@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7BDFE104
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 16:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92B49FE10A
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 16:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727621AbfKOPQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 10:16:53 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:15999 "EHLO
+        id S1727504AbfKOPTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 10:19:08 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:10909 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbfKOPQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 10:16:53 -0500
+        with ESMTP id S1727412AbfKOPTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 10:19:07 -0500
 Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAFFGgIQ023070;
-        Fri, 15 Nov 2019 07:16:43 -0800
-Date:   Fri, 15 Nov 2019 20:38:30 +0530
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAFFIxUn023083;
+        Fri, 15 Nov 2019 07:19:00 -0800
+Date:   Fri, 15 Nov 2019 20:40:47 +0530
 From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, jakub.kicinski@netronome.com,
-        davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next v3 1/2] cxgb4: add TC-MATCHALL classifier egress
- offload
-Message-ID: <20191115150824.GA14296@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
+        vishal@chelsio.com, dt@chelsio.com
+Subject: Re: [PATCH net-next v3 2/2] cxgb4: add TC-MATCHALL classifier
+ ingress offload
+Message-ID: <20191115151046.GA14367@chelsio.com>
 References: <cover.1573818408.git.rahul.lakkireddy@chelsio.com>
- <5b5af4a7ec3a6c9bc878046f4670a2838bbbe718.1573818408.git.rahul.lakkireddy@chelsio.com>
- <20191115135845.GC2158@nanopsycho>
+ <418c2bbf879fa75a8a3170d8523235f9b16af595.1573818409.git.rahul.lakkireddy@chelsio.com>
+ <20191115135318.GB2158@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191115135845.GC2158@nanopsycho>
+In-Reply-To: <20191115135318.GB2158@nanopsycho>
 User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, November 11/15/19, 2019 at 14:58:45 +0100, Jiri Pirko wrote:
-> Fri, Nov 15, 2019 at 01:14:20PM CET, rahul.lakkireddy@chelsio.com wrote:
+On Friday, November 11/15/19, 2019 at 14:53:18 +0100, Jiri Pirko wrote:
+> Fri, Nov 15, 2019 at 01:14:21PM CET, rahul.lakkireddy@chelsio.com wrote:
 > 
 > [...]
 > 
 > 
-> >+static int cxgb4_matchall_egress_validate(struct net_device *dev,
-> >+					  struct tc_cls_matchall_offload *cls)
-> >+{
-> >+	struct netlink_ext_ack *extack = cls->common.extack;
-> >+	struct flow_action *actions = &cls->rule->action;
-> >+	struct port_info *pi = netdev2pinfo(dev);
-> >+	struct flow_action_entry *entry;
-> >+	u64 max_link_rate;
-> >+	u32 i, speed;
-> >+	int ret;
-> >+
-> >+	if (cls->common.prio != 1) {
-> >+		NL_SET_ERR_MSG_MOD(extack,
-> >+				   "Egress MATCHALL offload must have prio 1");
+> >@@ -26,9 +37,13 @@ struct cxgb4_tc_matchall {
+> > };
+> > 
+> > int cxgb4_tc_matchall_replace(struct net_device *dev,
+> >-			      struct tc_cls_matchall_offload *cls_matchall);
+> >+			      struct tc_cls_matchall_offload *cls_matchall,
+> >+			      bool ingress);
+> > int cxgb4_tc_matchall_destroy(struct net_device *dev,
+> >-			      struct tc_cls_matchall_offload *cls_matchall);
+> >+			      struct tc_cls_matchall_offload *cls_matchall,
+> >+			      bool ingress);
+> >+int cxgb4_tc_matchall_stats(struct net_device *dev,
+> >+			    struct tc_cls_matchall_offload *cls_matchall);
 > 
-> I don't understand why you need it to be prio 1.
+> Hmm, you only add stats function in this second patch. Does that mean
+> you don't care for stats in egress?
+> From looking at cxgb_setup_tc_matchall() looks like I'm right.
+> Why?
+> 
 
-This is to maintain rule ordering with the kernel. Jakub has suggested
-this in my earlier series [1][2]. I see similar checks in various
-drivers (mlx5 and nfp), while offloading matchall with policer.
+We're currently missing support to fetch these stats from hardware/
+firmware on egress side. So, I could only implement it for the ingress
+side for now.
 
-[1] http://patchwork.ozlabs.org/patch/1194936/#2304413
-[2] http://patchwork.ozlabs.org/patch/1194301/#2303749
+> > 
+> > int cxgb4_init_tc_matchall(struct adapter *adap);
+> > void cxgb4_cleanup_tc_matchall(struct adapter *adap);
+> >-- 
+> >2.24.0
+> >
 
 Thanks,
 Rahul
