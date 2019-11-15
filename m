@@ -2,66 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53DCAFD317
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 04:01:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD37FD343
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 04:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbfKODBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 22:01:32 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37276 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbfKODBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 22:01:32 -0500
-Received: by mail-wr1-f66.google.com with SMTP id t1so9315486wrv.4
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 19:01:31 -0800 (PST)
+        id S1726985AbfKODXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 22:23:50 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46010 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726491AbfKODXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 22:23:50 -0500
+Received: by mail-pf1-f196.google.com with SMTP id z4so5657915pfn.12;
+        Thu, 14 Nov 2019 19:23:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=R45P+ujHZ8R+ysjNPaE8IucTth8sfJ61hafnDi3yIqA=;
-        b=hZWKamlxyAXUoySjOfMlK/oBgp3WvtMWQ64ne26ZX6DVQ0nI0ZuJNI6BsMGC1158oU
-         4BV8LPwt3kuy9QMpWDtgcwuhzeXNHAJ3Jn6YKQGikITIzY0bFAaihNhNqjMNRQGecL0z
-         SPLm/69J5uSmh32AUjKR0qEqj+//74SzTsRa0rUmFJbmBPvUewY/0dzppdt6PhaSlT+f
-         7THJEXf6BxyU+VKTUVpc/sWT/TDgkJqVYBm0txUBu91kvaE1A1y361k9x+Mc+QqswI19
-         ZUYj7WCluFD+YOD/lWEZt/wT3l3Eiv3EK3RlPIA2Qt7Jci9iDt7X8n2XWopibUzpGFbp
-         83YQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mc9ObuKZI129W8OSfy3VEYUS0DDz4uy5r2u0ZDpAVtk=;
+        b=bVfxmkS1boVUkiynerVs4TW6Da1TBNqMIDoN0ev79uPhJvX08WefcrNTMpXSvxkd5B
+         rJqRPvIzeeiU+I5TTqrLVOvtyaTphrPdiFHfsC6FSUgmaTJCwbWBicc5mINq3SbF/2m4
+         ABd53qScBP8AM3WfeFKtQIQ2WDrSl10PyyvPo9Gy7W9RrnATEHXXyDprutAtlxhhs2xG
+         qqrz/27pnEfGIkqC0wkoB43/LVYmOtbrLpApnLbOPzSM2LV/MeptsM2Xo2mlqT27Fmil
+         jcyXgnAIX4gYmVFKO20GWgEGr18w76Qm2+SfMmRgPRz/9aFrCnBtqJzXBvYdZZ98T8M6
+         anug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=R45P+ujHZ8R+ysjNPaE8IucTth8sfJ61hafnDi3yIqA=;
-        b=IE0Sd55nHhMWEYMw/e8mCgoaUCxidZwRmyQo1hMRr63Atu7wqwueosnuQcVcNVLfoT
-         8kIlTltMUPzKIMG4PakpVyeUMyZG5VSdTPu57iuiGhvGVLYA4s6KaoJQ6KdB9tuPOTfn
-         rwXOmb9YhWR4VESIjVoA2aTcaHh6hB26OeE61BxrugbL3vswHzedTWVUo5NTuZDyB7Ha
-         wVaZcpM9d6M1auBbRUu9KF2c41EwKAPWF9lamv6eIAiiymk9VlueM9z3p/QcuGD7N6bt
-         htlNKYlswFTOfbhP3h3i+24L975AFlLLnt/CxixWeJQVPVvWKYqpDd1XvEWnyjygC7ZN
-         LSRQ==
-X-Gm-Message-State: APjAAAWuNud6KB5ieBgLVPsfMLBiaS699b9Bjv4tJREdomfAtgXaELla
-        5hmYrCxO4QxKr4TDd3z49hHZ0LPuIQOgtt6UrKs=
-X-Google-Smtp-Source: APXvYqzf/NIUmARrwpeQjNCIqZ3DuFnIGngTLSHsn322J+tradseXz9EUBDF7sq5PryQ6bpJlo3jLslJhXA8eTEW55A=
-X-Received: by 2002:a5d:458d:: with SMTP id p13mr12676809wrq.181.1573786890950;
- Thu, 14 Nov 2019 19:01:30 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mc9ObuKZI129W8OSfy3VEYUS0DDz4uy5r2u0ZDpAVtk=;
+        b=i+Zrp5/6IvH5HvkCUtIiDD4poyhTqN0QzotiKr//ESftTkMA+26VyrAjSyc1s7eLsY
+         7kDwsPXYfZ6jDTUyWUozzfFR8W1HbZOx+YelnCSl05oDNHT5GAfDRmYQRiM6E7tGpuFB
+         62UAtaUcmVZulzSGOQJCI2iremPtYvGyVBXmiZ+ZuWcwo6O9T14FSHmSRTV7X8nQggos
+         9lEzd4MI+Yoo46mHLQ31fP2VrNmSwdRCZLeiu7RHc6bDr9Bsdsa01WagI2PRzv0asgqo
+         JxNXSK/y86G4G1RDrIZb5P7kNn+YLr/nLrxAHPB6rcZaHhAiX4l3BibP8DsOXFvwMOMs
+         iKcA==
+X-Gm-Message-State: APjAAAU3U2VgUBoV4wDvNwuX0rulOi0x/JAs+sOTdimE2mvnmniHYg9n
+        G3MLQ4dOL/EafUPHpcNdUDE=
+X-Google-Smtp-Source: APXvYqyuAf6dvTW+dhuK2J1TbuNaJ/JMPCB6e+aHJU8fAN5/JOIxhGx5+AzZfIqItKPtiB90IZAClA==
+X-Received: by 2002:a63:115c:: with SMTP id 28mr13765973pgr.6.1573788229212;
+        Thu, 14 Nov 2019 19:23:49 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::6ab4])
+        by smtp.gmail.com with ESMTPSA id k32sm8165332pje.10.2019.11.14.19.23.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 19:23:48 -0800 (PST)
+Date:   Thu, 14 Nov 2019 19:23:46 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH rfc bpf-next 7/8] bpf, x86: emit patchable direct jump as
+ tail call
+Message-ID: <20191115032345.loei6qqgyo4tdbuq@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1573779287.git.daniel@iogearbox.net>
+ <78a8cbc4887d00b3dc4705347f05572630650cbf.1573779287.git.daniel@iogearbox.net>
 MIME-Version: 1.0
-Reply-To: ibrahim8rahman@gmail.com
-Received: by 2002:a1c:bdc6:0:0:0:0:0 with HTTP; Thu, 14 Nov 2019 19:01:30
- -0800 (PST)
-From:   lbrahim rahman <ibrahim8rahman@gmail.com>
-Date:   Fri, 15 Nov 2019 03:01:30 +0000
-X-Google-Sender-Auth: hXpVDAidBudiba2XPxxYZd7WG9g
-Message-ID: <CADfURssfHkPM35KqSRQUT=VfFmzHXqeoHdEgBkGNkF=+CNTCnA@mail.gmail.com>
-Subject: Dear Sir/Madam!,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78a8cbc4887d00b3dc4705347f05572630650cbf.1573779287.git.daniel@iogearbox.net>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir/Madam.
+On Fri, Nov 15, 2019 at 02:04:01AM +0100, Daniel Borkmann wrote:
+> for later modifications. In ii) fixup_bpf_tail_call_direct() walks
+> over the progs poke_tab, locks the tail call maps poke_mutex to
+> prevent from parallel updates and patches in the right locations via
+...
+> @@ -1610,6 +1671,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  		prog->bpf_func = (void *)image;
+>  		prog->jited = 1;
+>  		prog->jited_len = proglen;
+> +		fixup_bpf_tail_call_direct(prog);
 
-I am Mr.Ibrahim Rahman. I have (15.5 M Dollars) to transfer into
-your account,
-I will send you more details about this deal and the procedures to
-follow when I receive a positive response from you,
+Why not to move fixup_bpf_tail_call_direct() just before
+bpf_jit_binary_lock_ro() and use simple memcpy instead of text_poke ?
 
-Yours Sincerely,
+imo this logic in patch 7:
+case BPF_JMP | BPF_TAIL_CALL:
++   if (imm32)
++            emit_bpf_tail_call_direct(&bpf_prog->aux->poke_tab[imm32 - 1],
+would have been easier to understand if patch 7 and 8 were swapped.
 
-From Mr.Ibrahim Rahman.
