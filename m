@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8942FD9A3
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 10:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B310FD9F1
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 10:51:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727612AbfKOJoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 04:44:30 -0500
-Received: from www262.sakura.ne.jp ([202.181.97.72]:56755 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727170AbfKOJo3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 04:44:29 -0500
-Received: from fsav102.sakura.ne.jp (fsav102.sakura.ne.jp [27.133.134.229])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id xAF9hluQ013037;
-        Fri, 15 Nov 2019 18:43:47 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav102.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav102.sakura.ne.jp);
- Fri, 15 Nov 2019 18:43:47 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav102.sakura.ne.jp)
-Received: from [192.168.1.9] (softbank126040052248.bbtec.net [126.40.52.248])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id xAF9hfEU013011
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
-        Fri, 15 Nov 2019 18:43:46 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
-        ddstreet@ieee.org, Dmitry Vyukov <dvyukov@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>
-References: <00000000000056268e05737dcb95@google.com>
- <0000000000007d22100573d66078@google.com>
- <063a57ba-7723-6513-043e-ee99c5797271@I-love.SAKURA.ne.jp>
- <CAADnVQJ7BZMVSt9on4updWrWsFWq6b5J1qEGwTdGYV+BLqH7tg@mail.gmail.com>
- <87imopgere.fsf@toke.dk>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Message-ID: <6f69f704-b51d-c3cb-02c6-8e6eb93f4194@i-love.sakura.ne.jp>
-Date:   Fri, 15 Nov 2019 18:43:36 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1727677AbfKOJvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 04:51:38 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39837 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727372AbfKOJu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 04:50:27 -0500
+Received: by mail-lj1-f194.google.com with SMTP id p18so10020966ljc.6
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 01:50:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x/UA8N9071Hs67JB/CtCLOKYsRujWaxB61T4BkLclrk=;
+        b=Uj//MN/eYpagIL5SFVK5o9mqojQITuF2XVCgryREyFOYqXwn9xWNIEKr/hnSu/yd37
+         OgcpwNqi83ryL9yGP1i3iNYM1NbRKkpytuLcvx7ux/H500d7XGmBTA1gGyjzvIoV1iEw
+         ld7CduY+HoP5HPEWtCzcfMm9I2Dm+Qz4o73G7hmWuJKiE/659BHe9isr8jEu6zfrXY5w
+         p6E8t5bh/a39/Z0Xs8X8yXae3wjaBpHdwtcjDJIrI75l11sES3dl5SnTE4LguB/l+0rp
+         l/TlA8QLOU8hAcIlE+mlbdA00awq8mAiygKQOZVYY63BinchNpYcFAYnxZkBzVC+ig3U
+         4gDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x/UA8N9071Hs67JB/CtCLOKYsRujWaxB61T4BkLclrk=;
+        b=nJGPlbGHs8mOrl1tk8WJvdwb53YrzxWTYbEIoYtKzPVZT4BJAj11vxzMKFJxZIo2oK
+         g11KVUXIdRXDyEmmHT8F+R+U5mo0oMMduHdD1TNLcgE08b9JgskGFfh+mmREsiBPjf19
+         xjXWHEuTxIdYL09IVgiHyPC/RkGxq155UwwwGsX07aKoWmlgG2iDTzuCZ/tLOEin5for
+         DXCKta1T0pqOzUZj0rph8fyyCaMuh7+ykW1flcDPH5+4cNgTzj/EmeJ4PpVdBKBdHRHe
+         TpTrOddnYoh6duZnnSjd064ze0LpZmJqnoD1IJ0T2bC+BTIDzN8wmAUkIpyUbts8mbSg
+         94dw==
+X-Gm-Message-State: APjAAAUm6Xg0iwKcEhFbdRa8xa+AjZ6ss3ZBbs9fSD4ziuL1Qv1bkD1k
+        o79/CJvOKCj+ptvvAepoMi7XnjHKfadTmlcOGBMMGQ==
+X-Google-Smtp-Source: APXvYqzoH0lE2meSnOsWYn4w2Vnm6zFN87zG7pAIdO4qZpC8+1a/pUkOgr9YtQTghftKTYLC9GIcmmSSdCngI9weV+A=
+X-Received: by 2002:a2e:161b:: with SMTP id w27mr10500539ljd.183.1573811425820;
+ Fri, 15 Nov 2019 01:50:25 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <87imopgere.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191115062454.7025-1-hslester96@gmail.com>
+In-Reply-To: <20191115062454.7025-1-hslester96@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 15 Nov 2019 10:50:14 +0100
+Message-ID: <CACRpkdaXcas08jy+oZOi4fKuXZYkbFAOipqf49smSdGd6TmFag@mail.gmail.com>
+Subject: Re: [PATCH] net: gemini: add missed free_netdev
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On Fri, Nov 15, 2019 at 7:25 AM Chuhong Yuan <hslester96@gmail.com> wrote:
 
-syzbot is still reporting that bpf(BPF_MAP_UPDATE_ELEM) causes
-unregister_netdevice() to hang. It seems that commit 546ac1ffb70d25b5
-("bpf: add devmap, a map for storing net device references") assigned
-dtab->netdev_map[i] at dev_map_update_elem() but commit 6f9d451ab1a33728
-("xdp: Add devmap_hash map type for looking up devices by hashed index")
-forgot to assign dtab->netdev_map[idx] at __dev_map_hash_update_elem()
-when dev is newly allocated by __dev_map_alloc_node(). As far as I and
-syzbot tested, https://syzkaller.appspot.com/x/patch.diff?x=140dd206e00000
-can avoid the problem, but I don't know whether this is right location to
-assign it. Please check and fix.
+> This driver forgets to free allocated netdev in remove like
+> what is done in probe failure.
+> Add the free to fix it.
+>
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 
+Looks correct!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
