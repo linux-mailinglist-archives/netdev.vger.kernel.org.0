@@ -2,165 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46277FD3F4
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1DDBFD40B
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726996AbfKOFKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 00:10:00 -0500
-Received: from mail-eopbgr60070.outbound.protection.outlook.com ([40.107.6.70]:28741
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725773AbfKOFKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 00:10:00 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H6YfUHDV5GmIssTEETjBIjRKsEI4Dgpmr5yalIcAKcOlWc+3ErgRID4hAqDhbyIVXg5Dmc9bRcnroiA2480pdJAlgGfMZtCRdviU+cWjO3nWz1meEo5Bx7frBFCrioNS1pFMJPYPtxies9BYDmeF54IqwZXrokxapwz3ZaLIINiqdWGmUPWDTgxg93UfUJQir+rvOaTujDUqUw2JBZz8rJsB4okSmLaNig9XJeUY/ZsZk+QTCK72F8FB3QgM7q20bgd2OdyDLsH0WSGrVO3H2ggr00IngCdvEBp2cDTEN1VWDpVkdj7fLkkWAkkqtgY12IVCFX6wsgTw4PdewikUtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g5fNGrVkOtzgua3y87Qa3uh8R4b9GCtX7y4M4Jjbi0g=;
- b=Es3Kwh/PDYZ8DJgB1oS428a+NbI+bM1fCheT4vDAlPdKUaDbjyG8+y1IOXe250XN4I+OtTISpyruOpT1rAVYlje10Sg7wQg+1FQ44NjVJkYxBlBtp6XqCKQRhYfULQ4kinqiLOqNrhMt4Y98mH0JXlJNf16S94O2z9faWvpqZO4Tje3rqBZhw3Tpdc+Qp5KWcfCP3YQpy0hHZh9TZO+vedo1x+Yf8AwL3nqjvmUGqutEsEufKDKDVm8j6dcRvwZA8ZrMRlgDD2D7sgHQ62fQr5Qll/qBUP3ykE9CxT9nL8ZGubCZye9Y39wl+BmaTBNxbmMIBvdiahgrq5tq3Jzvug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g5fNGrVkOtzgua3y87Qa3uh8R4b9GCtX7y4M4Jjbi0g=;
- b=i5/QKoR8Q/vvcjB0ZMp2o5gVHZkA/zY19rk8KpkxG8wuJUMiyUD3lC2Su3vTsT8+9Szz5TtI1QPL8Pb/gnJuWKtayXPOubJaaEK3BZ6tdmFOV1v9SYrQc5knGz5eBGGBktOBLP6Q0ViMHLQW/+do4aUs2E+DW5LqZUPfC5yV4/s=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB5355.eurprd04.prod.outlook.com (20.178.105.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.28; Fri, 15 Nov 2019 05:09:53 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2451.029; Fri, 15 Nov 2019
- 05:09:53 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
-Thread-Topic: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
-Thread-Index: AQHVm3IDm0rriooN3k2DjIsf/kbhcKeLrVbg
-Date:   Fri, 15 Nov 2019 05:09:53 +0000
-Message-ID: <DB7PR04MB4618335E8A90387EDAE17F21E6700@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b73127c1-82ea-4bb5-4d3c-08d7698a0cdc
-x-ms-traffictypediagnostic: DB7PR04MB5355:|DB7PR04MB5355:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB5355126361D4415BE72A6C61E6700@DB7PR04MB5355.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 02229A4115
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(39860400002)(396003)(376002)(346002)(199004)(189003)(13464003)(478600001)(66556008)(102836004)(66476007)(66946007)(64756008)(2906002)(14454004)(26005)(66446008)(6506007)(76176011)(53546011)(446003)(14444005)(256004)(11346002)(476003)(486006)(7736002)(6116002)(8676002)(3846002)(7696005)(186003)(305945005)(8936002)(9686003)(81166006)(55016002)(86362001)(6436002)(229853002)(2201001)(4326008)(81156014)(74316002)(66066001)(6246003)(76116006)(110136005)(52536014)(5660300002)(2501003)(316002)(33656002)(71190400001)(71200400001)(99286004)(54906003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5355;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: P5UQ544nyEwNvs0ESIjfRp974a2MZDECpSBgeVjy06zbffk5Um129cwPXLZm6HuT6u2XwzJc+fsFrTJz+LJRcZNQtEzq/Oamr/czVIXeHq9jy/imp4Xoqz6WrN+tIhQxJZLAEfu/gx9JNYLQFY61oq8CbUDbpr1xM4eGa4BrNCcuqp5J3Vp/i2k7W0JGxQ8IGbPNTeKXHODunce7zOS8nHCRYk8g8euML9AjzxD+c47j74wRwY0uImJWIZeVo7imyeBoyee1HdEkLpIAEIhhS03cMqy6oM9K32TjNyE3MGOUShUIcJKNyR4uimZ9osNHKPvTh/WF8inJVSUFdGPLqO4NVMZcD1mLV2eMQXCEwVZ9hz5v7tRrIHLIEsyqM7fYamO+h4qm3AqSKbubS+98JPWWTlehYdiURA5fkRC+WUbtg5GP+T5kNERpTg0b2fXd
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1727077AbfKOFVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 00:21:02 -0500
+Received: from mailout1.samsung.com ([203.254.224.24]:17116 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727032AbfKOFVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 00:21:01 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20191115052059epoutp01f90b5c34f1947e0cbce6bb1df06684e2~XPnNT88T-0981509815epoutp01i
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 05:20:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20191115052059epoutp01f90b5c34f1947e0cbce6bb1df06684e2~XPnNT88T-0981509815epoutp01i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1573795259;
+        bh=2s6MJG+dWgsvZtxFBg4TZIeCR2AfmMSoYt3HmY1lyMY=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=cBDirSRUFaQxoD6WDd89bscs2LPuA6rDTPPs0WSZvRS+3YbTU6B20qktnbHLAxYAE
+         VYOHdCC5MqZQQ4MEZcJQ9MLylezp7zxDieobjHKK3IY0AiTn6hRg4couSY5U7/GkTD
+         C9dPaKheLiB2OfsEKfWGnpWM4GqjexctGHBfmjd8=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20191115052059epcas5p15a17370751bca212bb6d227dcb4c17d4~XPnMndHW72461724617epcas5p1j;
+        Fri, 15 Nov 2019 05:20:59 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5B.82.20245.AB53ECD5; Fri, 15 Nov 2019 14:20:58 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20191115052058epcas5p42d949eaa247a8f55fd55da61db2b6676~XPnL15ohw1624916249epcas5p4V;
+        Fri, 15 Nov 2019 05:20:58 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20191115052057epsmtrp2ea1f391f18ee3ad1c456006271439ede~XPnLZg8i00484304843epsmtrp20;
+        Fri, 15 Nov 2019 05:20:57 +0000 (GMT)
+X-AuditID: b6c32a4b-fb9ff70000014f15-01-5dce35ba49e4
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        83.98.25663.9B53ECD5; Fri, 15 Nov 2019 14:20:57 +0900 (KST)
+Received: from pankjsharma02 (unknown [107.111.84.17]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20191115052056epsmtip24d94ed8a7c35800f5fe695bf349b82ea~XPnJ3FkcQ2430624306epsmtip2E;
+        Fri, 15 Nov 2019 05:20:56 +0000 (GMT)
+From:   "pankj.sharma" <pankj.sharma@samsung.com>
+To:     "'Marc Kleine-Budde'" <mkl@pengutronix.de>
+Cc:     <wg@grandegger.com>, <davem@davemloft.net>,
+        <eugen.hristev@microchip.com>, <ludovic.desroches@microchip.com>,
+        <pankaj.dubey@samsung.com>, <rcsekar@samsung.com>,
+        "'Sriram Dash'" <sriram.dash@samsung.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+In-Reply-To: <38ade7ff-0e0c-afe9-a927-17317f0f27b9@pengutronix.de>
+Subject: RE: [PATCH v3] can: m_can: add support for one shot mode
+Date:   Fri, 15 Nov 2019 10:50:54 +0530
+Message-ID: <05f701d59b74$7610ecf0$6232c6d0$@samsung.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b73127c1-82ea-4bb5-4d3c-08d7698a0cdc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 05:09:53.7032
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dkLF3rAGYxbm+o1R6DK+DKByiYl6RBcdv3BU/+20dJwwQ6ok8tuiybjtXzSzpYtJ0ffirpNjUI89GG6ZomoH5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5355
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHwFvFf7BLTdmyWN921EOIqnqBEoQIzkbGZAZnmUhSnOE2GgA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrIKsWRmVeSWpSXmKPExsWy7bCmuu4u03OxBivv2ljMOd/CYnHgx3EW
+        i1XfpzJbXN41h83ixdrrrBbrF01hsTi2QMxi0dYv7BazLuxgtbixnt1i6b2drA7cHltW3mTy
+        +HjpNqPHnR9LGT36/xp49G1ZxejxeZNcAFsUl01Kak5mWWqRvl0CV8apl1OZCv6qVJydtICx
+        gfGGXBcjJ4eEgInEiuv/WLsYuTiEBHYzSqydNZUNwvnEKPF8w2l2COcbo8SSS9uZYVrOtj6H
+        qtrLKHF0ynI2kISQwGtGidczgkBsNgF9iSlNf1lAbBEBPYnfExYxgTQwC6xlkuhf8oUVJMEp
+        4CTx7PIisGZhAUeJl4tfAxVxcLAIqEq0PHAACfMKWEr8m/2VGcIWlDg58wnYTGYBbYllC19D
+        HaQg8fPpMlaIXU4Sa/52s0LUiEu8PHoE7AMJgX52iVVbHrJCNLhInLi7mB3CFpZ4dXwLlC0l
+        8fndXjYIO1ti4e5+FpB7JAQqJNpmCEOE7SUOXJkDFmYW0JRYv0sfYhWfRO/vJ0wQ1bwSHW1C
+        ENVqElOfvmOEsGUk7jzaDDXcQ+LDthOsExgVZyF5bBaSx2YheWAWwrIFjCyrGCVTC4pz01OL
+        TQuM81LL9YoTc4tL89L1kvNzNzGCE5aW9w7GTed8DjEKcDAq8fBK3DobK8SaWFZcmXuIUYKD
+        WUmEd8rbM7FCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeSexXo0REkhPLEnNTk0tSC2CyTJxcEo1
+        MIa+ZXbkcr3wZNrt9Ivpbz+nLTtyZpniq4Af786Jpu35l3mISWFv6roM69f/Iv5rzaz9NevV
+        xcBn+/XeR2aplzayF6wq07iZo7Ci/cEaU7+G86Y/eVmnJ06addtzn0x4U0iwreZOq99fPS51
+        vunRTTzenMEXs3Tf0rh/MgffNjI8eizSBkxbhkosxRmJhlrMRcWJAMtaSu5UAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrEIsWRmVeSWpSXmKPExsWy7bCSvO5O03OxBgun6lnMOd/CYnHgx3EW
+        i1XfpzJbXN41h83ixdrrrBbrF01hsTi2QMxi0dYv7BazLuxgtbixnt1i6b2drA7cHltW3mTy
+        +HjpNqPHnR9LGT36/xp49G1ZxejxeZNcAFsUl01Kak5mWWqRvl0CV8aia2UFexQrpi7Wb2Cc
+        LdXFyMkhIWAicbb1OVsXIxeHkMBuRolrc7+wdjFyACVkJBZ/roaoEZZY+e85O4gtJPCSUaJh
+        sjKIzSagLzGl6S8LiC0ioCfxe8IiJhCbWWA7k8SOvWUQMy8wSnzsecoIkuAUcJJ4dnkRG4gt
+        LOAo8XLxayaQXSwCqhItDxxAwrwClhL/Zn9lhrAFJU7OfMICMVNbovdhKyOMvWzha2aI2xQk
+        fj5dxgpxg5PEmr/drBA14hIvjx5hn8AoPAvJqFlIRs1CMmoWkpYFjCyrGCVTC4pz03OLDQuM
+        8lLL9YoTc4tL89L1kvNzNzGCY05LawfjiRPxhxgFOBiVeHglbp2NFWJNLCuuzD3EKMHBrCTC
+        O+XtmVgh3pTEyqrUovz4otKc1OJDjNIcLErivPL5xyKFBNITS1KzU1MLUotgskwcnFINjEt0
+        FjT++zd1a/bp0Ka7fPa6719Mtrtz5sbUVx+6ptwN1HkjIrXhTo/V/pDm+1VS57IOunSuFdhs
+        wVDkcdL3e8/pDOO9nEzrJ+5QX+9z/sLlpVPny9+4Fh7Y3Po05hCTgFid47zJwauZPyjcctmQ
+        p8NfdUb0dvqxM7Pe9hheCp217Kd/7dyFDFFKLMUZiYZazEXFiQATU5t2tQIAAA==
+X-CMS-MailID: 20191115052058epcas5p42d949eaa247a8f55fd55da61db2b6676
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60
+References: <CGME20191021120513epcas5p2fd23f5dbdff6a0e6aa3b0726b30e4b60@epcas5p2.samsung.com>
+        <1571659480-29109-1-git-send-email-pankj.sharma@samsung.com>
+        <38ade7ff-0e0c-afe9-a927-17317f0f27b9@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBTZWFuLA0KDQpJIHJlbWVtYmVyIHRoYXQgeW91IGFyZSB0aGUgZmlyc3Qgb25lIHNlbmRp
-bmcgb3V0IHRoZSBwYXRjaCB0byBmaXggdGhpcyBpc3N1ZSwgYW5kIEkgTkFDSyB0aGUgcGF0Y2gg
-YmVmb3JlLg0KSSBhbSBzbyBzb3JyeSBmb3IgdGhhdCwgaXQgY2FuIHdvcmsgZmluZSBhZnRlciB0
-ZXN0aW5nIGF0IG15IHNpZGUuIENvdWxkIHlvdSBoZWxwIGRvdWJsZSBjaGVjayBhdCB5b3VyIHNp
-ZGUgZm9yDQp0aGlzIHBhdGNoPyBCb3RoIHdha2V1cCBmcm9tIHRvdGFsbHkgc3VzcGVuZCBhbmQg
-d2FrZXVwIGZyb20gc3VzcGVuZGluZz8NCg0KV2l0aCB0aGlzIHBhdGNoLCB3ZSBjYW4gZml4IHR3
-byBwcm9ibGVtczoNCjEpIGZpeCBkZWFkbG9jayB3aGVuIHVzaW5nIHNlbGYgd2FrZXVwDQoyKSBm
-cmFtZXMgb3V0LW9mLW9yZGVyIGluIGZpcnN0IElSUSBoYW5kbGVyIHJ1biBhZnRlciB3YWtldXAN
-Cg0KVGhhbmtzIGEgbG90IQ0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCg0KPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56
-aGFuZ0BueHAuY29tPg0KPiBTZW50OiAyMDE5xOoxMdTCMTXI1SAxMzowMw0KPiBUbzogbWtsQHBl
-bmd1dHJvbml4LmRlOyBzZWFuQGdlYW5peC5jb207IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcN
-Cj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJu
-ZWwub3JnOyBKb2FraW0gWmhhbmcNCj4gPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiBTdWJq
-ZWN0OiBbUEFUQ0ggMS8zXSBjYW46IGZsZXhjYW46IGZpeCBkZWFkbG9jayB3aGVuIHVzaW5nIHNl
-bGYgd2FrZXVwDQo+IA0KPiBGcm9tOiBTZWFuIE55ZWtqYWVyIDxzZWFuQGdlYW5peC5jb20+DQo+
-IA0KPiBXaGVuIHN1c3BlbmRpbmcsIHdoZW4gdGhlcmUgaXMgc3RpbGwgY2FuIHRyYWZmaWMgb24g
-dGhlIGludGVyZmFjZXMgdGhlIGZsZXhjYW4NCj4gaW1tZWRpYXRlbHkgd2FrZXMgdGhlIHBsYXRm
-b3JtIGFnYWluLiBBcyBpdCBzaG91bGQgOi0pLiBCdXQgaXQgdGhyb3dzIHRoaXMgZXJyb3INCj4g
-bXNnOg0KPiBbIDMxNjkuMzc4NjYxXSBQTTogbm9pcnEgc3VzcGVuZCBvZiBkZXZpY2VzIGZhaWxl
-ZA0KPiANCj4gT24gdGhlIHdheSBkb3duIHRvIHN1c3BlbmQgdGhlIGludGVyZmFjZSB0aGF0IHRo
-cm93cyB0aGUgZXJyb3IgbWVzc2FnZSBkb2VzDQo+IGNhbGwgZmxleGNhbl9zdXNwZW5kIGJ1dCBm
-YWlscyB0byBjYWxsIGZsZXhjYW5fbm9pcnFfc3VzcGVuZC4gVGhhdCBtZWFucyB0aGUNCj4gZmxl
-eGNhbl9lbnRlcl9zdG9wX21vZGUgaXMgY2FsbGVkLCBidXQgb24gdGhlIHdheSBvdXQgb2Ygc3Vz
-cGVuZCB0aGUgZHJpdmVyDQo+IG9ubHkgY2FsbHMgZmxleGNhbl9yZXN1bWUgYW5kIHNraXBzIGZs
-ZXhjYW5fbm9pcnFfcmVzdW1lLCB0aHVzIGl0IGRvZXNuJ3QgY2FsbA0KPiBmbGV4Y2FuX2V4aXRf
-c3RvcF9tb2RlLiBUaGlzIGxlYXZlcyB0aGUgZmxleGNhbiBpbiBzdG9wIG1vZGUsIGFuZCB3aXRo
-IHRoZQ0KPiBjdXJyZW50IGRyaXZlciBpdCBjYW4ndCByZWNvdmVyIGZyb20gdGhpcyBldmVuIHdp
-dGggYSBzb2Z0IHJlYm9vdCwgaXQgcmVxdWlyZXMgYQ0KPiBoYXJkIHJlYm9vdC4NCj4gDQo+IFRo
-aXMgcGF0Y2ggY2FuIGZpeCBkZWFkbG9jayB3aGVuIHVzaW5nIHNlbGYgd2FrZXVwLCBpdCBoYXBw
-ZW5lcyB0byBiZSBhYmxlIHRvDQo+IGZpeCBhbm90aGVyIGlzc3VlIHRoYXQgZnJhbWVzIG91dC1v
-Zi1vcmRlciBpbiBmaXJzdCBJUlEgaGFuZGxlciBydW4gYWZ0ZXIgd2FrZXVwLg0KPiANCj4gSW4g
-d2FrZXVwIGNhc2UsIGFmdGVyIHN5c3RlbSByZXN1bWUsIGZyYW1lcyByZWNlaXZlZCBvdXQtb2Yt
-b3JkZXIsdGhlDQo+IHByb2JsZW0gaXMgd2FrZXVwIGxhdGVuY3kgZnJvbSBmcmFtZSByZWNlcHRp
-b24gdG8gSVJRIGhhbmRsZXIgaXMgbXVjaCBiaWdnZXINCj4gdGhhbiB0aGUgY291bnRlciBvdmVy
-Zmxvdy4gVGhpcyBtZWFucyBpdCdzIGltcG9zc2libGUgdG8gc29ydCB0aGUgQ0FOIGZyYW1lcw0K
-PiBieSB0aW1lc3RhbXAuIFRoZSByZWFzb24gaXMgdGhhdCBjb250cm9sbGVyIGV4aXRzIHN0b3Ag
-bW9kZSBkdXJpbmcgbm9pcnENCj4gcmVzdW1lLCB0aGVuIGl0IGNhbiByZWNlaXZlIHRoZSBmcmFt
-ZSBpbW1lZGlhdGVseS4gSWYgbm9pcnEgcmV1c21lIHN0YWdlDQo+IGNvbnN1bWVzIG11Y2ggdGlt
-ZSwgaXQgd2lsbCBleHRlbmQgaW50ZXJydXB0IHJlc3BvbnNlIHRpbWUuDQo+IA0KPiBGaXhlczog
-ZGUzNTc4YzE5OGM2ICgiY2FuOiBmbGV4Y2FuOiBhZGQgc2VsZiB3YWtldXAgc3VwcG9ydCIpDQo+
-IFNpZ25lZC1vZmYtYnk6IFNlYW4gTnlla2phZXIgPHNlYW5AZ2Vhbml4LmNvbT4NCj4gU2lnbmVk
-LW9mZi1ieTogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gLS0tDQo+
-ICBkcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jIHwgMTkgKysrKysrKysrKystLS0tLS0tLQ0KPiAg
-MSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pDQo+IA0KPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyBiL2RyaXZlcnMvbmV0L2Nhbi9m
-bGV4Y2FuLmMgaW5kZXgNCj4gYTkyOWNkZGE5YWIyLi40M2ZkMTg3NzY4ZjEgMTAwNjQ0DQo+IC0t
-LSBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvY2FuL2Zs
-ZXhjYW4uYw0KPiBAQCAtMTM0LDggKzEzNCw3IEBADQo+ICAJKEZMRVhDQU5fRVNSX0VSUl9CVVMg
-fCBGTEVYQ0FOX0VTUl9FUlJfU1RBVEUpICAjZGVmaW5lDQo+IEZMRVhDQU5fRVNSX0FMTF9JTlQg
-XA0KPiAgCShGTEVYQ0FOX0VTUl9UV1JOX0lOVCB8IEZMRVhDQU5fRVNSX1JXUk5fSU5UIHwgXA0K
-PiAtCSBGTEVYQ0FOX0VTUl9CT0ZGX0lOVCB8IEZMRVhDQU5fRVNSX0VSUl9JTlQgfCBcDQo+IC0J
-IEZMRVhDQU5fRVNSX1dBS19JTlQpDQo+ICsJIEZMRVhDQU5fRVNSX0JPRkZfSU5UIHwgRkxFWENB
-Tl9FU1JfRVJSX0lOVCkNCj4gDQo+ICAvKiBGTEVYQ0FOIGludGVycnVwdCBmbGFnIHJlZ2lzdGVy
-IChJRkxBRykgYml0cyAqLw0KPiAgLyogRXJyYXRhIEVSUjAwNTgyOSBzdGVwNzogUmVzZXJ2ZSBm
-aXJzdCB2YWxpZCBNQiAqLyBAQCAtOTYwLDYgKzk1OSwxMg0KPiBAQCBzdGF0aWMgaXJxcmV0dXJu
-X3QgZmxleGNhbl9pcnEoaW50IGlycSwgdm9pZCAqZGV2X2lkKQ0KPiANCj4gIAlyZWdfZXNyID0g
-cHJpdi0+cmVhZCgmcmVncy0+ZXNyKTsNCj4gDQo+ICsJLyogQUNLIHdha2V1cCBpbnRlcnJ1cHQg
-Ki8NCj4gKwlpZiAocmVnX2VzciAmIEZMRVhDQU5fRVNSX1dBS19JTlQpIHsNCj4gKwkJaGFuZGxl
-ZCA9IElSUV9IQU5ETEVEOw0KPiArCQlwcml2LT53cml0ZShyZWdfZXNyICYgRkxFWENBTl9FU1Jf
-V0FLX0lOVCwgJnJlZ3MtPmVzcik7DQo+ICsJfQ0KPiArDQo+ICAJLyogQUNLIGFsbCBidXMgZXJy
-b3IgYW5kIHN0YXRlIGNoYW5nZSBJUlEgc291cmNlcyAqLw0KPiAgCWlmIChyZWdfZXNyICYgRkxF
-WENBTl9FU1JfQUxMX0lOVCkgew0KPiAgCQloYW5kbGVkID0gSVJRX0hBTkRMRUQ7DQo+IEBAIC0x
-NzIyLDYgKzE3MjcsOSBAQCBzdGF0aWMgaW50IF9fbWF5YmVfdW51c2VkIGZsZXhjYW5fcmVzdW1l
-KHN0cnVjdA0KPiBkZXZpY2UgKmRldmljZSkNCj4gIAkJbmV0aWZfc3RhcnRfcXVldWUoZGV2KTsN
-Cj4gIAkJaWYgKGRldmljZV9tYXlfd2FrZXVwKGRldmljZSkpIHsNCj4gIAkJCWRpc2FibGVfaXJx
-X3dha2UoZGV2LT5pcnEpOw0KPiArCQkJZXJyID0gZmxleGNhbl9leGl0X3N0b3BfbW9kZShwcml2
-KTsNCj4gKwkJCWlmIChlcnIpDQo+ICsJCQkJcmV0dXJuIGVycjsNCj4gIAkJfSBlbHNlIHsNCj4g
-IAkJCWVyciA9IHBtX3J1bnRpbWVfZm9yY2VfcmVzdW1lKGRldmljZSk7DQo+ICAJCQlpZiAoZXJy
-KQ0KPiBAQCAtMTc2NywxNCArMTc3NSw5IEBAIHN0YXRpYyBpbnQgX19tYXliZV91bnVzZWQNCj4g
-ZmxleGNhbl9ub2lycV9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2aWNlKSAgew0KPiAgCXN0cnVj
-dCBuZXRfZGV2aWNlICpkZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2aWNlKTsNCj4gIAlzdHJ1Y3Qg
-ZmxleGNhbl9wcml2ICpwcml2ID0gbmV0ZGV2X3ByaXYoZGV2KTsNCj4gLQlpbnQgZXJyOw0KPiAN
-Cj4gLQlpZiAobmV0aWZfcnVubmluZyhkZXYpICYmIGRldmljZV9tYXlfd2FrZXVwKGRldmljZSkp
-IHsNCj4gKwlpZiAobmV0aWZfcnVubmluZyhkZXYpICYmIGRldmljZV9tYXlfd2FrZXVwKGRldmlj
-ZSkpDQo+ICAJCWZsZXhjYW5fZW5hYmxlX3dha2V1cF9pcnEocHJpdiwgZmFsc2UpOw0KPiAtCQll
-cnIgPSBmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlKHByaXYpOw0KPiAtCQlpZiAoZXJyKQ0KPiAtCQkJ
-cmV0dXJuIGVycjsNCj4gLQl9DQo+IA0KPiAgCXJldHVybiAwOw0KPiAgfQ0KPiAtLQ0KPiAyLjE3
-LjENCg0K
+
+
+> From: Marc Kleine-Budde <mkl=40pengutronix.de>
+> Subject: Re: =5BPATCH v3=5D can: m_can: add support for one shot mode
+>=20
+> On 10/21/19 2:04 PM, Pankaj Sharma wrote:
+> > According to the CAN Specification (see ISO 11898-1:2015, 8.3.4
+> > Recovery Management), the M_CAN provides means for automatic
+> > retransmission of frames that have lost arbitration or that have been
+> > disturbed by errors during transmission. By default automatic
+> > retransmission is enabled.
+> >
+> > The Bosch MCAN controller has support for disabling automatic
+> > retransmission.
+> >
+> > To support time-triggered communication as described in ISO
+> > 11898-1:2015, chapter 9.2, the automatic retransmission may be
+> > disabled via CCCR.DAR.
+> >
+> > CAN_CTRLMODE_ONE_SHOT is used for disabling automatic retransmission.
+> >
+> > Signed-off-by: Pankaj Sharma <pankj.sharma=40samsung.com>
+> > Signed-off-by: Sriram Dash <sriram.dash=40samsung.com>
+> > ---
+> >
+> > changes in v3:
+> > - resolving build errors for net-next branch
+> >
+> > changes in v2:
+> > - rebase to net-next
+> >
+> >  drivers/net/can/m_can/m_can.c =7C 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/can/m_can/m_can.c
+> > b/drivers/net/can/m_can/m_can.c index 562c8317e3aa..75e7490c4299
+> > 100644
+> > --- a/drivers/net/can/m_can/m_can.c
+> > +++ b/drivers/net/can/m_can/m_can.c
+> > =40=40 -123,6 +123,7 =40=40 enum m_can_reg =7B
+> >  =23define CCCR_CME_CANFD_BRS	0x2
+> >  =23define CCCR_TXP		BIT(14)
+> >  =23define CCCR_TEST		BIT(7)
+> > +=23define CCCR_DAR		BIT(6)
+> >  =23define CCCR_MON		BIT(5)
+> >  =23define CCCR_CSR		BIT(4)
+> >  =23define CCCR_CSA		BIT(3)
+> > =40=40 -1135,7 +1136,7 =40=40 static void m_can_chip_config(struct net_=
+device
+> *dev)
+> >  	if (cdev->version =3D=3D 30) =7B
+> >  	/* Version 3.0.x */
+> >
+> > -		cccr &=3D =7E(CCCR_TEST =7C CCCR_MON =7C
+> > +		cccr &=3D =7E(CCCR_TEST =7C CCCR_MON =7C CCCR_DAR =7C
+> >  			(CCCR_CMR_MASK << CCCR_CMR_SHIFT) =7C
+> >  			(CCCR_CME_MASK << CCCR_CME_SHIFT));
+> >
+> > =40=40 -1145,7 +1146,7 =40=40 static void m_can_chip_config(struct net_=
+device
+> *dev)
+> >  	=7D else =7B
+> >  	/* Version 3.1.x or 3.2.x */
+> >  		cccr &=3D =7E(CCCR_TEST =7C CCCR_MON =7C CCCR_BRSE =7C CCCR_FDOE
+> =7C
+> > -			  CCCR_NISO);
+> > +			  CCCR_NISO =7C CCCR_DAR);
+> >
+> >  		/* Only 3.2.x has NISO Bit implemented */
+> >  		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO) =40=40 -
+> 1165,6
+> > +1166,10 =40=40 static void m_can_chip_config(struct net_device *dev)
+> >  	if (cdev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
+> >  		cccr =7C=3D CCCR_MON;
+> >
+> > +	/* Disable Auto Retransmission (all versions) */
+> > +	if (cdev->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
+> > +		cccr =7C=3D CCCR_DAR;
+> > +
+> >  	/* Write config */
+> >  	m_can_write(cdev, M_CAN_CCCR, cccr);
+> >  	m_can_write(cdev, M_CAN_TEST, test); =40=40 -1310,7 +1315,8 =40=40
+> static
+> > int m_can_dev_setup(struct m_can_classdev *m_can_dev)
+> >  	m_can_dev->can.ctrlmode_supported =3D CAN_CTRLMODE_LOOPBACK =7C
+> >  					CAN_CTRLMODE_LISTENONLY =7C
+> >  					CAN_CTRLMODE_BERR_REPORTING =7C
+> > -					CAN_CTRLMODE_FD;
+> > +					CAN_CTRLMODE_FD =7C
+> > +					CAN_CTRLMODE_ONE_SHOT;
+> >
+> >  	/* Set properties depending on M_CAN version */
+> >  	switch (m_can_dev->version) =7B
+>=20
+> What happens if you have called netif_stop_queue() and the controller was=
+ not
+> able to send a single frame?
+>=20
+> What happens to the echo_skb, if the controller was not able to send a fr=
+ame?
+
+We are aware of this issue. For this the tx frame errors are to be first ha=
+ndled and=20
+the error stats should be updated.
+Currently in MCAN code Tx errors aren=E2=80=99t=20being=20handled.=20=0D=0A=
+We=20are=20working=20on=20this=20issue=20to=20handle=20these=20errors.=20Ar=
+bitration=20error=20being=20the=20first=20=0D=0Apatch=20which=20is=20alread=
+y=20posted.=20Very=20soon=20will=20be=20posting=20the=20patches=20for=20tx=
+=20error=20handling.=20=0D=0A=0D=0A>=20=0D=0A>=20Marc=0D=0A>=20=0D=0A>=20--=
+=0D=0A>=20Pengutronix=20e.K.=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=7C=20Marc=20Kleine-Budde=20=20=20=20=20=20=20=20=20=20=20=7C=0D=
+=0A>=20Industrial=20Linux=20Solutions=20=20=20=20=20=20=20=20=7C=20Phone:=
+=20+49-231-2826-924=20=20=20=20=20=7C=0D=0A>=20Vertretung=20West/Dortmund=
+=20=20=20=20=20=20=20=20=20=20=7C=20Fax:=20=20=20+49-5121-206917-5555=20=7C=
+=0D=0A>=20Amtsgericht=20Hildesheim,=20HRA=202686=20=20=7C=0D=0A>=20https://=
+protect2.fireeye.com/url?k=3De09921cf-bd02ddac-e098aa80-=0D=0A>=200cc47a31c=
+dbc-65578a3e12ca03be&u=3Dhttp://www.pengutronix.de/=20=20=20=7C=0D=0A=0D=0A=
+=0D=0A
