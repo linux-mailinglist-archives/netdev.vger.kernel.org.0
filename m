@@ -2,96 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0ABFE5B5
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9172FE60E
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:53:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727145AbfKOTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 14:35:10 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43408 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbfKOTfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 14:35:10 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 3so7142844pfb.10
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 11:35:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=SYrybljTLmRZf2tyoawg2jBMOahFgH2xWbEpDAnPmHs=;
-        b=ERWegw+rkZGi3bA3leKMvQull6+mUzLy2r4w7AMqNqz5eHqpCNRBLJT0UegqMzrosQ
-         +B1rr7rCFSX2WV56RapRnIto91FvCKddvkMG3WPcMKzXqWLnJVgaEOTGS/M4Gj/kznuU
-         1LRp2joPQGYsHZAYovPqGuvb2nGImjXXRPyCpCoG5FzYwsJCvnRrz4b4BbsTuyW2bWd2
-         lZ6ERX0nh7I+olyOl8E666+lNUkhiSBK0yicwLp4F13lqWa7j70fFZxNoab4HSb9jdgC
-         WB12PUScJLbv9OvOwBYocKvLr9OsHDV/AiIGWqsTAzvSE84V28LQIlQgygBN11vn9Bgq
-         jeeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=SYrybljTLmRZf2tyoawg2jBMOahFgH2xWbEpDAnPmHs=;
-        b=emz1qJ/ViYYwQxlvTMUodw5HipB/MyiRh/GN/CuJmjQ3oCWjpgvEthM2I0ze2d/rYk
-         UJVQIMdaZQEFgRgUKte4Nay/JLwcu627j+DU2EaW2XV42oTvPvsEuPAHeOrV7f2EbUDx
-         HILOJb7d+X1UAynkaUd1+iKN8+J8LsScQY/RMlzOrywuqOSMj5DwY7LSuyKqGfcGPU7r
-         kl6IGLPYVW3bkLnhYooBchHAJfJGcAh7VQ7VvJsxsFiLE+EJ211iJ4uYzmppQu8Z2eTh
-         E+tluAqeA8+Tkz0acCpwfbuC4b0SnBOCQPZcKPfduH1zqLDTTdPsfK+AwPP+ENySTK52
-         eZrg==
-X-Gm-Message-State: APjAAAUqev1qB5VZ05guxCOfjO07YVOBzrAxnisEfWOoosCoWChfQ8q9
-        sxSjuxwd213l1u99gr5NXrE=
-X-Google-Smtp-Source: APXvYqwB04Z3zeMscnnqNddyKOu0o1RkIijHvwSK1Lo/ayz/B+oNUTDdyIOQv3ZuDHw3tUiGMVlqXQ==
-X-Received: by 2002:a63:1e0d:: with SMTP id e13mr9179350pge.166.1573846508796;
-        Fri, 15 Nov 2019 11:35:08 -0800 (PST)
-Received: from [172.20.54.79] ([2620:10d:c090:200::2:83d7])
-        by smtp.gmail.com with ESMTPSA id w5sm12324303pfd.31.2019.11.15.11.35.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Nov 2019 11:35:08 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Lorenzo Bianconi" <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, brouer@redhat.com,
-        lorenzo.bianconi@redhat.com, mcroce@redhat.com
-Subject: Re: [PATCH v3 net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for device
-Date:   Fri, 15 Nov 2019 11:35:07 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <A329EE59-03C4-424C-8C17-10E434CE39AD@gmail.com>
-In-Reply-To: <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
-References: <cover.1573844190.git.lorenzo@kernel.org>
- <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
+        id S1726599AbfKOTxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 14:53:55 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:49922 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726466AbfKOTxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 14:53:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=i9GS39cGaOlOLMWEwVz2GSR98HyYKXh6AyHjx+cBGLM=; b=mcXml+82Zv+Dt81fSQGJW5ZU2
+        RdKGInRwthpteM1fwfCjueOw2Ynpv8xTIwgyieFjrJeeMMfGoYYXdjnaa19nUvTXIj7bRHcqZWC+W
+        sL5IggVJRWVhdX9A6ntVJb3G3neZp+PQr3BFBxhajRVHPfc2usOB3vNau629qcAseUy9r52isacpL
+        xaFFr0A1M0HIETPu/Um4JYwOTCR4C3zEYkT1UU9HomfijkREwTyyNrkhegLgt3gVtgaUia9rI65pB
+        +DejdNZZ5c+aO5cAxv4T8lXWl4bzNGr6NnubEtyrA2USqDEj/u0t9rtoThLPD9TuligwbJQqIkX/D
+        E7aYSRd3Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40078)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iVhf4-00035s-Az; Fri, 15 Nov 2019 19:53:42 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iVhf1-0004lP-Cv; Fri, 15 Nov 2019 19:53:39 +0000
+Date:   Fri, 15 Nov 2019 19:53:39 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/3] Add support for SFPs behind PHYs
+Message-ID: <20191115195339.GR25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series adds partial support for SFP cages connected to PHYs,
+specifically optical SFPs.
 
+We add core infrastructure to phylib for this, and arrange for
+minimal code in the PHY driver - currently, this is code to verify
+that the module is one that we can support for Marvell 10G PHYs.
 
-On 15 Nov 2019, at 11:01, Lorenzo Bianconi wrote:
+v2: add yaml binding patch
 
-> Introduce the following parameters in order to add the possibility to sync
-> DMA memory for device before putting allocated pages in the page_pool
-> caches:
-> - PP_FLAG_DMA_SYNC_DEV: if set in page_pool_params flags, all pages that
->   the driver gets from page_pool will be DMA-synced-for-device according
->   to the length provided by the device driver. Please note DMA-sync-for-CPU
->   is still device driver responsibility
-> - offset: DMA address offset where the DMA engine starts copying rx data
-> - max_len: maximum DMA memory size page_pool is allowed to flush. This
->   is currently used in __page_pool_alloc_pages_slow routine when pages
->   are allocated from page allocator
-> These parameters are supposed to be set by device drivers.
->
-> This optimization reduces the length of the DMA-sync-for-device.
-> The optimization is valid because pages are initially
-> DMA-synced-for-device as defined via max_len. At RX time, the driver
-> will perform a DMA-sync-for-CPU on the memory for the packet length.
-> What is important is the memory occupied by packet payload, because
-> this is the area CPU is allowed to read and modify. As we don't track
-> cache-lines written into by the CPU, simply use the packet payload length
-> as dma_sync_size at page_pool recycle time. This also take into account
-> any tail-extend.
->
-> Tested-by: Matteo Croce <mcroce@redhat.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+ .../bindings/net/ethernet-controller.yaml          |  5 ++
+ .../devicetree/bindings/net/ethernet-phy.yaml      |  5 ++
+ drivers/net/phy/marvell10g.c                       | 25 +++++++-
+ drivers/net/phy/phy.c                              |  7 +++
+ drivers/net/phy/phy_device.c                       | 66 ++++++++++++++++++++++
+ include/linux/phy.h                                | 11 ++++
+ 6 files changed, 118 insertions(+), 1 deletion(-)
 
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
