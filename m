@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3862FDE44
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 13:48:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FA92FDE1B
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 13:42:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbfKOMsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 07:48:38 -0500
-Received: from mail.hgs.gob.ec ([190.214.19.83]:48436 "HELO mail.hgs.gob.ec"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-        id S1727272AbfKOMsh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 07:48:37 -0500
-X-Greylist: delayed 39641 seconds by postgrey-1.27 at vger.kernel.org; Fri, 15 Nov 2019 07:48:27 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mail.hgs.gob.ec (Postfix) with ESMTP id 34C424ED36D;
-        Thu, 14 Nov 2019 16:43:55 -0500 (-05)
-Received: from mail.hgs.gob.ec ([127.0.0.1])
-        by localhost (mail.hgs.gob.ec [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id t5T70MiT5ccF; Thu, 14 Nov 2019 16:43:54 -0500 (-05)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.hgs.gob.ec (Postfix) with ESMTP id 83D7FA7BFC0;
-        Thu, 14 Nov 2019 16:42:11 -0500 (-05)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.hgs.gob.ec 83D7FA7BFC0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hgs.gob.ec;
-        s=DD120D66-D63F-11E9-9729-9452E74E1CB4; t=1573767731;
-        bh=oYeOwTtTK4mcRNNK0JGL7ZOgP8mm7StpJG1pujYq4Z0=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=hYdD+sv2c4iDPMwAw6seJxO7gtkleMY7gzk8tFUo46Wr+GcPfKmRFrpCVq+wBVUE9
-         +yVIOCVFAq/dVm2h7dYAKQV3g9FgwxVDfRMLIFRBZLNb0ZyTzUQSNxXw32S8ADxG3+
-         lr/ZV9B2iqIR80R5DuJm38Ss7PPUcwS8tJZiVnYfynO2+XCxVH5wnTTm+3UpO9tDN2
-         aKbj+HTa91HoqJfgJNyXs7xuJfwNPyWCIHdqlCh3eVjY1Y3LgQylE9Txv98JkRvAt1
-         SgfBLLMqh6agW7/a/FlukY3S4+evkZUJsd83LiYws5EwASJMllJxZKSsAEBwyi+srw
-         +pmUx9h7GF+GQ==
-X-Virus-Scanned: amavisd-new at hgs.gob.ec
-Received: from mail.hgs.gob.ec ([127.0.0.1])
-        by localhost (mail.hgs.gob.ec [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ALWivQj6AXbj; Thu, 14 Nov 2019 16:42:11 -0500 (-05)
-Received: from [10.32.142.65] (unknown [105.4.7.6])
-        by mail.hgs.gob.ec (Postfix) with ESMTPSA id 6EB10A15A5B;
-        Thu, 14 Nov 2019 16:40:39 -0500 (-05)
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
+        id S1727380AbfKOMmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 07:42:55 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36084 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727272AbfKOMmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 07:42:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573821774;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VKSgyufm9lCSTbG6iAHD70fQpWTZJML7/dJPhf6V5lk=;
+        b=K6hiAh+vHui8SvInBZoT5VK5urNhg6K3VJqmk5XH4U9Zl1/ALGlDVTIFOuTFyp+3EsF5q5
+        W5G4C/RNv78PsDD3YBMgcRI1+S+r12n2nt94PWDtholjQi4zkLesIykgyK3OMA1l0Ie1xH
+        SPwE4LDtcs5YAfe+nnNn1OjpgKv9H6s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-79-vYiBxy1BNMmK6MDubHF4dg-1; Fri, 15 Nov 2019 07:42:53 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9D2E1802CE3;
+        Fri, 15 Nov 2019 12:42:51 +0000 (UTC)
+Received: from griffin.upir.cz (unknown [10.40.206.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E860E5C548;
+        Fri, 15 Nov 2019 12:42:50 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH bpf] selftests: bpf: xdping is not meant to be run standalone
+Date:   Fri, 15 Nov 2019 13:42:32 +0100
+Message-Id: <4365c81198f62521344c2215909634407184387e.1573821726.git.jbenc@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: vYiBxy1BNMmK6MDubHF4dg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: =?utf-8?q?Wohlt=C3=A4tigkeitsspende_von_2=2E000=2E000=2E000_Euro?=
-To:     Recipients <dietetica@hgs.gob.ec>
-From:   ''Charles jackson'' <dietetica@hgs.gob.ec>
-Date:   Thu, 14 Nov 2019 23:40:29 +0200
-Reply-To: charlesjacksonjr001@gmail.com
-Message-Id: <20191114214039.6EB10A15A5B@mail.hgs.gob.ec>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lieber Freund,
+The actual test to run is test_xdping.sh, which is already in TEST_PROGS.
+The xdping program alone is not runnable with 'make run_tests', it
+immediatelly fails due to missing arguments.
 
-Ich bin Herr Charles W Jackson, North Carolina, Vereinigte Staaten von Amer=
-ika, der Mega-Gewinner von 344 Millionen US-Dollar. Beim Mega-Millions-Jack=
-pot spende ich an 5 zuf&auml;llige Personen. Wenn Sie diese E-Mail erhalten=
-, wurde Ihre E-Mail zu einem Spinball, den ich am h&auml;ufigsten verteilt =
-habe von meinem Verm&ouml;gen an eine Reihe von Wohlt&auml;tigkeitsorganisa=
-tionen. Ich habe mich freiwillig entschlossen, Ihnen als einer der ausgew&a=
-uml;hlten 5 einen Betrag von &euro; 2.000.000,00 zu spenden, um meine Gewin=
-ne zu &uuml;berpr&uuml;fen.
-Dies ist Ihr Spendencode: [CJ530342019]
+Move xdping to TEST_GEN_PROGS_EXTENDED in order to be built but not run.
 
-www.youtube.com/watch?v=3DBSr8myiLPMQ
+Fixes: cd5385029f1d ("selftests/bpf: measure RTT from xdp using xdping")
+Cc: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+---
+ tools/testing/selftests/bpf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Antworten Sie auf diese E-Mail mit dem SPENDER-CODE: =
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests=
+/bpf/Makefile
+index 6889c19a628c..99193a241bc7 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -29,7 +29,7 @@ TEST_GEN_PROGS =3D test_verifier test_tag test_maps test_=
+lru_map test_lpm_map test
+ =09test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+ =09test_cgroup_storage test_select_reuseport test_section_names \
+ =09test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashm=
+ap \
+-=09test_btf_dump test_cgroup_attach xdping
++=09test_btf_dump test_cgroup_attach
+=20
+ BPF_OBJ_FILES =3D $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
+ TEST_GEN_FILES =3D $(BPF_OBJ_FILES)
+@@ -82,7 +82,7 @@ TEST_PROGS_EXTENDED :=3D with_addr.sh \
+ # Compile but not part of 'make run_tests'
+ TEST_GEN_PROGS_EXTENDED =3D test_libbpf_open test_sock_addr test_skb_cgrou=
+p_id_user \
+ =09flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+-=09test_lirc_mode2_user
++=09test_lirc_mode2_user xdping
+=20
+ include ../lib.mk
+=20
+--=20
+2.18.1
 
-
-charlesjacksonjr001@gmail.com
-
-Ich hoffe, Sie und Ihre Familie gl&uuml;cklich zu machen
-
-Sch&ouml;ne Gr&uuml;&szlig;e
-Mr. Charles Jackson
