@@ -2,314 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3DBFDF91
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 14:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA56EFDF97
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 15:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfKON7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 08:59:53 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36913 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727438AbfKON7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 08:59:53 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p24so6729226pfn.4;
-        Fri, 15 Nov 2019 05:59:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=3A2MX6HtZFZ1kTf8WxpdKJiidP05Sgi2ukVRpZmmeTU=;
-        b=q3lmtRvxYG8uKTV/4nYfWs+WKVi8INMqXtt7m5UV65jupDu7E+JLTSgMoUdHskDybl
-         7O8CawhzNR3B7uVxC8CDYIxJFBbF7of/3PhfWm19h8J4JPqRlIaGp+EIWNlfX9Lt0YYj
-         g0AyK5lS15cBKnbJ4DzxE8A/omo//fpQXrVaPNMXw3VWHWXZ+9fkt6cdPbBI6DbSYp2D
-         IBQs72qsXGisCEZwuuCEY/SeM74/hw4wGyyQOh8dhEzRFBsjDJD/N08Sm5R8+CiYhUOc
-         CmjSYitM6j1Q8yof2lTkrZu5LCj27capZ6qpp5L0WTzj2IB4KVivqFienULrU4AenpV2
-         +UgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3A2MX6HtZFZ1kTf8WxpdKJiidP05Sgi2ukVRpZmmeTU=;
-        b=bj+Mg+yStZYfWJfm1FB+oQhEYJ9zOQUcZNMOFGPgcrd42GvbMzq0lvqWcKcDsUNwR4
-         TJZxby6d86C0AEB02stCEHeYufKQOqn48G5vNGi9za/lacF+eIjst+2xip8zNMelWrN2
-         /Kf0ltQv8XT8oca3LZFP3pvk/C3afCb6V24i6RkAmNw7Nhytaizdqr8yEXWt5/ggvHGn
-         becGLUj7HYHyxq2zAolQ2Yp88WAZuFYrTU1ub+Su7EipDTwVsuuiuC+9z3bOFApULHUt
-         yIU+ppMlTrqUSswwpy+phKgTvOUo52mQinrEPngSik2Yv/CcWxQ7EWFjupx4yTtqHDZq
-         bG4Q==
-X-Gm-Message-State: APjAAAUk//cIhp4NTuvqalTDJ0m/TP6ix5l0Sq+eTH1hF27TMa4QsVyz
-        2Mdoiv+6zn8oM5VhznwVzy9La/SXgBg=
-X-Google-Smtp-Source: APXvYqyx8yEFbA1Cxu9RO8t54/rAS25Y6XwAxilVNFSf3IrnE4T55/KHrdA6z7Av5U3DhnQa/mIowA==
-X-Received: by 2002:a63:c0a:: with SMTP id b10mr13472041pgl.168.1573826391383;
-        Fri, 15 Nov 2019 05:59:51 -0800 (PST)
-Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id u3sm9500299pjn.0.2019.11.15.05.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2019 05:59:51 -0800 (PST)
-From:   Wenbo Zhang <ethercflow@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     alexei.starovoitov@gmail.com, daniel@iogearbox.net, yhs@fb.com,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        Wenbo Zhang <ethercflow@gmail.com>
-Subject: [PATCH bpf-next v4] selftests/bpf: test for bpf_get_file_path() from raw tracepoint
-Date:   Fri, 15 Nov 2019 08:59:01 -0500
-Message-Id: <20191115135901.8114-1-ethercflow@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727434AbfKOODg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 09:03:36 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:40478 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727406AbfKOODf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 09:03:35 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAFDnBER013529;
+        Fri, 15 Nov 2019 14:03:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2019-08-05;
+ bh=bnPX2OgeK3ijYnTq5eg/WnUbrlpyXkw4Zi8V/8h7jco=;
+ b=nY8ASD/ZdpTDoGPIDQKOc7IzYn37aPd3yzAv/CFc3AUJucnwiw9DellRCXeg3WuA+fE8
+ Bkq+b+lbCBwt8cocHIx/OgCzov6F8kt3XN7wBe1MqWYKb9c94sCDvadrAdgIz0FgsAMo
+ ZDQgszXJaBsNLv6jXM+mgJaakmhpj14bMqhM5uD/9bi2MPC/Bh2XpT8gNRXL2HitQ/M6
+ iLR6DeFvuAzFzRL08q3BCcTEx1vKCE3clsyZoSr0xJsFRSyaxHMF1oVmqKzLDCekdvoC
+ Lg8cURGqV6wYgLrn62w+rDtOKjpIQuPDIn/sjdpl2RVH50AojzDyt7nRf0v2HEAQ1yHx BQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2w9gxpkdsa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 15 Nov 2019 14:03:31 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAFDnBm4193052;
+        Fri, 15 Nov 2019 14:03:30 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 2w9h182hnn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 15 Nov 2019 14:03:30 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAFE3S9d022052;
+        Fri, 15 Nov 2019 14:03:28 GMT
+Received: from dhcp-10-175-203-21.vpn.oracle.com (/10.175.203.21)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 15 Nov 2019 06:03:28 -0800
+Date:   Fri, 15 Nov 2019 14:03:23 +0000 (GMT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@dhcp-10-175-203-21.vpn.oracle.com
+To:     =?ISO-8859-15?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
+cc:     Jiri Benc <jbenc@redhat.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
+Subject: Re: [PATCH bpf] selftests: bpf: xdping is not meant to be run
+ standalone
+In-Reply-To: <87a78xmgmu.fsf@toke.dk>
+Message-ID: <alpine.LRH.2.20.1911151402580.15722@dhcp-10-175-203-21.vpn.oracle.com>
+References: <4365c81198f62521344c2215909634407184387e.1573821726.git.jbenc@redhat.com> <87a78xmgmu.fsf@toke.dk>
+User-Agent: Alpine 2.20 (LRH 67 2015-01-07)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; BOUNDARY="-1358293557-283249934-1573826608=:15722"
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9441 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=4 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=627
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1911150126
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9441 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=4 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=690 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1911150126
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trace fstat events by raw tracepoint sys_enter:newfstat, and handle events
-only produced by test_file_get_path, which call fstat on several different
-types of files to test bpf_get_file_path's feature.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-v3->v4: addressed Andrii's feedback
-- use a set of fd instead of fds array
-- use global variables instead of maps (in v3, I mistakenly thought that
-the bpf maps are global variables.)
-- remove uncessary global variable path_info_index
-- remove fd compare as the fstat's order is fixed
+---1358293557-283249934-1573826608=:15722
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-v2->v3: addressed Andrii's feedback
-- use global data instead of perf_buffer to simplified code
+On Fri, 15 Nov 2019, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
 
-v1->v2: addressed Daniel's feedback
-- rename bpf_fd2path to bpf_get_file_path to be consistent with other
-helper's names
+> Jiri Benc <jbenc@redhat.com> writes:
+>=20
+> > The actual test to run is test_xdping.sh, which is already in TEST_PROG=
+S.
+> > The xdping program alone is not runnable with 'make run_tests', it
+> > immediatelly fails due to missing arguments.
+> >
+> > Move xdping to TEST_GEN_PROGS_EXTENDED in order to be built but not run=
+=2E
+> >
+> > Fixes: cd5385029f1d ("selftests/bpf: measure RTT from xdp using xdping"=
+)
+> > Cc: Alan Maguire <alan.maguire@oracle.com>
+> > Signed-off-by: Jiri Benc <jbenc@redhat.com>
+>=20
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>=20
+>=20
 
-Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
----
- .../selftests/bpf/prog_tests/get_file_path.c  | 173 ++++++++++++++++++
- .../selftests/bpf/progs/test_get_file_path.c  |  43 +++++
- 2 files changed, 216 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_path.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_path.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_file_path.c b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
-new file mode 100644
-index 000000000000..446ee4dd20e2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
-@@ -0,0 +1,173 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <test_progs.h>
-+#include <sys/stat.h>
-+#include <linux/sched.h>
-+#include <sys/syscall.h>
-+
-+#define MAX_PATH_LEN		128
-+#define MAX_FDS			7
-+#define MAX_EVENT_NUM		16
-+
-+static struct file_path_test_data {
-+	pid_t pid;
-+	__u32 cnt;
-+	__u32 fds[MAX_EVENT_NUM];
-+	char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
-+} src, dst;
-+
-+static inline int set_pathname(int fd)
-+{
-+	char buf[MAX_PATH_LEN];
-+
-+	snprintf(buf, MAX_PATH_LEN, "/proc/%d/fd/%d", src.pid, fd);
-+	src.fds[src.cnt] = fd;
-+	return readlink(buf, src.paths[src.cnt++], MAX_PATH_LEN);
-+}
-+
-+static int trigger_fstat_events(pid_t pid)
-+{
-+	int pipefd[2] = { -1, -1 };
-+	int sockfd = -1, procfd = -1, devfd = -1;
-+	int localfd = -1, indicatorfd = -1;
-+	struct stat fileStat;
-+	int ret = -1;
-+
-+	/* unmountable pseudo-filesystems */
-+	if (CHECK_FAIL(pipe(pipefd) < 0))
-+		return ret;
-+	/* unmountable pseudo-filesystems */
-+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+	if (CHECK_FAIL(sockfd < 0))
-+		goto out_close;
-+	/* mountable pseudo-filesystems */
-+	procfd = open("/proc/self/comm", O_RDONLY);
-+	if (CHECK_FAIL(procfd < 0))
-+		goto out_close;
-+	devfd = open("/dev/urandom", O_RDONLY);
-+	if (CHECK_FAIL(devfd < 0))
-+		goto out_close;
-+	localfd = open("/tmp/fd2path_loadgen.txt", O_CREAT|O_RDONLY);
-+	if (CHECK_FAIL(localfd < 0))
-+		goto out_close;
-+	/* bpf_get_file_path will return path with (deleted) */
-+	remove("/tmp/fd2path_loadgen.txt");
-+	indicatorfd = open("/tmp/", O_PATH);
-+	if (CHECK_FAIL(indicatorfd < 0))
-+		goto out_close;
-+
-+	src.pid = pid;
-+
-+	ret = set_pathname(pipefd[0]);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(pipefd[1]);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(sockfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(procfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(devfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(localfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(indicatorfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+
-+	fstat(pipefd[0], &fileStat);
-+	fstat(pipefd[1], &fileStat);
-+	fstat(sockfd, &fileStat);
-+	fstat(procfd, &fileStat);
-+	fstat(devfd, &fileStat);
-+	fstat(localfd, &fileStat);
-+	fstat(indicatorfd, &fileStat);
-+
-+out_close:
-+	close(indicatorfd);
-+	close(localfd);
-+	close(devfd);
-+	close(procfd);
-+	close(sockfd);
-+	close(pipefd[1]);
-+	close(pipefd[0]);
-+
-+	return ret;
-+}
-+
-+void test_get_file_path(void)
-+{
-+	const char *prog_name = "tracepoint/syscalls/sys_enter_newfstat";
-+	const char *obj_file = "./test_get_file_path.o";
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts, );
-+	int err, results_map_fd, duration = 0;
-+	struct bpf_program *tp_prog = NULL;
-+	struct bpf_link *tp_link = NULL;
-+	struct bpf_object *obj = NULL;
-+	const int zero = 0;
-+
-+	obj = bpf_object__open_file(obj_file, &opts);
-+	if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-+		return;
-+
-+	tp_prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!tp_prog, "find_tp",
-+		  "prog '%s' not found\n", prog_name))
-+		goto cleanup;
-+
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "obj_load", "err %d\n", err))
-+		goto cleanup;
-+
-+	results_map_fd = bpf_find_map(__func__, obj, "test_get.bss");
-+	if (CHECK(results_map_fd < 0, "find_bss_map",
-+		  "err %d\n", results_map_fd))
-+		goto cleanup;
-+
-+	tp_link = bpf_program__attach_tracepoint(tp_prog, "syscalls",
-+						 "sys_enter_newfstat");
-+	if (CHECK(IS_ERR(tp_link), "attach_tp",
-+		  "err %ld\n", PTR_ERR(tp_link))) {
-+		tp_link = NULL;
-+		goto cleanup;
-+	}
-+
-+	dst.pid = syscall(SYS_gettid);
-+	err = bpf_map_update_elem(results_map_fd, &zero, &dst, 0);
-+	if (CHECK(err, "update_elem",
-+		  "failed to set pid filter: %d\n", err))
-+		goto cleanup;
-+
-+	err = trigger_fstat_events(dst.pid);
-+	if (CHECK_FAIL(err < 0))
-+		goto cleanup;
-+
-+	err = bpf_map_lookup_elem(results_map_fd, &zero, &dst);
-+	if (CHECK(err, "get_results",
-+		  "failed to get results: %d\n", err))
-+		goto cleanup;
-+
-+	for (int i = 0; i < MAX_FDS; i++) {
-+		if (i < 3) {
-+			CHECK((dst.paths[i][0] != '\0'), "get_file_path",
-+			       "failed to filter fs [%d]: %u(%s) vs %u(%s)\n",
-+			       i, src.fds[i], src.paths[i], dst.fds[i],
-+			       dst.paths[i]);
-+		} else {
-+			err = strncmp(src.paths[i], dst.paths[i], MAX_PATH_LEN);
-+			CHECK(err != 0, "get_file_path",
-+			       "failed to get path[%d]: %u(%s) vs %u(%s)\n",
-+			       i, src.fds[i], src.paths[i], dst.fds[i],
-+			       dst.paths[i]);
-+		}
-+	}
-+
-+cleanup:
-+	bpf_link__destroy(tp_link);
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_get_file_path.c b/tools/testing/selftests/bpf/progs/test_get_file_path.c
-new file mode 100644
-index 000000000000..c006fa05e32b
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_get_file_path.c
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <linux/ptrace.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include "bpf_helpers.h"
-+#include "bpf_tracing.h"
-+
-+#define MAX_PATH_LEN		128
-+#define MAX_EVENT_NUM		16
-+
-+static struct file_path_test_data {
-+	pid_t pid;
-+	__u32 cnt;
-+	__u32 fds[MAX_EVENT_NUM];
-+	char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
-+} data;
-+
-+struct sys_enter_newfstat_args {
-+	unsigned long long pad1;
-+	unsigned long long pad2;
-+	unsigned int fd;
-+};
-+
-+SEC("tracepoint/syscalls/sys_enter_newfstat")
-+int bpf_prog(struct sys_enter_newfstat_args *args)
-+{
-+	pid_t pid = bpf_get_current_pid_tgid();
-+
-+	if (pid != data.pid)
-+		return 0;
-+	if (data.cnt >= MAX_EVENT_NUM)
-+		return 0;
-+
-+	data.fds[data.cnt] = args->fd;
-+	bpf_get_file_path(data.paths[data.cnt], MAX_PATH_LEN, args->fd);
-+	data.cnt++;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.17.1
-
+Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+---1358293557-283249934-1573826608=:15722--
