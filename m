@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6ADFD25F
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 02:24:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD805FD265
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 02:25:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbfKOBYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 20:24:44 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33959 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726956AbfKOBYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 20:24:44 -0500
-Received: by mail-pf1-f196.google.com with SMTP id n13so5519906pff.1
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 17:24:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=vQl889CN5y2lhB7wQ6ztDPXBLh/TC9puTuFstOMw+l0=;
-        b=tLtW9Df66yptv8LsOzfXJQ7EPj8Me/bXdfsqRaNGzfGnNU5hUFR3lsSLhRMDdMIjDG
-         uu+7pXTviCHZNZrk638M29ad3q6dh04R3SLSedYnfMbBDN+YDJQxL4qCzYhRGtNUD4rG
-         6lS/zKbHkB5l3wtRYEq2sjB6K1GscKqIZrrPW7WvTh42gDcoOg3L4Jg+5zzD+LLwuzeF
-         CPDHsuuX9giUuH2SERVo8kOLTZFkeMg5s93ZOgcCxrYLZ6sigh2qYhCMdQVXn5/pLmGZ
-         eEZbd984p3LrhOhKAKsj0GeQ3mJsyw7gsMtl4OGeI/tqgtWhio4uXVMOa9jEtuFez6gk
-         yasA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=vQl889CN5y2lhB7wQ6ztDPXBLh/TC9puTuFstOMw+l0=;
-        b=Y8ixLHjH2N/FSwFdmEeyavPPzWjgIRMmOs2WE8BoT8Cja8K42pH4AJnVk+xRPOcZ8T
-         VU8OKEpvUczcGmLXuNF6NT/zr1KkEMj+RXJ0Qjmplo77lrcgC6GoWBXhnRjXfWg6INvo
-         kF0wv2kMQaQ8ue8J/PQ7S9L/9x2+8GLN3TTECXlwxDEDDuyEdvUza1ZdXS48qAwhMCIo
-         OoemxSTHVJY9U1PqnYOxdnfnOETNt0mWs0vPGXIE73MWSfhzcrG/oMy/0jX89CVabeqM
-         SCLnNHJAqakTIDcZyl6FLVVGrYDswv/KB3dEkk4VkeIYlDAhRCk/bf6jzz7r/tScWNBJ
-         5fzA==
-X-Gm-Message-State: APjAAAXKmw+VPv3FPlPjyOKZPD8H/VlX9bbzdytNGny16z40bnkxJ1xF
-        ESBG1CPqBQ2Drw7HreXw1Nq0sfJU
-X-Google-Smtp-Source: APXvYqxbAl2kU6xt96G1Q1Sc9TOM/I/01e/wTMVzM/b+jijV/Wewc0UP7GJy6C7z0Z22IjX69chqfA==
-X-Received: by 2002:a63:4819:: with SMTP id v25mr13264347pga.165.1573781083825;
-        Thu, 14 Nov 2019 17:24:43 -0800 (PST)
-Received: from [172.20.189.1] ([2620:10d:c090:180::34be])
-        by smtp.gmail.com with ESMTPSA id x3sm6638835pjq.10.2019.11.14.17.24.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 17:24:43 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        ilias.apalodimas@linaro.org, kernel-team@fb.com
-Subject: Re: [net-next PATCH v3 1/1] page_pool: do not release pool until
- inflight == 0.
-Date:   Thu, 14 Nov 2019 17:24:42 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <F7B3F26C-A697-4E47-897B-582444962A53@gmail.com>
-In-Reply-To: <20191114231737.29b46690@carbon>
-References: <20191114221300.1002982-1-jonathan.lemon@gmail.com>
- <20191114221300.1002982-2-jonathan.lemon@gmail.com>
- <20191114231737.29b46690@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+        id S1727442AbfKOBZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 20:25:11 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:57042 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726956AbfKOBZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 20:25:10 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D988314B72710;
+        Thu, 14 Nov 2019 17:25:08 -0800 (PST)
+Date:   Thu, 14 Nov 2019 17:25:08 -0800 (PST)
+Message-Id: <20191114.172508.1027995193093100862.davem@davemloft.net>
+To:     alobakin@dlink.ru
+Cc:     ecree@solarflare.com, jiri@mellanox.com, edumazet@google.com,
+        idosch@mellanox.com, pabeni@redhat.com, petrm@mellanox.com,
+        sd@queasysnail.net, f.fainelli@gmail.com,
+        jaswinder.singh@linaro.org, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
+        linuxwifi@intel.com, kvalo@codeaurora.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: core: allow fast GRO for skbs with
+ Ethernet header in head
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191112122843.30636-1-alobakin@dlink.ru>
+References: <20191112122843.30636-1-alobakin@dlink.ru>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 Nov 2019 17:25:09 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14 Nov 2019, at 14:17, Jesper Dangaard Brouer wrote:
+From: Alexander Lobakin <alobakin@dlink.ru>
+Date: Tue, 12 Nov 2019 15:28:43 +0300
 
-> On Thu, 14 Nov 2019 14:13:00 -0800
-> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->
->> The page pool keeps track of the number of pages in flight, and
->> it isn't safe to remove the pool until all pages are returned.
->>
->> Disallow removing the pool until all pages are back, so the pool
->> is always available for page producers.
->>
->> Make the page pool responsible for its own delayed destruction
->> instead of relying on XDP, so the page pool can be used without
->> the xdp memory model.
->>
->> When all pages are returned, free the pool and notify xdp if the
->> pool is registered with the xdp memory system.  Have the callback
->> perform a table walk since some drivers (cpsw) may share the pool
->> among multiple xdp_rxq_info.
->>
->> Note that the increment of pages_state_release_cnt may result in
->> inflight == 0, resulting in the pool being released.
->>
->> Fixes: d956a048cd3f ("xdp: force mem allocator removal and periodic 
->> warning")
->> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->> ---
->
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Commit 78d3fd0b7de8 ("gro: Only use skb_gro_header for completely
+> non-linear packets") back in May'09 (2.6.31-rc1) has changed the
+> original condition '!skb_headlen(skb)' to the current
+> 'skb_mac_header(skb) == skb_tail_pointer(skb)' in gro_reset_offset()
+> saying: "Since the drivers that need this optimisation all provide
+> completely non-linear packets".
 
-Thanks, Jesper!
--- 
-Jonathan
+Please reference the appropriate SHA1-ID both here in this paragraph and
+also in an appropriate Fixes: tag.
+
+If this goes so far back that it is before GIT, then you need to provide
+a reference to the patch posting via lore.kernel.org or similar because
+it is absolutely essentialy for people reviewing this patch to be able
+to do some digging into why the condition is code the way that it is
+currently.
+
+Thank you.
