@@ -2,108 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27323FD704
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73718FD734
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbfKOHgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 02:36:25 -0500
-Received: from fd.dlink.ru ([178.170.168.18]:45614 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725829AbfKOHgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 02:36:25 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 5F79F1B21219; Fri, 15 Nov 2019 10:36:19 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 5F79F1B21219
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1573803379; bh=auYJSdX39uan+gvUCsaNo2NaaQLgfRyrUszL7DhJUb4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=SfuWrd47XdQioLUmZkIhQ3OMs+HeaDWSatiVwQEdzY6ZWJg2pT1l1h5EpRzPJOv1V
-         iwF6IOh6Wr3/0/ynRcejg8zch7KZVc5GEmUbQMUJVgrUDcjeky25QHC4/jtsEcdxeX
-         QQyOIe6XZqOm2o6R0+fxyLS063xmDUIB+DB8uGYo=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id D61961B203C6;
-        Fri, 15 Nov 2019 10:36:08 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru D61961B203C6
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 9C6611B21209;
-        Fri, 15 Nov 2019 10:36:08 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Fri, 15 Nov 2019 10:36:08 +0300 (MSK)
+        id S1727290AbfKOHoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 02:44:17 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42964 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727262AbfKOHoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:44:16 -0500
+Received: by mail-lj1-f194.google.com with SMTP id n5so9605414ljc.9
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 23:44:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MerzeYQd7mMrWj7xug82ip0Zzuk57QC86rO5mCSsEzs=;
+        b=cimPOY7g4EAlwVyfr4cwpdgRJdBwRgLjtx/sUwL01IBFA4qPtm6hLBgyIKILrFzJM9
+         xiOtbLJf0y4FyFS5wuHNxaB4q8sFK2F7P67/5/RQWCsQ9oGFBnDTdc4D+B26iZzap9Qa
+         gTUwq1Rz9t3IIvqDWNeazaS9zPcEWsGD6g1ZM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MerzeYQd7mMrWj7xug82ip0Zzuk57QC86rO5mCSsEzs=;
+        b=LV3LpXQeuzT5d271eNPkfW/mNc+SPMtbjQ+Hhi5ulLH/eqjm/nME/tzJlZqoJA7GoM
+         BE40+VeJUzHrb0xWzJtBGLuR2igvCDYzJ4WnfL6Fe6f8jjaoH3hvBxSP9ezvf2ZoY9vc
+         DIHvMZMR1+tphPu3I9HjL/WyCaFxm26Ea3gjvoVl6NGKLGJWe/jsZtgtzFn/AbLm8Vyd
+         Jmgjyt3YBAJD11ks+SGlhLJx3q4CAi19Pg/eXeRXSnr9udr8W1gKVrURW77C9LHJVla8
+         rPAVOio2dS9Mo4uv6+ysuoPJGXCri2Kn6q99y5+d9195EWG+nTNgZ5+VNFzCQUAfCySu
+         9KGg==
+X-Gm-Message-State: APjAAAU1BlaTTkPWK9ZnQV9Y3eM3eDVZbZUd8DhGgeOvhg16ajAym+pR
+        W6b36OJsZfUjSES+Yca+NX/kYK9pgd4k4TP5
+X-Google-Smtp-Source: APXvYqw8OAiLBu508szXHtSnz3QQioa3U2uijYFbTHFzEtm/A+7bHMI6CgvxmnwrGknlwyb2z4HUYw==
+X-Received: by 2002:a2e:9784:: with SMTP id y4mr10091304lji.77.1573803854082;
+        Thu, 14 Nov 2019 23:44:14 -0800 (PST)
+Received: from [172.16.11.28] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id p19sm3689755lji.65.2019.11.14.23.44.13
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 23:44:13 -0800 (PST)
+Subject: Re: [PATCH v4 45/47] net/wan/fsl_ucc_hdlc: reject muram offsets above
+ 64K
+To:     Timur Tabi <timur@kernel.org>
+Cc:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Scott Wood <oss@buserror.net>, netdev <netdev@vger.kernel.org>
+References: <20191108130123.6839-1-linux@rasmusvillemoes.dk>
+ <20191108130123.6839-46-linux@rasmusvillemoes.dk>
+ <CAOZdJXUibQ6RM8O4CfkYBdGsg+LMcE2ZoZEQ4txn2yvquUWwCA@mail.gmail.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <79101f00-e3ff-9dd0-7a05-760f8be1ff69@rasmusvillemoes.dk>
+Date:   Fri, 15 Nov 2019 08:44:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 15 Nov 2019 10:36:08 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     David Miller <davem@davemloft.net>
-Cc:     ecree@solarflare.com, jiri@mellanox.com, edumazet@google.com,
-        idosch@mellanox.com, pabeni@redhat.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        jaswinder.singh@linaro.org, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
-        linuxwifi@intel.com, kvalo@codeaurora.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: core: allow fast GRO for skbs with Ethernet
- header in head
-In-Reply-To: <20191114.172508.1027995193093100862.davem@davemloft.net>
-References: <20191112122843.30636-1-alobakin@dlink.ru>
- <20191114.172508.1027995193093100862.davem@davemloft.net>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <097eb720466a7c429c8fd91c792e7cd5@dlink.ru>
-X-Sender: alobakin@dlink.ru
+In-Reply-To: <CAOZdJXUibQ6RM8O4CfkYBdGsg+LMcE2ZoZEQ4txn2yvquUWwCA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
-
-David Miller wrote 15.11.2019 04:25:
-
-> From: Alexander Lobakin <alobakin@dlink.ru>
-> Date: Tue, 12 Nov 2019 15:28:43 +0300
+On 15/11/2019 05.41, Timur Tabi wrote:
+> On Fri, Nov 8, 2019 at 7:04 AM Rasmus Villemoes
+> <linux@rasmusvillemoes.dk> wrote:
 > 
->> Commit 78d3fd0b7de8 ("gro: Only use skb_gro_header for completely
->> non-linear packets") back in May'09 (2.6.31-rc1) has changed the
->> original condition '!skb_headlen(skb)' to the current
->> 'skb_mac_header(skb) == skb_tail_pointer(skb)' in gro_reset_offset()
->> saying: "Since the drivers that need this optimisation all provide
->> completely non-linear packets".
+>> diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+>> index 8d13586bb774..f029eaa7cfc0 100644
+>> --- a/drivers/net/wan/fsl_ucc_hdlc.c
+>> +++ b/drivers/net/wan/fsl_ucc_hdlc.c
+>> @@ -245,6 +245,11 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
+>>                 ret = -ENOMEM;
+>>                 goto free_riptr;
+>>         }
+>> +       if (riptr != (u16)riptr || tiptr != (u16)tiptr) {
 > 
-> Please reference the appropriate SHA1-ID both here in this paragraph 
-> and
-> also in an appropriate Fixes: tag.
-
-Sorry for confusing. The SHA1-ID from commit message is correct
-actually. At the moment of 2.6.31 we used skb->mac_header and skb->tail
-pointers directly, so the original condition was
-'skb->mac_header == skb->tail'.
-Commit ced14f6804a9 ("net: Correct comparisons and calculations using
-skb->tail and skb-transport_header") has changed this condition to
-the referred 'skb_mac_header(skb) == skb_tail_pointer(skb)' without
-any functional changes.
-I didn't add the "Fixes:" tag because at the moment of 2.6.31 it was
-a needed change, but it became obsolete later, so now we can revert
-it back to speed up skbs with only Ethernet header in head.
-Please let me know if I must send v2 of this patch with corrected
-description before getting any further reviews.
-
-Thanks.
-
-> If this goes so far back that it is before GIT, then you need to 
-> provide
-> a reference to the patch posting via lore.kernel.org or similar because
-> it is absolutely essentialy for people reviewing this patch to be able
-> to do some digging into why the condition is code the way that it is
-> currently.
+> "riptr/tiptr > U16_MAX" is clearer.
 > 
-> Thank you.
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+I can change it, sure, but it's a matter of taste. To me the above asks
+"does the value change when it is truncated to a u16" which makes
+perfect sense when the value is next used with iowrite16be(). Using a
+comparison to U16_MAX takes more brain cycles for me, because I have to
+think whether it should be > or >=, and are there some
+signedness/integer promotion business interfering with that test.
+
+Rasmus
