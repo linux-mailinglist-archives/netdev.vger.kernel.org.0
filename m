@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A190CFE56D
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:09:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 888AEFE554
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:01:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbfKOTJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 14:09:25 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:29948 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbfKOTJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 14:09:24 -0500
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAFJ99oU024225;
-        Fri, 15 Nov 2019 11:09:10 -0800
-Date:   Sat, 16 Nov 2019 00:30:57 +0530
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next v3 1/2] cxgb4: add TC-MATCHALL classifier egress
- offload
-Message-ID: <20191115190056.GA14695@chelsio.com>
-References: <cover.1573818408.git.rahul.lakkireddy@chelsio.com>
- <5b5af4a7ec3a6c9bc878046f4670a2838bbbe718.1573818408.git.rahul.lakkireddy@chelsio.com>
- <20191115135845.GC2158@nanopsycho>
- <20191115150824.GA14296@chelsio.com>
- <20191115153247.GD2158@nanopsycho>
- <20191115105112.17c14b2b@cakuba.netronome.com>
+        id S1726632AbfKOTBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 14:01:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52322 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726323AbfKOTBz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 14:01:55 -0500
+Received: from localhost.localdomain.com (unknown [77.139.212.74])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ABF1F20732;
+        Fri, 15 Nov 2019 19:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573844514;
+        bh=tlj22l7/LTEexEzbFvzvD4XsFk/OMusxlw3mMaGexVM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SNtrkLQZ6ndJJ1Ex21KOOwerLQaD0sMIMN9XTviIycpMcrGDpw5PelW44T5NL16AO
+         ggkWDR6BWdCWudhgFYAc/uQsUIqknvt5A2xksIIvdpgjeD5sL8HKGX21/JDmXydQzg
+         dsR20YXNItgWZ7gFa7HpcDMlLpmSRSrt53/bIjSU=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, ilias.apalodimas@linaro.org,
+        brouer@redhat.com, lorenzo.bianconi@redhat.com, mcroce@redhat.com
+Subject: [PATCH v3 net-next 0/3] add DMA-sync-for-device capability to page_pool API
+Date:   Fri, 15 Nov 2019 21:01:36 +0200
+Message-Id: <cover.1573844190.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191115105112.17c14b2b@cakuba.netronome.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, November 11/15/19, 2019 at 10:51:12 -0800, Jakub Kicinski wrote:
-> On Fri, 15 Nov 2019 16:32:47 +0100, Jiri Pirko wrote:
-> > Fri, Nov 15, 2019 at 04:08:30PM CET, rahul.lakkireddy@chelsio.com wrote:
-> > >On Friday, November 11/15/19, 2019 at 14:58:45 +0100, Jiri Pirko wrote:  
-> > >> Fri, Nov 15, 2019 at 01:14:20PM CET, rahul.lakkireddy@chelsio.com wrote:
-> > >> >+static int cxgb4_matchall_egress_validate(struct net_device *dev,
-> > >> >+					  struct tc_cls_matchall_offload *cls)
-> > >> >+{
-> > >> >+	struct netlink_ext_ack *extack = cls->common.extack;
-> > >> >+	struct flow_action *actions = &cls->rule->action;
-> > >> >+	struct port_info *pi = netdev2pinfo(dev);
-> > >> >+	struct flow_action_entry *entry;
-> > >> >+	u64 max_link_rate;
-> > >> >+	u32 i, speed;
-> > >> >+	int ret;
-> > >> >+
-> > >> >+	if (cls->common.prio != 1) {
-> > >> >+		NL_SET_ERR_MSG_MOD(extack,
-> > >> >+				   "Egress MATCHALL offload must have prio 1");  
-> > >> 
-> > >> I don't understand why you need it to be prio 1.  
-> > >
-> > >This is to maintain rule ordering with the kernel. Jakub has suggested
-> > >this in my earlier series [1][2]. I see similar checks in various
-> > >drivers (mlx5 and nfp), while offloading matchall with policer.  
-> > 
-> > I don't think that is correct. If matchall is the only filter there, it
-> > does not matter which prio is it. It matters only in case there are
-> > other filters.
-> 
-> Yup, the ingress side is the one that matters.
-> 
-> > The code should just check for other filters and forbid to insert the
-> > rule if other filters have higher prio (lower number).
-> 
-> Ack as well, that'd work even better. 
-> 
-> I've capitulated to the prio == 1 condition as "good enough" when
-> netronome was adding the policer offload for OvS.
+Introduce the possibility to sync DMA memory for device in the page_pool API.
+This feature allows to sync proper DMA size and not always full buffer
+(dma_sync_single_for_device can be very costly).
+Please note DMA-sync-for-CPU is still device driver responsibility.
+Relying on page_pool DMA sync mvneta driver improves XDP_DROP pps of
+about 180Kpps:
 
-I see. I thought there was some sort of mutual agreement, that to
-offload police, then prio must be 1, when I saw several drivers do
-it. I don't have a police offload on ingress side yet. So, I'm
-guessing this check for prio is not needed at all for my series?
-Please confirm again so that I'm on the same page. :)
+- XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
+- XDP_DROP DMA sync managed by page_pool API:	~595Kpps
 
-Thanks,
-Rahul
+Changes since v2:
+- rely on PP_FLAG_DMA_SYNC_DEV flag instead of dma_sync
+
+Changes since v1:
+- rename sync in dma_sync
+- set dma_sync_size to 0xFFFFFFFF in page_pool_recycle_direct and
+  page_pool_put_page routines
+- Improve documentation
+
+Lorenzo Bianconi (3):
+  net: mvneta: rely on page_pool_recycle_direct in mvneta_run_xdp
+  net: page_pool: add the possibility to sync DMA memory for device
+  net: mvneta: get rid of huge dma sync in mvneta_rx_refill
+
+ drivers/net/ethernet/marvell/mvneta.c | 24 +++++++++------
+ include/net/page_pool.h               | 21 ++++++++++----
+ net/core/page_pool.c                  | 42 +++++++++++++++++++++++----
+ 3 files changed, 66 insertions(+), 21 deletions(-)
+
+-- 
+2.21.0
+
