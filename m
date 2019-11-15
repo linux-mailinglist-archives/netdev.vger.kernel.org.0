@@ -2,288 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D6AFDBCA
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 11:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57CF4FDBCE
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 11:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbfKOKzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 05:55:43 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36676 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726521AbfKOKzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 05:55:42 -0500
-Received: by mail-pg1-f194.google.com with SMTP id k13so5831642pgh.3;
-        Fri, 15 Nov 2019 02:55:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=20Cgp80vhwwKTOz8AyAi1Y+u0+xnbO+WaqEg864mgH0=;
-        b=fNtnmERGHmVNsnVwGDAuoXikGXWQ1cFhY90zZm8SrboL14kl1ecDEYJje/R+QoU9aB
-         UDauDYwKORRfQBW0ANOejleEWWicWzKRfAJj/FqaPsf93OHUW8WiCKPBr8e24xgAnwwC
-         e4aydMoEfdAh5rn70th4ov2pYzuZBovciWmM0/qQnwNDPD0gvdrmwtDJ8GkjMrYWF64z
-         7BZHuGzGeJ36RZmXzBri55FaeY0aiZOx6KjSGB2+DvmOMzFAob+733bBbCtXsW0W4Yrp
-         f/hc2nGhxyVEh6kaPV1S1PKRBGb+6uZnNBbCtcjUg8ykAAKGgjLifUjopf/gAsnEfU7H
-         lP6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=20Cgp80vhwwKTOz8AyAi1Y+u0+xnbO+WaqEg864mgH0=;
-        b=MJrLbap4jK/JwScBqEMWtY1oR+kWfcJTtP/+XOzMM26ScM9KtXIG9TIcX5N/veiNF2
-         pZCD8a+HM4+RMv3PZOdRjyVCX08vHiksOGVuwHpbgI4ZhzE8qqx5RZkmE1AKYTSFMg90
-         ehCkiXJ18VF1OdYHHefy5YVo8TBhc+fiiwNU2JCG7hhZSSC9LyTePgd9bE78oj+UsFFE
-         ITlztfC/QVHzX6wwZMs89U6Grz7NZp36LxfqzjIsraWL+XSNtMv5Ky4Z2Bhzy7BGtg6N
-         olPn8wrEWkXq2cVaGTqmt6vwEct2TYEbBz3rmvQoGDKbluuE2JOszVyvD8NKKa21wFTW
-         Heyg==
-X-Gm-Message-State: APjAAAXgVL1pzzcthKjDEEr7BgIOVIPwVUrBiuvKe/BlxqPo5CB7yAGl
-        i6dd37WE9+3YE9vj9GQTWvULDMHFDl4=
-X-Google-Smtp-Source: APXvYqwxdq39mRRW2kE2hFSZsdh3QQwm7q1yRv7PqO0S8tHltxiw987Kcp6UveF7hNZpA832kFLPng==
-X-Received: by 2002:a65:6245:: with SMTP id q5mr8133304pgv.347.1573815339875;
-        Fri, 15 Nov 2019 02:55:39 -0800 (PST)
-Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id c9sm12515428pfb.114.2019.11.15.02.55.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2019 02:55:39 -0800 (PST)
-From:   Wenbo Zhang <ethercflow@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     alexei.starovoitov@gmail.com, daniel@iogearbox.net, yhs@fb.com,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        Wenbo Zhang <ethercflow@gmail.com>
-Subject: [PATCH bpf-next v8] bpf: add new helper get_file_path for mapping a file descriptor to a pathname
-Date:   Fri, 15 Nov 2019 05:55:27 -0500
-Message-Id: <20191115105527.28226-1-ethercflow@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727274AbfKOK4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 05:56:35 -0500
+Received: from mail.aperture-lab.de ([138.201.29.205]:33618 "EHLO
+        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727112AbfKOK4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 05:56:35 -0500
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
+        t=1573815392;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uBJc7hcajP8FEHgdeBWBaFOQbOLebSdyenmlOi0uYxA=;
+        b=O8JtRdntbEJURgpdD6MrUYkKYQYwyHbUNpMTSGs9rE8JbGfernDCI6mD8fKb2qukSC1FV+
+        ZBXt7Q/srnvMlQgQjZJgpve874drG5Y+k+G4+PVDhmURl/Jo+jaSTMbMrD0KjtuUDHEYHh
+        ZKetoahkmkKWGOetJK43EZreuRZdLVY11wn4wRwkDOllSrY9PB1JiuwiqcSNLiiOUskzQX
+        rMLmWk488ReuJm3Pd94UBJO6jGQxQU+IPi/pZvXUcujJHMd975fmw/U8JCBCyFsOZTta1S
+        s4AqP3D9GqvllPahTJ5SjYTu8+2trJeD+SfM4rbfGhKFPwgy6uqwDqLIhUZAiw==
+To:     ath10k@lists.infradead.org
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ben Greear <greearb@candelatech.com>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: [PATCH net-next v2] ath10k: fix RX of frames with broken FCS in monitor mode
+Date:   Fri, 15 Nov 2019 11:56:12 +0100
+Message-Id: <20191115105612.8531-1-linus.luessing@c0d3.blue>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue;
+        s=2018; t=1573815392;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uBJc7hcajP8FEHgdeBWBaFOQbOLebSdyenmlOi0uYxA=;
+        b=MMfU0F89mh6EF+HRdjK7Qm9SsszXQXVQH8OEu8xiT+nDw+d9FYqeftHJDPdGVEAMmGhtXn
+        DYZYpjaQBlvZQOq2ue58DttUqGzKqsRIzNVf/lhFFxwBO3OCfbJQ2MgyCPeS+OqRLEvINB
+        q6b9N+hiNtFCKSZBAeMZDqgwkskCfB818bY/9SpdlaWg7m3CEmOXde+8CPyGqgGv5Alfwh
+        2kxFDq4STya73izPJ4XvnJTDwvpE8X/dTpQgYT9EmlGbwWknIJHDg3NATzVGwI6KdVnt1C
+        ImvCic5cn0NWp9LGRtcwkGcOt9QwEmR7dCPqu/ciBtlxnU3q8enPdY7NliXA6Q==
+ARC-Seal: i=1; s=2018; d=c0d3.blue; t=1573815392; a=rsa-sha256; cv=none;
+        b=KUUWM6vRn3AtzkRE3UM7xMjLNEdf9BrkiLXVJ5fDdPnyYR20R+KkU3mtbapdbMrLqKNQ+A
+        rrKNIglcXVdWorWhmSnuQExegzNsHXPerTiTBPPkBxgvieE5NtfSCVRwMua7qRYMf2iapg
+        M2xPM2k46UdQvoNDdSpT6DOLj+d7RD7wRlwrRGKjbaglBmUiGKwGfHrtLPsnK07nPvY/BI
+        ChcGcHcCDTRAawEBP1Y1hl5I2CI0K3dj0m3xwFsmAKyocvesfLDAwROkvcozB0I0KYVLsS
+        qxp6SrGcWbPYl1J1jpTveKCJ6wkVR9D4tmtvghVtEw69M8HxfE4rLzpenq5GHQ==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When people want to identify which file system files are being opened,
-read, and written to, they can use this helper with file descriptor as
-input to achieve this goal. Other pseudo filesystems are also supported.
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-This requirement is mainly discussed here:
+So far, frames were forwarded regardless of the FCS correctness leading
+to userspace applications listening on the monitor mode interface to
+receive potentially broken frames, even with the "fcsfail" flag unset.
 
-  https://github.com/iovisor/bcc/issues/237
+By default, with the "fcsfail" flag of a monitor mode interface
+unset, frames with FCS errors should be dropped. With this patch, the
+fcsfail flag is taken into account correctly.
 
-v7->v8: addressed Alexei's feedback
-- use fget_raw instead of fdget_raw, as fdget_raw is only used inside fs/
-- ensure we're in user context which is safe fot the help to run
-- filter unmountable pseudo filesystem, because they don't have real path
-- supplement the description of this helper function
-
-v6->v7:
-- fix missing signed-off-by line
-
-v5->v6: addressed Andrii's feedback
-- avoid unnecessary goto end by having two explicit returns
-
-v4->v5: addressed Andrii and Daniel's feedback
-- rename bpf_fd2path to bpf_get_file_path to be consistent with other
-helper's names
-- when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-- remove fdput from fdget_raw's error path
-- use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
-into the buffer or an error code if the path was too long
-- modify the normal path's return value to return copied string length
-including NUL
-- update this helper description's Return bits.
-
-v3->v4: addressed Daniel's feedback
-- fix missing fdput()
-- move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-- move fd2path's test code to another patch
-- add comment to explain why use fdget_raw instead of fdget
-
-v2->v3: addressed Yonghong's feedback
-- remove unnecessary LOCKDOWN_BPF_READ
-- refactor error handling section for enhanced readability
-- provide a test case in tools/testing/selftests/bpf
-
-v1->v2: addressed Daniel's feedback
-- fix backward compatibility
-- add this helper description
-- fix signed-off name
-
-Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
 ---
- include/uapi/linux/bpf.h       | 29 +++++++++++++++-
- kernel/trace/bpf_trace.c       | 63 ++++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 28 ++++++++++++++-
- 3 files changed, 118 insertions(+), 2 deletions(-)
+This was tested on an Open Mesh A41 device, featuring a QCA4019. And
+with this firmware:
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index df6809a76404..8ca63815fd9c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2815,6 +2815,32 @@ union bpf_attr {
-  * 	Return
-  * 		On success, the strictly positive length of the string,	including
-  * 		the trailing NUL character. On error, a negative value.
-+ *
-+ * int bpf_get_file_path(char *path, u32 size, int fd)
-+ *	Description
-+ *		Get **file** atrribute from the current task by *fd*, then call
-+ *		**d_path** to get it's absolute path and copy it as string into
-+ *		*path* of *size*. Notice the **path** don't support unmountable
-+ *		pseudo filesystems as they don't have path (eg: SOCKFS, PIPEFS).
-+ *      The *size* must be strictly positive. On success, the helper
-+ *      makes sure that the *path* is NUL-terminated, and the buffer
-+ *      could be:
-+ *          - a regular full path (include mountable fs eg: /proc, /sys)
-+ *          - a regular full path with "(deleted)" at the end.
-+ *      On failure, it is filled with zeroes.
-+ *	Return
-+ *		On success, returns the length of the copied string INCLUDING
-+ *		the trailing NUL.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *      **-EPERM** if no permission to get the path (eg: in irq ctx).
-+ *
-+ *      **-EBADF** if *fd* is invalid.
-+ *
-+ *		**-EINVAL** if *fd* corresponds to a unmountable pseudo fs
-+ *
-+ *	    **-ENAMETOOLONG** if full path is longer than *size*
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2932,7 +2958,8 @@ union bpf_attr {
- 	FN(probe_read_user),		\
- 	FN(probe_read_kernel),		\
- 	FN(probe_read_user_str),	\
--	FN(probe_read_kernel_str),
-+	FN(probe_read_kernel_str),	\
-+	FN(get_file_path),
+https://www.candelatech.com/downloads/ath10k-4019-10-4b/firmware-5-ct-full-community-12.bin-lede.011
+
+But from looking at the code it seems that the vanilla ath10k has the
+same issue, therefore submitting it here.
+
+Changelog v2:
+
+* removed the spinlock as only a 32 bit statistics counter is
+  incremented
+
+Changelog RFC->v1:
+
+* removed "ar->monitor" check
+* added a debug counter
+
+---
+
+ drivers/net/wireless/ath/ath10k/core.h   | 1 +
+ drivers/net/wireless/ath/ath10k/debug.c  | 2 ++
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 7 +++++++
+ 3 files changed, 10 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index af68eb5d0776..d445482fa945 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -1180,6 +1180,7 @@ struct ath10k {
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index ffc91d4935ac..274ecb67ea4a 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -762,6 +762,67 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
- 	.arg1_type	= ARG_ANYTHING,
- };
+ 	struct {
+ 		/* protected by data_lock */
++		u32 rx_crc_err_drop;
+ 		u32 fw_crash_counter;
+ 		u32 fw_warm_reset_counter;
+ 		u32 fw_cold_reset_counter;
+diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
+index bd2b5628f850..5e4cd2966e6f 100644
+--- a/drivers/net/wireless/ath/ath10k/debug.c
++++ b/drivers/net/wireless/ath/ath10k/debug.c
+@@ -1094,6 +1094,7 @@ static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
+ 	"d_rts_good",
+ 	"d_tx_power", /* in .5 dbM I think */
+ 	"d_rx_crc_err", /* fcs_bad */
++	"d_rx_crc_err_drop", /* frame with FCS error, dropped late in kernel */
+ 	"d_no_beacon",
+ 	"d_tx_mpdus_queued",
+ 	"d_tx_msdu_queued",
+@@ -1193,6 +1194,7 @@ void ath10k_debug_get_et_stats(struct ieee80211_hw *hw,
+ 	data[i++] = pdev_stats->rts_good;
+ 	data[i++] = pdev_stats->chan_tx_power;
+ 	data[i++] = pdev_stats->fcs_bad;
++	data[i++] = ar->stats.rx_crc_err_drop;
+ 	data[i++] = pdev_stats->no_beacons;
+ 	data[i++] = pdev_stats->mpdu_enqued;
+ 	data[i++] = pdev_stats->msdu_enqued;
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 9f0e7b4943ec..8139c9cea1d8 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -1285,6 +1285,13 @@ static void ath10k_process_rx(struct ath10k *ar, struct sk_buff *skb)
  
-+BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
-+{
-+	struct file *f;
-+	char *p;
-+	int ret = -EBADF;
-+
-+	/* Ensure we're in user context which is safe for the helper to
-+	 * run. This helper has no business in a kthread.
-+	 */
-+	if (unlikely(in_interrupt() ||
-+		     current->flags & (PF_KTHREAD | PF_EXITING)))
-+		return -EPERM;
-+
-+	/* Use fget_raw instead of fget to support O_PATH, and it doesn't
-+	 * have any sleepable code, so it's ok to be here.
-+	 */
-+	f = fget_raw(fd);
-+	if (!f)
-+		goto error;
-+
-+	/* For unmountable pseudo filesystem, it seems to have no meaning
-+	 * to get their fake paths as they don't have path, and to be no
-+	 * way to validate this function pointer can be always safe to call
-+	 * in the current context.
-+	 */
-+	if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname)
-+		return -EINVAL;
-+
-+	/* After filter unmountable pseudo filesytem, d_path won't call
-+	 * dentry->d_op->d_name(), the noramlly path doesn't have any
-+	 * sleepable code, and despite it uses the current macro to get
-+	 * fs_struct (current->fs), we've already ensured we're in user
-+	 * context, so it's ok to be here.
-+	 */
-+	p = d_path(&f->f_path, dst, size);
-+	if (IS_ERR(p)) {
-+		ret = PTR_ERR(p);
-+		fput(f);
-+		goto error;
+ 	status = IEEE80211_SKB_RXCB(skb);
+ 
++	if (!(ar->filter_flags & FIF_FCSFAIL) &&
++	    status->flag & RX_FLAG_FAILED_FCS_CRC) {
++		ar->stats.rx_crc_err_drop++;
++		dev_kfree_skb_any(skb);
++		return;
 +	}
 +
-+	ret = strlen(p);
-+	memmove(dst, p, ret);
-+	dst[ret++] = '\0';
-+	fput(f);
-+	return ret;
-+
-+error:
-+	memset(dst, '0', size);
-+	return ret;
-+}
-+
-+static const struct bpf_func_proto bpf_get_file_path_proto = {
-+	.func       = bpf_get_file_path,
-+	.gpl_only   = true,
-+	.ret_type   = RET_INTEGER,
-+	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-+	.arg2_type  = ARG_CONST_SIZE,
-+	.arg3_type  = ARG_ANYTHING,
-+};
-+
- static const struct bpf_func_proto *
- tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -822,6 +883,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- #endif
- 	case BPF_FUNC_send_signal:
- 		return &bpf_send_signal_proto;
-+	case BPF_FUNC_get_file_path:
-+		return &bpf_get_file_path_proto;
- 	default:
- 		return NULL;
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index df6809a76404..4147f628feea 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2815,6 +2815,31 @@ union bpf_attr {
-  * 	Return
-  * 		On success, the strictly positive length of the string,	including
-  * 		the trailing NUL character. On error, a negative value.
-+ * int bpf_get_file_path(char *path, u32 size, int fd)
-+ *	Description
-+ *		Get **file** atrribute from the current task by *fd*, then call
-+ *		**d_path** to get it's absolute path and copy it as string into
-+ *		*path* of *size*. Notice the **path** don't support unmountable
-+ *		pseudo filesystems as they don't have path (eg: SOCKFS, PIPEFS).
-+ *      The *size* must be strictly positive. On success, the helper
-+ *      makes sure that the *path* is NUL-terminated, and the buffer
-+ *      could be:
-+ *          - a regular full path (include mountable fs eg: /proc, /sys)
-+ *          - a regular full path with "(deleted)" at the end.
-+ *      On failure, it is filled with zeroes.
-+ *	Return
-+ *		On success, returns the length of the copied string INCLUDING
-+ *		the trailing NUL.
-+ *
-+ *		On failure, the returned value is one of the following:
-+ *
-+ *      **-EPERM** if no permission to get the path (eg: in irq ctx).
-+ *
-+ *      **-EBADF** if *fd* is invalid.
-+ *
-+ *		**-EINVAL** if *fd* corresponds to a unmountable pseudo fs
-+ *
-+ *	    **-ENAMETOOLONG** if full path is longer than *size*
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2932,7 +2957,8 @@ union bpf_attr {
- 	FN(probe_read_user),		\
- 	FN(probe_read_kernel),		\
- 	FN(probe_read_user_str),	\
--	FN(probe_read_kernel_str),
-+	FN(probe_read_kernel_str),	\
-+	FN(get_file_path),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
+ 	ath10k_dbg(ar, ATH10K_DBG_DATA,
+ 		   "rx skb %pK len %u peer %pM %s %s sn %u %s%s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%x fcs-err %i mic-err %i amsdu-more %i\n",
+ 		   skb,
 -- 
-2.17.1
+2.24.0.rc2
 
