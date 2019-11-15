@@ -2,104 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63152FE598
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0ABFE5B5
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfKOT22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 14:28:28 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:37664 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbfKOT22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 14:28:28 -0500
-Received: by mail-lf1-f66.google.com with SMTP id b20so8855246lfp.4
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 11:28:27 -0800 (PST)
+        id S1727145AbfKOTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 14:35:10 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43408 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726550AbfKOTfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 14:35:10 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 3so7142844pfb.10
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 11:35:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=uvgjJEg8EIWKeB1XBnyt33chTW7fA4gpna4jP6od8Bo=;
-        b=HcBU8VkC8+vg6rcHtdMPO6n6bDoOaW1GiNKefeOfYnKW01UZP1j+drIVza2nq5rdFw
-         qn7VqB0rDs5miE9If05YMJiVC4Of0E49o0svy6iujsjohr8zlRJK/hg3G2Vx1db3HEt1
-         kBOGqCxGczcHuMQtFS1IKSsumoHzX0WQzGRTXUcmtL6YjTzC7jUlM0xeYHlrmFHbTRxu
-         qd5kY98UsW0mvRw9XPjzTv2FF58/8PAUDcSgBPU2Yz9G0HnnYEYLuVSgY98SpcaCIzEe
-         g6tSnw9Dk/gvAf6VSRXrTyyA+GG0FQ91ef+UhpP9MSOUSh9sWdUor6smpLM91rxkBrFp
-         vrCA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=SYrybljTLmRZf2tyoawg2jBMOahFgH2xWbEpDAnPmHs=;
+        b=ERWegw+rkZGi3bA3leKMvQull6+mUzLy2r4w7AMqNqz5eHqpCNRBLJT0UegqMzrosQ
+         +B1rr7rCFSX2WV56RapRnIto91FvCKddvkMG3WPcMKzXqWLnJVgaEOTGS/M4Gj/kznuU
+         1LRp2joPQGYsHZAYovPqGuvb2nGImjXXRPyCpCoG5FzYwsJCvnRrz4b4BbsTuyW2bWd2
+         lZ6ERX0nh7I+olyOl8E666+lNUkhiSBK0yicwLp4F13lqWa7j70fFZxNoab4HSb9jdgC
+         WB12PUScJLbv9OvOwBYocKvLr9OsHDV/AiIGWqsTAzvSE84V28LQIlQgygBN11vn9Bgq
+         jeeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=uvgjJEg8EIWKeB1XBnyt33chTW7fA4gpna4jP6od8Bo=;
-        b=tbozgFZ8B+gLAuVl1RdGwGpIP76qv+86XbI4B2sI5Lnr9Lj/p0AQpbxzIOQ3LGlZHw
-         bPLbg5pRQX5rvehy9e0yEAlflEE0OJJHkX9TxmWzxPsVxrnJzJ/vktzeA+jIsnk/6OGq
-         D1u4tzUPHD8mVNb9H3rja4TCyFqQBRqflVscKVc9+pqsoG+bKqeJk1jzveHmYZZ0++lA
-         6WfLnq6gmikpAFzif1PrWI0GfRLRZRauDVUOpaJJ2l+2f0jdXQKm7/193bNmQ4RTVQnd
-         ysnKgmbPX0Q80lf7CxtZY42BWibfyX4nGs5zAnYIcOOhG2+MqyvjHo+4kqamSKmUTYW6
-         GQDg==
-X-Gm-Message-State: APjAAAVmXDlkirjmgSvBazvUFZ/c1lZ2ONKHWfTEDQvtvZfTebGZsA4F
-        zLF4V+0tEiG7bSDxLp56CkpHHw==
-X-Google-Smtp-Source: APXvYqysYaSDr9msyG53jdP1LzRrDubH5jzxbNnBeekNDos/tzsbyZFMH40CgOxf5+Xk9m416JDZ3w==
-X-Received: by 2002:ac2:4d17:: with SMTP id r23mr12728896lfi.56.1573846106482;
-        Fri, 15 Nov 2019 11:28:26 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i28sm4826297lfo.34.2019.11.15.11.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2019 11:28:26 -0800 (PST)
-Date:   Fri, 15 Nov 2019 11:28:17 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next v3 1/2] cxgb4: add TC-MATCHALL classifier
- egress offload
-Message-ID: <20191115112817.3b7d0c13@cakuba.netronome.com>
-In-Reply-To: <20191115190056.GA14695@chelsio.com>
-References: <cover.1573818408.git.rahul.lakkireddy@chelsio.com>
-        <5b5af4a7ec3a6c9bc878046f4670a2838bbbe718.1573818408.git.rahul.lakkireddy@chelsio.com>
-        <20191115135845.GC2158@nanopsycho>
-        <20191115150824.GA14296@chelsio.com>
-        <20191115153247.GD2158@nanopsycho>
-        <20191115105112.17c14b2b@cakuba.netronome.com>
-        <20191115190056.GA14695@chelsio.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=SYrybljTLmRZf2tyoawg2jBMOahFgH2xWbEpDAnPmHs=;
+        b=emz1qJ/ViYYwQxlvTMUodw5HipB/MyiRh/GN/CuJmjQ3oCWjpgvEthM2I0ze2d/rYk
+         UJVQIMdaZQEFgRgUKte4Nay/JLwcu627j+DU2EaW2XV42oTvPvsEuPAHeOrV7f2EbUDx
+         HILOJb7d+X1UAynkaUd1+iKN8+J8LsScQY/RMlzOrywuqOSMj5DwY7LSuyKqGfcGPU7r
+         kl6IGLPYVW3bkLnhYooBchHAJfJGcAh7VQ7VvJsxsFiLE+EJ211iJ4uYzmppQu8Z2eTh
+         E+tluAqeA8+Tkz0acCpwfbuC4b0SnBOCQPZcKPfduH1zqLDTTdPsfK+AwPP+ENySTK52
+         eZrg==
+X-Gm-Message-State: APjAAAUqev1qB5VZ05guxCOfjO07YVOBzrAxnisEfWOoosCoWChfQ8q9
+        sxSjuxwd213l1u99gr5NXrE=
+X-Google-Smtp-Source: APXvYqwB04Z3zeMscnnqNddyKOu0o1RkIijHvwSK1Lo/ayz/B+oNUTDdyIOQv3ZuDHw3tUiGMVlqXQ==
+X-Received: by 2002:a63:1e0d:: with SMTP id e13mr9179350pge.166.1573846508796;
+        Fri, 15 Nov 2019 11:35:08 -0800 (PST)
+Received: from [172.20.54.79] ([2620:10d:c090:200::2:83d7])
+        by smtp.gmail.com with ESMTPSA id w5sm12324303pfd.31.2019.11.15.11.35.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Nov 2019 11:35:08 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Lorenzo Bianconi" <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, brouer@redhat.com,
+        lorenzo.bianconi@redhat.com, mcroce@redhat.com
+Subject: Re: [PATCH v3 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Date:   Fri, 15 Nov 2019 11:35:07 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <A329EE59-03C4-424C-8C17-10E434CE39AD@gmail.com>
+In-Reply-To: <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
+References: <cover.1573844190.git.lorenzo@kernel.org>
+ <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 16 Nov 2019 00:30:57 +0530, Rahul Lakkireddy wrote:
-> > > I don't think that is correct. If matchall is the only filter there, it
-> > > does not matter which prio is it. It matters only in case there are
-> > > other filters.  
-> > 
-> > Yup, the ingress side is the one that matters.
-> >   
-> > > The code should just check for other filters and forbid to insert the
-> > > rule if other filters have higher prio (lower number).  
-> > 
-> > Ack as well, that'd work even better. 
-> > 
-> > I've capitulated to the prio == 1 condition as "good enough" when
-> > netronome was adding the policer offload for OvS.  
-> 
-> I see. I thought there was some sort of mutual agreement, that to
-> offload police, then prio must be 1, when I saw several drivers do
-> it. I don't have a police offload on ingress side yet. So, I'm
-> guessing this check for prio is not needed at all for my series?
-> Please confirm again so that I'm on the same page. :)
 
-You still need to make sure that Hw orders the rules the same as SW
-would. If there are lower prio flower offloads added first and then
-high prio matchall rule, the flower filters should no longer match.
-And vice versa if higher prio flower rules are inserted after match 
-all they should take precedence.
 
-If that's how it currently works then all is good, but I don't see the
-relevant checks anywhere.
+On 15 Nov 2019, at 11:01, Lorenzo Bianconi wrote:
 
-As Jiri suggested, you can narrow the scope to whatever you're actual
-use case requires. For example simply refuse to offload the filters if
-it would require reordering or ejecting rules from HW.
+> Introduce the following parameters in order to add the possibility to sync
+> DMA memory for device before putting allocated pages in the page_pool
+> caches:
+> - PP_FLAG_DMA_SYNC_DEV: if set in page_pool_params flags, all pages that
+>   the driver gets from page_pool will be DMA-synced-for-device according
+>   to the length provided by the device driver. Please note DMA-sync-for-CPU
+>   is still device driver responsibility
+> - offset: DMA address offset where the DMA engine starts copying rx data
+> - max_len: maximum DMA memory size page_pool is allowed to flush. This
+>   is currently used in __page_pool_alloc_pages_slow routine when pages
+>   are allocated from page allocator
+> These parameters are supposed to be set by device drivers.
+>
+> This optimization reduces the length of the DMA-sync-for-device.
+> The optimization is valid because pages are initially
+> DMA-synced-for-device as defined via max_len. At RX time, the driver
+> will perform a DMA-sync-for-CPU on the memory for the packet length.
+> What is important is the memory occupied by packet payload, because
+> this is the area CPU is allowed to read and modify. As we don't track
+> cache-lines written into by the CPU, simply use the packet payload length
+> as dma_sync_size at page_pool recycle time. This also take into account
+> any tail-extend.
+>
+> Tested-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
