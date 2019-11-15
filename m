@@ -2,79 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77057FE825
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 23:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E57FE82F
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 23:42:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbfKOWjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 17:39:24 -0500
-Received: from mga01.intel.com ([192.55.52.88]:32628 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726953AbfKOWjX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 17:39:23 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Nov 2019 14:39:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,309,1569308400"; 
-   d="scan'208";a="214860788"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Nov 2019 14:39:22 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iVkFN-000F3a-Vc; Sat, 16 Nov 2019 06:39:21 +0800
-Date:   Sat, 16 Nov 2019 06:38:34 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mscc.c: fix semicolon.cocci warnings
-Message-ID: <20191115223834.ysp6nhb7mlhepdvl@4978f4969bb8>
-References: <201911160629.1h9COFsK%lkp@intel.com>
+        id S1727021AbfKOWmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 17:42:36 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:35166 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726920AbfKOWmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 17:42:36 -0500
+Received: by mail-qt1-f196.google.com with SMTP id n4so12543133qte.2;
+        Fri, 15 Nov 2019 14:42:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1Ljh/C9bOl+iw6pSFvN3eoLNKQmG6h31Yeu6UPqkFhQ=;
+        b=qTyktsT4cDpAQOuWRvAREFnO06PUl5P+DdqgZm+lxHqH05GZI2qSuxSrvvBPdanQoL
+         URI+YXs/LLv+nK0GkRAFNzSNYbBipDq1Hbt08kTHPTpcA92Cc+UaxSaCLIhPHQ7OMKc8
+         Cw9eqqoYH3rVjwSYxFU8rW3d0rClYqPQLkNu7UdD1JjEgK56fhBbOE9PXYG/ndHyBjlG
+         SlseIWTzGRdJ94MYa95c+aTBf0b3yDAZK2UO8zs72iuNvX+5QraLP7zU/s2aHpPoq8Xo
+         omyqG8D30tKykT7YpnQxkY4kIdYAzSkJpRaDsAdaR20562wr39KFzy83C/L9crO+tD95
+         4P8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1Ljh/C9bOl+iw6pSFvN3eoLNKQmG6h31Yeu6UPqkFhQ=;
+        b=KCXSHrrhbBy0vlgA1/EWPksFHv9GWnMMnlcb7QcKDYSpTmqU9TanBN4/bJoFfJz3dN
+         hz3Z9xF3Q96rubq1ug3ZOENRDF+45Nb35JfeqNRDZ7lGHO3MY0zLbBL1RjonlWOAB255
+         YWRtzsGRdsPckjtgdqYEekAw1rEVTiljbF1yhSijBIroqRBUV+omvVop64btVIwRhB5N
+         LGjXcyOE76U3uWTLzF7VxJNlSKJsjqnjX2IQAPU3mlCYyV2GTuN2fXRV9PULe9czrrJv
+         IVG/UDgrGLbtr+c+ZlCZqEccp4Dp8Q0VG8F7uNxMLosPYoQI2WhYfSVhsoxG0tCEXzWi
+         R02Q==
+X-Gm-Message-State: APjAAAWyyhsUAIIOBIW/0hkVaumR0Grcf3FNgUpulytqv3XvTLUUU/Ec
+        Cz/Q6Z1+KeutjfHtDBeyNwDbrKKsHkwjQgqQzz0=
+X-Google-Smtp-Source: APXvYqxS8GFDbUqv8q+wlxQKq2ZdR4dc8Hypo7Wdr47XR6xakaez1owd4zmlDuenxRAj580QV3D41WsgWMccHfyOOeQ=
+X-Received: by 2002:ac8:199d:: with SMTP id u29mr15886076qtj.93.1573857754983;
+ Fri, 15 Nov 2019 14:42:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <201911160629.1h9COFsK%lkp@intel.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20191107212023.171208-1-brianvv@google.com> <20191107212023.171208-3-brianvv@google.com>
+In-Reply-To: <20191107212023.171208-3-brianvv@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 15 Nov 2019 14:42:24 -0800
+Message-ID: <CAEf4Bzbn6J79+_wK2+JtQaGRiiM9hCGyOsuE9DeSqa9ngemTWw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 2/3] tools/bpf: test bpf_map_lookup_and_delete_batch()
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kbuild test robot <lkp@intel.com>
+On Thu, Nov 7, 2019 at 1:23 PM Brian Vazquez <brianvv@google.com> wrote:
+>
+> From: Yonghong Song <yhs@fb.com>
+>
+> Added four libbpf API functions to support map batch operations:
+>   . int bpf_map_delete_batch( ... )
+>   . int bpf_map_lookup_batch( ... )
+>   . int bpf_map_lookup_and_delete_batch( ... )
+>   . int bpf_map_update_batch( ... )
+>
+> Tested bpf_map_lookup_and_delete_batch() and bpf_map_update_batch()
+> functionality.
+>   $ ./test_maps
+>   ...
+>   test_map_lookup_and_delete_batch:PASS
+>   ...
+>
+> Note that I clumped uapi header sync patch, libbpf patch
+> and tests patch together considering this is a RFC patch.
+> Will do proper formating once it is out of RFC stage.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
 
-drivers/net/phy/mscc.c:1683:3-4: Unneeded semicolon
+[...]
 
+>
+> +       struct { /* struct used by BPF_MAP_*_BATCH commands */
+> +               __u64           batch;  /* input/output:
+> +                                        * input: start batch,
+> +                                        *        0 to start from beginning.
+> +                                        * output: next start batch,
+> +                                        *         0 to end batching.
+> +                                        */
+> +               __aligned_u64   keys;
+> +               __aligned_u64   values;
+> +               __u32           count;  /* input/output:
+> +                                        * input: # of elements keys/values.
+> +                                        * output: # of filled elements.
+> +                                        */
+> +               __u32           map_fd;
+> +               __u64           elem_flags;
+> +               __u64           flags;
+> +       } batch;
+> +
 
- Remove unneeded semicolon.
+Describe what elem_flags and flags are here?
 
-Generated by: scripts/coccinelle/misc/semicolon.cocci
+[...]
 
-Fixes: 75a1ccfe6c72 ("mscc.c: Add support for additional VSC PHYs")
-CC: Bryan Whitehead <Bryan.Whitehead@microchip.com>
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
+> +LIBBPF_API int bpf_map_delete_batch(int fd, __u64 *batch, __u32 *count,
+> +                                   __u64 elem_flags, __u64 flags);
+> +LIBBPF_API int bpf_map_lookup_batch(int fd, __u64 *batch, void *keys,
+> +                                   void *values, __u32 *count,
+> +                                   __u64 elem_flags, __u64 flags);
+> +LIBBPF_API int bpf_map_lookup_and_delete_batch(int fd, __u64 *batch,
+> +                                              void *keys, void *values,
+> +                                              __u32 *count, __u64 elem_flags,
+> +                                              __u64 flags);
+> +LIBBPF_API int bpf_map_update_batch(int fd, void *keys, void *values,
+> +                                   __u32 *count, __u64 elem_flags,
+> +                                   __u64 flags);
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   a98cdaf73e32d1538cc225464fcf61310749471e
-commit: 75a1ccfe6c726ba33a2f9859d39deb2eba620583 [217/233] mscc.c: Add support for additional VSC PHYs
+Should we start using the same approach as with bpf_object__open_file
+(see LIBBPF_OPTS), so that we can keep adding extra fields without
+breaking ABI? The gist is: use function arguments for mandatory fields
+(as of right now, at least), and put all the optional fields into a
+xxx_opts struct, which can be NULL. Please see
+bpf_object__open_{file,mem} for details.
 
- mscc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +
+>  LIBBPF_API int bpf_obj_pin(int fd, const char *pathname);
+>  LIBBPF_API int bpf_obj_get(const char *pathname);
+>  LIBBPF_API int bpf_prog_attach(int prog_fd, int attachable_fd,
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 86173cbb159d3..0529a770a04eb 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -189,6 +189,10 @@ LIBBPF_0.0.4 {
+>  LIBBPF_0.0.5 {
+>         global:
+>                 bpf_btf_get_next_id;
+> +               bpf_map_delete_batch;
+> +               bpf_map_lookup_and_delete_batch;
+> +               bpf_map_lookup_batch;
+> +               bpf_map_update_batch;
+>  } LIBBPF_0.0.4;
 
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -1680,7 +1680,7 @@ static int vsc8584_config_init(struct ph
- 		default:
- 			ret = -EINVAL;
- 			break;
--		};
-+		}
- 
- 		if (ret)
- 			goto err;
+This should be in 0.0.6 section now.
+
+>
+
+[...]
