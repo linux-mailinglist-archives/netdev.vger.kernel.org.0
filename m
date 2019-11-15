@@ -2,61 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BD8FE02A
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 15:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 768FCFE0D4
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 16:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727690AbfKOOd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 09:33:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50026 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727526AbfKOOd4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 09:33:56 -0500
-Received: from [192.168.1.20] (cpe-24-28-70-126.austin.res.rr.com [24.28.70.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727577AbfKOPGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 10:06:04 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:39341 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727406AbfKOPGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 10:06:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573830364;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TODaIAwhcCK/CDTAy8pB/JaSNs2DJO3Mkp3NEKFUlpo=;
+        b=bJwXh2OxwsfV7WfGTVq/xOyecn1hP7fHPBQ+SmdcHkhKUmhcHNmgWK8ZHenm3rnLNLVNqu
+        7vr1wyL0PdCQ5iymfpF4IQVGT0LCGnGk3ft8/4/qJeFlUsQ3CTjS8f5vpIAOol/5zXRjcC
+        /rVXifSYq16Ighw6+MfXKCkGssRLwcA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-BY7Tp7GWOLGHIL03QnnoSg-1; Fri, 15 Nov 2019 10:06:02 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7E6E620733;
-        Fri, 15 Nov 2019 14:33:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573828435;
-        bh=mF87Nl6gED2r2qJHxN4WWU1Jb6PLM4yh2d+dwZW5Hk8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Vvc8P1N2l/zeirxvFEhap3H1A3jDhl2uKzyj33rEKW2rwdgj5T8pzOsDy4fw1UWub
-         XOWWlOSXPH1wP5r87NRbpax/A2wzVHEpPawa5nMHZ+KwvkJODp0QrvuDT4Y1ONRqcu
-         eG/BLYr6FtmyUe4Co3Y8nzyrcQUTocfk9sbUsS/M=
-Subject: Re: [PATCH v4 45/47] net/wan/fsl_ucc_hdlc: reject muram offsets above
- 64K
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>, netdev <netdev@vger.kernel.org>
-References: <20191108130123.6839-1-linux@rasmusvillemoes.dk>
- <20191108130123.6839-46-linux@rasmusvillemoes.dk>
- <CAOZdJXUibQ6RM8O4CfkYBdGsg+LMcE2ZoZEQ4txn2yvquUWwCA@mail.gmail.com>
- <79101f00-e3ff-9dd0-7a05-760f8be1ff69@rasmusvillemoes.dk>
-From:   Timur Tabi <timur@kernel.org>
-Message-ID: <3db19b28-90a4-f204-07b3-517cfd44010b@kernel.org>
-Date:   Fri, 15 Nov 2019 08:33:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.1
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3937D1005511;
+        Fri, 15 Nov 2019 15:06:01 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-41.brq.redhat.com [10.40.200.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5051D6055E;
+        Fri, 15 Nov 2019 15:05:55 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 06A0B30FC134F;
+        Fri, 15 Nov 2019 16:05:54 +0100 (CET)
+Subject: [net-next v1 PATCH 0/4] page_pool: followup changes to restore
+ tracepoint features
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Date:   Fri, 15 Nov 2019 16:05:53 +0100
+Message-ID: <157383032789.3173.11648581637167135301.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-In-Reply-To: <79101f00-e3ff-9dd0-7a05-760f8be1ff69@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: BY7Tp7GWOLGHIL03QnnoSg-1
+X-Mimecast-Spam-Score: 2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/19 1:44 AM, Rasmus Villemoes wrote:
-> I can change it, sure, but it's a matter of taste. To me the above asks
-> "does the value change when it is truncated to a u16" which makes
-> perfect sense when the value is next used with iowrite16be(). Using a
-> comparison to U16_MAX takes more brain cycles for me, because I have to
-> think whether it should be > or >=, and are there some
-> signedness/integer promotion business interfering with that test.
+This patchset is a followup to Jonathan patch, that do not release
+pool until inflight =3D=3D 0. That changed page_pool to be responsible for
+its own delayed destruction instead of relying on xdp memory model.
 
-Ok.
+As the page_pool maintainer, I'm promoting the use of tracepoint to
+troubleshoot and help driver developers verify correctness when
+converting at driver to use page_pool. The role of xdp:mem_disconnect
+have changed, which broke my bpftrace tools for shutdown verification.
+With these changes, the same capabilities are regained.
+
+---
+
+Jesper Dangaard Brouer (4):
+      xdp: remove memory poison on free for struct xdp_mem_allocator
+      page_pool: add destroy attempts counter and rename tracepoint
+      page_pool: block alloc cache during shutdown
+      page_pool: extend tracepoint to also include the page PFN
+
+
+ include/net/page_pool.h          |    2 ++
+ include/trace/events/page_pool.h |   22 +++++++++++++++-------
+ net/core/page_pool.c             |   17 +++++++++++++++--
+ net/core/xdp.c                   |    5 -----
+ 4 files changed, 32 insertions(+), 14 deletions(-)
+
+--
+
