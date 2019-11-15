@@ -2,134 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77327FE0D9
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 16:06:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E7BDFE104
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 16:16:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727656AbfKOPG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 10:06:26 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36648 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727406AbfKOPG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 10:06:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573830385;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RVu85RivfwVZM9INv3LcREXxrptqzk3KQQxrg6JwlMM=;
-        b=LFRo9t5azNzdSvp10qq76WsahpfUjzGH5OLxKp8G/3Iubu1elO1vOSH0Z7kuSRt795fh+v
-        BCe7oqK9CAD/48hcMenALflbMsBfndgFpWrCQO6/WUpXRAdjs473H+3u5OQVyWbPSr7+wj
-        c+cj/i+PCZcvc04WdOrmoQn22RSHP5E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-FiONSV3qM-KF9UlEZCzPKg-1; Fri, 15 Nov 2019 10:06:22 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D9BDB802684;
-        Fri, 15 Nov 2019 15:06:20 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-200-41.brq.redhat.com [10.40.200.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0AE12A203;
-        Fri, 15 Nov 2019 15:06:15 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 3B1B930FC134F;
-        Fri, 15 Nov 2019 16:06:14 +0100 (CET)
-Subject: [net-next v1 PATCH 4/4] page_pool: extend tracepoint to also
- include the page PFN
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Date:   Fri, 15 Nov 2019 16:06:14 +0100
-Message-ID: <157383037419.3173.317842248540451919.stgit@firesoul>
-In-Reply-To: <157383032789.3173.11648581637167135301.stgit@firesoul>
-References: <157383032789.3173.11648581637167135301.stgit@firesoul>
-User-Agent: StGit/0.17.1-dirty
+        id S1727621AbfKOPQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 10:16:53 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:15999 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727412AbfKOPQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 10:16:53 -0500
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAFFGgIQ023070;
+        Fri, 15 Nov 2019 07:16:43 -0800
+Date:   Fri, 15 Nov 2019 20:38:30 +0530
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: Re: [PATCH net-next v3 1/2] cxgb4: add TC-MATCHALL classifier egress
+ offload
+Message-ID: <20191115150824.GA14296@chelsio.com>
+References: <cover.1573818408.git.rahul.lakkireddy@chelsio.com>
+ <5b5af4a7ec3a6c9bc878046f4670a2838bbbe718.1573818408.git.rahul.lakkireddy@chelsio.com>
+ <20191115135845.GC2158@nanopsycho>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: FiONSV3qM-KF9UlEZCzPKg-1
-X-Mimecast-Spam-Score: 2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191115135845.GC2158@nanopsycho>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MM tracepoint for page free (called kmem:mm_page_free) doesn't provide
-the page pointer directly, instead it provides the PFN (Page Frame Number).
-This is annoying when writing a page_pool leak detector in BPF.
+On Friday, November 11/15/19, 2019 at 14:58:45 +0100, Jiri Pirko wrote:
+> Fri, Nov 15, 2019 at 01:14:20PM CET, rahul.lakkireddy@chelsio.com wrote:
+> 
+> [...]
+> 
+> 
+> >+static int cxgb4_matchall_egress_validate(struct net_device *dev,
+> >+					  struct tc_cls_matchall_offload *cls)
+> >+{
+> >+	struct netlink_ext_ack *extack = cls->common.extack;
+> >+	struct flow_action *actions = &cls->rule->action;
+> >+	struct port_info *pi = netdev2pinfo(dev);
+> >+	struct flow_action_entry *entry;
+> >+	u64 max_link_rate;
+> >+	u32 i, speed;
+> >+	int ret;
+> >+
+> >+	if (cls->common.prio != 1) {
+> >+		NL_SET_ERR_MSG_MOD(extack,
+> >+				   "Egress MATCHALL offload must have prio 1");
+> 
+> I don't understand why you need it to be prio 1.
 
-This patch change page_pool tracepoints to also provide the PFN.
-The page pointer is still provided to allow other kinds of
-troubleshooting from BPF.
+This is to maintain rule ordering with the kernel. Jakub has suggested
+this in my earlier series [1][2]. I see similar checks in various
+drivers (mlx5 and nfp), while offloading matchall with policer.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- include/trace/events/page_pool.h |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+[1] http://patchwork.ozlabs.org/patch/1194936/#2304413
+[2] http://patchwork.ozlabs.org/patch/1194301/#2303749
 
-diff --git a/include/trace/events/page_pool.h b/include/trace/events/page_p=
-ool.h
-index ee7f1aca7839..2f2a10e8eb56 100644
---- a/include/trace/events/page_pool.h
-+++ b/include/trace/events/page_pool.h
-@@ -8,6 +8,7 @@
- #include <linux/types.h>
- #include <linux/tracepoint.h>
-=20
-+#include <trace/events/mmflags.h>
- #include <net/page_pool.h>
-=20
- TRACE_EVENT(page_pool_release,
-@@ -49,16 +50,18 @@ TRACE_EVENT(page_pool_state_release,
- =09=09__field(const struct page_pool *,=09pool)
- =09=09__field(const struct page *,=09=09page)
- =09=09__field(u32,=09=09=09=09release)
-+=09=09__field(unsigned long,=09=09=09pfn)
- =09),
-=20
- =09TP_fast_assign(
- =09=09__entry->pool=09=09=3D pool;
- =09=09__entry->page=09=09=3D page;
- =09=09__entry->release=09=3D release;
-+=09=09__entry->pfn=09=09=3D page_to_pfn(page);
- =09),
-=20
--=09TP_printk("page_pool=3D%p page=3D%p release=3D%u",
--=09=09  __entry->pool, __entry->page, __entry->release)
-+=09TP_printk("page_pool=3D%p page=3D%p pfn=3D%lu release=3D%u",
-+=09=09  __entry->pool, __entry->page, __entry->pfn, __entry->release)
- );
-=20
- TRACE_EVENT(page_pool_state_hold,
-@@ -72,16 +75,18 @@ TRACE_EVENT(page_pool_state_hold,
- =09=09__field(const struct page_pool *,=09pool)
- =09=09__field(const struct page *,=09=09page)
- =09=09__field(u32,=09=09=09=09hold)
-+=09=09__field(unsigned long,=09=09=09pfn)
- =09),
-=20
- =09TP_fast_assign(
- =09=09__entry->pool=09=3D pool;
- =09=09__entry->page=09=3D page;
- =09=09__entry->hold=09=3D hold;
-+=09=09__entry->pfn=09=3D page_to_pfn(page);
- =09),
-=20
--=09TP_printk("page_pool=3D%p page=3D%p hold=3D%u",
--=09=09  __entry->pool, __entry->page, __entry->hold)
-+=09TP_printk("page_pool=3D%p page=3D%p pfn=3D%lu hold=3D%u",
-+=09=09  __entry->pool, __entry->page, __entry->pfn, __entry->hold)
- );
-=20
- #endif /* _TRACE_PAGE_POOL_H */
-
+Thanks,
+Rahul
