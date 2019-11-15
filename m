@@ -2,142 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70139FD6B7
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:06:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD78FD6CB
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfKOHF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 02:05:58 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44462 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726182AbfKOHF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:05:58 -0500
-Received: by mail-wr1-f67.google.com with SMTP id f2so9724125wrs.11
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 23:05:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nAnIAGGtHw/Q6fcxh521kpfEKNfp0OkyR1BXBR5vZr8=;
-        b=epMSIpQZm2eg5htR3zm0YVV7KRqO/COeXSxY0GC//N87jRkKVocH3wE7OZCtfegad/
-         qxLZeUOvvb5ZOw/74Wb1t6Fnolz16I9Ap+adWanq7VGNgGPfORSKgGKyugHmL/rSDMZx
-         lSKp5g5WJFce2iPrCBgsc9t4aAGVbWeuKU86mSFSpVaBl8ugFd/7aZq1NFBvyMKrkXPa
-         ohTwvkFl5ut4eT+VYGz5HggJcaQCMn12U10L3kOe6/OJCavjQ/PcC3ZiW0IJ2bLUvv5S
-         cxJIb+sy+LH6BkmBlX5I7Onmre1u0gvmUKrROudUeNietDHqlwolQNLxS2b7AECPEMrX
-         pMvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nAnIAGGtHw/Q6fcxh521kpfEKNfp0OkyR1BXBR5vZr8=;
-        b=Dl5w7Lv0L5VnzbQLpQKgWGkRuLvN45MeeMdc+jZPR7oy+WKls3DWZcCXVSfPa9jZ5L
-         N0hmX3ScbEwXqEsR/h1ggaa0TSrv8JGV3kPis/Gt2NqowfN5HiU7nFbf4OmBsMzufibz
-         e06w49FjqNaJ+QwEshS2SEta1Yf6Vvb0Wp4BHuyXnHtDEJM/Vrg0zrcAS9yd8E5b2L/n
-         3VC5bzsrDl8WHaF9vNZlTEIJeQqLuLDourLr42ACxlAAUwg/G0HtZFBg6u7Dq7DBxBhS
-         7uMuxTIt28Elxx1SRDuJvucFoCPC9lUPDuS0ffwK3aF6LviE+7dYHaBvuEQ1mkIsadeB
-         GMrQ==
-X-Gm-Message-State: APjAAAVCYiNXTzCfVmZ5aKk95PWdRK2zT2dR6B3ZvXlJG1mEj2tcoGdR
-        4XjlLqZfD8um06xSok5cJK/T0w==
-X-Google-Smtp-Source: APXvYqx+nNTSDyhwWKJZmyth/aGk4+F9kXjeHxCo7PoXMJPukRLInRhgxTFw39mHlHK1i8NlpuqtIw==
-X-Received: by 2002:a5d:530f:: with SMTP id e15mr5854516wrv.119.1573801554510;
-        Thu, 14 Nov 2019 23:05:54 -0800 (PST)
-Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
-        by smtp.gmail.com with ESMTPSA id p14sm10626640wrq.72.2019.11.14.23.05.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 23:05:53 -0800 (PST)
-Date:   Fri, 15 Nov 2019 09:05:51 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net,
-        thomas.petazzoni@bootlin.com, matteo.croce@redhat.com
-Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
- DMA memory for non-coherent devices
-Message-ID: <20191115070551.GA99458@apalos.home>
-References: <cover.1573383212.git.lorenzo@kernel.org>
- <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
- <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
- <20191114185326.GA43048@PC192.168.49.172>
- <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
- <20191114204227.GA43707@PC192.168.49.172>
- <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
- <20191114224309.649dfacb@carbon>
+        id S1726717AbfKOHOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 02:14:01 -0500
+Received: from www62.your-server.de ([213.133.104.62]:58974 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbfKOHOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:14:01 -0500
+Received: from 57.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.57] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iVVnr-0002xW-CQ; Fri, 15 Nov 2019 08:13:59 +0100
+Date:   Fri, 15 Nov 2019 08:13:58 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH rfc bpf-next 8/8] bpf: constant map key tracking for prog
+ array pokes
+Message-ID: <20191115071358.GA3957@pc-9.home>
+References: <cover.1573779287.git.daniel@iogearbox.net>
+ <fa3c2f6e2f4fbe45200d54a3c6d4c65c4f84f790.1573779287.git.daniel@iogearbox.net>
+ <20191115042939.ckt4fqvtfdi344y2@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191114224309.649dfacb@carbon>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191115042939.ckt4fqvtfdi344y2@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25633/Thu Nov 14 10:50:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 10:43:09PM +0100, Jesper Dangaard Brouer wrote:
-> On Thu, 14 Nov 2019 13:04:26 -0800
-> "Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
-> 
-> > On 14 Nov 2019, at 12:42, Ilias Apalodimas wrote:
+On Thu, Nov 14, 2019 at 08:29:41PM -0800, Alexei Starovoitov wrote:
+> On Fri, Nov 15, 2019 at 02:04:02AM +0100, Daniel Borkmann wrote:
+> > Add tracking of constant keys into tail call maps. The signature of
+> > bpf_tail_call_proto is that arg1 is ctx, arg2 map pointer and arg3
+> > is a index key. The direct call approach for tail calls can be enabled
+> > if the verifier asserted that for all branches leading to the tail call
+> > helper invocation, the map pointer and index key were both constant
+> > and the same. Tracking of map pointers we already do from prior work
+> > via c93552c443eb ("bpf: properly enforce index mask to prevent out-of-bounds
+> > speculation") and 09772d92cd5a ("bpf: avoid retpoline for lookup/update/
+> > delete calls on maps"). Given the tail call map index key is not on
+> > stack but directly in the register, we can add similar tracking approach
+> > and later in fixup_bpf_calls() add a poke descriptor to the progs poke_tab
+> > with the relevant information for the JITing phase. We internally reuse
+> > insn->imm for the rewritten BPF_JMP | BPF_TAIL_CALL instruction in order
+> > to point into the prog's poke_tab and keep insn->imm == 0 as indicator
+> > that current indirect tail call emission must be used.
 > > 
-> > > Hi Jonathan,
-> > >
-> > > On Thu, Nov 14, 2019 at 12:27:40PM -0800, Jonathan Lemon wrote:  
-> > >>
-> > >>
-> > >> On 14 Nov 2019, at 10:53, Ilias Apalodimas wrote:
-> > >>  
-> > >>> [...]  
-> > >>>>> index 2cbcdbdec254..defbfd90ab46 100644
-> > >>>>> --- a/include/net/page_pool.h
-> > >>>>> +++ b/include/net/page_pool.h
-> > >>>>> @@ -65,6 +65,9 @@ struct page_pool_params {
-> > >>>>>  	int		nid;  /* Numa node id to allocate from pages from */
-> > >>>>>  	struct device	*dev; /* device, for DMA pre-mapping purposes */
-> > >>>>>  	enum dma_data_direction dma_dir; /* DMA mapping direction */
-> > >>>>> +	unsigned int	max_len; /* max DMA sync memory size */
-> > >>>>> +	unsigned int	offset;  /* DMA addr offset */
-> > >>>>> +	u8 sync;
-> > >>>>>  };  
-> > >>>>
-> > >>>> How about using PP_FLAG_DMA_SYNC instead of another flag word?
-> > >>>> (then it can also be gated on having DMA_MAP enabled)  
-> > >>>
-> > >>> You mean instead of the u8?
-> > >>> As you pointed out on your V2 comment of the mail, some cards don't 
-> > >>> sync back to device.
-> > >>>
-> > >>> As the API tries to be generic a u8 was choosen instead of a flag
-> > >>> to cover these use cases. So in time we'll change the semantics of
-> > >>> this to 'always sync', 'dont sync if it's an skb-only queue' etc.
-> > >>>
-> > >>> The first case Lorenzo covered is sync the required len only instead 
-> > >>> of the full buffer  
-> > >>
-> > >> Yes, I meant instead of:
-> > >> +		.sync = 1,
-> > >>
-> > >> Something like:
-> > >>         .flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC
-> > >>
+> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> > ---
+> >  include/linux/bpf_verifier.h |  1 +
+> >  kernel/bpf/verifier.c        | 98 ++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 99 insertions(+)
+> > 
+> > diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> > index cdd08bf0ec06..f494f0c9ac13 100644
+> > --- a/include/linux/bpf_verifier.h
+> > +++ b/include/linux/bpf_verifier.h
+> > @@ -301,6 +301,7 @@ struct bpf_insn_aux_data {
+> >  			u32 map_off;		/* offset from value base address */
+> >  		};
+> >  	};
+> > +	u64 key_state; /* constant key tracking for maps */
 > 
-> I actually agree and think we could use a flag. I suggest
-> PP_FLAG_DMA_SYNC_DEV to indicate that this DMA-sync-for-device.
-> 
-> Ilias notice that the change I requested to Lorenzo, that dma_sync_size
-> default value is 0xFFFFFFFF (-1).  That makes dma_sync_size==0 a valid
-> value, which you can use in the cases, where you know that nobody have
-> written into the data-area.  This allow us to selectively choose it for
-> these cases.
+> may be map_key_state ?
+> key_state is a bit ambiguous in the bpf_insn_aux_data.
 
-Okay, then i guess the flag is a better fit for this.
-The only difference would be that the sync semantics will be done on 'per
-packet' basis,  instead of 'per pool', but that should be fine for our cases.
+Could be, alternatively could also be idx_state or map_idx_state since
+it's really just for u32 type key indices.
 
-Cheers
-/Ilias
+> > +static int
+> > +record_func_key(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
+> > +		int func_id, int insn_idx)
+> > +{
+> > +	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
+> > +	struct bpf_reg_state *regs = cur_regs(env), *reg;
+> > +	struct tnum range = tnum_range(0, U32_MAX);
+> > +	struct bpf_map *map = meta->map_ptr;
+> > +	u64 val;
+> > +
+> > +	if (func_id != BPF_FUNC_tail_call)
+> > +		return 0;
+> > +	if (!map || map->map_type != BPF_MAP_TYPE_PROG_ARRAY) {
+> > +		verbose(env, "kernel subsystem misconfigured verifier\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	reg = &regs[BPF_REG_3];
+> > +	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
+> > +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+> > +		return 0;
+> > +	}
+> > +
+> > +	val = reg->var_off.value;
+> > +	if (bpf_map_key_unseen(aux))
+> > +		bpf_map_key_store(aux, val);
+> > +	else if (bpf_map_key_immediate(aux) != val)
+> > +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+> > +	return 0;
+> > +}
 > 
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
-> 
+> I think this analysis is very useful in other cases as well. Could you
+> generalize it for array map lookups ? The key used in bpf_map_lookup_elem() for
+> arrays is often constant. In such cases we can optimize array_map_gen_lookup()
+> into absolute pointer. It will be possible to do
+> if (idx < max_entries) ptr += idx * elem_size;
+> during verification instead of runtime and the whole
+> bpf_map_lookup_elem(map, &key); will become single instruction that
+> assigns &array[idx] into R0.
+
+Was thinking exactly the same. ;-) I started coding this yesterday night [0],
+but then had the (in hinsight obvious) realization that as-is the key_state
+holds the address but not the index for plain array map lookup. Hence I'd need
+to go a step further there to look at the const stack content. Will proceed on
+this as a separate set on top.
+
+  [0] https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/bpf.git/commit/?h=pr/bpf-tail-call-rebased2&id=b86b7eae4646d8233e3e9058e68fef27536bf0c4
+
+Thanks,
+Daniel
