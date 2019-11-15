@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE0CFD496
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:54:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E02D1FD521
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfKOFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 00:53:56 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:5061 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726182AbfKOFxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 00:53:54 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dce3d6c0003>; Thu, 14 Nov 2019 21:53:48 -0800
+        id S1727452AbfKOFyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 00:54:00 -0500
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:10713 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727385AbfKOFx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 00:53:58 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dce3d6a0000>; Thu, 14 Nov 2019 21:53:46 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 14 Nov 2019 21:53:45 -0800
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 14 Nov 2019 21:53:46 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 14 Nov 2019 21:53:45 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 15 Nov
+        by hqpgpgate101.nvidia.com on Thu, 14 Nov 2019 21:53:46 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 15 Nov
  2019 05:53:44 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 15 Nov
- 2019 05:53:44 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Fri, 15 Nov 2019 05:53:43 +0000
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Fri, 15 Nov 2019 05:53:44 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dce3d670008>; Thu, 14 Nov 2019 21:53:43 -0800
+        id <B5dce3d670009>; Thu, 14 Nov 2019 21:53:43 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -58,84 +55,84 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH v5 06/24] goldish_pipe: rename local pin_user_pages() routine
-Date:   Thu, 14 Nov 2019 21:53:22 -0800
-Message-ID: <20191115055340.1825745-7-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>,
+        "Jason Gunthorpe" <jgg@mellanox.com>
+Subject: [PATCH v5 07/24] IB/umem: use get_user_pages_fast() to pin DMA pages
+Date:   Thu, 14 Nov 2019 21:53:23 -0800
+Message-ID: <20191115055340.1825745-8-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191115055340.1825745-1-jhubbard@nvidia.com>
 References: <20191115055340.1825745-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573797228; bh=OvCIL0+nr8EQ3ucOYL7z+Bd4Y3AXJzaosdg9/Wp2t2k=;
+        t=1573797226; bh=yfY59FEzCJLU6Ev5Ha1oxCyEt547L9Ku0BnikujLehw=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Type:Content-Transfer-Encoding;
-        b=oIgv7H6syx1GugWyR8H+eL4sYjr20cqI3wx54NA3ZDk09DlXHmFTzT8DxmMYLN+VO
-         +1kx8YlGldw+s7bwn81GGbu6ec4Cw97vpCtuzScHDFreI2OrdTwQpd5ASdksIDXXkP
-         LkFSmFCnbe8BmpOQXkO0TI4JSPC5x7ai4sswX4Fh7k6mZY4yQmQ0zCjvc56nIl4+lc
-         ZjDJ4mfe29Hk+EuUgvhgUUo51Zmv7HPk7YUQI1BHMnl9ak7NHZSdiIq1FxhNKAhmk8
-         61qi3b5+yV31s1hNWIE6+jiBZCReu5Z894zkrI6qEofTjyt5LWZ8tesKhhpFd6Gp/N
-         CtCZZeM2efUkA==
+         Content-Transfer-Encoding:Content-Type;
+        b=A9hrUgxG1Wpy+FopUKz/jWLNwCqwSPx7DGqTimISP8Rl7kpszhEa7581+c/ChLkp4
+         AjT8S5nHDBGla9QupMu9UxjReSlJ+RLQ2lJjSr4S6+IpG6mVhCGujuMe/CIqN4+3gw
+         Lnx0yxKUoiXPUe0wmq+Yai+Uzi7i0VomFpZ+WLws7rrPSibVaUqYofPUjYGEkz66Nt
+         uSBZWRSpy9bjfpiajjJGp2ooa7ixb7fAeVs5N6hUZH9ppgsYd4zeJ2ytbw6RYaitfh
+         I5PCQOIgBChvbSC34WutTzwzJ0jOAlC0DGoYHCHktJBy6aAjNFkmvPAJd/QyzvnsGS
+         JGzL9jZEPHFtA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Avoid naming conflicts: rename local static function from
-"pin_user_pages()" to "pin_goldfish_pages()".
+And get rid of the mmap_sem calls, as part of that. Note
+that get_user_pages_fast() will, if necessary, fall back to
+__gup_longterm_unlocked(), which takes the mmap_sem as needed.
 
-An upcoming patch will introduce a global pin_user_pages()
-function.
-
-Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
 Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/platform/goldfish/goldfish_pipe.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/infiniband/core/umem.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/g=
-oldfish/goldfish_pipe.c
-index cef0133aa47a..7ed2a21a0bac 100644
---- a/drivers/platform/goldfish/goldfish_pipe.c
-+++ b/drivers/platform/goldfish/goldfish_pipe.c
-@@ -257,12 +257,12 @@ static int goldfish_pipe_error_convert(int status)
+diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.=
+c
+index 24244a2f68cc..3d664a2539eb 100644
+--- a/drivers/infiniband/core/umem.c
++++ b/drivers/infiniband/core/umem.c
+@@ -271,16 +271,13 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, u=
+nsigned long addr,
+ 	sg =3D umem->sg_head.sgl;
+=20
+ 	while (npages) {
+-		down_read(&mm->mmap_sem);
+-		ret =3D get_user_pages(cur_base,
+-				     min_t(unsigned long, npages,
+-					   PAGE_SIZE / sizeof (struct page *)),
+-				     gup_flags | FOLL_LONGTERM,
+-				     page_list, NULL);
+-		if (ret < 0) {
+-			up_read(&mm->mmap_sem);
++		ret =3D get_user_pages_fast(cur_base,
++					  min_t(unsigned long, npages,
++						PAGE_SIZE /
++						sizeof(struct page *)),
++					  gup_flags | FOLL_LONGTERM, page_list);
++		if (ret < 0)
+ 			goto umem_release;
+-		}
+=20
+ 		cur_base +=3D ret * PAGE_SIZE;
+ 		npages   -=3D ret;
+@@ -288,8 +285,6 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, uns=
+igned long addr,
+ 		sg =3D ib_umem_add_sg_table(sg, page_list, ret,
+ 			dma_get_max_seg_size(context->device->dma_device),
+ 			&umem->sg_nents);
+-
+-		up_read(&mm->mmap_sem);
  	}
- }
 =20
--static int pin_user_pages(unsigned long first_page,
--			  unsigned long last_page,
--			  unsigned int last_page_size,
--			  int is_write,
--			  struct page *pages[MAX_BUFFERS_PER_COMMAND],
--			  unsigned int *iter_last_page_size)
-+static int pin_goldfish_pages(unsigned long first_page,
-+			      unsigned long last_page,
-+			      unsigned int last_page_size,
-+			      int is_write,
-+			      struct page *pages[MAX_BUFFERS_PER_COMMAND],
-+			      unsigned int *iter_last_page_size)
- {
- 	int ret;
- 	int requested_pages =3D ((last_page - first_page) >> PAGE_SHIFT) + 1;
-@@ -354,9 +354,9 @@ static int transfer_max_buffers(struct goldfish_pipe *p=
-ipe,
- 	if (mutex_lock_interruptible(&pipe->lock))
- 		return -ERESTARTSYS;
-=20
--	pages_count =3D pin_user_pages(first_page, last_page,
--				     last_page_size, is_write,
--				     pipe->pages, &iter_last_page_size);
-+	pages_count =3D pin_goldfish_pages(first_page, last_page,
-+					 last_page_size, is_write,
-+					 pipe->pages, &iter_last_page_size);
- 	if (pages_count < 0) {
- 		mutex_unlock(&pipe->lock);
- 		return pages_count;
+ 	sg_mark_end(sg);
 --=20
 2.24.0
 
