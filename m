@@ -2,123 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B7AFD1CC
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 01:04:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B13EFD1FB
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 01:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbfKOAEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 19:04:23 -0500
-Received: from mail-eopbgr20060.outbound.protection.outlook.com ([40.107.2.60]:16455
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726767AbfKOAEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Nov 2019 19:04:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YklHV3stnHFG6Z8fanTwA+dZFHgByLsinYmB/BSzItjtgXUld/rFNxvT0uEHoOMoonv+1UNQV94qHp1wOJyxWSZPv74Eid3VS6i/9mu4x2lJIgrM7T4+zMrDzDaIOUhZnEh/rAZWZXS9ooG2spgs4SYkhtx9f5BdW6RDnq0dOwPKRTDViikiS0+9w2WXV0x/ir/9NEeeQlECd30Efex3CzITgyiyWYFbsMC7oSKtnoCzRHao2pdzeb3zg1SuHTmgva6Jolepdiw/noFlPza2bLABZO9uHcMCHRQJSfDsSxa+n049U6lRZqB7ByPpDJvMb2z1DeFJhCjh4/8wywAzdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VoiQqo/hezt/bdJr7j4UZ39NP9aMGKgdZxjdHmqODMk=;
- b=JslHrFB0qoxHcrT1Cy81N65gxnzdk6lItKdf5CpiUSdPL8PuZLBaqMXBFxPBEjbvTNC1RUompfjITc9r/YlHKqSltgR9hbeId0/rdgL4XGy17guNfCFwTIS53+/4BhvI8mSKa5lCTOmxKuYDQd1nhO7evfgiJ1xY8eydiejG4vsgaa0Vls7/q+LZZiXrmwIgsrpIVbCvePE7SvjEOR0/L8j4sSVRtDNvmb4IwpwyK+f7VqEqfFkh9ngNdz0WYMiCDGRcxe3fPAJ6YiC0vLRrNRNiyOgYPCHmdspKtRrrxhyCO/8Soz57vGLd9S50erOq4F1MCwsQ1gGEybhSo5lxtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VoiQqo/hezt/bdJr7j4UZ39NP9aMGKgdZxjdHmqODMk=;
- b=i6T5IPFoi7oWbmEKICHj98/aiO68pxHbiqtgJOHsTGN9AzFMF6Gy5rshpX3zqpr6niFo8A0eCTceOOe9FJCTUWHPnLu0bnVvCo8BYKoaJmQCtFc/9gveFMAMKX2JhKCrpfFmWfY4TsOpvCGTfpvAkRN/Ikd1Z+KrK/1mxNpK02U=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB5776.eurprd05.prod.outlook.com (20.178.122.82) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.22; Fri, 15 Nov 2019 00:04:19 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2430.028; Fri, 15 Nov 2019
- 00:04:19 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "christopher.s.hall@intel.com" <christopher.s.hall@intel.com>,
-        Eugenia Emantayev <eugenia@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "sergei.shtylyov@cogentembedded.com" 
-        <sergei.shtylyov@cogentembedded.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        "stefan.sorensen@spectralink.com" <stefan.sorensen@spectralink.com>,
-        "brandon.streiff@ni.com" <brandon.streiff@ni.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "felipe.balbi@linux.intel.com" <felipe.balbi@linux.intel.com>
-Subject: Re: [PATCH net 12/13] mlx5: Reject requests to enable time stamping
- on both edges.
-Thread-Topic: [PATCH net 12/13] mlx5: Reject requests to enable time stamping
- on both edges.
-Thread-Index: AQHVmxuzvm7+hsz/F06moyyH5jeV/6eLWjqA
-Date:   Fri, 15 Nov 2019 00:04:19 +0000
-Message-ID: <23131f95a2afeb32e49d4db797855b17ea24444e.camel@mellanox.com>
-References: <20191114184507.18937-13-richardcochran@gmail.com>
-In-Reply-To: <20191114184507.18937-13-richardcochran@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ceaf25c5-6e0e-41b3-6c4c-08d7695f5cb1
-x-ms-traffictypediagnostic: VI1PR05MB5776:|VI1PR05MB5776:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5776163640AAC564609E6A6FBE700@VI1PR05MB5776.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 02229A4115
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(346002)(136003)(39860400002)(189003)(199004)(71190400001)(2906002)(4326008)(6512007)(91956017)(58126008)(66946007)(110136005)(4001150100001)(66066001)(54906003)(76116006)(118296001)(305945005)(7416002)(14454004)(7736002)(6246003)(36756003)(6436002)(2501003)(478600001)(76176011)(6486002)(486006)(66446008)(64756008)(66556008)(66476007)(71200400001)(446003)(14444005)(316002)(81166006)(81156014)(229853002)(5660300002)(6506007)(476003)(8936002)(2616005)(25786009)(26005)(102836004)(186003)(99286004)(256004)(8676002)(6116002)(3846002)(86362001)(11346002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5776;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pdaRKI9QC+PE1/DYzwRZi80GRPBnau0LzuUROt48ym4OGyfxCB/nbhRlRyhkyHyptoUkw0RNMBJlakDDQIIGFJv2Tp4Pmzk3XKuU17LgfkuqlkY49U9feTq+Bb+Ex2KmCIA0GloETC4dHOCwyeev5o7FgsS3vQ4O9sDViZPz8h43QM+P2W0tw2ji8/ttFLuE/4bdNwyQ4GSb+R/OutaGyj8Bby3eFAuPz9DQLRFT/sxiP8uEQY50Hu94wFFFlk6hDXTWDU0FGILmgehY/RRoZSeqHLG0IiIg/NO0G3Ie1w/jzzsGOvepptTwa1zo9Wx0+80BTYALtC0uSIcchn+lgIlmGK9xoDTEZoUS1LobLv1SJW3TOUcUcVgxX4mwwGb72hTT2bljYZ3guW6aASkGyOxgkiJFxCE+aLB+zg/pObLtgRa2IbKkrlOrOqWtyKK6
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <45CDF6797FA10B4F9FCC56755697FFDA@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727354AbfKOAa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 19:30:29 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44939 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727020AbfKOAa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 19:30:29 -0500
+Received: by mail-pg1-f193.google.com with SMTP id f19so4835039pgk.11;
+        Thu, 14 Nov 2019 16:30:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=sDha34YrgBlsdela6AIpAyFg7qDyyE5Z+PMSeNCg550=;
+        b=ENaYMt1xyJYD8sEN4QHRtuVPBih7FvFEBdCzHAoHVd/OW43fzHADkPyRFjF28ZYYHJ
+         cfhdBKb0/ug7Y0yypvyzhHbNKXlY/PnedS1e3QOxu7CXljpr6cCHGkKXNNQ42lcVlyd+
+         lMvTzpzLg/gUNiew+BtCK9wi180kLbHeRy/EBNzyPrDPjmDDJWpxlP4GjKzrAgMWjfgm
+         kcNyL7LTiySdq2qL8f+3Ux0ITFuvvP1I1vMuA8E6Fiv4GKdgNauytWJ/36aLrL9CLR5c
+         LmkWSRFWcU6oe8vA0aPcMzaLJMhg74HWR9gbMWG+792YbG0e28yO0oNjGkztNlCKiBxB
+         JCqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=sDha34YrgBlsdela6AIpAyFg7qDyyE5Z+PMSeNCg550=;
+        b=WuW7kiI8b+vat8/S6sFbkKbQby7kLnLsJMNJFj2Y/NtlVmOiNfc11jSa0dVTo+TnyD
+         6xUptSzExzC47o2a/xiwZFWD+qTjHclP6FpSJ1jIE/P086CM83O05JOh2cPgZTuTWuYV
+         Qbfnem0cFWMDOrBYGFc7EWZgPccPySu9S3w4AbFm4a2vG8wA33o2Jh6bD8nyB1umOgbJ
+         XTt8C7fsaTR9eH3aanTc3+acAN2G+wwoxn4O0KoVW9S0vRjAit5FlrRfxawc8k25unJM
+         /wJJANIFeMi7kRqjqx3ygPBBiM3zktBGw6elgMecELHXJ/eqYWL/Yqlh4YY85mVSuHjd
+         9LEg==
+X-Gm-Message-State: APjAAAXVPkANXlZDCZSrNplgEP+kDNBvPI/L283hv4U0P39Xl0Zpn8++
+        Xp+/De/ql93ESLYvv+YtItU=
+X-Google-Smtp-Source: APXvYqy+7Yx+mkOdiVw0TriGYZtRnY+QAieX3NEClr3w2Y4MpKv58mXheafj8+03OdZjR9NjsZ+K4A==
+X-Received: by 2002:a63:ec03:: with SMTP id j3mr2993349pgh.212.1573777828476;
+        Thu, 14 Nov 2019 16:30:28 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::6ab4])
+        by smtp.gmail.com with ESMTPSA id w5sm8717133pfd.31.2019.11.14.16.30.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 16:30:27 -0800 (PST)
+Date:   Thu, 14 Nov 2019 16:30:26 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com
+Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
+Message-ID: <20191115003024.h7eg2kbve23jmzqn@ast-mbp.dhcp.thefacebook.com>
+References: <20191113204737.31623-1-bjorn.topel@gmail.com>
+ <20191113204737.31623-3-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ceaf25c5-6e0e-41b3-6c4c-08d7695f5cb1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 00:04:19.3306
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +SGWka8+MnzpLOlo2J5ya6nJJDUbW/S0qAlHwjOVGdRbGkJkJ7JYC7Chx0AqLgxOrYm/RjxgShtE3JvBLIrpDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5776
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191113204737.31623-3-bjorn.topel@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTExLTE0IGF0IDEwOjQ1IC0wODAwLCBSaWNoYXJkIENvY2hyYW4gd3JvdGU6
-DQo+IFRoaXMgZHJpdmVyIGVuYWJsZXMgcmlzaW5nIGVkZ2Ugb3IgZmFsbGluZyBlZGdlLCBidXQg
-bm90IGJvdGgsIGFuZCBzbw0KPiB0aGlzIHBhdGNoIHZhbGlkYXRlcyB0aGF0IHRoZSByZXF1ZXN0
-IGNvbnRhaW5zIG9ubHkgb25lIG9mIHRoZSB0d28NCj4gZWRnZXMuDQo+IA0KPiBTaWduZWQtb2Zm
-LWJ5OiBSaWNoYXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4NCj4gLS0tDQo+
-ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2Nsb2NrLmMgfCA2
-ICsrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9saWIvY2xvY2su
-Yw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9saWIvY2xvY2su
-Yw0KPiBpbmRleCA4MTkwOTdkOWI1ODMuLjQzZjk3NjAxYjUwMCAxMDA2NDQNCj4gLS0tIGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2xpYi9jbG9jay5jDQo+ICsrKyBi
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9saWIvY2xvY2suYw0KPiBA
-QCAtMjQzLDYgKzI0MywxMiBAQCBzdGF0aWMgaW50IG1seDVfZXh0dHNfY29uZmlndXJlKHN0cnVj
-dA0KPiBwdHBfY2xvY2tfaW5mbyAqcHRwLA0KPiAgCQkJCVBUUF9TVFJJQ1RfRkxBR1MpKQ0KPiAg
-CQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+ICANCj4gKwkvKiBSZWplY3QgcmVxdWVzdHMgdG8gZW5h
-YmxlIHRpbWUgc3RhbXBpbmcgb24gYm90aCBlZGdlcy4gKi8NCj4gKwlpZiAoKHJxLT5leHR0cy5m
-bGFncyAmIFBUUF9TVFJJQ1RfRkxBR1MpICYmDQo+ICsJICAgIChycS0+ZXh0dHMuZmxhZ3MgJiBQ
-VFBfRU5BQkxFX0ZFQVRVUkUpICYmDQo+ICsJICAgIChycS0+ZXh0dHMuZmxhZ3MgJiBQVFBfRVhU
-VFNfRURHRVMpID09IFBUUF9FWFRUU19FREdFUykNCj4gKwkJcmV0dXJuIC1FT1BOT1RTVVBQOw0K
-PiArDQo+ICAJaWYgKHJxLT5leHR0cy5pbmRleCA+PSBjbG9jay0+cHRwX2luZm8ubl9waW5zKQ0K
-PiAgCQlyZXR1cm4gLUVJTlZBTDsNCj4gIA0KDQoNClJldmlld2VkLWJ5OiBTYWVlZCBNYWhhbWVl
-ZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCg0K
+On Wed, Nov 13, 2019 at 09:47:35PM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> The BPF dispatcher builds on top of the BPF trampoline ideas;
+> Introduce bpf_arch_text_poke() and (re-)use the BPF JIT generate
+> code. The dispatcher builds a dispatch table for XDP programs, for
+> retpoline avoidance. The table is a simple binary search model, so
+> lookup is O(log n). Here, the dispatch table is limited to four
+> entries (for laziness reason -- only 1B relative jumps :-P). If the
+> dispatch table is full, it will fallback to the retpoline path.
+> 
+> An example: A module/driver allocates a dispatcher. The dispatcher is
+> shared for all netdevs. Each netdev allocate a slot in the dispatcher
+> and a BPF program. The netdev then uses the dispatcher to call the
+> correct program with a direct call (actually a tail-call).
+> 
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>  arch/x86/net/bpf_jit_comp.c |  96 ++++++++++++++++++
+>  kernel/bpf/Makefile         |   1 +
+>  kernel/bpf/dispatcher.c     | 197 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 294 insertions(+)
+>  create mode 100644 kernel/bpf/dispatcher.c
+> 
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 28782a1c386e..d75aebf508b8 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -10,10 +10,12 @@
+>  #include <linux/if_vlan.h>
+>  #include <linux/bpf.h>
+>  #include <linux/memory.h>
+> +#include <linux/sort.h>
+>  #include <asm/extable.h>
+>  #include <asm/set_memory.h>
+>  #include <asm/nospec-branch.h>
+>  #include <asm/text-patching.h>
+> +#include <asm/asm-prototypes.h>
+>  
+>  static u8 *emit_code(u8 *ptr, u32 bytes, unsigned int len)
+>  {
+> @@ -1471,6 +1473,100 @@ int arch_prepare_bpf_trampoline(void *image, struct btf_func_model *m, u32 flags
+>  	return 0;
+>  }
+>  
+> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_RETPOLINE)
+> +
+> +/* Emits the dispatcher. Id lookup is limited to BPF_DISPATCHER_MAX,
+> + * so it'll fit into PAGE_SIZE/2. The lookup is binary search: O(log
+> + * n).
+> + */
+> +static int emit_bpf_dispatcher(u8 **pprog, int a, int b, u64 *progs,
+> +			       u8 *fb)
+> +{
+> +	u8 *prog = *pprog, *jg_reloc;
+> +	int pivot, err, cnt = 0;
+> +	s64 jmp_offset;
+> +
+> +	if (a == b) {
+> +		emit_mov_imm64(&prog, BPF_REG_0,	/* movabs func,%rax */
+> +			       progs[a] >> 32,
+> +			       (progs[a] << 32) >> 32);
+
+Could you try optimizing emit_mov_imm64() to recognize s32 ?
+iirc there was a single x86 insns that could move and sign extend.
+That should cut down on bytecode size and probably make things a bit faster?
+Another alternative is compare lower 32-bit only, since on x86-64 upper 32
+should be ~0 anyway for bpf prog pointers.
+Looking at bookkeeping code, I think I should be able to generalize bpf
+trampoline a bit and share the code for bpf dispatch.
+Could you also try aligning jmp target a bit by inserting nops?
+Some x86 cpus are sensitive to jmp target alignment. Even without considering
+JCC bug it could be helpful. Especially since we're talking about XDP/AF_XDP
+here that will be pushing millions of calls through bpf dispatch.
+
