@@ -2,116 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 451D3FE743
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 22:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3ACFE747
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 22:48:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbfKOVig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 16:38:36 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39544 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726640AbfKOVig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 16:38:36 -0500
-Received: by mail-wr1-f67.google.com with SMTP id l7so12472674wrp.6
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 13:38:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=pQzqiO//7tq//zWmM3dPFXBEELdmrHLeAL9DXRd3X1w=;
-        b=pjsErFPoaDeeono8TmURZ1LDwiqJF0D2MzxEW9c+UFTXkEI1WLMGsfok4TtK/awCco
-         5g0yZFXNoWjnEFg6UQjEdPEZfUYhRh9kQvmErPATSDGQxATAn1QpsdFXX3N1tmDFElk3
-         BDFaR/kIa3Bu6iv6sA+whXpfmFfz8kA1plcdd0LdkttNanh2ik5LWHsKlxILwgmEc1rM
-         YbTtBopzgDKrct+gyTN8pcyz+0ic+vynBw2Mhza1SvzbIYttyL9K1XD9HlAVnVRW7XSV
-         CKOcGkXiMQx2x6DzNJZ0OoFI656dVdVfRuuhr6O7b/GEwgXEmbVA/vFCzZ+yo3p4ISGR
-         ainw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=pQzqiO//7tq//zWmM3dPFXBEELdmrHLeAL9DXRd3X1w=;
-        b=g4HkYDlSbIzBQU9vf6BUy+G84Ewhrl5P/YQHCEbrRgIvHqh6xKa2pflJg3dPFtbVW0
-         x/zozcVFbmbKrxzXOZap3PuHr0f40jClPyr2OkX77TTS7+Npc4Cw+/JmI1afU6lxCDhn
-         QQc481s4LUavtw/YKojWLPIuyQw3fhA+ZS2o+3V4dNXXkBKkJ7yqBjmtNOBwQHlqmvEF
-         a9VkJsEMCLkG4FHSeYRugnn8LDcJrSdvrcJS+mMel6E4Pd5CrVdmHLQkhjMtDFNciycu
-         fZ5AlCT+4Dhtvrp64mNl3GYv1sTcb5e8Vqz92SRqIHwUQNvMyZdVUsL4KqkRzs97QtDB
-         OjGw==
-X-Gm-Message-State: APjAAAX94/C17wwpsvUG5VYtZV3Y+4/4K3II4gMV1iR09kHToyTAtP8o
-        0r8GVFOUwMmiDWKaqbUjEYtsODKN
-X-Google-Smtp-Source: APXvYqyEPE5dfSEh4yIEdBC5ibn5TMKFVS5+y1rS4JZDQKC3sXQh4soe/gwOf1jOFJQyC2LsrEtAeA==
-X-Received: by 2002:a5d:5191:: with SMTP id k17mr17342071wrv.350.1573853913198;
-        Fri, 15 Nov 2019 13:38:33 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f2d:7d00:a4ca:7f51:f03b:b2bd? (p200300EA8F2D7D00A4CA7F51F03BB2BD.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:a4ca:7f51:f03b:b2bd])
-        by smtp.googlemail.com with ESMTPSA id h140sm12518815wme.22.2019.11.15.13.38.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Nov 2019 13:38:32 -0800 (PST)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: load firmware for RTL8168fp/RTL8117
-Message-ID: <927c7de5-adbb-8f96-5f77-994c7cfa7eb0@gmail.com>
-Date:   Fri, 15 Nov 2019 22:38:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1726812AbfKOVsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 16:48:11 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17528 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726704AbfKOVsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 16:48:11 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAFLiWJr032254;
+        Fri, 15 Nov 2019 13:47:58 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=7rlFsxIup2fV+K8qyiM9qHHZFKQyWZv2MPNmWCsMEF0=;
+ b=ZhWssz1Gonfr0N4SpbpY+tmcnB7eMGZIbBxCNo7UcnQ0OFvXiBunly82BlHNp0FsSI7Y
+ jyD7MvGFuufz2sRfGyqXIFsOl++ixg95GfWLhDB0QkqKV2hXSKgmsJaJnK7mDH8Jt4qz
+ k4VbwRAvxE9curRFTzfoM8668LfB1qUJgG4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2w90t8qwn9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 15 Nov 2019 13:47:58 -0800
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 15 Nov 2019 13:47:57 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 15 Nov 2019 13:47:57 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T1Np2OtCCE6gY5EMzqgWOHP7zFwLG9+uQT+nwcCgV/2RfXTuvrjYRaqBOmUCxv+wjUskUe9JrY1LfVr6qqjaPJLtX8StaEvzJhji6XOoX/fWO4Xc5RMzwuUcTxRp4dhQyjYIobTp3nPfjZFLKHg/CvvGT60ba7hBW2PbefUmFOf+LBVQs8dB2E9P8+nH8ospkYkW/8LeC3/YxgVdrZwei2SOD/mIFbBkGfDcRBSi21BPw137XmeRreOUpj+R60sjxGXai+Sma0pbzkufa6kfWxmZ4ZWXw/hLkAq7sui8ZqkcfCaUX9ZRLQJSx+KHyNlnOZtPNex/SbKzJBFxyz+jIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7rlFsxIup2fV+K8qyiM9qHHZFKQyWZv2MPNmWCsMEF0=;
+ b=noMdSwu1TDNbNkcHHanb3u2kRs0gR2/k/qDm2sSTX0QI6at2G4ipyuJdS9UC/8aqOzDyZg0eDXKAmmpfeD6Y2e/RZDAj4WzJFO25x4hJCpMT6SHCjl+dbbDo5R5aJw2BVFI/787pohhvGi1eyMjWvuGiQ48bUfNQMxqJuDRT2GZ2PQ6+3uYRHlQECMPoLo/o6KZL8fISyll8Zyik4AR1EhXiWWVLGeeXDiIcfUI8Zxt0eZJ67jGSAb3deOZv77KiEqBiUp3oFpKJLRIBvIbUOoinLnHKGvCRpVC/ywzoQBwoVikGQVe5coUtwcvFKCvNfjpoz4KpoxCVePd1by3IrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7rlFsxIup2fV+K8qyiM9qHHZFKQyWZv2MPNmWCsMEF0=;
+ b=TgVYOnJO5XgAV0NbncMAQmCYeGmppNWkiwzyt6ci5ToL+De6QUfTSfZ2IR92EHWIaFrTEAQa+xfYz+QJ62QYordcKKMVsFGfbSuggTT9fVmnKexyTbhSkw+zR5NjvYNYoTP2fKa0CSnDagge0t6D1Lh3yprzTCLEgxusGk0bVfo=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1214.namprd15.prod.outlook.com (10.175.2.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.26; Fri, 15 Nov 2019 21:47:56 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::f831:d112:6187:90d9]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::f831:d112:6187:90d9%4]) with mapi id 15.20.2451.027; Fri, 15 Nov 2019
+ 21:47:56 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 1/4] bpf: switch bpf_map ref counter to 64bit
+ so bpf_map_inc never fails
+Thread-Topic: [PATCH v4 bpf-next 1/4] bpf: switch bpf_map ref counter to 64bit
+ so bpf_map_inc never fails
+Thread-Index: AQHVm2mRVgl7bIo0OEGpB1OHuFn9VKeMxdmA
+Date:   Fri, 15 Nov 2019 21:47:56 +0000
+Message-ID: <AAF69EA9-C7B3-4EB1-BF5B-556EAB2E4DF1@fb.com>
+References: <20191115040225.2147245-1-andriin@fb.com>
+ <20191115040225.2147245-2-andriin@fb.com>
+In-Reply-To: <20191115040225.2147245-2-andriin@fb.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3601.0.10)
+x-originating-ip: [2620:10d:c090:200::3:582]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d20dcd89-5b51-4666-b215-08d76a15799a
+x-ms-traffictypediagnostic: MWHPR15MB1214:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB1214CAF8E6B119483E2A68DEB3700@MWHPR15MB1214.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 02229A4115
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(376002)(396003)(39860400002)(366004)(199004)(189003)(66476007)(64756008)(186003)(36756003)(305945005)(4744005)(476003)(46003)(99286004)(6862004)(4326008)(6246003)(486006)(81156014)(81166006)(86362001)(25786009)(2616005)(50226002)(11346002)(8676002)(446003)(8936002)(7736002)(102836004)(229853002)(76176011)(478600001)(14454004)(53546011)(71190400001)(6506007)(6486002)(6436002)(71200400001)(316002)(5660300002)(54906003)(37006003)(256004)(6116002)(66946007)(2906002)(6636002)(66556008)(66446008)(76116006)(6512007)(33656002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1214;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 46I72UcWvRh6yoMytKnI3Fsy+9yxAoDiSWjE2ayoMumaramo+4ntcS0G8d9q9nlnVY4qfWCtiKF6aXUgT9S00J5a3zKifvgW1W2atIOms3QJpefAvG99l5dY3AQ7bFOKdqxcMIs84GtPAxtUMI2dStsj2ihACZVd74FtViTa9WpqS89FeM9GXf+6Wk9W9tIZdukFfLFt+BIlHzK4eQieNPnC9nHX5VugffLw4b2lShR+X/iXM8egjlYGyZKgFQGF62dk5wzGRiXpTzJ8yzhi6uBg2CgQl+6ZbJTlKukaP8xfeA18dggpCqxgr7D+D38S1VTmHDebjy+7a2DoPVgBOxR2dwOZM/QH5YvFd1dVpSWiAmvm0q5PA7lN9Yew9uZLMfbrvRWVu3G0ZmedcXOkPGt4Q1kBQJxzKDmNPyhXReg+Q+wcjENbB9pL65BSidpX
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4C114E9E4EBE1C4FB8C70CA2EC660F42@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: d20dcd89-5b51-4666-b215-08d76a15799a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 21:47:56.2033
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8aecALGGQ2gR/GVgk129Fx/Z68LZaboA1RNwdgoP05EdQyiDjU9jKzMjoKsQo9VLC8taeBw6fjzmwie+QnOtYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1214
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-15_07:2019-11-15,2019-11-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ malwarescore=0 priorityscore=1501 mlxscore=0 mlxlogscore=598 phishscore=0
+ spamscore=0 impostorscore=0 clxscore=1015 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911150190
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Load Realtek-provided firmware for RTL8168fp/RTL8117. Unlike the
-firmware for other chip versions which is for the PHY, firmware for
-RTL8168fp/RTL8117 is for the MAC.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
-Firmware file has been submitted to linux-firmware.
----
- drivers/net/ethernet/realtek/r8169_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index ca4aa14fc..53d39c6fe 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -52,6 +52,7 @@
- #define FIRMWARE_8168G_3	"rtl_nic/rtl8168g-3.fw"
- #define FIRMWARE_8168H_1	"rtl_nic/rtl8168h-1.fw"
- #define FIRMWARE_8168H_2	"rtl_nic/rtl8168h-2.fw"
-+#define FIRMWARE_8168FP_3	"rtl_nic/rtl8168fp-3.fw"
- #define FIRMWARE_8107E_1	"rtl_nic/rtl8107e-1.fw"
- #define FIRMWARE_8107E_2	"rtl_nic/rtl8107e-2.fw"
- #define FIRMWARE_8125A_3	"rtl_nic/rtl8125a-3.fw"
-@@ -203,7 +204,7 @@ static const struct {
- 	[RTL_GIGA_MAC_VER_49] = {"RTL8168ep/8111ep"			},
- 	[RTL_GIGA_MAC_VER_50] = {"RTL8168ep/8111ep"			},
- 	[RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"			},
--	[RTL_GIGA_MAC_VER_52] = {"RTL8117"				},
-+	[RTL_GIGA_MAC_VER_52] = {"RTL8168fp/RTL8117",  FIRMWARE_8168FP_3},
- 	[RTL_GIGA_MAC_VER_60] = {"RTL8125"				},
- 	[RTL_GIGA_MAC_VER_61] = {"RTL8125",		FIRMWARE_8125A_3},
- };
-@@ -715,6 +716,7 @@ MODULE_FIRMWARE(FIRMWARE_8168G_2);
- MODULE_FIRMWARE(FIRMWARE_8168G_3);
- MODULE_FIRMWARE(FIRMWARE_8168H_1);
- MODULE_FIRMWARE(FIRMWARE_8168H_2);
-+MODULE_FIRMWARE(FIRMWARE_8168FP_3);
- MODULE_FIRMWARE(FIRMWARE_8107E_1);
- MODULE_FIRMWARE(FIRMWARE_8107E_2);
- MODULE_FIRMWARE(FIRMWARE_8125A_3);
-@@ -4883,6 +4885,9 @@ static void rtl_hw_start_8117(struct rtl8169_private *tp)
- 	r8168_mac_ocp_write(tp, 0xc094, 0x0000);
- 	r8168_mac_ocp_write(tp, 0xc09e, 0x0000);
- 
-+	/* firmware is for MAC only */
-+	rtl_apply_firmware(tp);
-+
- 	rtl_hw_aspm_clkreq_enable(tp, true);
- }
- 
--- 
-2.24.0
+> On Nov 14, 2019, at 8:02 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+>=20
 
+[...]=20
+
+>=20
+> This patch, while modifying all users of bpf_map_inc, also cleans up its
+> interface to match bpf_map_put with separate operations for bpf_map_inc a=
+nd
+> bpf_map_inc_with_uref (to match bpf_map_put and bpf_map_put_with_uref,
+> respectively). Also, given there are no users of bpf_map_inc_not_zero
+> specifying uref=3Dtrue, remove uref flag and default to uref=3Dfalse inte=
+rnally.
+>=20
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+
+Acked-by: Song Liu <songliubraving@fb.com>=
