@@ -2,700 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F00BFD4FE
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:55:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3175EFD644
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 07:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbfKOFzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 00:55:20 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:10740 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727476AbfKOFyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 00:54:02 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dce3d6a0001>; Thu, 14 Nov 2019 21:53:46 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 14 Nov 2019 21:53:46 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 14 Nov 2019 21:53:46 -0800
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 15 Nov
- 2019 05:53:45 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Fri, 15 Nov 2019 05:53:45 +0000
-Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dce3d690007>; Thu, 14 Nov 2019 21:53:45 -0800
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH v5 24/24] mm, tree-wide: rename put_user_page*() to unpin_user_page*()
-Date:   Thu, 14 Nov 2019 21:53:40 -0800
-Message-ID: <20191115055340.1825745-25-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191115055340.1825745-1-jhubbard@nvidia.com>
-References: <20191115055340.1825745-1-jhubbard@nvidia.com>
+        id S1727978AbfKOGXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 01:23:10 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6233 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727953AbfKOGXH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 01:23:07 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 95A67377791EE37F876E;
+        Fri, 15 Nov 2019 14:23:03 +0800 (CST)
+Received: from [127.0.0.1] (10.173.222.12) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Fri, 15 Nov 2019
+ 14:22:57 +0800
+From:   "wangxiaogang (F)" <wangxiaogang3@huawei.com>
+To:     <dsahern@kernel.org>, <shrijeet@gmail.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hujunwei4@huawei.com>, <xuhanbing@huawei.com>
+Subject: [PATCH] vrf: Fix possible NULL pointer oops when delete nic
+Message-ID: <60e827cb-2bba-2b7e-55dc-651103e9905f@huawei.com>
+Date:   Fri, 15 Nov 2019 14:22:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573797226; bh=STzExVj+9tzBfJU2bAe+2a5wKbBXpDTeZdAEjVWwxYo=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Transfer-Encoding:Content-Type;
-        b=fgq2HbUmLwZt8sMtmHStunjU2h2x48zs6ALgNOdkOca3A7EluDhjmi1kxykMiJZ2R
-         uawnlW9ZH9+FFbXpSIzXECa/HYO9D1OZrD7eq6opLINmSnPE+FSHcSRLyeyD50bBOi
-         DcF0GajCOlwRupOCe9dPxmZFS7Lemsm28diMyt+iI5iFiG8AMa09417uvpCBnGjslY
-         SP4jinLKAYRud8zS7dF58YuAdmTJhhjPsbSYiqANVedXTEhDXDT7hgL6dqDKiGJJuY
-         eaieXiOdzg1ikcvcOaoc5LbfMxrHc7dtbE1j8cRwSopUFEB2MMoNnVodPGol5t98sX
-         U/uSBI6N6hITw==
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.173.222.12]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to provide a clearer, more symmetric API for pinning
-and unpinning DMA pages. This way, pin_user_pages*() calls
-match up with unpin_user_pages*() calls, and the API is a lot
-closer to being self-explanatory.
+From: XiaoGang Wang <wangxiaogang3@huawei.com>
 
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+Recently we get a crash when access illegal address (0xc0),
+which will occasionally appear when deleting a physical NIC with vrf.
+
+[166603.826737]hinic 0000:43:00.4 eth-s3: Failed to cycle device eth-s3;
+route tables might be wrong!
+.....
+[166603.828018]WARNING: CPU: 135 PID: 15382at net/core/dev.c:6875
+__netdev_adjacent_dev_remove.constprop.40+0x1e0/0x1e8
+......
+[166603.828169]pc : __netdev_adjacent_dev_remove.constprop.40+0x1e0/0x1e8
+[166603.828171]lr : __netdev_adjacent_dev_remove.constprop.40+0x1e0/0x1e8
+[166603.828172]sp : ffff000031efb810
+[166603.828173]x29: ffff000031efb810 x28: 0000000000002710
+[166603.828175]x27: 0000000000000001 x26: ffffa021f4095d88
+[166603.828177]x25: ffff000008d30de8 x24: ffff0000092d75d6
+[166603.828179]x23: 0000000000000006 x22: ffffa021e1edc480
+[166603.828181]x21: 0000000000000000 x20: ffffa021e1edc530
+[166603.828183]x19: ffffa021e1edc518 x18: ffffffffffffffff
+[166603.828185]x17: 0000000000000000 x16: 0000000000000000
+[166603.828186]x15: ffff0000091d9708 x14: 776620746567206f
+[166603.828188]x13: 742064656c696146 x12: ffff800040801004
+[166603.828190]x11: ffff80004080100c x10: ffff0000091dbae0
+[166603.828192]x9 : 0000000000000001 x8 : 0000000006a60f9c
+[166603.828194]x7 : ffff0000093b6fc0 x6 : 0000000000000001
+[166603.828196]x5 : 0000000000000001 x4 : ffffa020560383c0
+[166603.828198]x3 : ffffa020560383c0 x2 : 371cb5224b539100
+[166603.828200]x1 : 0000000000000000 x0 : 0000000000000036
+[166603.828202]Call trace:
+[166603.828204] __netdev_adjacent_dev_remove.constprop.40+0x1e0/0x1e8
+[166603.828205] __netdev_adjacent_dev_unlink_neighbour+0x2c/0x48
+[166603.828207] netdev_upper_dev_unlink+0x7c/0xe8
+[166603.828215] vrf_device_event+0x58/0x80 [vrf]
+[166603.828221] notifier_call_chain+0x5c/0xa0
+[166603.828222] raw_notifier_call_chain+0x3c/0x50
+[166603.828224] call_netdevice_notifiers_info+0x3c/0x80
+[166603.828229] rollback_registered_many+0x35c/0x568
+[166603.828233] rollback_registered+0x68/0xb0
+[166603.828234] unregister_netdevice_queue+0xc0/0x110
+[166603.828239] unregister_netdev+0x28/0x38
+[166603.828425] nic_remove+0x58/0xc0 [hinic]
+[166603.828442] detach_uld+0xd8/0x1a8 [hinic]
+[166603.828458] hinic_ulds_deinit+0x54/0x68 [hinic]
+[166603.828473] hinic_remove+0x218/0x240 [hinic]
+[166603.828481] pci_device_remove+0x48/0xd8
+[166603.828490] device_release_driver_internal+0x1b4/0x250
+[166603.828492] device_release_driver+0x28/0x38
+[166603.828499] pci_stop_bus_device+0x84/0xb8
+[166603.828500] pci_stop_bus_device+0x40/0xb8
+[166603.828502] pci_stop_bus_device+0x40/0xb8
+[166603.828503] pci_stop_and_remove_bus_device+0x20/0x38
+[166603.828557] PCIEMGT_KNL_DelPciDev+0xc0/0x198 [pciemgtagent]
+[166603.828564] PCIEMGT_KNL_DelDev+0xac/0x1d8 [pciemgtagent]
+[166603.828573] PCIEMGT_DelKnlDev+0x50/0x180 [pciemgtagent]
+[166603.828579] PCIEMGT_KAGENT_DevEventHandle+0x94/0x168 [pciemgtagent]
+[166603.828585] PCIEMGT_KAGENT_EventHandleThread+0xb8/0x1a0 [pciemgtagent]
+[166603.828594] kthread+0x134/0x138
+[166603.828599] ret_from_fork+0x10/0x18
+[166603.828601]---[ end trace 5052903cb62d99f0 ]---
+[166603.828612]Unable to handle kernel NULL pointer dereference at virtual address 00000000000000c0
+[166603.828613]Mem abort info:
+[166603.828614]  ESR = 0x96000006
+[166603.828616]  Exception class = DABT (current EL), IL = 32 bits
+[166603.828617]  SET = 0, FnV = 0
+[166603.828618]  EA = 0, S1PTW = 0
+[166603.828618]Data abort info:
+[166603.828619]  ISV = 0, ISS = 0x00000006
+[166603.828620]  CM = 0, WnR = 0
+[166603.828622]user pgtable: 4k pages, 48-bit VAs, pgdp = 000000003c6ab870
+[166603.828623][00000000000000c0] pgd=00002022651d1003, pud=000020226bd6a003, pmd=0000000000000000
+[166603.828628]Internal error: Oops: 96000006 [#1] SMP
+[166603.828630]Process PCIE40:c.0 (pid: 15382, stack limit = 0x00000000d24f8167)
+[166603.828632]CPU: 135 PID: 15382 Comm: PCIE40:c.0 Kdump: loaded Tainted: PF       WC OE     4.19.36-vhulk1907.1.0.h453.eulerosv2r8.aarch64 #1
+[166603.828633]Hardware name: Huawei Technologies Co., Ltd. PANGEA/STL6SPCB, BIOS TA BIOS Pangea3P CS - 11.01.60T31 05/26/2019
+[166603.828634]pstate: 40c00009 (nZcv daif +PAN +UAO)
+[166603.828636]pc : __netdev_adjacent_dev_remove.constprop.40+0x28/0x1e8
+[166603.828638]lr : __netdev_adjacent_dev_unlink_neighbour+0x3c/0x48
+[166603.828639]sp : ffff000031efb810
+[166603.828639]x29: ffff000031efb810 x28: 0000000000002710
+[166603.828641]x27: 0000000000000001 x26: ffffa021f4095d88
+[166603.828643]x25: ffff000008d30de8 x24: ffff0000092d75d6
+[166603.828645]x23: 0000000000000006 x22: 0000000000000000
+[166603.828647]x21: ffffa021e1edc480 x20: 00000000000000c0
+[166603.828649]x19: 0000000000000000 x18: ffffffffffffffff
+[166603.828651]x17: 0000000000000000 x16: 0000000000000000
+[166603.828653]x15: ffff0000091d9708 x14: 776620746567206f
+[166603.828654]x13: 742064656c696146 x12: ffff800040801004
+[166603.828656]x11: ffff80004080100c x10: ffff0000091dbae0
+[166603.828658]x9 : 0000000000000001 x8 : 0000000006a60f9c
+[166603.828660]x7 : ffff0000093b6fc0 x6 : 0000000000000001
+[166603.828662]x5 : 0000000000000001 x4 : ffffa020560383c0
+[166603.828664]x3 : ffffa020560383c0 x2 : 00000000000000c0
+[166603.828666]x1 : ffffa021e1edc480 x0 : ffff000008879f7c
+[166603.828668]Call trace:
+[166603.828669] __netdev_adjacent_dev_remove.constprop.40+0x28/0x1e8
+[166603.828670] __netdev_adjacent_dev_unlink_neighbour+0x3c/0x48
+[166603.828672] netdev_upper_dev_unlink+0x7c/0xe8
+[166603.828674] vrf_device_event+0x58/0x80 [vrf]
+[166603.828675] notifier_call_chain+0x5c/0xa0
+[166603.828676] raw_notifier_call_chain+0x3c/0x50
+[166603.828678] call_netdevice_notifiers_info+0x3c/0x80
+[166603.828679] rollback_registered_many+0x35c/0x568
+[166603.828681] rollback_registered+0x68/0xb0
+[166603.828682] unregister_netdevice_queue+0xc0/0x110
+[166603.828684] unregister_netdev+0x28/0x38
+[166603.828699] nic_remove+0x58/0xc0 [hinic]
+[166603.828714] detach_uld+0xd8/0x1a8 [hinic]
+[166603.828729] hinic_ulds_deinit+0x54/0x68 [hinic]
+[166603.828743] hinic_remove+0x218/0x240 [hinic]
+[166603.828745] pci_device_remove+0x48/0xd8
+[166603.828747] device_release_driver_internal+0x1b4/0x250
+[166603.828748] device_release_driver+0x28/0x38
+[166603.828750] pci_stop_bus_device+0x84/0xb8
+[166603.828751] pci_stop_bus_device+0x40/0xb8
+[166603.828752] pci_stop_bus_device+0x40/0xb8
+[166603.828753] pci_stop_and_remove_bus_device+0x20/0x38
+[166603.828760] PCIEMGT_KNL_DelPciDev+0xc0/0x198 [pciemgtagent]
+[166603.828765] PCIEMGT_KNL_DelDev+0xac/0x1d8 [pciemgtagent]
+[166603.828771] PCIEMGT_DelKnlDev+0x50/0x180 [pciemgtagent]
+[166603.828776] PCIEMGT_KAGENT_DevEventHandle+0x94/0x168 [pciemgtagent]
+[166603.828782] PCIEMGT_KAGENT_EventHandleThread+0xb8/0x1a0 [pciemgtagent]
+[166603.828784] kthread+0x134/0x138
+[166603.828785] ret_from_fork+0x10/0x18
+[166603.828788]Code: aa0203f4 aa1e03e0 d503201f d503201f (f9400280)
+[166603.828789]kernel fault(0x1) notification starting on CPU 135
+
+set vrf nomaster function vrf_del_slave() and del nic function
+vrf_device_event() concurrent execution will occasionally oops.
+
+thread1                     thread2
+
+do_vrf_del_slave
+netdev_upper_dev_unlink()   vrf_device_event
+ 	
+                            vrf_device_event
+                            netif_is_l3_slave(dev)
+                            //IFF_L3MDEV_SLAVE is not cleaned
+                            //so function return 1
+                            netdev_master_upper_dev_get()
+                            //return vrf_dev is NULL
+                            ....	
+                            __netdev_adjacent_dev_remove()
+                            //adj pointer is NULL cause WARN_ON
+                            __netdev_adjacent_dev_remove()
+                            //down_list is NULL cause OOPS
+
+port_dev->priv_flags &= ~IFF_L3MDEV_SLAVE;
+
+why oops did not happen in __netdev_adjacent_dev_unlink_lists()'s
+parameter “&upper_dev->adj_list.lower”.
+we Disassemble __netdev_adjacent_dev_unlink_neighbour:
+.....
+ <__netdev_adjacent_dev_unlink_neighbour+44>: add     x2, x19, #0xc0
+ <__netdev_adjacent_dev_unlink_neighbour+48>: mov     x1, x20
+ <__netdev_adjacent_dev_unlink_neighbour+52>: mov     x0, x19
+....
+upper_dev->adj_list.lower is compiled to be optimized to
+upper_dev pointer offset 0xc0.
+
+this patch adds vrf_dev NULL pointer judgment to resolve the above problem.
+
+Signed-off-by: XiaoGang Wang <wangxiaogang3@huawei.com>
+Reviewed-by: JunWei Hu <hujunwei4@huawei.com>
 ---
- Documentation/core-api/pin_user_pages.rst   |  2 +-
- arch/powerpc/mm/book3s64/iommu_api.c        |  6 +--
- drivers/gpu/drm/via/via_dmablit.c           |  4 +-
- drivers/infiniband/core/umem.c              |  2 +-
- drivers/infiniband/hw/hfi1/user_pages.c     |  2 +-
- drivers/infiniband/hw/mthca/mthca_memfree.c |  6 +--
- drivers/infiniband/hw/qib/qib_user_pages.c  |  2 +-
- drivers/infiniband/hw/qib/qib_user_sdma.c   |  6 +--
- drivers/infiniband/hw/usnic/usnic_uiom.c    |  2 +-
- drivers/infiniband/sw/siw/siw_mem.c         |  2 +-
- drivers/media/v4l2-core/videobuf-dma-sg.c   |  4 +-
- drivers/platform/goldfish/goldfish_pipe.c   |  4 +-
- drivers/vfio/vfio_iommu_type1.c             |  2 +-
- fs/io_uring.c                               |  4 +-
- include/linux/mm.h                          | 30 +++++++-------
- include/linux/mmzone.h                      |  2 +-
- mm/gup.c                                    | 46 ++++++++++-----------
- mm/gup_benchmark.c                          |  2 +-
- mm/process_vm_access.c                      |  4 +-
- net/xdp/xdp_umem.c                          |  2 +-
- 20 files changed, 67 insertions(+), 67 deletions(-)
+ drivers/net/vrf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/core-api/pin_user_pages.rst b/Documentation/core=
--api/pin_user_pages.rst
-index baa288a44a77..6d93ef203561 100644
---- a/Documentation/core-api/pin_user_pages.rst
-+++ b/Documentation/core-api/pin_user_pages.rst
-@@ -220,7 +220,7 @@ since the system was booted, via two new /proc/vmstat e=
-ntries: ::
-     /proc/vmstat/nr_foll_pin_requested
-=20
- Those are both going to show zero, unless CONFIG_DEBUG_VM is set. This is
--because there is a noticeable performance drop in put_user_page(), when th=
-ey
-+because there is a noticeable performance drop in unpin_user_page(), when =
-they
- are activated.
-=20
- References
-diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s6=
-4/iommu_api.c
-index 196383e8e5a9..dd7aa5a4f33c 100644
---- a/arch/powerpc/mm/book3s64/iommu_api.c
-+++ b/arch/powerpc/mm/book3s64/iommu_api.c
-@@ -168,7 +168,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, uns=
-igned long ua,
-=20
- free_exit:
- 	/* free the references taken */
--	put_user_pages(mem->hpages, pinned);
-+	unpin_user_pages(mem->hpages, pinned);
-=20
- 	vfree(mem->hpas);
- 	kfree(mem);
-@@ -211,8 +211,8 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_=
-mem_t *mem)
- 		if (!page)
- 			continue;
-=20
--		put_user_pages_dirty_lock(&mem->hpages[i], 1,
--					  MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
-+		unpin_user_pages_dirty_lock(&mem->hpages[i], 1,
-+					    MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
-=20
- 		mem->hpas[i] =3D 0;
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index b8228f5..86c4b8c 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1427,6 +1427,9 @@ static int vrf_device_event(struct notifier_block *unused,
+ 			goto out;
+
+ 		vrf_dev = netdev_master_upper_dev_get(dev);
++		if (!vrf_dev)
++			goto out;
++
+ 		vrf_del_slave(vrf_dev, dev);
  	}
-diff --git a/drivers/gpu/drm/via/via_dmablit.c b/drivers/gpu/drm/via/via_dm=
-ablit.c
-index 37c5e572993a..719d036c9384 100644
---- a/drivers/gpu/drm/via/via_dmablit.c
-+++ b/drivers/gpu/drm/via/via_dmablit.c
-@@ -188,8 +188,8 @@ via_free_sg_info(struct pci_dev *pdev, drm_via_sg_info_=
-t *vsg)
- 		kfree(vsg->desc_pages);
- 		/* fall through */
- 	case dr_via_pages_locked:
--		put_user_pages_dirty_lock(vsg->pages, vsg->num_pages,
--					  (vsg->direction =3D=3D DMA_FROM_DEVICE));
-+		unpin_user_pages_dirty_lock(vsg->pages, vsg->num_pages,
-+					   (vsg->direction =3D=3D DMA_FROM_DEVICE));
- 		/* fall through */
- 	case dr_via_pages_alloc:
- 		vfree(vsg->pages);
-diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.=
-c
-index 2c287ced3439..119a147da904 100644
---- a/drivers/infiniband/core/umem.c
-+++ b/drivers/infiniband/core/umem.c
-@@ -54,7 +54,7 @@ static void __ib_umem_release(struct ib_device *dev, stru=
-ct ib_umem *umem, int d
-=20
- 	for_each_sg_page(umem->sg_head.sgl, &sg_iter, umem->sg_nents, 0) {
- 		page =3D sg_page_iter_page(&sg_iter);
--		put_user_pages_dirty_lock(&page, 1, umem->writable && dirty);
-+		unpin_user_pages_dirty_lock(&page, 1, umem->writable && dirty);
- 	}
-=20
- 	sg_free_table(&umem->sg_head);
-diff --git a/drivers/infiniband/hw/hfi1/user_pages.c b/drivers/infiniband/h=
-w/hfi1/user_pages.c
-index 9a94761765c0..3b505006c0a6 100644
---- a/drivers/infiniband/hw/hfi1/user_pages.c
-+++ b/drivers/infiniband/hw/hfi1/user_pages.c
-@@ -118,7 +118,7 @@ int hfi1_acquire_user_pages(struct mm_struct *mm, unsig=
-ned long vaddr, size_t np
- void hfi1_release_user_pages(struct mm_struct *mm, struct page **p,
- 			     size_t npages, bool dirty)
- {
--	put_user_pages_dirty_lock(p, npages, dirty);
-+	unpin_user_pages_dirty_lock(p, npages, dirty);
-=20
- 	if (mm) { /* during close after signal, mm can be NULL */
- 		atomic64_sub(npages, &mm->pinned_vm);
-diff --git a/drivers/infiniband/hw/mthca/mthca_memfree.c b/drivers/infiniba=
-nd/hw/mthca/mthca_memfree.c
-index 8269ab040c21..78a48aea3faf 100644
---- a/drivers/infiniband/hw/mthca/mthca_memfree.c
-+++ b/drivers/infiniband/hw/mthca/mthca_memfree.c
-@@ -482,7 +482,7 @@ int mthca_map_user_db(struct mthca_dev *dev, struct mth=
-ca_uar *uar,
-=20
- 	ret =3D pci_map_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
- 	if (ret < 0) {
--		put_user_page(pages[0]);
-+		unpin_user_page(pages[0]);
- 		goto out;
- 	}
-=20
-@@ -490,7 +490,7 @@ int mthca_map_user_db(struct mthca_dev *dev, struct mth=
-ca_uar *uar,
- 				 mthca_uarc_virt(dev, uar, i));
- 	if (ret) {
- 		pci_unmap_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
--		put_user_page(sg_page(&db_tab->page[i].mem));
-+		unpin_user_page(sg_page(&db_tab->page[i].mem));
- 		goto out;
- 	}
-=20
-@@ -556,7 +556,7 @@ void mthca_cleanup_user_db_tab(struct mthca_dev *dev, s=
-truct mthca_uar *uar,
- 		if (db_tab->page[i].uvirt) {
- 			mthca_UNMAP_ICM(dev, mthca_uarc_virt(dev, uar, i), 1);
- 			pci_unmap_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
--			put_user_page(sg_page(&db_tab->page[i].mem));
-+			unpin_user_page(sg_page(&db_tab->page[i].mem));
- 		}
- 	}
-=20
-diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniban=
-d/hw/qib/qib_user_pages.c
-index 7fc4b5f81fcd..342e3172ca40 100644
---- a/drivers/infiniband/hw/qib/qib_user_pages.c
-+++ b/drivers/infiniband/hw/qib/qib_user_pages.c
-@@ -40,7 +40,7 @@
- static void __qib_release_user_pages(struct page **p, size_t num_pages,
- 				     int dirty)
- {
--	put_user_pages_dirty_lock(p, num_pages, dirty);
-+	unpin_user_pages_dirty_lock(p, num_pages, dirty);
- }
-=20
- /**
-diff --git a/drivers/infiniband/hw/qib/qib_user_sdma.c b/drivers/infiniband=
-/hw/qib/qib_user_sdma.c
-index 1a3cc2957e3a..a67599b5a550 100644
---- a/drivers/infiniband/hw/qib/qib_user_sdma.c
-+++ b/drivers/infiniband/hw/qib/qib_user_sdma.c
-@@ -317,7 +317,7 @@ static int qib_user_sdma_page_to_frags(const struct qib=
-_devdata *dd,
- 		 * the caller can ignore this page.
- 		 */
- 		if (put) {
--			put_user_page(page);
-+			unpin_user_page(page);
- 		} else {
- 			/* coalesce case */
- 			kunmap(page);
-@@ -631,7 +631,7 @@ static void qib_user_sdma_free_pkt_frag(struct device *=
-dev,
- 			kunmap(pkt->addr[i].page);
-=20
- 		if (pkt->addr[i].put_page)
--			put_user_page(pkt->addr[i].page);
-+			unpin_user_page(pkt->addr[i].page);
- 		else
- 			__free_page(pkt->addr[i].page);
- 	} else if (pkt->addr[i].kvaddr) {
-@@ -706,7 +706,7 @@ static int qib_user_sdma_pin_pages(const struct qib_dev=
-data *dd,
- 	/* if error, return all pages not managed by pkt */
- free_pages:
- 	while (i < j)
--		put_user_page(pages[i++]);
-+		unpin_user_page(pages[i++]);
-=20
- done:
- 	return ret;
-diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/=
-hw/usnic/usnic_uiom.c
-index 600896727d34..bd9f944b68fc 100644
---- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-+++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-@@ -75,7 +75,7 @@ static void usnic_uiom_put_pages(struct list_head *chunk_=
-list, int dirty)
- 		for_each_sg(chunk->page_list, sg, chunk->nents, i) {
- 			page =3D sg_page(sg);
- 			pa =3D sg_phys(sg);
--			put_user_pages_dirty_lock(&page, 1, dirty);
-+			unpin_user_pages_dirty_lock(&page, 1, dirty);
- 			usnic_dbg("pa: %pa\n", &pa);
- 		}
- 		kfree(chunk);
-diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/si=
-w/siw_mem.c
-index e53b07dcfed5..e2061dc0b043 100644
---- a/drivers/infiniband/sw/siw/siw_mem.c
-+++ b/drivers/infiniband/sw/siw/siw_mem.c
-@@ -63,7 +63,7 @@ struct siw_mem *siw_mem_id2obj(struct siw_device *sdev, i=
-nt stag_index)
- static void siw_free_plist(struct siw_page_chunk *chunk, int num_pages,
- 			   bool dirty)
- {
--	put_user_pages_dirty_lock(chunk->plist, num_pages, dirty);
-+	unpin_user_pages_dirty_lock(chunk->plist, num_pages, dirty);
- }
-=20
- void siw_umem_release(struct siw_umem *umem, bool dirty)
-diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2=
--core/videobuf-dma-sg.c
-index 162a2633b1e3..13b65ed9e74c 100644
---- a/drivers/media/v4l2-core/videobuf-dma-sg.c
-+++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
-@@ -349,8 +349,8 @@ int videobuf_dma_free(struct videobuf_dmabuf *dma)
- 	BUG_ON(dma->sglen);
-=20
- 	if (dma->pages) {
--		put_user_pages_dirty_lock(dma->pages, dma->nr_pages,
--					  dma->direction =3D=3D DMA_FROM_DEVICE);
-+		unpin_user_pages_dirty_lock(dma->pages, dma->nr_pages,
-+					    dma->direction =3D=3D DMA_FROM_DEVICE);
- 		kfree(dma->pages);
- 		dma->pages =3D NULL;
- 	}
-diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/g=
-oldfish/goldfish_pipe.c
-index 635a8bc1b480..bf523df2a90d 100644
---- a/drivers/platform/goldfish/goldfish_pipe.c
-+++ b/drivers/platform/goldfish/goldfish_pipe.c
-@@ -360,8 +360,8 @@ static int transfer_max_buffers(struct goldfish_pipe *p=
-ipe,
-=20
- 	*consumed_size =3D pipe->command_buffer->rw_params.consumed_size;
-=20
--	put_user_pages_dirty_lock(pipe->pages, pages_count,
--				  !is_write && *consumed_size > 0);
-+	unpin_user_pages_dirty_lock(pipe->pages, pages_count,
-+				    !is_write && *consumed_size > 0);
-=20
- 	mutex_unlock(&pipe->lock);
- 	return 0;
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type=
-1.c
-index 18aa36b56896..c48ac1567f14 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -328,7 +328,7 @@ static int put_pfn(unsigned long pfn, int prot)
- 	if (!is_invalid_reserved_pfn(pfn)) {
- 		struct page *page =3D pfn_to_page(pfn);
-=20
--		put_user_pages_dirty_lock(&page, 1, prot & IOMMU_WRITE);
-+		unpin_user_pages_dirty_lock(&page, 1, prot & IOMMU_WRITE);
- 		return 1;
- 	}
- 	return 0;
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index cff64bd00db9..75ce5b386ffd 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3312,7 +3312,7 @@ static int io_sqe_buffer_unregister(struct io_ring_ct=
-x *ctx)
- 		struct io_mapped_ubuf *imu =3D &ctx->user_bufs[i];
-=20
- 		for (j =3D 0; j < imu->nr_bvecs; j++)
--			put_user_page(imu->bvec[j].bv_page);
-+			unpin_user_page(imu->bvec[j].bv_page);
-=20
- 		if (ctx->account_mem)
- 			io_unaccount_mem(ctx->user, imu->nr_bvecs);
-@@ -3457,7 +3457,7 @@ static int io_sqe_buffer_register(struct io_ring_ctx =
-*ctx, void __user *arg,
- 			 * release any pages we did get
- 			 */
- 			if (pret > 0)
--				put_user_pages(pages, pret);
-+				unpin_user_pages(pages, pret);
- 			if (ctx->account_mem)
- 				io_unaccount_mem(ctx->user, nr_pages);
- 			kvfree(imu->bvec);
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index db872766480f..dc5fa3df826f 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1080,18 +1080,18 @@ static inline void put_page(struct page *page)
-  * made against the page. ("gup-pinned" is another term for the latter).
-  *
-  * With this scheme, get_user_pages() becomes special: such pages are mark=
-ed
-- * as distinct from normal pages. As such, the put_user_page() call (and i=
-ts
-+ * as distinct from normal pages. As such, the unpin_user_page() call (and=
- its
-  * variants) must be used in order to release gup-pinned pages.
-  *
-  * Choice of value:
-  *
-  * By making GUP_PIN_COUNTING_BIAS a power of two, debugging of page refer=
-ence
-- * counts with respect to get_user_pages() and put_user_page() becomes sim=
-pler,
-- * due to the fact that adding an even power of two to the page refcount h=
-as
-- * the effect of using only the upper N bits, for the code that counts up =
-using
-- * the bias value. This means that the lower bits are left for the exclusi=
-ve
-- * use of the original code that increments and decrements by one (or at l=
-east,
-- * by much smaller values than the bias value).
-+ * counts with respect to get_user_pages() and unpin_user_page() becomes
-+ * simpler, due to the fact that adding an even power of two to the page
-+ * refcount has the effect of using only the upper N bits, for the code th=
-at
-+ * counts up using the bias value. This means that the lower bits are left=
- for
-+ * the exclusive use of the original code that increments and decrements b=
-y one
-+ * (or at least, by much smaller values than the bias value).
-  *
-  * Of course, once the lower bits overflow into the upper bits (and this i=
-s
-  * OK, because subtraction recovers the original values), then visual insp=
-ection
-@@ -1106,10 +1106,10 @@ static inline void put_page(struct page *page)
-  */
- #define GUP_PIN_COUNTING_BIAS (1UL << 10)
-=20
--void put_user_page(struct page *page);
--void put_user_pages_dirty_lock(struct page **pages, unsigned long npages,
--			       bool make_dirty);
--void put_user_pages(struct page **pages, unsigned long npages);
-+void unpin_user_page(struct page *page);
-+void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages=
-,
-+				 bool make_dirty);
-+void unpin_user_pages(struct page **pages, unsigned long npages);
-=20
- /**
-  * page_dma_pinned() - report if a page is pinned for DMA.
-@@ -2660,7 +2660,7 @@ struct page *follow_page(struct vm_area_struct *vma, =
-unsigned long address,
- #define FOLL_ANON	0x8000	/* don't do file mappings */
- #define FOLL_LONGTERM	0x10000	/* mapping lifetime is indefinite: see below=
- */
- #define FOLL_SPLIT_PMD	0x20000	/* split huge pmd before returning */
--#define FOLL_PIN	0x40000	/* pages must be released via put_user_page() */
-+#define FOLL_PIN	0x40000	/* pages must be released via unpin_user_page */
-=20
- /*
-  * FOLL_PIN and FOLL_LONGTERM may be used in various combinations with eac=
-h
-@@ -2695,7 +2695,7 @@ struct page *follow_page(struct vm_area_struct *vma, =
-unsigned long address,
-  * Direct IO). This lets the filesystem know that some non-file-system ent=
-ity is
-  * potentially changing the pages' data. In contrast to FOLL_GET (whose pa=
-ges
-  * are released via put_page()), FOLL_PIN pages must be released, ultimate=
-ly, by
-- * a call to put_user_page().
-+ * a call to unpin_user_page().
-  *
-  * FOLL_PIN is similar to FOLL_GET: both of these pin pages. They use diff=
-erent
-  * and separate refcounting mechanisms, however, and that means that each =
-has
-@@ -2703,7 +2703,7 @@ struct page *follow_page(struct vm_area_struct *vma, =
-unsigned long address,
-  *
-  *     FOLL_GET: get_user_pages*() to acquire, and put_page() to release.
-  *
-- *     FOLL_PIN: pin_user_pages*() to acquire, and put_user_pages to relea=
-se.
-+ *     FOLL_PIN: pin_user_pages*() to acquire, and unpin_user_pages to rel=
-ease.
-  *
-  * FOLL_PIN and FOLL_GET are mutually exclusive for a given function call.
-  * (The underlying pages may experience both FOLL_GET-based and FOLL_PIN-b=
-ased
-@@ -2713,7 +2713,7 @@ struct page *follow_page(struct vm_area_struct *vma, =
-unsigned long address,
-  * FOLL_PIN should be set internally by the pin_user_pages*() APIs, never
-  * directly by the caller. That's in order to help avoid mismatches when
-  * releasing pages: get_user_pages*() pages must be released via put_page(=
-),
-- * while pin_user_pages*() pages must be released via put_user_page().
-+ * while pin_user_pages*() pages must be released via unpin_user_page().
-  *
-  * Please see Documentation/vm/pin_user_pages.rst for more information.
-  */
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 0485cba38d23..d66c1fb9d45e 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -245,7 +245,7 @@ enum node_stat_item {
- 	NR_WRITTEN,		/* page writings since bootup */
- 	NR_KERNEL_MISC_RECLAIMABLE,	/* reclaimable non-slab kernel pages */
- 	NR_FOLL_PIN_REQUESTED,	/* via: pin_user_page(), gup flag: FOLL_PIN */
--	NR_FOLL_PIN_RETURNED,	/* pages returned via put_user_page() */
-+	NR_FOLL_PIN_RETURNED,	/* pages returned via unpin_user_page() */
- 	NR_VM_NODE_STAT_ITEMS
- };
-=20
-diff --git a/mm/gup.c b/mm/gup.c
-index 783cc5f23c79..9cbb72399182 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -110,15 +110,15 @@ static bool __put_devmap_managed_user_page(struct pag=
-e *page)
- #endif /* CONFIG_DEV_PAGEMAP_OPS */
-=20
- /**
-- * put_user_page() - release a dma-pinned page
-+ * unpin_user_page() - release a dma-pinned page
-  * @page:            pointer to page to be released
-  *
-  * Pages that were pinned via pin_user_pages*() must be released via eithe=
-r
-- * put_user_page(), or one of the put_user_pages*() routines. This is so t=
-hat
-- * such pages can be separately tracked and uniquely handled. In particula=
-r,
-- * interactions with RDMA and filesystems need special handling.
-+ * unpin_user_page(), or one of the unpin_user_pages*() routines. This is =
-so
-+ * that such pages can be separately tracked and uniquely handled. In
-+ * particular, interactions with RDMA and filesystems need special handlin=
-g.
-  */
--void put_user_page(struct page *page)
-+void unpin_user_page(struct page *page)
- {
- 	page =3D compound_head(page);
-=20
-@@ -136,10 +136,10 @@ void put_user_page(struct page *page)
-=20
- 	__update_proc_vmstat(page, NR_FOLL_PIN_RETURNED, 1);
- }
--EXPORT_SYMBOL(put_user_page);
-+EXPORT_SYMBOL(unpin_user_page);
-=20
- /**
-- * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned p=
-ages
-+ * unpin_user_pages_dirty_lock() - release and optionally dirty gup-pinned=
- pages
-  * @pages:  array of pages to be maybe marked dirty, and definitely releas=
-ed.
-  * @npages: number of pages in the @pages array.
-  * @make_dirty: whether to mark the pages dirty
-@@ -149,19 +149,19 @@ EXPORT_SYMBOL(put_user_page);
-  *
-  * For each page in the @pages array, make that page (or its head page, if=
- a
-  * compound page) dirty, if @make_dirty is true, and if the page was previ=
-ously
-- * listed as clean. In any case, releases all pages using put_user_page(),
-- * possibly via put_user_pages(), for the non-dirty case.
-+ * listed as clean. In any case, releases all pages using unpin_user_page(=
-),
-+ * possibly via unpin_user_pages(), for the non-dirty case.
-  *
-- * Please see the put_user_page() documentation for details.
-+ * Please see the unpin_user_page() documentation for details.
-  *
-  * set_page_dirty_lock() is used internally. If instead, set_page_dirty() =
-is
-  * required, then the caller should a) verify that this is really correct,
-  * because _lock() is usually required, and b) hand code it:
-- * set_page_dirty_lock(), put_user_page().
-+ * set_page_dirty_lock(), unpin_user_page().
-  *
-  */
--void put_user_pages_dirty_lock(struct page **pages, unsigned long npages,
--			       bool make_dirty)
-+void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages=
-,
-+				 bool make_dirty)
- {
- 	unsigned long index;
-=20
-@@ -172,7 +172,7 @@ void put_user_pages_dirty_lock(struct page **pages, uns=
-igned long npages,
- 	 */
-=20
- 	if (!make_dirty) {
--		put_user_pages(pages, npages);
-+		unpin_user_pages(pages, npages);
- 		return;
- 	}
-=20
-@@ -200,21 +200,21 @@ void put_user_pages_dirty_lock(struct page **pages, u=
-nsigned long npages,
- 		 */
- 		if (!PageDirty(page))
- 			set_page_dirty_lock(page);
--		put_user_page(page);
-+		unpin_user_page(page);
- 	}
- }
--EXPORT_SYMBOL(put_user_pages_dirty_lock);
-+EXPORT_SYMBOL(unpin_user_pages_dirty_lock);
-=20
- /**
-- * put_user_pages() - release an array of gup-pinned pages.
-+ * unpin_user_pages() - release an array of gup-pinned pages.
-  * @pages:  array of pages to be marked dirty and released.
-  * @npages: number of pages in the @pages array.
-  *
-- * For each page in the @pages array, release the page using put_user_page=
-().
-+ * For each page in the @pages array, release the page using unpin_user_pa=
-ge().
-  *
-- * Please see the put_user_page() documentation for details.
-+ * Please see the unpin_user_page() documentation for details.
-  */
--void put_user_pages(struct page **pages, unsigned long npages)
-+void unpin_user_pages(struct page **pages, unsigned long npages)
- {
- 	unsigned long index;
-=20
-@@ -224,9 +224,9 @@ void put_user_pages(struct page **pages, unsigned long =
-npages)
- 	 * single operation to the head page should suffice.
- 	 */
- 	for (index =3D 0; index < npages; index++)
--		put_user_page(pages[index]);
-+		unpin_user_page(pages[index]);
- }
--EXPORT_SYMBOL(put_user_pages);
-+EXPORT_SYMBOL(unpin_user_pages);
-=20
- #ifdef CONFIG_MMU
- static struct page *no_page_table(struct vm_area_struct *vma,
-@@ -1953,7 +1953,7 @@ static void __maybe_unused undo_dev_pagemap(int *nr, =
-int nr_start,
-=20
- 		ClearPageReferenced(page);
- 		if (flags & FOLL_PIN)
--			put_user_page(page);
-+			unpin_user_page(page);
- 		else
- 			put_page(page);
- 	}
-diff --git a/mm/gup_benchmark.c b/mm/gup_benchmark.c
-index 1ac089ad815f..76d32db48af8 100644
---- a/mm/gup_benchmark.c
-+++ b/mm/gup_benchmark.c
-@@ -35,7 +35,7 @@ static void put_back_pages(int cmd, struct page **pages, =
-unsigned long nr_pages)
-=20
- 	case PIN_FAST_BENCHMARK:
- 	case PIN_BENCHMARK:
--		put_user_pages(pages, nr_pages);
-+		unpin_user_pages(pages, nr_pages);
- 		break;
- 	}
- }
-diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
-index fd20ab675b85..de41e830cdac 100644
---- a/mm/process_vm_access.c
-+++ b/mm/process_vm_access.c
-@@ -126,8 +126,8 @@ static int process_vm_rw_single_vec(unsigned long addr,
- 		pa +=3D pinned_pages * PAGE_SIZE;
-=20
- 		/* If vm_write is set, the pages need to be made dirty: */
--		put_user_pages_dirty_lock(process_pages, pinned_pages,
--					  vm_write);
-+		unpin_user_pages_dirty_lock(process_pages, pinned_pages,
-+					    vm_write);
- 	}
-=20
- 	return rc;
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index d071003b5e76..ac182c38f7b0 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -212,7 +212,7 @@ static int xdp_umem_map_pages(struct xdp_umem *umem)
-=20
- static void xdp_umem_unpin_pages(struct xdp_umem *umem)
- {
--	put_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
-+	unpin_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
-=20
- 	kfree(umem->pgs);
- 	umem->pgs =3D NULL;
---=20
-2.24.0
+ out:
+-- 
+1.7.12.4
 
