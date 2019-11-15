@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A20B7FD765
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:54:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75BFDFD76F
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727348AbfKOHy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 02:54:29 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:43094 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727064AbfKOHy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:54:28 -0500
-Received: by mail-lj1-f196.google.com with SMTP id y23so9614640ljh.10
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 23:54:27 -0800 (PST)
+        id S1727189AbfKOH5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 02:57:12 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41957 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726182AbfKOH5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:57:11 -0500
+Received: by mail-qk1-f194.google.com with SMTP id m125so7403391qkd.8;
+        Thu, 14 Nov 2019 23:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+C6UFetkkOkabjlrx29bRj2f/pHq6ZunDxUzZ7B8oJI=;
-        b=Tj7gXOnqtuG0wJhNZbvfhuhFF7Ajj+d/fkSs7BOhJuk6zYcUK3pqsPz4KlpJ5C6cZu
-         CQ9MRWf2wM06ny9O2bnOKcTBNvY1ewmlHc0/L/nIx34DK3gZJOIMBOt6MJMcRJUnM6lj
-         Sty8aREsnWc3bR9ednCLj5/uDLng1EyPh4j+w=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=F+aS45e+tp3qf3Ydob9f2pyeaLNqmi833pMJJ3DlQVk=;
+        b=DAjX27o5q96qF83it+oHtsrQatRWEZg/Qv3scklzjxT4QRhfDPT9JYZhm9I6+5gCZC
+         yCFqgq2SR2sFuMFzSyfgH7AxhdvpCgZbYruNgmiQ/AUitkwkwZNguD2fVaZS28Rg/vqQ
+         LLhGugqK7wDLNKUrZ4rNme4PyTdAtAjU6cbmTweW14aaJ0ieL7yuxcZjjhwe+hi7Mvhm
+         zqR2iFsyMh1DFbEppfO2GQitQ8FyT9T9pkVpP8CDhi2+Tg7v9GL77f6NUla2bePTykBJ
+         UIQSTy5TD8UsOenYTpNWcgkc4oKw+Y+WSRr5WXRNHcWH9o8MUVI6IRn1MNHtL441xXG9
+         qVvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+C6UFetkkOkabjlrx29bRj2f/pHq6ZunDxUzZ7B8oJI=;
-        b=ginfGiQLyYKeixTS3gzCt+HXiltgcQvFvmzqOkxE1Cy//X3Og77ph7NHHG8NqFfYlp
-         4udmmgHfyIqRiTKgGuLqHa+hd0c9yMRfONsgJuSmUKkV5FfUFu+JEckmE30o8uMGsHrL
-         ZAcEAwGO+be4oXt23W6Th4ZGe6dYPBsE70v6AsuT4f/QCc+Yn9LLj/mOlzccE16ZH+LJ
-         MoG8sDC+Lua3OpXmAkP3yffKf0JhhrRC4NZRJsNZQKf/rmh2JaF74eMln3pdVZorn+OM
-         3L3mNIJ1h+25+CRn+Twv9L67S6m4eEGAHlNb2nyUL3pILuRFN9LW3uhpp8Zs6wwg15w4
-         3Z3w==
-X-Gm-Message-State: APjAAAWlGavLg59CHSoiMsUr/GPtTxbMQt5oFIjBSs9mRmK3jN2Rf7uB
-        nAQImD+qMznkQfp3jYv+7b4dXL+KboGaFLZz
-X-Google-Smtp-Source: APXvYqwtca4V1MXOZa/BxeDe/jqUfjT4UHa/rribPRAykBqSAV8Y1dWumBHX7aG8dBwq5CyNgx3uLQ==
-X-Received: by 2002:a2e:8809:: with SMTP id x9mr9979158ljh.82.1573804466324;
-        Thu, 14 Nov 2019 23:54:26 -0800 (PST)
-Received: from [172.16.11.28] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id w11sm4254332lji.45.2019.11.14.23.54.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 23:54:25 -0800 (PST)
-Subject: Re: [PATCH v4 46/47] net: ethernet: freescale: make UCC_GETH
- explicitly depend on PPC32
-To:     Li Yang <leoyang.li@nxp.com>, Timur Tabi <timur@kernel.org>
-Cc:     Qiang Zhao <qiang.zhao@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>, netdev <netdev@vger.kernel.org>
-References: <20191108130123.6839-1-linux@rasmusvillemoes.dk>
- <20191108130123.6839-47-linux@rasmusvillemoes.dk>
- <CAOZdJXUX2cZfaQTkBdNrwD=jT2399rZzRFtDj6vNa==9Bmkh5A@mail.gmail.com>
- <CADRPPNS00uU+f6ap9D-pYQUFo_T-o2bgtnYaE9qAXOwck86-OQ@mail.gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <29b45e76-f384-fe16-0891-cc51cfecefd4@rasmusvillemoes.dk>
-Date:   Fri, 15 Nov 2019 08:54:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=F+aS45e+tp3qf3Ydob9f2pyeaLNqmi833pMJJ3DlQVk=;
+        b=KWfCijm8HsPp3pKotbScQXfBX4g4ci0+FkEkqmZ5pS5TWPBqYlEiOeu9HOJy4O4Oka
+         4rYUBRoL+cvqcC0j2VrjTINts7frLTB2Evn9/oAfjhoW0HmsBBXzv5NFx7svELxgKCda
+         NMzruI3L4yEV4sMRE+Dj6i/a9iyKttyBmRcqEHJRya6rvtXS9ET0cw61fLw0wJicZLX2
+         gxTsKrDH44Qo0G3t6vNofti/9Rd2TAkPcceZhb7Jwwhyn1n2+Omz+eGeSHsT8ipmFeMV
+         SOCX/pBrGiVlm4hqNObURLSDTVMXDhKBS3ZiVBI0dkyTTXbP4tkvSMFi/a1lQy9Mol+l
+         NkTQ==
+X-Gm-Message-State: APjAAAUjMMv59nl4CzY547hAG7224JHiJ4yQHInaaWrxop5p5JHQsNEF
+        +UDlqL9JZWSg4lDA4+dmQesKkzCddci2xw1+G+s=
+X-Google-Smtp-Source: APXvYqx2N5FsU1ezDf2HNNL2a1lzjMS2gkxoqVlUgcCHLWwEf+2QsbwNK84VzVRj74ygDDE7Nm+NkoUwWk5Oq8Pu+OY=
+X-Received: by 2002:a05:620a:113b:: with SMTP id p27mr11492421qkk.333.1573804630673;
+ Thu, 14 Nov 2019 23:57:10 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CADRPPNS00uU+f6ap9D-pYQUFo_T-o2bgtnYaE9qAXOwck86-OQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191113204737.31623-1-bjorn.topel@gmail.com> <20191113204737.31623-3-bjorn.topel@gmail.com>
+ <20191115003024.h7eg2kbve23jmzqn@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191115003024.h7eg2kbve23jmzqn@ast-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 15 Nov 2019 08:56:59 +0100
+Message-ID: <CAJ+HfNhKWND35Jnwe=99=8rWt81fhy9pRpXCVRYTu=C=aj13KQ@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Edward Cree <ecree@solarflare.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/11/2019 06.44, Li Yang wrote:
-> On Thu, Nov 14, 2019 at 10:37 PM Timur Tabi <timur@kernel.org> wrote:
->>
->> On Fri, Nov 8, 2019 at 7:04 AM Rasmus Villemoes
->> <linux@rasmusvillemoes.dk> wrote:
->>>
->>> Currently, QUICC_ENGINE depends on PPC32, so this in itself does not
->>> change anything. In order to allow removing the PPC32 dependency from
->>> QUICC_ENGINE and avoid allmodconfig build failures, add this explicit
->>> dependency.
->>
->> Can you add an explanation why we don't want ucc_geth on non-PowerPC platforms?
+On Fri, 15 Nov 2019 at 01:30, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+[...]
+>
+> Could you try optimizing emit_mov_imm64() to recognize s32 ?
+> iirc there was a single x86 insns that could move and sign extend.
+> That should cut down on bytecode size and probably make things a bit fast=
+er?
+> Another alternative is compare lower 32-bit only, since on x86-64 upper 3=
+2
+> should be ~0 anyway for bpf prog pointers.
 
-It's not that "we" don't want to allow building this on non-PPC per se,
-but making it build requires some surgery that I think should be done by
-whoever might eventually want it. So _my_ reason for lowering this
-dependency from QUICC_ENGINE to UCC_GETH is exactly what it says above.
+Good ideas, thanks! I'll do the optimization, extend it to >4 entries
+(as Toke suggested), and do a non-RFC respin.
 
-> I think it is because the QE Ethernet was never integrated in any
-> non-PowerPC SoC and most likely will not be in the future. 
+> Looking at bookkeeping code, I think I should be able to generalize bpf
+> trampoline a bit and share the code for bpf dispatch.
 
-Well, that kind of thing is impossible to know for outsiders like me.
-Maybe one can amend the commit log with that info:
+Ok, good!
 
-"Also, the QE Ethernet has never been integrated on any non-PowerPC SoC
-and most likely will not be in the future."
+> Could you also try aligning jmp target a bit by inserting nops?
+> Some x86 cpus are sensitive to jmp target alignment. Even without conside=
+ring
+> JCC bug it could be helpful. Especially since we're talking about XDP/AF_=
+XDP
+> here that will be pushing millions of calls through bpf dispatch.
+>
 
-Rasmus
+Yeah, I need to address the Jcc bug anyway, so that makes sense.
+
+Another thought; I'm using the fentry nop as patch point, so it wont
+play nice with other users of fentry atm -- but the plan is to move to
+Steve's *_ftrace_direct work at some point, correct?
+
+
+Bj=C3=B6rn
