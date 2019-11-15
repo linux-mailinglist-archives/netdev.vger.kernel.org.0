@@ -2,160 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37654FD296
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 02:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C347FD29C
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 02:57:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727451AbfKOBuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 20:50:06 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34041 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726956AbfKOBuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 20:50:06 -0500
-Received: by mail-pf1-f195.google.com with SMTP id n13so5554321pff.1;
-        Thu, 14 Nov 2019 17:50:05 -0800 (PST)
+        id S1727461AbfKOB51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 20:57:27 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41817 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727406AbfKOB50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 20:57:26 -0500
+Received: by mail-lf1-f68.google.com with SMTP id j14so6692379lfb.8
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 17:57:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=c61Ig9SwSoDqV7zYUXQJVmC/opkuC1ckBKs3j2LfZ8E=;
-        b=X6cVeiofk1m8oDoYmfhokhr3mDnJcd6YUIivEM8+ec8ZYmmMpARpo2iMJLxrvQk7Ll
-         09YorFNiMK6vBqQi4MMXXc+Pw6ANivhcI2G0zJZ2ssO72/fif7cwwi0ZuUg7yqsN00GS
-         iy+2N59lvsdwVCk9lVsLEfU51xfTceJ+FpxYEDdJ04dTCShiU/0/BKnON3bSC6sz0NBP
-         awAFgc/WuB2JpgkGubQacYjGS0Zk3AXgBJHuhCr2vbzlEi0hlpeqzCtkC+/nN9XECtSC
-         7kxP1/5hC2kfPiwY8249dyf6vXAdPGwOXNGMHzcHKlcSvomXrPpvk+Pn2wo0iRWc4n00
-         U7Gg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VhwfCvUXZdHcPjd/8gnXz63IRCXwmj0cc9MwMWk9XXQ=;
+        b=e+QjIhLz/WsEJAN12AxLkTNiXTZIBr5lqC50IVP0v3sj3Dv4Vght57Kv79N+t2D0uf
+         U+mTHNdA3WbMGdb9k6sJoOovSavYzNoubzdH8/k9oiMusB8TRlv5I8W07vZMh+xP4SNn
+         66YT/YbdoWng9ye34W9IfWIPnEeHVWKymthBeju9oAksBfbIcCppd3oKuMK5KzpzAWK9
+         gYOUlRqvPBWPnSEtGjNvz2c2Gvgsw/aSfn9s+yPjqNsGBMu6TDE2zdKdJk+awScoOZGn
+         He2vsQHPpfNKqMPSrFqqwuUWbNuD/zy/vh7AhQmMdOECtXu/kiIeXELfwO+pIPVp/1Up
+         peIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=c61Ig9SwSoDqV7zYUXQJVmC/opkuC1ckBKs3j2LfZ8E=;
-        b=sV26QJC6Icbc2Vkm8190t1ntQW35ngGZ6h9FFoauQded4OpfL5ELQQp4tOhNgs6VTb
-         zv7TvJMk1uvXLX5Z3cxV4wTIJvAxFUHoLnonXLoqF6Du0B+G7izPeXzsonfPxw+PGY/n
-         SibYH1t6LBvYeKmulZS/WsePFelXa8FhTdMUN3Dq8JxoF264YxH1ePL8GU+o3iPofqla
-         jLpRAzob1tt/D92CaMzg6L2Ul8b9aZClzAyP203Rmf9NCUomi4K8vezXQ/F8Dm7rEYZY
-         BrPv2yRUDwEAZ1yM7lx0/KJleYub5sU9jM9yMdPGkI4jydXxJOYt5PkoYQXuuvxNKovV
-         vFAg==
-X-Gm-Message-State: APjAAAVaUt4of8riQyqILlv2qhJGLakg2IcDPTY+L06VPu1MR1UiHhi6
-        D+hHVDMYM5Cj3dTsznqK4bA=
-X-Google-Smtp-Source: APXvYqweRFwLYD1YzcH+8o+vHooL43IMa8Qu6x4b+uHj1uQmVERPeMJ4ClvjfiV8YKDES/ckY8kDIA==
-X-Received: by 2002:a17:90a:ba81:: with SMTP id t1mr16166868pjr.139.1573782605331;
-        Thu, 14 Nov 2019 17:50:05 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::6ab4])
-        by smtp.gmail.com with ESMTPSA id w15sm7407109pfn.13.2019.11.14.17.50.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 17:50:04 -0800 (PST)
-Date:   Thu, 14 Nov 2019 17:50:02 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: static and dynamic linking. Was: [PATCH bpf-next v3 1/5] bpf:
- Support chain calling multiple BPF
-Message-ID: <20191115015001.iyqipxhoqt77iade@ast-mbp.dhcp.thefacebook.com>
-References: <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
- <874l07fu61.fsf@toke.dk>
- <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
- <87eez4odqp.fsf@toke.dk>
- <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
- <87h839oymg.fsf@toke.dk>
- <20191112195223.cp5kcmkko54dsfbg@ast-mbp.dhcp.thefacebook.com>
- <5dcb3f4e8be4_3202ae6af4ec5bcac@john-XPS-13-9370.notmuch>
- <20191113002058.bkch563wm6vhmn3l@ast-mbp.dhcp.thefacebook.com>
- <5dcb959eb9d15_6dcc2b08358745c0f9@john-XPS-13-9370.notmuch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VhwfCvUXZdHcPjd/8gnXz63IRCXwmj0cc9MwMWk9XXQ=;
+        b=LGVr++XI2FX6wly3j6C8M0zSZTo0LODMpqlRDjHqtkGl/aXUuwubTJk6yQQ/9B9IN/
+         a8HXyjc2IP9mhgY3qU9TyjD7TTF1qFArgr40JzmOCAivk/ewBIu5QNLDB+ZQVn/cVXNK
+         jzG0iOmBWokSzRNVbohW3CnVgt6JcHOdcm5xKU4Tnx0VLLwTKrw9MhD4o+mlFk9VW9+p
+         Fyftky+wOKqBKaYdw2Osoi9dTxe/w5srKs29XeFFto8XwmmO3xQ1WeNXnoNbpcdwFow3
+         2DpOas/ao4rXgSAnWeufjV9PAPb3+YFGGRR4Ju+TqcNk/KayiYbVcrLk39e0HC7c9Dmn
+         2wtw==
+X-Gm-Message-State: APjAAAUJ9oBghoKoq/1AbI0mZt32IhVw/CAypJxkSeAjWBUHeVtnmbO6
+        O0Ok6BnwLnri1N6glsA/2nzXvr8d0P4=
+X-Google-Smtp-Source: APXvYqz1qOY1cWE8Vi59QvBvRmmDiO65qvpBAwJtShWlFCb8fPUP7tPVw8M2P1uoObYofhL+pdmBGA==
+X-Received: by 2002:a19:3f07:: with SMTP id m7mr9468163lfa.136.1573783043837;
+        Thu, 14 Nov 2019 17:57:23 -0800 (PST)
+Received: from localhost.localdomain (57-201-94-178.pool.ukrtel.net. [178.94.201.57])
+        by smtp.gmail.com with ESMTPSA id v22sm4376394lfg.63.2019.11.14.17.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2019 17:57:22 -0800 (PST)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     netdev@vger.kernel.org, davem@davemloft.net,
+        vinicius.gomes@intel.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        linux-kernel@vger.kernel.org,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [net-next PATCH] taprio: don't reject same mqprio settings
+Date:   Fri, 15 Nov 2019 03:56:07 +0200
+Message-Id: <20191115015607.11291-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5dcb959eb9d15_6dcc2b08358745c0f9@john-XPS-13-9370.notmuch>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 09:33:18PM -0800, John Fastabend wrote:
-> 
-> In addition to above flow something like this to load libraries first should
-> also work?
-> 
->    // here fw2 is a library its never attached to anything but can be
->    // used to pull functions from
->    obj = bpf_object__open("fw2.o", attr);
->    bpf_object__load(obj);
->    prog = bpf_object__find_program_by_title(obj);
->    subprog_btf_id0 = libbpf_find_obj_btf_id("name of function", obj);
->    subprog_btf_id1 = libbpf_find_obj_btf_id("name of function", obj);
-> 
->    // all pairs of (prog_fd, btf_id) need to be specified at load time
->    attr.attach[0].prog_fd = fw2_fd;
->    attr.attach[0].btf_id = subprog_btf_id0;
->    attr.attach[1].prog_fd = fw2_fd;
->    attr.attach[1].btf_id = subprog_btf_id1;
->    obj = bpf_object__open("rootlet.o", attr)
->    bpf_object__load(obj)
->    prog = bpf_object__find_program_by_title(obj);
->    link = bpf_program__replace(prog);
->    // attach rootlet.o at this point with subprog_btf_id
+The taprio qdisc allows to set mqprio setting but only once. In case
+if mqprio settings are provided next time the error is returned as
+it's not allowed to change traffic class mapping in-flignt and that
+is normal. But if configuration is absolutely the same - no need to
+return error. It allows to provide same command couple times,
+changing only base time for instance, or changing only scheds maps,
+but leaving mqprio setting w/o modification. It more corresponds the
+message: "Changing the traffic mapping of a running schedule is not
+supported", so reject mqprio if it's really changed.
 
-The point I'm arguing that these:
-   attr.attach[0].prog_fd = fw2_fd;
-   attr.attach[0].btf_id = subprog_btf_id0;
-   attr.attach[1].prog_fd = fw2_fd;
-   attr.attach[1].btf_id = subprog_btf_id1;
-should not be part of libbpf api. Instead libbpf should be able to adjust
-relocations inside the program. You're proposing to do linking via explicit
-calls, I'm saying such linking should be declarative. libbpf should be able to
-derive the intent from the program and patch calls.
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+---
+ net/sched/sch_taprio.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-Example:
-helpers.o:
-int foo(struct xdp_md *ctx, int var) {...}
-int bar(int *array, bpf_size_t size) {...}
-obj = bpf_object__open("helpers.o", attr)
-bpf_object__load(obj);
-// load and verify helpers. 'foo' and 'bar' are not attachable to anything.
-// These two programs don't have program type.
-// The kernel loaded and verified them.
-main_prog.o:
-int foo(struct xdp_md *ctx, int var);
-int bar(int *array, bpf_size_t size);
-int main_prog(struct xdp_md *ctx) 
-{ 
-  int ar[5], ret;
-  ret = foo(ctx, 1) + bar(ar, 5);
-}
-// 'foo' and 'bar' are extern functions from main_prog pov.
-obj = bpf_object__open("main_prog.o", attr)
-bpf_object__load(obj);
-// libbpf finds foo/bar in the kernel and adjusts two call instructions inside
-// main_prog to point to prog_fd+btf_id
-
-That is the second use case of dynamic linking I've been talking earlier. The
-same thing should be possible to do with static linking. Then libbpf will
-adjust calls inside main_prog to be 'call pc+123' and 'foo' and 'bar' will
-become traditional bpf subprograms. main_prog() has single 'struct xdp_md *'
-argument. It is normal attachable XDP program.
-
-Loading main_prog.o first and then loading helpers.o should be possible as
-well. The verifier needs BTF of extern 'foo' and 'bar' symbols to be able to
-verify main_prog() independently. For example to check that main_prog() is
-passing correct ctx into foo(). That is the main difference vs traditional
-dynamic linking. I think we all agree that we want bpf programs to be verified
-independently. To do that the verifier needs to have BTF (function prototypes)
-of extern symbols. One can argue that it's not necessary and helpers.o can be
-loaded first. I don't think that will work in all cases. There could be many
-dependencies between helpers1.o calling another helpers2.o and so on and there
-will be no good order where calling extern foo() can be avoided.
-
-This thread is getting long :) and sounds like we're converging. I'm thinking
-to combine everything we've discussed so far into dynamic/static linking doc.
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 7cd68628c637..bd844f2cbf7a 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1347,6 +1347,26 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
+ 	return err;
+ }
+ 
++static int taprio_mqprio_cmp(struct net_device *dev,
++			     struct tc_mqprio_qopt *mqprio)
++{
++	int i;
++
++	if (mqprio->num_tc != dev->num_tc)
++		return -1;
++
++	for (i = 0; i < mqprio->num_tc; i++)
++		if (dev->tc_to_txq[i].count != mqprio->count[i] ||
++		    dev->tc_to_txq[i].offset != mqprio->offset[i])
++			return -1;
++
++	for (i = 0; i < TC_BITMASK + 1; i++)
++		if (dev->prio_tc_map[i] != mqprio->prio_tc_map[i])
++			return -1;
++
++	return 0;
++}
++
+ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 			 struct netlink_ext_ack *extack)
+ {
+@@ -1398,6 +1418,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	admin = rcu_dereference(q->admin_sched);
+ 	rcu_read_unlock();
+ 
++	/* no changes - no new mqprio settings */
++	if (mqprio && !taprio_mqprio_cmp(dev, mqprio))
++		mqprio = NULL;
++
+ 	if (mqprio && (oper || admin)) {
+ 		NL_SET_ERR_MSG(extack, "Changing the traffic mapping of a running schedule is not supported");
+ 		err = -ENOTSUPP;
+-- 
+2.20.1
 
