@@ -2,164 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05BB9FD3C9
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 05:45:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD681FD3DC
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfKOEp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 23:45:26 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43984 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbfKOEpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 23:45:25 -0500
-Received: by mail-pl1-f193.google.com with SMTP id a18so3774889plm.10;
-        Thu, 14 Nov 2019 20:45:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zp0EkuTAfCyU3TOfat2tURAscamqJyiKCYFYh95KC9Y=;
-        b=Uvvx12ulSsuclHGxLxRKcbnX1hvkC6X1UJh37k7o2EvM6pnQD4eGuh9h+yu6rQwwAw
-         6H3Ut7ImmPx6yZeuc9tKV1W8BuFADKpW9Wv43cqlqSUTnj5KrIa1af6RUx62us68aSpO
-         QsdikKljQbjsOHYWg4WJKepz4cekERzdRhN3QAwR/gcdUkA0hzvdbBbQVvQgVwko5Z5G
-         rH4TXAeWX1xfitVZetm7oruJWoyjazVBxTGa2lHLCvFKbrE2C7mCzio0ckRmgI165wDD
-         f01BgU2ZH79St/CEGT3SZ9nzXGvSKRXvm7uIixhmRzhAbtkpLsLsxOKbpcANH6v6uxQ3
-         hiPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zp0EkuTAfCyU3TOfat2tURAscamqJyiKCYFYh95KC9Y=;
-        b=sOXBBfLXdQ6gYanWkHPtDJFwc6280UT2ETi3p4Nc3CB7gVudy2C0RJ7/d3yho3RZy3
-         Okgf4EEdV1IU6SxErjZ+b8ltJGmef+i1rvlaZc0aIWiqf5AJyS8gcZSuhdy2d1w7piT/
-         kb1ptRN+0t+xLZv7mgkV167hCAoyoZ2B0GxQQpxfSdm8kw/cGYYvZofDy4KNLLo5V8D5
-         6/Q5O2U9YqTJWlCB4pmGpEMw9m2+SoI2CfIhDJ4975/GbPunjhMu/tgCEMvatPLQK15P
-         7cVSBFx79Vla91UH+Plxp815xATEUBbaHQ0ISKMc2BrC+SOVcWC+BpNAciuiahCY+dIX
-         xZFw==
-X-Gm-Message-State: APjAAAWr0FJNbj2JwBPQi/+dxKgcrfo7QqXG7Rhe/njxmjnJfL+UIO9G
-        9hPViY1xv6Qk+Lt2yzZL23FlG7Cd
-X-Google-Smtp-Source: APXvYqyl3v1j86ODq4j7anq/8l4nn+UMXP3KQxfoQSp2iuxylztQpzNW2oQeQMLjFl5iXPHrOk3tAw==
-X-Received: by 2002:a17:90a:f496:: with SMTP id bx22mr17357298pjb.101.1573793122887;
-        Thu, 14 Nov 2019 20:45:22 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::a328])
-        by smtp.gmail.com with ESMTPSA id z18sm8395241pgv.90.2019.11.14.20.45.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 20:45:22 -0800 (PST)
-Date:   Thu, 14 Nov 2019 20:45:19 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com, Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Message-ID: <20191115044518.sqh3y3bwtjfp5zex@ast-mbp.dhcp.thefacebook.com>
-References: <20191115040225.2147245-1-andriin@fb.com>
- <20191115040225.2147245-3-andriin@fb.com>
+        id S1726550AbfKOFDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 00:03:30 -0500
+Received: from mail-eopbgr30079.outbound.protection.outlook.com ([40.107.3.79]:7650
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725773AbfKOFD3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 00:03:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YY2MTCtysI5wq9xKUN3Fk36SAk/muWWuH/plNU7vhRUiRViGqknPeAYVslszE43DpZcBqKDTfN8Zm2cP8XMEuZ2DDI6tDTD4uciMefF8066p7VgPlKS3c0YFaTrbgVv1Wk0yrSoOV8zt8ga9P8Oq8e8AsJk0Rv26Gj3S0xtcJqvVzHcVyS7rW/cXgCzApbZhKAJcpeYdLXVPdkeJj8TgzvuwcyGyU9LwKhp1C8j5FUM6X2/ZAoAyblMapuLVTW+lfaYYMKdXY+sw0XBzVp5oku2fycMcsWF5B4RFdD37s3yJAczjzUwuL9VvEsx40BAU2Q8hz4k/ZKhsCxlt+vGQpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AEd1Sj3Rd0n6Pp+0IUHTFXYetP0rBPQtuNIalU9l81k=;
+ b=OXjEesYIZZtQA65HhrSan0uLOnZv8MsCe9KED5Js0HxO7oo6pUNMuBQ+BpL9KvBWlyIraNvU11MNfTCPn1qEIUerhlJBGWq+G0Oh2L+hzwDLBeOcUTq9nTmbIBPhk/h21tYekco1bCkpeKDhw9WTGRXszpsgYgLXTcWVq5I9AOKpCFzbXCcIxvsGpOXSGEf6iMIrTD5Kr6y/0YElO6gVm0lKX3w9XtPjzxhXWB/bQbH0pwBdBHMFTN7HlqpzzUIFVfyvcVZjZH4SJWLN+JewXF6rBxvDkCSgJB0bmjg59j4xcQxA741NnWmfzXWk6R1VtR3znxJAVJl7MF0f/bIdqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AEd1Sj3Rd0n6Pp+0IUHTFXYetP0rBPQtuNIalU9l81k=;
+ b=m0SLsGc1wEkRu3PAhoh85bTgQG7yoRBFmtbzFPbNEKvmWPxVHvxzjIT59SKQt938yR7lG4nskTw4Q9H1tJsO61tYmmQJbAsicJmZEq/N8oEhV/P55HxEjs9OlsdvSdub4hLqw0zyDs1sVSwM/p6VvQXPFe8NYDZGFZ0epAYzaU8=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4620.eurprd04.prod.outlook.com (52.135.140.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.28; Fri, 15 Nov 2019 05:03:26 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2451.029; Fri, 15 Nov 2019
+ 05:03:26 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
+Thread-Topic: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
+Thread-Index: AQHVm3IDm0rriooN3k2DjIsf/kbhcA==
+Date:   Fri, 15 Nov 2019 05:03:26 +0000
+Message-ID: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR06CA0143.apcprd06.prod.outlook.com
+ (2603:1096:1:1f::21) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 028f6dae-a349-42a3-71e3-08d7698925ab
+x-ms-traffictypediagnostic: DB7PR04MB4620:|DB7PR04MB4620:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB462021E34634F15ECCF8D469E6700@DB7PR04MB4620.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02229A4115
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(199004)(189003)(52116002)(316002)(305945005)(110136005)(8936002)(66066001)(478600001)(64756008)(66556008)(71190400001)(66946007)(66476007)(50226002)(256004)(66446008)(8676002)(6506007)(36756003)(3846002)(6116002)(14454004)(102836004)(54906003)(26005)(14444005)(71200400001)(2906002)(81156014)(81166006)(386003)(25786009)(99286004)(7736002)(186003)(2501003)(5660300002)(486006)(1076003)(2201001)(6486002)(86362001)(476003)(2616005)(6512007)(6436002)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4620;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lAPGa+bmRJ/UFv8r84MBOkNydTxj88dHbIwuDRgpgaxSmn8rJUAx3Fsih7RfC2EjTw95AByDxSLXf9SrisXiFnp/mW0cYCww5nIex9VrlnCsCoc5XnWAFLkeqsUpLzMJz6MLOaN5iWsK3rWAaEIz3gN6lwPjE139OyUm00kuWqgq/hIdwwlwor+YgkKaTCVdv8zuXugekWcdc2TbOfKCbh4HxxX3P+xrZZ9RuKPgQbly5tLmz4xTZ7p/cPcEkEqzG/vhVAcz5BS6A1CudwFKvkOiC9Itdm2O5f7Q4A0u7U8YvWOn1E4KoY2nZtdkdny/QstxGjeg/SLIs0DUBhjOcfD/wsd5/dpdJVDYYtcyxIW55gD+RdBdAG26w85BoVGWMqhiZHiw5DxnuNQYxR8QIXOkMc/Wt0+zHKmzksXGCv4S5VpFAykTO/s3oSfI2bT1
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191115040225.2147245-3-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 028f6dae-a349-42a3-71e3-08d7698925ab
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 05:03:26.1972
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 35GphiRYUNl5dmhyQy0KQVxHxe9wbQkqxRp/meWwu7FnFrDYZz9yLz6QtUisoV0D6pGB/uDLuRG0OtOa0ZoVfQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4620
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 08:02:23PM -0800, Andrii Nakryiko wrote:
-> Add ability to memory-map contents of BPF array map. This is extremely useful
-> for working with BPF global data from userspace programs. It allows to avoid
-> typical bpf_map_{lookup,update}_elem operations, improving both performance
-> and usability.
-> 
-> There had to be special considerations for map freezing, to avoid having
-> writable memory view into a frozen map. To solve this issue, map freezing and
-> mmap-ing is happening under mutex now:
->   - if map is already frozen, no writable mapping is allowed;
->   - if map has writable memory mappings active (accounted in map->writecnt),
->     map freezing will keep failing with -EBUSY;
->   - once number of writable memory mappings drops to zero, map freezing can be
->     performed again.
-> 
-> Only non-per-CPU plain arrays are supported right now. Maps with spinlocks
-> can't be memory mapped either.
-> 
-> For BPF_F_MMAPABLE array, memory allocation has to be done through vmalloc()
-> to be mmap()'able. We also need to make sure that array data memory is
-> page-sized and page-aligned, so we over-allocate memory in such a way that
-> struct bpf_array is at the end of a single page of memory with array->value
-> being aligned with the start of the second page. On deallocation we need to
-> accomodate this memory arrangement to free vmalloc()'ed memory correctly.
-> 
-> One important consideration regarding how memory-mapping subsystem functions.
-> Memory-mapping subsystem provides few optional callbacks, among them open()
-> and close().  close() is called for each memory region that is unmapped, so
-> that users can decrease their reference counters and free up resources, if
-> necessary. open() is *almost* symmetrical: it's called for each memory region
-> that is being mapped, **except** the very first one. So bpf_map_mmap does
-> initial refcnt bump, while open() will do any extra ones after that. Thus
-> number of close() calls is equal to number of open() calls plus one more.
-> 
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: Rik van Riel <riel@surriel.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  include/linux/bpf.h            | 11 ++--
->  include/linux/vmalloc.h        |  1 +
->  include/uapi/linux/bpf.h       |  3 ++
->  kernel/bpf/arraymap.c          | 59 +++++++++++++++++---
->  kernel/bpf/syscall.c           | 99 ++++++++++++++++++++++++++++++++--
->  mm/vmalloc.c                   | 20 +++++++
->  tools/include/uapi/linux/bpf.h |  3 ++
->  7 files changed, 184 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 6fbe599fb977..8021fce98868 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -12,6 +12,7 @@
->  #include <linux/err.h>
->  #include <linux/rbtree_latch.h>
->  #include <linux/numa.h>
-> +#include <linux/mm_types.h>
->  #include <linux/wait.h>
->  #include <linux/u64_stats_sync.h>
->  
-> @@ -66,6 +67,7 @@ struct bpf_map_ops {
->  				     u64 *imm, u32 off);
->  	int (*map_direct_value_meta)(const struct bpf_map *map,
->  				     u64 imm, u32 *off);
-> +	int (*map_mmap)(struct bpf_map *map, struct vm_area_struct *vma);
->  };
->  
->  struct bpf_map_memory {
-> @@ -94,9 +96,10 @@ struct bpf_map {
->  	u32 btf_value_type_id;
->  	struct btf *btf;
->  	struct bpf_map_memory memory;
-> +	char name[BPF_OBJ_NAME_LEN];
->  	bool unpriv_array;
-> -	bool frozen; /* write-once */
-> -	/* 48 bytes hole */
-> +	bool frozen; /* write-once; write-protected by freeze_mutex */
-> +	/* 22 bytes hole */
->  
->  	/* The 3rd and 4th cacheline with misc members to avoid false sharing
->  	 * particularly with refcounting.
-> @@ -104,7 +107,8 @@ struct bpf_map {
->  	atomic64_t refcnt ____cacheline_aligned;
->  	atomic64_t usercnt;
->  	struct work_struct work;
-> -	char name[BPF_OBJ_NAME_LEN];
-> +	struct mutex freeze_mutex;
-> +	u64 writecnt; /* writable mmap cnt; protected by freeze_mutex */
->  };
+From: Sean Nyekjaer <sean@geanix.com>
 
-Can the mutex be moved into bpf_array instead of being in bpf_map that is
-shared across all map types?
-If so then can you reuse the mutex that Daniel is adding in his patch 6/8
-of tail_call series? Not sure what would the right name for such mutex.
-It will be used for your map_freeze logic and for Daniel's text_poke.
+When suspending, when there is still can traffic on the interfaces the
+flexcan immediately wakes the platform again. As it should :-). But it
+throws this error msg:
+[ 3169.378661] PM: noirq suspend of devices failed
+
+On the way down to suspend the interface that throws the error message does
+call flexcan_suspend but fails to call flexcan_noirq_suspend. That means th=
+e
+flexcan_enter_stop_mode is called, but on the way out of suspend the driver
+only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't c=
+all
+flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
+current driver it can't recover from this even with a soft reboot, it requi=
+res
+a hard reboot.
+
+This patch can fix deadlock when using self wakeup, it happenes to be
+able to fix another issue that frames out-of-order in first IRQ handler
+run after wakeup.
+
+In wakeup case, after system resume, frames received out-of-order,the
+problem is wakeup latency from frame reception to IRQ handler is much
+bigger than the counter overflow. This means it's impossible to sort the
+CAN frames by timestamp. The reason is that controller exits stop mode
+during noirq resume, then it can receive the frame immediately. If
+noirq reusme stage consumes much time, it will extend interrupt response
+time.
+
+Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/can/flexcan.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index a929cdda9ab2..43fd187768f1 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -134,8 +134,7 @@
+ 	(FLEXCAN_ESR_ERR_BUS | FLEXCAN_ESR_ERR_STATE)
+ #define FLEXCAN_ESR_ALL_INT \
+ 	(FLEXCAN_ESR_TWRN_INT | FLEXCAN_ESR_RWRN_INT | \
+-	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT | \
+-	 FLEXCAN_ESR_WAK_INT)
++	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT)
+=20
+ /* FLEXCAN interrupt flag register (IFLAG) bits */
+ /* Errata ERR005829 step7: Reserve first valid MB */
+@@ -960,6 +959,12 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+=20
+ 	reg_esr =3D priv->read(&regs->esr);
+=20
++	/* ACK wakeup interrupt */
++	if (reg_esr & FLEXCAN_ESR_WAK_INT) {
++		handled =3D IRQ_HANDLED;
++		priv->write(reg_esr & FLEXCAN_ESR_WAK_INT, &regs->esr);
++	}
++
+ 	/* ACK all bus error and state change IRQ sources */
+ 	if (reg_esr & FLEXCAN_ESR_ALL_INT) {
+ 		handled =3D IRQ_HANDLED;
+@@ -1722,6 +1727,9 @@ static int __maybe_unused flexcan_resume(struct devic=
+e *device)
+ 		netif_start_queue(dev);
+ 		if (device_may_wakeup(device)) {
+ 			disable_irq_wake(dev->irq);
++			err =3D flexcan_exit_stop_mode(priv);
++			if (err)
++				return err;
+ 		} else {
+ 			err =3D pm_runtime_force_resume(device);
+ 			if (err)
+@@ -1767,14 +1775,9 @@ static int __maybe_unused flexcan_noirq_resume(struc=
+t device *device)
+ {
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+-	int err;
+=20
+-	if (netif_running(dev) && device_may_wakeup(device)) {
++	if (netif_running(dev) && device_may_wakeup(device))
+ 		flexcan_enable_wakeup_irq(priv, false);
+-		err =3D flexcan_exit_stop_mode(priv);
+-		if (err)
+-			return err;
+-	}
+=20
+ 	return 0;
+ }
+--=20
+2.17.1
 
