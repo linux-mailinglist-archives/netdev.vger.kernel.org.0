@@ -2,95 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75411FDF5F
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 14:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EAF5FDF72
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 14:57:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727503AbfKONxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 08:53:21 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40725 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727411AbfKONxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 08:53:21 -0500
-Received: by mail-wm1-f67.google.com with SMTP id f3so10484167wmc.5
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 05:53:20 -0800 (PST)
+        id S1727503AbfKON5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 08:57:07 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43321 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727380AbfKON5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 08:57:07 -0500
+Received: by mail-pl1-f195.google.com with SMTP id a18so4711589plm.10
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 05:57:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=vnRMw3+UbZy0rA6oiz2O+xw7fSkKVfJNnex0oqybiDg=;
-        b=gb7cRL+usJkOgacizdbIlxy1a/K79RO9bi29zNWgsmy0oE6Ptl9yfH7MqVQgUuRzoU
-         Vi+5XaCkXzUUBZiRCOCjp22QbTD1KjeQH25lsCJEVDhZC/yJtyVWNHoKi8u6M92DZsDM
-         CcuCy6EaM87gT3skHJFd8X7UX1i53cXbQPXaD4uxk7oe/S4Vw9I23k4wv548wnPMZ4F7
-         5YpBxnzEb5ELTwrNy5yq+cXxMqd18ViQa8w1iaVCmswhPxyfc2ZTJenDMrq4m8EzBw1E
-         txEzLHmO3aUF0EDlnLbTTOIQu2sw5cfHo27kWy7DDAjn/sMt+NegK2VvfcZG+1inOO0C
-         qj/Q==
+        bh=5fRrTg/vhAwT1fmQQ8btG004QGt2nYF+M9QxTu9sTWA=;
+        b=RcEy7KwUZydagXfYUZ2++g2nSi9WV8Ma+cw4lqwUnkyV+/lmAGo3r0YLod1CewxhkS
+         g8Eo1y2PZgBJ8VgJm0yv839WGxkfFKNvCqLzrRW8zcQtUZawz1GYU3h/zXP/CAHpoXz4
+         Wyoza7KbgtGjuoJxpJ17i0SeJrZD/xGG8zdy5Z1olhTmbVfpku4PtRN5FRkeTkC5Rv7l
+         k+FXtjwKnox3KQCv4xQwDduZETiKFcovvIc7SPZ9VkHWt/Ou/B0FsV2i4jHy68Z+2NTg
+         T0KFiyLac//Y80tw2etZ9rrvDXaxtJUmxQDQZ8CuoWrtoBiG4CVzD7K1hhSC2+oUgV4Y
+         iiCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vnRMw3+UbZy0rA6oiz2O+xw7fSkKVfJNnex0oqybiDg=;
-        b=LIrhaonQeGDgqna9nIEPBtvlL4ghwrKusNBrbG+FrjW03Mf2wz4bzQGBKdgXkjdFoc
-         rSv0V8aJ2P/3KYRTUkahL+4IJmF8zKYxqTHhf/dgiKrQ46k6RpjYd/4xbwOLyWy5HOyQ
-         rdwu8GZ+EeGExiP0JeVvlrgDfE/TT6c+vkC8xOyFeG+zPAtb1W339AaXLBFJrsp9E1z2
-         wNL431c82OaGydFLYTWrQmE2Xeeb6eWDsVegLt3ehrhWrimwiZOs/auq8fUNJOgXbsk+
-         ot+bkOAD7BgjWm1crqvlyyPxtvYRRb/XOV61ZryQWgchJVZEe6S8xIKVrO0a16y0Liqx
-         lNlg==
-X-Gm-Message-State: APjAAAVIWRyLiCvLFBZ3y5q94uIHBtSJkTQMcMl4vPMPpJjchUXwHSkL
-        TTkjrr+yR8JPN33qn/ZrewJLnOpikTI=
-X-Google-Smtp-Source: APXvYqzsqDm159D6tYBVD5PMfexBg3qW7RPBoz5mrdw3xRnMEVtpK6by/PzlZZ7ApebNYZ5sryk8hw==
-X-Received: by 2002:a1c:2395:: with SMTP id j143mr14250463wmj.128.1573825999534;
-        Fri, 15 Nov 2019 05:53:19 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id w4sm9319333wmi.39.2019.11.15.05.53.18
+        bh=5fRrTg/vhAwT1fmQQ8btG004QGt2nYF+M9QxTu9sTWA=;
+        b=s/ZiNmFwjE/gnetwgWFv6AyChP679bWBYu2uSnauKOqXpc5fv+Pk1l1gQptP5S7QxV
+         wjLABVyCt8t9n5sJUlUrBO1ks7Mjj7CWMiqB30EC+gBk6KeVzACKxVexph/nZuKQ9KOU
+         8k6VrYme0vPAkrc8O6beLVv/vi27zkM2a6LJVatRZ09cOj9RHF21daEXPYA2w46PKjyZ
+         /ZWwh608G97tbWMaA3ltSdQEbeV5gmuxgR2Zh1na9N/qfiTEmRSLXjRkEmqDHoFSLDN1
+         v40RmERmXY9BoweLWX9vDYhzCrteCI5uFUDrtUjr74U4pQqs4iRwFb3ipE8GYsJ8uuXp
+         /9kA==
+X-Gm-Message-State: APjAAAXlRE8oYMjudrZRkdBt+cXm577NKu5dt7ETUKlzVntPYVsNRQv1
+        eNNwF5j4w3AHUzvjxB3Q0chC5A==
+X-Google-Smtp-Source: APXvYqxMZJAbje2U8MlpKS6E4KT497xnMsIsmDC2+Ryy/8kslK0/GaAXloCNb0nXTxcqofJSjEKBBg==
+X-Received: by 2002:a17:90a:7bcc:: with SMTP id d12mr19825661pjl.63.1573826225906;
+        Fri, 15 Nov 2019 05:57:05 -0800 (PST)
+Received: from localhost ([2620:10d:c090:180::a9db])
+        by smtp.gmail.com with ESMTPSA id p3sm12009787pfb.163.2019.11.15.05.57.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Nov 2019 05:53:18 -0800 (PST)
-Date:   Fri, 15 Nov 2019 14:53:18 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
-        vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next v3 2/2] cxgb4: add TC-MATCHALL classifier
- ingress offload
-Message-ID: <20191115135318.GB2158@nanopsycho>
-References: <cover.1573818408.git.rahul.lakkireddy@chelsio.com>
- <418c2bbf879fa75a8a3170d8523235f9b16af595.1573818409.git.rahul.lakkireddy@chelsio.com>
+        Fri, 15 Nov 2019 05:57:05 -0800 (PST)
+Date:   Fri, 15 Nov 2019 08:57:03 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com, Rik van Riel <riel@surriel.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
+ BPF_MAP_TYPE_ARRAY
+Message-ID: <20191115135703.GA309457@cmpxchg.org>
+References: <20191115040225.2147245-1-andriin@fb.com>
+ <20191115040225.2147245-3-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <418c2bbf879fa75a8a3170d8523235f9b16af595.1573818409.git.rahul.lakkireddy@chelsio.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191115040225.2147245-3-andriin@fb.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 15, 2019 at 01:14:21PM CET, rahul.lakkireddy@chelsio.com wrote:
-
-[...]
-
-
->@@ -26,9 +37,13 @@ struct cxgb4_tc_matchall {
-> };
+On Thu, Nov 14, 2019 at 08:02:23PM -0800, Andrii Nakryiko wrote:
+> Add ability to memory-map contents of BPF array map. This is extremely useful
+> for working with BPF global data from userspace programs. It allows to avoid
+> typical bpf_map_{lookup,update}_elem operations, improving both performance
+> and usability.
 > 
-> int cxgb4_tc_matchall_replace(struct net_device *dev,
->-			      struct tc_cls_matchall_offload *cls_matchall);
->+			      struct tc_cls_matchall_offload *cls_matchall,
->+			      bool ingress);
-> int cxgb4_tc_matchall_destroy(struct net_device *dev,
->-			      struct tc_cls_matchall_offload *cls_matchall);
->+			      struct tc_cls_matchall_offload *cls_matchall,
->+			      bool ingress);
->+int cxgb4_tc_matchall_stats(struct net_device *dev,
->+			    struct tc_cls_matchall_offload *cls_matchall);
-
-Hmm, you only add stats function in this second patch. Does that mean
-you don't care for stats in egress?
-From looking at cxgb_setup_tc_matchall() looks like I'm right.
-Why?
-
+> There had to be special considerations for map freezing, to avoid having
+> writable memory view into a frozen map. To solve this issue, map freezing and
+> mmap-ing is happening under mutex now:
+>   - if map is already frozen, no writable mapping is allowed;
+>   - if map has writable memory mappings active (accounted in map->writecnt),
+>     map freezing will keep failing with -EBUSY;
+>   - once number of writable memory mappings drops to zero, map freezing can be
+>     performed again.
 > 
-> int cxgb4_init_tc_matchall(struct adapter *adap);
-> void cxgb4_cleanup_tc_matchall(struct adapter *adap);
->-- 
->2.24.0
->
+> Only non-per-CPU plain arrays are supported right now. Maps with spinlocks
+> can't be memory mapped either.
+> 
+> For BPF_F_MMAPABLE array, memory allocation has to be done through vmalloc()
+> to be mmap()'able. We also need to make sure that array data memory is
+> page-sized and page-aligned, so we over-allocate memory in such a way that
+> struct bpf_array is at the end of a single page of memory with array->value
+> being aligned with the start of the second page. On deallocation we need to
+> accomodate this memory arrangement to free vmalloc()'ed memory correctly.
+> 
+> One important consideration regarding how memory-mapping subsystem functions.
+> Memory-mapping subsystem provides few optional callbacks, among them open()
+> and close().  close() is called for each memory region that is unmapped, so
+> that users can decrease their reference counters and free up resources, if
+> necessary. open() is *almost* symmetrical: it's called for each memory region
+> that is being mapped, **except** the very first one. So bpf_map_mmap does
+> initial refcnt bump, while open() will do any extra ones after that. Thus
+> number of close() calls is equal to number of open() calls plus one more.
+> 
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Cc: Rik van Riel <riel@surriel.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
