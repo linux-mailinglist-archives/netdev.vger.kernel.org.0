@@ -2,136 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78843FE894
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 00:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C880FE898
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 00:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbfKOXXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 18:23:11 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:35363 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727056AbfKOXXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 18:23:11 -0500
-Received: by mail-qk1-f196.google.com with SMTP id i19so9510993qki.2;
-        Fri, 15 Nov 2019 15:23:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wGFPIMQEUkO/+C9EmOWTVcA4qD5FSm48Riv2fdhacjQ=;
-        b=WhouXq5oaqtYCPDm4fxN2R8AwpFGNxaV636Piy0rAT7+M6De6B+eZ8KugdYYDygdWs
-         +BI36/nMUCZuBFDw8fm7gUfYXNZOT2dbSxH4Xip0uO1NDx3Osg2ST/rbTCo0xZgJxNCJ
-         +K9Kfn3Vshu1i82w991zlCp78mLqS99ZD3ZwLnhR8ljcoRDqm9MFz3hPlHjrbogsbTwp
-         HPPbg8kgSiHxoiZIwynwektrFc3YFi5KY4f25iys2llY4C64vPhbzZjMPDSeMhRo6AyV
-         W9J8aW19Vsdk49KOWWqELLohsyDVfKZVexQBFD0FkcGcCV6394zN3cU3DswU3JZwJuto
-         tJXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wGFPIMQEUkO/+C9EmOWTVcA4qD5FSm48Riv2fdhacjQ=;
-        b=Zi16oM1HQp82DB+krJ/6PIYAP0Gsgaw0xr9Ri54MuRd8wpsX66ZFgRy+RjKjGvjhAF
-         lGpXEgL8swCBDA/qlt0aFnFDcXmVzQcItRPfXnuPAgUDcom7gbJ2NLIcZ3g6n4mC8cAf
-         BPFJsdwpJ0ntHGB4+XwZohLVauwHLI4iJCwGFP1bnzoSVtfAjeecyq4QiNE+UPuFgNuI
-         GxWGKDd21U3SGGVMeW3pJA744sPHlofDqc++sjZYP+w91Niqj0plo9kNSXWRv8iioGrB
-         8yV6458d8ZaWZUUaX1IURFIkTvau4n9pCFYr8ApkRSn9StLZyCRU9TCycx9rx/GNL81F
-         B/0Q==
-X-Gm-Message-State: APjAAAWbIkaSc/6TdtHkWOC3PBUe4D2MmJKaESh2jIjI4tba4VkMCObl
-        WITX8UTU1fDsAr2Xmax07h5rNbWb3WyUdajiVhnLrQ==
-X-Google-Smtp-Source: APXvYqz1Jb23dkNgG3Ivn+RVufWRWR0fnQTi/K4weS+0IFsTryLBBQBWBpw4K+xreO7ppsCM9keQEhfhtbw3Cqaanes=
-X-Received: by 2002:a05:620a:1011:: with SMTP id z17mr15084382qkj.39.1573860190106;
- Fri, 15 Nov 2019 15:23:10 -0800 (PST)
+        id S1727344AbfKOXYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 18:24:04 -0500
+Received: from www62.your-server.de ([213.133.104.62]:56324 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727056AbfKOXYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 18:24:04 -0500
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iVkwa-0003XA-Pl; Sat, 16 Nov 2019 00:24:00 +0100
+Received: from [178.197.248.45] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iVkwa-0005ww-B2; Sat, 16 Nov 2019 00:24:00 +0100
+Subject: Re: [PATCH v4 bpf-next 1/4] bpf: switch bpf_map ref counter to 64bit
+ so bpf_map_inc never fails
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20191115040225.2147245-1-andriin@fb.com>
+ <20191115040225.2147245-2-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7032bc3c-9375-876d-8d97-1ed21e94ae92@iogearbox.net>
+Date:   Sat, 16 Nov 2019 00:23:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <cover.1573779287.git.daniel@iogearbox.net> <d2364bbaca1569b04e2434d8b58a458f21c685ef.1573779287.git.daniel@iogearbox.net>
-In-Reply-To: <d2364bbaca1569b04e2434d8b58a458f21c685ef.1573779287.git.daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 15 Nov 2019 15:22:59 -0800
-Message-ID: <CAEf4BzZau9d-feGEsOu617b7cd2aSfmmSi2TgwZbf4XZGBHASg@mail.gmail.com>
-Subject: Re: [PATCH rfc bpf-next 1/8] bpf, x86: generalize and extend
- bpf_arch_text_poke for direct jumps
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191115040225.2147245-2-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25634/Fri Nov 15 10:44:37 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 5:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Add BPF_MOD_{NOP_TO_JUMP,JUMP_TO_JUMP,JUMP_TO_NOP} patching for x86
-> JIT in order to be able to patch direct jumps or nop them out. We need
-> this facility in order to patch tail call jumps and in later work also
-> BPF static keys.
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+On 11/15/19 5:02 AM, Andrii Nakryiko wrote:
+> 92117d8443bc ("bpf: fix refcnt overflow") turned refcounting of bpf_map into
+> potentially failing operation, when refcount reaches BPF_MAX_REFCNT limit
+> (32k). Due to using 32-bit counter, it's possible in practice to overflow
+> refcounter and make it wrap around to 0, causing erroneous map free, while
+> there are still references to it, causing use-after-free problems.
+
+You mention 'it's possible in practice' to overflow in relation to bpf map
+refcount, do we need any fixing for bpf tree here?
+
+> But having a failing refcounting operations are problematic in some cases. One
+> example is mmap() interface. After establishing initial memory-mapping, user
+> is allowed to arbitrarily map/remap/unmap parts of mapped memory, arbitrarily
+> splitting it into multiple non-contiguous regions. All this happening without
+> any control from the users of mmap subsystem. Rather mmap subsystem sends
+> notifications to original creator of memory mapping through open/close
+> callbacks, which are optionally specified during initial memory mapping
+> creation. These callbacks are used to maintain accurate refcount for bpf_map
+> (see next patch in this series). The problem is that open() callback is not
+> supposed to fail, because memory-mapped resource is set up and properly
+> referenced. This is posing a problem for using memory-mapping with BPF maps.
+> 
+> One solution to this is to maintain separate refcount for just memory-mappings
+> and do single bpf_map_inc/bpf_map_put when it goes from/to zero, respectively.
+> There are similar use cases in current work on tcp-bpf, necessitating extra
+> counter as well. This seems like a rather unfortunate and ugly solution that
+> doesn't scale well to various new use cases.
+> 
+> Another approach to solve this is to use non-failing refcount_t type, which
+> uses 32-bit counter internally, but, once reaching overflow state at UINT_MAX,
+> stays there. This utlimately causes memory leak, but prevents use after free.
+> 
+> But given refcounting is not the most performance-critical operation with BPF
+> maps (it's not used from running BPF program code), we can also just switch to
+> 64-bit counter that can't overflow in practice, potentially disadvantaging
+> 32-bit platforms a tiny bit. This simplifies semantics and allows above
+> described scenarios to not worry about failing refcount increment operation.
+> 
+> In terms of struct bpf_map size, we are still good and use the same amount of
+> space:
+> 
+> BEFORE (3 cache lines, 8 bytes of padding at the end):
+> struct bpf_map {
+> 	const struct bpf_map_ops  * ops __attribute__((__aligned__(64))); /*     0     8 */
+> 	struct bpf_map *           inner_map_meta;       /*     8     8 */
+> 	void *                     security;             /*    16     8 */
+> 	enum bpf_map_type  map_type;                     /*    24     4 */
+> 	u32                        key_size;             /*    28     4 */
+> 	u32                        value_size;           /*    32     4 */
+> 	u32                        max_entries;          /*    36     4 */
+> 	u32                        map_flags;            /*    40     4 */
+> 	int                        spin_lock_off;        /*    44     4 */
+> 	u32                        id;                   /*    48     4 */
+> 	int                        numa_node;            /*    52     4 */
+> 	u32                        btf_key_type_id;      /*    56     4 */
+> 	u32                        btf_value_type_id;    /*    60     4 */
+> 	/* --- cacheline 1 boundary (64 bytes) --- */
+> 	struct btf *               btf;                  /*    64     8 */
+> 	struct bpf_map_memory memory;                    /*    72    16 */
+> 	bool                       unpriv_array;         /*    88     1 */
+> 	bool                       frozen;               /*    89     1 */
+> 
+> 	/* XXX 38 bytes hole, try to pack */
+> 
+> 	/* --- cacheline 2 boundary (128 bytes) --- */
+> 	atomic_t                   refcnt __attribute__((__aligned__(64))); /*   128     4 */
+> 	atomic_t                   usercnt;              /*   132     4 */
+> 	struct work_struct work;                         /*   136    32 */
+> 	char                       name[16];             /*   168    16 */
+> 
+> 	/* size: 192, cachelines: 3, members: 21 */
+> 	/* sum members: 146, holes: 1, sum holes: 38 */
+> 	/* padding: 8 */
+> 	/* forced alignments: 2, forced holes: 1, sum forced holes: 38 */
+> } __attribute__((__aligned__(64)));
+> 
+> AFTER (same 3 cache lines, no extra padding now):
+> struct bpf_map {
+> 	const struct bpf_map_ops  * ops __attribute__((__aligned__(64))); /*     0     8 */
+> 	struct bpf_map *           inner_map_meta;       /*     8     8 */
+> 	void *                     security;             /*    16     8 */
+> 	enum bpf_map_type  map_type;                     /*    24     4 */
+> 	u32                        key_size;             /*    28     4 */
+> 	u32                        value_size;           /*    32     4 */
+> 	u32                        max_entries;          /*    36     4 */
+> 	u32                        map_flags;            /*    40     4 */
+> 	int                        spin_lock_off;        /*    44     4 */
+> 	u32                        id;                   /*    48     4 */
+> 	int                        numa_node;            /*    52     4 */
+> 	u32                        btf_key_type_id;      /*    56     4 */
+> 	u32                        btf_value_type_id;    /*    60     4 */
+> 	/* --- cacheline 1 boundary (64 bytes) --- */
+> 	struct btf *               btf;                  /*    64     8 */
+> 	struct bpf_map_memory memory;                    /*    72    16 */
+> 	bool                       unpriv_array;         /*    88     1 */
+> 	bool                       frozen;               /*    89     1 */
+> 
+> 	/* XXX 38 bytes hole, try to pack */
+> 
+> 	/* --- cacheline 2 boundary (128 bytes) --- */
+> 	atomic64_t                 refcnt __attribute__((__aligned__(64))); /*   128     8 */
+> 	atomic64_t                 usercnt;              /*   136     8 */
+> 	struct work_struct work;                         /*   144    32 */
+> 	char                       name[16];             /*   176    16 */
+> 
+> 	/* size: 192, cachelines: 3, members: 21 */
+> 	/* sum members: 154, holes: 1, sum holes: 38 */
+> 	/* forced alignments: 2, forced holes: 1, sum forced holes: 38 */
+> } __attribute__((__aligned__(64)));
+> 
+> This patch, while modifying all users of bpf_map_inc, also cleans up its
+> interface to match bpf_map_put with separate operations for bpf_map_inc and
+> bpf_map_inc_with_uref (to match bpf_map_put and bpf_map_put_with_uref,
+> respectively). Also, given there are no users of bpf_map_inc_not_zero
+> specifying uref=true, remove uref flag and default to uref=false internally.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > ---
-
-just naming nits, looks good otherwise
-
-
->  arch/x86/net/bpf_jit_comp.c | 64 ++++++++++++++++++++++++++-----------
->  include/linux/bpf.h         |  6 ++++
->  2 files changed, 52 insertions(+), 18 deletions(-)
->
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index 2e586f579945..66921f2aeece 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -203,8 +203,9 @@ struct jit_context {
->  /* Maximum number of bytes emitted while JITing one eBPF insn */
->  #define BPF_MAX_INSN_SIZE      128
->  #define BPF_INSN_SAFETY                64
-> -/* number of bytes emit_call() needs to generate call instruction */
-> -#define X86_CALL_SIZE          5
+>   .../net/ethernet/netronome/nfp/bpf/offload.c  |  4 +-
+>   include/linux/bpf.h                           | 10 ++--
+>   kernel/bpf/inode.c                            |  2 +-
+>   kernel/bpf/map_in_map.c                       |  2 +-
+>   kernel/bpf/syscall.c                          | 51 ++++++++-----------
+>   kernel/bpf/verifier.c                         |  6 +--
+>   kernel/bpf/xskmap.c                           |  6 +--
+>   net/core/bpf_sk_storage.c                     |  2 +-
+>   8 files changed, 34 insertions(+), 49 deletions(-)
+> 
+[...]
+> +	refold = atomic64_fetch_add_unless(&map->refcnt, 1, 0);
+>   	if (!refold)
+>   		return ERR_PTR(-ENOENT);
+> -
+>   	if (uref)
+> -		atomic_inc(&map->usercnt);
+> +		atomic64_inc(&map->usercnt);
+>   
+>   	return map;
+>   }
+>   
+> -struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map, bool uref)
+> +struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map)
+>   {
+>   	spin_lock_bh(&map_idr_lock);
+> -	map = __bpf_map_inc_not_zero(map, uref);
+> +	map = __bpf_map_inc_not_zero(map, false);
+>   	spin_unlock_bh(&map_idr_lock);
+>   
+>   	return map;
+> @@ -1454,6 +1444,9 @@ static struct bpf_prog *____bpf_prog_get(struct fd f)
+>   	return f.file->private_data;
+>   }
+>   
+> +/* prog's refcnt limit */
+> +#define BPF_MAX_REFCNT 32768
 > +
-> +/* Number of bytes emit_patchable() needs to generate instructions */
-> +#define X86_PATCHABLE_SIZE     5
->
->  #define PROLOGUE_SIZE          25
->
-> @@ -215,7 +216,7 @@ struct jit_context {
->  static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf)
->  {
->         u8 *prog = *pprog;
-> -       int cnt = X86_CALL_SIZE;
-> +       int cnt = X86_PATCHABLE_SIZE;
->
->         /* BPF trampoline can be made to work without these nops,
->          * but let's waste 5 bytes for now and optimize later
-> @@ -480,64 +481,91 @@ static void emit_stx(u8 **pprog, u32 size, u32 dst_reg, u32 src_reg, int off)
->         *pprog = prog;
->  }
->
-> -static int emit_call(u8 **pprog, void *func, void *ip)
-> +static int emit_patchable(u8 **pprog, void *func, void *ip, u8 b1)
 
-I'd strongly prefer opcode instead of b1 :) also would emit_patch() be
-a terrible name?
+Would it make sense in this context to also convert prog refcount over to atomic64
+so we have both in one go in order to align them again? This could likely simplify
+even more wrt error paths.
 
->  {
->         u8 *prog = *pprog;
->         int cnt = 0;
->         s64 offset;
->
-
-[...]
-
->         case BPF_MOD_CALL_TO_NOP:
-> -               if (memcmp(ip, old_insn, X86_CALL_SIZE))
-> +       case BPF_MOD_JUMP_TO_NOP:
-> +               if (memcmp(ip, old_insn, X86_PATCHABLE_SIZE))
->                         goto out;
-> -               text_poke_bp(ip, ideal_nops[NOP_ATOMIC5], X86_CALL_SIZE, NULL);
-> +               text_poke_bp(ip, ideal_nops[NOP_ATOMIC5], X86_PATCHABLE_SIZE,
-
-
-maybe keep it shorter with X86_PATCH_SIZE?
-
-> +                            NULL);
->                 break;
->         }
->         ret = 0;
-
-[...]
+>   struct bpf_prog *bpf_prog_add(struct bpf_prog *prog, int i)
+>   {
+>   	if (atomic_add_return(i, &prog->aux->refcnt) > BPF_MAX_REFCNT) {
