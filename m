@@ -2,88 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9A24FE679
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 21:39:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88796FE681
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 21:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfKOUjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 15:39:18 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36971 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbfKOUjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 15:39:18 -0500
-Received: by mail-ed1-f67.google.com with SMTP id k14so8482356eds.4
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 12:39:16 -0800 (PST)
+        id S1727004AbfKOUnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 15:43:02 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40272 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726991AbfKOUnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 15:43:02 -0500
+Received: by mail-lf1-f66.google.com with SMTP id j26so8972048lfh.7
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 12:43:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3SLe+WMg8dXpRCyxQcXsOPYu7LkJHkn9ZcqcSQYbo0w=;
-        b=qpWmi2ILr53a+wGjprSAGcbkTL8XbZI+PcRPdTKJNaHtyERIOfcLcJHL2Zf8iMkH44
-         BdD3iLPqmFiMs/y6YqfH3MCXv3pWTydmjudaqrEK8HqNvv0DYM9R+3Tcnu/dFZJq0DNH
-         DajcYrSQAkoIH5gO+3pnzzy6wuEpaW6gWSeRa7GMzY+qGeKa/7ccsd06PpvqkXiQR7xs
-         eQ+0FqG+COroYweLvrR9dKRpvnT6fwFtBNReozZ5yQ7fF4QQ4P5p/fcjCCWwznUvvKs3
-         8SmjrTDD4jCbiKvVIBYL3m4J38w+RsyzGlrnr/IdZ6NPtkfMqb7JHIspCPIL82qvYTP/
-         Fb8g==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=t1kmXn3DyN+oFbpE0GUcOMwvt7CaLBdPQtzGMkEvuuo=;
+        b=L4BOM+ma7vZ+5IMmlzYDyPuXeIG8inY6qKkKLmdIa6fwTU1Oox/CRwFDH6cEUwPHvn
+         gUhmjArFefBw2iBF0sXANS3OtgQ9ldypJP+hiBYPfEslHky01GluebRRvCmT64ajDOd9
+         W1SQkD+Mryy7+KtbKHkBoaLJRcO/GVJZX6ez7FQKD7XRFxdq3Z/lXV7wrAku7l6OZaQQ
+         t9qIEEnzXTQaz63YQainhYftsVm15y8xLJ0dwDHCsSN4Z9HZj6cr8Dz7xV9D7Ks+KU23
+         aY3lg9rfRbycQaoDe2H0h6YeiLJ03jXx/1FdYNhWl3uD39HDxc0e/B8NNRvF3UMHlI/1
+         x06w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3SLe+WMg8dXpRCyxQcXsOPYu7LkJHkn9ZcqcSQYbo0w=;
-        b=sJKxp4D86X2FL0PDFQ0oQEbHcQeBcplW56wY8kdvtlpM982ihSWF+bXlscchxeT/pe
-         PgGhKDcZfVk603meCZW8PULYwUMY/aofB/V47DIleybMWS4ha7YGgZEvcx5ny+ZjeuGi
-         kirDPtmf6JHO1Kd4acRkVZHx07GuiNkXHVxz/4S2qlS2hq0PSo5o68ZTMVGMN8puZ5ad
-         ywKl1AQVr92bAT3d9/xfYqfT4OIJQkKuT6B/XKfbEUxyRlV3AwFhm/zW0d6/qDy302L2
-         jeLIoBGMtVaD92uh9sE4G0yv6vq5DXd6h94nBGnE9sIsMq4gLr4WbkvZ8jJQpIpRUoHn
-         LWOQ==
-X-Gm-Message-State: APjAAAXFYD0tjej2w2S0+KlZuFj+IotCUS0hwqGjTpeK+Z2jRbVWuOac
-        Stn9NSLud93khKsgQN1RSKgit3E1SOd6djKu7SY=
-X-Google-Smtp-Source: APXvYqyuyCe1kAZ0jc+N3kmHQ4CEjmPK1eUAuG2ymDtmyw/uI4dq46LoUMW/vLRGCjQDQScy2esck65g/Q2WyCgBiM8=
-X-Received: by 2002:a17:906:1d19:: with SMTP id n25mr3509347ejh.151.1573850355506;
- Fri, 15 Nov 2019 12:39:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=t1kmXn3DyN+oFbpE0GUcOMwvt7CaLBdPQtzGMkEvuuo=;
+        b=f6ACs/rmBjaY8IsqLReAkc3smtNXt4F6XgKaoejhERHs7+XnesBPGVNi3IMMKd1B6+
+         PcvznLbYqvVIqjEW6d0qbmz4GrpjCFey1fDgK7/3B8ANgUsfgnJkak9X8J0OznZKCFXV
+         C2Mdr+qJtAZ8Myl+QCCOkOZeoCN5t6fvFUcRgUTBTYcY7xODBDf7ELq90y/+mDDti3/5
+         S23VcN3/bk0pDAVYJ/Vtn83LJw4pMjr0gNTDvxwcd0/BGh5SWkxz1XWBXxXeQduT4blw
+         ObUd/Y6WD5TgcboWJPl77pTIns3jdo41PHavzJ5i5c1D9JPKzuWV7Q+f3uk7UlDGblYx
+         rzHg==
+X-Gm-Message-State: APjAAAXi+QTk86KHj5yImcTJBumPU7PTZEDqKHiI83UcXSzmA1Z0YJPD
+        GLfePOtXMsdTQHLBZCW80FZFHw==
+X-Google-Smtp-Source: APXvYqxfIcKVLtbBh2FpSLw2e7hTrC36NJile3EdMyK78ZMtjgyZxfmfvXXqKdVHw+zm2Tv0rY9Dfw==
+X-Received: by 2002:a19:cb4a:: with SMTP id b71mr12475061lfg.90.1573850579868;
+        Fri, 15 Nov 2019 12:42:59 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 30sm4539202ljw.29.2019.11.15.12.42.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Nov 2019 12:42:59 -0800 (PST)
+Date:   Fri, 15 Nov 2019 12:42:49 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
+ BPF_MAP_TYPE_ARRAY
+Message-ID: <20191115124249.0ad3496d@cakuba.netronome.com>
+In-Reply-To: <CAEf4Bzat=GDcZWWpGkPWYBJvpKA=PvhhP0QZrEcOOkQz3WvnaA@mail.gmail.com>
+References: <20191115040225.2147245-1-andriin@fb.com>
+        <20191115040225.2147245-3-andriin@fb.com>
+        <20191115044518.sqh3y3bwtjfp5zex@ast-mbp.dhcp.thefacebook.com>
+        <CAEf4BzbE+1s_4=jpWEgNj+T0HyMXt1yjiRncq4sB3vfx6A3Sxw@mail.gmail.com>
+        <20191115050824.76gmttbxd32jnnhb@ast-mbp.dhcp.thefacebook.com>
+        <CAEf4BzbsJSEgnW14F7Xt+E911NC_ZqEUeLg0pxrUbaoj1Zzkyg@mail.gmail.com>
+        <CAEf4Bzat=GDcZWWpGkPWYBJvpKA=PvhhP0QZrEcOOkQz3WvnaA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191114150330.25856-1-olteanv@gmail.com> <20191115.123231.2135613715202333585.davem@davemloft.net>
-In-Reply-To: <20191115.123231.2135613715202333585.davem@davemloft.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 15 Nov 2019 22:39:04 +0200
-Message-ID: <CA+h21hovUw1VfJMtWr5r8NqucejYYNJ1W91MwocKs-fKOsE0PQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 00/11] DSA driver for Vitesse Felix switch
-To:     David Miller <davem@davemloft.net>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Nov 2019 at 22:32, David Miller <davem@davemloft.net> wrote:
->
-> From: Vladimir Oltean <olteanv@gmail.com>
-> Date: Thu, 14 Nov 2019 17:03:19 +0200
->
-> > This series builds upon the previous "Accomodate DSA front-end into
-> > Ocelot" topic and does the following:
-> >
-> > - Reworks the Ocelot (VSC7514) driver to support one more switching core
-> >   (VSC9959), used in NPI mode. Some code which was thought to be
-> >   SoC-specific (ocelot_board.c) wasn't, and vice versa, so it is being
-> >   accordingly moved.
-> > - Exports ocelot driver structures and functions to include/soc/mscc.
-> > - Adds a DSA ocelot front-end for VSC9959, which is a PCI device and
-> >   uses the exported ocelot functionality for hardware configuration.
-> > - Adds a tagger driver for the Vitesse injection/extraction DSA headers.
-> >   This is known to be compatible with at least Ocelot and Felix.
->
-> Series applied, thank you.
+On Fri, 15 Nov 2019 08:36:56 -0800, Andrii Nakryiko wrote:
+> Alternatively we can use spinlock. I don't think it's too ugly, tbh. See below.
+> 
+> From 0da495b911adad495857f1c0fc3596f1d06a705f Mon Sep 17 00:00:00 2001
+> From: Andrii Nakryiko <andriin@fb.com>
+> Date: Fri, 15 Nov 2019 08:32:43 -0800
+> Subject: [PATCH bpf-next] bpf: switch freeze locking to use spin_lock and save
+>  space
+> 
+> Switch to spin_lock in favor of mutex. Due to mmap-ing itself happening not
+> under spinlock, there needs to be an extra "correction" step for writecnt, if
+> mapping fails.
 
-Thank you!
-
--Vladimir
+FWIW I was pondering that too, and thought your initial design was
+nicer, the transient errors sometimes become a major PITA.
