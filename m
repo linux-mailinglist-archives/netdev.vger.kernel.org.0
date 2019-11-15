@@ -2,109 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76350FD784
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 09:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5FEFD7AA
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 09:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbfKOIB5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 15 Nov 2019 03:01:57 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:37540 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbfKOIB4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 03:01:56 -0500
-Received: from marcel-macbook.fritz.box (p4FF9F0D1.dip0.t-ipconnect.de [79.249.240.209])
-        by mail.holtmann.org (Postfix) with ESMTPSA id A8C1ECED16;
-        Fri, 15 Nov 2019 09:11:00 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3601.0.10\))
-Subject: Re: [PATCH v5 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm
- config
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20191114180959.v5.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
-Date:   Fri, 15 Nov 2019 09:01:54 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        dianders@chromium.org, devicetree <devicetree@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <CAF11E66-CD51-47CA-82AD-3DF3302FC456@holtmann.org>
-References: <20191115021008.32926-1-abhishekpandit@chromium.org>
- <20191114180959.v5.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3601.0.10)
+        id S1727435AbfKOIGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 03:06:20 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33797 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726196AbfKOIGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 03:06:19 -0500
+Received: by mail-wr1-f67.google.com with SMTP id e6so9926465wrw.1
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 00:06:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=a0U+sPvL8Cn+hswtwRT1IPFr32mhGDBEbT4cUpTK/fQ=;
+        b=g8+V5qTBrE4aUEOgRY9IQpOEBvXzhEO3Tuir8b0L85AihmNm+IB/P7IW6HOYKQ25K8
+         r0nlHXjaFqUb13ewgGmpAvQvuiYGamVyT7GGeglJcuQdVz1LNneQh+uZIL2QcGHMzeGB
+         WDLP06mzZeonboAb4G5zTGSKY7lXLoLGfVgVzPdFX3T6Nx7utL+J3a9WJU9GCQ5lqVfy
+         Nuz/SOmjcdYJ/WeGxK070h/7jtiUJzRb4rgas8yVxGkHVC/cNkQuSo0HzaI/HP/EUHCW
+         f82mdhEqqCE+R3Y5j3hM21ixPxtUT4ZO3lPQ/O8Ub/HO3SpsuFNmk1D/ajBZkvAJYAJA
+         nStw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=a0U+sPvL8Cn+hswtwRT1IPFr32mhGDBEbT4cUpTK/fQ=;
+        b=qIQyNSbmAgqCXVEJE3zBbNQkw+Gttbk18qwwTlbWg+9u9u+XNFEx8B0obVk92YGPQt
+         hZ3TvxZ5mLNowgZWRql7OS49Ia64amT56/5TQQcG5UAdK3DCr2c4ofMWMGo109xWwrfP
+         GVJmfwlkXIKcbS3lPzIsxvILCQo9iFmBIQHFiZMLDTAQYO9GvYvC59JnR8807xO1fzIY
+         zSrcFRCwKMoXW7FhzkX9qWKEGoNjy1ZF54obgwWo6EChcKNfabs32ZSfZA52SOR/gwuE
+         n9b1jVH1C3snYqHx88WopF8nloMcDa7JDL75BmX70AYn7MQVifHPt2t0CEHHKaXob0Nc
+         pI2w==
+X-Gm-Message-State: APjAAAWT00tlkbOl2cyA+HeWC1ltQjNLKZ8vSglCyPRz1RDNWmSrb953
+        O8QnyCZhM9B1QuKrUFYv6nsFsfWQeog=
+X-Google-Smtp-Source: APXvYqxVoOJ1Qx1boHe6xCOIwhPYlY1HyC19PPJqL1odlEPah/xIHyejIwgI/IGGLxpGSfvLiZsosA==
+X-Received: by 2002:adf:f282:: with SMTP id k2mr14193909wro.387.1573805176570;
+        Fri, 15 Nov 2019 00:06:16 -0800 (PST)
+Received: from PC192.168.49.172 (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id p4sm10843248wrx.71.2019.11.15.00.06.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Nov 2019 00:06:15 -0800 (PST)
+Date:   Fri, 15 Nov 2019 10:03:52 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Message-ID: <20191115080352.GA45399@PC192.168.49.172>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+ <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
+ <20191114185326.GA43048@PC192.168.49.172>
+ <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
+ <20191114204227.GA43707@PC192.168.49.172>
+ <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
+ <20191114224309.649dfacb@carbon>
+ <20191115070551.GA99458@apalos.home>
+ <20191115074743.GB10037@localhost.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191115074743.GB10037@localhost.localdomain>
+User-Agent: Mutt/1.9.5 (2018-04-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+Hi Lorenzo, 
 
-> Add documentation for pcm parameters.
+> > > > >>>> How about using PP_FLAG_DMA_SYNC instead of another flag word?
+> > > > >>>> (then it can also be gated on having DMA_MAP enabled)  
+> > > > >>>
+> > > > >>> You mean instead of the u8?
+> > > > >>> As you pointed out on your V2 comment of the mail, some cards don't 
+> > > > >>> sync back to device.
+> > > > >>>
+> > > > >>> As the API tries to be generic a u8 was choosen instead of a flag
+> > > > >>> to cover these use cases. So in time we'll change the semantics of
+> > > > >>> this to 'always sync', 'dont sync if it's an skb-only queue' etc.
+> > > > >>>
+> > > > >>> The first case Lorenzo covered is sync the required len only instead 
+> > > > >>> of the full buffer  
+> > > > >>
+> > > > >> Yes, I meant instead of:
+> > > > >> +		.sync = 1,
+> > > > >>
+> > > > >> Something like:
+> > > > >>         .flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC
+> > > > >>
+> > > 
+> > > I actually agree and think we could use a flag. I suggest
+> > > PP_FLAG_DMA_SYNC_DEV to indicate that this DMA-sync-for-device.
+> > > 
+> > > Ilias notice that the change I requested to Lorenzo, that dma_sync_size
+> > > default value is 0xFFFFFFFF (-1).  That makes dma_sync_size==0 a valid
+> > > value, which you can use in the cases, where you know that nobody have
+> > > written into the data-area.  This allow us to selectively choose it for
+> > > these cases.
+> > 
+> > Okay, then i guess the flag is a better fit for this.
+> > The only difference would be that the sync semantics will be done on 'per
+> > packet' basis,  instead of 'per pool', but that should be fine for our cases.
 > 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> ---
+> Ack, fine for me.
+> Do you think when checking for PP_FLAG_DMA_SYNC_DEV we should even verify
+> PP_FLAG_DMA_MAP? Something like:
 > 
-> Changes in v5: None
-> Changes in v4: None
-> Changes in v3: None
-> Changes in v2: None
+> if ((pool->p.flags & (PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)) ==
+>     (PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV))
+> 	page_pool_dma_sync_for_device();
 > 
-> .../bindings/net/broadcom-bluetooth.txt       | 20 +++++++++++-
-> include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
-> 2 files changed, 51 insertions(+), 1 deletion(-)
-> create mode 100644 include/dt-bindings/bluetooth/brcm.h
-> 
-> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> index c749dc297624..a92da31daa79 100644
-> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> @@ -29,10 +29,22 @@ Optional properties:
->    - "lpo": external low power 32.768 kHz clock
->  - vbat-supply: phandle to regulator supply for VBAT
->  - vddio-supply: phandle to regulator supply for VDDIO
-> -
-> + - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
-> +                        This value must be set in order for the latter
-> +                        properties to take effect.
-> + - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
-> + - brcm,bt-pcm-frame-type: short, long
-> + - brcm,bt-pcm-sync-mode: slave, master
-> + - brcm,bt-pcm-clock-mode: slave, master
-> +
-> +See include/dt-bindings/bluetooth/brcm.h for SCO/PCM parameters. The default
-> +value for all these values are 0 (except for brcm,bt-sco-routing which requires
-> +a value) if you choose to leave it out.
-> 
-> Example:
-> 
-> +#include <dt-bindings/bluetooth/brcm.h>
-> +
-> &uart2 {
->        pinctrl-names = "default";
->        pinctrl-0 = <&uart2_pins>;
-> @@ -40,5 +52,11 @@ Example:
->        bluetooth {
->                compatible = "brcm,bcm43438-bt";
->                max-speed = <921600>;
-> +
-> +               brcm,bt-sco-routing        = <BRCM_SCO_ROUTING_TRANSPORT>;
-> +               brcm,bt-pcm-interface-rate = <BRCM_PCM_IF_RATE_512KBPS>;
-> +               brcm,bt-pcm-frame-type     = <BRCM_PCM_FRAME_TYPE_SHORT>;
-> +               brcm,bt-pcm-sync-mode      = <BRCM_PCM_SYNC_MODE_MASTER>;
-> +               brcm,bt-pcm-clock-mode     = <BRCM_PCM_CLOCK_MODE_MASTER>;
->        };
+> Regards,
+> Lorenzo
 
-I am not sure this makes this all that much more readable. I would have been fine with using actual integer values with a comment behind it. Especially since in the driver itself we will never compare against the constants, we set whatever the DT gives us.
+I think it's better to do the check once on the pool registration and maybe
+refuse to allocate the pool? Syncing without mapping doesn't really make sense
 
-Anyway, for the names, I like Rob to ack them before applying them.
+Cheers
+/Ilias
+> 
+> > 
+> > Cheers
+> > /Ilias
+> > > 
+> > > -- 
+> > > Best regards,
+> > >   Jesper Dangaard Brouer
+> > >   MSc.CS, Principal Kernel Engineer at Red Hat
+> > >   LinkedIn: http://www.linkedin.com/in/brouer
+> > > 
+> > 
 
-Regards
-
-Marcel
 
