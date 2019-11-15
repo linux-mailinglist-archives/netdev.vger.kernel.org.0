@@ -2,130 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD78FD6CB
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4902BFD6D1
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbfKOHOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 02:14:01 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58974 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbfKOHOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:14:01 -0500
-Received: from 57.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.57] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iVVnr-0002xW-CQ; Fri, 15 Nov 2019 08:13:59 +0100
-Date:   Fri, 15 Nov 2019 08:13:58 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH rfc bpf-next 8/8] bpf: constant map key tracking for prog
- array pokes
-Message-ID: <20191115071358.GA3957@pc-9.home>
-References: <cover.1573779287.git.daniel@iogearbox.net>
- <fa3c2f6e2f4fbe45200d54a3c6d4c65c4f84f790.1573779287.git.daniel@iogearbox.net>
- <20191115042939.ckt4fqvtfdi344y2@ast-mbp.dhcp.thefacebook.com>
+        id S1727118AbfKOHRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 02:17:08 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39562 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727002AbfKOHRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:17:08 -0500
+Received: by mail-wm1-f67.google.com with SMTP id t26so9162429wmi.4
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 23:17:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3rWXfoENBk01hvOSkg8kCt1Ez88OrYUmZuEToQ/hW7Y=;
+        b=tw7VLLubU1v0LrWgVXyiOXB5Can5hWCnbuo68UCr0doGqLMjERKMAszkWW8jAQoAyB
+         8vhVMbfP2ayvLx0jjPiWn19Trhn+0ZYC3GO2QaWOHiex1r5jT/2OCw2Ow8hhTP9hdmj9
+         B8UDMK8D1rwfrZNx6P/81mmx7JO6xltRwipr77TMNfF9MNx16N7Jfx+omnaPGcdP5Ca4
+         WWwrOuaGGOh2yuWf15ltJTPg+O6mSD6n02l3GYTcd8l2zRIc21tphXW4dcR71EBwp+Nj
+         DtvDdCuj3oP77jCBdtn+MDbqsSrC65maAjUz/pego/Mi0TvAYgXJC/+xN0G/EjqCDVAF
+         2/PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3rWXfoENBk01hvOSkg8kCt1Ez88OrYUmZuEToQ/hW7Y=;
+        b=mFcBm//LGuZ46XfZehdF4bVOeDueCkqmw6jQnnyfmE0omb0q/MfoYBUtzw1TofT/rR
+         Rs+tnatqkzyPv2PkGZqqCeHEs/RMqv8c5P7efCafXg0DmlszareW7fmB/oxTColXX3sV
+         L4Y6RSMHzeb7pAMNrJ9jYs6ASDtPPiorjVgLYX9Z9SqErQO3x+2VfK/CDVqpd/2kz4TU
+         8Xn834WWvK+zn71iCnrtK9ED54PLa2hTOQETvwNb3wFGDcIMcEnoWpMUSd4zUwtCFbVR
+         /5qjmt16BwSodkPJvCK93t7GwIVUPDrKBptvyxuoHZxx+ABfoeaUXQvnhPUGIXp8bX4w
+         5FQQ==
+X-Gm-Message-State: APjAAAW29fuNegU1nq57AOLEohJ9KZvIGkZjWD0wccRUzx+VN3uVgFJ1
+        Noq/BPWUZ6HRGzhc74+0Ro9gbA==
+X-Google-Smtp-Source: APXvYqzReM+bpsihfuf0ohonI8fOMspQ/bGrJUagOi+uNBkqXaZck0XDCo/VT8LBq/xKgnCJ8c80Rg==
+X-Received: by 2002:a05:600c:506:: with SMTP id i6mr13435203wmc.153.1573802226201;
+        Thu, 14 Nov 2019 23:17:06 -0800 (PST)
+Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id w11sm12262094wra.83.2019.11.14.23.17.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2019 23:17:05 -0800 (PST)
+Date:   Fri, 15 Nov 2019 09:17:03 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Message-ID: <20191115071703.GB99458@apalos.home>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+ <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
+ <20191114185326.GA43048@PC192.168.49.172>
+ <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
+ <20191114204227.GA43707@PC192.168.49.172>
+ <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191115042939.ckt4fqvtfdi344y2@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25633/Thu Nov 14 10:50:04 2019)
+In-Reply-To: <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 08:29:41PM -0800, Alexei Starovoitov wrote:
-> On Fri, Nov 15, 2019 at 02:04:02AM +0100, Daniel Borkmann wrote:
-> > Add tracking of constant keys into tail call maps. The signature of
-> > bpf_tail_call_proto is that arg1 is ctx, arg2 map pointer and arg3
-> > is a index key. The direct call approach for tail calls can be enabled
-> > if the verifier asserted that for all branches leading to the tail call
-> > helper invocation, the map pointer and index key were both constant
-> > and the same. Tracking of map pointers we already do from prior work
-> > via c93552c443eb ("bpf: properly enforce index mask to prevent out-of-bounds
-> > speculation") and 09772d92cd5a ("bpf: avoid retpoline for lookup/update/
-> > delete calls on maps"). Given the tail call map index key is not on
-> > stack but directly in the register, we can add similar tracking approach
-> > and later in fixup_bpf_calls() add a poke descriptor to the progs poke_tab
-> > with the relevant information for the JITing phase. We internally reuse
-> > insn->imm for the rewritten BPF_JMP | BPF_TAIL_CALL instruction in order
-> > to point into the prog's poke_tab and keep insn->imm == 0 as indicator
-> > that current indirect tail call emission must be used.
-> > 
-> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > ---
-> >  include/linux/bpf_verifier.h |  1 +
-> >  kernel/bpf/verifier.c        | 98 ++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 99 insertions(+)
-> > 
-> > diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-> > index cdd08bf0ec06..f494f0c9ac13 100644
-> > --- a/include/linux/bpf_verifier.h
-> > +++ b/include/linux/bpf_verifier.h
-> > @@ -301,6 +301,7 @@ struct bpf_insn_aux_data {
-> >  			u32 map_off;		/* offset from value base address */
-> >  		};
-> >  	};
-> > +	u64 key_state; /* constant key tracking for maps */
+Hi Jonathan, 
+
 > 
-> may be map_key_state ?
-> key_state is a bit ambiguous in the bpf_insn_aux_data.
-
-Could be, alternatively could also be idx_state or map_idx_state since
-it's really just for u32 type key indices.
-
-> > +static int
-> > +record_func_key(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
-> > +		int func_id, int insn_idx)
-> > +{
-> > +	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
-> > +	struct bpf_reg_state *regs = cur_regs(env), *reg;
-> > +	struct tnum range = tnum_range(0, U32_MAX);
-> > +	struct bpf_map *map = meta->map_ptr;
-> > +	u64 val;
-> > +
-> > +	if (func_id != BPF_FUNC_tail_call)
-> > +		return 0;
-> > +	if (!map || map->map_type != BPF_MAP_TYPE_PROG_ARRAY) {
-> > +		verbose(env, "kernel subsystem misconfigured verifier\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	reg = &regs[BPF_REG_3];
-> > +	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
-> > +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
-> > +		return 0;
-> > +	}
-> > +
-> > +	val = reg->var_off.value;
-> > +	if (bpf_map_key_unseen(aux))
-> > +		bpf_map_key_store(aux, val);
-> > +	else if (bpf_map_key_immediate(aux) != val)
-> > +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
-> > +	return 0;
-> > +}
+[...]
+> > For the skb reserved queues, this depends on the 'anything'. If the rest
+> > of the
+> > layers touch (or rather write) into that area, then we'll again gave to
+> > sync.
+> > If we know that the data has not been altered though, we can hand them
+> > back to
+> > the device skipping that sync right?
 > 
-> I think this analysis is very useful in other cases as well. Could you
-> generalize it for array map lookups ? The key used in bpf_map_lookup_elem() for
-> arrays is often constant. In such cases we can optimize array_map_gen_lookup()
-> into absolute pointer. It will be possible to do
-> if (idx < max_entries) ptr += idx * elem_size;
-> during verification instead of runtime and the whole
-> bpf_map_lookup_elem(map, &key); will become single instruction that
-> assigns &array[idx] into R0.
+> Sure, but this is also true for eBPF programs.  How would the driver know
+> that
+> the data has not been altered / compacted by the upper layers?
 
-Was thinking exactly the same. ;-) I started coding this yesterday night [0],
-but then had the (in hinsight obvious) realization that as-is the key_state
-holds the address but not the index for plain array map lookup. Hence I'd need
-to go a step further there to look at the const stack content. Will proceed on
-this as a separate set on top.
+I haven't looked that up in detail. I was just explaining the reasoning behind
+picking a u8 instead of a flag. As Jesper pointed we can get the same result by
+using len = 0, so i am fine with the proposed change.
 
-  [0] https://git.kernel.org/pub/scm/linux/kernel/git/dborkman/bpf.git/commit/?h=pr/bpf-tail-call-rebased2&id=b86b7eae4646d8233e3e9058e68fef27536bf0c4
-
-Thanks,
-Daniel
+Thanks
+/Ilias
+> -- 
+> Jonathan
