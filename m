@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 888AEFE554
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1FBFE556
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 20:02:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726632AbfKOTBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 14:01:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52322 "EHLO mail.kernel.org"
+        id S1726786AbfKOTCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 14:02:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726323AbfKOTBz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 14:01:55 -0500
+        id S1726323AbfKOTCB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 14:02:01 -0500
 Received: from localhost.localdomain.com (unknown [77.139.212.74])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ABF1F20732;
-        Fri, 15 Nov 2019 19:01:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9DEB420732;
+        Fri, 15 Nov 2019 19:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573844514;
-        bh=tlj22l7/LTEexEzbFvzvD4XsFk/OMusxlw3mMaGexVM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SNtrkLQZ6ndJJ1Ex21KOOwerLQaD0sMIMN9XTviIycpMcrGDpw5PelW44T5NL16AO
-         ggkWDR6BWdCWudhgFYAc/uQsUIqknvt5A2xksIIvdpgjeD5sL8HKGX21/JDmXydQzg
-         dsR20YXNItgWZ7gFa7HpcDMlLpmSRSrt53/bIjSU=
+        s=default; t=1573844521;
+        bh=CQ03LOxX3qfdQP4gLMGjQolBpXCyqwlZgmCwjn9Oe/s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hTj15bsu7hgC8ejzWs4ESf/FpfRYElZdPJV1qeTz4pWLZeMxJXnrnwug1i1iOka5/
+         em9oV8eXNHs/rjQOpKz2Rw9BvDq914Cn6mfJ0jOzca99lJZ88lHshdxiBsaCZYM0dD
+         hyqZXfPgFwu0PjF2mn23N/9HS/Z02navpUw/82sE=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, ilias.apalodimas@linaro.org,
         brouer@redhat.com, lorenzo.bianconi@redhat.com, mcroce@redhat.com
-Subject: [PATCH v3 net-next 0/3] add DMA-sync-for-device capability to page_pool API
-Date:   Fri, 15 Nov 2019 21:01:36 +0200
-Message-Id: <cover.1573844190.git.lorenzo@kernel.org>
+Subject: [PATCH v3 net-next 1/3] net: mvneta: rely on page_pool_recycle_direct in mvneta_run_xdp
+Date:   Fri, 15 Nov 2019 21:01:37 +0200
+Message-Id: <7d145a87b685ed4725b6ed45ca0976551e6966d8.1573844190.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <cover.1573844190.git.lorenzo@kernel.org>
+References: <cover.1573844190.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -38,35 +40,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the possibility to sync DMA memory for device in the page_pool API.
-This feature allows to sync proper DMA size and not always full buffer
-(dma_sync_single_for_device can be very costly).
-Please note DMA-sync-for-CPU is still device driver responsibility.
-Relying on page_pool DMA sync mvneta driver improves XDP_DROP pps of
-about 180Kpps:
+Rely on page_pool_recycle_direct and not on xdp_return_buff in
+mvneta_run_xdp. This is a preliminary patch to limit the dma sync len
+to the one strictly necessary
 
-- XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
-- XDP_DROP DMA sync managed by page_pool API:	~595Kpps
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Changes since v2:
-- rely on PP_FLAG_DMA_SYNC_DEV flag instead of dma_sync
-
-Changes since v1:
-- rename sync in dma_sync
-- set dma_sync_size to 0xFFFFFFFF in page_pool_recycle_direct and
-  page_pool_put_page routines
-- Improve documentation
-
-Lorenzo Bianconi (3):
-  net: mvneta: rely on page_pool_recycle_direct in mvneta_run_xdp
-  net: page_pool: add the possibility to sync DMA memory for device
-  net: mvneta: get rid of huge dma sync in mvneta_rx_refill
-
- drivers/net/ethernet/marvell/mvneta.c | 24 +++++++++------
- include/net/page_pool.h               | 21 ++++++++++----
- net/core/page_pool.c                  | 42 +++++++++++++++++++++++----
- 3 files changed, 66 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 12e03b15f0ab..f7713c2c68e1 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -2097,7 +2097,8 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 		err = xdp_do_redirect(pp->dev, xdp, prog);
+ 		if (err) {
+ 			ret = MVNETA_XDP_DROPPED;
+-			xdp_return_buff(xdp);
++			page_pool_recycle_direct(rxq->page_pool,
++						 virt_to_head_page(xdp->data));
+ 		} else {
+ 			ret = MVNETA_XDP_REDIR;
+ 		}
+@@ -2106,7 +2107,8 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 	case XDP_TX:
+ 		ret = mvneta_xdp_xmit_back(pp, xdp);
+ 		if (ret != MVNETA_XDP_TX)
+-			xdp_return_buff(xdp);
++			page_pool_recycle_direct(rxq->page_pool,
++						 virt_to_head_page(xdp->data));
+ 		break;
+ 	default:
+ 		bpf_warn_invalid_xdp_action(act);
 -- 
 2.21.0
 
