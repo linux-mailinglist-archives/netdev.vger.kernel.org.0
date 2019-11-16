@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 966CCFEB2F
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 08:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BEEFEB4D
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 10:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbfKPHwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 02:52:02 -0500
-Received: from smtp.codeaurora.org ([198.145.29.96]:57548 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726034AbfKPHwC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 02:52:02 -0500
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 52E1C61014; Sat, 16 Nov 2019 07:52:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573890721;
-        bh=5IbSK3rPZdO2NHSKbA3WuCwgwfaJIOSGDuXA+44GJho=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=bWuhGVJLEBVRgDPzKuNhBYS2BIJsLzGPAw5zdHwlwCBs5UwwQjL0M3J6MpaPvy3HX
-         B42kyL9y9G92FrYsv9pZX0bhG/uMIAIbmG5M/9NPOClKPQ687qctvJhUVVQlGka8dc
-         B5T/CDCHaoCxM9hzh5VjW6WW4mpKRRRWwKtP9aL8=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from x230.qca.qualcomm.com (176-93-0-138.bb.dnainternet.fi [176.93.0.138])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727505AbfKPJPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 04:15:32 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29124 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726814AbfKPJPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 04:15:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573895730;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QDu18Mloig89ndXoAMZhBaSvzIzoluShQUmKSI/WsHU=;
+        b=gtSL5XA18psX68LS9QO1iNITFUpsdGXr8KfmLvFY5rZffjsFCxLkuvxptqky3OZ6TYGohe
+        BxNI7C19m3JwKuoiwGpEOHvWCALE08fA9IZk3taOwo/re4L9zrYSP0w3DBKAK9hQLJpwnU
+        8kXimbrrE8uto/oxup3tSyPXyhLZV5E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-112-mqWu2DZ5NwmAAzOwrC-eug-1; Sat, 16 Nov 2019 04:15:26 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5E1B160B19;
-        Sat, 16 Nov 2019 07:51:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573890720;
-        bh=5IbSK3rPZdO2NHSKbA3WuCwgwfaJIOSGDuXA+44GJho=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=E47RPSOnWqjf/4i9ypO3VEv8ZuI3yFs+hphAF0L2hcVQggrVZbyN5CzDn1szTKj1z
-         VGDslsqWHwFLnIoITRxjzXn5RMUA++E/XnMVTUFlrTQluZMi2pghQbJoZZMJftV1hU
-         7xGS7/EJm6djf8bfc4gqN9Us0fVgwxBpw7spo1eU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5E1B160B19
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     zhengbin <zhengbin13@huawei.com>
-Cc:     <stas.yakovlev@gmail.com>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH -next 2/2] ipw2x00: remove set but not used variable 'force_update'
-References: <1573890083-33761-1-git-send-email-zhengbin13@huawei.com>
-        <1573890083-33761-3-git-send-email-zhengbin13@huawei.com>
-Date:   Sat, 16 Nov 2019 09:51:57 +0200
-In-Reply-To: <1573890083-33761-3-git-send-email-zhengbin13@huawei.com>
-        (zhengbin's message of "Sat, 16 Nov 2019 15:41:23 +0800")
-Message-ID: <87tv74uule.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E4F351005500;
+        Sat, 16 Nov 2019 09:15:24 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-116-32.ams2.redhat.com [10.36.116.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 999C05DDB3;
+        Sat, 16 Nov 2019 09:15:23 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 0/2] net: introduce and use route hint
+Date:   Sat, 16 Nov 2019 10:14:49 +0100
+Message-Id: <cover.1573893340.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: mqWu2DZ5NwmAAzOwrC-eug-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhengbin <zhengbin13@huawei.com> writes:
+This series leverages the listification infrastructure to avoid
+unnecessary route lookup on ingress packets. In absence of policy routing,
+packets with equal daddr will usually land on the same dst.
 
-> Fixes gcc '-Wunused-but-set-variable' warning:
->
-> drivers/net/wireless/intel/ipw2x00/ipw2100.c: In function shim__set_security:
-> drivers/net/wireless/intel/ipw2x00/ipw2100.c:5582:9: warning: variable force_update set but not used [-Wunused-but-set-variable]
->
-> It is introduced by commit 367a1092b555 ("ipw2x00:
-> move under intel vendor directory"), but never used, so remove it.
+When processing packet bursts (lists) we can easily reference the previous
+dst entry. When we hit the 'same destination' condition we can avoid the
+route lookup, coping the already available dst.
 
-Same here, I'll remove this sentence as well.
+Detailed performance numbers are available in the individual commit message=
+s.
 
--- 
-Kalle Valo
+Paolo Abeni (2):
+  ipv6: introduce and uses route look hints for list input
+  ipv4: use dst hint for ipv4 list receive
+
+ include/net/route.h  | 11 +++++++++++
+ net/ipv4/ip_input.c  | 29 ++++++++++++++++++++++++-----
+ net/ipv4/route.c     | 38 ++++++++++++++++++++++++++++++++++++++
+ net/ipv6/ip6_input.c | 30 ++++++++++++++++++++++++++----
+ 4 files changed, 99 insertions(+), 9 deletions(-)
+
+--=20
+2.21.0
+
