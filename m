@@ -2,146 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4127EFEA08
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 02:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F70FEA2E
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 02:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbfKPBS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 20:18:56 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:61406 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727298AbfKPBSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 20:18:54 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAG1ENux003068;
-        Fri, 15 Nov 2019 17:18:37 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=/J/nI4zHj133msHcZ2ugLqArUMTq0B+ZLa4M81X4SOM=;
- b=NrpwnZ0VPnmW6zQgZVadqiVypf69085T7uzzYc6UuS5X9B/BEuEniSh/C7g6+TdoFCDu
- +OG/tuoSHwVt3blycrl554Qy+w5LPqy30hmTRgTVjpzabszlWH3mXBe8tnlyhphZxcM1
- 1Mr5/oN0LknsgB8i9Hzt1NNLfzWrFGdLl3Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2wa1junsj3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 15 Nov 2019 17:18:37 -0800
-Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
- ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 15 Nov 2019 17:18:36 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 15 Nov 2019 17:18:36 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KwpCL3wsNXw0kvkcBO4tPI4vJBh8fBmXS8ReMsz0MJNXETTHRW5DeSCFaTArHG5uRSbSEvww/ChZwvVASfypM3fU+N0AHo3pl0kRmiW9f0uFgXu5UXaMlA/Ruicw4AxCmjuoAcOqtuk1NkXtXjio/aFNy1OCiCmkTOOKq14IU5mDIWJV4CRJV2Tcv5DyebeRJP3w/8a2b9xsVBX7AAWiQMpWkZqGYCqfNQCbl+mVjkGCf4IrzpZ941IL4e8lR+hpOI7LGPFw/EvvWrxlX81njFwtp5wNVKgBtXGroTtGUC1UOETqjtsQcqJIq65PXKLvDdU03N/VIG3hhJtD2BcXmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/J/nI4zHj133msHcZ2ugLqArUMTq0B+ZLa4M81X4SOM=;
- b=jGDza7wvY25iy7Vbv5Zme9QshNrS3faM42DMbA2hiWomwZiAMU98Zs4kq7xu2/9wArtr9yDmmOW9WQ7gyxJvMQQaBkE+K9F0VRos2dcF8rouNNbWBlFZz4kt8nQ3TdX86157YhbJuM27hWHnOS/dllv34lDB5qOJJPlAD0OsrAQ/7dC4J3N1e4VASgk8a8kmPBOyVMcOTt2Og79SWhPb5qZHkieC3rbGdjeAlrqsWXxRWx3Quld+A8Bp6T07yQvHns3LJQNo+vBK0ApUxcRKOAY424gdnYvt4SY3XRdpcZ+Sy6KbIKwRZ8jpP5USHOC9jn4ZwBZoGMpINo8Ah5cnpQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/J/nI4zHj133msHcZ2ugLqArUMTq0B+ZLa4M81X4SOM=;
- b=aRSQI2rT2QrgZ2Fs3OBfAcqe1DHZUWfs/x3MHt5wXdmx5D3YBcn64bGMFsxEfRghzt1U2gmdU3ywpUYEpGIGEdmggcAQPfJiItzjpe9750sTmYX7gB6+Ay2DwVjM6oHk0Ilak4+w4YMCFURfUqbsRWYHb0kVfG7Psw3ooO2eIvA=
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
- BYAPR15MB3381.namprd15.prod.outlook.com (20.179.59.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Sat, 16 Nov 2019 01:18:34 +0000
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::e864:c934:8b54:4a40]) by BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::e864:c934:8b54:4a40%5]) with mapi id 15.20.2451.027; Sat, 16 Nov 2019
- 01:18:34 +0000
-From:   Alexei Starovoitov <ast@fb.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Thread-Topic: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Thread-Index: AQHVm2mT23Qa9zxaoUGXDmZOssK4HKeM4soAgAABlICAAAIggP//eoiAgACNnQCAABINgA==
-Date:   Sat, 16 Nov 2019 01:18:34 +0000
-Message-ID: <3eca5e22-f3ec-f05f-0776-4635b14c2a4e@fb.com>
-References: <20191115040225.2147245-1-andriin@fb.com>
- <20191115040225.2147245-3-andriin@fb.com>
- <888858f7-97fb-4434-4440-a5c0ec5cbac8@iogearbox.net>
- <293bb2fe-7599-3825-1bfe-d52224e5c357@fb.com>
- <3287b984-6335-cacb-da28-3d374afb7f77@iogearbox.net>
- <fe46c471-e345-b7e4-ab91-8ef044fd58ae@fb.com>
- <c79ca69f-84fd-bfc2-71fd-439bc3b94c81@iogearbox.net>
-In-Reply-To: <c79ca69f-84fd-bfc2-71fd-439bc3b94c81@iogearbox.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR2201CA0057.namprd22.prod.outlook.com
- (2603:10b6:301:16::31) To BYAPR15MB2501.namprd15.prod.outlook.com
- (2603:10b6:a02:88::11)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::8ac1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5b369656-f00e-4061-8f24-08d76a32e681
-x-ms-traffictypediagnostic: BYAPR15MB3381:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3381661C5FE4A893145C906AD7730@BYAPR15MB3381.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02234DBFF6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(376002)(39860400002)(346002)(366004)(199004)(189003)(25786009)(11346002)(36756003)(305945005)(486006)(46003)(476003)(2906002)(6506007)(66946007)(66556008)(66476007)(386003)(66446008)(64756008)(53546011)(52116002)(186003)(2616005)(99286004)(4326008)(71200400001)(71190400001)(446003)(86362001)(6512007)(8676002)(2501003)(2201001)(31696002)(478600001)(6246003)(14454004)(6486002)(229853002)(31686004)(54906003)(6116002)(102836004)(76176011)(110136005)(14444005)(256004)(8936002)(7736002)(81156014)(5660300002)(6436002)(4744005)(81166006)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3381;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bbDiqWOOfHqAPjqn5eHvj8BiqY7tNdOUAt0uPdmCV/u9F+vm9//9uLTDpvFir7vaDV6yeL6wsnj2giydTSahQXBlDksv2d/7o8vkX54+rAE6e8xhpRdKCuwqXoVWijOa1C4/OXFgnerCFSMqZR3+pmq0zVQE2fCzjxCjdwf8iiHkaBBTro5rAXwjBWkaj+4yjJv6LdMXjzORx8YMG7iLr7XvdVHm3CZKGLKvmiVSCjXQccsaUfATBLn2G/ltJqPbYTmzLdsvZarEabJ6X24gpgpThxSFzj97yK5qLa7agR5+tK4i/EUxYmE9mK/zvAddUDf30zpdLJ/kpJKoH+FSEdeVTQMs8/NomZxWpxeveWSh0wiBuvbUy32DMzhBtQ9dmgxGGnlOP2+NuepOe4MOW2Rg7MViR6rXL14uiHHmPsCjHWvEdhvZary0Q6JjeVv9
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <68626CA51A664A47AAB88E7F4E5B8148@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727365AbfKPBwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 20:52:40 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:35996 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727089AbfKPBwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 20:52:40 -0500
+Received: by mail-oi1-f171.google.com with SMTP id j7so10358121oib.3
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 17:52:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FCrjWN9xuMa6Ah+xNPKfnt3IK3UhGLmxaGJwqC29cME=;
+        b=uwpXaKAskL/FcMoAUoipwO0GHwsug8IguAXalLo+s6cNuz/Pe+2tuUOHuCHQ9x3P1H
+         ywYvs4Ug2UiFrcTvgxkX3XcFMZtkwYrEoK9Icqvb0EDrRDf+hQt5sTN18pjStRwSIhWM
+         JfsacMtTWOU3zAW8pzUsDS6OTvIzZHNsFzzJJiSNEfuAirFUl5PgJrfOqUzupYd+7fGk
+         7SiiNov9iEKwWaz7J2qVkm5wUFPsaluMMSW05GeJvB2a76wn6Mqfh8iExS3MYezhK14a
+         x+jmbIDYqT0n6oK9mI4bpseH2In/qkyIOITG3f5n8kVdO4GWFdCz4oRsI8rd7n8I5Juw
+         M2vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FCrjWN9xuMa6Ah+xNPKfnt3IK3UhGLmxaGJwqC29cME=;
+        b=PtQkC+hQnHYKbkEBWuzvDaNAjQzuJh+APmGQh7+yxAUbOlmZqISEbQQEAQmN5VL2ne
+         U6O0N5GW6dSktyCjWIVprQl4grQ3B+ZmpKYhTpBEaHxLl85kIXw7Iwicv5bW5AWPgauk
+         2yGrwvWRTjVDUCk8NAjtfkYxFNOIdT7GErGAmPeRqCa626sbDDuDaQCCV5EB2hcyhRSk
+         6Rau4k/uHmZWK7NXpu75tutimC0049iFCJM/bDPHtxYPllMnzUv7lhRNM9fblgoSibPe
+         9XcrBwZ7TXeu2l4ZtUE7WeL5czolxUmcOLr4j7S5sdZdjEhngLpb8HiqOyZhJufdaMVX
+         OIAw==
+X-Gm-Message-State: APjAAAWzqobFBMezmAkvoLojwRfFTdGPdWFeR9YzdFs6zLaGHx93SX9B
+        DJAqG+wmClUpXJILW/IDJRYt7vZ0VbEHTy1dO1kK9Hq1jrI=
+X-Google-Smtp-Source: APXvYqzvfYw7tZYNS8ChUY9i53PVRwNVR1d3Rd+D3G0kTxItSCI4e/iLaiBxXCrUbu9i/G554N5OYTyVZbR6Hst/4xA=
+X-Received: by 2002:aca:5441:: with SMTP id i62mr10234051oib.42.1573869158902;
+ Fri, 15 Nov 2019 17:52:38 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b369656-f00e-4061-8f24-08d76a32e681
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Nov 2019 01:18:34.7442
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rlXTcgypfG+kFPS/8tZ9elEQ/y0HSKWD1UivvzGuJAW+PtI+4SzFkA7vJRmtBVFD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3381
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-15_08:2019-11-15,2019-11-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 mlxscore=0
- priorityscore=1501 malwarescore=0 clxscore=1015 suspectscore=0
- lowpriorityscore=0 mlxlogscore=999 adultscore=0 phishscore=0 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911160006
-X-FB-Internal: deliver
+References: <CAJwzM1k7iW9tJZiO-JhVbnT-EmwaJbsroaVbJLnSVY-tyCzjLQ@mail.gmail.com>
+ <0d553faa-b665-14cf-e977-d2b0ff3d763e@gmail.com>
+In-Reply-To: <0d553faa-b665-14cf-e977-d2b0ff3d763e@gmail.com>
+From:   Avinash Patil <avinashapatil@gmail.com>
+Date:   Fri, 15 Nov 2019 17:52:27 -0800
+Message-ID: <CAJwzM1=uv8NG=upCiRonvA504dn1u5Tj5DNM83BCSMbSmwvLuw@mail.gmail.com>
+Subject: Re: Possible bug in TCP retry logic/Kernel crash
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTEvMTUvMTkgNDoxMyBQTSwgRGFuaWVsIEJvcmttYW5uIHdyb3RlOg0KPj4+IFllYWgsIG9u
-bHkgZm9yIGZkIGFycmF5IGN1cnJlbnRseS4gUXVlc3Rpb24gaXMsIGlmIHdlIGV2ZXIgcmV1c2Ug
-dGhhdA0KPj4+IG1hcF9yZWxlYXNlX3VyZWYNCj4+PiBjYWxsYmFjayBpbiBmdXR1cmUgZm9yIHNv
-bWV0aGluZyBlbHNlLCB3aWxsIHdlIHJlbWVtYmVyIHRoYXQgd2UgZWFybGllcg0KPj4+IG1pc3Nl
-ZCB0byBhZGQNCj4+PiBpdCBoZXJlPyA6Lw0KPj4NCj4+IFdoYXQgZG8geW91IG1lYW4gJ21pc3Nl
-ZCB0byBhZGQnID8NCj4gDQo+IFdhcyBzYXlpbmcgbWlzc2VkIHRvIGFkZCB0aGUgaW5jL3B1dCBm
-b3IgdGhlIHVyZWYgY291bnRlci4NCj4gDQo+PiBUaGlzIGlzIG1tYXAgcGF0aC4gQW55dGhpbmcg
-dGhhdCBuZWVkcyByZWxlYXNpbmcgKGxpa2UgRkRzIGZvcg0KPj4gcHJvZ19hcnJheSBvciBwcm9n
-cyBmb3Igc29ja21hcCkgY2Fubm90IGJlIG1tYXAtYWJsZS4NCj4gDQo+IFJpZ2h0LCBJIG1lYW50
-IGlmIGluIGZ1dHVyZSB3ZSBldmVyIGhhdmUgYW5vdGhlciB1c2UgY2FzZSBvdXRzaWRlIG9mIGl0
-DQo+IGZvciBzb21lIHJlYXNvbiAodW5yZWxhdGVkIHRvIHRob3NlIG1hcHMgeW91IG1lbnRpb24g
-YWJvdmUpLiBDYW4gd2UNCj4gZ3VhcmFudGVlIHRoaXMgaXMgbmV2ZXIgZ29pbmcgdG8gaGFwcGVu
-PyBTZWVtZWQgbGVzcyBmcmFnaWxlIGF0IGxlYXN0IHRvDQo+IG1haW50YWluIHByb3BlciBjb3Vu
-dCBoZXJlLg0KDQpJJ20gc3RydWdnbGluZyB0byB1bmRlcnN0YW5kIHRoZSBjb25jZXJuLg0KbWFw
-LWluLW1hcCwgeHNrbWFwLCBzb2NrZXQgbG9jYWwgc3RvcmFnZSBhcmUgZG9pbmcgYnBmX21hcF9p
-bmMoLCBmYWxzZSkNCndoZW4gdGhleSBuZWVkIHRvIGhvbGQgdGhlIG1hcC4gV2h5IHRoaXMgY2Fz
-ZSBpcyBhbnkgZGlmZmVyZW50Pw0K
+Hi Eric,
+
+I integrated all patches till 4.19.83 as per your suggestion.
+Unfortunately, I still see crash.
+
+[  991.291968] [ECR   ]: 0x00230400 => Misaligned r/w from 0x00000001
+[  991.299766] [EFA   ]: 0x00000001
+[  991.299766] [BLINK ]: tcp_clean_rtx_queue+0x2a4/0xc88
+[  991.299766] [ERET  ]: __list_del_entry_valid+0x12/0x1a0
+[  991.313350] [STAT32]: 0x00000206 : K         E2 E1
+[  991.318323] BTA: 0x8b188843   SP: 0x8f04fcf4  FP: 0x00000000
+[  991.323977] LPS: 0x8b2e2942  LPE: 0x8b2e2946 LPC: 0x00000000
+[  991.329660] r00: 0x8cbf2224  r01: 0x8cbf21c0 r02: 0x6e6c53fe
+[  991.329660] r03: 0x00000001  r04: 0x00000000 r05: 0x39ef6f1d
+[  991.329660] r06: 0x8f3e3180  r07: 0x00000000 r08: 0x3b14d54c
+[  991.329660] r09: 0x00000000  r10: 0x0000c0ef r11: 0x00000000
+[  991.329660] r12: 0x04c80000  r13: 0x8cbf21c0 r14: 0x00000000
+[  991.329660] r15: 0x00000000  r16: 0x00000001 r17: 0x00000000
+[  991.329660] r18: 0x8f3e3580  r19: 0x8f3e2d80 r20: 0x00000004
+[  991.329660] r21: 0x8f04fd7c  r22: 0x00000001 r23: 0x3b14d54c
+[  991.329660] r24: 0x00000000  r25: 0x8f0315c0
+[  991.329660]
+[  991.329660]
+[  991.382333]
+[  991.382333] Stack Trace:
+[  991.386374] Firmware build version: avinashp6_bbic5_a-cl103643
+[  991.386374] Firmware configuration: pearl_10gax_config
+[  991.386374] Hardware ID           : 65535
+[  991.401461]   __list_del_entry_valid+0x12/0x1a0
+[  991.406125]   tcp_clean_rtx_queue+0x2a4/0xc88
+[  991.410618]   tcp_ack+0x484/0x914
+[  991.414073]   tcp_rcv_established+0x538/0x724
+[  991.418564]   tcp_v4_do_rcv+0xda/0x120
+[  991.422456]   tcp_v4_rcv+0x954/0xa7c
+[  991.426105]   ip_local_deliver+0x72/0x208
+[  991.430257]   process_backlog+0xbe/0x1b0
+[  991.434319]   net_rx_action+0x106/0x294
+[  991.438286]   __do_softirq+0xf0/0x218
+[  991.442014]   run_ksoftirqd+0x2a/0x3c
+[  991.445812]   smpboot_thread_fn+0xb4/0x10c
+[  991.450054]   kthread+0xd8/0xdc
+[  991.453338]   ret_from_fork+0x18/0x1c
+[  991.457067]
+
+Thank you!
+
+-Avinash
+
+On Sun, Nov 10, 2019 at 3:48 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 11/9/19 9:59 PM, Avinash Patil wrote:
+> > Hi everyone,
+> >
+> > Kernel: Linux 4.19.35 kernel built from linux-stable
+> >
+>
+> This is quite an old version.
+>
+> Please upgrade to the latest one.
+>
+> $ git log --oneline v4.19.35..v4.19.82 -- net/ipv4/tcp*c
+> 3fdcf6a88ded2bb5c3c0f0aabaff253dd3564013 tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
+> 67fe3b94a833779caf4504ececa7097fba9b2627 tcp: fix tcp_ecn_withdraw_cwr() to clear TCP_ECN_QUEUE_CWR
+> 5977bc19ce7f1ed25bf20d09d8e93e56873a9abb tcp: remove empty skb from write queue in error cases
+> 6f3126379879bb2b9148174f0a4b6b65e04dede9 tcp: inherit timestamp on mtu probe
+> 1b200acde418f4d6d87279d3f6f976ebf188f272 tcp: Reset bytes_acked and bytes_received when disconnecting
+> c60f57dfe995172c2f01e59266e3ffa3419c6cd9 tcp: fix tcp_set_congestion_control() use from bpf hook
+> 6323c238bb4374d1477348cfbd5854f2bebe9a21 tcp: be more careful in tcp_fragment()
+> dad3a9314ac95dedc007bc7dacacb396ea10e376 tcp: refine memory limit test in tcp_fragment()
+> 59222807fcc99951dc769cd50e132e319d73d699 tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
+> 7f9f8a37e563c67b24ccd57da1d541a95538e8d9 tcp: add tcp_min_snd_mss sysctl
+> ec83921899a571ad70d582934ee9e3e07f478848 tcp: tcp_fragment() should apply sane memory limits
+> c09be31461ed140976c60a87364415454a2c3d42 tcp: limit payload size of sacked skbs
+> 6728c6174a47b8a04ceec89aca9e1195dee7ff6b tcp: tcp_grow_window() needs to respect tcp_space()
+>
