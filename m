@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40522FF0EE
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4363FF0F3
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731097AbfKPQIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:08:43 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46582 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729833AbfKPQIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 11:08:42 -0500
-Received: by mail-wr1-f68.google.com with SMTP id b3so14275181wrs.13
-        for <netdev@vger.kernel.org>; Sat, 16 Nov 2019 08:08:41 -0800 (PST)
+        id S1730702AbfKPQI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:08:56 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46593 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729833AbfKPQIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 11:08:47 -0500
+Received: by mail-wr1-f67.google.com with SMTP id b3so14275574wrs.13
+        for <netdev@vger.kernel.org>; Sat, 16 Nov 2019 08:08:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=FYBY2kcMHJiSzhdqEyOuVC5yVxtvqKBPPIAhj3BsMQA=;
-        b=vCXPMUqLdAtl0tuU0tVbWjsyuXFnhQ8esONIq+9szzbl6bRh68g7nk70HEpP+skfie
-         vsS9a99DBBb2wyH+sXxFE9hwPyb6THAm1V7XM1/zVg8kFh22AFDY13EwOuS0WTf33cRd
-         xZ8F/OVczdHQ6LQYwugJaD+YCQCzaFkSl6gUi02OQ+WfsKHVZBL0DGS4vxt0h5y3bCFQ
-         fkeMhi74zUPtZu23PMplC6MMARXQJhUFUz1zA37mmA1PhDbR6YjeqFlzicktCPtqKlTs
-         4GUqKl2Y/GQM7onPOwaAsj19j+h/58qdDpmCga82DSEUCiun6sesnDAHaz3EOg070XhK
-         EcvA==
+        bh=+AU4oP9SCpnihz1A+NAdbdE77yzXMwuqX7ezGMru7uc=;
+        b=YeVVKtHt4Pf6a/zBYlQ5RAWC+KW311s6xGAnQwym9fv3KAYRysTOni2q08iaoM8PiX
+         Xhq1BWUxDyALmPwc8gsVhc4tNxz8esaW40zGOnZY4/QNUiWUbQpAdt5hiorjMUHIEiqj
+         1nQrjc2xWvz0dTt/bB1iv4R8lnkeQ9rOxR4fmVD+/FvPcbVxuR5AvBg40XDamwhmOW3j
+         INyMby8hm/zeY2/jmhgyaAOhUGC0ZHCsTTCFw6pSEIIlJr5V86dEcF5KHK4z4bGYRM5l
+         hJNKnii4j+Cwpst93W/S42j8j9V+owaswypWLxY6TCMu4VXmtmDnzt1Pn8Neu7Td5beK
+         UAXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FYBY2kcMHJiSzhdqEyOuVC5yVxtvqKBPPIAhj3BsMQA=;
-        b=dDuktKgKpYLlXqQLfbuQhoxYVYos+cPF8NWn4b0Y7XCGp2qpmK9S/sPSUwB2mm0xOf
-         1uFjGLTpT4w408kNgTJMyaQetvNlnDJtEAXL8p42qnTRXQxMCzacv0vTVoRum66Q87NB
-         E81+oaOSjRnTg6DlYKmdZ92ssscjndqsdgXkPy95UL6EcaY6CNFz8mStdW5I6vlmNUAl
-         Fz5AGg/kg/Uv7yRZELgSGtVKXG1C1hnKPOBmuWGIkoER1sfvWbjG1A/K7LltQMQoyrXh
-         qzO5hJggY81rIcvBIkdEMX2i9/8kGo9krwO4aQiqytpz0i3oSNCdpm4GlKeb725ciXn2
-         DGfw==
-X-Gm-Message-State: APjAAAXkLCRGdANMzVdAn9IXtDHE8euEh/62BHj1rxSpcTRqtVSP11GA
-        NkV0sJd5rraJYettgL2CBqY=
-X-Google-Smtp-Source: APXvYqwaC98cPx49BYhAgttdDoHwIKu4Ey0IGQiQjw4VRvpKhmwFfjA5gFyuXSf+zSnnJN2ovxHpKA==
-X-Received: by 2002:a5d:4403:: with SMTP id z3mr20240659wrq.44.1573920520422;
-        Sat, 16 Nov 2019 08:08:40 -0800 (PST)
+        bh=+AU4oP9SCpnihz1A+NAdbdE77yzXMwuqX7ezGMru7uc=;
+        b=Ysp4i4V5/iVug/9+Ldw2t7srtF+DDWmdfrkRdMffBKa2WcbP0hrinJE9v6wabGh/4H
+         d7uGVDbas/gm3a6vwTE0rEFiOxwizMcSiPRw1lVTvmx93ZFZw70NMYYkaf+HSYEuct7P
+         x0GXjBPC7XCjic0/474ioMJoWjMKisM27A1tTmf+NxYbBSdzLvwupBd2W7GBUXevvkpm
+         sTPYemecoKXl6TnlYMxtRiwZ5ITu4hIrpXdLeUkoTLXdzo7+J0RiwY/v/KcVbTqlyKGs
+         SFigmNnzekn9/PWQb5vUiUkJr3dwkTF+j8qXt8db04gr3w3soKwRy1eqJjZevh+pFXk2
+         yriQ==
+X-Gm-Message-State: APjAAAXgwVc3CbTCKv2p+1loYdy3hcA0XAT4bS1DNlFeK38DkduNhRCH
+        I5BUcRbNARTJevPns/tcTKs=
+X-Google-Smtp-Source: APXvYqwQr8BO5CLdUUIDr0RmBZ0pBNXEskJlnWbK+enxcRxJPa8yKJI05sY5hdr59yxst2V7mq3VEQ==
+X-Received: by 2002:a5d:68c3:: with SMTP id p3mr23065101wrw.82.1573920526346;
+        Sat, 16 Nov 2019 08:08:46 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id t134sm14782076wmt.24.2019.11.16.08.08.39
+        by smtp.gmail.com with ESMTPSA id o187sm14055163wmo.20.2019.11.16.08.08.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Nov 2019 08:08:39 -0800 (PST)
+        Sat, 16 Nov 2019 08:08:45 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net] net: dsa: tag_8021q: Fix dsa_8021q_restore_pvid for an absent pvid
-Date:   Sat, 16 Nov 2019 18:08:25 +0200
-Message-Id: <20191116160825.29232-1-olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: tag_8021q: Fix dsa_8021q_restore_pvid for an absent pvid
+Date:   Sat, 16 Nov 2019 18:08:42 +0200
+Message-Id: <20191116160842.29511-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -115,11 +115,11 @@ Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 9c1cc2482b68..9e5a883a9f0c 100644
+index 73632d21f1a6..2fb6c26294b5 100644
 --- a/net/dsa/tag_8021q.c
 +++ b/net/dsa/tag_8021q.c
-@@ -106,7 +106,7 @@ static int dsa_8021q_restore_pvid(struct dsa_switch *ds, int port)
- 	slave = ds->ports[port].slave;
+@@ -105,7 +105,7 @@ static int dsa_8021q_restore_pvid(struct dsa_switch *ds, int port)
+ 	slave = dsa_to_port(ds, port)->slave;
  
  	err = br_vlan_get_pvid(slave, &pvid);
 -	if (err < 0)
