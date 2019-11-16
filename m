@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DFC5FF0A3
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CC9FF098
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730860AbfKPQG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:06:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58968 "EHLO mail.kernel.org"
+        id S1731742AbfKPQGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:06:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730009AbfKPPun (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:50:43 -0500
+        id S1729233AbfKPPuo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:50:44 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3353820729;
-        Sat, 16 Nov 2019 15:50:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 54D59217D6;
+        Sat, 16 Nov 2019 15:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919442;
-        bh=5dEbdlruILwkWbOUiIwYdpi3k5zAZe2wyIRORJgY8cw=;
+        s=default; t=1573919443;
+        bh=d9y+8teIU6Z3Uw7Gq33J3Sg7jR+MWOtnLwmYSK1PHvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SmSIDmoYRnkTnrIpK7G8EIU5TUuQEKPqlK2iVaNIoV2Xf3qZUexqno4FjrIFclF7q
-         S82c4mlr2WnP4UGF3t/1kzWbUYbevqK549qUxd4lHAKkMcd1VBzO3AYHSWHWF1pLwh
-         jELPB9HqWNp8ckiIfWfpv+FYg7W7WHiPTBks5Td0=
+        b=vyMthJq5dXHmb49hbOXBFli7WpdTE0Z2JRnZ3PD1DGS0OTGhykqqF4s0zrFHAu8lh
+         jyaKRwUzegPX7rRKk53IHNdjjLUyW2JQTTM9v9n4dOPQHUcIDHe5LCYeo5Qj+mYI5H
+         hWHPE5WavQK+0A6ZlGldKXobTEriJOi1wCNfJtww=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Barmann <david.barmann@stackpath.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 139/150] sock: Reset dst when changing sk_mark via setsockopt
-Date:   Sat, 16 Nov 2019 10:47:17 -0500
-Message-Id: <20191116154729.9573-139-sashal@kernel.org>
+Cc:     Sriram R <srirrama@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 141/150] cfg80211: Prevent regulatory restore during STA disconnect in concurrent interfaces
+Date:   Sat, 16 Nov 2019 10:47:19 -0500
+Message-Id: <20191116154729.9573-141-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 References: <20191116154729.9573-1-sashal@kernel.org>
@@ -44,44 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Barmann <david.barmann@stackpath.com>
+From: Sriram R <srirrama@codeaurora.org>
 
-[ Upstream commit 50254256f382c56bde87d970f3d0d02fdb76ec70 ]
+[ Upstream commit 113f3aaa81bd56aba02659786ed65cbd9cb9a6fc ]
 
-When setting the SO_MARK socket option, if the mark changes, the dst
-needs to be reset so that a new route lookup is performed.
+Currently when an AP and STA interfaces are active in the same or different
+radios, regulatory settings are restored whenever the STA disconnects. This
+restores all channel information including dfs states in all radios.
+For example, if an AP interface is active in one radio and STA in another,
+when radar is detected on the AP interface, the dfs state of the channel
+will be changed to UNAVAILABLE. But when the STA interface disconnects,
+this issues a regulatory disconnect hint which restores all regulatory
+settings in all the radios attached and thereby losing the stored dfs
+state on the other radio where the channel was marked as unavailable
+earlier. Hence prevent such regulatory restore whenever another active
+beaconing interface is present in the same or other radios.
 
-This fixes the case where an application wants to change routing by
-setting a new sk_mark.  If this is done after some packets have already
-been sent, the dst is cached and has no effect.
-
-Signed-off-by: David Barmann <david.barmann@stackpath.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sriram R <srirrama@codeaurora.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/sock.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/wireless/sme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 7ccbcd853cbce..78c9aa310ce6b 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -985,10 +985,12 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 			clear_bit(SOCK_PASSSEC, &sock->flags);
- 		break;
- 	case SO_MARK:
--		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-+		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
- 			ret = -EPERM;
--		else
-+		} else if (val != sk->sk_mark) {
- 			sk->sk_mark = val;
-+			sk_dst_reset(sk);
-+		}
- 		break;
- 
- 	case SO_RXQ_OVFL:
+diff --git a/net/wireless/sme.c b/net/wireless/sme.c
+index d014aea07160c..66cccd16c24af 100644
+--- a/net/wireless/sme.c
++++ b/net/wireless/sme.c
+@@ -642,11 +642,15 @@ static bool cfg80211_is_all_idle(void)
+ 	 * All devices must be idle as otherwise if you are actively
+ 	 * scanning some new beacon hints could be learned and would
+ 	 * count as new regulatory hints.
++	 * Also if there is any other active beaconing interface we
++	 * need not issue a disconnect hint and reset any info such
++	 * as chan dfs state, etc.
+ 	 */
+ 	list_for_each_entry(rdev, &cfg80211_rdev_list, list) {
+ 		list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
+ 			wdev_lock(wdev);
+-			if (wdev->conn || wdev->current_bss)
++			if (wdev->conn || wdev->current_bss ||
++			    cfg80211_beaconing_iface_active(wdev))
+ 				is_all_idle = false;
+ 			wdev_unlock(wdev);
+ 		}
 -- 
 2.20.1
 
