@@ -2,143 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF4DFEC40
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 13:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 114C4FEC8B
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 15:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727521AbfKPMRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 07:17:53 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57763 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727471AbfKPMRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 07:17:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573906673;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5e836FtExJw28OZVxlgH02W1ihrshgAA9cjRIRi2vCA=;
-        b=ZR6yq+jrUEYSkfDCI+r2D6rMbUMxPsyGOOyFzWUFZvXozmJfnb8uIZq5HrYt/JTOuhEudJ
-        oGCBLnjTZzM1dHk7eQQNLpD8OKQNMQOu1PY+RGu9g0RJ8cycOjJFELSyr7B9h5aoKpv5+n
-        L3HWWBalifYqK5qMGoJNw3kgyI5VW5Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-189-rupxIHayNNyMNZKeh_D6aQ-1; Sat, 16 Nov 2019 07:17:51 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59A0E5B37E;
-        Sat, 16 Nov 2019 12:17:50 +0000 (UTC)
-Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5573560F8B;
-        Sat, 16 Nov 2019 12:17:43 +0000 (UTC)
-Date:   Sat, 16 Nov 2019 13:17:41 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, lorenzo.bianconi@redhat.com,
-        mcroce@redhat.com, brouer@redhat.com
-Subject: Re: [PATCH v3 net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for device
-Message-ID: <20191116131741.2657e1bb@carbon>
-In-Reply-To: <20191116113630.GB20820@localhost.localdomain>
-References: <cover.1573844190.git.lorenzo@kernel.org>
-        <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
-        <20191116122017.78e29e27@carbon>
-        <20191116113630.GB20820@localhost.localdomain>
+        id S1727642AbfKPOAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 09:00:35 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:39121 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727551AbfKPOAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 09:00:35 -0500
+Received: by mail-ed1-f67.google.com with SMTP id l25so9802117edt.6;
+        Sat, 16 Nov 2019 06:00:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vg6OMNguE37yRu0lZWDv0k0PCtncGHdIM9h+B2HKyM0=;
+        b=hM7nbd5gGgND0V7S1OiJOui/OwV0wmHX9tSl/bTxGNE7cP8pbplWyA0REo22B/wq4R
+         tGLDzmpndHJ2i2WBe2nt+ObWvTgRjMVUkfbghIQHlVHtMasiQFqOAu6HwyG1DSPMuDBB
+         ODU2sInhuDbf63eETl+wljibS4V3NR6f1aPtm0h+PPNBMxtV8d9tupKD1SODlsd9f7pS
+         BWVcqT/Ee2WwGYP82RF1qKA3riDKux5hbgZwqDxFu/pew2ep809Y5oQGx9Cx5TrFhGMH
+         UaEj8vZjva6d0sElsNieq8b82U1HG5g0wckLy6LsJM5q+EbPgz9y4+y0UuaDH8kp/8kR
+         dLtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vg6OMNguE37yRu0lZWDv0k0PCtncGHdIM9h+B2HKyM0=;
+        b=X/MrQBtV8WfCsVwOISw+V4YOr7SQhBQvP3Qy3DWeuqoaqO8cL4Ezxmg4E6Df7ZD/RW
+         WqhNrSHGlDrZ4Uwe3tBxs77m3NgOLb6NbnjCtAAIzniJkSE7PdOpzG+0EVsVnpSo2m2w
+         6tpR5r+eSjfrYEk+ZvkkTFQ+sBH3qUaAcSqTCiOow9IeUgywoM31ccob6FxKTrmZxthM
+         AxQeEaILViCHJLB7J6pRyq/HqwcSbLPCf0umtcs1nCWnU47vKiZ+RSDPnjpMFUlcJWs3
+         xt7mUqQgxF3if3jffvotBbjuFL43sbb1iTiD+reeSEFF+smi0r0b62yxKPEZEM3Eu8K5
+         24lA==
+X-Gm-Message-State: APjAAAUDYmHMc8vOg7GJDR+jWiE3HiMeEFtxcJmefVkgQVckVoLLD5+H
+        hjfRAOEk9yRaUfpkiqFz590tGgCdeQcWnZlW377GAEsL
+X-Google-Smtp-Source: APXvYqxj3xRFkMYxP+BopeZ8IgN78tBvhLNLSsp0WDlo7FxOG5yBwZDICwp9PI+Z2EhY9uaorCeokmEjFFgZIv24D4Q=
+X-Received: by 2002:a17:906:a388:: with SMTP id k8mr9654605ejz.223.1573912833541;
+ Sat, 16 Nov 2019 06:00:33 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: rupxIHayNNyMNZKeh_D6aQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191112112830.27561-1-hslester96@gmail.com> <20191115.121050.591805779332799354.davem@davemloft.net>
+ <VI1PR0402MB3600CE74E0EC86AC97F25026FF730@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR0402MB3600CE74E0EC86AC97F25026FF730@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+From:   Chuhong Yuan <hslester96@gmail.com>
+Date:   Sat, 16 Nov 2019 22:00:21 +0800
+Message-ID: <CANhBUQ1VZMV4MKqs95mJnZPLeDnhAgjgLTSaqL_pY08GGzM-mQ@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net v2] net: fec: add a check for CONFIG_PM to
+ avoid clock count mis-match
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 16 Nov 2019 13:36:30 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Sat, Nov 16, 2019 at 2:57 PM Andy Duan <fugang.duan@nxp.com> wrote:
+>
+> From: David Miller <davem@davemloft.net> Sent: Saturday, November 16, 2019 4:11 AM
+> > From: Chuhong Yuan <hslester96@gmail.com>
+> > Date: Tue, 12 Nov 2019 19:28:30 +0800
+> >
+> > > If CONFIG_PM is enabled, runtime pm will work and call runtime_suspend
+> > > automatically to disable clks.
+> > > Therefore, remove only needs to disable clks when CONFIG_PM is disabled.
+> > > Add this check to avoid clock count mis-match caused by double-disable.
+> > >
+> > > Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in
+> > > remove")
+> > > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> >
+> > Your explanation in your reply to my feedback still doesn't explain the
+> > situation to me.
+> >
+> > For every clock enable done during probe, there must be a matching clock
+> > disable during remove.
+> >
+> > Period.
+> >
+> > There is no CONFIG_PM guarding the clock enables during probe in this driver,
+> > therefore there should be no reason to require CONFIG_PM guards to the
+> > clock disables during the remove method,
+> >
+> > You have to explain clearly, and in detail, why my logic and analysis of this
+> > situation is not correct.
+> >
+> > And when you do so, you will need to add those important details to the
+> > commit message of this change and submit a v3.
+> >
+> > Thank you.
+>
+> I agree with David. Below fixes is more reasonable.
+> Chuhong, if there has no voice about below fixes, you can submit v3 later.
+>
 
-> > On Fri, 15 Nov 2019 21:01:38 +0200
-> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >  =20
-> > >  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
-> > > -=09=09=09=09   struct page *page)
-> > > +=09=09=09=09=09  struct page *page,
-> > > +=09=09=09=09=09  unsigned int dma_sync_size)
-> > >  {
-> > >  =09int ret;
-> > >  =09/* BH protection not needed if current is serving softirq */
-> > > @@ -264,6 +285,9 @@ static bool __page_pool_recycle_into_ring(struct =
-page_pool *pool,
-> > >  =09else
-> > >  =09=09ret =3D ptr_ring_produce_bh(&pool->ring, page);
-> > > =20
-> > > +=09if (ret =3D=3D 0 && (pool->p.flags & PP_FLAG_DMA_SYNC_DEV))
-> > > +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
-> > > +
-> > >  =09return (ret =3D=3D 0) ? true : false;
-> > >  } =20
-> >=20
-> >=20
-> > I do wonder if we should DMA-sync-for-device BEFORE putting page into
-> > ptr_ring, as this is a channel between several concurrent CPUs. =20
->=20
-> Hi Jesper,
->=20
-> in this way we can end up syncing the DMA page even if it is unmapped in
-> __page_pool_clean_page (e.g. if the ptr_ring is full), right?
+I get confused that how does this work to solve the CONFIG_PM problem.
+And why do we need to adjust the position of the latter four functions?
+I need to explain them in the commit message.
 
-Yes.  The call __page_pool_clean_page() will do a dma_unmap_page, so it
-should still be safe/correct.   I can see, that it is not optimal
-performance wise, in-case the ptr_ring is full, as DMA-sync-for-device
-is wasted work.
-
-I don't know if you can find an argument, that proves that it cannot
-happen, that a remote CPU can dequeue/consume the page from ptr_ring
-and give it to the device, while you (the CPU the enqueued) are still
-doing the DMA-sync-for-device.
-
-=20
-> > > @@ -273,18 +297,22 @@ static bool __page_pool_recycle_into_ring(struc=
-t page_pool *pool,
-> > >   * Caller must provide appropriate safe context.
-> > >   */
-> > >  static bool __page_pool_recycle_direct(struct page *page,
-> > > -=09=09=09=09       struct page_pool *pool)
-> > > +=09=09=09=09       struct page_pool *pool,
-> > > +=09=09=09=09       unsigned int dma_sync_size)
-> > >  {
-> > >  =09if (unlikely(pool->alloc.count =3D=3D PP_ALLOC_CACHE_SIZE))
-> > >  =09=09return false;
-> > > =20
-> > >  =09/* Caller MUST have verified/know (page_ref_count(page) =3D=3D 1)=
- */
-> > >  =09pool->alloc.cache[pool->alloc.count++] =3D page;
-> > > +
-> > > +=09if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> > > +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
-> > >  =09return true;
-> > >  } =20
-> >=20
-> > We know __page_pool_recycle_direct() is concurrency safe, and only a
-> > single (NAPI processing) CPU can enter. (So, the DMA-sync order is not
-> > wrong here, but it could be swapped) =20
->=20
-> do you mean move it before putting the page in the cache?
->=20
-> pool->alloc.cache[pool->alloc.count++] =3D page;
-
-Yes, but here the order doesn't matter.
-
-If you choose to do the DMA-sync-for-device earlier/before, then look
-at the code, and see of it makes sense to do it in __page_pool_put_page() ?
-(I've not checked the details)
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> @@ -3636,6 +3636,11 @@ fec_drv_remove(struct platform_device *pdev)
+>         struct net_device *ndev = platform_get_drvdata(pdev);
+>         struct fec_enet_private *fep = netdev_priv(ndev);
+>         struct device_node *np = pdev->dev.of_node;
+> +       int ret;
+> +
+> +       ret = pm_runtime_get_sync(&pdev->dev);
+> +       if (ret < 0)
+> +               return ret;
+>
+>         cancel_work_sync(&fep->tx_timeout_work);
+>         fec_ptp_stop(pdev);
+> @@ -3643,15 +3648,17 @@ fec_drv_remove(struct platform_device *pdev)
+>         fec_enet_mii_remove(fep);
+>         if (fep->reg_phy)
+>                 regulator_disable(fep->reg_phy);
+> -       pm_runtime_put(&pdev->dev);
+> -       pm_runtime_disable(&pdev->dev);
+> -       clk_disable_unprepare(fep->clk_ahb);
+> -       clk_disable_unprepare(fep->clk_ipg);
+> +
+>         if (of_phy_is_fixed_link(np))
+>                 of_phy_deregister_fixed_link(np);
+>         of_node_put(fep->phy_node);
+>         free_netdev(ndev);
+>
+> +       clk_disable_unprepare(fep->clk_ahb);
+> +       clk_disable_unprepare(fep->clk_ipg);
+> +       pm_runtime_put_noidle(&pdev->dev);
+> +       pm_runtime_disable(&pdev->dev);
+> +
+>         return 0;
+>  }
+>
+> Regards,
+> Fugang Duan
