@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E9EEFF1D0
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27EB6FF1CB
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731923AbfKPQOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:14:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54428 "EHLO mail.kernel.org"
+        id S1731682AbfKPQOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:14:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729757AbfKPPrl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:47:41 -0500
+        id S1729763AbfKPPrm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:47:42 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4EAB520740;
-        Sat, 16 Nov 2019 15:47:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1EDA32084F;
+        Sat, 16 Nov 2019 15:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919260;
-        bh=vS6NaVgZQJk4ZRO2M57wzdi0pOreZwpgBQncFbvkgIk=;
+        s=default; t=1573919261;
+        bh=6zq1h0zpHyWUa2iY01rCQAMD12ByPs7apA5AM2uYwds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RE1JmX6+raZ1CeI1r81xFV+HEM8nrsQQT2drO1z3hNRIwWYfqQVs9LpRnaXHzfldn
-         ameBPvlRSqYxf7To3VFjwff6bfEgK65UdmfNIjMClVWsRPlaDn6Psa7dpqCE2KPsDD
-         F4JGpek/lLdsRhjlQZSbJ570Qf3nd9sITNkfi0hE=
+        b=OFXouQQI4z8DxADvqaAEafdPKQR8m8W2y1Gly5onpU258J5ZqaG181lHxTsM6xFEG
+         MpxwoDH6/KCyyvA0whyIzExXWiSQZevqqN47GNI/Id1/Hyq0XUd7i+R53hxG+ibC6O
+         TZORnBi6e3AL2niraFOPr5W4RYycSnGIowM1GCU8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>,
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
+        Brian Norris <briannorris@chomium.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 010/150] brcmsmac: AP mode: update beacon when TIM changes
-Date:   Sat, 16 Nov 2019 10:45:08 -0500
-Message-Id: <20191116154729.9573-10-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 011/150] ath10k: allocate small size dma memory in ath10k_pci_diag_write_mem
+Date:   Sat, 16 Nov 2019 10:45:09 -0500
+Message-Id: <20191116154729.9573-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 References: <20191116154729.9573-1-sashal@kernel.org>
@@ -46,97 +45,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+From: Carl Huang <cjhuang@codeaurora.org>
 
-[ Upstream commit 2258ee58baa554609a3cc3996276e4276f537b6d ]
+[ Upstream commit 0738b4998c6d1caf9ca2447b946709a7278c70f1 ]
 
-Beacons are not updated to reflect TIM changes. This is not compliant with
-power-saving client stations as the beacons do not have valid TIM and can
-cause the network to stall at random occasions and to have highly variable
-latencies.
-Fix it by updating beacon templates on mac80211 set_tim callback.
+ath10k_pci_diag_write_mem may allocate big size of the dma memory
+based on the parameter nbytes. Take firmware diag download as
+example, the biggest size is about 500K. In some systems, the
+allocation is likely to fail because it can't acquire such a large
+contiguous dma memory.
 
-Addresses an issue described in:
-https://marc.info/?i=20180911163534.21312d08%20()%20manjaro
+The fix is to allocate a small size dma memory. In the loop,
+driver copies the data to the allocated dma memory and writes to
+the destination until all the data is written.
 
-Signed-off-by: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Tested with QCA6174 PCI with
+firmware-6.bin_WLAN.RM.4.4.1-00119-QCARMSWP-1, this also affects
+QCA9377 PCI.
+
+Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
+Reviewed-by: Brian Norris <briannorris@chomium.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c | 26 +++++++++++++++++++
- .../broadcom/brcm80211/brcmsmac/main.h        |  1 +
- 2 files changed, 27 insertions(+)
+ drivers/net/wireless/ath/ath10k/pci.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-index ddfdfe177e245..257968fb3111f 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-@@ -502,6 +502,7 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index d790ea20b95d9..89fbd03db2987 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -1039,10 +1039,9 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
+ 	int ret = 0;
+ 	u32 *buf;
+-	unsigned int completed_nbytes, orig_nbytes, remaining_bytes;
++	unsigned int completed_nbytes, alloc_nbytes, remaining_bytes;
+ 	struct ath10k_ce_pipe *ce_diag;
+ 	void *data_buf = NULL;
+-	u32 ce_data;	/* Host buffer address in CE space */
+ 	dma_addr_t ce_data_base = 0;
+ 	int i;
+ 
+@@ -1056,9 +1055,10 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ 	 *   1) 4-byte alignment
+ 	 *   2) Buffer in DMA-able space
+ 	 */
+-	orig_nbytes = nbytes;
++	alloc_nbytes = min_t(unsigned int, nbytes, DIAG_TRANSFER_LIMIT);
++
+ 	data_buf = (unsigned char *)dma_alloc_coherent(ar->dev,
+-						       orig_nbytes,
++						       alloc_nbytes,
+ 						       &ce_data_base,
+ 						       GFP_ATOMIC);
+ 	if (!data_buf) {
+@@ -1066,9 +1066,6 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ 		goto done;
  	}
  
- 	spin_lock_bh(&wl->lock);
-+	wl->wlc->vif = vif;
- 	wl->mute_tx = false;
- 	brcms_c_mute(wl->wlc, false);
- 	if (vif->type == NL80211_IFTYPE_STATION)
-@@ -519,6 +520,11 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- static void
- brcms_ops_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- {
-+	struct brcms_info *wl = hw->priv;
+-	/* Copy caller's data to allocated DMA buf */
+-	memcpy(data_buf, data, orig_nbytes);
+-
+ 	/*
+ 	 * The address supplied by the caller is in the
+ 	 * Target CPU virtual address space.
+@@ -1081,12 +1078,14 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ 	 */
+ 	address = ath10k_pci_targ_cpu_to_ce_addr(ar, address);
+ 
+-	remaining_bytes = orig_nbytes;
+-	ce_data = ce_data_base;
++	remaining_bytes = nbytes;
+ 	while (remaining_bytes) {
+ 		/* FIXME: check cast */
+ 		nbytes = min_t(int, remaining_bytes, DIAG_TRANSFER_LIMIT);
+ 
++		/* Copy caller's data to allocated DMA buf */
++		memcpy(data_buf, data, nbytes);
 +
-+	spin_lock_bh(&wl->lock);
-+	wl->wlc->vif = NULL;
-+	spin_unlock_bh(&wl->lock);
- }
+ 		/* Set up to receive directly into Target(!) address */
+ 		ret = __ath10k_ce_rx_post_buf(ce_diag, &address, address);
+ 		if (ret != 0)
+@@ -1096,7 +1095,7 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ 		 * Request CE to send caller-supplied data that
+ 		 * was copied to bounce buffer to Target(!) address.
+ 		 */
+-		ret = ath10k_ce_send_nolock(ce_diag, NULL, (u32)ce_data,
++		ret = ath10k_ce_send_nolock(ce_diag, NULL, ce_data_base,
+ 					    nbytes, 0, 0);
+ 		if (ret != 0)
+ 			goto done;
+@@ -1137,12 +1136,12 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
  
- static int brcms_ops_config(struct ieee80211_hw *hw, u32 changed)
-@@ -937,6 +943,25 @@ static void brcms_ops_set_tsf(struct ieee80211_hw *hw,
- 	spin_unlock_bh(&wl->lock);
- }
+ 		remaining_bytes -= nbytes;
+ 		address += nbytes;
+-		ce_data += nbytes;
++		data += nbytes;
+ 	}
  
-+static int brcms_ops_beacon_set_tim(struct ieee80211_hw *hw,
-+				 struct ieee80211_sta *sta, bool set)
-+{
-+	struct brcms_info *wl = hw->priv;
-+	struct sk_buff *beacon = NULL;
-+	u16 tim_offset = 0;
-+
-+	spin_lock_bh(&wl->lock);
-+	if (wl->wlc->vif)
-+		beacon = ieee80211_beacon_get_tim(hw, wl->wlc->vif,
-+						  &tim_offset, NULL);
-+	if (beacon)
-+		brcms_c_set_new_beacon(wl->wlc, beacon, tim_offset,
-+				       wl->wlc->vif->bss_conf.dtim_period);
-+	spin_unlock_bh(&wl->lock);
-+
-+	return 0;
-+}
-+
- static const struct ieee80211_ops brcms_ops = {
- 	.tx = brcms_ops_tx,
- 	.start = brcms_ops_start,
-@@ -955,6 +980,7 @@ static const struct ieee80211_ops brcms_ops = {
- 	.flush = brcms_ops_flush,
- 	.get_tsf = brcms_ops_get_tsf,
- 	.set_tsf = brcms_ops_set_tsf,
-+	.set_tim = brcms_ops_beacon_set_tim,
- };
+ done:
+ 	if (data_buf) {
+-		dma_free_coherent(ar->dev, orig_nbytes, data_buf,
++		dma_free_coherent(ar->dev, alloc_nbytes, data_buf,
+ 				  ce_data_base);
+ 	}
  
- void brcms_dpc(unsigned long data)
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-index c4d135cff04ad..9f76b880814e8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-@@ -563,6 +563,7 @@ struct brcms_c_info {
- 
- 	struct wiphy *wiphy;
- 	struct scb pri_scb;
-+	struct ieee80211_vif *vif;
- 
- 	struct sk_buff *beacon;
- 	u16 beacon_tim_offset;
 -- 
 2.20.1
 
