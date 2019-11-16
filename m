@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5699FF376
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1150EFF34A
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730240AbfKPQZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:25:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45436 "EHLO mail.kernel.org"
+        id S1729562AbfKPQYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:24:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728115AbfKPPmC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:42:02 -0500
+        id S1728276AbfKPPmY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:42:24 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0DE642075E;
-        Sat, 16 Nov 2019 15:42:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 86E1F2082E;
+        Sat, 16 Nov 2019 15:42:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573918921;
-        bh=qtEvDNQ1hGh5OvtIarObqpS47qN5mS+O16aIP/RsG7M=;
+        s=default; t=1573918943;
+        bh=nn55VR0mjRnVCirDI9UVbFxLsK48NZQCrZGr+lyqim4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MiLOFB6iRTN1ThVwrQTes/BobsGmd+kQVfG5jtB05Bv9WXOhdrSD596YJPz5WxqJU
-         20pPqHnKSSHouwK96raUtZMIBiYP/1ydbNQiEaymOPEhuEFD5jAuckexim7npuAtj2
-         lnt9v+X5xphK8RL5JNhOlLxNRqMws9rS78HvJhow=
+        b=NCX7kilWCVqh3LsO5ztPw6ztY2jA5IZUL8XpLVBHKu4p6xkDQyQvM4yl7L7U6qel6
+         jNlVQxPe0rQmwFQg6NqpN9UJVjdoFEJVKah03qY7Ms+EqLf26SMb2W/Nt1S9SbwSOI
+         HSfBgWekFhkRFIqQkMKYtpodAdxDtyT43QKz5nEs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Beckett <david.beckett@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, oss-drivers@netronome.com
-Subject: [PATCH AUTOSEL 4.19 046/237] nfp: bpf: protect against mis-initializing atomic counters
-Date:   Sat, 16 Nov 2019 10:38:01 -0500
-Message-Id: <20191116154113.7417-46-sashal@kernel.org>
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 066/237] net: dsa: mv88e6xxx: Fix 88E6141/6341 2500mbps SERDES speed
+Date:   Sat, 16 Nov 2019 10:38:21 -0500
+Message-Id: <20191116154113.7417-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,221 +44,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
+From: Marek Behún <marek.behun@nic.cz>
 
-[ Upstream commit 527db74b71ee5a279f818aae51f2c26b4e5c7648 ]
+[ Upstream commit 26422340da467538cd65eaa9c65538039ee99c8c ]
 
-Atomic operations on the NFP are currently always in big endian.
-The driver keeps track of regions of memory storing atomic values
-and byte swaps them accordingly.  There are corner cases where
-the map values may be initialized before the driver knows they
-are used as atomic counters.  This can happen either when the
-datapath is performing the update and the stack contents are
-unknown or when map is updated before the program which will
-use it for atomic values is loaded.
+This is a fix for the port_set_speed method for the Topaz family.
+Currently the same method is used as for the Peridot family, but
+this is wrong for the SERDES port.
 
-To avoid situation where user initializes the value to 0 1 2 3
-and then after loading a program which uses the word as an atomic
-counter starts reading 3 2 1 0 - only allow atomic counters to be
-initialized to endian-neutral values.
+On Topaz, the SERDES port is port 5, not 9 and 10 as in Peridot.
+Moreover setting alt_bit on Topaz only makes sense for port 0 (for
+(differentiating 100mbps vs 200mbps). The SERDES port does not
+support more than 2500mbps, so alt_bit does not make any difference.
 
-For updates from the datapath the stack information may not be
-as precise, so just allow initializing such values to 0.
-
-Example code which would break:
-struct bpf_map_def SEC("maps") rxcnt = {
-       .type = BPF_MAP_TYPE_HASH,
-       .key_size = sizeof(__u32),
-       .value_size = sizeof(__u64),
-       .max_entries = 1,
-};
-
-int xdp_prog1()
-{
-      	__u64 nonzeroval = 3;
-	__u32 key = 0;
-	__u64 *value;
-
-	value = bpf_map_lookup_elem(&rxcnt, &key);
-	if (!value)
-		bpf_map_update_elem(&rxcnt, &key, &nonzeroval, BPF_ANY);
-	else
-		__sync_fetch_and_add(value, 1);
-
-	return XDP_PASS;
-}
-
-$ offload bpftool map dump
-key: 00 00 00 00 value: 00 00 00 03 00 00 00 00
-
-should be:
-
-$ offload bpftool map dump
-key: 00 00 00 00 value: 03 00 00 00 00 00 00 00
-
-Reported-by: David Beckett <david.beckett@netronome.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/bpf/main.h |  7 ++-
- .../net/ethernet/netronome/nfp/bpf/offload.c  | 18 +++++-
- .../net/ethernet/netronome/nfp/bpf/verifier.c | 58 +++++++++++++++++--
- 3 files changed, 76 insertions(+), 7 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c |  4 ++--
+ drivers/net/dsa/mv88e6xxx/port.c | 25 +++++++++++++++++++++++--
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 3 files changed, 26 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/main.h b/drivers/net/ethernet/netronome/nfp/bpf/main.h
-index dbd00982fd2b6..2134045e14c36 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/main.h
-@@ -206,6 +206,11 @@ enum nfp_bpf_map_use {
- 	NFP_MAP_USE_ATOMIC_CNT,
- };
- 
-+struct nfp_bpf_map_word {
-+	unsigned char type		:4;
-+	unsigned char non_zero_update	:1;
-+};
-+
- /**
-  * struct nfp_bpf_map - private per-map data attached to BPF maps for offload
-  * @offmap:	pointer to the offloaded BPF map
-@@ -219,7 +224,7 @@ struct nfp_bpf_map {
- 	struct nfp_app_bpf *bpf;
- 	u32 tid;
- 	struct list_head l;
--	enum nfp_bpf_map_use use_map[];
-+	struct nfp_bpf_map_word use_map[];
- };
- 
- struct nfp_bpf_neutral_map {
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/offload.c b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-index 1ccd6371a15b5..6140e4650b71c 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-@@ -299,10 +299,25 @@ static void nfp_map_bpf_byte_swap(struct nfp_bpf_map *nfp_map, void *value)
- 	unsigned int i;
- 
- 	for (i = 0; i < DIV_ROUND_UP(nfp_map->offmap->map.value_size, 4); i++)
--		if (nfp_map->use_map[i] == NFP_MAP_USE_ATOMIC_CNT)
-+		if (nfp_map->use_map[i].type == NFP_MAP_USE_ATOMIC_CNT)
- 			word[i] = (__force u32)cpu_to_be32(word[i]);
- }
- 
-+/* Mark value as unsafely initialized in case it becomes atomic later
-+ * and we didn't byte swap something non-byte swap neutral.
-+ */
-+static void
-+nfp_map_bpf_byte_swap_record(struct nfp_bpf_map *nfp_map, void *value)
-+{
-+	u32 *word = value;
-+	unsigned int i;
-+
-+	for (i = 0; i < DIV_ROUND_UP(nfp_map->offmap->map.value_size, 4); i++)
-+		if (nfp_map->use_map[i].type == NFP_MAP_UNUSED &&
-+		    word[i] != (__force u32)cpu_to_be32(word[i]))
-+			nfp_map->use_map[i].non_zero_update = 1;
-+}
-+
- static int
- nfp_bpf_map_lookup_entry(struct bpf_offloaded_map *offmap,
- 			 void *key, void *value)
-@@ -322,6 +337,7 @@ nfp_bpf_map_update_entry(struct bpf_offloaded_map *offmap,
- 			 void *key, void *value, u64 flags)
- {
- 	nfp_map_bpf_byte_swap(offmap->dev_priv, value);
-+	nfp_map_bpf_byte_swap_record(offmap->dev_priv, value);
- 	return nfp_bpf_ctrl_update_entry(offmap, key, value, flags);
- }
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/verifier.c b/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-index a6e9248669e14..db7e186dae56d 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/verifier.c
-@@ -108,6 +108,46 @@ nfp_record_adjust_head(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
- 	nfp_prog->adjust_head_location = location;
- }
- 
-+static bool nfp_bpf_map_update_value_ok(struct bpf_verifier_env *env)
-+{
-+	const struct bpf_reg_state *reg1 = cur_regs(env) + BPF_REG_1;
-+	const struct bpf_reg_state *reg3 = cur_regs(env) + BPF_REG_3;
-+	struct bpf_offloaded_map *offmap;
-+	struct bpf_func_state *state;
-+	struct nfp_bpf_map *nfp_map;
-+	int off, i;
-+
-+	state = env->cur_state->frame[reg3->frameno];
-+
-+	/* We need to record each time update happens with non-zero words,
-+	 * in case such word is used in atomic operations.
-+	 * Implicitly depend on nfp_bpf_stack_arg_ok(reg3) being run before.
-+	 */
-+
-+	offmap = map_to_offmap(reg1->map_ptr);
-+	nfp_map = offmap->dev_priv;
-+	off = reg3->off + reg3->var_off.value;
-+
-+	for (i = 0; i < offmap->map.value_size; i++) {
-+		struct bpf_stack_state *stack_entry;
-+		unsigned int soff;
-+
-+		soff = -(off + i) - 1;
-+		stack_entry = &state->stack[soff / BPF_REG_SIZE];
-+		if (stack_entry->slot_type[soff % BPF_REG_SIZE] == STACK_ZERO)
-+			continue;
-+
-+		if (nfp_map->use_map[i / 4].type == NFP_MAP_USE_ATOMIC_CNT) {
-+			pr_vlog(env, "value at offset %d/%d may be non-zero, bpf_map_update_elem() is required to initialize atomic counters to zero to avoid offload endian issues\n",
-+				i, soff);
-+			return false;
-+		}
-+		nfp_map->use_map[i / 4].non_zero_update = 1;
-+	}
-+
-+	return true;
-+}
-+
- static int
- nfp_bpf_stack_arg_ok(const char *fname, struct bpf_verifier_env *env,
- 		     const struct bpf_reg_state *reg,
-@@ -198,7 +238,8 @@ nfp_bpf_check_call(struct nfp_prog *nfp_prog, struct bpf_verifier_env *env,
- 					 bpf->helpers.map_update, reg1) ||
- 		    !nfp_bpf_stack_arg_ok("map_update", env, reg2,
- 					  meta->func_id ? &meta->arg2 : NULL) ||
--		    !nfp_bpf_stack_arg_ok("map_update", env, reg3, NULL))
-+		    !nfp_bpf_stack_arg_ok("map_update", env, reg3, NULL) ||
-+		    !nfp_bpf_map_update_value_ok(env))
- 			return -EOPNOTSUPP;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index d075f0f7a3de8..411ae9961bf4f 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3028,7 +3028,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
+ 	.port_set_link = mv88e6xxx_port_set_link,
+ 	.port_set_duplex = mv88e6xxx_port_set_duplex,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+-	.port_set_speed = mv88e6390_port_set_speed,
++	.port_set_speed = mv88e6341_port_set_speed,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+ 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
+@@ -3649,7 +3649,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+ 	.port_set_link = mv88e6xxx_port_set_link,
+ 	.port_set_duplex = mv88e6xxx_port_set_duplex,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+-	.port_set_speed = mv88e6390_port_set_speed,
++	.port_set_speed = mv88e6341_port_set_speed,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+ 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index fdeddbfa829da..2f16a310c110e 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -228,8 +228,11 @@ static int mv88e6xxx_port_set_speed(struct mv88e6xxx_chip *chip, int port,
+ 		ctrl = MV88E6XXX_PORT_MAC_CTL_SPEED_1000;
  		break;
- 
-@@ -376,15 +417,22 @@ nfp_bpf_map_mark_used_one(struct bpf_verifier_env *env,
- 			  struct nfp_bpf_map *nfp_map,
- 			  unsigned int off, enum nfp_bpf_map_use use)
- {
--	if (nfp_map->use_map[off / 4] != NFP_MAP_UNUSED &&
--	    nfp_map->use_map[off / 4] != use) {
-+	if (nfp_map->use_map[off / 4].type != NFP_MAP_UNUSED &&
-+	    nfp_map->use_map[off / 4].type != use) {
- 		pr_vlog(env, "map value use type conflict %s vs %s off: %u\n",
--			nfp_bpf_map_use_name(nfp_map->use_map[off / 4]),
-+			nfp_bpf_map_use_name(nfp_map->use_map[off / 4].type),
- 			nfp_bpf_map_use_name(use), off);
- 		return -EOPNOTSUPP;
- 	}
- 
--	nfp_map->use_map[off / 4] = use;
-+	if (nfp_map->use_map[off / 4].non_zero_update &&
-+	    use == NFP_MAP_USE_ATOMIC_CNT) {
-+		pr_vlog(env, "atomic counter in map value may already be initialized to non-zero value off: %u\n",
-+			off);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	nfp_map->use_map[off / 4].type = use;
- 
- 	return 0;
+ 	case 2500:
+-		ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000 |
+-			MV88E6390_PORT_MAC_CTL_ALTSPEED;
++		if (alt_bit)
++			ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000 |
++				MV88E6390_PORT_MAC_CTL_ALTSPEED;
++		else
++			ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000;
+ 		break;
+ 	case 10000:
+ 		/* all bits set, fall through... */
+@@ -291,6 +294,24 @@ int mv88e6185_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed)
+ 	return mv88e6xxx_port_set_speed(chip, port, speed, false, false);
  }
+ 
++/* Support 10, 100, 200, 1000, 2500 Mbps (e.g. 88E6341) */
++int mv88e6341_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed)
++{
++	if (speed == SPEED_MAX)
++		speed = port < 5 ? 1000 : 2500;
++
++	if (speed > 2500)
++		return -EOPNOTSUPP;
++
++	if (speed == 200 && port != 0)
++		return -EOPNOTSUPP;
++
++	if (speed == 2500 && port < 5)
++		return -EOPNOTSUPP;
++
++	return mv88e6xxx_port_set_speed(chip, port, speed, !port, true);
++}
++
+ /* Support 10, 100, 200, 1000 Mbps (e.g. 88E6352 family) */
+ int mv88e6352_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed)
+ {
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 95b59f5eb3931..cbb64a7683e28 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -280,6 +280,7 @@ int mv88e6xxx_port_set_duplex(struct mv88e6xxx_chip *chip, int port, int dup);
+ 
+ int mv88e6065_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
+ int mv88e6185_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
++int mv88e6341_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
+ int mv88e6352_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
+ int mv88e6390_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
+ int mv88e6390x_port_set_speed(struct mv88e6xxx_chip *chip, int port, int speed);
 -- 
 2.20.1
 
