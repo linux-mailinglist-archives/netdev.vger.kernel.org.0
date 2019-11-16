@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E93F9FF124
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:10:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34397FF0F2
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfKPPtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:49:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56830 "EHLO mail.kernel.org"
+        id S1730425AbfKPPuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:50:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730279AbfKPPtS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:49:18 -0500
+        id S1730415AbfKPPuH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:50:07 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D2CF2081E;
-        Sat, 16 Nov 2019 15:49:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 25DE1208A1;
+        Sat, 16 Nov 2019 15:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919357;
-        bh=iEFg2OgAmaWRd0RDYXvJ8JsJ2QGa+NeD4y94Xt9Om80=;
+        s=default; t=1573919406;
+        bh=J0/R4Z5BY+02R0pbRuvu0OdHWnNZFRHfN+3UcXMO7bk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ToROOiu1zTbO08vu3xRDSYK7FzREfvYlI9KWtsFUUKs4nqUNBUiBtz9COuuuJU4aM
-         ShL2st/s/fSzW1PjDgViUPl1KI72T/26Lb52hvzR196jWGzzI2rSpaO2h7t1q9SBNr
-         7zHH+s7fOCVVbF9I2+vLzG2/QFypYjLW9MX5GdDk=
+        b=LJr7BlBgL0W2gVGZwGVazD5NIZY5Hk5p9iamJESK+q2umdDF02kJdlH72BTW5Paug
+         5FApyGPoJIOEnq3G1NfxNjCITOZx/mm4mzoZpk0T4HCGsK0NUNO4J0fIYNEdThYPEp
+         ELZQmGA3j+EYFi70KKC2MbAO6+ZII5xS2kEem4oQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Radu Rendec <radu.rendec@gmail.com>,
-        Patrick Talbert <ptalbert@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 081/150] macsec: update operstate when lower device changes
-Date:   Sat, 16 Nov 2019 10:46:19 -0500
-Message-Id: <20191116154729.9573-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 105/150] igb: shorten maximum PHC timecounter update interval
+Date:   Sat, 16 Nov 2019 10:46:43 -0500
+Message-Id: <20191116154729.9573-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 References: <20191116154729.9573-1-sashal@kernel.org>
@@ -45,68 +47,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Miroslav Lichvar <mlichvar@redhat.com>
 
-[ Upstream commit e6ac075882b2afcdf2d5ab328ce4ab42a1eb9593 ]
+[ Upstream commit 094bf4d0e9657f6ea1ee3d7e07ce3970796949ce ]
 
-Like all other virtual devices (macvlan, vlan), the operstate of a
-macsec device should match the state of its lower device. This is done
-by calling netif_stacked_transfer_operstate from its netdevice notifier.
+The timecounter needs to be updated at least once per ~550 seconds in
+order to avoid a 40-bit SYSTIM timestamp to be misinterpreted as an old
+timestamp.
 
-We also need to call netif_stacked_transfer_operstate when a new macsec
-device is created, so that its operstate is set properly. This is only
-relevant when we try to bring the device up directly when we create it.
+Since commit 500462a9d ("timers: Switch to a non-cascading wheel"),
+scheduling of delayed work seems to be less accurate and a requested
+delay of 540 seconds may actually be longer than 550 seconds. Shorten
+the delay to 480 seconds to be sure the timecounter is updated in time.
 
-Radu Rendec proposed a similar patch, inspired from the 802.1q driver,
-that included changing the administrative state of the macsec device,
-instead of just the operstate. This version is similar to what the
-macvlan driver does, and updates only the operstate.
+This fixes an issue with HW timestamps on 82580/I350/I354 being off by
+~1100 seconds for few seconds every ~9 minutes.
 
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
-Reported-by: Radu Rendec <radu.rendec@gmail.com>
-Reported-by: Patrick Talbert <ptalbert@redhat.com>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/ethernet/intel/igb/igb_ptp.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 9bcb7c3e879f3..40e8f11f20cbf 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3273,6 +3273,9 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 	if (err < 0)
- 		goto del_dev;
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 0746b19ec6d37..295d27f331042 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -65,9 +65,15 @@
+  *
+  * The 40 bit 82580 SYSTIM overflows every
+  *   2^40 * 10^-9 /  60  = 18.3 minutes.
++ *
++ * SYSTIM is converted to real time using a timecounter. As
++ * timecounter_cyc2time() allows old timestamps, the timecounter
++ * needs to be updated at least once per half of the SYSTIM interval.
++ * Scheduling of delayed work is not very accurate, so we aim for 8
++ * minutes to be sure the actual interval is shorter than 9.16 minutes.
+  */
  
-+	netif_stacked_transfer_operstate(real_dev, dev);
-+	linkwatch_fire_event(dev);
-+
- 	macsec_generation++;
- 
- 	return 0;
-@@ -3444,6 +3447,20 @@ static int macsec_notify(struct notifier_block *this, unsigned long event,
- 		return NOTIFY_DONE;
- 
- 	switch (event) {
-+	case NETDEV_DOWN:
-+	case NETDEV_UP:
-+	case NETDEV_CHANGE: {
-+		struct macsec_dev *m, *n;
-+		struct macsec_rxh_data *rxd;
-+
-+		rxd = macsec_data_rtnl(real_dev);
-+		list_for_each_entry_safe(m, n, &rxd->secys, secys) {
-+			struct net_device *dev = m->secy.netdev;
-+
-+			netif_stacked_transfer_operstate(real_dev, dev);
-+		}
-+		break;
-+	}
- 	case NETDEV_UNREGISTER: {
- 		struct macsec_dev *m, *n;
- 		struct macsec_rxh_data *rxd;
+-#define IGB_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 9)
++#define IGB_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 8)
+ #define IGB_PTP_TX_TIMEOUT		(HZ * 15)
+ #define INCPERIOD_82576			BIT(E1000_TIMINCA_16NS_SHIFT)
+ #define INCVALUE_82576_MASK		GENMASK(E1000_TIMINCA_16NS_SHIFT - 1, 0)
 -- 
 2.20.1
 
