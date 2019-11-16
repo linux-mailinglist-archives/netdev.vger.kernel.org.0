@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1549EFEEAF
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 16:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1037BFEF97
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731267AbfKPPxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:53:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34656 "EHLO mail.kernel.org"
+        id S1731310AbfKPPxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:53:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35078 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731258AbfKPPxc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:53:32 -0500
+        id S1729947AbfKPPxs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:53:48 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 25AAF2168B;
-        Sat, 16 Nov 2019 15:53:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2284E219F9;
+        Sat, 16 Nov 2019 15:53:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919612;
-        bh=B0Njg5yOngXhHDvGrWZ4jBKX4MpUpoK1cGw/PDSWp/c=;
+        s=default; t=1573919627;
+        bh=+BzdJ6LDlqS6iccz6NVyrV0+MjE0C9nKxm+/FH2c3oA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q0PZek3q7sxS9Afet8LJCiI3GuvXHBOD26+gSGP7aLQnwt9ZqKd3CuV2ByvO8kO0/
-         +I7inij3aj1upbU1WFaEMTrWTMqr1Mrs2eZ+spsEBHjVMdBmpntXxVo3snHJS4F5la
-         HoGPyGGwzj49K6HEozWX+V6nMUeGko6Db+q3TdcU=
+        b=ms3Jbv5Aam70b3NYyIDlOUuSvBGTx7jmvb5s8VZOPKpZPJKlCC5CY4PfipjPsBccr
+         QbxQFVadn4TyDBS9m3CO0GPKuwKV1TZMMfRJA/ENdbsxq3DSqBKvXzLEcAqSwab5m7
+         hKUXzwMKw83ny0h3k4NEByJu8LjHK6+4qq8eqquA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Donald Sharp <sharpd@cumulusnetworks.com>,
-        Mike Manning <mmanning@vyatta.att-mail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 99/99] ipv6: Fix handling of LLA with VRF and sockets bound to VRF
-Date:   Sat, 16 Nov 2019 10:51:02 -0500
-Message-Id: <20191116155103.10971-99-sashal@kernel.org>
+Cc:     Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 07/77] brcmsmac: AP mode: update beacon when TIM changes
+Date:   Sat, 16 Nov 2019 10:52:29 -0500
+Message-Id: <20191116155339.11909-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191116155103.10971-1-sashal@kernel.org>
-References: <20191116155103.10971-1-sashal@kernel.org>
+In-Reply-To: <20191116155339.11909-1-sashal@kernel.org>
+References: <20191116155339.11909-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,48 +44,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
 
-[ Upstream commit c2027d1e17582903e368abf5d4838b22a98f2b7b ]
+[ Upstream commit 2258ee58baa554609a3cc3996276e4276f537b6d ]
 
-A recent commit allows sockets bound to a VRF to receive ipv6 link local
-packets. However, it only works for UDP and worse TCP connection attempts
-to the LLA with the only listener bound to the VRF just hang where as
-before the client gets a reset and connection refused. Fix by adjusting
-ir_iif for LL addresses and packets received through a device enslaved
-to a VRF.
+Beacons are not updated to reflect TIM changes. This is not compliant with
+power-saving client stations as the beacons do not have valid TIM and can
+cause the network to stall at random occasions and to have highly variable
+latencies.
+Fix it by updating beacon templates on mac80211 set_tim callback.
 
-Fixes: 6f12fa775530 ("vrf: mark skb for multicast or link-local as enslaved to VRF")
-Reported-by: Donald Sharp <sharpd@cumulusnetworks.com>
-Cc: Mike Manning <mmanning@vyatta.att-mail.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Addresses an issue described in:
+https://marc.info/?i=20180911163534.21312d08%20()%20manjaro
+
+Signed-off-by: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/tcp_ipv6.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../wireless/brcm80211/brcmsmac/mac80211_if.c | 26 +++++++++++++++++++
+ .../net/wireless/brcm80211/brcmsmac/main.h    |  1 +
+ 2 files changed, 27 insertions(+)
 
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 4953466cf98f0..54e2557335c1c 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -693,6 +693,7 @@ static void tcp_v6_init_req(struct request_sock *req,
- 			    const struct sock *sk_listener,
- 			    struct sk_buff *skb)
+diff --git a/drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c
+index 61ae2768132a0..e3b01d804cf24 100644
+--- a/drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c
++++ b/drivers/net/wireless/brcm80211/brcmsmac/mac80211_if.c
+@@ -502,6 +502,7 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+ 	}
+ 
+ 	spin_lock_bh(&wl->lock);
++	wl->wlc->vif = vif;
+ 	wl->mute_tx = false;
+ 	brcms_c_mute(wl->wlc, false);
+ 	if (vif->type == NL80211_IFTYPE_STATION)
+@@ -519,6 +520,11 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+ static void
+ brcms_ops_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
  {
-+	bool l3_slave = ipv6_l3mdev_skb(TCP_SKB_CB(skb)->header.h6.flags);
- 	struct inet_request_sock *ireq = inet_rsk(req);
- 	const struct ipv6_pinfo *np = inet6_sk(sk_listener);
++	struct brcms_info *wl = hw->priv;
++
++	spin_lock_bh(&wl->lock);
++	wl->wlc->vif = NULL;
++	spin_unlock_bh(&wl->lock);
+ }
  
-@@ -700,7 +701,7 @@ static void tcp_v6_init_req(struct request_sock *req,
- 	ireq->ir_v6_loc_addr = ipv6_hdr(skb)->daddr;
+ static int brcms_ops_config(struct ieee80211_hw *hw, u32 changed)
+@@ -937,6 +943,25 @@ static void brcms_ops_set_tsf(struct ieee80211_hw *hw,
+ 	spin_unlock_bh(&wl->lock);
+ }
  
- 	/* So that link locals have meaning */
--	if (!sk_listener->sk_bound_dev_if &&
-+	if ((!sk_listener->sk_bound_dev_if || l3_slave) &&
- 	    ipv6_addr_type(&ireq->ir_v6_rmt_addr) & IPV6_ADDR_LINKLOCAL)
- 		ireq->ir_iif = tcp_v6_iif(skb);
++static int brcms_ops_beacon_set_tim(struct ieee80211_hw *hw,
++				 struct ieee80211_sta *sta, bool set)
++{
++	struct brcms_info *wl = hw->priv;
++	struct sk_buff *beacon = NULL;
++	u16 tim_offset = 0;
++
++	spin_lock_bh(&wl->lock);
++	if (wl->wlc->vif)
++		beacon = ieee80211_beacon_get_tim(hw, wl->wlc->vif,
++						  &tim_offset, NULL);
++	if (beacon)
++		brcms_c_set_new_beacon(wl->wlc, beacon, tim_offset,
++				       wl->wlc->vif->bss_conf.dtim_period);
++	spin_unlock_bh(&wl->lock);
++
++	return 0;
++}
++
+ static const struct ieee80211_ops brcms_ops = {
+ 	.tx = brcms_ops_tx,
+ 	.start = brcms_ops_start,
+@@ -955,6 +980,7 @@ static const struct ieee80211_ops brcms_ops = {
+ 	.flush = brcms_ops_flush,
+ 	.get_tsf = brcms_ops_get_tsf,
+ 	.set_tsf = brcms_ops_set_tsf,
++	.set_tim = brcms_ops_beacon_set_tim,
+ };
  
+ void brcms_dpc(unsigned long data)
+diff --git a/drivers/net/wireless/brcm80211/brcmsmac/main.h b/drivers/net/wireless/brcm80211/brcmsmac/main.h
+index c4d135cff04ad..9f76b880814e8 100644
+--- a/drivers/net/wireless/brcm80211/brcmsmac/main.h
++++ b/drivers/net/wireless/brcm80211/brcmsmac/main.h
+@@ -563,6 +563,7 @@ struct brcms_c_info {
+ 
+ 	struct wiphy *wiphy;
+ 	struct scb pri_scb;
++	struct ieee80211_vif *vif;
+ 
+ 	struct sk_buff *beacon;
+ 	u16 beacon_tim_offset;
 -- 
 2.20.1
 
