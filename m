@@ -2,177 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE31FEA40
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 03:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1001FEA70
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 04:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbfKPC3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 21:29:34 -0500
-Received: from mail-pj1-f52.google.com ([209.85.216.52]:38179 "EHLO
-        mail-pj1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727274AbfKPC3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 21:29:33 -0500
-Received: by mail-pj1-f52.google.com with SMTP id f7so199127pjw.5
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 18:29:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=40o7MMsWcg5pLEJHEHpNghwkyq2LzvNWABTOo7wAeJQ=;
-        b=sGrh4LlOUbQ3HWtrdQe2cZUIY8wkSllPgj2HnLoOJDOrfv5IAa9ccLyVVLGxgn1W1x
-         YqW3tf0c1R1Zb01ojPc47dksZVMwWMa01q1JUH2JZK/GBCqweccM+poVGynSUUr1UxcD
-         PGVKLtqZnGFfbjJ371dXO+Xt0F2lX3uyo2On8oJgkUNItcLqQl8BdwvSU7s5ukSl0L6z
-         /d/i05d0ByrElZzq7zAcMOzTTTWgItxvPaFuLIOwIJXamxtcVTZ/D0BweKpcWKKse44/
-         8pYQseC6GqqFBAxIhCcttDzTcH1EKgjwSOcR3VNr2Tk9gPONvF/Herxjjl3+EnOrPNC3
-         vHig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=40o7MMsWcg5pLEJHEHpNghwkyq2LzvNWABTOo7wAeJQ=;
-        b=DgqZqZlbS8slYaXwqBJkUkqLZ00CUPnSY9fHSo3vOItBGPze4K5TyQ1hor3vAi7Ukm
-         Qy9e2RTid2yRVzAM+g3zWlJF8DoeltCmFPU59Z1oeKQMXTua1rlZSKnRfngRXbC4JqTr
-         /vXSnkpgFvvDfrRp2M6umDpf1riKHMzbfJtlEl0e8KMzx/o1fASu3FyArfqxa44rog/6
-         t9yr4ovyLwI/eh3FH0cdZ0Fuh+1X3Oc/GSCtnIFX0CyOXbqg8W3qMkzX+3hmgvn6eP/K
-         2r3Eg2B4KlA4vt9pUJQR+n0/7/n+DcChjP9J3fl3FZQ1LAPr0hm0OIBsYMmk9bZ9b091
-         J2Gw==
-X-Gm-Message-State: APjAAAXHmWcC7bCBcHKyO/Ajo1sRfjy8MkTDh1KoE47mbxMNpLk5bW7r
-        ody7cYtIfkhBezckhVGP8LSTid3G
-X-Google-Smtp-Source: APXvYqyH2El3433EChqUud8w8HoyW+qK7vp+wPzPHHT8genDMKHBBBVpNu4pP8dJYhXWEBcSv8u2vw==
-X-Received: by 2002:a17:90a:4803:: with SMTP id a3mr6245670pjh.101.1573871372146;
-        Fri, 15 Nov 2019 18:29:32 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x186sm13446030pfx.105.2019.11.15.18.29.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Nov 2019 18:29:31 -0800 (PST)
-Subject: Re: Possible bug in TCP retry logic/Kernel crash
-To:     Avinash Patil <avinashapatil@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <CAJwzM1k7iW9tJZiO-JhVbnT-EmwaJbsroaVbJLnSVY-tyCzjLQ@mail.gmail.com>
- <0d553faa-b665-14cf-e977-d2b0ff3d763e@gmail.com>
- <CAJwzM1=uv8NG=upCiRonvA504dn1u5Tj5DNM83BCSMbSmwvLuw@mail.gmail.com>
- <5bc7724f-c713-1810-2988-75520cb6f5eb@gmail.com>
- <CAJwzM1m-CTK-H9At_LdpMUP8kZNGkY6v1jZmusyFpChG2sGefQ@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <40b553a5-11b1-3278-3c73-406baec833d6@gmail.com>
-Date:   Fri, 15 Nov 2019 18:29:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727384AbfKPDns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 22:43:48 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6681 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727290AbfKPDnr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 22:43:47 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EB98DC47404AEEF3A289;
+        Sat, 16 Nov 2019 11:43:44 +0800 (CST)
+Received: from localhost.localdomain (10.90.53.225) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Sat, 16 Nov 2019 11:43:39 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <davem@davemloft.net>, <joabreu@synopsys.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <chenwandun@huawei.com>
+Subject: [PATCH] net: stmmac: remove variable 'ret' set but not used
+Date:   Sat, 16 Nov 2019 11:50:46 +0800
+Message-ID: <1573876246-139122-1-git-send-email-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <CAJwzM1m-CTK-H9At_LdpMUP8kZNGkY6v1jZmusyFpChG2sGefQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.90.53.225]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fixes gcc '-Wunused-but-set-variable' warning:
 
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function stmmac_rx_buf1_len:
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3460:6: warning: variable ret set but not used [-Wunused-but-set-variable]
 
-On 11/15/19 6:07 PM, Avinash Patil wrote:
-> No; I am not using an official tree. There are certain changes to
-> arch/arc directory which are specific to Synposys ARC platform.
-> However, there are no changes to TCP module and this is why I suspect
-> crash is generic TCP issue.
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 39b4efd..7003a30 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3457,7 +3457,7 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
+ 				       struct dma_desc *p,
+ 				       int status, unsigned int len)
+ {
+-	int ret, coe = priv->hw->rx_csum;
++	int coe = priv->hw->rx_csum;
+ 	unsigned int plen = 0, hlen = 0;
+ 
+ 	/* Not first descriptor, buffer is always zero */
+@@ -3465,7 +3465,7 @@ static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
+ 		return 0;
+ 
+ 	/* First descriptor, get split header length */
+-	ret = stmmac_get_rx_header_len(priv, p, &hlen);
++	stmmac_get_rx_header_len(priv, p, &hlen);
+ 	if (priv->sph && hlen) {
+ 		priv->xstats.rx_split_hdr_pkt_n++;
+ 		return hlen;
+-- 
+2.7.4
 
-Please provide a git tree then, and exact line numbers of the stack trace.
-
-Really I can not spend days working on non pristibe kernels, you have to help a bit.
-
-Thanks.
-
-> 
-> Thanks,
-> Avinash
-> 
-> 
-> On Fri, Nov 15, 2019 at 6:01 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 11/15/19 5:52 PM, Avinash Patil wrote:
->>> Hi Eric,
->>>
->>> I integrated all patches till 4.19.83 as per your suggestion.
->>> Unfortunately, I still see crash.
->>
->> What do you mean by integrating patches ?
->>
->> Are you using an official/pristine tree ?
->>
->>>
->>> [  991.291968] [ECR   ]: 0x00230400 => Misaligned r/w from 0x00000001
->>> [  991.299766] [EFA   ]: 0x00000001
->>> [  991.299766] [BLINK ]: tcp_clean_rtx_queue+0x2a4/0xc88
->>> [  991.299766] [ERET  ]: __list_del_entry_valid+0x12/0x1a0
->>> [  991.313350] [STAT32]: 0x00000206 : K         E2 E1
->>> [  991.318323] BTA: 0x8b188843   SP: 0x8f04fcf4  FP: 0x00000000
->>> [  991.323977] LPS: 0x8b2e2942  LPE: 0x8b2e2946 LPC: 0x00000000
->>> [  991.329660] r00: 0x8cbf2224  r01: 0x8cbf21c0 r02: 0x6e6c53fe
->>> [  991.329660] r03: 0x00000001  r04: 0x00000000 r05: 0x39ef6f1d
->>> [  991.329660] r06: 0x8f3e3180  r07: 0x00000000 r08: 0x3b14d54c
->>> [  991.329660] r09: 0x00000000  r10: 0x0000c0ef r11: 0x00000000
->>> [  991.329660] r12: 0x04c80000  r13: 0x8cbf21c0 r14: 0x00000000
->>> [  991.329660] r15: 0x00000000  r16: 0x00000001 r17: 0x00000000
->>> [  991.329660] r18: 0x8f3e3580  r19: 0x8f3e2d80 r20: 0x00000004
->>> [  991.329660] r21: 0x8f04fd7c  r22: 0x00000001 r23: 0x3b14d54c
->>> [  991.329660] r24: 0x00000000  r25: 0x8f0315c0
->>> [  991.329660]
->>> [  991.329660]
->>> [  991.382333]
->>> [  991.382333] Stack Trace:
->>> [  991.386374] Firmware build version: avinashp6_bbic5_a-cl103643
->>> [  991.386374] Firmware configuration: pearl_10gax_config
->>> [  991.386374] Hardware ID           : 65535
->>> [  991.401461]   __list_del_entry_valid+0x12/0x1a0
->>> [  991.406125]   tcp_clean_rtx_queue+0x2a4/0xc88
->>> [  991.410618]   tcp_ack+0x484/0x914
->>> [  991.414073]   tcp_rcv_established+0x538/0x724
->>> [  991.418564]   tcp_v4_do_rcv+0xda/0x120
->>> [  991.422456]   tcp_v4_rcv+0x954/0xa7c
->>> [  991.426105]   ip_local_deliver+0x72/0x208
->>> [  991.430257]   process_backlog+0xbe/0x1b0
->>> [  991.434319]   net_rx_action+0x106/0x294
->>> [  991.438286]   __do_softirq+0xf0/0x218
->>> [  991.442014]   run_ksoftirqd+0x2a/0x3c
->>> [  991.445812]   smpboot_thread_fn+0xb4/0x10c
->>> [  991.450054]   kthread+0xd8/0xdc
->>> [  991.453338]   ret_from_fork+0x18/0x1c
->>> [  991.457067]
->>>
->>> Thank you!
->>>
->>> -Avinash
->>>
->>> On Sun, Nov 10, 2019 at 3:48 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>>>
->>>>
->>>>
->>>> On 11/9/19 9:59 PM, Avinash Patil wrote:
->>>>> Hi everyone,
->>>>>
->>>>> Kernel: Linux 4.19.35 kernel built from linux-stable
->>>>>
->>>>
->>>> This is quite an old version.
->>>>
->>>> Please upgrade to the latest one.
->>>>
->>>> $ git log --oneline v4.19.35..v4.19.82 -- net/ipv4/tcp*c
->>>> 3fdcf6a88ded2bb5c3c0f0aabaff253dd3564013 tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
->>>> 67fe3b94a833779caf4504ececa7097fba9b2627 tcp: fix tcp_ecn_withdraw_cwr() to clear TCP_ECN_QUEUE_CWR
->>>> 5977bc19ce7f1ed25bf20d09d8e93e56873a9abb tcp: remove empty skb from write queue in error cases
->>>> 6f3126379879bb2b9148174f0a4b6b65e04dede9 tcp: inherit timestamp on mtu probe
->>>> 1b200acde418f4d6d87279d3f6f976ebf188f272 tcp: Reset bytes_acked and bytes_received when disconnecting
->>>> c60f57dfe995172c2f01e59266e3ffa3419c6cd9 tcp: fix tcp_set_congestion_control() use from bpf hook
->>>> 6323c238bb4374d1477348cfbd5854f2bebe9a21 tcp: be more careful in tcp_fragment()
->>>> dad3a9314ac95dedc007bc7dacacb396ea10e376 tcp: refine memory limit test in tcp_fragment()
->>>> 59222807fcc99951dc769cd50e132e319d73d699 tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
->>>> 7f9f8a37e563c67b24ccd57da1d541a95538e8d9 tcp: add tcp_min_snd_mss sysctl
->>>> ec83921899a571ad70d582934ee9e3e07f478848 tcp: tcp_fragment() should apply sane memory limits
->>>> c09be31461ed140976c60a87364415454a2c3d42 tcp: limit payload size of sacked skbs
->>>> 6728c6174a47b8a04ceec89aca9e1195dee7ff6b tcp: tcp_grow_window() needs to respect tcp_space()
->>>>
