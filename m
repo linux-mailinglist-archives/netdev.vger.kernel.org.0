@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55961FF3AC
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C52F9FF3C7
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:28:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727945AbfKPPlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:41:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44670 "EHLO mail.kernel.org"
+        id S1729982AbfKPQ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:27:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44688 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727866AbfKPPle (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:41:34 -0500
+        id S1727927AbfKPPlf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:41:35 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8E57220718;
-        Sat, 16 Nov 2019 15:41:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E1BD2075C;
+        Sat, 16 Nov 2019 15:41:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1573918894;
-        bh=AyTUmJ/PdREZeE/3RwDvKntTI3oiK+VLMX9m0h1ozyc=;
+        bh=/LdlDunYvEq9PMi5iXWMTlTTC/OHVe6NjuwqYWeQ3qE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q740NAToJcLN0mEN6M6ivGVDmBB2DsnzbcgSSMLd3ijuUScA4ZDwr9vQef4vbPPWt
-         7ib/XlKhfoTEEWNxjzmMsO4mGYzo7VP+pW53QWR2ON7CH1t5XunklyMMCdxbgmc2rG
-         zXUG4PdCZBNVPefH/eNyf8JgGqFKzcdQKgcGyg6Q=
+        b=gDyEJV8wtMMpx9qoWsVU+bdx5sDf7mqmdTn3IHZKfAEXaWEmltoeqf0ekSVZnxNdS
+         NkHRKSeQtT0ZuU4POH9p64sWZq7deSFeXZL4aFREf3w+6IQtKQoBCHly81MkXLgbQh
+         osnL8jeMOpvNqCbkELmjJfqPO32FVQzrYVLy1h/M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>,
+Cc:     Rakesh Pillai <pillair@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 018/237] brcmsmac: AP mode: update beacon when TIM changes
-Date:   Sat, 16 Nov 2019 10:37:33 -0500
-Message-Id: <20191116154113.7417-18-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 019/237] ath10k: set probe request oui during driver start
+Date:   Sat, 16 Nov 2019 10:37:34 -0500
+Message-Id: <20191116154113.7417-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -46,97 +44,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+From: Rakesh Pillai <pillair@codeaurora.org>
 
-[ Upstream commit 2258ee58baa554609a3cc3996276e4276f537b6d ]
+[ Upstream commit f1157695c527d4ee949ac83f743f80107751a70c ]
 
-Beacons are not updated to reflect TIM changes. This is not compliant with
-power-saving client stations as the beacons do not have valid TIM and can
-cause the network to stall at random occasions and to have highly variable
-latencies.
-Fix it by updating beacon templates on mac80211 set_tim callback.
+Currently the wmi command for setting probe request
+oui, needed for mac randomization, is sent during
+the mac register. At this time, during the driver
+init the wmi has already been detached. This can
+cause unexpected behavior since the firmware is
+already down and the wmi has been detached.
 
-Addresses an issue described in:
-https://marc.info/?i=20180911163534.21312d08%20()%20manjaro
+Send the wmi command for setting probe request
+oui during the driver start. This will make sure
+that the firmware is started and wmi is initialized
+before we send this command.
 
-Signed-off-by: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Tested HW: WCN3990
+Tested FW: WLAN.HL.2.0-01188-QCAHLSWMTPLZ-1
+
+Fixes: 60e1d0fb290197fe505dff6e4e3b7e4d258dbf60
+Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c | 26 +++++++++++++++++++
- .../broadcom/brcm80211/brcmsmac/main.h        |  1 +
- 2 files changed, 27 insertions(+)
+ drivers/net/wireless/ath/ath10k/mac.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-index ecc89e718b9c1..23118207b661e 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-@@ -502,6 +502,7 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 1419f9d1505fe..97e6911811176 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -4685,6 +4685,14 @@ static int ath10k_start(struct ieee80211_hw *hw)
+ 		goto err_core_stop;
  	}
  
- 	spin_lock_bh(&wl->lock);
-+	wl->wlc->vif = vif;
- 	wl->mute_tx = false;
- 	brcms_c_mute(wl->wlc, false);
- 	if (vif->type == NL80211_IFTYPE_STATION)
-@@ -519,6 +520,11 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- static void
- brcms_ops_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- {
-+	struct brcms_info *wl = hw->priv;
++	if (test_bit(WMI_SERVICE_SPOOF_MAC_SUPPORT, ar->wmi.svc_map)) {
++		ret = ath10k_wmi_scan_prob_req_oui(ar, ar->mac_addr);
++		if (ret) {
++			ath10k_err(ar, "failed to set prob req oui: %i\n", ret);
++			goto err_core_stop;
++		}
++	}
 +
-+	spin_lock_bh(&wl->lock);
-+	wl->wlc->vif = NULL;
-+	spin_unlock_bh(&wl->lock);
- }
+ 	if (test_bit(WMI_SERVICE_ADAPTIVE_OCS, ar->wmi.svc_map)) {
+ 		ret = ath10k_wmi_adaptive_qcs(ar, true);
+ 		if (ret) {
+@@ -8549,12 +8557,6 @@ int ath10k_mac_register(struct ath10k *ar)
+ 	}
  
- static int brcms_ops_config(struct ieee80211_hw *hw, u32 changed)
-@@ -937,6 +943,25 @@ static void brcms_ops_set_tsf(struct ieee80211_hw *hw,
- 	spin_unlock_bh(&wl->lock);
- }
- 
-+static int brcms_ops_beacon_set_tim(struct ieee80211_hw *hw,
-+				 struct ieee80211_sta *sta, bool set)
-+{
-+	struct brcms_info *wl = hw->priv;
-+	struct sk_buff *beacon = NULL;
-+	u16 tim_offset = 0;
-+
-+	spin_lock_bh(&wl->lock);
-+	if (wl->wlc->vif)
-+		beacon = ieee80211_beacon_get_tim(hw, wl->wlc->vif,
-+						  &tim_offset, NULL);
-+	if (beacon)
-+		brcms_c_set_new_beacon(wl->wlc, beacon, tim_offset,
-+				       wl->wlc->vif->bss_conf.dtim_period);
-+	spin_unlock_bh(&wl->lock);
-+
-+	return 0;
-+}
-+
- static const struct ieee80211_ops brcms_ops = {
- 	.tx = brcms_ops_tx,
- 	.start = brcms_ops_start,
-@@ -955,6 +980,7 @@ static const struct ieee80211_ops brcms_ops = {
- 	.flush = brcms_ops_flush,
- 	.get_tsf = brcms_ops_get_tsf,
- 	.set_tsf = brcms_ops_set_tsf,
-+	.set_tim = brcms_ops_beacon_set_tim,
- };
- 
- void brcms_dpc(unsigned long data)
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-index c4d135cff04ad..9f76b880814e8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
-@@ -563,6 +563,7 @@ struct brcms_c_info {
- 
- 	struct wiphy *wiphy;
- 	struct scb pri_scb;
-+	struct ieee80211_vif *vif;
- 
- 	struct sk_buff *beacon;
- 	u16 beacon_tim_offset;
+ 	if (test_bit(WMI_SERVICE_SPOOF_MAC_SUPPORT, ar->wmi.svc_map)) {
+-		ret = ath10k_wmi_scan_prob_req_oui(ar, ar->mac_addr);
+-		if (ret) {
+-			ath10k_err(ar, "failed to set prob req oui: %i\n", ret);
+-			goto err_dfs_detector_exit;
+-		}
+-
+ 		ar->hw->wiphy->features |=
+ 			NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR;
+ 	}
 -- 
 2.20.1
 
