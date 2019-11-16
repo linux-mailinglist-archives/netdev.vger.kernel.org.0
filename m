@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D5DFF00D
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D25CFEFF9
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731027AbfKPPwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:52:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33120 "EHLO mail.kernel.org"
+        id S1730959AbfKPQCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:02:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730999AbfKPPwU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:52:20 -0500
+        id S1727709AbfKPPw6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:52:58 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E53520842;
-        Sat, 16 Nov 2019 15:52:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C5DB20871;
+        Sat, 16 Nov 2019 15:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919539;
-        bh=pm4J433S+H+C6Sxgui/dBAeNPiQ5Rk3ZCpsfCJCntLg=;
+        s=default; t=1573919578;
+        bh=uOQtTCLHEwtW2ut6Q0nPb0g093HpDJgAfOS0CS1GpVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=df6Wy+u+lH+AHD8WLcpze6Ao25lqDOVjcIqc9Ch2aj2yaghl5AHCS+xyEkTC0lhsi
-         yst4R9IYy698YTTCNyfKjUvTDIrTk5R+va+ydr2Pn02FNR1ERWfZUmW472bkwFVyxA
-         TldPTWI+a2zpic9NqOYUNFOOJoy1+vMcfZdkrU9Y=
+        b=MPXl1wM/3dcu9uSFWGOfJuF/DMDY92BY5ZfC8alYbttcWzJ7dOLhuZgJhO1s48Y7d
+         JeRJLD+Q++Bubl6trSTTe13onecU79lj327eyzFbPKFLjAOufzmLS4HRDnUqDAA3CW
+         NHkRe8uy87ESi8/EQ25F+QjXxPq/1hSQ3vh3H4VM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Radu Rendec <radu.rendec@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 55/99] macsec: let the administrator set UP state even if lowerdev is down
-Date:   Sat, 16 Nov 2019 10:50:18 -0500
-Message-Id: <20191116155103.10971-55-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 69/99] igb: shorten maximum PHC timecounter update interval
+Date:   Sat, 16 Nov 2019 10:50:32 -0500
+Message-Id: <20191116155103.10971-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116155103.10971-1-sashal@kernel.org>
 References: <20191116155103.10971-1-sashal@kernel.org>
@@ -44,41 +47,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Miroslav Lichvar <mlichvar@redhat.com>
 
-[ Upstream commit 07bddef9839378bd6f95b393cf24c420529b4ef1 ]
+[ Upstream commit 094bf4d0e9657f6ea1ee3d7e07ce3970796949ce ]
 
-Currently, the kernel doesn't let the administrator set a macsec device
-up unless its lower device is currently up. This is inconsistent, as a
-macsec device that is up won't automatically go down when its lower
-device goes down.
+The timecounter needs to be updated at least once per ~550 seconds in
+order to avoid a 40-bit SYSTIM timestamp to be misinterpreted as an old
+timestamp.
 
-Now that linkstate propagation works, there's really no reason for this
-limitation, so let's remove it.
+Since commit 500462a9d ("timers: Switch to a non-cascading wheel"),
+scheduling of delayed work seems to be less accurate and a requested
+delay of 540 seconds may actually be longer than 550 seconds. Shorten
+the delay to 480 seconds to be sure the timecounter is updated in time.
 
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
-Reported-by: Radu Rendec <radu.rendec@gmail.com>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This fixes an issue with HW timestamps on 82580/I350/I354 being off by
+~1100 seconds for few seconds every ~9 minutes.
+
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_ptp.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index d2a3825376be5..a48ed0873cc72 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -2798,9 +2798,6 @@ static int macsec_dev_open(struct net_device *dev)
- 	struct net_device *real_dev = macsec->real_dev;
- 	int err;
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 9eb9b68f8935e..ae1f963b60923 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -65,9 +65,15 @@
+  *
+  * The 40 bit 82580 SYSTIM overflows every
+  *   2^40 * 10^-9 /  60  = 18.3 minutes.
++ *
++ * SYSTIM is converted to real time using a timecounter. As
++ * timecounter_cyc2time() allows old timestamps, the timecounter
++ * needs to be updated at least once per half of the SYSTIM interval.
++ * Scheduling of delayed work is not very accurate, so we aim for 8
++ * minutes to be sure the actual interval is shorter than 9.16 minutes.
+  */
  
--	if (!(real_dev->flags & IFF_UP))
--		return -ENETDOWN;
--
- 	err = dev_uc_add(real_dev, dev->dev_addr);
- 	if (err < 0)
- 		return err;
+-#define IGB_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 9)
++#define IGB_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 8)
+ #define IGB_PTP_TX_TIMEOUT		(HZ * 15)
+ #define INCPERIOD_82576			BIT(E1000_TIMINCA_16NS_SHIFT)
+ #define INCVALUE_82576_MASK		GENMASK(E1000_TIMINCA_16NS_SHIFT - 1, 0)
 -- 
 2.20.1
 
