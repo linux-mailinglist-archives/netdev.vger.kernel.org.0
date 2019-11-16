@@ -2,148 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4509EFF499
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 19:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCBDFF554
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 20:47:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727703AbfKPSKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 13:10:11 -0500
-Received: from mx2.suse.de ([195.135.220.15]:49284 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727437AbfKPSKK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 13:10:10 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id ECC11B13A;
-        Sat, 16 Nov 2019 18:10:02 +0000 (UTC)
-Date:   Sun, 17 Nov 2019 05:09:34 +1100
-From:   Aleksa Sarai <asarai@suse.de>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Aleksa Sarai <cyphar@cyphar.com>, Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>,
-        David Drysdale <drysdale@google.com>,
-        Chanho Min <chanho.min@lge.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Christian Brauner <christian@brauner.io>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        dev@opencontainers.org, containers@lists.linux-foundation.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-api@vger.kernel.org,
-        libc-alpha@sourceware.org, linux-arch@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
-Subject: Re: [PATCH v16 02/12] namei: allow nd_jump_link() to produce errors
-Message-ID: <20191116180934.fajrkc4jqcewiuqd@yavin.dot.cyphar.com>
-References: <20191116002802.6663-1-cyphar@cyphar.com>
- <20191116002802.6663-3-cyphar@cyphar.com>
- <20191116003702.GX26530@ZenIV.linux.org.uk>
+        id S1727514AbfKPTrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 14:47:46 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46967 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727473AbfKPTrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 14:47:45 -0500
+Received: by mail-pl1-f193.google.com with SMTP id l4so7059725plt.13;
+        Sat, 16 Nov 2019 11:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OYC2ekx7Tzmq1QfMcXgIkodtKuvAto7LJnsdQYrM5P0=;
+        b=O/DQ/d+SOGMDbioUU5bvadLkKDnTXUk7FRJF1g2GFbdPQm9yWrAopHx7hJg+wAtSDB
+         aynBQ/HG50v06LEuARaPf+RM5PPAKgPRvKGVPKCnUOqFHMJGPDzXKf9+7CH1qdx+z6hE
+         b5zIz5Y6VRUvJmjS8QbwPMYRPMVQcR7MhkbAykyzXtEMu63YVUEzjqeWMX6sqBJTZIHt
+         JFL9dlDKuRpzk6S+rk0ztqrb8T9Vqy23SuYsik14+0KHWiS6mgbtjEvYvZJYz+Ipwmxg
+         4l8sV0cNGS9zko/Kg91UQV7y93HM+zE1Lrm1URK3jvL8FopPdnQzsUzMnzV5SeUzPntr
+         nlMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OYC2ekx7Tzmq1QfMcXgIkodtKuvAto7LJnsdQYrM5P0=;
+        b=GLbGsGWxMpJ1l9oLGcP9ABDmq9ZJv34ySeBqdG+zJi/J1qg+p15OgB0NqaLptm6XLd
+         8rg6qDKvxuiDobXVlSGzDLgsXXUSJDZ5vwDwgVwwtZYqrys5w2ycx9lG1H7xL95aC0c2
+         aHU2XpK5jwSiTKCpeoMjib99lFpM8AkmSY57JjbSuNH7q3j6ITo3247gwmbmej99siie
+         soUkYdXBRXNBlf7b4LwI5DGBqxnKUhp1mHwqB+UAQLKHFUqp+w5IBFlPqJaSFAjeqalb
+         Xn2qz1OuVNrcimyXVOghf87bKdtvz53W2zyLptWLkYT6gDWm6oVnGu7gyTsN6ZGelBKG
+         ijAg==
+X-Gm-Message-State: APjAAAWBH6942o5uWLL4/HC/lLnQnGxq/fE8Zh1zxsMSNc1qiqtThLks
+        2zhbHkClMhAU8VCOiFb3WPT2BAhEhcJf+EDXEOY=
+X-Google-Smtp-Source: APXvYqzzKrnIp2YvOOnX+vGIyguect9QGtIIXcMScDxpXTL77ouZZoPvyilpnVU+y7dsn+efWeNlPwsQXCG9e75v9XM=
+X-Received: by 2002:a17:902:d684:: with SMTP id v4mr20988116ply.316.1573933664833;
+ Sat, 16 Nov 2019 11:47:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ushqsy2n2ywnjdre"
-Content-Disposition: inline
-In-Reply-To: <20191116003702.GX26530@ZenIV.linux.org.uk>
-User-Agent: NeoMutt/20180716
+References: <20191112130510.91570-1-tonylu@linux.alibaba.com>
+ <20191112130510.91570-2-tonylu@linux.alibaba.com> <ea3bf073-68af-d899-2664-fef54953a68d@gmail.com>
+In-Reply-To: <ea3bf073-68af-d899-2664-fef54953a68d@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 16 Nov 2019 11:47:33 -0800
+Message-ID: <CAM_iQpW7S9fUX33jCNhRfsK17rGmFSCkO97ujREJGsq1NpwwzQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] net: add trace events for net_device refcnt
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>, shemminger@osdl.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 12, 2019 at 7:27 AM David Ahern <dsahern@gmail.com> wrote:
+> The location alone does nothing for resolving reference count leaks; you
+> really have to use stack traces to pair up the hold and put and to give
+> context for what are repetitive locations for the hold and put.
 
---ushqsy2n2ywnjdre
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
++1
 
-On 2019-11-16, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Sat, Nov 16, 2019 at 11:27:52AM +1100, Aleksa Sarai wrote:
-> > +	error =3D nd_jump_link(&path);
-> > +	if (error)
-> > +		path_put(&path);
->=20
-> > +	error =3D nd_jump_link(&ns_path);
-> > +	if (error)
-> > +		path_put(&ns_path);
->=20
-> > +	error =3D nd_jump_link(&path);
-> > +	if (error)
-> > +		path_put(&path);
->=20
-> 3 calls.  Exact same boilerplate in each to handle a failure case.
-> Which spells "wrong calling conventions"; it's absolutely clear
-> that we want that path_put() inside nd_jump_link().
->=20
-> The rule should be this: reference that used to be held in
-> *path is consumed in any case.  On success it goes into
-> nd->path, on error it's just dropped, but in any case, the
-> caller has the same refcounting environment to deal with.
->=20
-> If you need the same boilerplate cleanup on failure again and again,
-> the calling conventions are wrong and need to be fixed.
-
-Will do.
-
-> And I'm not sure that int is the right return type here, to be honest.
-> void * might be better - return ERR_PTR() or NULL, so that the value
-> could be used as return value of ->get_link() that calls that thing.
-
-I don't agree, given that the few callers of ns_get_path() are
-inconsistent with regards to whether they should use IS_ERR() or check
-for NULL, not to mention that "void *error" reads to me as being very
-odd given how common "int error" is throughout the kernel. There's also
-the "error =3D=3D ERR_PTR(-EAGAIN)" checks which also read as being quite
-odd too.
-
-But the main motivating factor for changing it was that the one use
-where "void *" is useful (proc_ns_get_link) becomes needlessly ugly
-because of the "nd_jump_link() can return errors" change:
-
-	error =3D ERR_PTR(nd_jump_link(&ns_path));
-
-Or probably (if you don't want to rely on ERR_PTR(0) =3D=3D NULL):
-
-	int err =3D nd_jump_link(&ns_path);
-	if (err)
-		error =3D ERR_PTR(err);
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---ushqsy2n2ywnjdre
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXdA7WwAKCRCdlLljIbnQ
-EkhIAQCTW+ppymqPGqw4uOB2Z70GQdn52zl46zQ6xxp5L3kEHQD9FZ2+HHtYsZC+
-LGfFupqoyojLXID+lx72AXf4CJ7KLw4=
-=aGSY
------END PGP SIGNATURE-----
-
---ushqsy2n2ywnjdre--
+And, as you are using tracepoint, you get trace filter and trigger for free,
+which already includes stacktrace.
