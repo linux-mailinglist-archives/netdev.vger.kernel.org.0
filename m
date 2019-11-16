@@ -2,113 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 593CAFEBC5
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 12:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245A3FEBC7
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 12:22:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727479AbfKPLUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 06:20:35 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:25212 "EHLO
+        id S1727496AbfKPLWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 06:22:43 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:50559 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727331AbfKPLUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 06:20:35 -0500
+        by vger.kernel.org with ESMTP id S1727331AbfKPLWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 06:22:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573903234;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E7kwZ+T9T4I0XCMdkyhZy+/XO8jWr21WXOwjrbwLOZU=;
-        b=IRZif0Sh0JiTCP1ZPr1t8VQDLPGOKZvANBvvXGjNxZID8ZSsM8QirbqrfJuB9WEd4xv3k3
-        VE72HdcpqauRIjBrrwgJwX3QJSAiLhqqeEvRVH1B7AycwUFG6yU4SDwexvzQFfcTMQfUoE
-        aa3gu8w/8bGgJecZhxo6lvhSV1b9vsw=
+        s=mimecast20190719; t=1573903362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DFvtcaYXXdNUDQYLEti992lt0Z4LB/5qnNbfONAo4rk=;
+        b=J7Wo5ZhGjbUvYroCt3mCszamPZ/SKbQN6NKn6i6sXg8YIuSJFOb/eOXQMWRsCyv6q29KK2
+        bHSqq0aTRXB64h5wKmzwJRpbDQrBCr0uJYD7FbSjj37JvWz6EwtYYA9Q4VF9VSLgzDC4Dy
+        lRgmXnkr0ejKxPKTGDWQA9H7j5gjIzM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-105-IKVGtEE4MSuFEMbMBKYJbQ-1; Sat, 16 Nov 2019 06:20:32 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-179-t5d6b-8SNtetDtBVJ2LYZw-1; Sat, 16 Nov 2019 06:22:41 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6DC201005500;
-        Sat, 16 Nov 2019 11:20:31 +0000 (UTC)
-Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1586760C81;
-        Sat, 16 Nov 2019 11:20:18 +0000 (UTC)
-Date:   Sat, 16 Nov 2019 12:20:17 +0100
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F21E1802CE2;
+        Sat, 16 Nov 2019 11:22:39 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-41.brq.redhat.com [10.40.200.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 172C21036C81;
+        Sat, 16 Nov 2019 11:22:34 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 05BFE30FC134D;
+        Sat, 16 Nov 2019 12:22:33 +0100 (CET)
+Subject: [net-next v2 PATCH 0/3] page_pool: followup changes to restore
+ tracepoint features
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, lorenzo.bianconi@redhat.com,
-        mcroce@redhat.com, brouer@redhat.com
-Subject: Re: [PATCH v3 net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for device
-Message-ID: <20191116122017.78e29e27@carbon>
-In-Reply-To: <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
-References: <cover.1573844190.git.lorenzo@kernel.org>
-        <1e177bb63c858acdf5aeac9198c2815448d37820.1573844190.git.lorenzo@kernel.org>
+Cc:     Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Date:   Sat, 16 Nov 2019 12:22:32 +0100
+Message-ID: <157390333500.4062.15569811103072483038.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: IKVGtEE4MSuFEMbMBKYJbQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: t5d6b-8SNtetDtBVJ2LYZw-1
+X-Mimecast-Spam-Score: 2
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Nov 2019 21:01:38 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+This patchset is a followup to Jonathan patch, that do not release
+pool until inflight =3D=3D 0. That changed page_pool to be responsible for
+its own delayed destruction instead of relying on xdp memory model.
 
->  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
-> -=09=09=09=09   struct page *page)
-> +=09=09=09=09=09  struct page *page,
-> +=09=09=09=09=09  unsigned int dma_sync_size)
->  {
->  =09int ret;
->  =09/* BH protection not needed if current is serving softirq */
-> @@ -264,6 +285,9 @@ static bool __page_pool_recycle_into_ring(struct page=
-_pool *pool,
->  =09else
->  =09=09ret =3D ptr_ring_produce_bh(&pool->ring, page);
-> =20
-> +=09if (ret =3D=3D 0 && (pool->p.flags & PP_FLAG_DMA_SYNC_DEV))
-> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
-> +
->  =09return (ret =3D=3D 0) ? true : false;
->  }
+As the page_pool maintainer, I'm promoting the use of tracepoint to
+troubleshoot and help driver developers verify correctness when
+converting at driver to use page_pool. The role of xdp:mem_disconnect
+have changed, which broke my bpftrace tools for shutdown verification.
+With these changes, the same capabilities are regained.
+
+---
+
+Jesper Dangaard Brouer (3):
+      xdp: remove memory poison on free for struct xdp_mem_allocator
+      page_pool: add destroy attempts counter and rename tracepoint
+      page_pool: extend tracepoint to also include the page PFN
 
 
-I do wonder if we should DMA-sync-for-device BEFORE putting page into
-ptr_ring, as this is a channel between several concurrent CPUs.
+ include/net/page_pool.h          |    2 ++
+ include/trace/events/page_pool.h |   22 +++++++++++++++-------
+ net/core/page_pool.c             |   13 +++++++++++--
+ net/core/xdp.c                   |    5 -----
+ 4 files changed, 28 insertions(+), 14 deletions(-)
 
-
-
-> @@ -273,18 +297,22 @@ static bool __page_pool_recycle_into_ring(struct pa=
-ge_pool *pool,
->   * Caller must provide appropriate safe context.
->   */
->  static bool __page_pool_recycle_direct(struct page *page,
-> -=09=09=09=09       struct page_pool *pool)
-> +=09=09=09=09       struct page_pool *pool,
-> +=09=09=09=09       unsigned int dma_sync_size)
->  {
->  =09if (unlikely(pool->alloc.count =3D=3D PP_ALLOC_CACHE_SIZE))
->  =09=09return false;
-> =20
->  =09/* Caller MUST have verified/know (page_ref_count(page) =3D=3D 1) */
->  =09pool->alloc.cache[pool->alloc.count++] =3D page;
-> +
-> +=09if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
->  =09return true;
->  }
-
-We know __page_pool_recycle_direct() is concurrency safe, and only a
-single (NAPI processing) CPU can enter. (So, the DMA-sync order is not
-wrong here, but it could be swapped)
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+--
+Signature
 
