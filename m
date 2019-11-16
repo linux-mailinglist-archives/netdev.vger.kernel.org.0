@@ -2,101 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9323FF5D3
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 22:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2B7FF5DC
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 22:58:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbfKPVky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 16:40:54 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38090 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727273AbfKPVkx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 16:40:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=aY+xaRtFx06NQX0uCEmKZdmMCb4OTBihel8VoHJ7XfE=; b=cJzhIt1KFQnyTPklH0c5Lmt+o
-        mgFnh21ja46czC7rrAcXe7Huu2XE++ZeUCggSoRTa2dm3ZqAznPuaORc2Q82CpLoom5yLgkElaJmW
-        M5nl3i8pBn+3FxC4iKfc315EfwE6F7/6tKgU9IO5GsH11jbZn/DDtEhkEePZn5sDiCRDoOL5DF0I+
-        HM8sYrxm2nqsqDCenhcPBxSB21WgtyfpwCraz+Eao4JPN0aigD3M5BjAyjrrxq+Wls1Vn5y8S6U9p
-        bjzBYi4Mk+3LB4vO3McPyvXHXNL9rJj+Ys5qE8EZMEej0LTX/UUQtPhZKqxKVKx9LAxSskf1VKIkE
-        4bhMneblg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:36408)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iW5oD-0001Oo-LJ; Sat, 16 Nov 2019 21:40:45 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iW5oA-0005nf-Im; Sat, 16 Nov 2019 21:40:42 +0000
-Date:   Sat, 16 Nov 2019 21:40:42 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: add SFP+ support
-Message-ID: <20191116214042.GU25745@shell.armlinux.org.uk>
-References: <20191115195339.GR25745@shell.armlinux.org.uk>
- <E1iVhiC-0007bG-Cm@rmk-PC.armlinux.org.uk>
- <20191116160635.GB5653@lunn.ch>
+        id S1727666AbfKPV6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 16:58:01 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:38707 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727611AbfKPV6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 16:58:01 -0500
+Received: by mail-il1-f199.google.com with SMTP id f6so12519164ilg.5
+        for <netdev@vger.kernel.org>; Sat, 16 Nov 2019 13:58:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=FivOluRux2/DVAkTpjJWtSvpnnKGD4Lb0eJIgMOZqFE=;
+        b=OoGIMc45MwAtP0NSepY1Mlhlt8Nm1AsXBt3gfj4vfnkOx/cczrSDoE+27ZbZvuzAlh
+         /UvYjpzS3XwpzngkDaOPgh/NbFyPTyVb4bchXbUFiBhCBcTC3ApHxZDEeGjitFGfET5H
+         9m7vwpLlNf1tfAD+J+JHKJCqa/t2pZS022RpfuWeZJu48A0Im3iUmwXfZSQe0gvaPiP2
+         DZ6uB2fAKJl8p/gOsHtWtrxuWT0Q7dyRkqpS+sDBLlKi6/ogOJ2MIraUy73S8GraZLCg
+         tBqI6wIupeCE/isTvJg6m0m1br09VtBIw4dLsH24KGxaI5WmLByTOXmlJ96crl3iioqv
+         p+Fw==
+X-Gm-Message-State: APjAAAW20FubptMl1eIurgWe3Lmni0hBfmgrJ4YIXtBWxlhEzbILx+r/
+        uZBl3x9/d3ZOuUIvMad5A5KPkVUDZ7mp2fY1Ynj0+Yu/8vbe
+X-Google-Smtp-Source: APXvYqyBClsLcSrM3dmH+CTnYr4efRlSIxtAlH+yao3jUBN/eeOlTRZsa2EivhAtWsDIyW2jCsP5hnuY0bzWexF2Lwoo7rY/12fX
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191116160635.GB5653@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a92:5fc2:: with SMTP id i63mr7652353ill.218.1573941480648;
+ Sat, 16 Nov 2019 13:58:00 -0800 (PST)
+Date:   Sat, 16 Nov 2019 13:58:00 -0800
+In-Reply-To: <000000000000029056057cd141cb@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d9f8a805977dce36@google.com>
+Subject: Re: possible deadlock in neigh_change_state
+From:   syzbot <syzbot+6a3c02010a025ac7b7cf@syzkaller.appspotmail.com>
+To:     christian@brauner.io, corbet@lwn.net, davem@davemloft.net,
+        dsahern@gmail.com, dvyukov@google.com, ebiggers@kernel.org,
+        edumazet@google.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        roopa@cumulusnetworks.com, syzkaller-bugs@googlegroups.com,
+        w.bumiller@proxmox.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 16, 2019 at 05:06:35PM +0100, Andrew Lunn wrote:
-> > +static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
-> > +{
-> > +	struct phy_device *phydev = upstream;
-> > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
-> > +	phy_interface_t iface;
-> > +
-> > +	sfp_parse_support(phydev->sfp_bus, id, support);
-> > +	iface = sfp_select_interface(phydev->sfp_bus, id, support);
-> > +
-> > +	if (iface != PHY_INTERFACE_MODE_10GKR) {
-> > +		dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
-> > +		return -EINVAL;
-> > +	}
-> 
-> Hi Russell
-> 
-> Is it possible to put an SFP module into an SFP+ cage?
-> sfp_select_interface() would then say 1000Base-X or 2500Base-X. The
-> SFP+ cage has a single SERDES pair, so electrically, would it be
-> possible to do 1000Base-X? Should mv3310_sfp_insert() be reconfiguring
-> the PHY so the SFP side swaps to 1000Base-X?
+syzbot has bisected this bug to:
 
-The answer is... it depends.
+commit 58956317c8de52009d1a38a721474c24aef74fe7
+Author: David Ahern <dsahern@gmail.com>
+Date:   Fri Dec 7 20:24:57 2018 +0000
 
-Some SFP+ cages have stronger pull-ups and run the I2C bus at 400kHz.
-SFP modules limit the pullups to 4.7k minimum and a bus speed of
-100kHz.
+     neighbor: Improve garbage collection
 
-Some SFP modules will stand the faster bus speed and the stronger
-pull-ups.  Others will not.  Others may end up with EEPROM corruption.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1328a1e2e00000
+start commit:   addb0679 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       net-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=10a8a1e2e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1728a1e2e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d9655b05acfc97ff
+dashboard link: https://syzkaller.appspot.com/bug?extid=6a3c02010a025ac7b7cf
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13317705400000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177bb01b400000
 
-It is possible to reconfigure the 3310 to 1000base-X (I don't think
-2500base-X is possible on the fiber port) but it requires a PHY reset.
-I have code to do it, but I haven't tested it - as the pullups on the
-board I have to test with are too strong to allow the EEPROM in SFP
-modules to be read.
+Reported-by: syzbot+6a3c02010a025ac7b7cf@syzkaller.appspotmail.com
+Fixes: 58956317c8de ("neighbor: Improve garbage collection")
 
-If I get around to replacing the resistor packs, then I can test it,
-but I'm not going to contribute completely untested code!
-
-So, this patch reflects what can be done with the SFP+ slots on
-Macchiatobin boards today.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
