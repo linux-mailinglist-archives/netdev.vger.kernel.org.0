@@ -2,98 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2500FE9CB
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 01:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4681AFE9FF
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 02:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbfKPAiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 19:38:10 -0500
-Received: from zeniv.linux.org.uk ([195.92.253.2]:43390 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727151AbfKPAiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 19:38:09 -0500
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iVm5G-00041D-QH; Sat, 16 Nov 2019 00:37:02 +0000
-Date:   Sat, 16 Nov 2019 00:37:02 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Aleksa Sarai <cyphar@cyphar.com>
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>,
-        David Drysdale <drysdale@google.com>,
-        Chanho Min <chanho.min@lge.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Christian Brauner <christian@brauner.io>,
-        Aleksa Sarai <asarai@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        dev@opencontainers.org, containers@lists.linux-foundation.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-api@vger.kernel.org,
-        libc-alpha@sourceware.org, linux-arch@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
-Subject: Re: [PATCH v16 02/12] namei: allow nd_jump_link() to produce errors
-Message-ID: <20191116003702.GX26530@ZenIV.linux.org.uk>
-References: <20191116002802.6663-1-cyphar@cyphar.com>
- <20191116002802.6663-3-cyphar@cyphar.com>
+        id S1727274AbfKPBEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 20:04:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42470 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727128AbfKPBEb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 20:04:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=7syE8TRK5UzvkCQbEiPHLm1+JQdzDwIap42DGG+wxbI=; b=il9/OWX4rXZhrZ2huhuuVlREh1
+        fclGAiDorOTQ+qAQhP14dCHVhsBLPQHOCoX9w8Y6NgNBr9I8LVgSDIA34002lsNRL4u4SYcwYc/G1
+        q6HzpPlytdtn0j4T6Jb6wYlzEJ0DprWab09fSLRRxB0rtkiM85QIP+P53oJ+huk5jpf8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iVmVd-0003z1-3B; Sat, 16 Nov 2019 02:04:17 +0100
+Date:   Sat, 16 Nov 2019 02:04:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     kbuild test robot <lkp@intel.com>
+Cc:     Bryan Whitehead <Bryan.Whitehead@microchip.com>,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mscc.c: fix semicolon.cocci warnings
+Message-ID: <20191116010417.GJ24205@lunn.ch>
+References: <201911160629.1h9COFsK%lkp@intel.com>
+ <20191115223834.ysp6nhb7mlhepdvl@4978f4969bb8>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191116002802.6663-3-cyphar@cyphar.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191115223834.ysp6nhb7mlhepdvl@4978f4969bb8>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 16, 2019 at 11:27:52AM +1100, Aleksa Sarai wrote:
-> +	error = nd_jump_link(&path);
-> +	if (error)
-> +		path_put(&path);
+On Sat, Nov 16, 2019 at 06:38:34AM +0800, kbuild test robot wrote:
+> From: kbuild test robot <lkp@intel.com>
+> 
+> drivers/net/phy/mscc.c:1683:3-4: Unneeded semicolon
+> 
+> 
+>  Remove unneeded semicolon.
+> 
+> Generated by: scripts/coccinelle/misc/semicolon.cocci
+> 
+> Fixes: 75a1ccfe6c72 ("mscc.c: Add support for additional VSC PHYs")
+> CC: Bryan Whitehead <Bryan.Whitehead@microchip.com>
+> Signed-off-by: kbuild test robot <lkp@intel.com>
 
-> +	error = nd_jump_link(&ns_path);
-> +	if (error)
-> +		path_put(&ns_path);
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> +	error = nd_jump_link(&path);
-> +	if (error)
-> +		path_put(&path);
-
-3 calls.  Exact same boilerplate in each to handle a failure case.
-Which spells "wrong calling conventions"; it's absolutely clear
-that we want that path_put() inside nd_jump_link().
-
-The rule should be this: reference that used to be held in
-*path is consumed in any case.  On success it goes into
-nd->path, on error it's just dropped, but in any case, the
-caller has the same refcounting environment to deal with.
-
-If you need the same boilerplate cleanup on failure again and again,
-the calling conventions are wrong and need to be fixed.
-
-And I'm not sure that int is the right return type here, to be honest.
-void * might be better - return ERR_PTR() or NULL, so that the value
-could be used as return value of ->get_link() that calls that thing.
+    Andrew
