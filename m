@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE22BFF2DD
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84189FF2D5
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730516AbfKPQVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:21:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47450 "EHLO mail.kernel.org"
+        id S1732081AbfKPQVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:21:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728725AbfKPPn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:43:27 -0500
+        id S1728750AbfKPPna (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:43:30 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EB142072D;
-        Sat, 16 Nov 2019 15:43:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 977D32072D;
+        Sat, 16 Nov 2019 15:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919006;
-        bh=8dmS8o1S1OWyghfPQaJAbhcPEyv6AWCXgS+qPBjMVWE=;
+        s=default; t=1573919009;
+        bh=9bch6VTDVZgwC2rRZU7Zqnz8hEruZA8tajpvcVynNb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SWFnamHmPeOpXYByNutqf8rIRd7MLsZRsOojIIy+4SGTcbCUx+3XdxgviAsrPOzc+
-         ffhb8sBp3R5SHEVS4UKMV1brNmPTy6RgjmSs5U47LlreWpTjNjU8FynlWGh9pZHhz1
-         rA7TxUyTVBE5xQxw+XBkjTk3in7Xbnp/pNcFXAtY=
+        b=lugkCPPQuZi/h79ebvk+Iy2gYUhyR17jZqbOHyu0ooEC748c7E45A0uNUN6fRxCCr
+         K6cxl5L6a0rl2or2sOzak87uE98iO5LXyx0AG7awloFID0KjmHo0Qenxe1WzVA4E+i
+         q2CPHA5ww2I2XvKVMeKuoTV1Axl8rhSF6oABYkv8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
+Cc:     Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Yoshitoyo Osaki <osaki.yoshitoyo@socionext.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 108/237] net: ethernet: ti: cpsw: unsync mcast entries while switch promisc mode
-Date:   Sat, 16 Nov 2019 10:39:03 -0500
-Message-Id: <20191116154113.7417-108-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 113/237] net: socionext: Stop PHY before resetting netsec
+Date:   Sat, 16 Nov 2019 10:39:08 -0500
+Message-Id: <20191116154113.7417-113-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -45,40 +44,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+From: Masahisa Kojima <masahisa.kojima@linaro.org>
 
-[ Upstream commit 9737cc99dd14b5b8b9d267618a6061feade8ea68 ]
+[ Upstream commit 8e850f25b5812aefedec6732732eb10e7b47cb5c ]
 
-After flushing all mcast entries from the table, the ones contained in
-mc list of ndev are not restored when promisc mode is toggled off,
-because they are considered as synched with ALE, thus, in order to
-restore them after promisc mode - reset syncing info. This fix
-touches only switch mode devices, including single port boards
-like Beagle Bone.
+In ndo_stop, driver resets the netsec ethernet controller IP.
+When the netsec IP is reset, HW running mode turns to NRM mode
+and driver has to wait until this mode transition completes.
 
-Fixes: commit 5da1948969bc
-("net: ethernet: ti: cpsw: fix lost of mcast packets while rx_mode update")
+But mode transition to NRM will not complete if the PHY is
+in normal operation state. Netsec IP requires PHY is in
+power down state when it is reset.
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+This modification stops the PHY before resetting netsec.
+
+Together with this modification, phy_addr is stored in netsec_priv
+structure because ndev->phydev is not yet ready in ndo_init.
+
+Fixes: 533dd11a12f6 ("net: socionext: Add Synquacer NetSec driver")
+Signed-off-by: Masahisa Kojima <masahisa.kojima@linaro.org>
+Signed-off-by: Yoshitoyo Osaki <osaki.yoshitoyo@socionext.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpsw.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/socionext/netsec.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index ef79d2b6070b9..8f93ef74fa407 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -642,6 +642,7 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index d2caeb9edc044..28d582c18afb9 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -274,6 +274,7 @@ struct netsec_priv {
+ 	struct clk *clk;
+ 	u32 msg_enable;
+ 	u32 freq;
++	u32 phy_addr;
+ 	bool rx_cksum_offload_flag;
+ };
  
- 			/* Clear all mcast from ALE */
- 			cpsw_ale_flush_multicast(ale, ALE_ALL_PORTS, -1);
-+			__dev_mc_unsync(ndev, NULL);
+@@ -1346,11 +1347,11 @@ static int netsec_netdev_stop(struct net_device *ndev)
+ 	netsec_uninit_pkt_dring(priv, NETSEC_RING_TX);
+ 	netsec_uninit_pkt_dring(priv, NETSEC_RING_RX);
  
- 			/* Flood All Unicast Packets to Host port */
- 			cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 1);
+-	ret = netsec_reset_hardware(priv, false);
+-
+ 	phy_stop(ndev->phydev);
+ 	phy_disconnect(ndev->phydev);
+ 
++	ret = netsec_reset_hardware(priv, false);
++
+ 	pm_runtime_put_sync(priv->dev);
+ 
+ 	return ret;
+@@ -1360,6 +1361,7 @@ static int netsec_netdev_init(struct net_device *ndev)
+ {
+ 	struct netsec_priv *priv = netdev_priv(ndev);
+ 	int ret;
++	u16 data;
+ 
+ 	ret = netsec_alloc_dring(priv, NETSEC_RING_TX);
+ 	if (ret)
+@@ -1369,6 +1371,11 @@ static int netsec_netdev_init(struct net_device *ndev)
+ 	if (ret)
+ 		goto err1;
+ 
++	/* set phy power down */
++	data = netsec_phy_read(priv->mii_bus, priv->phy_addr, MII_BMCR) |
++		BMCR_PDOWN;
++	netsec_phy_write(priv->mii_bus, priv->phy_addr, MII_BMCR, data);
++
+ 	ret = netsec_reset_hardware(priv, true);
+ 	if (ret)
+ 		goto err2;
+@@ -1418,7 +1425,7 @@ static const struct net_device_ops netsec_netdev_ops = {
+ };
+ 
+ static int netsec_of_probe(struct platform_device *pdev,
+-			   struct netsec_priv *priv)
++			   struct netsec_priv *priv, u32 *phy_addr)
+ {
+ 	priv->phy_np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 	if (!priv->phy_np) {
+@@ -1426,6 +1433,8 @@ static int netsec_of_probe(struct platform_device *pdev,
+ 		return -EINVAL;
+ 	}
+ 
++	*phy_addr = of_mdio_parse_addr(&pdev->dev, priv->phy_np);
++
+ 	priv->clk = devm_clk_get(&pdev->dev, NULL); /* get by 'phy_ref_clk' */
+ 	if (IS_ERR(priv->clk)) {
+ 		dev_err(&pdev->dev, "phy_ref_clk not found\n");
+@@ -1626,12 +1635,14 @@ static int netsec_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (dev_of_node(&pdev->dev))
+-		ret = netsec_of_probe(pdev, priv);
++		ret = netsec_of_probe(pdev, priv, &phy_addr);
+ 	else
+ 		ret = netsec_acpi_probe(pdev, priv, &phy_addr);
+ 	if (ret)
+ 		goto free_ndev;
+ 
++	priv->phy_addr = phy_addr;
++
+ 	if (!priv->freq) {
+ 		dev_err(&pdev->dev, "missing PHY reference clock frequency\n");
+ 		ret = -ENODEV;
 -- 
 2.20.1
 
