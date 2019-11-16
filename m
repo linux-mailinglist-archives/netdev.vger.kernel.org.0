@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8004CFF248
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:18:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B700FF23E
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732013AbfKPQSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:18:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52876 "EHLO mail.kernel.org"
+        id S1730205AbfKPQR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:17:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729415AbfKPPqb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:46:31 -0500
+        id S1728764AbfKPPqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:46:33 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EB9022084D;
-        Sat, 16 Nov 2019 15:46:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9B3E20862;
+        Sat, 16 Nov 2019 15:46:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919190;
-        bh=1EzmoxlhEX6IlHcaaJRCa8HqlvFEPSAV4f3se9ynVhc=;
+        s=default; t=1573919193;
+        bh=0/v6sglde6ETDy/cKQP12kRzT3Ku99PNjbTwDK6rlkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NaVDqJaakFW+afZbvoAh7cAArTzNxlBY3YGjjY4uPIPGj+Ct4IgvOTR277sjbIK8G
-         a/AGcalzGPgeRZGGjWvUQAMk+e2YXYzkXy55n+dwunlLVsKd8o0KikZOSTVH/dvR6K
-         zw2Bn8q6czlhqsonqTruEd/9rpe1HCBuadHbgprA=
+        b=wnsM+9T6493SapgfKsWAS1hR9uyOHGy+kd6Zng+8oBER9SNZkw2pxYqzPnl6XShzZ
+         FN39pSfznh/yexuPNaKwMOMZ2UGLBKLinXG/Ym61qyqSW6Y3nT/0Y6dv5ndodMNHXM
+         aEWTTgFyoyMY/c5qHe96+S9pOe/LQmKfoJuZZepA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lior David <liord@codeaurora.org>,
-        Maya Erez <merez@codeaurora.org>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 199/237] wil6210: fix locking in wmi_call
-Date:   Sat, 16 Nov 2019 10:40:34 -0500
-Message-Id: <20191116154113.7417-199-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 201/237] wlcore: Fix the return value in case of error in 'wlcore_vendor_cmd_smart_config_start()'
+Date:   Sat, 16 Nov 2019 10:40:36 -0500
+Message-Id: <20191116154113.7417-201-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -46,60 +44,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lior David <liord@codeaurora.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit dc57731dbd535880fe6ced31c229262c34df7d64 ]
+[ Upstream commit 3419348a97bcc256238101129d69b600ceb5cc70 ]
 
-Switch from spin_lock to spin_lock_irqsave, because
-wmi_ev_lock is used inside interrupt handler.
+We return 0 unconditionally at the end of
+'wlcore_vendor_cmd_smart_config_start()'.
+However, 'ret' is set to some error codes in several error handling paths
+and we already return some error codes at the beginning of the function.
 
-Signed-off-by: Lior David <liord@codeaurora.org>
-Signed-off-by: Maya Erez <merez@codeaurora.org>
+Return 'ret' instead to propagate the error code.
+
+Fixes: 80ff8063e87c ("wlcore: handle smart config vendor commands")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wil6210/wmi.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ti/wlcore/vendor_cmd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/wmi.c b/drivers/net/wireless/ath/wil6210/wmi.c
-index 2010f771478df..8a603432f5317 100644
---- a/drivers/net/wireless/ath/wil6210/wmi.c
-+++ b/drivers/net/wireless/ath/wil6210/wmi.c
-@@ -1639,16 +1639,17 @@ int wmi_call(struct wil6210_priv *wil, u16 cmdid, u8 mid, void *buf, u16 len,
- {
- 	int rc;
- 	unsigned long remain;
-+	ulong flags;
- 
- 	mutex_lock(&wil->wmi_mutex);
- 
--	spin_lock(&wil->wmi_ev_lock);
-+	spin_lock_irqsave(&wil->wmi_ev_lock, flags);
- 	wil->reply_id = reply_id;
- 	wil->reply_mid = mid;
- 	wil->reply_buf = reply;
- 	wil->reply_size = reply_size;
- 	reinit_completion(&wil->wmi_call);
--	spin_unlock(&wil->wmi_ev_lock);
-+	spin_unlock_irqrestore(&wil->wmi_ev_lock, flags);
- 
- 	rc = __wmi_send(wil, cmdid, mid, buf, len);
- 	if (rc)
-@@ -1668,12 +1669,12 @@ int wmi_call(struct wil6210_priv *wil, u16 cmdid, u8 mid, void *buf, u16 len,
- 	}
- 
+diff --git a/drivers/net/wireless/ti/wlcore/vendor_cmd.c b/drivers/net/wireless/ti/wlcore/vendor_cmd.c
+index dbe78d8491eff..7f34ec077ee57 100644
+--- a/drivers/net/wireless/ti/wlcore/vendor_cmd.c
++++ b/drivers/net/wireless/ti/wlcore/vendor_cmd.c
+@@ -70,7 +70,7 @@ wlcore_vendor_cmd_smart_config_start(struct wiphy *wiphy,
  out:
--	spin_lock(&wil->wmi_ev_lock);
-+	spin_lock_irqsave(&wil->wmi_ev_lock, flags);
- 	wil->reply_id = 0;
- 	wil->reply_mid = U8_MAX;
- 	wil->reply_buf = NULL;
- 	wil->reply_size = 0;
--	spin_unlock(&wil->wmi_ev_lock);
-+	spin_unlock_irqrestore(&wil->wmi_ev_lock, flags);
+ 	mutex_unlock(&wl->mutex);
  
- 	mutex_unlock(&wil->wmi_mutex);
+-	return 0;
++	return ret;
+ }
  
+ static int
 -- 
 2.20.1
 
