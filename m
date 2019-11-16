@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACF59FF0A6
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DFC5FF0A3
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729683AbfKPPul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:50:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58912 "EHLO mail.kernel.org"
+        id S1730860AbfKPQG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:06:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58968 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730587AbfKPPuk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:50:40 -0500
+        id S1730009AbfKPPun (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:50:43 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 417AD20891;
-        Sat, 16 Nov 2019 15:50:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3353820729;
+        Sat, 16 Nov 2019 15:50:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919439;
-        bh=iUY5tR8dvDKK3APmd9zDwxM/JsNhSxWuwvIjRWP0ESk=;
+        s=default; t=1573919442;
+        bh=5dEbdlruILwkWbOUiIwYdpi3k5zAZe2wyIRORJgY8cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ice6k4Wl9829U2QHU3eZMkaCURnDtpHZB4pUX57HOy+NnJUs6CZRmzmtrLGCWCrf4
-         riAJR7xGta04+/YuHcrbSDj/fEtX+mum+gSu17AtbiTpiqEiemEQfr5MVvPZdtsdjT
-         iedbCRgvgEeC12FnvpYJOVmp5U2jODnh5QBW6UcU=
+        b=SmSIDmoYRnkTnrIpK7G8EIU5TUuQEKPqlK2iVaNIoV2Xf3qZUexqno4FjrIFclF7q
+         S82c4mlr2WnP4UGF3t/1kzWbUYbevqK549qUxd4lHAKkMcd1VBzO3AYHSWHWF1pLwh
+         jELPB9HqWNp8ckiIfWfpv+FYg7W7WHiPTBks5Td0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>,
+Cc:     David Barmann <david.barmann@stackpath.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 138/150] net: bcmgenet: return correct value 'ret' from bcmgenet_power_down
-Date:   Sat, 16 Nov 2019 10:47:16 -0500
-Message-Id: <20191116154729.9573-138-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 139/150] sock: Reset dst when changing sk_mark via setsockopt
+Date:   Sat, 16 Nov 2019 10:47:17 -0500
+Message-Id: <20191116154729.9573-139-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 References: <20191116154729.9573-1-sashal@kernel.org>
@@ -44,39 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: David Barmann <david.barmann@stackpath.com>
 
-[ Upstream commit 0db55093b56618088b9a1d445eb6e43b311bea33 ]
+[ Upstream commit 50254256f382c56bde87d970f3d0d02fdb76ec70 ]
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+When setting the SO_MARK socket option, if the mark changes, the dst
+needs to be reset so that a new route lookup is performed.
 
-drivers/net/ethernet/broadcom/genet/bcmgenet.c: In function 'bcmgenet_power_down':
-drivers/net/ethernet/broadcom/genet/bcmgenet.c:1136:6: warning:
- variable 'ret' set but not used [-Wunused-but-set-variable]
+This fixes the case where an application wants to change routing by
+setting a new sk_mark.  If this is done after some packets have already
+been sent, the dst is cached and has no effect.
 
-bcmgenet_power_down should return 'ret' instead of 0.
-
-Fixes: ca8cf341903f ("net: bcmgenet: propagate errors from bcmgenet_power_down")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: David Barmann <david.barmann@stackpath.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/sock.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 1cc4fb27c13b3..b6af286fa5c7e 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1138,7 +1138,7 @@ static int bcmgenet_power_down(struct bcmgenet_priv *priv,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 7ccbcd853cbce..78c9aa310ce6b 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -985,10 +985,12 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 			clear_bit(SOCK_PASSSEC, &sock->flags);
  		break;
- 	}
+ 	case SO_MARK:
+-		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
++		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
+ 			ret = -EPERM;
+-		else
++		} else if (val != sk->sk_mark) {
+ 			sk->sk_mark = val;
++			sk_dst_reset(sk);
++		}
+ 		break;
  
--	return 0;
-+	return ret;
- }
- 
- static void bcmgenet_power_up(struct bcmgenet_priv *priv,
+ 	case SO_RXQ_OVFL:
 -- 
 2.20.1
 
