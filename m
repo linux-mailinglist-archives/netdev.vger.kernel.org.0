@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE84FF159
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0F02FF14D
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729131AbfKPPsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:48:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55704 "EHLO mail.kernel.org"
+        id S1730149AbfKPPsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:48:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730079AbfKPPsd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:48:33 -0500
+        id S1730126AbfKPPsk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:48:40 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0BAB2081E;
-        Sat, 16 Nov 2019 15:48:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 620C020885;
+        Sat, 16 Nov 2019 15:48:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919312;
-        bh=zLQV2HqGvTo5a7yHKXiDaxbA4ZR6GADgRXsTGVKYPBs=;
+        s=default; t=1573919319;
+        bh=+F1QBt/M7/kXYdp+oOwPTbfq4rcy67ZihT++W2s3Ayw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sTL7ExnvO8wOwMwDhjsbmulSK4vAqzJlBORJbwcQZobap08XortmWsYH7xsO3czO7
-         SUEVbl+j0U7l/xww1hn15imPWEICKeK5y9SZG22CvVGu7iXX+q81EC0yhr6hrF2QGq
-         QwEEjN6u6gVE1eeVrxFfJ/mIe5T2ki1nEC0J1Ydo=
+        b=Gqjof5gelgergFoM4WTdrZcsNZ0eZCTyp1VwYD38m4VwDCStdKySC03u3IThGuLAT
+         VqS/nqGg/oOpbtNXCCVFuNY7g3i79tA/a0SNRvCJwnXlg+wN5Fo2ZPEIcQDKjI19E3
+         c47wsLFNorrUy0qUf9e6OFv4la/A1ulfseKxoSWo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.14 055/150] atm: zatm: Fix empty body Clang warnings
-Date:   Sat, 16 Nov 2019 10:45:53 -0500
-Message-Id: <20191116154729.9573-55-sashal@kernel.org>
+Cc:     Ilya Dryomov <idryomov@gmail.com>, Sasha Levin <sashal@kernel.org>,
+        ceph-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 061/150] libceph: don't consume a ref on pagelist in ceph_msg_data_add_pagelist()
+Date:   Sat, 16 Nov 2019 10:45:59 -0500
+Message-Id: <20191116154729.9573-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
 References: <20191116154729.9573-1-sashal@kernel.org>
@@ -45,173 +42,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Chancellor <natechancellor@gmail.com>
+From: Ilya Dryomov <idryomov@gmail.com>
 
-[ Upstream commit 64b9d16e2d02ca6e5dc8fcd30cfd52b0ecaaa8f4 ]
+[ Upstream commit 894868330a1e038ea4a65dbb81741eef70ad71b1 ]
 
-Clang warns:
+Because send_mds_reconnect() wants to send a message with a pagelist
+and pass the ownership to the messenger, ceph_msg_data_add_pagelist()
+consumes a ref which is then put in ceph_msg_data_destroy().  This
+makes managing pagelists in the OSD client (where they are wrapped in
+ceph_osd_data) unnecessarily hard because the handoff only happens in
+ceph_osdc_start_request() instead of when the pagelist is passed to
+ceph_osd_data_pagelist_init().  I counted several memory leaks on
+various error paths.
 
-drivers/atm/zatm.c:513:7: error: while loop has empty body
-[-Werror,-Wempty-body]
-        zwait;
-             ^
-drivers/atm/zatm.c:513:7: note: put the semicolon on a separate line to
-silence this warning
+Fix up ceph_msg_data_add_pagelist() and carry a pagelist ref in
+ceph_osd_data.
 
-Get rid of this warning by using an empty do-while loop. While we're at
-it, add parentheses to make it clear that this is a function-like macro.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/42
-Suggested-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/zatm.c | 42 +++++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ fs/ceph/mds_client.c  | 2 +-
+ net/ceph/messenger.c  | 1 +
+ net/ceph/osd_client.c | 8 ++++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/atm/zatm.c b/drivers/atm/zatm.c
-index 2c288d1f42bba..817c7edfec0b4 100644
---- a/drivers/atm/zatm.c
-+++ b/drivers/atm/zatm.c
-@@ -126,7 +126,7 @@ static unsigned long dummy[2] = {0,0};
- #define zin_n(r) inl(zatm_dev->base+r*4)
- #define zin(r) inl(zatm_dev->base+uPD98401_##r*4)
- #define zout(v,r) outl(v,zatm_dev->base+uPD98401_##r*4)
--#define zwait while (zin(CMR) & uPD98401_BUSY)
-+#define zwait() do {} while (zin(CMR) & uPD98401_BUSY)
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index b968334f841e8..a6096f959e54b 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -2102,7 +2102,6 @@ static struct ceph_msg *create_request_message(struct ceph_mds_client *mdsc,
  
- /* RX0, RX1, TX0, TX1 */
- static const int mbx_entries[NR_MBX] = { 1024,1024,1024,1024 };
-@@ -140,7 +140,7 @@ static const int mbx_esize[NR_MBX] = { 16,16,4,4 }; /* entry size in bytes */
+ 	if (req->r_pagelist) {
+ 		struct ceph_pagelist *pagelist = req->r_pagelist;
+-		refcount_inc(&pagelist->refcnt);
+ 		ceph_msg_data_add_pagelist(msg, pagelist);
+ 		msg->hdr.data_len = cpu_to_le32(pagelist->length);
+ 	} else {
+@@ -3191,6 +3190,7 @@ static void send_mds_reconnect(struct ceph_mds_client *mdsc,
+ 	mutex_unlock(&mdsc->mutex);
  
- static void zpokel(struct zatm_dev *zatm_dev,u32 value,u32 addr)
- {
--	zwait;
-+	zwait();
- 	zout(value,CER);
- 	zout(uPD98401_IND_ACC | uPD98401_IA_BALL |
- 	    (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
-@@ -149,10 +149,10 @@ static void zpokel(struct zatm_dev *zatm_dev,u32 value,u32 addr)
+ 	up_read(&mdsc->snap_rwsem);
++	ceph_pagelist_release(pagelist);
+ 	return;
  
- static u32 zpeekl(struct zatm_dev *zatm_dev,u32 addr)
- {
--	zwait;
-+	zwait();
- 	zout(uPD98401_IND_ACC | uPD98401_IA_BALL | uPD98401_IA_RW |
- 	  (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--	zwait;
-+	zwait();
- 	return zin(CER);
+ fail:
+diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+index 081a41c753413..9f4851c782fed 100644
+--- a/net/ceph/messenger.c
++++ b/net/ceph/messenger.c
+@@ -3293,6 +3293,7 @@ void ceph_msg_data_add_pagelist(struct ceph_msg *msg,
+ 
+ 	data = ceph_msg_data_create(CEPH_MSG_DATA_PAGELIST);
+ 	BUG_ON(!data);
++	refcount_inc(&pagelist->refcnt);
+ 	data->pagelist = pagelist;
+ 
+ 	list_add_tail(&data->links, &msg->data);
+diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+index 92b2641ab93b8..45850962acdd6 100644
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -127,6 +127,9 @@ static void ceph_osd_data_init(struct ceph_osd_data *osd_data)
+ 	osd_data->type = CEPH_OSD_DATA_TYPE_NONE;
  }
  
-@@ -241,7 +241,7 @@ static void refill_pool(struct atm_dev *dev,int pool)
- 	}
- 	if (first) {
- 		spin_lock_irqsave(&zatm_dev->lock, flags);
--		zwait;
-+		zwait();
- 		zout(virt_to_bus(first),CER);
- 		zout(uPD98401_ADD_BAT | (pool << uPD98401_POOL_SHIFT) | count,
- 		    CMR);
-@@ -508,9 +508,9 @@ static int open_rx_first(struct atm_vcc *vcc)
- 	}
- 	if (zatm_vcc->pool < 0) return -EMSGSIZE;
- 	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait;
-+	zwait();
- 	zout(uPD98401_OPEN_CHAN,CMR);
--	zwait;
-+	zwait();
- 	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
- 	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
- 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
-@@ -571,21 +571,21 @@ static void close_rx(struct atm_vcc *vcc)
- 		pos = vcc->vci >> 1;
- 		shift = (1-(vcc->vci & 1)) << 4;
- 		zpokel(zatm_dev,zpeekl(zatm_dev,pos) & ~(0xffff << shift),pos);
--		zwait;
-+		zwait();
- 		zout(uPD98401_NOP,CMR);
--		zwait;
-+		zwait();
- 		zout(uPD98401_NOP,CMR);
- 		spin_unlock_irqrestore(&zatm_dev->lock, flags);
- 	}
- 	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait;
-+	zwait();
- 	zout(uPD98401_DEACT_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
- 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait;
-+	zwait();
- 	udelay(10); /* why oh why ... ? */
- 	zout(uPD98401_CLOSE_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
- 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait;
-+	zwait();
- 	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
- 		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close RX channel "
- 		    "%d\n",vcc->dev->number,zatm_vcc->rx_chan);
-@@ -699,7 +699,7 @@ printk("NONONONOO!!!!\n");
- 	skb_queue_tail(&zatm_vcc->tx_queue,skb);
- 	DPRINTK("QRP=0x%08lx\n",zpeekl(zatm_dev,zatm_vcc->tx_chan*VC_SIZE/4+
- 	  uPD98401_TXVC_QRP));
--	zwait;
-+	zwait();
- 	zout(uPD98401_TX_READY | (zatm_vcc->tx_chan <<
- 	    uPD98401_CHAN_ADDR_SHIFT),CMR);
- 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
-@@ -891,12 +891,12 @@ static void close_tx(struct atm_vcc *vcc)
- 	}
- 	spin_lock_irqsave(&zatm_dev->lock, flags);
- #if 0
--	zwait;
-+	zwait();
- 	zout(uPD98401_DEACT_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
- #endif
--	zwait;
-+	zwait();
- 	zout(uPD98401_CLOSE_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait;
-+	zwait();
- 	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
- 		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close TX channel "
- 		    "%d\n",vcc->dev->number,chan);
-@@ -926,9 +926,9 @@ static int open_tx_first(struct atm_vcc *vcc)
- 	zatm_vcc->tx_chan = 0;
- 	if (vcc->qos.txtp.traffic_class == ATM_NONE) return 0;
- 	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait;
-+	zwait();
- 	zout(uPD98401_OPEN_CHAN,CMR);
--	zwait;
-+	zwait();
- 	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
- 	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
- 	spin_unlock_irqrestore(&zatm_dev->lock, flags);
-@@ -1559,7 +1559,7 @@ static void zatm_phy_put(struct atm_dev *dev,unsigned char value,
- 	struct zatm_dev *zatm_dev;
- 
- 	zatm_dev = ZATM_DEV(dev);
--	zwait;
-+	zwait();
- 	zout(value,CER);
- 	zout(uPD98401_IND_ACC | uPD98401_IA_B0 |
- 	    (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
-@@ -1571,10 +1571,10 @@ static unsigned char zatm_phy_get(struct atm_dev *dev,unsigned long addr)
- 	struct zatm_dev *zatm_dev;
- 
- 	zatm_dev = ZATM_DEV(dev);
--	zwait;
-+	zwait();
- 	zout(uPD98401_IND_ACC | uPD98401_IA_B0 | uPD98401_IA_RW |
- 	  (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--	zwait;
-+	zwait();
- 	return zin(CER) & 0xff;
++/*
++ * Consumes @pages if @own_pages is true.
++ */
+ static void ceph_osd_data_pages_init(struct ceph_osd_data *osd_data,
+ 			struct page **pages, u64 length, u32 alignment,
+ 			bool pages_from_pool, bool own_pages)
+@@ -139,6 +142,9 @@ static void ceph_osd_data_pages_init(struct ceph_osd_data *osd_data,
+ 	osd_data->own_pages = own_pages;
  }
  
++/*
++ * Consumes a ref on @pagelist.
++ */
+ static void ceph_osd_data_pagelist_init(struct ceph_osd_data *osd_data,
+ 			struct ceph_pagelist *pagelist)
+ {
+@@ -304,6 +310,8 @@ static void ceph_osd_data_release(struct ceph_osd_data *osd_data)
+ 		num_pages = calc_pages_for((u64)osd_data->alignment,
+ 						(u64)osd_data->length);
+ 		ceph_release_page_vector(osd_data->pages, num_pages);
++	} else if (osd_data->type == CEPH_OSD_DATA_TYPE_PAGELIST) {
++		ceph_pagelist_release(osd_data->pagelist);
+ 	}
+ 	ceph_osd_data_init(osd_data);
+ }
 -- 
 2.20.1
 
