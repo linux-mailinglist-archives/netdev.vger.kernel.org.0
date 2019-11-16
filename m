@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD61FF3C5
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A54AFF395
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730243AbfKPQ1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:27:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44748 "EHLO mail.kernel.org"
+        id S1730129AbfKPQ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:26:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727929AbfKPPlf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:41:35 -0500
+        id S1727804AbfKPPlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:41:55 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F2EE5207FC;
-        Sat, 16 Nov 2019 15:41:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7D02F2075E;
+        Sat, 16 Nov 2019 15:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573918895;
-        bh=b/sRTmRb3FgThC1+lDPGaQKGeEym6S5uxTBkxKO1ews=;
+        s=default; t=1573918914;
+        bh=cTbj6kOszfLz/oxz/9GOU8X8ThfPuqYFmp+Zf3cX2vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qUXFHKGmyxchZ+dRj2svelrUqBQUgg+QS6FT77tZOtUURvdCVt5iKXRSvIFxAHstX
-         f7vY4u/7uwoEeTvtwyiquEdiE+IJ4SMjCOqUT66IOYzobeBFgJoU3rZ0XV/qf/CsyV
-         YvrpU9mPq/3UuX2euC5+j87K1FDxWjT7pQN0fT1Y=
+        b=uMJUzoFbOLWkXF0tTeIoqeDFDDnmQ0yWTv8ggkMJt7zaC9CWZxQdcuUV8Xv1vtqBJ
+         VxWjyh6Ft+mTsuewIDyV4c360LsoArH50cd9psPugFare7Zj462IoZeSBo8ZHorCKB
+         TSlwSnD9IsUWPUFcRBU5xXXTfG+MOEGh14SQtRKI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Carl Huang <cjhuang@codeaurora.org>,
-        Brian Norris <briannorris@chomium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 020/237] ath10k: allocate small size dma memory in ath10k_pci_diag_write_mem
-Date:   Sat, 16 Nov 2019 10:37:35 -0500
-Message-Id: <20191116154113.7417-20-sashal@kernel.org>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 037/237] net: ethernet: ti: cpsw: fix lost of mcast packets while rx_mode update
+Date:   Sat, 16 Nov 2019 10:37:52 -0500
+Message-Id: <20191116154113.7417-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -45,111 +44,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Carl Huang <cjhuang@codeaurora.org>
+From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 
-[ Upstream commit 0738b4998c6d1caf9ca2447b946709a7278c70f1 ]
+[ Upstream commit 5da1948969bc1991920987ce4361ea56046e5a98 ]
 
-ath10k_pci_diag_write_mem may allocate big size of the dma memory
-based on the parameter nbytes. Take firmware diag download as
-example, the biggest size is about 500K. In some systems, the
-allocation is likely to fail because it can't acquire such a large
-contiguous dma memory.
+Whenever kernel or user decides to call rx mode update, it clears
+every multicast entry from forwarding table and in some time adds
+it again. This time can be enough to drop incoming multicast packets.
 
-The fix is to allocate a small size dma memory. In the loop,
-driver copies the data to the allocated dma memory and writes to
-the destination until all the data is written.
+That's why clear only staled multicast entries and update or add new
+one afterwards.
 
-Tested with QCA6174 PCI with
-firmware-6.bin_WLAN.RM.4.4.1-00119-QCARMSWP-1, this also affects
-QCA9377 PCI.
-
-Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
-Reviewed-by: Brian Norris <briannorris@chomium.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/pci.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/ti/cpsw.c | 46 +++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
-index af2cf55c4c1e6..daf450472aca3 100644
---- a/drivers/net/wireless/ath/ath10k/pci.c
-+++ b/drivers/net/wireless/ath/ath10k/pci.c
-@@ -1054,10 +1054,9 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
- 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
- 	int ret = 0;
- 	u32 *buf;
--	unsigned int completed_nbytes, orig_nbytes, remaining_bytes;
-+	unsigned int completed_nbytes, alloc_nbytes, remaining_bytes;
- 	struct ath10k_ce_pipe *ce_diag;
- 	void *data_buf = NULL;
--	u32 ce_data;	/* Host buffer address in CE space */
- 	dma_addr_t ce_data_base = 0;
- 	int i;
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 1afed85550c0a..ef79d2b6070b9 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -570,7 +570,7 @@ static inline int cpsw_get_slave_port(u32 slave_num)
+ 	return slave_num + 1;
+ }
  
-@@ -1071,9 +1070,10 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
- 	 *   1) 4-byte alignment
- 	 *   2) Buffer in DMA-able space
- 	 */
--	orig_nbytes = nbytes;
-+	alloc_nbytes = min_t(unsigned int, nbytes, DIAG_TRANSFER_LIMIT);
+-static void cpsw_add_mcast(struct cpsw_priv *priv, u8 *addr)
++static void cpsw_add_mcast(struct cpsw_priv *priv, const u8 *addr)
+ {
+ 	struct cpsw_common *cpsw = priv->cpsw;
+ 
+@@ -662,16 +662,35 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
+ 	}
+ }
+ 
+-static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
++static int cpsw_add_mc_addr(struct net_device *ndev, const u8 *addr)
++{
++	struct cpsw_priv *priv = netdev_priv(ndev);
 +
- 	data_buf = (unsigned char *)dma_alloc_coherent(ar->dev,
--						       orig_nbytes,
-+						       alloc_nbytes,
- 						       &ce_data_base,
- 						       GFP_ATOMIC);
- 	if (!data_buf) {
-@@ -1081,9 +1081,6 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
- 		goto done;
++	cpsw_add_mcast(priv, addr);
++	return 0;
++}
++
++static int cpsw_del_mc_addr(struct net_device *ndev, const u8 *addr)
+ {
+ 	struct cpsw_priv *priv = netdev_priv(ndev);
+ 	struct cpsw_common *cpsw = priv->cpsw;
+-	int vid;
++	int vid, flags;
+ 
+-	if (cpsw->data.dual_emac)
++	if (cpsw->data.dual_emac) {
+ 		vid = cpsw->slaves[priv->emac_port].port_vlan;
+-	else
+-		vid = cpsw->data.default_vlan;
++		flags = ALE_VLAN;
++	} else {
++		vid = 0;
++		flags = 0;
++	}
++
++	cpsw_ale_del_mcast(cpsw->ale, addr, 0, flags, vid);
++	return 0;
++}
++
++static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
++{
++	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
+ 
+ 	if (ndev->flags & IFF_PROMISC) {
+ 		/* Enable promiscuous mode */
+@@ -684,19 +703,9 @@ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
  	}
  
--	/* Copy caller's data to allocated DMA buf */
--	memcpy(data_buf, data, orig_nbytes);
+ 	/* Restore allmulti on vlans if necessary */
+-	cpsw_ale_set_allmulti(cpsw->ale, priv->ndev->flags & IFF_ALLMULTI);
 -
- 	/*
- 	 * The address supplied by the caller is in the
- 	 * Target CPU virtual address space.
-@@ -1096,12 +1093,14 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
- 	 */
- 	address = ath10k_pci_targ_cpu_to_ce_addr(ar, address);
+-	/* Clear all mcast from ALE */
+-	cpsw_ale_flush_multicast(cpsw->ale, ALE_ALL_PORTS, vid);
++	cpsw_ale_set_allmulti(cpsw->ale, ndev->flags & IFF_ALLMULTI);
  
--	remaining_bytes = orig_nbytes;
--	ce_data = ce_data_base;
-+	remaining_bytes = nbytes;
- 	while (remaining_bytes) {
- 		/* FIXME: check cast */
- 		nbytes = min_t(int, remaining_bytes, DIAG_TRANSFER_LIMIT);
+-	if (!netdev_mc_empty(ndev)) {
+-		struct netdev_hw_addr *ha;
+-
+-		/* program multicast address list into ALE register */
+-		netdev_for_each_mc_addr(ha, ndev) {
+-			cpsw_add_mcast(priv, ha->addr);
+-		}
+-	}
++	__dev_mc_sync(ndev, cpsw_add_mc_addr, cpsw_del_mc_addr);
+ }
  
-+		/* Copy caller's data to allocated DMA buf */
-+		memcpy(data_buf, data, nbytes);
-+
- 		/* Set up to receive directly into Target(!) address */
- 		ret = ce_diag->ops->ce_rx_post_buf(ce_diag, &address, address);
- 		if (ret != 0)
-@@ -1111,7 +1110,7 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
- 		 * Request CE to send caller-supplied data that
- 		 * was copied to bounce buffer to Target(!) address.
- 		 */
--		ret = ath10k_ce_send_nolock(ce_diag, NULL, (u32)ce_data,
-+		ret = ath10k_ce_send_nolock(ce_diag, NULL, ce_data_base,
- 					    nbytes, 0, 0);
- 		if (ret != 0)
- 			goto done;
-@@ -1152,12 +1151,12 @@ int ath10k_pci_diag_write_mem(struct ath10k *ar, u32 address,
+ static void cpsw_intr_enable(struct cpsw_common *cpsw)
+@@ -1956,6 +1965,7 @@ static int cpsw_ndo_stop(struct net_device *ndev)
+ 	struct cpsw_common *cpsw = priv->cpsw;
  
- 		remaining_bytes -= nbytes;
- 		address += nbytes;
--		ce_data += nbytes;
-+		data += nbytes;
- 	}
- 
- done:
- 	if (data_buf) {
--		dma_free_coherent(ar->dev, orig_nbytes, data_buf,
-+		dma_free_coherent(ar->dev, alloc_nbytes, data_buf,
- 				  ce_data_base);
- 	}
+ 	cpsw_info(priv, ifdown, "shutting down cpsw device\n");
++	__dev_mc_unsync(priv->ndev, cpsw_del_mc_addr);
+ 	netif_tx_stop_all_queues(priv->ndev);
+ 	netif_carrier_off(priv->ndev);
  
 -- 
 2.20.1
