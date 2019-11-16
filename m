@@ -2,38 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80319FF083
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3E3FF078
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:06:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731711AbfKPQGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:06:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59242 "EHLO mail.kernel.org"
+        id S1727975AbfKPQFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:05:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730492AbfKPPuv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:50:51 -0500
+        id S1729798AbfKPPvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:51:14 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 737AD2182A;
-        Sat, 16 Nov 2019 15:50:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5F63C20885;
+        Sat, 16 Nov 2019 15:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919450;
-        bh=oh0ks+X54M4go9LLQLOV8qujEqe3WNtVIJ2zrYgMEqc=;
+        s=default; t=1573919473;
+        bh=wucw8pbi4C/AdKmqf6xlB6tbRdCrEUwkZjVsOm3WrJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TlDOMyccMMfzOFDeIHu0jL07O80EUa4AQNf3e+gx0yhRowXFnwzKDX3HUTDASPKn0
-         4DTQnXt3bRrtShDf+OrULKro4rOaBtJrw67JMDqsT0l6nPVO/uoqIXO59BwPnhwP04
-         RCbmGZOYs2/RX6kli3oLYHhoLwFfvJfMvyYs2Kj0=
+        b=2i+VbaT+071ViIGv9VfsqR7tSohYebtGJ17GQjofH9DBogOuCkzVhJk584wswVFlP
+         BKS2F3dKbkUJlP4BsQNMBNlPpwZgp1ar1N9vJfpaUfHvXrV1LEsaUbuo+YupNgbn/t
+         uQoNBDtludabH4iwphkZuJsGbAfENv4A+wyzdFcg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 150/150] cfg80211: call disconnect_wk when AP stops
-Date:   Sat, 16 Nov 2019 10:47:28 -0500
-Message-Id: <20191116154729.9573-150-sashal@kernel.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 07/99] brcmsmac: AP mode: update beacon when TIM changes
+Date:   Sat, 16 Nov 2019 10:49:30 -0500
+Message-Id: <20191116155103.10971-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191116154729.9573-1-sashal@kernel.org>
-References: <20191116154729.9573-1-sashal@kernel.org>
+In-Reply-To: <20191116155103.10971-1-sashal@kernel.org>
+References: <20191116155103.10971-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,66 +46,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
 
-[ Upstream commit e005bd7ddea06784c1eb91ac5bb6b171a94f3b05 ]
+[ Upstream commit 2258ee58baa554609a3cc3996276e4276f537b6d ]
 
-Since we now prevent regulatory restore during STA disconnect
-if concurrent AP interfaces are active, we need to reschedule
-this check when the AP state changes. This fixes never doing
-a restore when an AP is the last interface to stop. Or to put
-it another way: we need to re-check after anything we check
-here changes.
+Beacons are not updated to reflect TIM changes. This is not compliant with
+power-saving client stations as the beacons do not have valid TIM and can
+cause the network to stall at random occasions and to have highly variable
+latencies.
+Fix it by updating beacon templates on mac80211 set_tim callback.
 
-Cc: stable@vger.kernel.org
-Fixes: 113f3aaa81bd ("cfg80211: Prevent regulatory restore during STA disconnect in concurrent interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Addresses an issue described in:
+https://marc.info/?i=20180911163534.21312d08%20()%20manjaro
+
+Signed-off-by: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/ap.c   | 2 ++
- net/wireless/core.h | 2 ++
- net/wireless/sme.c  | 2 +-
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ .../broadcom/brcm80211/brcmsmac/mac80211_if.c | 26 +++++++++++++++++++
+ .../broadcom/brcm80211/brcmsmac/main.h        |  1 +
+ 2 files changed, 27 insertions(+)
 
-diff --git a/net/wireless/ap.c b/net/wireless/ap.c
-index 63682176c96cb..c4bd3ecef5089 100644
---- a/net/wireless/ap.c
-+++ b/net/wireless/ap.c
-@@ -40,6 +40,8 @@ int __cfg80211_stop_ap(struct cfg80211_registered_device *rdev,
- 		cfg80211_sched_dfs_chan_update(rdev);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+index 7c2a9a9bc372c..a620b2f6c7c4c 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+@@ -502,6 +502,7 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
  	}
  
-+	schedule_work(&cfg80211_disconnect_work);
+ 	spin_lock_bh(&wl->lock);
++	wl->wlc->vif = vif;
+ 	wl->mute_tx = false;
+ 	brcms_c_mute(wl->wlc, false);
+ 	if (vif->type == NL80211_IFTYPE_STATION)
+@@ -519,6 +520,11 @@ brcms_ops_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+ static void
+ brcms_ops_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+ {
++	struct brcms_info *wl = hw->priv;
 +
- 	return err;
++	spin_lock_bh(&wl->lock);
++	wl->wlc->vif = NULL;
++	spin_unlock_bh(&wl->lock);
  }
  
-diff --git a/net/wireless/core.h b/net/wireless/core.h
-index 90f90c7d8bf9b..507ec6446eb67 100644
---- a/net/wireless/core.h
-+++ b/net/wireless/core.h
-@@ -429,6 +429,8 @@ void cfg80211_process_wdev_events(struct wireless_dev *wdev);
- bool cfg80211_does_bw_fit_range(const struct ieee80211_freq_range *freq_range,
- 				u32 center_freq_khz, u32 bw_khz);
- 
-+extern struct work_struct cfg80211_disconnect_work;
-+
- /**
-  * cfg80211_chandef_dfs_usable - checks if chandef is DFS usable
-  * @wiphy: the wiphy to validate against
-diff --git a/net/wireless/sme.c b/net/wireless/sme.c
-index 66cccd16c24af..8344153800e27 100644
---- a/net/wireless/sme.c
-+++ b/net/wireless/sme.c
-@@ -667,7 +667,7 @@ static void disconnect_work(struct work_struct *work)
- 	rtnl_unlock();
+ static int brcms_ops_config(struct ieee80211_hw *hw, u32 changed)
+@@ -937,6 +943,25 @@ static void brcms_ops_set_tsf(struct ieee80211_hw *hw,
+ 	spin_unlock_bh(&wl->lock);
  }
  
--static DECLARE_WORK(cfg80211_disconnect_work, disconnect_work);
-+DECLARE_WORK(cfg80211_disconnect_work, disconnect_work);
++static int brcms_ops_beacon_set_tim(struct ieee80211_hw *hw,
++				 struct ieee80211_sta *sta, bool set)
++{
++	struct brcms_info *wl = hw->priv;
++	struct sk_buff *beacon = NULL;
++	u16 tim_offset = 0;
++
++	spin_lock_bh(&wl->lock);
++	if (wl->wlc->vif)
++		beacon = ieee80211_beacon_get_tim(hw, wl->wlc->vif,
++						  &tim_offset, NULL);
++	if (beacon)
++		brcms_c_set_new_beacon(wl->wlc, beacon, tim_offset,
++				       wl->wlc->vif->bss_conf.dtim_period);
++	spin_unlock_bh(&wl->lock);
++
++	return 0;
++}
++
+ static const struct ieee80211_ops brcms_ops = {
+ 	.tx = brcms_ops_tx,
+ 	.start = brcms_ops_start,
+@@ -955,6 +980,7 @@ static const struct ieee80211_ops brcms_ops = {
+ 	.flush = brcms_ops_flush,
+ 	.get_tsf = brcms_ops_get_tsf,
+ 	.set_tsf = brcms_ops_set_tsf,
++	.set_tim = brcms_ops_beacon_set_tim,
+ };
  
+ void brcms_dpc(unsigned long data)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
+index c4d135cff04ad..9f76b880814e8 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.h
+@@ -563,6 +563,7 @@ struct brcms_c_info {
  
- /*
+ 	struct wiphy *wiphy;
+ 	struct scb pri_scb;
++	struct ieee80211_vif *vif;
+ 
+ 	struct sk_buff *beacon;
+ 	u16 beacon_tim_offset;
 -- 
 2.20.1
 
