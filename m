@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE76FF261
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE73DFF24A
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729348AbfKPPqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:46:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52636 "EHLO mail.kernel.org"
+        id S1729411AbfKPPqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:46:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52804 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728698AbfKPPqS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:46:18 -0500
+        id S1729398AbfKPPq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:46:28 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6ABA620857;
-        Sat, 16 Nov 2019 15:46:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A061220836;
+        Sat, 16 Nov 2019 15:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919177;
-        bh=KG7jFFleSrAXnKXJdxb/7eBupZkKjYHi6r78Y7FcSD0=;
+        s=default; t=1573919188;
+        bh=LeuDf/I7ZPQA6VJiMkvQSsm3CQHvloLielawHcYlLlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bbv51ljuPkk7PaiSEd1cr5M2cr8B4iDUFBpvaBP38ZEV/ncpFc1VryZDvh2eU9unT
-         6eC+8tSeEpSqarDWHMP183dR41/SC249ZuuhCPDPs6/HIFKBD9YuXo8ym/lcwU6fvZ
-         YN2sK0y0QeQ3Hk1r1ViP0L3t9RDIQ/CPU+33s1HI=
+        b=VgwZr/nWC7flsPOneMaoASDjPI+6hmiWW5VfWJJyD8v16YL1IKJ+BeLQ2D1iafctW
+         Ht+XK4jv/HZO4qGbX50vAdkvJb7fGZ2BX1bRlo7zpto5Ks4oCUelszj4vDbvhNAajL
+         osaHi8L1DDlrM0OlH49TfQyJeFwFlzSDVy6YgoWY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org
-Subject: [PATCH AUTOSEL 4.19 186/237] openvswitch: fix linking without CONFIG_NF_CONNTRACK_LABELS
-Date:   Sat, 16 Nov 2019 10:40:21 -0500
-Message-Id: <20191116154113.7417-186-sashal@kernel.org>
+Cc:     Ahmad Masri <amasri@codeaurora.org>,
+        Maya Erez <merez@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 196/237] wil6210: fix debugfs memory access alignment
+Date:   Sat, 16 Nov 2019 10:40:31 -0500
+Message-Id: <20191116154113.7417-196-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -44,41 +46,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Ahmad Masri <amasri@codeaurora.org>
 
-[ Upstream commit a277d516de5f498c91d91189717ef7e01102ad27 ]
+[ Upstream commit 84ec040d0fb25197584d28a0dedc355503cd19b9 ]
 
-When CONFIG_CC_OPTIMIZE_FOR_DEBUGGING is enabled, the compiler
-fails to optimize out a dead code path, which leads to a link failure:
+All wil6210 device memory access should be 4 bytes aligned. In io
+blob wil6210 did not force alignment for read function, this caused
+alignment fault on some platforms.
+Fixing that by accessing all 4 lower bytes and return to host the
+requested data.
 
-net/openvswitch/conntrack.o: In function `ovs_ct_set_labels':
-conntrack.c:(.text+0x2e60): undefined reference to `nf_connlabels_replace'
-
-In this configuration, we can take a shortcut, and completely
-remove the contrack label code. This may also help the regular
-optimization.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ahmad Masri <amasri@codeaurora.org>
+Signed-off-by: Maya Erez <merez@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/conntrack.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/wil6210/debugfs.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 35ae64cbef33f..46aa1aa51db41 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1199,7 +1199,8 @@ static int ovs_ct_commit(struct net *net, struct sw_flow_key *key,
- 					 &info->labels.mask);
- 		if (err)
- 			return err;
--	} else if (labels_nonzero(&info->labels.mask)) {
-+	} else if (IS_ENABLED(CONFIG_NF_CONNTRACK_LABELS) &&
-+		   labels_nonzero(&info->labels.mask)) {
- 		err = ovs_ct_set_labels(ct, key, &info->labels.value,
- 					&info->labels.mask);
- 		if (err)
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index 51c3330bc316f..12b8cb698f64d 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -662,10 +662,10 @@ static ssize_t wil_read_file_ioblob(struct file *file, char __user *user_buf,
+ 	enum { max_count = 4096 };
+ 	struct wil_blob_wrapper *wil_blob = file->private_data;
+ 	struct wil6210_priv *wil = wil_blob->wil;
+-	loff_t pos = *ppos;
++	loff_t aligned_pos, pos = *ppos;
+ 	size_t available = wil_blob->blob.size;
+ 	void *buf;
+-	size_t ret;
++	size_t unaligned_bytes, aligned_count, ret;
+ 	int rc;
+ 
+ 	if (test_bit(wil_status_suspending, wil_blob->wil->status) ||
+@@ -683,7 +683,12 @@ static ssize_t wil_read_file_ioblob(struct file *file, char __user *user_buf,
+ 	if (count > max_count)
+ 		count = max_count;
+ 
+-	buf = kmalloc(count, GFP_KERNEL);
++	/* set pos to 4 bytes aligned */
++	unaligned_bytes = pos % 4;
++	aligned_pos = pos - unaligned_bytes;
++	aligned_count = count + unaligned_bytes;
++
++	buf = kmalloc(aligned_count, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+@@ -694,9 +699,9 @@ static ssize_t wil_read_file_ioblob(struct file *file, char __user *user_buf,
+ 	}
+ 
+ 	wil_memcpy_fromio_32(buf, (const void __iomem *)
+-			     wil_blob->blob.data + pos, count);
++			     wil_blob->blob.data + aligned_pos, aligned_count);
+ 
+-	ret = copy_to_user(user_buf, buf, count);
++	ret = copy_to_user(user_buf, buf + unaligned_bytes, count);
+ 
+ 	wil_pm_runtime_put(wil);
+ 
 -- 
 2.20.1
 
