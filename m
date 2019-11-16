@@ -2,116 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC191FE8F4
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 01:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B27C4FE8F5
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 01:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbfKPAB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 19:01:26 -0500
-Received: from www62.your-server.de ([213.133.104.62]:59828 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727064AbfKPAB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 19:01:26 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iVlWa-0005qj-Rk; Sat, 16 Nov 2019 01:01:13 +0100
-Received: from [178.197.248.45] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iVlWa-0007PX-BS; Sat, 16 Nov 2019 01:01:12 +0100
-Subject: Re: [PATCH v4 bpf-next 00/20] Introduce BPF trampoline
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     x86@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-References: <20191114185720.1641606-1-ast@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <04793b36-6a71-92cf-76f0-a4863300b35c@iogearbox.net>
-Date:   Sat, 16 Nov 2019 01:01:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727340AbfKPAB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 19:01:28 -0500
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:37682 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfKPAB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 19:01:28 -0500
+Received: by mail-qv1-f68.google.com with SMTP id s18so4458510qvr.4;
+        Fri, 15 Nov 2019 16:01:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=14b3kdiFt7KGRqWtA7BSS3n76oZM9Gd1ShnBfNhJNlA=;
+        b=Uk3odKo/i8GQNzZydSHpMdNJ1RWpiOwoPdUElnakkphFEPsD4IpU6nKWRSwqCZXxDK
+         52apn8ia4YY4UtUNzkAsYtPUzzkPxRhOsvMyUJiLloDuS7+S76VVBZlmj/VOPiZOWCpt
+         eAPkh45Upa76OhEtcHAVi8AEVz5YGjpYtW64VThdl7X+M/0vRg1rpdMr0/K2gVChq/LP
+         0siBlh4NtD5ZjHrqEc0wyQM1ZhbLsuvX1qwKmUfwADcm7w71v2SuN3QGHIuxYFgsQDi7
+         jqNetEcSsPZS19AMTXnQjBwaPKtPT0O+yY6NQ4ZCY0fnJTHNmy7LcWSrOLkqF1Y7k7sD
+         JL8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=14b3kdiFt7KGRqWtA7BSS3n76oZM9Gd1ShnBfNhJNlA=;
+        b=FooHZgLWxF1CPDgGSGUPLU+eisVD438Bdc4szbFLNNoA7czDLl4abbZIp2xNaGdvcn
+         DBKd5SYIZ3BWP4zNxAFmyTtcjfVoV8Mo/xlQPDqm89tkw/3oljJIj1BCYf7IaXGOWssO
+         7kva9D1jS2nVjzvcMy27gEQUmdmZN6kVuGJQoMfZQYK+KK0jK0Xh+D/QoIlHHbAeze0E
+         i+wrGp17i0ofdYqdnzH7ztVVbBKhMh6dK5OX42BKy/bbLEeOTp7Pu9daqvKw/mIV1N1G
+         yzJdowR60mitED7YvIq0wzZ/wkZyjW9+gtrNL+z2nsghDl2HtWrTKXVhR6xwDNQng7Cb
+         Yhpg==
+X-Gm-Message-State: APjAAAWerSV24kXKEbdmG0PJLENx1v8Ega23Fgy5J5+fXj5uJk5z83jw
+        WKa2JLPjJBIGIg8tSV9eYDvvXUlmQlUcZgYjtnE=
+X-Google-Smtp-Source: APXvYqzjMRh5zz7LEYzaU+/zIVQiR+MaZh9BCix8WLbw79+tnBYSyjDETu0L3EZmcV8ebaIVbDn8T6GnhYy8vQvyWFI=
+X-Received: by 2002:ad4:558e:: with SMTP id e14mr2546486qvx.247.1573862486621;
+ Fri, 15 Nov 2019 16:01:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191114185720.1641606-1-ast@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25634/Fri Nov 15 10:44:37 2019)
+References: <cover.1573779287.git.daniel@iogearbox.net> <d2364bbaca1569b04e2434d8b58a458f21c685ef.1573779287.git.daniel@iogearbox.net>
+ <CAEf4BzZau9d-feGEsOu617b7cd2aSfmmSi2TgwZbf4XZGBHASg@mail.gmail.com> <17b06848-c0e0-e766-912e-e11f85de9eca@iogearbox.net>
+In-Reply-To: <17b06848-c0e0-e766-912e-e11f85de9eca@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 15 Nov 2019 16:01:15 -0800
+Message-ID: <CAEf4BzZ_e+uriKecarWRu9QJQS6N9hWyy=EKu++_crhpEjs0Tw@mail.gmail.com>
+Subject: Re: [PATCH rfc bpf-next 1/8] bpf, x86: generalize and extend
+ bpf_arch_text_poke for direct jumps
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/14/19 7:57 PM, Alexei Starovoitov wrote:
-> Introduce BPF trampoline that works as a bridge between kernel functions, BPF
-> programs and other BPF programs.
-> 
-> The first use case is fentry/fexit BPF programs that are roughly equivalent to
-> kprobe/kretprobe. Unlike k[ret]probe there is practically zero overhead to call
-> a set of BPF programs before or after kernel function.
-> 
-> The second use case is heavily influenced by pain points in XDP development.
-> BPF trampoline allows attaching similar fentry/fexit BPF program to any
-> networking BPF program. It's now possible to see packets on input and output of
-> any XDP, TC, lwt, cgroup programs without disturbing them. This greatly helps
-> BPF-based network troubleshooting.
-> 
-> The third use case of BPF trampoline will be explored in the follow up patches.
-> The BPF trampoline will be used to dynamicly link BPF programs. It's more
-> generic mechanism than array and link list of programs used in tracing,
-> networking, cgroups. In many cases it can be used as a replacement for
-> bpf_tail_call-based program chaining. See [1] for long term design discussion.
-> 
-> v3->v4:
-> - Included Peter's
->    "86/alternatives: Teach text_poke_bp() to emulate instructions" as a first patch.
->    If it changes between now and merge window, I'll rebease to newer version.
->    The patch is necessary to do s/text_poke/text_poke_bp/ in patch 3 to fix the race.
-> - In patch 4 fixed bpf_trampoline creation race spotted by Andrii.
-> - Added patch 15 that annotates prog->kern bpf context types. It made patches 16
->    and 17 cleaner and more generic.
-> - Addressed Andrii's feedback in other patches.
-> 
-> v2->v3:
-> - Addressed Song's and Andrii's comments
-> - Fixed few minor bugs discovered while testing
-> - Added one more libbpf patch
-> 
-> v1->v2:
-> - Addressed Andrii's comments
-> - Added more test for fentry/fexit to kernel functions. Including stress test
->    for maximum number of progs per trampoline.
-> - Fixed a race btf_resolve_helper_id()
-> - Added a patch to compare BTF types of functions arguments with actual types.
-> - Added support for attaching BPF program to another BPF program via trampoline
-> - Converted to use text_poke() API. That's the only viable mechanism to
->    implement BPF-to-BPF attach. BPF-to-kernel attach can be refactored to use
->    register_ftrace_direct() whenever it's available.
-> 
-> [1]
-> https://lore.kernel.org/bpf/20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com/
-> 
-> Alexei Starovoitov (19):
->    bpf: refactor x86 JIT into helpers
->    bpf: Add bpf_arch_text_poke() helper
->    bpf: Introduce BPF trampoline
->    libbpf: Introduce btf__find_by_name_kind()
->    libbpf: Add support to attach to fentry/fexit tracing progs
->    selftest/bpf: Simple test for fentry/fexit
->    bpf: Add kernel test functions for fentry testing
->    selftests/bpf: Add test for BPF trampoline
->    selftests/bpf: Add fexit tests for BPF trampoline
->    selftests/bpf: Add combined fentry/fexit test
->    selftests/bpf: Add stress test for maximum number of progs
->    bpf: Reserve space for BPF trampoline in BPF programs
->    bpf: Fix race in btf_resolve_helper_id()
->    bpf: Annotate context types
->    bpf: Compare BTF types of functions arguments with actual types
->    bpf: Support attaching tracing BPF program to other BPF programs
->    libbpf: Add support for attaching BPF programs to other BPF programs
->    selftests/bpf: Extend test_pkt_access test
->    selftests/bpf: Add a test for attaching BPF prog to another BPF prog
->      and subprog
+On Fri, Nov 15, 2019 at 3:42 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 11/16/19 12:22 AM, Andrii Nakryiko wrote:
+> > On Thu, Nov 14, 2019 at 5:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >>
+> >> Add BPF_MOD_{NOP_TO_JUMP,JUMP_TO_JUMP,JUMP_TO_NOP} patching for x86
+> >> JIT in order to be able to patch direct jumps or nop them out. We need
+> >> this facility in order to patch tail call jumps and in later work also
+> >> BPF static keys.
+> >>
+> >> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> >> ---
+> >
+> > just naming nits, looks good otherwise
+> >
+> >>   arch/x86/net/bpf_jit_comp.c | 64 ++++++++++++++++++++++++++-----------
+> >>   include/linux/bpf.h         |  6 ++++
+> >>   2 files changed, 52 insertions(+), 18 deletions(-)
+> >>
+> >> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> >> index 2e586f579945..66921f2aeece 100644
+> >> --- a/arch/x86/net/bpf_jit_comp.c
+> >> +++ b/arch/x86/net/bpf_jit_comp.c
+> >> @@ -203,8 +203,9 @@ struct jit_context {
+> >>   /* Maximum number of bytes emitted while JITing one eBPF insn */
+> >>   #define BPF_MAX_INSN_SIZE      128
+> >>   #define BPF_INSN_SAFETY                64
+> >> -/* number of bytes emit_call() needs to generate call instruction */
+> >> -#define X86_CALL_SIZE          5
+> >> +
+> >> +/* Number of bytes emit_patchable() needs to generate instructions */
+> >> +#define X86_PATCHABLE_SIZE     5
+> >>
+> >>   #define PROLOGUE_SIZE          25
+> >>
+> >> @@ -215,7 +216,7 @@ struct jit_context {
+> >>   static void emit_prologue(u8 **pprog, u32 stack_depth, bool ebpf_from_cbpf)
+> >>   {
+> >>          u8 *prog = *pprog;
+> >> -       int cnt = X86_CALL_SIZE;
+> >> +       int cnt = X86_PATCHABLE_SIZE;
+> >>
+> >>          /* BPF trampoline can be made to work without these nops,
+> >>           * but let's waste 5 bytes for now and optimize later
+> >> @@ -480,64 +481,91 @@ static void emit_stx(u8 **pprog, u32 size, u32 dst_reg, u32 src_reg, int off)
+> >>          *pprog = prog;
+> >>   }
+> >>
+> >> -static int emit_call(u8 **pprog, void *func, void *ip)
+> >> +static int emit_patchable(u8 **pprog, void *func, void *ip, u8 b1)
+> >
+> > I'd strongly prefer opcode instead of b1 :) also would emit_patch() be
+> > a terrible name?
+>
+> Hmm, been using b1 since throughout the JIT we use u8 b1/b2/b3/.. for our
+> EMIT*() macros to denote the encoding positions. So I thought it would be
+> more conventional, but could also change to op if preferred.
 
-Applied, thanks!
+Well, I've been looking through text_poke_bp() recently, that one
+consistently used opcode terminology. See for yourself, the function
+is small, so it not too confusing to figure out what it really is.
+
+>
+> >>   {
+> >>          u8 *prog = *pprog;
+> >>          int cnt = 0;
+> >>          s64 offset;
+> >>
+> >
+> > [...]
+> >
+> >>          case BPF_MOD_CALL_TO_NOP:
+> >> -               if (memcmp(ip, old_insn, X86_CALL_SIZE))
+> >> +       case BPF_MOD_JUMP_TO_NOP:
+> >> +               if (memcmp(ip, old_insn, X86_PATCHABLE_SIZE))
+> >>                          goto out;
+> >> -               text_poke_bp(ip, ideal_nops[NOP_ATOMIC5], X86_CALL_SIZE, NULL);
+> >> +               text_poke_bp(ip, ideal_nops[NOP_ATOMIC5], X86_PATCHABLE_SIZE,
+> >
+> > maybe keep it shorter with X86_PATCH_SIZE?
+>
+> Sure, then X86_PATCH_SIZE and emit_patch() it is.
+>
+> >> +                            NULL);
+> >>                  break;
+> >>          }
+> >>          ret = 0;
+> >
+> > [...]
+> >
+>
