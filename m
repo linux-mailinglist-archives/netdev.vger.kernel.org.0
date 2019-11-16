@@ -2,154 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2902FEA35
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 03:07:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41712FEA36
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 03:08:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfKPCHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 21:07:32 -0500
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:36813 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727159AbfKPCHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 21:07:32 -0500
-Received: by mail-ot1-f51.google.com with SMTP id f10so9699014oto.3
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 18:07:31 -0800 (PST)
+        id S1727374AbfKPCI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 21:08:27 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41861 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727159AbfKPCI1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 21:08:27 -0500
+Received: by mail-wr1-f65.google.com with SMTP id b18so11465125wrj.8
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 18:08:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UiJOx0feRjqs4cBrw3GQ1eO/2u+7cvWu567DYWM07zI=;
-        b=nI0SXpz95V61zXrDXn+JWo1wEZ8I+amEugSyTpTz38A7JnrGbXtfojojxzi9rnw3AX
-         HYLWlk8xZUuFxgLQuXRpUx1VTaDMc/Konnga1g7a6Sr9z6hnyXMH2mrO/EkWi7yGTmxg
-         u7nee2jwYuJPOJdRtrmKWOPXBxhLzqyD81YQf+jCOdp3nQRPK6SnACAXyM2m7OS+LObH
-         ZeayDeQa7EEJo+MWr53dNVcQ8UQgYGYP2TEU4wYI7yobPSoSJ/Rj4y2cF7VSmLwS3FD4
-         oH9vP5SzQpPPmW7jWddeG1rWUfyC0Mwxmyt4UU+C3Wno1rE5ZzxQTiceX8zT5H7ugeBs
-         wjyg==
+        bh=8NYO4EYapc8xznltqHTYw3LF72laS+6k/AgXBQsNjsk=;
+        b=hvC8NBS0JuFx8qplWQ84Pnb1K6AOyoOM7BdRkevgd/TwiRYVuiwxLeX2O7fXrpA2vU
+         WdRwusPNaRssClKtM8tV1dMKRx4thN1wwrYrHXJ1pBSKLadaHvciUb7/OgsioZ7oXtFD
+         pRf3+Mcbxpjyn4N8DjjDRwe/9TQq65yKhR9MTxfnUPqgmsUNdgc/dXiyZXJSPyOokrdu
+         bj+u94WDUY0AV6xqr0zQWJj9TuzZtdn93ILFZMT1KOBSXHO2nv7aX+KriFgJK2Fjts0b
+         dTNRER1smYv9yth4wNSwpEItghs9igTQrxLQKh2FX+jRJfemrbJlaDiCekS4jDm+7vRW
+         qCVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UiJOx0feRjqs4cBrw3GQ1eO/2u+7cvWu567DYWM07zI=;
-        b=DzisXRajQ940thrt/pCI008OdYni51lVi9C1ogJYQlZVv6/Awl7+dvz7XD+2e9EdK6
-         FUCeBYtmjIGmtultlI/6W1Lpg7Swr0T2Sh/S3aDec1jzrBBe+5k1lrJl6k+w+huUk6aJ
-         6LCK3AHIuSVdoxVp0nJhJ4QpDwV/f3B4yU7wo6H0GySLiS+UoCGqp6wzEsUte0WHuJ2V
-         NI4eEAtDCwtLTJtfCxdB9v6c9PVQXgUsGr/KKFhDJsq+/2Ud21NdCGsGyqXJnFE340bQ
-         k5ABSgB2uoi3Gp6AAnbrkKSUJPWivhtSouv05qXrBYSZeabrneyjkMB8fO9CLZ3SlIdK
-         S7eQ==
-X-Gm-Message-State: APjAAAWOGhXaCXi8sh9GrtEUcizsB0gkwH+1mii3nl6srubUB7KPvM9u
-        K1Rt+thBkNU6xjZVR5NIlC5+coO5WYpLgcwYOhk=
-X-Google-Smtp-Source: APXvYqzjpdQhJ+oJPLn1XG46/vRjRTMm+mqt16WgMWozDT9UkOdl7ZOacoyTIgsEM4EF3SNHYMnh5GIFJ4HkAx2ZJMY=
-X-Received: by 2002:a9d:6f92:: with SMTP id h18mr7151318otq.242.1573870051042;
- Fri, 15 Nov 2019 18:07:31 -0800 (PST)
+        bh=8NYO4EYapc8xznltqHTYw3LF72laS+6k/AgXBQsNjsk=;
+        b=RlTn4NuFOQSrIHJdifeuNDfu9qOooxIcTXXRUc3m7z1VjOAxa3DSW51hZ6jWOOIHpd
+         HfG/y58MtC6dSf4Quof5V2VxH90Qcglnqaoc8C20AaeKTRmkEtCK4WQ4U2gQ685DnCCI
+         MOvT3IEYGeuHEXujf5ZUTAQV7Yxx7i7xyZewIFUM5Mniy5k72T+mwgA/V6MFpKqG9qW9
+         ymDnPVqpkLXVyX6zS+7zFZ/HbwLCEkj1LdiA2qIME0JaPLdu0doLc6khNRBFRGYrd0On
+         wFbnNgwCGuCi9NMm9X3CwuMmYsiKelyltuz4dFXVpHzDY01DDqCKb6e4B2t5GK6NXovQ
+         tMaw==
+X-Gm-Message-State: APjAAAW4MMdhA+YSuA12X5qNY0KDQ4Jmnp6vTXr5GNwuiCH9ZmRtGZTJ
+        CNmUoEMKJLUM2wIU4+WnvLGiFSqobUeln1VhaTPEbg==
+X-Google-Smtp-Source: APXvYqzNKfHSd/T34jH9e6Z37cMBjh3wGt32AItc++rBpPY4g0UwVRJdbUc5sIutw8u2z117TyNvRn0cLS+dYrca03s=
+X-Received: by 2002:a5d:44d2:: with SMTP id z18mr5451285wrr.209.1573870102492;
+ Fri, 15 Nov 2019 18:08:22 -0800 (PST)
 MIME-Version: 1.0
-References: <CAJwzM1k7iW9tJZiO-JhVbnT-EmwaJbsroaVbJLnSVY-tyCzjLQ@mail.gmail.com>
- <0d553faa-b665-14cf-e977-d2b0ff3d763e@gmail.com> <CAJwzM1=uv8NG=upCiRonvA504dn1u5Tj5DNM83BCSMbSmwvLuw@mail.gmail.com>
- <5bc7724f-c713-1810-2988-75520cb6f5eb@gmail.com>
-In-Reply-To: <5bc7724f-c713-1810-2988-75520cb6f5eb@gmail.com>
-From:   Avinash Patil <avinashapatil@gmail.com>
-Date:   Fri, 15 Nov 2019 18:07:20 -0800
-Message-ID: <CAJwzM1m-CTK-H9At_LdpMUP8kZNGkY6v1jZmusyFpChG2sGefQ@mail.gmail.com>
-Subject: Re: Possible bug in TCP retry logic/Kernel crash
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org
+References: <20191116015554.51077-1-edumazet@google.com>
+In-Reply-To: <20191116015554.51077-1-edumazet@google.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Fri, 15 Nov 2019 21:07:46 -0500
+Message-ID: <CACSApvYWQXrbLpWWTN++YRPsevn6kNm_fA6maWrXN+4kErkYMA@mail.gmail.com>
+Subject: Re: [PATCH net-next] selftests: net: avoid ptl lock contention in tcp_mmap
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arjun Roy <arjunroy@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No; I am not using an official tree. There are certain changes to
-arch/arc directory which are specific to Synposys ARC platform.
-However, there are no changes to TCP module and this is why I suspect
-crash is generic TCP issue.
+On Fri, Nov 15, 2019 at 8:56 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> tcp_mmap is used as a reference program for TCP rx zerocopy,
+> so it is important to point out some potential issues.
+>
+> If multiple threads are concurrently using getsockopt(...
+> TCP_ZEROCOPY_RECEIVE), there is a chance the low-level mm
+> functions compete on shared ptl lock, if vma are arbitrary placed.
+>
+> Instead of letting the mm layer place the chunks back to back,
+> this patch enforces an alignment so that each thread uses
+> a different ptl lock.
+>
+> Performance measured on a 100 Gbit NIC, with 8 tcp_mmap clients
+> launched at the same time :
+>
+> $ for f in {1..8}; do ./tcp_mmap -H 2002:a05:6608:290:: & done
+>
+> In the following run, we reproduce the old behavior by requesting no alignment :
+>
+> $ tcp_mmap -sz -C $((128*1024)) -a 4096
+> received 32768 MB (100 % mmap'ed) in 9.69532 s, 28.3516 Gbit
+>   cpu usage user:0.08634 sys:3.86258, 120.511 usec per MB, 171839 c-switches
+> received 32768 MB (100 % mmap'ed) in 25.4719 s, 10.7914 Gbit
+>   cpu usage user:0.055268 sys:21.5633, 659.745 usec per MB, 9065 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.5419 s, 9.63069 Gbit
+>   cpu usage user:0.057401 sys:23.8761, 730.392 usec per MB, 14987 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.655 s, 9.59268 Gbit
+>   cpu usage user:0.059689 sys:23.8087, 728.406 usec per MB, 18509 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.7808 s, 9.55074 Gbit
+>   cpu usage user:0.066042 sys:23.4632, 718.056 usec per MB, 24702 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.8259 s, 9.5358 Gbit
+>   cpu usage user:0.056547 sys:23.6628, 723.858 usec per MB, 23518 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.8808 s, 9.51767 Gbit
+>   cpu usage user:0.059357 sys:23.8515, 729.703 usec per MB, 14691 c-switches
+> received 32768 MB (100 % mmap'ed) in 28.8879 s, 9.51534 Gbit
+>   cpu usage user:0.047115 sys:23.7349, 725.769 usec per MB, 21773 c-switches
+>
+> New behavior (automatic alignment based on Hugepagesize),
+> we can see the system overhead being dramatically reduced.
+>
+> $ tcp_mmap -sz -C $((128*1024))
+> received 32768 MB (100 % mmap'ed) in 13.5339 s, 20.3103 Gbit
+>   cpu usage user:0.122644 sys:3.4125, 107.884 usec per MB, 168567 c-switches
+> received 32768 MB (100 % mmap'ed) in 16.0335 s, 17.1439 Gbit
+>   cpu usage user:0.132428 sys:3.55752, 112.608 usec per MB, 188557 c-switches
+> received 32768 MB (100 % mmap'ed) in 17.5506 s, 15.6621 Gbit
+>   cpu usage user:0.155405 sys:3.24889, 103.891 usec per MB, 226652 c-switches
+> received 32768 MB (100 % mmap'ed) in 19.1924 s, 14.3222 Gbit
+>   cpu usage user:0.135352 sys:3.35583, 106.542 usec per MB, 207404 c-switches
+> received 32768 MB (100 % mmap'ed) in 22.3649 s, 12.2906 Gbit
+>   cpu usage user:0.142429 sys:3.53187, 112.131 usec per MB, 250225 c-switches
+> received 32768 MB (100 % mmap'ed) in 22.5336 s, 12.1986 Gbit
+>   cpu usage user:0.140654 sys:3.61971, 114.757 usec per MB, 253754 c-switches
+> received 32768 MB (100 % mmap'ed) in 22.5483 s, 12.1906 Gbit
+>   cpu usage user:0.134035 sys:3.55952, 112.718 usec per MB, 252997 c-switches
+> received 32768 MB (100 % mmap'ed) in 22.6442 s, 12.139 Gbit
+>   cpu usage user:0.126173 sys:3.71251, 117.147 usec per MB, 253728 c-switches
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Thanks,
-Avinash
+Neat idea! Thank you for the patch!
 
-
-On Fri, Nov 15, 2019 at 6:01 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> Cc: Arjun Roy <arjunroy@google.com>
+> ---
+>  tools/testing/selftests/net/tcp_mmap.c | 58 +++++++++++++++++++++++---
+>  1 file changed, 53 insertions(+), 5 deletions(-)
 >
+> diff --git a/tools/testing/selftests/net/tcp_mmap.c b/tools/testing/selftests/net/tcp_mmap.c
+> index 0e73a30f0c2262e62a5ed1e2db6c7c8977bf44fa..5bb370a0857ec8a24916f583be5374183a9aefc8 100644
+> --- a/tools/testing/selftests/net/tcp_mmap.c
+> +++ b/tools/testing/selftests/net/tcp_mmap.c
+> @@ -82,7 +82,9 @@ static int zflg; /* zero copy option. (MSG_ZEROCOPY for sender, mmap() for recei
+>  static int xflg; /* hash received data (simple xor) (-h option) */
+>  static int keepflag; /* -k option: receiver shall keep all received file in memory (no munmap() calls) */
 >
+> -static int chunk_size  = 512*1024;
+> +static size_t chunk_size  = 512*1024;
+> +
+> +static size_t map_align;
 >
-> On 11/15/19 5:52 PM, Avinash Patil wrote:
-> > Hi Eric,
-> >
-> > I integrated all patches till 4.19.83 as per your suggestion.
-> > Unfortunately, I still see crash.
+>  unsigned long htotal;
 >
-> What do you mean by integrating patches ?
+> @@ -118,6 +120,9 @@ void hash_zone(void *zone, unsigned int length)
+>         htotal = temp;
+>  }
 >
-> Are you using an official/pristine tree ?
+> +#define ALIGN_UP(x, align_to)  (((x) + ((align_to)-1)) & ~((align_to)-1))
+> +#define ALIGN_PTR_UP(p, ptr_align_to)  ((typeof(p))ALIGN_UP((unsigned long)(p), ptr_align_to))
+> +
+>  void *child_thread(void *arg)
+>  {
+>         unsigned long total_mmap = 0, total = 0;
+> @@ -126,6 +131,7 @@ void *child_thread(void *arg)
+>         int flags = MAP_SHARED;
+>         struct timeval t0, t1;
+>         char *buffer = NULL;
+> +       void *raddr = NULL;
+>         void *addr = NULL;
+>         double throughput;
+>         struct rusage ru;
+> @@ -142,9 +148,13 @@ void *child_thread(void *arg)
+>                 goto error;
+>         }
+>         if (zflg) {
+> -               addr = mmap(NULL, chunk_size, PROT_READ, flags, fd, 0);
+> -               if (addr == (void *)-1)
+> +               raddr = mmap(NULL, chunk_size + map_align, PROT_READ, flags, fd, 0);
+> +               if (raddr == (void *)-1) {
+> +                       perror("mmap");
+>                         zflg = 0;
+> +               } else {
+> +                       addr = ALIGN_PTR_UP(raddr, map_align);
+> +               }
+>         }
+>         while (1) {
+>                 struct pollfd pfd = { .fd = fd, .events = POLLIN, };
+> @@ -222,7 +232,7 @@ void *child_thread(void *arg)
+>         free(buffer);
+>         close(fd);
+>         if (zflg)
+> -               munmap(addr, chunk_size);
+> +               munmap(raddr, chunk_size + map_align);
+>         pthread_exit(0);
+>  }
 >
-> >
-> > [  991.291968] [ECR   ]: 0x00230400 => Misaligned r/w from 0x00000001
-> > [  991.299766] [EFA   ]: 0x00000001
-> > [  991.299766] [BLINK ]: tcp_clean_rtx_queue+0x2a4/0xc88
-> > [  991.299766] [ERET  ]: __list_del_entry_valid+0x12/0x1a0
-> > [  991.313350] [STAT32]: 0x00000206 : K         E2 E1
-> > [  991.318323] BTA: 0x8b188843   SP: 0x8f04fcf4  FP: 0x00000000
-> > [  991.323977] LPS: 0x8b2e2942  LPE: 0x8b2e2946 LPC: 0x00000000
-> > [  991.329660] r00: 0x8cbf2224  r01: 0x8cbf21c0 r02: 0x6e6c53fe
-> > [  991.329660] r03: 0x00000001  r04: 0x00000000 r05: 0x39ef6f1d
-> > [  991.329660] r06: 0x8f3e3180  r07: 0x00000000 r08: 0x3b14d54c
-> > [  991.329660] r09: 0x00000000  r10: 0x0000c0ef r11: 0x00000000
-> > [  991.329660] r12: 0x04c80000  r13: 0x8cbf21c0 r14: 0x00000000
-> > [  991.329660] r15: 0x00000000  r16: 0x00000001 r17: 0x00000000
-> > [  991.329660] r18: 0x8f3e3580  r19: 0x8f3e2d80 r20: 0x00000004
-> > [  991.329660] r21: 0x8f04fd7c  r22: 0x00000001 r23: 0x3b14d54c
-> > [  991.329660] r24: 0x00000000  r25: 0x8f0315c0
-> > [  991.329660]
-> > [  991.329660]
-> > [  991.382333]
-> > [  991.382333] Stack Trace:
-> > [  991.386374] Firmware build version: avinashp6_bbic5_a-cl103643
-> > [  991.386374] Firmware configuration: pearl_10gax_config
-> > [  991.386374] Hardware ID           : 65535
-> > [  991.401461]   __list_del_entry_valid+0x12/0x1a0
-> > [  991.406125]   tcp_clean_rtx_queue+0x2a4/0xc88
-> > [  991.410618]   tcp_ack+0x484/0x914
-> > [  991.414073]   tcp_rcv_established+0x538/0x724
-> > [  991.418564]   tcp_v4_do_rcv+0xda/0x120
-> > [  991.422456]   tcp_v4_rcv+0x954/0xa7c
-> > [  991.426105]   ip_local_deliver+0x72/0x208
-> > [  991.430257]   process_backlog+0xbe/0x1b0
-> > [  991.434319]   net_rx_action+0x106/0x294
-> > [  991.438286]   __do_softirq+0xf0/0x218
-> > [  991.442014]   run_ksoftirqd+0x2a/0x3c
-> > [  991.445812]   smpboot_thread_fn+0xb4/0x10c
-> > [  991.450054]   kthread+0xd8/0xdc
-> > [  991.453338]   ret_from_fork+0x18/0x1c
-> > [  991.457067]
-> >
-> > Thank you!
-> >
-> > -Avinash
-> >
-> > On Sun, Nov 10, 2019 at 3:48 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 11/9/19 9:59 PM, Avinash Patil wrote:
-> >>> Hi everyone,
-> >>>
-> >>> Kernel: Linux 4.19.35 kernel built from linux-stable
-> >>>
-> >>
-> >> This is quite an old version.
-> >>
-> >> Please upgrade to the latest one.
-> >>
-> >> $ git log --oneline v4.19.35..v4.19.82 -- net/ipv4/tcp*c
-> >> 3fdcf6a88ded2bb5c3c0f0aabaff253dd3564013 tcp: better handle TCP_USER_TIMEOUT in SYN_SENT state
-> >> 67fe3b94a833779caf4504ececa7097fba9b2627 tcp: fix tcp_ecn_withdraw_cwr() to clear TCP_ECN_QUEUE_CWR
-> >> 5977bc19ce7f1ed25bf20d09d8e93e56873a9abb tcp: remove empty skb from write queue in error cases
-> >> 6f3126379879bb2b9148174f0a4b6b65e04dede9 tcp: inherit timestamp on mtu probe
-> >> 1b200acde418f4d6d87279d3f6f976ebf188f272 tcp: Reset bytes_acked and bytes_received when disconnecting
-> >> c60f57dfe995172c2f01e59266e3ffa3419c6cd9 tcp: fix tcp_set_congestion_control() use from bpf hook
-> >> 6323c238bb4374d1477348cfbd5854f2bebe9a21 tcp: be more careful in tcp_fragment()
-> >> dad3a9314ac95dedc007bc7dacacb396ea10e376 tcp: refine memory limit test in tcp_fragment()
-> >> 59222807fcc99951dc769cd50e132e319d73d699 tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
-> >> 7f9f8a37e563c67b24ccd57da1d541a95538e8d9 tcp: add tcp_min_snd_mss sysctl
-> >> ec83921899a571ad70d582934ee9e3e07f478848 tcp: tcp_fragment() should apply sane memory limits
-> >> c09be31461ed140976c60a87364415454a2c3d42 tcp: limit payload size of sacked skbs
-> >> 6728c6174a47b8a04ceec89aca9e1195dee7ff6b tcp: tcp_grow_window() needs to respect tcp_space()
-> >>
+> @@ -303,6 +313,30 @@ static void do_accept(int fdlisten)
+>         }
+>  }
+>
+> +/* Each thread should reserve a big enough vma to avoid
+> + * spinlock collisions in ptl locks.
+> + * This size is 2MB on x86_64, and is exported in /proc/meminfo.
+> + */
+> +static unsigned long default_huge_page_size(void)
+> +{
+> +       FILE *f = fopen("/proc/meminfo", "r");
+> +       unsigned long hps = 0;
+> +       size_t linelen = 0;
+> +       char *line = NULL;
+> +
+> +       if (!f)
+> +               return 0;
+> +       while (getline(&line, &linelen, f) > 0) {
+> +               if (sscanf(line, "Hugepagesize:       %lu kB", &hps) == 1) {
+> +                       hps <<= 10;
+> +                       break;
+> +               }
+> +       }
+> +       free(line);
+> +       fclose(f);
+> +       return hps;
+> +}
+> +
+>  int main(int argc, char *argv[])
+>  {
+>         struct sockaddr_storage listenaddr, addr;
+> @@ -314,7 +348,7 @@ int main(int argc, char *argv[])
+>         int sflg = 0;
+>         int mss = 0;
+>
+> -       while ((c = getopt(argc, argv, "46p:svr:w:H:zxkP:M:")) != -1) {
+> +       while ((c = getopt(argc, argv, "46p:svr:w:H:zxkP:M:C:a:")) != -1) {
+>                 switch (c) {
+>                 case '4':
+>                         cfg_family = PF_INET;
+> @@ -354,10 +388,24 @@ int main(int argc, char *argv[])
+>                 case 'P':
+>                         max_pacing_rate = atoi(optarg) ;
+>                         break;
+> +               case 'C':
+> +                       chunk_size = atol(optarg);
+> +                       break;
+> +               case 'a':
+> +                       map_align = atol(optarg);
+> +                       break;
+>                 default:
+>                         exit(1);
+>                 }
+>         }
+> +       if (!map_align) {
+> +               map_align = default_huge_page_size();
+> +               /* if really /proc/meminfo is not helping,
+> +                * we use the default x86_64 hugepagesize.
+> +                */
+> +               if (!map_align)
+> +                       map_align = 2*1024*1024;
+> +       }
+>         if (sflg) {
+>                 int fdlisten = socket(cfg_family, SOCK_STREAM, 0);
+>
+> --
+> 2.24.0.432.g9d3f5f5b63-goog
+>
