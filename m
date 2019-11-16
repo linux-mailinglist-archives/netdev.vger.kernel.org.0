@@ -2,120 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50ADDFEB5F
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 10:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0142EFEBAD
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 11:47:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbfKPJlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 04:41:08 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:36393 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbfKPJlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 04:41:08 -0500
-Received: by mail-pj1-f68.google.com with SMTP id cq11so281604pjb.3;
-        Sat, 16 Nov 2019 01:41:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=qiKpDqxor3KUPMlSYGxk73RwYW/8ZTPLFV2q2AOqPwA=;
-        b=W0ha5aHVkIGBLHwz/gdctkLmI4Oql1roTIHHOzCoD2VoPA6H+wa/xnBl+cs8UD5BOM
-         TqAAMleVYFKgE2Fh9xJGTXJI+98T1GYERAcv8VsFeRYFOv9E3ABzxWRepgCXeTf0qvHG
-         TpGjaFD0g0tdxsfZaFCTEbp6AdWP/Sl4yKGW4Qzun0mjABtnyHTIS4jeWCNU4zs1qKfN
-         oO3rDQh9uMU9bDV92eZUvEnJZsEfyb+l0D8nfKPdWsliLYKJOodSv+T3soY8EXSfn8LX
-         kwkoWAoO9zMkkLsIaqzq1+quFn+N8iuofy4HbNUqvGUavZmmx4JzID4nyCsj8j9A7pOa
-         Dafg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=qiKpDqxor3KUPMlSYGxk73RwYW/8ZTPLFV2q2AOqPwA=;
-        b=Ok0oRygxD8b6BpY2+FT6U4TlZ1IZeyp6cfcUUhWlcBYi/H8cOSiLSLqzdp4Trf604p
-         uPwmVLatqOcKnHSQZ5qA5qdN1inOVfnPxp1ZoliNKaogyKv3wo6m6YcPrsxE1OAFDoFg
-         SFbTDmurPs+RnhXvMCKQLoEbZBSWdKiQVlQ9rApTOWBHCPdW85ZsPlzT2yQTu0iwf53C
-         w44RbeSg34grl9t0G4irqfCV4D+QX9banAlQ4NkNTy5YcTjXp3HexF38rubd40jmLkQr
-         9CKLGsKbiY8pCEY0V59Qxus6mE895M0CQnLloWylnM7Bk2rgZc80+JofSpSrq2nEZaqH
-         CY4A==
-X-Gm-Message-State: APjAAAUpMf208Fry1A72Nz/zWF7y9nQV65DGetGfilLIbGplaV+ssfcB
-        pCmEXDY/4hZchV432fUVccM=
-X-Google-Smtp-Source: APXvYqyW6+jLj/VO7pVPjaOQjAqUjgSvy7AbiRgLXW2biey8wHyiwFbIYDRR3iLvuMHbxUJ9v7EUHQ==
-X-Received: by 2002:a17:902:547:: with SMTP id 65mr19631123plf.239.1573897267640;
-        Sat, 16 Nov 2019 01:41:07 -0800 (PST)
-Received: from nishad ([106.51.232.103])
-        by smtp.gmail.com with ESMTPSA id q70sm16531609pjq.26.2019.11.16.01.41.03
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 16 Nov 2019 01:41:07 -0800 (PST)
-Date:   Sat, 16 Nov 2019 15:10:59 +0530
-From:   Nishad Kamdar <nishadkamdar@gmail.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: Use the correct style for SPDX License
- Identifier
-Message-ID: <20191116094055.GA4863@nishad>
+        id S1727340AbfKPKrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 05:47:25 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:32839 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727000AbfKPKrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 05:47:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573901244;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7gF0eJeuiZodSAhORXmoP5s14B2XONiOXpf6C0HyEY4=;
+        b=ROMJcx61sSzZOE4Qwjt6RNvkEzJfMAkLZnyhFcN30/XQB1oc9Sxra6moSZdzq2JFJM2Xoc
+        DeXH6umn643L2D8PA8KT/tl9ZCpvmv+6W9tgdRZJgJpgCDa6wXCGmK6/8x9Gv7DGn6YsVq
+        FuZ5pmuckXQw2wjN5vx89ZHP9/2XGAc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-329-5Aq7myTPN0CNbvF4tTnNcQ-1; Sat, 16 Nov 2019 05:47:18 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8290E1005502;
+        Sat, 16 Nov 2019 10:47:16 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 16AF86055F;
+        Sat, 16 Nov 2019 10:47:08 +0000 (UTC)
+Date:   Sat, 16 Nov 2019 11:47:07 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Jonathan Lemon" <jonathan.lemon@gmail.com>
+Cc:     "Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
+        netdev@vger.kernel.org,
+        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
+        "Saeed Mahameed" <saeedm@mellanox.com>,
+        "Matteo Croce" <mcroce@redhat.com>,
+        "Lorenzo Bianconi" <lorenzo@kernel.org>,
+        "Tariq Toukan" <tariqt@mellanox.com>, brouer@redhat.com
+Subject: Re: [net-next v1 PATCH 3/4] page_pool: block alloc cache during
+ shutdown
+Message-ID: <20191116114707.0bfde142@carbon>
+In-Reply-To: <8FD50D75-44C3-4C67-984E-0B85ADE6BAA5@gmail.com>
+References: <157383032789.3173.11648581637167135301.stgit@firesoul>
+        <157383036914.3173.12541360542055110975.stgit@firesoul>
+        <8FD50D75-44C3-4C67-984E-0B85ADE6BAA5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: 5Aq7myTPN0CNbvF4tTnNcQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch corrects the SPDX License Identifier style in
-header files related to STMicroelectronics based Multi-Gigabit
-Ethernet driver. For C header files Documentation/process/license-rules.rst
-mandates C-like comments (opposed to C source files where
-C++ style should be used).
+On Fri, 15 Nov 2019 10:38:21 -0800
+"Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
 
-Changes made by using a script provided by Joe Perches here:
-https://lkml.org/lkml/2019/2/7/46.
+> Case 1:
+> Now, if the driver screws up and tries to re-use the pool and allocate
+> another packet, it enters __page_pool_get_cached(), which will decrement
+> the alloc.count, and return NULL.  This causes a fallback to
+> __get_alloc_pages_slow(), which bumps up the pool inflight count.
 
-Suggested-by: Joe Perches <joe@perches.com>
-Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac5.h   | 2 +-
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h | 2 +-
- drivers/net/ethernet/stmicro/stmmac/hwif.h     | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+I can see that I made a mistake, and cannot use NULL as the poison
+value. Let me drop this patch, so others (and yours) can go in before
+merge window.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-index 775db776b3cc..23fecf68f781 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- // Copyright (c) 2017 Synopsys, Inc. and/or its affiliates.
- // stmmac Support for 5.xx Ethernet QoS cores
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 99037386080a..9d08a934fe4f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- /*
-  * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
-  * stmmac XGMAC definitions.
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 509daeefdb79..aa5b917398fe 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- // Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- // stmmac HW Interface Callbacks
- 
--- 
-2.17.1
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
