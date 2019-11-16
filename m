@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 211C9FF2A6
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:21:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60EEAFF266
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729015AbfKPPoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:44:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49460 "EHLO mail.kernel.org"
+        id S1729261AbfKPPp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:45:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728035AbfKPPod (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:44:33 -0500
+        id S1729229AbfKPPpy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:45:54 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EB32D2072D;
-        Sat, 16 Nov 2019 15:44:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F7472082E;
+        Sat, 16 Nov 2019 15:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919072;
-        bh=LjgfDLWpducmF8pDBK9oB34UqtgHeQLfOEMFR1elg2c=;
+        s=default; t=1573919153;
+        bh=iPFtIhlFnF1IDIP9CFvA7qpSv6U66EhbaLGNIWWMfT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tftiQqrqblB2hnt7K8SHbtLoSWjgO1088aXgZI/SF2RJcPiBWDsio0ykCL0S1+ISw
-         4+mxrNifaQcSGlkYGp25nsgjwkpNGmxrkqulhjDxmbp+SHZ0kTteIJJo9gMZgwqeZW
-         Bg9qm0e4XGCuGuDULeM7uhGwRqUcPrL0sjiGCUaY=
+        b=BoJRBeju/nJ44CVuVGiHxtCPks3AVzVdmfXm5WxK8X3RCjDf4I0fuOxepBY3omLbg
+         zdl9YBBnRkMq3kVBBB/pAMovISTqSQ1aV8fuKC9+8A0dQeUTVKaLdRmvBpKS3eL47j
+         2HKH5j8OpHxQ+opfjaZ4nn0A7uiBi86Gvi/v2URY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, Ying Xu <yinxu@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 142/237] ipv4/igmp: fix v1/v2 switchback timeout based on rfc3376, 8.12
-Date:   Sat, 16 Nov 2019 10:39:37 -0500
-Message-Id: <20191116154113.7417-142-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 167/237] fm10k: ensure completer aborts are marked as non-fatal after a resume
+Date:   Sat, 16 Nov 2019 10:40:02 -0500
+Message-Id: <20191116154113.7417-167-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116154113.7417-1-sashal@kernel.org>
 References: <20191116154113.7417-1-sashal@kernel.org>
@@ -43,167 +43,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-[ Upstream commit 966c37f2d77eb44d47af8e919267b1ba675b2eca ]
+[ Upstream commit e330af788998b0de4da4f5bd7ddd087507999800 ]
 
-Similiar with ipv6 mcast commit 89225d1ce6af3 ("net: ipv6: mld: fix v1/v2
-switchback timeout to rfc3810, 9.12.")
+VF drivers can trigger PCIe completer aborts any time they read a queue
+that they don't own. Even in nominal circumstances, it is not possible
+to prevent the VF driver from reading queues it doesn't own. VF drivers
+may attempt to read queues it previously owned, but which it no longer
+does due to a PF reset.
 
-i) RFC3376 8.12. Older Version Querier Present Timeout says:
+Normally these completer aborts aren't an issue. However, on some
+platforms these trigger machine check errors. This is true even if we
+lower their severity from fatal to non-fatal. Indeed, we already have
+code for lowering the severity.
 
-   The Older Version Querier Interval is the time-out for transitioning
-   a host back to IGMPv3 mode once an older version query is heard.
-   When an older version query is received, hosts set their Older
-   Version Querier Present Timer to Older Version Querier Interval.
+We could attempt to mask these errors conditionally around resets, which
+is the most common time they would occur. However this would essentially
+be a race between the PF and VF drivers, and we may still occasionally
+see machine check exceptions on these strictly configured platforms.
 
-   This value MUST be ((the Robustness Variable) times (the Query
-   Interval in the last Query received)) plus (one Query Response
-   Interval).
+Instead, mask the errors entirely any time we resume VFs. By doing so,
+we prevent the completer aborts from being sent to the parent PCIe
+device, and thus these strict platforms will not upgrade them into
+machine check errors.
 
-Currently we only use a hardcode value IGMP_V1/v2_ROUTER_PRESENT_TIMEOUT.
-Fix it by adding two new items mr_qi(Query Interval) and mr_qri(Query Response
-Interval) in struct in_device.
+Additionally, we don't lose any information by masking these errors,
+because we'll still report VFs which attempt to access queues via the
+FUM_BAD_VF_QACCESS errors.
 
-Now we can calculate the switchback time via (mr_qrv * mr_qi) + mr_qri.
-We need update these values when receive IGMPv3 queries.
+Without this change, on platforms where completer aborts cause machine
+check exceptions, the VF reading queues it doesn't own could crash the
+host system. Masking the completer abort prevents this, so we should
+mask it for good, and not just around a PCIe reset. Otherwise malicious
+or misconfigured VFs could cause the host system to crash.
 
-Reported-by: Ying Xu <yinxu@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Because we are masking the error entirely, there is little reason to
+also keep setting the severity bit, so that code is also removed.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/inetdevice.h |  4 ++-
- net/ipv4/igmp.c            | 53 ++++++++++++++++++++++++++------------
- 2 files changed, 39 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/intel/fm10k/fm10k_iov.c | 48 ++++++++++++--------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
-diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
-index c759d1cbcedd8..a64f21a97369a 100644
---- a/include/linux/inetdevice.h
-+++ b/include/linux/inetdevice.h
-@@ -37,7 +37,9 @@ struct in_device {
- 	unsigned long		mr_v1_seen;
- 	unsigned long		mr_v2_seen;
- 	unsigned long		mr_maxdelay;
--	unsigned char		mr_qrv;
-+	unsigned long		mr_qi;		/* Query Interval */
-+	unsigned long		mr_qri;		/* Query Response Interval */
-+	unsigned char		mr_qrv;		/* Query Robustness Variable */
- 	unsigned char		mr_gq_running;
- 	unsigned char		mr_ifc_count;
- 	struct timer_list	mr_gq_timer;	/* general query timer */
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index b2240b7f225d5..523d26f5e22e2 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -111,13 +111,10 @@
- #ifdef CONFIG_IP_MULTICAST
- /* Parameter names and values are taken from igmp-v2-06 draft */
- 
--#define IGMP_V1_ROUTER_PRESENT_TIMEOUT		(400*HZ)
--#define IGMP_V2_ROUTER_PRESENT_TIMEOUT		(400*HZ)
- #define IGMP_V2_UNSOLICITED_REPORT_INTERVAL	(10*HZ)
- #define IGMP_V3_UNSOLICITED_REPORT_INTERVAL	(1*HZ)
-+#define IGMP_QUERY_INTERVAL			(125*HZ)
- #define IGMP_QUERY_RESPONSE_INTERVAL		(10*HZ)
--#define IGMP_QUERY_ROBUSTNESS_VARIABLE		2
--
- 
- #define IGMP_INITIAL_REPORT_DELAY		(1)
- 
-@@ -953,13 +950,15 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
- 
- 			max_delay = IGMP_QUERY_RESPONSE_INTERVAL;
- 			in_dev->mr_v1_seen = jiffies +
--				IGMP_V1_ROUTER_PRESENT_TIMEOUT;
-+				(in_dev->mr_qrv * in_dev->mr_qi) +
-+				in_dev->mr_qri;
- 			group = 0;
- 		} else {
- 			/* v2 router present */
- 			max_delay = ih->code*(HZ/IGMP_TIMER_SCALE);
- 			in_dev->mr_v2_seen = jiffies +
--				IGMP_V2_ROUTER_PRESENT_TIMEOUT;
-+				(in_dev->mr_qrv * in_dev->mr_qi) +
-+				in_dev->mr_qri;
- 		}
- 		/* cancel the interface change timer */
- 		in_dev->mr_ifc_count = 0;
-@@ -999,8 +998,21 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
- 		if (!max_delay)
- 			max_delay = 1;	/* can't mod w/ 0 */
- 		in_dev->mr_maxdelay = max_delay;
--		if (ih3->qrv)
--			in_dev->mr_qrv = ih3->qrv;
-+
-+		/* RFC3376, 4.1.6. QRV and 4.1.7. QQIC, when the most recently
-+		 * received value was zero, use the default or statically
-+		 * configured value.
-+		 */
-+		in_dev->mr_qrv = ih3->qrv ?: net->ipv4.sysctl_igmp_qrv;
-+		in_dev->mr_qi = IGMPV3_QQIC(ih3->qqic)*HZ ?: IGMP_QUERY_INTERVAL;
-+
-+		/* RFC3376, 8.3. Query Response Interval:
-+		 * The number of seconds represented by the [Query Response
-+		 * Interval] must be less than the [Query Interval].
-+		 */
-+		if (in_dev->mr_qri >= in_dev->mr_qi)
-+			in_dev->mr_qri = (in_dev->mr_qi/HZ - 1)*HZ;
-+
- 		if (!group) { /* general query */
- 			if (ih3->nsrcs)
- 				return true;	/* no sources allowed */
-@@ -1738,18 +1750,30 @@ void ip_mc_down(struct in_device *in_dev)
- 	ip_mc_dec_group(in_dev, IGMP_ALL_HOSTS);
+diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_iov.c b/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
+index e707d717012fa..618032612f52d 100644
+--- a/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
++++ b/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
+@@ -302,6 +302,28 @@ void fm10k_iov_suspend(struct pci_dev *pdev)
+ 	}
  }
  
--void ip_mc_init_dev(struct in_device *in_dev)
--{
- #ifdef CONFIG_IP_MULTICAST
-+static void ip_mc_reset(struct in_device *in_dev)
++static void fm10k_mask_aer_comp_abort(struct pci_dev *pdev)
 +{
- 	struct net *net = dev_net(in_dev->dev);
++	u32 err_mask;
++	int pos;
 +
-+	in_dev->mr_qi = IGMP_QUERY_INTERVAL;
-+	in_dev->mr_qri = IGMP_QUERY_RESPONSE_INTERVAL;
-+	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
-+}
-+#else
-+static void ip_mc_reset(struct in_device *in_dev)
-+{
-+}
- #endif
++	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ERR);
++	if (!pos)
++		return;
 +
-+void ip_mc_init_dev(struct in_device *in_dev)
-+{
- 	ASSERT_RTNL();
- 
- #ifdef CONFIG_IP_MULTICAST
- 	timer_setup(&in_dev->mr_gq_timer, igmp_gq_timer_expire, 0);
- 	timer_setup(&in_dev->mr_ifc_timer, igmp_ifc_timer_expire, 0);
--	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
- #endif
-+	ip_mc_reset(in_dev);
- 
- 	spin_lock_init(&in_dev->mc_tomb_lock);
- }
-@@ -1759,15 +1783,10 @@ void ip_mc_init_dev(struct in_device *in_dev)
- void ip_mc_up(struct in_device *in_dev)
++	/* Mask the completion abort bit in the ERR_UNCOR_MASK register,
++	 * preventing the device from reporting these errors to the upstream
++	 * PCIe root device. This avoids bringing down platforms which upgrade
++	 * non-fatal completer aborts into machine check exceptions. Completer
++	 * aborts can occur whenever a VF reads a queue it doesn't own.
++	 */
++	pci_read_config_dword(pdev, pos + PCI_ERR_UNCOR_MASK, &err_mask);
++	err_mask |= PCI_ERR_UNC_COMP_ABORT;
++	pci_write_config_dword(pdev, pos + PCI_ERR_UNCOR_MASK, err_mask);
++
++	mmiowb();
++}
++
+ int fm10k_iov_resume(struct pci_dev *pdev)
  {
- 	struct ip_mc_list *pmc;
--#ifdef CONFIG_IP_MULTICAST
--	struct net *net = dev_net(in_dev->dev);
--#endif
+ 	struct fm10k_intfc *interface = pci_get_drvdata(pdev);
+@@ -317,6 +339,12 @@ int fm10k_iov_resume(struct pci_dev *pdev)
+ 	if (!iov_data)
+ 		return -ENOMEM;
  
- 	ASSERT_RTNL();
++	/* Lower severity of completer abort error reporting as
++	 * the VFs can trigger this any time they read a queue
++	 * that they don't own.
++	 */
++	fm10k_mask_aer_comp_abort(pdev);
++
+ 	/* allocate hardware resources for the VFs */
+ 	hw->iov.ops.assign_resources(hw, num_vfs, num_vfs);
  
--#ifdef CONFIG_IP_MULTICAST
--	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
--#endif
-+	ip_mc_reset(in_dev);
- 	ip_mc_inc_group(in_dev, IGMP_ALL_HOSTS);
+@@ -460,20 +488,6 @@ void fm10k_iov_disable(struct pci_dev *pdev)
+ 	fm10k_iov_free_data(pdev);
+ }
  
- 	for_each_pmc_rtnl(in_dev, pmc) {
+-static void fm10k_disable_aer_comp_abort(struct pci_dev *pdev)
+-{
+-	u32 err_sev;
+-	int pos;
+-
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ERR);
+-	if (!pos)
+-		return;
+-
+-	pci_read_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, &err_sev);
+-	err_sev &= ~PCI_ERR_UNC_COMP_ABORT;
+-	pci_write_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, err_sev);
+-}
+-
+ int fm10k_iov_configure(struct pci_dev *pdev, int num_vfs)
+ {
+ 	int current_vfs = pci_num_vf(pdev);
+@@ -495,12 +509,6 @@ int fm10k_iov_configure(struct pci_dev *pdev, int num_vfs)
+ 
+ 	/* allocate VFs if not already allocated */
+ 	if (num_vfs && num_vfs != current_vfs) {
+-		/* Disable completer abort error reporting as
+-		 * the VFs can trigger this any time they read a queue
+-		 * that they don't own.
+-		 */
+-		fm10k_disable_aer_comp_abort(pdev);
+-
+ 		err = pci_enable_sriov(pdev, num_vfs);
+ 		if (err) {
+ 			dev_err(&pdev->dev,
 -- 
 2.20.1
 
