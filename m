@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E13FF04D
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FCBFF03F
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:04:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731388AbfKPQEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 11:04:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60392 "EHLO mail.kernel.org"
+        id S1731177AbfKPQEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 11:04:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729234AbfKPPvi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:51:38 -0500
+        id S1729692AbfKPPvw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:51:52 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1DF9120854;
-        Sat, 16 Nov 2019 15:51:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 47A7320857;
+        Sat, 16 Nov 2019 15:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919498;
-        bh=05CNfXklO5AkLQeHnG44yjPSeuDjG6GdgTpsbdsJ3LU=;
+        s=default; t=1573919511;
+        bh=GrS/sfvynxkd0Z9uBnjBDVMYI0Mc/xdQEjRQgmhPX4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZsYC00iAtdlmq0jRwLtkGi6MURZwmfvqZsQUhdyV6L9x9Av+C3qlNBUR/4WG1E/F
-         T/VbussOGfL1/UWYILuu+coC8uFBN0F0Ch+D0MUXSz+Cy4eziRhtNJhk9FhZgK2UhC
-         1v34SGtOk6+83DVjFBPd+3KNnKuiv10OFPQeCK8Q=
+        b=n1OFR84Mt5dv3dzMiOPuuNLnSYD2uKrlfVkmIAy6sKclosCL1vIJxz95e1445ny7n
+         8N3c24R3YydST57VxZnWllgbHei3D+LBj4SxMxlKCKJGVdVjFwfO+zp+fSXCSyHSzP
+         z6JRRETCous2in6WmUMbVJU33ORt5acLOOJLp1Yo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kyeongdon Kim <kyeongdon.kim@lge.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 25/99] net: fix warning in af_unix
-Date:   Sat, 16 Nov 2019 10:49:48 -0500
-Message-Id: <20191116155103.10971-25-sashal@kernel.org>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 33/99] SUNRPC: Fix a compile warning for cmpxchg64()
+Date:   Sat, 16 Nov 2019 10:49:56 -0500
+Message-Id: <20191116155103.10971-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116155103.10971-1-sashal@kernel.org>
 References: <20191116155103.10971-1-sashal@kernel.org>
@@ -43,35 +43,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kyeongdon Kim <kyeongdon.kim@lge.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 33c4368ee2589c165aebd8d388cbd91e9adb9688 ]
+[ Upstream commit e732f4485a150492b286f3efc06f9b34dd6b9995 ]
 
-This fixes the "'hash' may be used uninitialized in this function"
-
-net/unix/af_unix.c:1041:20: warning: 'hash' may be used uninitialized in this function [-Wmaybe-uninitialized]
-  addr->hash = hash ^ sk->sk_type;
-
-Signed-off-by: Kyeongdon Kim <kyeongdon.kim@lge.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/af_unix.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/sunrpc/auth_gss/gss_krb5_seal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index cecf51a5aec4f..32ae82a5596d9 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -224,6 +224,8 @@ static inline void unix_release_addr(struct unix_address *addr)
+diff --git a/net/sunrpc/auth_gss/gss_krb5_seal.c b/net/sunrpc/auth_gss/gss_krb5_seal.c
+index 1d74d653e6c05..ad0dcb69395d7 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_seal.c
++++ b/net/sunrpc/auth_gss/gss_krb5_seal.c
+@@ -63,6 +63,7 @@
+ #include <linux/sunrpc/gss_krb5.h>
+ #include <linux/random.h>
+ #include <linux/crypto.h>
++#include <linux/atomic.h>
  
- static int unix_mkname(struct sockaddr_un *sunaddr, int len, unsigned int *hashp)
- {
-+	*hashp = 0;
-+
- 	if (len <= sizeof(short) || len > sizeof(*sunaddr))
- 		return -EINVAL;
- 	if (!sunaddr || sunaddr->sun_family != AF_UNIX)
+ #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+ # define RPCDBG_FACILITY        RPCDBG_AUTH
 -- 
 2.20.1
 
