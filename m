@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B62AFF569
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 21:17:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91854FF56B
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 21:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727607AbfKPURM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 15:17:12 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53226 "EHLO
+        id S1727719AbfKPUS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 15:18:56 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:53248 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbfKPURL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 15:17:11 -0500
+        with ESMTP id S1727115AbfKPUS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 15:18:56 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3CA4815172091;
-        Sat, 16 Nov 2019 12:17:11 -0800 (PST)
-Date:   Sat, 16 Nov 2019 12:17:10 -0800 (PST)
-Message-Id: <20191116.121710.1143094650284471912.davem@davemloft.net>
-To:     hslester96@gmail.com
-Cc:     nicolas.ferre@microchip.com, netdev@vger.kernel.org,
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AC79015172247;
+        Sat, 16 Nov 2019 12:18:55 -0800 (PST)
+Date:   Sat, 16 Nov 2019 12:18:55 -0800 (PST)
+Message-Id: <20191116.121855.39087339208287206.davem@davemloft.net>
+To:     andrea.mayer@uniroma2.it
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        dav.lebrun@gmail.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: macb: add missed tasklet_kill
+Subject: Re: [net, 0/2] seg6: fixes to Segment Routing in IPv6
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191116142310.13770-1-hslester96@gmail.com>
-References: <20191116142310.13770-1-hslester96@gmail.com>
+In-Reply-To: <20191116150553.17497-1-andrea.mayer@uniroma2.it>
+References: <20191116150553.17497-1-andrea.mayer@uniroma2.it>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 16 Nov 2019 12:17:11 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 16 Nov 2019 12:18:55 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
-Date: Sat, 16 Nov 2019 22:23:10 +0800
+From: Andrea Mayer <andrea.mayer@uniroma2.it>
+Date: Sat, 16 Nov 2019 16:05:51 +0100
 
-> This driver forgets to kill tasklet in remove.
-> Add the call to fix it.
+> This patchset is divided in 2 patches and it introduces some fixes
+> to Segment Routing in IPv6, which are:
 > 
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> ---
-> Changes in v2:
->   - Rebase on net-next.
+> - in function get_srh() fix the srh pointer after calling
+>   pskb_may_pull();
+> 
+> - fix the skb->transport_header after calling decap_and_validate()
+>   function;
+> 
+> Any comments on the patchset are welcome.
 
-Does this bug exist in mainline?  Then this bug fix should target 'net'.
-
-You must also provide an appropriate Fixes: tag which indicates the commit
-which introduced this bug.
-
-Thank you.
+Series applied and queued up for -stable, thanks.
