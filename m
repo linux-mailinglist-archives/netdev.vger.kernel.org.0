@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F23FEFAD
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:01:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAC4FEFAE
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 17:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731159AbfKPPxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 10:53:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34192 "EHLO mail.kernel.org"
+        id S1731178AbfKPPxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 10:53:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728295AbfKPPxL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Nov 2019 10:53:11 -0500
+        id S1731167AbfKPPxO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Nov 2019 10:53:14 -0500
 Received: from sasha-vm.mshome.net (unknown [50.234.116.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE44920728;
-        Sat, 16 Nov 2019 15:53:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6754621826;
+        Sat, 16 Nov 2019 15:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573919591;
-        bh=huLGE5ggeIgXKytVG3OtvdU6vFNW9/hzsvZZSdna6ZU=;
+        s=default; t=1573919593;
+        bh=luqP4xoGP1K9bacavhN3oKuBE214qMJYyj/o2cLvzy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kUr0huZgIg9x2fhnXNIBApUVAIK51Yzn+c8vOxTTCEZt9msdgCClbTR0Uyzvcuy9Y
-         ltixpAF/zXpYRjpRthoCh+f3lzRv3LsZ4ZyMKDPhTthmBjHvaAGId+JUeFutgPd7iu
-         2lknMJ28TaP/1iCvGUEAIzlqBVIVHqlqMzsFlA3Q=
+        b=XSckj0T4uKpWqGKVTS+sMPYM/6HTHg9srJia4oTBYa8wa9pUR0UvttMF5cap1ykyf
+         iIG4wtD8rVOHYXaGLeHn3WxyIbcN+Dm9N6/Q9F4WJqC7gwvGrphiwkPCUih9IO5/jC
+         VQskYgvD3VbeZvIaDOIy1mzLaLE5rTPMlC7xCYFs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>,
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 80/99] brcmsmac: never log "tid x is not agg'able" by default
-Date:   Sat, 16 Nov 2019 10:50:43 -0500
-Message-Id: <20191116155103.10971-80-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 81/99] wireless: airo: potential buffer overflow in sprintf()
+Date:   Sat, 16 Nov 2019 10:50:44 -0500
+Message-Id: <20191116155103.10971-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191116155103.10971-1-sashal@kernel.org>
 References: <20191116155103.10971-1-sashal@kernel.org>
@@ -46,37 +44,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 96fca788e5788b7ea3b0050eb35a343637e0a465 ]
+[ Upstream commit 3d39e1bb1c88f32820c5f9271f2c8c2fb9a52bac ]
 
-This message greatly spams the log under heavy Tx of frames with BK access
-class which is especially true when operating as AP. It is also not informative
-as the "agg'ablity" of TIDs are set once and never change.
-Fix this by logging only in debug mode.
+It looks like we wanted to print a maximum of BSSList_rid.ssidLen bytes
+of the ssid, but we accidentally use "%*s" (width) instead of "%.*s"
+(precision) so if the ssid doesn't have a NUL terminator this could lead
+to an overflow.
 
-Signed-off-by: Ali MJ Al-Nasrawy <alimjalnasrawy@gmail.com>
+Static analysis.  Not tested.
+
+Fixes: e174961ca1a0 ("net: convert print_mac to %pM")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c    | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/cisco/airo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-index a620b2f6c7c4c..b820e80d4b4c2 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
-@@ -846,8 +846,8 @@ brcms_ops_ampdu_action(struct ieee80211_hw *hw,
- 		status = brcms_c_aggregatable(wl->wlc, tid);
- 		spin_unlock_bh(&wl->lock);
- 		if (!status) {
--			brcms_err(wl->wlc->hw->d11core,
--				  "START: tid %d is not agg\'able\n", tid);
-+			brcms_dbg_ht(wl->wlc->hw->d11core,
-+				     "START: tid %d is not agg\'able\n", tid);
- 			return -EINVAL;
- 		}
- 		ieee80211_start_tx_ba_cb_irqsafe(vif, sta->addr, tid);
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 69b826d229c5b..04939e576ee02 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -5472,7 +5472,7 @@ static int proc_BSSList_open( struct inode *inode, struct file *file ) {
+            we have to add a spin lock... */
+ 	rc = readBSSListRid(ai, doLoseSync, &BSSList_rid);
+ 	while(rc == 0 && BSSList_rid.index != cpu_to_le16(0xffff)) {
+-		ptr += sprintf(ptr, "%pM %*s rssi = %d",
++		ptr += sprintf(ptr, "%pM %.*s rssi = %d",
+ 			       BSSList_rid.bssid,
+ 				(int)BSSList_rid.ssidLen,
+ 				BSSList_rid.ssid,
 -- 
 2.20.1
 
