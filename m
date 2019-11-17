@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4732EFF6AA
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 02:21:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42895FF6B8
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 02:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbfKQBVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Nov 2019 20:21:15 -0500
-Received: from mout-p-102.mailbox.org ([80.241.56.152]:32482 "EHLO
-        mout-p-102.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbfKQBVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 20:21:15 -0500
+        id S1727296AbfKQBVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Nov 2019 20:21:40 -0500
+Received: from mout-p-201.mailbox.org ([80.241.56.171]:21192 "EHLO
+        mout-p-201.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbfKQBVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Nov 2019 20:21:39 -0500
 Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
         (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 47FvRr0QBZzKmTQ;
-        Sun, 17 Nov 2019 02:21:12 +0100 (CET)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 47FvSK0wHqzQl9V;
+        Sun, 17 Nov 2019 02:21:37 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
-        with ESMTP id XIuc593KrUwi; Sun, 17 Nov 2019 02:21:07 +0100 (CET)
+        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
+        with ESMTP id tlUt7q619fFf; Sun, 17 Nov 2019 02:21:33 +0100 (CET)
 From:   Aleksa Sarai <cyphar@cyphar.com>
 To:     Al Viro <viro@zeniv.linux.org.uk>,
         Jeff Layton <jlayton@kernel.org>,
@@ -64,9 +64,9 @@ Cc:     Aleksa Sarai <cyphar@cyphar.com>,
         linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
         linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org,
         sparclinux@vger.kernel.org
-Subject: [PATCH v17 07/13] namei: LOOKUP_NO_XDEV: block mountpoint crossing
-Date:   Sun, 17 Nov 2019 12:17:07 +1100
-Message-Id: <20191117011713.13032-8-cyphar@cyphar.com>
+Subject: [PATCH v17 08/13] namei: LOOKUP_BENEATH: O_BENEATH-like scoped resolution
+Date:   Sun, 17 Nov 2019 12:17:08 +1100
+Message-Id: <20191117011713.13032-9-cyphar@cyphar.com>
 In-Reply-To: <20191117011713.13032-1-cyphar@cyphar.com>
 References: <20191117011713.13032-1-cyphar@cyphar.com>
 MIME-Version: 1.0
@@ -77,35 +77,49 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 /* Background. */
-The need to contain path operations within a mountpoint has been a
-long-standing usecase that userspace has historically implemented
-manually with liberal usage of stat(). find, rsync, tar and
-many other programs implement these semantics -- but it'd be much
-simpler to have a fool-proof way of refusing to open a path if it
-crosses a mountpoint.
+There are many circumstances when userspace wants to resolve a path and
+ensure that it doesn't go outside of a particular root directory during
+resolution. Obvious examples include archive extraction tools, as well as
+other security-conscious userspace programs. FreeBSD spun out O_BENEATH
+from their Capsicum project[1,2], so it also seems reasonable to
+implement similar functionality for Linux.
 
-This is part of a refresh of Al's AT_NO_JUMPS patchset[1] (which was a
-variation on David Drysdale's O_BENEATH patchset[2], which in turn was
-based on the Capsicum project[3]).
+This is part of a refresh of Al's AT_NO_JUMPS patchset[3] (which was a
+variation on David Drysdale's O_BENEATH patchset[4], which in turn was
+based on the Capsicum project[5]).
 
 /* Userspace API. */
-LOOKUP_NO_XDEV will be exposed to userspace through openat2(2).
+LOOKUP_BENEATH will be exposed to userspace through openat2(2).
 
 /* Semantics. */
 Unlike most other LOOKUP flags (most notably LOOKUP_FOLLOW),
-LOOKUP_NO_XDEV applies to all components of the path.
+LOOKUP_BENEATH applies to all components of the path.
 
-With LOOKUP_NO_XDEV, any path component which crosses a mount-point
-during path resolution (including "..") will yield an -EXDEV. Absolute
-paths, absolute symlinks, and magic-links will only yield an -EXDEV if
-the jump involved changing mount-points.
+With LOOKUP_BENEATH, any path component which attempts to "escape" the
+starting point of the filesystem lookup (the dirfd passed to openat)
+will yield -EXDEV. Thus, all absolute paths and symlinks are disallowed.
+
+Due to a security concern brought up by Jann[6], any ".." path
+components are also blocked. This restriction will be lifted in a future
+patch, but requires more work to ensure that permitting ".." is done
+safely.
+
+Magic-link jumps are also blocked, because they can beam the path lookup
+across the starting point. It would be possible to detect and block
+only the "bad" crossings with path_is_under() checks, but it's unclear
+whether it makes sense to permit magic-links at all. However, userspace
+is recommended to pass LOOKUP_NO_MAGICLINKS if they want to ensure that
+magic-link crossing is entirely disabled.
 
 /* Testing. */
-LOOKUP_NO_XDEV is tested as part of the openat2(2) selftests.
+LOOKUP_BENEATH is tested as part of the openat2(2) selftests.
 
-[1]: https://lore.kernel.org/lkml/20170429220414.GT29622@ZenIV.linux.org.uk/
-[2]: https://lore.kernel.org/lkml/1415094884-18349-1-git-send-email-drysdale@google.com/
-[3]: https://lore.kernel.org/lkml/1404124096-21445-1-git-send-email-drysdale@google.com/
+[1]: https://reviews.freebsd.org/D2808
+[2]: https://reviews.freebsd.org/D17547
+[3]: https://lore.kernel.org/lkml/20170429220414.GT29622@ZenIV.linux.org.uk/
+[4]: https://lore.kernel.org/lkml/1415094884-18349-1-git-send-email-drysdale@google.com/
+[5]: https://lore.kernel.org/lkml/1404124096-21445-1-git-send-email-drysdale@google.com/
+[6]: https://lore.kernel.org/lkml/CAG48ez1jzNvxB+bfOBnERFGp=oMM0vHWuLD6EULmne3R6xa53w@mail.gmail.com/
 
 Cc: Christian Brauner <christian.brauner@ubuntu.com>
 Suggested-by: David Drysdale <drysdale@google.com>
@@ -114,105 +128,181 @@ Suggested-by: Andy Lutomirski <luto@kernel.org>
 Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Aleksa Sarai <cyphar@cyphar.com>
 ---
- fs/namei.c            | 31 +++++++++++++++++++++++++++----
- include/linux/namei.h |  1 +
- 2 files changed, 28 insertions(+), 4 deletions(-)
+ fs/namei.c            | 70 +++++++++++++++++++++++++++++++++++++++----
+ include/linux/namei.h |  4 +++
+ 2 files changed, 68 insertions(+), 6 deletions(-)
 
 diff --git a/fs/namei.c b/fs/namei.c
-index 415a897729c8..321c8ad5d6b3 100644
+index 321c8ad5d6b3..3f7bb22c375d 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
-@@ -838,6 +838,11 @@ static inline void path_to_nameidata(const struct path *path,
+@@ -641,6 +641,14 @@ static bool legitimize_links(struct nameidata *nd)
+ 
+ static bool legitimize_root(struct nameidata *nd)
+ {
++	/*
++	 * For scoped-lookups (where nd->root has been zeroed), we need to
++	 * restart the whole lookup from scratch -- because set_root() is wrong
++	 * for these lookups (nd->dfd is the root, not the filesystem root).
++	 */
++	if (!nd->root.mnt && (nd->flags & LOOKUP_IS_SCOPED))
++		return false;
++	/* Nothing to do if nd->root is zero or is managed by the VFS user. */
+ 	if (!nd->root.mnt || (nd->flags & LOOKUP_ROOT))
+ 		return true;
+ 	nd->flags |= LOOKUP_ROOT_GRABBED;
+@@ -776,12 +784,27 @@ static int complete_walk(struct nameidata *nd)
+ 	int status;
+ 
+ 	if (nd->flags & LOOKUP_RCU) {
+-		if (!(nd->flags & LOOKUP_ROOT))
++		/*
++		 * We don't want to zero nd->root for scoped-lookups or
++		 * externally-managed nd->root.
++		 */
++		if (!(nd->flags & (LOOKUP_ROOT | LOOKUP_IS_SCOPED)))
+ 			nd->root.mnt = NULL;
+ 		if (unlikely(unlazy_walk(nd)))
+ 			return -ECHILD;
+ 	}
+ 
++	if (unlikely(nd->flags & LOOKUP_IS_SCOPED)) {
++		/*
++		 * Do a final check to ensure that the path didn't escape. Note
++		 * that this should already be guaranteed by all of the other
++		 * LOOKUP_IS_SCOPED checks (and delaying this check this late
++		 * does open the door to some possible timing-based attacks).
++		 */
++		if (WARN_ON(!path_is_under(&nd->path, &nd->root)))
++			return -EXDEV;
++	}
++
+ 	if (likely(!(nd->flags & LOOKUP_JUMPED)))
+ 		return 0;
+ 
+@@ -802,6 +825,14 @@ static int set_root(struct nameidata *nd)
+ {
+ 	struct fs_struct *fs = current->fs;
+ 
++	/*
++	 * Jumping to the real root in a scoped-lookup is a BUG in namei, but we
++	 * still have to ensure it doesn't happen because it will cause a breakout
++	 * from the dirfd.
++	 */
++	if (WARN_ON(nd->flags & LOOKUP_IS_SCOPED))
++		return -ENOTRECOVERABLE;
++
+ 	if (nd->flags & LOOKUP_RCU) {
+ 		unsigned seq;
+ 
+@@ -838,6 +869,8 @@ static inline void path_to_nameidata(const struct path *path,
  
  static int nd_jump_root(struct nameidata *nd)
  {
-+	if (unlikely(nd->flags & LOOKUP_NO_XDEV)) {
-+		/* Absolute path arguments to path_init() are allowed. */
-+		if (nd->path.mnt != NULL && nd->path.mnt != nd->root.mnt)
-+			return -EXDEV;
-+	}
- 	if (!nd->root.mnt) {
- 		int error = set_root(nd);
- 		if (error)
-@@ -873,6 +878,12 @@ int nd_jump_link(struct path *path)
- 	if (unlikely(nd->flags & LOOKUP_NO_MAGICLINKS))
- 		goto err;
++	if (unlikely(nd->flags & LOOKUP_BENEATH))
++		return -EXDEV;
+ 	if (unlikely(nd->flags & LOOKUP_NO_XDEV)) {
+ 		/* Absolute path arguments to path_init() are allowed. */
+ 		if (nd->path.mnt != NULL && nd->path.mnt != nd->root.mnt)
+@@ -883,6 +916,9 @@ int nd_jump_link(struct path *path)
+ 		if (nd->path.mnt != path->mnt)
+ 			goto err;
+ 	}
++	/* Not currently safe for scoped-lookups. */
++	if (unlikely(nd->flags & LOOKUP_IS_SCOPED))
++		goto err;
  
-+	error = -EXDEV;
-+	if (unlikely(nd->flags & LOOKUP_NO_XDEV)) {
-+		if (nd->path.mnt != path->mnt)
-+			goto err;
-+	}
-+
  	path_put(&nd->path);
  	nd->path = *path;
- 	nd->inode = nd->path.dentry->d_inode;
-@@ -1280,12 +1291,16 @@ static int follow_managed(struct path *path, struct nameidata *nd)
- 		break;
- 	}
+@@ -1379,8 +1415,11 @@ static int follow_dotdot_rcu(struct nameidata *nd)
+ 	struct inode *inode = nd->inode;
  
--	if (need_mntput && path->mnt == mnt)
--		mntput(path->mnt);
-+	if (need_mntput) {
-+		if (path->mnt == mnt)
-+			mntput(path->mnt);
-+		if (unlikely(nd->flags & LOOKUP_NO_XDEV))
-+			ret = -EXDEV;
-+		else
-+			nd->flags |= LOOKUP_JUMPED;
-+	}
- 	if (ret == -EISDIR || !ret)
- 		ret = 1;
--	if (need_mntput)
--		nd->flags |= LOOKUP_JUMPED;
- 	if (unlikely(ret < 0))
- 		path_put_conditional(path, nd);
- 	return ret;
-@@ -1342,6 +1357,8 @@ static bool __follow_mount_rcu(struct nameidata *nd, struct path *path,
- 		mounted = __lookup_mnt(path->mnt, path->dentry);
- 		if (!mounted)
- 			break;
-+		if (unlikely(nd->flags & LOOKUP_NO_XDEV))
-+			return false;
- 		path->mnt = &mounted->mnt;
- 		path->dentry = mounted->mnt.mnt_root;
- 		nd->flags |= LOOKUP_JUMPED;
-@@ -1388,6 +1405,8 @@ static int follow_dotdot_rcu(struct nameidata *nd)
- 				return -ECHILD;
- 			if (&mparent->mnt == nd->path.mnt)
- 				break;
-+			if (unlikely(nd->flags & LOOKUP_NO_XDEV))
+ 	while (1) {
+-		if (path_equal(&nd->path, &nd->root))
++		if (path_equal(&nd->path, &nd->root)) {
++			if (unlikely(nd->flags & LOOKUP_BENEATH))
 +				return -ECHILD;
- 			/* we know that mountpoint was pinned */
- 			nd->path.dentry = mountpoint;
- 			nd->path.mnt = &mparent->mnt;
-@@ -1402,6 +1421,8 @@ static int follow_dotdot_rcu(struct nameidata *nd)
- 			return -ECHILD;
- 		if (!mounted)
  			break;
-+		if (unlikely(nd->flags & LOOKUP_NO_XDEV))
-+			return -ECHILD;
- 		nd->path.mnt = &mounted->mnt;
- 		nd->path.dentry = mounted->mnt.mnt_root;
- 		inode = nd->path.dentry->d_inode;
-@@ -1500,6 +1521,8 @@ static int follow_dotdot(struct nameidata *nd)
- 		}
- 		if (!follow_up(&nd->path))
++		}
+ 		if (nd->path.dentry != nd->path.mnt->mnt_root) {
+ 			struct dentry *old = nd->path.dentry;
+ 			struct dentry *parent = old->d_parent;
+@@ -1510,9 +1549,12 @@ static int path_parent_directory(struct path *path)
+ 
+ static int follow_dotdot(struct nameidata *nd)
+ {
+-	while(1) {
+-		if (path_equal(&nd->path, &nd->root))
++	while (1) {
++		if (path_equal(&nd->path, &nd->root)) {
++			if (unlikely(nd->flags & LOOKUP_BENEATH))
++				return -EXDEV;
  			break;
-+		if (unlikely(nd->flags & LOOKUP_NO_XDEV))
++		}
+ 		if (nd->path.dentry != nd->path.mnt->mnt_root) {
+ 			int ret = path_parent_directory(&nd->path);
+ 			if (ret)
+@@ -1739,6 +1781,13 @@ static inline int handle_dots(struct nameidata *nd, int type)
+ 	if (type == LAST_DOTDOT) {
+ 		int error = 0;
+ 
++		/*
++		 * Scoped-lookup flags resolving ".." is not currently safe --
++		 * races can cause our parent to have moved outside of the root
++		 * and us to skip over it.
++		 */
++		if (unlikely(nd->flags & LOOKUP_IS_SCOPED))
 +			return -EXDEV;
+ 		if (!nd->root.mnt) {
+ 			error = set_root(nd);
+ 			if (error)
+@@ -2261,7 +2310,6 @@ static const char *path_init(struct nameidata *nd, unsigned flags)
+ 			get_fs_pwd(current->fs, &nd->path);
+ 			nd->inode = nd->path.dentry->d_inode;
+ 		}
+-		return s;
+ 	} else {
+ 		/* Caller must check execute permissions on the starting path component */
+ 		struct fd f = fdget_raw(nd->dfd);
+@@ -2286,8 +2334,18 @@ static const char *path_init(struct nameidata *nd, unsigned flags)
+ 			nd->inode = nd->path.dentry->d_inode;
+ 		}
+ 		fdput(f);
+-		return s;
  	}
- 	follow_mount(&nd->path);
- 	nd->inode = nd->path.dentry->d_inode;
++	/* For scoped-lookups we need to set the root to the dirfd as well. */
++	if (flags & LOOKUP_IS_SCOPED) {
++		nd->root = nd->path;
++		if (flags & LOOKUP_RCU) {
++			nd->root_seq = nd->seq;
++		} else {
++			path_get(&nd->root);
++			nd->flags |= LOOKUP_ROOT_GRABBED;
++		}
++	}
++	return s;
+ }
+ 
+ static const char *trailing_symlink(struct nameidata *nd)
 diff --git a/include/linux/namei.h b/include/linux/namei.h
-index 1573b8493d98..25ee88c4acb1 100644
+index 25ee88c4acb1..93dad378f1e8 100644
 --- a/include/linux/namei.h
 +++ b/include/linux/namei.h
-@@ -42,6 +42,7 @@ enum {LAST_NORM, LAST_ROOT, LAST_DOT, LAST_DOTDOT, LAST_BIND};
- /* Scoping flags for lookup. */
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_NAMEI_H
+ #define _LINUX_NAMEI_H
+ 
++#include <linux/fs.h>
+ #include <linux/kernel.h>
+ #include <linux/path.h>
+ #include <linux/fcntl.h>
+@@ -43,6 +44,9 @@ enum {LAST_NORM, LAST_ROOT, LAST_DOT, LAST_DOTDOT, LAST_BIND};
  #define LOOKUP_NO_SYMLINKS	0x010000 /* No symlink crossing. */
  #define LOOKUP_NO_MAGICLINKS	0x020000 /* No nd_jump_link() crossing. */
-+#define LOOKUP_NO_XDEV		0x040000 /* No mountpoint crossing. */
+ #define LOOKUP_NO_XDEV		0x040000 /* No mountpoint crossing. */
++#define LOOKUP_BENEATH		0x080000 /* No escaping from starting point. */
++/* LOOKUP_* flags which do scope-related checks based on the dirfd. */
++#define LOOKUP_IS_SCOPED LOOKUP_BENEATH
  
  extern int path_pts(struct path *path);
  
