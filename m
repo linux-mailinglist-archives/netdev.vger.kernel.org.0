@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E533FFAEA
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 18:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCDCFFAEE
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 18:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfKQR2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 12:28:18 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12906 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726085AbfKQR2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 12:28:17 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAHHS8eo023141
-        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:15 -0800
+        id S1726463AbfKQR2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 12:28:23 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2968 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726334AbfKQR2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 12:28:20 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAHHNjJC004308
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:17 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=lOYiIw2L00Jmt7jzpWQlfvJwmchRN5NMUOO5xe6Lo8M=;
- b=Zu4egPzx0snt9aYkiqrMIkVgWIvM1HScjlaNhUR2xCEipTD1iciihwhdbgqRYk5zBmbc
- bEuccJopnrhZlInOF+mPzOIFgJmOIB/v82rYQ1DDREeY8vtIEJmQ6CjLMhvrkFgOqlGA
- /BdRJCpSznEwmcEDmgX3ya41l2BBLZY3Dzw= 
+ content-type; s=facebook; bh=110FubEvOVE+nW9NAeKepaAYYd7LPl0b4QVFM00cuCo=;
+ b=FbNGgMR6b2+LoA6z6C4YPIYF43p1WMBkBEX2laVSRWsj17n2q1zsG2QAzhMd/eGMR3qV
+ 02kStzxZ7BE6rxibcOwlNsR26zblj6/9CVispqDe5zCMVHNrYEBZahlpJGayNFcWiGuT
+ taXkE0c+TEe88F7jOZnvdth2MTHuA2IaorE= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wb1pvj4tt-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2waftjus2k-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:15 -0800
-Received: from 2401:db00:2120:81dc:face:0:23:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:17 -0800
+Received: from 2401:db00:30:6012:face:0:17:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Sun, 17 Nov 2019 09:28:14 -0800
+ Sun, 17 Nov 2019 09:28:15 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 758042EC0551; Sun, 17 Nov 2019 09:28:12 -0800 (PST)
+        id A88772EC0551; Sun, 17 Nov 2019 09:28:14 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
+        Andrii Nakryiko <andriin@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v6 bpf-next 2/5] bpf: convert bpf_prog refcnt to atomic64_t
-Date:   Sun, 17 Nov 2019 09:28:03 -0800
-Message-ID: <20191117172806.2195367-3-andriin@fb.com>
+Subject: [PATCH v6 bpf-next 3/5] bpf: add mmap() support for BPF_MAP_TYPE_ARRAY
+Date:   Sun, 17 Nov 2019 09:28:04 -0800
+Message-ID: <20191117172806.2195367-4-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191117172806.2195367-1-andriin@fb.com>
 References: <20191117172806.2195367-1-andriin@fb.com>
@@ -49,400 +51,469 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-17_03:2019-11-15,2019-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- malwarescore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
- suspectscore=25 impostorscore=0 bulkscore=0 spamscore=0 mlxscore=0
- priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1911170167
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 adultscore=0 phishscore=0 bulkscore=0 priorityscore=1501
+ mlxlogscore=999 clxscore=1015 mlxscore=0 spamscore=0 impostorscore=0
+ suspectscore=25 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911170167
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similarly to bpf_map's refcnt/usercnt, convert bpf_prog's refcnt to atomic64
-and remove artificial 32k limit. This allows to make bpf_prog's refcounting
-non-failing, simplifying logic of users of bpf_prog_add/bpf_prog_inc.
+Add ability to memory-map contents of BPF array map. This is extremely useful
+for working with BPF global data from userspace programs. It allows to avoid
+typical bpf_map_{lookup,update}_elem operations, improving both performance
+and usability.
 
-Validated compilation by running allyesconfig kernel build.
+There had to be special considerations for map freezing, to avoid having
+writable memory view into a frozen map. To solve this issue, map freezing and
+mmap-ing is happening under mutex now:
+  - if map is already frozen, no writable mapping is allowed;
+  - if map has writable memory mappings active (accounted in map->writecnt),
+    map freezing will keep failing with -EBUSY;
+  - once number of writable memory mappings drops to zero, map freezing can be
+    performed again.
 
-Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Only non-per-CPU plain arrays are supported right now. Maps with spinlocks
+can't be memory mapped either.
+
+For BPF_F_MMAPABLE array, memory allocation has to be done through vmalloc()
+to be mmap()'able. We also need to make sure that array data memory is
+page-sized and page-aligned, so we over-allocate memory in such a way that
+struct bpf_array is at the end of a single page of memory with array->value
+being aligned with the start of the second page. On deallocation we need to
+accomodate this memory arrangement to free vmalloc()'ed memory correctly.
+
+One important consideration regarding how memory-mapping subsystem functions.
+Memory-mapping subsystem provides few optional callbacks, among them open()
+and close().  close() is called for each memory region that is unmapped, so
+that users can decrease their reference counters and free up resources, if
+necessary. open() is *almost* symmetrical: it's called for each memory region
+that is being mapped, **except** the very first one. So bpf_map_mmap does
+initial refcnt bump, while open() will do any extra ones after that. Thus
+number of close() calls is equal to number of open() calls plus one more.
+
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Rik van Riel <riel@surriel.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  9 ++----
- .../net/ethernet/cavium/thunder/nicvf_main.c  |  9 ++----
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  7 ++---
- .../net/ethernet/mellanox/mlx4/en_netdev.c    | 24 ++++-----------
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 18 ++++-------
- drivers/net/ethernet/qlogic/qede/qede_main.c  |  8 ++---
- drivers/net/virtio_net.c                      |  7 ++---
- include/linux/bpf.h                           | 13 ++++----
- kernel/bpf/inode.c                            |  5 ++--
- kernel/bpf/syscall.c                          | 30 ++++++-------------
- kernel/events/core.c                          |  7 ++---
- 11 files changed, 40 insertions(+), 97 deletions(-)
+ include/linux/bpf.h            | 11 ++--
+ include/linux/vmalloc.h        |  1 +
+ include/uapi/linux/bpf.h       |  3 ++
+ kernel/bpf/arraymap.c          | 58 +++++++++++++++++---
+ kernel/bpf/syscall.c           | 99 ++++++++++++++++++++++++++++++++--
+ mm/vmalloc.c                   | 20 +++++++
+ tools/include/uapi/linux/bpf.h |  3 ++
+ 7 files changed, 183 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index c07172429c70..9da4fbee3cf7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3171,13 +3171,8 @@ static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
- 	bnxt_init_rxbd_pages(ring, type);
- 
- 	if (BNXT_RX_PAGE_MODE(bp) && bp->xdp_prog) {
--		rxr->xdp_prog = bpf_prog_add(bp->xdp_prog, 1);
--		if (IS_ERR(rxr->xdp_prog)) {
--			int rc = PTR_ERR(rxr->xdp_prog);
--
--			rxr->xdp_prog = NULL;
--			return rc;
--		}
-+		bpf_prog_add(bp->xdp_prog, 1);
-+		rxr->xdp_prog = bp->xdp_prog;
- 	}
- 	prod = rxr->rx_prod;
- 	for (i = 0; i < bp->rx_ring_size; i++) {
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index 40a44dcb3d9b..f28409279ea4 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -1876,13 +1876,8 @@ static int nicvf_xdp_setup(struct nicvf *nic, struct bpf_prog *prog)
- 
- 	if (nic->xdp_prog) {
- 		/* Attach BPF program */
--		nic->xdp_prog = bpf_prog_add(nic->xdp_prog, nic->rx_queues - 1);
--		if (!IS_ERR(nic->xdp_prog)) {
--			bpf_attached = true;
--		} else {
--			ret = PTR_ERR(nic->xdp_prog);
--			nic->xdp_prog = NULL;
--		}
-+		bpf_prog_add(nic->xdp_prog, nic->rx_queues - 1);
-+		bpf_attached = true;
- 	}
- 
- 	/* Calculate Tx queues needed for XDP and network stack */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index c26c0a7cbb6b..acc56606d3a5 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1807,11 +1807,8 @@ static int setup_xdp(struct net_device *dev, struct bpf_prog *prog)
- 	if (prog && !xdp_mtu_valid(priv, dev->mtu))
- 		return -EINVAL;
- 
--	if (prog) {
--		prog = bpf_prog_add(prog, priv->num_channels);
--		if (IS_ERR(prog))
--			return PTR_ERR(prog);
--	}
-+	if (prog)
-+		bpf_prog_add(prog, priv->num_channels);
- 
- 	up = netif_running(dev);
- 	need_update = (!!priv->xdp_prog != !!prog);
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 40ec5acf79c0..d4697beeacc2 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -2286,11 +2286,7 @@ int mlx4_en_try_alloc_resources(struct mlx4_en_priv *priv,
- 		lockdep_is_held(&priv->mdev->state_lock));
- 
- 	if (xdp_prog && carry_xdp_prog) {
--		xdp_prog = bpf_prog_add(xdp_prog, tmp->rx_ring_num);
--		if (IS_ERR(xdp_prog)) {
--			mlx4_en_free_resources(tmp);
--			return PTR_ERR(xdp_prog);
--		}
-+		bpf_prog_add(xdp_prog, tmp->rx_ring_num);
- 		for (i = 0; i < tmp->rx_ring_num; i++)
- 			rcu_assign_pointer(tmp->rx_ring[i]->xdp_prog,
- 					   xdp_prog);
-@@ -2782,11 +2778,9 @@ static int mlx4_xdp_set(struct net_device *dev, struct bpf_prog *prog)
- 	 * program for a new one.
- 	 */
- 	if (priv->tx_ring_num[TX_XDP] == xdp_ring_num) {
--		if (prog) {
--			prog = bpf_prog_add(prog, priv->rx_ring_num - 1);
--			if (IS_ERR(prog))
--				return PTR_ERR(prog);
--		}
-+		if (prog)
-+			bpf_prog_add(prog, priv->rx_ring_num - 1);
-+
- 		mutex_lock(&mdev->state_lock);
- 		for (i = 0; i < priv->rx_ring_num; i++) {
- 			old_prog = rcu_dereference_protected(
-@@ -2807,13 +2801,8 @@ static int mlx4_xdp_set(struct net_device *dev, struct bpf_prog *prog)
- 	if (!tmp)
- 		return -ENOMEM;
- 
--	if (prog) {
--		prog = bpf_prog_add(prog, priv->rx_ring_num - 1);
--		if (IS_ERR(prog)) {
--			err = PTR_ERR(prog);
--			goto out;
--		}
--	}
-+	if (prog)
-+		bpf_prog_add(prog, priv->rx_ring_num - 1);
- 
- 	mutex_lock(&mdev->state_lock);
- 	memcpy(&new_prof, priv->prof, sizeof(struct mlx4_en_port_profile));
-@@ -2862,7 +2851,6 @@ static int mlx4_xdp_set(struct net_device *dev, struct bpf_prog *prog)
- 
- unlock_out:
- 	mutex_unlock(&mdev->state_lock);
--out:
- 	kfree(tmp);
- 	return err;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 772bfdbdeb9c..1d4a66fb466a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -408,12 +408,9 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
- 		rq->stats = &c->priv->channel_stats[c->ix].rq;
- 	INIT_WORK(&rq->recover_work, mlx5e_rq_err_cqe_work);
- 
--	rq->xdp_prog = params->xdp_prog ? bpf_prog_inc(params->xdp_prog) : NULL;
--	if (IS_ERR(rq->xdp_prog)) {
--		err = PTR_ERR(rq->xdp_prog);
--		rq->xdp_prog = NULL;
--		goto err_rq_wq_destroy;
--	}
-+	if (params->xdp_prog)
-+		bpf_prog_inc(params->xdp_prog);
-+	rq->xdp_prog = params->xdp_prog;
- 
- 	rq_xdp_ix = rq->ix;
- 	if (xsk)
-@@ -4406,16 +4403,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- 	/* no need for full reset when exchanging programs */
- 	reset = (!priv->channels.params.xdp_prog || !prog);
- 
--	if (was_opened && !reset) {
-+	if (was_opened && !reset)
- 		/* num_channels is invariant here, so we can take the
- 		 * batched reference right upfront.
- 		 */
--		prog = bpf_prog_add(prog, priv->channels.num);
--		if (IS_ERR(prog)) {
--			err = PTR_ERR(prog);
--			goto unlock;
--		}
--	}
-+		bpf_prog_add(prog, priv->channels.num);
- 
- 	if (was_opened && reset) {
- 		struct mlx5e_channels new_channels = {};
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 8d1c208f778f..1e26964fe4e9 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -2107,12 +2107,8 @@ static int qede_start_queues(struct qede_dev *edev, bool clear_stats)
- 			if (rc)
- 				goto out;
- 
--			fp->rxq->xdp_prog = bpf_prog_add(edev->xdp_prog, 1);
--			if (IS_ERR(fp->rxq->xdp_prog)) {
--				rc = PTR_ERR(fp->rxq->xdp_prog);
--				fp->rxq->xdp_prog = NULL;
--				goto out;
--			}
-+			bpf_prog_add(edev->xdp_prog, 1);
-+			fp->rxq->xdp_prog = edev->xdp_prog;
- 		}
- 
- 		if (fp->type & QEDE_FASTPATH_TX) {
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 5a635f028bdc..4d7d5434cc5d 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2445,11 +2445,8 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	if (!prog && !old_prog)
- 		return 0;
- 
--	if (prog) {
--		prog = bpf_prog_add(prog, vi->max_queue_pairs - 1);
--		if (IS_ERR(prog))
--			return PTR_ERR(prog);
--	}
-+	if (prog)
-+		bpf_prog_add(prog, vi->max_queue_pairs - 1);
- 
- 	/* Make sure NAPI is not using any XDP TX queues for RX. */
- 	if (netif_running(dev)) {
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 34a34445c009..fb606dc61a3a 100644
+index fb606dc61a3a..e913dd5946ae 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -485,7 +485,7 @@ struct bpf_func_info_aux {
+@@ -12,6 +12,7 @@
+ #include <linux/err.h>
+ #include <linux/rbtree_latch.h>
+ #include <linux/numa.h>
++#include <linux/mm_types.h>
+ #include <linux/wait.h>
+ #include <linux/u64_stats_sync.h>
+ #include <linux/refcount.h>
+@@ -68,6 +69,7 @@ struct bpf_map_ops {
+ 				     u64 *imm, u32 off);
+ 	int (*map_direct_value_meta)(const struct bpf_map *map,
+ 				     u64 imm, u32 *off);
++	int (*map_mmap)(struct bpf_map *map, struct vm_area_struct *vma);
  };
  
- struct bpf_prog_aux {
--	atomic_t refcnt;
-+	atomic64_t refcnt;
- 	u32 used_map_cnt;
- 	u32 max_ctx_offset;
- 	u32 max_pkt_offset;
-@@ -770,9 +770,9 @@ extern const struct bpf_verifier_ops xdp_analyzer_ops;
- struct bpf_prog *bpf_prog_get(u32 ufd);
- struct bpf_prog *bpf_prog_get_type_dev(u32 ufd, enum bpf_prog_type type,
- 				       bool attach_drv);
--struct bpf_prog * __must_check bpf_prog_add(struct bpf_prog *prog, int i);
-+void bpf_prog_add(struct bpf_prog *prog, int i);
- void bpf_prog_sub(struct bpf_prog *prog, int i);
--struct bpf_prog * __must_check bpf_prog_inc(struct bpf_prog *prog);
-+void bpf_prog_inc(struct bpf_prog *prog);
- struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *prog);
- void bpf_prog_put(struct bpf_prog *prog);
- int __bpf_prog_charge(struct user_struct *user, u32 pages);
-@@ -912,10 +912,8 @@ static inline struct bpf_prog *bpf_prog_get_type_dev(u32 ufd,
- 	return ERR_PTR(-EOPNOTSUPP);
- }
+ struct bpf_map_memory {
+@@ -96,9 +98,10 @@ struct bpf_map {
+ 	u32 btf_value_type_id;
+ 	struct btf *btf;
+ 	struct bpf_map_memory memory;
++	char name[BPF_OBJ_NAME_LEN];
+ 	bool unpriv_array;
+-	bool frozen; /* write-once */
+-	/* 48 bytes hole */
++	bool frozen; /* write-once; write-protected by freeze_mutex */
++	/* 22 bytes hole */
  
--static inline struct bpf_prog * __must_check bpf_prog_add(struct bpf_prog *prog,
--							  int i)
-+static inline void bpf_prog_add(struct bpf_prog *prog, int i)
+ 	/* The 3rd and 4th cacheline with misc members to avoid false sharing
+ 	 * particularly with refcounting.
+@@ -106,7 +109,8 @@ struct bpf_map {
+ 	atomic64_t refcnt ____cacheline_aligned;
+ 	atomic64_t usercnt;
+ 	struct work_struct work;
+-	char name[BPF_OBJ_NAME_LEN];
++	struct mutex freeze_mutex;
++	u64 writecnt; /* writable mmap cnt; protected by freeze_mutex */
+ };
+ 
+ static inline bool map_value_has_spin_lock(const struct bpf_map *map)
+@@ -795,6 +799,7 @@ void bpf_map_charge_finish(struct bpf_map_memory *mem);
+ void bpf_map_charge_move(struct bpf_map_memory *dst,
+ 			 struct bpf_map_memory *src);
+ void *bpf_map_area_alloc(size_t size, int numa_node);
++void *bpf_map_area_mmapable_alloc(size_t size, int numa_node);
+ void bpf_map_area_free(void *base);
+ void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr);
+ 
+diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
+index 4e7809408073..b4c58a191eb1 100644
+--- a/include/linux/vmalloc.h
++++ b/include/linux/vmalloc.h
+@@ -93,6 +93,7 @@ extern void *vzalloc(unsigned long size);
+ extern void *vmalloc_user(unsigned long size);
+ extern void *vmalloc_node(unsigned long size, int node);
+ extern void *vzalloc_node(unsigned long size, int node);
++extern void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags);
+ extern void *vmalloc_exec(unsigned long size);
+ extern void *vmalloc_32(unsigned long size);
+ extern void *vmalloc_32_user(unsigned long size);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4842a134b202..dbbcf0b02970 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -348,6 +348,9 @@ enum bpf_attach_type {
+ /* Clone map from listener for newly accepted socket */
+ #define BPF_F_CLONE		(1U << 9)
+ 
++/* Enable memory-mapping BPF map */
++#define BPF_F_MMAPABLE		(1U << 10)
++
+ /* flags for BPF_PROG_QUERY */
+ #define BPF_F_QUERY_EFFECTIVE	(1U << 0)
+ 
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index 1c65ce0098a9..a42097c36b0c 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -14,7 +14,7 @@
+ #include "map_in_map.h"
+ 
+ #define ARRAY_CREATE_FLAG_MASK \
+-	(BPF_F_NUMA_NODE | BPF_F_ACCESS_MASK)
++	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK)
+ 
+ static void bpf_array_free_percpu(struct bpf_array *array)
  {
--	return ERR_PTR(-EOPNOTSUPP);
- }
+@@ -59,6 +59,10 @@ int array_map_alloc_check(union bpf_attr *attr)
+ 	    (percpu && numa_node != NUMA_NO_NODE))
+ 		return -EINVAL;
  
- static inline void bpf_prog_sub(struct bpf_prog *prog, int i)
-@@ -926,9 +924,8 @@ static inline void bpf_prog_put(struct bpf_prog *prog)
- {
- }
- 
--static inline struct bpf_prog * __must_check bpf_prog_inc(struct bpf_prog *prog)
-+static inline void bpf_prog_inc(struct bpf_prog *prog)
- {
--	return ERR_PTR(-EOPNOTSUPP);
- }
- 
- static inline struct bpf_prog *__must_check
-diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-index 2f17f24258dc..ecf42bec38c0 100644
---- a/kernel/bpf/inode.c
-+++ b/kernel/bpf/inode.c
-@@ -31,7 +31,7 @@ static void *bpf_any_get(void *raw, enum bpf_type type)
- {
- 	switch (type) {
- 	case BPF_TYPE_PROG:
--		raw = bpf_prog_inc(raw);
-+		bpf_prog_inc(raw);
- 		break;
- 	case BPF_TYPE_MAP:
- 		bpf_map_inc_with_uref(raw);
-@@ -534,7 +534,8 @@ static struct bpf_prog *__get_prog_inode(struct inode *inode, enum bpf_prog_type
- 	if (!bpf_prog_get_ok(prog, &type, false))
- 		return ERR_PTR(-EINVAL);
- 
--	return bpf_prog_inc(prog);
-+	bpf_prog_inc(prog);
-+	return prog;
- }
- 
- struct bpf_prog *bpf_prog_get_type_path(const char *name, enum bpf_prog_type type)
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 20030751b7a2..52fe4bacb330 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1339,7 +1339,7 @@ static void __bpf_prog_put_noref(struct bpf_prog *prog, bool deferred)
- 
- static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
- {
--	if (atomic_dec_and_test(&prog->aux->refcnt)) {
-+	if (atomic64_dec_and_test(&prog->aux->refcnt)) {
- 		perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
- 		/* bpf_prog_free_id() must be called first */
- 		bpf_prog_free_id(prog, do_idr_lock);
-@@ -1445,16 +1445,9 @@ static struct bpf_prog *____bpf_prog_get(struct fd f)
- 	return f.file->private_data;
- }
- 
--/* prog's refcnt limit */
--#define BPF_MAX_REFCNT 32768
--
--struct bpf_prog *bpf_prog_add(struct bpf_prog *prog, int i)
-+void bpf_prog_add(struct bpf_prog *prog, int i)
- {
--	if (atomic_add_return(i, &prog->aux->refcnt) > BPF_MAX_REFCNT) {
--		atomic_sub(i, &prog->aux->refcnt);
--		return ERR_PTR(-EBUSY);
--	}
--	return prog;
-+	atomic64_add(i, &prog->aux->refcnt);
- }
- EXPORT_SYMBOL_GPL(bpf_prog_add);
- 
-@@ -1465,13 +1458,13 @@ void bpf_prog_sub(struct bpf_prog *prog, int i)
- 	 * path holds a reference to the program, thus atomic_sub() can
- 	 * be safely used in such cases!
- 	 */
--	WARN_ON(atomic_sub_return(i, &prog->aux->refcnt) == 0);
-+	WARN_ON(atomic64_sub_return(i, &prog->aux->refcnt) == 0);
- }
- EXPORT_SYMBOL_GPL(bpf_prog_sub);
- 
--struct bpf_prog *bpf_prog_inc(struct bpf_prog *prog)
-+void bpf_prog_inc(struct bpf_prog *prog)
- {
--	return bpf_prog_add(prog, 1);
-+	atomic64_inc(&prog->aux->refcnt);
- }
- EXPORT_SYMBOL_GPL(bpf_prog_inc);
- 
-@@ -1480,12 +1473,7 @@ struct bpf_prog *bpf_prog_inc_not_zero(struct bpf_prog *prog)
- {
- 	int refold;
- 
--	refold = atomic_fetch_add_unless(&prog->aux->refcnt, 1, 0);
--
--	if (refold >= BPF_MAX_REFCNT) {
--		__bpf_prog_put(prog, false);
--		return ERR_PTR(-EBUSY);
--	}
-+	refold = atomic64_fetch_add_unless(&prog->aux->refcnt, 1, 0);
- 
- 	if (!refold)
- 		return ERR_PTR(-ENOENT);
-@@ -1523,7 +1511,7 @@ static struct bpf_prog *__bpf_prog_get(u32 ufd, enum bpf_prog_type *attach_type,
- 		goto out;
++	if (attr->map_type != BPF_MAP_TYPE_ARRAY &&
++	    attr->map_flags & BPF_F_MMAPABLE)
++		return -EINVAL;
++
+ 	if (attr->value_size > KMALLOC_MAX_SIZE)
+ 		/* if value_size is bigger, the user space won't be able to
+ 		 * access the elements.
+@@ -102,10 +106,19 @@ static struct bpf_map *array_map_alloc(union bpf_attr *attr)
  	}
  
--	prog = bpf_prog_inc(prog);
-+	bpf_prog_inc(prog);
- out:
+ 	array_size = sizeof(*array);
+-	if (percpu)
++	if (percpu) {
+ 		array_size += (u64) max_entries * sizeof(void *);
+-	else
+-		array_size += (u64) max_entries * elem_size;
++	} else {
++		/* rely on vmalloc() to return page-aligned memory and
++		 * ensure array->value is exactly page-aligned
++		 */
++		if (attr->map_flags & BPF_F_MMAPABLE) {
++			array_size = PAGE_ALIGN(array_size);
++			array_size += PAGE_ALIGN((u64) max_entries * elem_size);
++		} else {
++			array_size += (u64) max_entries * elem_size;
++		}
++	}
+ 
+ 	/* make sure there is no u32 overflow later in round_up() */
+ 	cost = array_size;
+@@ -117,7 +130,20 @@ static struct bpf_map *array_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(ret);
+ 
+ 	/* allocate all map elements and zero-initialize them */
+-	array = bpf_map_area_alloc(array_size, numa_node);
++	if (attr->map_flags & BPF_F_MMAPABLE) {
++		void *data;
++
++		/* kmalloc'ed memory can't be mmap'ed, use explicit vmalloc */
++		data = bpf_map_area_mmapable_alloc(array_size, numa_node);
++		if (!data) {
++			bpf_map_charge_finish(&mem);
++			return ERR_PTR(-ENOMEM);
++		}
++		array = data + PAGE_ALIGN(sizeof(struct bpf_array))
++			- offsetof(struct bpf_array, value);
++	} else {
++		array = bpf_map_area_alloc(array_size, numa_node);
++	}
+ 	if (!array) {
+ 		bpf_map_charge_finish(&mem);
+ 		return ERR_PTR(-ENOMEM);
+@@ -350,6 +376,11 @@ static int array_map_delete_elem(struct bpf_map *map, void *key)
+ 	return -EINVAL;
+ }
+ 
++static void *array_map_vmalloc_addr(struct bpf_array *array)
++{
++	return (void *)round_down((unsigned long)array, PAGE_SIZE);
++}
++
+ /* Called when map->refcnt goes to zero, either from workqueue or from syscall */
+ static void array_map_free(struct bpf_map *map)
+ {
+@@ -365,7 +396,10 @@ static void array_map_free(struct bpf_map *map)
+ 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
+ 		bpf_array_free_percpu(array);
+ 
+-	bpf_map_area_free(array);
++	if (array->map.map_flags & BPF_F_MMAPABLE)
++		bpf_map_area_free(array_map_vmalloc_addr(array));
++	else
++		bpf_map_area_free(array);
+ }
+ 
+ static void array_map_seq_show_elem(struct bpf_map *map, void *key,
+@@ -444,6 +478,17 @@ static int array_map_check_btf(const struct bpf_map *map,
+ 	return 0;
+ }
+ 
++int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
++{
++	struct bpf_array *array = container_of(map, struct bpf_array, map);
++	pgoff_t pgoff = PAGE_ALIGN(sizeof(*array)) >> PAGE_SHIFT;
++
++	if (!(map->map_flags & BPF_F_MMAPABLE))
++		return -EINVAL;
++
++	return remap_vmalloc_range(vma, array_map_vmalloc_addr(array), pgoff);
++}
++
+ const struct bpf_map_ops array_map_ops = {
+ 	.map_alloc_check = array_map_alloc_check,
+ 	.map_alloc = array_map_alloc,
+@@ -455,6 +500,7 @@ const struct bpf_map_ops array_map_ops = {
+ 	.map_gen_lookup = array_map_gen_lookup,
+ 	.map_direct_value_addr = array_map_direct_value_addr,
+ 	.map_direct_value_meta = array_map_direct_value_meta,
++	.map_mmap = array_map_mmap,
+ 	.map_seq_show_elem = array_map_seq_show_elem,
+ 	.map_check_btf = array_map_check_btf,
+ };
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 52fe4bacb330..bac3becf9f90 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -127,7 +127,7 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+ 	return map;
+ }
+ 
+-void *bpf_map_area_alloc(size_t size, int numa_node)
++static void *__bpf_map_area_alloc(size_t size, int numa_node, bool mmapable)
+ {
+ 	/* We really just want to fail instead of triggering OOM killer
+ 	 * under memory pressure, therefore we set __GFP_NORETRY to kmalloc,
+@@ -142,18 +142,33 @@ void *bpf_map_area_alloc(size_t size, int numa_node)
+ 	const gfp_t flags = __GFP_NOWARN | __GFP_ZERO;
+ 	void *area;
+ 
+-	if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
++	/* kmalloc()'ed memory can't be mmap()'ed */
++	if (!mmapable && size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
+ 		area = kmalloc_node(size, GFP_USER | __GFP_NORETRY | flags,
+ 				    numa_node);
+ 		if (area != NULL)
+ 			return area;
+ 	}
+-
++	if (mmapable) {
++		BUG_ON(!PAGE_ALIGNED(size));
++		return vmalloc_user_node_flags(size, numa_node, GFP_KERNEL |
++					       __GFP_RETRY_MAYFAIL | flags);
++	}
+ 	return __vmalloc_node_flags_caller(size, numa_node,
+ 					   GFP_KERNEL | __GFP_RETRY_MAYFAIL |
+ 					   flags, __builtin_return_address(0));
+ }
+ 
++void *bpf_map_area_alloc(size_t size, int numa_node)
++{
++	return __bpf_map_area_alloc(size, numa_node, false);
++}
++
++void *bpf_map_area_mmapable_alloc(size_t size, int numa_node)
++{
++	return __bpf_map_area_alloc(size, numa_node, true);
++}
++
+ void bpf_map_area_free(void *area)
+ {
+ 	kvfree(area);
+@@ -425,6 +440,74 @@ static ssize_t bpf_dummy_write(struct file *filp, const char __user *buf,
+ 	return -EINVAL;
+ }
+ 
++/* called for any extra memory-mapped regions (except initial) */
++static void bpf_map_mmap_open(struct vm_area_struct *vma)
++{
++	struct bpf_map *map = vma->vm_file->private_data;
++
++	bpf_map_inc_with_uref(map);
++
++	if (vma->vm_flags & VM_WRITE) {
++		mutex_lock(&map->freeze_mutex);
++		map->writecnt++;
++		mutex_unlock(&map->freeze_mutex);
++	}
++}
++
++/* called for all unmapped memory region (including initial) */
++static void bpf_map_mmap_close(struct vm_area_struct *vma)
++{
++	struct bpf_map *map = vma->vm_file->private_data;
++
++	if (vma->vm_flags & VM_WRITE) {
++		mutex_lock(&map->freeze_mutex);
++		map->writecnt--;
++		mutex_unlock(&map->freeze_mutex);
++	}
++
++	bpf_map_put_with_uref(map);
++}
++
++static const struct vm_operations_struct bpf_map_default_vmops = {
++	.open		= bpf_map_mmap_open,
++	.close		= bpf_map_mmap_close,
++};
++
++static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
++{
++	struct bpf_map *map = filp->private_data;
++	int err;
++
++	if (!map->ops->map_mmap || map_value_has_spin_lock(map))
++		return -ENOTSUPP;
++
++	if (!(vma->vm_flags & VM_SHARED))
++		return -EINVAL;
++
++	mutex_lock(&map->freeze_mutex);
++
++	if ((vma->vm_flags & VM_WRITE) && map->frozen) {
++		err = -EPERM;
++		goto out;
++	}
++
++	/* set default open/close callbacks */
++	vma->vm_ops = &bpf_map_default_vmops;
++	vma->vm_private_data = map;
++
++	err = map->ops->map_mmap(map, vma);
++	if (err)
++		goto out;
++
++	bpf_map_inc_with_uref(map);
++
++	if (vma->vm_flags & VM_WRITE)
++		map->writecnt++;
++out:
++	mutex_unlock(&map->freeze_mutex);
++	return err;
++}
++
+ const struct file_operations bpf_map_fops = {
+ #ifdef CONFIG_PROC_FS
+ 	.show_fdinfo	= bpf_map_show_fdinfo,
+@@ -432,6 +515,7 @@ const struct file_operations bpf_map_fops = {
+ 	.release	= bpf_map_release,
+ 	.read		= bpf_dummy_read,
+ 	.write		= bpf_dummy_write,
++	.mmap		= bpf_map_mmap,
+ };
+ 
+ int bpf_map_new_fd(struct bpf_map *map, int flags)
+@@ -577,6 +661,7 @@ static int map_create(union bpf_attr *attr)
+ 
+ 	atomic64_set(&map->refcnt, 1);
+ 	atomic64_set(&map->usercnt, 1);
++	mutex_init(&map->freeze_mutex);
+ 
+ 	if (attr->btf_key_type_id || attr->btf_value_type_id) {
+ 		struct btf *btf;
+@@ -1163,6 +1248,13 @@ static int map_freeze(const union bpf_attr *attr)
+ 	map = __bpf_map_get(f);
+ 	if (IS_ERR(map))
+ 		return PTR_ERR(map);
++
++	mutex_lock(&map->freeze_mutex);
++
++	if (map->writecnt) {
++		err = -EBUSY;
++		goto err_put;
++	}
+ 	if (READ_ONCE(map->frozen)) {
+ 		err = -EBUSY;
+ 		goto err_put;
+@@ -1174,6 +1266,7 @@ static int map_freeze(const union bpf_attr *attr)
+ 
+ 	WRITE_ONCE(map->frozen, true);
+ err_put:
++	mutex_unlock(&map->freeze_mutex);
  	fdput(f);
- 	return prog;
-@@ -1714,7 +1702,7 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
- 	prog->orig_prog = NULL;
- 	prog->jited = 0;
+ 	return err;
+ }
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index a3c70e275f4e..4a7d7459c4f9 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2671,6 +2671,26 @@ void *vzalloc_node(unsigned long size, int node)
+ }
+ EXPORT_SYMBOL(vzalloc_node);
  
--	atomic_set(&prog->aux->refcnt, 1);
-+	atomic64_set(&prog->aux->refcnt, 1);
- 	prog->gpl_compatible = is_gpl ? 1 : 0;
++/**
++ * vmalloc_user_node_flags - allocate memory for userspace on a specific node
++ * @size: allocation size
++ * @node: numa node
++ * @flags: flags for the page level allocator
++ *
++ * The resulting memory area is zeroed so it can be mapped to userspace
++ * without leaking data.
++ *
++ * Return: pointer to the allocated memory or %NULL on error
++ */
++void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags)
++{
++	return __vmalloc_node_range(size, SHMLBA,  VMALLOC_START, VMALLOC_END,
++				    flags | __GFP_ZERO, PAGE_KERNEL,
++				    VM_USERMAP, node,
++				    __builtin_return_address(0));
++}
++EXPORT_SYMBOL(vmalloc_user_node_flags);
++
+ /**
+  * vmalloc_exec - allocate virtually contiguous, executable memory
+  * @size:	  allocation size
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 4842a134b202..dbbcf0b02970 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -348,6 +348,9 @@ enum bpf_attach_type {
+ /* Clone map from listener for newly accepted socket */
+ #define BPF_F_CLONE		(1U << 9)
  
- 	if (bpf_prog_is_dev_bound(prog->aux)) {
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index aec8dba2bea4..73c616876597 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -10477,12 +10477,9 @@ perf_event_alloc(struct perf_event_attr *attr, int cpu,
- 		context = parent_event->overflow_handler_context;
- #if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_EVENT_TRACING)
- 		if (overflow_handler == bpf_overflow_handler) {
--			struct bpf_prog *prog = bpf_prog_inc(parent_event->prog);
-+			struct bpf_prog *prog = parent_event->prog;
++/* Enable memory-mapping BPF map */
++#define BPF_F_MMAPABLE		(1U << 10)
++
+ /* flags for BPF_PROG_QUERY */
+ #define BPF_F_QUERY_EFFECTIVE	(1U << 0)
  
--			if (IS_ERR(prog)) {
--				err = PTR_ERR(prog);
--				goto err_ns;
--			}
-+			bpf_prog_inc(prog);
- 			event->prog = prog;
- 			event->orig_overflow_handler =
- 				parent_event->orig_overflow_handler;
 -- 
 2.17.1
 
