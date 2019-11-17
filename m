@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1480FFAAF
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 17:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0ABFFAB0
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 17:15:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfKQQPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 11:15:16 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38382 "EHLO
+        id S1726706AbfKQQPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 11:15:21 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36415 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbfKQQPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 11:15:15 -0500
-Received: by mail-pf1-f196.google.com with SMTP id c13so9121962pfp.5
-        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 08:15:15 -0800 (PST)
+        with ESMTP id S1726481AbfKQQPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 11:15:21 -0500
+Received: by mail-pf1-f196.google.com with SMTP id b19so9129317pfd.3
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 08:15:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3Ki8c3frg6x9BgrPHzvwyAP8RJoriRPBeOXnHqw5i/k=;
-        b=khKa9V1+uEhDn1MG+BhPyXG6uoiOn6WoLsRo6HOY4JSP+DRfYu3yrAjHPXeCr7980t
-         JKSfRk1391Ob6mkQJ0+AR4u/fDkk4oqQoz25661mVRrhspm6avd5A4FyIo5d3wlN6fHW
-         McJFZO0vyPSv5TpTgoYm3St3bRncmkDns/lTPA0lcc6ZpcymSGNtNr1smuTc9wbiJCC7
-         +l8Sm8dxVUHAawGA5VFAfnMzT9pb8JaauZmkM+FKgK3VQtfXtmPe8FZqOqVG6+cDxJc3
-         b5/+29euWG8nlQnJ2t+1KfBI5ggQ+47ZL39Qcqs/An0ggsoqqc1oSRXtTEn2gksltu52
-         SeeQ==
+        bh=QbIwK2fySWaJG9IcydN6295K/uwa8q0Yn0f9/YX3m1c=;
+        b=nYi0+IWRZEL2VCdpErG2HLUOa7tOAqap/qHnp/OsHgTrrIxwGMM0HbAjdrUzPfLhbx
+         ribpVBVgLOtHnMEG34C4cZ8+KtEcGKHyAEwfpXf//pP9jAnCojfePbsr8wB0ZagLZQoS
+         VD/rPfbtkZCRn6dk9GACWjB6VrU6L/tlGAJLWHi6cusSF3Vpoyh74Q13FPRri09CDw/s
+         cIeymC/tJAWeNZhriYEOKpLRSbLhWWRxZPif/a0jdnwCxC5kqFp1byrOssSzvW1QtGDb
+         6tLOg6oZ/KPCMilwRVC73lhrCfF+6xH54TtFcTJ/yn0XObSE2ljGQc3BBTKtyH+wu1mw
+         xlqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3Ki8c3frg6x9BgrPHzvwyAP8RJoriRPBeOXnHqw5i/k=;
-        b=RcLR9KkfOs4Whrw6td/TQKRuSj03oJNfnV5qHEP9oPbYkdvWcm/WW7ZSFni/yDRx2K
-         TScssjiHoVlXfeDLEArnhzsOycSUkKfnYy48hi/nw6xpqJ9YVnEqZqE6YiHGHYc6ddRS
-         aTgbv7AGoliGv+77R4vbhpuffJrvPlwo+boqRA35WTnXWrEUrfuANq7htDyX+KKi3cDr
-         nOMdt1Z0RjUyobffPbhD0GVuVTHaRm4PoEzSEhNpNeyDPQiGHnQOAKVT49HdQM6BQpMN
-         zmK3bx3NQdZVVVp+52FBZ9UhZx/2qhQ9T2E9h6/DTgRvFObZv/GihwmE1h+oQo9Dww8d
-         BkJw==
-X-Gm-Message-State: APjAAAUGhflGzgSrClwMl00cPcTN0GHslkn3dlEjtzfQPIjextNuABdx
-        j/uaVkZeYh5EKhOYKalt9V/qu7ZJdiE=
-X-Google-Smtp-Source: APXvYqwcsrY3lG3KZGthwomLNNYz+25wLffrnMqYeEkRjkTwaOITGFMT45FXry0MjHPxOGj4k7XMDQ==
-X-Received: by 2002:a63:d405:: with SMTP id a5mr27936050pgh.79.1574007314591;
-        Sun, 17 Nov 2019 08:15:14 -0800 (PST)
+        bh=QbIwK2fySWaJG9IcydN6295K/uwa8q0Yn0f9/YX3m1c=;
+        b=RF4euvZM6JOxIy8XyWTUDM8OHCwTe241gpJjG9C76Vzkm2bR4fDf6w4IVaiddGmEul
+         X6NBxnFtSusazxR6a+FFct9agpGEdxJ5Q+D+bGOVr6+Q9toPMq50sb5TVuKzL4VTi+4F
+         aC0Dls4hZER/+e1yIveSdT9TkkkUsfnUOxYr4/JVoJYT95FPC8ntdgNyAeHzqclTlIIT
+         2UsXwlpmBreqb+WA4dFvJmnz9sLk/YtOd8+clsqeHnUN4P24PaOi6hdqgiOHDVUXA9fn
+         9b3T+w2VkoMehTvUy9wQotRssVukYSc5oJ1sDovcEuWP2ybnlATvpIJkST3uYnJeXmBv
+         8E2Q==
+X-Gm-Message-State: APjAAAXMZE0FoznNUEm4PtpwK2Y+f9DxxaQDO8IBlqjh0YnwEMSmaloS
+        ViB3vX5VGHYTFgC+2fcWQArA1UgFl1w=
+X-Google-Smtp-Source: APXvYqxCOpSNusJa046BdDbCXz8NmDyrrG2CO2ZPYhWCTamdPxDbl0NUO86U2mFSIuz37Uk0cOfwPw==
+X-Received: by 2002:a62:e119:: with SMTP id q25mr29646880pfh.161.1574007318953;
+        Sun, 17 Nov 2019 08:15:18 -0800 (PST)
 Received: from machine421.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id v2sm2675231pgi.79.2019.11.17.08.15.12
+        by smtp.googlemail.com with ESMTPSA id v2sm2675231pgi.79.2019.11.17.08.15.15
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 17 Nov 2019 08:15:14 -0800 (PST)
+        Sun, 17 Nov 2019 08:15:18 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Jerin Jacob <jerinj@marvell.com>,
+Cc:     davem@davemloft.net, Radha Mohan Chintakuntla <radhac@marvell.com>,
         Pavan Nikhilesh <pbhagavatula@marvell.com>,
+        Stanislaw Kardach <skardach@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 07/15] octeontx2-af: add debug msgs for NIX block errors
-Date:   Sun, 17 Nov 2019 21:44:18 +0530
-Message-Id: <1574007266-17123-8-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH 08/15] octeontx2-af: Add SSO unit support to the AF driver
+Date:   Sun, 17 Nov 2019 21:44:19 +0530
+Message-Id: <1574007266-17123-9-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1574007266-17123-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1574007266-17123-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -59,292 +60,1340 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jerin Jacob <jerinj@marvell.com>
+From: Radha Mohan Chintakuntla <radhac@marvell.com>
 
-Added debug messages for NIX_AF_RVU_INT, NIX_AF_ERR_INT and NIX_AF_RAS
-error AF interrupts.
+This patch adds the SSO (Schedule/Synchronize/Order) unit support to the
+Adming Function (AF) driver including initial mailboxes, initialization
+of SSO hardware groups and workslots and their teardown sequence.
 
-These will help in detecting issues wrt AQ instruction faults,
-LF misconfiguration, NPC MCAM entry trying to forward pkt to PF_FUNC
-with no NIXLF mapped etc.
-
-Signed-off-by: Jerin Jacob <jerinj@marvell.com>
+Signed-off-by: Radha Mohan Chintakuntla <radhac@marvell.com>
 Signed-off-by: Pavan Nikhilesh <pbhagavatula@marvell.com>
+Signed-off-by: Stanislaw Kardach <skardach@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   5 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   2 +
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 202 +++++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |  10 +
- 4 files changed, 219 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  90 +++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  28 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  24 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    | 180 ++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_sso.c    | 837 +++++++++++++++++++++
+ 6 files changed, 1157 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_sso.c
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+index 1b25948..5988d58 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+@@ -8,4 +8,4 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
+ 
+ octeontx2_mbox-y := mbox.o
+ octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+-		  rvu_reg.o rvu_npc.o rvu_debugfs.o
++		  rvu_reg.o rvu_npc.o rvu_debugfs.o rvu_sso.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index bde3bda..aa75757 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -152,6 +152,21 @@ M(NPA_LF_FREE,		0x401, npa_lf_free, msg_req, msg_rsp)		\
+ M(NPA_AQ_ENQ,		0x402, npa_aq_enq, npa_aq_enq_req, npa_aq_enq_rsp)   \
+ M(NPA_HWCTX_DISABLE,	0x403, npa_hwctx_disable, hwctx_disable_req, msg_rsp)\
+ /* SSO/SSOW mbox IDs (range 0x600 - 0x7FF) */				\
++M(SSO_LF_ALLOC,		0x600, sso_lf_alloc,				\
++				sso_lf_alloc_req, sso_lf_alloc_rsp)	\
++M(SSO_LF_FREE,		0x601, sso_lf_free,				\
++				sso_lf_free_req, msg_rsp)		\
++M(SSOW_LF_ALLOC,	0x602, ssow_lf_alloc,				\
++				ssow_lf_alloc_req, msg_rsp)		\
++M(SSOW_LF_FREE,		0x603, ssow_lf_free,				\
++				ssow_lf_free_req, msg_rsp)		\
++M(SSO_HW_SETCONFIG,	0x604, sso_hw_setconfig,			\
++				sso_hw_setconfig, msg_rsp)		\
++M(SSO_GRP_SET_PRIORITY,	0x605, sso_grp_set_priority,			\
++				sso_grp_priority, msg_rsp)		\
++M(SSO_GRP_GET_PRIORITY,	0x606, sso_grp_get_priority,			\
++				sso_info_req, sso_grp_priority)	\
++M(SSO_WS_CACHE_INV,	0x607, sso_ws_cache_inv, msg_req, msg_rsp)	\
+ /* TIM mbox IDs (range 0x800 - 0x9FF) */				\
+ /* CPT mbox IDs (range 0xA00 - 0xBFF) */				\
+ /* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
+@@ -710,6 +725,81 @@ struct nix_bp_cfg_rsp {
+ 	u8	chan_cnt; /* Number of channel for which bpids are assigned */
+ };
+ 
++/* SSO mailbox error codes
++ * Range 501 - 600.
++ */
++enum sso_af_status {
++	SSO_AF_ERR_PARAM	= -501,
++	SSO_AF_ERR_LF_INVALID	= -502,
++	SSO_AF_ERR_AF_LF_ALLOC	= -503,
++	SSO_AF_ERR_GRP_EBUSY	= -504,
++	SSO_AF_INVAL_NPA_PF_FUNC = -505,
++};
++
++struct sso_lf_alloc_req {
++	struct mbox_msghdr hdr;
++	int node;
++	u16 hwgrps;
++};
++
++struct sso_lf_alloc_rsp {
++	struct mbox_msghdr hdr;
++	u32	xaq_buf_size;
++	u32	xaq_wq_entries;
++	u32	in_unit_entries;
++	u16	hwgrps;
++};
++
++struct sso_lf_free_req {
++	struct mbox_msghdr hdr;
++	int node;
++	u16 hwgrps;
++};
++
++struct sso_hw_setconfig {
++	struct mbox_msghdr hdr;
++	u32	npa_aura_id;
++	u16	npa_pf_func;
++	u16	hwgrps;
++};
++
++struct sso_info_req {
++	struct mbox_msghdr hdr;
++	union {
++		u16 grp;
++		u16 hws;
++	};
++};
++
++struct sso_grp_priority {
++	struct mbox_msghdr hdr;
++	u16 grp;
++	u8 priority;
++	u8 affinity;
++	u8 weight;
++};
++
++/* SSOW mailbox error codes
++ * Range 601 - 700.
++ */
++enum ssow_af_status {
++	SSOW_AF_ERR_PARAM	= -601,
++	SSOW_AF_ERR_LF_INVALID	= -602,
++	SSOW_AF_ERR_AF_LF_ALLOC	= -603,
++};
++
++struct ssow_lf_alloc_req {
++	struct mbox_msghdr hdr;
++	int node;
++	u16 hws;
++};
++
++struct ssow_lf_free_req {
++	struct mbox_msghdr hdr;
++	int node;
++	u16 hws;
++};
++
+ /* NPC mbox message structs */
+ 
+ #define NPC_MCAM_ENTRY_INVALID	0xFFFF
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index a13a055..6e4d5b8 100644
+index 6e4d5b8..0c74304 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -2126,6 +2126,7 @@ static void rvu_unregister_interrupts(struct rvu *rvu)
- 	int irq;
+@@ -653,6 +653,7 @@ static void rvu_free_hw_resources(struct rvu *rvu)
+ 	rvu_npa_freemem(rvu);
+ 	rvu_npc_freemem(rvu);
+ 	rvu_nix_freemem(rvu);
++	rvu_sso_freemem(rvu);
  
- 	rvu_npa_unregister_interrupts(rvu);
-+	rvu_nix_unregister_interrupts(rvu);
+ 	/* Free block LF bitmaps */
+ 	for (id = 0; id < BLK_COUNT; id++) {
+@@ -953,6 +954,10 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
+ 	if (err)
+ 		goto cgx_err;
  
- 	/* Disable the Mbox interrupt */
- 	rvu_write64(rvu, BLKADDR_RVUM, RVU_AF_PFAF_MBOX_INT_ENA_W1C,
-@@ -2339,6 +2340,10 @@ static int rvu_register_interrupts(struct rvu *rvu)
- 	if (ret)
- 		goto fail;
- 
-+	ret = rvu_nix_register_interrupts(rvu);
-+	if (ret)
-+		goto fail;
++	err = rvu_sso_init(rvu);
++	if (err)
++		goto cgx_err;
 +
  	return 0;
- fail:
- 	rvu_unregister_interrupts(rvu);
+ 
+ cgx_err:
+@@ -1017,7 +1022,7 @@ int rvu_mbox_handler_ready(struct rvu *rvu, struct msg_req *req,
+ /* Get current count of a RVU block's LF/slots
+  * provisioned to a given RVU func.
+  */
+-static u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
++u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
+ {
+ 	switch (blktype) {
+ 	case BLKTYPE_NPA:
+@@ -1046,7 +1051,7 @@ bool is_pffunc_map_valid(struct rvu *rvu, u16 pcifunc, int blktype)
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+ 
+ 	/* Check if this PFFUNC has a LF of type blktype attached */
+-	if (!rvu_get_rsrc_mapcount(pfvf, blktype))
++	if (blktype != BLKTYPE_SSO && !rvu_get_rsrc_mapcount(pfvf, blktype))
+ 		return false;
+ 
+ 	return true;
+@@ -1932,12 +1937,30 @@ static void rvu_blklf_teardown(struct rvu *rvu, u16 pcifunc, u8 blkaddr)
+ 			rvu_nix_lf_teardown(rvu, pcifunc, block->addr, lf);
+ 		else if (block->addr == BLKADDR_NPA)
+ 			rvu_npa_lf_teardown(rvu, pcifunc, lf);
++		else if (block->addr == BLKADDR_SSO)
++			rvu_sso_lf_teardown(rvu, pcifunc, lf, slot);
++		else if (block->addr == BLKADDR_SSOW)
++			rvu_ssow_lf_teardown(rvu, pcifunc, lf, slot);
+ 
+ 		err = rvu_lf_reset(rvu, block, lf);
+ 		if (err) {
+ 			dev_err(rvu->dev, "Failed to reset blkaddr %d LF%d\n",
+ 				block->addr, lf);
+ 		}
++
++		if (block->addr == BLKADDR_SSO)
++			rvu_sso_hwgrp_config_thresh(rvu, block->addr, lf);
++	}
++}
++
++static void rvu_sso_pfvf_rst(struct rvu *rvu, u16 pcifunc)
++{
++	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
++	struct rvu_hwinfo *hw = rvu->hw;
++
++	if (pfvf->sso_uniq_ident) {
++		rvu_free_rsrc(&hw->sso.pfvf_ident, pfvf->sso_uniq_ident);
++		pfvf->sso_uniq_ident = 0;
+ 	}
+ }
+ 
+@@ -1956,6 +1979,7 @@ static void __rvu_flr_handler(struct rvu *rvu, u16 pcifunc)
+ 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_SSO);
+ 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NPA);
+ 	rvu_detach_rsrcs(rvu, NULL, pcifunc);
++	rvu_sso_pfvf_rst(rvu, pcifunc);
+ 	mutex_unlock(&rvu->flr_lock);
+ }
+ 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index a6fe840..9f3d817 100644
+index 9f3d817..142f19f 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -465,6 +465,8 @@ void rvu_nix_freemem(struct rvu *rvu);
- int rvu_get_nixlf_count(struct rvu *rvu);
- void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int npalf);
- int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf);
-+int rvu_nix_register_interrupts(struct rvu *rvu);
-+void rvu_nix_unregister_interrupts(struct rvu *rvu);
+@@ -129,6 +129,19 @@ struct npc_mcam {
+ 	u16     rx_miss_act_cntr; /* Counter for RX MISS action */
+ };
  
- /* NPC APIs */
- int rvu_npc_init(struct rvu *rvu);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 10b49e5..f1201e0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -3407,3 +3407,205 @@ int rvu_mbox_handler_nix_lso_format_cfg(struct rvu *rvu,
++struct sso_rsrc {
++	u8      sso_hws;
++	u16     sso_hwgrps;
++	u16     sso_xaq_num_works;
++	u16     sso_xaq_buf_size;
++	u16     sso_iue;
++	u64	iaq_rsvd;
++	u64	iaq_max;
++	u64	taq_rsvd;
++	u64	taq_max;
++	struct rsrc_bmap pfvf_ident;
++};
++
+ /* Structure for per RVU func info ie PF/VF */
+ struct rvu_pfvf {
+ 	bool		npalf; /* Only one NPALF per RVU_FUNC */
+@@ -138,6 +151,7 @@ struct rvu_pfvf {
+ 	u16		cptlfs;
+ 	u16		timlfs;
+ 	u8		cgx_lmac;
++	u8		sso_uniq_ident;
  
- 	return 0;
- }
+ 	/* Block LF's MSIX vector info */
+ 	struct rsrc_bmap msix;      /* Bitmap for MSIX vector alloc */
+@@ -257,6 +271,7 @@ struct rvu_hwinfo {
+ 	struct nix_hw    *nix0;
+ 	struct npc_pkind pkind;
+ 	struct npc_mcam  mcam;
++	struct sso_rsrc  sso;
+ };
+ 
+ struct mbox_wq_info {
+@@ -399,6 +414,7 @@ void rvu_free_rsrc(struct rsrc_bmap *rsrc, int id);
+ int rvu_rsrc_free_count(struct rsrc_bmap *rsrc);
+ int rvu_alloc_rsrc_contig(struct rsrc_bmap *rsrc, int nrsrc);
+ bool rvu_rsrc_check_contig(struct rsrc_bmap *rsrc, int nrsrc);
++u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype);
+ int rvu_get_pf(u16 pcifunc);
+ struct rvu_pfvf *rvu_get_pfvf(struct rvu *rvu, int pcifunc);
+ void rvu_get_pf_numvfs(struct rvu *rvu, int pf, int *numvfs, int *hwvf);
+@@ -447,6 +463,14 @@ void rvu_cgx_enadis_rx_bp(struct rvu *rvu, int pf, bool enable);
+ int rvu_cgx_start_stop_io(struct rvu *rvu, u16 pcifunc, bool start);
+ int rvu_cgx_nix_cuml_stats(struct rvu *rvu, void *cgxd, int lmac_id, int index,
+ 			   int rxtxflag, u64 *stat);
 +
-+static irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
++/* SSO APIs */
++int rvu_sso_init(struct rvu *rvu);
++void rvu_sso_freemem(struct rvu *rvu);
++int rvu_sso_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot_id);
++int rvu_ssow_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot_id);
++void rvu_sso_hwgrp_config_thresh(struct rvu *rvu, int blkaddr, int lf);
++
+ /* NPA APIs */
+ int rvu_npa_init(struct rvu *rvu);
+ void rvu_npa_freemem(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index be758c1..1aa3129 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -405,14 +405,167 @@
+ #define NIX_PRIV_LFX_INT_CFG		(0x8000020)
+ #define NIX_AF_RVU_LF_CFG_DEBUG		(0x8000030)
+ 
++#define NIX_AF_LF_CFG_SHIFT		17
++#define NIX_AF_LF_SSO_PF_FUNC_SHIFT	16
++
+ /* SSO */
+ #define SSO_AF_CONST			(0x1000)
+ #define SSO_AF_CONST1			(0x1008)
+-#define SSO_AF_BLK_RST			(0x10f8)
++#define SSO_AF_NOS_CNT			(0x1050)
++#define SSO_AF_AW_WE			(0x1080)
+ #define SSO_AF_LF_HWGRP_RST		(0x10e0)
++#define SSO_AF_AW_CFG			(0x10f0)
++#define SSO_AF_BLK_RST			(0x10f8)
++#define SSO_AF_ACTIVE_CYCLES0		(0x1100)
++#define SSO_AF_ACTIVE_CYCLES1		(0x1108)
++#define SSO_AF_ACTIVE_CYCLES2		(0x1110)
++#define SSO_AF_ERR0			(0x1220)
++#define SSO_AF_ERR0_W1S			(0x1228)
++#define SSO_AF_ERR0_ENA_W1C		(0x1230)
++#define SSO_AF_ERR0_ENA_W1S		(0x1238)
++#define SSO_AF_ERR2			(0x1260)
++#define SSO_AF_ERR2_W1S			(0x1268)
++#define SSO_AF_ERR2_ENA_W1C		(0x1270)
++#define SSO_AF_ERR2_ENA_W1S		(0x1278)
++#define SSO_AF_UNMAP_INFO		(0x12f0)
++#define SSO_AF_UNMAP_INFO2		(0x1300)
++#define SSO_AF_UNMAP_INFO3		(0x1310)
++#define SSO_AF_RAS			(0x1420)
++#define SSO_AF_RAS_W1S			(0x1430)
++#define SSO_AF_RAS_ENA_W1C		(0x1460)
++#define SSO_AF_RAS_ENA_W1S		(0x1470)
++#define SSO_PRIV_AF_INT_CFG		(0x3000)
++#define SSO_AF_AW_ADD			(0x2080)
++#define SSO_AF_AW_READ_ARB		(0x2090)
++#define SSO_AF_XAQ_REQ_PC		(0x20B0)
++#define SSO_AF_XAQ_LATENCY_PC		(0x20B8)
++#define SSO_AF_TAQ_CNT			(0x20c0)
++#define SSO_AF_TAQ_ADD			(0x20e0)
++#define SSO_AF_POISONX(a)		(0x2100 | (a) << 3)
++#define SSO_AF_POISONX_W1S(a)		(0x2200 | (a) << 3)
+ #define SSO_AF_RVU_LF_CFG_DEBUG		(0x3800)
+ #define SSO_PRIV_LFX_HWGRP_CFG		(0x10000)
+ #define SSO_PRIV_LFX_HWGRP_INT_CFG	(0x20000)
++#define SSO_AF_XAQX_GMCTL(a)		(0xe0000 | (a) << 3)
++#define SSO_AF_XAQX_HEAD_PTR(a)		(0x80000 | (a) << 3)
++#define SSO_AF_XAQX_TAIL_PTR(a)		(0x90000 | (a) << 3)
++#define SSO_AF_XAQX_HEAD_NEXT(a)	(0xa0000 | (a) << 3)
++#define SSO_AF_XAQX_TAIL_NEXT(a)	(0xb0000 | (a) << 3)
++#define SSO_AF_TOAQX_STATUS(a)		(0xd0000 | (a) << 3)
++#define SSO_AF_TIAQX_STATUS(a)		(0xc0000 | (a) << 3)
++#define SSO_AF_HWGRPX_IAQ_THR(a)	(0x200000 | (a) << 12)
++#define SSO_AF_HWGRPX_TAQ_THR(a)	(0x200010 | (a) << 12)
++#define SSO_AF_HWGRPX_PRI(a)		(0x200020 | (a) << 12)
++#define SSO_AF_HWGRPX_WS_PC(a)		(0x200050 | (a) << 12)
++#define SSO_AF_HWGRPX_EXT_PC(a)		(0x200060 | (a) << 12)
++#define SSO_AF_HWGRPX_WA_PC(a)		(0x200070 | (a) << 12)
++#define SSO_AF_HWGRPX_TS_PC(a)		(0x200080 | (a) << 12)
++#define SSO_AF_HWGRPX_DS_PC(a)		(0x200090 | (a) << 12)
++#define SSO_AF_HWGRPX_DQ_PC(a)		(0x2000A0 | (a) << 12)
++#define SSO_AF_HWGRPX_PAGE_CNT(a)	(0x200100 | (a) << 12)
++#define SSO_AF_IU_ACCNTX_CFG(a)		(0x50000 | (a) << 3)
++#define SSO_AF_IU_ACCNTX_RST(a)		(0x60000 | (a) << 3)
++#define SSO_AF_HWGRPX_AW_STATUS(a)	(0x200110 | (a) << 12)
++#define SSO_AF_HWGRPX_AW_CFG(a)		(0x200120 | (a) << 12)
++#define SSO_AF_HWGRPX_AW_TAGSPACE(a)	(0x200130 | (a) << 12)
++#define SSO_AF_HWGRPX_XAQ_AURA(a)	(0x200140 | (a) << 12)
++#define SSO_AF_HWGRPX_XAQ_LIMIT(a)	(0x200220 | (a) << 12)
++#define SSO_AF_HWGRPX_IU_ACCNT(a)	(0x200230 | (a) << 12)
++#define SSO_AF_HWSX_ARB(a)		(0x400100 | (a) << 12)
++#define SSO_AF_HWSX_INV(a)		(0x400180 | (a) << 12)
++#define SSO_AF_HWSX_GMCTL(a)		(0x400200 | (a) << 12)
++#define SSO_AF_HWSX_SX_GRPMSKX(a, b, c) \
++				(0x400400 | (a) << 12 | (b) << 5 | (c) << 3)
++#define SSO_AF_TAQX_LINK(a)		(0xc00000 | (a) << 3)
++#define SSO_AF_TAQX_WAEY_TAG(a, b)	(0xe00000 | (a) << 8 | (b) << 4)
++#define SSO_AF_TAQX_WAEY_WQP(a, b)	(0xe00008 | (a) << 8 | (b) << 4)
++#define SSO_AF_IPL_FREEX(a)		(0x800000 | (a) << 3)
++#define SSO_AF_IPL_IAQX(a)		(0x840000 | (a) << 3)
++#define SSO_AF_IPL_DESCHEDX(a)		(0x860000 | (a) << 3)
++#define SSO_AF_IPL_CONFX(a)		(0x880000 | (a) << 3)
++#define SSO_AF_IENTX_TAG(a)		(0Xa00000 | (a) << 3)
++#define SSO_AF_IENTX_GRP(a)		(0xa20000 | (a) << 3)
++#define SSO_AF_IENTX_PENDTAG(a)		(0xa40000 | (a) << 3)
++#define SSO_AF_IENTX_LINKS(a)		(0xa60000 | (a) << 3)
++#define SSO_AF_IENTX_QLINKS(a)		(0xa80000 | (a) << 3)
++#define SSO_AF_IENTX_WQP(a)		(0xaa0000 | (a) << 3)
++#define SSO_AF_XAQDIS_DIGESTX(a)	(0x901000 | (a) << 3)
++#define SSO_AF_FLR_AQ_DIGESTX(a)	(0x901200 | (a) << 3)
++#define SSO_AF_QCTLDIS_DIGESTX(a)	(0x900E00 | (a) << 3)
++#define SSO_AF_WQP0_DIGESTX(a)		(0x900A00 | (a) << 3)
++#define SSO_AF_NPA_DIGESTX(a)		(0x900000 | (a) << 3)
++#define SSO_AF_BFP_DIGESTX(a)		(0x900200 | (a) << 3)
++#define SSO_AF_BFPN_DIGESTX(a)		(0x900400 | (a) << 3)
++#define SSO_AF_GRPDIS_DIGESTX(a)	(0x900600 | (a) << 3)
++
++#define SSO_AF_IAQ_FREE_CNT_MASK	0x3FFFull
++#define SSO_AF_IAQ_RSVD_FREE_MASK	0x3FFFull
++#define SSO_AF_IAQ_RSVD_FREE_SHIFT	16
++#define SSO_AF_IAQ_FREE_CNT_MAX		SSO_AF_IAQ_FREE_CNT_MASK
++#define SSO_AF_AW_ADD_RSVD_FREE_MASK	0x3FFFull
++#define SSO_AF_AW_ADD_RSVD_FREE_SHIFT	16
++#define SSO_HWGRP_IAQ_MAX_THR_MASK	0x3FFFull
++#define SSO_HWGRP_IAQ_RSVD_THR_MASK	0x3FFFull
++#define SSO_HWGRP_IAQ_MAX_THR_SHIFT	32
++#define SSO_HWGRP_IAQ_RSVD_THR		0x2
++#define SSO_HWGRP_IAQ_GRP_CNT_SHIFT	48
++#define SSO_HWGRP_IAQ_GRP_CNT_MASK	0x3FFFull
++#define SSO_AF_HWGRPX_IUEX_NOSCHED(a, b)\
++		(((((b) >> 48) & 0x3FF) == (a)) && ((b) & BIT_ULL(60)))
++#define SSO_AF_HWGRP_PAGE_CNT_MASK	(BIT_ULL(32) - 1)
++#define SSO_AF_HWGRP_PAGE_CNT_MASK	(BIT_ULL(32) - 1)
++#define SSO_HWGRP_IAQ_MAX_THR_STRM_PERF	0xD0
++#define SSO_AF_HWGRP_IU_ACCNT_MAX_THR	0x7FFFull
++
++#define SSO_AF_TAQ_FREE_CNT_MASK	0x7FFull
++#define SSO_AF_TAQ_RSVD_FREE_MASK	0x7FFull
++#define SSO_AF_TAQ_RSVD_FREE_SHIFT	16
++#define SSO_AF_TAQ_FREE_CNT_MAX		SSO_AF_TAQ_FREE_CNT_MASK
++#define SSO_AF_TAQ_ADD_RSVD_FREE_MASK	0x1FFFull
++#define SSO_AF_TAQ_ADD_RSVD_FREE_SHIFT	16
++#define SSO_HWGRP_TAQ_MAX_THR_MASK	0x7FFull
++#define SSO_HWGRP_TAQ_RSVD_THR_MASK	0x7FFull
++#define SSO_HWGRP_TAQ_MAX_THR_SHIFT	32
++#define SSO_HWGRP_TAQ_RSVD_THR		0x3
++#define SSO_AF_ERR0_MASK		0xFFEull
++#define SSO_AF_ERR2_MASK		0xF001F000ull
++#define SSO_HWGRP_TAQ_MAX_THR_STRM_PERF	0x10
++
++#define SSO_HWGRP_PRI_MASK		0x7ull
++#define SSO_HWGRP_PRI_AFF_MASK		0xFull
++#define SSO_HWGRP_PRI_AFF_SHIFT		8
++#define SSO_HWGRP_PRI_WGT_MASK		0x3Full
++#define SSO_HWGRP_PRI_WGT_SHIFT		16
++#define SSO_HWGRP_PRI_WGT_LEFT_MASK	0x3Full
++#define SSO_HWGRP_PRI_WGT_LEFT_SHIFT	24
++
++#define SSO_HWGRP_AW_CFG_RWEN		BIT_ULL(0)
++#define SSO_HWGRP_AW_CFG_LDWB		BIT_ULL(1)
++#define SSO_HWGRP_AW_CFG_LDT		BIT_ULL(2)
++#define SSO_HWGRP_AW_CFG_STT		BIT_ULL(3)
++#define SSO_HWGRP_AW_CFG_XAQ_BYP_DIS	BIT_ULL(4)
++
++#define SSO_HWGRP_AW_STS_TPTR_VLD	BIT_ULL(8)
++#define SSO_HWGRP_AW_STS_NPA_FETCH	BIT_ULL(9)
++#define SSO_HWGRP_AW_STS_XAQ_BUFSC_MASK	0x7ull
++#define SSO_HWGRP_AW_STS_INIT_STS	0x18ull
++
++#define SSO_LF_GGRP_OP_ADD_WORK1	(0x8ull)
++#define SSO_LF_GGRP_QCTL		(0x20ull)
++#define SSO_LF_GGRP_INT			(0x100ull)
++#define SSO_LF_GGRP_INT_ENA_W1S		(0x110ull)
++#define SSO_LF_GGRP_INT_ENA_W1C		(0x118ull)
++#define SSO_LF_GGRP_INT_THR		(0x140ull)
++#define SSO_LF_GGRP_INT_CNT		(0x180ull)
++#define SSO_LF_GGRP_XAQ_CNT		(0x1b0ull)
++#define SSO_LF_GGRP_AQ_CNT		(0x1c0ull)
++#define SSO_LF_GGRP_AQ_THR		(0x1e0ull)
++#define SSO_LF_GGRP_MISC_CNT		(0x200ull)
++
++#define SSO_LF_GGRP_INT_MASK		(0X7)
++#define SSO_LF_GGRP_AQ_THR_MASK		(BIT_ULL(33) - 1)
++#define SSO_LF_GGRP_XAQ_CNT_MASK	(BIT_ULL(33) - 1)
++#define SSO_LF_GGRP_INT_CNT_MASK	(0x3FFF3FFF0000ull)
+ 
+ /* SSOW */
+ #define SSOW_AF_RVU_LF_HWS_CFG_DEBUG	(0x0010)
+@@ -420,6 +573,22 @@
+ #define SSOW_PRIV_LFX_HWS_CFG		(0x1000)
+ #define SSOW_PRIV_LFX_HWS_INT_CFG	(0x2000)
+ 
++#define SSOW_LF_GWS_PENDSTATE		(0x50ull)
++#define SSOW_LF_GWS_NW_TIM		(0x70ull)
++#define SSOW_LF_GWS_INT			(0x100ull)
++#define SSOW_LF_GWS_INT_ENA_W1C		(0x118ull)
++#define SSOW_LF_GWS_TAG			(0x200ull)
++#define SSOW_LF_GWS_WQP			(0x210ull)
++#define SSOW_LF_GWS_OP_GET_WORK		(0x600ull)
++#define SSOW_LF_GWS_OP_SWTAG_FLUSH	(0x800ull)
++#define SSOW_LF_GWS_OP_DESCHED		(0x880ull)
++#define SSOW_LF_GWS_OP_CLR_NSCHED0	(0xA00ull)
++#define SSOW_LF_GWS_OP_GWC_INVAL	(0xe00ull)
++
++#define SSO_TT_EMPTY			(0x3)
++#define SSOW_LF_GWS_INT_MASK		(0x7FF)
++#define SSOW_LF_GWS_MAX_NW_TIM		(BIT_ULL(10) - 1)
++
+ /* TIM */
+ #define TIM_AF_CONST			(0x90)
+ #define TIM_PRIV_LFX_CFG		(0x20000)
+@@ -525,4 +694,13 @@
+ 		(0x00F00 | (a) << 5 | (b) << 4)
+ #define NDC_AF_BANKX_HIT_PC(a)		(0x01000 | (a) << 3)
+ #define NDC_AF_BANKX_MISS_PC(a)		(0x01100 | (a) << 3)
++
++#define AF_BAR2_ALIASX_SIZE		(0x100000ull)
++#define SSOW_AF_BAR2_SEL		(0x9000000ull)
++#define SSO_AF_BAR2_SEL			(0x9000000ull)
++
++#define AF_BAR2_ALIASX(a, b)		(0x9100000ull | (a) << 12 | (b))
++#define SSOW_AF_BAR2_ALIASX(a, b)	AF_BAR2_ALIASX(a, b)
++#define SSO_AF_BAR2_ALIASX(a, b)	AF_BAR2_ALIASX(a, b)
++
+ #endif /* RVU_REG_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_sso.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_sso.c
+new file mode 100644
+index 0000000..cc80cc7
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_sso.c
+@@ -0,0 +1,837 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell OcteonTx2 RVU Admin Function driver
++ *
++ * Copyright (C) 2019 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/types.h>
++
++#include "rvu_struct.h"
++
++#include "rvu_reg.h"
++#include "rvu.h"
++
++#if defined(CONFIG_ARM64)
++#define rvu_sso_store_pair(val0, val1, addr) ({				\
++	__asm__ volatile("stp %x[x0], %x[x1], [%x[p1]]"			\
++			 :						\
++			 :						\
++			 [x0]"r"(val0), [x1]"r"(val1), [p1]"r"(addr));	\
++	})
++#else
++#define rvu_sso_store_pair(val0, val1, addr)				\
++	do {								\
++		u64 *addr1 = (void *)addr;				\
++		*addr1 = val0;						\
++		*(u64 *)(((u8 *)addr1) + 8) = val1;			\
++	} while (0)
++#endif
++
++void rvu_sso_hwgrp_config_thresh(struct rvu *rvu, int blkaddr, int lf)
 +{
-+	struct rvu *rvu = (struct rvu *)rvu_irq;
-+	int blkaddr;
-+	u64 intr;
++	struct rvu_hwinfo *hw = rvu->hw;
++	u64 add, grp_thr, grp_rsvd;
++	u64 reg;
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
++	/* Configure IAQ Thresholds */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_IAQ_THR(lf));
++	grp_rsvd = reg & SSO_HWGRP_IAQ_RSVD_THR_MASK;
++	add = hw->sso.iaq_rsvd - grp_rsvd;
 +
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RVU_INT);
++	grp_thr = hw->sso.iaq_rsvd & SSO_HWGRP_IAQ_RSVD_THR_MASK;
++	grp_thr |= ((hw->sso.iaq_max & SSO_HWGRP_IAQ_MAX_THR_MASK) <<
++		    SSO_HWGRP_IAQ_MAX_THR_SHIFT);
 +
-+	if (intr & BIT_ULL(0))
-+		dev_err(rvu->dev, "NIX: Unmapped slot error\n");
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_IAQ_THR(lf), grp_thr);
 +
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT, intr);
-+	return IRQ_HANDLED;
++	if (add)
++		rvu_write64(rvu, blkaddr, SSO_AF_AW_ADD,
++			    (add & SSO_AF_AW_ADD_RSVD_FREE_MASK) <<
++			    SSO_AF_AW_ADD_RSVD_FREE_SHIFT);
++
++	/* Configure TAQ Thresholds */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_TAQ_THR(lf));
++	grp_rsvd = reg & SSO_HWGRP_TAQ_RSVD_THR_MASK;
++	add = hw->sso.taq_rsvd - grp_rsvd;
++
++	grp_thr = hw->sso.taq_rsvd & SSO_HWGRP_TAQ_RSVD_THR_MASK;
++	grp_thr |= ((hw->sso.taq_max & SSO_HWGRP_TAQ_MAX_THR_MASK) <<
++		    SSO_HWGRP_TAQ_MAX_THR_SHIFT);
++
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_TAQ_THR(lf), grp_thr);
++
++	if (add)
++		rvu_write64(rvu, blkaddr, SSO_AF_TAQ_ADD,
++			    (add & SSO_AF_TAQ_RSVD_FREE_MASK) <<
++			    SSO_AF_TAQ_ADD_RSVD_FREE_SHIFT);
 +}
 +
-+static irqreturn_t rvu_nix_af_err_intr_handler(int irq, void *rvu_irq)
++int rvu_sso_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot)
 +{
-+	struct rvu *rvu = (struct rvu *)rvu_irq;
-+	int blkaddr;
-+	u64 intr;
++	int ssow_lf, iue, blkaddr, ssow_blkaddr, err;
++	struct sso_rsrc *sso = &rvu->hw->sso;
++	struct rvu_hwinfo *hw = rvu->hw;
++	u64 aq_cnt, ds_cnt, cq_ds_cnt;
++	u64 reg, add, wqp, val;
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
 +	if (blkaddr < 0)
-+		return IRQ_NONE;
++		return SSO_AF_ERR_LF_INVALID;
 +
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
++	/* Enable BAR2 ALIAS for this pcifunc. */
++	reg = BIT_ULL(16) | pcifunc;
++	rvu_write64(rvu, blkaddr, SSO_AF_BAR2_SEL, reg);
 +
-+	if (intr & BIT_ULL(14))
-+		dev_err(rvu->dev, "NIX: Memory fault on NIX_AQ_INST_S read\n");
++	rvu_write64(rvu, blkaddr,
++		    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_INT_THR), 0x0);
++	rvu_write64(rvu, blkaddr,
++		    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_AQ_THR),
++		    SSO_LF_GGRP_AQ_THR_MASK);
 +
-+	if (intr & BIT_ULL(13))
-+		dev_err(rvu->dev, "NIX: Memory fault on NIX_AQ_RES_S write\n");
++	rvu_write64(rvu, blkaddr,
++		    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_INT),
++		    SSO_LF_GGRP_INT_MASK);
++	rvu_write64(rvu, blkaddr,
++		    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_INT_ENA_W1C),
++		    SSO_LF_GGRP_INT_MASK);
 +
-+	if (intr & BIT_ULL(12))
-+		dev_err(rvu->dev, "NIX: AQ doorbell error\n");
++	ssow_blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSOW, 0);
++	if (ssow_blkaddr < 0)
++		goto af_cleanup;
++	/* Check if LF is in slot 0, if not no HWS are attached. */
++	ssow_lf = rvu_get_lf(rvu, &hw->block[ssow_blkaddr], pcifunc, 0);
++	if (ssow_lf < 0)
++		goto af_cleanup;
 +
-+	if (intr & BIT_ULL(6))
-+		dev_err(rvu->dev, "NIX: Rx on unmapped PF_FUNC\n");
++	rvu_write64(rvu, ssow_blkaddr, SSOW_AF_BAR2_SEL, reg);
 +
-+	if (intr & BIT_ULL(5))
-+		dev_err(rvu->dev, "NIX: Rx multicast replication error\n");
++	/* Ignore all interrupts */
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_INT_ENA_W1C),
++		    SSOW_LF_GWS_INT_MASK);
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_INT),
++		    SSOW_LF_GWS_INT_MASK);
 +
-+	if (intr & BIT_ULL(4))
-+		dev_err(rvu->dev, "NIX: Memory fault on NIX_RX_MCE_S read\n");
++	/* Prepare WS for GW operations. */
++	do {
++		reg = rvu_read64(rvu, ssow_blkaddr,
++				 SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_TAG));
++	} while (reg & BIT_ULL(63));
 +
-+	if (intr & BIT_ULL(3))
-+		dev_err(rvu->dev, "NIX: Memory fault on multicast WQE read\n");
++	if (reg & BIT_ULL(62))
++		rvu_write64(rvu, ssow_blkaddr,
++			    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_OP_DESCHED), 0);
++	else if (((reg >> 32) & SSO_TT_EMPTY) != SSO_TT_EMPTY)
++		rvu_write64(rvu, ssow_blkaddr,
++			    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_OP_SWTAG_FLUSH),
++			    0);
 +
-+	if (intr & BIT_ULL(2))
-+		dev_err(rvu->dev, "NIX: Memory fault on mirror WQE read\n");
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_OP_GWC_INVAL), 0);
 +
-+	if (intr & BIT_ULL(1))
-+		dev_err(rvu->dev, "NIX: Memory fault on mirror pkt write\n");
++	/* Disable add work. */
++	rvu_write64(rvu, blkaddr, SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_QCTL),
++		    0x0);
 +
-+	if (intr & BIT_ULL(0))
-+		dev_err(rvu->dev, "NIX: Memory fault on multicast pkt write\n");
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT, intr);
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t rvu_nix_af_ras_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu *rvu = (struct rvu *)rvu_irq;
-+	int blkaddr;
-+	u64 intr;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RAS);
-+
-+	if (intr & BIT_ULL(34))
-+		dev_err(rvu->dev, "NIX: Poisoned data on NIX_AQ_INST_S read\n");
-+
-+	if (intr & BIT_ULL(33))
-+		dev_err(rvu->dev, "NIX: Poisoned data on NIX_AQ_RES_S write\n");
-+
-+	if (intr & BIT_ULL(32))
-+		dev_err(rvu->dev, "NIX: Poisoned data on HW context read\n");
-+
-+	if (intr & BIT_ULL(4))
-+		dev_err(rvu->dev, "NIX: Poisoned data on packet read from mirror buffer\n");
-+
-+	if (intr & BIT_ULL(3))
-+		dev_err(rvu->dev, "NIX: Poisoned data on packet read from multicast buffer\n");
-+
-+	if (intr & BIT_ULL(2))
-+		dev_err(rvu->dev, "NIX: Poisoned data on WQE read from mirror buffer\n");
-+
-+	if (intr & BIT_ULL(1))
-+		dev_err(rvu->dev, "NIX: Poisoned data on WQE read from multicast buffer\n");
-+
-+	if (intr & BIT_ULL(0))
-+		dev_err(rvu->dev, "NIX: Poisoned data on NIX_RX_MCE_S read\n");
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS, intr);
-+	return IRQ_HANDLED;
-+}
-+
-+static bool rvu_nix_af_request_irq(struct rvu *rvu, int blkaddr, int offset,
-+				   const char *name, irq_handler_t fn)
-+{
-+	int rc;
-+
-+	WARN_ON(rvu->irq_allocated[offset]);
-+	rvu->irq_allocated[offset] = false;
-+	sprintf(&rvu->irq_name[offset * NAME_SIZE], name);
-+	rc = request_irq(pci_irq_vector(rvu->pdev, offset), fn, 0,
-+			 &rvu->irq_name[offset * NAME_SIZE], rvu);
-+	if (rc)
-+		dev_warn(rvu->dev, "Failed to register %s irq\n", name);
-+	else
-+		rvu->irq_allocated[offset] = true;
-+
-+	return rvu->irq_allocated[offset];
-+}
-+
-+int rvu_nix_register_interrupts(struct rvu *rvu)
-+{
-+	int blkaddr, base;
-+	bool rc;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	/* Get NIX AF MSIX vectors offset. */
-+	base = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!base) {
-+		dev_warn(rvu->dev,
-+			 "Failed to get NIX_AF_INT vector offsets\n");
-+		return 0;
++	/* HRM 14.13.4 (4) */
++	/* Clean up nscheduled IENT let the work flow. */
++	for (iue = 0; iue < sso->sso_iue; iue++) {
++		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_GRP(iue));
++		if (SSO_AF_HWGRPX_IUEX_NOSCHED(lf, reg)) {
++			wqp = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_WQP(iue));
++			rvu_sso_store_pair(wqp, iue, rvu->afreg_base +
++					   ((ssow_blkaddr << 28) |
++					    SSOW_AF_BAR2_ALIASX(0,
++						  SSOW_LF_GWS_OP_CLR_NSCHED0)));
++		}
 +	}
 +
-+	/* Register and enable NIX_AF_RVU_INT interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, blkaddr, base +  NIX_AF_INT_VEC_RVU,
-+				    "NIX_AF_RVU_INT",
-+				    rvu_nix_af_rvu_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
++	/* HRM 14.13.4 (6) */
++	/* Drain all the work using grouped gw. */
++	aq_cnt = rvu_read64(rvu, blkaddr,
++			    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_AQ_CNT));
++	ds_cnt = rvu_read64(rvu, blkaddr,
++			    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_MISC_CNT));
++	cq_ds_cnt = rvu_read64(rvu, blkaddr,
++			       SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_INT_CNT));
++	cq_ds_cnt &= SSO_LF_GGRP_INT_CNT_MASK;
 +
-+	/* Register and enable NIX_AF_ERR_INT interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, blkaddr, base + NIX_AF_INT_VEC_AF_ERR,
-+				    "NIX_AF_ERR_INT",
-+				    rvu_nix_af_err_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
++	val  = slot;		/* GGRP ID */
++	val |= BIT_ULL(18);	/* Grouped */
++	val |= BIT_ULL(16);	/* WAIT */
 +
-+	/* Register and enable NIX_AF_RAS interrupt */
-+	rc = rvu_nix_af_request_irq(rvu, blkaddr, base + NIX_AF_INT_VEC_POISON,
-+				    "NIX_AF_RAS",
-+				    rvu_nix_af_ras_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1S, ~0ULL);
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_NW_TIM),
++		    SSOW_LF_GWS_MAX_NW_TIM);
++
++	while (aq_cnt || cq_ds_cnt || ds_cnt) {
++		rvu_write64(rvu, ssow_blkaddr,
++			    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_OP_GET_WORK),
++			    val);
++		do {
++			reg = rvu_read64(rvu, ssow_blkaddr,
++					 SSOW_AF_BAR2_ALIASX(0,
++							     SSOW_LF_GWS_TAG));
++		} while (reg & BIT_ULL(63));
++		if (((reg >> 32) & SSO_TT_EMPTY) != SSO_TT_EMPTY)
++			rvu_write64(rvu, ssow_blkaddr,
++				    SSOW_AF_BAR2_ALIASX(0,
++						SSOW_LF_GWS_OP_SWTAG_FLUSH),
++				    0x0);
++		aq_cnt = rvu_read64(rvu, blkaddr,
++				    SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_AQ_CNT)
++				    );
++		ds_cnt = rvu_read64(rvu, blkaddr,
++				    SSO_AF_BAR2_ALIASX(slot,
++						       SSO_LF_GGRP_MISC_CNT));
++		cq_ds_cnt = rvu_read64(rvu, blkaddr,
++				       SSO_AF_BAR2_ALIASX(slot,
++							  SSO_LF_GGRP_INT_CNT));
++		/* Extract cq and ds count */
++		cq_ds_cnt &= SSO_LF_GGRP_INT_CNT_MASK;
++	}
++
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_NW_TIM), 0x0);
++
++	/* HRM 14.13.4 (7) */
++	reg = rvu_read64(rvu, blkaddr,
++			 SSO_AF_BAR2_ALIASX(slot, SSO_LF_GGRP_XAQ_CNT))
++		& SSO_LF_GGRP_XAQ_CNT_MASK;
++	if (reg != 0)
++		dev_warn(rvu->dev,
++			 "SSO_LF[%d]_GGRP_XAQ_CNT is %lld expected 0", lf, reg);
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_PAGE_CNT(lf))
++		& SSO_AF_HWGRP_PAGE_CNT_MASK;
++	if (reg != 0)
++		dev_warn(rvu->dev,
++			 "SSO_AF_HWGRP[%d]_PAGE_CNT is %lld expected 0", lf,
++			 reg);
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_IAQ_THR(lf))
++		>> SSO_HWGRP_IAQ_GRP_CNT_SHIFT;
++	reg &= SSO_HWGRP_IAQ_GRP_CNT_MASK;
++	if (reg != 0)
++		dev_warn(rvu->dev,
++			 "SSO_AF_HWGRP[%d]_IAQ_THR is %lld expected 0", lf,
++			 reg);
++	rvu_write64(rvu, ssow_blkaddr, SSOW_AF_BAR2_SEL, 0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWSX_INV(ssow_lf), 0x1);
++
++af_cleanup:
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_UNMAP_INFO);
++	if ((reg & 0xFFF) == pcifunc)
++		rvu_write64(rvu, blkaddr, SSO_AF_ERR0, SSO_AF_ERR0_MASK);
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_UNMAP_INFO2);
++	if ((reg & 0xFFF) == pcifunc)
++		rvu_write64(rvu, blkaddr, SSO_AF_ERR2, SSO_AF_ERR2_MASK);
++
++	rvu_write64(rvu, blkaddr, SSO_AF_POISONX(lf / 64), lf % 64);
++	rvu_write64(rvu, blkaddr, SSO_AF_IU_ACCNTX_RST(lf), 0x1);
++
++	err = rvu_poll_reg(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf),
++			   SSO_HWGRP_AW_STS_NPA_FETCH, true);
++	if (err)
++		dev_warn(rvu->dev,
++			 "SSO_HWGRP(%d)_AW_STATUS[NPA_FETCH] not cleared", lf);
++
++	/* Remove all pointers from XAQ, HRM 14.13.6 */
++	rvu_write64(rvu, blkaddr, SSO_AF_ERR0_ENA_W1C, ~0ULL);
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_AW_CFG(lf));
++	reg = (reg & ~SSO_HWGRP_AW_CFG_RWEN) | SSO_HWGRP_AW_CFG_XAQ_BYP_DIS;
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_CFG(lf), reg);
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf));
++	if (reg & SSO_HWGRP_AW_STS_TPTR_VLD) {
++		/* aura will be torn down, no need to free the pointer. */
++		rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf),
++			    SSO_HWGRP_AW_STS_TPTR_VLD);
++	}
++
++	err = rvu_poll_reg(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf),
++			   SSO_HWGRP_AW_STS_XAQ_BUFSC_MASK, true);
++	if (err) {
++		dev_warn(rvu->dev,
++			 "SSO_HWGRP(%d)_AW_STATUS[XAQ_BUF_CACHED] not cleared",
++			 lf);
++		return err;
++	}
++
++	rvu_write64(rvu, blkaddr, SSO_AF_ERR0, ~0ULL);
++	/* Re-enable error reporting once we're finished */
++	rvu_write64(rvu, blkaddr, SSO_AF_ERR0_ENA_W1S, ~0ULL);
++
++	/* HRM 14.13.4 (13) */
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_CFG(lf),
++		    SSO_HWGRP_AW_CFG_LDWB | SSO_HWGRP_AW_CFG_LDT |
++		    SSO_HWGRP_AW_CFG_STT);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_XAQ_AURA(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_XAQX_GMCTL(lf), 0x0);
++	reg = (SSO_HWGRP_PRI_AFF_MASK << SSO_HWGRP_PRI_AFF_SHIFT) |
++	      (SSO_HWGRP_PRI_WGT_MASK << SSO_HWGRP_PRI_WGT_SHIFT) |
++	      (0x1 << SSO_HWGRP_PRI_WGT_SHIFT);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_PRI(lf), reg);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_WS_PC(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_EXT_PC(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_WA_PC(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_TS_PC(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_DS_PC(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_XAQ_LIMIT(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_IU_ACCNT(lf), 0x0);
++
++	/* The delta between the current and default thresholds
++	 * need to be returned to the SSO
++	 */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_IAQ_THR(lf)) &
++		SSO_HWGRP_IAQ_RSVD_THR_MASK;
++	add = SSO_HWGRP_IAQ_RSVD_THR - reg;
++	reg = (SSO_HWGRP_IAQ_MAX_THR_MASK << SSO_HWGRP_IAQ_MAX_THR_SHIFT) |
++	      SSO_HWGRP_IAQ_RSVD_THR;
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_IAQ_THR(lf), reg);
++
++	if (add)
++		rvu_write64(rvu, blkaddr, SSO_AF_AW_ADD,
++			    (add & SSO_AF_AW_ADD_RSVD_FREE_MASK) <<
++			    SSO_AF_AW_ADD_RSVD_FREE_SHIFT);
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_TAQ_THR(lf)) &
++		SSO_HWGRP_TAQ_RSVD_THR_MASK;
++	add = SSO_HWGRP_TAQ_RSVD_THR - reg;
++	reg = (SSO_HWGRP_TAQ_MAX_THR_MASK << SSO_HWGRP_TAQ_MAX_THR_SHIFT) |
++	      SSO_HWGRP_TAQ_RSVD_THR;
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_TAQ_THR(lf), reg);
++	if (add)
++		rvu_write64(rvu, blkaddr, SSO_AF_TAQ_ADD,
++			    (add & SSO_AF_TAQ_RSVD_FREE_MASK) <<
++			    SSO_AF_TAQ_ADD_RSVD_FREE_SHIFT);
++
++	rvu_write64(rvu, blkaddr, SSO_AF_XAQX_HEAD_PTR(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_XAQX_TAIL_PTR(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_XAQX_HEAD_NEXT(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_XAQX_TAIL_NEXT(lf), 0x0);
++
++	rvu_write64(rvu, blkaddr, SSO_AF_BAR2_SEL, 0);
 +
 +	return 0;
-+err:
-+	rvu_nix_unregister_interrupts(rvu);
++}
++
++int rvu_ssow_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot)
++{
++	int blkaddr, ssow_blkaddr;
++	u64 reg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
++	if (blkaddr < 0)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	ssow_blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSOW, 0);
++	if (ssow_blkaddr < 0)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	/* Enable BAR2 alias access. */
++	reg = BIT_ULL(16) | pcifunc;
++	rvu_write64(rvu, ssow_blkaddr, SSOW_AF_BAR2_SEL, reg);
++
++	/* Ignore all interrupts */
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_INT_ENA_W1C),
++		    SSOW_LF_GWS_INT_MASK);
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_INT),
++		    SSOW_LF_GWS_INT_MASK);
++
++	/* HRM 14.13.4 (3) */
++	/* Wait till waitw/desched completes. */
++	do {
++		reg = rvu_read64(rvu, ssow_blkaddr,
++				 SSOW_AF_BAR2_ALIASX(slot,
++						     SSOW_LF_GWS_PENDSTATE));
++	} while (reg & (BIT_ULL(63) | BIT_ULL(58)));
++
++	reg = rvu_read64(rvu, ssow_blkaddr,
++			 SSOW_AF_BAR2_ALIASX(slot, SSOW_LF_GWS_TAG));
++	/* Switch Tag Pending */
++	if (reg & BIT_ULL(62))
++		rvu_write64(rvu, ssow_blkaddr,
++			    SSOW_AF_BAR2_ALIASX(slot, SSOW_LF_GWS_OP_DESCHED),
++			    0x0);
++	/* Tag Type != EMPTY use swtag_flush to release tag-chain. */
++	else if (((reg >> 32) & SSO_TT_EMPTY) != SSO_TT_EMPTY)
++		rvu_write64(rvu, ssow_blkaddr,
++			    SSOW_AF_BAR2_ALIASX(slot,
++						SSOW_LF_GWS_OP_SWTAG_FLUSH),
++			    0x0);
++
++	/* Wait for desched to complete. */
++	do {
++		reg = rvu_read64(rvu, ssow_blkaddr,
++				 SSOW_AF_BAR2_ALIASX(slot,
++						     SSOW_LF_GWS_PENDSTATE));
++	} while (reg & BIT_ULL(58));
++
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_NW_TIM), 0x0);
++	rvu_write64(rvu, ssow_blkaddr,
++		    SSOW_AF_BAR2_ALIASX(0, SSOW_LF_GWS_OP_GWC_INVAL), 0x0);
++
++	/* set SAI_INVAL bit */
++	rvu_write64(rvu, blkaddr, SSO_AF_HWSX_INV(lf), 0x1);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWSX_ARB(lf), 0x0);
++	rvu_write64(rvu, blkaddr, SSO_AF_HWSX_GMCTL(lf), 0x0);
++
++	rvu_write64(rvu, ssow_blkaddr, SSOW_AF_BAR2_SEL, 0x0);
++
++	return 0;
++}
++
++int rvu_mbox_handler_sso_hw_setconfig(struct rvu *rvu,
++				      struct sso_hw_setconfig *req,
++				      struct msg_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int hwgrp, lf, err, blkaddr;
++	u32 npa_aura_id;
++	u64 reg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
++	if (blkaddr < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	npa_aura_id = req->npa_aura_id;
++
++	/* Check if requested 'SSOLF <=> NPALF' mapping is valid */
++	if (req->npa_pf_func) {
++		/* If default, use 'this' SSOLF's PFFUNC */
++		if (req->npa_pf_func == RVU_DEFAULT_PF_FUNC)
++			req->npa_pf_func = pcifunc;
++		if (!is_pffunc_map_valid(rvu, req->npa_pf_func, BLKTYPE_NPA))
++			return SSO_AF_INVAL_NPA_PF_FUNC;
++	}
++
++	/* Initialize XAQ ring */
++	for (hwgrp = 0; hwgrp < req->hwgrps; hwgrp++) {
++		lf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, hwgrp);
++		if (lf < 0)
++			return SSO_AF_ERR_LF_INVALID;
++
++		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf));
++		if (reg & SSO_HWGRP_AW_STS_XAQ_BUFSC_MASK || reg & BIT_ULL(3)) {
++			reg = rvu_read64(rvu, blkaddr,
++					 SSO_AF_HWGRPX_AW_CFG(lf));
++			reg = (reg & ~SSO_HWGRP_AW_CFG_RWEN) |
++			       SSO_HWGRP_AW_CFG_XAQ_BYP_DIS;
++			rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_CFG(lf),
++				    reg);
++
++			reg = rvu_read64(rvu, blkaddr,
++					 SSO_AF_HWGRPX_AW_STATUS(lf));
++			if (reg & SSO_HWGRP_AW_STS_TPTR_VLD) {
++				rvu_poll_reg(rvu, blkaddr,
++					     SSO_AF_HWGRPX_AW_STATUS(lf),
++					     SSO_HWGRP_AW_STS_NPA_FETCH, true);
++
++				rvu_write64(rvu, blkaddr,
++					    SSO_AF_HWGRPX_AW_STATUS(lf),
++					    SSO_HWGRP_AW_STS_TPTR_VLD);
++			}
++
++			if (rvu_poll_reg(rvu, blkaddr,
++					 SSO_AF_HWGRPX_AW_STATUS(lf),
++					 SSO_HWGRP_AW_STS_XAQ_BUFSC_MASK, true))
++				dev_warn(rvu->dev,
++					 "SSO_HWGRP(%d)_AW_STATUS[XAQ_BUF_CACHED] not cleared",
++					 lf);
++		}
++
++		rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_XAQ_AURA(lf),
++			    npa_aura_id);
++		rvu_write64(rvu, blkaddr, SSO_AF_XAQX_GMCTL(lf),
++			    req->npa_pf_func);
++
++		/* enable XAQ */
++		rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_CFG(lf), 0xF);
++
++		/* Wait for ggrp to ack. */
++		err = rvu_poll_reg(rvu, blkaddr,
++				   SSO_AF_HWGRPX_AW_STATUS(lf),
++				   SSO_HWGRP_AW_STS_INIT_STS, false);
++
++		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_AW_STATUS(lf));
++		if (err || (reg & BIT_ULL(4)) || !(reg & BIT_ULL(8))) {
++			dev_warn(rvu->dev, "SSO_HWGRP(%d) XAQ NPA pointer initialization failed",
++				 lf);
++			return -ENOMEM;
++		}
++	}
++
++	return 0;
++}
++
++int rvu_mbox_handler_sso_grp_set_priority(struct rvu *rvu,
++					  struct sso_grp_priority *req,
++					  struct msg_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++	u64 regval;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
++	if (blkaddr < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	regval = (((u64)(req->weight & SSO_HWGRP_PRI_WGT_MASK)
++		  << SSO_HWGRP_PRI_WGT_SHIFT) |
++		  ((u64)(req->affinity & SSO_HWGRP_PRI_AFF_MASK)
++		   << SSO_HWGRP_PRI_AFF_SHIFT) |
++		  (req->priority & SSO_HWGRP_PRI_MASK));
++
++	lf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, req->grp);
++	if (lf < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_PRI(lf), regval);
++
++	return 0;
++}
++
++int rvu_mbox_handler_sso_grp_get_priority(struct rvu *rvu,
++					  struct sso_info_req *req,
++					  struct sso_grp_priority *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++	u64 regval;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
++	if (blkaddr < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	lf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, req->grp);
++	if (lf < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	regval = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_PRI(lf));
++
++	rsp->weight = (regval >> SSO_HWGRP_PRI_WGT_SHIFT)
++			& SSO_HWGRP_PRI_WGT_MASK;
++	rsp->affinity = (regval >> SSO_HWGRP_PRI_AFF_SHIFT)
++			& SSO_HWGRP_PRI_AFF_MASK;
++	rsp->priority = regval & SSO_HWGRP_PRI_MASK;
++
++	return 0;
++}
++
++int rvu_mbox_handler_sso_lf_alloc(struct rvu *rvu, struct sso_lf_alloc_req *req,
++				  struct sso_lf_alloc_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int ssolf, uniq_ident, rc = 0;
++	struct rvu_pfvf *pfvf;
++	int hwgrp, blkaddr;
++
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
++	if (pfvf->sso <= 0 || blkaddr < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	if (!pfvf->sso_uniq_ident) {
++		uniq_ident = rvu_alloc_rsrc(&hw->sso.pfvf_ident);
++		if (uniq_ident < 0) {
++			rc = SSO_AF_ERR_AF_LF_ALLOC;
++			goto exit;
++		}
++		pfvf->sso_uniq_ident = uniq_ident;
++	} else {
++		uniq_ident = pfvf->sso_uniq_ident;
++	}
++
++	/* Set threshold for the In-Unit Accounting Index*/
++	rvu_write64(rvu, blkaddr, SSO_AF_IU_ACCNTX_CFG(uniq_ident),
++		    SSO_AF_HWGRP_IU_ACCNT_MAX_THR << 16);
++
++	for (hwgrp = 0; hwgrp < req->hwgrps; hwgrp++) {
++		ssolf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, hwgrp);
++		if (ssolf < 0)
++			return SSO_AF_ERR_LF_INVALID;
++
++		/* All groups assigned to single SR-IOV function must be
++		 * assigned same unique in-unit accounting index.
++		 */
++		rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_IU_ACCNT(ssolf),
++			    0x10000 | uniq_ident);
++
++		/* Assign unique tagspace */
++		rvu_write64(rvu, blkaddr, SSO_AF_HWGRPX_AW_TAGSPACE(ssolf),
++			    uniq_ident);
++	}
++
++exit:
++	rsp->xaq_buf_size = hw->sso.sso_xaq_buf_size;
++	rsp->xaq_wq_entries = hw->sso.sso_xaq_num_works;
++	rsp->in_unit_entries = hw->sso.sso_iue;
++	rsp->hwgrps = hw->sso.sso_hwgrps;
 +	return rc;
 +}
 +
-+void rvu_nix_unregister_interrupts(struct rvu *rvu)
++int rvu_mbox_handler_sso_lf_free(struct rvu *rvu, struct sso_lf_free_req *req,
++				 struct msg_rsp *rsp)
 +{
-+	int blkaddr, offs, i;
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int hwgrp, lf, err, blkaddr;
++	struct rvu_pfvf *pfvf;
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
 +	if (blkaddr < 0)
-+		return;
++		return SSO_AF_ERR_LF_INVALID;
 +
-+	offs = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!offs)
-+		return;
++	/* Perform reset of SSO HW GRPs */
++	for (hwgrp = 0; hwgrp < req->hwgrps; hwgrp++) {
++		lf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, hwgrp);
++		if (lf < 0)
++			return SSO_AF_ERR_LF_INVALID;
 +
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1C, ~0ULL);
++		err = rvu_sso_lf_teardown(rvu, pcifunc, lf, hwgrp);
++		if (err)
++			return err;
 +
-+	if (rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU]) {
-+		free_irq(pci_irq_vector(rvu->pdev, offs + NIX_AF_INT_VEC_RVU),
-+			 rvu);
-+		rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU] = false;
++		/* Reset this SSO LF */
++		err = rvu_lf_reset(rvu, &hw->block[blkaddr], lf);
++		if (err)
++			dev_err(rvu->dev, "SSO%d free: failed to reset\n", lf);
++		/* Reset the IAQ and TAQ thresholds */
++		rvu_sso_hwgrp_config_thresh(rvu, blkaddr, lf);
 +	}
 +
-+	for (i = NIX_AF_INT_VEC_AF_ERR; i < NIX_AF_INT_VEC_CNT; i++)
-+		if (rvu->irq_allocated[offs + i]) {
-+			free_irq(pci_irq_vector(rvu->pdev, offs + i), rvu);
-+			rvu->irq_allocated[offs + i] = false;
-+		}
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-index 2940b6d..8fd256e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-@@ -70,6 +70,16 @@ enum npa_af_int_vec_e {
- 	NPA_AF_INT_VEC_CNT	= 0x5,
- };
- 
-+/* NIX Admin function Interrupt Vector Enumeration */
-+enum nix_af_int_vec_e {
-+	NIX_AF_INT_VEC_RVU	= 0x0,
-+	NIX_AF_INT_VEC_GEN	= 0x1,
-+	NIX_AF_INT_VEC_AQ_DONE	= 0x2,
-+	NIX_AF_INT_VEC_AF_ERR	= 0x3,
-+	NIX_AF_INT_VEC_POISON	= 0x4,
-+	NIX_AF_INT_VEC_CNT	= 0x5,
-+};
++	if (pfvf->sso_uniq_ident) {
++		rvu_free_rsrc(&hw->sso.pfvf_ident, pfvf->sso_uniq_ident);
++		pfvf->sso_uniq_ident = 0;
++	}
 +
- /**
-  * RVU PF Interrupt Vector Enumeration
-  */
++	return 0;
++}
++
++int rvu_mbox_handler_sso_ws_cache_inv(struct rvu *rvu, struct msg_req *req,
++				      struct msg_rsp *rsp)
++{
++	int num_lfs, ssowlf, hws, blkaddr;
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSOW, pcifunc);
++	if (blkaddr < 0)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	block = &hw->block[blkaddr];
++
++	num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu, pcifunc),
++					block->type);
++	if (!num_lfs)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	/* SSO HWS invalidate registers are part of SSO AF */
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, pcifunc);
++	if (blkaddr < 0)
++		return SSO_AF_ERR_LF_INVALID;
++
++	for (hws = 0; hws < num_lfs; hws++) {
++		ssowlf = rvu_get_lf(rvu, block, pcifunc, hws);
++		if (ssowlf < 0)
++			return SSOW_AF_ERR_LF_INVALID;
++
++		/* Reset this SSO LF GWS cache */
++		rvu_write64(rvu, blkaddr, SSO_AF_HWSX_INV(ssowlf), 1);
++	}
++
++	return 0;
++}
++
++int rvu_mbox_handler_ssow_lf_alloc(struct rvu *rvu,
++				   struct ssow_lf_alloc_req *req,
++				   struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_pfvf *pfvf;
++
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
++	if (pfvf->ssow <= 0)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	return 0;
++}
++
++int rvu_mbox_handler_ssow_lf_free(struct rvu *rvu,
++				  struct ssow_lf_free_req *req,
++				  struct msg_rsp *rsp)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 pcifunc = req->hdr.pcifunc;
++	int ssowlf, hws, err, blkaddr;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSOW, pcifunc);
++	if (blkaddr < 0)
++		return SSOW_AF_ERR_LF_INVALID;
++
++	for (hws = 0; hws < req->hws; hws++) {
++		ssowlf = rvu_get_lf(rvu, &hw->block[blkaddr], pcifunc, hws);
++		if (ssowlf < 0)
++			return SSOW_AF_ERR_LF_INVALID;
++
++		err = rvu_ssow_lf_teardown(rvu, pcifunc, ssowlf, hws);
++		if (err)
++			return err;
++
++		/* Reset this SSO LF */
++		err = rvu_lf_reset(rvu, &hw->block[blkaddr], ssowlf);
++		if (err)
++			dev_err(rvu->dev, "SSOW%d free: failed to reset\n",
++				ssowlf);
++	}
++
++	return 0;
++}
++
++int rvu_sso_init(struct rvu *rvu)
++{
++	u64 iaq_free_cnt, iaq_rsvd, iaq_max, iaq_rsvd_cnt = 0;
++	u64 taq_free_cnt, taq_rsvd, taq_max, taq_rsvd_cnt = 0;
++	struct sso_rsrc *sso = &rvu->hw->sso;
++	int blkaddr, hwgrp, grpmsk, hws, err;
++	u64 reg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
++	if (blkaddr < 0)
++		return 0;
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_CONST);
++	/* number of SSO hardware work slots */
++	sso->sso_hws = (reg >> 56) & 0xFF;
++	/* number of SSO hardware groups */
++	sso->sso_hwgrps = (reg & 0xFFFF);
++	/* number of SSO In-Unit entries */
++	sso->sso_iue =  (reg >> 16) & 0xFFFF;
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_CONST1);
++	/* number of work entries in external admission queue (XAQ) */
++	sso->sso_xaq_num_works = (reg >> 16) & 0xFFFF;
++	/* number of bytes in a XAQ buffer */
++	sso->sso_xaq_buf_size = (reg & 0xFFFF);
++
++	/* Configure IAQ entries */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_AW_WE);
++	iaq_free_cnt = reg & SSO_AF_IAQ_FREE_CNT_MASK;
++
++	/* Give out half of buffers fairly, rest left floating */
++	iaq_rsvd = iaq_free_cnt / sso->sso_hwgrps / 2;
++
++	/* Enforce minimum per hardware requirements */
++	if (iaq_rsvd < SSO_HWGRP_IAQ_RSVD_THR)
++		iaq_rsvd = SSO_HWGRP_IAQ_RSVD_THR;
++	/* To ensure full streaming performance should be at least 208. */
++	iaq_max = iaq_rsvd + SSO_HWGRP_IAQ_MAX_THR_STRM_PERF;
++
++	if (iaq_max >= (SSO_AF_IAQ_FREE_CNT_MAX + 1))
++		iaq_max = SSO_AF_IAQ_FREE_CNT_MAX;
++
++	/* Configure TAQ entries */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_TAQ_CNT);
++	taq_free_cnt = reg & SSO_AF_TAQ_FREE_CNT_MASK;
++
++	/* Give out half of buffers fairly, rest left floating */
++	taq_rsvd = taq_free_cnt / sso->sso_hwgrps / 2;
++
++	/* Enforce minimum per hardware requirements */
++	if (taq_rsvd < SSO_HWGRP_TAQ_RSVD_THR)
++		taq_rsvd = SSO_HWGRP_TAQ_RSVD_THR;
++	/* To ensure full streaming performance should be at least 16. */
++	taq_max = taq_rsvd + SSO_HWGRP_TAQ_MAX_THR_STRM_PERF;
++
++	if (taq_max >= (SSO_AF_TAQ_FREE_CNT_MAX + 1))
++		taq_max = SSO_AF_TAQ_FREE_CNT_MAX;
++
++	/* Save thresholds to reprogram HWGRPs on reset */
++	sso->iaq_rsvd = iaq_rsvd;
++	sso->iaq_max = iaq_max;
++	sso->taq_rsvd = taq_rsvd;
++	sso->taq_max = taq_max;
++
++	for (hwgrp = 0; hwgrp < sso->sso_hwgrps; hwgrp++) {
++		rvu_sso_hwgrp_config_thresh(rvu, blkaddr, hwgrp);
++		iaq_rsvd_cnt += iaq_rsvd;
++		taq_rsvd_cnt += taq_rsvd;
++	}
++
++	/* Verify SSO_AW_WE[RSVD_FREE], TAQ_CNT[RSVD_FREE] are greater than
++	 * or equal to sum of IAQ[RSVD_THR], TAQ[RSRVD_THR] fields.
++	 */
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_AW_WE);
++	reg = (reg >> SSO_AF_IAQ_RSVD_FREE_SHIFT) & SSO_AF_IAQ_RSVD_FREE_MASK;
++	if (reg < iaq_rsvd_cnt) {
++		dev_warn(rvu->dev, "WARN: Wrong IAQ resource calculations %llx vs %llx\n",
++			 reg, iaq_rsvd_cnt);
++		rvu_write64(rvu, blkaddr, SSO_AF_AW_WE,
++			    (iaq_rsvd_cnt & SSO_AF_IAQ_RSVD_FREE_MASK) <<
++			    SSO_AF_IAQ_RSVD_FREE_SHIFT);
++	}
++
++	reg = rvu_read64(rvu, blkaddr, SSO_AF_TAQ_CNT);
++	reg = (reg >> SSO_AF_TAQ_RSVD_FREE_SHIFT) & SSO_AF_TAQ_RSVD_FREE_MASK;
++	if (reg < taq_rsvd_cnt) {
++		dev_warn(rvu->dev, "WARN: Wrong TAQ resource calculations %llx vs %llx\n",
++			 reg, taq_rsvd_cnt);
++		rvu_write64(rvu, blkaddr, SSO_AF_TAQ_CNT,
++			    (taq_rsvd_cnt & SSO_AF_TAQ_RSVD_FREE_MASK) <<
++			    SSO_AF_TAQ_RSVD_FREE_SHIFT);
++	}
++
++	/* Unset the HWS Hardware Group Mask.
++	 * The hardware group mask should be set by PF/VF
++	 * using SSOW_LF_GWS_GRPMSK_CHG based on the LF allocations.
++	 */
++	for (grpmsk = 0; grpmsk < (sso->sso_hwgrps / 64); grpmsk++) {
++		for (hws = 0; hws < sso->sso_hws; hws++) {
++			rvu_write64(rvu, blkaddr,
++				    SSO_AF_HWSX_SX_GRPMSKX(hws, 0, grpmsk),
++				    0x0);
++			rvu_write64(rvu, blkaddr,
++				    SSO_AF_HWSX_SX_GRPMSKX(hws, 1, grpmsk),
++				    0x0);
++		}
++	}
++
++	/* Allocate SSO_AF_CONST::HWS + 1. As the total number of pf/vf are
++	 * limited by the numeber of HWS available.
++	 */
++	sso->pfvf_ident.max = sso->sso_hws + 1;
++	err = rvu_alloc_bitmap(&sso->pfvf_ident);
++	if (err)
++		return err;
++
++	/* Reserve one bit so that identifier starts from 1 */
++	rvu_alloc_rsrc(&sso->pfvf_ident);
++
++	return 0;
++}
++
++void rvu_sso_freemem(struct rvu *rvu)
++{
++	struct sso_rsrc *sso = &rvu->hw->sso;
++
++	kfree(sso->pfvf_ident.bmap);
++}
 -- 
 2.7.4
 
