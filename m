@@ -2,108 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EB40FF8B2
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 10:52:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97458FF933
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 12:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726084AbfKQJwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 04:52:40 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:37258 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725953AbfKQJwk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Nov 2019 04:52:40 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 44A741B20C5D; Sun, 17 Nov 2019 12:52:35 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 44A741B20C5D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1573984355; bh=kb0YVBramWtjA/Ad8wxxFedgfyiwwLDzdL9qmwmkwJo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=CYTJS3OPFdbnqAqD6h9NnT5GP96M+sKXbB5l2quB1ODwLZ2oRj8lF8SMe3fQnKBrx
-         eGlDMkBsi6YPE0BtsF4dpyMVNNE4XzANSawajT2/yphkVDHVOtp5uoTfmfHy90cZhg
-         LXfVWQAU8GF+SLSwmSAA6dBrnKKYolIuygqq/w5c=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 903E41B202CB;
-        Sun, 17 Nov 2019 12:52:24 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 903E41B202CB
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 57C4B1B2022F;
-        Sun, 17 Nov 2019 12:52:24 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Sun, 17 Nov 2019 12:52:24 +0300 (MSK)
+        id S1726088AbfKQLqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 06:46:21 -0500
+Received: from mail-eopbgr80073.outbound.protection.outlook.com ([40.107.8.73]:32389
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726027AbfKQLqV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Nov 2019 06:46:21 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pd2Exwi9JxTd0fiMJFiAKVKW3/lT/lSOFA4nV+rurg982NCFRJHyFGsG+0IIInbC4Eki2z4iRShkvoJnkVRI6E+23p5uCNdms5EC5Qbz34MipsPQdNikb0vnrRnMA0DCh4UluyJ9hvJWYhGXqPHVOhyZ0gkr9RVM7RGvzEcvBcYz9s2zexuedEqaYng9O33hFupe+pID3H0F9RvMqc3wxNaJXas2vdlt4+g6H2nmG7ftNpPXrCkwXxXJzbdyZBYYtdEXk2UuA+se7mZKrKbUKp+ftvqjAUhw2B7e8ZMbMpb3Ma6NlMPo1UGiDR0iw9hJPZbcKgwFEDSMYNwnl0HBjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=spiKmaemsn3hdih+271tFKaYRt9TRWjFXZ44Z3aDhTU=;
+ b=eCaI2Kg92kkZRzM0nejyUYiOdZP6AkzhyI3SP6t/w8tT2nqicTYddvzCzqlLS3FQls7Q5za6HQ97JK9nzXiO7aPs2ufBHpmHFSOB/qGkGsLY7ATppcgVyDWimw0D75MNm666kTl7x7sju1dFO9RsfinPGmBn07drGANQHkhRW9XzsGoy0rUph/DP6HAlaGfS62YDIoNo06Gv2A9JD+A5x+v8fUIaTQ/9wBhk3Td/e5hIjvtAAZ/ZQQhJTqLfbORutFZpkEp1bjhXwYC9Q1f6EB6l36h1VEp9Htc90wuELPolvsWJkZUZ91qPh2G1ReBWy9TUQ3eeAL15B4nwqjJpmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=spiKmaemsn3hdih+271tFKaYRt9TRWjFXZ44Z3aDhTU=;
+ b=sk7xDEBpy5dZE2M2oP45N9txSCne5ORk3DoEiRBSZzRfqMcME1yf8cN1yd9xXZ8oxb85DVbr5uohWUyyiYBHNBX+vRs7gcPPlo6a17Pmtqft0seob9nFpmhaqPCKy9iWBW5mKFgYiZ7QoyaAEnpMrlRIE6sTjV+0MkIz2eP+5cc=
+Received: from VI1PR05MB5680.eurprd05.prod.outlook.com (20.178.124.149) by
+ VI1PR05MB5421.eurprd05.prod.outlook.com (20.177.200.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.29; Sun, 17 Nov 2019 11:46:16 +0000
+Received: from VI1PR05MB5680.eurprd05.prod.outlook.com
+ ([fe80::b5cf:e640:40d3:b461]) by VI1PR05MB5680.eurprd05.prod.outlook.com
+ ([fe80::b5cf:e640:40d3:b461%4]) with mapi id 15.20.2451.029; Sun, 17 Nov 2019
+ 11:46:16 +0000
+From:   Shay Drory <shayd@mellanox.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Maor Gottlieb <maorg@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        "lennart@poettering.net" <lennart@poettering.net>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Send SFP event from kernel driver to user space (UDEV)
+Thread-Topic: Send SFP event from kernel driver to user space (UDEV)
+Thread-Index: AQHVnTyemIrPi2KC+0KxDlDyt5FLmg==
+Date:   Sun, 17 Nov 2019 11:46:15 +0000
+Message-ID: <a041bba0-83d1-331f-d263-c8cbb0509220@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shayd@mellanox.com; 
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 180caa74-8399-43c2-29c2-08d76b53c101
+x-ms-traffictypediagnostic: VI1PR05MB5421:|VI1PR05MB5421:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5421D130E2BE0BC7E0604F64C2720@VI1PR05MB5421.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 02243C58C6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(366004)(39860400002)(376002)(346002)(199004)(189003)(31686004)(6486002)(6436002)(99286004)(1730700003)(8676002)(81156014)(966005)(5660300002)(2501003)(81166006)(4326008)(66066001)(76116006)(6506007)(6116002)(66556008)(14454004)(3846002)(66476007)(66946007)(26005)(66446008)(316002)(8936002)(102836004)(54906003)(186003)(86362001)(7736002)(107886003)(25786009)(2351001)(31696002)(64756008)(2616005)(305945005)(6512007)(486006)(476003)(256004)(36756003)(6306002)(2906002)(71190400001)(71200400001)(5640700003)(478600001)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5421;H:VI1PR05MB5680.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3lM+haCYhFexBhpFikBlwC4q+GfSbTBuuz2PPPwYSEmu7noBJkIkDhFy0l+rGP0wIq5TSXv7v3SCg7O6buAlc6NuiQw/8a/IYdRnxu6NYVgNjGM1nI5QGFhX8Ib9YdHAPaIx/xan4m8Ns2oEASLf05hVQi1U+G0WrO1BYPpVoTFPG2+Zdx9mFQizyGk797JMPhf6JC4UqMeisIG8KCNYmYTKLFv7FE26CVi9KEuR27KBtECEBdgOBdB9UXuCWDWBdYicN5rxz140eceQyoDZWuyYvBwczDzjeTpZsXe4umHXyY/y98c391OTVg633+lT1OYugvOeV4D8OvqzDLrWQE0PkayC3ZWmbJ02t//34g0frsVCSQ57pdvjpf01Hs7xDZYFiWrnHzguk/l9FsLg9saBgrrKt/AbmkFwVmUniLvpxSPBJuHTIREnM5j0O/iU
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <89C595B21030464499068224A0F20811@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Sun, 17 Nov 2019 12:52:24 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     David Miller <davem@davemloft.net>
-Cc:     ecree@solarflare.com, jiri@mellanox.com, edumazet@google.com,
-        idosch@mellanox.com, pabeni@redhat.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        jaswinder.singh@linaro.org, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
-        linuxwifi@intel.com, kvalo@codeaurora.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: core: allow fast GRO for skbs with
- Ethernet header in head
-In-Reply-To: <20191116.130101.268806870571558138.davem@davemloft.net>
-References: <20191115091135.13487-1-alobakin@dlink.ru>
- <20191116.130101.268806870571558138.davem@davemloft.net>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <5622418d39ce3ebc3d526d3e16c8546b@dlink.ru>
-X-Sender: alobakin@dlink.ru
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 180caa74-8399-43c2-29c2-08d76b53c101
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Nov 2019 11:46:15.8822
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LSASFW3Ird17vJ0jEJ7R2kgrT+opyeapvcIdWTnxu0Y+7sS3gQV+XazP7PAVIEohdX4sB5XwZW0kEWZo61P0Fg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5421
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller wrote 17.11.2019 00:01:
-
-> From: Alexander Lobakin <alobakin@dlink.ru>
-> Date: Fri, 15 Nov 2019 12:11:35 +0300
-> 
->> Commit 78d3fd0b7de8 ("gro: Only use skb_gro_header for completely
->> non-linear packets") back in May'09 (v2.6.31-rc1) has changed the
->> original condition '!skb_headlen(skb)' to
->> 'skb->mac_header == skb->tail' in gro_reset_offset() saying: "Since
->> the drivers that need this optimisation all provide completely
->> non-linear packets" (note that this condition has become the current
->> 'skb_mac_header(skb) == skb_tail_pointer(skb)' later with commmit
->> ced14f6804a9 ("net: Correct comparisons and calculations using
->> skb->tail and skb-transport_header") without any functional changes).
->> 
->> For now, we have the following rough statistics for v5.4-rc7:
->> 1) napi_gro_frags: 14
->> 2) napi_gro_receive with skb->head containing (most of) payload: 83
->> 3) napi_gro_receive with skb->head containing all the headers: 20
->> 4) napi_gro_receive with skb->head containing only Ethernet header: 2
->> 
->> With the current condition, fast GRO with the usage of
->> NAPI_GRO_CB(skb)->frag0 is available only in the [1] case.
->> Packets pushed by [2] and [3] go through the 'slow' path, but
->> it's not a problem for them as they already contain all the needed
->> headers in skb->head, so pskb_may_pull() only moves skb->data.
->> 
->> The layout of skbs in the fourth [4] case at the moment of
->> dev_gro_receive() is identical to skbs that have come through [1],
->> as napi_frags_skb() pulls Ethernet header to skb->head. The only
->> difference is that the mentioned condition is always false for them,
->> because skb_put() and friends irreversibly alter the tail pointer.
->> They also go through the 'slow' path, but now every single
->> pskb_may_pull() in every single .gro_receive() will call the *really*
->> slow __pskb_pull_tail() to pull headers to head. This significantly
->> decreases the overall performance for no visible reasons.
->  ...
->> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-> 
-> Applied to net-next, thanks.
-
-Thank you!
-
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+VG9kYXksIFNGUCBpbnNlcnRlZCAvIHJlbW92YWwgZXZlbnQgaW1wYWN0cyBvbmx5IHRoZSBrZXJu
+ZWwgc3BhY2UgZHJpdmVycy4NClRoZXJlIGFyZSB1c2VycyB3aG8gd2lzaGVzIHRvIGdldCBTRlAg
+aW5zZXJ0IC8gcmVtb3ZhbCBpbiBhIHVkZXYtZXZlbnQNCmZvcm1hdCBmb3IgdGhlaXIgYXBwbGlj
+YXRpb24gLyBkYWVtb25zIC8gbW9uaXRvcnMuDQpUaGUgbmFpdmUgd2F5IHRvIGltcGxlbWVudCB0
+aGlzIGZlYXR1cmUgd291bGQgYmUgdG8gY3JlYXRlIGEgc3lzZnMgZmlsZQ0KdGhhdCByZXByZXNl
+bnRzIGRldmljZSBTRlAsIHRvIGV4cG9zZSBpdCB1bmRlciB0aGUgbmV0ZGV2IHN5c2ZzLCBhbmQN
+CnRvIHJhaXNlIGEgdWRldiBldmVudCBvdmVyIGl0Lg0KSG93ZXZlciwgaXQgaXMgbm90IHJlYXNv
+bmFibGUgdG8gY3JlYXRlIGEgc3lzZnMgZm9yIGVhY2ggbmV0LWRldmljZS4NCkluIHRoaXMgbGV0
+dGVyLCBJIHdvdWxkIGxpa2UgdG8gb2ZmZXIgYSBuZXcgbWVjaGFuaXNtIHRoYXQgd2lsbCBhZGQg
+YQ0Kc3VwcG9ydCB0byBzZW5kIFNGUCBldmVudHMgZnJvbSB0aGUga2VybmVsIGRyaXZlciB0byB1
+c2VyIHNwYWNlLg0KVGhpcyBzdWdnZXN0aW9uIGlzIGJ1aWx0IHVwb24gYSBuZXcgbmV0bGluayBp
+bmZyYXN0cnVjdHVyZSBmb3IgZXRodG9vbA0KY3VycmVudGx5IGJlaW5nIHdyaXR0ZW4gYnkgTWlj
+aGFsIEt1YmVja3doaWNoIGNhbGxlZCDigJxldGh0b29sLW5ldGxpbmvigJ1bMV0uDQpNeSBzdWdn
+ZXN0aW9uIGlzIHRvIGRvIGl0IGJ5IGFkZGluZyBhIGZ1bmN0aW9uDQooZXRodG9vbF9zZnBfaW5z
+dGVydGVkL3JlbW92ZWQoLi4uKSkgdG8gZXRodG9vbCBBUEksIFRoaXMgZnVuY3Rpb24gd2lsbA0K
+cmFpc2UgYSBuZXRsaW5rIGV2ZW50IHRvIGJlIGNhdWdodCBpbiB1c2VyIHNwYWNlLg0KVGhlIGRl
+c2lnbjoNCg0KLSBTRlAgZXZlbnQgZnJvbSBOSUMgY2F1Z2h0IGJ5IHRoZSBkcml2ZXINCi0gRHJp
+dmVyIGNhbGwgZXRodG9vbF9zZnBfaW5zZXJ0ZWQvcmVtb3ZlZCgpDQotIEV0aHRvb2wgZ2VuZXJh
+dGVkIG5ldGxpbmsgZXZlbnQgd2l0aCByZWxldmFudCBkYXRhDQotIFRoaXMgZXZlbnQtbWVzc2Fn
+ZSB3aWxsIGJlIGhhbmRsZWQgaW4gdGhlIHVzZXItc3BhY2UgbGlicmFyeSBvZiBVREVWDQooZm9y
+IHRoaXMgcHVycG9zZSB3ZSB3b3VsZCBsaWtlIHRvIGFkZCBhIG5ldGxpbmsgaW5mcmFzdHJ1Y3R1
+cmUgdG8gVURFVg0KdXNlci1zcGFjZSBsaWJyYXJ5KS4NCg0KdGhlIGZsb3cgaW4gc2NoZW1lOg0K
+DQpVREVWIChpbiBzeXN0ZW1kKQ0KICAgICAgICAgICAgICAgICDihpENCmV0aHRvb2xfbmV0bGlu
+ayAoaW4gZXRodG9vbCkNCiAgICAgICAgICAgICAgICAg4oaRDQpkcml2ZXIgKG1seDVfY29yZSBm
+b3IgZXhhbXBsZSkNCiAgICAgICAgICAgICAgICAg4oaRDQpOSUMgKFNGUCBldmVudCkNCg0KV291
+bGQgbGlrZSB0byBoZWFyIHlvdXIgb3BpbmlvbiBvbiB0aGlzIHN1Z2dlc3Rpb24sIG9yIG9uIGFs
+dGVybmF0aXZlDQpkZXNpZ25zLg0KDQpUaGFua3MNClNoYXkgRHJvcnkNCg0KWzFdDQpodHRwczov
+L3BhdGNod29yay5vemxhYnMub3JnL3Byb2plY3QvbmV0ZGV2L2xpc3QvP3Nlcmllcz0mc3VibWl0
+dGVyPTExODkyJnN0YXRlPSomcT0mYXJjaGl2ZT0mZGVsZWdhdGU9DQoNCg==
