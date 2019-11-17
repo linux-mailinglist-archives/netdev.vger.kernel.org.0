@@ -2,86 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20669FFA21
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 15:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC20EFFA59
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 15:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbfKQOMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 09:12:49 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:40956 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726069AbfKQOMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 09:12:49 -0500
-Received: by mail-qv1-f68.google.com with SMTP id i3so5505969qvv.7
-        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 06:12:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=RFB1pqp5YWJ2J+5cPsc37KoPK3QSbx2sGb1xpC65Ecw=;
-        b=kqNbjMQCqL9luAQXTpspzXbKqpzcS7vhWJD9bbaRb3DTkO2alPUZgupOglxf4wijFC
-         fPk5pMQ+LHq99Tq9Vyftw2J3qHGdmEcX7pAUM1mIfGRoeadjfCUaS5sbtxEHLdk89L6q
-         nQJE3X1canqQkbmYZTtseUDfteTSadeKM2fu/tXkU7o9z1oFGUNV4978gbGiBuBUV9R6
-         7JxSnNAYF/4HhBSYt6Tx+e/pRq3K7dvboMO4nR0u4GEUi/RzLdpndmVyUVxTFadoKEwc
-         /ipFSG91G+44gsFf5jbr8mHWmClWWoUDGxuzxlMMOpy6FEXxtqPSPJr7li+y2lURJg8R
-         DNvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=RFB1pqp5YWJ2J+5cPsc37KoPK3QSbx2sGb1xpC65Ecw=;
-        b=Xz60rmzNLYJ6+HQnaSqWKPRjqMH2/WYqhwbAXAFsx5MgRYHgRQ4y0cKZpBWT9J+aAy
-         mKXTE9tCr2xUnp5oTO1qrzMOaXvsxElP5TPQ9ldq0UGYsI2Rn9K2dBvbp/Ia4/BXFrsY
-         dQ6DgxKLy7RBy5LgsZObrojLRyWU9WfYYFD4/D/vnxnRXuaeice/7EjMECo+pS63W1Ph
-         D/hoBeXBFljirUu14cKw44gYBZzNedZM0Svuj/uc231HFgtBF+bWUC/Pz7aoSPEAuP/S
-         CyXzB92jcF8Oecxx7dtzIx8lBmCq/Hfeuu1NLjxac3Pkghsa25jzvSS7zMoQSD7y0YX3
-         55Dw==
-X-Gm-Message-State: APjAAAWPWuT/F6CrX7D+8uptDPLv1/Kp+v340y9goQEKoeBjfC3Ruc9P
-        1sm4Oj+p4xyp3juetqdlCj0vjtgev6rbO9yH+xU=
-X-Google-Smtp-Source: APXvYqxElIh0cTg9A/T80YwM3o/j6Yi3b29Q8+ClWJBoQ33kg+Aa7vQYvwkqlVvwwE5y/wEozYsEsz2MkfqbU5KsZTo=
-X-Received: by 2002:a0c:804c:: with SMTP id 70mr6461579qva.81.1573999968132;
- Sun, 17 Nov 2019 06:12:48 -0800 (PST)
+        id S1726183AbfKQOq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 09:46:58 -0500
+Received: from mail-eopbgr70057.outbound.protection.outlook.com ([40.107.7.57]:53056
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726076AbfKQOq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Nov 2019 09:46:58 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dDhXpoJjWl823hncD0Jd+4Jg/Lqwh0StzYFtdOGjSPXmJOqToXWynNb+PJjGigupbqwG9MX2AmW8HbSczVVRa+ujR4rm+04XKlnWPLbSxG1pwscH/Fe38eojFxF3Be5E9uO/MOYUI+XKlgBHBKFKPQKgijEiESs3eWBvzQ/kcHJIeZwziljraHTAfP5XyH2Gm/jKQbOPrP5vWmTkViBBsBJIpYqH4pWJMeO+puKxyIei0ZQiQjJar/oWWnPOCO+laOSZfddpjVQTsij0yoMtWXBW6vXn+VlFSPYrBNjMGCgzE2EXpgcmQyNAbtxx/4JG9zRQaKehVJn8Z4nLFF5F/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EE71lzoqzMyXH6VgBWRWPWryiSV+F3JaTieuM6tVfJE=;
+ b=RVhd7tQI/3RLT6gzZcRcV2CcBKj0j1YTF/QVkXaWjn7IuEqMLkJ9oUxnpIVLquFv6i/n6S95gBihwZRmVfR/p7nGfYvlvYnicx0ZYqTaC47xTjOOKmMbQKZhjIWUJA7CSdGLHdfFRwxugtY8BK0tBCa8MDsQmFWTG84lG0CeZVBpKM+ngHykpcEyiA+gYOAr3JvSixWHZAUF8tFEmP3qT/hRaIQKpPAEsJEme44MWrKN7TcV7pH3qsWoimtuD32NOY2YokQE9N+EwS+TzptfKvE0pBF5I8IrD29BgeokVSNgNk2EPOzAYJQPqP0uW1YvEMp5Y3Bv0c1AJ1ezN/hxQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EE71lzoqzMyXH6VgBWRWPWryiSV+F3JaTieuM6tVfJE=;
+ b=CRlv6pSe5BpokpNiCHDYLjEyoV8DFZUuDHs9FM/HexmUC8moXJGEHBZZfPb/Im5Mtp81fRMjh6FKFgJFV+xVSsrIyf6kzUvYLZtiyzB47+IrtfuIf/NXQWGyKtZZbiRjyYMMR0I77n4ozaR4YDeWRu1BBWdJ+06yN8obKSKJ4Bg=
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.43.208) by
+ DBBPR05MB6329.eurprd05.prod.outlook.com (20.179.41.81) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.28; Sun, 17 Nov 2019 14:46:51 +0000
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::8032:b650:9659:1c3a]) by DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::8032:b650:9659:1c3a%7]) with mapi id 15.20.2451.029; Sun, 17 Nov 2019
+ 14:46:51 +0000
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     David Miller <davem@davemloft.net>,
+        "lrizzo@google.com" <lrizzo@google.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [PATCH] net/mlx4_en: fix mlx4 ethtool -N insertion
+Thread-Topic: [PATCH] net/mlx4_en: fix mlx4 ethtool -N insertion
+Thread-Index: AQHVm/EMSXbZQwpspUCUKjixDQl+CaeOTMwAgAEm8oA=
+Date:   Sun, 17 Nov 2019 14:46:50 +0000
+Message-ID: <59ebfae8-ac93-75a1-7a60-2bb3820a9a79@mellanox.com>
+References: <20191115201225.92888-1-lrizzo@google.com>
+ <20191116.131058.1856199123293908506.davem@davemloft.net>
+In-Reply-To: <20191116.131058.1856199123293908506.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR05CA0044.eurprd05.prod.outlook.com
+ (2603:10a6:208:be::21) To DBBPR05MB6283.eurprd05.prod.outlook.com
+ (2603:10a6:10:cf::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 59a30144-7fc4-49d7-4f94-08d76b6cfaf6
+x-ms-traffictypediagnostic: DBBPR05MB6329:|DBBPR05MB6329:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR05MB63297890DFAF3823BB75B079AE720@DBBPR05MB6329.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02243C58C6
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(136003)(39860400002)(376002)(396003)(189003)(199004)(81166006)(64756008)(102836004)(31686004)(6246003)(6506007)(386003)(53546011)(25786009)(6116002)(81156014)(107886003)(4326008)(71190400001)(71200400001)(52116002)(3846002)(478600001)(8936002)(8676002)(4744005)(186003)(110136005)(99286004)(5660300002)(476003)(2616005)(66066001)(54906003)(486006)(2906002)(14454004)(36756003)(11346002)(86362001)(2501003)(6512007)(446003)(66476007)(66556008)(7736002)(305945005)(6436002)(26005)(229853002)(76176011)(66946007)(316002)(66446008)(6486002)(256004)(31696002);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6329;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3ZdbnTcxux7tOm/kDH+RVmPixafWDf4wQCbMxhpKpKx+lhDABCuU3Kq9zUXKHmmAgh1Bj0GeLUuql8cw40J54wg3jeARdkKl5M/WQDPpUx+/Au48LVok49QyARG7y6NNu7b7HxAYi0Vzs6IPq5aQebovCNvzk9n4wiCEdHzsrOFDHA8eTqkAZUqo651pfTNOD70XdZ8cuteDjm6uI9ZydLUo/Ud4KDDVI+WQXCJC68yjBdP3tDMqfhSg/m/EURKiOt/FWC+POIgVpfenzjZK7g7m8fHoihLh7KxgsdaoI+BeKIzVhhjtReUXHhy4wkBcWvOQA5brtq7O0gWG3p47yphjW7vKdiGhXRnFG2qgN/lZ7O+hLQgjkswZRu7VS4g7BGyMuOr3ja6vZYaQ9YSzuSgiEqFQ3GtofqvfFjpeRHyFbFefX2rGiubpiRQ6w8a9
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <282A150AF2EFA74EAF7BDCC7A301575A@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Received: by 2002:ac8:360a:0:0:0:0:0 with HTTP; Sun, 17 Nov 2019 06:12:47
- -0800 (PST)
-Reply-To: joeakaba00@gmail.com
-From:   joe akaba <pagentsif6@gmail.com>
-Date:   Sun, 17 Nov 2019 15:12:47 +0100
-Message-ID: <CAKiDfoVYtK1zfdLnkmYEmzO1ZLbZr2x3vxT+2R1aP32_b7iRsA@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59a30144-7fc4-49d7-4f94-08d76b6cfaf6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Nov 2019 14:46:50.9999
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nd7oNg8/3e25tICBJ+FQP4TNHgyIX7YtVV6BHBXMheny9M9s6qEOi6qwgij3ZFEu6+P9zhChKHAvhazTc6KkdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6329
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day, dear
-
-My name is Mr. Joe Akaba ESQ, Working with one of the best
-chambers and I write to inform you about the death of my client who
-dead as a result of an accident with his family .On the 19th day of August
-2017, My late client died as a result of deadly accident without him be
-register any of his family member as next of kin to bank where he deposited
-a huge amount of money and He died with his family and i have searched for
-any other members of his
-nearby relative without any fruitful result and it was when the bank
-here sent me a notice of their resolution to confiscate he=E2=80=99s estate=
- in line
-with their abandoned property.
-
-This is to bring your attention by seeking your consent to present
-your name as My late client next of Kin to the bank where he
-deposited a huge amount of money before his death Eight million Five
-hundred thousand United State dollar .$8.5 million Usd
-
-I have unsuccessfully made several attempts to locate any of my
-clients extended relatives, but all to no avail. Please i need your urgent
- respond so that we can move to the bank where the fund is deposited .
-
-Thanks and regards,
-Barrister Joe Akaba (Esq)
-Principal attorney of
-dominion associates
-chambers barristers & solicitors
-Call +22890-33-26-71
+DQoNCk9uIDExLzE2LzIwMTkgMTE6MTAgUE0sIERhdmlkIE1pbGxlciB3cm90ZToNCj4gRnJvbTog
+THVpZ2kgUml6em8gPGxyaXp6b0Bnb29nbGUuY29tPg0KPiBEYXRlOiBGcmksIDE1IE5vdiAyMDE5
+IDEyOjEyOjI1IC0wODAwDQo+IA0KPj4gZXRodG9vbCBleHBlY3RzIEVUSFRPT0xfR1JYQ0xTUkxB
+TEwgdG8gc2V0IGV0aHRvb2xfcnhuZmMtPmRhdGEgd2l0aCB0aGUNCj4+IHRvdGFsIG51bWJlciBv
+ZiBlbnRyaWVzIGluIHRoZSByeCBjbGFzc2lmaWVyIHRhYmxlLiAgU3VycHJpc2luZ2x5LCBtbHg0
+DQo+PiBpcyBtaXNzaW5nIHRoaXMgcGFydCAoaW4gcHJpbmNpcGxlIGV0aHRvb2wgY291bGQgc3Rp
+bGwgbW92ZSBmb3J3YXJkIGFuZA0KPj4gdHJ5IHRoZSBpbnNlcnQpLg0KPj4NCj4+IFRlc3RlZDog
+Y29tcGlsZWQgYW5kIHJ1biBjb21tYW5kOg0KPj4gCXBoaDEzOn4jIGV0aHRvb2wgLU4gZXRoMSBm
+bG93LXR5cGUgdWRwNCAgcXVldWUgNA0KPj4gCUFkZGVkIHJ1bGUgd2l0aCBJRCAyNTUNCj4+DQo+
+PiBTaWduZWQtb2ZmLWJ5OiBMdWlnaSBSaXp6byA8bHJpenpvQGdvb2dsZS5jb20+DQo+PiBDaGFu
+Z2UtSWQ6IEkxOGE3MmYwOGRmY2ZiNmI5ZjZhYTgwZmJjMTJkNTg1NTNlMWZkYTc2DQo+IA0KPiBM
+dWlnaSwgX2Fsd2F5c18gQ0M6IHRoZSBhcHByb3ByaWF0ZSBtYWludGFpbmVyIHdoZW4gbWFraW5n
+IGNoYW5nZXMgdG8gdGhlDQo+IGtlcm5lbCwgYXMgcGVyIHRoZSB0b3AtbGV2ZWwgTUFJTlRBSU5F
+UlMgZmlsZS4NCj4gDQo+IFRhcmlxIGV0IGFsLiwgcGxlYXNlIHJldmlldy4NCj4gDQoNClJldmll
+d2VkLWJ5OiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+DQoNClRoYW5rcyBmb3Ig
+eW91ciBwYXRjaC4NCg0KVGFyaXENCg==
