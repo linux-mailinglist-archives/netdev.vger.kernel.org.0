@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 863A3FFAC9
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 17:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE3BFFACB
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 17:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfKQQol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 11:44:41 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:36878 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726069AbfKQQol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 11:44:41 -0500
-Received: by mail-il1-f193.google.com with SMTP id s5so13744249iln.4;
-        Sun, 17 Nov 2019 08:44:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=36Tcd3xvowpaFHHOukEJNvL3vFXR/sOP5nOa5scXrnE=;
-        b=tSH1TGFcQ0ItQXfer5WLy/aRI//T79BHWXHbPKv25v/4rsKAk0U1tRBGQwu9n/Z2Zt
-         AN4XZiH05yjwl395s+vmky4dclcliC6XSOYiCUVJmHVHUftzrrnh3oN5qUK8YQPYnNP0
-         M6gX+GvMLkhJWEtAVnzP0PdHHyzYVIw7uJ2H8CAQSiwP6YWRExzjI6yVrFMwQqymw8hb
-         kf5TVPcQkZPiF4Yz2Dp+G6BhPNRRuP2g5jSpya2q8XBydaNNXStNCIz81PimF1kOqTuA
-         rHDZtHcRt9IJQ2k7wJiFD/cUItTkKiZoBLUhd0B8H+B7kF4wABhAhjK2tUhdX1R+svT8
-         T5zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=36Tcd3xvowpaFHHOukEJNvL3vFXR/sOP5nOa5scXrnE=;
-        b=bUbduAygozOOmUHjaEPOlvv405N7TWK7azSuwIm7UvgIUplvAb6ts0XHIVNYskVzWt
-         RYYOOLKHwJkkGD71IromqyE0IFP6rhthIF2jLQNwBpS3XhabEoWWx6FiDKex/KFkU5eA
-         6TRS6luxfXZr1m5AocznR3Rk05/IXNocxmZTyfj8Q0YI9GAb/08y2KDRSnPk3RrSeptZ
-         fLnVfeY4yUi78LrffiO0uDV56fqZkAXV1XbzVU2lzpfj9PKth1Rv7CEIpfS/D0ovb9/y
-         dnoJ6o8q1ecyUAzIGbGAJhjwM0OFD6V9ugXbJ7gvR16NviMZjk1iZe7vFgcVwR9hzeN3
-         t+vw==
-X-Gm-Message-State: APjAAAXjzoDuHhN3fPuBKfVDFnVQmR8TNsA6K1mnSByleFfBr16HkR2J
-        +Lcm4v/PiFdOg1jQMLi8cPATtifV
-X-Google-Smtp-Source: APXvYqxcM+fLeUZlpp/Zq9SJUIFyOcFUl7TSat14OvsDmsnA/Lz37Wi6VHL6nH6fjyPaWf7CRxIxCQ==
-X-Received: by 2002:a92:8498:: with SMTP id y24mr10984537ilk.89.1574009080179;
-        Sun, 17 Nov 2019 08:44:40 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:bd88:fb6d:6b19:f7d1])
-        by smtp.googlemail.com with ESMTPSA id p8sm3103393ilp.24.2019.11.17.08.44.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Nov 2019 08:44:39 -0800 (PST)
-Subject: Re: [PATCH AUTOSEL 4.9 89/99] vrf: mark skb for multicast or
- link-local as enslaved to VRF
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Mike Manning <mmanning@vyatta.att-mail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20191116155103.10971-1-sashal@kernel.org>
- <20191116155103.10971-89-sashal@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a6c038cb-4b95-beb0-abf3-8938825d379e@gmail.com>
-Date:   Sun, 17 Nov 2019 09:44:38 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
+        id S1726187AbfKQQti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 11:49:38 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50266 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbfKQQti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 11:49:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=C1rQWDry0dpvs0YlyglnHndpmo5lRLnq4C5C9GTT3z4=; b=Wbkd/2J0GSJMAllOqOe1jmc7U
+        ejXCKWSBpPIqbvsb/5CK3plmPKOwN4k9Upy49evir2rztLcefFDYc9GAOeMOHq0sCVc1Ez8X1qF8K
+        Xg+nRvzHZoxo9uiMTY+0Z8+AuV43S8+/haPqa2OWBxxmsZq2RAR6n/dUXa7Q1NGwwNjo4Fol0dmAf
+        9psDbZwPmiJvtjavAl8icld+UrTJpazyZPAdzhvVPC2slFREyRuqZKRfRyhoAUU9FiFDCFEHcZi1j
+        XEkHKuueej27v9dmibqS8KC6kBmMS47KPSzxjP/34SkFdG8jaUqAm5Sa690WF0/Q2E0XkhE7/HxHk
+        zLru/xmIw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40904)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iWNjt-0006Pf-JP; Sun, 17 Nov 2019 16:49:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iWNjo-0007N1-Na; Sun, 17 Nov 2019 16:49:24 +0000
+Date:   Sun, 17 Nov 2019 16:49:24 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next v4 0/5] dpaa2-eth: add MAC/PHY support through
+ phylink
+Message-ID: <20191117164924.GI1344@shell.armlinux.org.uk>
+References: <1572477512-4618-1-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20191116155103.10971-89-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1572477512-4618-1-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/16/19 8:50 AM, Sasha Levin wrote:
-> From: Mike Manning <mmanning@vyatta.att-mail.com>
-> 
-> [ Upstream commit 6f12fa775530195a501fb090d092c637f32d0cc5 ]
-> 
-> The skb for packets that are multicast or to a link-local address are
-> not marked as being enslaved to a VRF, if they are received on a socket
-> bound to the VRF. This is needed for ND and it is preferable for the
-> kernel not to have to deal with the additional use-cases if ll or mcast
-> packets are handled as enslaved. However, this does not allow service
-> instances listening on unbound and bound to VRF sockets to distinguish
-> the VRF used, if packets are sent as multicast or to a link-local
-> address. The fix is for the VRF driver to also mark these skb as being
-> enslaved to the VRF.
-> 
-> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
-> Reviewed-by: David Ahern <dsahern@gmail.com>
-> Tested-by: David Ahern <dsahern@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/net/vrf.c | 19 +++++++++----------
->  1 file changed, 9 insertions(+), 10 deletions(-)
-> 
+On Thu, Oct 31, 2019 at 01:18:27AM +0200, Ioana Ciornei wrote:
+> The dpaa2-eth driver now has support for connecting to its associated PHY
+> device found through standard OF bindings. The PHY interraction is handled
+> by PHYLINK and even though, at the moment, only RGMII_* phy modes are
+> supported by the driver, this is just the first step into adding the
+> necessary changes to support the entire spectrum of capabilities.
 
-backporting this patch and it's bug fix, "ipv6: Fix handling of LLA with
-VRF and sockets bound to VRF" to 4.14 is a bit questionable. They
-definitely do not need to come back to 4.9.
+Hi,
+
+You mention that one of the aims here is to eventually support SFPs.
+Do you have a plan to solve the current problem with the DPAA2
+structure, where the physical network interfaces are configured at
+boot time by RCW for their operating mode?
+
+If you want full SFP support, then you will need to dynamically
+reconfigure the network interfaces.  For example, 10G NBASE-T SFP+
+modules will dynamically switch between 10GBASE-R (XFI), 5000BASE-X,
+2500BASE-X, and SGMII depending on the copper side link speed.  The
+PHY may also support UXSGMII but it doesn't power up that way and it
+is not known whether it is possible or how to change the interface
+mode to UXSGMII.
+
+Then there's the whole issue of SGMII vs 1000BASE-X SFPs, and fiber
+channel SFPs that can operate at 2500BASE-X.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
