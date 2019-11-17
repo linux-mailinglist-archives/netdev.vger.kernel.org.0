@@ -2,147 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DD6FFAD9
-	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 18:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACF95FFAE5
+	for <lists+netdev@lfdr.de>; Sun, 17 Nov 2019 18:28:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbfKQRRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 12:17:24 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:33850 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726028AbfKQRRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 12:17:23 -0500
-Received: by mail-qk1-f194.google.com with SMTP id 205so12430013qkk.1;
-        Sun, 17 Nov 2019 09:17:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fx2VciQBT28HKq8nonJlVkforLB2KkAFigbIrUjR1KA=;
-        b=t3BAY68WAJeRiYC3pBuxRoVQbqAAR6l55EdGe2VcOJwVpMbJ1YnxkmVjG9SVSYJcNI
-         X/HUgFtI1vAxAjUwqpnWqScIoo6B7AlKsGYXRv6xFawMMoX6W7jSO2BdsvVe/3XhHWdk
-         cisj9ZhSbNJ+wrQoGUPLe4+aiK843lEgs0xLDGlwhReemNER+s1uBKkEyMDVZkBW38qU
-         lzVaQLsQTFv3GbRnaJQdxsoDRcfdX23u5ayr3up/dw3nWSTEepldI4h+tebrsyeKHLy8
-         SqQ9lcIPZhYQyu0HwaHxRU/0x0N3u3hgBZ11i/Bn0P0ujvvNjGboBtdVcxLtMwk6WITG
-         2RUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fx2VciQBT28HKq8nonJlVkforLB2KkAFigbIrUjR1KA=;
-        b=Vxy2SkhL3nI7yX9s/aE0P1mWn5ACOfimsmV1v9QdK0eLfImwwF5Xjx7eZQBIzyNuJ8
-         ilIDJd9v4B/3uokMlWJPkXumA2o9+vYYbowr0SVNOOyMO8FVZhj944ez+TsaKgglgIBK
-         pbmhLzO2vDI9f2J5uB4iuGgLnANVUpTLCWWloKTRYVZDirpAo42gwHBMLOaYL7nSt346
-         /3B/TejCvDUsXvL+VWCBva6uGf8ffDaixNztjb6fGVj/oYkKdkz67OHnuzCPClJLyX2i
-         d3gwg09xC1QacTQVEwbl+Tg9c/Q6Tn/KOW8vWNc1F8i4tHBDKieHk2eW/Qj9MD7uotpD
-         AJfQ==
-X-Gm-Message-State: APjAAAXl5hgAgDOshKQ1PKhbBltJcbe8K73PCn2vlCXjJ9RbwbvPR4VT
-        fbCwURZNADpbWeURMzzhZQ0gbahbTD+y7Z3dEI4=
-X-Google-Smtp-Source: APXvYqzFIhKSrcizELW9CRuMzL5BonrNPxpHZZnfEQXo3c64TVkFMIbyEltDE7kJ1adg7lBp2707N6G77v1zTfMRvDs=
-X-Received: by 2002:a37:b3c4:: with SMTP id c187mr8848861qkf.36.1574011041899;
- Sun, 17 Nov 2019 09:17:21 -0800 (PST)
+        id S1726091AbfKQR2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 12:28:11 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42980 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726032AbfKQR2K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 12:28:10 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAHHRcoG017607
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:09 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=TbOrdwQweC9PXb0RprnofxGZ7EjXDTC3ppomtDb8DII=;
+ b=fPaPI/u9e49c3qm+LKelTZHLyqhd+u11ipZIjQI8JeUoxUmywfEezZIFmosOpBt7h1Xq
+ 9uvNRLs9DU1AdUBE/DD5+QRbVkIH8IVk86VFSD55SsN02VRZWjZg3RtpLe/kfQx4NYbA
+ Lr1oaRmtuHX72kBV7KYM6qQ0zQthOcFicjw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2wadnn585e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 09:28:09 -0800
+Received: from 2401:db00:2050:5076:face:0:9:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 17 Nov 2019 09:28:08 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id EB5DB2EC0551; Sun, 17 Nov 2019 09:28:07 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v6 bpf-next 0/5] Add support for memory-mapping BPF array maps
+Date:   Sun, 17 Nov 2019 09:28:01 -0800
+Message-ID: <20191117172806.2195367-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20191115040225.2147245-1-andriin@fb.com> <20191115040225.2147245-3-andriin@fb.com>
- <888858f7-97fb-4434-4440-a5c0ec5cbac8@iogearbox.net> <293bb2fe-7599-3825-1bfe-d52224e5c357@fb.com>
- <3287b984-6335-cacb-da28-3d374afb7f77@iogearbox.net> <fe46c471-e345-b7e4-ab91-8ef044fd58ae@fb.com>
- <c79ca69f-84fd-bfc2-71fd-439bc3b94c81@iogearbox.net> <3eca5e22-f3ec-f05f-0776-4635b14c2a4e@fb.com>
- <CAEf4BzZHT=Gwor_VA38Yoy6Lo7zeeiVeQK+KQpZUHRpnV6=fuA@mail.gmail.com> <3a99d3af-97e7-3d6d-0a9c-46fb8104a211@iogearbox.net>
-In-Reply-To: <3a99d3af-97e7-3d6d-0a9c-46fb8104a211@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 17 Nov 2019 09:17:10 -0800
-Message-ID: <CAEf4BzbyHn5JOf6=S6g=Qr15evEbwmMO3F4QCC9hkU0hpJcA4g@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for BPF_MAP_TYPE_ARRAY
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-17_03:2019-11-15,2019-11-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ suspectscore=8 adultscore=0 phishscore=0 bulkscore=0 mlxlogscore=527
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 priorityscore=1501
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911170167
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 17, 2019 at 4:07 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/17/19 6:57 AM, Andrii Nakryiko wrote:
-> > On Fri, Nov 15, 2019 at 5:18 PM Alexei Starovoitov <ast@fb.com> wrote:
-> >> On 11/15/19 4:13 PM, Daniel Borkmann wrote:
-> >>>>> Yeah, only for fd array currently. Question is, if we ever reuse that
-> >>>>> map_release_uref
-> >>>>> callback in future for something else, will we remember that we earlier
-> >>>>> missed to add
-> >>>>> it here? :/
-> >>>>
-> >>>> What do you mean 'missed to add' ?
-> >>>
-> >>> Was saying missed to add the inc/put for the uref counter.
-> >>>
-> >>>> This is mmap path. Anything that needs releasing (like FDs for
-> >>>> prog_array or progs for sockmap) cannot be mmap-able.
-> >>>
-> >>> Right, I meant if in future we ever have another use case outside of it
-> >>> for some reason (unrelated to those maps you mention above). Can we
-> >>> guarantee this is never going to happen? Seemed less fragile at least to
-> >>> maintain proper count here.
-> >
-> > I don't think we'll ever going to allow mmaping anything that contains
-> > not just pure data. E.g., we disallow mmaping array that contains spin
-> > lock for that reason. So I think it's safe to assume that this is not
-> > going to happen even for future maps. At least not without some
-> > serious considerations before that. So I'm going to keep it as just
-> > plain bpf_map_inc for now.
->
-> Fair enough, then keep it as it is. The purpose of the uref counter is to
-> track whatever map holds a reference either in form of fd or inode in bpf
-> fs which are the only two things till now where user space can refer to the
-> map, and once it hits 0, we perform the map's map_release_uref() callback.
+This patch set adds ability to memory-map BPF array maps (single- and
+multi-element). The primary use case is memory-mapping BPF array maps, created
+to back global data variables, created by libbpf implicitly. This allows for
+much better usability, along with avoiding syscalls to read or update data
+completely.
 
-To be honest, I don't exactly understand why we need both refcnt and
-usercnt. Does it have anything to do with some circular dependencies
-for those maps containing other FDs? And once userspace doesn't have
-any more referenced, we release FDs, which might decrement refcnt,
-thus breaking circular refcnt between map FD and special FDs inside a
-map? Or that's not the case and there is a different reason?
+Due to memory-mapping requirements, BPF array map that is supposed to be
+memory-mapped, has to be created with special BPF_F_MMAPABLE attribute, which
+triggers slightly different memory allocation strategy internally. See
+patch 1 for details.
 
-Either way, I looked at map creation and bpf_map_release()
-implementation again. map_create() does set usercnt to 1, and
-bpf_map_release(), which I assume is called when map FD is closed,
-does decrement usercnt, so yeah, we do with_uref() manipulations for
-cases when userspace maintains some sort of handle to map. In that
-regard, mmap() does fall into the same category, so I'm going to
-convert everything mmap-related back to
-bpf_map_inc_with_uref()/bpf_map_put_with_uref(), to stay consistent.
+Libbpf is extended to detect kernel support for this flag, and if supported,
+will specify it for all global data maps automatically.
 
->
-> The fact that some maps make use of it and some others not is an implementation
-> detail in my opinion, but the concept itself is generic and can be used by
-> whatever map implementation would need it in future. From my perspective not
-> breaking with this semantic would allow to worry about one less issue once
-> this callback gets reused for whatever reason.
->
-> As I understand, from your PoV, you think that this uref counter is and will
-> be exactly only tied to the fd based maps that currently use it and given
-> they understandably won't ever need a mmap interface we don't need to inc/dec
-> it there.
->
-> Fair enough, but could we add some assertion then which adds a check if a map
-> ever uses both that we bail out so we don't forget about this detail in a few
-> weeks from now? Given complexity we have in our BPF codebase these days, I'm
-> mainly worried about the latter if we can catch such details with a trivial
-> check easily, for example, it would be trivial enough to add a test for the
-> existence of map_release_uref callback inside bpf_map_mmap() and bail out in
-> order to guarantee this, similar as you do with the spinlock.
->
-> > I'm going to convert bpf_prog_add/bpf_prog_inc, though, and will do it
-> > as a separate patch, on top of bpf_map_inc refactor. It touches quite
-> > a lot drivers, so would benefit from having being separate.
->
-> Yeah, sounds good to me. Thanks for converting!
->
-> >> I'm struggling to understand the concern.
-> >> map-in-map, xskmap, socket local storage are doing bpf_map_inc(, false)
-> >> when they need to hold the map. Why this case is any different?
->
-> (See above.)
+Patch #1 refactors bpf_map_inc() and converts bpf_map's refcnt to atomic64_t
+to make refcounting never fail. Patch #2 does similar refactoring for
+bpf_prog_add()/bpf_prog_inc().
+
+v5->v6:
+- add back uref counting (Daniel);
+
+v4->v5:
+- change bpf_prog's refcnt to atomic64_t (Daniel);
+
+v3->v4:
+- add mmap's open() callback to fix refcounting (Johannes);
+- switch to remap_vmalloc_pages() instead of custom fault handler (Johannes);
+- converted bpf_map's refcnt/usercnt into atomic64_t;
+- provide default bpf_map_default_vmops handling open/close properly;
+
+v2->v3:
+- change allocation strategy to avoid extra pointer dereference (Jakub);
+
+v1->v2:
+- fix map lookup code generation for BPF_F_MMAPABLE case;
+- prevent BPF_F_MMAPABLE flag for all but plain array map type;
+- centralize ref-counting in generic bpf_map_mmap();
+- don't use uref counting (Alexei);
+- use vfree() directly;
+- print flags with %x (Song);
+- extend tests to verify bpf_map_{lookup,update}_elem() logic as well.
+
+Andrii Nakryiko (5):
+  bpf: switch bpf_map ref counter to atomic64_t so bpf_map_inc() never
+    fails
+  bpf: convert bpf_prog refcnt to atomic64_t
+  bpf: add mmap() support for BPF_MAP_TYPE_ARRAY
+  libbpf: make global data internal arrays mmap()-able, if possible
+  selftests/bpf: add BPF_TYPE_MAP_ARRAY mmap() tests
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   9 +-
+ .../net/ethernet/cavium/thunder/nicvf_main.c  |   9 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   7 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  24 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  18 +-
+ .../net/ethernet/netronome/nfp/bpf/offload.c  |   4 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   8 +-
+ drivers/net/virtio_net.c                      |   7 +-
+ include/linux/bpf.h                           |  34 +--
+ include/linux/vmalloc.h                       |   1 +
+ include/uapi/linux/bpf.h                      |   3 +
+ kernel/bpf/arraymap.c                         |  58 ++++-
+ kernel/bpf/inode.c                            |   7 +-
+ kernel/bpf/map_in_map.c                       |   2 +-
+ kernel/bpf/syscall.c                          | 174 ++++++++++----
+ kernel/bpf/verifier.c                         |   6 +-
+ kernel/bpf/xskmap.c                           |   6 +-
+ kernel/events/core.c                          |   7 +-
+ mm/vmalloc.c                                  |  20 ++
+ net/core/bpf_sk_storage.c                     |   2 +-
+ tools/include/uapi/linux/bpf.h                |   3 +
+ tools/lib/bpf/libbpf.c                        |  32 ++-
+ .../selftests/bpf/prog_tests/core_reloc.c     |  45 ++--
+ tools/testing/selftests/bpf/prog_tests/mmap.c | 220 ++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_mmap.c |  45 ++++
+ 25 files changed, 576 insertions(+), 175 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/mmap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_mmap.c
+
+-- 
+2.17.1
+
