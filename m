@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7E3100188
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 10:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1741001C3
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 10:51:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfKRJl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 04:41:29 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41385 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726461AbfKRJl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 04:41:28 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 18 Nov 2019 11:41:25 +0200
-Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.134.206.5])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xAI9fO1k031576;
-        Mon, 18 Nov 2019 11:41:24 +0200
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH net] net/mlx4_en: Fix wrong limitation for number of TX rings
-Date:   Mon, 18 Nov 2019 11:41:04 +0200
-Message-Id: <20191118094104.9477-1-tariqt@mellanox.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726795AbfKRJvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 04:51:55 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23873 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726898AbfKRJvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 04:51:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574070713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RnkPtrtkzLDiLhVBi6u0mh9f/xmCiH2CgLmKPX7+Qck=;
+        b=CGsYHzzMuFeH+Oos5sMyuRwV+i5qpYGqMKrK8wo7GB+IYl094ZmDIs2fRtSDJZ2LXgMzLT
+        A5TL4WH7dFtXY33iyuwz7iq2D7Ma0dqgsybnMmQCHKdIxiNSWrvQHUPOejsT8H8NM7Yk32
+        egm1fgovSrPB79yKXJ8OwZYzlH+8FvI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-136-tlNJaAxFMeuMcg0GwrRpbQ-1; Mon, 18 Nov 2019 04:51:49 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E5120107ACCC;
+        Mon, 18 Nov 2019 09:51:47 +0000 (UTC)
+Received: from localhost (ovpn-204-195.brq.redhat.com [10.40.204.195])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A7BEC2934D;
+        Mon, 18 Nov 2019 09:51:46 +0000 (UTC)
+Date:   Mon, 18 Nov 2019 10:51:45 +0100
+From:   Jiri Benc <jbenc@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH bpf] selftests: bpf: fix test_tc_tunnel hanging
+Message-ID: <20191118105145.3e576745@redhat.com>
+In-Reply-To: <CAF=yD-K53UaChX7S6YzNaCTArYf3RVWGPdskeEd5bEaBfuaonQ@mail.gmail.com>
+References: <60919291657a9ee89c708d8aababc28ebe1420be.1573821780.git.jbenc@redhat.com>
+        <dc889f46-bc26-df21-bf24-906a6ccf7a12@iogearbox.net>
+        <CAF=yD-K53UaChX7S6YzNaCTArYf3RVWGPdskeEd5bEaBfuaonQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: tlNJaAxFMeuMcg0GwrRpbQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP_TX rings should not be limited by max_num_tx_rings_p_up.
-To make sure total number of TX rings never exceed MAX_TX_RINGS,
-add similar check in mlx4_en_alloc_tx_queue_per_tc(), where
-a new value is assigned for num_up.
+On Fri, 15 Nov 2019 17:05:42 -0500, Willem de Bruijn wrote:
+> Ah, a typo. This is the SHA1 in my tree, note the aa9d --> aa99d
+>=20
+> $ git fetch davem-net-next
+> $ git log -1 --oneline -- tools/testing/selftests/bpf/test_tc_tunnel.sh
+> f6ad6accaa99d selftests/bpf: expand test_tc_tunnel with SIT encap
 
-Fixes: 7e1dc5e926d5 ("net/mlx4_en: Limit the number of TX rings")
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 8 ++++----
- drivers/net/ethernet/mellanox/mlx4/en_netdev.c  | 9 +++++++++
- 2 files changed, 13 insertions(+), 4 deletions(-)
+Indeed, it should have been:
 
-Please queue to -stable >= v4.15.
+Fixes: f6ad6accaa99 ("selftests/bpf: expand test_tc_tunnel with SIT encap")
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-index c12da02c2d1b..a1202e53710c 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -1812,6 +1812,7 @@ static int mlx4_en_set_channels(struct net_device *dev,
- 	struct mlx4_en_dev *mdev = priv->mdev;
- 	struct mlx4_en_port_profile new_prof;
- 	struct mlx4_en_priv *tmp;
-+	int total_tx_count;
- 	int port_up = 0;
- 	int xdp_count;
- 	int err = 0;
-@@ -1826,13 +1827,12 @@ static int mlx4_en_set_channels(struct net_device *dev,
- 
- 	mutex_lock(&mdev->state_lock);
- 	xdp_count = priv->tx_ring_num[TX_XDP] ? channel->rx_count : 0;
--	if (channel->tx_count * priv->prof->num_up + xdp_count >
--	    priv->mdev->profile.max_num_tx_rings_p_up * priv->prof->num_up) {
-+	total_tx_count = channel->tx_count * priv->prof->num_up + xdp_count;
-+	if (total_tx_count > MAX_TX_RINGS) {
- 		err = -EINVAL;
- 		en_err(priv,
- 		       "Total number of TX and XDP rings (%d) exceeds the maximum supported (%d)\n",
--		       channel->tx_count * priv->prof->num_up  + xdp_count,
--		       MAX_TX_RINGS);
-+		       total_tx_count, MAX_TX_RINGS);
- 		goto out;
- 	}
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 40ec5acf79c0..70fd246840e2 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -91,6 +91,7 @@ int mlx4_en_alloc_tx_queue_per_tc(struct net_device *dev, u8 tc)
- 	struct mlx4_en_dev *mdev = priv->mdev;
- 	struct mlx4_en_port_profile new_prof;
- 	struct mlx4_en_priv *tmp;
-+	int total_count;
- 	int port_up = 0;
- 	int err = 0;
- 
-@@ -104,6 +105,14 @@ int mlx4_en_alloc_tx_queue_per_tc(struct net_device *dev, u8 tc)
- 				      MLX4_EN_NUM_UP_HIGH;
- 	new_prof.tx_ring_num[TX] = new_prof.num_tx_rings_p_up *
- 				   new_prof.num_up;
-+	total_count = new_prof.tx_ring_num[TX] + new_prof.tx_ring_num[TX_XDP];
-+	if (total_count > MAX_TX_RINGS) {
-+		err = -EINVAL;
-+		en_err(priv,
-+		       "Total number of TX and XDP rings (%d) exceeds the maximum supported (%d)\n",
-+		       total_count, MAX_TX_RINGS);
-+		goto out;
-+	}
- 	err = mlx4_en_try_alloc_resources(priv, tmp, &new_prof, true);
- 	if (err)
- 		goto out;
--- 
-2.21.0
+Not sure how that happened, I'm sorry for that. Thanks for catching it.
+Should I resend with the fixed commit message?
+
+Sorry again,
+
+ Jiri
 
