@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB168100A7D
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 18:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F266100AF4
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 18:59:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfKRRkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 12:40:07 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40783 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbfKRRkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 12:40:06 -0500
-Received: by mail-qt1-f194.google.com with SMTP id o49so21153616qta.7;
-        Mon, 18 Nov 2019 09:40:05 -0800 (PST)
+        id S1726814AbfKRR7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 12:59:15 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37532 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726423AbfKRR7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 12:59:14 -0500
+Received: by mail-pg1-f194.google.com with SMTP id b10so1465125pgd.4
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 09:59:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Hyf5OOMWKEL9cOljn/aGmBG4pFeH+YNqiR2OliYFFqI=;
-        b=ZSGIiOOcMLaekKnpOYF7PJCMjqZOEthBOZb/PsBDUZEhmzBT2m6eZSyo3Gj136U4GR
-         3piMkz8stJlRrveQNpbA5gAIW7IeFjRDB0edF1b3zwUaBCa/95KvFabrz1LHFvoZZDFj
-         pKoOjk/4X8Asbp9aiTqwHNtwuUQJgluhwYmjsYyJWri1dq4Hv7BBPyuc8L4bV6+VhjTI
-         Ozm8GU8wwx610/X/9CjHGpjgn4kzrhtgGJoF/4HfQ+VgpGWVsczM28p9GNgZXHGrAG1c
-         SN0+FZdXX6tLvwJ0bvihGPKvlGP6hqTk8oq9dAh+U2DcUf37sGj5/0FYh9QtJ6QJ9ZsF
-         ToOw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7EYmZ7NRTxHkOWSbSxQ0gywzZ0Cdf+FfUYZH7rtEdQE=;
+        b=dLIQEzcwJz03sHkX/zkGpM9f5gUe4Ym6v3uAIwg37cDxKuvpfBDkJEaQpxzKHzK5fv
+         PwiH8ZdFLgm9mi7G+FxOTJvbzKFvKbp0ZgvV/+/9eTdRu09rUCCIgt5Tijrm0oYfy6vY
+         ae1TO3fwnzHwp3RD6ch5hUmBkvcD+bd+BIxgPXQNrpmYl0ys7jhvyb4EoYa0Z8UumCPo
+         gh6FWfkUDYgGqYD38BJRkMEycx7slcYj7Jq8bjTk9qSQY/FFFun9JXxsrlxiyZ1WepyL
+         7KFFRRVvozD2Fp1TqFeOS5wq0MPMFwO17JNiyIJpw+vvX/Dh4GK7wqmIU4GXaHYcgUuq
+         WMJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hyf5OOMWKEL9cOljn/aGmBG4pFeH+YNqiR2OliYFFqI=;
-        b=mJjs4NQqbX6+UMqior8DhWftqov09JrZ6JdT3XCc8ciD8TLyBVugVFaFyrCjjxDS17
-         PqqSrR+o9bqylHF+lMKFbm291f/V0QxqqhkwcRQl+hJ3BK8YfZKgmWyUBvWWGS+0eW45
-         LYEzJquRVjyhpz3I7BwG3OxNvK1Sa14Q2+TCUXUHF7t7gffxVi7SBTDCilIiP5X2p/YZ
-         /wfWnXaNTT4k2Tk48/QrWCtOkXU6Kvfh4EXfC8bU3Fajgfk9ZHQVs8tAMzbD7tOeRo7m
-         B9BS1kgwJs+DuKIbk7cBSwQRTHwYnlQPDqUqS3dgLjXdBtOIFXSSEeZqknKegsxuKeKg
-         CNKw==
-X-Gm-Message-State: APjAAAXXWPz+Des/wtzJYmwXQLaRvJiS6v7FzglxEPaoC9re9D14nYDt
-        u1yiqpo/D5WaufYNClpoiLThmFDG/O88AiIJ1VY=
-X-Google-Smtp-Source: APXvYqzxkfsJ7jA/fUNe+oKfU5tAUVijU9KiOEgz6WDLKAKs5QeRcgJIvlyyFBY7XkpEzpFKxkIe7HOKjFJUjB5+xaU=
-X-Received: by 2002:ac8:3fed:: with SMTP id v42mr27947748qtk.171.1574098804440;
- Mon, 18 Nov 2019 09:40:04 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7EYmZ7NRTxHkOWSbSxQ0gywzZ0Cdf+FfUYZH7rtEdQE=;
+        b=d/h2LZTnTXCp2yrJVYUutANVfzWdqKOECBfrjk/VioN4uQjoI7ZMVzVEmvKv+XYC19
+         cgC0M2uHm0pzMHM57Xf7F/8ivPrm+av3uqTH85lNILaaKPKzCgsV4jGe7lqyJxy5xdWn
+         i5Vj5Z4xphYuvayVOAvit2cioXMWKrAtGWL8ibTDa8HlfjcivQct2h5tF6P3cJuOriPT
+         xMWeVvkQ5iXMrNKC1Iqjkw8wxYMJOeAmU6vrii2bmclsBnWV/htoi2HNyRxVyFWC8PJP
+         r1QoalP1iJBpp3W/okCxHSaUKv0L62omgsMVKBvJYql2vh1NMPI8e9mu8K8RkWG6tQY3
+         vjBg==
+X-Gm-Message-State: APjAAAV0iXHfR+CmtA/ZDzpF82tu/I+QdRmP6ivsOvil46w06lqh7XW5
+        v6nS5+MvEF2/wLAtCHJ5WOvIMw==
+X-Google-Smtp-Source: APXvYqwe244ck0Ha1OOKUd5dlfDyynPE9re1cJMR8bAB5hw9pzDlUwsH4z+WwCavWNf8pM4H24Z4bg==
+X-Received: by 2002:a63:f40e:: with SMTP id g14mr623031pgi.132.1574099953908;
+        Mon, 18 Nov 2019 09:59:13 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id r16sm18525557pgl.77.2019.11.18.09.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2019 09:59:13 -0800 (PST)
+Date:   Mon, 18 Nov 2019 09:59:10 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf\@aepfle.de" <olaf@aepfle.de>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "sashal\@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv\@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net, 1/2] hv_netvsc: Fix offset usage in
+ netvsc_send_table()
+Message-ID: <20191118095910.3566c5dd@hermes.lan>
+In-Reply-To: <87wobxgkkv.fsf@vitty.brq.redhat.com>
+References: <1574094751-98966-1-git-send-email-haiyangz@microsoft.com>
+        <1574094751-98966-2-git-send-email-haiyangz@microsoft.com>
+        <87wobxgkkv.fsf@vitty.brq.redhat.com>
 MIME-Version: 1.0
-References: <cover.1573779287.git.daniel@iogearbox.net> <ff9a3829fb46802262a20dbad1123cd66c118b8b.1573779287.git.daniel@iogearbox.net>
-In-Reply-To: <ff9a3829fb46802262a20dbad1123cd66c118b8b.1573779287.git.daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 18 Nov 2019 09:39:53 -0800
-Message-ID: <CAEf4BzaxyULFPYd8OGfoc5FLSDt2ecppLFakjRJ2TyK5F-fJOw@mail.gmail.com>
-Subject: Re: [PATCH rfc bpf-next 6/8] bpf: add poke dependency tracking for
- prog array maps
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 5:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> This work adds program tracking to prog array maps. This is needed such
-> that upon prog array updates/deletions we can fix up all programs which
-> make use of this tail call map. We add ops->map_poke_{un,}track() helpers
-> to maps to maintain the list of programs and ops->map_poke_run() for
-> triggering the actual update. bpf_array_aux is extended to contain the
-> list head and poke_mutex in order to serialize program patching during
-> updates/deletions. bpf_free_used_maps() will untrack the program shortly
-> before dropping the reference to the map.
->
-> The prog_array_map_poke_run() is triggered during updates/deletions and
-> walks the maintained prog list. It checks in their poke_tabs whether the
-> map and key is matching and runs the actual bpf_arch_text_poke() for
-> patching in the nop or new jmp location. Depending on the type of update,
-> we use one of BPF_MOD_{NOP_TO_JUMP,JUMP_TO_NOP,JUMP_TO_JUMP}.
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> ---
->  include/linux/bpf.h   |  36 +++++++++++++
->  kernel/bpf/arraymap.c | 120 +++++++++++++++++++++++++++++++++++++++++-
->  kernel/bpf/core.c     |   9 +++-
->  3 files changed, 162 insertions(+), 3 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 0ff06a0d0058..62a369fb8d98 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -21,6 +21,7 @@ struct bpf_verifier_env;
->  struct bpf_verifier_log;
->  struct perf_event;
->  struct bpf_prog;
-> +struct bpf_prog_aux;
->  struct bpf_map;
->  struct sock;
->  struct seq_file;
-> @@ -63,6 +64,12 @@ struct bpf_map_ops {
->                              const struct btf_type *key_type,
->                              const struct btf_type *value_type);
->
-> +       /* Prog poke tracking helpers. */
-> +       int (*map_poke_track)(struct bpf_map *map, struct bpf_prog_aux *aux);
-> +       void (*map_poke_untrack)(struct bpf_map *map, struct bpf_prog_aux *aux);
-> +       void (*map_poke_run)(struct bpf_map *map, u32 key, struct bpf_prog *old,
-> +                            struct bpf_prog *new);
+On Mon, 18 Nov 2019 18:28:48 +0100
+Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
 
-You are passing bpf_prog_aux for track/untrack, but bpf_prog itself
-for run. Maybe stick to just bpf_prog everywhere?
+> > +		netdev_err(ndev, "Received send-table offset too big:%u\n",
+> > +			   offset);
+> > +		return;
+> > +	}
+> > +
+> > +	tab = (void *)nvmsg + offset;  
+> 
+> But tab is 'u32 *', doesn't compiler complain?
 
-> +
->         /* Direct value access helpers. */
->         int (*map_direct_value_addr)(const struct bpf_map *map,
->                                      u64 *imm, u32 off);
-> @@ -584,6 +591,9 @@ struct bpf_array_aux {
->          */
->         enum bpf_prog_type type;
->         bool jited;
-> +       /* Programs with direct jumps into programs part of this array. */
-> +       struct list_head poke_progs;
-> +       struct mutex poke_mutex;
->  };
->
-
-[...]
+nvmsg + offset is still of type void *.
+assigning void * to another pointer type is allowed with C.
