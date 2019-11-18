@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F1911000D6
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 09:57:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B991000D7
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 09:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbfKRI5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 03:57:15 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37600 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726654AbfKRI5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 03:57:15 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b10so796737pgd.4
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 00:57:14 -0800 (PST)
+        id S1726739AbfKRI5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 03:57:18 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33101 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726654AbfKRI5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 03:57:17 -0500
+Received: by mail-pl1-f196.google.com with SMTP id ay6so9419632plb.0
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 00:57:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dcHFOyDCfRkCHfb/8xW+LBRQYXUKmyp7A+x0woA1Qs4=;
-        b=O8Mhtyny7SjKy8cd/TBm6iqdUkkJUTMJFYcWwEj32abvwdI31ipgmUwcSGY4dqvD9Z
-         RUdu9o1ds9qbPz7J7LA18HlhrenJmi1oUwQPIzfAVeCIyTBAp1xHx7dmiesQCQPx5uUM
-         8Nt95FganBOAFGPaasWAd9g5WiPjEq7Qy5KQA=
+        bh=5pYU3MBdJcghgwmZCZMRJCjKXgYOm8xSqjzP0Su5DbY=;
+        b=dhflZuvpjoOmeUdY1yWFNOov2+J/CTc8CWJ/aIgnlipLRKpQd88Qrk8w7exsyjNNTc
+         XAHp+RbEXkFTU7gLZ3W1vbNQWUjNWAfud1q48D+QyFnDUexKTXqp/bbYrRyIEOYiuXVC
+         OYxxustx7fj+Tuvo6dTPoIdrTESPPSYkhNGbg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dcHFOyDCfRkCHfb/8xW+LBRQYXUKmyp7A+x0woA1Qs4=;
-        b=ScGQs9M9fiISQ+IVDVgZg0gDdkM6R4qZM+//C4kaerN57AjdFN5vFawtmXXlCNXZ9n
-         Am71PkFtC0MYLQDjPIf8ALR7k9eUrV+udJsSmyAnSTZoqNqRq522psGyuQgsK75xxQxm
-         PsOjVPoEWirIA0UOZHZvb94o3xd6jK4zyFnHX68ID7MvBApBW+gH4dRBaxXvQFsskQiQ
-         p9askrZr2o6jlr/5BP7ZMHyV+G/kw6y6/cp0ud3e5OQ0wezOVSumUVomw2z0HbaydI4F
-         KmQgP7yDvZitAJYvPeuoCcm7rzGcqMqpPOEgf6lORFWN5ZU1r93aA2ixHdJ/R7wG9PWs
-         BTEg==
-X-Gm-Message-State: APjAAAWuE9/PHQ9+G41glvqALYBHkwYsVVrWw9nb0RN602JC9aRua5XN
-        6HH9NUMdOHqbBTBReBMYigCNrw==
-X-Google-Smtp-Source: APXvYqy92tjNUfRZJ2g6LGBUNXG34MUJIidxFfCZBMf+IvPBMuRWXAF3fE6GB4an1Oq/F8paqVGPZA==
-X-Received: by 2002:a62:606:: with SMTP id 6mr9956930pfg.76.1574067434252;
-        Mon, 18 Nov 2019 00:57:14 -0800 (PST)
+        bh=5pYU3MBdJcghgwmZCZMRJCjKXgYOm8xSqjzP0Su5DbY=;
+        b=Uyg9icSCJSPtnujnUi+xjB4JfmwXtlkAL0VymjTVOCQM6aHfGubOhU/ANBrq5YkK3R
+         QFSKAkuUctiOnw7jB6uiZRtwjZEBIkcc36VKkpIJbJkxwtdUGRe2wxkZuPvbts/KKDGV
+         OL5J/TxL7RS1sFC7DNLeHo/mr0nDHZ6uut6a+HJJLd/IhhxVG8VMkHJWLJNKYWtgBeq6
+         1d1wROdziurGy3iotFO6oN3LigpHhKrkti4reL+53EI5SMCaDt5lJTJbiRW5gYO9U9b/
+         tF8hndHdrTCBg7gZNRkCWOQ36xdmIHguis426wFVdxcofi7UkdQ+eB826laPAchowHzP
+         fFHA==
+X-Gm-Message-State: APjAAAUV35odRiUZPgTho35x1Lu3lwxEHCo2kD9hZXGkDVHi2NPVNXix
+        WG80YU80Ep9PXguBtnOxaQHOwJ3jdJ4=
+X-Google-Smtp-Source: APXvYqyKcxuSrliKa00hmt3GXuNE5j96pnNkIPgKrTwdyiIm5t+Beiv7uB30p53pCUuk8rTAXU7gvw==
+X-Received: by 2002:a17:902:161:: with SMTP id 88mr26521256plb.253.1574067436540;
+        Mon, 18 Nov 2019 00:57:16 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q41sm19120230pja.20.2019.11.18.00.57.12
+        by smtp.gmail.com with ESMTPSA id q41sm19120230pja.20.2019.11.18.00.57.14
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Nov 2019 00:57:13 -0800 (PST)
+        Mon, 18 Nov 2019 00:57:16 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next 8/9] bnxt_en: Add a warning message for driver initiated reset
-Date:   Mon, 18 Nov 2019 03:56:42 -0500
-Message-Id: <1574067403-4344-9-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [PATCH net-next 9/9] bnxt_en: Abort waiting for firmware response if there is no heartbeat.
+Date:   Mon, 18 Nov 2019 03:56:43 -0500
+Message-Id: <1574067403-4344-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1574067403-4344-1-git-send-email-michael.chan@broadcom.com>
 References: <1574067403-4344-1-git-send-email-michael.chan@broadcom.com>
@@ -55,28 +54,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-During loss of heartbeat, log this warning message.
+This is especially beneficial during the NVRAM related firmware
+commands that have longer timeouts.  If the BNXT_STATE_FW_FATAL_COND
+flag gets set while waiting for firmware response, abort and return
+error.
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index a168324..55e02a9 100644
+index 55e02a9..b20ab38 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10122,6 +10122,7 @@ static void bnxt_force_fw_reset(struct bnxt *bp)
+@@ -4278,6 +4278,11 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
+ 		/* Wait until hwrm response cmpl interrupt is processed */
+ 		while (bp->hwrm_intr_seq_id != (u16)~seq_id &&
+ 		       i++ < tmo_count) {
++			/* Abort the wait for completion if the FW health
++			 * check has failed.
++			 */
++			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
++				return -EBUSY;
+ 			/* on first few passes, just barely sleep */
+ 			if (i < HWRM_SHORT_TIMEOUT_COUNTER)
+ 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
+@@ -4301,6 +4306,11 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
  
- void bnxt_fw_exception(struct bnxt *bp)
- {
-+	netdev_warn(bp->dev, "Detected firmware fatal condition, initiating reset\n");
- 	set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
- 	bnxt_rtnl_lock_sp(bp);
- 	bnxt_force_fw_reset(bp);
+ 		/* Check if response len is updated */
+ 		for (i = 0; i < tmo_count; i++) {
++			/* Abort the wait for completion if the FW health
++			 * check has failed.
++			 */
++			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
++				return -EBUSY;
+ 			len = (le32_to_cpu(*resp_len) & HWRM_RESP_LEN_MASK) >>
+ 			      HWRM_RESP_LEN_SFT;
+ 			if (len)
 -- 
 2.5.1
 
