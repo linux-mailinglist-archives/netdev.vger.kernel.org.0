@@ -2,134 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C514D100688
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90ACD1006C7
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727018AbfKRNeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 08:34:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51792 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726883AbfKRNeJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 08:34:09 -0500
-Received: from localhost.localdomain.com (unknown [77.139.212.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 537132075E;
-        Mon, 18 Nov 2019 13:34:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574084049;
-        bh=yk9UnCRQag+MRhAsMPjqi4p3IqpYTg+dCcYvgMZ8Cis=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2RFkQI++3a+oLpzNzrRYRV9+Rvq2vZB30Apa5u1QqdHpNpFmvOxaXrnJyglWV53v
-         f3ZMxo/SwcvsXu9btFFpQz/6mMjcjAT0D5LIqJUYnmLUbpqn2H46S3DXjT6Aj/5BrH
-         BqjVEf9SkxTYiz+QK74bCu/UCwr5UyHdAOyb+XEI=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, ilias.apalodimas@linaro.org,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com, mcroce@redhat.com,
-        jonathan.lemon@gmail.com
-Subject: [PATCH v4 net-next 3/3] net: mvneta: get rid of huge dma sync in mvneta_rx_refill
-Date:   Mon, 18 Nov 2019 15:33:46 +0200
-Message-Id: <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1574083275.git.lorenzo@kernel.org>
-References: <cover.1574083275.git.lorenzo@kernel.org>
+        id S1727109AbfKRNuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 08:50:23 -0500
+Received: from www62.your-server.de ([213.133.104.62]:34948 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbfKRNuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 08:50:23 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iWhQ3-00021M-4I; Mon, 18 Nov 2019 14:50:19 +0100
+Received: from [2a02:1205:507e:bf80:bef8:7f66:49c8:72e5] (helo=pc-11.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iWhQ2-000OGJ-G8; Mon, 18 Nov 2019 14:50:18 +0100
+Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
+ BPF_MAP_TYPE_ARRAY
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>
+References: <20191115040225.2147245-1-andriin@fb.com>
+ <20191115040225.2147245-3-andriin@fb.com>
+ <888858f7-97fb-4434-4440-a5c0ec5cbac8@iogearbox.net>
+ <293bb2fe-7599-3825-1bfe-d52224e5c357@fb.com>
+ <3287b984-6335-cacb-da28-3d374afb7f77@iogearbox.net>
+ <fe46c471-e345-b7e4-ab91-8ef044fd58ae@fb.com>
+ <c79ca69f-84fd-bfc2-71fd-439bc3b94c81@iogearbox.net>
+ <3eca5e22-f3ec-f05f-0776-4635b14c2a4e@fb.com>
+ <CAEf4BzZHT=Gwor_VA38Yoy6Lo7zeeiVeQK+KQpZUHRpnV6=fuA@mail.gmail.com>
+ <3a99d3af-97e7-3d6d-0a9c-46fb8104a211@iogearbox.net>
+ <CAEf4BzbyHn5JOf6=S6g=Qr15evEbwmMO3F4QCC9hkU0hpJcA4g@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6cb3f3f4-cc08-8280-8d72-f2fdc58ad034@iogearbox.net>
+Date:   Mon, 18 Nov 2019 14:50:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzbyHn5JOf6=S6g=Qr15evEbwmMO3F4QCC9hkU0hpJcA4g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25637/Mon Nov 18 10:53:23 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get rid of costly dma_sync_single_for_device in mvneta_rx_refill
-since now the driver can let page_pool API to manage needed DMA
-sync with a proper size.
+On 11/17/19 6:17 PM, Andrii Nakryiko wrote:
+> On Sun, Nov 17, 2019 at 4:07 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 11/17/19 6:57 AM, Andrii Nakryiko wrote:
+>>> On Fri, Nov 15, 2019 at 5:18 PM Alexei Starovoitov <ast@fb.com> wrote:
+>>>> On 11/15/19 4:13 PM, Daniel Borkmann wrote:
+>>>>>>> Yeah, only for fd array currently. Question is, if we ever reuse that
+>>>>>>> map_release_uref
+>>>>>>> callback in future for something else, will we remember that we earlier
+>>>>>>> missed to add
+>>>>>>> it here? :/
+>>>>>>
+>>>>>> What do you mean 'missed to add' ?
+>>>>>
+>>>>> Was saying missed to add the inc/put for the uref counter.
+>>>>>
+>>>>>> This is mmap path. Anything that needs releasing (like FDs for
+>>>>>> prog_array or progs for sockmap) cannot be mmap-able.
+>>>>>
+>>>>> Right, I meant if in future we ever have another use case outside of it
+>>>>> for some reason (unrelated to those maps you mention above). Can we
+>>>>> guarantee this is never going to happen? Seemed less fragile at least to
+>>>>> maintain proper count here.
+>>>
+>>> I don't think we'll ever going to allow mmaping anything that contains
+>>> not just pure data. E.g., we disallow mmaping array that contains spin
+>>> lock for that reason. So I think it's safe to assume that this is not
+>>> going to happen even for future maps. At least not without some
+>>> serious considerations before that. So I'm going to keep it as just
+>>> plain bpf_map_inc for now.
+>>
+>> Fair enough, then keep it as it is. The purpose of the uref counter is to
+>> track whatever map holds a reference either in form of fd or inode in bpf
+>> fs which are the only two things till now where user space can refer to the
+>> map, and once it hits 0, we perform the map's map_release_uref() callback.
+> 
+> To be honest, I don't exactly understand why we need both refcnt and
+> usercnt. Does it have anything to do with some circular dependencies
+> for those maps containing other FDs? And once userspace doesn't have
+> any more referenced, we release FDs, which might decrement refcnt,
+> thus breaking circular refcnt between map FD and special FDs inside a
+> map? Or that's not the case and there is a different reason?
 
-- XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
-- XDP_DROP DMA sync managed by page_pool API:	~585Kpps
+Yes, back then we added it to break up circular dependencies in relation to
+tail calls which is why these are pinned before the loader process finishes
+(e.g. as in Cilium's case).
 
-Tested-by: Matteo Croce <mcroce@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+> Either way, I looked at map creation and bpf_map_release()
+> implementation again. map_create() does set usercnt to 1, and
+> bpf_map_release(), which I assume is called when map FD is closed,
+> does decrement usercnt, so yeah, we do with_uref() manipulations for
+> cases when userspace maintains some sort of handle to map. In that
+> regard, mmap() does fall into the same category, so I'm going to
+> convert everything mmap-related back to
+> bpf_map_inc_with_uref()/bpf_map_put_with_uref(), to stay consistent.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index f7713c2c68e1..a06d109c9e80 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1846,7 +1846,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 			    struct mvneta_rx_queue *rxq,
- 			    gfp_t gfp_mask)
- {
--	enum dma_data_direction dma_dir;
- 	dma_addr_t phys_addr;
- 	struct page *page;
- 
-@@ -1856,9 +1855,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 		return -ENOMEM;
- 
- 	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
--	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
--	dma_sync_single_for_device(pp->dev->dev.parent, phys_addr,
--				   MVNETA_MAX_RX_BUF_SIZE, dma_dir);
- 	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
- 
- 	return 0;
-@@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
- 		if (err) {
- 			ret = MVNETA_XDP_DROPPED;
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		} else {
- 			ret = MVNETA_XDP_REDIR;
- 		}
-@@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	case XDP_TX:
- 		ret = mvneta_xdp_xmit_back(pp, xdp);
- 		if (ret != MVNETA_XDP_TX)
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-@@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		trace_xdp_exception(pp->dev, prog, act);
- 		/* fall through */
- 	case XDP_DROP:
--		page_pool_recycle_direct(rxq->page_pool,
--					 virt_to_head_page(xdp->data));
-+		__page_pool_put_page(rxq->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		ret = MVNETA_XDP_DROPPED;
- 		break;
- 	}
-@@ -3067,11 +3069,13 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
- 	struct bpf_prog *xdp_prog = READ_ONCE(pp->xdp_prog);
- 	struct page_pool_params pp_params = {
- 		.order = 0,
--		.flags = PP_FLAG_DMA_MAP,
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
- 		.pool_size = size,
- 		.nid = cpu_to_node(0),
- 		.dev = pp->dev->dev.parent,
- 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = pp->rx_offset_correction,
-+		.max_len = MVNETA_MAX_RX_BUF_SIZE,
- 	};
- 	int err;
- 
--- 
-2.21.0
+Ok, fair enough, either way would have been fine.
 
+Thanks a lot,
+Daniel
