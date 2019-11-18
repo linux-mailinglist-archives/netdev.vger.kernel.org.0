@@ -2,160 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 434E0100C1E
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 20:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEF35100C3C
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 20:33:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbfKRTVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 14:21:43 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36545 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726962AbfKRTVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 14:21:43 -0500
-Received: by mail-pf1-f194.google.com with SMTP id b19so10858054pfd.3
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 11:21:41 -0800 (PST)
+        id S1726635AbfKRTdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 14:33:25 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:45603 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726435AbfKRTdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 14:33:25 -0500
+Received: by mail-wr1-f68.google.com with SMTP id z10so20907862wrs.12
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 11:33:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7Vv2B0bFyN86x+8y9RduLalL/HEcvQ97xAs8bNkoqkM=;
-        b=YkiIf2B3OQussUzFcXNFRTUsy45i9XgaSTRKEeUr6P68fOeMC7WfkpxokUULDn8o2Y
-         81WOgLDOTfUaFb6KqpTEMkvOWWLjm7RxsR9FyMH0oORnxLI0mbe0ud+HZYRMVNMlrq0a
-         3Stutl0NThC6s6axuW2y0b08o+LRLu/Jqkoic=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rNwcpaiaZQrX345KzttaY7j6spDQbPibj2LcMlNLNxw=;
+        b=PU4iVDDrppxuDv+7qgCdKXR7pqjDBwl0bem3UGt6XMLvOjvesqTY7WZcGgqXOCD5rP
+         eHD3n3hAG9gtTxLzs4Qfh5pO9auL7WbYZDWSpgkglL+7dawY1SaBe0lBs0DrXyi1QpxT
+         GJep5/voCDPxiMMt7nfz0DTIg2RvdJX9njBDPSL8yf/r/NFikg5jFPXodRZAGs0XowCj
+         MTkXXdzhzNcUaW+gDJTa6KiBlVfws1+8OGpVqhOM4AdfiVFB3LeJ0L/A38quEhc1+aAH
+         A3v7MYFiZSeaU0j/m96sqwn0L06ZKmcLbGtZqsiFse+0Hd18yZoxlUR97P/ah8jokD08
+         8dEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7Vv2B0bFyN86x+8y9RduLalL/HEcvQ97xAs8bNkoqkM=;
-        b=em9wYyHTPWSLPqOn5w08daMm4giaBHNEcJ+lZQ2IoY2KPggAmo2ivzQD+S5oITdmiV
-         X2cgyBiIZEH6kqscY8zmavklTYqg5SJEt/CnM5Hho5hcPN5bkFwrhUhaC8DwvSDt4sDj
-         c1HVuRcBLPcbz6+qNOwxQv0dzpzEhUVRg/2SKmnTku7Mb4Vgb3kYJCUCPhFZg+8MjAVt
-         9SNo42Z7lvG/OalGSBkiclICqxLHjrXrJBJmBrg42jwBYFrrVXAVopuVLE25S5iEHkqb
-         /dRdz7ZS3CfVY0Vr+7qGgLHdFHbzO3JOJKZSlSxTCGYYLKuzPlPb1s/Vyl0RAC/pKiUS
-         2afQ==
-X-Gm-Message-State: APjAAAVPn20137xYId/wN7iF/6FZwp+Macot6/6hdfw0eh4AXlPmJONx
-        oVoSC/FWksHslcsklP5Kfg4N3g==
-X-Google-Smtp-Source: APXvYqyftvKH1fK0ACjlvyP+upMLpK/ORTLYCjxK+/XeKb32FV0IOsarIrAKdQQe9sSFMBw9Hv91cA==
-X-Received: by 2002:aa7:9533:: with SMTP id c19mr919367pfp.77.1574104901053;
-        Mon, 18 Nov 2019 11:21:41 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id p123sm22772633pfg.30.2019.11.18.11.21.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 11:21:39 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-bluetooth@vger.kernel.org, dianders@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH v6 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm config
-Date:   Mon, 18 Nov 2019 11:21:22 -0800
-Message-Id: <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-In-Reply-To: <20191118192123.82430-1-abhishekpandit@chromium.org>
-References: <20191118192123.82430-1-abhishekpandit@chromium.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rNwcpaiaZQrX345KzttaY7j6spDQbPibj2LcMlNLNxw=;
+        b=sAXj+duIFSI2LqNggksLgm4esIZf+eZvDjlBo733amrclR2TsvWPyujD9EypqPXUjv
+         yExEEG9LiVSxpInQ5g9WnfYbNSMTla3z2PI8ZaBXWaVcwnJGjEt+rJtKO2PCt9r9D1Ob
+         J6pWfWcNOlvXg/ILW+fnEAwLm0CxgooK5MkT6Imkso+iCprwJUXCnK8cP2eOM1fJVxG0
+         07hV+GE5FVrrZDXz58BfhE1wmgYkeaMxU4YTmPIxtghkF6q3gdHNZbWCIJFFcIcbJfV8
+         o1YBAUPYfGbFGTfYU/hOoqBluY3S+vTtiKeKsLayIi3/3Du8pH9YbhDymQDOPHDjpfvH
+         YrSA==
+X-Gm-Message-State: APjAAAVskx2W2ZBHBhMBimPDkPn6VW0+/Qesu04Gtc+5urfGAcVEVwwr
+        8WVJGHNSCb3mEAg0fhLlok6e9aQW
+X-Google-Smtp-Source: APXvYqwEfwsIq3f+CGwo/B+9mEqqYJ3Y+/J46LBJ53m5L0BjEUr78wp7EGxhbgrvUFlyVuvaxCSvUw==
+X-Received: by 2002:adf:b1cb:: with SMTP id r11mr23719134wra.246.1574105603508;
+        Mon, 18 Nov 2019 11:33:23 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f2d:7d00:e016:8d04:5d1f:5991? (p200300EA8F2D7D00E0168D045D1F5991.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:e016:8d04:5d1f:5991])
+        by smtp.googlemail.com with ESMTPSA id f188sm438296wmf.3.2019.11.18.11.33.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Nov 2019 11:33:22 -0800 (PST)
+Subject: Re: [PATCH net-next] r8169: disable TSO on a single version of
+ RTL8168c to fix performance
+To:     Corinna Vinschen <vinschen@redhat.com>, netdev@vger.kernel.org
+Cc:     nic_swsd@realtek.com, David Miller <davem@davemloft.net>
+References: <20191118095503.25611-1-vinschen@redhat.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <44352432-e6ad-3e3c-4fea-9ad59f7c4ae9@gmail.com>
+Date:   Mon, 18 Nov 2019 20:33:16 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191118095503.25611-1-vinschen@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for pcm parameters.
+On 18.11.2019 10:55, Corinna Vinschen wrote:
+> During performance testing, I found that one of my r8169 NICs suffered
+> a major performance loss, a 8168c model.
+> 
+> Running netperf's TCP_STREAM test didn't return the expected
+> throughput of > 900 Mb/s, but rather only about 22 Mb/s.  Strange
+> enough, running the TCP_MAERTS and UDP_STREAM tests all returned with
+> throughput > 900 Mb/s, as did TCP_STREAM with the other r8169 NICs I can
+> test (either one of 8169s, 8168e, 8168f).
+> 
+> Bisecting turned up commit 93681cd7d94f83903cb3f0f95433d10c28a7e9a5,
+> "r8169: enable HW csum and TSO" as the culprit.
+> 
+> I added my 8168c version, RTL_GIGA_MAC_VER_22, to the code
+> special-casing the 8168evl as per the patch below.  This fixed the
+> performance problem for me.
+> 
+> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
+> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+Thanks for reporting and the fix. Just two small nits:
+- fix should be annotated "net", not "net-next"
+- comment blocks in net subsystem don't have /* on a separate line
 
-Changes in v6: None
-Changes in v5: None
-Changes in v4: None
-Changes in v3: None
-Changes in v2: None
+Apart from that:
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
 
- .../bindings/net/broadcom-bluetooth.txt       | 16 ++++++++++
- include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
- 2 files changed, 48 insertions(+)
- create mode 100644 include/dt-bindings/bluetooth/brcm.h
+Out of curiosity: Did you test also with iperf3? If yes,
+do you see the same issue?
 
-diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-index c749dc297624..8561e4684378 100644
---- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-@@ -29,10 +29,20 @@ Optional properties:
-    - "lpo": external low power 32.768 kHz clock
-  - vbat-supply: phandle to regulator supply for VBAT
-  - vddio-supply: phandle to regulator supply for VDDIO
-+ - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
-+ - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
-+ - brcm,bt-pcm-frame-type: short, long
-+ - brcm,bt-pcm-sync-mode: slave, master
-+ - brcm,bt-pcm-clock-mode: slave, master
- 
-+See include/dt-bindings/bluetooth/brcm.h for SCO/PCM parameters. The default
-+value for all these values are 0 (except for brcm,bt-sco-routing which requires
-+a value) if you choose to leave it out.
- 
- Example:
- 
-+#include <dt-bindings/bluetooth/brcm.h>
-+
- &uart2 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&uart2_pins>;
-@@ -40,5 +50,11 @@ Example:
-        bluetooth {
-                compatible = "brcm,bcm43438-bt";
-                max-speed = <921600>;
-+
-+               brcm,bt-sco-routing        = <BRCM_SCO_ROUTING_TRANSPORT>;
-+               brcm,bt-pcm-interface-rate = <BRCM_PCM_IF_RATE_512KBPS>;
-+               brcm,bt-pcm-frame-type     = <BRCM_PCM_FRAME_TYPE_SHORT>;
-+               brcm,bt-pcm-sync-mode      = <BRCM_PCM_SYNC_MODE_MASTER>;
-+               brcm,bt-pcm-clock-mode     = <BRCM_PCM_CLOCK_MODE_MASTER>;
-        };
- };
-diff --git a/include/dt-bindings/bluetooth/brcm.h b/include/dt-bindings/bluetooth/brcm.h
-new file mode 100644
-index 000000000000..8b86f90d7dd2
---- /dev/null
-+++ b/include/dt-bindings/bluetooth/brcm.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-+/*
-+ * This header provides constants for Broadcom bluetooth dt-bindings.
-+ */
-+#ifndef _DT_BINDINGS_BLUETOOTH_BRCM_H
-+#define _DT_BINDINGS_BLUETOOTH_BRCM_H
-+
-+#define BRCM_BT_SCO_ROUTING_PCM			0
-+#define BRCM_BT_SCO_ROUTING_TRANSPORT		1
-+#define BRCM_BT_SCO_ROUTING_CODEC		2
-+#define BRCM_BT_SCO_ROUTING_I2S			3
-+
-+/* Default is 128KBPs */
-+#define BRCM_BT_PCM_INTERFACE_RATE_128KBPS	0
-+#define BRCM_BT_PCM_INTERFACE_RATE_256KBPS	1
-+#define BRCM_BT_PCM_INTERFACE_RATE_512KBPS	2
-+#define BRCM_BT_PCM_INTERFACE_RATE_1024KBPS	3
-+#define BRCM_BT_PCM_INTERFACE_RATE_2048KBPS	4
-+
-+/* Default should be short */
-+#define BRCM_BT_PCM_FRAME_TYPE_SHORT		0
-+#define BRCM_BT_PCM_FRAME_TYPE_LONG		1
-+
-+/* Default should be master */
-+#define BRCM_BT_PCM_SYNC_MODE_SLAVE		0
-+#define BRCM_BT_PCM_SYNC_MODE_MASTER		1
-+
-+/* Default should be master */
-+#define BRCM_BT_PCM_CLOCK_MODE_SLAVE		0
-+#define BRCM_BT_PCM_CLOCK_MODE_MASTER		1
-+
-+#endif /* _DT_BINDINGS_BLUETOOTH_BRCM_H */
--- 
-2.24.0.432.g9d3f5f5b63-goog
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index d8fcdb9db8d1..1de11ac05bd6 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -6952,8 +6952,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		dev->gso_max_segs = RTL_GSO_MAX_SEGS_V1;
+>  	}
+>  
+> -	/* RTL8168e-vl has a HW issue with TSO */
+> -	if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
+> +	/*
+
+not net style comment
+
+> +	 * RTL8168e-vl and one RTL8168c variant are known to have a
+> +	 * HW issue with TSO.
+> +	 */
+> +	if (tp->mac_version == RTL_GIGA_MAC_VER_34 ||
+> +	    tp->mac_version == RTL_GIGA_MAC_VER_22) {
+>  		dev->vlan_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+>  		dev->hw_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+>  		dev->features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+> 
 
