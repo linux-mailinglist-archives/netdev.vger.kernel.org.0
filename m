@@ -2,72 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45906100610
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C533710066E
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfKRNDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 08:03:07 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:32854 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfKRNDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 08:03:07 -0500
-Received: by mail-wr1-f65.google.com with SMTP id w9so19404166wrr.0
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 05:03:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wv9tG/7LquXcsfhuek8p/vKB+glErzAx7gvb6JwF85Y=;
-        b=ZX9zQDGBn2JIDwPhEjQZPCZo4oM9gDtjoTAry/ghnFVvbkrV+6nhvRoNjM+y908OjM
-         IYb8fsdFV20LQ6BG+lYOR3DFjbD4LokPBdKA9tKaeFmWPZ4nv+53capt/CRQ/kR6A4Ww
-         qiQgyKa+/wfmWdw9a3nn/oBmzSSLoZCXCVdlsjeFFavfKYcvJGBHz2M7oHrmpfECGFnN
-         PkN0y6OzqE0+47faGpDfTmt4nFMXDKnki72S/awlN995IJZKIRrX1N8XHygaEFAxJUoP
-         lTdmbPHLbQSWNIJ4frpMe0HB3vILa3eCq8U63RRfzgl4RpCytZbK7wAoCpzfHR1UMkOm
-         I0FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wv9tG/7LquXcsfhuek8p/vKB+glErzAx7gvb6JwF85Y=;
-        b=LoGGqZVDgVW/u3q09rlGqqOo8cYoqdvDXAmH5g8WXPdGZjW722vr5e1yxdH8diiDEh
-         oAP/l7Nm225ZkBkFtsEWDPzwTFT9oFCT+H1xOifr7zUw5Hso+KvcnK4ht7l3E6CpPeNN
-         ffERq8bm7TRPnh7wZaHExgzX54GwLVitr98wVIYQ484rIXNXRCa9+EIzMC2i8oVHeRFo
-         MO7Cc5q9cwL5juCjdGqowvVnZgSzMxO5bKCwM4qJaNnIey02Q9Wb1JZJqL2yPy3XUORm
-         gf0idrlmDWTnWK1PoOfIhpCrWueAqAWl8cTKFVPzBrBsvYYkJlyNtxHAVVz1YlldQOMu
-         j69A==
-X-Gm-Message-State: APjAAAVHvgNnqsaeQAI7b5RkDKNmS4rICHJFwe8ow8wTF8Q/DdfYri6+
-        /c4BQicoxIcZbAHK4N1gCrDH0g==
-X-Google-Smtp-Source: APXvYqxybNyYUoW2Dv9Z6Tn1FkSqETHQDaMJ8+zeUEc3vlIp9fhRIWQS1Dg8MwDTK9PmZefsvvNF9w==
-X-Received: by 2002:adf:e885:: with SMTP id d5mr17580513wrm.117.1574082185336;
-        Mon, 18 Nov 2019 05:03:05 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id y17sm23782198wrs.58.2019.11.18.05.03.05
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 18 Nov 2019 05:03:05 -0800 (PST)
-Date:   Mon, 18 Nov 2019 14:03:04 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net
-Subject: Re: [PATCH net-next] lwtunnel: change to use nla_put_u8 for
- LWTUNNEL_IP_OPT_ERSPAN_VER
-Message-ID: <20191118130304.ejmg73sld7yusdrm@netronome.com>
-References: <60ad49e50facc0d5d77120350b01e37e37d86c57.1574071812.git.lucien.xin@gmail.com>
+        id S1726739AbfKRN1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 08:27:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49660 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726284AbfKRN1J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 08:27:09 -0500
+Received: from localhost (unknown [89.205.134.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5C4C2089D;
+        Mon, 18 Nov 2019 13:27:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574083628;
+        bh=E7ZZRoBlbuyEgprwH4gZMq8d0oF29io7p07EbbxznFc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xb1cY/RqblL9s5I/WYcmj2/+7IK2G51KYcolTQFFjAjkcxKqjkSJ4AxNboonwgZmR
+         LzgRywQCiBqQrOnhzfss6UogUmt1RFtfaC1dvWpOQlDwIhJ2YwKmvMlMZy00MFz0H/
+         kirENd3sUR87Ao5H1o/R6hKUs7isEvkqZt5it3ug=
+Date:   Mon, 18 Nov 2019 14:27:05 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     jouni.hogander@unikie.com
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH v3] net-sysfs: Fix reference count leak
+Message-ID: <20191118132705.GB261521@kroah.com>
+References: <20191118123246.27618-1-jouni.hogander@unikie.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <60ad49e50facc0d5d77120350b01e37e37d86c57.1574071812.git.lucien.xin@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191118123246.27618-1-jouni.hogander@unikie.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 06:10:12PM +0800, Xin Long wrote:
-> LWTUNNEL_IP_OPT_ERSPAN_VER is u8 type, and nla_put_u8 should have
-> been used instead of nla_put_u32(). This is a copy-paste error.
+On Mon, Nov 18, 2019 at 02:32:46PM +0200, jouni.hogander@unikie.com wrote:
+> From: Jouni Hogander <jouni.hogander@unikie.com>
 > 
-> Fixes: b0a21810bd5e ("lwtunnel: add options setting and dumping for erspan")
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> Netdev_register_kobject is calling device_initialize. In case of error
+> reference taken by device_initialize is not given up.
+> 
+> Drivers are supposed to call free_netdev in case of error. In non-error
+> case the last reference is given up there and device release sequence
+> is triggered. In error case this reference is kept and the release
+> sequence is never started.
+> 
+> Fix this reference count leak by allowing giving up the reference also
+> in error case in free_netdev.
+> 
+> Also replace BUG_ON with WARN_ON in free_netdev and in netdev_release.
+> 
+> This is the rootcause for couple of memory leaks reported by Syzkaller:
+> 
+> BUG: memory leak unreferenced object 0xffff8880675ca008 (size 256):
+>   comm "netdev_register", pid 281, jiffies 4294696663 (age 6.808s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>   backtrace:
+>     [<0000000058ca4711>] kmem_cache_alloc_trace+0x167/0x280
+>     [<000000002340019b>] device_add+0x882/0x1750
+>     [<000000001d588c3a>] netdev_register_kobject+0x128/0x380
+>     [<0000000011ef5535>] register_netdevice+0xa1b/0xf00
+>     [<000000007fcf1c99>] __tun_chr_ioctl+0x20d5/0x3dd0
+>     [<000000006a5b7b2b>] tun_chr_ioctl+0x2f/0x40
+>     [<00000000f30f834a>] do_vfs_ioctl+0x1c7/0x1510
+>     [<00000000fba062ea>] ksys_ioctl+0x99/0xb0
+>     [<00000000b1c1b8d2>] __x64_sys_ioctl+0x78/0xb0
+>     [<00000000984cabb9>] do_syscall_64+0x16f/0x580
+>     [<000000000bde033d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     [<00000000e6ca2d9f>] 0xffffffffffffffff
+> 
+> BUG: memory leak
+> unreferenced object 0xffff8880668ba588 (size 8):
+>   comm "kobject_set_nam", pid 286, jiffies 4294725297 (age 9.871s)
+>   hex dump (first 8 bytes):
+>     6e 72 30 00 cc be df 2b                          nr0....+
+>   backtrace:
+>     [<00000000a322332a>] __kmalloc_track_caller+0x16e/0x290
+>     [<00000000236fd26b>] kstrdup+0x3e/0x70
+>     [<00000000dd4a2815>] kstrdup_const+0x3e/0x50
+>     [<0000000049a377fc>] kvasprintf_const+0x10e/0x160
+>     [<00000000627fc711>] kobject_set_name_vargs+0x5b/0x140
+>     [<0000000019eeab06>] dev_set_name+0xc0/0xf0
+>     [<0000000069cb12bc>] netdev_register_kobject+0xc8/0x320
+>     [<00000000f2e83732>] register_netdevice+0xa1b/0xf00
+>     [<000000009e1f57cc>] __tun_chr_ioctl+0x20d5/0x3dd0
+>     [<000000009c560784>] tun_chr_ioctl+0x2f/0x40
+>     [<000000000d759e02>] do_vfs_ioctl+0x1c7/0x1510
+>     [<00000000351d7c31>] ksys_ioctl+0x99/0xb0
+>     [<000000008390040a>] __x64_sys_ioctl+0x78/0xb0
+>     [<0000000052d196b7>] do_syscall_64+0x16f/0x580
+>     [<0000000019af9236>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     [<00000000bc384531>] 0xffffffffffffffff
+> 
+> Reported-by: syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com
+> Cc: David Miller <davem@davemloft.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+> ---
+> v2 -> v3:
+> * Replaced BUG_ON with WARN_ON in free_netdev and netdev_release
+> v1 -> v2:
+> * Relying on driver calling free_netdev rather than calling
+>   put_device directly in error path
+> ---
+>  net/core/dev.c       | 14 +++++++-------
+>  net/core/net-sysfs.c |  6 +++++-
+>  2 files changed, 12 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 99ac84ff398f..1d6c0bfb5ec5 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9603,14 +9603,14 @@ void free_netdev(struct net_device *dev)
+>  
+>  	netdev_unregister_lockdep_key(dev);
+>  
+> -	/*  Compatibility with error handling in drivers */
+> -	if (dev->reg_state == NETREG_UNINITIALIZED) {
+> -		netdev_freemem(dev);
+> -		return;
+> -	}
+> +	/* reg_state is NETREG_UNINITIALIZED if there is an error in
+> +	 * registration.
+> +	 */
+> +	WARN_ON(dev->reg_state != NETREG_UNREGISTERED &&
+> +		dev->reg_state != NETREG_UNINITIALIZED);
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+You "warn" about this, but do not actually handle the problem.  So what
+is this helping with?
 
+Systems with panic-on-warn just rebooted, and a "normal" system saw a
+traceback yet no error handling happened so why would the code even test
+this?
+
+I'm not trying to be picky here, just to think about what you are doing
+with these checks please.
+
+thanks,
+
+greg k-h
