@@ -2,100 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D28D100F72
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 00:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B565F100F76
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 00:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfKRXgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 18:36:23 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:33162 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726795AbfKRXgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 18:36:23 -0500
-Received: by mail-lj1-f194.google.com with SMTP id t5so21082170ljk.0
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 15:36:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Qmoi2yAGqAvPpdrYm/kV/N3qOxyhtGgGOyHZAdgiWl4=;
-        b=qMiVMcI+a3HGnNkJ8+5EhPAsN0WpgPnZBOpnyU31PhDrNM4aWo4bPCAkV6Ufv8jYOn
-         u2mfiSyv7QlAy2sFuLe8/IXgemSCDtSVMQ7W6Eh8dbJVpj5vBV726rBphd0tcBY3Of6u
-         1WtP1VloIpwvADTeWEOclqewvkT0ku9ZdrXcb1bnEiy9UEb3bgB4oM8f9mfX29wKyvrL
-         Qk/79qfGkgWu3aI+fFyaCOnOxYP6XOSwMSofJOQfIimy/4kjCQyps78hDed44GlxpX3z
-         cMLuw8cwThJ4JaHDPqfBAMOTZ1Lci250tRwAHKpXWyQ+KNKFR1AyhNKL+iaCZfI2siqk
-         Dt1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Qmoi2yAGqAvPpdrYm/kV/N3qOxyhtGgGOyHZAdgiWl4=;
-        b=HBwwWlKxD/V9BCezLn5G5/TGa8xUs0iq0Q3v/YcxPJUC5XPb34Dg1Ygxc89TyCLSjj
-         5RXdIPn4iNVCkvYBXnZphobPzNi58OuZYcdL45YiYb0u90IbP+H6dimA5+U8BW/xBRIm
-         RREaYgKFaXNifle9ezAWtluLu30OUoJYW+1xdMYDnAF44ehkxoL4E0VwM1bjz+fH8GHE
-         6mFNpU/318h3XUjBngW10pbghMLW2ffQkLWx/HyJuE4tQ1GGbLQzMo/4CWodxOTk4+DI
-         Bw4Cb2EFGD1WQD4E7UYR3eHXyJ0WfC7UYZY0JnXvPLriDOwFk4SRPfEk9CP5lc0oX+2I
-         NNdQ==
-X-Gm-Message-State: APjAAAVPBmFebaVeWn2LIReGy5KQgtcWdnrJWq0ZFqiKGY781qpEf800
-        ITntLdAzXlHyUkixzOWSnGhmWw==
-X-Google-Smtp-Source: APXvYqxZaVqzVHMmv9Ir2wg3vnUmLucwtT8iPgxpll0D3WgGNVolcet4xyHDi25rLxFCHPVZwhJ5Tw==
-X-Received: by 2002:a2e:91d5:: with SMTP id u21mr1470554ljg.32.1574120179051;
-        Mon, 18 Nov 2019 15:36:19 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g23sm10574641ljn.63.2019.11.18.15.36.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 15:36:18 -0800 (PST)
-Date:   Mon, 18 Nov 2019 15:36:06 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
-        vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next v4 2/3] cxgb4: check rule prio conflicts before
- offload
-Message-ID: <20191118153606.27aa9863@cakuba.netronome.com>
-In-Reply-To: <f93ecd0a1607d3eebdbf3f9738abef7d8166eba0.1574089391.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574089391.git.rahul.lakkireddy@chelsio.com>
-        <f93ecd0a1607d3eebdbf3f9738abef7d8166eba0.1574089391.git.rahul.lakkireddy@chelsio.com>
-Organization: Netronome Systems, Ltd.
+        id S1726895AbfKRXif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 18:38:35 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45242 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726795AbfKRXie (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 18:38:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+gyPTj0ulkxKiKx/TxVg16730+9x+rAbmIcyaqpG7Co=; b=Vw0IoUwRIz5RAc1ICtQf5cpkGw
+        aT+FA+w2Q6NP/EhzU9ZJNrWKHffKeSJMbyanQRl/W2yFxk8ChyHcw2R73s5jiFtHFJsISBi6tnnMT
+        SvVurnXdx5bhxPrEsB2bq+6XHOTlQQTZu9JcWs6lcu9dyG5rGf0jMuQ6ZQujlriQk3pQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iWqbI-0005pu-4V; Tue, 19 Nov 2019 00:38:32 +0100
+Date:   Tue, 19 Nov 2019 00:38:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH net 1/1] mdio_bus: fix mdio_register_device when
+ RESET_CONTROLLER is disabled
+Message-ID: <20191118233832.GD15395@lunn.ch>
+References: <20191118181505.32298-1-marek.behun@nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191118181505.32298-1-marek.behun@nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rahul!
-
-Please remember to CC people who have you feedback to make sure we
-don't miss the next version of the set.
-
-On Mon, 18 Nov 2019 22:30:18 +0530, Rahul Lakkireddy wrote:
-> Only offload rule if it satisfies following conditions:
-> 1. The immediate previous rule has priority < current rule's priority.
-> 2. The immediate next rule has priority > current rule's priority.
-
-Hm, the strict comparison here looks suspicious.
-
-The most common use case for flower is to insert many non-conflicting
-rules (different keys) at the same priority. From looking at this
-description and the code:
-
-+	if ((prev_fe->valid && prio < prev_fe->fs.tc_prio) ||
-+	    (next_fe->valid && prio > next_fe->fs.tc_prio))
-+		valid = false;
-
-I get the feeling that either you haven't tested flower well or these
-->valid flags are unreliable?
-
-> Also rework free entry fetch logic to search from end of TCAM, instead
-> of beginning, because higher indices have lower priority than lower
-> indices. This is similar to how TC auto generates priority values.
+On Mon, Nov 18, 2019 at 07:15:05PM +0100, Marek Behún wrote:
+> When CONFIG_RESET_CONTROLLER is disabled, the
+> devm_reset_control_get_exclusive function returns -ENOTSUPP. This is not
+> handled in subsequent check and then the mdio device fails to probe.
 > 
-> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-> ---
-> v4:
-> - Patch added in this version.
+> When CONFIG_RESET_CONTROLLER is enabled, its code checks in OF for reset
+> device, and since it is not present, returns -ENOENT. -ENOENT is handled.
+> Add -ENOTSUPP also.
+> 
+> This happened to me when upgrading kernel on Turris Omnia. You either
+> have to enable CONFIG_RESET_CONTROLLER or use this patch.
+> 
+> Signed-off-by: Marek Behún <marek.behun@nic.cz>
+> Fixes: 71dd6c0dff51b ("net: phy: add support for reset-controller")
 
-FWIW in the networking world we like the version history to be included
-in the commit message, i.e. above the --- lines. It's useful
-information.
+This seems reasonable.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
