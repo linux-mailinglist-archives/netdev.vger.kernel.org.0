@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3324100533
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 13:02:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A74E010053A
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 13:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727389AbfKRMCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 07:02:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:37464 "EHLO mx1.suse.de"
+        id S1727436AbfKRMC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 07:02:29 -0500
+Received: from mx2.suse.de ([195.135.220.15]:37408 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726760AbfKRMBZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 07:01:25 -0500
+        id S1726490AbfKRMBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 07:01:24 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id BB66FB02C;
+        by mx1.suse.de (Postfix) with ESMTP id 8CBC2AFDB;
         Mon, 18 Nov 2019 12:01:20 +0000 (UTC)
 Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 7DE191E4B03; Mon, 18 Nov 2019 10:49:18 +0100 (CET)
-Date:   Mon, 18 Nov 2019 10:49:18 +0100
+        id BE4051E4B05; Mon, 18 Nov 2019 11:16:01 +0100 (CET)
+Date:   Mon, 18 Nov 2019 11:16:01 +0100
 From:   Jan Kara <jack@suse.cz>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -49,81 +49,42 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [PATCH v5 07/24] IB/umem: use get_user_pages_fast() to pin DMA
- pages
-Message-ID: <20191118094918.GE17319@quack2.suse.cz>
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v5 10/24] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+Message-ID: <20191118101601.GF17319@quack2.suse.cz>
 References: <20191115055340.1825745-1-jhubbard@nvidia.com>
- <20191115055340.1825745-8-jhubbard@nvidia.com>
+ <20191115055340.1825745-11-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191115055340.1825745-8-jhubbard@nvidia.com>
+In-Reply-To: <20191115055340.1825745-11-jhubbard@nvidia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 14-11-19 21:53:23, John Hubbard wrote:
-> And get rid of the mmap_sem calls, as part of that. Note
-> that get_user_pages_fast() will, if necessary, fall back to
-> __gup_longterm_unlocked(), which takes the mmap_sem as needed.
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+On Thu 14-11-19 21:53:26, John Hubbard wrote:
+>  /*
+> - * NOTE on FOLL_LONGTERM:
+> + * FOLL_PIN and FOLL_LONGTERM may be used in various combinations with each
+> + * other. Here is what they mean, and how to use them:
+>   *
+>   * FOLL_LONGTERM indicates that the page will be held for an indefinite time
+> - * period _often_ under userspace control.  This is contrasted with
+> - * iov_iter_get_pages() where usages which are transient.
+> + * period _often_ under userspace control.  This is in contrast to
+> + * iov_iter_get_pages(), where usages which are transient.
+                          ^^^ when you touch this, please fix also the
+second sentense. It doesn't quite make sense to me... I'd probably write
+there "whose usages are transient" but maybe you can come up with something
+even better.
 
-Looks good to me. You can add:
+Otherwise the patch looks good to me so feel free to add:
 
 Reviewed-by: Jan Kara <jack@suse.cz>
 
 								Honza
-
-
-> ---
->  drivers/infiniband/core/umem.c | 17 ++++++-----------
->  1 file changed, 6 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.c
-> index 24244a2f68cc..3d664a2539eb 100644
-> --- a/drivers/infiniband/core/umem.c
-> +++ b/drivers/infiniband/core/umem.c
-> @@ -271,16 +271,13 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, unsigned long addr,
->  	sg = umem->sg_head.sgl;
->  
->  	while (npages) {
-> -		down_read(&mm->mmap_sem);
-> -		ret = get_user_pages(cur_base,
-> -				     min_t(unsigned long, npages,
-> -					   PAGE_SIZE / sizeof (struct page *)),
-> -				     gup_flags | FOLL_LONGTERM,
-> -				     page_list, NULL);
-> -		if (ret < 0) {
-> -			up_read(&mm->mmap_sem);
-> +		ret = get_user_pages_fast(cur_base,
-> +					  min_t(unsigned long, npages,
-> +						PAGE_SIZE /
-> +						sizeof(struct page *)),
-> +					  gup_flags | FOLL_LONGTERM, page_list);
-> +		if (ret < 0)
->  			goto umem_release;
-> -		}
->  
->  		cur_base += ret * PAGE_SIZE;
->  		npages   -= ret;
-> @@ -288,8 +285,6 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, unsigned long addr,
->  		sg = ib_umem_add_sg_table(sg, page_list, ret,
->  			dma_get_max_seg_size(context->device->dma_device),
->  			&umem->sg_nents);
-> -
-> -		up_read(&mm->mmap_sem);
->  	}
->  
->  	sg_mark_end(sg);
-> -- 
-> 2.24.0
-> 
 -- 
 Jan Kara <jack@suse.com>
 SUSE Labs, CR
