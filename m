@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62712FFCD7
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 02:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8232FFD05
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 03:12:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbfKRB31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Nov 2019 20:29:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:44010 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725905AbfKRB31 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Nov 2019 20:29:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=68MdGxmDO19V+eLUaXTmCXn6d6UTQ9ivYg48u6u/xB4=; b=4+qbuS2doVzhVqwtM8TAbR1M9e
-        H+FPrM05gL1I/IU8ftYOHuLXIDLbDc/YmnxE4MwXR4sxoPZ6crqc5WVe88IiVNL4ZlfSiQ3oZMHpU
-        UheQzGzKFqXVrH8vs2hT+DIIn6Bova34QOsJBvPyCbuMKQQRItXGF9FMqlNHlI2njDj8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iWVr2-00025Q-Tm; Mon, 18 Nov 2019 02:29:24 +0100
-Date:   Mon, 18 Nov 2019 02:29:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Shay Drory <shayd@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        "lennart@poettering.net" <lennart@poettering.net>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: Send SFP event from kernel driver to user space (UDEV)
-Message-ID: <20191118012924.GC4084@lunn.ch>
-References: <a041bba0-83d1-331f-d263-c8cbb0509220@mellanox.com>
+        id S1726397AbfKRCMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Nov 2019 21:12:54 -0500
+Received: from mail-pl1-f175.google.com ([209.85.214.175]:40638 "EHLO
+        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725905AbfKRCMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Nov 2019 21:12:53 -0500
+Received: by mail-pl1-f175.google.com with SMTP id e3so8810686plt.7
+        for <netdev@vger.kernel.org>; Sun, 17 Nov 2019 18:12:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Q821HtqIod7xcLEt+DHaspqgfWR7S6Bq1zvIlTQoV8Y=;
+        b=e7Sg+hDGsSj5UR2G2Wr+3cFBCLuiSQIfuadlkWdniHihrSnOsQKOURU7zfrT1pa7PT
+         ycEJdKvdi/FgwozRlXJ2ZcMITzYakOwojfBSK3AeJuRkgMb3EDGI3ZihUkOG8CR3V3lb
+         BZwPi3B/ezlGyaTHqWULeilBUl+5cZJKTgn3HvxTezohA6QUhiA4brhu7Xkqn6Y2uHJ7
+         tg6Gc+M1npOMVx4ZQnj+SN3BIt0dYZDILgLZQqvpI7glPuFxzcfL6ANJlZ0JrcKS7yww
+         4UcIJQgTKBLiODc9zxCsJkzlpHLWmQtk7buigtKEnvohng24aWTmXnAjQynmTnVtmH2g
+         9bXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Q821HtqIod7xcLEt+DHaspqgfWR7S6Bq1zvIlTQoV8Y=;
+        b=FveSJO882btkutl1/RM39wVKlguG5HJo9JJVOGYx2glY/XJu54Gy1ibJYdWXWlyyPq
+         UPxy95ZXekSPD+YCGW6fnOyo31zHU4PstnLS3/MbDrdTgqRzfeyC8a/vRnpSOcNwlXHx
+         gGjXITdkRTjJ3dwIl/g6sEBRaHHgvPXRkHRbcu6skeh3cMRxlD1WRyXHcom83ezFsG8v
+         hnz9m0Med/r7eo7FoRA5+V+0UR92TtrEi5Hv6YxfmcNvjZcnzUtPf3I4v5Q9zvhv1NFI
+         asDc+Aqt9RyLZQpLHMiMmeskM7a6c3QFpy3HkR7b7P7ZD1gtLXHYYddb+ixfSti0EEle
+         V3iA==
+X-Gm-Message-State: APjAAAU5vRwAnijkzz7sD7ELRH9X9CgBeD/VWfxZGIEUlF6EQj5oP1AT
+        Dg8ZXrHBuxfuNgxtodlUWVPJPNE3
+X-Google-Smtp-Source: APXvYqyy2za13SeFF2SxJGwpan1pmK8Lx6idcGXUkog+7PJ0ltyWSjfQqyy+CYlpoTRxiw4oVHvMZQ==
+X-Received: by 2002:a17:902:728e:: with SMTP id d14mr21488150pll.19.1574043171577;
+        Sun, 17 Nov 2019 18:12:51 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:bd88:fb6d:6b19:f7d1])
+        by smtp.googlemail.com with ESMTPSA id a145sm19308552pfa.7.2019.11.17.18.12.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Nov 2019 18:12:50 -0800 (PST)
+Subject: Re: ping6 packets high probability loss occurs by the default
+ firewalld rule(rpfilter invert) with low traffic generated by iperf
+To:     hujunwei <hujunwei4@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        kafai@fb.com, weiwan@google.com
+Cc:     netdev@vger.kernel.org, wangxiaogang3@huawei.com,
+        xuhanbing@huawei.com
+References: <96ac86f8-eb74-f3fc-ab23-5a97603fac82@huawei.com>
+ <8f66b92f-5068-f9a5-0d28-0db075c3c07e@gmail.com>
+ <09f64e3f-137d-93d7-5b96-b73926b39583@huawei.com>
+ <6b6361fd-9ea1-93be-a60b-ac051bda4c10@huawei.com>
+ <2a302e61-26c8-07c5-607b-3c1e9562ef3d@gmail.com>
+ <243d02cf-2e36-5db5-5cdd-cb8a09b22e87@huawei.com>
+ <78e68ed2-088b-5a89-472d-690e67f6e3d6@gmail.com>
+ <7c9c80df-66fa-7383-7b5b-b300de8b6485@huawei.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <55068587-ac1b-42f2-5a62-184a54f07050@gmail.com>
+Date:   Sun, 17 Nov 2019 19:12:49 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <7c9c80df-66fa-7383-7b5b-b300de8b6485@huawei.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a041bba0-83d1-331f-d263-c8cbb0509220@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 17, 2019 at 11:46:15AM +0000, Shay Drory wrote:
+On 11/14/19 8:57 PM, hujunwei wrote:
+> Thank you so much for the reply, so when will you update it?
+> I really look forward to your patch.
 
-Hi Shay
-
-It would be good to Cc: the generic SFP code maintainers.
-
-> Today, SFP inserted / removal event impacts only the kernel space drivers.
-> There are users who wishes to get SFP insert / removal in a udev-event
-> format for their application / daemons / monitors.
-> The naive way to implement this feature would be to create a sysfs file
-> that represents device SFP, to expose it under the netdev sysfs, and
-> to raise a udev event over it.
-> However, it is not reasonable to create a sysfs for each net-device.
-> In this letter, I would like to offer a new mechanism that will add a
-> support to send SFP events from the kernel driver to user space.
-> This suggestion is built upon a new netlink infrastructure for ethtool
-> currently being written by Michal Kubeckwhich called “ethtool-netlink”[1].
-
-So you are in no rush to make use of this? ethtool-nl seems to be
-making very slow progress.
-
-> My suggestion is to do it by adding a function
-> (ethtool_sfp_insterted/removed(...)) to ethtool API, This function will
-> raise a netlink event to be caught in user space.
-
-What about the case of the SFP is inserted before the SFP is
-associated to a netdev? Similarly, the SFP is ejected when the SFP is
-not connected to a MAC. You don't have a netdev, so you cannot send an
-event. And SFF, which are never inserted or removed? SFPs have a
-different life cycle to a netdev. Do you care about this?
-
-> The design:
-> 
-> - SFP event from NIC caught by the driver
-> - Driver call ethtool_sfp_inserted/removed()
-> - Ethtool generated netlink event with relevant data
-> - This event-message will be handled in the user-space library of UDEV
-> (for this purpose we would like to add a netlink infrastructure to UDEV
-> user-space library).
-
-Would you add just SFP insert/eject to UDEV. Or all the events which
-get sent via netlink? Link up/down, route add/remove, etc?
-
-What sort of daemon is this anyway? Most networking daemons already
-have the code to listen to netlink events. So why complicate things by
-using UDEV?
-
-Is UDEV name space aware? Do you run a udev daemon in each network
-name space? I assume when you open a netlink socket, it is for just
-the current network namespace?
-
-    Andrew
+I looked at what is needed this past summer and as I recall most of the
+effort is writing tests to validate the change. As far as I know there
+are no tests under tools/testing/selftests/net that exercise the code paths.
