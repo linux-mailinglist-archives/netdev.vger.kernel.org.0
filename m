@@ -2,103 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE6B1007FD
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 16:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 520A710083F
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 16:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727199AbfKRPRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 10:17:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41374 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726668AbfKRPRJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 10:17:09 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7FDF2071B;
-        Mon, 18 Nov 2019 15:17:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574090228;
-        bh=8oHPpeDbLVKRHKTWyH/2Nazz8CQb+rciG+W4BGLrxYk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oMK2djkOvzobOaiHFUdV/NwyvoeGQBFH4E22D8bD5h9VL+fIAzUhP2aahtZr9MDC6
-         85zlmPnZB0619QLhN/FKp0ZTRDONgMtpeAScAFAaIBy6P6ysHMD47tGEXpITRoKg7/
-         BQtEMXYMdswww7DcDQr9+w4lK3T4zrPUh4O0C0ZM=
-Date:   Mon, 18 Nov 2019 16:17:06 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        jgg@mellanox.com, netdev@vger.kernel.org, cohuck@redhat.com,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
-        aadam@redhat.com, jakub.kicinski@netronome.com, jiri@mellanox.com,
-        jeffrey.t.kirsher@intel.com
-Subject: Re: [PATCH V13 6/6] docs: sample driver to demonstrate how to
- implement virtio-mdev framework
-Message-ID: <20191118151706.GA371978@kroah.com>
-References: <20191118105923.7991-1-jasowang@redhat.com>
- <20191118105923.7991-7-jasowang@redhat.com>
+        id S1727168AbfKRP1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 10:27:42 -0500
+Received: from mx2.suse.de ([195.135.220.15]:37566 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726578AbfKRP1l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 10:27:41 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 22DD6AE55;
+        Mon, 18 Nov 2019 15:27:39 +0000 (UTC)
+Date:   Mon, 18 Nov 2019 16:27:38 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Qian Cai <cai@lca.pw>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
+Message-ID: <20191118152738.az364dczadskgimc@pathway.suse.cz>
+References: <20190904061501.GB3838@dhcp22.suse.cz>
+ <20190904064144.GA5487@jagdpanzerIV>
+ <20190904065455.GE3838@dhcp22.suse.cz>
+ <20190904071911.GB11968@jagdpanzerIV>
+ <20190904074312.GA25744@jagdpanzerIV>
+ <1567599263.5576.72.camel@lca.pw>
+ <20190904144850.GA8296@tigerII.localdomain>
+ <1567629737.5576.87.camel@lca.pw>
+ <20190905113208.GA521@jagdpanzerIV>
+ <1573751570.5937.122.camel@lca.pw>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191118105923.7991-7-jasowang@redhat.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <1573751570.5937.122.camel@lca.pw>
+User-Agent: NeoMutt/20170912 (1.9.0)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 06:59:23PM +0800, Jason Wang wrote:
-> +static void mvnet_device_release(struct device *dev)
-> +{
-> +	dev_dbg(dev, "mvnet: released\n");
-> +}
+On Thu 2019-11-14 12:12:50, Qian Cai wrote:
+> On Thu, 2019-09-05 at 20:32 +0900, Sergey Senozhatsky wrote:
+> > On (09/04/19 16:42), Qian Cai wrote:
+> > > > Let me think more.
+> > > 
+> > > To summary, those look to me are all good long-term improvement that would
+> > > reduce the likelihood of this kind of livelock in general especially for other
+> > > unknown allocations that happen while processing softirqs, but it is still up to
+> > > the air if it fixes it 100% in all situations as printk() is going to take more
+> > > time
+> > 
+> > Well. So. I guess that we don't need irq_work most of the time.
+> > 
+> > We need to queue irq_work for "safe" wake_up_interruptible(), when we
+> > know that we can deadlock in scheduler. IOW, only when we are invoked
+> > from the scheduler. Scheduler has printk_deferred(), which tells printk()
+> > that it cannot do wake_up_interruptible(). Otherwise we can just use
+> > normal wake_up_process() and don't need that irq_work->wake_up_interruptible()
+> > indirection. The parts of the scheduler, which by mistake call plain printk()
+> > from under pi_lock or rq_lock have chances to deadlock anyway and should
+> > be switched to printk_deferred().
+> > 
+> > I think we can queue significantly much less irq_work-s from printk().
+> > 
+> > Petr, Steven, what do you think?
+> 
+> Sergey, do you still plan to get this patch merged?
+> 
+> > 
+> > Something like this. Call wake_up_interruptible(), switch to
+> > wake_up_klogd() only when called from sched code.
+> > 
+> > ---
+> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> > index cd51aa7d08a9..89cb47882254 100644
+> > --- a/kernel/printk/printk.c
+> > +++ b/kernel/printk/printk.c
+> > @@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
+> >  	pending_output = (curr_log_seq != log_next_seq);
+> >  	logbuf_unlock_irqrestore(flags);
+> >  
+> > +	if (!pending_output)
+> > +		return printed_len;
+> > +
+> >  	/* If called from the scheduler, we can not call up(). */
+> > -	if (!in_sched && pending_output) {
+> > +	if (!in_sched) {
+> >  		/*
+> >  		 * Disable preemption to avoid being preempted while holding
+> >  		 * console_sem which would prevent anyone from printing to
+> > @@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
+> >  		if (console_trylock_spinning())
+> >  			console_unlock();
+> >  		preempt_enable();
+> > -	}
+> >  
+> > -	if (pending_output)
+> > +		wake_up_interruptible(&log_wait);
 
-We used to have documentation in the kernel source tree that said that
-whenever anyone did this, I got to make fun of them.  Unfortunately that
-has been removed.
+I do not like this. As a result, normal printk() will always deadlock
+in the scheduler code, including WARN() calls. The chance of the
+deadlock is small now. It happens only when there is another
+process waiting for console_sem.
 
-Think about what you did right here.  You silenced a kernel runtime
-warning that said something like "ERROR! NO RELEASE FUNCTION FOUND!" by
-doing the above because "I am smarter than the kernel, I will silence it
-by putting an empty release function in there."
+We want to remove locks from printk() and not add them.
 
-{sigh}
-
-Did you ever think _why_ we took the time and effort to add that warning
-there?  It wasn't just so that people can circumvent it, it is to
-PREVENT A MAJOR BUG IN YOUR DESIGN!  We are trying to be nice here and
-give people a _chance_ to get things right instead of having you just
-live with a silent memory leak.
-
-After 13 versions of this series, basic things like this are still here?
-Who is reviewing this thing?
-
-{ugh}
-
-Also, see the other conversations we are having about a "virtual" bus
-and devices.  I do not want to have two different ways of doing the same
-thing in the kernel at the same time please.  Please work together with
-the Intel developers to solve this in a unified way, as you both
-need/want the same thing here.
-
-Neither this, nor the other proposal can be accepted until you all agree
-on the design and implementation.
-
-/me goes off to find a nice fruity drink with an umbrella.
-
-greg k-h
+Best Regards,
+Petr
