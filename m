@@ -2,127 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DED8F100E4C
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 22:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2229100E5F
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 22:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbfKRVtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 16:49:46 -0500
-Received: from correo.us.es ([193.147.175.20]:45720 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727255AbfKRVti (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 16:49:38 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 8790BEBAEF
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 22:49:35 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 77A4CDA801
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 22:49:35 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6B92CDA72F; Mon, 18 Nov 2019 22:49:35 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BB4EB202AE;
-        Mon, 18 Nov 2019 22:49:31 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 18 Nov 2019 22:49:31 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 8898042EE38F;
-        Mon, 18 Nov 2019 22:49:31 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 18/18] netfilter: nf_tables: add nft_unregister_flowtable_hook()
-Date:   Mon, 18 Nov 2019 22:49:14 +0100
-Message-Id: <20191118214914.142794-19-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20191118214914.142794-1-pablo@netfilter.org>
-References: <20191118214914.142794-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727512AbfKRVuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 16:50:12 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37702 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727483AbfKRVuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 16:50:09 -0500
+Received: by mail-lf1-f65.google.com with SMTP id b20so15143719lfp.4
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 13:50:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=6iEisswkww6icIvmueWMET5QsWfdd/ybzp6e7GAC5Co=;
+        b=J0kSWmhUVRv/ogCumNEKUuGfnNjijWRe5pKw7IdOyJZZTTpUvX6QcD4M32ELIjT8QE
+         dfrfPIHI6XdJb1xaEh6g4TZY9OUFBnt/4sfctshHqnJKhTNwA0c0+kpcUu8EB6+7Znb1
+         vQqQMUlM9Cuc5Ebibk8S2E1VI+fnPv1fj/Q8etmrGTB+du1CHDU71H0lbUBDHjgqeoy2
+         BDV/880tQYYLJgjFkLquffOZxaQ2+ve/SekrEH8kI9xsM0jz8arQemD+Qy7HY/LbK20U
+         dAcjKUx8Nev/7T/uacRG0gSrf67LIAbbqoKNP4RQlPj/Sw3pP7Qnpn3qyt2fNfluH3Bt
+         UChg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=6iEisswkww6icIvmueWMET5QsWfdd/ybzp6e7GAC5Co=;
+        b=I95gnxxY3LL0o40+J6b7V6p+QLSVwIY/TcqYuq9gBI4GHI89vsmY/v7n/5oENqhTOk
+         pzCDjesKswHMgyviKMuwP/cMhxtTJf/IZ4DtFxZ9YKLUsXSMmwAr33H9cqJqt5VuJ+YJ
+         YoDK+M+vuXIo5EQYpjBKG2QYy/MSdbYgnM9vts8mB273C6nvHmWKk7+fSREcwp+rEz5g
+         25HsVcdOCoBpweZIc3pTHd8BCyQ6NLNJ/aoyLSe3HBLlbA6BePv/GTLtyimyf31/gZLT
+         b6zJbTbPMXDhaR6qtb1bou6rPzAPs6mRt7E/N46O+J+76EdxgGp8XQnKoFsgnNLDWVnm
+         eRSg==
+X-Gm-Message-State: APjAAAVg+8zKtM6zc75XTHRcNzENFM+nWLxj2Z9HRcdhe0kxlGGlEzVk
+        xhb2AQBBKrvjs1usy2MLuuJL9BUBEug=
+X-Google-Smtp-Source: APXvYqxrccfzYhsJvWrrrZXyW3FTowCjEzJ2Su8cc0pAQ1uttXSLjwIIy5PBzlEKssYanKRnWwm5rQ==
+X-Received: by 2002:a19:7510:: with SMTP id y16mr1135222lfe.24.1574113807792;
+        Mon, 18 Nov 2019 13:50:07 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y9sm9382778lfl.16.2019.11.18.13.50.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2019 13:50:07 -0800 (PST)
+Date:   Mon, 18 Nov 2019 13:49:55 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Christina Jacob <cjacob@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH 15/15] octeontx2-af: Support to get CGX link info like
+ current speed, fec etc
+Message-ID: <20191118134955.41b00c79@cakuba.netronome.com>
+In-Reply-To: <1574007266-17123-16-git-send-email-sunil.kovvuri@gmail.com>
+References: <1574007266-17123-1-git-send-email-sunil.kovvuri@gmail.com>
+        <1574007266-17123-16-git-send-email-sunil.kovvuri@gmail.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unbind flowtable callback if hook is unregistered.
+On Sun, 17 Nov 2019 21:44:26 +0530, sunil.kovvuri@gmail.com wrote:
+> From: Christina Jacob <cjacob@marvell.com>
+> 
+> - Implements CGX_FW_DATA_GET command to get the cgx link info shared
+>   from atf.
+> - Implement CGX_FEC_SET mailbox message to set current FEC value.
+> - Update the link status structre in cgx with additional information
+>   such as the port type, current fec etc.
+> - Upon request, fetch FEC corrected and uncorrected block counters
+>   for the mapped CGX LMAC.
+> - If present get phy's EEPROM data as response to ethtool command.
 
-This patch is implicitly fixing the error path of
-nf_tables_newflowtable() and nft_flowtable_event().
+Again, confused about what this driver is doing. You talk about ethool
+in the last point, but there's not ethtool hooked in here. More than
+that:
 
-Fixes: 8bb69f3b2918 ("netfilter: nf_tables: add flowtable offload control plane")
-Reported-by: wenxu <wenxu@ucloud.cn>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 9340b976d85c..ff04cdc87f76 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5975,16 +5975,22 @@ nft_flowtable_type_get(struct net *net, u8 family)
- 	return ERR_PTR(-ENOENT);
- }
- 
-+static void nft_unregister_flowtable_hook(struct net *net,
-+					  struct nft_flowtable *flowtable,
-+					  struct nft_hook *hook)
-+{
-+	nf_unregister_net_hook(net, &hook->ops);
-+	flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
-+				    FLOW_BLOCK_UNBIND);
-+}
-+
- static void nft_unregister_flowtable_net_hooks(struct net *net,
- 					       struct nft_flowtable *flowtable)
- {
- 	struct nft_hook *hook;
- 
--	list_for_each_entry(hook, &flowtable->hook_list, list) {
--		nf_unregister_net_hook(net, &hook->ops);
--		flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
--					    FLOW_BLOCK_UNBIND);
--	}
-+	list_for_each_entry(hook, &flowtable->hook_list, list)
-+		nft_unregister_flowtable_hook(net, flowtable, hook);
- }
- 
- static int nft_register_flowtable_net_hooks(struct net *net,
-@@ -6030,9 +6036,7 @@ static int nft_register_flowtable_net_hooks(struct net *net,
- 		if (i-- <= 0)
- 			break;
- 
--		nf_unregister_net_hook(net, &hook->ops);
--		flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
--					    FLOW_BLOCK_UNBIND);
-+		nft_unregister_flowtable_hook(net, flowtable, hook);
- 		list_del_rcu(&hook->list);
- 		kfree_rcu(hook, rcu);
- 	}
-@@ -6139,7 +6143,7 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
- 	return 0;
- err5:
- 	list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
--		nf_unregister_net_hook(net, &hook->ops);
-+		nft_unregister_flowtable_hook(net, flowtable, hook);
- 		list_del_rcu(&hook->list);
- 		kfree_rcu(hook, rcu);
- 	}
-@@ -6484,7 +6488,7 @@ static void nft_flowtable_event(unsigned long event, struct net_device *dev,
- 		if (hook->ops.dev != dev)
- 			continue;
- 
--		nf_unregister_net_hook(dev_net(dev), &hook->ops);
-+		nft_unregister_flowtable_hook(dev_net(dev), flowtable, hook);
- 		list_del_rcu(&hook->list);
- 		kfree_rcu(hook, rcu);
- 		break;
--- 
-2.11.0
-
+net-next$ git grep ethtool -- drivers/net/ethernet/marvell/octeontx2/
+net-next$
