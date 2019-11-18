@@ -2,118 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A98100573
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 13:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F061810058A
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 13:25:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726646AbfKRMSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 07:18:37 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:40233 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfKRMSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 07:18:37 -0500
-Received: by mail-pl1-f193.google.com with SMTP id e3so9715238plt.7;
-        Mon, 18 Nov 2019 04:18:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cQqjGoXTfZR1JdEd7frIlLbAs9ReexofvLueKLqlVq0=;
-        b=tvosgQaOVccJ9RwFjanBszZ08wmytTTOb+PpQNDCnUpEk8Ai4Lgy0i+jFTZZSoZduO
-         MDufK2zZMsmseJkDTWp+bHs/H7Q49c7i8fsP61KhX7dW1zpgbuOIGM+ol3UP6UFneV3y
-         YpMkedziQuRn5BvjZ2zfJjEKHwpDECYoIXsjmNqUIoG/F1VmVV+XhAew2nnoO9VnwkOk
-         mFAw4CcROxwhI1wqoeXiAfWOxo2xrON1UnuAB4Ta/7dAoo6J98ry5myeYAOYWYmnm62j
-         AaR/Yp/FrZ9po+bnKzCQOmmvHLpiZlCNPllK6txNZCUbkDjof4Za4c262gukNMRepquU
-         ergQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cQqjGoXTfZR1JdEd7frIlLbAs9ReexofvLueKLqlVq0=;
-        b=I+mU+QXb5Q1LjFwXsn0+FL+7HVycr0MdKce2VHbUHtX7KFS9IXEeO/Kxv73T8ypnws
-         7l5BVUhsg+z5UXw+vUcsyKHx4SV2tYzFqJ2Z4holppA4GRzvJESJDCntauQGWWrh1V4q
-         bw374C8AUHCcL3A0Vol2EitFMFGOkAJWfrdqunFAFb5oTPBt8cKIbHRDPxJtEn876N8Z
-         RucKUJBgSVraDCWMO8IwgcO2Z81j7yRDc+M0LyI5uA3iIvsW1sZwtCd8h+1HcY1uf82t
-         QZc3Iln5k1s6xIvCGfKsCZU0NKv9EbJUJ8OpiJMr00dk7XUoRsPw4N7mKWkFQuVvq95V
-         aCJw==
-X-Gm-Message-State: APjAAAUGi0sjYRz68y8dQH4Y3teEQEkYBw6+jegY+uMzLpJxX+5vOFA9
-        71XkL195RQGWL++Jnqc/S5A=
-X-Google-Smtp-Source: APXvYqxk2G6oTTKeLj1iGpqhA+EA3a7JneBJiwp0mvUUw1Cesa97rPZrZ8b9WiCOyj+fGOWVY5T3Tg==
-X-Received: by 2002:a17:90a:a416:: with SMTP id y22mr39978002pjp.91.1574079516546;
-        Mon, 18 Nov 2019 04:18:36 -0800 (PST)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id k66sm16514221pgk.16.2019.11.18.04.18.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 04:18:35 -0800 (PST)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net v3] net: fec: fix clock count mis-match
-Date:   Mon, 18 Nov 2019 20:18:26 +0800
-Message-Id: <20191118121826.26353-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S1726646AbfKRMZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 07:25:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49878 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726464AbfKRMZa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 07:25:30 -0500
+Received: from localhost (unknown [5.29.147.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9DED206F4;
+        Mon, 18 Nov 2019 12:25:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574079929;
+        bh=y8W5feSYOVMmL55Boge+mPkAhCKFugFyDbqQ6R06rsU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kTh9opAOXXWRpftwT/ZnZynNfstlUe23LXkGF0vVrwkrGVWnDNcbUKlNHVzRaBFOQ
+         qX74nDTEYluD+MlPOTHc5cLPLQgvLjoXYUfxGf+DI8bB7i7nIrRVeln/5qybz+tkbX
+         HVDaRCiT6RcoPMHdg/WjBfjNh4oEMaGj7jedoEc8=
+Date:   Mon, 18 Nov 2019 14:25:26 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     jouni.hogander@unikie.com
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH v3] net-sysfs: Fix reference count leak
+Message-ID: <20191118122526.GB52766@unreal>
+References: <20191118120650.12597-1-jouni.hogander@unikie.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191118120650.12597-1-jouni.hogander@unikie.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pm_runtime_put_autosuspend in probe will call suspend to disable clks
-automatically if CONFIG_PM is defined. (If CONFIG_PM is not defined,
-its implementation will be empty, then suspend will not be called.)
+On Mon, Nov 18, 2019 at 02:06:50PM +0200, jouni.hogander@unikie.com wrote:
+> From: Jouni Hogander <jouni.hogander@unikie.com>
+>
+> Netdev_register_kobject is calling device_initialize. In case of error
+> reference taken by device_initialize is not given up.
+>
+> Drivers are supposed to call free_netdev in case of error. In non-error
+> case the last reference is given up there and device release sequence
+> is triggered. In error case this reference is kept and the release
+> sequence is never started.
+>
+> Fix this reference count leak by allowing giving up the reference also
+> in error case in free_netdev.
+>
+> Also replace BUG_ON with WARN_ON in free_netdev and in netdev_release.
+>
+> This is the rootcause for couple of memory leaks reported by Syzkaller:
+>
+> BUG: memory leak unreferenced object 0xffff8880675ca008 (size 256):
+>   comm "netdev_register", pid 281, jiffies 4294696663 (age 6.808s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>   backtrace:
+>     [<0000000058ca4711>] kmem_cache_alloc_trace+0x167/0x280
+>     [<000000002340019b>] device_add+0x882/0x1750
+>     [<000000001d588c3a>] netdev_register_kobject+0x128/0x380
+>     [<0000000011ef5535>] register_netdevice+0xa1b/0xf00
+>     [<000000007fcf1c99>] __tun_chr_ioctl+0x20d5/0x3dd0
+>     [<000000006a5b7b2b>] tun_chr_ioctl+0x2f/0x40
+>     [<00000000f30f834a>] do_vfs_ioctl+0x1c7/0x1510
+>     [<00000000fba062ea>] ksys_ioctl+0x99/0xb0
+>     [<00000000b1c1b8d2>] __x64_sys_ioctl+0x78/0xb0
+>     [<00000000984cabb9>] do_syscall_64+0x16f/0x580
+>     [<000000000bde033d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     [<00000000e6ca2d9f>] 0xffffffffffffffff
+>
+> BUG: memory leak
+> unreferenced object 0xffff8880668ba588 (size 8):
+>   comm "kobject_set_nam", pid 286, jiffies 4294725297 (age 9.871s)
+>   hex dump (first 8 bytes):
+>     6e 72 30 00 cc be df 2b                          nr0....+
+>   backtrace:
+>     [<00000000a322332a>] __kmalloc_track_caller+0x16e/0x290
+>     [<00000000236fd26b>] kstrdup+0x3e/0x70
+>     [<00000000dd4a2815>] kstrdup_const+0x3e/0x50
+>     [<0000000049a377fc>] kvasprintf_const+0x10e/0x160
+>     [<00000000627fc711>] kobject_set_name_vargs+0x5b/0x140
+>     [<0000000019eeab06>] dev_set_name+0xc0/0xf0
+>     [<0000000069cb12bc>] netdev_register_kobject+0xc8/0x320
+>     [<00000000f2e83732>] register_netdevice+0xa1b/0xf00
+>     [<000000009e1f57cc>] __tun_chr_ioctl+0x20d5/0x3dd0
+>     [<000000009c560784>] tun_chr_ioctl+0x2f/0x40
+>     [<000000000d759e02>] do_vfs_ioctl+0x1c7/0x1510
+>     [<00000000351d7c31>] ksys_ioctl+0x99/0xb0
+>     [<000000008390040a>] __x64_sys_ioctl+0x78/0xb0
+>     [<0000000052d196b7>] do_syscall_64+0x16f/0x580
+>     [<0000000019af9236>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     [<00000000bc384531>] 0xffffffffffffffff
+>
+> v2 -> v3:
+> * Replaced BUG_ON with WARN_ON in free_netdev and netdev_release
+>
+> v1 -> v2:
+> * Relying on driver calling free_netdev rather than calling
+>   put_device directly in error path
 
-Therefore, we can call pm_runtime_get_sync to resume it first to enable
-clks, which matches the suspend. (Only when CONFIG_PM is defined, otherwise
-pm_runtime_get_sync will also be empty, then resume will not be called.)
+This changelog should go after "---" line.
 
-Then it is fine to disable clks without causing clock count mis-match.
-
-Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index a9c386b63581..4bb30761abfc 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3636,6 +3636,11 @@ fec_drv_remove(struct platform_device *pdev)
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct device_node *np = pdev->dev.of_node;
-+	int ret;
-+
-+	ret = pm_runtime_get_sync(&pdev->dev);
-+	if (ret < 0)
-+		return ret;
- 
- 	cancel_work_sync(&fep->tx_timeout_work);
- 	fec_ptp_stop(pdev);
-@@ -3643,15 +3648,17 @@ fec_drv_remove(struct platform_device *pdev)
- 	fec_enet_mii_remove(fep);
- 	if (fep->reg_phy)
- 		regulator_disable(fep->reg_phy);
--	pm_runtime_put(&pdev->dev);
--	pm_runtime_disable(&pdev->dev);
--	clk_disable_unprepare(fep->clk_ahb);
--	clk_disable_unprepare(fep->clk_ipg);
-+
- 	if (of_phy_is_fixed_link(np))
- 		of_phy_deregister_fixed_link(np);
- 	of_node_put(fep->phy_node);
- 	free_netdev(ndev);
- 
-+	clk_disable_unprepare(fep->clk_ahb);
-+	clk_disable_unprepare(fep->clk_ipg);
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
- 	return 0;
- }
- 
--- 
-2.24.0
-
+Thanks
