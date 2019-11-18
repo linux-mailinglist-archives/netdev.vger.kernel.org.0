@@ -2,111 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5528C100EFC
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 23:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C097D100EFE
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 23:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbfKRWzK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 18 Nov 2019 17:55:10 -0500
-Received: from mga12.intel.com ([192.55.52.136]:42573 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726705AbfKRWzK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 17:55:10 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Nov 2019 14:55:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,321,1569308400"; 
-   d="scan'208";a="215394769"
-Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
-  by fmsmga001.fm.intel.com with ESMTP; 18 Nov 2019 14:55:08 -0800
-Received: from orsmsx125.amr.corp.intel.com (10.22.240.125) by
- ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 18 Nov 2019 14:55:08 -0800
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.229]) by
- ORSMSX125.amr.corp.intel.com ([169.254.3.139]) with mapi id 14.03.0439.000;
- Mon, 18 Nov 2019 14:55:08 -0800
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Topic: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHVnATHptCZx1o750+cmj+dZwSi7aeRF4IAgAB2SgA=
-Date:   Mon, 18 Nov 2019 22:55:08 +0000
-Message-ID: <2B0E3F215D1AB84DA946C8BEE234CCC97B30129A@ORSMSX101.amr.corp.intel.com>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <20191118074934.GB130507@kroah.com>
-In-Reply-To: <20191118074934.GB130507@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1726942AbfKRWzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 17:55:35 -0500
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:54092 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726705AbfKRWzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 17:55:35 -0500
+Received: by mail-qk1-f201.google.com with SMTP id s144so12419257qke.20
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 14:55:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=T32Rb6g2SHamfdiMAguvghJ70n8sNGBtor6Z7vA/pVE=;
+        b=Xd/9mGAk975A7EnlmwTCTWXg1Ew73ijveVbvpIPTfZdKVWbTJrEGLXfcLQwx4Wn3jU
+         Sets0gqPv0zrJv9/WnzaoJY+rSrqbhlVEUN5WGxujBtxABTjSEva2smGUBJFptyLCKb3
+         fVGJ0xTWnhB4C2zCvcJQuLJ3pb+/1H5c5HXcZkPT2XbiaElzOEyOgGraKEFZfSiCgM8W
+         T1OnLDfA1nMoOf5B9tMcbno9BKmOSarO8rH6sz547/u7rMCAf8INJnXB/QgDQvbUqlCM
+         k589p5niyRXGkyXIzTqDvgRY2bZc47AvSWF7ihzGwlBmLunIZFF2AOMowwBoVb4Kq8sj
+         lFkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=T32Rb6g2SHamfdiMAguvghJ70n8sNGBtor6Z7vA/pVE=;
+        b=QkYVtAZxtkXqVp4GuyelcQyZgzjKrp9XZL0lXG+l7bqygY8AfJjy5StdIl7WVC6Y0h
+         oyFVxs6EU0HOesiQ7NGMM2t+7hijIXrZaLlnzVLvb/hho3jFVYiJksx8RMKT5YeBtpVN
+         Zl91pI3q16jVemkbU6DCGyGIEfS+eSwPEIvz4qPMFfaVGnDTPCWcdhOscdHhApy5i6T8
+         C1eZK90R+buJ8MDGc/6JCbPKqdCCawOAlG4OR3aawVClz6Fl6w0p+1SCF54/irnE6wi5
+         EvQgfx8q37msFLcCnpJAV9APvc8xxKyXGqm/mwxTjREvwlwjV6laAYJ4kiagTOt49TBO
+         BE+w==
+X-Gm-Message-State: APjAAAW1YLUuXCZJdtOkx1UJ52QocyisjWmnG7yIctHEsi7tKRqYwgzk
+        eEhU1M/6MbPl7NUZg8naHSdsDMrfHxE=
+X-Google-Smtp-Source: APXvYqzjGajv3e44C7N5V7bO1h7NEzSi6kSFeUIiJ6Lev7MjXXPlxmqfsZUQNSArrHpqBEMPgMfezJDQ33Q=
+X-Received: by 2002:a0c:94fb:: with SMTP id k56mr28781169qvk.127.1574117732372;
+ Mon, 18 Nov 2019 14:55:32 -0800 (PST)
+Date:   Mon, 18 Nov 2019 14:55:23 -0800
+Message-Id: <20191118225523.41697-1-lrizzo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH] net-af_xdp: use correct number of channels from ethtool
+From:   Luigi Rizzo <lrizzo@google.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        jonathan.lemon@gmail.com, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, rizzo@iet.unipi.it,
+        Luigi Rizzo <lrizzo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Greg KH <gregkh@linuxfoundation.org>
-> Sent: Sunday, November 17, 2019 11:50 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; Ertman, David M <david.m.ertman@intel.com>;
-> netdev@vger.kernel.org; linux-rdma@vger.kernel.org;
-> nhorman@redhat.com; sassmann@redhat.com; jgg@ziepe.ca;
-> parav@mellanox.com; Patil, Kiran <kiran.patil@intel.com>
-> Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-> 
-> On Fri, Nov 15, 2019 at 02:33:55PM -0800, Jeff Kirsher wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> >
-> > This is the initial implementation of the Virtual Bus, virtbus_device
-> > and virtbus_driver.  The virtual bus is a software based bus intended
-> > to support lightweight devices and drivers and provide matching
-> > between them and probing of the registered drivers.
-> >
-> > The primary purpose of the virual bus is to provide matching services
-> > and to pass the data pointer contained in the virtbus_device to the
-> > virtbus_driver during its probe call.  This will allow two separate
-> > kernel objects to match up and start communication.
-> >
-> > The bus will support probe/remove shutdown and suspend/resume
-> > callbacks.
-> >
-> > Kconfig and Makefile alterations are included
-> >
-> > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> > ---
-> > v2: Cleaned up the virtual bus interface based on feedback from Greg KH
-> >     and provided a test driver and test virtual bus device as an example
-> >     of how to implement the virtual bus.
-> 
-> There is not a real user of this here, many of your exported functions are not
-> used at all, right?  I want to see this in "real use" to actually determine how it
-> works, and that's the only way you will know if it solves your problem or not.
-> 
-> thanks,
-> 
-> greg k-h
+Drivers use different fields to report the number of channels, so take
+the maximum of all fields (rx, tx, other, combined) when determining the
+size of the xsk map. The current code used only 'combined' which was set
+to 0 in some drivers e.g. mlx4.
 
-I totally understand.  The ice, i40e, and irdma drivers will be available later this
-week using the new virtbus.  I am implementing some changes suggested by both
-you and Parav Pandit, otherwise it would already be ready :)
+Tested: compiled and run xdpsock -q 3 -r -S on mlx4
+Signed-off-by: Luigi Rizzo <lrizzo@google.com>
+---
+ tools/lib/bpf/xsk.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
--Dave E
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 74d84f36a5b24..8e12269428d08 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -412,6 +412,11 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 	return 0;
+ }
+ 
++static inline int max_i(int a, int b)
++{
++	return a > b ? a : b;
++}
++
+ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ {
+ 	struct ethtool_channels channels = { .cmd = ETHTOOL_GCHANNELS };
+@@ -431,13 +436,18 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 		goto out;
+ 	}
+ 
+-	if (err || channels.max_combined == 0)
++	if (err) {
+ 		/* If the device says it has no channels, then all traffic
+ 		 * is sent to a single stream, so max queues = 1.
+ 		 */
+ 		ret = 1;
+-	else
+-		ret = channels.max_combined;
++	} else {
++		/* Take the max of rx, tx, other, combined. Drivers return
++		 * the number of channels in different ways.
++		 */
++		ret = max_i(max_i(channels.max_rx, channels.max_tx),
++			      max_i(channels.max_other, channels.max_combined));
++	}
+ 
+ out:
+ 	close(fd);
+-- 
+2.24.0.432.g9d3f5f5b63-goog
+
