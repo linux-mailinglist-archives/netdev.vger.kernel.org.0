@@ -2,138 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E6A100BB9
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 19:46:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA6A100BF5
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 20:05:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbfKRSqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 13:46:30 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37577 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbfKRSqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 13:46:30 -0500
-Received: by mail-qt1-f193.google.com with SMTP id g50so21397566qtb.4;
-        Mon, 18 Nov 2019 10:46:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AhpmY6hAm1VkzY6LRm4tRnmqIjnVC/MkB4dNNrm8cs8=;
-        b=YVdU2vJxLlixEajh6Qy6a+syuI5j4ArQMN68JrrdC+MnAzARpTXO3xUekeAvQRec+S
-         mseLhn7UEjpRhlm0W0PFLdPwjN4v3j0cn+3Zc1dVsJn6rmbBBXqcr+p+VV73Jor61+cN
-         pTGzYd1lGHyaFLys8MJAecaihTVaJC4/8ueN9O7RWoqKQb4A6Ld4fb+e+oeKLZxKLwMN
-         El1ob1WOF0/0jf9YmmOzX0pUNlZktiG4LO2IR/zqHOgyeXqMcC/hGI++RBM9Ktux6pKN
-         x4nj3SfmryF4OZNG8Z2sfAGAJwLVL2sxankHwK//LCviZsDxeiT0T2e5InUNxk9OGS0D
-         64eQ==
+        id S1726759AbfKRTFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 14:05:12 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48508 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726423AbfKRTFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 14:05:11 -0500
+Received: by mail-il1-f197.google.com with SMTP id j68so17151337ili.15
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 11:05:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AhpmY6hAm1VkzY6LRm4tRnmqIjnVC/MkB4dNNrm8cs8=;
-        b=HEsNZKZwJ42/ZFRflgOZ5qnHpAWkJjLeiZQHBDtP9PltYJKGT9h74GWg5nE9ahtkgY
-         zjCUtMfXey9PbxzfBD2Kk+IvQubouGhHyh3dWoCS0fAF656Zs4D7L4LcPXjUhX622eIZ
-         GY4WP7lxl408uWI1h3eh0k1glY3egB1ggmRwRoU6AemPWuVU66f0t1pMiXyznaAfg5or
-         k31LfHtg6MUtbRiILDtRkF6TLwE3y39rseUfLShKG0q6dAjloIagPEXd731jwxsvjNVO
-         gOgNZWEX1hQ9arlsi8AxxjiGfB1HMq7xhQleRxA4PpiYY8OGXEz7sC4WNpu9JOemf4iZ
-         xzHg==
-X-Gm-Message-State: APjAAAUJVzuT1VecEqK3PZeShrDJNhirlFrC6MzAd3kVXezBVme4A5zy
-        1zcs7qR+40AbJwsjGkmWeEsNpFfhA/Pj4KJn4o0=
-X-Google-Smtp-Source: APXvYqxn9FfoukgEqyVyDUItvd+pM6Kf8lIeyPnvnqZNWaOS87puH6pcdZ8xNZbXq/PILwVQObL218Lxm6fnZfIVRd4=
-X-Received: by 2002:ac8:6613:: with SMTP id c19mr28904733qtp.117.1574102788950;
- Mon, 18 Nov 2019 10:46:28 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=JN/WIzRL3xgiIAMfN7W4EDclVvEnXiBKfc2rvVhShA0=;
+        b=X/I6bbEO7G64GunltTNI5Tlq5x2t1WyUrtKPcK18SZVdgczp7yVf9CefIsWaSd/+0Q
+         Lf8yPWO/uGppWr543IlfcDVv5laLfqpgCWTCUPdqRq/oHL70iUCJ3vSz5Z72sCIeBjex
+         COrdu7XriLD/5tkcl7JI90NyTXj4BKblqXGlR+dlxsMmCBZY8EJFdpoF6eK2eaUoemgy
+         +Mpd7sACErEuztjp/P8iPaPqw9VyYglyCRGlVPRpO/aDS20O1puGraJya/0SoCEqOezK
+         +Hx8ooyqp5BCrPExHVJWmpI6UN3AjGvkM2lE69vAKqgG/wOOgVMK6G0dHP3VVKSHfejI
+         T1CA==
+X-Gm-Message-State: APjAAAWRdA8FKg4O+25jKyxWQaL91LjuTKeTIBDGg8mGhmgJqt3mBclC
+        skseT3LwGlfO+Q4EXSiw1yd68+Lwe50agG64Ykne4Wdh6OR/
+X-Google-Smtp-Source: APXvYqzQv3IIi/EFnLlvpMQdjMEXk2J9nVzgCVUHWEnLUbkGSRF3p8znLbD8SbilYWbLCnXsHJtBk7RT8Zz8xLBUcMmQ/qQ2wWkW
 MIME-Version: 1.0
-References: <cover.1573779287.git.daniel@iogearbox.net> <ff9a3829fb46802262a20dbad1123cd66c118b8b.1573779287.git.daniel@iogearbox.net>
- <CAEf4BzaxyULFPYd8OGfoc5FLSDt2ecppLFakjRJ2TyK5F-fJOw@mail.gmail.com> <4ae5ae7b-d7bb-4a59-0f5f-0f7f41bd6f6d@iogearbox.net>
-In-Reply-To: <4ae5ae7b-d7bb-4a59-0f5f-0f7f41bd6f6d@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 18 Nov 2019 10:46:17 -0800
-Message-ID: <CAEf4BzZ9SaQ_idpP8P8mG26KC72GG+xY57A76nsBCvOPSxOJEA@mail.gmail.com>
-Subject: Re: [PATCH rfc bpf-next 6/8] bpf: add poke dependency tracking for
- prog array maps
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a92:6611:: with SMTP id a17mr18116394ilc.208.1574103909400;
+ Mon, 18 Nov 2019 11:05:09 -0800 (PST)
+Date:   Mon, 18 Nov 2019 11:05:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005c08d10597a3a05d@google.com>
+Subject: KMSAN: uninit-value in can_receive
+From:   syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 10:39 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/18/19 6:39 PM, Andrii Nakryiko wrote:
-> > On Thu, Nov 14, 2019 at 5:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >>
-> >> This work adds program tracking to prog array maps. This is needed such
-> >> that upon prog array updates/deletions we can fix up all programs which
-> >> make use of this tail call map. We add ops->map_poke_{un,}track() helpers
-> >> to maps to maintain the list of programs and ops->map_poke_run() for
-> >> triggering the actual update. bpf_array_aux is extended to contain the
-> >> list head and poke_mutex in order to serialize program patching during
-> >> updates/deletions. bpf_free_used_maps() will untrack the program shortly
-> >> before dropping the reference to the map.
-> >>
-> >> The prog_array_map_poke_run() is triggered during updates/deletions and
-> >> walks the maintained prog list. It checks in their poke_tabs whether the
-> >> map and key is matching and runs the actual bpf_arch_text_poke() for
-> >> patching in the nop or new jmp location. Depending on the type of update,
-> >> we use one of BPF_MOD_{NOP_TO_JUMP,JUMP_TO_NOP,JUMP_TO_JUMP}.
-> >>
-> >> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> >> ---
-> >>   include/linux/bpf.h   |  36 +++++++++++++
-> >>   kernel/bpf/arraymap.c | 120 +++++++++++++++++++++++++++++++++++++++++-
-> >>   kernel/bpf/core.c     |   9 +++-
-> >>   3 files changed, 162 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> >> index 0ff06a0d0058..62a369fb8d98 100644
-> >> --- a/include/linux/bpf.h
-> >> +++ b/include/linux/bpf.h
-> >> @@ -21,6 +21,7 @@ struct bpf_verifier_env;
-> >>   struct bpf_verifier_log;
-> >>   struct perf_event;
-> >>   struct bpf_prog;
-> >> +struct bpf_prog_aux;
-> >>   struct bpf_map;
-> >>   struct sock;
-> >>   struct seq_file;
-> >> @@ -63,6 +64,12 @@ struct bpf_map_ops {
-> >>                               const struct btf_type *key_type,
-> >>                               const struct btf_type *value_type);
-> >>
-> >> +       /* Prog poke tracking helpers. */
-> >> +       int (*map_poke_track)(struct bpf_map *map, struct bpf_prog_aux *aux);
-> >> +       void (*map_poke_untrack)(struct bpf_map *map, struct bpf_prog_aux *aux);
-> >> +       void (*map_poke_run)(struct bpf_map *map, u32 key, struct bpf_prog *old,
-> >> +                            struct bpf_prog *new);
-> >
-> > You are passing bpf_prog_aux for track/untrack, but bpf_prog itself
-> > for run. Maybe stick to just bpf_prog everywhere?
->
-> This needs to be bpf_prog_aux as prog itself is not stable yet and can still
-> change, but aux itself is stable.
+Hello,
 
-no one will prevent doing container_of() and get bpf_prog itself, so
-it's just an implicit knowledge that bpf_prog might be incomplete yet,
-that has to be remembered (btw, might be good to add a brief comment
-stating that). But I don't feel strongly either way.
+syzbot found the following crash on:
 
->
-> >> +
-> >>          /* Direct value access helpers. */
-> >>          int (*map_direct_value_addr)(const struct bpf_map *map,
-> >>                                       u64 *imm, u32 off);
-> >> @@ -584,6 +591,9 @@ struct bpf_array_aux {
-> >>           */
-> >>          enum bpf_prog_type type;
-> >>          bool jited;
-> >> +       /* Programs with direct jumps into programs part of this array. */
-> >> +       struct list_head poke_progs;
-> >> +       struct mutex poke_mutex;
-> >>   };
-> >>
-> >
-> > [...]
-> >
->
+HEAD commit:    9c6a7162 kmsan: remove unneeded annotations in bio
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=14563416e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9e324dfe9c7b0360
+dashboard link: https://syzkaller.appspot.com/bug?extid=b02ff0707a97e4e79ebb
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in can_receive+0x23c/0x5e0 net/can/af_can.c:649
+CPU: 1 PID: 3490 Comm: syz-executor.2 Not tainted 5.4.0-rc5+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  <IRQ>
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x128/0x220 mm/kmsan/kmsan_report.c:108
+  __msan_warning+0x73/0xe0 mm/kmsan/kmsan_instr.c:245
+  can_receive+0x23c/0x5e0 net/can/af_can.c:649
+  can_rcv+0x188/0x3a0 net/can/af_can.c:685
+  __netif_receive_skb_one_core net/core/dev.c:5010 [inline]
+  __netif_receive_skb net/core/dev.c:5124 [inline]
+  process_backlog+0x12e8/0x1410 net/core/dev.c:5955
+  napi_poll net/core/dev.c:6392 [inline]
+  net_rx_action+0x7a6/0x1aa0 net/core/dev.c:6460
+  __do_softirq+0x4a1/0x83a kernel/softirq.c:293
+  do_softirq_own_stack+0x49/0x80 arch/x86/entry/entry_64.S:1093
+  </IRQ>
+  do_softirq kernel/softirq.c:338 [inline]
+  __local_bh_enable_ip+0x184/0x1d0 kernel/softirq.c:190
+  local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
+  rcu_read_unlock_bh include/linux/rcupdate.h:688 [inline]
+  __dev_queue_xmit+0x38e8/0x4200 net/core/dev.c:3900
+  dev_queue_xmit+0x4b/0x60 net/core/dev.c:3906
+  packet_snd net/packet/af_packet.c:2959 [inline]
+  packet_sendmsg+0x82d7/0x92e0 net/packet/af_packet.c:2984
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg net/socket.c:657 [inline]
+  ___sys_sendmsg+0x14ff/0x1590 net/socket.c:2311
+  __sys_sendmsg net/socket.c:2356 [inline]
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg+0x305/0x460 net/socket.c:2363
+  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2363
+  do_syscall_64+0xb6/0x160 arch/x86/entry/common.c:291
+  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+RIP: 0033:0x45a639
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ff1b9c14c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a639
+RDX: 0000000000000050 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff1b9c156d4
+R13: 00000000004c8acf R14: 00000000004df078 R15: 00000000ffffffff
+
+Uninit was created at:
+  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:151 [inline]
+  kmsan_internal_poison_shadow+0x60/0x120 mm/kmsan/kmsan.c:134
+  kmsan_slab_alloc+0xaa/0x120 mm/kmsan/kmsan_hooks.c:88
+  slab_alloc_node mm/slub.c:2799 [inline]
+  __kmalloc_node_track_caller+0xd7b/0x1390 mm/slub.c:4407
+  __kmalloc_reserve net/core/skbuff.c:141 [inline]
+  __alloc_skb+0x306/0xa10 net/core/skbuff.c:209
+  alloc_skb include/linux/skbuff.h:1050 [inline]
+  alloc_skb_with_frags+0x18c/0xa80 net/core/skbuff.c:5662
+  sock_alloc_send_pskb+0xafd/0x10a0 net/core/sock.c:2244
+  packet_alloc_skb net/packet/af_packet.c:2807 [inline]
+  packet_snd net/packet/af_packet.c:2902 [inline]
+  packet_sendmsg+0x6785/0x92e0 net/packet/af_packet.c:2984
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg net/socket.c:657 [inline]
+  ___sys_sendmsg+0x14ff/0x1590 net/socket.c:2311
+  __sys_sendmsg net/socket.c:2356 [inline]
+  __do_sys_sendmsg net/socket.c:2365 [inline]
+  __se_sys_sendmsg+0x305/0x460 net/socket.c:2363
+  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2363
+  do_syscall_64+0xb6/0x160 arch/x86/entry/common.c:291
+  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+=====================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
