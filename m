@@ -2,57 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C038EFFF69
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 08:16:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8535FFF6F
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 08:19:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbfKRHQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 02:16:41 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:40526 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726551AbfKRHQk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 02:16:40 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id D2FF020460;
-        Mon, 18 Nov 2019 08:16:39 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RkiwNY-Stmzm; Mon, 18 Nov 2019 08:16:39 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 79B22201E5;
-        Mon, 18 Nov 2019 08:16:39 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 18 Nov 2019
- 08:16:39 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 10AFF318275C;
- Mon, 18 Nov 2019 08:16:39 +0100 (CET)
-Date:   Mon, 18 Nov 2019 08:16:39 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Vakul Garg <vakul.garg@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Required guidance to debug ipsec memory leak
-Message-ID: <20191118071638.GQ14361@gauss3.secunet.de>
-References: <DB7PR04MB4620A7723FAC95C7767573208B4D0@DB7PR04MB4620.eurprd04.prod.outlook.com>
+        id S1726370AbfKRHTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 02:19:01 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:41331 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726312AbfKRHTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 02:19:00 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id A06A422469;
+        Mon, 18 Nov 2019 02:18:59 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 18 Nov 2019 02:18:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=s/4rpTB7YDTfUONkd
+        tNJ3XcbMrsAKvpojO+4NSkzW0g=; b=GEqBaQDWZJ3+LfxTFPVb2v6VpO4MEM12A
+        tqD02GKWEbVaiW/poR2EhIzeVlzue8+vwPE8cLAiBHIUgfM1ce9f2xpO5ub1/46B
+        zjZ94/P8dJj3YPhh/1rc1+H67no3sDdJxUvASFHTaZ1TmWdGrfIqTenGALq5b/oB
+        +GgLDN4ceVmm5M8ULGYGDqhbmqVEjGB6RPe774GHqVwBQHqob3Yk5XOntpDA+v/X
+        6wc9p1nnuq/ajRZ/xS6xTbtgygqCdGMvY+i3a2nLc6Z/nFQyehKTpb6emRLbDK4s
+        3ZhLfi5R5dmkPbnqzYkkD9EBWhcR6HMap46UtaRj6p/anSP7zPKbw==
+X-ME-Sender: <xms:4kXSXWTqPQB0YuCKgDlDq4omh5pZaVATJ9huXbSabCT6dmf6MmMLEA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudeggedguddtjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:4kXSXfCsoLsQ26ukecVvBuBzhRJcgMXCazfrOtLzV7RTpM6vgNWK5w>
+    <xmx:4kXSXdTF07T6mXUgSq_Z_BjHi2AAFWKCJ-4qNXfSgdkgKn_6P0v7mQ>
+    <xmx:4kXSXdouueNkou5l89Fg_O0mXOfIFXSmc4DDgPFv__6ezsUTfTDfiA>
+    <xmx:40XSXXwByhEbRn-OwmaBjHvZJNeADvNpZ61lqwa_5bp3eKYrWVVe1g>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 761D380060;
+        Mon, 18 Nov 2019 02:18:57 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] mlxsw: spectrum_router: Fix determining underlay for a GRE tunnel
+Date:   Mon, 18 Nov 2019 09:18:42 +0200
+Message-Id: <20191118071842.31712-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <DB7PR04MB4620A7723FAC95C7767573208B4D0@DB7PR04MB4620.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 06:35:24AM +0000, Vakul Garg wrote:
-> Hi
-> 
-> I need help to debug a suspected memory leak problem while running kernel ipsec with rekeying enabled.
+From: Petr Machata <petrm@mellanox.com>
 
-Did you try with the current net tree? There is a fix for
-such a leak:
+The helper mlxsw_sp_ipip_dev_ul_tb_id() determines the underlay VRF of a
+GRE tunnel. For a tunnel without a bound device, it uses the same VRF that
+the tunnel is in. However in Linux, a GRE tunnel without a bound device
+uses the main VRF as the underlay. Fix the function accordingly.
 
-commit 86c6739eda7d ("xfrm: Fix memleak on xfrm state destroy")
+mlxsw further assumed that moving a tunnel to a different VRF could cause
+conflict in local tunnel endpoint address, which cannot be offloaded.
+However, the only way that an underlay could be changed by moving the
+tunnel device itself is if the tunnel device does not have a bound device.
+But in that case the underlay is always the main VRF, so there is no
+opportunity to introduce a conflict by moving such device. Thus this check
+constitutes a dead code, and can be removed, which do.
+
+Fixes: 6ddb7426a7d4 ("mlxsw: spectrum_router: Introduce loopback RIFs")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index a330b369e899..39d600c8b92d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -994,7 +994,7 @@ u32 mlxsw_sp_ipip_dev_ul_tb_id(const struct net_device *ol_dev)
+ 	if (d)
+ 		return l3mdev_fib_table(d) ? : RT_TABLE_MAIN;
+ 	else
+-		return l3mdev_fib_table(ol_dev) ? : RT_TABLE_MAIN;
++		return RT_TABLE_MAIN;
+ }
+ 
+ static struct mlxsw_sp_rif *
+@@ -1598,27 +1598,10 @@ static int mlxsw_sp_netdevice_ipip_ol_vrf_event(struct mlxsw_sp *mlxsw_sp,
+ {
+ 	struct mlxsw_sp_ipip_entry *ipip_entry =
+ 		mlxsw_sp_ipip_entry_find_by_ol_dev(mlxsw_sp, ol_dev);
+-	enum mlxsw_sp_l3proto ul_proto;
+-	union mlxsw_sp_l3addr saddr;
+-	u32 ul_tb_id;
+ 
+ 	if (!ipip_entry)
+ 		return 0;
+ 
+-	/* For flat configuration cases, moving overlay to a different VRF might
+-	 * cause local address conflict, and the conflicting tunnels need to be
+-	 * demoted.
+-	 */
+-	ul_tb_id = mlxsw_sp_ipip_dev_ul_tb_id(ol_dev);
+-	ul_proto = mlxsw_sp->router->ipip_ops_arr[ipip_entry->ipipt]->ul_proto;
+-	saddr = mlxsw_sp_ipip_netdev_saddr(ul_proto, ol_dev);
+-	if (mlxsw_sp_ipip_demote_tunnel_by_saddr(mlxsw_sp, ul_proto,
+-						 saddr, ul_tb_id,
+-						 ipip_entry)) {
+-		mlxsw_sp_ipip_entry_demote_tunnel(mlxsw_sp, ipip_entry);
+-		return 0;
+-	}
+-
+ 	return __mlxsw_sp_ipip_entry_update_tunnel(mlxsw_sp, ipip_entry,
+ 						   true, false, false, extack);
+ }
+-- 
+2.21.0
 
