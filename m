@@ -2,147 +2,413 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2546EFFF7B
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 08:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A49BFFFC0
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 08:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726425AbfKRHZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 02:25:07 -0500
-Received: from mail-eopbgr40051.outbound.protection.outlook.com ([40.107.4.51]:9029
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726370AbfKRHZG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 02:25:06 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vz1V5ZOXiEPJ6JCFbqzfGgEXC8DMwGfS7Z+6NOm5c8AAhX3Xg4/zLQqTTzkTL1f8SOYIA5qvhxQUKxQIuG8SWJt0z5AIz5m5j59Ps1RNnHsdZVf8WDclPTqrqZvFJFh+W0yw8h0oz18urrGVw6vRVns6j+oLTce1WHDnW4ehSDA4SJ7Hm6OH/b6ElPNbiSduDI9YWGcvoynxKDKSv7JRLcM4M08XbZ5Y+D9IKVrPpmKGHgnhAH5z5bqfBExdEkOovtg8DsHJfFI0v5Yon3GBdyjvG/uTzS8HXAeJmasiaWiKoVkV1JCnymdGfwRyWbRR7dcPZK5XE7Rx9W/nA+IT2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CQhuJwiuDpZxiXaw+VLqu2vIT6Oa3ui6z5mq/ZsDeh4=;
- b=lZ15gJWklqtPwiJY4WMyFfrseIqIoJmqdo0vG4/A+Bk95JH8mn0ZaMZZgwe7iItjIpUV2p6sBXzBLBeDJXWNlXwbC2xd9r/oznc1IQazIweDQVhvx04i3yTapW3eyl+4SzUmScj8XhQIB6lRwB326PgCqcxBoyatniGRlDQPJ7ga3rsT0VdEHt03hGjOSMpxJbBWdantTBLyLJrRSkMyhblYh5e1Sn/AXOCb4lVN4KFua4AnvnM3GDzVl1a+IZwvKr6zz3TxU+6+yBEfBgjGugPWWU3M83sYj+ebRQJJXPX+O5tMGr9BnQoE0EcpNPan1bLHAsccKOOz5llZOV6k1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CQhuJwiuDpZxiXaw+VLqu2vIT6Oa3ui6z5mq/ZsDeh4=;
- b=FyNUSUHXaKk45jl9p35md6jrmGBIyXi3voKsWrRK5o9Osdosa0dG4viJHgbe+C4QtXlbqx/RCT63W+uP1LqLzKR0TCWT25PUuszeJb0+e3AikntTH5C83frw8npfOpbjZXYdJPKGovV3qdCxGxvpjHG6ZEuBam3iS+Zv7qaTFS4=
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.188.155) by
- AM4PR05MB3395.eurprd05.prod.outlook.com (10.171.188.32) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.23; Mon, 18 Nov 2019 07:25:02 +0000
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::70c3:1586:88a:1493]) by AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::70c3:1586:88a:1493%7]) with mapi id 15.20.2451.029; Mon, 18 Nov 2019
- 07:25:02 +0000
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Danit Goldberg <danitg@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/4] Get IB port and node GUIDs through
- rtnetlink
-Thread-Topic: [PATCH rdma-next 0/4] Get IB port and node GUIDs through
- rtnetlink
-Thread-Index: AQHVmu/Vfdk+oqiBkUy0e40m6XWwa6eQjLIA
-Date:   Mon, 18 Nov 2019 07:25:02 +0000
-Message-ID: <20191118072500.GI4716@unreal>
-References: <20191114133126.238128-1-leon@kernel.org>
-In-Reply-To: <20191114133126.238128-1-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR05CA0060.eurprd05.prod.outlook.com
- (2603:10a6:208:be::37) To AM4PR05MB3137.eurprd05.prod.outlook.com
- (2603:10a6:205:8::27)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [5.29.147.182]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0e7614d4-2fa7-4246-dd33-08d76bf86d37
-x-ms-traffictypediagnostic: AM4PR05MB3395:|AM4PR05MB3395:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3395D978A93E33065AF959E1B04D0@AM4PR05MB3395.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0225B0D5BC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(366004)(376002)(396003)(39860400002)(346002)(136003)(199004)(189003)(256004)(81166006)(81156014)(4326008)(66446008)(66476007)(66556008)(64756008)(6486002)(66066001)(86362001)(33716001)(5660300002)(1076003)(6246003)(99286004)(8936002)(6512007)(316002)(54906003)(9686003)(8676002)(14454004)(2906002)(76176011)(386003)(6506007)(11346002)(52116002)(229853002)(6436002)(446003)(66946007)(33656002)(186003)(102836004)(7736002)(6916009)(305945005)(478600001)(26005)(476003)(25786009)(6116002)(71200400001)(71190400001)(3846002)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3395;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MOXb8K6VJpxrsaAX9Oqm6ZOC0aIrfkQXjCz2wougoul24wEO07R8PRbEFxi6Qdom0r2pdLsmymvCIxE7AzcdCJ2yYIKVaBVclpZUK6PTfAWe2KNZItS/9zWQvuM/DNEkSQEyjt+hBWTNdBXU6uYpcwXzbeG6HZpKhZGjpcJOfCLEthGW8uhzSwN19vgaOGPT9/MFNNhUddFuWGleyAuJEjs5/E8AMDxLzzBd6y9DXdM02tnh80RYrdG1pIzvujoZ/iLahUD9nwT4+0yf0xVeN7Yr+2e0s4luCvPiEUwgpW9wML/N3227TQH1KqMP/jd/QD6zdShr7iyJS6LGK6IfWgbYuw5cK9tsOlNlcItfiedhOHC2CWRy/R16L0P0wtOxT6tX8N/dZrGTqnMm+eVP+/dTsYwr7l6dfSwxGV0FqMBQKgTNyW3+7Cm+DGROGMUK
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C5D491281E1C6D48800D75E4F4F8254C@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726566AbfKRHsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 02:48:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33694 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726283AbfKRHsj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 02:48:39 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0240020409;
+        Mon, 18 Nov 2019 07:48:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574063317;
+        bh=C3o+zsML0lPQRe4p26aKJrwfilU10RU+U7Kxiw+59G8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nQABsS/wWaA9gfCfcktGAARoEKRc0ShaS4ZANqjTXMvFGmDbnezgAG1uIuaEq85Is
+         BumzQVe/+/iZTONgMXjdBy+9VoOHyanGSUtq9yN69jR4aRZqQrWKGuZpV4BttQEIq5
+         XG9lu0L6Cbf7F4MaqkeO+MiORffV/GPL4/7Koa1A=
+Date:   Mon, 18 Nov 2019 08:48:34 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        parav@mellanox.com, Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191118074834.GA130507@kroah.com>
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e7614d4-2fa7-4246-dd33-08d76bf86d37
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2019 07:25:02.7478
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: M/DjxYAAt6jOanPhxXmZWwJEt/Wguhl4BoysqL8CiSRDGWbaXpZ3A8PheA+jp30UOAevbxkwqBLUp7eg500utw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3395
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 03:31:21PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
->
-> Hi,
->
-> This series from Danit extends RTNETLINK to provide IB port and node
-> GUIDs, which were configured for Infiniband VFs.
->
-> The functionality to set VF GUIDs already existed for a long time, and he=
-re
-> we are adding the missing "get" so that netlink will be symmetric
-> and various cloud orchestration tools will be able to manage such
-> VFs more naturally.
->
-> The iproute2 was extended too to present those GUIDs.
->
-> - ip link show <device>
->
-> For example:
-> - ip link set ib4 vf 0 node_guid 22:44:33:00:33:11:00:33
-> - ip link set ib4 vf 0 port_guid 10:21:33:12:00:11:22:10
-> - ip link show ib4
->     ib4: <BROADCAST,MULTICAST> mtu 4092 qdisc noop state DOWN mode DEFAUL=
-T group default qlen 256
->     link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:9a:03:00:44=
-:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->     vf 0     link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:9a=
-:03:00:44:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:f=
-f:ff,
->     spoof checking off, NODE_GUID 22:44:33:00:33:11:00:33, PORT_GUID 10:2=
-1:33:12:00:11:22:10, link-state disable, trust off, query_rss off
->
-> Due to the fact that this series touches both net and RDMA, we assume
-> that it needs to be applied to our shared branch (mlx5-next) and pulled
-> later by Dave and Doug/Jason.
->
-> Thanks
->
-> Danit Goldberg (4):
->   net/core: Add support for getting VF GUIDs
->   IB/core: Add interfaces to get VF node and port GUIDs
->   IB/ipoib: Add ndo operation for getting VFs GUID attributes
->   IB/mlx5: Implement callbacks for getting VFs GUID attributes
+On Fri, Nov 15, 2019 at 02:33:55PM -0800, Jeff Kirsher wrote:
+> From: Dave Ertman <david.m.ertman@intel.com>
+> 
+> This is the initial implementation of the Virtual Bus,
+> virtbus_device and virtbus_driver.  The virtual bus is
+> a software based bus intended to support lightweight
+> devices and drivers and provide matching between them
+> and probing of the registered drivers.
+> 
+> The primary purpose of the virual bus is to provide
+> matching services and to pass the data pointer
+> contained in the virtbus_device to the virtbus_driver
+> during its probe call.  This will allow two separate
+> kernel objects to match up and start communication.
+> 
+> The bus will support probe/remove shutdown and
+> suspend/resume callbacks.
+> 
+> Kconfig and Makefile alterations are included
+> 
+> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+> v2: Cleaned up the virtual bus interface based on feedback from Greg KH
+>     and provided a test driver and test virtual bus device as an example
+>     of how to implement the virtual bus.
+> 
+>  Documentation/driver-api/virtual_bus.rst      |  76 ++++
+>  drivers/bus/Kconfig                           |  14 +
+>  drivers/bus/Makefile                          |   1 +
+>  drivers/bus/virtual_bus.c                     | 326 ++++++++++++++++++
+>  include/linux/virtual_bus.h                   |  55 +++
+>  .../virtual_bus/virtual_bus_dev/Makefile      |   7 +
+>  .../virtual_bus_dev/virtual_bus_dev.c         |  67 ++++
+>  .../virtual_bus/virtual_bus_drv/Makefile      |   7 +
+>  .../virtual_bus_drv/virtual_bus_drv.c         | 101 ++++++
+>  9 files changed, 654 insertions(+)
+>  create mode 100644 Documentation/driver-api/virtual_bus.rst
+>  create mode 100644 drivers/bus/virtual_bus.c
+>  create mode 100644 include/linux/virtual_bus.h
+>  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_dev/Makefile
+>  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_dev/virtual_bus_dev.c
+>  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_drv/Makefile
+>  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_drv/virtual_bus_drv.c
+> 
+> diff --git a/Documentation/driver-api/virtual_bus.rst b/Documentation/driver-api/virtual_bus.rst
+> new file mode 100644
+> index 000000000000..970e06267284
+> --- /dev/null
+> +++ b/Documentation/driver-api/virtual_bus.rst
+> @@ -0,0 +1,76 @@
+> +===============================
+> +Virtual Bus Devices and Drivers
+> +===============================
+> +
+> +See <linux/virtual_bus.h> for the models for virtbus_device and virtbus_driver.
+> +This bus is meant to be a lightweight software based bus to attach generic
+> +devices and drivers to so that a chunk of data can be passed between them.
+> +
+> +One use case example is an rdma driver needing to connect with several
+> +different types of PCI LAN devices to be able to request resources from
+> +them (queue sets).  Each LAN driver that supports rdma will register a
+> +virtbus_device on the virtual bus for each physical function.  The rdma
+> +driver will register as a virtbus_driver on the virtual bus to be
+> +matched up with multiple virtbus_devices and receive a pointer to a
+> +struct containing the callbacks that the PCI LAN drivers support for
+> +registering with them.
+> +
+> +Sections in this document:
+> +        Virtbus devices
+> +        Virtbus drivers
+> +        Device Enumeration
+> +        Device naming and driver binding
+> +        Virtual Bus API entry points
+> +
+> +Virtbus devices
+> +~~~~~~~~~~~~~~~
+> +Virtbus_devices are lightweight objects that support the minimal device
+> +functionality.  Devices will accept a name, and then an automatically
+> +generated index is concatenated onto it for the virtbus_device->name.
+> +
+> +The memory backing the "void *data" element of the virtbus_device is
+> +expected to be allocated and freed outside the context of the bus
+> +operations.  This memory is also expected to remain viable for the
+> +duration of the time that the virtbus_device is registered to the
+> +virtual bus. (e.g. from before the virtbus_dev_register until after
+> +the paired virtbus_dev_unregister).
+> +
+> +The provided API for virtbus_dev_alloc is an efficient way of allocating
+> +the memory for the virtbus_device (except for the data element) and
+> +automatically freeing it when the device is removed from the bus.
+> +
+> +Virtbus drivers
+> +~~~~~~~~~~~~~~~
+> +Virtbus drivers register with the virtual bus to be matched with virtbus
+> +devices.  They expect to be registered with a probe and remove callback,
+> +and also support shutdown, suspend, and resume callbacks.  They otherwise
+> +follow the standard driver behavior of having discovery and enumeration
+> +handled in the bus infrastructure.
+> +
+> +Virtbus drivers register themselves with the API entry point virtbus_drv_reg
+> +and unregister with virtbus_drv_unreg.
+> +
+> +Device Enumeration
+> +~~~~~~~~~~~~~~~~~~
+> +Enumeration is handled automatically by the bus infrastructure via the
+> +ida_simple methods.
+> +
+> +Device naming and driver binding
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +The virtbus_device.dev.name is the canonical name for the device. It is
+> +built from two other parts:
+> +
+> +        - virtbus_device.name (also used for matching).
+> +        - virtbus_device.id (generated automatically from ida_simple calls)
+> +
+> +This allows for multiple virtbus_devices with the same name, which will all
+> +be matched to the same virtbus_driver. Driver binding is performed by the
+> +driver core, invoking driver probe() after finding a match between device and driver.
+> +
+> +Virtual Bus API entry points
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +struct virtbus_device *virtbus_dev_alloc(const char *name, void *data)
+> +int virtbus_dev_register(struct virtbus_device *vdev)
+> +void virtbus_dev_unregister(struct virtbus_device *vdev)
+> +int virtbus_drv_register(struct virtbus_driver *vdrv, struct module *owner)
+> +void virtbus_drv_unregister(struct virtbus_driver *vdrv)
+> diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
+> index 6b331061d34b..30cef35b0c30 100644
+> --- a/drivers/bus/Kconfig
+> +++ b/drivers/bus/Kconfig
+> @@ -193,4 +193,18 @@ config DA8XX_MSTPRI
+>  
+>  source "drivers/bus/fsl-mc/Kconfig"
+>  
+> +config VIRTUAL_BUS
+> +       tristate "lightweight Virtual Bus"
+> +       depends on PM
+> +       help
+> +         Provides a lightweight bus for virtbus_devices to be added to it
+> +         and virtbus_drivers to be registered on it.  Will create a match
+> +         between the driver and device, then call the driver's probe with
+> +         the virtbus_device's struct (including a pointer for data).
+> +         One example is the irdma driver needing to connect with various
+> +         PCI LAN drivers to request resources (queues) to be able to perform
+> +         its function.  The data in the virtbus_device created by the
+> +         PCI LAN driver is a set of ops (function pointers) for the irdma
+> +         driver to use to register and communicate with the PCI LAN driver.
+> +
+>  endmenu
+> diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
+> index 16b43d3468c6..0b0ba53cbe5b 100644
+> --- a/drivers/bus/Makefile
+> +++ b/drivers/bus/Makefile
+> @@ -33,3 +33,4 @@ obj-$(CONFIG_UNIPHIER_SYSTEM_BUS)	+= uniphier-system-bus.o
+>  obj-$(CONFIG_VEXPRESS_CONFIG)	+= vexpress-config.o
+>  
+>  obj-$(CONFIG_DA8XX_MSTPRI)	+= da8xx-mstpri.o
+> +obj-$(CONFIG_VIRTUAL_BUS)	+= virtual_bus.o
+> diff --git a/drivers/bus/virtual_bus.c b/drivers/bus/virtual_bus.c
+> new file mode 100644
+> index 000000000000..c6eab1658391
+> --- /dev/null
+> +++ b/drivers/bus/virtual_bus.c
+> @@ -0,0 +1,326 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * virtual_bus.c - lightweight software based bus for virtual devices
+> + *
+> + * Copyright (c) 2019-20 Intel Corporation
+> + *
+> + * Please see Documentation/driver-api/virtual_bus.rst for
+> + * more information
+> + */
+> +
+> +#include <linux/string.h>
+> +#include <linux/virtual_bus.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/pm_domain.h>
+> +#include <linux/acpi.h>
+> +#include <linux/device.h>
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("Lightweight Virtual Bus");
+> +MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
+> +MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
+> +
+> +static DEFINE_IDA(virtbus_dev_ida);
 
-Dave,
+Do you ever clean up this when unloaded?  I didn't see that happening
+but I might have missed it.
 
-I see that you marked these patches as "not applicable" in patchworks.
+> +
+> +static const
+> +struct virtbus_dev_id *virtbus_match_id(const struct virtbus_dev_id *id,
+> +					struct virtbus_device *vdev)
+> +{
+> +	while (id->name[0]) {
+> +		if (!strcmp(vdev->name, id->name)) {
+> +			vdev->dev_id = id;
 
-Can I assume that you are OK with them and we can take them through RDMA
-tree? If yes, can you give your Ack on the first patch?
+Why are you changing/setting the id?
 
-Thanks
+> +			return id;
+> +		}
+> +		id++;
+> +	}
+> +	return NULL;
+> +}
+> +
+> +#define to_virtbus_dev(x)	(container_of((x), struct virtbus_device, dev))
+> +#define to_virtbus_drv(x)	(container_of((x), struct virtbus_driver, \
+> +				 driver))
+> +
+> +/**
+> + * virtbus_match - bind virtbus device to virtbus driver
+> + * @dev: device
+> + * @drv: driver
+> + *
+> + * Virtbus device IDs are always in "<name>.<instance>" format.
+> + * Instances are automatically selected through an ida_simple_get so
+> + * are positive integers. Names are taken from the device name field.
+> + * Driver IDs are simple <name>.  Need to extract the name from the
+> + * Virtual Device compare to name of the driver.
+> + */
+> +static int virtbus_match(struct device *dev, struct device_driver *drv)
+> +{
+> +	struct virtbus_driver *vdrv = to_virtbus_drv(drv);
+> +	struct virtbus_device *vdev = to_virtbus_dev(dev);
+> +
+> +	if (vdrv->id_table)
+> +		return virtbus_match_id(vdrv->id_table, vdev) != NULL;
+> +
+> +	return !strcmp(vdev->name, drv->name);
+> +}
+> +
+> +/**
+> + * virtbus_probe - call probe of the virtbus_drv
+> + * @dev: device struct
+> + */
+> +static int virtbus_probe(struct device *dev)
+> +{
+> +	if (dev->driver->probe)
+> +		return dev->driver->probe(dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtbus_remove(struct device *dev)
+> +{
+> +	if (dev->driver->remove)
+> +		return dev->driver->remove(dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void virtbus_shutdown(struct device *dev)
+> +{
+> +	if (dev->driver->shutdown)
+> +		dev->driver->shutdown(dev);
+> +}
+> +
+> +static int virtbus_suspend(struct device *dev, pm_message_t state)
+> +{
+> +	if (dev->driver->suspend)
+> +		return dev->driver->suspend(dev, state);
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtbus_resume(struct device *dev)
+> +{
+> +	if (dev->driver->resume)
+> +		return dev->driver->resume(dev);
+> +
+> +	return 0;
+> +}
+> +
+> +struct bus_type virtual_bus_type = {
+> +	.name		= "virtbus",
+> +	.match		= virtbus_match,
+> +	.probe		= virtbus_probe,
+> +	.remove		= virtbus_remove,
+> +	.shutdown	= virtbus_shutdown,
+> +	.suspend	= virtbus_suspend,
+> +	.resume		= virtbus_resume,
+> +};
+> +
+> +/**
+> + * virtbus_dev_register - add a virtual bus device
+> + * @vdev: virtual bus device to add
+> + */
+> +int virtbus_dev_register(struct virtbus_device *vdev)
+> +{
+> +	int ret;
+> +
+> +	if (!vdev)
+> +		return -EINVAL;
+> +
+> +	device_initialize(&vdev->dev);
+> +
+> +	vdev->dev.bus = &virtual_bus_type;
+> +	/* All device IDs are automatically allocated */
+> +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	vdev->id = ret;
+> +	dev_set_name(&vdev->dev, "%s.%d", vdev->name, vdev->id);
+> +
+> +	dev_dbg(&vdev->dev, "Registering VirtBus device '%s'\n",
+> +		dev_name(&vdev->dev));
+> +
+> +	ret = device_add(&vdev->dev);
+> +	if (!ret)
+> +		return ret;
+
+This logic has tripped me up multiple times, it's an anti-pattern.
+Please do:
+	if (ret)
+		goto device_add_error;
+
+	return 0;
+
+device_add_error:
+	...
+
+> +
+> +	/* Error adding virtual device */
+> +	device_del(&vdev->dev);
+> +	ida_simple_remove(&virtbus_dev_ida, vdev->id);
+> +	vdev->id = VIRTBUS_DEVID_NONE;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(virtbus_dev_register);
+> +
+> +/**
+> + * virtbus_dev_unregister - remove a virtual bus device
+> + * vdev: virtual bus device we are removing
+> + */
+> +void virtbus_dev_unregister(struct virtbus_device *vdev)
+> +{
+> +	if (!IS_ERR_OR_NULL(vdev)) {
+> +		device_del(&vdev->dev);
+> +
+> +		ida_simple_remove(&virtbus_dev_ida, vdev->id);
+> +		vdev->id = VIRTBUS_DEVID_NONE;
+
+Why set the id?  What will care/check this?
+
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(virtbus_dev_unregister);
+> +
+> +struct virtbus_object {
+> +	struct virtbus_device vdev;
+> +	char name[];
+> +};
+
+Why not use the name in the device structure?
+
+thanks,
+
+greg k-h
