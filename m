@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D48100365
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 12:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D7C100367
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 12:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbfKRLCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 06:02:33 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45752 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726890AbfKRLCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 06:02:32 -0500
+        id S1726890AbfKRLCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 06:02:38 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32715 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727239AbfKRLCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 06:02:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574074951;
+        s=mimecast20190719; t=1574074954;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l6rfiROFeW43GyvP/Cafzt3CsjQ/7ws9jG9UXs7NYj4=;
-        b=C/Nyq9o6mewPXJyHq1qqg+HNstQ8Pis1yG7gnGKolImaYmQ0N4kakW18ElkeyFAZrmHdm4
-        FN6JCUPmxbrUZKZCwnKPx1+EsJfxNPz1eh3tWeoL8LbiitD2V9C6sLYRWBqJxm+k9S6oUI
-        qAoYatjSCCRArDKuWl6jedlIXUmVzMo=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/CPy6WDs/EWc+Bu0cYFEz/Gm3YKQJa2lR6NOi7rwnOo=;
+        b=fBPQkH8Aj5c5DwoQMDGS70SvL23qn8NMmT4SeV/mzrWKc0K58rcvgULbk6Lmcr0ccTSGoS
+        5WfqQlyoshHQrwN9+9Y/ZKzvDdZe3S1hxlOpkgbwYwlj63fyyACY9cCSDCAbFjkcFTBOn9
+        f2Bo779DbJ/eIJvhuwQCfJ8UIyhIv+w=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-2HXXyJrFP4SX8d5CG5s45g-1; Mon, 18 Nov 2019 06:02:29 -0500
+ us-mta-254-MjdWET-6PgqAalU8f84WYg-1; Mon, 18 Nov 2019 06:02:31 -0500
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 76B27108BC52;
-        Mon, 18 Nov 2019 11:02:28 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E855A1852E2F;
+        Mon, 18 Nov 2019 11:02:29 +0000 (UTC)
 Received: from localhost.localdomain.com (ovpn-117-52.ams2.redhat.com [10.36.117.52])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C8F65DDAA;
-        Mon, 18 Nov 2019 11:02:27 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C79B44F9B6;
+        Mon, 18 Nov 2019 11:02:28 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next v2 0/2] net: introduce and use route hint
-Date:   Mon, 18 Nov 2019 12:01:28 +0100
-Message-Id: <cover.1574071944.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 1/2] ipv6: introduce and uses route look hints for list input
+Date:   Mon, 18 Nov 2019 12:01:29 +0100
+Message-Id: <643f2b258e275e915fa96ef0c635f9c5ff804c9d.1574071944.git.pabeni@redhat.com>
+In-Reply-To: <cover.1574071944.git.pabeni@redhat.com>
+References: <cover.1574071944.git.pabeni@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: 2HXXyJrFP4SX8d5CG5s45g-1
+X-MC-Unique: MjdWET-6PgqAalU8f84WYg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -50,31 +53,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series leverages the listification infrastructure to avoid
-unnecessary route lookup on ingress packets. In absence of policy routing,
-packets with equal daddr will usually land on the same dst.
+When doing RX batch packet processing, we currently always repeat
+the route lookup for each ingress packet. If policy routing is
+configured, and IPV6_SUBTREES is disabled at build time, we
+know that packets with the same destination address will use
+the same dst.
 
-When processing packet bursts (lists) we can easily reference the previous
-dst entry. When we hit the 'same destination' condition we can avoid the
-route lookup, coping the already available dst.
+This change tries to avoid per packet route lookup caching
+the destination address of the latest successful lookup, and
+reusing it for the next packet when the above conditions are
+in place. Ingress traffic for most servers should fit.
 
-Detailed performance numbers are available in the individual commit
-messages.
+The measured performance delta under UDP flood vs a recvmmsg
+receiver is as follow:
 
-v1 -> v2
- - fix build issue with !CONFIG_IP*_MULTIPLE_TABLES
- - fix potential race in ip6_list_rcv_finish()
+vanilla=09=09patched=09=09delta
+Kpps=09=09Kpps=09=09%
+1431=09=091664=09=09+14
 
-Paolo Abeni (2):
-  ipv6: introduce and uses route look hints for list input
-  ipv4: use dst hint for ipv4 list receive
+In the worst-case scenario - each packet has a different
+destination address - the performance delta is within noise
+range.
 
- include/net/route.h  | 11 +++++++++++
- net/ipv4/ip_input.c  | 38 +++++++++++++++++++++++++++++++++-----
- net/ipv4/route.c     | 38 ++++++++++++++++++++++++++++++++++++++
+v1 -> v2:
+ - fix build issue with !CONFIG_IPV6_MULTIPLE_TABLES
+ - fix potential race when fib6_has_custom_rules is set
+   while processing a packet batch
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
  net/ipv6/ip6_input.c | 40 ++++++++++++++++++++++++++++++++++++----
- 4 files changed, 118 insertions(+), 9 deletions(-)
+ 1 file changed, 36 insertions(+), 4 deletions(-)
 
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index ef7f707d9ae3..f559ad6b09ef 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -44,10 +44,16 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst_metadata.h>
+=20
++struct ip6_route_input_hint {
++=09unsigned long=09refdst;
++=09struct in6_addr daddr;
++};
++
+ INDIRECT_CALLABLE_DECLARE(void udp_v6_early_demux(struct sk_buff *));
+ INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *));
+ static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
+-=09=09=09=09struct sk_buff *skb)
++=09=09=09=09struct sk_buff *skb,
++=09=09=09=09struct ip6_route_input_hint *hint)
+ {
+ =09void (*edemux)(struct sk_buff *skb);
+=20
+@@ -59,7 +65,13 @@ static void ip6_rcv_finish_core(struct net *net, struct =
+sock *sk,
+ =09=09=09INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
+ =09=09=09=09=09udp_v6_early_demux, skb);
+ =09}
+-=09if (!skb_valid_dst(skb))
++
++=09if (skb_valid_dst(skb))
++=09=09return;
++
++=09if (hint && ipv6_addr_equal(&hint->daddr, &ipv6_hdr(skb)->daddr))
++=09=09__skb_dst_copy(skb, hint->refdst);
++=09else
+ =09=09ip6_route_input(skb);
+ }
+=20
+@@ -71,7 +83,7 @@ int ip6_rcv_finish(struct net *net, struct sock *sk, stru=
+ct sk_buff *skb)
+ =09skb =3D l3mdev_ip6_rcv(skb);
+ =09if (!skb)
+ =09=09return NET_RX_SUCCESS;
+-=09ip6_rcv_finish_core(net, sk, skb);
++=09ip6_rcv_finish_core(net, sk, skb, NULL);
+=20
+ =09return dst_input(skb);
+ }
+@@ -86,9 +98,20 @@ static void ip6_sublist_rcv_finish(struct list_head *hea=
+d)
+ =09}
+ }
+=20
++static bool ip6_can_cache_route_hint(struct net *net)
++{
++=09return !IS_ENABLED(IPV6_SUBTREES) &&
++#ifdef CONFIG_IPV6_MULTIPLE_TABLES
++=09       !net->ipv6.fib6_has_custom_rules;
++#else
++=09       1;
++#endif
++}
++
+ static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
+ =09=09=09=09struct list_head *head)
+ {
++=09struct ip6_route_input_hint _hint, *hint =3D NULL;
+ =09struct dst_entry *curr_dst =3D NULL;
+ =09struct sk_buff *skb, *next;
+ =09struct list_head sublist;
+@@ -104,9 +127,18 @@ static void ip6_list_rcv_finish(struct net *net, struc=
+t sock *sk,
+ =09=09skb =3D l3mdev_ip6_rcv(skb);
+ =09=09if (!skb)
+ =09=09=09continue;
+-=09=09ip6_rcv_finish_core(net, sk, skb);
++=09=09ip6_rcv_finish_core(net, sk, skb, hint);
+ =09=09dst =3D skb_dst(skb);
+ =09=09if (curr_dst !=3D dst) {
++=09=09=09if (ip6_can_cache_route_hint(net)) {
++=09=09=09=09_hint.refdst =3D skb->_skb_refdst;
++=09=09=09=09memcpy(&_hint.daddr, &ipv6_hdr(skb)->daddr,
++=09=09=09=09       sizeof(_hint.daddr));
++=09=09=09=09hint =3D &_hint;
++=09=09=09} else {
++=09=09=09=09hint =3D NULL;
++=09=09=09}
++
+ =09=09=09/* dispatch old sublist */
+ =09=09=09if (!list_empty(&sublist))
+ =09=09=09=09ip6_sublist_rcv_finish(&sublist);
 --=20
 2.21.0
 
