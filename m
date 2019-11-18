@@ -2,85 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8B0100612
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5F210060F
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 14:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfKRNDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 08:03:17 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32790 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726728AbfKRNDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 08:03:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574082196;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/QRLHU74v2oa2JWIWl0HhvTQ4gOOEbuByxl6xxO27+Q=;
-        b=Xl7To/nh2PsUlWyOCt4VAHM9d+4qg1d5QO0dsM/O4oVI9CThRqbjXnYs+JqyyumxRsGmq3
-        hNUHO+tg5l5O0pGbN4aNLv2ThYhLFDrNavhW1oIKn79or5RQaCox8dN/BdOSadqSPC4CaO
-        S7m0kOVypMQKEbL7DQRdX8+Ag7ElqAA=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-112-7fvf5KS0PY2zCnMoYagAJg-1; Mon, 18 Nov 2019 08:03:15 -0500
-Received: by mail-lj1-f198.google.com with SMTP id u6so3258421ljg.8
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 05:03:14 -0800 (PST)
+        id S1726646AbfKRNC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 08:02:58 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35251 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726490AbfKRNC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 08:02:58 -0500
+Received: by mail-wm1-f68.google.com with SMTP id 8so18758951wmo.0
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 05:02:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/eygnYaJ/Qk6Ezupep4rjaSg2pLHyykPL949pIhmOCE=;
+        b=1MHYO9yp4KPekbJw32u64aA5ZoIPeO+0kZpqv60pI1cJU6kSDZgYyv3SKkAly4t7l4
+         LgnLY/QKT4lakJzNw7VPHhsju9XtA9XDeJowle+AZylMqoFeRBv4mQAf8u3uiJozIgOj
+         cn+WS1xvYS5ttkw1aGk+QUt2/4/TqWIm0DO6bxYekCaDxaSsjIvRYheXdXBdw4MhBu7K
+         pdRS0ZpfV3LnK89negypYKFI8SCupGVE0gQCALubwokv4eyXtvEafr/raM/CEzC39ZcF
+         zkrDJP94U4RChEBZOcsxjS+GP3P4XeI2uZUei5EXalbdxPkQHgeDIsfT1cplTd2dpoqf
+         h5Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iZ+zQEixGxKYqEe3LvF9b/lANTSE9z1m4u41Jw+cA1g=;
-        b=QcrBnBdE2zXMrBW+EsN/076hpZbSO5HGFeQVAZGrHolHi9w+yjfhqYxviMK6c/r6gx
-         NZi0IREwyIVZmfE6Kbk+DiVSIDlVSYFStQ/QD34NrMR1hgOFpmvusGeyeHEfZnRqrIrb
-         f2SiUYk4yKO4zwCc1af22jQtmcR9o7yXnW+Y+dMGs36ElxFv0DDZ7LJR/VXKivMO2Syf
-         uE8is0dShi04QSwryZPTU2FaiPZnI2f2YEqofEhTd3xavloV5UTAjokfP9CG/svf+cp+
-         ta+dcBpbyp8rKQ6v7Hkducy5+aMhOwYJYDNwfS9RqfQHgsEh+C7dij2311P+Pfb5QK8p
-         9xfw==
-X-Gm-Message-State: APjAAAWl8VkiOBjRldX1BeDzUcJu6mQWoCklzBUU2eeLrAdysRhawcmo
-        y1N1VXObB5KZE3tw+fojlnt2YEJyMGJpgIanltE6W4WoROU8lIiOjFm4WJ9knIMrhPyd0viE5/q
-        lnXPcIzKoxGqsZ4fUXddzpg4bLH8SCyTq
-X-Received: by 2002:ac2:4d17:: with SMTP id r23mr21304612lfi.56.1574082192839;
-        Mon, 18 Nov 2019 05:03:12 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyPW9BKT9zPAmX+PDWEyi+oZVlbQwpuiVcIRdI/4gdD4oQ1n3zpvDXa5LUcwgOz5UbAHEJbFEThSQaP57zJrCM=
-X-Received: by 2002:ac2:4d17:: with SMTP id r23mr21304598lfi.56.1574082192643;
- Mon, 18 Nov 2019 05:03:12 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/eygnYaJ/Qk6Ezupep4rjaSg2pLHyykPL949pIhmOCE=;
+        b=ckVJHHk9toVTMBDlFifYImI6l8SLtNS2ZzT2Ih8GNG63cNrzV+/FwbCYd1p0PRiqDL
+         fx9TsL7b2g/Ta8HSyMy46Pxhqg+e/qEkpfQdUMvCIho62PD1bqjYCInjDXCEnkSmm727
+         xxqnsvXKrupo2ZA361t9jxVsVWHM1lkqbc09VE0zOtQuO21lSnQriuiobp565HgxLrBe
+         T91EJjypWs+nRa127eXscPcOn3W0mb993PnVY8hXlv8CuJM85gfmSbI/ZXGNrTEBlTO+
+         rFZR1AJF1fIiQPtiCUwpeGnCfYpGs1CS0kXuw5HSAX1nFkeIzj9HPZCXnUIXJiqJrsE9
+         9G4Q==
+X-Gm-Message-State: APjAAAX2fLLYRkRXk/z6wQ5+wu6ixgeZPQwa7MniVPqzIJ9ycKZBZayF
+        MTtV8JD9yFjt//Br0wzwiFTzSnu+zRbENA==
+X-Google-Smtp-Source: APXvYqzBn7FiUIwkexcQfuGD5YhEWdCeaCh07kX4xfKY7vnW3XIeBHai38Q4UFkVWhAqA8xqT7dj0w==
+X-Received: by 2002:a05:600c:21d9:: with SMTP id x25mr31072848wmj.50.1574082176216;
+        Mon, 18 Nov 2019 05:02:56 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id x7sm26702435wrg.63.2019.11.18.05.02.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 18 Nov 2019 05:02:55 -0800 (PST)
+Date:   Mon, 18 Nov 2019 14:02:55 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>
+Subject: Re: [PATCH net] net: sched: ensure opts_len <= IP_TUNNEL_OPTS_MAX in
+ act_tunnel_key
+Message-ID: <20191118130253.hznw2vac6nh2z3ru@netronome.com>
+References: <920e2171915c7d2ba4c7ea4315e049370002afbe.1574069974.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <9b97a07518c119e531de8ab012d95a8f3feea038.1574080178.git.marcelo.leitner@gmail.com>
-In-Reply-To: <9b97a07518c119e531de8ab012d95a8f3feea038.1574080178.git.marcelo.leitner@gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Mon, 18 Nov 2019 14:02:36 +0100
-Message-ID: <CAGnkfhwziVRE_LdXWm6UAFhva4jZTpioFUYdms1pfBm9rYZeKg@mail.gmail.com>
-Subject: Re: [PATCH net] net/ipv4: fix sysctl max for fib_multipath_hash_policy
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-X-MC-Unique: 7fvf5KS0PY2zCnMoYagAJg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <920e2171915c7d2ba4c7ea4315e049370002afbe.1574069974.git.lucien.xin@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 1:46 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> Commit eec4844fae7c ("proc/sysctl: add shared variables for range
-> check") did:
-> -               .extra2         =3D &two,
-> +               .extra2         =3D SYSCTL_ONE,
-> here, which doesn't seem to be intentional, given the changelog.
-> This patch restores it to the previous, as the value of 2 still makes
-> sense (used in fib_multipath_hash()).
->
+On Mon, Nov 18, 2019 at 05:39:34PM +0800, Xin Long wrote:
+> info->options_len is 'u8' type, and when opts_len with a value >
+> IP_TUNNEL_OPTS_MAX, 'info->options_len = opts_len' will cast int
+> to u8 and set a wrong value to info->options_len.
+> 
+> Kernel crashed in my test when doing:
+> 
+>   # opts="0102:80:00800022"
+>   # for i in {1..99}; do opts="$opts,0102:80:00800022"; done
+>   # ip link add name geneve0 type geneve dstport 0 external
+>   # tc qdisc add dev eth0 ingress
+>   # tc filter add dev eth0 protocol ip parent ffff: \
+>        flower indev eth0 ip_proto udp action tunnel_key \
+>        set src_ip 10.0.99.192 dst_ip 10.0.99.193 \
+>        dst_port 6081 id 11 geneve_opts $opts \
+>        action mirred egress redirect dev geneve0
+> 
+> So we should do the similar check as cls_flower does, return error
+> when opts_len > IP_TUNNEL_OPTS_MAX in tunnel_key_copy_opts().
+> 
+> Fixes: 0ed5269f9e41 ("net/sched: add tunnel option support to act_tunnel_key")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Nice catch.
-Somehow a chunk in 363887a2cdfeb was partially reverted.
-
-Acked-by: Matteo Croce <mcroce@redhat.com>
-
---=20
-Matteo Croce
-per aspera ad upstream
-
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
