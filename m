@@ -2,99 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B991000D7
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 09:57:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CAD1000F4
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 10:09:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbfKRI5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 03:57:18 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:33101 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726654AbfKRI5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 03:57:17 -0500
-Received: by mail-pl1-f196.google.com with SMTP id ay6so9419632plb.0
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 00:57:17 -0800 (PST)
+        id S1726666AbfKRJJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 04:09:39 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37312 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726595AbfKRJJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 04:09:39 -0500
+Received: by mail-lf1-f66.google.com with SMTP id b20so13175071lfp.4
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 01:09:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5pYU3MBdJcghgwmZCZMRJCjKXgYOm8xSqjzP0Su5DbY=;
-        b=dhflZuvpjoOmeUdY1yWFNOov2+J/CTc8CWJ/aIgnlipLRKpQd88Qrk8w7exsyjNNTc
-         XAHp+RbEXkFTU7gLZ3W1vbNQWUjNWAfud1q48D+QyFnDUexKTXqp/bbYrRyIEOYiuXVC
-         OYxxustx7fj+Tuvo6dTPoIdrTESPPSYkhNGbg=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRHarKxs+FXQC17mDhZjcIM/UrEIpgau+60o1VUlLBU=;
+        b=iS8KFNLdFLqOPrD6V35b7GfQj7gpMOzvVLNiAW93HgzmFuCocGe86U9tQYNhCtGH9/
+         F+TqzaLdZyguwYLCf9PWnDeTQSehf9n/6irOMCHTjflBh4ewrMY9tvsUUQi667HjVvBj
+         qsn6lw5EKap4TVlakLfnu9RWrYaWfH/ttogmmSmZerWzyIjIReYKU9FA/SocSUeORWsN
+         dg51gG/X4xKZ+s1vRvnbBS+zx/5+df70kxZHFeyCBGnBZuHmasyIpzCflCQKRLyRcC+3
+         rn0GA2jEV78MMCPZJuEBXII31EOjOH7eAlcshQaU5t0QTFxPwAev0MZ4NnfvB0Y3hX3d
+         ydJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=5pYU3MBdJcghgwmZCZMRJCjKXgYOm8xSqjzP0Su5DbY=;
-        b=Uyg9icSCJSPtnujnUi+xjB4JfmwXtlkAL0VymjTVOCQM6aHfGubOhU/ANBrq5YkK3R
-         QFSKAkuUctiOnw7jB6uiZRtwjZEBIkcc36VKkpIJbJkxwtdUGRe2wxkZuPvbts/KKDGV
-         OL5J/TxL7RS1sFC7DNLeHo/mr0nDHZ6uut6a+HJJLd/IhhxVG8VMkHJWLJNKYWtgBeq6
-         1d1wROdziurGy3iotFO6oN3LigpHhKrkti4reL+53EI5SMCaDt5lJTJbiRW5gYO9U9b/
-         tF8hndHdrTCBg7gZNRkCWOQ36xdmIHguis426wFVdxcofi7UkdQ+eB826laPAchowHzP
-         fFHA==
-X-Gm-Message-State: APjAAAUV35odRiUZPgTho35x1Lu3lwxEHCo2kD9hZXGkDVHi2NPVNXix
-        WG80YU80Ep9PXguBtnOxaQHOwJ3jdJ4=
-X-Google-Smtp-Source: APXvYqyKcxuSrliKa00hmt3GXuNE5j96pnNkIPgKrTwdyiIm5t+Beiv7uB30p53pCUuk8rTAXU7gvw==
-X-Received: by 2002:a17:902:161:: with SMTP id 88mr26521256plb.253.1574067436540;
-        Mon, 18 Nov 2019 00:57:16 -0800 (PST)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q41sm19120230pja.20.2019.11.18.00.57.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Nov 2019 00:57:16 -0800 (PST)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next 9/9] bnxt_en: Abort waiting for firmware response if there is no heartbeat.
-Date:   Mon, 18 Nov 2019 03:56:43 -0500
-Message-Id: <1574067403-4344-10-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1574067403-4344-1-git-send-email-michael.chan@broadcom.com>
-References: <1574067403-4344-1-git-send-email-michael.chan@broadcom.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRHarKxs+FXQC17mDhZjcIM/UrEIpgau+60o1VUlLBU=;
+        b=nNww1f9W/FYjyuFi2t1S3d54WJ0Gr0oVSfYHOi+AVMvclbqTpxcjOgNXjyzRCC5a2I
+         MYcOukIwpw7CvO792nXOA6b8wIslTJu25sjOTn3hdtybW61ftiiLLkG/ejM8lV3dFp/2
+         jIJxwCrBXIpxOv2qsI3Pbtpw1p9Ikg62TFpEyZyDNQBNW37q9ZaxDQ81+oZmvn+HCTXi
+         cI1h1tJxbpexJugGE0WOZY9t5fHA2CQdALwBQ7RKr5X4Oxg276iKAnwgTSLz6sfC5XYE
+         +rRr1fpHBlKfZha/jPiJaNbjnBMQ9Y1c/dCUM/2GU/yNWnbtsxIcdtMB1ifiNSK5dKC9
+         Au5g==
+X-Gm-Message-State: APjAAAUrT1iBf3NosOHEzpxPzk86RacZXGgIEkL2ZO84U0V6AD+bhGz5
+        OhRK0h3MhkoHfalNQ4msvGIqOw==
+X-Google-Smtp-Source: APXvYqyhYvfNiJx2V0NEwl3l8Xan6FmO3Iko3dR/CCQvpO4Av5UhD0iRNKaQv1xQYWN7JvWHllknjQ==
+X-Received: by 2002:a19:6d19:: with SMTP id i25mr19733291lfc.178.1574068176629;
+        Mon, 18 Nov 2019 01:09:36 -0800 (PST)
+Received: from localhost (c-413e70d5.07-21-73746f28.bbcust.telenor.se. [213.112.62.65])
+        by smtp.gmail.com with ESMTPSA id e10sm7997635ljp.23.2019.11.18.01.09.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2019 01:09:35 -0800 (PST)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     paulmck@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH] net: ipmr: fix suspicious RCU warning
+Date:   Mon, 18 Nov 2019 10:09:25 +0100
+Message-Id: <20191118090925.2474-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+When booting an arm64 allmodconfig kernel on linux-next (tag
+next-20191115). The following "suspicious RCU usage" warning shows up.
+This bug seems to have been introduced by commit f0ad0860d01e ("ipv4:
+ipmr: support multiple tables") in 2010, but the warning was added only
+in this past year by commit 28875945ba98 ("rcu: Add support for
+consolidated-RCU reader checking").
 
-This is especially beneficial during the NVRAM related firmware
-commands that have longer timeouts.  If the BNXT_STATE_FW_FATAL_COND
-flag gets set while waiting for firmware response, abort and return
-error.
+[   32.496021][    T1] =============================
+[   32.497616][    T1] WARNING: suspicious RCU usage
+[   32.499614][    T1] 5.4.0-rc6-next-20191108-00003-gf74bac957b5c-dirty #2 Not tainted
+[   32.502018][    T1] -----------------------------
+[   32.503976][    T1] net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
+[   32.506746][    T1]
+[   32.506746][    T1] other info that might help us debug this:
+[   32.506746][    T1]
+[   32.509794][    T1]
+[   32.509794][    T1] rcu_scheduler_active = 2, debug_locks = 1
+[   32.512661][    T1] 1 lock held by swapper/0/1:
+[   32.514169][    T1]  #0: ffffa000150dd678 (pernet_ops_rwsem){+.+.}, at: register_pernet_subsys+0x24/0x50
+[   32.517621][    T1]
+[   32.517621][    T1] stack backtrace:
+[   32.519930][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.0-rc6-next-20191108-00003-gf74bac957b5c-dirty #2
+[   32.523063][    T1] Hardware name: linux,dummy-virt (DT)
+[   32.524787][    T1] Call trace:
+[   32.525946][    T1]  dump_backtrace+0x0/0x2d0
+[   32.527433][    T1]  show_stack+0x20/0x30
+[   32.528811][    T1]  dump_stack+0x204/0x2ac
+[   32.530258][    T1]  lockdep_rcu_suspicious+0xf4/0x108
+[   32.531993][    T1]  ipmr_get_table+0xc8/0x170
+[   32.533496][    T1]  ipmr_new_table+0x48/0xa0
+[   32.535002][    T1]  ipmr_net_init+0xe8/0x258
+[   32.536465][    T1]  ops_init+0x280/0x2d8
+[   32.537876][    T1]  register_pernet_operations+0x210/0x420
+[   32.539707][    T1]  register_pernet_subsys+0x30/0x50
+[   32.541372][    T1]  ip_mr_init+0x54/0x180
+[   32.542785][    T1]  inet_init+0x25c/0x3e8
+[   32.544186][    T1]  do_one_initcall+0x4c0/0xad8
+[   32.545757][    T1]  kernel_init_freeable+0x3e0/0x500
+[   32.547443][    T1]  kernel_init+0x14/0x1f0
+[   32.548875][    T1]  ret_from_fork+0x10/0x18
 
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+This commit therefore introduces a lockdep-specific variable that
+maintains initialization state.  It then passes this variable along with
+the return value of lockdep_rtnl_is_held() to list_for_each_entry_rcu()
+in order to correctly check for proper RCU/locking/initialization state.
+
+Suggested-by: Paul E. McKenney <paulmck@kernel.org>
+Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/ipv4/ipmr.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 55e02a9..b20ab38 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -4278,6 +4278,11 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
- 		/* Wait until hwrm response cmpl interrupt is processed */
- 		while (bp->hwrm_intr_seq_id != (u16)~seq_id &&
- 		       i++ < tmo_count) {
-+			/* Abort the wait for completion if the FW health
-+			 * check has failed.
-+			 */
-+			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
-+				return -EBUSY;
- 			/* on first few passes, just barely sleep */
- 			if (i < HWRM_SHORT_TIMEOUT_COUNTER)
- 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
-@@ -4301,6 +4306,11 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 6e68def66822..93007c429dae 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -108,9 +108,18 @@ static void igmpmsg_netlink_event(struct mr_table *mrt, struct sk_buff *pkt);
+ static void mroute_clean_tables(struct mr_table *mrt, int flags);
+ static void ipmr_expire_process(struct timer_list *t);
  
- 		/* Check if response len is updated */
- 		for (i = 0; i < tmo_count; i++) {
-+			/* Abort the wait for completion if the FW health
-+			 * check has failed.
-+			 */
-+			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
-+				return -EBUSY;
- 			len = (le32_to_cpu(*resp_len) & HWRM_RESP_LEN_MASK) >>
- 			      HWRM_RESP_LEN_SFT;
- 			if (len)
++#ifdef CONFIG_PROVE_LOCKING
++int ip_mr_initialized;
++void ip_mr_now_initialized(void) { ip_mr_initialized = 1; }
++#else
++const int ip_mr_initialized = 1;
++void ip_mr_now_initialized(void) { }
++#endif
++
+ #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
+ #define ipmr_for_each_table(mrt, net) \
+-	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
++	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
++			(lockdep_rtnl_is_held() || !ip_mr_initialized))
+ 
+ static struct mr_table *ipmr_mr_table_iter(struct net *net,
+ 					   struct mr_table *mrt)
+@@ -3160,6 +3169,8 @@ int __init ip_mr_init(void)
+ 
+ 	rtnl_register(RTNL_FAMILY_IPMR, RTM_GETLINK,
+ 		      NULL, ipmr_rtm_dumplink, 0);
++
++	ip_mr_now_initialized();
+ 	return 0;
+ 
+ #ifdef CONFIG_IP_PIMSM_V2
 -- 
-2.5.1
+2.20.1
 
