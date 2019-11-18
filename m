@@ -2,137 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5662E10096F
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 17:44:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E3D1009EA
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 18:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbfKRQoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 11:44:38 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:56639 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726705AbfKRQoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 11:44:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574095476;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nBLEJh4Q1XwlS/JwRjXFD+trEGKdoyTbcRbQngpHBt8=;
-        b=SlpmBI0CS7gYOvOwQTj8uDeW+fu1/JWnust3o8dMpNwFtV9QnaDDMnhZrW8gxYzSOxXlDw
-        q6NHh8+x2ZwhRDMucGCHF/o9+Zy8H4Am3yNwuflT0yvrhzcDypZj7zsGPhew2D5P8euEt4
-        NgWowfXO7UJv1s0g5TSO74T9C+2jX2g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-35-NytjcJi3NmqoTiXpkNtcLQ-1; Mon, 18 Nov 2019 11:44:30 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0ED2A12DB78;
-        Mon, 18 Nov 2019 16:44:29 +0000 (UTC)
-Received: from ovpn-117-52.ams2.redhat.com (ovpn-117-52.ams2.redhat.com [10.36.117.52])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DF8E717D24;
-        Mon, 18 Nov 2019 16:44:27 +0000 (UTC)
-Message-ID: <2853344436a97a9a0aaeea60ce11e544f74d2511.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/2] ipv4: use dst hint for ipv4 list receive
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 18 Nov 2019 17:44:26 +0100
-In-Reply-To: <2393b7ba-2f58-421d-ef9b-a6ccd3804907@solarflare.com>
-References: <cover.1573893340.git.pabeni@redhat.com>
-         <5b7407edd15edaf912214ee62ea3d56d4b4e16b1.1573893340.git.pabeni@redhat.com>
-         <2393b7ba-2f58-421d-ef9b-a6ccd3804907@solarflare.com>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: NytjcJi3NmqoTiXpkNtcLQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1726977AbfKRRIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 12:08:49 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:28583 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726322AbfKRRIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 12:08:49 -0500
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAIH8eE0018666;
+        Mon, 18 Nov 2019 09:08:41 -0800
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: [PATCH net-next v4 0/3] cxgb4: add TC-MATCHALL classifier offload
+Date:   Mon, 18 Nov 2019 22:30:16 +0530
+Message-Id: <cover.1574089391.git.rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-11-18 at 16:15 +0000, Edward Cree wrote:
-> @@ -538,6 +543,7 @@ static void ip_sublist_rcv_finish(struct list_head *h=
-ead)
-> >  static void ip_list_rcv_finish(struct net *net, struct sock *sk,
-> >  =09=09=09       struct list_head *head)
-> >  {
-> > +=09struct ip_route_input_hint _hint, *hint =3D NULL;
-> >  =09struct dst_entry *curr_dst =3D NULL;
-> >  =09struct sk_buff *skb, *next;
-> >  =09struct list_head sublist;
-> > @@ -554,11 +560,24 @@ static void ip_list_rcv_finish(struct net *net, s=
-truct sock *sk,
-> >  =09=09skb =3D l3mdev_ip_rcv(skb);
-> >  =09=09if (!skb)
-> >  =09=09=09continue;
-> > -=09=09if (ip_rcv_finish_core(net, sk, skb, dev) =3D=3D NET_RX_DROP)
-> > +=09=09if (ip_rcv_finish_core(net, sk, skb, dev, hint) =3D=3D NET_RX_DR=
-OP)
-> >  =09=09=09continue;
-> > =20
-> >  =09=09dst =3D skb_dst(skb);
-> >  =09=09if (curr_dst !=3D dst) {
-> > +=09=09=09struct rtable *rt =3D (struct rtable *)dst;
-> > +
-> > +=09=09=09if (!net->ipv4.fib_has_custom_rules &&
-> > +=09=09=09    rt->rt_type !=3D RTN_BROADCAST) {
-> > +=09=09=09=09_hint.refdst =3D skb->_skb_refdst;
-> > +=09=09=09=09_hint.daddr =3D ip_hdr(skb)->daddr;
-> > +=09=09=09=09_hint.tos =3D ip_hdr(skb)->tos;
-> > +=09=09=09=09_hint.local =3D rt->rt_type =3D=3D RTN_LOCAL;
-> > +=09=09=09=09hint =3D &_hint;
-> > +=09=09=09} else {
-> > +=09=09=09=09hint =3D NULL;
-> > +=09=09=09}
-> Perhaps factor this block out into a function?  Just because it's getting
->  deeply indented and giving it a name would make it more obvious what it'=
-s
->  for.  hint =3D ipv4_extract_route_hint(skb, &_hint)?
+This series of patches add support to offload TC-MATCHALL classifier
+to hardware to classify all outgoing and incoming traffic on the
+underlying port. Only 1 egress and 1 ingress rule each can be
+offloaded on the underlying port.
 
-yep, I like the idea, will do in the next iteration.
->=20
-> > +
-> >  =09=09=09/* dispatch old sublist */
-> >  =09=09=09if (!list_empty(&sublist))
-> >  =09=09=09=09ip_sublist_rcv_finish(&sublist);
-> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> > index dcc4fa10138d..b0ddff17db80 100644
-> > --- a/net/ipv4/route.c
-> > +++ b/net/ipv4/route.c
-> > @@ -2019,6 +2019,44 @@ static int ip_mkroute_input(struct sk_buff *skb,
-> >  =09return __mkroute_input(skb, res, in_dev, daddr, saddr, tos);
-> >  }
-> > =20
-> > +/* Implements all the saddr-related checks as ip_route_input_slow(),
-> > + * assuming daddr is valid and this is not a local broadcast.
-> > + * Uses the provided hint instead of performing a route lookup.
-> > + */
-> > +int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
-> > +=09=09      u8 tos, struct net_device *dev,
-> > +=09=09      struct ip_route_input_hint *hint)
-> Mostly I like the idea of these patches, but it bugs me that this seems
->  to be reimplementing a little bit, and might get out of sync.  Is it
->  possible to factor out the checks from ip_route_input_slow() and just
->  call them here?
-> Otherwise maybe stick something in the comment to ip_route_input_slow()
->  reminding to propagate changes to ip_route_use_hint()?
->=20
-> Or perhaps better still would be to come up with a single function that
->  always takes a hint, that may be NULL, in which case it performs normal
->  routing; and use that in all paths?  (Plumbing the hint through from
->  ip_route_input_noref() etc.)
+Patch 1 adds support for TC-MATCHALL classifier offload on the egress
+side. TC-POLICE is the only action that can be offloaded on the egress
+side and is used to rate limit all outgoing traffic to specified max
+rate.
 
-I experimented a bit with the latter option before restricting to
-!RTN_BROADCAST, and it make the code quite uglier. Anyhow, preserving
-the !RTN_BROADCAST restriction for hint usage, I think it could work.
-Let me try that.
+Patch 2 adds logic to reject the current rule offload if its priority
+conflicts with existing rules in the TCAM.
 
-Thank you for the feedback!
+Patch 3 adds support for TC-MATCHALL classifier offload on the ingress
+side. The same set of actions supported by existing TC-FLOWER
+classifier offload can be applied on all the incoming traffic.
 
-Paolo
+Thanks,
+Rahul
+
+---
+v4:
+- Removed check in patch 1 to reject police offload if prio is not 1.
+- Moved TC_SETUP_BLOCK code to separate function in patch 1.
+- Added logic to ensure the prio passed by TC doesn't conflict with
+  other rules in TCAM in patch 2.
+- Higher index has lower priority than lower index in TCAM. So, rework
+  cxgb4_get_free_ftid() to search free index from end of TCAM in
+  descending order in patch 2.
+- Added check to ensure the matchall rule's prio doesn't conflict with
+  other rules in TCAM in patch 3.
+- Added logic to fill default mask for VIID, if none has been
+  provided, to prevent conflict with duplicate VIID rules in patch 3.
+- Used existing variables in private structure to fill VIID info,
+  instead of extracting the info manually in patch 3.
+
+v3:
+- Added check in patch 1 to reject police offload if prio is not 1.
+- Assign block_shared variable only for TC_SETUP_BLOCK in patch 1.
+
+v2:
+- Added check to reject flow block sharing for policers in patch 1.
+- Removed logic to fetch free index from end of TCAM in patch 2.
+  Must maintain the same ordering as in kernel.
+
+
+Rahul Lakkireddy (3):
+  cxgb4: add TC-MATCHALL classifier egress offload
+  cxgb4: check rule prio conflicts before offload
+  cxgb4: add TC-MATCHALL classifier ingress offload
+
+ drivers/net/ethernet/chelsio/cxgb4/Makefile   |   3 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  11 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 119 ++++--
+ .../net/ethernet/chelsio/cxgb4/cxgb4_filter.h |   1 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  91 ++++-
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.c  |  52 ++-
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.h  |   6 +
+ .../chelsio/cxgb4/cxgb4_tc_matchall.c         | 354 ++++++++++++++++++
+ .../chelsio/cxgb4/cxgb4_tc_matchall.h         |  49 +++
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  |   5 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c |  36 +-
+ drivers/net/ethernet/chelsio/cxgb4/sched.c    |  56 ++-
+ drivers/net/ethernet/chelsio/cxgb4/sched.h    |   1 +
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c    |  11 +-
+ 14 files changed, 707 insertions(+), 88 deletions(-)
+ create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+ create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
+
+-- 
+2.24.0
 
