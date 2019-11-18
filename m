@@ -2,160 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A51100EE8
-	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 23:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDA6F100EF7
+	for <lists+netdev@lfdr.de>; Mon, 18 Nov 2019 23:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbfKRWlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 17:41:00 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:43016 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbfKRWlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 17:41:00 -0500
-Received: by mail-qv1-f66.google.com with SMTP id cg2so7289864qvb.10;
-        Mon, 18 Nov 2019 14:40:59 -0800 (PST)
+        id S1726909AbfKRWu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 17:50:57 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:5556 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726705AbfKRWu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 17:50:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sZdC4vqQ43VNOnMIxV/dGjIpbV52hvN58hPGe7bOOWI=;
-        b=AyNlBipnz5IA0/CKWwCQWcYqz1/TsqZ2E10s9HYOf9vv+Kb0tWk12yIqAJAYwh1r6d
-         JLAfv9qig9BLvJy4AB9fKNPRFu+kbHp7NLPBfspNRljdxfrLpUchc6N/pEA1QUCF1QW4
-         U5AROxmrIr4bN5F+4SvjlaJseXwGjyXBJZEWysCi6BOMgJnkQzt3zdNvz8t07WchTdh0
-         4P9b+dVFhsVg0acFhOA59U8l8pGN2gS90bA/FDsCPwsBWZB0tzbjklp7ZBaUBJsSYBDn
-         x0SYktB2QvYK1s0a8g2r+Pk26fQfBPj1ui8W/XRyS5JY9y3bzYKU5mZVuEC93XIDlcmR
-         T+AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sZdC4vqQ43VNOnMIxV/dGjIpbV52hvN58hPGe7bOOWI=;
-        b=TtM/uQ+kT/nXuIXPj0ZshDDHiNpAyDK0VOodTzk08Rx1iqf6I0gsdzepYjzAcKf+I9
-         bIiBm0Qz9pEZ3axPSh/eIjBK3oE6y2vYmcqkHKWYa9SveuDgKATQrIPzrkycPX/u7V+x
-         F0kLGCIRbNiBWdGG7Bm7qpRKFCfGXXNvAUqwzqknz5M2LhUw/bJK8JartWhFplaUPHTe
-         rUwkiFDglNCwdqPJX9+mvfMli/pRUYvdeI0p4Myfr+pPushwvBP2VDn4jS2Bo8vCTIr4
-         Okmj4VUz85ZuPWrRTWw5Edn6DinrRbam/IlhNS+Z27rhwJEKLQoCZ+rD3mlnTt0XgJ50
-         HDKg==
-X-Gm-Message-State: APjAAAVnzKW+5FVgUmvf44kG+U7TYHysWcz1NbBTSG9MyZdEizgbQ3vA
-        JS8+7DqbLqsUW+JA3tF26ww=
-X-Google-Smtp-Source: APXvYqyg2giaP82C5jnycov/YY7fMGLh9p2IZ6cW/LF+VLItK4d/vxgfOu1NIK7XIBV0YJUj7lhheg==
-X-Received: by 2002:a0c:c211:: with SMTP id l17mr9032327qvh.55.1574116858313;
-        Mon, 18 Nov 2019 14:40:58 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f022:db90:e53b:1344:8965:c548])
-        by smtp.gmail.com with ESMTPSA id y24sm9134326qki.104.2019.11.18.14.40.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 14:40:57 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id EED10C4B42; Mon, 18 Nov 2019 19:40:54 -0300 (-03)
-Date:   Mon, 18 Nov 2019 19:40:54 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Aaron Conole <aconole@redhat.com>
-Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, paulb@mellanox.com,
-        Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH net 2/2] act_ct: support asymmetric conntrack
-Message-ID: <20191118224054.GB388551@localhost.localdomain>
-References: <20191108210714.12426-1-aconole@redhat.com>
- <20191108210714.12426-2-aconole@redhat.com>
- <20191114162949.GB3419@localhost.localdomain>
- <f7to8x8yj6k.fsf@dhcp-25.97.bos.redhat.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1574117456; x=1605653456;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=1TBCj8S5tiY8lhLSka2cC9BaFEo3dEfDS9nvfhst664=;
+  b=lopWEQespzIk+QbFoxtJhCxVxGQB/xt4uu2nLMgqFu1PRw3Th1gtbdnr
+   vOVB3veDyMZzJ2cBMlxPdsZy2kMrqXEYoBmrkdvJuwMeOCuJJOun56/S/
+   sgPeZFZ3W7h7hLt026BkLHVva1VnEt9EtQqdESQGTehob6N/Z79dAb35N
+   Y=;
+IronPort-SDR: YAUFUtGwZEsOF+dtfms7gj40Vziv0l1dJXEl5COAlNTLstrcKNwPgTlwMht3hzAqr95hFrIO3D
+ aLOwJwxxrk6Q==
+X-IronPort-AV: E=Sophos;i="5.68,321,1569283200"; 
+   d="scan'208";a="9098233"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-9ec21598.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 18 Nov 2019 22:50:53 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-9ec21598.us-east-1.amazon.com (Postfix) with ESMTPS id E2983A1F75;
+        Mon, 18 Nov 2019 22:50:51 +0000 (UTC)
+Received: from EX13D04EUB003.ant.amazon.com (10.43.166.235) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 18 Nov 2019 22:50:51 +0000
+Received: from EX13D10EUB001.ant.amazon.com (10.43.166.211) by
+ EX13D04EUB003.ant.amazon.com (10.43.166.235) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 18 Nov 2019 22:50:50 +0000
+Received: from EX13D10EUB001.ant.amazon.com ([10.43.166.211]) by
+ EX13D10EUB001.ant.amazon.com ([10.43.166.211]) with mapi id 15.00.1367.000;
+ Mon, 18 Nov 2019 22:50:50 +0000
+From:   "Machulsky, Zorik" <zorik@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>
+Subject: Re: [PATCH V1 net 2/2] net: ena: fix too long default tx interrupt
+ moderation interval
+Thread-Topic: [PATCH V1 net 2/2] net: ena: fix too long default tx interrupt
+ moderation interval
+Thread-Index: AQHVkwdBRTuKvi3GFE+1IFjb+Yuigad7Y1QAgAMjDQCAComjgIAIajMA//+e3QA=
+Date:   Mon, 18 Nov 2019 22:50:50 +0000
+Message-ID: <A4B5B150-86CB-4B92-B3CA-868FE20507EC@amazon.com>
+References: <1572868728-5211-1-git-send-email-akiyano@amazon.com>
+ <1572868728-5211-3-git-send-email-akiyano@amazon.com>
+ <20191104.111852.941272299166797826.davem@davemloft.net>
+ <081dc70c42bb4c638f8d2fcb669941cd@EX13D22EUA004.ant.amazon.com>
+ <2FDAF85D-51A1-4F69-9E76-E02E3D47A00C@amazon.com>
+ <92294494768e4c41a0755218e51a0138@EX13D22EUA004.ant.amazon.com>
+In-Reply-To: <92294494768e4c41a0755218e51a0138@EX13D22EUA004.ant.amazon.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.193]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D4FD11673BCE8540BE185E33333E9307@amazon.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f7to8x8yj6k.fsf@dhcp-25.97.bos.redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 04:21:39PM -0500, Aaron Conole wrote:
-> Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> writes:
-> 
-> > On Fri, Nov 08, 2019 at 04:07:14PM -0500, Aaron Conole wrote:
-> >> The act_ct TC module shares a common conntrack and NAT infrastructure
-> >> exposed via netfilter.  It's possible that a packet needs both SNAT and
-> >> DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
-> >> this because it runs through the NAT table twice - once on ingress and
-> >> again after egress.  The act_ct action doesn't have such capability.
-> >> 
-> >> Like netfilter hook infrastructure, we should run through NAT twice to
-> >> keep the symmetry.
-> >> 
-> >> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> >> 
-> >> Signed-off-by: Aaron Conole <aconole@redhat.com>
-> >> ---
-> >>  net/sched/act_ct.c | 13 ++++++++++++-
-> >>  1 file changed, 12 insertions(+), 1 deletion(-)
-> >> 
-> >> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> >> index fcc46025e790..f3232a00970f 100644
-> >> --- a/net/sched/act_ct.c
-> >> +++ b/net/sched/act_ct.c
-> >> @@ -329,6 +329,7 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
-> >>  			  bool commit)
-> >>  {
-> >>  #if IS_ENABLED(CONFIG_NF_NAT)
-> >> +	int err;
-> >>  	enum nf_nat_manip_type maniptype;
-> >>  
-> >>  	if (!(ct_action & TCA_CT_ACT_NAT))
-> >> @@ -359,7 +360,17 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
-> >>  		return NF_ACCEPT;
-> >>  	}
-> >>  
-> >> -	return ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-> >> +	err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-> >> +	if (err == NF_ACCEPT &&
-> >> +	    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
-> >> +		if (maniptype == NF_NAT_MANIP_SRC)
-> >> +			maniptype = NF_NAT_MANIP_DST;
-> >> +		else
-> >> +			maniptype = NF_NAT_MANIP_SRC;
-> >> +
-> >> +		err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-> >> +	}
-> >
-> > I keep thinking about this and I'm not entirely convinced that this
-> > shouldn't be simpler. More like:
-> >
-> > if (DNAT)
-> > 	DNAT
-> > if (SNAT)
-> > 	SNAT
-> >
-> > So it always does DNAT before SNAT, similarly to what iptables would
-> > do on PRE/POSTROUTING chains.
-> 
-> I can rewrite the whole function, but I wanted to start with the smaller
-> fix that worked.  I also think it needs more testing then (since it's
-> something of a rewrite of the function).
-> 
-> I guess it's not too important - do you think it gives any readability
-> to do it this way?  If so, I can respin the patch changing it like you
-> describe.
-
-I didn't mean a rewrite, but just to never handle SNAT before DNAT. So
-the fix here would be like:
-
--	return ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+	err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+	if (err == NF_ACCEPT && maniptype == NF_NAT_MANIP_DST &&
-+	    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
-+		maniptype = NF_NAT_MANIP_SRC;
-+		err = ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+	}
-+	return err;
-
-> >> +	return err;
-> >>  #else
-> >>  	return NF_ACCEPT;
-> >>  #endif
-> >> -- 
-> >> 2.21.0
-> >> 
-> 
+ICAgIA0KICAgICAgICAgPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KICAgICAgICA+IEZy
+b206IERhdmlkIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4NCiAgICAgICAgPiBTZW50OiBN
+b25kYXksIE5vdmVtYmVyIDQsIDIwMTkgOToxOSBQTQ0KICAgICAgICA+IFRvOiBLaXlhbm92c2tp
+LCBBcnRodXIgPGFraXlhbm9AYW1hem9uLmNvbT4NCiAgICAgICAgPiBDYzogbmV0ZGV2QHZnZXIu
+a2VybmVsLm9yZzsgV29vZGhvdXNlLCBEYXZpZCA8ZHdtd0BhbWF6b24uY28udWs+Ow0KICAgICAg
+ICA+IE1hY2h1bHNreSwgWm9yaWsgPHpvcmlrQGFtYXpvbi5jb20+OyBNYXR1c2hldnNreSwgQWxl
+eGFuZGVyDQogICAgICAgID4gPG1hdHVhQGFtYXpvbi5jb20+OyBCc2hhcmEsIFNhZWVkIDxzYWVl
+ZGJAYW1hem9uLmNvbT47IFdpbHNvbiwNCiAgICAgICAgPiBNYXR0IDxtc3dAYW1hem9uLmNvbT47
+IExpZ3VvcmksIEFudGhvbnkgPGFsaWd1b3JpQGFtYXpvbi5jb20+Ow0KICAgICAgICA+IEJzaGFy
+YSwgTmFmZWEgPG5hZmVhQGFtYXpvbi5jb20+OyBUemFsaWssIEd1eSA8Z3R6YWxpa0BhbWF6b24u
+Y29tPjsNCiAgICAgICAgPiBCZWxnYXphbCwgTmV0YW5lbCA8bmV0YW5lbEBhbWF6b24uY29tPjsg
+U2FpZGksIEFsaQ0KICAgICAgICA+IDxhbGlzYWlkaUBhbWF6b24uY29tPjsgSGVycmVuc2NobWlk
+dCwgQmVuamFtaW4gPGJlbmhAYW1hem9uLmNvbT47DQogICAgICAgID4gRGFnYW4sIE5vYW0gPG5k
+YWdhbkBhbWF6b24uY29tPjsgQWdyb3NraW4sIFNoYXkNCiAgICAgICAgPiA8c2hheWFnckBhbWF6
+b24uY29tPg0KICAgICAgICA+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggVjEgbmV0IDIvMl0gbmV0OiBl
+bmE6IGZpeCB0b28gbG9uZyBkZWZhdWx0IHR4IGludGVycnVwdA0KICAgICAgICA+IG1vZGVyYXRp
+b24gaW50ZXJ2YWwNCiAgICAgICAgPiANCiAgICAgICAgPiBGcm9tOiA8YWtpeWFub0BhbWF6b24u
+Y29tPg0KICAgICAgICA+IERhdGU6IE1vbiwgNCBOb3YgMjAxOSAxMzo1ODo0OCArMDIwMA0KICAg
+ICAgICA+IA0KICAgICAgICA+ID4gRnJvbTogQXJ0aHVyIEtpeWFub3Zza2kgPGFraXlhbm9AYW1h
+em9uLmNvbT4NCiAgICAgICAgPiA+DQogICAgICAgID4gPiBDdXJyZW50IGRlZmF1bHQgbm9uLWFk
+YXB0aXZlIHR4IGludGVycnVwdCBtb2RlcmF0aW9uIGludGVydmFsIGlzIDE5NiB1cy4NCiAgICAg
+ICAgPiA+IFRoaXMgY29tbWl0IHNldHMgaXQgdG8gMCwgd2hpY2ggaXMgbXVjaCBtb3JlIHNlbnNp
+YmxlIGFzIGEgZGVmYXVsdCB2YWx1ZS4NCiAgICAgICAgPiA+IEl0IGNhbiBiZSBtb2RpZmllZCB1
+c2luZyBldGh0b29sIC1DLg0KICAgICAgICA+ID4NCiAgICAgICAgPiA+IFNpZ25lZC1vZmYtYnk6
+IEFydGh1ciBLaXlhbm92c2tpIDxha2l5YW5vQGFtYXpvbi5jb20+DQogICAgICAgID4gDQogICAg
+ICAgID4gSSBkbyBub3QgYWdyZWUgdGhhdCB0dXJuaW5nIFRYIGludGVycnVwdCBtb2RlcmF0aW9u
+IG9mZiBjb21wbGV0ZWx5IGlzIGEgbW9yZQ0KICAgICAgICA+IHNlbnNpYmxlIGRlZmF1bHQgdmFs
+dWUuDQogICAgICAgID4gDQogICAgICAgID4gTWF5YmUgYSBtdWNoIHNtYWxsZXIgdmFsdWUsIGJ1
+dCB0dXJuaW5nIG9mZiB0aGUgY29hbGVzY2luZyBkZWxheSBjb21wbGV0ZWx5DQogICAgICAgID4g
+aXMgYSBiaXQgbXVjaC4NCiAgICAgICAgDQogICAgICAgIERhdmlkLA0KICAgICAgICBVcCB1bnRp
+bCBub3csIHRoZSBFTkEgZGV2aWNlIGRpZCBub3Qgc3VwcG9ydCBpbnRlcnJ1cHQgbW9kZXJhdGlv
+biwgc28gZWZmZWN0aXZlbHkgdGhlIGRlZmF1bHQgdHggaW50ZXJydXB0IG1vZGVyYXRpb24gaW50
+ZXJ2YWwgd2FzIDAuDQogICAgICAgIFlvdSBhcmUgcHJvYmFibHkgcmlnaHQgdGhhdCAwIGlzIG5v
+dCBhbiBvcHRpbWFsIHZhbHVlLg0KICAgICAgICBIb3dldmVyIHVudGlsIHdlIHJlc2VhcmNoIGFu
+ZCBmaW5kIHN1Y2ggYW4gb3B0aW1hbCB2YWx1ZSwgaW4gb3JkZXIgdG8gYXZvaWQgYSBkZWdyYWRh
+dGlvbiBpbiBkZWZhdWx0IHBlcmZvcm1hbmNlLCB3ZSB3YW50IHRoZSBkZWZhdWx0IHZhbHVlIGlu
+IHRoZSBuZXcgZHJpdmVyIHRvIGJlIChlZmZlY3RpdmVseSkgdGhlIHNhbWUgYXMgaW4gdGhlIG9s
+ZCBkcml2ZXIuDQogICAgICAgIA0KICAgICBEYXZpZCwNCiAgICBKdXN0IHdhbnRlZCB0byByZS1p
+dGVyYXRlIHdoYXQgQXJ0aHVyIGhhcyBtZW50aW9uZWQuIFdlIGNsZWFybHkgc2VlIEJXIGFuZCBD
+UFUgdXRpbGl6YXRpb24gaW1wcm92ZW1lbnQgd2l0aCBpbnRyb2R1Y3Rpb24gb2YgRElNIG9uIHRo
+ZSBSeCBzaWRlIGFuZCBub24tYWRhcHRpdmUgbW9kZXJhdGlvbiBvbiB0aGUgVHggc2lkZSBpbiBv
+dXIgZHJpdmVyLiANCiAgICBXZSdkIGxpa2UgdG8gZGVsaXZlciB0aGlzIHRvIG91ciBjdXN0b21l
+cnMgQVNBUC4gV2UgYXJlIHVzdWFsbHkgdmVyeSBjYXV0aW91cyB3aXRoIGludHJvZHVjdGlvbiBv
+ZiB0aGUgbmV3IGZlYXR1cmVzLCB0aGVyZWZvcmUgd2UnZCBsaWtlIHRvIGtlZXAgaW50ZXJydXB0
+IG1vZGVyYXRpb24gZGlzYWJsZWQgYnkgZGVmYXVsdCBmb3Igbm93LiBXZSdkIGFkdmlzZSBvdXIg
+Y3VzdG9tZXJzIGF3YWl0aW5nIGZvciBpdCB0byBlbmFibGUgaXQgdXNpbmcgZXRodG9vbC4gDQog
+ICAgV2UgYXJlIGdvaW5nIHRvIGVuYWJsZSBtb2RlcmF0aW9uIGJ5IGRlZmF1bHQgYWZ0ZXIgd2Ug
+YWNjdW11bGF0ZSBtb3JlIG1pbGVhZ2Ugd2l0aCBpdCBhbmQgZmluZSB0dW5lIGl0IGZ1cnRoZXIu
+IFRoYXQncyB0aGUgcmVhc29uIGJlaGluZCBoYXZpbmcgVHggaW50ZXJ2YWwgPTAgZm9yIG5vdyAo
+UnggbW9kZXJhdGlvbiBpcyBkaXNhYmxlZCBieSBkZWZhdWx0IGFzIHdlbGwpLiBIb3BlIGl0IG1h
+a2VzIHNlbnNlLiAgICANCg0KRGF2aWQsDQpJJ20gYnVtcGluZyB0aGlzIHVwIHRvIGJyaW5nIGl0
+IHRvIHlvdXIgYXR0ZW50aW9uLg0KVGhhbmtzLiAgICAgIAkgICAgICAgDQogICAgDQogICAgDQoN
+Cg==
