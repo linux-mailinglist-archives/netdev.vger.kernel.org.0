@@ -2,208 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D109C1010F0
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 02:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D20511010FD
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 02:49:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbfKSBoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 20:44:38 -0500
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:44393 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727428AbfKSBoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 20:44:37 -0500
-Received: by mail-pg1-f201.google.com with SMTP id k23so14572049pgl.11
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 17:44:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=vOGdWKkLZw+fnwsKztc5Xhx6sgiytcIM3uQq3wSpoPY=;
-        b=ae7SAUyRl+afwJjPYWHUh238QkT8TPlv+uLlQdmyNQJZlTCOIWGSZlOKTEetLzBhCy
-         Coeco7M+ofuKsaMhZTUwJih265NFLB0rweLZkM+o9afBA5bmO9Squatev3m2zgfxzecb
-         sZI/bTHikAvdCvLfQkCbI6aUhs5z6mRO50dq/9rUpMrz4teQKs1I6f2hymSIv58HUvfU
-         aasXDfIesdHIwA+aZzk11ZUiumZGY8hk5egqYlMrEWzctBBBvQX5y64LKMQwB4vcMmpf
-         lRKRp9LJlDwUxYTclvvh4N5AxQgOpNr/Mm36deZfIgTS31+scAIIKhpRwKCZnMO9O/P1
-         fsQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=vOGdWKkLZw+fnwsKztc5Xhx6sgiytcIM3uQq3wSpoPY=;
-        b=WzPUUGSycrWZyuCmro4BMRiHqhPbXbj1yUDGbnP1eRO8JBiRHIe7pwPP45yrot0Viw
-         IMUyIE11pGHa5VsLIiHbxTFUBFixfqzM8MA65mJDzTQIKII5S0UzOiiC8bRAHeYHiheK
-         bs6QCZkC0EN34PUZHhtuMuscekYcsZL+iCxzt2Rb6r5IvWMeq8zpnREQ6xixRu9C9kvO
-         oUS7k5i18YL/8fZxGbE4oAkmBtqotONTdgiA+vdXqM7XGNEamujR0fDMFh0Mh14C0IkE
-         Qu0gJoCOSFR0BUQ4U5uwXnBwq5uPlVeLUbHsIwmaJ+LOdjN/LbDBlJtgByYKSrzU7HuK
-         NzhQ==
-X-Gm-Message-State: APjAAAUfb0LPf1yfY3wFmGs3c96h9IWKhEcVFbiWnam/sZqE66vKS2VE
-        UStuQeQAlUA/dyHNQUVRM6sr4abNhAUy
-X-Google-Smtp-Source: APXvYqyysPK7uFHLsTejqiiFUyzQuAwLBfeWk+ZOfNeGUvoHECBR2YcqktgomekVGfvRDQv9o+fSoZRotwhf
-X-Received: by 2002:a63:a05c:: with SMTP id u28mr2703600pgn.333.1574127876542;
- Mon, 18 Nov 2019 17:44:36 -0800 (PST)
-Date:   Mon, 18 Nov 2019 17:43:57 -0800
-In-Reply-To: <20191119014357.98465-1-brianvv@google.com>
-Message-Id: <20191119014357.98465-10-brianvv@google.com>
-Mime-Version: 1.0
-References: <20191119014357.98465-1-brianvv@google.com>
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH bpf-next 9/9] selftests/bpf: add batch ops testing to array
- bpf map
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Yonghong Song <yhs@fb.com>, Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Brian Vazquez <brianvv@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727047AbfKSBtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 20:49:33 -0500
+Received: from mail-eopbgr40085.outbound.protection.outlook.com ([40.107.4.85]:49219
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726761AbfKSBtd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 20:49:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oKqc692O3VhOeK76nUC+3hfv2PaSd0C1125wVc4wUA3cVgt5bBAVKaGeUyir7MuulVnKAxORVOzbzuQogGI0+QDPHMVzspcVQwv0M3KrMC4xjESwMrq+dNRNMhufz4fuH0Jg9M8HBlfx0crVkTrO7OoMdch+WAAdUSJHnfFesMS78vcDqf7iEu33Z2lJG6T0AazExuKRk0a6FbF8t7U3CgEodswF97xcQRsrOhCWo84BTFHkdNBMQyTSP28NmtM+YkZPZKnQJFub3d8mt34co9N7yfVFP98TOjNfhyC+NbmkxeuuTup7aBruo+6B4e4giot94KabpFLOu5By8t4xDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YCLhzJ9wvl/gyXPLwHU4QdBzQszX9ifWJT2HFr6dKQo=;
+ b=gKaYlLALHZCNJdaZ93CzY8EzoLxai40NUe9bZozsoxw5r4/LFv67a+oO90BCRmaqb4ooIYTRFt0fVNzF9Hr0S9/lIyLiIMzTtuWvdoZ1anjDBTllnfir8jNpe6i80wpoTZeHsm24JkzF9r0F0iAab2U5uZ2BKluwZD4ChO7/sXfW1hwoknJaCeo1MRC3i051xV5mNw4HfFPsh5yc0mA/BTfrZoBlgMM4WElAWCpCyhfMTFloNgIseCubK9B9ZvZMoOWS6NqCCFXXYf5V6y5n/5Gl8mAGXz6Sr/WjzcjXorwdRw+sopHkAQkYWFIPJObT/Tb5T8VDSQ4ojenqIvmdPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YCLhzJ9wvl/gyXPLwHU4QdBzQszX9ifWJT2HFr6dKQo=;
+ b=TFTnmKHFlaDWapdFbAw8NUPfCdopJwA8LjEt+nyDcoCYHpWUUxZQeAU9lCt/tWAuIHWPv9c4aYP1x/EGScgUiG2eX7o19ryzOiF+6eowX9rzTZj5gWN66N21D2fBmsXYC//tBCzDDmWA4fUMjHhzS5nZnObaev4MzYhQRyDHfFU=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
+ VI1PR0402MB3503.eurprd04.prod.outlook.com (52.134.6.154) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.23; Tue, 19 Nov 2019 01:49:30 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::30e0:6638:e97c:e625]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::30e0:6638:e97c:e625%7]) with mapi id 15.20.2451.029; Tue, 19 Nov 2019
+ 01:49:29 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Chuhong Yuan <hslester96@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] [PATCH net v3] net: fec: fix clock count mis-match
+Thread-Topic: [EXT] [PATCH net v3] net: fec: fix clock count mis-match
+Thread-Index: AQHVngpPN2duB9UCX06qCEzQ+nC0SKeRup8A
+Date:   Tue, 19 Nov 2019 01:49:29 +0000
+Message-ID: <VI1PR0402MB3600A4B2E81637B834D7DCC4FF4C0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <20191118121826.26353-1-hslester96@gmail.com>
+In-Reply-To: <20191118121826.26353-1-hslester96@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 6997faa9-a88f-4b56-d913-08d76c92b7bd
+x-ms-traffictypediagnostic: VI1PR0402MB3503:
+x-microsoft-antispam-prvs: <VI1PR0402MB35036C7B5772456A6AD52178FF4C0@VI1PR0402MB3503.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 022649CC2C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(136003)(346002)(39860400002)(396003)(189003)(199004)(9686003)(66556008)(64756008)(66446008)(66476007)(81166006)(81156014)(7696005)(86362001)(5660300002)(66946007)(186003)(229853002)(6246003)(4326008)(26005)(7736002)(14454004)(305945005)(6916009)(52536014)(6506007)(102836004)(71190400001)(3846002)(25786009)(476003)(76116006)(55016002)(8676002)(446003)(256004)(14444005)(8936002)(6116002)(478600001)(71200400001)(11346002)(99286004)(1411001)(66066001)(2906002)(74316002)(54906003)(316002)(6436002)(76176011)(486006)(33656002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3503;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qdyZYiVA95MpWEGJD+m2hgUqG+pWsYKn2WMHiaa+BxPwZN99OjM2FZrLutX+obAIeTjAufo4IwNFwsYYDH3Xr6q+wwIIHs42csYpqnlFqeNgzRCc/l9scmbtf4+3KRW+3wqM+zwCyo3LbOH4t4uwiR/BdH610ieGXPlrA1PAcLFTIE/uBJNAGDwTzQ0DkeppdmMk83OMl132q7dzjB/LYpHHqOSy+ZT0YF8gBc9HWLm4sNBnphayXIeIq/TsRvNUPKpvirvSSBzaa9653kPIs10fy0s+V86SIVVsrT0Xa+S7ZASlcCFzn2MGyCZZGrfDcka+R3RIOX7ZMLJ8oamOJtUZ7pPdfGMajGcXky8F5VMpdaPyjUk5V24abvSws7Lwv1vyifUaKsK8svbv9Di2hI/KPXJrqXlFT+RvrI5HVdsHwNeXseisJFidtcRF5Sk9
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6997faa9-a88f-4b56-d913-08d76c92b7bd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Nov 2019 01:49:29.7913
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5Gg8BJGMslUyczq7RvRQ/kpSL80PVDhulZiYTs1EYTi1Ydma/K5XacQCLU0m0jBwQHHjw5HQS/JuYf6LNk+xzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3503
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested bpf_map_lookup_batch() and bpf_map_update_batch()
-functionality.
+From: Chuhong Yuan <hslester96@gmail.com> Sent: Monday, November 18, 2019 8=
+:18 PM
+> pm_runtime_put_autosuspend in probe will call suspend to disable clks
+> automatically if CONFIG_PM is defined. (If CONFIG_PM is not defined, its
+> implementation will be empty, then suspend will not be called.)
 
-  $ ./test_maps
-      ...
-        test_map_lookup_and_delete_batch_array:PASS
-      ...
-
-Signed-off-by: Brian Vazquez <brianvv@google.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../map_lookup_and_delete_batch_array.c       | 119 ++++++++++++++++++
- 1 file changed, 119 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_array.c
-
-diff --git a/tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_array.c b/tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_array.c
-new file mode 100644
-index 0000000000000..cbec72ad38609
---- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_array.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <stdio.h>
-+#include <errno.h>
-+#include <string.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include <test_maps.h>
-+
-+static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
-+			     int *values)
-+{
-+	int i, err;
-+
-+	for (i = 0; i < max_entries; i++) {
-+		keys[i] = i;
-+		values[i] = i + 1;
-+	}
-+
-+	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, 0, 0);
-+	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
-+}
-+
-+static void map_batch_verify(int *visited, __u32 max_entries,
-+			     int *keys, int *values)
-+{
-+	int i;
-+
-+	memset(visited, 0, max_entries * sizeof(*visited));
-+	for (i = 0; i < max_entries; i++) {
-+		CHECK(keys[i] + 1 != values[i], "key/value checking",
-+		      "error: i %d key %d value %d\n", i, keys[i], values[i]);
-+		visited[i] = 1;
-+	}
-+	for (i = 0; i < max_entries; i++) {
-+		CHECK(visited[i] != 1, "visited checking",
-+		      "error: keys array at index %d missing\n", i);
-+	}
-+}
-+
-+void test_map_lookup_and_delete_batch_array(void)
-+{
-+	struct bpf_create_map_attr xattr = {
-+		.name = "array_map",
-+		.map_type = BPF_MAP_TYPE_ARRAY,
-+		.key_size = sizeof(int),
-+		.value_size = sizeof(int),
-+	};
-+	int map_fd, *keys, *values, *visited;
-+	__u32 count, total, total_success;
-+	const __u32 max_entries = 10;
-+	int err, i, step;
-+	bool nospace_err;
-+	__u64 batch = 0;
-+
-+	xattr.max_entries = max_entries;
-+	map_fd = bpf_create_map_xattr(&xattr);
-+	CHECK(map_fd == -1,
-+	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
-+
-+	keys = malloc(max_entries * sizeof(int));
-+	values = malloc(max_entries * sizeof(int));
-+	visited = malloc(max_entries * sizeof(int));
-+	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
-+	      strerror(errno));
-+
-+	/* populate elements to the map */
-+	map_batch_update(map_fd, max_entries, keys, values);
-+
-+	/* test 1: lookup in a loop with various steps. */
-+	total_success = 0;
-+	for (step = 1; step < max_entries; step++) {
-+		map_batch_update(map_fd, max_entries, keys, values);
-+		memset(keys, 0, max_entries * sizeof(*keys));
-+		memset(values, 0, max_entries * sizeof(*values));
-+		batch = 0;
-+		total = 0;
-+		i = 0;
-+		/* iteratively lookup/delete elements with 'step'
-+		 * elements each.
-+		 */
-+		count = step;
-+		nospace_err = false;
-+		while (true) {
-+			err = bpf_map_lookup_batch(map_fd,
-+						total ? &batch : NULL, &batch,
-+						keys + total,
-+						values + total,
-+						&count, 0, 0);
-+
-+			CHECK((err && errno != ENOENT), "lookup with steps",
-+			      "error: %s\n", strerror(errno));
-+
-+			total += count;
-+
-+			if (err)
-+				break;
-+
-+			i++;
-+		}
-+
-+		if (nospace_err == true)
-+			continue;
-+
-+		CHECK(total != max_entries, "lookup with steps",
-+		      "total = %u, max_entries = %u\n", total, max_entries);
-+
-+		map_batch_verify(visited, max_entries, keys, values);
-+
-+		total_success++;
-+	}
-+
-+	CHECK(total_success == 0, "check total_success",
-+	      "unexpected failure\n");
-+
-+	printf("%s:PASS\n", __func__);
-+}
--- 
-2.24.0.432.g9d3f5f5b63-goog
+suspend -> runtime suspend
+>=20
+> Therefore, we can call pm_runtime_get_sync to resume it first to enable c=
+lks,
+resume -> runtime resume
+> which matches the suspend. (Only when CONFIG_PM is defined, otherwise
+suspend -> runtime suspend
+> pm_runtime_get_sync will also be empty, then resume will not be called.)
+>=20
+> Then it is fine to disable clks without causing clock count mis-match.
+>=20
+> Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in
+> remove")
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> b/drivers/net/ethernet/freescale/fec_main.c
+> index a9c386b63581..4bb30761abfc 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -3636,6 +3636,11 @@ fec_drv_remove(struct platform_device *pdev)
+>         struct net_device *ndev =3D platform_get_drvdata(pdev);
+>         struct fec_enet_private *fep =3D netdev_priv(ndev);
+>         struct device_node *np =3D pdev->dev.of_node;
+> +       int ret;
+> +
+> +       ret =3D pm_runtime_get_sync(&pdev->dev);
+> +       if (ret < 0)
+> +               return ret;
+>=20
+>         cancel_work_sync(&fep->tx_timeout_work);
+>         fec_ptp_stop(pdev);
+> @@ -3643,15 +3648,17 @@ fec_drv_remove(struct platform_device *pdev)
+>         fec_enet_mii_remove(fep);
+>         if (fep->reg_phy)
+>                 regulator_disable(fep->reg_phy);
+> -       pm_runtime_put(&pdev->dev);
+> -       pm_runtime_disable(&pdev->dev);
+> -       clk_disable_unprepare(fep->clk_ahb);
+> -       clk_disable_unprepare(fep->clk_ipg);
+> +
+>         if (of_phy_is_fixed_link(np))
+>                 of_phy_deregister_fixed_link(np);
+>         of_node_put(fep->phy_node);
+>         free_netdev(ndev);
+>=20
+> +       clk_disable_unprepare(fep->clk_ahb);
+> +       clk_disable_unprepare(fep->clk_ipg);
+> +       pm_runtime_put_noidle(&pdev->dev);
+> +       pm_runtime_disable(&pdev->dev);
+> +
+>         return 0;
+>  }
+>=20
+> --
+> 2.24.0
 
