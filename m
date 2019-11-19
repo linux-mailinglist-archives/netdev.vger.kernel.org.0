@@ -2,805 +2,600 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8621A1022DE
+	by mail.lfdr.de (Postfix) with ESMTP id EFCC31022DF
 	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbfKSLSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 06:18:31 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:36002 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727722AbfKSLSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 06:18:30 -0500
-Received: by mail-pl1-f193.google.com with SMTP id d7so11610179pls.3
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 03:18:29 -0800 (PST)
+        id S1727890AbfKSLSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 06:18:34 -0500
+Received: from mail-pg1-f177.google.com ([209.85.215.177]:42507 "EHLO
+        mail-pg1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbfKSLSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 06:18:34 -0500
+Received: by mail-pg1-f177.google.com with SMTP id q17so11200862pgt.9
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 03:18:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KyhGMFaDL+5bK2RKgk1sD022TsBZDXEGvPpssKZxvEA=;
-        b=IdNDGLZbTh6y2axbY0sB15pAyCVbLDgT14X1M6GRrxAzh6HkjRDpr3gVQZs6gEH6dI
-         AinbpET38GCFg5qmm0GXm5Rwc/Ck55+VkPKdT/9/50w52IQMpBAdoeFfuvXohpfGf5bX
-         qwvFy7Qonk5RAudljxqIQxcPNYo/Fe/tJ+sbJQWuKBCXE/a+R94+HkklYBvDhWXPC3cZ
-         1WsX0uWd/hwKvv85GYK1B1vIOFPKdxvxn+2+JJEB+mUt+Ob1mVbpxx4Df4FBKuTemazX
-         XAAehhGagQ9rcvvBw2m2UvUxi1gMctikrEWKqZ6pM2G5q29y+cS1nTqEkwpSfMT/Fi9M
-         Xs6A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XJ5iogo13Y1vLjp30jmP6G0GPooSAiiBIa1vOfQK0C8=;
+        b=Zmo3UQ5teiNu2UT3JJb+BdUWGml8Ldyhw73oIuzWPm7wXyhScBxD0h/q5V9uIBGLcy
+         OkWJmA7skrXXsPW6g6ZnDh0BePufR076UXX/lTYD882VzCmXTq/h3WTNeOv2X0BccKvi
+         9DmdJrqYPOs/VJomP3ZqXdVU2S4r7klS+bcJKcpFFb8NBMYEOv1ArwFdYKVojzYmXSxe
+         xmPsiyvYDhzxeNHBswnrrCCsvdtRDdF7r/G/iRN4D4OBugoD6bvumtSYQZkY+xMAKjRA
+         z4mWJBO8OP75CkKxCIxoAWfnPzeGYkcYcGyStZy1DPBIH0tgJS1/6xxA6yky6dlGcTef
+         qLmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KyhGMFaDL+5bK2RKgk1sD022TsBZDXEGvPpssKZxvEA=;
-        b=jranX6FPXrFTuRTYcGMViwxQrWnQI82ieSi/lQ7XNRbfFmjVnoVsZrm5cDkwfPFwKG
-         sK0j5eLseVOKkgGVhpnv8tqZFr9uTBeTJNfcDiL/CnDqY9o4SW/A5G81OIEMvrht79pv
-         1HWoZuHabKrZ9x2CD9dRtixTRKLWJmjt65bp8ISaOnVNIjizGpKdqox+l0kyXQa5qKQY
-         HE3uj0irUaHDicL5ZNq9oFMq/Q6G68ga1jUNpRSGj4SyOlZ7hk7mMeenSddfVzqj2c/n
-         jyRHKlMw2a5r1ytuoGL/H/jZ9veuO0cLw+/t7S8kEzR2BH/efRNr1eX/UXVhPltDIUbj
-         DZVg==
-X-Gm-Message-State: APjAAAWMt/gpLsLJcVzjjDIax/doB4DtkDvH63yEBuyRk3hb37/b3Vpj
-        f+rSKt2w8aOtIMFG17i9/RRk7lju3Ic=
-X-Google-Smtp-Source: APXvYqzKYHOzp0Lh+IIZtvcYiJbk2TfAu+Y461c4t7+iEqyqPdEn4VZQ3rLy05jXpTK2MKcpdtwhbA==
-X-Received: by 2002:a17:90a:bf8b:: with SMTP id d11mr5777615pjs.87.1574162308792;
-        Tue, 19 Nov 2019 03:18:28 -0800 (PST)
+         :references:mime-version:content-transfer-encoding;
+        bh=XJ5iogo13Y1vLjp30jmP6G0GPooSAiiBIa1vOfQK0C8=;
+        b=gmerVx0YpHl0m78y4oQ4nUOAc1lPjCtYhfRtqSnGUUeJ6NxO3Wjc3YoenNwW3ufcek
+         bIPFh3g4p1Apw3OddGBNRL+4hygSR7dr1SULmkU4HlAbLac8GY+bBtRf6QWlP0wxe1bk
+         mC4bF36GF9OSgV2TmNF5oH5D6lvByubpsHwV8xFyvlVR7UFDepAMEwj/nw+HgDkcMzcf
+         Tut6zX2mlRcB+vkWia1mVt/y+0lIpqjaqNs5mhTJivYNv9b9GtburyHzd7MY55w1cUfD
+         FUSuJuEgxsvLPRzzx0l2kKrfylbxNRfUkqPLDde6hmJKYnOR+YArEhrqCuYnCVQTglaU
+         9VSQ==
+X-Gm-Message-State: APjAAAXnHK7wwZbZD+EmIuLHGh9ST+QC8VkCNbda6fNzydLb3OJQDx3/
+        gsD857RXaYXHLNFJB2KhS+Gszh1PeZU=
+X-Google-Smtp-Source: APXvYqySwgJ/RFOvkh3LJ5ba7aNUDHKDxKhZeUMvGeaFLYgYqaz42q8xFiHCNLKtJhczDgyYFkH0PA==
+X-Received: by 2002:a63:4387:: with SMTP id q129mr4977860pga.428.1574162312498;
+        Tue, 19 Nov 2019 03:18:32 -0800 (PST)
 Received: from machine421.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id 6sm25918453pfy.43.2019.11.19.03.18.26
+        by smtp.googlemail.com with ESMTPSA id 6sm25918453pfy.43.2019.11.19.03.18.29
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 19 Nov 2019 03:18:28 -0800 (PST)
+        Tue, 19 Nov 2019 03:18:31 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Pavan Nikhilesh <pbhagavatula@marvell.com>,
+Cc:     davem@davemloft.net, Andrew Pinski <apinski@marvell.com>,
+        Pavan Nikhilesh <pbhagavatula@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v2 11/15] octeontx2-af: add debugfs support for sso
-Date:   Tue, 19 Nov 2019 16:47:35 +0530
-Message-Id: <1574162259-28181-12-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH v2 12/15] octeontx2-af: Add TIM unit support.
+Date:   Tue, 19 Nov 2019 16:47:36 +0530
+Message-Id: <1574162259-28181-13-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1574162259-28181-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1574162259-28181-1-git-send-email-sunil.kovvuri@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavan Nikhilesh <pbhagavatula@marvell.com>
+From: Andrew Pinski <apinski@marvell.com>
 
-Add debugfs for HWGRP performance counter stats, internal queue walks
-and few HWS debug registers.
+Add TIM (Timer) unit support to AF driver that involves initializing
+and configuring TIM and its rings through mailbox. This block
+helps software to schedule SSO work entries for a future time.
 
+Signed-off-by: Andrew Pinski <apinski@marvell.com>
+Co-developed-by: Pavan Nikhilesh <pbhagavatula@marvell.com>
 Signed-off-by: Pavan Nikhilesh <pbhagavatula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   3 +
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 699 +++++++++++++++++++++
- 2 files changed, 702 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   3 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  80 +++++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  12 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   4 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  12 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_tim.c    | 322 +++++++++++++++++++++
+ 6 files changed, 429 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_tim.c
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+index 5988d58..9c80d8c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+@@ -8,4 +8,5 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
+ 
+ octeontx2_mbox-y := mbox.o
+ octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+-		  rvu_reg.o rvu_npc.o rvu_debugfs.o rvu_sso.o
++		  rvu_reg.o rvu_npc.o rvu_debugfs.o rvu_sso.o \
++		  rvu_tim.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index df35a05..5ba6b30 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -171,6 +171,12 @@ M(SSO_GRP_QOS_CONFIG,	0x608, sso_grp_qos_config, sso_grp_qos_cfg, msg_rsp)\
+ M(SSO_GRP_GET_STATS,	0x609, sso_grp_get_stats, sso_info_req, sso_grp_stats)\
+ M(SSO_HWS_GET_STATS,	0x610, sso_hws_get_stats, sso_info_req, sso_hws_stats)\
+ /* TIM mbox IDs (range 0x800 - 0x9FF) */				\
++M(TIM_LF_ALLOC,		0x800, tim_lf_alloc,				\
++				tim_lf_alloc_req, tim_lf_alloc_rsp)	\
++M(TIM_LF_FREE,		0x801, tim_lf_free, tim_ring_req, msg_rsp)	\
++M(TIM_CONFIG_RING,	0x802, tim_config_ring, tim_config_req, msg_rsp)\
++M(TIM_ENABLE_RING,	0x803, tim_enable_ring, tim_ring_req, tim_enable_rsp)\
++M(TIM_DISABLE_RING,	0x804, tim_disable_ring, tim_ring_req, msg_rsp)	\
+ /* CPT mbox IDs (range 0xA00 - 0xBFF) */				\
+ /* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
+ M(NPC_MCAM_ALLOC_ENTRY,	0x6000, npc_mcam_alloc_entry, npc_mcam_alloc_entry_req,\
+@@ -978,4 +984,78 @@ struct npc_get_kex_cfg_rsp {
+ 	u8 mkex_pfl_name[MKEX_NAME_LEN];
+ };
+ 
++/* TIM mailbox error codes
++ * Range 801 - 900.
++ */
++enum tim_af_status {
++	TIM_AF_NO_RINGS_LEFT			= -801,
++	TIM_AF_INVAL_NPA_PF_FUNC		= -802,
++	TIM_AF_INVAL_SSO_PF_FUNC		= -803,
++	TIM_AF_RING_STILL_RUNNING		= -804,
++	TIM_AF_LF_INVALID			= -805,
++	TIM_AF_CSIZE_NOT_ALIGNED		= -806,
++	TIM_AF_CSIZE_TOO_SMALL			= -807,
++	TIM_AF_CSIZE_TOO_BIG			= -808,
++	TIM_AF_INTERVAL_TOO_SMALL		= -809,
++	TIM_AF_INVALID_BIG_ENDIAN_VALUE		= -810,
++	TIM_AF_INVALID_CLOCK_SOURCE		= -811,
++	TIM_AF_GPIO_CLK_SRC_NOT_ENABLED		= -812,
++	TIM_AF_INVALID_BSIZE			= -813,
++	TIM_AF_INVALID_ENABLE_PERIODIC		= -814,
++	TIM_AF_INVALID_ENABLE_DONTFREE		= -815,
++	TIM_AF_ENA_DONTFRE_NSET_PERIODIC	= -816,
++	TIM_AF_RING_ALREADY_DISABLED		= -817,
++};
++
++enum tim_clk_srcs {
++	TIM_CLK_SRCS_TENNS	= 0,
++	TIM_CLK_SRCS_GPIO	= 1,
++	TIM_CLK_SRCS_GTI	= 2,
++	TIM_CLK_SRCS_PTP	= 3,
++	TIM_CLK_SRSC_INVALID,
++};
++
++enum tim_gpio_edge {
++	TIM_GPIO_NO_EDGE		= 0,
++	TIM_GPIO_LTOH_TRANS		= 1,
++	TIM_GPIO_HTOL_TRANS		= 2,
++	TIM_GPIO_BOTH_TRANS		= 3,
++	TIM_GPIO_INVALID,
++};
++
++struct tim_lf_alloc_req {
++	struct mbox_msghdr hdr;
++	u16	ring;
++	u16	npa_pf_func;
++	u16	sso_pf_func;
++};
++
++struct tim_ring_req {
++	struct mbox_msghdr hdr;
++	u16	ring;
++};
++
++struct tim_config_req {
++	struct mbox_msghdr hdr;
++	u16	ring;
++	u8	bigendian;
++	u8	clocksource;
++	u8	enableperiodic;
++	u8	enabledontfreebuffer;
++	u32	bucketsize;
++	u32	chunksize;
++	u32	interval;
++};
++
++struct tim_lf_alloc_rsp {
++	struct mbox_msghdr hdr;
++	u64 tenns_clk;
++};
++
++struct tim_enable_rsp {
++	struct mbox_msghdr hdr;
++	u64	timestarted;
++	u32	currentbucket;
++};
++
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 9be8003..b6291ea 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -959,6 +959,10 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
+ 	if (err)
+ 		goto cgx_err;
+ 
++	err = rvu_tim_init(rvu);
++	if (err)
++		goto cgx_err;
++
+ 	return 0;
+ 
+ cgx_err:
+@@ -1327,12 +1331,12 @@ int rvu_mbox_handler_attach_resources(struct rvu *rvu,
+ 		goto exit;
+ 
+ 	/* Now attach the requested resources */
+-	if (attach->npalf)
+-		rvu_attach_block(rvu, pcifunc, BLKTYPE_NPA, 1);
+-
+ 	if (attach->nixlf)
+ 		rvu_attach_block(rvu, pcifunc, BLKTYPE_NIX, 1);
+ 
++	if (attach->npalf)
++		rvu_attach_block(rvu, pcifunc, BLKTYPE_NPA, 1);
++
+ 	if (attach->sso) {
+ 		/* RVU func doesn't know which exact LF or slot is attached
+ 		 * to it, it always sees as slot 0,1,2. So for a 'modify'
+@@ -1942,6 +1946,8 @@ static void rvu_blklf_teardown(struct rvu *rvu, u16 pcifunc, u8 blkaddr)
+ 			rvu_sso_lf_teardown(rvu, pcifunc, lf, slot);
+ 		else if (block->addr == BLKADDR_SSOW)
+ 			rvu_ssow_lf_teardown(rvu, pcifunc, lf, slot);
++		else if (block->addr == BLKADDR_TIM)
++			rvu_tim_lf_teardown(rvu, pcifunc, lf, slot);
+ 
+ 		err = rvu_lf_reset(rvu, block, lf);
+ 		if (err) {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 301c88e..e6fc41f 100644
+index e6fc41f..00468c88 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -50,6 +50,9 @@ struct rvu_debugfs {
- 	struct dentry *npa;
- 	struct dentry *nix;
- 	struct dentry *npc;
-+	struct dentry *sso;
-+	struct dentry *sso_hwgrp;
-+	struct dentry *sso_hws;
- 	struct dump_ctx npa_aura_ctx;
- 	struct dump_ctx npa_pool_ctx;
- 	struct dump_ctx nix_cq_ctx;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 77adad4..524d56d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -1676,6 +1676,704 @@ static void rvu_dbg_npc_init(struct rvu *rvu)
- 	debugfs_remove_recursive(rvu->rvu_dbg.npc);
- }
+@@ -524,6 +524,10 @@ void rvu_npc_get_mcam_counter_alloc_info(struct rvu *rvu, u16 pcifunc,
+ 					 int blkaddr, int *alloc_cnt,
+ 					 int *enable_cnt);
  
-+static int parse_sso_cmd_buffer(char *cmd_buf, size_t *count,
-+				const char __user *buffer, int *ssolf,
-+				bool *all)
++/* TIM APIs */
++int rvu_tim_init(struct rvu *rvu);
++int rvu_tim_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot);
++
+ #ifdef CONFIG_DEBUG_FS
+ void rvu_dbg_init(struct rvu *rvu);
+ void rvu_dbg_exit(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 8d319b6..99c6c7d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -596,6 +596,18 @@
+ #define TIM_AF_RVU_LF_CFG_DEBUG		(0x30000)
+ #define TIM_AF_BLK_RST			(0x10)
+ #define TIM_AF_LF_RST			(0x20)
++#define TIM_AF_BLK_RST			(0x10)
++#define TIM_AF_RINGX_GMCTL(a)		(0x2000 | (a) << 3)
++#define TIM_AF_RINGX_CTL0(a)		(0x4000 | (a) << 3)
++#define TIM_AF_RINGX_CTL1(a)		(0x6000 | (a) << 3)
++#define TIM_AF_RINGX_CTL2(a)		(0x8000 | (a) << 3)
++#define TIM_AF_FLAGS_REG		(0x80)
++#define TIM_AF_FLAGS_REG_ENA_TIM	BIT_ULL(0)
++#define TIM_AF_RINGX_CTL1_ENA		BIT_ULL(47)
++#define TIM_AF_RINGX_CTL1_RCF_BUSY	BIT_ULL(50)
++
++#define TIM_AF_RING_GMCTL_SHIFT		3
++#define TIM_AF_RING_SSO_PF_FUNC_SHIFT	0
+ 
+ /* CPT */
+ #define CPT_AF_CONSTANTS0		(0x0000)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_tim.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_tim.c
+new file mode 100644
+index 0000000..af79729
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_tim.c
+@@ -0,0 +1,322 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell OcteonTx2 RVU Admin Function driver
++ *
++ * Copyright (C) 2019 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/types.h>
++#include <clocksource/arm_arch_timer.h>
++
++#include "rvu_struct.h"
++#include "rvu_reg.h"
++#include "rvu.h"
++
++#define TIM_CHUNKSIZE_MULTIPLE	(16)
++#define TIM_CHUNKSIZE_MIN	(TIM_CHUNKSIZE_MULTIPLE * 0x2)
++#define TIM_CHUNKSIZE_MAX	(TIM_CHUNKSIZE_MULTIPLE * 0x1FFF)
++
++static int rvu_tim_disable_lf(struct rvu *rvu, int lf, int blkaddr)
 +{
-+	int ret, bytes_not_copied;
-+	char *cmd_buf_tmp;
-+	char *subtoken;
++	u64 regval;
 +
-+	bytes_not_copied = copy_from_user(cmd_buf, buffer, *count);
-+	if (bytes_not_copied)
-+		return -EFAULT;
++	regval = rvu_read64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf));
++	if ((regval & TIM_AF_RINGX_CTL1_ENA) == 0)
++		return TIM_AF_RING_ALREADY_DISABLED;
 +
-+	cmd_buf[*count] = '\0';
-+	cmd_buf_tmp = strchr(cmd_buf, '\n');
++	/* Clear TIM_AF_RING(0..255)_CTL1[ENA]. */
++	regval = rvu_read64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf));
++	regval &= ~TIM_AF_RINGX_CTL1_ENA;
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf), regval);
 +
-+	if (cmd_buf_tmp) {
-+		*cmd_buf_tmp = '\0';
-+		*count = cmd_buf_tmp - cmd_buf + 1;
++	/* Poll until the corresponding ring’s
++	 * TIM_AF_RING(0..255)_CTL1[RCF_BUSY] is clear.
++	 */
++	rvu_poll_reg(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf),
++		     TIM_AF_RINGX_CTL1_RCF_BUSY, true);
++	return 0;
++}
++
++int rvu_mbox_handler_tim_lf_alloc(struct rvu *rvu,
++				  struct tim_lf_alloc_req *req,
++				  struct tim_lf_alloc_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++	u64 regval;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
++	if (blkaddr < 0)
++		return TIM_AF_LF_INVALID;
++
++	lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, req->ring);
++	if (lf < 0)
++		return TIM_AF_LF_INVALID;
++
++	/* Check if requested 'TIMLF <=> NPALF' mapping is valid */
++	if (req->npa_pf_func) {
++		/* If default, use 'this' TIMLF's PFFUNC */
++		if (req->npa_pf_func == RVU_DEFAULT_PF_FUNC)
++			req->npa_pf_func = pcifunc;
++		if (!is_pffunc_map_valid(rvu, req->npa_pf_func, BLKTYPE_NPA))
++			return TIM_AF_INVAL_NPA_PF_FUNC;
 +	}
 +
-+	subtoken = strsep(&cmd_buf, " ");
-+	if (subtoken && strcmp(subtoken, "all") == 0) {
-+		*all = true;
-+	} else {
-+		ret = subtoken ? kstrtoint(subtoken, 10, ssolf) : -EINVAL;
-+		if (ret < 0)
-+			return ret;
++	/* Check if requested 'TIMLF <=> SSOLF' mapping is valid */
++	if (req->sso_pf_func) {
++		/* If default, use 'this' SSOLF's PFFUNC */
++		if (req->sso_pf_func == RVU_DEFAULT_PF_FUNC)
++			req->sso_pf_func = pcifunc;
++		if (!is_pffunc_map_valid(rvu, req->sso_pf_func, BLKTYPE_SSO))
++			return TIM_AF_INVAL_SSO_PF_FUNC;
 +	}
-+	if (cmd_buf)
-+		return -EINVAL;
++
++	regval = (((u64)req->npa_pf_func) << 16) |
++		 ((u64)req->sso_pf_func);
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_GMCTL(lf), regval);
++
++	rsp->tenns_clk = arch_timer_get_rate();
 +
 +	return 0;
 +}
 +
-+static void sso_hwgrp_display_iq_list(struct rvu *rvu, int ssolf, u16 idx,
-+				      u16 tail_idx, u8 queue_type)
++int rvu_mbox_handler_tim_lf_free(struct rvu *rvu,
++				 struct tim_ring_req *req,
++				 struct msg_rsp *rsp)
 +{
-+	const char *queue[3] = {"DQ", "CQ", "AQ"};
-+	int blkaddr;
-+	u64 reg;
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
 +	if (blkaddr < 0)
-+		return;
++		return TIM_AF_LF_INVALID;
 +
-+	pr_info("SSO HWGGRP[%d] [%s] Chain queue head[%d]", ssolf,
-+		queue[queue_type], idx);
-+	pr_info("SSO HWGGRP[%d] [%s] Chain queue tail[%d]", ssolf,
-+		queue[queue_type], tail_idx);
-+	pr_info("--------------------------------------------------\n");
-+	do {
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_TAG(idx));
-+		pr_info("SSO HWGGRP[%d] [%s] IE[%d] TAG      0x%llx\n", ssolf,
-+			queue[queue_type], idx, reg);
++	lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, req->ring);
++	if (lf < 0)
++		return TIM_AF_LF_INVALID;
 +
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_GRP(idx));
-+		pr_info("SSO HWGGRP[%d] [%s] IE[%d] GRP      0x%llx\n", ssolf,
-+			queue[queue_type], idx, reg);
++	rvu_tim_lf_teardown(rvu, pcifunc, lf, req->ring);
 +
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_PENDTAG(idx));
-+		pr_info("SSO HWGGRP[%d] [%s] IE[%d] PENDTAG  0x%llx\n", ssolf,
-+			queue[queue_type], idx, reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_LINKS(idx));
-+		pr_info("SSO HWGGRP[%d] [%s] IE[%d] LINKS    0x%llx\n", ssolf,
-+			queue[queue_type], idx, reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_QLINKS(idx));
-+		pr_info("SSO HWGGRP[%d] [%s] IE[%d] QLINKS   0x%llx\n", ssolf,
-+			queue[queue_type], idx, reg);
-+		pr_info("--------------------------------------------------\n");
-+		if (idx == tail_idx)
-+			break;
-+		idx = reg & 0x1FFF;
-+	} while (idx != 0x1FFF);
++	return 0;
 +}
 +
-+static void sso_hwgrp_display_taq_list(struct rvu *rvu, int ssolf, u8 wae_head,
-+				       u16 ent_head, u8 wae_used, u8 taq_lines)
++int rvu_mbox_handler_tim_config_ring(struct rvu *rvu,
++				     struct tim_config_req *req,
++				     struct msg_rsp *rsp)
 +{
-+	int i, blkaddr;
-+	u64 reg;
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++	u32 intervalmin;
++	u64 regval;
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
 +	if (blkaddr < 0)
-+		return;
++		return TIM_AF_LF_INVALID;
 +
-+	pr_info("--------------------------------------------------\n");
-+	do {
-+		for (i = wae_head; i < taq_lines && wae_used; i++) {
-+			reg = rvu_read64(rvu, blkaddr,
-+					 SSO_AF_TAQX_WAEY_TAG(ent_head, i));
-+			pr_info("SSO HWGGRP[%d] TAQ[%d] WAE[%d] TAG  0x%llx\n",
-+				ssolf, ent_head, i, reg);
++	lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, req->ring);
++	if (lf < 0)
++		return TIM_AF_LF_INVALID;
 +
-+			reg = rvu_read64(rvu, blkaddr,
-+					 SSO_AF_TAQX_WAEY_WQP(ent_head, i));
-+			pr_info("SSO HWGGRP[%d] TAQ[%d] WAE[%d] WQP  0x%llx\n",
-+				ssolf, ent_head, i, reg);
-+			wae_used--;
++	/* Check the inputs. */
++	/* bigendian can only be 1 or 0. */
++	if (req->bigendian & ~1)
++		return TIM_AF_INVALID_BIG_ENDIAN_VALUE;
++
++	/* Check GPIO clock source has the GPIO edge set. */
++	if (req->clocksource == TIM_CLK_SRCS_GPIO) {
++		regval = rvu_read64(rvu, blkaddr, TIM_AF_FLAGS_REG);
++		if (((regval >> 5) & 0x3) == 0)
++			return TIM_AF_GPIO_CLK_SRC_NOT_ENABLED;
++	}
++
++	/* enableperiodic can only be 1 or 0. */
++	if (req->enableperiodic & ~1)
++		return TIM_AF_INVALID_ENABLE_PERIODIC;
++
++	/* enabledontfreebuffer can only be 1 or 0. */
++	if (req->enabledontfreebuffer & ~1)
++		return TIM_AF_INVALID_ENABLE_DONTFREE;
++
++	/* enabledontfreebuffer needs to be true if enableperiodic
++	 * is enabled.
++	 */
++	if (req->enableperiodic && !req->enabledontfreebuffer)
++		return TIM_AF_ENA_DONTFRE_NSET_PERIODIC;
++
++	/* bucketsize needs to between 2 and 2M (1<<20). */
++	if (req->bucketsize < 2 || req->bucketsize > 1 << 20)
++		return TIM_AF_INVALID_BSIZE;
++
++	if (req->chunksize % TIM_CHUNKSIZE_MULTIPLE)
++		return TIM_AF_CSIZE_NOT_ALIGNED;
++
++	if (req->chunksize < TIM_CHUNKSIZE_MIN)
++		return TIM_AF_CSIZE_TOO_SMALL;
++
++	if (req->chunksize > TIM_CHUNKSIZE_MAX)
++		return TIM_AF_CSIZE_TOO_BIG;
++
++	switch (req->clocksource) {
++	case TIM_CLK_SRCS_TENNS:
++		intervalmin = 256;
++		break;
++	case TIM_CLK_SRCS_GPIO:
++		intervalmin = 256;
++		break;
++	case TIM_CLK_SRCS_GTI:
++	case TIM_CLK_SRCS_PTP:
++		intervalmin = 300;
++		break;
++	default:
++		return TIM_AF_INVALID_CLOCK_SOURCE;
++	}
++
++	if (req->interval < intervalmin)
++		return TIM_AF_INTERVAL_TOO_SMALL;
++
++	/* CTL0 */
++	/* EXPIRE_OFFSET = 0 and is set correctly when enabling. */
++	regval = req->interval;
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_CTL0(lf), regval);
++
++	/* CTL1 */
++	regval = (((u64)req->bigendian) << 53) |
++		 (((u64)req->clocksource) << 51) |
++		 (1ull << 48) | /* LOCK_EN */
++		 (((u64)req->enableperiodic) << 45) |
++		 (((u64)(req->enableperiodic ^ 1)) << 44) | /* ENA_LDWB */
++		 (((u64)req->enabledontfreebuffer) << 43) |
++		 (u64)(req->bucketsize - 1);
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf), regval);
++
++	/* CTL2 */
++	regval = ((u64)req->chunksize / TIM_CHUNKSIZE_MULTIPLE) << 40;
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_CTL2(lf), regval);
++
++	return 0;
++}
++
++int rvu_mbox_handler_tim_enable_ring(struct rvu *rvu,
++				     struct tim_ring_req *req,
++				     struct tim_enable_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++	u64 regval;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
++	if (blkaddr < 0)
++		return TIM_AF_LF_INVALID;
++
++	lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, req->ring);
++	if (lf < 0)
++		return TIM_AF_LF_INVALID;
++
++	/* Error out if the ring is already running. */
++	regval = rvu_read64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf));
++	if (regval & TIM_AF_RINGX_CTL1_ENA)
++		return TIM_AF_RING_STILL_RUNNING;
++
++	/* Enable, the ring. */
++	regval = rvu_read64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf));
++	regval |= TIM_AF_RINGX_CTL1_ENA;
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_CTL1(lf), regval);
++
++	rsp->timestarted = arch_timer_read_counter();
++	rsp->currentbucket = (regval >> 20) & 0xfffff;
++
++	return 0;
++}
++
++int rvu_mbox_handler_tim_disable_ring(struct rvu *rvu,
++				      struct tim_ring_req *req,
++				      struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	int lf, blkaddr;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
++	if (blkaddr < 0)
++		return TIM_AF_LF_INVALID;
++
++	lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr], pcifunc, req->ring);
++	if (lf < 0)
++		return TIM_AF_LF_INVALID;
++
++	return rvu_tim_disable_lf(rvu, lf, blkaddr);
++}
++
++int rvu_tim_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot)
++{
++	int blkaddr;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, pcifunc);
++	if (blkaddr < 0)
++		return TIM_AF_LF_INVALID;
++
++	/* Ensure TIM ring is disabled prior to clearing the mapping */
++	rvu_tim_disable_lf(rvu, lf, blkaddr);
++
++	rvu_write64(rvu, blkaddr, TIM_AF_RINGX_GMCTL(lf), 0);
++
++	return 0;
++}
++
++#define FOR_EACH_TIM_LF(lf)	\
++for (lf = 0; lf < hw->block[BLKTYPE_TIM].lf.max; lf++)
++
++int rvu_tim_init(struct rvu *rvu)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	int lf, blkaddr;
++	u8 gpio_edge;
++	u64 regval;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_TIM, 0);
++	if (blkaddr < 0)
++		return 0;
++
++	regval = rvu_read64(rvu, blkaddr, TIM_AF_FLAGS_REG);
++
++	/* Disable the TIM block, if not already disabled. */
++	if (regval & TIM_AF_FLAGS_REG_ENA_TIM) {
++		/* Disable each ring(lf). */
++		FOR_EACH_TIM_LF(lf) {
++			regval = rvu_read64(rvu, blkaddr,
++					    TIM_AF_RINGX_CTL1(lf));
++			if (!(regval & TIM_AF_RINGX_CTL1_ENA))
++				continue;
++
++			rvu_tim_disable_lf(rvu, lf, blkaddr);
 +		}
 +
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_TAQX_LINK(ent_head));
-+		pr_info("SSO HWGGRP[%d] TAQ[%d] LINK         0x%llx\n",
-+			ssolf, ent_head, reg);
-+		ent_head = reg & 0x7FF;
-+		pr_info("--------------------------------------------------\n");
-+	} while (ent_head && wae_used);
-+}
++		/* Disable the TIM block. */
++		regval = rvu_read64(rvu, blkaddr, TIM_AF_FLAGS_REG);
++		regval &= ~TIM_AF_FLAGS_REG_ENA_TIM;
++		rvu_write64(rvu, blkaddr, TIM_AF_FLAGS_REG, regval);
++	}
 +
-+static int read_sso_pc(struct rvu *rvu)
-+{
-+	int blkaddr;
-+	u64 reg;
++	/* Reset each LF. */
++	FOR_EACH_TIM_LF(lf) {
++		rvu_lf_reset(rvu, &hw->block[BLKTYPE_TIM], lf);
++	}
 +
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return -ENODEV;
++	/* Reset the TIM block; getting a clean slate. */
++	rvu_write64(rvu, blkaddr, TIM_AF_BLK_RST, 0x1);
++	rvu_poll_reg(rvu, blkaddr, TIM_AF_BLK_RST, BIT_ULL(63), true);
 +
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_ACTIVE_CYCLES0);
-+	pr_info("SSO Add-Work active cycles		%lld\n", reg);
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_ACTIVE_CYCLES1);
-+	pr_info("SSO Get-Work active cycles		%lld\n", reg);
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_ACTIVE_CYCLES2);
-+	pr_info("SSO Work-Slot active cycles		%lld\n", reg);
-+	pr_info("\n");
++	gpio_edge = TIM_GPIO_NO_EDGE;
 +
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_NOS_CNT) & 0x1FFF;
-+	pr_info("SSO work-queue entries on the no-schedule list	%lld\n", reg);
-+	pr_info("\n");
-+
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_AW_READ_ARB);
-+	pr_info("SSO XAQ reads outstanding		%lld\n",
-+		(reg >> 24) & 0x3F);
-+
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_XAQ_REQ_PC);
-+	pr_info("SSO XAQ reads requests			%lld\n", reg);
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_XAQ_LATENCY_PC);
-+	pr_info("SSO XAQ read latency cycles		%lld\n", reg);
-+	pr_info("\n");
-+
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_AW_WE);
-+	pr_info("SSO IAQ reserved			%lld\n",
-+		(reg >> 16) & 0x3FFF);
-+	pr_info("SSO IAQ total				%lld\n", reg & 0x3FFF);
-+	pr_info("\n");
-+
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_TAQ_CNT);
-+	pr_info("SSO TAQ reserved			%lld\n",
-+		(reg >> 16) & 0x7FF);
-+	pr_info("SSO TAQ total				%lld\n", reg & 0x7FF);
-+	pr_info("\n");
++	/* Enable TIM block. */
++	regval = (((u64)gpio_edge) << 6) |
++		 BIT_ULL(2) | /* RESET */
++		 BIT_ULL(0); /* ENA_TIM */
++	rvu_write64(rvu, blkaddr, TIM_AF_FLAGS_REG, regval);
 +
 +	return 0;
 +}
-+
-+/* Reads SSO hwgrp perfomance counters */
-+static void read_sso_hwgrp_pc(struct rvu *rvu, int ssolf, bool all)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	int blkaddr, max_id;
-+	u64 reg;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	block = &hw->block[blkaddr];
-+	if (ssolf < 0 || ssolf >= block->lf.max) {
-+		pr_info("Invalid SSOLF(HWGRP), valid range is 0-%d\n",
-+			block->lf.max - 1);
-+		return;
-+	}
-+	max_id =  block->lf.max;
-+
-+	if (all)
-+		ssolf = 0;
-+	else
-+		max_id = ssolf + 1;
-+
-+	pr_info("==================================================\n");
-+	for (; ssolf < max_id; ssolf++) {
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_WS_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] Work-Schedule PC     0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_EXT_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] External Schedule PC 0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_WA_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] Work-Add PC          0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_TS_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] Tag Switch PC        0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_DS_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] Deschedule PC        0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWGRPX_DQ_PC(ssolf));
-+		pr_info("SSO HWGGRP[%d] Work-Descheduled PC  0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_PAGE_CNT(ssolf));
-+		pr_info("SSO HWGGRP[%d] In-use Page Count    0x%llx\n", ssolf,
-+			reg);
-+		pr_info("==================================================\n");
-+	}
-+}
-+
-+/* Reads SSO hwgrp Threshold */
-+static void read_sso_hwgrp_thresh(struct rvu *rvu, int ssolf, bool all)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	int blkaddr, max_id;
-+	u64 reg;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	block = &hw->block[blkaddr];
-+	if (ssolf < 0 || ssolf >= block->lf.max) {
-+		pr_info("Invalid SSOLF(HWGRP), valid range is 0-%d\n",
-+			block->lf.max - 1);
-+		return;
-+	}
-+	max_id =  block->lf.max;
-+
-+	if (all)
-+		ssolf = 0;
-+	else
-+		max_id = ssolf + 1;
-+
-+	pr_info("==================================================\n");
-+	for (; ssolf < max_id; ssolf++) {
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_IAQ_THR(ssolf));
-+		pr_info("SSO HWGGRP[%d] IAQ Threshold        0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_TAQ_THR(ssolf));
-+		pr_info("SSO HWGGRP[%d] TAQ Threshold        0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_XAQ_AURA(ssolf));
-+		pr_info("SSO HWGGRP[%d] XAQ Aura             0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_XAQ_LIMIT(ssolf));
-+		pr_info("SSO HWGGRP[%d] XAQ Limit            0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_HWGRPX_IU_ACCNT(ssolf));
-+		pr_info("SSO HWGGRP[%d] IU Account Index     0x%llx\n", ssolf,
-+			reg);
-+
-+		reg = rvu_read64(rvu, blkaddr,
-+				 SSO_AF_IU_ACCNTX_CFG(reg & 0xFF));
-+		pr_info("SSO HWGGRP[%d] IU Accounting Cfg    0x%llx\n", ssolf,
-+			reg);
-+		pr_info("==================================================\n");
-+	}
-+}
-+
-+/* Reads SSO hwgrp TAQ list */
-+static void read_sso_hwgrp_taq_list(struct rvu *rvu, int ssolf, bool all)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	u8 taq_entries, wae_head;
-+	struct rvu_block *block;
-+	u16 ent_head, cl_used;
-+	int blkaddr, max_id;
-+	u64 reg;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	block = &hw->block[blkaddr];
-+	if (ssolf < 0 || ssolf >= block->lf.max) {
-+		pr_info("Invalid SSOLF(HWGRP), valid range is 0-%d\n",
-+			block->lf.max - 1);
-+		return;
-+	}
-+	max_id =  block->lf.max;
-+
-+	if (all)
-+		ssolf = 0;
-+	else
-+		max_id = ssolf + 1;
-+	reg = rvu_read64(rvu, blkaddr, SSO_AF_CONST);
-+	taq_entries = (reg >> 48) & 0xFF;
-+	pr_info("==================================================\n");
-+	for (; ssolf < max_id; ssolf++) {
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("SSO HWGGRP[%d] Transitory Output Admission Queue",
-+			ssolf);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_TOAQX_STATUS(ssolf));
-+		pr_info("SSO HWGGRP[%d] TOAQ Status          0x%llx\n", ssolf,
-+			reg);
-+		ent_head = (reg >> 12) & 0x7FF;
-+		cl_used = (reg >> 32) & 0x7FF;
-+		if (reg & BIT_ULL(61) && cl_used) {
-+			pr_info("SSO HWGGRP[%d] TOAQ CL_USED         0x%x\n",
-+				ssolf, cl_used);
-+			sso_hwgrp_display_taq_list(rvu, ssolf, ent_head, 0,
-+						   cl_used * taq_entries,
-+						   taq_entries);
-+		}
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("SSO HWGGRP[%d] Transitory Input Admission Queue",
-+			ssolf);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_TIAQX_STATUS(ssolf));
-+		pr_info("SSO HWGGRP[%d] TIAQ Status          0x%llx\n", ssolf,
-+			reg);
-+		wae_head = (reg >> 60) & 0xF;
-+		cl_used = (reg >> 32) & 0x7FFF;
-+		ent_head = (reg >> 12) & 0x7FF;
-+		if (reg & BIT_ULL(61) && cl_used) {
-+			pr_info("SSO HWGGRP[%d] TIAQ WAE_USED         0x%x\n",
-+				ssolf, cl_used);
-+			sso_hwgrp_display_taq_list(rvu, ssolf, ent_head,
-+						   wae_head, cl_used,
-+						   taq_entries);
-+		}
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("==================================================\n");
-+	}
-+}
-+
-+/* Reads SSO hwgrp IAQ list */
-+static void read_sso_hwgrp_iaq_list(struct rvu *rvu, int ssolf, bool all)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	u16 head_idx, tail_idx;
-+	int blkaddr, max_id;
-+	u64 reg;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	block = &hw->block[blkaddr];
-+	if (ssolf < 0 || ssolf >= block->lf.max) {
-+		pr_info("Invalid SSOLF(HWGRP), valid range is 0-%d\n",
-+			block->lf.max - 1);
-+		return;
-+	}
-+	max_id =  block->lf.max;
-+
-+	if (all)
-+		ssolf = 0;
-+	else
-+		max_id = ssolf + 1;
-+	pr_info("==================================================\n");
-+	for (; ssolf < max_id; ssolf++) {
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("SSO HWGGRP[%d] Deschedule Queue(DQ)\n", ssolf);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IPL_DESCHEDX(ssolf));
-+		pr_info("SSO HWGGRP[%d] DQ List              0x%llx\n", ssolf,
-+			reg);
-+		head_idx = (reg >> 13) & 0x1FFF;
-+		tail_idx = reg & 0x1FFF;
-+		if (reg & (BIT_ULL(26) | BIT_ULL(27)))
-+			sso_hwgrp_display_iq_list(rvu, ssolf, head_idx,
-+						  tail_idx, 0);
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("SSO HWGGRP[%d] Conflict Queue(CQ)\n", ssolf);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IPL_CONFX(ssolf));
-+		pr_info("SSO HWGGRP[%d] CQ List              0x%llx\n", ssolf,
-+			reg);
-+		head_idx = (reg >> 13) & 0x1FFF;
-+		tail_idx = reg & 0x1FFF;
-+		if (reg & (BIT_ULL(26) | BIT_ULL(27)))
-+			sso_hwgrp_display_iq_list(rvu, ssolf, head_idx,
-+						  tail_idx, 1);
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("SSO HWGGRP[%d] Admission Queue(AQ)\n", ssolf);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IPL_IAQX(ssolf));
-+		pr_info("SSO HWGGRP[%d] AQ List              0x%llx\n", ssolf,
-+			reg);
-+		head_idx = (reg >> 13) & 0x1FFF;
-+		tail_idx = reg & 0x1FFF;
-+		if (reg & (BIT_ULL(26) | BIT_ULL(27)))
-+			sso_hwgrp_display_iq_list(rvu, ssolf, head_idx,
-+						  tail_idx, 2);
-+		pr_info("++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-+		pr_info("==================================================\n");
-+	}
-+}
-+
-+/* Reads SSO hwgrp IENT list */
-+static int read_sso_hwgrp_ient_list(struct rvu *rvu)
-+{
-+	const char *tt_c[4] = {"SSO_TT_ORDERED_", "SSO_TT_ATOMIC__",
-+				"SSO_TT_UNTAGGED", "SSO_TT_EMPTY___"};
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	int max_idx = hw->sso.sso_iue;
-+	u64 pendtag, qlinks, links;
-+	int len, idx, blkaddr;
-+	u64 tag, grp, wqp;
-+	char str[300];
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return -ENODEV;
-+
-+	for (idx = 0; idx < max_idx; idx++) {
-+		len = 0;
-+		tag = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_TAG(idx));
-+		grp = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_GRP(idx));
-+		pendtag = rvu_read64(rvu, blkaddr,
-+				     SSO_AF_IENTX_PENDTAG(idx));
-+		links = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_LINKS(idx));
-+		qlinks = rvu_read64(rvu, blkaddr,
-+				    SSO_AF_IENTX_QLINKS(idx));
-+		wqp = rvu_read64(rvu, blkaddr, SSO_AF_IENTX_WQP(idx));
-+		len = snprintf(str + len, 300,
-+			       "SSO IENT[%4d] TT [%s] HWGRP [%3lld] ", idx,
-+				tt_c[(tag >> 32) & 0x3], (grp >> 48) & 0x1f);
-+		len += snprintf(str + len, 300 - len,
-+				"TAG [0x%010llx] GRP [0x%016llx] ", tag, grp);
-+		len += snprintf(str + len, 300 - len, "PENDTAG [0x%010llx] ",
-+				pendtag);
-+		len += snprintf(str + len, 300 - len,
-+				"LINKS [0x%016llx] QLINKS [0x%010llx] ", links,
-+				qlinks);
-+		snprintf(str + len, 300 - len, "WQP [0x%016llx]\n", wqp);
-+		pr_info("%s", str);
-+	}
-+
-+	return 0;
-+}
-+
-+/* Reads SSO hwgrp free list */
-+static int read_sso_hwgrp_free_list(struct rvu *rvu)
-+{
-+	int blkaddr;
-+	u64 reg;
-+	u8 idx;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return -ENODEV;
-+
-+	pr_info("==================================================\n");
-+	for (idx = 0; idx < 4; idx++) {
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_IPL_FREEX(idx));
-+		pr_info("SSO FREE LIST[%d]\n", idx);
-+		pr_info("qnum_head : %lld qnum_tail : %lld\n",
-+			(reg >> 58) & 0x3, (reg >> 56) & 0x3);
-+		pr_info("queue_cnt : %llx\n", (reg >> 26) & 0x7fff);
-+		pr_info("queue_val : %lld queue_head : %4lld queue_tail %4lld\n"
-+			, (reg >> 40) & 0x1, (reg >> 13) & 0x1fff,
-+			reg & 0x1fff);
-+		pr_info("==================================================\n");
-+	}
-+
-+	return 0;
-+}
-+
-+/* Reads SSO hwgrp perfomance counters */
-+static void read_sso_hws_info(struct rvu *rvu, int ssowlf, bool all)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	int blkaddr;
-+	int max_id;
-+	u64 reg;
-+	u8 mask;
-+	u8 set;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSOW, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	block = &hw->block[blkaddr];
-+	if (ssowlf < 0 || ssowlf >= block->lf.max) {
-+		pr_info("Invalid SSOWLF(HWS), valid range is 0-%d\n",
-+			block->lf.max - 1);
-+		return;
-+	}
-+	max_id =  block->lf.max;
-+
-+	if (all)
-+		ssowlf = 0;
-+	else
-+		max_id = ssowlf + 1;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_SSO, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	pr_info("==================================================\n");
-+	for (; ssowlf < max_id; ssowlf++) {
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWSX_ARB(ssowlf));
-+		pr_info("SSOW HWS[%d] Arbitration State      0x%llx\n", ssowlf,
-+			reg);
-+		reg = rvu_read64(rvu, blkaddr, SSO_AF_HWSX_GMCTL(ssowlf));
-+		pr_info("SSOW HWS[%d] Guest Machine Control  0x%llx\n", ssowlf,
-+			reg);
-+		for (set = 0; set < 2; set++)
-+			for (mask = 0; mask < 4; mask++) {
-+				reg = rvu_read64(rvu, blkaddr,
-+						 SSO_AF_HWSX_SX_GRPMSKX(ssowlf, set, mask));
-+				pr_info("SSOW HWS[%d] SET[%d] Group Mask[%d] 0x%llx\n",
-+					ssowlf, set, mask, reg);
-+			}
-+		pr_info("==================================================\n");
-+	}
-+}
-+
-+typedef void (*sso_dump_cb)(struct rvu *rvu, int ssolf, bool all);
-+
-+static ssize_t rvu_dbg_sso_cmd_parser(struct file *filp,
-+				      const char __user *buffer, size_t count,
-+				      loff_t *ppos, char *lf_type,
-+				      char *file_nm, sso_dump_cb fn)
-+{
-+	struct rvu *rvu = filp->private_data;
-+	bool all = false;
-+	char *cmd_buf;
-+	int lf = 0;
-+
-+	if ((*ppos != 0) || !count)
-+		return -EINVAL;
-+
-+	cmd_buf = kzalloc(count + 1, GFP_KERNEL);
-+	if (!cmd_buf)
-+		return -ENOSPC;
-+
-+	if (parse_sso_cmd_buffer(cmd_buf, &count, buffer,
-+				 &lf, &all) < 0) {
-+		pr_info("Usage: echo [<%s>/all] > %s\n", lf_type, file_nm);
-+	} else {
-+		fn(rvu, lf, all);
-+	}
-+	kfree(cmd_buf);
-+
-+	return count;
-+}
-+
-+/* SSO debugfs APIs */
-+static ssize_t rvu_dbg_sso_pc_display(struct file *filp,
-+				      char __user *buffer,
-+				      size_t count, loff_t *ppos)
-+{
-+	return read_sso_pc(filp->private_data);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_pc_display(struct file *filp,
-+					    const char __user *buffer,
-+					    size_t count, loff_t *ppos)
-+{
-+	return rvu_dbg_sso_cmd_parser(filp, buffer, count, ppos, "hwgrp",
-+			"sso_hwgrp_pc", read_sso_hwgrp_pc);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_thresh_display(struct file *filp,
-+						const char __user *buffer,
-+						size_t count, loff_t *ppos)
-+{
-+	return rvu_dbg_sso_cmd_parser(filp, buffer, count, ppos, "hwgrp",
-+			"sso_hwgrp_thresh", read_sso_hwgrp_thresh);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_taq_wlk_display(struct file *filp,
-+						 const char __user *buffer,
-+						 size_t count, loff_t *ppos)
-+{
-+	return rvu_dbg_sso_cmd_parser(filp, buffer, count, ppos, "hwgrp",
-+			"sso_hwgrp_taq_wlk", read_sso_hwgrp_taq_list);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_iaq_wlk_display(struct file *filp,
-+						 const char __user *buffer,
-+						 size_t count, loff_t *ppos)
-+{
-+	return rvu_dbg_sso_cmd_parser(filp, buffer, count, ppos, "hwgrp",
-+			"sso_hwgrp_iaq_wlk", read_sso_hwgrp_iaq_list);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_ient_wlk_display(struct file *filp,
-+						  char __user *buffer,
-+						  size_t count, loff_t *ppos)
-+{
-+	return read_sso_hwgrp_ient_list(filp->private_data);
-+}
-+
-+static ssize_t rvu_dbg_sso_hwgrp_fl_wlk_display(struct file *filp,
-+						char __user *buffer,
-+						size_t count, loff_t *ppos)
-+{
-+	return read_sso_hwgrp_free_list(filp->private_data);
-+}
-+
-+static ssize_t rvu_dbg_sso_hws_info_display(struct file *filp,
-+					    const char __user *buffer,
-+					    size_t count, loff_t *ppos)
-+{
-+	return rvu_dbg_sso_cmd_parser(filp, buffer, count, ppos, "hws",
-+			"sso_hws_info", read_sso_hws_info);
-+}
-+
-+RVU_DEBUG_FOPS(sso_pc, sso_pc_display, NULL);
-+RVU_DEBUG_FOPS(sso_hwgrp_pc, NULL, sso_hwgrp_pc_display);
-+RVU_DEBUG_FOPS(sso_hwgrp_thresh, NULL, sso_hwgrp_thresh_display);
-+RVU_DEBUG_FOPS(sso_hwgrp_taq_wlk, NULL, sso_hwgrp_taq_wlk_display);
-+RVU_DEBUG_FOPS(sso_hwgrp_iaq_wlk, NULL, sso_hwgrp_iaq_wlk_display);
-+RVU_DEBUG_FOPS(sso_hwgrp_ient_wlk, sso_hwgrp_ient_wlk_display, NULL);
-+RVU_DEBUG_FOPS(sso_hwgrp_fl_wlk, sso_hwgrp_fl_wlk_display, NULL);
-+RVU_DEBUG_FOPS(sso_hws_info, NULL, sso_hws_info_display);
-+
-+static void rvu_dbg_sso_init(struct rvu *rvu)
-+{
-+	const struct device *dev = &rvu->pdev->dev;
-+	struct dentry *pfile;
-+
-+	rvu->rvu_dbg.sso = debugfs_create_dir("sso", rvu->rvu_dbg.root);
-+	if (!rvu->rvu_dbg.sso)
-+		return;
-+
-+	rvu->rvu_dbg.sso_hwgrp = debugfs_create_dir("hwgrp", rvu->rvu_dbg.sso);
-+	if (!rvu->rvu_dbg.sso_hwgrp)
-+		return;
-+
-+	rvu->rvu_dbg.sso_hws = debugfs_create_dir("hws", rvu->rvu_dbg.sso);
-+	if (!rvu->rvu_dbg.sso_hws)
-+		return;
-+
-+	pfile = debugfs_create_file("sso_pc", 0600,
-+				    rvu->rvu_dbg.sso, rvu,
-+			&rvu_dbg_sso_pc_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_pc", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_pc_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_thresh", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_thresh_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_taq_walk", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_taq_wlk_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_iaq_walk", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_iaq_wlk_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_ient_walk", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_ient_wlk_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hwgrp_free_list_walk", 0600,
-+				    rvu->rvu_dbg.sso_hwgrp, rvu,
-+			&rvu_dbg_sso_hwgrp_fl_wlk_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	pfile = debugfs_create_file("sso_hws_info", 0600,
-+				    rvu->rvu_dbg.sso_hws, rvu,
-+			&rvu_dbg_sso_hws_info_fops);
-+	if (!pfile)
-+		goto create_failed;
-+
-+	return;
-+
-+create_failed:
-+	dev_err(dev, "Failed to create debugfs dir/file for SSO\n");
-+	debugfs_remove_recursive(rvu->rvu_dbg.sso);
-+}
-+
- void rvu_dbg_init(struct rvu *rvu)
- {
- 	struct device *dev = &rvu->pdev->dev;
-@@ -1695,6 +2393,7 @@ void rvu_dbg_init(struct rvu *rvu)
- 	rvu_dbg_nix_init(rvu);
- 	rvu_dbg_cgx_init(rvu);
- 	rvu_dbg_npc_init(rvu);
-+	rvu_dbg_sso_init(rvu);
- 
- 	return;
- 
 -- 
 2.7.4
 
