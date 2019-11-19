@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE911102C16
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 19:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F268B102C2B
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 19:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727148AbfKSS4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 13:56:05 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:42558 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbfKSS4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 13:56:05 -0500
-Received: by mail-ot1-f68.google.com with SMTP id b16so18855818otk.9;
-        Tue, 19 Nov 2019 10:56:04 -0800 (PST)
+        id S1727427AbfKSS6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 13:58:53 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:32931 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726939AbfKSS6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 13:58:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574189932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gFWTHuIB+L6IZSct+FIzo+M5q3SYg/8/nPaBMk+3VaU=;
+        b=L4VnQIYAbc8+s03iPXZ8KTlOEQM3bT+z+MuOZR4LDgawQ+QfI8l3vFTNETIGQYktXaRvpB
+        BidRmd8DiiWaVRPsWn4pnpxl+/Fo3kn7cMAVueOWb8j7zvo4MasxQE4/HsAlgSx8Qh5HTe
+        hZP0bFxU7IP51H6pT7/XUoJ9hLsVk64=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-172-KobqVd3RPGOwZ4CfssdT9g-1; Tue, 19 Nov 2019 13:58:50 -0500
+Received: by mail-qt1-f197.google.com with SMTP id g13so15246666qtq.16
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 10:58:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CCMimOxx1V+1wuiFXabtOOmc4F+FlW5VrFGeJkEeb3g=;
-        b=WU1aFvI96hM19+44aW8xWwhcFV+VkO2FaTZ3uvCD27r1LUKpWEDyf1yGPotkI04iXN
-         oNyYacW2JY+SfP1HYc7Kl80zpQVgSlvXwgQfNGlsbeyd1jpTUsu5h0GiPwFMsODOcN0Y
-         rFrafl2QQYOemVJgvUdjFycGnj3V0/bK0gUjlFm50I8ozVDDgqJRIZvEoE+VNEubJmTf
-         +aY79/rc4k1cwjzSBG6I2KgOFrGff44FedjAk6KVaW3k/6mBT19XOfRxCBN81+jy1RDV
-         +Vn3cv7dV/IqxYupuw5WPiQPOYjnbn2E05UpywBZilGvX3uBXuuh92wpNnZk+n4BvjZV
-         Akyg==
-X-Gm-Message-State: APjAAAWRMWOWL8YAuNzq/kefTSi0ThdW0F9peTufJIxeJeS0xoEsGKxm
-        lB041ecFtv6LQlXceQriXnMR+EH0IsWy89bmsUc=
-X-Google-Smtp-Source: APXvYqx9RerZ121T3Eq7XBfWuQsji+hUcMrbDd/mvJJNzps0Zuxlx3QL2Akjf/eIrhg+NcOQ2gFiiv9G2SJxxaTwvN8=
-X-Received: by 2002:a9d:5511:: with SMTP id l17mr4972413oth.145.1574189764218;
- Tue, 19 Nov 2019 10:56:04 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EjrhTZUF7jtDysVYJRqGuNLeGXSR7KDqe9NefhbwW0U=;
+        b=lQKBhq7TyeB2cJMOApA9QRnetQFtvtTRA/8+3LdDLM1T5sse7/5v3dJ/tPcAqT7d0t
+         6kTSgas5yEcHeHjN4cPuR3QHKh62pzVjCdvCOADgwJG1bM0BPEwIhLN640XUyXdEZQMO
+         W5WTdR3JlhOYo37C7LlcvlWK8sitNiyhPW6MOO+mZ87lWVFwkzbof7KfaSjQ0ERUpoFi
+         FYQrSXYhX1LqQhSDosR7YDdfsXN2qjJ+wfZOll5XVqtevJSjRLUuvA9u9aWnCtN+vvv1
+         rRN8tYFTIVCQ02ZqxKHjthHF07a29yzZ9UMuo8zn0l+69gZdyRShYAvvJqGKipEUAYH3
+         16fg==
+X-Gm-Message-State: APjAAAWoRZ3fIBNXvxt1j7Pru0Rj3H752/m6ETtn9eCrzXZo0NZHSIOY
+        vWH6kaLrk5A/447pAPnL3vCZP9q+JbpM5N2pIW8gkIven9l05I5axgoy1tydu5o2fm6jgP6ZrY5
+        ONHWMpluQAxnQ+yCl
+X-Received: by 2002:a37:3c8:: with SMTP id 191mr29472495qkd.77.1574189930455;
+        Tue, 19 Nov 2019 10:58:50 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwnBZAF+Wt1CXxfcMn6Q/+Z+4iK6XGfqiua/IbAXSkx+t9b7Vkf5iIeIpKwNaUzLal2VrJvnQ==
+X-Received: by 2002:a37:3c8:: with SMTP id 191mr29472450qkd.77.1574189930141;
+        Tue, 19 Nov 2019 10:58:50 -0800 (PST)
+Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
+        by smtp.gmail.com with ESMTPSA id y29sm13298234qtc.8.2019.11.19.10.58.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 10:58:49 -0800 (PST)
+Date:   Tue, 19 Nov 2019 13:58:42 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191119134822-mutt-send-email-mst@kernel.org>
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
+ <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
+ <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
+ <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
+ <20191119164632.GA4991@ziepe.ca>
 MIME-Version: 1.0
-References: <20191119112524.24841-1-geert+renesas@glider.be> <1afede33-897b-8718-d977-351357dffe4f@gmail.com>
-In-Reply-To: <1afede33-897b-8718-d977-351357dffe4f@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 19 Nov 2019 19:55:53 +0100
-Message-ID: <CAMuHMdW+Lkj1VRbS-1Qw8YsbPYueFrM770eBRv=e_sTg8vbiVg@mail.gmail.com>
-Subject: Re: [PATCH] mdio_bus: Fix init if CONFIG_RESET_CONTROLLER=n
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191119164632.GA4991@ziepe.ca>
+X-MC-Unique: KobqVd3RPGOwZ4CfssdT9g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Tue, Nov 19, 2019 at 12:46:32PM -0400, Jason Gunthorpe wrote:
+> As always, this is all very hard to tell without actually seeing real
+> accelerated drivers implement this.=20
+>=20
+> Your patch series might be a bit premature in this regard.
 
-On Tue, Nov 19, 2019 at 7:05 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 11/19/19 3:25 AM, Geert Uytterhoeven wrote:
-> > Commit 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after
-> > initialization to constant") accidentally changed a check from -ENOTSUPP
-> > to -ENOSYS, causing failures if reset controller support is not enabled.
-> > E.g. on r7s72100/rskrza1:
-> >
-> >     sh-eth e8203000.ethernet: MDIO init failed: -524
-> >     sh-eth: probe of e8203000.ethernet failed with error -524
-> >
-> > Fixes: 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after initialization to constant")
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> This has been fixed in the "net" tree with:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=075e238d12c21c8bde700d21fb48be7a3aa80194
+Actually drivers implementing this have been posted, haven't they?
+See e.g. https://lwn.net/Articles/804379/
 
-Ah, hadn't seen that one.
+--=20
+MST
 
-However, that one (a) keeps the unneeded check for -ENOSYS, and (b)
-carries a wrong Fixes tag.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
