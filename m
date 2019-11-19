@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB74102ADF
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:37:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BEBE102AE3
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728287AbfKSRhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 12:37:01 -0500
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:50012 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727929AbfKSRhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:37:01 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAJHatn8093112;
-        Tue, 19 Nov 2019 11:36:55 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1574185015;
-        bh=BLr+0isCzO1Blg7PXSeJwgTgKxpKl4VHpA3jAmPlYk8=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=HH5vGbgGaj1Z3Q1qHigK5XGucX/BPcwv0l/VLrYl4DriQ0bVybEZkGGlQRrBoeD0m
-         w1jusa5G5x4ue9aqUPFr8Y6AR22Je8Q8tl4ECImswR0FPQmHR44EDRGhblYwRl5bok
-         jCqzgBI3NGEdCbRGQP+kF0XeQKIgSmEx+QsY0pH4=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJHat37006430;
-        Tue, 19 Nov 2019 11:36:55 -0600
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 19
- Nov 2019 11:36:54 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 19 Nov 2019 11:36:54 -0600
-Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJHarAq096039;
-        Tue, 19 Nov 2019 11:36:53 -0600
-Subject: Re: dp83867: Why does ti,fifo-depth set only TX, and why is it
- mandatory?
-From:   Dan Murphy <dmurphy@ti.com>
-To:     Adrian Bunk <bunk@kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        <netdev@vger.kernel.org>
-References: <20191114162431.GA21979@localhost>
- <190bd4d3-4bbd-3684-da31-2335b7c34c2a@ti.com>
- <20191114194715.GA29047@localhost>
- <d20a0c5a-507c-dd75-0951-e0733daf4a6e@ti.com>
-Message-ID: <0b1bbbea-d9e4-224c-d425-30d9485f8042@ti.com>
-Date:   Tue, 19 Nov 2019 11:35:17 -0600
+        id S1728287AbfKSRkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 12:40:24 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42462 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727929AbfKSRkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:40:24 -0500
+Received: by mail-pl1-f193.google.com with SMTP id j12so12117791plt.9
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 09:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UXRxnVWqdFLg9p/S0J7/eu8mH53LsZoGvLaIM5gWSgA=;
+        b=DYMyF7sDRD2cgH7SuaBp4fBRpyaRYDejYURA/i3PFh0O6/+gNHBgJ5sk6R4sgaoHlS
+         NFG0b/k2D6u33Wn+o60kz3ITd0xIehpauWAwwjuUYnVaTeXFb58wrwWI8Pu34R/JtLKb
+         3bgDVWzR/OYoFg4+DSE4WuK99jojYpdAf2w3/ushps7qNZK4ZXD7KzfA+4IYkEflWvob
+         CK2t0c86CMJIvZDIaNrK1h5ovjFlOAzNlcv/ro66hCLsrQZu3yNF+MTQ4Y1lMaxOh2mg
+         b+Ka1+Cdb90z5m3jigV86FB3a25A0h8w+VlAVip906JZRvEQ/pBshh0lieeaNjWd6vRt
+         X6/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UXRxnVWqdFLg9p/S0J7/eu8mH53LsZoGvLaIM5gWSgA=;
+        b=c8P5HFWvTQYl5Y4a6V9a+y5gor3roY8U5LnZ2qSQVeGJbpusOr9lobiJU9a3cYLWGm
+         h8cs6zz8w28CeJrzj0a93BH38AFzensM69YU7q7xCoAodavBHoEAz7NGN4WHCdnxmhGv
+         xOw+CJ6DcFK3ey1GPAAZZxOTnIH/IhNnDphj8qcsENSq0SAjvHeCM8CLaurcRDPuGSHz
+         uR1xkTEHKUvLLVPWyi/dcOedvCY1RmcWIDst61fmDKhr0EBiQHrt+LZmarnptj/M1/zV
+         AXnSLI5080P2qr22HVAzCvLVvetbULSE/JihM/NrW3DPrKhGqZS/zXdcVwRuKazBdL11
+         t4aw==
+X-Gm-Message-State: APjAAAW9r5DYIZ/vgK9nKBfnvvYP9q0LgyaKLcwxOCOX6MRMgKYwBB7Z
+        3ZGlucnNjPy7kifMYIdVj5E=
+X-Google-Smtp-Source: APXvYqwc0K4hLEiaqNCkf2H0L95/gO8jQ7KS7TrsgA0k4+vJtHiW+s5qLn3QSoERDfThden1wJp24A==
+X-Received: by 2002:a17:90a:2a44:: with SMTP id d4mr7946424pjg.91.1574185223630;
+        Tue, 19 Nov 2019 09:40:23 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id m15sm25665176pfh.19.2019.11.19.09.40.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Nov 2019 09:40:22 -0800 (PST)
+Subject: Re: [PATCH net-next v3 1/2] ipv6: introduce and uses route look hints
+ for list input
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        David Ahern <dsahern@gmail.com>
+References: <cover.1574165644.git.pabeni@redhat.com>
+ <422ebfbf2fcb8a6ce23bcd97ab1f7c3a0c633cbd.1574165644.git.pabeni@redhat.com>
+ <c6d67eb8-623e-9265-567c-3d5cc1de7477@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <91cc8a38-55a4-74b6-7a1a-3f6dc2b0842e@gmail.com>
+Date:   Tue, 19 Nov 2019 09:40:21 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <d20a0c5a-507c-dd75-0951-e0733daf4a6e@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <c6d67eb8-623e-9265-567c-3d5cc1de7477@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adrian
-
-On 11/14/19 2:01 PM, Dan Murphy wrote:
-> Adrian
->
-> On 11/14/19 1:47 PM, Adrian Bunk wrote:
->> On Thu, Nov 14, 2019 at 11:53:36AM -0600, Dan Murphy wrote:
->>> Adrian
->> Hi Dan,
->>
->>> ...
->>>> 2. Why is it a mandatory property?
->>>> Perhaps I am missing something obvious, but why can't the driver 
->>>> either
->>>> leave the value untouched or set the maximum when nothing is 
->>>> configured?
->>> When the driver was originally written it was written only for RGMII
->>> interfaces as that is the MII that the data sheet references and 
->>> does not
->>> reference SGMII.  We did not have SGMII samples available at that time.
->>> According to the HW guys setting the FIFO depth is required for RGMII
->>> interfaces.
->> My reading of the datasheets is that it isn't needed at all for RGMII,
->> only for SGMII and gigabit GMII.
->>
->> Which makes it weird that it is only written in the RGMII case where it
->> is documented to be disabled.
->>
->> And there is a documented default value so writing shouldn't be 
->> mandatory
->> in any case.
->>
->> Perhaps I am looking at the wrong datasheets or there's a hardware 
->> errata?
->>
->>> When SGMII support was added in commit
->>> 507ddd5c0d47ad869f361c71d700ffe7f12d1dd6
->> That's adding 6-wire mode support, the version of the driver I use with
->> SGMII in 4.14 is much older and not far from the original submission.
->>
->> Is there anything that might be missing for SGMII you are aware of?
->>
-> I forwarded this to our PHY support guy as I did not work on the SGMII 
-> device they shipped.
->
-> I only had a RGMII certified device.
-
-I only got half the info but the FIFO depth is not required for RGMII.  
-They are still trying to determine if it is for SGMII
-
-Waiting on a response from someone OoO
-
-Dan
 
 
->
-> Dan
->
+On 11/19/19 9:34 AM, Eric Dumazet wrote:
+> 
+
+>>  
+>> +static bool ip6_can_use_hint(struct sk_buff *skb, const struct sk_buff *hint)
+>> +{
+>> +	return hint && !skb_dst(skb) &&
+>> +	       ipv6_addr_equal(&ipv6_hdr(hint)->daddr, &ipv6_hdr(skb)->daddr);
+>> +}
+>> +
+> 
+> Why keeping whole skb as the hint, since all you want is the ipv6_hdr(skb)->daddr ?
+> 
+> Remembering the pointer to daddr would avoid de-referencing many skb fields.
+> 
+
+Ah we also need the hint dst, scrap this then...
+
