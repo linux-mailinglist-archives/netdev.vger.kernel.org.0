@@ -2,110 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA92910104F
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D0E101052
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfKSAlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 19:41:24 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40585 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbfKSAlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 19:41:24 -0500
-Received: by mail-pg1-f194.google.com with SMTP id e17so3085690pgd.7;
-        Mon, 18 Nov 2019 16:41:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VhycBUBk52oH8Q0uHteGPnTBWRxOGi22wCEAjXZ7q4E=;
-        b=OGvEwx/jF362jbt4QLy5C+CcKvcX+0Luf/w7YPOfsos8KP0iPO0vnuavA1+DVlgJAb
-         AIg7Bcx0KOYMvTRFdnMquBjqp7aO37bpWiJHuKgT6XDnCxGHh5ZVmrN6/t4Nc3mJUaa8
-         w4kItdPmwcrkV6r4phzeYVwyM0SZ1B6DzdEL2KCv6IjlxkMRjmKJBeFTKrMm9JMJHiB2
-         WB2/lIwCum5Tjljuho//j8iXsMjYuPE30xjEnpzn0yNtVGQmB1wCR/hb5FZ4hEEe5bTk
-         jjXWk1KNBbhDRwqrwSz8P30uFW5DNxLS4DVP6/2+e0CFJUs8/spedCQwgozx65+E2Ans
-         1e4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VhycBUBk52oH8Q0uHteGPnTBWRxOGi22wCEAjXZ7q4E=;
-        b=pNd/YCT+b7lWsJ14XL1Nhi4TbO6Q4WCEqni4RFHJEWCnP0Q23EnpqaZ5hr2QcOaQnd
-         +nicvQxxASDTO5PZrUYNw5LozGmnFyswUu0Z3/UO8aHT9pxlPPX+hakzzr4iuJEAg9lc
-         WnreFdjvHz3QjGowaX1R9unDFI+tcM0NaYaIJHHyFInvmAgOJuN9DFVQYlvjINA+tu6Q
-         PhZPRZUE3/1A8eEAiQxwQqiTkgRsVQcrVgCXsSpV3qryFHBCx1ZmuQJ5u6Id1j0HhIuj
-         KDkYXwPhrPaayGcghowjM5JX5HPiTqLZJdZ3GC6jKmoJJe36gKzDCWgaxcBztZoSWGm3
-         C2vA==
-X-Gm-Message-State: APjAAAXO2eSEN3UEg6ED3wKxtGq98KEavTb6C7qPnxaHKNLgxil6oTAj
-        +LHPJIaQz+FkWw27JAL00dw=
-X-Google-Smtp-Source: APXvYqx7cbZwsqcAnJabZDyjIHRiMhmcgRkk02vYONsF9R0zMO8Je0yZdAJHIWWVaDzyxZo1pD4xrg==
-X-Received: by 2002:a63:1c5c:: with SMTP id c28mr2288735pgm.241.1574124083207;
-        Mon, 18 Nov 2019 16:41:23 -0800 (PST)
-Received: from localhost ([2401:fa00:8f:203:250d:e71d:5a0a:9afe])
-        by smtp.gmail.com with ESMTPSA id h2sm4281561pgj.45.2019.11.18.16.41.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 16:41:21 -0800 (PST)
-Date:   Tue, 19 Nov 2019 09:41:19 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Qian Cai <cai@lca.pw>,
-        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20191119004119.GC208047@google.com>
-References: <20190904064144.GA5487@jagdpanzerIV>
- <20190904065455.GE3838@dhcp22.suse.cz>
- <20190904071911.GB11968@jagdpanzerIV>
- <20190904074312.GA25744@jagdpanzerIV>
- <1567599263.5576.72.camel@lca.pw>
- <20190904144850.GA8296@tigerII.localdomain>
- <1567629737.5576.87.camel@lca.pw>
- <20190905113208.GA521@jagdpanzerIV>
- <1573751570.5937.122.camel@lca.pw>
- <20191118152738.az364dczadskgimc@pathway.suse.cz>
+        id S1727047AbfKSAnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 19:43:43 -0500
+Received: from ozlabs.org ([203.11.71.1]:58343 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726809AbfKSAnn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 19:43:43 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47H6Wc0jffz9sPT;
+        Tue, 19 Nov 2019 11:43:39 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1574124220;
+        bh=xMxw573KD5jDq42n3/8r5oPhgnATMUQil1KgKEsaq6k=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Astlrpt6b8XGpP7RNqEGM0Z5G2fdpwvY4t3Mz1z8TYVrTGepZcB8are8BrslzOOOD
+         Vla9pNoaA8YURXDbSvaSSzeTcYhtLtkWjqYqmR1T1bNKwZeeq5vgIHnnPTgbsBJ8ei
+         nnBvyvBCvUghTfEYxiX1GX7xgFisxJo0JQLpollXxSRKiex8LdGlOAKJkFBmyXRLlG
+         BlDM4BB0ZOS/Rnh8G2mvGePQ6WauAouMsmZkGIx5bg6G36doAEk+DSi/ZNwDfKm1g2
+         q1pj/NwWBl+zEFiRZS+PSyYdQ39ApNEsIeDbvphU2i1TtvWdJAxMBhY1rPmMibjfNI
+         IdKFLcATuJAsg==
+Date:   Tue, 19 Nov 2019 11:43:33 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBl?= =?UTF-8?B?bA==?= 
+        <bjorn.topel@intel.com>, Andrii Nakryiko <andriin@fb.com>
+Subject: linux-next: manual merge of the bpf-next tree with Linus' tree
+Message-ID: <20191119114333.757f8429@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191118152738.az364dczadskgimc@pathway.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="Sig_/eTLoDxRxjWpc6AMDcATFG0N";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (19/11/18 16:27), Petr Mladek wrote:
-> > > @@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
-> > >  	pending_output = (curr_log_seq != log_next_seq);
-> > >  	logbuf_unlock_irqrestore(flags);
-> > >  
-> > > +	if (!pending_output)
-> > > +		return printed_len;
-> > > +
-> > >  	/* If called from the scheduler, we can not call up(). */
-> > > -	if (!in_sched && pending_output) {
-> > > +	if (!in_sched) {
-> > >  		/*
-> > >  		 * Disable preemption to avoid being preempted while holding
-> > >  		 * console_sem which would prevent anyone from printing to
-> > > @@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
-> > >  		if (console_trylock_spinning())
-> > >  			console_unlock();
-> > >  		preempt_enable();
-> > > -	}
-> > >  
-> > > -	if (pending_output)
-> > > +		wake_up_interruptible(&log_wait);
-> 
-> I do not like this. As a result, normal printk() will always deadlock
-> in the scheduler code, including WARN() calls. The chance of the
-> deadlock is small now. It happens only when there is another
-> process waiting for console_sem.
+--Sig_/eTLoDxRxjWpc6AMDcATFG0N
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Why would it *always* deadlock? If this is the case, why we don't *always*
-deadlock doing the very same wake_up_process() from console_unlock()?
+Hi all,
 
-	-ss
+Today's linux-next merge of the bpf-next tree got conflicts in:
+
+  include/linux/bpf.h
+  kernel/bpf/syscall.c
+
+between commit:
+
+  ff1c08e1f74b ("bpf: Change size to u64 for bpf_map_{area_alloc, charge_in=
+it}()")
+
+from Linus' tree and commit:
+
+  fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/linux/bpf.h
+index 464f3f7e0b7a,e913dd5946ae..000000000000
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@@ -688,7 -798,8 +798,8 @@@ int bpf_map_charge_init(struct bpf_map_
+  void bpf_map_charge_finish(struct bpf_map_memory *mem);
+  void bpf_map_charge_move(struct bpf_map_memory *dst,
+  			 struct bpf_map_memory *src);
+ -void *bpf_map_area_alloc(size_t size, int numa_node);
+ -void *bpf_map_area_mmapable_alloc(size_t size, int numa_node);
+ +void *bpf_map_area_alloc(u64 size, int numa_node);
+++void *bpf_map_area_mmapable_alloc(u64 size, int numa_node);
+  void bpf_map_area_free(void *base);
+  void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr);
+ =20
+diff --cc kernel/bpf/syscall.c
+index d447b5e343bf,bac3becf9f90..000000000000
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@@ -127,7 -127,7 +127,7 @@@ static struct bpf_map *find_and_alloc_m
+  	return map;
+  }
+ =20
+- void *bpf_map_area_alloc(u64 size, int numa_node)
+ -static void *__bpf_map_area_alloc(size_t size, int numa_node, bool mmapab=
+le)
+++static void *__bpf_map_area_alloc(u64 size, int numa_node, bool mmapable)
+  {
+  	/* We really just want to fail instead of triggering OOM killer
+  	 * under memory pressure, therefore we set __GFP_NORETRY to kmalloc,
+@@@ -142,10 -142,8 +142,11 @@@
+  	const gfp_t flags =3D __GFP_NOWARN | __GFP_ZERO;
+  	void *area;
+ =20
+ +	if (size >=3D SIZE_MAX)
+ +		return NULL;
+ +
+- 	if (size <=3D (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
++ 	/* kmalloc()'ed memory can't be mmap()'ed */
++ 	if (!mmapable && size <=3D (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
+  		area =3D kmalloc_node(size, GFP_USER | __GFP_NORETRY | flags,
+  				    numa_node);
+  		if (area !=3D NULL)
+@@@ -157,6 -159,16 +162,16 @@@
+  					   flags, __builtin_return_address(0));
+  }
+ =20
+ -void *bpf_map_area_alloc(size_t size, int numa_node)
+++void *bpf_map_area_alloc(u64 size, int numa_node)
++ {
++ 	return __bpf_map_area_alloc(size, numa_node, false);
++ }
++=20
+ -void *bpf_map_area_mmapable_alloc(size_t size, int numa_node)
+++void *bpf_map_area_mmapable_alloc(u64 size, int numa_node)
++ {
++ 	return __bpf_map_area_alloc(size, numa_node, true);
++ }
++=20
+  void bpf_map_area_free(void *area)
+  {
+  	kvfree(area);
+
+--Sig_/eTLoDxRxjWpc6AMDcATFG0N
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3TOrUACgkQAVBC80lX
+0GzhIAf8CSu6s2K7IPHLOZSz4ZsJ2Q9LTU1JDb0hFFJ+Ve4dg1fH1ZbyAoS/3ha6
+oG6QV1jtvtgzTbroCajhZCQiT45+d/bc4Io6s5X27YqO1c6hyjodNk2CsLIrtYeN
+ZST2bwjZxqX9ohwlQNEQsmnamBAHuBZrE676e8mBb56TQYKnHwN6nv2VxDPA7qNi
+bIYx6HmWMhvf5XV2zGvh3JroBCKL0jB6uXoRxPogb6ZX4uELTME4zBBc5EaCzjLz
+I02N/rxWdhZnmL7Vn3fL1do+TR4CGTXeOo7JasSXl+9Kxtebr2naThcd+I79qITn
+iZAG4finVHbpghB8TpN+ljqgWI6tWA==
+=UlaO
+-----END PGP SIGNATURE-----
+
+--Sig_/eTLoDxRxjWpc6AMDcATFG0N--
