@@ -2,198 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6F0102028
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:23:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E20E4102039
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:26:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbfKSJXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 04:23:23 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:40829 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfKSJXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:23:22 -0500
-Received: by mail-lf1-f65.google.com with SMTP id v24so5502393lfi.7
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:23:20 -0800 (PST)
+        id S1727316AbfKSJ0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 04:26:12 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40243 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726132AbfKSJ0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:26:11 -0500
+Received: by mail-lj1-f194.google.com with SMTP id q2so22517164ljg.7
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:26:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=unikie-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=vEC81GcLttEcJAjNdIB9ExJmxUvRup+AThBWqWVUKJs=;
-        b=JUpcFk6rJA46S/I6GusqCj/PQ985nXzbFTn8a30qh1FMxth5gfELLgoZq+Pob+6xmS
-         Z1HAEmAracreUslwnirYP1yIk5BxCHQs1oqfoio1ewjc8Cg/RU8OsYjupMiThdakA5Ai
-         tQdl5CtF9bsJxqfMioyKPQjyV0i6tAJ1sK0P8NV25UeeAya592YGtHGgDRAQ/CoMkLp9
-         8WSK93TRciKx3CXPKI2b5Q8+drPFt4S8+1vfwvlWZLWf3P7UsZ1ugnnwVI5m5PRpesv2
-         fS6IQtmwBiRCDUwjHx1+n+BHpq6fooRIgUTRt8OXRHi6EqdPYWzlks5nWnEGekI6IZ96
-         25cA==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=EaDBGaUrTCyGilB8DhkN1F/kJnvQ8bUshlfDqjHoxzk=;
+        b=ikbsjyFhsTnrhXVyUK14RaUtYzx0tqRfpB9YUHH//6RbExWy1uHu91Bw1ZqhWuYbEu
+         J39r/tOknfZ3t8x8kShgq6SCikWU4DYb7MMMWoysNVhfxTMkRSwbTzcPvhMD4p8sgjAU
+         4QjeCxbJ16VrHpovL5nIUKdXL9z22ioGdACH8vuzEQZROcVKDeT1ubAEzquTuG95sM2A
+         dQCjEhbvewCWNLPG1cGfqrZ0tgg/uwcrzxR+vXipT65+wKK/fp/j6aSUv+FahTBJgOLG
+         e3S4cGKWcfCPPuk+115tGtCk7iM7aynce+d36C6WeC1EWFqlTNcwmG/e0hO5Gj5du2CC
+         xLrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version:content-transfer-encoding;
-        bh=vEC81GcLttEcJAjNdIB9ExJmxUvRup+AThBWqWVUKJs=;
-        b=qwbHoFCB9d/ygzmufjAXrZuhvsAGbhkJwpBo5CxBbbPV6kdRLWcMDkCMbXi3Wpni/0
-         T8CUCBS+CyVBecw1IIyiLzDiyLeN+1dcI/6njXvwRFcyQCuxyE1DNjoniUeoQMJHkwmm
-         6U5DhoYqiPZelJGCZwcYDyv0lk6z4HE4giCe2kYvoNEfFrLhCNhfbJI8uXhNRrBD6aAJ
-         U9JbMUh7UAwIozSaMl2msHC/DpmffubyvXByVOTKZ+ImXRsUUU9TtD11hKfXzOPBi316
-         iSNqj0dl6BODTQY0yyCnbSxM5xuke+Agid35igedWYfdcCGWQmQtlo8iE3Qn8ZLDfdf5
-         p6HA==
-X-Gm-Message-State: APjAAAUMIOd9sE6A9tlbfFJuuC7xQ6Hc7DiN8HrkQX930rnBSOFYbD0M
-        xYieLSrHnMQ68CVS1zZ8SJ0+Fg==
-X-Google-Smtp-Source: APXvYqz+znk21ZeWTGR59C/2gLajA7W6WAiuVbp81pij031nrln0Ps4u4OLZy+4wn9735BBEeKkj2w==
-X-Received: by 2002:a19:5e06:: with SMTP id s6mr2933229lfb.176.1574155400032;
-        Tue, 19 Nov 2019 01:23:20 -0800 (PST)
-Received: from GL-434 ([109.204.235.119])
-        by smtp.gmail.com with ESMTPSA id w20sm9947665lff.46.2019.11.19.01.23.19
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 19 Nov 2019 01:23:19 -0800 (PST)
-From:   jouni.hogander@unikie.com (Jouni =?utf-8?Q?H=C3=B6gander?=)
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH] net-sysfs: Fix memory leak in register_queue_kobjects
-References: <20191114111325.2027-1-jouni.hogander@unikie.com>
-Date:   Tue, 19 Nov 2019 11:23:18 +0200
-In-Reply-To: <20191114111325.2027-1-jouni.hogander@unikie.com> (jouni
-        hogander's message of "Thu, 14 Nov 2019 13:13:25 +0200")
-Message-ID: <871ru4rzi1.fsf@unikie.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.2 (gnu/linux)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EaDBGaUrTCyGilB8DhkN1F/kJnvQ8bUshlfDqjHoxzk=;
+        b=HccBYculbRYSnz/RTNaUWSbJcM7VID57G8xrRRprFHOdWgNe4ygKGA6dSn56/cf4Yu
+         93y35HCGfEvn2byznVyMTOKFQLX7Nq9ftETLPHqRMf6UeZW9MWgZCW/RtLXqqBwf5goG
+         Vkk6oKnjn1grtR/Xgc7LT2LadIc9fkgEJf67YDXo/FUtOJgQOskyZwMdkJ0zy0Bh5Uxd
+         PwAn3F2+oBR2orTXFf5mTZXLSTzHqY6Eu7+8ak/8J4zOwQCQCoKQWAtMynYaOyMoLvou
+         Vo+C/6N3BseaxO5pOR7RbcuOyO07WTHv27UANOSDs88zfUyzD8qcuRa9hU74qIu2U2vb
+         OgXw==
+X-Gm-Message-State: APjAAAWehbIZjXrFQ9LSUkp9vCGwTbLtx8ETuwscJa/ijpiP/49kfpjb
+        to4L6QlTVclJqHJFIILFcDsB9Q==
+X-Google-Smtp-Source: APXvYqxfnIPD6olHEqZuEZ+IBMXW4FA6tTunsko04mShwCPVfe7DxsvfHXGljZgNnffteATkneZFuQ==
+X-Received: by 2002:a05:651c:1053:: with SMTP id x19mr2976201ljm.39.1574155567470;
+        Tue, 19 Nov 2019 01:26:07 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:21a:5b37:6d7b:a689:ba65:5cea? ([2a00:1fa0:21a:5b37:6d7b:a689:ba65:5cea])
+        by smtp.gmail.com with ESMTPSA id u2sm10244727ljg.34.2019.11.19.01.26.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 19 Nov 2019 01:26:06 -0800 (PST)
+Subject: Re: [net-next] seg6: allow local packet processing for SRv6 End.DT6
+ behavior
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Lebrun <dav.lebrun@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20191118182026.2634-1-andrea.mayer@uniroma2.it>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <703510f1-22af-aca1-b066-d2c38fe572b1@cogentembedded.com>
+Date:   Tue, 19 Nov 2019 12:25:16 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191118182026.2634-1-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-jouni.hogander@unikie.com writes:
+On 18.11.2019 21:20, Andrea Mayer wrote:
 
-> From: Jouni Hogander <jouni.hogander@unikie.com>
->
-> net_rx_queue_update_kobjects and netdev_queue_update_kobjects are
-> leaking memory in their error paths. Leak was originally reported
-> by Syzkaller:
->
-> BUG: memory leak
-> unreferenced object 0xffff8880679f8b08 (size 8):
->   comm "netdev_register", pid 269, jiffies 4294693094 (age 12.132s)
->   hex dump (first 8 bytes):
->     72 78 2d 30 00 36 20 d4                          rx-0.6 .
->   backtrace:
->     [<000000008c93818e>] __kmalloc_track_caller+0x16e/0x290
->     [<000000001f2e4e49>] kvasprintf+0xb1/0x140
->     [<000000007f313394>] kvasprintf_const+0x56/0x160
->     [<00000000aeca11c8>] kobject_set_name_vargs+0x5b/0x140
->     [<0000000073a0367c>] kobject_init_and_add+0xd8/0x170
->     [<0000000088838e4b>] net_rx_queue_update_kobjects+0x152/0x560
->     [<000000006be5f104>] netdev_register_kobject+0x210/0x380
->     [<00000000e31dab9d>] register_netdevice+0xa1b/0xf00
->     [<00000000f68b2465>] __tun_chr_ioctl+0x20d5/0x3dd0
->     [<000000004c50599f>] tun_chr_ioctl+0x2f/0x40
->     [<00000000bbd4c317>] do_vfs_ioctl+0x1c7/0x1510
->     [<00000000d4c59e8f>] ksys_ioctl+0x99/0xb0
->     [<00000000946aea81>] __x64_sys_ioctl+0x78/0xb0
->     [<0000000038d946e5>] do_syscall_64+0x16f/0x580
->     [<00000000e0aa5d8f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->     [<00000000285b3d1a>] 0xffffffffffffffff
->
-> Cc: David Miller <davem@davemloft.net>
-> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+> End.DT6 behavior makes use of seg6_lookup_nexthop() function which drops
+> all packets that are destined to be locally processed. However, DT* should
+> be able to delivery decapsulated packets that are destined to local
+
+    Deliver?
+
+> addresses. Function seg6_lookup_nexthop() is also used by DX6, so in order
+> to maintain compatibility I created another routing helper function which
+> is called seg6_lookup_any_nexthop(). This function is able to take into
+> account both packets that have to be processed locally and the ones that
+> are destined to be forwarded directly to another machine. Hence,
+> seg6_lookup_any_nexthop() is used in DT6 rather than seg6_lookup_nexthop()
+> to allow local delivery.
+> 
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 > ---
->  net/core/net-sysfs.c | 34 ++++++++++++++++++++++++----------
->  1 file changed, 24 insertions(+), 10 deletions(-)
->
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 865ba6ca16eb..2f44c6a3bcae 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -923,20 +923,25 @@ static int rx_queue_add_kobject(struct net_device *=
-dev, int index)
->  	error =3D kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
->  				     "rx-%u", index);
->  	if (error)
-> -		return error;
-> +		goto err_init_and_add;
->=20=20
->  	dev_hold(queue->dev);
->=20=20
->  	if (dev->sysfs_rx_queue_group) {
->  		error =3D sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
-> -		if (error) {
-> -			kobject_put(kobj);
-> -			return error;
-> -		}
-> +		if (error)
-> +			goto err_sysfs_create;
->  	}
->=20=20
->  	kobject_uevent(kobj, KOBJ_ADD);
->=20=20
-> +	return error;
-> +
-> +err_sysfs_create:
-> +	kobject_put(kobj);
-> +err_init_and_add:
-> +	kfree_const(kobj->name);
-> +
->  	return error;
->  }
->  #endif /* CONFIG_SYSFS */
-> @@ -968,6 +973,7 @@ net_rx_queue_update_kobjects(struct net_device *dev, =
-int old_num, int new_num)
->  		if (dev->sysfs_rx_queue_group)
->  			sysfs_remove_group(kobj, dev->sysfs_rx_queue_group);
->  		kobject_put(kobj);
-> +		kfree_const(kobj->name);
->  	}
->=20=20
->  	return error;
-> @@ -1461,21 +1467,28 @@ static int netdev_queue_add_kobject(struct net_de=
-vice *dev, int index)
->  	error =3D kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
->  				     "tx-%u", index);
->  	if (error)
-> -		return error;
-> +		goto err_init_and_add;
->=20=20
->  	dev_hold(queue->dev);
->=20=20
->  #ifdef CONFIG_BQL
->  	error =3D sysfs_create_group(kobj, &dql_group);
-> -	if (error) {
-> -		kobject_put(kobj);
-> -		return error;
-> -	}
-> +	if (error)
-> +		goto err_sysfs_create;
->  #endif
->=20=20
->  	kobject_uevent(kobj, KOBJ_ADD);
->=20=20
->  	return 0;
-> +
-> +#ifdef CONFIG_BQL
-> +err_sysfs_create:
-> +	kobject_put(kobj);
-> +#endif
-> +err_init_and_add:
-> +	kfree_const(kobj->name);
-> +
-> +	return error;
->  }
->  #endif /* CONFIG_SYSFS */
->=20=20
-> @@ -1503,6 +1516,7 @@ netdev_queue_update_kobjects(struct net_device *dev=
-, int old_num, int new_num)
->  		sysfs_remove_group(&queue->kobj, &dql_group);
->  #endif
->  		kobject_put(&queue->kobj);
-> +		kfree_const(queue->kobj.name);
->  	}
->=20=20
->  	return error;
+>   net/ipv6/seg6_local.c | 22 ++++++++++++++++++----
+>   1 file changed, 18 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+> index e70567446f28..43f3c9f1b4c1 100644
+> --- a/net/ipv6/seg6_local.c
+> +++ b/net/ipv6/seg6_local.c
+> @@ -149,8 +149,9 @@ static void advance_nextseg(struct ipv6_sr_hdr *srh, struct in6_addr *daddr)
+>   	*daddr = *addr;
+>   }
+>   
+> -int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+> -			u32 tbl_id)
+> +static int
+> +seg6_lookup_any_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+> +			u32 tbl_id, int local_delivery)
+>   {
+>   	struct net *net = dev_net(skb->dev);
+>   	struct ipv6hdr *hdr = ipv6_hdr(skb);
+[...]
+> @@ -199,6 +207,12 @@ int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+>   	return dst->error;
+>   }
+>   
+> +inline int seg6_lookup_nexthop(struct sk_buff *skb,
+> +			       struct in6_addr *nhaddr, u32 tbl_id)
+> +{
+> +	return seg6_lookup_any_nexthop(skb, nhaddr, tbl_id, false);
 
-This patch should be ignored. Rootcause for this memory leak is
-reference count leak. I will upload another patch.
+    The last parameter to that function is of type *int*, not 'bool'. Be 
+consistent please...
 
-BR,
+> @@ -396,7 +410,7 @@ static int input_action_end_dt6(struct sk_buff *skb,
+>   
+>   	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+>   
+> -	seg6_lookup_nexthop(skb, NULL, slwt->table);
+> +	seg6_lookup_any_nexthop(skb, NULL, slwt->table, true);
 
-Jouni H=C3=B6gander
+    Same here, just declare the last parameter as 'bool'.
+
+[...]
+
+MBR, Sergei
