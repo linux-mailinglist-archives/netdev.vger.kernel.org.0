@@ -2,95 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D965102245
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4A0102246
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbfKSKuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 05:50:22 -0500
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:46995 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfKSKuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:50:20 -0500
-Received: by mail-wr1-f42.google.com with SMTP id b3so23216745wrs.13
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 02:50:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lW5fYRFznQhl0mYpmoGVfe9AF6AxfqUaLZDYUmnCmhA=;
-        b=Te9dzMeKQ/g3QeWAL/NqxnIQgAz29j+NrZKaOGHypjJ6636AzHOnyU2xEZkC4JHBXr
-         FGf5xvOwpYHR1LAleyeDhgFQ6wWjjgKklFqWEnWywKhZRt+iecUWFo5XAWLH2hMJFsaw
-         QK9dOmV0ei17UBJQs/adzFSrQE59csR57w8K1la5StOLcXgrNzrQmaeem6GCkjnG/u5H
-         Bsez+qxvKtdj/H+5koyftTLCeIg9Coahdpl+adLe8ot69Vv5yHsazxl2+za9Uq9C6hjv
-         aSx5YzMMcLVOnzG0xCUDXkebaY9CqGZZmLtsD+Uo/aZD5BdogVAhsSOJCd3577xSsEAJ
-         +Q/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=lW5fYRFznQhl0mYpmoGVfe9AF6AxfqUaLZDYUmnCmhA=;
-        b=VeC1V3tB0YBQpnl6GBNlR4r3jIvbtX/A8m2cPwLEZwKWaNrEWoxGV4uuLNGzZ0arp+
-         ss4Mn/mLbnop8pIJT3XVsb1QWAdRlxh8XsHf/k1eCaflZJL0QqMFRkyftIyaLKDSPcQK
-         LaOGr7wR0jd5/hWhXvnzV4GY7ictKrg9ykmAS+lw/jIg6eij1D72qWmeTCC0GU98BgV6
-         eH6WBiUpKXcl/JkpQpXr2HwyhigEyJWw0OtJiSrDC4CfwsXIVSt4Iod75fLxFFNHj97K
-         mEKNQJsUSXPDKdz6Dsz2iVk8XDxXiyiihPK1B4mjVbZKHnPXxnBja7BVbvzjZFVEfFdX
-         Y3EQ==
-X-Gm-Message-State: APjAAAWCz7+o2HX0HWssIp6iu9kLAEYW0jIg0xhMapjB2dVCSNXY8sS5
-        CTbwKMY9bGM2tA9ORIacWQ2jOw==
-X-Google-Smtp-Source: APXvYqwhTfqu1QWzjU7vd7becuO8YTxtRPabMruCbJ0rnyKXdwXwQaqTMdErMxLuRr/bfdkXuMjEyA==
-X-Received: by 2002:a5d:66cf:: with SMTP id k15mr35217258wrw.38.1574160618494;
-        Tue, 19 Nov 2019 02:50:18 -0800 (PST)
-Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id g5sm2646708wma.43.2019.11.19.02.50.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 02:50:17 -0800 (PST)
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH bpf-next 2/2] selftests: bpftool: skip the build test if not in tree
-Date:   Tue, 19 Nov 2019 10:50:10 +0000
-Message-Id: <20191119105010.19189-3-quentin.monnet@netronome.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191119105010.19189-1-quentin.monnet@netronome.com>
-References: <20191119105010.19189-1-quentin.monnet@netronome.com>
+        id S1727509AbfKSKu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 05:50:58 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:49634 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725798AbfKSKu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:50:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=rTGmdtHfB8D+RXUW/nszfm1Tcj14HyPbpRvI//ea+GA=; b=drUfrpN76KRffTDF1jsGzfqTC
+        /VufvbrXBdvCeS/Bn72PdKZ6nWw7FS8HuMuNK6xDZ+EbF0RmLiJyRL+++KnDkfKzhfelqu4Tly/fz
+        o3EtlTtN6ka0Z7PZKQxe1JAmh0FYvEYUw9t6bOJM9sc5NuejfDTOgsIwdNRrCSv32oK1hPEgwA9JE
+        jzaeI+Z/E3/hAEwQNbogIKkg6hx+jRucW/zYdeaxL+SlUFSlrVShNU/atb/epVueWAOMWVHJ9IpYW
+        osIjd/7baZcWM6egLSc9GfDA23Hpfi/XQolc/gYd4hJNY/mpqyUYjQFvolV2s6eCvNYS4GlK1kK2K
+        yjrdNvjNw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:37534)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iX15t-0000kB-5o; Tue, 19 Nov 2019 10:50:49 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iX15p-0000et-Nh; Tue, 19 Nov 2019 10:50:45 +0000
+Date:   Tue, 19 Nov 2019 10:50:45 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Michael Walle <michael@walle.cc>
+Cc:     hkallweit1@gmail.com, andrew@lunn.ch, davem@davemloft.net,
+        f.fainelli@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] net: phy: add callback for custom
+ interrupt handler to struct phy_driver
+Message-ID: <20191119105045.GY25745@shell.armlinux.org.uk>
+References: <acb8507d-d5a3-2190-8d5c-988f1062f2e7@gmail.com>
+ <bd47f8e1ebc04fa98856ed8d89b91419@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bd47f8e1ebc04fa98856ed8d89b91419@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Tue, Nov 19, 2019 at 11:33:47AM +0100, Michael Walle wrote:
+> 
+> Hi,
+> 
+> this is an old thread and I know its already applied. But I'd like to hear
+> your opinion on the following problem below.
+> 
+> > The phylib interrupt handler handles link change events only currently.
+> > However PHY drivers may want to use other interrupt sources too,
+> > e.g. to report temperature monitoring events. Therefore add a callback
+> > to struct phy_driver allowing PHY drivers to implement a custom
+> > interrupt handler.
+> > 
+> > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> > Suggested-by: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> > Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  drivers/net/phy/phy.c | 9 +++++++--
+> >  include/linux/phy.h   | 3 +++
+> >  2 files changed, 10 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> > index d90d9863e..068f0a126 100644
+> > --- a/drivers/net/phy/phy.c
+> > +++ b/drivers/net/phy/phy.c
+> > @@ -772,8 +772,13 @@ static irqreturn_t phy_interrupt(int irq, void
+> > *phy_dat)
+> >  	if (phydev->drv->did_interrupt && !phydev->drv->did_interrupt(phydev))
+> >  		return IRQ_NONE;
+> > 
+> > -	/* reschedule state queue work to run as soon as possible */
+> > -	phy_trigger_machine(phydev);
+> > +	if (phydev->drv->handle_interrupt) {
+> > +		if (phydev->drv->handle_interrupt(phydev))
+> > +			goto phy_err;
+> 
+> There are PHYs which clears the interrupt already by reading the interrupt
+> status register. To do something useful in handle_interrupt() I have to read
+> the interrupt status register, thus clearing the pending interrupts.
+> 
+> 
+> > +	} else {
+> > +		/* reschedule state queue work to run as soon as possible */
+> > +		phy_trigger_machine(phydev);
+> > +	}
+> > 
+> >  	if (phy_clear_interrupt(phydev))
+> >  		goto phy_err;
+> 
+> But here the interrupts are cleared again, which means we might loose
+> interrupt causes in between.
+> 
+> I could think of two different fixes:
+>  (1) handle_interrupt() has to take care to clear the interrupts and skip
+> the phy_clear_interrupt() above.
+>  (2) handle_interrupt() might return a special return code which skips the
+> phy_clear_interrupt
+> 
+> TBH, I'd prefer (1) but I don't know if it is allowed to change semantics
+> afterwards. (Also, I've found no driver where handle_interrupt() is actually
+> used for now?)
 
-If selftests are copied over to another machine/location
-for execution the build test of bpftool will obviously
-not work, since the sources are not copied.
-Skip it if we can't find bpftool's Makefile.
+I made the argument at the time that phylib should stop being a middle-
+layer, but instead let PHY drivers take care of interrupt handling
+themselves, just like we do elsewhere in the kernel.  I think your
+case just shows that trying to keep the interrupt handling structured
+inside phylib and trying to make all PHYs fit is just going to be
+painful.
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
----
- tools/testing/selftests/bpf/test_bpftool_build.sh | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-index 1fc6f6247f9b..ac349a5cea7e 100755
---- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-+++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-@@ -20,6 +20,10 @@ SCRIPT_REL_PATH=$(realpath --relative-to=$PWD $0)
- SCRIPT_REL_DIR=$(dirname $SCRIPT_REL_PATH)
- KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
- cd $KDIR_ROOT_DIR
-+if [ ! -e tools/bpf/bpftool/Makefile ]; then
-+	echo -e "skip:    bpftool files not found!\n"
-+	exit 0
-+fi
- 
- ERROR=0
- TMPDIR=
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
