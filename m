@@ -2,105 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA89D102395
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB3521023E1
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 13:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbfKSLt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 06:49:29 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39454 "EHLO mx1.suse.de"
+        id S1727909AbfKSMHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 07:07:03 -0500
+Received: from mx2.suse.de ([195.135.220.15]:50878 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726351AbfKSLt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 06:49:29 -0500
+        id S1727702AbfKSMHD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Nov 2019 07:07:03 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E3C64BDB4;
-        Tue, 19 Nov 2019 11:49:26 +0000 (UTC)
-Message-ID: <1b116fabe85a324e2d05a593d38811467f43fb91.camel@suse.de>
-Subject: Re: [PATCH v2 0/6] Raspberry Pi 4 PCIe support
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Andrew Murray <andrew.murray@arm.com>
-Cc:     devicetree@vger.kernel.org, f.fainelli@gmail.com,
-        linux-rdma@vger.kernel.org, maz@kernel.org, phil@raspberrypi.org,
-        linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
-        linux-rockchip@lists.infradead.org,
-        iommu@lists.linux-foundation.org, mbrugger@suse.com,
-        bcm-kernel-feedback-list@broadcom.com, wahrenst@gmx.net,
-        james.quinlan@broadcom.com, linux-pci@vger.kernel.org,
-        Robin Murphy <robin.murphy@arm.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org
-Date:   Tue, 19 Nov 2019 12:49:24 +0100
-In-Reply-To: <20191119111848.GR43905@e119886-lin.cambridge.arm.com>
-References: <20191112155926.16476-1-nsaenzjulienne@suse.de>
-         <20191119111848.GR43905@e119886-lin.cambridge.arm.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-K76aLLNKfyo+gQkABBwD"
-User-Agent: Evolution 3.34.1 
-MIME-Version: 1.0
+        by mx1.suse.de (Postfix) with ESMTP id 1C85EBAF7;
+        Tue, 19 Nov 2019 12:07:01 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] net: ipconfig: Make device wait timeout configurable
+Date:   Tue, 19 Nov 2019 13:06:46 +0100
+Message-Id: <20191119120647.31547-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If network device drivers are using deferred probing it's possible
+that waiting for devices to show up in ipconfig is already over,
+when the device eventually shows up. With the new netdev_max_wait
+kernel cmdline pataremter it's now possible to extend this time.
 
---=-K76aLLNKfyo+gQkABBwD
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ Documentation/admin-guide/kernel-parameters.txt |  5 +++++
+ net/ipv4/ipconfig.c                             | 22 +++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 3 deletions(-)
 
-On Tue, 2019-11-19 at 11:18 +0000, Andrew Murray wrote:
-> On Tue, Nov 12, 2019 at 04:59:19PM +0100, Nicolas Saenz Julienne wrote:
-> > This series aims at providing support for Raspberry Pi 4's PCIe
-> > controller, which is also shared with the Broadcom STB family of
-> > devices.
-> >=20
-> > There was a previous attempt to upstream this some years ago[1] but was
-> > blocked as most STB PCIe integrations have a sparse DMA mapping[2] whic=
-h
-> > is something currently not supported by the kernel.  Luckily this is no=
-t
-> > the case for the Raspberry Pi 4.
-> >=20
-> > Note that the driver code is to be based on top of Rob Herring's series
-> > simplifying inbound and outbound range parsing.
-> >=20
-> > [1] https://patchwork.kernel.org/cover/10605933/
-> > [2] https://patchwork.kernel.org/patch/10605957/
-> >=20
->=20
-> What happened to patch 3? I can't see it on the list or in patchwork?
-
-For some reason the script I use to call get_maintainer.sh or git send-mail
-failed to add linux-pci@vger.kernel.org and linux-kernel@vger.kernel.org as
-recipients. I didn't do anything different between v1 and v2 as far as mail=
-ing
-is concerned.
-
-Nevertheless it's here: https://www.spinics.net/lists/arm-kernel/msg768461.=
-html
-and should be present in the linux-arm-kernel list.
-
-I'll look in to it and make sure this doesn't happen in v3.
-
-Regards,
-Nicolas
-
-
---=-K76aLLNKfyo+gQkABBwD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3T1sQACgkQlfZmHno8
-x/5oAAgAsirq9AHBWc9c3u37sxo0sduCFRqCFKOtWMxm0jb/DcUdD6rQy3N9/RIf
-tK6vZvovGokMN5GHwwG6sDD7vSCeNimQSFZx7R36XMI5iYvITtmREMYLCwherVD0
-W2hMdlOm1hzjt1sEGCz9BHxnMT3w56ZLabkmJWscUGVaPhArD7ISSUo3ksO5x7rh
-KS1lbJX9wZLpegmk3gxXxAoHN3OWgDunznERQ07/dvrDALwf4CZkyQT+V/8nOZhr
-OV64Rq+nMrhttDcMk2ufbrUsWn0Gt6zVbIXqJyitSJmAEb0If2zq2KGKK/88n2hf
-GFsoFCTkw2RQ0cpZmMHvvkVumUTaPg==
-=kHJj
------END PGP SIGNATURE-----
-
---=-K76aLLNKfyo+gQkABBwD--
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index a84a83f8881e..6083ac04f075 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2755,6 +2755,11 @@
+ 			This usage is only documented in each driver source
+ 			file if at all.
+ 
++	netdev_max_wait=
++			[IP_PNP] set the maximum time in seconds to wait
++			for net devices showing up, when doing kernel
++			IP configuration
++
+ 	nf_conntrack.acct=
+ 			[NETFILTER] Enable connection tracking flow accounting
+ 			0 to disable accounting
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index 9bcca08efec9..851ea8239f5f 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -103,6 +103,9 @@
+ /* Wait for carrier timeout default in seconds */
+ static unsigned int carrier_timeout = 120;
+ 
++/* Wait for devices to show up in seconds */
++static unsigned int device_max_wait = 12;
++
+ /*
+  * Public IP configuration
+  */
+@@ -1402,13 +1405,11 @@ __be32 __init root_nfs_parse_addr(char *name)
+ 	return addr;
+ }
+ 
+-#define DEVICE_WAIT_MAX		12 /* 12 seconds */
+-
+ static int __init wait_for_devices(void)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < DEVICE_WAIT_MAX; i++) {
++	for (i = 0; i < device_max_wait; i++) {
+ 		struct net_device *dev;
+ 		int found = 0;
+ 
+@@ -1797,3 +1798,18 @@ static int __init set_carrier_timeout(char *str)
+ 	return 1;
+ }
+ __setup("carrier_timeout=", set_carrier_timeout);
++
++static int __init set_device_max_wait(char *str)
++{
++	ssize_t ret;
++
++	if (!str)
++		return 0;
++
++	ret = kstrtouint(str, 0, &device_max_wait);
++	if (ret)
++		return 0;
++
++	return 1;
++}
++__setup("netdev_max_wait=", set_device_max_wait);
+-- 
+2.16.4
 
