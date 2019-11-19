@@ -2,312 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB4C1026F8
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 15:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4324B10272E
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 15:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727903AbfKSOjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 09:39:31 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32660 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727646AbfKSOjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 09:39:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574174369;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3EZWs3ETBkJuIOChc46QkQQ15msWjcGSiMlSqcMx8Es=;
-        b=RMRqdKQ9DyiKNr3Asgal2BBJS/gsUJYMQYuPha0woSvIF6sXRQwIBqRnOyihgDORplSSuA
-        gczBsEY8tjCxV/pjfgaFlzXCFOe7fL3Eurszi3eh6brYicuDOXVisdRgFucqNL9LD26q2L
-        fAluxvx5WXyoocKGBN4ARQlsNMPdo3U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-6MfxGh21NUq_JNmuZb14OA-1; Tue, 19 Nov 2019 09:39:25 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 64957109810C;
-        Tue, 19 Nov 2019 14:39:20 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-117-12.ams2.redhat.com [10.36.117.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 273099CD1;
-        Tue, 19 Nov 2019 14:39:18 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Edward Cree <ecree@solarflare.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next v3 2/2] ipv4: use dst hint for ipv4 list receive
-Date:   Tue, 19 Nov 2019 15:38:37 +0100
-Message-Id: <f242674de1892d14ed602047c3817cc7212a618d.1574165644.git.pabeni@redhat.com>
-In-Reply-To: <cover.1574165644.git.pabeni@redhat.com>
-References: <cover.1574165644.git.pabeni@redhat.com>
+        id S1728095AbfKSOpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 09:45:18 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:50916 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbfKSOpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 09:45:18 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAJEitb1007682;
+        Tue, 19 Nov 2019 08:44:55 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1574174695;
+        bh=Xb17bFFvyyPqVZH3JQh33Q09iDlqcgXHhX0DKwO4lwQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=kwYmH3N4LCqQEjuhK3qaWi51suMy+3umddzaTsp68YsDKKJpN9AxFnguws3i5Ylik
+         0QP08Mym8xE93voINGsQByrWfLgeOhHk4hGcMMCRFi+VVIgEbCrwxqxBN2MSQ4ZkcY
+         i+Y1p1VfHx69Y1Uen+jVcHTgFxJs+MsO4l6VuPaU=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xAJEituH016789
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 19 Nov 2019 08:44:55 -0600
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 19
+ Nov 2019 08:44:54 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 19 Nov 2019 08:44:54 -0600
+Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJEirca010193;
+        Tue, 19 Nov 2019 08:44:54 -0600
+Subject: Re: [PATCH 1/2] can: m_can_platform: set net_device structure as
+ driver data
+To:     Pankaj Sharma <pankj.sharma@samsung.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <rcsekar@samsung.com>, <pankaj.dubey@samsung.com>,
+        Sriram Dash <sriram.dash@samsung.com>
+References: <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
+ <CGME20191119102155epcas5p34ca3dfaba9eef8de24d1bc9d64ef5335@epcas5p3.samsung.com>
+ <1574158838-4616-2-git-send-email-pankj.sharma@samsung.com>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <cb975009-2d89-40b9-8c28-e5cf40bf20a2@ti.com>
+Date:   Tue, 19 Nov 2019 08:43:18 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: 6MfxGh21NUq_JNmuZb14OA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1574158838-4616-2-git-send-email-pankj.sharma@samsung.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is alike the previous change, with some additional ipv4 specific
-quirk. Even when using the route hint we still have to do perform
-additional per packet checks about source address validity: a new
-helper is added to wrap them.
+Pankaj
 
-To keep the code as simple as possible, use  hints for local destination
-only.
+On 11/19/19 4:20 AM, Pankaj Sharma wrote:
+> A device driver for CAN controller hardware registers itself with the
+> Linux network layer as a network device. So, the driver data for m_can
+> should ideally be of type net_device.
+>
+> Fixes: f524f829b75a ("can: m_can: Create a m_can platform framework")
+>
+> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+> Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
+> ---
+>   drivers/net/can/m_can/m_can_platform.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+> index 6ac4c35..2eaa354 100644
+> --- a/drivers/net/can/m_can/m_can_platform.c
+> +++ b/drivers/net/can/m_can/m_can_platform.c
+> @@ -107,7 +107,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
+>   
+>   	mcan_class->is_peripheral = false;
+>   
+> -	platform_set_drvdata(pdev, mcan_class->dev);
+> +	platform_set_drvdata(pdev, mcan_class->net);
+>   
+>   	m_can_init_ram(mcan_class);
+>   
 
-UDP flood performances vs recvmmsg() receiver:
+Thanks for the fix.
 
-vanilla=09=09patched=09=09delta
-Kpps=09=09Kpps=09=09%
-1683=09=091871=09=09+11
-
-In the worst case scenario - each packet has a different
-destination address - the performance delta is within noise
-range.
-
-v2 -> v3:
- - really fix build (sic) and hint usage check
- - use fib4_has_custom_rules() helpers (David A.)
- - add ip_extract_route_hint() helper (Edward C.)
- - use prev skb as hint instead of copying data (Willem)
-
-v1 -> v2:
- - fix build issue with !CONFIG_IP_MULTIPLE_TABLES
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- include/net/ip_fib.h    | 10 ++++++++++
- include/net/route.h     |  4 ++++
- net/ipv4/fib_frontend.c | 10 ----------
- net/ipv4/ip_input.c     | 35 +++++++++++++++++++++++++++++++----
- net/ipv4/route.c        | 37 +++++++++++++++++++++++++++++++++++++
- 5 files changed, 82 insertions(+), 14 deletions(-)
-
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 52b2406a5dfc..8e65e3e0a948 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -311,6 +311,11 @@ static inline int fib_lookup(struct net *net, const st=
-ruct flowi4 *flp,
- =09return err;
- }
-=20
-+static inline bool fib4_has_custom_rules(struct net *net)
-+{
-+=09return false;
-+}
-+
- static inline bool fib4_rule_default(const struct fib_rule *rule)
- {
- =09return true;
-@@ -378,6 +383,11 @@ static inline int fib_lookup(struct net *net, struct f=
-lowi4 *flp,
- =09return err;
- }
-=20
-+static inline bool fib4_has_custom_rules(struct net *net)
-+{
-+=09return net->ipv4.fib_has_custom_rules;
-+}
-+
- bool fib4_rule_default(const struct fib_rule *rule);
- int fib4_rules_dump(struct net *net, struct notifier_block *nb,
- =09=09    struct netlink_ext_ack *extack);
-diff --git a/include/net/route.h b/include/net/route.h
-index 6c516840380d..a9c60fc68e36 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -185,6 +185,10 @@ int ip_route_input_rcu(struct sk_buff *skb, __be32 dst=
-, __be32 src,
- =09=09       u8 tos, struct net_device *devin,
- =09=09       struct fib_result *res);
-=20
-+int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
-+=09=09      u8 tos, struct net_device *devin,
-+=09=09      const struct sk_buff *hint);
-+
- static inline int ip_route_input(struct sk_buff *skb, __be32 dst, __be32 s=
-rc,
- =09=09=09=09 u8 tos, struct net_device *devin)
- {
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 71c78d223dfd..577db1d50a24 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -70,11 +70,6 @@ static int __net_init fib4_rules_init(struct net *net)
- =09fib_free_table(main_table);
- =09return -ENOMEM;
- }
--
--static bool fib4_has_custom_rules(struct net *net)
--{
--=09return false;
--}
- #else
-=20
- struct fib_table *fib_new_table(struct net *net, u32 id)
-@@ -131,11 +126,6 @@ struct fib_table *fib_get_table(struct net *net, u32 i=
-d)
- =09}
- =09return NULL;
- }
--
--static bool fib4_has_custom_rules(struct net *net)
--{
--=09return net->ipv4.fib_has_custom_rules;
--}
- #endif /* CONFIG_IP_MULTIPLE_TABLES */
-=20
- static void fib_replace_table(struct net *net, struct fib_table *old,
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index 24a95126e698..e992f90586f3 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -302,16 +302,31 @@ static inline bool ip_rcv_options(struct sk_buff *skb=
-, struct net_device *dev)
- =09return true;
- }
-=20
-+static bool ip_can_use_hint(struct sk_buff *skb, const struct iphdr *iph,
-+=09=09=09    const struct sk_buff *hint)
-+{
-+=09return hint && !skb_dst(skb) && ip_hdr(hint)->daddr =3D=3D iph->daddr &=
-&
-+=09       ip_hdr(hint)->tos =3D=3D iph->tos;
-+}
-+
- INDIRECT_CALLABLE_DECLARE(int udp_v4_early_demux(struct sk_buff *));
- INDIRECT_CALLABLE_DECLARE(int tcp_v4_early_demux(struct sk_buff *));
- static int ip_rcv_finish_core(struct net *net, struct sock *sk,
--=09=09=09      struct sk_buff *skb, struct net_device *dev)
-+=09=09=09      struct sk_buff *skb, struct net_device *dev,
-+=09=09=09      const struct sk_buff *hint)
- {
- =09const struct iphdr *iph =3D ip_hdr(skb);
- =09int (*edemux)(struct sk_buff *skb);
- =09struct rtable *rt;
- =09int err;
-=20
-+=09if (ip_can_use_hint(skb, iph, hint)) {
-+=09=09err =3D ip_route_use_hint(skb, iph->daddr, iph->saddr, iph->tos,
-+=09=09=09=09=09dev, hint);
-+=09=09if (unlikely(err))
-+=09=09=09goto drop_error;
-+=09}
-+
- =09if (net->ipv4.sysctl_ip_early_demux &&
- =09    !skb_dst(skb) &&
- =09    !skb->sk &&
-@@ -408,7 +423,7 @@ static int ip_rcv_finish(struct net *net, struct sock *=
-sk, struct sk_buff *skb)
- =09if (!skb)
- =09=09return NET_RX_SUCCESS;
-=20
--=09ret =3D ip_rcv_finish_core(net, sk, skb, dev);
-+=09ret =3D ip_rcv_finish_core(net, sk, skb, dev, NULL);
- =09if (ret !=3D NET_RX_DROP)
- =09=09ret =3D dst_input(skb);
- =09return ret;
-@@ -535,11 +550,20 @@ static void ip_sublist_rcv_finish(struct list_head *h=
-ead)
- =09}
- }
-=20
-+static struct sk_buff *ip_extract_route_hint(struct net *net,
-+=09=09=09=09=09     struct sk_buff *skb, int rt_type)
-+{
-+=09if (fib4_has_custom_rules(net) || rt_type !=3D RTN_LOCAL)
-+=09=09return NULL;
-+
-+=09return skb;
-+}
-+
- static void ip_list_rcv_finish(struct net *net, struct sock *sk,
- =09=09=09       struct list_head *head)
- {
-+=09struct sk_buff *skb, *next, *hint =3D NULL;
- =09struct dst_entry *curr_dst =3D NULL;
--=09struct sk_buff *skb, *next;
- =09struct list_head sublist;
-=20
- =09INIT_LIST_HEAD(&sublist);
-@@ -554,11 +578,14 @@ static void ip_list_rcv_finish(struct net *net, struc=
-t sock *sk,
- =09=09skb =3D l3mdev_ip_rcv(skb);
- =09=09if (!skb)
- =09=09=09continue;
--=09=09if (ip_rcv_finish_core(net, sk, skb, dev) =3D=3D NET_RX_DROP)
-+=09=09if (ip_rcv_finish_core(net, sk, skb, dev, hint) =3D=3D NET_RX_DROP)
- =09=09=09continue;
-=20
- =09=09dst =3D skb_dst(skb);
- =09=09if (curr_dst !=3D dst) {
-+=09=09=09hint =3D ip_extract_route_hint(net, skb,
-+=09=09=09=09=09       ((struct rtable *)dst)->rt_type);
-+
- =09=09=09/* dispatch old sublist */
- =09=09=09if (!list_empty(&sublist))
- =09=09=09=09ip_sublist_rcv_finish(&sublist);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index dcc4fa10138d..7083cfa9f0a5 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2019,10 +2019,47 @@ static int ip_mkroute_input(struct sk_buff *skb,
- =09return __mkroute_input(skb, res, in_dev, daddr, saddr, tos);
- }
-=20
-+/* Implements all the saddr-related checks as ip_route_input_slow(),
-+ * assuming daddr is valid and destination is local.
-+ * Uses the provided hint instead of performing a route lookup.
-+ */
-+int ip_route_use_hint(struct sk_buff *skb, __be32 daddr, __be32 saddr,
-+=09=09      u8 tos, struct net_device *dev,
-+=09=09      const struct sk_buff *hint)
-+{
-+=09struct in_device *in_dev =3D __in_dev_get_rcu(dev);
-+=09struct net *net =3D dev_net(dev);
-+=09int err =3D -EINVAL;
-+=09u32 tag =3D 0;
-+
-+=09if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
-+=09=09goto martian_source;
-+
-+=09if (ipv4_is_zeronet(saddr))
-+=09=09goto martian_source;
-+
-+=09if (ipv4_is_loopback(saddr) && !IN_DEV_NET_ROUTE_LOCALNET(in_dev, net))
-+=09=09goto martian_source;
-+
-+=09tos &=3D IPTOS_RT_MASK;
-+=09err =3D fib_validate_source(skb, saddr, daddr, tos, 0, dev, in_dev, &ta=
-g);
-+=09if (err < 0)
-+=09=09goto martian_source;
-+
-+=09skb_dst_copy(skb, hint);
-+=09return 0;
-+
-+martian_source:
-+=09ip_handle_martian_source(dev, in_dev, skb, daddr, saddr);
-+=09return err;
-+}
-+
- /*
-  *=09NOTE. We drop all the packets that has local source
-  *=09addresses, because every properly looped back packet
-  *=09must have correct destination already attached by output routine.
-+ *=09Changes in the enforced policies must be applied also to
-+ *=09ip_route_use_hint().
-  *
-  *=09Such approach solves two big problems:
-  *=091. Not simplex devices are handled properly.
---=20
-2.21.0
+Acked-by: Dan Murphy <dmurphy@ti.com>
 
