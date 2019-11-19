@@ -2,84 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DEED102AA3
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:17:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12EB6102AAC
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:19:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728532AbfKSRRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 12:17:24 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:43626 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727805AbfKSRRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:17:24 -0500
-Received: by mail-pj1-f68.google.com with SMTP id a10so2875739pju.10
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 09:17:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SkUrXg9/rRQwrGDaQvMDHhFrvTWxqZ4qFgsVbyPlGag=;
-        b=VRqQ0GFMRnjzY5zCtH0HLdG9OWc25Vop244eEmOIVGasgVYOuFd77l7c7ro58eV9k1
-         TH2OK2OlANVx1/6YWi03/7EU9vef9P/t6JgIoe1jAko7KeTHKgFzgNE5MdNlsRuEc6j9
-         HDBl0WhxsCAr9EcTRIza4NnDiejyEiOB6tlL6+CJDeCFnt9m2TAWe4mHZQCt/a+MDhIB
-         wu2UApeNu0NNVmfY8nuIW3HiGdInqQXvXAe3dcXL+n2woqthO8SafenPeFBZcmn5pRqj
-         8picaldzJmkH4u2Vls6TLhwvfEbqYGowlJ/et3/lxYU4iFHYon1M88lnVuVnywtuKM9I
-         fvHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SkUrXg9/rRQwrGDaQvMDHhFrvTWxqZ4qFgsVbyPlGag=;
-        b=tM/rPjivEYdJZZJqMEKc3yEusHWX/AhnbZ1gKIJ8t5EFSi3rVDWkjan4PEyERTsYTc
-         9Xk4/2V8iU1R6/TzwovWfXCVbLAvqGlE1gmfHl3NUTn1868M7tTpzdFlXSgd5th2Llzy
-         +WN2QHb0hyAU9OOTk6FFQJf2HQ4JxIH5MN1pyrq7afkBF4XGN0TFuigXnl7LQ5N+Awlb
-         Ju4u+d5Wm6xrmXQf+J5hupvuNKXJ6jdxnU46Rt7XhjtGsRxuXoiWujj871IUuHmX5Mfh
-         sG8A2oXkXlHNZHvALKwpshGEhbdpor54SM0NMIj0H97LtC0CraPQZIe5QgsFvtGE8njh
-         vN+g==
-X-Gm-Message-State: APjAAAWfFMFpNMpwUSB5vo6H1KGxGwt/jkFRBmGtFsJxZTSjgJ9sALX3
-        FdhFwwGwh+IAHW7HrxNlCDo=
-X-Google-Smtp-Source: APXvYqzLSuc6gg6CUUttRdazU2hfEpmfP1ZFDtxB1O7NHd9YT6YP8Ud7TPwxzGc92KpqXCe+o5Hdiw==
-X-Received: by 2002:a17:90a:741:: with SMTP id s1mr7998331pje.107.1574183843890;
-        Tue, 19 Nov 2019 09:17:23 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id 193sm28792172pfv.18.2019.11.19.09.17.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Nov 2019 09:17:22 -0800 (PST)
-Subject: Re: [PATCH net] tcp: switch snprintf to scnprintf
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jiri Benc <jbenc@redhat.com>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20191114102831.23753-1-liuhangbin@gmail.com>
- <557b2545-3b3c-63a9-580c-270a0a103b2e@gmail.com>
- <20191115024106.GB18865@dhcp-12-139.nay.redhat.com>
- <20191115105455.24a4dd48@redhat.com>
- <20191119015338.GD18865@dhcp-12-139.nay.redhat.com>
- <22361732-351e-4768-0974-bd4050eb9f2e@gmail.com>
- <20191119134051.GE18865@dhcp-12-139.nay.redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <0af010ef-7930-8b9b-24c7-5789b391d12e@gmail.com>
-Date:   Tue, 19 Nov 2019 09:17:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728517AbfKSRS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 12:18:59 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:54600 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727805AbfKSRS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:18:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=d7gaQXaOZuD56XOR2d5iryMWvBxv9PFeFj7jATwMUok=; b=MOKrtpvf/Noiak6ccZp4jfzPug
+        q0xW786z+zN2nJa8RBmO9OTzfZuoR/odUimAuHrywu3tTDJyFwn58SPT5Ag0WI0xQxGe0FBMPYe12
+        WeHX41M2plUTVD3fcW8cg25N2LEJBetBWZCjMn9j7T1La44vrniEz4Ao5O+kb6q/s31mYBLIIBDg8
+        K4FTEP+RVMRuf92UJLfNLphtaZbpybkdDGnRh2SeRK6Hdz7ha78n3ZSaHwLRgsqI2j7iyCv/Cmu+V
+        xjBuJAwC3CMBZj/guvYki5atcZU2UdWpdFWwi++51Mc9kM5WVg0L2PMth0LN6wxKQdmFVNi/fvllD
+        h9vau+tg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:37072 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iX79Q-0002jT-Os; Tue, 19 Nov 2019 17:18:52 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iX79Q-0000hw-0u; Tue, 19 Nov 2019 17:18:52 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net] net: phylink: update documentation on create and destroy
 MIME-Version: 1.0
-In-Reply-To: <20191119134051.GE18865@dhcp-12-139.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1iX79Q-0000hw-0u@rmk-PC.armlinux.org.uk>
+Date:   Tue, 19 Nov 2019 17:18:52 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Update the documentation on phylink's create and destroy functions to
+explicitly state that the rtnl lock must not be held while calling
+these.
 
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On 11/19/19 5:40 AM, Hangbin Liu wrote:
-
->>
-> OK, I will post a v2 update. Should it target to net or net-next?
-> 
-
-Since there is no bug to fix, net-next is appropriate.
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 8b5e1086523c..342521ed7e7a 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -580,6 +580,8 @@ static int phylink_register_sfp(struct phylink *pl,
+  * Create a new phylink instance, and parse the link parameters found in @np.
+  * This will parse in-band modes, fixed-link or SFP configuration.
+  *
++ * Note: the rtnl lock must not be held when calling this function.
++ *
+  * Returns a pointer to a &struct phylink, or an error-pointer value. Users
+  * must use IS_ERR() to check for errors from this function.
+  */
+@@ -659,6 +661,8 @@ EXPORT_SYMBOL_GPL(phylink_create);
+  *
+  * Destroy a phylink instance. Any PHY that has been attached must have been
+  * cleaned up via phylink_disconnect_phy() prior to calling this function.
++ *
++ * Note: the rtnl lock must not be held when calling this function.
+  */
+ void phylink_destroy(struct phylink *pl)
+ {
+-- 
+2.20.1
 
