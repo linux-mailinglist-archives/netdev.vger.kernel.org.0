@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E662102EC3
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:02:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B695C102EC7
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:03:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727194AbfKSWCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:02:25 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:45528 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbfKSWCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:02:25 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 22106140F5809;
-        Tue, 19 Nov 2019 14:02:25 -0800 (PST)
-Date:   Tue, 19 Nov 2019 14:02:22 -0800 (PST)
-Message-Id: <20191119.140222.1092498595946013025.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     sunil.kovvuri@gmail.com, netdev@vger.kernel.org,
-        sgoutham@marvell.com
-Subject: Re: [PATCH v2 00/15] octeontx2-af: SSO, TIM HW blocks and other
- config support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191119134638.6814285a@cakuba.netronome.com>
-References: <1574162259-28181-1-git-send-email-sunil.kovvuri@gmail.com>
-        <20191119134638.6814285a@cakuba.netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727438AbfKSWDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 17:03:20 -0500
+Received: from mail-lj1-f170.google.com ([209.85.208.170]:39326 "EHLO
+        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbfKSWDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:03:19 -0500
+Received: by mail-lj1-f170.google.com with SMTP id p18so25163504ljc.6
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 14:03:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=hkXsADjEOdlZ3YiKrCkRrx58YtFi1M6caFsielcQFFg=;
+        b=q7RQyIw/akRBQYATHpyvF6sPlZP0+lRSZFkKhlbOJBfKQYyCldLCrHUlBUW3HTEODQ
+         lgnyW2VdcXZdHP/TxSv/lxQ9Qw3/UJQK7kckSMyTrHS3HX105JEd+0chhg04zw4H64cS
+         ENAZPHxec/j/9CmqijHU44dFqUR9J5oyKICGWW/ZDSgBstvdlmGJ99cE7urJyOTQ6tuq
+         hbBIy+LY2mkgR4DlRLJGW7imD0D6Vmnyl1KceTJjeiZT9siqxk1pCbYZr2aZFJvnfluZ
+         Yd+xtEyvKeubFn5yFYvECZFAx50FyscC+PbZgUCKkkNG33ixkGB7Vr0Qy8Pj8R9nZmgw
+         oF0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=hkXsADjEOdlZ3YiKrCkRrx58YtFi1M6caFsielcQFFg=;
+        b=IKJwncX5ip0iBpCd7i8rJUdk5eePP5LCxEu5yEsyYgSySgziDOazfdC05Y0iJRihYB
+         fnEqZZkBP8GKPOZu52ZFmqqfW64dn2sJAt7GKj5aPpnmQhWWMndqzl8/rViL08UqJ2/0
+         XN1cufSUSI6sl8GruoHd5DSM4l3p4QWOwynSvU1+n1O52nhHwhDPyitNVLww5pHSeetm
+         ZhKUmhYb9K8CPbJn3Kpj1jrUJD3CxEMeH8xgdRxItVC61eUHl3CGW3jIVL+jJuq39TlU
+         wXhWwidc/S7zYTFe6hREXM2aUCj+zygor8hQtVrpEWOCCvll6uw+6AMsy0t3cIpHh801
+         6gKg==
+X-Gm-Message-State: APjAAAUIGnM+lhb66ieIJuyr6rtXKLb++rv1HNeL/z9VsIkD7950Gpai
+        0TdebhunLe0rk+SZrzz5R10sDQ==
+X-Google-Smtp-Source: APXvYqwaEGTNQ6pH3nMfuHI18X2jWcofC92bUt5mO8xtMpIu9pyAp5ByFh4AqZ1cix2cCPEzxx9A8w==
+X-Received: by 2002:a2e:98c6:: with SMTP id s6mr5237392ljj.235.1574200997652;
+        Tue, 19 Nov 2019 14:03:17 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a11sm10429535ljm.60.2019.11.19.14.03.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 14:03:17 -0800 (PST)
+Date:   Tue, 19 Nov 2019 14:03:01 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Luigi Rizzo <lrizzo@google.com>
+Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        jonathan.lemon@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, rizzo@iet.unipi.it
+Subject: Re: [PATCH v2] net-af_xdp: use correct number of channels from
+ ethtool
+Message-ID: <20191119140301.6ff669e1@cakuba.netronome.com>
+In-Reply-To: <20191119001951.92930-1-lrizzo@google.com>
+References: <20191119001951.92930-1-lrizzo@google.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 Nov 2019 14:02:25 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Tue, 19 Nov 2019 13:46:38 -0800
+On Mon, 18 Nov 2019 16:19:51 -0800, Luigi Rizzo wrote:
+> Drivers use different fields to report the number of channels, so take
+> the maximum of all data channels (rx, tx, combined) when determining the
+> size of the xsk map. The current code used only 'combined' which was set
+> to 0 in some drivers e.g. mlx4.
+> 
+> Tested: compiled and run xdpsock -q 3 -r -S on mlx4
+> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 
-> As I asked in my review of patch 4 in v1, please provide us with
-> accurate description of how does a system with a octeontx2 operate.
-> Best in the form of RST documentation in the Documentation/ directory,
-> otherwise it's very hard for upstream folks to review what you're doing.
-
-Yes, please do this.
-
-Some of us are strongly suspecting that there is a third agent (via
-an SDK or similar) that programs part of this chip in a complete system
-and if that is the case you must fully disclose how all of this is
-intended to work.
-
-Right now nobody has any idea what any of these new feature components
-are, how there are used, how they are configured by the user, etc.
-
-And the choices of things to put into debugfs seem completely arbitrary.
-
-In short, these octeontx2 submissions are for huge complicated chip
-and lack any wholistic description of how this stuff works,
-understandable by those reviewing your changes rather than those who
-are experts about this networking chip.
-
-Thank you.
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
