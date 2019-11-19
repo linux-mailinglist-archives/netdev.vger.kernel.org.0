@@ -2,235 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0891027F6
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 16:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73CDF1027FE
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 16:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbfKSPVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 10:21:04 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:37208 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727509AbfKSPVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 10:21:04 -0500
-Received: by mail-io1-f68.google.com with SMTP id 1so23612392iou.4
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 07:21:02 -0800 (PST)
+        id S1728226AbfKSPXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 10:23:46 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34000 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726637AbfKSPXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 10:23:45 -0500
+Received: by mail-wr1-f68.google.com with SMTP id e6so24370846wrw.1
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 07:23:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wLB89YSfgFbBGVbXR/ZLzoyZwIzs8AJRlNKdafMUlZc=;
-        b=JZU5Egl9ZoaDwz0bdBgxNinwLYcLz3n+Hn0aSbO/AVFn/aCE1lLwcN1r/3QDejrEwj
-         6kglXsZ4RySU2HEjz8jO/+dMfP0KzreCJJzgp6h7hlw6u+wxrZj6UwrfdYtdIGDWXGiR
-         OYES5PwFK/+xSi0YVlN3UdH6klun9G6QoHg4Tc+ZnUsv6IMI/4muOABPexjk1oA0ADE5
-         b3zj+/FHbBkydFhTf4a73F5C1bOOVr937pWuybe9hb0lgDZmy5CuNokkTpHWHs08/nD+
-         f69g2JR9eA014LrlsmPjz5j30rtzeVJA7qw7ztGe066Nw7m/BfFu8Iv6+9T9ezL/N4tx
-         eaVA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0ZlP3l8MU/qV+mcE5CTpDdgpZthwhwe2rRllBt9+9r8=;
+        b=XlSpCEeUbw3Cy9D+a45SNSTSCdl8fKZPl63yAYEUSql3m+oedUCLYmGvyeP1tFzV3q
+         S8XLP07p8DiuK//osIdzdICf9jiAVHHWhKtY9RL2ClL54gZJz1bFkckxxJ8zFeay1ehA
+         1MCddUEwkLFb41TGhy4bFQZ8qmM+bwGq16Y64OC2Z1Xh5/0zbFdMkFfsRyM6fYT2dDLo
+         JChVyRruZqA5KqFGDYoM1ebz7yfMnNFr++UV+DQMrQMN7ztfq9mSCSwQN7JNgk5dYz1M
+         K0Es7HeCqz+jjmhTIfXOoin7IgaRsKy3H/5ITqitv0mVn0XAa4fz9CQvIb4glpxKVskF
+         womg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wLB89YSfgFbBGVbXR/ZLzoyZwIzs8AJRlNKdafMUlZc=;
-        b=E/RpkWBrIsC9u1jYvL0xTfbSQYeSOU+AR7cFqPo+YVoxpxTyjrFAvcsHcGqTRdJd0s
-         DLtwgKoIjClZ7jia6lUC8xtbnNOML3/4dU94vRqf+Uw+h2sgwNuEFtyTJXMfrePCnWaG
-         pIyWcPJUV+lAHJOKS7HOw42qR2hyvrzaRAnve3QPvFTEot8ebY4phI4NE3//Yy4xgwPC
-         l75v8s7D2jVNvyqh5jl+SiRWY2KvRhc5SZaa23wlYC7CbUCo4NhpSOgsZjyuizamIuwG
-         bzbno0KaiyW+n15FWcGuV3GORGqo0LFMtBIHgrKJbh1sNRbIPpjQBIufx2oVR3D85n3y
-         U23w==
-X-Gm-Message-State: APjAAAW5GRUMX+4lhS6p3nRcZOxRZlsL1Hg7XQDgjhMaZq/tk/xmXlGf
-        hb9j6dd4gFOT1NbggmvXdhin6323Bpo=
-X-Google-Smtp-Source: APXvYqxS869fK817TTK5HMeIoHO8JiLIL3F6mOGHGin+8CiL/opZQabRZ2ZaAHZYToc+OJNCCgwA+A==
-X-Received: by 2002:a02:70cb:: with SMTP id f194mr19334335jac.126.1574176861577;
-        Tue, 19 Nov 2019 07:21:01 -0800 (PST)
-Received: from [192.168.1.159] ([65.144.74.34])
-        by smtp.gmail.com with ESMTPSA id t7sm4262873iog.85.2019.11.19.07.20.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 Nov 2019 07:21:00 -0800 (PST)
-Subject: Re: INFO: task hung in io_wq_destroy
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     syzbot <syzbot+0f1cc17f85154f400465@syzkaller.appspotmail.com>,
-        andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
-        idosch@mellanox.com, kimbrownkd@gmail.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, petrm@mellanox.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        viro@zeniv.linux.org.uk, wanghai26@huawei.com,
-        yuehaibing@huawei.com
-References: <000000000000f86a4f0595fdb152@google.com>
- <f1a79e81-b41f-ba48-9bf3-aeae708f73ba@kernel.dk>
- <20191119022330.GC3147@sol.localdomain>
- <bc52115c-3951-54c6-7810-86797d8c4644@kernel.dk>
- <c7b9c600-724b-6df1-84ba-b74999d6f4a6@kernel.dk>
-Message-ID: <09cdf1d6-4660-9712-e374-4bbb120d6858@kernel.dk>
-Date:   Tue, 19 Nov 2019 08:20:58 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0ZlP3l8MU/qV+mcE5CTpDdgpZthwhwe2rRllBt9+9r8=;
+        b=qg4F9MnLm9SdGkDvK+4MpRcJII8ExmIMyEAQxh0/q1UkV/DOwdhHtvH7xM0Gut2/4v
+         JKtDfXlMgLXp+0hOCVW4jjHyAuVGLvtkZ7SGSrGydvSoZdFQSJOzR3KCbBfBNogkk9An
+         5K9RjW7IIFmcjINPG/URK/99Y6uQMDg8bkjQ4nkWfoC1c1O+HWdTA0EaIFknT+qH2d2w
+         QaE+r77iqpAGXWfgqY+n5hj/UwjGyPv2Erkl2Pt/Gpd1n/MuseUyxqUcEJQwh7dB9kEy
+         7hLz/+FSzxHxud5vOfWou0fEHJu8Q7loZRRksO4DAcje1rdHRAOB9btYeyNaKCUodHVl
+         j+vw==
+X-Gm-Message-State: APjAAAVEGjGBEM9v64VQl/BfWnkKa7yt+Y3XRyWY88DMks1T6mq+3lKe
+        ZrLXWChYTaqOAZ8/IP+EIwUiCQ==
+X-Google-Smtp-Source: APXvYqy4xV+vEHKMRS7ljsN3G0L8IL87R3Jtg9tYlhA77XFoBmrrwNkWWPH/ZHkvms82KXXoKzymxQ==
+X-Received: by 2002:a5d:4f09:: with SMTP id c9mr39756946wru.175.1574177023406;
+        Tue, 19 Nov 2019 07:23:43 -0800 (PST)
+Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id u18sm28119297wrp.14.2019.11.19.07.23.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 07:23:42 -0800 (PST)
+Date:   Tue, 19 Nov 2019 17:23:40 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com,
+        mcroce@redhat.com, jonathan.lemon@gmail.com
+Subject: Re: [PATCH v4 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191119152340.GA31758@apalos.home>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+ <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
+ <20191119122358.12276da4@carbon>
+ <20191119113336.GA25152@apalos.home>
+ <20191119161109.7cd83965@carbon>
 MIME-Version: 1.0
-In-Reply-To: <c7b9c600-724b-6df1-84ba-b74999d6f4a6@kernel.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119161109.7cd83965@carbon>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/19 9:34 PM, Jens Axboe wrote:
-> On 11/18/19 8:15 PM, Jens Axboe wrote:
->> On 11/18/19 7:23 PM, Eric Biggers wrote:
->>> Hi Jens,
->>>
->>> On Mon, Oct 28, 2019 at 03:00:08PM -0600, Jens Axboe wrote:
->>>> This is fixed in my for-next branch for a few days at least, unfortunately
->>>> linux-next is still on the old one. Next version should be better.
->>>
->>> This is still occurring on linux-next.  Here's a report on next-20191115 from
->>> https://syzkaller.appspot.com/text?tag=CrashReport&x=16fa3d1ce00000
->>
->> Hmm, I'll take a look. Looking at the reproducer, it's got a massive
->> sleep at the end. I take it this triggers before that time actually
->> passes? Because that's around 11.5 days of sleep.
->>
->> No luck reproducing this so far, I'll try on linux-next.
+On Tue, Nov 19, 2019 at 04:11:09PM +0100, Jesper Dangaard Brouer wrote:
+> On Tue, 19 Nov 2019 13:33:36 +0200
+> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
 > 
-> I see what it is - if the io-wq is setup and torn down before the
-> manager thread is started, then we won't create the workers we already
-> expected. The manager thread will exit without doing anything, but
-> teardown will wait for the expected workers to exit before being
-> allowed to proceed. That never happens.
+> > > > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > > > index dfc2501c35d9..4f9aed7bce5a 100644
+> > > > --- a/net/core/page_pool.c
+> > > > +++ b/net/core/page_pool.c
+> > > > @@ -47,6 +47,13 @@ static int page_pool_init(struct page_pool *pool,
+> > > >  	    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
+> > > >  		return -EINVAL;
+> > > >  
+> > > > +	/* In order to request DMA-sync-for-device the page needs to
+> > > > +	 * be mapped
+> > > > +	 */
+> > > > +	if ((pool->p.flags & PP_FLAG_DMA_SYNC_DEV) &&
+> > > > +	    !(pool->p.flags & PP_FLAG_DMA_MAP))
+> > > > +		return -EINVAL;
+> > > > +  
+> > > 
+> > > I like that you have moved this check to setup time.
+> > > 
+> > > There are two other parameters the DMA_SYNC_DEV depend on:
+> > > 
+> > >  	struct page_pool_params pp_params = {
+> > >  		.order = 0,
+> > > -		.flags = PP_FLAG_DMA_MAP,
+> > > +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+> > >  		.pool_size = size,
+> > >  		.nid = cpu_to_node(0),
+> > >  		.dev = pp->dev->dev.parent,
+> > >  		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> > > +		.offset = pp->rx_offset_correction,
+> > > +		.max_len = MVNETA_MAX_RX_BUF_SIZE,
+> > >  	};
+> > > 
+> > > Can you add a check, that .max_len must not be zero.  The reason is
+> > > that I can easily see people misconfiguring this.  And the effect is
+> > > that the DMA-sync-for-device is essentially disabled, without user
+> > > realizing this. The not-realizing part is really bad, especially
+> > > because bugs that can occur from this are very rare and hard to catch.  
+> > 
+> > +1 we sync based on the min() value of those 
+> > 
+> > > 
+> > > I'm up for discussing if there should be a similar check for .offset.
+> > > IMHO we should also check .offset is configured, and then be open to
+> > > remove this check once a driver user want to use offset=0.  Does the
+> > > mvneta driver already have a use-case for this (in non-XDP mode)?  
+> > 
+> > Not sure about this, since it does not break anything apart from some
+> > performance hit
 > 
-> I've got a patch for this, but I'll test it a bit and send it out
-> tomorrow.
+> I don't follow the 'performance hit' comment.  This is checked at setup
+> time (page_pool_init), thus it doesn't affect runtime.
 
-This should fix it - wait until the manager is started and has created
-the required fixed workers, then check if it failed or not. That closes
-the gap between startup and teardown, as we have settled things before
-anyone is allowed to call io_wq_destroy().
+If the offset is 0, you'll end up syncing a couple of uneeded bytes (whatever
+headers the buffer has which doesn't need syncing). 
 
+> 
+> This is a generic optimization principle that I use a lot. Moving code
+> checks out of fast-path, and instead do more at setup/load-time, or
+> even at shutdown-time (like we do for page_pool e.g. check refcnt
+> invariance).  This principle is also heavily used by BPF, that adjust
+> BPF-instructions at load-time.  It is core to getting the performance
+> we need for high-speed networking.
 
-diff --git a/fs/io-wq.c b/fs/io-wq.c
-index 9174007ce107..1f640c489f7c 100644
---- a/fs/io-wq.c
-+++ b/fs/io-wq.c
-@@ -33,6 +33,7 @@ enum {
- enum {
- 	IO_WQ_BIT_EXIT		= 0,	/* wq exiting */
- 	IO_WQ_BIT_CANCEL	= 1,	/* cancel work on list */
-+	IO_WQ_BIT_ERROR		= 2,	/* error on setup */
- };
- 
- enum {
-@@ -562,14 +563,14 @@ void io_wq_worker_sleeping(struct task_struct *tsk)
- 	spin_unlock_irq(&wqe->lock);
- }
- 
--static void create_io_worker(struct io_wq *wq, struct io_wqe *wqe, int index)
-+static bool create_io_worker(struct io_wq *wq, struct io_wqe *wqe, int index)
- {
- 	struct io_wqe_acct *acct =&wqe->acct[index];
- 	struct io_worker *worker;
- 
- 	worker = kcalloc_node(1, sizeof(*worker), GFP_KERNEL, wqe->node);
- 	if (!worker)
--		return;
-+		return false;
- 
- 	refcount_set(&worker->ref, 1);
- 	worker->nulls_node.pprev = NULL;
-@@ -581,7 +582,7 @@ static void create_io_worker(struct io_wq *wq, struct io_wqe *wqe, int index)
- 				"io_wqe_worker-%d/%d", index, wqe->node);
- 	if (IS_ERR(worker->task)) {
- 		kfree(worker);
--		return;
-+		return false;
- 	}
- 
- 	spin_lock_irq(&wqe->lock);
-@@ -599,6 +600,7 @@ static void create_io_worker(struct io_wq *wq, struct io_wqe *wqe, int index)
- 		atomic_inc(&wq->user->processes);
- 
- 	wake_up_process(worker->task);
-+	return true;
- }
- 
- static inline bool io_wqe_need_worker(struct io_wqe *wqe, int index)
-@@ -606,9 +608,6 @@ static inline bool io_wqe_need_worker(struct io_wqe *wqe, int index)
- {
- 	struct io_wqe_acct *acct = &wqe->acct[index];
- 
--	/* always ensure we have one bounded worker */
--	if (index == IO_WQ_ACCT_BOUND && !acct->nr_workers)
--		return true;
- 	/* if we have available workers or no work, no need */
- 	if (!hlist_nulls_empty(&wqe->free_list) || !io_wqe_run_queue(wqe))
- 		return false;
-@@ -621,10 +620,19 @@ static inline bool io_wqe_need_worker(struct io_wqe *wqe, int index)
- static int io_wq_manager(void *data)
- {
- 	struct io_wq *wq = data;
-+	int i;
- 
--	while (!kthread_should_stop()) {
--		int i;
-+	/* create fixed workers */
-+	for (i = 0; i < wq->nr_wqes; i++) {
-+		if (create_io_worker(wq, wq->wqes[i], IO_WQ_ACCT_BOUND))
-+			continue;
-+		goto err;
-+	}
- 
-+	refcount_set(&wq->refs, wq->nr_wqes);
-+	complete(&wq->done);
-+
-+	while (!kthread_should_stop()) {
- 		for (i = 0; i < wq->nr_wqes; i++) {
- 			struct io_wqe *wqe = wq->wqes[i];
- 			bool fork_worker[2] = { false, false };
-@@ -644,6 +652,10 @@ static int io_wq_manager(void *data)
- 		schedule_timeout(HZ);
- 	}
- 
-+	return 0;
-+err:
-+	set_bit(IO_WQ_BIT_ERROR, &wq->state);
-+	complete(&wq->done);
- 	return 0;
- }
- 
-@@ -982,7 +994,6 @@ struct io_wq *io_wq_create(unsigned bounded, struct mm_struct *mm,
- 	wq->user = user;
- 
- 	i = 0;
--	refcount_set(&wq->refs, wq->nr_wqes);
- 	for_each_online_node(node) {
- 		struct io_wqe *wqe;
- 
-@@ -1020,6 +1031,10 @@ struct io_wq *io_wq_create(unsigned bounded, struct mm_struct *mm,
- 	wq->manager = kthread_create(io_wq_manager, wq, "io_wq_manager");
- 	if (!IS_ERR(wq->manager)) {
- 		wake_up_process(wq->manager);
-+		wait_for_completion(&wq->done);
-+		if (test_bit(IO_WQ_BIT_ERROR, &wq->state))
-+			goto err;
-+		reinit_completion(&wq->done);
- 		return wq;
- 	}
- 
-@@ -1041,10 +1056,9 @@ void io_wq_destroy(struct io_wq *wq)
- {
- 	int i;
- 
--	if (wq->manager) {
--		set_bit(IO_WQ_BIT_EXIT, &wq->state);
-+	set_bit(IO_WQ_BIT_EXIT, &wq->state);
-+	if (wq->manager)
- 		kthread_stop(wq->manager);
--	}
- 
- 	rcu_read_lock();
- 	for (i = 0; i < wq->nr_wqes; i++) {
+The offset will affect the fast path running code.
 
--- 
-Jens Axboe
+What i am worried about is that XDP and SKB pool will have different needs for
+offsets. In the netsec driver i am dealing with this with reserving the same
+header whether the packet is an SKB or XDP buffer. If we check the offset we are
+practically forcing people to do something similar
 
+Thanks
+/Ilias
+> 
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
