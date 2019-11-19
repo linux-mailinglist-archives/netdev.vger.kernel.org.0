@@ -2,131 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4ED0102351
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6112F10235E
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:39:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728025AbfKSLh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 06:37:58 -0500
-Received: from mx2.suse.de ([195.135.220.15]:35362 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727557AbfKSLh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 06:37:57 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8BC3DBCC5;
-        Tue, 19 Nov 2019 11:37:52 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 1D7961E47E5; Tue, 19 Nov 2019 12:37:46 +0100 (CET)
-Date:   Tue, 19 Nov 2019 12:37:46 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 17/24] mm/gup: track FOLL_PIN pages
-Message-ID: <20191119113746.GD25605@quack2.suse.cz>
-References: <20191119081643.1866232-1-jhubbard@nvidia.com>
- <20191119081643.1866232-18-jhubbard@nvidia.com>
+        id S1727963AbfKSLjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 06:39:05 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48551 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727529AbfKSLjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 06:39:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574163543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jmfnhk3LBCDD/hpnlyFXlGUe8AU9t88orirFnAYVQOM=;
+        b=bOpfvTEpMnhmjdsRlY2GqL79va4O3wB3yJh+kvOdm98+obTUB37PbmDtx0NUr4TVXnyaKz
+        u9RegVZHF3z81yBxgHGUF1rHMcBmT180GFzI5eqDEwKfrCFgAeMEscfXwyAoZK3XFL3E6X
+        NmblRbCgJcQZO2gS4qT5uhglb0gPxvc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-200-JZPDqvMPMjmQef2sci79GQ-1; Tue, 19 Nov 2019 06:39:00 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5488B1883523;
+        Tue, 19 Nov 2019 11:38:59 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F37A05E24D;
+        Tue, 19 Nov 2019 11:38:51 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 12:38:50 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, lorenzo.bianconi@redhat.com,
+        mcroce@redhat.com, jonathan.lemon@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v4 net-next 3/3] net: mvneta: get rid of huge dma sync
+ in mvneta_rx_refill
+Message-ID: <20191119123850.5cd60c0e@carbon>
+In-Reply-To: <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+        <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191119081643.1866232-18-jhubbard@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: JZPDqvMPMjmQef2sci79GQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 19-11-19 00:16:36, John Hubbard wrote:
-> @@ -2025,6 +2149,20 @@ static int __record_subpages(struct page *page, unsigned long addr,
->  	return nr;
->  }
->  
-> +static bool __pin_compound_head(struct page *head, int refs, unsigned int flags)
-> +{
+On Mon, 18 Nov 2019 15:33:46 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-I don't quite like the proliferation of names starting with __. I don't
-think there's a good reason for that, particularly in this case. Also 'pin'
-here is somewhat misleading as we already use term "pin" for the particular
-way of pinning the page. We could have grab_compound_head() or maybe
-nail_compound_head() :), but you're native speaker so you may come up with
-better word.
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet=
+/marvell/mvneta.c
+> index f7713c2c68e1..a06d109c9e80 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+[...]
+> @@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvne=
+ta_rx_queue *rxq,
+>  =09=09err =3D xdp_do_redirect(pp->dev, xdp, prog);
+>  =09=09if (err) {
+>  =09=09=09ret =3D MVNETA_XDP_DROPPED;
+> -=09=09=09page_pool_recycle_direct(rxq->page_pool,
+> -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
+> +=09=09=09__page_pool_put_page(rxq->page_pool,
+> +=09=09=09=09=09virt_to_head_page(xdp->data),
+> +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
+> +=09=09=09=09=09true);
+>  =09=09} else {
+>  =09=09=09ret =3D MVNETA_XDP_REDIR;
+>  =09=09}
+> @@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvne=
+ta_rx_queue *rxq,
+>  =09case XDP_TX:
+>  =09=09ret =3D mvneta_xdp_xmit_back(pp, xdp);
+>  =09=09if (ret !=3D MVNETA_XDP_TX)
+> -=09=09=09page_pool_recycle_direct(rxq->page_pool,
+> -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
+> +=09=09=09__page_pool_put_page(rxq->page_pool,
+> +=09=09=09=09=09virt_to_head_page(xdp->data),
+> +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
+> +=09=09=09=09=09true);
+>  =09=09break;
+>  =09default:
+>  =09=09bpf_warn_invalid_xdp_action(act);
+> @@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvne=
+ta_rx_queue *rxq,
+>  =09=09trace_xdp_exception(pp->dev, prog, act);
+>  =09=09/* fall through */
+>  =09case XDP_DROP:
+> -=09=09page_pool_recycle_direct(rxq->page_pool,
+> -=09=09=09=09=09 virt_to_head_page(xdp->data));
+> +=09=09__page_pool_put_page(rxq->page_pool,
+> +=09=09=09=09     virt_to_head_page(xdp->data),
+> +=09=09=09=09     xdp->data_end - xdp->data_hard_start,
+> +=09=09=09=09     true);
 
-> +	if (flags & FOLL_PIN) {
-> +		if (unlikely(!try_pin_compound_head(head, refs)))
-> +			return false;
-> +	} else {
-> +		head = try_get_compound_head(head, refs);
-> +		if (!head)
-> +			return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
->  static void put_compound_head(struct page *page, int refs)
->  {
->  	/* Do a get_page() first, in case refs == page->_refcount */
+This does beg for the question: Should we create an API wrapper for
+this in the header file?
 
-put_compound_head() needs similar treatment as undo_dev_pagemap(), doesn't
-it?
+But what to name it?
 
-> @@ -968,7 +973,18 @@ struct page *follow_devmap_pmd(struct vm_area_struct *vma, unsigned long addr,
->  	if (!*pgmap)
->  		return ERR_PTR(-EFAULT);
->  	page = pfn_to_page(pfn);
-> -	get_page(page);
-> +
-> +	if (flags & FOLL_GET)
-> +		get_page(page);
-> +	else if (flags & FOLL_PIN) {
-> +		/*
-> +		 * try_pin_page() is not actually expected to fail here because
-> +		 * we hold the pmd lock so no one can unmap the pmd and free the
-> +		 * page that it points to.
-> +		 */
-> +		if (unlikely(!try_pin_page(page)))
-> +			page = ERR_PTR(-EFAULT);
-> +	}
+I know Jonathan doesn't like the "direct" part of the  previous function
+name page_pool_recycle_direct.  (I do considered calling this 'napi'
+instead, as it would be inline with networking use-cases, but it seemed
+limited if other subsystem end-up using this).
 
-This pattern is rather common. So maybe I'd add a helper grab_page(page,
-flags) doing
+Does is 'page_pool_put_page_len' sound better?
 
-	if (flags & FOLL_GET)
-		get_page(page);
-	else if (flags & FOLL_PIN)
-		return try_pin_page(page);
-	return true;
+But I want also want hide the bool 'allow_direct' in the API name.
+(As it makes it easier to identify users that uses this from softirq)
 
-Otherwise the patch looks good to me now.
+Going for 'page_pool_put_page_len_napi' starts to be come rather long.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
