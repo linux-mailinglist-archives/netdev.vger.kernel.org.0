@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D292102F7A
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE120102F7D
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfKSWrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:47:24 -0500
-Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:44734
+        id S1727389AbfKSWrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 17:47:40 -0500
+Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:34061
         "EHLO sonic313-15.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725978AbfKSWrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:47:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1574203643; bh=fQopPU+QHEIhU1rMxngnZt5dLriz8PONEvXZFfDzj2M=; h=From:To:Subject:Date:In-Reply-To:References:From:Subject; b=iA3uj1SNnHCTKNqi6gMv5N5GUFm2PIGyAHJQ/MG5rX3N9Ty8yO/loZZuY71LoW4nLcgGhih2j7qKMdAPHpUI2cikqtwDpXboj1bBli4/lliucj7SRUZL1Y1hfabyKbUcjbAoojp/rxtD6bWUocjDQ/vIi/RIQCb5X9qjBF1mL3GtOLrQd+KeYSGSau5s5hS9WXTtgHi2GVyI+g1IcwJPmSGvJHPw4A2KQRpZGPl8nNDHqwiXSohVJ14f+J3nfXDSS/ZsCb9tmoC7hrnVMr754u4ThGVa06dBNWgetpE9LBbknd8RXZNQgzoowLMoO6S67fxzIn8Q41Xk+GuJFvXyrQ==
-X-YMail-OSG: VZjamvUVM1kgZ1Bm6rfM3ph.MIFJpksyA2u7VFgYLWZciFH1efd3p3J9V92YMNt
- 7sBWdUARaM6GGdGsEAuQBSZyrT22irGYXE7cT88eqbxUHGuVTvc3hjJf9KwWo6wSrnwDJD9J5Imr
- VYY1A3KfdZPi9YSckqUGfGKZNpFWcDFy9imFRm3u48WoeOcf9u8Q8NAC0y3G2OrSulAK.DRKk1zr
- 2LL4L0Ep3QBZNDr2fZqcVA6NNaJmR0dlQb2OYnBpj4WDX2TTR3kR88GF1vibXae2swNiYMXMjII3
- LwoqdKFmqnOdMdc56ryjjupOYIxkFCQ3gXujt.6QITfSY_i0.7LDskgNQiK54NepwKSQyrIajJ2x
- G.062r55ohMBbVF4DsKkaTMlbnQhndFYms6hz3hJnkMpN_55PELGmTODIRXW9F8QeRpzF4Sm4Aqd
- N4PH62ucBbzsXOY4zQocZ8jYtHpDWHrvxSGwiP3d3IbZv7k1PpaDD_fHDwKX5z9QJRAhGOt8Opvf
- _BXAOGtT7DwCZPHuyn6OE757tSa3phlLJmycnwq79w5qlV4rMBA0bNyfExXv143osL1mh40UUMPK
- xwF6dSIMdr8Qs4IhrpQxrlgKR2zwCt3tCNU2hdzAX6H10GMOvL.oOQVxF3URhTeqfDaxDzJGB7cL
- zxX62QZxhdjGZAWI.5G0SaePiued1rcL9KRNsew6GlizpJx4DGk2uH_U36KTtZeMDk93IVzzg8CX
- N21hAc9O5hDhCo0TwExwT2qvEeTKJ8vUmMPap0yf_a1jSq4u45tmtliRD91ZcacYmaBGDuCY5rD2
- VEveWpoibUwxjxiR2vumQE88AXcxshxXqzUHzevmTi5XFIWq5oNre3dgzQYzxKQ0gBfPBghuS98U
- R5SCDs9iSvdTp_gHQSlC09RO3X3I2gkv7pkRqbUSAD2Kkq28s._STzfk.dOlfqPqyGTzNs88OyUm
- iadZsc5ORW4pOvzINXgqn5U1vUlSNXsSLGcWp5TmgBjOdRdUumH4AmhHdnC4HdT0sgwtPcfZWJeC
- fBrjinnFfHeZCBl8Zimy6.CF7.Hu8LgxSjKG56FLQzYKr7DXgqQb2A1YMGqx8GhgpOXm4mkCg1TR
- wLB3vVt_ZNirEoh7E38cbzU3EDIKL7HRoj6dpaH0RA0jL_AaauVYqCergCBT64gU6OHwQNYWsSla
- LyUE8PD9kEIbIIce2zPnM0TpiIq6fN3BcDWDN7SJLAGMtWE8Zrc6UsEnS1z0LE5BXMhN0HRt3TIS
- v54bFT5ZYzmPqpZWAnhVyWXnYsJzSXGQGfJA8.RXeb4dsTn33nt6tY27FkLhqk_E_O.QMnEQOl9K
- rmX5Ki_RiibMyUljeiAZtTA7QcUq.dirzSNACk06FR3jXVsskzbibXmL902wx6QJUCDplCk5Kcpt
- yUhhESVgCagpZ.7OzIopGzkZK4M3JY7xym6dw
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Tue, 19 Nov 2019 22:47:23 +0000
-Received: by smtp418.mail.bf1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID f0ce218b5cf5f7d004bf13262887f557;
-          Tue, 19 Nov 2019 22:47:21 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1727194AbfKSWrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:47:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1574203658; bh=co4jpZY+mhudboH3Pzmlm1GU8BGwBGVp+kygYlsjIuI=; h=From:To:Subject:Date:In-Reply-To:References:From:Subject; b=InQtvz+F1qHKBDznT9wiv/4nBuP+j3tZSoATD5CeFlUkUyGuA2ulGeXJdlGGKqQZ3opcJ7L0ZLap15NWz0K5w57QoCbGtWwDQAYpBCW6YrQyz30Uu4vR/ivPQSWtrRW++wtEjD+N3jlI5lUg7WgDjnjSYBPTYkNy0pkxHkY+7UZaRXzIVH+pSZhOt+9d8/iMQMobxSDNsWjVXOPq8xceC59vgIUKEVII2p6CaMTjCju2lt0ZGn3N8Dn6FRs0v0kIWtyt4uoQFH0XLdzg1n1jc4XXrtwRI35L/cevfCq66az8RQIW6XXqx3prk8PybCMgt4StJyAtBXkRYpTc7cDC/Q==
+X-YMail-OSG: dVYXdN0VM1koanQeJ__DrPl9W9PrmILAmV5sIpGPeUaKhOqSKh_yvwaGqEHcOQ8
+ jwvkODrqTqK_59.iZj07xVkSpEPK7WQka2T7JPPwWrnotI9hsmCByq7n_q0fwKBEREbBzrAUUC0T
+ stLUgBdHBnoimWDvS9LJ_Jui8t3A_3b_YyRWoCTWrBbegII5HPTpvTQ.aTNTuG3IDHQD.CXX4X0d
+ Bw881L9I2zIOrquj5wLnnehpi_ZTjl.poJCFnwR1oK80ubQVQS_YT3ykAmlS4nRZv8RPmkf_G2KQ
+ iEXH4DBE8OXuzE1YKUylWcGkBbcvgs8masRJU_lfVk0vO9P8k6Bt9ZKPCDhE2hhRItDxqq_kSOhO
+ iWe0OzykYym971jt2erZdncb27CIuKyFUsBLk6l7hL4.vJgEkoVkGQH0gpuyoMIzEs.HggYrIdap
+ is4.80uJcMKLjXqPeYvTixnofhgsr_sZyA5keukfXlIvOiPAWfGI8NtITDPx8OCiin9EI.DFvbmg
+ To1Uj7HniMs5J.1uSwLSmR3YwVaKz2Yai6.rnoxkLzyMfCFWd8JeMJfwfIzxQwX.hxVLaxHcgowf
+ 7L8keW3T4tjzTyTBqETYO8dZUWf5NaFdFUo3LLxQUhMhWKNkN9XEJMf.fNBIgDT63P50hADvdhSN
+ ifq.aKGVSXJAbr1Sq6aUS_7nU7BemwOH5lrYi158VVI6lvJepAoVncWo6wt7ZpAvhM_zhopjcdgG
+ tPb1qshrmpruo9kLx.6VYlteISkwstXNs.TqchMihjTIAkC0sySlYrCNmbXX_H.Dl_FIfxt7woGw
+ X_qLcfdT1ZmeZc4kOARbpYVPqGRh_xPjUbHFQaxBPeZ4nVVTxK5QY1z_2wfXwy5UC8_GEmue_zcJ
+ 3.lFb8sYjM71Pf93SGxHVRBcyWkc4Dou.p3DBwHfDa9Cncy7R3wrUtKyYkDNQHbqB02XcEDFrfSq
+ VLE1wHSGN3qAcPjjp.RnFu9aUlpf.9Sr0DOvl1SWfM0CZAANNCc4uIGak2IpPRz7HzKLQ_JNiZUD
+ PYk8XDLGbW8oZ4emXIscROK2.5v4eohgE7zA7MEqdCMx8CwlyyPIoO_.SKePzuNpxEm_cg5YP2FQ
+ ypEKsvBOQpNMZJQSZkVoqHZBHpbSw0JycTmiT3Z536fv1m7RkVRpIOFhDRHb7KkG6wzSpFojCvxK
+ GAnPUckF2ClXcSkBJhbRAY.UkJ_uAuXWcFIbW.W9rqojs1hNYjhMAV8F0BVtfGjmqjTB5b2t94ho
+ j1Dg1WbRakIE5_5eQanvEdDB472dedH0YrE0Dga_LVKZgnyrgOu6SrFFVd5XPizKrM1STBV76ihe
+ QfH6plVQSxHRZhzO1JZYf_F2AqtAaEA8XpS1V_t4g5YpLISynrC8Ig9E.wKg1JIAzNJb4XIV9u0N
+ CKGvvFkAzVTRI5ttvucnh.2gDnUt.p9Ov
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Tue, 19 Nov 2019 22:47:38 +0000
+Received: by smtp431.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID de87915666a9c7d973a1bff130532280;
+          Tue, 19 Nov 2019 22:47:33 +0000 (UTC)
 From:   Casey Schaufler <casey@schaufler-ca.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH v11 05/25] net: Prepare UDS for security module stacking
-Date:   Tue, 19 Nov 2019 14:47:04 -0800
-Message-Id: <20191119224714.13491-3-casey@schaufler-ca.com>
+Subject: [PATCH v11 06/25] LSM: Use lsmblob in security_secctx_to_secid
+Date:   Tue, 19 Nov 2019 14:47:05 -0800
+Message-Id: <20191119224714.13491-4-casey@schaufler-ca.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191119224714.13491-1-casey@schaufler-ca.com>
 References: <20191119224714.13491-1-casey@schaufler-ca.com>
@@ -50,176 +50,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change the data used in UDS SO_PEERSEC processing from a
-secid to a more general struct lsmblob. Update the
-security_socket_getpeersec_dgram() interface to use the
-lsmblob. There is a small amount of scaffolding code
-that will come out when the security_secid_to_secctx()
-code is brought in line with the lsmblob.
+Change security_secctx_to_secid() to fill in a lsmblob instead
+of a u32 secid. Multiple LSMs may be able to interpret the
+string, and this allows for setting whichever secid is
+appropriate. In some cases there is scaffolding where other
+interfaces have yet to be converted.
 
 Reviewed-by: Kees Cook <keescook@chromium.org>
 Reviewed-by: John Johansen <john.johansen@canonical.com>
 Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-cc: netdev@vger.kernel.org
 ---
- include/linux/security.h |  7 +++++--
- include/net/af_unix.h    |  2 +-
- include/net/scm.h        |  8 +++++---
- net/ipv4/ip_sockglue.c   |  8 +++++---
- net/unix/af_unix.c       |  6 +++---
- security/security.c      | 18 +++++++++++++++---
- 6 files changed, 34 insertions(+), 15 deletions(-)
+ include/linux/security.h          |  5 +++--
+ kernel/cred.c                     |  4 +---
+ net/netfilter/nft_meta.c          | 13 ++++++-------
+ net/netfilter/xt_SECMARK.c        |  5 ++++-
+ net/netlabel/netlabel_unlabeled.c | 14 ++++++++------
+ security/security.c               | 18 +++++++++++++++---
+ 6 files changed, 37 insertions(+), 22 deletions(-)
 
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 2b0ab47cfb26..d57f400a307e 100644
+index d57f400a307e..b69877a13efa 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -1354,7 +1354,8 @@ int security_socket_shutdown(struct socket *sock, int how);
- int security_sock_rcv_skb(struct sock *sk, struct sk_buff *skb);
- int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
- 				      int __user *optlen, unsigned len);
--int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid);
-+int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
-+				     struct lsmblob *blob);
- int security_sk_alloc(struct sock *sk, int family, gfp_t priority);
- void security_sk_free(struct sock *sk);
- void security_sk_clone(const struct sock *sk, struct sock *newsk);
-@@ -1492,7 +1493,9 @@ static inline int security_socket_getpeersec_stream(struct socket *sock, char __
- 	return -ENOPROTOOPT;
- }
+@@ -494,7 +494,8 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
+ int security_netlink_send(struct sock *sk, struct sk_buff *skb);
+ int security_ismaclabel(const char *name);
+ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob);
+ void security_release_secctx(char *secdata, u32 seclen);
+ void security_inode_invalidate_secctx(struct inode *inode);
+ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -1300,7 +1301,7 @@ static inline int security_secid_to_secctx(u32 secid, char **secdata, u32 *secle
  
--static inline int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
-+static inline int security_socket_getpeersec_dgram(struct socket *sock,
-+						   struct sk_buff *skb,
-+						   struct lsmblob *blob)
+ static inline int security_secctx_to_secid(const char *secdata,
+ 					   u32 seclen,
+-					   u32 *secid)
++					   struct lsmblob *blob)
  {
- 	return -ENOPROTOOPT;
+ 	return -EOPNOTSUPP;
  }
-diff --git a/include/net/af_unix.h b/include/net/af_unix.h
-index 3426d6dacc45..933492c08b8c 100644
---- a/include/net/af_unix.h
-+++ b/include/net/af_unix.h
-@@ -36,7 +36,7 @@ struct unix_skb_parms {
- 	kgid_t			gid;
- 	struct scm_fp_list	*fp;		/* Passed files		*/
- #ifdef CONFIG_SECURITY_NETWORK
--	u32			secid;		/* Security ID		*/
-+	struct lsmblob		lsmblob;	/* Security LSM data	*/
- #endif
- 	u32			consumed;
- } __randomize_layout;
-diff --git a/include/net/scm.h b/include/net/scm.h
-index 1ce365f4c256..e2e71c4bf9d0 100644
---- a/include/net/scm.h
-+++ b/include/net/scm.h
-@@ -33,7 +33,7 @@ struct scm_cookie {
- 	struct scm_fp_list	*fp;		/* Passed files		*/
- 	struct scm_creds	creds;		/* Skb credentials	*/
- #ifdef CONFIG_SECURITY_NETWORK
--	u32			secid;		/* Passed security ID 	*/
-+	struct lsmblob		lsmblob;	/* Passed LSM data	*/
- #endif
- };
+diff --git a/kernel/cred.c b/kernel/cred.c
+index 846ac4b23c16..7fef90f3f10b 100644
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -756,14 +756,12 @@ EXPORT_SYMBOL(set_security_override);
+ int set_security_override_from_ctx(struct cred *new, const char *secctx)
+ {
+ 	struct lsmblob blob;
+-	u32 secid;
+ 	int ret;
  
-@@ -46,7 +46,7 @@ struct scm_fp_list *scm_fp_dup(struct scm_fp_list *fpl);
- #ifdef CONFIG_SECURITY_NETWORK
- static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
- {
--	security_socket_getpeersec_dgram(sock, NULL, &scm->secid);
-+	security_socket_getpeersec_dgram(sock, NULL, &scm->lsmblob);
+-	ret = security_secctx_to_secid(secctx, strlen(secctx), &secid);
++	ret = security_secctx_to_secid(secctx, strlen(secctx), &blob);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	lsmblob_init(&blob, secid);
+ 	return set_security_override(new, &blob);
  }
- #else
- static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
-@@ -97,7 +97,9 @@ static inline void scm_passec(struct socket *sock, struct msghdr *msg, struct sc
+ EXPORT_SYMBOL(set_security_override_from_ctx);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 317e3a9e8c5b..7c49397c33fd 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -617,21 +617,20 @@ static const struct nla_policy nft_secmark_policy[NFTA_SECMARK_MAX + 1] = {
+ 
+ static int nft_secmark_compute_secid(struct nft_secmark *priv)
+ {
+-	u32 tmp_secid = 0;
++	struct lsmblob blob;
  	int err;
  
- 	if (test_bit(SOCK_PASSSEC, &sock->flags)) {
--		err = security_secid_to_secctx(scm->secid, &secdata, &seclen);
-+		/* Scaffolding - it has to be element 0 for now */
-+		err = security_secid_to_secctx(scm->lsmblob.secid[0],
-+					       &secdata, &seclen);
+-	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &tmp_secid);
++	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &blob);
+ 	if (err)
+ 		return err;
  
- 		if (!err) {
- 			put_cmsg(msg, SOL_SOCKET, SCM_SECURITY, seclen, secdata);
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index aa3fd61818c4..6cf57d5ac899 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -130,15 +130,17 @@ static void ip_cmsg_recv_checksum(struct msghdr *msg, struct sk_buff *skb,
+-	if (!tmp_secid)
+-		return -ENOENT;
+-
+-	err = security_secmark_relabel_packet(tmp_secid);
++	/* Using le[0] is scaffolding */
++	err = security_secmark_relabel_packet(blob.secid[0]);
+ 	if (err)
+ 		return err;
  
- static void ip_cmsg_recv_security(struct msghdr *msg, struct sk_buff *skb)
+-	priv->secid = tmp_secid;
++	/* Using le[0] is scaffolding */
++	priv->secid = blob.secid[0];
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
+index 2317721f3ecb..2d68416b4552 100644
+--- a/net/netfilter/xt_SECMARK.c
++++ b/net/netfilter/xt_SECMARK.c
+@@ -45,13 +45,14 @@ secmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
+ 
+ static int checkentry_lsm(struct xt_secmark_target_info *info)
  {
-+	struct lsmblob lb;
- 	char *secdata;
--	u32 seclen, secid;
-+	u32 seclen;
++	struct lsmblob blob;
  	int err;
  
--	err = security_socket_getpeersec_dgram(NULL, skb, &secid);
-+	err = security_socket_getpeersec_dgram(NULL, skb, &lb);
- 	if (err)
- 		return;
+ 	info->secctx[SECMARK_SECCTX_MAX - 1] = '\0';
+ 	info->secid = 0;
  
--	err = security_secid_to_secctx(secid, &secdata, &seclen);
-+	/* Scaffolding - it has to be element 0 */
-+	err = security_secid_to_secctx(lb.secid[0], &secdata, &seclen);
- 	if (err)
- 		return;
+ 	err = security_secctx_to_secid(info->secctx, strlen(info->secctx),
+-				       &info->secid);
++				       &blob);
+ 	if (err) {
+ 		if (err == -EINVAL)
+ 			pr_info_ratelimited("invalid security context \'%s\'\n",
+@@ -59,6 +60,8 @@ static int checkentry_lsm(struct xt_secmark_target_info *info)
+ 		return err;
+ 	}
  
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 0d8da809bea2..189fd6644e7f 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -138,17 +138,17 @@ static struct hlist_head *unix_sockets_unbound(void *addr)
- #ifdef CONFIG_SECURITY_NETWORK
- static void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
- {
--	UNIXCB(skb).secid = scm->secid;
-+	UNIXCB(skb).lsmblob = scm->lsmblob;
++	/* scaffolding during the transition */
++	info->secid = blob.secid[0];
+ 	if (!info->secid) {
+ 		pr_info_ratelimited("unable to map security context \'%s\'\n",
+ 				    info->secctx);
+diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+index d2e4ab8d1cb1..7a5a87f15736 100644
+--- a/net/netlabel/netlabel_unlabeled.c
++++ b/net/netlabel/netlabel_unlabeled.c
+@@ -881,7 +881,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -905,12 +905,13 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* scaffolding with the [0] */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 dev_name, addr, mask, addr_len, secid,
++				 dev_name, addr, mask, addr_len, blob.secid[0],
+ 				 &audit_info);
  }
  
- static inline void unix_set_secdata(struct scm_cookie *scm, struct sk_buff *skb)
- {
--	scm->secid = UNIXCB(skb).secid;
-+	scm->lsmblob = UNIXCB(skb).lsmblob;
+@@ -932,7 +933,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -954,12 +955,13 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* scaffolding with the [0] */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 NULL, addr, mask, addr_len, secid,
++				 NULL, addr, mask, addr_len, blob.secid[0],
+ 				 &audit_info);
  }
  
- static inline bool unix_secdata_eq(struct scm_cookie *scm, struct sk_buff *skb)
- {
--	return (scm->secid == UNIXCB(skb).secid);
-+	return lsmblob_equal(&scm->lsmblob, &(UNIXCB(skb).lsmblob));
- }
- #else
- static inline void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
 diff --git a/security/security.c b/security/security.c
-index dd6f212e11af..55837706e3ef 100644
+index 55837706e3ef..32bb5383de9b 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2108,10 +2108,22 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
- 				optval, optlen, len);
+@@ -1970,10 +1970,22 @@ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
  }
+ EXPORT_SYMBOL(security_secid_to_secctx);
  
--int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
-+int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
-+				     struct lsmblob *blob)
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob)
  {
--	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
--			     skb, secid);
+-	*secid = 0;
+-	return call_int_hook(secctx_to_secid, 0, secdata, seclen, secid);
 +	struct security_hook_list *hp;
-+	int rc = -ENOPROTOOPT;
++	int rc;
 +
-+	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
-+			     list) {
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.secctx_to_secid, list) {
 +		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
 +			continue;
-+		rc = hp->hook.socket_getpeersec_dgram(sock, skb,
-+						&blob->secid[hp->lsmid->slot]);
++		rc = hp->hook.secctx_to_secid(secdata, seclen,
++					      &blob->secid[hp->lsmid->slot]);
 +		if (rc != 0)
-+			break;
++			return rc;
 +	}
-+	return rc;
++	return 0;
  }
- EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ EXPORT_SYMBOL(security_secctx_to_secid);
  
 -- 
 2.20.1
