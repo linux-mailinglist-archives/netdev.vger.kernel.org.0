@@ -2,88 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33107101AA5
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:59:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E9E5101AE5
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 09:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727336AbfKSH7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 02:59:01 -0500
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:36257 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726921AbfKSH7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:59:01 -0500
-Received: by mail-ua1-f67.google.com with SMTP id z9so6221330uan.3;
-        Mon, 18 Nov 2019 23:59:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PRw07XCFW2nbwWC0OIMMG5Z5kRG46gKFzow6yKd7+cM=;
-        b=DQPxQDsPkoQRnm8IWQ46ldblk9QmcMp9+sn9ByC8jhBb5xfOIATvCq9Yz1sM/4yfVf
-         yBnni68M3IYaZr5gjy4aPi/VyGPczD2kwbXntPj71CfKm6YwSVOMMeY3eDkl6EjzcUj8
-         L+ghd6Ad+NaB+hfqlu+z8f+cQhntWGm+LaCBfWJWQF0dNafqfDyswqspB0joLQ3cPGq9
-         fy6KUZS3/57R42MDchiverlSVM66h/TRs1IYCilQKOdMjde8QypXDkBBynu30djXZ7BR
-         8QOWPrYqGl35ITne1FG3Z+loFaeX0fb5VCeiFu/EPRtRFXf4v66QDI3T60Tf8aBOE3ey
-         V/Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PRw07XCFW2nbwWC0OIMMG5Z5kRG46gKFzow6yKd7+cM=;
-        b=jbiA6odQOEuLYlH34vgyLiwZjc7lB4VoSYvTzuHHbyomW5/lbps/Xlc+ChEc+t/l/V
-         bux+OKOcKj7x6nA1tO6aKQ4I4h3ql3wxKGCflGRMuORkKNMtiU06O/yrKPrz4w1Uusfq
-         AX3gFK2rUfIIrrsiT/DfEnvAmXA/rSFyCr28OO2IFzyBkavqfB8aT8VyU3etSqFOndoU
-         paVqYu63WaBXm06x+TeB9EpBb34PIEUZ6yiVmtaBFTeqxCaiW11afQtrkDdMx433ssv2
-         t4b66ayFwZvvV1RUCYwLFmd6sCC0vyiFAJjwSqAlIl5WFDXaPDx9dNkf+n5iypebIRio
-         Jk8A==
-X-Gm-Message-State: APjAAAVJdI9fLrFZT6WDOipT6GaiG+5XYnbdYmauGcpYYgpbS0MQ+zDQ
-        EEcL30Scjq7lid97lyAMKH+vX3v6l4J8z//VNtM=
-X-Google-Smtp-Source: APXvYqysC8+XpmOyo7+68+S1jc5tlaMecLlA8Jnp5FRUKcdJ1vdUQU8Xazb6fNRshj5v/ELhOn7AC90iG05upSknKaE=
-X-Received: by 2002:a9f:3772:: with SMTP id a47mr8648367uae.53.1574150340611;
- Mon, 18 Nov 2019 23:59:00 -0800 (PST)
+        id S1727118AbfKSIFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 03:05:03 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52499 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727073AbfKSIFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 03:05:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574150701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1MlTih8cCQ4S/hqFZ1/WTgoAoxUoAz6EyWx3ksJycWc=;
+        b=gNvTuQkQ3smjtYEp9fEd+i+05A2cxj0GAY9HZG3wqKW3ozPJNVBrBXPv5IHenTOYl6NjwG
+        n/2mH3AapXl9icqJWszGK5zl4r2uTUuS64IpK0s/rlKSsixjR3EIavQWsDT1goCU5yWdvU
+        MsoJ2eZOE62CDixGovwjEFNAFpA0iks=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-184-h9I2qfHvO1OqTNLBkQCu4Q-1; Tue, 19 Nov 2019 03:04:58 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DEFAB107ACC4;
+        Tue, 19 Nov 2019 08:04:56 +0000 (UTC)
+Received: from [10.72.12.74] (ovpn-12-74.pek2.redhat.com [10.72.12.74])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A5FF166074;
+        Tue, 19 Nov 2019 08:04:52 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        parav@mellanox.com, Kiran Patil <kiran.patil@intel.com>
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
+ <20191118074834.GA130507@kroah.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d3ee845d-cc9f-a4f7-2f21-511fde61dd5e@redhat.com>
+Date:   Tue, 19 Nov 2019 16:04:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
-In-Reply-To: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
-From:   Rain River <rain.1986.08.12@gmail.com>
-Date:   Tue, 19 Nov 2019 16:06:09 +0800
-Message-ID: <CAJr_XRBBy121cVKhUQohyt-DxTLVWUHpMEURu3gnjr9nHtMxRw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] MAINTAINERS: forcedeth: Change Zhu Yanjun's email address
-To:     Zhu Yanjun <yanjun.zhu@oracle.com>
-Cc:     mchehab+samsung@kernel.org, David Miller <davem@davemloft.net>,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        robh@kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191118074834.GA130507@kroah.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: h9I2qfHvO1OqTNLBkQCu4Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 3:54 PM Zhu Yanjun <yanjun.zhu@oracle.com> wrote:
->
-> I prefer to use my personal email address for kernel related work.
->
-> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+
+On 2019/11/18 =E4=B8=8B=E5=8D=883:48, Greg KH wrote:
+> +Virtbus drivers
+> +~~~~~~~~~~~~~~~
+> +Virtbus drivers register with the virtual bus to be matched with virtbus
+> +devices.  They expect to be registered with a probe and remove callback,
+> +and also support shutdown, suspend, and resume callbacks.  They otherwis=
+e
+> +follow the standard driver behavior of having discovery and enumeration
+> +handled in the bus infrastructure.
+> +
+> +Virtbus drivers register themselves with the API entry point virtbus_drv=
+_reg
+> +and unregister with virtbus_drv_unreg.
+> +
+> +Device Enumeration
+> +~~~~~~~~~~~~~~~~~~
+> +Enumeration is handled automatically by the bus infrastructure via the
+> +ida_simple methods.
+> +
+> +Device naming and driver binding
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +The virtbus_device.dev.name is the canonical name for the device. It is
+> +built from two other parts:
+> +
+> +        - virtbus_device.name (also used for matching).
+> +        - virtbus_device.id (generated automatically from ida_simple cal=
+ls)
+> +
+> +This allows for multiple virtbus_devices with the same name, which will =
+all
+> +be matched to the same virtbus_driver. Driver binding is performed by th=
+e
+> +driver core, invoking driver probe() after finding a match between devic=
+e and driver.
+> +
+> +Virtual Bus API entry points
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +struct virtbus_device *virtbus_dev_alloc(const char *name, void *data)
+
+
+Hi:
+
+Several questions about the name parameter here:
+
+- If we want to have multiple types of device to be attached, some=20
+convention is needed to avoid confusion during the match. But if we had=20
+such one (e.g prefix or suffix), it basically another bus?
+- Who decides the name of this virtbus dev, is it under the control of=20
+userspace? If yes, a management interface is required.
 
 Thanks
 
-Acked-by: Rain River <rain.1986.08.12@gmail.com>
 
-> ---
->  MAINTAINERS | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e4f170d..8165658 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -643,7 +643,7 @@ F:  drivers/net/ethernet/alacritech/*
->
->  FORCEDETH GIGABIT ETHERNET DRIVER
->  M:     Rain River <rain.1986.08.12@gmail.com>
-> -M:     Zhu Yanjun <yanjun.zhu@oracle.com>
-> +M:     Zhu Yanjun <zyjzyj2000@gmail.com>
->  L:     netdev@vger.kernel.org
->  S:     Maintained
->  F:     drivers/net/ethernet/nvidia/*
-> --
-> 2.7.4
->
+> +int virtbus_dev_register(struct virtbus_device *vdev)
+> +void virtbus_dev_unregister(struct virtbus_device *vdev)
+> +int virtbus_drv_register(struct virtbus_driver *vdrv, struct module *own=
+er)
+> +void virtbus_drv_unregister(struct virtbus_driver *vdrv)
+
