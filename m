@@ -2,115 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D1F100F9E
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E00100FD0
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:20:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfKSABr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 19:01:47 -0500
-Received: from mga17.intel.com ([192.55.52.151]:10625 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726809AbfKSABr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 19:01:47 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Nov 2019 16:01:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,321,1569308400"; 
-   d="scan'208";a="407569542"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Nov 2019 16:01:45 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iWqxl-000GaJ-2t; Tue, 19 Nov 2019 08:01:45 +0800
-Date:   Tue, 19 Nov 2019 08:01:39 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     sunil.kovvuri@gmail.com
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        davem@davemloft.net, Linu Cherian <lcherian@marvell.com>,
-        Rakesh Babu <rsaladi2@marvell.com>,
-        Vamsi Attunuru <vamsi.attunuru@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH 02/15] octeontx2-af: Add support for importing firmware
- data
-Message-ID: <201911190755.klynO0gk%lkp@intel.com>
-References: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726961AbfKSAUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 19:20:00 -0500
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:51989 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726809AbfKSAUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 19:20:00 -0500
+Received: by mail-pg1-f201.google.com with SMTP id f18so2191215pgh.18
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 16:19:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VvQgGDe+hmOgI9C/B8EM+92sDwQj4yhDGdjV423Q5zg=;
+        b=aYz6/cd5U1jOehyCj/fikIRi6p8WiCTQL+oh3HLi3qqDa2r/hLN9twQdlXIxCAxAd9
+         JdmNp5tL5IT1ghbfN5HsiHrlr6Xu1w+3AUXlf/dYTl1xXgELVdJXA0GooWc+C5T5at0m
+         lZlIxmnim6FS+r+M1wF4Z4cvHmMkx4fu1ZwNz+f/GoBJg4JoCi9PcdIA2QRM/NygS/DI
+         ecddcZ0ZmFSrpwoLCl4x7YQd4PRlOLVxIOIta0iOdLUO6K0ILKTpH/ty+NuM1ZPHgBSp
+         5sn6WNdfrXwAQZFTYI6Wys7C+emme/vdIGdLIxEqYTjGCyiGH8GPMmsI9Qhw95D7PgrN
+         Evbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VvQgGDe+hmOgI9C/B8EM+92sDwQj4yhDGdjV423Q5zg=;
+        b=HYsf5VFT/NH6dW9K6+U+HbOXDvq47+xXrQxdwauP4uKSldlugmaGNFn6fRdC6RbBGe
+         oT6idi7iqriwuXWFQJtF6IjG9EProO0P/U97q1KMRIG6HVygQs2e6zraw0w3nrbLx5OT
+         fiv2eNc6RPpFXIoFAWuI/NMc1qi12tk4G3Cn6BHU4kUDFOlz9I19xjdTw7SSc6Cu7jqc
+         cduP5KMk8vC+06CIDFEhmSSbgyakFfR+Bw74+SC1RHKO25s4cUyM1lpSYKOVL92MYSgT
+         uGKKM1sj2IywMAiSDDDMRV/f6fK2GYJmn7PmBOpUvN7DfUlQI92PgQg+dFDmpTu4e4Zb
+         SI5Q==
+X-Gm-Message-State: APjAAAU+yK0xUyC8fllPHjpLkEWU+9DXxJysJFxjVNIxz5jr0wuP+RAv
+        fFc3j1GSCHO7m4e89GOocaGx0jftwiw=
+X-Google-Smtp-Source: APXvYqyhqWBjwyTEBEnIiu55yVgbyYn9icIGoCmfZtWwtVHC4gvJnfqcHVnVV+EIVPy2EXEMMWo/onBCKd4=
+X-Received: by 2002:a63:b047:: with SMTP id z7mr2251683pgo.224.1574122798219;
+ Mon, 18 Nov 2019 16:19:58 -0800 (PST)
+Date:   Mon, 18 Nov 2019 16:19:51 -0800
+Message-Id: <20191119001951.92930-1-lrizzo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH v2] net-af_xdp: use correct number of channels from ethtool
+From:   Luigi Rizzo <lrizzo@google.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        jonathan.lemon@gmail.com, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, rizzo@iet.unipi.it,
+        Luigi Rizzo <lrizzo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Drivers use different fields to report the number of channels, so take
+the maximum of all data channels (rx, tx, combined) when determining the
+size of the xsk map. The current code used only 'combined' which was set
+to 0 in some drivers e.g. mlx4.
 
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-[also build test WARNING on next-20191118]
-[cannot apply to v5.4-rc8]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-
-url:    https://github.com/0day-ci/linux/commits/sunil-kovvuri-gmail-com/octeontx2-af-SSO-TIM-HW-blocks-and-other-config-support/20191118-002309
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 19b7e21c55c81713c4011278143006af9f232504
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-32-g233d4e1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse: sparse: incorrect type in assignment (different address spaces) @@    expected struct rvu_fwdata *fwdata @@    got void struct rvu_fwdata *fwdata @@
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    expected struct rvu_fwdata *fwdata
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    got void [noderef] <asn:2> *
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    expected void volatile [noderef] <asn:2> *addr
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    got struct rvu_fwdata *fwdata
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    expected void volatile [noderef] <asn:2> *addr
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    got struct rvu_fwdata *fwdata
-
-vim +722 drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-
-   712	
-   713	static int rvu_fwdata_init(struct rvu *rvu)
-   714	{
-   715		u64 fwdbase;
-   716		int err;
-   717	
-   718		/* Get firmware data base address */
-   719		err = cgx_get_fwdata_base(&fwdbase);
-   720		if (err)
-   721			goto fail;
- > 722		rvu->fwdata = ioremap_wc(fwdbase, sizeof(struct rvu_fwdata));
-   723		if (!rvu->fwdata)
-   724			goto fail;
-   725		if (!is_rvu_fwdata_valid(rvu)) {
-   726			dev_err(rvu->dev,
-   727				"Mismatch in 'fwdata' struct btw kernel and firmware\n");
- > 728			iounmap(rvu->fwdata);
-   729			rvu->fwdata = NULL;
-   730			return -EINVAL;
-   731		}
-   732		return 0;
-   733	fail:
-   734		dev_info(rvu->dev, "Unable to fetch 'fwdata' from firmware\n");
-   735		return -EIO;
-   736	}
-   737	
-
+Tested: compiled and run xdpsock -q 3 -r -S on mlx4
+Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+ tools/lib/bpf/xsk.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 74d84f36a5b24..37921375f4d45 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -431,13 +431,18 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 		goto out;
+ 	}
+ 
+-	if (err || channels.max_combined == 0)
++	if (err) {
+ 		/* If the device says it has no channels, then all traffic
+ 		 * is sent to a single stream, so max queues = 1.
+ 		 */
+ 		ret = 1;
+-	else
+-		ret = channels.max_combined;
++	} else {
++		/* Take the max of rx, tx, combined. Drivers return
++		 * the number of channels in different ways.
++		 */
++		ret = max(channels.max_rx, channels.max_tx);
++		ret = max(ret, (int)channels.max_combined);
++	}
+ 
+ out:
+ 	close(fd);
+-- 
+2.24.0.432.g9d3f5f5b63-goog
+
