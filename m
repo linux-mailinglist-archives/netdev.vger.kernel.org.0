@@ -2,327 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E794B102563
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71BEA102568
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:28:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727988AbfKSN16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 08:27:58 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37317 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbfKSN15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 08:27:57 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p24so12191323pfn.4;
-        Tue, 19 Nov 2019 05:27:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=7QCFqNWcvU4J1MHmB0GpMmiCAmvr5gWvsuXQRbKpPB0=;
-        b=DQic9ck9XQJCqO4hpPhFKeUMG42inIVpwrvic+NgXybT+A1iTOiZ4/gqSH6aUIc/Nx
-         S7OdBX7U46H3tRBImVtXGfzHPIua4nEbzLWM7lKR6no8MXW+fE/e1Vm3C/epyRwbNuCR
-         OJS69SNOGwFqmw66HarddvOQscWUBWacWktoBRF5hcBRoyGmpHMddbXKCwg052nWI7JT
-         vDvwFaBQh1ALVudKN23VdmeJJAGN7+FIh/Ss4zmAebvPr5dzvkx8aSLrSgiVJSe2IFXb
-         DKFGKTT6LW85tY4N70WtARVfRgVA1UXJY0C10z+2YDhEV6uDl1XPtBJ/9RnvB6Z9/paS
-         1rHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=7QCFqNWcvU4J1MHmB0GpMmiCAmvr5gWvsuXQRbKpPB0=;
-        b=CTt2nVyLCyPOVAoOPGnIGV2gBY+u0mqPJuJ3iOi1NOhtq8UFOym5S1n9gzC9nSyxxb
-         nTf4Znh2zcfQ4IM8RRA+iZjl6fZeJTNgzq5HlGmvaXtMu+p4vtGxaVOi/RDd0efu+E8C
-         Zc0KsVwmCH+XESZL3mga6xxd86Z4iT+qN3+HXQNxcY613xRK70efpj6vhnJNr/m6tNrL
-         AAd5nvNzkWYbERkK0XJB3aW7dovV52iUsqzAXmOSCbA4ARrQ6bpgvPztRs9GqwrspUYn
-         VVgP3o1gQVpFIxKw+Shc/Zo/M1m4qi+ccJBqLH828YAvg0nYmfd1MadibeKdECCPx+2j
-         JCrw==
-X-Gm-Message-State: APjAAAUry83O11hvNKHXSFIEIXb9rSYoUQwuU8a443/AcQ/Mabq6Q/eL
-        NX59QI5S9gBpfA8VqV+sdVkrUyY4DlU=
-X-Google-Smtp-Source: APXvYqymnR2BU+5foeWE80G07INoNeQRBPJmw1BvA6zVovAYPVyhTspRQHbc5FiGQktU7hHeyDgDaA==
-X-Received: by 2002:a63:1014:: with SMTP id f20mr5416692pgl.279.1574170075516;
-        Tue, 19 Nov 2019 05:27:55 -0800 (PST)
-Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id v189sm25990458pfv.133.2019.11.19.05.27.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 05:27:55 -0800 (PST)
-From:   Wenbo Zhang <ethercflow@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     ast@kernel.org.com, daniel@iogearbox.net, yhs@fb.com,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v10 2/2] selftests/bpf: test for bpf_get_file_path() from tracepoint
-Date:   Tue, 19 Nov 2019 08:27:38 -0500
-Message-Id: <1bcb57e9d1f904964fcf70746dc1ecc553333ac3.1574162990.git.ethercflow@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1574162990.git.ethercflow@gmail.com>
-References: <cover.1574162990.git.ethercflow@gmail.com>
-In-Reply-To: <cover.1574162990.git.ethercflow@gmail.com>
-References: <cover.1574162990.git.ethercflow@gmail.com>
+        id S1727646AbfKSN2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 08:28:49 -0500
+Received: from mail-eopbgr20055.outbound.protection.outlook.com ([40.107.2.55]:31310
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725904AbfKSN2s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Nov 2019 08:28:48 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lY7BouyFqdMMlhXu2iGqjL8EQQH2tW2N0u8lA7Al3V44plPSLN9zClvsUHfLnW0qDd2BP3aPLrVfnaKCxVij49x+nexKO9GiXPCgBfs2dVAuJdHnrW0Q5rZmShArS0xk3CHvesueMs2+slc31OiE6HrfZmwXBp4CHbmLsecjDuTMUuRHq/2HNEb+bTE9krHp6odayK6NDH95ShZq38TNKziXpnfwIi8vr3jJtzOjGR6Ozs4i4fxwP+Zzg2U1TQnOsZGLTfYoMdjlyDR8VwvvS30y9GGciKrpQVPxKr6r03zXGPJ3tneEscjC1ikmcgOa2/lJCWTRdCWMzQcjq3LXkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TxJAMylv4lJc36kVg/tn1uMkeyjcllHrmH9TZPZsnpI=;
+ b=WUuN2fP+FURAY5V5kR0KSyegnl2rn7PMVlVFdrkkSjcLAHUhf4l+kqo6n1LB8fIyjmTRY/aYa4KO1zwr3AstfUbLMLSc9W03TWR+ypYdOzAmaHmcOMtJYoNLL4DyG6UcE5Iy1iNRJZn+mOxRGCkwYD86r3th7QOEzK2ZV5sSsZIFrZogteqxkNew34PcbLhioo/Yc5gCOqwDFuBCNVlEoJ79N7CuoK77QO0RGSx8q8r4s+dHPlLIWcd0S4tQPylSw9w6aucPsN1bkl6Ua0eJxhGuxCjRpt177FVESJWreOhUiSNsMilccQq5JPybUFfdHZAltpSp6Apf19JCiWZKVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TxJAMylv4lJc36kVg/tn1uMkeyjcllHrmH9TZPZsnpI=;
+ b=IvP476jzFOt6W8f8AG0+U2VpwQNA9djGyGMPaYFXBkjuvpITrC4h3/v8KZasXyEc25fQonl8edimtbBz1Mo00TQ0dsNhkGLF9Qkly1hE+K6bhWm4BK0dwbASIoEBSHKlv9ZD678ojFScTBGtPfFg+tqWwNRByPNTtSI7qkT1OTE=
+Received: from VI1PR05MB5680.eurprd05.prod.outlook.com (20.178.124.149) by
+ VI1PR05MB4974.eurprd05.prod.outlook.com (20.177.49.209) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.23; Tue, 19 Nov 2019 13:28:34 +0000
+Received: from VI1PR05MB5680.eurprd05.prod.outlook.com
+ ([fe80::b5cf:e640:40d3:b461]) by VI1PR05MB5680.eurprd05.prod.outlook.com
+ ([fe80::b5cf:e640:40d3:b461%4]) with mapi id 15.20.2451.029; Tue, 19 Nov 2019
+ 13:28:34 +0000
+From:   Shay Drory <shayd@mellanox.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        "lennart@poettering.net" <lennart@poettering.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        lorian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "systemd-devel@lists.freedesktop.org" 
+        <systemd-devel@lists.freedesktop.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: Send SFP event from kernel driver to user space (UDEV)
+Thread-Topic: Send SFP event from kernel driver to user space (UDEV)
+Thread-Index: AQHVnTyemIrPi2KC+0KxDlDyt5FLmqeQJL4AgACuqICAAL9YAIAA7UQA
+Date:   Tue, 19 Nov 2019 13:28:34 +0000
+Message-ID: <43d837e2-5aec-5d77-2e2b-2b01cf82f98c@mellanox.com>
+References: <a041bba0-83d1-331f-d263-c8cbb0509220@mellanox.com>
+ <20191118012924.GC4084@lunn.ch>
+ <7dc1a44f-d15c-4181-df45-ae93cfd95438@mellanox.com>
+ <20191118231922.GB15395@lunn.ch>
+In-Reply-To: <20191118231922.GB15395@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shayd@mellanox.com; 
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2f546a7f-d25a-4718-5ab9-08d76cf460d8
+x-ms-traffictypediagnostic: VI1PR05MB4974:|VI1PR05MB4974:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB4974C195F980766F154F6609C24C0@VI1PR05MB4974.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 022649CC2C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(189003)(199004)(6506007)(446003)(6116002)(81166006)(3846002)(2906002)(81156014)(99286004)(31686004)(6916009)(8676002)(8936002)(478600001)(71190400001)(71200400001)(66476007)(64756008)(14454004)(66556008)(66446008)(76176011)(186003)(11346002)(76116006)(66066001)(5660300002)(486006)(31696002)(53546011)(476003)(6246003)(102836004)(2616005)(6486002)(26005)(256004)(305945005)(86362001)(229853002)(316002)(36756003)(7736002)(6436002)(25786009)(54906003)(4326008)(66946007)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4974;H:VI1PR05MB5680.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:3;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZmAUW+XQdE9moRtDZ3pEnkDFKYzlw3TY0NENe4ISPy4XEhwrKQwZk/7bVfmtohiMpAPtdtKX3tM6cJILnKWpXEe5muQfeVnlFAW/V2l/wjUb7YotHG+5dbONyEYUk680/kJM0QNY421TcggUsGS5Zbzudaj97JJbFf5wxCLYRcbc3bbt6GkTiLfO/J4dntPpuJpQ8eT5LONM5ZgepfrEOQthfLl2IMsML/MMUa1jGp1AuKeO6aBLRAcHLEU432lfU/+kc0Uhlhlx5uR7tW8wJ2RLQDSwNAeAcsErFxYKQr8dcrQbA8L7ksIXI5oZcfqi6lHEvj7qzR/ITq+PjnVn3smEENCGpZ//w7h00fYhRx8YKpre90VyuwPWn5WPOULmyc+2NWPPlbj58QFlNiUlgDf9P2pHWkPo2BYLlgRkkzvPiRqUgmhM3yAQAstboJrv
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AF8847A728A0FF4CBE56EA911353688D@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f546a7f-d25a-4718-5ab9-08d76cf460d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Nov 2019 13:28:34.8036
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dPlaT/PKaA/O+oD1A+W0xjZ4GQdw5X+1IRBUBz4CNsOFEzCrke9KdGAZTJtqtt6bhhBJBOvqTZHeX90t8YTcAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4974
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trace fstat events by tracepoint syscalls/sys_enter_newfstat, and handle
-events only produced by test_file_get_path, which call fstat on several
-different types of files to test bpf_get_file_path's feature.
-
-v4->v5: addressed Andrii's feedback
-- pass NULL for opts as bpf_object__open_file's PARAM2, as not really
-using any
-- modify patch subject to keep up with test code
-- as this test is single-threaded, so use getpid instead of SYS_gettid
-- remove unnecessary parens around check which after if (i < 3)
-- in kern use bpf_get_current_pid_tgid() >> 32 to fit getpid() in
-userspace part
-- with the patch adding helper as one patch series
-
-v3->v4: addressed Andrii's feedback
-- use a set of fd instead of fds array
-- use global variables instead of maps (in v3, I mistakenly thought that
-the bpf maps are global variables.)
-- remove uncessary global variable path_info_index
-- remove fd compare as the fstat's order is fixed
-
-v2->v3: addressed Andrii's feedback
-- use global data instead of perf_buffer to simplified code
-
-v1->v2: addressed Daniel's feedback
-- rename bpf_fd2path to bpf_get_file_path to be consistent with other
-helper's names
-
-Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
----
- .../selftests/bpf/prog_tests/get_file_path.c  | 171 ++++++++++++++++++
- .../selftests/bpf/progs/test_get_file_path.c  |  43 +++++
- 2 files changed, 214 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_path.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_path.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_file_path.c b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
-new file mode 100644
-index 000000000000..db88545e127b
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
-@@ -0,0 +1,171 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <test_progs.h>
-+#include <sys/stat.h>
-+#include <linux/sched.h>
-+#include <sys/syscall.h>
-+
-+#define MAX_PATH_LEN		128
-+#define MAX_FDS			7
-+#define MAX_EVENT_NUM		16
-+
-+static struct file_path_test_data {
-+	pid_t pid;
-+	__u32 cnt;
-+	__u32 fds[MAX_EVENT_NUM];
-+	char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
-+} src, dst;
-+
-+static inline int set_pathname(int fd)
-+{
-+	char buf[MAX_PATH_LEN];
-+
-+	snprintf(buf, MAX_PATH_LEN, "/proc/%d/fd/%d", src.pid, fd);
-+	src.fds[src.cnt] = fd;
-+	return readlink(buf, src.paths[src.cnt++], MAX_PATH_LEN);
-+}
-+
-+static int trigger_fstat_events(pid_t pid)
-+{
-+	int pipefd[2] = { -1, -1 };
-+	int sockfd = -1, procfd = -1, devfd = -1;
-+	int localfd = -1, indicatorfd = -1;
-+	struct stat fileStat;
-+	int ret = -1;
-+
-+	/* unmountable pseudo-filesystems */
-+	if (CHECK_FAIL(pipe(pipefd) < 0))
-+		return ret;
-+	/* unmountable pseudo-filesystems */
-+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+	if (CHECK_FAIL(sockfd < 0))
-+		goto out_close;
-+	/* mountable pseudo-filesystems */
-+	procfd = open("/proc/self/comm", O_RDONLY);
-+	if (CHECK_FAIL(procfd < 0))
-+		goto out_close;
-+	devfd = open("/dev/urandom", O_RDONLY);
-+	if (CHECK_FAIL(devfd < 0))
-+		goto out_close;
-+	localfd = open("/tmp/fd2path_loadgen.txt", O_CREAT | O_RDONLY);
-+	if (CHECK_FAIL(localfd < 0))
-+		goto out_close;
-+	/* bpf_get_file_path will return path with (deleted) */
-+	remove("/tmp/fd2path_loadgen.txt");
-+	indicatorfd = open("/tmp/", O_PATH);
-+	if (CHECK_FAIL(indicatorfd < 0))
-+		goto out_close;
-+
-+	src.pid = pid;
-+
-+	ret = set_pathname(pipefd[0]);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(pipefd[1]);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(sockfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(procfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(devfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(localfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(indicatorfd);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+
-+	fstat(pipefd[0], &fileStat);
-+	fstat(pipefd[1], &fileStat);
-+	fstat(sockfd, &fileStat);
-+	fstat(procfd, &fileStat);
-+	fstat(devfd, &fileStat);
-+	fstat(localfd, &fileStat);
-+	fstat(indicatorfd, &fileStat);
-+
-+out_close:
-+	close(indicatorfd);
-+	close(localfd);
-+	close(devfd);
-+	close(procfd);
-+	close(sockfd);
-+	close(pipefd[1]);
-+	close(pipefd[0]);
-+
-+	return ret;
-+}
-+
-+void test_get_file_path(void)
-+{
-+	const char *prog_name = "tracepoint/syscalls/sys_enter_newfstat";
-+	const char *obj_file = "test_get_file_path.o";
-+	int err, results_map_fd, duration = 0;
-+	struct bpf_program *tp_prog = NULL;
-+	struct bpf_link *tp_link = NULL;
-+	struct bpf_object *obj = NULL;
-+	const int zero = 0;
-+
-+	obj = bpf_object__open_file(obj_file, NULL);
-+	if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
-+		return;
-+
-+	tp_prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!tp_prog, "find_tp",
-+		  "prog '%s' not found\n", prog_name))
-+		goto cleanup;
-+
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "obj_load", "err %d\n", err))
-+		goto cleanup;
-+
-+	results_map_fd = bpf_find_map(__func__, obj, "test_get.bss");
-+	if (CHECK(results_map_fd < 0, "find_bss_map",
-+		  "err %d\n", results_map_fd))
-+		goto cleanup;
-+
-+	tp_link = bpf_program__attach_tracepoint(tp_prog, "syscalls",
-+						 "sys_enter_newfstat");
-+	if (CHECK(IS_ERR(tp_link), "attach_tp",
-+		  "err %ld\n", PTR_ERR(tp_link))) {
-+		tp_link = NULL;
-+		goto cleanup;
-+	}
-+
-+	dst.pid = getpid();
-+	err = bpf_map_update_elem(results_map_fd, &zero, &dst, 0);
-+	if (CHECK(err, "update_elem",
-+		  "failed to set pid filter: %d\n", err))
-+		goto cleanup;
-+
-+	err = trigger_fstat_events(dst.pid);
-+	if (CHECK_FAIL(err < 0))
-+		goto cleanup;
-+
-+	err = bpf_map_lookup_elem(results_map_fd, &zero, &dst);
-+	if (CHECK(err, "get_results",
-+		  "failed to get results: %d\n", err))
-+		goto cleanup;
-+
-+	for (int i = 0; i < MAX_FDS; i++) {
-+		if (i < 3)
-+			CHECK((dst.paths[i][0] != '\0'), "get_file_path",
-+			      "failed to filter fs [%d]: %u(%s) vs %u(%s)\n",
-+			      i, src.fds[i], src.paths[i], dst.fds[i],
-+			      dst.paths[i]);
-+		else
-+			CHECK(strncmp(src.paths[i], dst.paths[i], MAX_PATH_LEN),
-+			      "get_file_path",
-+			      "failed to get path[%d]: %u(%s) vs %u(%s)\n",
-+			      i, src.fds[i], src.paths[i], dst.fds[i],
-+			      dst.paths[i]);
-+	}
-+
-+cleanup:
-+	bpf_link__destroy(tp_link);
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_get_file_path.c b/tools/testing/selftests/bpf/progs/test_get_file_path.c
-new file mode 100644
-index 000000000000..eae663c1262a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_get_file_path.c
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <linux/ptrace.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include "bpf_helpers.h"
-+#include "bpf_tracing.h"
-+
-+#define MAX_PATH_LEN		128
-+#define MAX_EVENT_NUM		16
-+
-+static struct file_path_test_data {
-+	pid_t pid;
-+	__u32 cnt;
-+	__u32 fds[MAX_EVENT_NUM];
-+	char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
-+} data;
-+
-+struct sys_enter_newfstat_args {
-+	unsigned long long pad1;
-+	unsigned long long pad2;
-+	unsigned int fd;
-+};
-+
-+SEC("tracepoint/syscalls/sys_enter_newfstat")
-+int bpf_prog(struct sys_enter_newfstat_args *args)
-+{
-+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
-+
-+	if (pid != data.pid)
-+		return 0;
-+	if (data.cnt >= MAX_EVENT_NUM)
-+		return 0;
-+
-+	data.fds[data.cnt] = args->fd;
-+	bpf_get_file_path(data.paths[data.cnt], MAX_PATH_LEN, args->fd);
-+	data.cnt++;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.17.1
-
+T24gMTEvMTkvMjAxOSAwMToxOSwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IE9uIE1vbiwgTm92IDE4
+LCAyMDE5IGF0IDExOjU0OjMxQU0gKzAwMDAsIFNoYXkgRHJvcnkgd3JvdGU6DQo+PiBPbiAxMS8x
+OC8yMDE5IDAzOjI5LCBBbmRyZXcgTHVubiB3cm90ZToNCj4+PiBPbiBTdW4sIE5vdiAxNywgMjAx
+OSBhdCAxMTo0NjoxNUFNICswMDAwLCBTaGF5IERyb3J5IHdyb3RlOg0KPj4+DQo+Pj4gSGkgU2hh
+eQ0KPj4+DQo+Pj4gSXQgd291bGQgYmUgZ29vZCB0byBDYzogdGhlIGdlbmVyaWMgU0ZQIGNvZGUg
+bWFpbnRhaW5lcnMuDQo+PiBUaGUgc3VnZ2VzdGVkIHNvbHV0aW9uIGlzIG5vdCB0YXJnZXRlZCBm
+b3IgU0ZQIGRyaXZlcnMgKHNlZSBiZWxvdyksDQo+PiBidXQgSSBhZGRlZCB0aGVtIHRvIHRoZSBD
+YyBsaXN0Lg0KPiBIaSBTaGF5DQo+DQo+IFNvIHlvdSBhcmUgcHJvcG9zaW5nIHNvbWV0aGluZyB3
+aGljaCB3b24ndCB3b3JrIGZvciB0aGUgZ2VuZXJpYyBTRlANCj4gY29kZT8gIFRoYXQgc2hvdWxk
+IGJlIGFuIGF1dG9tYXRpYyBOQUNLLiBXaGF0ZXZlciB5b3UgcHJvcG9zZSBuZWVkcyB0bw0KPiBi
+ZSBnZW5lcmljIHNvIHRoYXQgaXQgY2FuIHdvcmsgZm9yIGFueSBOSUNzIHRoYXQgZG8gZmlybXdh
+cmUgc3VwcG9ydA0KPiBmb3IgU0ZQcywgYW5kIHRob3NlIHdobyBsZXQgTGludXggaGFuZGxlIHRo
+ZSBTRlAuDQoNClRoZSBzdWdnZXN0aW9uIGlzIHRhcmdldGVkIHRvIHN1cHBvcnQgYWxsIHR5cGVz
+IG9mIE5JQ3MNCnRoYXQgZG8gZmlybXdhcmUgc3VwcG9ydCBmb3IgU0ZQcy4gQnV0IEkgd2FudCB0
+byBkbyBpdCB2aWEgdGhlIGV0aHRvb2wtbmwNCmludGVyZmFjZSBhbmQgbm90IGJ5IHVzaW5nIHBo
+eSBkcml2ZXJzLg0KDQo+DQo+PiBUaGUgZmVhdHVyZSBpcyB0YXJnZXRlZCB0byBuZXRkZXYgdXNl
+cnMuIEl0IGlzIGV4cGVjdGVkIGZyb20gdGhlDQo+PiB1c2VyIHRvIHF1ZXJ5IGN1cnJlbnQgc3Rh
+dGUgdmlhIGV0aHRvb2wgLW0gYW5kIGFmdGVyd2FyZHMgbW9uaXRvcg0KPj4gZm9yIGNoYW5nZXMg
+b3ZlciBVREVWLg0KPiBXaGF0IGV4YWN0bHkgYXJlIHlvdSBpbnRlcmVzdGVkIGluPyBXaGF0IGFy
+ZSB5b3VyIHVzZSBjYXNlcy4gV2hlbg0KPiBod21vbiBkZXZpY2VzIGFyZSBjcmVhdGVkLCB5b3Ug
+c2hvdWxkIGdldCB1ZGV2IGV2ZW50cy4gTWF5YmUgdGhhdCBpcw0KPiBzdWZmaWNpZW50PyBPciBh
+cmUgeW91IGludGVyZXN0ZWQgaW4gc29tZSBvdGhlciBwYXJ0cyBvZiB0aGUgU0ZQIHRoYW4NCj4g
+dGhlIGRpYWdub3N0aWMgc2Vuc29ycz8NCg0KSXQgbG9va3MgbGlrZSB0aGUgaHdtb24gaXMgbm90
+IHN1ZmZpY2llbnQgZm9yIG91dCBwdXJwb3NlLiBJIGFtIGludGVyZXN0aW5nDQppbiBnZXR0aW5n
+IGV2ZW50cyB3aGVuIHRoZSBTRlAgaXMgaW5zZXJ0ZWQgb3IgcmVtb3ZlZC4NCg0KPg0KPj4+IFdv
+dWxkIHlvdSBhZGQganVzdCBTRlAgaW5zZXJ0L2VqZWN0IHRvIFVERVYuIE9yIGFsbCB0aGUgZXZl
+bnRzIHdoaWNoDQo+Pj4gZ2V0IHNlbnQgdmlhIG5ldGxpbms/IExpbmsgdXAvZG93biwgcm91dGUg
+YWRkL3JlbW92ZSwgZXRjPw0KPj4gSXQgbWFrZXMgc2Vuc2UgdG8gbm90aWZ5IGFsbCBldmVudHMu
+IFdoYXQgZG8geW91IHRoaW5rPw0KPiBJIGRvbid0IHBhcnRpY3VsYXJseSBsaWtlIHR3byB3YXlz
+IHRvIGdldCB0aGUgc2FtZSBpbmZvcm1hdGlvbi4gSXQNCj4gbWVhbnMgd2UgaGF2ZSB0d28gQVBJ
+cyB3ZSBuZWVkIHRvIG1haW50YWluIGZvcmV2ZXIsIHdoZW4ganVzdCBvbmUNCj4gc2hvdWxkIGJl
+IHN1ZmZpY2llbnQuDQo+DQo+Pj4gSXMgVURFViBuYW1lIHNwYWNlIGF3YXJlPyBEbyB5b3UgcnVu
+IGEgdWRldiBkYWVtb24gaW4gZWFjaCBuZXR3b3JrDQo+Pj4gbmFtZSBzcGFjZT8gSSBhc3N1bWUg
+d2hlbiB5b3Ugb3BlbiBhIG5ldGxpbmsgc29ja2V0LCBpdCBpcyBmb3IganVzdA0KPj4+IHRoZSBj
+dXJyZW50IG5ldHdvcmsgbmFtZXNwYWNlPw0KPj4gVURFViB3aWxsIGZvbGxvdyBuZXRsaW5rIG5h
+bWUtc3BhY2UuDQo+IFNvIHlvdSBkbyBwbGFuIHRvIGhhdmUgYSB1ZGV2IGRhZW1vbiBydW5uaW5n
+IGluIGV2ZXJ5IG5ldHdvcmsgbmFtZQ0KPiBzcGFjZS4gRG9lcyB1ZGV2IGV2ZW4gc3VwcG9ydCB0
+aGF0Pw0KPg0KPiBJJ20gc2NlcHRpY2FsIHVzaW5nIHVkZXYgaXMgYSBnb29kIGlkZWEuIEJ1dCBo
+YXZpbmcgbmV0bGluayBldmVudHMNCj4gZG9lcyBzb3VuZHMgcmVhc29uYWJsZS4gQW5kIGlmIHlv
+dSBhcmUgd2lsbGluZyB0byB3YWl0IGEgd2hpbGUsDQo+IGV0aHRvb2wtbmwgZG9lcyBzZWVtIGxp
+a2UgYSBnb29kIGZpdC4gQnV0IHBsZWFzZSBtYWtlIHN1cmUgeW91cg0KPiBzb2x1dGlvbiBpcyBn
+ZW5lcmljLg0KPg0KPiAJIEFuZHJldw0KDQpUaGFua3MgZm9yIHlvdXIgY29tbWVudHMuIFRoZSB1
+c2luZyBvZiBVZGV2IGlzIHVuZGVyIGludGVybmFsIGRpc2N1c3Npb24uDQoNCg==
