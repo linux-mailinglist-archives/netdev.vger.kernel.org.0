@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 471B5101EF6
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341F9101F7D
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:09:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbfKSJBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 04:01:02 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:55901 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbfKSJBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:01:02 -0500
-Received: from soja.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:13da])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <o.rempel@pengutronix.de>)
-        id 1iWzNa-0002sl-E9; Tue, 19 Nov 2019 10:00:58 +0100
-Subject: Re: KMSAN: uninit-value in can_receive
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000005c08d10597a3a05d@google.com>
- <a5f73d92-fdf2-2590-c863-39a181dca8e1@hartkopp.net>
- <deedd609-6f3b-8035-47e1-252ab221faa1@pengutronix.de>
- <7934bc2b-597f-0bb3-be2d-32f3b07b4de9@hartkopp.net>
- <7f5c4546-0c1a-86ae-581e-0203b5fca446@pengutronix.de>
- <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-Message-ID: <d87d0751-1433-386d-48aa-d41686106ecc@pengutronix.de>
-Date:   Tue, 19 Nov 2019 10:00:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726792AbfKSJJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 04:09:47 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59346 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725306AbfKSJJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:09:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574154585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qCbiJsyft8Uzb7RHSqVgxkyIbBx/LXqDr8Z1MoENKE4=;
+        b=VLd8B5gXqq/RRh5gjoG382SJSRsjvahytLyQPJ5r8Hd6c00PXqJPNw47vC2veQrez6N6W6
+        IaaXE21WW64RAaYpbvdPS0pKSIfwjY1G2xa762oEsdpdojr9PsVVZSQ8Naq+lhxE3zhKge
+        Gq/tsnsEdLcZ23gZPPkXZibAklFeZzE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-174-oewk__JROCuws-2rAD-Slw-1; Tue, 19 Nov 2019 04:09:42 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9B3EE106B2AF;
+        Tue, 19 Nov 2019 09:09:41 +0000 (UTC)
+Received: from calimero.vinschen.de (ovpn-117-86.ams2.redhat.com [10.36.117.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3F0A65DA60;
+        Tue, 19 Nov 2019 09:09:41 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id B2486A80A4E; Tue, 19 Nov 2019 10:09:39 +0100 (CET)
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH net] r8169: disable TSO on a single version of RTL8168c to fix performance
+Date:   Tue, 19 Nov 2019 10:09:39 +0100
+Message-Id: <20191119090939.29169-1-vinschen@redhat.com>
+In-Reply-To: <44352432-e6ad-3e3c-4fea-9ad59f7c4ae9@gmail.com>
+References: <44352432-e6ad-3e3c-4fea-9ad59f7c4ae9@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:13da
-X-SA-Exim-Mail-From: o.rempel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: oewk__JROCuws-2rAD-Slw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+During performance testing, I found that one of my r8169 NICs suffered
+a major performance loss, a 8168c model.
 
-On 19.11.19 08:35, Oliver Hartkopp wrote:
-> 
-> 
-> On 18/11/2019 22.15, Marc Kleine-Budde wrote:
->> On 11/18/19 9:49 PM, Oliver Hartkopp wrote:
->>>
->>>
->>> On 18/11/2019 21.29, Marc Kleine-Budde wrote:
->>>> On 11/18/19 9:25 PM, Oliver Hartkopp wrote:
->>>
->>>>>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->>>>>> Reported-by: syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com
->>>>>>
->>>>>> =====================================================
->>>>>> BUG: KMSAN: uninit-value in can_receive+0x23c/0x5e0 net/can/af_can.c:649
->>>>>> CPU: 1 PID: 3490 Comm: syz-executor.2 Not tainted 5.4.0-rc5+ #0
->>>
->>>>>
->>>>> In line 649 of 5.4.0-rc5+ we can find a while() statement:
->>>>>
->>>>> while (!(can_skb_prv(skb)->skbcnt))
->>>>>     can_skb_prv(skb)->skbcnt = atomic_inc_return(&skbcounter);
->>>>>
->>>>> In linux/include/linux/can/skb.h we see:
->>>>>
->>>>> static inline struct can_skb_priv *can_skb_prv(struct sk_buff *skb)
->>>>> {
->>>>>     return (struct can_skb_priv *)(skb->head);
->>>>> }
->>>>>
->>>>> IMO accessing can_skb_prv(skb)->skbcnt at this point is a valid
->>>>> operation which has no uninitialized value.
->>>>>
->>>>> Can this probably be a false positive of KMSAN?
->>>>
->>>> The packet is injected via the packet socket into the kernel. Where does
->>>> skb->head point to in this case? When the skb is a proper
->>>> kernel-generated skb containing a CAN-2.0 or CAN-FD frame skb->head is
->>>> maybe properly initialized?
->>>
->>> The packet is either received via vcan or vxcan which checks via
->>> can_dropped_invalid_skb() if we have a valid ETH_P_CAN type skb.
->>
->> According to the call stack it's injected into the kernel via a packet
->> socket and not via v(x)can.
-> 
-> See ioctl$ifreq https://syzkaller.appspot.com/x/log.txt?x=14563416e00000
-> 
-> 23:11:34 executing program 2:
-> r0 = socket(0x200000000000011, 0x3, 0x0)
-> ioctl$ifreq_SIOCGIFINDEX_vcan(r0, 0x8933, &(0x7f0000000040)={'vxcan1\x00', <r1=>0x0})
-> bind$packet(r0, &(0x7f0000000300)={0x11, 0xc, r1}, 0x14)
-> sendmmsg(r0, &(0x7f0000000d00), 0x400004e, 0x0)
-> 
-> We only can receive skbs from (v(x))can devices.
-> No matter if someone wrote to them via PF_CAN or PF_PACKET.
-> We check for ETH_P_CAN(FD) type and ARPHRD_CAN dev type at rx time.
-> 
->>> We additionally might think about introducing a check whether we have a
->>> can_skb_reserve() created skbuff.
->>>
->>> But even if someone forged a skbuff without this reserved space the
->>> access to can_skb_prv(skb)->skbcnt would point into some CAN frame
->>> content - which is still no access to uninitialized content, right?
-> 
-> So this question remains still valid whether we have a false positive from KMSAN here.
+Running netperf's TCP_STREAM test didn't return the expected
+throughput of > 900 Mb/s, but rather only about 22 Mb/s.  Strange
+enough, running the TCP_MAERTS and UDP_STREAM tests all returned with
+throughput > 900 Mb/s, as did TCP_STREAM with the other r8169 NICs I can
+test (either one of 8169s, 8168e, 8168f).
 
-It can be other incornation of this bug:
-https://github.com/linux-can/linux/issues/1
+Bisecting turned up commit 93681cd7d94f83903cb3f0f95433d10c28a7e9a5,
+"r8169: enable HW csum and TSO" as the culprit.
 
-The echo skd was free, because socket which send this skb was closed before it was received.
+I added my 8168c version, RTL_GIGA_MAC_VER_22, to the code
+special-casing the 8168evl as per the patch below.  This fixed the
+performance problem for me.
 
-Kind regards,
-Oleksij Rempel
+Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethern=
+et/realtek/r8169_main.c
+index d8fcdb9db8d1..1de11ac05bd6 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -6952,8 +6952,11 @@ static int rtl_init_one(struct pci_dev *pdev, const =
+struct pci_device_id *ent)
+ =09=09dev->gso_max_segs =3D RTL_GSO_MAX_SEGS_V1;
+ =09}
+=20
+-=09/* RTL8168e-vl has a HW issue with TSO */
+-=09if (tp->mac_version =3D=3D RTL_GIGA_MAC_VER_34) {
++=09/* RTL8168e-vl and one RTL8168c variant are known to have a
++=09 * HW issue with TSO.
++=09 */
++=09if (tp->mac_version =3D=3D RTL_GIGA_MAC_VER_34 ||
++=09    tp->mac_version =3D=3D RTL_GIGA_MAC_VER_22) {
+ =09=09dev->vlan_features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+ =09=09dev->hw_features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+ =09=09dev->features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+--=20
+2.20.1
+
