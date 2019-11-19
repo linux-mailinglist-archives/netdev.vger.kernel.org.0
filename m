@@ -2,127 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B72C1029D7
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:53:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0431029DA
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:55:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728474AbfKSQxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 11:53:36 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:42741 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727560AbfKSQxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:53:36 -0500
-Received: by mail-pl1-f194.google.com with SMTP id j12so12046233plt.9;
-        Tue, 19 Nov 2019 08:53:36 -0800 (PST)
+        id S1728264AbfKSQzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 11:55:05 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41780 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727560AbfKSQzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:55:04 -0500
+Received: by mail-qt1-f196.google.com with SMTP id o3so25356997qtj.8
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=0ikEmW1Uo4O0wTwEpbsw1vK5uaPUtxj8nWEOCJAitRY=;
-        b=QeA77eS6veKPZIsveG+jfcWwHV5debSGbGZJ1W14Wq82ggxzASoK28i/diQ7gbK4kl
-         h9Jc04PxNHmr527ewTCO94EU/wosCb3x9UXFXudKwnLMTp/v1o3tQ+0PfIbw+EXVwdbp
-         33QVUIdZPTVrDePLgB8KvLgIonuH19FhjXA31t4ZxhXtiTr7BNPCN04oelDG5pgKObTM
-         M5Toh7Q9ymkkgT6UvMoLgfC9sitLbTkDw0h78F7XvanRQtQs1Uml2zX29tQGqGA/e05d
-         WLTNWVxl8T7tHEntbz/iYGVRKDGLGhtQqYMuU4JTTYiNMmzFBniAlZIN+sbwDtpDSsbq
-         WsGg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WS7CgNbVTLnXI+F//St0LEaj4tnKGZAzwSTTN2+gQVc=;
+        b=iVAYjQHLPSEvwSFNlSCeOYv+886dqBtEdSB9f197Q+2nfx9MYsTdaFER/T+YT3sU4F
+         2sV2cUTWCgHWA/Sy8/JS1sLjB3RmPldgWEzHpDH3Zshmlx9sUeJd3WCjr0zJdBai7b+T
+         zy0kDiCzrL33Em9pVCTZenB2tDXqNlQKDuCoq8qOeSxuw5syY2PYyALR4CmEkS3xxRkF
+         KqdBDYqlUyjmKLg0jfLiPHNdfpwXCKAj7llRkxZqK0EAlnUnUfe1TveheX+AtLUcLsQM
+         5aonmzsTTQd9WPPpdNsJ0+Co3d3w0ppLUo0gKmx956jS+2Y6gtYKaBK+c/0EDbMVCE7m
+         wyCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0ikEmW1Uo4O0wTwEpbsw1vK5uaPUtxj8nWEOCJAitRY=;
-        b=dBoLqCv3zXUM2clTvqnSYaQNIVNOzMD9CPBTj7pxR4LU2mBEVWyFxFzi3BqLGbyxTm
-         uJsoocevINa3RzHuquiLQPGLPpXO1/0LHCwXUzTQWhui7F8Tnv/E3WN5xaJC2zmez9NS
-         WRoapJt96ewKY8LHRLONvaW0DnIztlt1CyEfCdlNMu2zIizapWBzb0CkLhpmvr0eppYA
-         XaP7wfA6qRxKDK8U+aN33dBYO7OJdw89W16B0ksXIWQtljydPaVcF4XMe3+nZ3Vr1E5e
-         lQKlo+C5d1WkBLiWc5W3f4TNFlEHdWXXaIBZl7VrKiQQ7ALSevzpBA9zlBg8Nf8COC+9
-         hKbQ==
-X-Gm-Message-State: APjAAAVx33wjz5hxrVILoWsBJhy3ArMv3pUx38ITINItCA6q0Od6TXse
-        WdXVYeLGA+MkjYqPmq6fA8Y=
-X-Google-Smtp-Source: APXvYqygJkmb3ADs33SkUCsYqyMgEU1MYC1EWxOPKO8Eu1XEONdfouHXmzYzmNtpFSyFYX23ceHM1g==
-X-Received: by 2002:a17:90a:8401:: with SMTP id j1mr7728686pjn.39.1574182415755;
-        Tue, 19 Nov 2019 08:53:35 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id u65sm25969583pfb.35.2019.11.19.08.53.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Nov 2019 08:53:34 -0800 (PST)
-Subject: Re: KMSAN: uninit-value in can_receive
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000005c08d10597a3a05d@google.com>
- <a5f73d92-fdf2-2590-c863-39a181dca8e1@hartkopp.net>
- <deedd609-6f3b-8035-47e1-252ab221faa1@pengutronix.de>
- <7934bc2b-597f-0bb3-be2d-32f3b07b4de9@hartkopp.net>
- <7f5c4546-0c1a-86ae-581e-0203b5fca446@pengutronix.de>
- <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9e06266a-67f3-7352-7b87-2b9144c7c9a9@gmail.com>
-Date:   Tue, 19 Nov 2019 08:53:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WS7CgNbVTLnXI+F//St0LEaj4tnKGZAzwSTTN2+gQVc=;
+        b=G4FlbRQm0tWuyNnpBAfg9y69IhgmQyOiAiuR304LwH1HQwpllAqpn505FjBRyG2uRS
+         pm8iHt0oI44Opg2q7TV90MpC7dhZxfuQ8KCwng6W7ndZaCMdIaFbO+kS3LeezlWKGIaV
+         oPZoSRIrMrE0L46AlWILB3g2igCWAXH0W/MIcrSoFkTA+gdHGaCg3sV9dWZXbblQ6FAh
+         Jlol6awahNaIu/u/VUBKiNayKb1USjataNIuvugpUPof8Q6QO09v4015E8low8TUwFRT
+         vY00WcHTbn+Kxy8Cui6GWbfaNva6+MbwXqLT2rlWdRwpDrOlJFBAWxPi9f9oTVQ6sz5Y
+         /1tA==
+X-Gm-Message-State: APjAAAXA7CQxVKfetMxYcPpDbPlLz+Av1sB3OAQUTp+G1QTWqXoMDfNZ
+        h4aRg+PGPykAv39xLkEXDcltNQ==
+X-Google-Smtp-Source: APXvYqzkFUvos9MykZsh27TV/+hmzGyyLBxh0y1ceE3cL9LAkahX/1j2YfuXdRVTSUCh1q0oLUrsfw==
+X-Received: by 2002:ac8:6757:: with SMTP id n23mr875894qtp.345.1574182503733;
+        Tue, 19 Nov 2019 08:55:03 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id v186sm10479291qkb.42.2019.11.19.08.55.02
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 19 Nov 2019 08:55:02 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iX6mM-0001Yp-4X; Tue, 19 Nov 2019 12:55:02 -0400
+Date:   Tue, 19 Nov 2019 12:55:02 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Andrew Murray <andrew.murray@arm.com>
+Cc:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Heiko Stuebner <heiko@sntech.de>, linux-pci@vger.kernel.org,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        linux-rdma@vger.kernel.org, maz@kernel.org, phil@raspberrypi.org,
+        iommu@lists.linux-foundation.org,
+        linux-rockchip@lists.infradead.org, f.fainelli@gmail.com,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-arm-kernel@lists.infradead.org, mbrugger@suse.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jeremy.linton@arm.com, Tom Joseph <tjoseph@cadence.com>,
+        wahrenst@gmx.net, james.quinlan@broadcom.com,
+        Robin Murphy <robin.murphy@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [PATCH v2 1/6] linux/log2.h: Add roundup/rounddown_pow_two64()
+ family of functions
+Message-ID: <20191119165502.GB4991@ziepe.ca>
+References: <20191112155926.16476-1-nsaenzjulienne@suse.de>
+ <20191112155926.16476-2-nsaenzjulienne@suse.de>
+ <20191119111320.GP43905@e119886-lin.cambridge.arm.com>
+ <052d07fb4eb79b29dd58cab577d59bab6684329a.camel@suse.de>
+ <56cbba61d92f9bc7d0a33c1de379bcd5cf411cb8.camel@suse.de>
+ <20191119162849.GT43905@e119886-lin.cambridge.arm.com>
 MIME-Version: 1.0
-In-Reply-To: <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119162849.GT43905@e119886-lin.cambridge.arm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/18/19 11:35 PM, Oliver Hartkopp wrote:
+On Tue, Nov 19, 2019 at 04:28:50PM +0000, Andrew Murray wrote:
+> On Tue, Nov 19, 2019 at 01:43:39PM +0100, Nicolas Saenz Julienne wrote:
+> > On Tue, 2019-11-19 at 12:30 +0100, Nicolas Saenz Julienne wrote:
+> > > Hi Andrew, thanks for the review.
+> > > > > +/**
+> > > > > + * __roundup_pow_of_two64() - round 64bit value up to nearest power of
+> > > > > two
+> > > > > + * @n: value to round up
+> > > > > + */
+> > > > > +static inline __attribute__((const)) __u64 __roundup_pow_of_two64(__u64
+> > > > > n)
+> > > > 
+> > > > To be consistent with other functions in the same file (__ilog_u64) you may
+> > > > want to rename this to __roundup_pow_of_two_u64.
+> > > 
+> > > Sounds good to me.
+> > > 
+> > > > Also do you know why u64 is used in some places and __u64 in others?
+> > > 
+> > > That's unwarranted, it should be __u64 everywhere.
+> > 
+> > Sorry, now that I look deeper into it, it should be u64.
 > 
+> Do you know the reason why? I'd be interested to know.
 
-> 
-> See ioctl$ifreq https://syzkaller.appspot.com/x/log.txt?x=14563416e00000
-> 
-> 23:11:34 executing program 2:
-> r0 = socket(0x200000000000011, 0x3, 0x0)
-> ioctl$ifreq_SIOCGIFINDEX_vcan(r0, 0x8933, &(0x7f0000000040)={'vxcan1\x00', <r1=>0x0})
-> bind$packet(r0, &(0x7f0000000300)={0x11, 0xc, r1}, 0x14)
-> sendmmsg(r0, &(0x7f0000000d00), 0x400004e, 0x0)
-> 
-> We only can receive skbs from (v(x))can devices.
-> No matter if someone wrote to them via PF_CAN or PF_PACKET.
-> We check for ETH_P_CAN(FD) type and ARPHRD_CAN dev type at rx time.
+__u64 must be used in header files that are under uapi - ie it is the
+name of the symbol in userspace, and u64 does not exist.
 
-And what entity sets the can_skb_prv(skb)->skbcnt to zero exactly ?
+u64 should be used in all code that is only inside the kernel, ie .c
+files, internal headers, etc
 
-> 
->>> We additionally might think about introducing a check whether we have a
->>> can_skb_reserve() created skbuff.
->>>
->>> But even if someone forged a skbuff without this reserved space the
->>> access to can_skb_prv(skb)->skbcnt would point into some CAN frame
->>> content - which is still no access to uninitialized content, right?
-> 
-> So this question remains still valid whether we have a false positive from KMSAN here.
+I routinely discourage use of __uXX in kernel native code.
 
-I do not believe it is a false positive.
-
-It seems CAN relies on some properties of low level drivers using alloc_can_skb() or similar function.
-
-Why not simply fix this like that ?
-
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 128d37a4c2e0ba5d8db69fcceec8cbd6a79380df..3e71a78d82af84caaacd0ef512b5e894efbf4852 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -647,8 +647,9 @@ static void can_receive(struct sk_buff *skb, struct net_device *dev)
-        pkg_stats->rx_frames_delta++;
- 
-        /* create non-zero unique skb identifier together with *skb */
--       while (!(can_skb_prv(skb)->skbcnt))
-+       do {
-                can_skb_prv(skb)->skbcnt = atomic_inc_return(&skbcounter);
-+       } while (!(can_skb_prv(skb)->skbcnt));
- 
-        rcu_read_lock();
- 
-
-
+Jason
