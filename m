@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3581024FD
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 13:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B29102504
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 13:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbfKSM5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 07:57:54 -0500
-Received: from nbd.name ([46.4.11.11]:40148 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727255AbfKSM5x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 07:57:53 -0500
-Received: from p5dcfb9cf.dip0.t-ipconnect.de ([93.207.185.207] helo=[10.255.191.27])
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <john@phrozen.org>)
-        id 1iX34n-00043j-78; Tue, 19 Nov 2019 13:57:49 +0100
-Subject: Re: Felix Fietkau email address become stale?
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        nbd@nbd.name
-Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>
-References: <20191119124506.GC25745@shell.armlinux.org.uk>
- <cad7ea93-8aad-6bfa-c1c3-9932c5a87699@phrozen.org>
- <20191119125556.GD25745@shell.armlinux.org.uk>
-From:   John Crispin <john@phrozen.org>
-Message-ID: <f6d40138-dd9e-82d9-728a-bc65538ff02b@phrozen.org>
-Date:   Tue, 19 Nov 2019 13:57:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728069AbfKSM6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 07:58:25 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:43765 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727702AbfKSM6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 07:58:25 -0500
+Received: by mail-yb1-f194.google.com with SMTP id r201so8696886ybc.10;
+        Tue, 19 Nov 2019 04:58:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iGUreshl/jUKAV7h3ePAhyfmas1/gCvv6uy3G++925w=;
+        b=XlpXoafkmE7SY7C/5S3OE1/qgzqiFQaJQVKtYoKnU65JQYXwyXiVY6h9XulsLfZUV6
+         B0lDQ6KvPfEkYzUF12R9JY0pQSrwibQA5oSpZ+dKuQ01+EGDaqG1UuNV9BSSv2bZ9Q/r
+         NB9YOtFRcwqLQBiaDyvgMHY/5tqCqXP5JGdLtDIElrS8kMR0XrKYf1fURGX4QMpRZluN
+         bhgap1sWXqBIlViDK3vpCzFruisl5Uoxp/seRGsc6DJmFH6yH3RR+cyk1mnI13kb+wTh
+         X5y2evAZuKfS9j0aF7K2MceJdAolNPA4zMrJM8OJ9uJzFuUuI/KTheyo0G1fS/z75cO/
+         BS+g==
+X-Gm-Message-State: APjAAAUWNq+zEXKpIaGBMGc8dRPEOxeN6Agy1yiMnnmwXVVigbwK4TR3
+        jKMmpstTj/InPK68cN4TUFFTL4x1rW0gUlz+SbQ=
+X-Google-Smtp-Source: APXvYqxQ2NP8UE+oe01b4UUlC7hZnTSSxNpqCcNRNJakRNjLijISk7RWnwspQrGrEpJONJTektvmRaXS1kTYu7iJUgg=
+X-Received: by 2002:a25:a0d3:: with SMTP id i19mr27854070ybm.14.1574168303987;
+ Tue, 19 Nov 2019 04:58:23 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191119125556.GD25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191111071347.21712-1-yuehaibing@huawei.com>
+In-Reply-To: <20191111071347.21712-1-yuehaibing@huawei.com>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Tue, 19 Nov 2019 18:28:12 +0530
+Message-ID: <CAFcVECJQH15y78YPurq_m2bDigQ6EzSCZHZMROHRFe-rJKw88g@mail.gmail.com>
+Subject: Re: [PATCH] mdio_bus: Fix PTR_ERR applied after initialization to constant
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Miller <davem@davemloft.net>, mail@david-bauer.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/11/2019 13:55, Russell King - ARM Linux admin wrote:
-> On Tue, Nov 19, 2019 at 01:46:58PM +0100, John Crispin wrote:
->> On 19/11/2019 13:45, Russell King - ARM Linux admin wrote:
->>> Hi,
->>>
->>>     nbd@openwrt.org
->>>       host util-01.infra.openwrt.org [2a03:b0c0:3:d0::175a:2001]
->>>       SMTP error from remote mail server after RCPT TO:<nbd@openwrt.org>:
->>>       550 Unrouteable address
->>>
->>> which was triggered due to MAINTAINERS saying:
->>>
->>> MEDIATEK ETHERNET DRIVER
->>> M:      Felix Fietkau <nbd@openwrt.org>
->>> M:      John Crispin <john@phrozen.org>
->>> M:      Sean Wang <sean.wang@mediatek.com>
->>> M:      Mark Lee <Mark-MC.Lee@mediatek.com>
->>>
->>> Does Felix's address need updating or removing?
->>>
->>
->> all @openwrt.org emails became stale during the owrt/lede remerge. please
->> use nbd@nbd.name
-> 
-> Thanks, but please consider my message a merely curtesy pointing out
-> the problem.  I've already sent out the patch and re-sending it to
-> all the recipients just because one person's email address is stale
-> is not reasonable.
-> 
-> MAINTAINERS and .mailcap need to be updated if Felix still wishes to
-> receive patches, and from what you're saying, the same goes for the
-> other openwrt.org email addresses therein.
-> 
+On Mon, Nov 11, 2019 at 12:53 PM YueHaibing <yuehaibing@huawei.com> wrote:
+>
+> Fix coccinelle warning:
+>
+> ./drivers/net/phy/mdio_bus.c:67:5-12: ERROR: PTR_ERR applied after initialization to constant on line 62
+> ./drivers/net/phy/mdio_bus.c:68:5-12: ERROR: PTR_ERR applied after initialization to constant on line 62
+>
+> Fix this by using IS_ERR before PTR_ERR
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 71dd6c0dff51 ("net: phy: add support for reset-controller")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/phy/mdio_bus.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 2e29ab8..3587656 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -64,11 +64,12 @@ static int mdiobus_register_reset(struct mdio_device *mdiodev)
+>         if (mdiodev->dev.of_node)
+>                 reset = devm_reset_control_get_exclusive(&mdiodev->dev,
+>                                                          "phy");
+> -       if (PTR_ERR(reset) == -ENOENT ||
+> -           PTR_ERR(reset) == -ENOTSUPP)
+> -               reset = NULL;
+> -       else if (IS_ERR(reset))
+> -               return PTR_ERR(reset);
+> +       if (IS_ERR(reset)) {
+> +               if (PTR_ERR(reset) == -ENOENT || PTR_ERR(reset) == -ENOSYS)
+> +                       reset = NULL;
+> +               else
+> +                       return PTR_ERR(reset);
+> +       }
+>
+>         mdiodev->reset_ctrl = reset;
+>
 
-I will let him know, thanks for the  heads up
-	John
+Adding Michal Simek to add some test comments.
+
+> --
+> 2.7.4
+>
+>
