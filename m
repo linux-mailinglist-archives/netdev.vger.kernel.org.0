@@ -2,105 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52BF810127F
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 05:34:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EA1101281
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 05:35:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfKSEeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 23:34:31 -0500
-Received: from mail-pl1-f173.google.com ([209.85.214.173]:36072 "EHLO
-        mail-pl1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727217AbfKSEea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 23:34:30 -0500
-Received: by mail-pl1-f173.google.com with SMTP id d7so11046570pls.3
-        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 20:34:28 -0800 (PST)
+        id S1727687AbfKSEfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 23:35:07 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40013 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfKSEfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 23:35:07 -0500
+Received: by mail-pg1-f194.google.com with SMTP id e17so3347397pgd.7;
+        Mon, 18 Nov 2019 20:35:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rkdEpR62sDVJxgsklhz1UnFEmVbcNibLh8/QnTcfFDc=;
-        b=QxRyOWEATY2cC2tVR5io3QZcV+0POPsUjI9K7u3AsC/BnxcStwWEfJUlXHl0Vi791Q
-         Io6aVIdnaAJRnpxHlJEpBsiNM58/23Ti/xY5Ge5bZp80Z0bCNHXJtcFtHdbiDZenPI09
-         PKFZNRtVzPyhTH/hzpAn0eFyDgIcZyTbRgiMdIYuOqaMSVnEoyAlU5RDlhVmnlGGLMAW
-         j2nw7EU7CUklvXki/4UaU2nPoGgjr+laZc020JOvx3acdSInUg46Qu6OC5UXAJF9LXdS
-         kmSfLrmPjbYJBiFx0vHl43XvtDqbJEVpR8AGeGRQbXBHGq41ywd0nP0brZuC6EyE47IC
-         brHg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1vAR9pr+zCDnA9c+fs7AWDCb/oWZcql0gVEAoledK6A=;
+        b=TiCzTjPTkxrZPTYjY++q7K5XMuc42Z2m3ZDTIE43dLkg9kuH9j/VL7P0TAun2ePnRh
+         aBiorpb7jbAqdIUQSPK1iS96wciwlNfqe7m7I2txRBUKTzD8ewXzlUc5e06WRQ5SkK+1
+         OQkiokjRiwYkepuDH6lr27tAhTAt04ohgT3vvC269qk+hWY4+QvV9pKW8ZTRtnpMfaWl
+         V3UFE2EWLFw2ZzDkNwu6MJd0bQvodnKE5st5Mnu68O8dehgnxjS8VmvNkpu46IaW/7KN
+         6MqhgG/fFd93/rBltodUFeWTwbXN6HXRuxB+dPDEx2sjUGgc3Uxf5CIasDdO4WaYqiPE
+         zbcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rkdEpR62sDVJxgsklhz1UnFEmVbcNibLh8/QnTcfFDc=;
-        b=XekX9KaKrGQOve5dooyo1XlMcRbl9PsFGh/tgY7sa0MqH0LSwhrruY82Q59fp7wcov
-         BrrKvLEbQqrE2gTQpK2/53TF5eTuUWyQR2FtKtcFcqZ8ebXLyQ+b2UrYBUO7BMSCUUPJ
-         JtrRyNVIBSYygJDWMBWUk9d6mcMeRmYxIkW5UhJWV0gwTugUnYLBVIfPkPTHJ+rMoBsQ
-         JfZskK8wHfmyDfTlChNwCzOMbaMS3ig4DLMfHLxTSle9tdoU5z7TjBSzjpfI4E9YkXzG
-         FX7K3zEvWYT+FU8RqCBJv59OlXrxBSlDUHWUCOFt5EWslnc7wPeWJyr/ZMdCQ+JQs3CL
-         8pgA==
-X-Gm-Message-State: APjAAAU9ajkxJoE8KS/MTUVauAicaD8EgTIifn7uddN/7oPt43W4qOGz
-        gEe7Mpz+MMB9RfEIOfSmJO7vaA==
-X-Google-Smtp-Source: APXvYqwS6dQ3WixHS9SBX1WTB0MYVtzBe/zIaYNktn/PyxM7sW/RB1GkPzkJraCwg45ZOoaYSWA9Lg==
-X-Received: by 2002:a17:90a:22a6:: with SMTP id s35mr3454079pjc.3.1574138067544;
-        Mon, 18 Nov 2019 20:34:27 -0800 (PST)
-Received: from [192.168.1.188] ([66.219.217.79])
-        by smtp.gmail.com with ESMTPSA id s2sm21838748pgv.48.2019.11.18.20.34.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1vAR9pr+zCDnA9c+fs7AWDCb/oWZcql0gVEAoledK6A=;
+        b=nwXITuR6400N/BH/9wEFriaQKiRqPdMRu/y9aJf27vR/aqKNuhGaT3CAKXE/vaeOKy
+         znyC2xbwlQkYMTDyMtS05jdID/OvD3EL06GvozdM31K0IoE25M4tA87qXVuexXveXLE+
+         stk0khQuQq95TadeP8mwj/CuaYXwRmDBzKiVG30YRtlicG0X5K2wdhhmyL9enG9gyELJ
+         y2lEpN5rRzrvgpYgK9aJqPsZALEt6JocSPd4YuQJ8606xnJdaIWuy3Yky0CMJYHwDToa
+         aewG5sV2iZqWTdUBf6zy5BUrSYZyhOYp7VjXSxkub7qC7W96tzzi/f+eLI9t4tv63Bbw
+         meCQ==
+X-Gm-Message-State: APjAAAU72WWBWQZrHBbvrWHghF5AoJLBSmFc18gmiHZ2eFIy3DhzMPRh
+        j/Xy0lw5Yg32fXPI6DDrUZk=
+X-Google-Smtp-Source: APXvYqw2upkCNdRdCwE1MLHAT3ARTAwvLwXyTicefk9hMVi7ATCVZaU13dcZHDyfp+cVK7uiCyHYJw==
+X-Received: by 2002:a63:115c:: with SMTP id 28mr3287445pgr.6.1574138106592;
+        Mon, 18 Nov 2019 20:35:06 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::db2d])
+        by smtp.gmail.com with ESMTPSA id y26sm24526869pfo.76.2019.11.18.20.35.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Nov 2019 20:34:26 -0800 (PST)
-Subject: Re: INFO: task hung in io_wq_destroy
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     syzbot <syzbot+0f1cc17f85154f400465@syzkaller.appspotmail.com>,
-        andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
-        idosch@mellanox.com, kimbrownkd@gmail.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, petrm@mellanox.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        viro@zeniv.linux.org.uk, wanghai26@huawei.com,
-        yuehaibing@huawei.com
-References: <000000000000f86a4f0595fdb152@google.com>
- <f1a79e81-b41f-ba48-9bf3-aeae708f73ba@kernel.dk>
- <20191119022330.GC3147@sol.localdomain>
- <bc52115c-3951-54c6-7810-86797d8c4644@kernel.dk>
-Message-ID: <c7b9c600-724b-6df1-84ba-b74999d6f4a6@kernel.dk>
-Date:   Mon, 18 Nov 2019 21:34:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Mon, 18 Nov 2019 20:35:05 -0800 (PST)
+Date:   Mon, 18 Nov 2019 20:35:01 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Yonghong Song <yhs@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 5/9] bpf: add batch ops to all htab bpf map
+Message-ID: <20191119042012.3wpj5porwkntpfm4@ast-mbp.dhcp.thefacebook.com>
+References: <20191119014357.98465-1-brianvv@google.com>
+ <20191119014357.98465-6-brianvv@google.com>
 MIME-Version: 1.0
-In-Reply-To: <bc52115c-3951-54c6-7810-86797d8c4644@kernel.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119014357.98465-6-brianvv@google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/19 8:15 PM, Jens Axboe wrote:
-> On 11/18/19 7:23 PM, Eric Biggers wrote:
->> Hi Jens,
->>
->> On Mon, Oct 28, 2019 at 03:00:08PM -0600, Jens Axboe wrote:
->>> This is fixed in my for-next branch for a few days at least, unfortunately
->>> linux-next is still on the old one. Next version should be better.
->>
->> This is still occurring on linux-next.  Here's a report on next-20191115 from
->> https://syzkaller.appspot.com/text?tag=CrashReport&x=16fa3d1ce00000
+On Mon, Nov 18, 2019 at 05:43:53PM -0800, Brian Vazquez wrote:
+> From: Yonghong Song <yhs@fb.com>
 > 
-> Hmm, I'll take a look. Looking at the reproducer, it's got a massive
-> sleep at the end. I take it this triggers before that time actually
-> passes? Because that's around 11.5 days of sleep.
+> htab can't use generic batch support due some problematic behaviours
+> inherent to the datastructre, i.e. while iterating the bpf map  a
+> concurrent program might delete the next entry that batch was about to
+> use, in this case there's no easy solution to retrieve the next entry
+> and the issua has been discussed multiple times (see [1] and [2]).
+> The only way hmap can be traversed without the problem previously
+> exposed is by making sure that the map is traversing entire buckets.
+> This commit implements those strict requirements for hmap, the
+> implementation follows the same interaction that generic support with
+> some exceptions:
 > 
-> No luck reproducing this so far, I'll try on linux-next.
+>  - If keys/values buffer are not big enough to traverse a bucket,
+>    ENOSPC will be returned.
+>  - out_batch contains the value of the next bucket in the iteration, not
+>  the next key, but this is transparent for the user since the user
+>  should never use out_batch for other than bpf batch syscalls.
+> 
+> Note that only lookup and lookup_and_delete batch ops require the hmap
+> specific implementation and update/delete batch ops can be the generic
+> ones.
+> 
+> [1] https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
+> [2] https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
+> 
+> Co-authored-by: Brian Vazquez <brianvv@google.com>
+> Signed-off-by: Brian Vazquez <brianvv@google.com>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-I see what it is - if the io-wq is setup and torn down before the
-manager thread is started, then we won't create the workers we already
-expected. The manager thread will exit without doing anything, but
-teardown will wait for the expected workers to exit before being
-allowed to proceed. That never happens.
+SOB order is not quite correct.
+If the patch was mainly developed by Yonghong it should have his 'From:'
+then his SOB and then your SOB.
+You can drop Co-authored-by field.
 
-I've got a patch for this, but I'll test it a bit and send it out
-tomorrow.
-
--- 
-Jens Axboe
+Patch 2 was also mainly done by Yonghong or not ?
+If so it should have his 'From:' field.
 
