@@ -2,150 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DBE2102E04
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 22:09:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEF6102E1F
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 22:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbfKSVJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 16:09:19 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44868 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbfKSVJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 16:09:19 -0500
-Received: by mail-pl1-f195.google.com with SMTP id az9so12524190plb.11;
-        Tue, 19 Nov 2019 13:09:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=540qf/bm5KNNA99hBGUVZOgA79LIDKy75tuXaffYbt4=;
-        b=oKGpGWgynQH9ILYGsyHsX31+GjtrcYbP9aVt91ZRjLLzZhK/UGcnwlnPPwjaTFpY5v
-         DqGFcB8M3yVBV3u19g31aeIoAKp0SiOeibtGsMi7uFN20gMBrrFH32nHDFegSsqPmpHP
-         cnydPu1sG+uq3t7cOUcDFNOC7sr65zdgkGYswFOGN61LUCZOhGUdR/feNrGEWsZGk7qh
-         ZleCpfaEl6dxmb7gwoF/Xgv9aTBg1d5ln/zjA4xLazUGVukTDJjbkokVOMixQMpKi7EO
-         qmLWrxzi0AVT8iUTDeIMaEWR9r5gVU21r2KYcNHHARCAHqHNLQz25bPA2gHu9aSRYpV3
-         dU2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=540qf/bm5KNNA99hBGUVZOgA79LIDKy75tuXaffYbt4=;
-        b=MPvKIBdi1QKCTgSRZOChgghkhECmEFam8rO8mdDjFRAf1Hqz+kCQZcyRHlWaBD4IXD
-         DqY4JnnjY+fwUwW8/Z42Ib74hYr2JaF90B5AJ7lI2QwKMTz+JEhqKYzVYmKkuFk5Fj1E
-         cC2rtnKKECh26WRefdUKawZUE4raUunN4rjMB7uLe6DU9IRdPMITF02vXqax4DyKoHDa
-         EU79GRbMaVNq97msKYzT8hEBWHblUkYLgYo5IAaodOGV/S7V89Fq+cVPgPufOoJfkItZ
-         tov1u/rM5mCB1loqdfCeV9Q8BQ/4GNbOGJ6S0uvFze0Ua5WOc6ApyHtKzzCsuZxmyJUs
-         WUrw==
-X-Gm-Message-State: APjAAAWFfM6kBRQ30Q5sjMGQkiixYsSmcTWsVmLWKX1pfey5Q2jDWQ7x
-        QBYPQNsr/dgMY4ISj/w4YSY=
-X-Google-Smtp-Source: APXvYqzKTah3FltRWuH5uhmLTEFkDzCBgApiVxtKBu7r5/lKFfyo2Piv4hieGubZghGC8/y9Q2LAeQ==
-X-Received: by 2002:a17:90a:3522:: with SMTP id q31mr9154747pjb.18.1574197758251;
-        Tue, 19 Nov 2019 13:09:18 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id y24sm28215358pfr.116.2019.11.19.13.09.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Nov 2019 13:09:17 -0800 (PST)
-Subject: Re: KMSAN: uninit-value in can_receive
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000005c08d10597a3a05d@google.com>
- <a5f73d92-fdf2-2590-c863-39a181dca8e1@hartkopp.net>
- <deedd609-6f3b-8035-47e1-252ab221faa1@pengutronix.de>
- <7934bc2b-597f-0bb3-be2d-32f3b07b4de9@hartkopp.net>
- <7f5c4546-0c1a-86ae-581e-0203b5fca446@pengutronix.de>
- <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
- <9e06266a-67f3-7352-7b87-2b9144c7c9a9@gmail.com>
- <3142c032-e46a-531c-d1b8-d532e5b403a6@hartkopp.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <92c04159-b83a-3e33-91da-25a727a692d0@gmail.com>
-Date:   Tue, 19 Nov 2019 13:09:16 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727194AbfKSVRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 16:17:34 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:54806 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726911AbfKSVRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 16:17:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574198252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VAGsvuknSxBFMrzU8TPh63ZgjOWKvtXFHTopm1H1Chk=;
+        b=LQBiIA1KHuikI1Kcu7Fudqt0FHqeKFMsNS5O2yt/KMDmSsocLzJNUiCl+3iWxgVLdpHmG5
+        TcxrO8mUJGwEOHbCL73K/gSlqNnWx25WzGjjwWjxjiSFYcv7iR3Jmuyl4GYHMO1jKrYkjS
+        6EISESCHLS/9q5qDcquZ9Dfmm6hMSxE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-319-kpjJ1TExO6CzkS-AZ8jTCA-1; Tue, 19 Nov 2019 16:17:31 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B2E3E107ACC4;
+        Tue, 19 Nov 2019 21:17:29 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB1B71ED;
+        Tue, 19 Nov 2019 21:17:19 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 22:17:18 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     mcroce@redhat.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, jonathan.lemon@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH v4 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191119221718.3d050008@carbon>
+In-Reply-To: <20191119152543.GD3449@localhost.localdomain>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+        <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
+        <20191119122358.12276da4@carbon>
+        <20191119121430.GA3449@localhost.localdomain>
+        <20191119161332.56faa205@carbon>
+        <20191119152543.GD3449@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <3142c032-e46a-531c-d1b8-d532e5b403a6@hartkopp.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: kpjJ1TExO6CzkS-AZ8jTCA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 19 Nov 2019 17:25:43 +0200
+Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 
+> > On Tue, 19 Nov 2019 14:14:30 +0200
+> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+> >  =20
+> > > > On Mon, 18 Nov 2019 15:33:45 +0200
+> > > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > >    =20
+> > > > > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > > > > index 1121faa99c12..6f684c3a3434 100644
+> > > > > --- a/include/net/page_pool.h
+> > > > > +++ b/include/net/page_pool.h
+> > > > > @@ -34,8 +34,15 @@
+> > > > >  #include <linux/ptr_ring.h>
+> > > > >  #include <linux/dma-direction.h>
+> > > > > =20
+> > > > > -#define PP_FLAG_DMA_MAP 1 /* Should page_pool do the DMA map/unm=
+ap */
+> > > > > -#define PP_FLAG_ALL=09PP_FLAG_DMA_MAP
+> > > > > +#define PP_FLAG_DMA_MAP=09=091 /* Should page_pool do the DMA ma=
+p/unmap */
+> > > > > +#define PP_FLAG_DMA_SYNC_DEV=092 /* if set all pages that the dr=
+iver gets
+> > > > > +=09=09=09=09   * from page_pool will be
+> > > > > +=09=09=09=09   * DMA-synced-for-device according to the
+> > > > > +=09=09=09=09   * length provided by the device driver.
+> > > > > +=09=09=09=09   * Please note DMA-sync-for-CPU is still
+> > > > > +=09=09=09=09   * device driver responsibility
+> > > > > +=09=09=09=09   */
+> > > > > +#define PP_FLAG_ALL=09=09(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV=
+)
+> > > > >     =20
+> > > > [...]
+> > > >=20
+> > > > Can you please change this to use the BIT(X) api.
+> > > >=20
+> > > > #include <linux/bits.h>
+> > > >=20
+> > > > #define PP_FLAG_DMA_MAP=09=09BIT(0)
+> > > > #define PP_FLAG_DMA_SYNC_DEV=09BIT(1)   =20
+> > >=20
+> > > Hi Jesper,
+> > >=20
+> > > sure, will do in v5
+> > >  =20
+> > > >=20
+> > > >=20
+> > > >    =20
+> > > > > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > > > > index dfc2501c35d9..4f9aed7bce5a 100644
+> > > > > --- a/net/core/page_pool.c
+> > > > > +++ b/net/core/page_pool.c
+> > > > > @@ -47,6 +47,13 @@ static int page_pool_init(struct page_pool *po=
+ol,
+> > > > >  =09    (pool->p.dma_dir !=3D DMA_BIDIRECTIONAL))
+> > > > >  =09=09return -EINVAL;
+> > > > > =20
+> > > > > +=09/* In order to request DMA-sync-for-device the page needs to
+> > > > > +=09 * be mapped
+> > > > > +=09 */
+> > > > > +=09if ((pool->p.flags & PP_FLAG_DMA_SYNC_DEV) &&
+> > > > > +=09    !(pool->p.flags & PP_FLAG_DMA_MAP))
+> > > > > +=09=09return -EINVAL;
+> > > > > +   =20
+> > > >=20
+> > > > I like that you have moved this check to setup time.
+> > > >=20
+> > > > There are two other parameters the DMA_SYNC_DEV depend on:
+> > > >=20
+> > > >  =09struct page_pool_params pp_params =3D {
+> > > >  =09=09.order =3D 0,
+> > > > -=09=09.flags =3D PP_FLAG_DMA_MAP,
+> > > > +=09=09.flags =3D PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+> > > >  =09=09.pool_size =3D size,
+> > > >  =09=09.nid =3D cpu_to_node(0),
+> > > >  =09=09.dev =3D pp->dev->dev.parent,
+> > > >  =09=09.dma_dir =3D xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> > > > +=09=09.offset =3D pp->rx_offset_correction,
+> > > > +=09=09.max_len =3D MVNETA_MAX_RX_BUF_SIZE,
+> > > >  =09};
+> > > >=20
+> > > > Can you add a check, that .max_len must not be zero.  The reason is
+> > > > that I can easily see people misconfiguring this.  And the effect i=
+s
+> > > > that the DMA-sync-for-device is essentially disabled, without user
+> > > > realizing this. The not-realizing part is really bad, especially
+> > > > because bugs that can occur from this are very rare and hard to cat=
+ch.   =20
+> > >=20
+> > > I guess we need to check it just if we provide PP_FLAG_DMA_SYNC_DEV.
+> > > Something like:
+> > >=20
+> > > =09if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV) {
+> > > =09=09if (!(pool->p.flags & PP_FLAG_DMA_MAP))
+> > > =09=09=09return -EINVAL;
+> > >=20
+> > > =09=09if (!pool->p.max_len)
+> > > =09=09=09return -EINVAL;
+> > >=09} =20
+> >=20
+> > Yes, exactly.
+> >  =20
+>=20
+> ack, I will add it to v5
+>=20
+> > > >=20
+> > > > I'm up for discussing if there should be a similar check for .offse=
+t.
+> > > > IMHO we should also check .offset is configured, and then be open t=
+o
+> > > > remove this check once a driver user want to use offset=3D0.  Does =
+the
+> > > > mvneta driver already have a use-case for this (in non-XDP mode)?  =
+ =20
+> > >=20
+> > > With 'non-XDP mode' do you mean not loading a BPF program? If so yes,=
+ it used
+> > > in __page_pool_alloc_pages_slow getting pages from page allocator.
+> > > What would be a right min value for it? Just 0 or
+> > > XDP_PACKET_HEADROOM/NET_SKB_PAD? I guess here it matters if a BPF pro=
+gram is
+> > > loaded or not. =20
+> >=20
+> > I think you are saying, that we need to allow .offset=3D=3D0, because i=
+t is
+> > used by mvneta.  Did I understand that correctly? =20
+>=20
+> I was just wondering what is the right value for the min offset, but
+> rethinking about it yes, there is a condition where  mvneta is using
+> offset set 0 (it is the regression reported by Andrew, when mvneta is
+> running on a hw bm device  but bm code is not compiled). Do you think
+> we can skip this check for the moment until we fix XDP on that
+> particular board?
 
-On 11/19/19 12:24 PM, Oliver Hartkopp wrote:
-> Hi Eric,
-> 
-> On 19/11/2019 17.53, Eric Dumazet wrote:
->>
->>
->> On 11/18/19 11:35 PM, Oliver Hartkopp wrote:
->>>
->>
->>>
->>> See ioctl$ifreq https://syzkaller.appspot.com/x/log.txt?x=14563416e00000
->>>
->>> 23:11:34 executing program 2:
->>> r0 = socket(0x200000000000011, 0x3, 0x0)
->>> ioctl$ifreq_SIOCGIFINDEX_vcan(r0, 0x8933, &(0x7f0000000040)={'vxcan1\x00', <r1=>0x0})
->>> bind$packet(r0, &(0x7f0000000300)={0x11, 0xc, r1}, 0x14)
->>> sendmmsg(r0, &(0x7f0000000d00), 0x400004e, 0x0)
->>>
->>> We only can receive skbs from (v(x))can devices.
->>> No matter if someone wrote to them via PF_CAN or PF_PACKET.
->>> We check for ETH_P_CAN(FD) type and ARPHRD_CAN dev type at rx time.
->>
->> And what entity sets the can_skb_prv(skb)->skbcnt to zero exactly ?
->>
->>>
->>>>> We additionally might think about introducing a check whether we have a
->>>>> can_skb_reserve() created skbuff.
->>>>>
->>>>> But even if someone forged a skbuff without this reserved space the
->>>>> access to can_skb_prv(skb)->skbcnt would point into some CAN frame
->>>>> content - which is still no access to uninitialized content, right?
->>>
->>> So this question remains still valid whether we have a false positive from KMSAN here.
->>
->> I do not believe it is a false positive.
->>
->> It seems CAN relies on some properties of low level drivers using alloc_can_skb() or similar function.
->>
->> Why not simply fix this like that ?
->>
->> diff --git a/net/can/af_can.c b/net/can/af_can.c
->> index 128d37a4c2e0ba5d8db69fcceec8cbd6a79380df..3e71a78d82af84caaacd0ef512b5e894efbf4852 100644
->> --- a/net/can/af_can.c
->> +++ b/net/can/af_can.c
->> @@ -647,8 +647,9 @@ static void can_receive(struct sk_buff *skb, struct net_device *dev)
->>          pkg_stats->rx_frames_delta++;
->>            /* create non-zero unique skb identifier together with *skb */
->> -       while (!(can_skb_prv(skb)->skbcnt))
->> +       do {
->>                  can_skb_prv(skb)->skbcnt = atomic_inc_return(&skbcounter);
->> +       } while (!(can_skb_prv(skb)->skbcnt));
->>            rcu_read_lock();
->>   
-> 
-> Please check commit d3b58c47d330d ("can: replace timestamp as unique skb attribute").
+Yes. I guess we just accept .offset can be zero.  It is an artificial
+limitation.
 
-Oh well... This notion of 'unique skb attribute' is interesting...
+The check is not important if API is used correctly. It comes from my
+API design philosophy for page_pool, which is "Easy to use, and hard to
+misuse".  This is a case of catching "misuse" and signaling that this
+was a wrong config.  The check for pool->p.max_len should be enough,
+for driver developer to notice, that they also need to set offset.
+Maybe a comment close to pool->p.max_len check about "offset" will be
+enough.  Given you return the "catch all" -EINVAL, we/you force driver
+devel to read code for page_pool_init(), which IMHO is sufficiently
+clear.
 
-> 
-> can_skb_prv(skb)->skbcnt is set to 0 at skb creation time when sending CAN frames from local host or receiving CAN frames from a real CAN interface.
-
-We can not enforce this to happen with a virtual interface.
-
-> 
-> When a CAN skb is received by the net layer the *first* time it gets a unique value which we need for a per-cpu filter mechanism in raw_rcv().
-> 
-> So where's the problem to check for (!(can_skb_prv(skb)->skbcnt)) in a while statement? I can't see a chance for an uninitialized value there.
-
-You have to make sure the packet has been properly cooked by a 'real CAN interface' then, and reject them if not.
-
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
