@@ -2,146 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA48610283F
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 16:40:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C320110283E
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 16:39:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728106AbfKSPkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 10:40:03 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:58820 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727505AbfKSPkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 10:40:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574178002;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DzgsKL37q1Wdl79gJu9Kvyc0hNyjuuod1WbPJh4SwKM=;
-        b=GBdLa6Mc4URmSqYnGhgiG7rPOII+5rbGH2IKvtDRQ5rRWGQEul127XF2ZRJae3tl2qDCRI
-        /dsaDkD3qNuA+t6CbYvMiTJXabtiG0mKuh9O/ZczkI64oTux5dXqQMkqcBLN4eBV1N4zh1
-        7XfFei9yJiAejRQzLMvH49NtMgMIcSY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-237-JMyYs1kwMBC0Qwj0fODgfg-1; Tue, 19 Nov 2019 10:38:32 -0500
-X-MC-Unique: JMyYs1kwMBC0Qwj0fODgfg-1
-Received: by mail-wm1-f70.google.com with SMTP id y133so2446359wmd.8
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 07:38:32 -0800 (PST)
+        id S1728353AbfKSPjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 10:39:04 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36827 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728333AbfKSPjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 10:39:03 -0500
+Received: by mail-pf1-f196.google.com with SMTP id b19so12363988pfd.3
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 07:39:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iCPyTdpy3mrTKl/PDrg5SrSr8N3q/XMSyCR1P6wNd/E=;
+        b=fsh6qKmHhbqBykttv7VyH+P89m3jgHHSZEdlki036pc/i7eiS2tyyeJASQVR2g0A9+
+         j8GVe4JPw5FfM+/FAxsjAm/zby4moCjvUiZp7YSU+4FooIgxQhDquNKHZ8kyJLbacIUM
+         llrL59ssJ8KZXU+v2Tkuh9h1dNMDc5uhP52osiawpCBBdE7Tbf661Vi7dXeeqvHmah5X
+         iRqA58YF26SZwa1UZ0NOqv7g1lb1InZ/G613GzBBpXXhKG/jDfrN7JxDb5aG2kYOhR2c
+         Z4sbu3/8SKq89OqayUQfAiZuTahXAxcMyiy8zYA+2rFQBpkUwqIvZImup9LRHFGXxRtL
+         PnBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xi73gLE1nyomaFPvjmdpS68gt8I25Vk9EcDuHkx/tiw=;
-        b=bndEMRNqwMQ4cFVqGErkwT94IwBF6Dna5lDrVMIS0fMiG6yYMqaqVNEVLuE/xH7NQi
-         alf5k9/tWbxI6oer0PYkSRqvSr+N8Et/uIKnmYLC89ZLeC9gpQyfP3z10C33FRT+4cNF
-         r6gGjC2BienfRiH8Irv/uH3/nPEkEj8u0F5FxTGsjQWDwD27tcnp/cuInPcnnGJIinMs
-         YsgkVK94Btp2Ddi+XGlvyM1jTdz/ICRIq+agyqOwI9zl1D0+LayqimwftGs0ApxfFlY2
-         EWZvlmnFAQtoSvVqzHovTnhc2U+Lvjq5VW3UBzNJFSD6E0D+ckNAaTh6LNkAcnvid8mL
-         fwZA==
-X-Gm-Message-State: APjAAAVv//deSOMSSMkZYPxM4laz8Q+woiAZMVDQ0bMY8W4GO+5igjzz
-        rlMokKaH+le7Gny8QAoAU7k/OaL1u900fSMcVr5ZKqHBy4fs5W4dN6PZ7TQy6aWz8ps2gmO7gIp
-        oZXt9gv2cDwKcCccw
-X-Received: by 2002:a05:6000:10c5:: with SMTP id b5mr39976273wrx.121.1574177911745;
-        Tue, 19 Nov 2019 07:38:31 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzJ1i7HWhK2centwxuI3YvYXzQnZbYiKA6QWxb+v4ib/adkERMfv8iAPcVkIkO2UEoiRO8SpQ==
-X-Received: by 2002:a05:6000:10c5:: with SMTP id b5mr39976230wrx.121.1574177911454;
-        Tue, 19 Nov 2019 07:38:31 -0800 (PST)
-Received: from localhost.localdomain ([77.139.212.74])
-        by smtp.gmail.com with ESMTPSA id f188sm3512382wmf.3.2019.11.19.07.38.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 07:38:30 -0800 (PST)
-Date:   Tue, 19 Nov 2019 17:38:27 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, ilias.apalodimas@linaro.org,
-        mcroce@redhat.com, jonathan.lemon@gmail.com
-Subject: Re: [PATCH v4 net-next 3/3] net: mvneta: get rid of huge dma sync in
- mvneta_rx_refill
-Message-ID: <20191119153827.GE3449@localhost.localdomain>
-References: <cover.1574083275.git.lorenzo@kernel.org>
- <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
- <20191119123850.5cd60c0e@carbon>
- <20191119121911.GC3449@localhost.localdomain>
- <20191119155143.0683f754@carbon>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iCPyTdpy3mrTKl/PDrg5SrSr8N3q/XMSyCR1P6wNd/E=;
+        b=DKqfSy4DGwoqWIciDoLKdzBziQKQ/bAZ633D4x7XTdzdV+riNSZf4h+o46Tc9lMDuZ
+         lVS4+uNe96Aj1mtLZu7OArJuudVG2SonXBTpcGJxPoBc+WsyGjjLsPvyZaiEUJ829XST
+         t+D6TzUZI6p1KtzFi8qFdApCkCZIwi/H1ImfPHYjADTLjpj0pEqjMRfkljWnGoWV4c0w
+         5YvXPmM3xLG9fPiUf8VPKKXuFoSFzbuOmam6Ccq0MoWIp4K0we1sOiaDcViw5TmLDFRS
+         +/T3jqNs3RWy3XWYH5WmIvXQpaTTlUuY41yNhDFM5PNV8rfoeZMBQcZB2L86u3TFHIUr
+         LTXg==
+X-Gm-Message-State: APjAAAULC1LrR/pKjmGcP0B8SvSQD0G7M+pjBJBFkLbay4j9VpDSvlTD
+        75ROfRWJwtRIH2tXdqf1xRo=
+X-Google-Smtp-Source: APXvYqyN6x5LGg/Q8mBLJTu2ZlR8oFaFES8CDeEwB3hlowK/eSxVGLIn9E7nzceM+lfHLUOPoYIvhA==
+X-Received: by 2002:a63:d854:: with SMTP id k20mr318985pgj.305.1574177942420;
+        Tue, 19 Nov 2019 07:39:02 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:3071:8113:4ecc:7f4c])
+        by smtp.googlemail.com with ESMTPSA id a28sm27409445pfg.51.2019.11.19.07.39.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Nov 2019 07:39:01 -0800 (PST)
+Subject: Re: [PATCH net-next v3 1/2] ipv6: introduce and uses route look hints
+ for list input
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Edward Cree <ecree@solarflare.com>
+References: <cover.1574165644.git.pabeni@redhat.com>
+ <422ebfbf2fcb8a6ce23bcd97ab1f7c3a0c633cbd.1574165644.git.pabeni@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5bb4b0b2-cc12-2cce-0122-54bd72ab04e7@gmail.com>
+Date:   Tue, 19 Nov 2019 08:39:00 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191119155143.0683f754@carbon>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Mimecast-Spam-Score: 0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2hMgfIw2X+zgXrFs"
-Content-Disposition: inline
+In-Reply-To: <422ebfbf2fcb8a6ce23bcd97ab1f7c3a0c633cbd.1574165644.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---2hMgfIw2X+zgXrFs
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 11/19/19 7:38 AM, Paolo Abeni wrote:
+> When doing RX batch packet processing, we currently always repeat
+> the route lookup for each ingress packet. If policy routing is
+> configured, and IPV6_SUBTREES is disabled at build time, we
+> know that packets with the same destination address will use
+> the same dst.
+> 
+> This change tries to avoid per packet route lookup caching
+> the destination address of the latest successful lookup, and
+> reusing it for the next packet when the above conditions are
+> in place. Ingress traffic for most servers should fit.
+> 
+> The measured performance delta under UDP flood vs a recvmmsg
+> receiver is as follow:
+> 
+> vanilla		patched		delta
+> Kpps		Kpps		%
+> 1431		1674		+17
 
-[...]
-> > > > -=09=09page_pool_recycle_direct(rxq->page_pool,
-> > > > -=09=09=09=09=09 virt_to_head_page(xdp->data));
-> > > > +=09=09__page_pool_put_page(rxq->page_pool,
-> > > > +=09=09=09=09     virt_to_head_page(xdp->data),
-> > > > +=09=09=09=09     xdp->data_end - xdp->data_hard_start,
-> > > > +=09=09=09=09     true); =20
-> > >=20
-> > > This does beg for the question: Should we create an API wrapper for
-> > > this in the header file?
-> > >=20
-> > > But what to name it?
-> > >=20
-> > > I know Jonathan doesn't like the "direct" part of the  previous funct=
-ion
-> > > name page_pool_recycle_direct.  (I do considered calling this 'napi'
-> > > instead, as it would be inline with networking use-cases, but it seem=
-ed
-> > > limited if other subsystem end-up using this).
-> > >=20
-> > > Does is 'page_pool_put_page_len' sound better?
-> > >=20
-> > > But I want also want hide the bool 'allow_direct' in the API name.
-> > > (As it makes it easier to identify users that uses this from softirq)
-> > >=20
-> > > Going for 'page_pool_put_page_len_napi' starts to be come rather long=
-. =20
-> >=20
-> > What about removing the second 'page'? Something like:
-> > - page_pool_put_len_napi()
->=20
-> Well, we (unfortunately) already have page_pool_put(), which is used
-> for refcnt on the page_pool object itself.
+That's a nice boost...
 
-__page_pool_put_page(pp, data, len, true) is a more generic version of
-page_pool_recycle_direct where we can specify even the length. So what abou=
-t:
+> +static struct sk_buff *ip6_extract_route_hint(struct net *net,
+> +					      struct sk_buff *skb)
+> +{
+> +	if (IS_ENABLED(IPV6_SUBTREES) || fib6_has_custom_rules(net))
 
-- page_pool_recycle_len_direct
-- page_pool_recycle_len_napi
+... but basing on SUBTREES being disabled is going to limit its use. If
+no routes are source based (fib6_src is not set), you should be able to
+re-use the hint with SUBTREES enabled. e.g., track fib6_src use with a
+per-namespace counter - similar to fib6_rules_require_fldissect.
 
-Regards,
-Lorenzo
-
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
---2hMgfIw2X+zgXrFs
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXdQMcAAKCRA6cBh0uS2t
-rEu2APwPIlf6Zw4NUGutChH9q/nqOvI000E9Aij308E+p3K4bwD/Rm9lsbgcv1Pl
-EVmLPqS0ln7WjBY30eCBHJj3m47CqAA=
-=NmDZ
------END PGP SIGNATURE-----
-
---2hMgfIw2X+zgXrFs--
 
