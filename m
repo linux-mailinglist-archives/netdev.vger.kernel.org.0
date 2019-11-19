@@ -2,225 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B020101A67
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B64101A78
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbfKSHjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 02:39:11 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34213 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725536AbfKSHjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:39:11 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C48E522314;
-        Tue, 19 Nov 2019 02:39:09 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 19 Nov 2019 02:39:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=KAYKld
-        rTMvXruG869CCJN/LRVyXg5vAUs/vRDSip7Xc=; b=LxBgNXp4Nc0mLaAL+iurJp
-        upjEoVhpkzGdxtm92X4Uh391tRR2AG2VENJD0LzRoZ38Rwt7HTMr68kUFVWTDTbN
-        cO0Pg5gNiHXFcsZU6RUysOyZe0IEFJyq8ruRXtNp/B74InI8fotM8AoR+RE5OIVk
-        VZiD2exsRdO+zj6cvpWevqrzCqj8g1YHepCkb4/bygw+BFty0SeWnKJERGDGsQzd
-        0vopGW6jDbOfqrxzW54I4vSwJBCVdyvxzc3W/fzkvH7rYF25UBDwq+PmB3BVSu9w
-        Azvkdfebj8g9I7pQsG1x079cZBGHekDjgS9mp0c/VRy+m2qQkaT+0VClO8SA/03w
-        ==
-X-ME-Sender: <xms:HJzTXWG2txDNmtlMzj5r0eOWtGD65vdfpLQRGG9UZ-4ffZl7K7rBFA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudegjedguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrg
-    hinhepnhigphdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsth
-    gvrhfuihiivgeptd
-X-ME-Proxy: <xmx:HJzTXV0LBkt91R_m3DHX9dAtj8wcBiu47wPqK1WC2oi42oat1pqFJw>
-    <xmx:HJzTXW-AgPXt_80wpDGv5rE2ymBZiCtKpgtgrmmDDF6TyFMjjeU9bw>
-    <xmx:HJzTXQG11HQLwxWM4BGqFNarbmiusv1Lxbpx37GlARtVikWGcalOsQ>
-    <xmx:HZzTXVcfV16wUaXJXVAzPZ56pIZtUt7iDdbIpXLj8h_9XDV4T_gsTw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 555C280060;
-        Tue, 19 Nov 2019 02:39:08 -0500 (EST)
-Date:   Tue, 19 Nov 2019 09:39:06 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, jiri@mellanox.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: Make HOSTPRIO a devlink
- param
-Message-ID: <20191119073906.GA27697@splinter>
-References: <20191116172325.13310-1-olteanv@gmail.com>
- <20191118083624.GA2149@splinter>
- <CA+h21hrDoTjSvqfpCJRgrzJJ0P1nwfFdxK533dTGSi4y7_-BNA@mail.gmail.com>
+        id S1727321AbfKSHpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 02:45:09 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:36482 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbfKSHpJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:45:09 -0500
+Received: by mail-lj1-f194.google.com with SMTP id k15so22141054lja.3
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 23:45:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=R4HtGm2QOg9Ec33jL2DRnBsQl/WknHSlLXUUXlcs6dM=;
+        b=sMvozZnIqw9W8WEN+bjnvmE1AxKWEa5EJKkTfMJyqRk2su2NpLVo2mz2cH5EOHhuPw
+         dUOHoSoQZDylMwin0FmkHq157oOrWdxDeNWcTGcuAZF9L0yUs3DWpVfR0bz3zZmnCKgx
+         +OorbWr6OdYBmz20UvaafE0YDcip1+ZfBgd56IyAVmOB8YHoIqSaRTvMcddhO12RiOov
+         cam2DvsmOrFUJ3yDJJXYroXTnxPJmZULkaaeMr0Hlrzx+RO6ROyVkge5sOYhh9LJA1AO
+         hSjDo23D+8m9Rie1JWBgLRjNV73GG9jrb9z5oCNPhzw1CuBmB2tqH9F+d2U5AXtS/8FJ
+         TryQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version:content-transfer-encoding;
+        bh=R4HtGm2QOg9Ec33jL2DRnBsQl/WknHSlLXUUXlcs6dM=;
+        b=P9TkLnEJIQYHZRh4DQNMJURM51lLEwPYgS+kbfG3WRFwV858kmv0+TPecn5IYmsKQ1
+         1nLvX/UnfWq8w/mNLOMv9xiiUDUm5U59Ne9S30fDBFn8GworPY4j7xIZnVHV7hbRVEKT
+         rfzGPqCNtqqfoHSxqk5j8+hrfzZ+HmyZ0CnXZBLWyRw1dTAJVRdfB9BD0079N2NRE8G3
+         b0XHMf2ydj6O4Oe17/tfZrzsI5KxAZ2E0ObpTbFemhS2KDJkK9ErOCh3+ukc/w8Hm19p
+         PmHgSHjpqKS1KTgIQCPH/Q7+i5YLWTZv13m7r5E9OUlS0ftZobHXFjsuTfX56pk2d2Ew
+         pY2A==
+X-Gm-Message-State: APjAAAXTtlNxfSqbAsKCBnrJl3/8rVb1iRdzF/QcbDepcFdasXluwWwZ
+        XQWSqKmUfeW89l0CY/LISeR8pJ90hD0=
+X-Google-Smtp-Source: APXvYqwSODMpqWr7m5KAOyCIRzOCk28jkywP4eT6dEJf6a99+YtU81PMT0Gdmz4JouJSHylxmbgCow==
+X-Received: by 2002:a2e:8088:: with SMTP id i8mr2551646ljg.205.1574149504653;
+        Mon, 18 Nov 2019 23:45:04 -0800 (PST)
+Received: from GL-434 ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id g26sm9838884lfh.1.2019.11.18.23.45.03
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 18 Nov 2019 23:45:04 -0800 (PST)
+From:   jouni.hogander@unikie.com (Jouni =?utf-8?Q?H=C3=B6gander?=)
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH v3] net-sysfs: Fix reference count leak
+References: <20191118123246.27618-1-jouni.hogander@unikie.com>
+        <20191118132705.GB261521@kroah.com>
+Date:   Tue, 19 Nov 2019 09:45:02 +0200
+In-Reply-To: <20191118132705.GB261521@kroah.com> (Greg Kroah-Hartman's message
+        of "Mon, 18 Nov 2019 14:27:05 +0100")
+Message-ID: <87eey4s41t.fsf@unikie.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrDoTjSvqfpCJRgrzJJ0P1nwfFdxK533dTGSi4y7_-BNA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 12:51:01PM +0200, Vladimir Oltean wrote:
-> Hi Ido,
-> 
-> On Mon, 18 Nov 2019 at 10:36, Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Sat, Nov 16, 2019 at 07:23:25PM +0200, Vladimir Oltean wrote:
-> > > Unfortunately with this hardware, there is no way to transmit in-band
-> > > QoS hints with management frames (i.e. VLAN PCP is ignored). The traffic
-> > > class for these is fixed in the static config (which in turn requires a
-> > > reset to change).
-> > >
-> > > With the new ability to add time gates for individual traffic classes,
-> > > there is a real danger that the user might unknowingly turn off the
-> > > traffic class for PTP, BPDUs, LLDP etc.
-> > >
-> > > So we need to manage this situation the best we can. There isn't any
-> > > knob in Linux for this, so create a driver-specific devlink param which
-> > > is a runtime u8. The default value is 7 (the highest priority traffic
-> > > class).
-> > >
-> > > Patch is largely inspired by the mv88e6xxx ATU_hash devlink param
-> > > implementation.
-> > >
-> > > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > > ---
-> > > Changes in v2:
-> > > Turned the NET_DSA_SJA1105_HOSTPRIO kernel config into a "hostprio"
-> > > runtime devlink param.
-> > >
-> > >  .../networking/devlink-params-sja1105.txt     |  9 ++
-> > >  Documentation/networking/dsa/sja1105.rst      | 19 +++-
-> > >  MAINTAINERS                                   |  1 +
-> > >  drivers/net/dsa/sja1105/sja1105.h             |  1 +
-> > >  drivers/net/dsa/sja1105/sja1105_main.c        | 94 +++++++++++++++++++
-> > >  5 files changed, 122 insertions(+), 2 deletions(-)
-> > >  create mode 100644 Documentation/networking/devlink-params-sja1105.txt
-> > >
-> > > diff --git a/Documentation/networking/devlink-params-sja1105.txt b/Documentation/networking/devlink-params-sja1105.txt
-> > > new file mode 100644
-> > > index 000000000000..5096a4cf923c
-> > > --- /dev/null
-> > > +++ b/Documentation/networking/devlink-params-sja1105.txt
-> > > @@ -0,0 +1,9 @@
-> > > +hostprio             [DEVICE, DRIVER-SPECIFIC]
-> > > +                     Configure the traffic class which will be used for
-> > > +                     management (link-local) traffic injected and trapped
-> > > +                     to/from the CPU. This includes STP, PTP, LLDP etc, as
-> > > +                     well as hardware-specific meta frames with RX
-> > > +                     timestamps.  Higher is better as long as you care about
-> > > +                     your PTP frames.
-> >
-> > Vladimir,
-> >
-> > I have some concerns about this. Firstly, I'm not sure why you need to
-> > expose this and who do you expect to be able to configure this? I'm
-> > asking because once you expose it to users there might not be a way
-> > back. mlxsw is upstream for over four years and the traffic classes for
-> > the different packet types towards the CPU are hard coded in the driver
-> > and based on "sane" defaults. It is therefore surprising to me that you
-> > already see the need to expose this.
-> >
-> 
-> WIth tc-taprio, it is up to the user / system administrator which of
-> the 8 traffic classes has access to the Ethernet media and when (if
-> ever).
-> For example, take this command:
-> 
-> sudo tc qdisc replace dev swp3 parent root handle 100 taprio \
->         num_tc 8 \
->         map 0 1 2 3 4 5 6 7 \
->         queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
->         base-time $base_time \
->         sched-entry S 03 300000 \
->         sched-entry S 02 300000 \
->         sched-entry S 06 400000 \
->         flags 2
-> 
-> It will allow access to traffic classes 0 and 1 (S 03) for 300000 ns,
-> traffic class 1 (S 02) for another 300000 ns, and to traffic classes 1
-> and 2 (S 06) for 400000 ns, then repeat the schedule. This is just an
-> example.
-> But the base-time is a PTP time, so the switch needs a PTP daemon to
-> keep track of time. But notice that the traffic class for PTP traffic
-> (which is hardcoded as 7 in the driver) is not present in the
-> tc-taprio schedule, so effectively PTP will be denied access to the
-> media, so it won't work, so it will completely break the schedule. The
-> user will be horribly confused by this.
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-OK, but I don't see how adding a new knob helps to avoid the confusion?
-Maybe add an extack here saying that HOSTPRIO traffic class has no
-access to the media. Alternatively, you can veto such configurations if
-it's acceptable (in which case you don't need the parameter).
+> On Mon, Nov 18, 2019 at 02:32:46PM +0200, jouni.hogander@unikie.com wrote:
+>> From: Jouni Hogander <jouni.hogander@unikie.com>
+>>=20
+>> Netdev_register_kobject is calling device_initialize. In case of error
+>> reference taken by device_initialize is not given up.
+>>=20
+>> Drivers are supposed to call free_netdev in case of error. In non-error
+>> case the last reference is given up there and device release sequence
+>> is triggered. In error case this reference is kept and the release
+>> sequence is never started.
+>>=20
+>> Fix this reference count leak by allowing giving up the reference also
+>> in error case in free_netdev.
+>>=20
+>> Also replace BUG_ON with WARN_ON in free_netdev and in netdev_release.
+>>=20
+>> This is the rootcause for couple of memory leaks reported by Syzkaller:
+>>=20
+>> BUG: memory leak unreferenced object 0xffff8880675ca008 (size 256):
+>>   comm "netdev_register", pid 281, jiffies 4294696663 (age 6.808s)
+>>   hex dump (first 32 bytes):
+>>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+>>   backtrace:
+>>     [<0000000058ca4711>] kmem_cache_alloc_trace+0x167/0x280
+>>     [<000000002340019b>] device_add+0x882/0x1750
+>>     [<000000001d588c3a>] netdev_register_kobject+0x128/0x380
+>>     [<0000000011ef5535>] register_netdevice+0xa1b/0xf00
+>>     [<000000007fcf1c99>] __tun_chr_ioctl+0x20d5/0x3dd0
+>>     [<000000006a5b7b2b>] tun_chr_ioctl+0x2f/0x40
+>>     [<00000000f30f834a>] do_vfs_ioctl+0x1c7/0x1510
+>>     [<00000000fba062ea>] ksys_ioctl+0x99/0xb0
+>>     [<00000000b1c1b8d2>] __x64_sys_ioctl+0x78/0xb0
+>>     [<00000000984cabb9>] do_syscall_64+0x16f/0x580
+>>     [<000000000bde033d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>     [<00000000e6ca2d9f>] 0xffffffffffffffff
+>>=20
+>> BUG: memory leak
+>> unreferenced object 0xffff8880668ba588 (size 8):
+>>   comm "kobject_set_nam", pid 286, jiffies 4294725297 (age 9.871s)
+>>   hex dump (first 8 bytes):
+>>     6e 72 30 00 cc be df 2b                          nr0....+
+>>   backtrace:
+>>     [<00000000a322332a>] __kmalloc_track_caller+0x16e/0x290
+>>     [<00000000236fd26b>] kstrdup+0x3e/0x70
+>>     [<00000000dd4a2815>] kstrdup_const+0x3e/0x50
+>>     [<0000000049a377fc>] kvasprintf_const+0x10e/0x160
+>>     [<00000000627fc711>] kobject_set_name_vargs+0x5b/0x140
+>>     [<0000000019eeab06>] dev_set_name+0xc0/0xf0
+>>     [<0000000069cb12bc>] netdev_register_kobject+0xc8/0x320
+>>     [<00000000f2e83732>] register_netdevice+0xa1b/0xf00
+>>     [<000000009e1f57cc>] __tun_chr_ioctl+0x20d5/0x3dd0
+>>     [<000000009c560784>] tun_chr_ioctl+0x2f/0x40
+>>     [<000000000d759e02>] do_vfs_ioctl+0x1c7/0x1510
+>>     [<00000000351d7c31>] ksys_ioctl+0x99/0xb0
+>>     [<000000008390040a>] __x64_sys_ioctl+0x78/0xb0
+>>     [<0000000052d196b7>] do_syscall_64+0x16f/0x580
+>>     [<0000000019af9236>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>     [<00000000bc384531>] 0xffffffffffffffff
+>>=20
+>> Reported-by: syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com
+>> Cc: David Miller <davem@davemloft.net>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+>> Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+>> ---
+>> v2 -> v3:
+>> * Replaced BUG_ON with WARN_ON in free_netdev and netdev_release
+>> v1 -> v2:
+>> * Relying on driver calling free_netdev rather than calling
+>>   put_device directly in error path
+>> ---
+>>  net/core/dev.c       | 14 +++++++-------
+>>  net/core/net-sysfs.c |  6 +++++-
+>>  2 files changed, 12 insertions(+), 8 deletions(-)
+>>=20
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index 99ac84ff398f..1d6c0bfb5ec5 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -9603,14 +9603,14 @@ void free_netdev(struct net_device *dev)
+>>=20=20
+>>  	netdev_unregister_lockdep_key(dev);
+>>=20=20
+>> -	/*  Compatibility with error handling in drivers */
+>> -	if (dev->reg_state =3D=3D NETREG_UNINITIALIZED) {
+>> -		netdev_freemem(dev);
+>> -		return;
+>> -	}
+>> +	/* reg_state is NETREG_UNINITIALIZED if there is an error in
+>> +	 * registration.
+>> +	 */
+>> +	WARN_ON(dev->reg_state !=3D NETREG_UNREGISTERED &&
+>> +		dev->reg_state !=3D NETREG_UNINITIALIZED);
+>
+> You "warn" about this, but do not actually handle the problem.  So what
+> is this helping with?
+>
 
-> I also don't want to keep the PTP traffic class hardcoded at 7, since
-> the system administrator might have other cyclic traffic schedules
-> that are more time-sensitive than PTP itself.
-> 
-> > Secondly, I find the name confusing. You call it "hostprio", but the
-> > description says "traffic class". These are two different things.
-> > Priority is a packet attribute based on which you can classify the
-> > packet to a transmission queue (traffic class). And if you have multiple
-> > transmission queues towards the CPU, how do you configure their
-> > scheduling and AQM? This relates to my next point.
-> >
-> 
-> HOSTPRIO is the way it is called in the hardware user guide:
-> https://www.nxp.com/docs/en/user-guide/UM10944.pdf
-> I don't see why I should call it something else, especially since it
-> does not map over any other concept.
+Now as I have replaced BUG_ON with WARN_ON different reg_states are
+actually handled. In free_netdev reference is given up and release
+sequence is expected to start no matter what is the dev->reg_state. In
+netdev_release memories are freed. There are just extra warnings in the
+log from the functions.
 
-It would be good to add the explanation you provided in this response
-to the documentation. It is not clear where the name comes from
-otherwise.
+> Systems with panic-on-warn just rebooted, and a "normal" system saw a
+> traceback yet no error handling happened so why would the code even test
+> this?
 
-> And since it is DSA, the Ethernet link between the CPU port and the
-> DSA master is inherently single queue, even though the switch is
-> multi-queue and the DSA master is multi-queue. Both the DSA master and
-> the front-panel switch can have independent qdiscs that operate
-> independently. It is a separate discussion.
-> 
-> > Thirdly, the fact that "there isn't any knob in Linux for this" does not
-> > mean that we should not create a proper one. As I see it, the CPU port
-> > (switch side, not DSA master) is a port like any other and therefore
-> > should have a netdev. With a netdev you can properly configure its
-> > different QoS attributes using tc instead of introducing driver-specific
-> > devlink-params.
-> >
-> 
-> Right, but let me summarize the hardware operation to understand what
-> this is really doing.
-> The switch has 2 MAC filters for link-local management traffic. I
-> hardcoded them in the driver to 01-80-C2-xx-xx-xx and
-> 01-1B-19-xx-xx-xx so that STP and PTP work by default. The switch
-> checks the DMAC of frames against these masks very early in the packet
-> processing pipeline, and if they match, they are trapped to the CPU.
-> In fact, the match is so early that the analyzer module is bypassed
-> and the frames do not get classified to a TC based on any QoS
-> classification rules. The hardware designers recognized that this
-> might be a problem, so they just invented a knob called HOSTPRIO,
-> which all frames that are trapped to the CPU get assigned.
-> On xmit, the MAC filters are active on the CPU port as well. So the
-> switch wants to trap the link-local frames coming from the CPU and
-> redirect them to the CPU, which it won't do because it's configured to
-> avoid hairpinning. So it drops those frames when they come from the
-> CPU port, due to lack of valid destinations. So the hardware designers
-> invented another concept called "management routes" which are meant to
-> bypass the MAC filters (which themselves bypass L2 forwarding). You
-> pre-program a one-shot "management route" in the switch for a frame
-> matching a certain DMAC, then you send it, then the switch figures out
-> it matches this "management route" and properly sends it out the
-> correct front-panel port. The point is that on xmit, the switch uses
-> HOSTPRIO for the "management route" frames as well.
+One use for panic-on-warn is the stabilation phase before "product"
+quality. In this case you are interested in everything that is
+unexpected. Having panic-on-warn set is easy way to make each warning in
+the system visible to user and force to react on it.
 
-Very weird model :( I understand your need for this knob now, but I
-suggest to add an extack in qdisc offload to make it clear to users that
-they are potentially shooting themselves in the foot.
+Another example is my Syzkaller excercise. I gathered all the crashes
+from the system and these include warnings as well. I will probably next
+look at these warnings Syzkaller found and try to understand why they
+are and do they need fixes.
+
+>
+> I'm not trying to be picky here, just to think about what you are doing
+> with these checks please.
+
+This state was not expected being anything else than
+NETREG_UNREGISTERED. Probably error cases were not taken into account or
+maybe error cases were not expected to end up to device release
+sequence. Especially as cleaning up relies on normal device release
+sequence on error cases this assumption is wrong.
+
+Do you think better choise would be to remove BUG_ON completely rather
+than replacing it with WARN_ON?
+
+BR,
+
+Jouni H=C3=B6gander
+
