@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A007A10112F
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 03:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF99F101157
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 03:32:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbfKSCSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 21:18:00 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7139 "EHLO huawei.com"
+        id S1727118AbfKSCbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 21:31:31 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7140 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726761AbfKSCSA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 21:18:00 -0500
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 101431AC88401CD54E2F;
-        Tue, 19 Nov 2019 10:17:58 +0800 (CST)
-Received: from huawei.com (10.90.53.225) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Tue, 19 Nov 2019
- 10:17:50 +0800
-From:   zhengbin <zhengbin13@huawei.com>
-To:     <Jes.Sorensen@gmail.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>
-Subject: [PATCH -next v2] rtl8xxxu: Remove set but not used variable 'vif','dev','len'
-Date:   Tue, 19 Nov 2019 10:25:14 +0800
-Message-ID: <1574130314-25626-1-git-send-email-zhengbin13@huawei.com>
+        id S1726952AbfKSCba (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Nov 2019 21:31:30 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 2A8EBCE325C28F5C1A14;
+        Tue, 19 Nov 2019 10:31:29 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 19 Nov 2019 10:31:19 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net] net: hns3: fix a wrong reset interrupt status mask
+Date:   Tue, 19 Nov 2019 10:31:48 +0800
+Message-ID: <1574130708-30767-1-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.90.53.225]
+X-Originating-IP: [10.69.192.56]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+According to hardware user manual, bits5~7 in register
+HCLGE_MISC_VECTOR_INT_STS means reset interrupts status,
+but HCLGE_RESET_INT_M is defined as bits0~2 now. So it
+will make hclge_reset_err_handle() read the wrong reset
+interrupt status.
 
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5396:24: warning: variable vif set but not used [-Wunused-but-set-variable]
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5397:17: warning: variable dev set but not used [-Wunused-but-set-variable]
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
-drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5400:6: warning: variable len set but not used [-Wunused-but-set-variable]
+This patch fixes it and prints out the register value.
 
-They are introduced by commit e542e66b7c2e ("rtl8xxxu:
-add bluetooth co-existence support for single antenna"), but never used,
-so remove them.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: zhengbin <zhengbin13@huawei.com>
+Fixes: 2336f19d7892 ("net: hns3: check reset interrupt status when reset fails")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
-v1->v2: modify comment, it --> they
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 10 +++++++---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h |  2 +-
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 1d94cab..aa2bb2a 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -5393,18 +5393,13 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index c052bb3..731cda0 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -3555,14 +3555,18 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
  {
- 	struct rtl8xxxu_priv *priv;
- 	struct rtl8723bu_c2h *c2h;
--	struct ieee80211_vif *vif;
--	struct device *dev;
- 	struct sk_buff *skb = NULL;
- 	unsigned long flags;
--	int len;
- 	u8 bt_info = 0;
- 	struct rtl8xxxu_btcoex *btcoex;
-
- 	priv = container_of(work, struct rtl8xxxu_priv, c2hcmd_work);
--	vif = priv->vif;
- 	btcoex = &priv->bt_coex;
--	dev = &priv->udev->dev;
-
- 	if (priv->rf_paths > 1)
- 		goto out;
-@@ -5415,7 +5410,6 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
- 		spin_unlock_irqrestore(&priv->c2hcmd_lock, flags);
-
- 		c2h = (struct rtl8723bu_c2h *)skb->data;
--		len = skb->len - 2;
-
- 		switch (c2h->id) {
- 		case C2H_8723B_BT_INFO:
---
+ #define MAX_RESET_FAIL_CNT 5
+ 
++	u32 msix_sts_reg;
++
++	msix_sts_reg = hclge_read_dev(&hdev->hw, HCLGE_MISC_VECTOR_INT_STS);
++
+ 	if (hdev->reset_pending) {
+ 		dev_info(&hdev->pdev->dev, "Reset pending %lu\n",
+ 			 hdev->reset_pending);
+ 		return true;
+-	} else if (hclge_read_dev(&hdev->hw, HCLGE_MISC_VECTOR_INT_STS) &
+-		   HCLGE_RESET_INT_M) {
++	} else if (msix_sts_reg & HCLGE_RESET_INT_M) {
+ 		dev_info(&hdev->pdev->dev,
+-			 "reset failed because new reset interrupt\n");
++			 "fail to reset, new reset interrupt is 0x%x\n",
++			 msix_sts_reg);
+ 		hclge_clear_reset_cause(hdev);
+ 		return false;
+ 	} else if (hdev->rst_stats.reset_fail_cnt < MAX_RESET_FAIL_CNT) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 59b8243..615cde1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -166,7 +166,7 @@ enum HLCGE_PORT_TYPE {
+ #define HCLGE_GLOBAL_RESET_BIT		0
+ #define HCLGE_CORE_RESET_BIT		1
+ #define HCLGE_IMP_RESET_BIT		2
+-#define HCLGE_RESET_INT_M		GENMASK(2, 0)
++#define HCLGE_RESET_INT_M		GENMASK(7, 5)
+ #define HCLGE_FUN_RST_ING		0x20C00
+ #define HCLGE_FUN_RST_ING_B		0
+ 
+-- 
 2.7.4
 
