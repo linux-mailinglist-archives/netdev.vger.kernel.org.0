@@ -2,328 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F7E102094
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:32:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8151020E1
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbfKSJcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 04:32:33 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:40665 "EHLO
+        id S1727262AbfKSJjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 04:39:20 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46005 "EHLO
         mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725784AbfKSJcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:32:33 -0500
-Received: by mail-pg1-f196.google.com with SMTP id e17so3714431pgd.7
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:32:32 -0800 (PST)
+        with ESMTP id S1726658AbfKSJjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:39:20 -0500
+Received: by mail-pg1-f196.google.com with SMTP id k1so9773583pgg.12
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:39:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=2fqqU8j37cZJ1rSuvUIFmZLwY/Hk+5dmq/P8W3EdOPI=;
-        b=s9hHHZQKiAMU4LGKwpxkp59wPgLH9yT5ZbEus+QmCiVk7ql1S2QUK9Mu4SQD07TzQ7
-         lFeEo2rblyV0BeE2L0Dzy1QvenIQgoE2/ckapLKcTMcjlLUeKM3sZd45bs3jyGUPM4r9
-         aovWwO77Cn+GtNdq8jvfnWs5YkGPJFwBNiXaawyWFBOZtXqNuD81Q6yRxqe2k1av04bx
-         YkHfyGLUdnrrFir9ZNU1ZF6Ug87R6obxGDK5pw90rJl85T9x77j+ivLVm8zD+TuKfpip
-         /KbdHx73Mr6FV1liIX5lt/XRx7JQE+akOV32KeQCQHV38KaofDUgVQi2TVXwAIvgaHSa
-         9EYw==
+        h=from:to:cc:subject:date:message-id;
+        bh=F2mAdthxl955f+6wY0RMAENUy6k1L5cbngy8ydfpP3U=;
+        b=iBtUjrZ8kOm66CgKDEyC/1nminCHpIBC0/x2G9fDw96poETVHsAMIMZP6x+WoSgPdB
+         I+Y3gh7KlPekEe/DBaz70OxVaQbfMxl2JGMZl1P7ELZD8zEup2trxAEYLmWS8Y55wqR0
+         t9QigaDuzJUz8mqwHUXpXvmnfXhLU9J4edaxFymIvWR/9vRv9TzhFteM+MSKGapJLPr8
+         i4B6tD2bE0T0WLed+oWlw/ScVEyrtODuixmhJqQn6DPCcDnyV3nmarbOrYAqETRk4Whg
+         fHq0I8EivgbHAaD3DQCztO31h+Js83Dtm16zGMkE5qQUv4G/RefiB8C7H/f3fZksSwrh
+         sGLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=2fqqU8j37cZJ1rSuvUIFmZLwY/Hk+5dmq/P8W3EdOPI=;
-        b=AmqJ4hOqKCb6cVxzdbsIDgGmSy5AthvE5WXwTxatLA3r7mWvFh2L7RMQM4ul+urH2U
-         4mtmvjsootgzMSmntCHjbYRvCQaCuZSkUy6uVd9h0cyKDihFpsWw2xXaO3piqbWEGJ5y
-         MGbp5ISiC28HldeA9XIB3zpIJ1O7cu2LOwBJUMCwHUkv+SKmmQ2zfFjMInhr6NhGWY+E
-         d5Mrjd/0FcOFIIYsAQN/kfo3/uWubwmJqrPoDJKggZlYEeWMQU4+RHg+h4rmZtTkzCyI
-         o4p84pNzB1t6YhJR+ytijNDWdS9MM+VU73umJNPv/emNOWPrtr3BXIShGkXug2w04/5y
-         eQqA==
-X-Gm-Message-State: APjAAAXMeJM1ei+46N74nYwScnL0Sm7ExsZ9/0VxNizgh4l/Dt8trggQ
-        DlS9Su7ipd9fTT1TIv1GY3MLAaEv
-X-Google-Smtp-Source: APXvYqxmfF+mncSPtmjrk8FFGZDW3Q9E4G63a6Qhp1anNM16XvO/X72tBQKdq1z0CqZXt8RSdc2nlw==
-X-Received: by 2002:a63:8a44:: with SMTP id y65mr1198532pgd.20.1574155951613;
-        Tue, 19 Nov 2019 01:32:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=F2mAdthxl955f+6wY0RMAENUy6k1L5cbngy8ydfpP3U=;
+        b=dNy3EqeCJEJIX2pbmowXxcExUue1Hp9T8ny4xbwWoUjmBLOwN2yoSP2iXJeQ5rsK0J
+         97DmI1fHYLzHI9kkPcv94Z2eC5d273BedVb1hbA73zcU0JrsqtKtA+ordvpGedh2P9aj
+         Jiri+P0Ihr1xV0IR4DSQ1QNPL/uJ+vSEMRtBfXtqMHu15C48rFSAEzQ+gQeSB/cG/cp+
+         MqjFNLcSsBH4bGhpQwLBIe3eWWqUN38ITCRVKdIBxYuX8nqmDs7J9k2aNZfq+Z5ljd3V
+         YHv9cWP6yng20Z3kcHV6vEiaLvah1lSjwI1GRjt92CfA6GUEu0zTG2aGm5g3hytX+jwV
+         LVWA==
+X-Gm-Message-State: APjAAAXcx6t1Lq3mKvl7DmEtn/PkHM1YYKUzpg3on83amd0LmfhnRheN
+        M16G0dJpCsY0xxb7DuXpQCOFXWt4
+X-Google-Smtp-Source: APXvYqxXisY9egjK4mvqzcUAMbux1Km840EhbBSMvWfc/GGdkc+s7t1WHPd7QSx+bj2ciaXEmTQA0w==
+X-Received: by 2002:a65:5cc1:: with SMTP id b1mr4512531pgt.36.1574156359205;
+        Tue, 19 Nov 2019 01:39:19 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b24sm22409017pgk.93.2019.11.19.01.32.30
+        by smtp.gmail.com with ESMTPSA id j4sm6978917pgt.57.2019.11.19.01.39.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 Nov 2019 01:32:30 -0800 (PST)
+        Tue, 19 Nov 2019 01:39:18 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, simon.horman@netronome.com
-Subject: [PATCH net-next 4/4] net: sched: allow flower to match erspan options
-Date:   Tue, 19 Nov 2019 17:31:49 +0800
-Message-Id: <c67e92a927f02672bbe28649aab139e61c0029ec.1574155869.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next] lwtunnel: add support for multiple geneve opts
+Date:   Tue, 19 Nov 2019 17:39:11 +0800
+Message-Id: <9c4231b54baf60619c110c818ca7a6eb37a2e52e.1574156351.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <9daf090729d21b39dd17b71665136644bcfa04c5.1574155869.git.lucien.xin@gmail.com>
-References: <cover.1574155869.git.lucien.xin@gmail.com>
- <af3c3d95717d8ff70c2c21621cb2f49c310593e2.1574155869.git.lucien.xin@gmail.com>
- <a84fb50a28d9a931e641924962eb05e8cfca12bf.1574155869.git.lucien.xin@gmail.com>
- <9daf090729d21b39dd17b71665136644bcfa04c5.1574155869.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1574155869.git.lucien.xin@gmail.com>
-References: <cover.1574155869.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to allow matching options in erspan.
+geneve RFC (draft-ietf-nvo3-geneve-14) allows a geneve packet to carry
+multiple geneve opts, so it's necessary for lwtunnel to support adding
+multiple geneve opts in one lwtunnel route. But vxlan and erspan opts
+are still only allowed to add one option.
 
-The options can be described in the form:
-VER:INDEX:DIR:HWID/VER:INDEX_MASK:DIR_MASK:HWID_MASK.
-When ver is set to 1, index will be applied while dir
-and hwid will be ignored, and when ver is set to 2,
-dir and hwid will be used while index will be ignored.
+With this patch, iproute2 could make it like:
 
-Different from geneve, only one option can be set. And
-also, geneve options, vxlan options or erspan options
-can't be set at the same time.
+  # ip r a 1.1.1.0/24 encap ip id 1 geneve_opts 0:0:12121212,1:2:12121212 \
+    dst 10.1.0.2 dev geneve1
 
-  # ip link add name erspan1 type erspan external
-  # tc qdisc add dev erspan1 ingress
-  # tc filter add dev erspan1 protocol ip parent ffff: \
-      flower \
-        enc_src_ip 10.0.99.192 \
-        enc_dst_ip 10.0.99.193 \
-        enc_key_id 11 \
-        erspan_opts 1:12:0:0/1:ffff:0:0 \
-        ip_proto udp \
-        action mirred egress redirect dev eth0
+  # ip r a 1.1.1.0/24 encap ip id 1 vxlan_opts 456 \
+    dst 10.1.0.2 dev erspan1
+
+  # ip r a 1.1.1.0/24 encap ip id 1 erspan_opts 1:123:0:0 \
+    dst 10.1.0.2 dev erspan1
+
+Which are pretty much like cls_flower and act_tunnel_key.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/pkt_cls.h |  16 +++++
- net/sched/cls_flower.c       | 145 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 161 insertions(+)
+ net/ipv4/ip_tunnel_core.c | 111 +++++++++++++++++++++++++++++++---------------
+ 1 file changed, 75 insertions(+), 36 deletions(-)
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 929825d..449a639 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -575,6 +575,10 @@ enum {
- 					 * TCA_FLOWER_KEY_ENC_OPT_VXLAN_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_ERSPAN,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
+diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
+index ee71e76..7d21f7e 100644
+--- a/net/ipv4/ip_tunnel_core.c
++++ b/net/ipv4/ip_tunnel_core.c
+@@ -251,7 +251,7 @@ erspan_opt_policy[LWTUNNEL_IP_OPT_ERSPAN_MAX + 1] = {
  };
  
-@@ -602,6 +606,18 @@ enum {
- 		(__TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX - 1)
+ static int ip_tun_parse_opts_geneve(struct nlattr *attr,
+-				    struct ip_tunnel_info *info,
++				    struct ip_tunnel_info *info, int opts_len,
+ 				    struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *tb[LWTUNNEL_IP_OPT_GENEVE_MAX + 1];
+@@ -273,7 +273,7 @@ static int ip_tun_parse_opts_geneve(struct nlattr *attr,
+ 		return -EINVAL;
  
- enum {
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER,              /* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX,            /* be32 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,              /* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,             /* u8 */
-+	__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX,
-+};
-+
-+#define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
-+
-+enum {
- 	TCA_FLOWER_KEY_FLAGS_IS_FRAGMENT = (1 << 0),
- 	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
- };
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 80b0c8f0..23e5ef1 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -23,6 +23,7 @@
- #include <net/flow_dissector.h>
- #include <net/geneve.h>
- #include <net/vxlan.h>
-+#include <net/erspan.h>
+ 	if (info) {
+-		struct geneve_opt *opt = ip_tunnel_info_opts(info);
++		struct geneve_opt *opt = ip_tunnel_info_opts(info) + opts_len;
  
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-@@ -691,6 +692,7 @@ static const struct nla_policy
- enc_opts_policy[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1] = {
- 	[TCA_FLOWER_KEY_ENC_OPTS_GENEVE]        = { .type = NLA_NESTED },
- 	[TCA_FLOWER_KEY_ENC_OPTS_VXLAN]         = { .type = NLA_NESTED },
-+	[TCA_FLOWER_KEY_ENC_OPTS_ERSPAN]        = { .type = NLA_NESTED },
- };
- 
- static const struct nla_policy
-@@ -706,6 +708,14 @@ vxlan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX + 1] = {
- 	[TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP]         = { .type = NLA_U32 },
- };
- 
-+static const struct nla_policy
-+erspan_opt_policy[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
-+	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]        = { .type = NLA_U8 },
-+	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]      = { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]        = { .type = NLA_U8 },
-+	[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]       = { .type = NLA_U8 },
-+};
-+
- static void fl_set_key_val(struct nlattr **tb,
- 			   void *val, int val_type,
- 			   void *mask, int mask_type, int len)
-@@ -970,6 +980,70 @@ static int fl_set_vxlan_opt(const struct nlattr *nla, struct fl_flow_key *key,
- 	return sizeof(*md);
+ 		memcpy(opt->opt_data, nla_data(attr), data_len);
+ 		opt->length = data_len / 4;
+@@ -288,7 +288,7 @@ static int ip_tun_parse_opts_geneve(struct nlattr *attr,
  }
  
-+static int fl_set_erspan_opt(const struct nlattr *nla, struct fl_flow_key *key,
-+			     int depth, int option_len,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX + 1];
-+	struct erspan_metadata *md;
-+	int err;
-+
-+	md = (struct erspan_metadata *)&key->enc_opts.data[key->enc_opts.len];
-+	memset(md, 0xff, sizeof(*md));
-+	md->version = 1;
-+
-+	if (!depth)
-+		return sizeof(*md);
-+
-+	if (nla_type(nla) != TCA_FLOWER_KEY_ENC_OPTS_ERSPAN) {
-+		NL_SET_ERR_MSG(extack, "Non-erspan option type for mask");
-+		return -EINVAL;
-+	}
-+
-+	err = nla_parse_nested(tb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX, nla,
-+			       erspan_opt_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!option_len && !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]) {
-+		NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option");
-+		return -EINVAL;
-+	}
-+
-+	if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER])
-+		md->version = nla_get_u8(tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER]);
-+
-+	if (md->version == 1) {
-+		if (!option_len && !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]) {
-+			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option");
-+			return -EINVAL;
-+		}
-+		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX]) {
-+			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX];
-+			md->u.index = nla_get_be32(nla);
-+		}
-+	} else if (md->version == 2) {
-+		if (!option_len && (!tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR] ||
-+				    !tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID])) {
-+			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option");
-+			return -EINVAL;
-+		}
-+		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR]) {
-+			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR];
-+			md->u.md2.dir = nla_get_u8(nla);
-+		}
-+		if (tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID]) {
-+			nla = tb[TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID];
-+			set_hwid(&md->u.md2, nla_get_u8(nla));
-+		}
-+	} else {
-+		NL_SET_ERR_MSG(extack, "erspan ver is not correct");
-+		return -EINVAL;
-+	}
-+
-+	return sizeof(*md);
-+}
-+
- static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 			  struct fl_flow_key *mask,
- 			  struct netlink_ext_ack *extack)
-@@ -1066,6 +1140,39 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 			if (msk_depth)
- 				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
- 			break;
-+		case TCA_FLOWER_KEY_ENC_OPTS_ERSPAN:
-+			if (key->enc_opts.dst_opt_type) {
-+				NL_SET_ERR_MSG(extack, "Wrong type for erspan options");
+ static int ip_tun_parse_opts_vxlan(struct nlattr *attr,
+-				   struct ip_tunnel_info *info,
++				   struct ip_tunnel_info *info, int opts_len,
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *tb[LWTUNNEL_IP_OPT_VXLAN_MAX + 1];
+@@ -303,7 +303,8 @@ static int ip_tun_parse_opts_vxlan(struct nlattr *attr,
+ 		return -EINVAL;
+ 
+ 	if (info) {
+-		struct vxlan_metadata *md = ip_tunnel_info_opts(info);
++		struct vxlan_metadata *md =
++			ip_tunnel_info_opts(info) + opts_len;
+ 
+ 		attr = tb[LWTUNNEL_IP_OPT_VXLAN_GBP];
+ 		md->gbp = nla_get_u32(attr);
+@@ -314,7 +315,7 @@ static int ip_tun_parse_opts_vxlan(struct nlattr *attr,
+ }
+ 
+ static int ip_tun_parse_opts_erspan(struct nlattr *attr,
+-				    struct ip_tunnel_info *info,
++				    struct ip_tunnel_info *info, int opts_len,
+ 				    struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *tb[LWTUNNEL_IP_OPT_ERSPAN_MAX + 1];
+@@ -329,7 +330,8 @@ static int ip_tun_parse_opts_erspan(struct nlattr *attr,
+ 		return -EINVAL;
+ 
+ 	if (info) {
+-		struct erspan_metadata *md = ip_tunnel_info_opts(info);
++		struct erspan_metadata *md =
++			ip_tunnel_info_opts(info) + opts_len;
+ 
+ 		attr = tb[LWTUNNEL_IP_OPT_ERSPAN_VER];
+ 		md->version = nla_get_u8(attr);
+@@ -356,30 +358,57 @@ static int ip_tun_parse_opts_erspan(struct nlattr *attr,
+ static int ip_tun_parse_opts(struct nlattr *attr, struct ip_tunnel_info *info,
+ 			     struct netlink_ext_ack *extack)
+ {
+-	struct nlattr *tb[LWTUNNEL_IP_OPTS_MAX + 1];
+-	int err;
++	int err, rem, opt_len, opts_len = 0, type = 0;
++	struct nlattr *nla;
+ 
+ 	if (!attr)
+ 		return 0;
+ 
+-	err = nla_parse_nested(tb, LWTUNNEL_IP_OPTS_MAX, attr,
+-			       ip_opts_policy, extack);
++	err = nla_validate(nla_data(attr), nla_len(attr), LWTUNNEL_IP_OPTS_MAX,
++			   ip_opts_policy, extack);
+ 	if (err)
+ 		return err;
+ 
+-	if (tb[LWTUNNEL_IP_OPTS_GENEVE])
+-		err = ip_tun_parse_opts_geneve(tb[LWTUNNEL_IP_OPTS_GENEVE],
+-					       info, extack);
+-	else if (tb[LWTUNNEL_IP_OPTS_VXLAN])
+-		err = ip_tun_parse_opts_vxlan(tb[LWTUNNEL_IP_OPTS_VXLAN],
+-					      info, extack);
+-	else if (tb[LWTUNNEL_IP_OPTS_ERSPAN])
+-		err = ip_tun_parse_opts_erspan(tb[LWTUNNEL_IP_OPTS_ERSPAN],
+-					       info, extack);
+-	else
+-		err = -EINVAL;
++	nla_for_each_attr(nla, nla_data(attr), nla_len(attr), rem) {
++		switch (nla_type(nla)) {
++		case LWTUNNEL_IP_OPTS_GENEVE:
++			if (type && type != TUNNEL_GENEVE_OPT)
 +				return -EINVAL;
-+			}
-+			option_len = 0;
-+			key->enc_opts.dst_opt_type = TUNNEL_ERSPAN_OPT;
-+			option_len = fl_set_erspan_opt(nla_opt_key, key,
-+						       key_depth, option_len,
-+						       extack);
-+			if (option_len < 0)
-+				return option_len;
-+
-+			key->enc_opts.len += option_len;
-+			/* At the same time we need to parse through the mask
-+			 * in order to verify exact and mask attribute lengths.
-+			 */
-+			mask->enc_opts.dst_opt_type = TUNNEL_ERSPAN_OPT;
-+			option_len = fl_set_erspan_opt(nla_opt_msk, mask,
-+						       msk_depth, option_len,
-+						       extack);
-+			if (option_len < 0)
-+				return option_len;
-+
-+			mask->enc_opts.len += option_len;
-+			if (key->enc_opts.len != mask->enc_opts.len) {
-+				NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
++			opt_len = ip_tun_parse_opts_geneve(nla, info, opts_len,
++							   extack);
++			if (opt_len < 0)
++				return opt_len;
++			opts_len += opt_len;
++			if (opts_len > IP_TUNNEL_OPTS_MAX)
 +				return -EINVAL;
-+			}
-+
-+			if (msk_depth)
-+				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
++			type = TUNNEL_GENEVE_OPT;
 +			break;
- 		default:
- 			NL_SET_ERR_MSG(extack, "Unknown tunnel option type");
- 			return -EINVAL;
-@@ -2237,6 +2344,39 @@ static int fl_dump_key_vxlan_opt(struct sk_buff *skb,
- 	return -EMSGSIZE;
++		case LWTUNNEL_IP_OPTS_VXLAN:
++			if (type)
++				return -EINVAL;
++			opt_len = ip_tun_parse_opts_vxlan(nla, info, opts_len,
++							  extack);
++			if (opt_len < 0)
++				return opt_len;
++			opts_len += opt_len;
++			type = TUNNEL_VXLAN_OPT;
++			break;
++		case LWTUNNEL_IP_OPTS_ERSPAN:
++			if (type)
++				return -EINVAL;
++			opt_len = ip_tun_parse_opts_erspan(nla, info, opts_len,
++							   extack);
++			if (opt_len < 0)
++				return opt_len;
++			opts_len += opt_len;
++			type = TUNNEL_ERSPAN_OPT;
++			break;
++		default:
++			return -EINVAL;
++		}
++	}
+ 
+-	return err;
++	return opts_len;
  }
  
-+static int fl_dump_key_erspan_opt(struct sk_buff *skb,
-+				  struct flow_dissector_key_enc_opts *enc_opts)
-+{
-+	struct erspan_metadata *md;
-+	struct nlattr *nest;
-+
-+	nest = nla_nest_start_noflag(skb, TCA_FLOWER_KEY_ENC_OPTS_ERSPAN);
-+	if (!nest)
-+		goto nla_put_failure;
-+
-+	md = (struct erspan_metadata *)&enc_opts->data[0];
-+	if (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER, md->version))
-+		goto nla_put_failure;
-+
-+	if (md->version == 1 &&
-+	    nla_put_be32(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX, md->u.index))
-+		goto nla_put_failure;
-+
-+	if (md->version == 2 &&
-+	    (nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,
-+			md->u.md2.dir) ||
-+	     nla_put_u8(skb, TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,
-+			get_hwid(&md->u.md2))))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, nest);
-+	return -EMSGSIZE;
-+}
-+
- static int fl_dump_key_ct(struct sk_buff *skb,
- 			  struct flow_dissector_key_ct *key,
- 			  struct flow_dissector_key_ct *mask)
-@@ -2295,6 +2435,11 @@ static int fl_dump_key_options(struct sk_buff *skb, int enc_opt_type,
- 		if (err)
- 			goto nla_put_failure;
- 		break;
-+	case TUNNEL_ERSPAN_OPT:
-+		err = fl_dump_key_erspan_opt(skb, enc_opts);
-+		if (err)
-+			goto nla_put_failure;
-+		break;
- 	default:
- 		goto nla_put_failure;
+ static int ip_tun_get_optlen(struct nlattr *attr,
+@@ -475,18 +504,23 @@ static int ip_tun_fill_encap_opts_geneve(struct sk_buff *skb,
+ {
+ 	struct geneve_opt *opt;
+ 	struct nlattr *nest;
++	int offset = 0;
+ 
+ 	nest = nla_nest_start_noflag(skb, LWTUNNEL_IP_OPTS_GENEVE);
+ 	if (!nest)
+ 		return -ENOMEM;
+ 
+-	opt = ip_tunnel_info_opts(tun_info);
+-	if (nla_put_be16(skb, LWTUNNEL_IP_OPT_GENEVE_CLASS, opt->opt_class) ||
+-	    nla_put_u8(skb, LWTUNNEL_IP_OPT_GENEVE_TYPE, opt->type) ||
+-	    nla_put(skb, LWTUNNEL_IP_OPT_GENEVE_DATA, opt->length * 4,
+-		    opt->opt_data)) {
+-		nla_nest_cancel(skb, nest);
+-		return -ENOMEM;
++	while (tun_info->options_len > offset) {
++		opt = ip_tunnel_info_opts(tun_info) + offset;
++		if (nla_put_be16(skb, LWTUNNEL_IP_OPT_GENEVE_CLASS,
++				 opt->opt_class) ||
++		    nla_put_u8(skb, LWTUNNEL_IP_OPT_GENEVE_TYPE, opt->type) ||
++		    nla_put(skb, LWTUNNEL_IP_OPT_GENEVE_DATA, opt->length * 4,
++			    opt->opt_data)) {
++			nla_nest_cancel(skb, nest);
++			return -ENOMEM;
++		}
++		offset += sizeof(*opt) + opt->length * 4;
  	}
+ 
+ 	nla_nest_end(skb, nest);
+@@ -602,13 +636,18 @@ static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
+ 
+ 	opt_len = nla_total_size(0);		/* LWTUNNEL_IP_OPTS */
+ 	if (info->key.tun_flags & TUNNEL_GENEVE_OPT) {
+-		struct geneve_opt *opt = ip_tunnel_info_opts(info);
+-
+-		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_GENEVE */
+-			   + nla_total_size(2)	/* OPT_GENEVE_CLASS */
+-			   + nla_total_size(1)	/* OPT_GENEVE_TYPE */
+-			   + nla_total_size(opt->length * 4);
+-						/* OPT_GENEVE_DATA */
++		struct geneve_opt *opt;
++		int offset = 0;
++
++		opt_len += nla_total_size(0);	/* LWTUNNEL_IP_OPTS_GENEVE */
++		while (info->options_len > offset) {
++			opt = ip_tunnel_info_opts(info) + offset;
++			opt_len += nla_total_size(2)	/* OPT_GENEVE_CLASS */
++				   + nla_total_size(1)	/* OPT_GENEVE_TYPE */
++				   + nla_total_size(opt->length * 4);
++							/* OPT_GENEVE_DATA */
++			offset += sizeof(*opt) + opt->length * 4;
++		}
+ 	} else if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
+ 		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_VXLAN */
+ 			   + nla_total_size(4);	/* OPT_VXLAN_GBP */
 -- 
 2.1.0
 
