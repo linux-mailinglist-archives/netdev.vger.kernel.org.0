@@ -2,261 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B86101029
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA70101032
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 01:23:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727625AbfKSAWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 19:22:46 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:6982 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbfKSAWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 19:22:45 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd335d60001>; Mon, 18 Nov 2019 16:22:46 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 18 Nov 2019 16:22:44 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 18 Nov 2019 16:22:44 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 19 Nov
- 2019 00:22:43 +0000
-Subject: Re: [PATCH v5 17/24] mm/gup: track FOLL_PIN pages
-To:     Jan Kara <jack@suse.cz>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191115055340.1825745-1-jhubbard@nvidia.com>
- <20191115055340.1825745-18-jhubbard@nvidia.com>
- <20191118115829.GJ17319@quack2.suse.cz>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <8424f891-271d-5c34-8f7c-ebf3e3aa6664@nvidia.com>
-Date:   Mon, 18 Nov 2019 16:22:43 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727634AbfKSAXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 19:23:19 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:41424 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727149AbfKSAXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 19:23:18 -0500
+Received: by mail-lf1-f66.google.com with SMTP id j14so15388650lfb.8
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 16:23:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4llU1F6LnwHCj5QCkkDFR2utRYRS39lSfGOyGIyfVHo=;
+        b=hvkhe0HyZsyEUxKasN7CBPhArMPIxYuemst7zJgC6mwFDHbojiQUgTIES3kmaCgK7H
+         wzEpToDBrdS32NzPxH55/yoFLKYB+TYZkHGZgbBwMSgnki3v21XSkhc5LYUanlkIKLy6
+         4+y75ud2n1Iv24PNKkuKgy1+Bkac1xakcVGnUm06kDcreZO+YT+BbPVVQ3yNOfH4T7Qh
+         BScxdSlLv8rDbQYBtqSVom7DP3EZHr3Oc3aRXHI7cyCoVNOuX+5YaT+KGKJVsjIN8hkl
+         MSOsM3+L4aDwy11MnhjP9KbgrEKTBCTVY/U4k+FWEQ2axXFPiLjFwwyf9F880YnT1iFR
+         7yxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4llU1F6LnwHCj5QCkkDFR2utRYRS39lSfGOyGIyfVHo=;
+        b=IEHpNwizYpcUMZ9h+rdzMB9FgtfwS0V6sJdCl7rfD6VobZRCG0kBOInwieNQdHXNBK
+         H8u9xeOe7K2qKcEc1LGQO3RmGem1F+XJmxcObwPhhFTdusBe3hF6baLeeWkG+SiP/W1O
+         DgqtXXfWYnBuVZXQ/570GbCh6DfW0/tDVHTnXIvH6Ui7IDnWLp5I3OFUi6e8xso9m1Ks
+         D1aAlaZLsV+bToRUf/jcfzfQRw3TItyPpx45bbhIqVJ9m9up40tNGpc/vo5j2pdOUhOo
+         VIgcMrn2mv8FOGIyPtqPdw8Z5g//GCL4PgLSLocdecj427Oq9YoM1cByGbbgietCMPMd
+         YwGQ==
+X-Gm-Message-State: APjAAAUJZz4Soc0XAhyAvBIOETAAzn5qYNaCtybgcbKvDB9x4YMwRhwX
+        kzYwPxXsuckxM26BgmYjknckXJCroyY=
+X-Google-Smtp-Source: APXvYqxzCBXE23ht+1iaif+rlqHGf5YhEfM5ZZzaeubaq3PrsNd7qh/NH8WgFa5bgfBk/VQDkNwpRw==
+X-Received: by 2002:a19:6e06:: with SMTP id j6mr1468098lfc.6.1574122996442;
+        Mon, 18 Nov 2019 16:23:16 -0800 (PST)
+Received: from localhost.localdomain (57-201-94-178.pool.ukrtel.net. [178.94.201.57])
+        by smtp.gmail.com with ESMTPSA id i6sm2633167lfo.12.2019.11.18.16.23.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2019 16:23:15 -0800 (PST)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     netdev@vger.kernel.org, davem@davemloft.net,
+        vinicius.gomes@intel.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        linux-kernel@vger.kernel.org, olteanv@gmail.com,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [net PATCH v2] taprio: don't reject same mqprio settings
+Date:   Tue, 19 Nov 2019 02:23:12 +0200
+Message-Id: <20191119002312.23811-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20191118115829.GJ17319@quack2.suse.cz>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574122967; bh=ip2xVJC+jxbL/7d2eWhZjqdIi4kB0uoxgzyWnYDs5q4=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=kZWTJaB6BUYpdW+z0HXxRztjdsBPgYMtIagp6++GXQ1xMYEqmDvkuTu5SJexcfc3Z
-         aqvcG/+YbvfnrntTmKpTzXcCcJ1vacUs8Vt+kkZFmecCKGt5ESA8XOWs62Cbve3dr3
-         XsCtQVKM4yFI8r3EtkYIToV94nBwkk0bzSnRfhI6IY4EfMEr9iYp9o7iElBN+PNDoe
-         GYMLDs4YJjT+MkCB6avfM8/DST4lwWHJbTQrh01mIBzcPCF4cBGDQd1OqtdqCqvly5
-         URQ6TTy1wBAC/IlVtHZs8b+E7d7tANvL2AVJcuHSx7ushKjPgli8Izd92XqBpLulsV
-         NLxmWdrhMpwGw==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/19 3:58 AM, Jan Kara wrote:
-> On Thu 14-11-19 21:53:33, John Hubbard wrote:
->> Add tracking of pages that were pinned via FOLL_PIN.
->>
->> As mentioned in the FOLL_PIN documentation, callers who effectively set
->> FOLL_PIN are required to ultimately free such pages via put_user_page().
->> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
->> for DIO and/or RDMA use".
->>
->> Pages that have been pinned via FOLL_PIN are identifiable via a
->> new function call:
->>
->>    bool page_dma_pinned(struct page *page);
->>
->> What to do in response to encountering such a page, is left to later
->> patchsets. There is discussion about this in [1].
-> 						^^ missing this reference
-> in the changelog...
+The taprio qdisc allows to set mqprio setting but only once. In case
+if mqprio settings are provided next time the error is returned as
+it's not allowed to change traffic class mapping in-flignt and that
+is normal. But if configuration is absolutely the same - no need to
+return error. It allows to provide same command couple times,
+changing only base time for instance, or changing only scheds maps,
+but leaving mqprio setting w/o modification. It more corresponds the
+message: "Changing the traffic mapping of a running schedule is not
+supported", so reject mqprio if it's really changed.
 
-I'll add that.=20
+Also corrected TC_BITMASK + 1 for consistency, as proposed.
 
->=20
->> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
->>
->> Suggested-by: Jan Kara <jack@suse.cz>
->> Suggested-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
->> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
->> ---
->> diff --git a/include/linux/mm.h b/include/linux/mm.h
->> index 6588d2e02628..db872766480f 100644
->> --- a/include/linux/mm.h
->> +++ b/include/linux/mm.h
->> @@ -1054,6 +1054,8 @@ static inline __must_check bool try_get_page(struc=
-t page *page)
->>  	return true;
->>  }
->> =20
->> +__must_check bool user_page_ref_inc(struct page *page);
->> +
->>  static inline void put_page(struct page *page)
->>  {
->>  	page =3D compound_head(page);
->> @@ -1071,29 +1073,70 @@ static inline void put_page(struct page *page)
->>  		__put_page(page);
->>  }
->> =20
->> -/**
->> - * put_user_page() - release a gup-pinned page
->> - * @page:            pointer to page to be released
->> +/*
->> + * GUP_PIN_COUNTING_BIAS, and the associated functions that use it, ove=
-rload
->> + * the page's refcount so that two separate items are tracked: the orig=
-inal page
->> + * reference count, and also a new count of how many get_user_pages() c=
-alls were
-> 							^^ pin_user_pages()
->=20
->> + * made against the page. ("gup-pinned" is another term for the latter)=
-.
->> + *
->> + * With this scheme, get_user_pages() becomes special: such pages are m=
-arked
-> 			^^^ pin_user_pages()
->=20
->> + * as distinct from normal pages. As such, the put_user_page() call (an=
-d its
->> + * variants) must be used in order to release gup-pinned pages.
->> + *
->> + * Choice of value:
->>   *
->> - * Pages that were pinned via pin_user_pages*() must be released via ei=
-ther
->> - * put_user_page(), or one of the put_user_pages*() routines. This is s=
-o that
->> - * eventually such pages can be separately tracked and uniquely handled=
-. In
->> - * particular, interactions with RDMA and filesystems need special hand=
-ling.
->> + * By making GUP_PIN_COUNTING_BIAS a power of two, debugging of page re=
-ference
->> + * counts with respect to get_user_pages() and put_user_page() becomes =
-simpler,
-> 				^^^ pin_user_pages()
->=20
+Fixes: a3d43c0d56f1 ("taprio: Add support adding an admin schedule")
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+---
 
-Yes.
+v2..v1:
+- rebased on net/master instead of net-next/master
+- added fixes tag
+- corrected TC_BITMASK + 1 and used <=
 
->> + * due to the fact that adding an even power of two to the page refcoun=
-t has
->> + * the effect of using only the upper N bits, for the code that counts =
-up using
->> + * the bias value. This means that the lower bits are left for the excl=
-usive
->> + * use of the original code that increments and decrements by one (or a=
-t least,
->> + * by much smaller values than the bias value).
->>   *
->> - * put_user_page() and put_page() are not interchangeable, despite this=
- early
->> - * implementation that makes them look the same. put_user_page() calls =
-must
->> - * be perfectly matched up with pin*() calls.
->> + * Of course, once the lower bits overflow into the upper bits (and thi=
-s is
->> + * OK, because subtraction recovers the original values), then visual i=
-nspection
->> + * no longer suffices to directly view the separate counts. However, fo=
-r normal
->> + * applications that don't have huge page reference counts, this won't =
-be an
->> + * issue.
->> + *
->> + * Locking: the lockless algorithm described in page_cache_get_speculat=
-ive()
->> + * and page_cache_gup_pin_speculative() provides safe operation for
->> + * get_user_pages and page_mkclean and other calls that race to set up =
-page
->> + * table entries.
->>   */
-> ...
->> @@ -2070,9 +2191,16 @@ static int gup_hugepte(pte_t *ptep, unsigned long=
- sz, unsigned long addr,
->>  	page =3D head + ((addr & (sz-1)) >> PAGE_SHIFT);
->>  	refs =3D __record_subpages(page, addr, end, pages + *nr);
->> =20
->> -	head =3D try_get_compound_head(head, refs);
->> -	if (!head)
->> -		return 0;
->> +	if (flags & FOLL_PIN) {
->> +		head =3D page;
->> +		if (unlikely(!user_page_ref_inc(head)))
->> +			return 0;
->> +		head =3D page;
->=20
-> Why do you assign 'head' twice? Also the refcounting logic is repeated
-> several times so perhaps you can factor it out in to a helper function or
-> even move it to __record_subpages()?
+ net/sched/sch_taprio.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
 
-OK.
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 7cd68628c637..c609373c8661 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -922,7 +922,7 @@ static int taprio_parse_mqprio_opt(struct net_device *dev,
+ 	}
+ 
+ 	/* Verify priority mapping uses valid tcs */
+-	for (i = 0; i < TC_BITMASK + 1; i++) {
++	for (i = 0; i <= TC_BITMASK; i++) {
+ 		if (qopt->prio_tc_map[i] >= qopt->num_tc) {
+ 			NL_SET_ERR_MSG(extack, "Invalid traffic class in priority to traffic class mapping");
+ 			return -EINVAL;
+@@ -1347,6 +1347,26 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
+ 	return err;
+ }
+ 
++static int taprio_mqprio_cmp(const struct net_device *dev,
++			     const struct tc_mqprio_qopt *mqprio)
++{
++	int i;
++
++	if (!mqprio || mqprio->num_tc != dev->num_tc)
++		return -1;
++
++	for (i = 0; i < mqprio->num_tc; i++)
++		if (dev->tc_to_txq[i].count != mqprio->count[i] ||
++		    dev->tc_to_txq[i].offset != mqprio->offset[i])
++			return -1;
++
++	for (i = 0; i <= TC_BITMASK; i++)
++		if (dev->prio_tc_map[i] != mqprio->prio_tc_map[i])
++			return -1;
++
++	return 0;
++}
++
+ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 			 struct netlink_ext_ack *extack)
+ {
+@@ -1398,6 +1418,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	admin = rcu_dereference(q->admin_sched);
+ 	rcu_read_unlock();
+ 
++	/* no changes - no new mqprio settings */
++	if (!taprio_mqprio_cmp(dev, mqprio))
++		mqprio = NULL;
++
+ 	if (mqprio && (oper || admin)) {
+ 		NL_SET_ERR_MSG(extack, "Changing the traffic mapping of a running schedule is not supported");
+ 		err = -ENOTSUPP;
+@@ -1455,7 +1479,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 					    mqprio->offset[i]);
+ 
+ 		/* Always use supplied priority mappings */
+-		for (i = 0; i < TC_BITMASK + 1; i++)
++		for (i = 0; i <= TC_BITMASK; i++)
+ 			netdev_set_prio_tc_map(dev, i,
+ 					       mqprio->prio_tc_map[i]);
+ 	}
+-- 
+2.20.1
 
->=20
->> +	} else {
->> +		head =3D try_get_compound_head(head, refs);
->> +		if (!head)
->> +			return 0;
->> +	}
->> =20
->>  	if (unlikely(pte_val(pte) !=3D pte_val(*ptep))) {
->>  		put_compound_head(head, refs);
->=20
-> So this will do the wrong thing for FOLL_PIN. We took just one "pin"
-> reference there but here we'll release 'refs' normal references AFAICT.
-> Also the fact that you take just one pin reference for each huge page
-> substantially changes how GUP refcounting works in the huge page case.
-> Currently, FOLL_GET users can be completely agnostic of huge pages. So yo=
-u
-> can e.g. GUP whole 2 MB page, submit it as 2 different bios and then
-> drop page references from each bio completion function. With your new
-> FOLL_PIN behavior you cannot do that and I believe it will be a problem f=
-or
-> some users. So I think you have to maintain the behavior that you increas=
-e
-> the head->_refcount by (refs * GUP_PIN_COUNTING_BIAS) here.
->=20
-
-Yes, completely agreed, this was a (big) oversight. I went through the same
-reasoning and reached your conclusions, in __gup_device_huge(), but then
-did it wrong in these functions. Will fix.
-
-thanks,
---=20
-John Hubbard
-NVIDIA
