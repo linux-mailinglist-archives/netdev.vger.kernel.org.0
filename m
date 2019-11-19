@@ -2,151 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6F63101A60
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B020101A67
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbfKSHhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 02:37:22 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:30052 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725869AbfKSHhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:37:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574149040;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V4HOW26B6UmWNYImZWcy25gysr0KYKZ6rlD1xLyvoHg=;
-        b=ae9a0vO+w+0XjW1A4v5TDd7aC1BXz/BkN2/hjU+0HysyIpHQRK/YpaV4MU+2o644OKkti8
-        pimiJT1S2RZhrcyzl5jhJjpTRyYGenwi8fKOmXEoRlraeDneJmcH7FvhvSz5CBjmRKjIfv
-        cLVsNn41au3Ljcgd/1s9E3jfs5sScm4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-285-aEN0Kg2qOs6uEDeYJ11VJg-1; Tue, 19 Nov 2019 02:37:17 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 580D6477;
-        Tue, 19 Nov 2019 07:37:15 +0000 (UTC)
-Received: from [10.72.12.74] (ovpn-12-74.pek2.redhat.com [10.72.12.74])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BC992B1CB;
-        Tue, 19 Nov 2019 07:37:04 +0000 (UTC)
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-To:     Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
- <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
- <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
-Date:   Tue, 19 Nov 2019 15:37:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727363AbfKSHjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 02:39:11 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:34213 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725536AbfKSHjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:39:11 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id C48E522314;
+        Tue, 19 Nov 2019 02:39:09 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 19 Nov 2019 02:39:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=KAYKld
+        rTMvXruG869CCJN/LRVyXg5vAUs/vRDSip7Xc=; b=LxBgNXp4Nc0mLaAL+iurJp
+        upjEoVhpkzGdxtm92X4Uh391tRR2AG2VENJD0LzRoZ38Rwt7HTMr68kUFVWTDTbN
+        cO0Pg5gNiHXFcsZU6RUysOyZe0IEFJyq8ruRXtNp/B74InI8fotM8AoR+RE5OIVk
+        VZiD2exsRdO+zj6cvpWevqrzCqj8g1YHepCkb4/bygw+BFty0SeWnKJERGDGsQzd
+        0vopGW6jDbOfqrxzW54I4vSwJBCVdyvxzc3W/fzkvH7rYF25UBDwq+PmB3BVSu9w
+        Azvkdfebj8g9I7pQsG1x079cZBGHekDjgS9mp0c/VRy+m2qQkaT+0VClO8SA/03w
+        ==
+X-ME-Sender: <xms:HJzTXWG2txDNmtlMzj5r0eOWtGD65vdfpLQRGG9UZ-4ffZl7K7rBFA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudegjedguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrg
+    hinhepnhigphdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsth
+    gvrhfuihiivgeptd
+X-ME-Proxy: <xmx:HJzTXV0LBkt91R_m3DHX9dAtj8wcBiu47wPqK1WC2oi42oat1pqFJw>
+    <xmx:HJzTXW-AgPXt_80wpDGv5rE2ymBZiCtKpgtgrmmDDF6TyFMjjeU9bw>
+    <xmx:HJzTXQG11HQLwxWM4BGqFNarbmiusv1Lxbpx37GlARtVikWGcalOsQ>
+    <xmx:HZzTXVcfV16wUaXJXVAzPZ56pIZtUt7iDdbIpXLj8h_9XDV4T_gsTw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 555C280060;
+        Tue, 19 Nov 2019 02:39:08 -0500 (EST)
+Date:   Tue, 19 Nov 2019 09:39:06 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, jiri@mellanox.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: Make HOSTPRIO a devlink
+ param
+Message-ID: <20191119073906.GA27697@splinter>
+References: <20191116172325.13310-1-olteanv@gmail.com>
+ <20191118083624.GA2149@splinter>
+ <CA+h21hrDoTjSvqfpCJRgrzJJ0P1nwfFdxK533dTGSi4y7_-BNA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: aEN0Kg2qOs6uEDeYJ11VJg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrDoTjSvqfpCJRgrzJJ0P1nwfFdxK533dTGSi4y7_-BNA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Nov 18, 2019 at 12:51:01PM +0200, Vladimir Oltean wrote:
+> Hi Ido,
+> 
+> On Mon, 18 Nov 2019 at 10:36, Ido Schimmel <idosch@idosch.org> wrote:
+> >
+> > On Sat, Nov 16, 2019 at 07:23:25PM +0200, Vladimir Oltean wrote:
+> > > Unfortunately with this hardware, there is no way to transmit in-band
+> > > QoS hints with management frames (i.e. VLAN PCP is ignored). The traffic
+> > > class for these is fixed in the static config (which in turn requires a
+> > > reset to change).
+> > >
+> > > With the new ability to add time gates for individual traffic classes,
+> > > there is a real danger that the user might unknowingly turn off the
+> > > traffic class for PTP, BPDUs, LLDP etc.
+> > >
+> > > So we need to manage this situation the best we can. There isn't any
+> > > knob in Linux for this, so create a driver-specific devlink param which
+> > > is a runtime u8. The default value is 7 (the highest priority traffic
+> > > class).
+> > >
+> > > Patch is largely inspired by the mv88e6xxx ATU_hash devlink param
+> > > implementation.
+> > >
+> > > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> > > ---
+> > > Changes in v2:
+> > > Turned the NET_DSA_SJA1105_HOSTPRIO kernel config into a "hostprio"
+> > > runtime devlink param.
+> > >
+> > >  .../networking/devlink-params-sja1105.txt     |  9 ++
+> > >  Documentation/networking/dsa/sja1105.rst      | 19 +++-
+> > >  MAINTAINERS                                   |  1 +
+> > >  drivers/net/dsa/sja1105/sja1105.h             |  1 +
+> > >  drivers/net/dsa/sja1105/sja1105_main.c        | 94 +++++++++++++++++++
+> > >  5 files changed, 122 insertions(+), 2 deletions(-)
+> > >  create mode 100644 Documentation/networking/devlink-params-sja1105.txt
+> > >
+> > > diff --git a/Documentation/networking/devlink-params-sja1105.txt b/Documentation/networking/devlink-params-sja1105.txt
+> > > new file mode 100644
+> > > index 000000000000..5096a4cf923c
+> > > --- /dev/null
+> > > +++ b/Documentation/networking/devlink-params-sja1105.txt
+> > > @@ -0,0 +1,9 @@
+> > > +hostprio             [DEVICE, DRIVER-SPECIFIC]
+> > > +                     Configure the traffic class which will be used for
+> > > +                     management (link-local) traffic injected and trapped
+> > > +                     to/from the CPU. This includes STP, PTP, LLDP etc, as
+> > > +                     well as hardware-specific meta frames with RX
+> > > +                     timestamps.  Higher is better as long as you care about
+> > > +                     your PTP frames.
+> >
+> > Vladimir,
+> >
+> > I have some concerns about this. Firstly, I'm not sure why you need to
+> > expose this and who do you expect to be able to configure this? I'm
+> > asking because once you expose it to users there might not be a way
+> > back. mlxsw is upstream for over four years and the traffic classes for
+> > the different packet types towards the CPU are hard coded in the driver
+> > and based on "sane" defaults. It is therefore surprising to me that you
+> > already see the need to expose this.
+> >
+> 
+> WIth tc-taprio, it is up to the user / system administrator which of
+> the 8 traffic classes has access to the Ethernet media and when (if
+> ever).
+> For example, take this command:
+> 
+> sudo tc qdisc replace dev swp3 parent root handle 100 taprio \
+>         num_tc 8 \
+>         map 0 1 2 3 4 5 6 7 \
+>         queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
+>         base-time $base_time \
+>         sched-entry S 03 300000 \
+>         sched-entry S 02 300000 \
+>         sched-entry S 06 400000 \
+>         flags 2
+> 
+> It will allow access to traffic classes 0 and 1 (S 03) for 300000 ns,
+> traffic class 1 (S 02) for another 300000 ns, and to traffic classes 1
+> and 2 (S 06) for 400000 ns, then repeat the schedule. This is just an
+> example.
+> But the base-time is a PTP time, so the switch needs a PTP daemon to
+> keep track of time. But notice that the traffic class for PTP traffic
+> (which is hardcoded as 7 in the driver) is not present in the
+> tc-taprio schedule, so effectively PTP will be denied access to the
+> media, so it won't work, so it will completely break the schedule. The
+> user will be horribly confused by this.
 
-On 2019/11/19 =E4=B8=8B=E5=8D=883:13, Parav Pandit wrote:
->> From: Jason Wang <jasowang@redhat.com>
->> Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bu=
-s
->>
->>
-> [..]
->
->> Probably, for virtio mdev we need more than just matching: life cycle
->> management, cooperation with VFIO and we also want to be prepared for
->> the device slicing (like sub functions).
-> Well I am revising my patches to life cycle sub functions via devlink int=
-erface for few reasons, as
->
-> (a) avoid mdev bus abuse (still named as mdev in your v13 series, though =
-it is actually for vfio-mdev)
+OK, but I don't see how adding a new knob helps to avoid the confusion?
+Maybe add an extack here saying that HOSTPRIO traffic class has no
+access to the media. Alternatively, you can veto such configurations if
+it's acceptable (in which case you don't need the parameter).
 
+> I also don't want to keep the PTP traffic class hardcoded at 7, since
+> the system administrator might have other cyclic traffic schedules
+> that are more time-sensitive than PTP itself.
+> 
+> > Secondly, I find the name confusing. You call it "hostprio", but the
+> > description says "traffic class". These are two different things.
+> > Priority is a packet attribute based on which you can classify the
+> > packet to a transmission queue (traffic class). And if you have multiple
+> > transmission queues towards the CPU, how do you configure their
+> > scheduling and AQM? This relates to my next point.
+> >
+> 
+> HOSTPRIO is the way it is called in the hardware user guide:
+> https://www.nxp.com/docs/en/user-guide/UM10944.pdf
+> I don't see why I should call it something else, especially since it
+> does not map over any other concept.
 
-Yes, but it could be simply renamed to "vfio-mdev".
+It would be good to add the explanation you provided in this response
+to the documentation. It is not clear where the name comes from
+otherwise.
 
+> And since it is DSA, the Ethernet link between the CPU port and the
+> DSA master is inherently single queue, even though the switch is
+> multi-queue and the DSA master is multi-queue. Both the DSA master and
+> the front-panel switch can have independent qdiscs that operate
+> independently. It is a separate discussion.
+> 
+> > Thirdly, the fact that "there isn't any knob in Linux for this" does not
+> > mean that we should not create a proper one. As I see it, the CPU port
+> > (switch side, not DSA master) is a port like any other and therefore
+> > should have a netdev. With a netdev you can properly configure its
+> > different QoS attributes using tc instead of introducing driver-specific
+> > devlink-params.
+> >
+> 
+> Right, but let me summarize the hardware operation to understand what
+> this is really doing.
+> The switch has 2 MAC filters for link-local management traffic. I
+> hardcoded them in the driver to 01-80-C2-xx-xx-xx and
+> 01-1B-19-xx-xx-xx so that STP and PTP work by default. The switch
+> checks the DMAC of frames against these masks very early in the packet
+> processing pipeline, and if they match, they are trapped to the CPU.
+> In fact, the match is so early that the analyzer module is bypassed
+> and the frames do not get classified to a TC based on any QoS
+> classification rules. The hardware designers recognized that this
+> might be a problem, so they just invented a knob called HOSTPRIO,
+> which all frames that are trapped to the CPU get assigned.
+> On xmit, the MAC filters are active on the CPU port as well. So the
+> switch wants to trap the link-local frames coming from the CPU and
+> redirect them to the CPU, which it won't do because it's configured to
+> avoid hairpinning. So it drops those frames when they come from the
+> CPU port, due to lack of valid destinations. So the hardware designers
+> invented another concept called "management routes" which are meant to
+> bypass the MAC filters (which themselves bypass L2 forwarding). You
+> pre-program a one-shot "management route" in the switch for a frame
+> matching a certain DMAC, then you send it, then the switch figures out
+> it matches this "management route" and properly sends it out the
+> correct front-panel port. The point is that on xmit, the switch uses
+> HOSTPRIO for the "management route" frames as well.
 
-> (b) support iommu
-
-
-That is already supported by mdev.
-
-
-> (c) manage and have coupling with devlink eswitch framework, which is ver=
-y rich in several aspects
-
-
-Good point.
-
-
-> (d) get rid of limited sysfs interface for mdev creation, as netlink is s=
-tandard and flexible to add params etc.
-
-
-Standard but net specific.
-
-
->
-> If you want to get a glimpse of old RFC work of my revised series, please=
- refer to [1].
-
-
-Will do.
-
-
->
-> Jiri, Jason, me think that even virtio accelerated devices will need eswi=
-tch support. And hence, life cycling virtio accelerated devices via devlink=
- makes a lot of sense to us.
-> This way user has single tool to choose what type of device he want to us=
-e (similar to ip link add link type).
-> So sub function flavour will be something like (virtio or sf).
-
-
-Networking is only one of the types that is supported in virtio-mdev.=20
-The codes are generic enough to support any kind of virtio device=20
-(block, scsi, crypto etc). Sysfs is less flexible but type independent.=20
-I agree that devlink is standard and feature richer but still network=20
-specific. It's probably hard to add devlink to other type of physical=20
-drivers. I'm thinking whether it's possible to combine syfs and devlink:=20
-e.g the mdev is available only after the sub fuction is created and=20
-fully configured by devlink.
-
-Thanks
-
-
->
-> So I am reviving my old RFC [1] back now in few days as actual patches ba=
-sed on series [2].
->
-> [1] https://lkml.org/lkml/2019/3/1/19
-> [2] https://lore.kernel.org/linux-rdma/20191107160448.20962-1-parav@mella=
-nox.com/
->
-
+Very weird model :( I understand your need for this knob now, but I
+suggest to add an extack in qdisc offload to make it clear to users that
+they are potentially shooting themselves in the foot.
