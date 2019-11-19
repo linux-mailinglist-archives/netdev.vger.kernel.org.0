@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B178D102592
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36BC102599
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727737AbfKSNiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 08:38:25 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45452 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727066AbfKSNiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 08:38:25 -0500
-Received: by mail-pg1-f193.google.com with SMTP id k1so10069692pgg.12
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 05:38:24 -0800 (PST)
+        id S1728071AbfKSNio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 08:38:44 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38848 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbfKSNij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 08:38:39 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 15so11384184pgh.5
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 05:38:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IQrHD9IslVtGMqrlGFhBe8nueuJ9D5DceJCfmpUkEkI=;
-        b=VYUSD85NaYB0byiucF060eB59AJCix2ZvFBUf0G24foXaNBoHXED/JKuWsLdVMLsJ9
-         F67yljXL4WpnyeArbGTiooVOGrFSCt8RIElIMc78cR+iiv2IHalg2Grmll8gmSJQiOt6
-         4W7fmornEPJ5adKNM/hYatKSWNjWbHA4WnxkXnzAFoYOxq/nTVonVa5RMMzX42Bu9XqG
-         Q8tDr/B400+0RhxErtJTEEed/1tQYqiRyake0Xv64rBA+LOXLcYwmpqOaT1XuAGVrHb/
-         C+ocmn1oebWBJ0zxKQFZ1i4HavqGpRSUnDO5fyCJPLAoqbbN8y2kpUwo1WTsRNY3e7fE
-         sitw==
+        bh=GXpXN3qGRu14Y9/peJf2kXHomshR399geW7jECCFaeU=;
+        b=smlVsLMczaZqkCW0xANte0PyYLPtZ0Agj2ciHGgDV/QLzrThWSjGG8y7ByCTk9Pw8U
+         /uDr1pIBRzQZy1fgIXcD1r534ePk1URYhNbzrmI+pvgZmAkmkxSC+MGfu/cJrYETbMUh
+         TSvi22X9IB6nU+vAJ/+NA0v698RVCvQvPELPvsgQgRwzCmDXujtpA3KVrI3Zy9Mi8Mbk
+         aHXy/hIeN04+UIuiTcUQY7nn4aJVOP5KnywwnsS3Q1wuIqhAFR3WhjPHrchPcDHbwt2R
+         apXvIOuxv4SD8EyiPs9yJWWvHb6tLVMY/U+5PKc6vW5kTBZ/SSZKL8YXInZFzHEeJ11K
+         uDKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IQrHD9IslVtGMqrlGFhBe8nueuJ9D5DceJCfmpUkEkI=;
-        b=UXJHgPfp1qLX6kEEvhgWtyoJQXA5hYWl8OWH7qrWHJBOqTENt4bFGnjl/Ky1ehEDAY
-         b+YFj5mgKhnKPJIci5b0GciSPyQTS3Klxskxe2bPFAV6m//W56tzTyqyShkHyqsDZ0lY
-         0BkGXIy6uBHkMUbOIYR1GarAn0MsbxnflPOqe/HGfPxBRtwB1LHayAUGJW8ZHAKx2V8I
-         PglFCVvZJrQsLyZxusVoHzLFIfNkY+2ocNvrILHhfqvp1QBQwP3hQXMjkcDPgE42XB7V
-         uUEZ9Q6bWwpav4TVrKjtDdBkvwNzCnOV+QotJcfsC4fmMm8FOvIzAb+DANUYYgnO7Q98
-         GbYw==
-X-Gm-Message-State: APjAAAXgxGObs6JiMSYVoRU2cCevoFK9gFKMIxP86crU1TdoWYSFedOo
-        yfbhhrIHcx/ipEYmdyCxWrFVSaQgXE06ibrxcbd/rg==
-X-Google-Smtp-Source: APXvYqyAvyKnlcct+TzQIJDyCdyo5QyXsi/jFxAF8Jx7zREh+d0k7xM01KV5RyOzX6Cxwo9frSbwx43NjsliXcsNS14=
-X-Received: by 2002:aa7:9ad0:: with SMTP id x16mr5918680pfp.51.1574170703810;
- Tue, 19 Nov 2019 05:38:23 -0800 (PST)
+        bh=GXpXN3qGRu14Y9/peJf2kXHomshR399geW7jECCFaeU=;
+        b=MHKCoa1cyf0TZcVfAvALahoaG5bP9AxLsRv5juKzHT7EszNQBEuViuL2Mpwwyscvef
+         6tYu46doDJpVFcDbrkCFf0o0ShSNovL5WdTIyPwQtLNiVNcw8nFiZd+6a1iTZaug/ds2
+         we7TG4JwoDPBDz4b9nFFzf/8Z3dp6wqvonJlfSEhAsd3oBqxWJgLP1EMuZKTTGdWnq6c
+         PVq+fKFsRDLC8vNgQjQii+qNNz5ZEvWrVq23gKkFqsEmYdygspcQmJOSpLWJvRh6PU+m
+         wVmCHKOEajCUBv5W5xGK0ecCEKmfqzcSbiFUjZvaD2ACG0awwRKH5A+t2c1MIKiET8Ub
+         Ln3Q==
+X-Gm-Message-State: APjAAAVACzmaYJweM6FhkCJvVoV1+mJ8zDv7JlAfsvk15o7r47bah/99
+        I4WsZL3TsxSeQUbDIyfNA9gX9rJ8KJY6jRejJoKXuw==
+X-Google-Smtp-Source: APXvYqxpgl1zDm1VngbFzIioQw/x4RVrX3Je8XpaErMRm55Ss4IM3MrZeZuT1Akj+vymG3utdlMe3t9E+wa0O5d3Uec=
+X-Received: by 2002:a62:53c6:: with SMTP id h189mr5792271pfb.93.1574170718555;
+ Tue, 19 Nov 2019 05:38:38 -0800 (PST)
 MIME-Version: 1.0
-References: <0000000000005ae4cd058731d407@google.com>
-In-Reply-To: <0000000000005ae4cd058731d407@google.com>
+References: <0000000000003712560591a4f1b1@google.com>
+In-Reply-To: <0000000000003712560591a4f1b1@google.com>
 From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Tue, 19 Nov 2019 14:38:11 +0100
-Message-ID: <CAAeHK+wDcQpQhDp2Ajz0GOFqKcqV9E_DSNvZ8UW26BdX+T-Uug@mail.gmail.com>
-Subject: Re: KASAN: invalid-free in rsi_91x_deinit
-To:     syzbot <syzbot+7c72edfb407b2bd866ce@syzkaller.appspotmail.com>
+Date:   Tue, 19 Nov 2019 14:38:26 +0100
+Message-ID: <CAAeHK+yTSrTwh77-eWBwPw=WnHFSJw-cvHtf-6cbYnj5KA2dyg@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in rsi_rx_done_handler
+To:     syzbot <syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com>
 Cc:     amitkarwar@gmail.com, "David S. Miller" <davem@davemloft.net>,
         Kalle Valo <kvalo@codeaurora.org>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -61,168 +61,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 23, 2019 at 2:36 PM syzbot
-<syzbot+7c72edfb407b2bd866ce@syzkaller.appspotmail.com> wrote:
+On Tue, Sep 3, 2019 at 2:08 PM syzbot
+<syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com> wrote:
 >
 > Hello,
 >
 > syzbot found the following crash on:
 >
-> HEAD commit:    d34f9519 usb-fuzzer: main usb gadget fuzzer driver
-> git tree:       https://github.com/google/kasan/tree/usb-fuzzer
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14a79403200000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=c73d1bb5aeaeae20
-> dashboard link: https://syzkaller.appspot.com/bug?extid=7c72edfb407b2bd866ce
+> HEAD commit:    eea39f24 usb-fuzzer: main usb gadget fuzzer driver
+> git tree:       https://github.com/google/kasan.git usb-fuzzer
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1031c5f2600000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d0c62209eedfd54e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b563b7f8dbe8223a51e8
 > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17547247200000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147b3a1d200000
+>
+> Unfortunately, I don't have any reproducer for this crash yet.
 >
 > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+7c72edfb407b2bd866ce@syzkaller.appspotmail.com
+> Reported-by: syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com
 >
-> usb 1-1: config 252 interface 115 altsetting 0 has 1 endpoint descriptor,
-> different from the interface descriptor's value: 4
-> usb 1-1: New USB device found, idVendor=1618, idProduct=9113,
-> bcdDevice=32.21
-> usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-> rsi_91x: rsi_probe: Failed to init usb interface
 > ==================================================================
-> BUG: KASAN: double-free or invalid-free in slab_free mm/slub.c:3003 [inline]
-> BUG: KASAN: double-free or invalid-free in kfree+0xce/0x280 mm/slub.c:3958
+> BUG: KASAN: use-after-free in rsi_rx_done_handler+0x3ba/0x490
+> drivers/net/wireless/rsi/rsi_91x_usb.c:267
+> Read of size 8 at addr ffff8881cebc0fe8 by task kworker/0:2/102
 >
-> CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.1.0-rc5-319617-gd34f951 #4
+> CPU: 0 PID: 102 Comm: kworker/0:2 Not tainted 5.3.0-rc5+ #28
 > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
 > Google 01/01/2011
 > Workqueue: usb_hub_wq hub_event
 > Call Trace:
+>   <IRQ>
 >   __dump_stack lib/dump_stack.c:77 [inline]
->   dump_stack+0xe8/0x16e lib/dump_stack.c:113
->   print_address_description+0x6c/0x236 mm/kasan/report.c:187
->   kasan_report_invalid_free+0x66/0xa0 mm/kasan/report.c:278
->   __kasan_slab_free+0x162/0x180 mm/kasan/common.c:438
->   slab_free_hook mm/slub.c:1429 [inline]
->   slab_free_freelist_hook+0x5e/0x140 mm/slub.c:1456
->   slab_free mm/slub.c:3003 [inline]
->   kfree+0xce/0x280 mm/slub.c:3958
->   rsi_91x_deinit+0x27b/0x300 drivers/net/wireless/rsi/rsi_91x_main.c:407
->   rsi_probe+0xdf3/0x140d drivers/net/wireless/rsi/rsi_91x_sdio.c:1178
->   usb_probe_interface+0x31d/0x820 drivers/usb/core/driver.c:361
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_set_configuration+0xdf7/0x1740 drivers/usb/core/message.c:2021
->   generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
->   usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
->   hub_port_connect drivers/usb/core/hub.c:5089 [inline]
->   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
->   port_event drivers/usb/core/hub.c:5350 [inline]
->   hub_event+0x1398/0x3b00 drivers/usb/core/hub.c:5432
->   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
->   worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
->   kthread+0x313/0x420 kernel/kthread.c:253
->   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+>   dump_stack+0xca/0x13e lib/dump_stack.c:113
+>   print_address_description+0x6a/0x32c mm/kasan/report.c:351
+>   __kasan_report.cold+0x1a/0x33 mm/kasan/report.c:482
+>   kasan_report+0xe/0x12 mm/kasan/common.c:612
+>   rsi_rx_done_handler+0x3ba/0x490 drivers/net/wireless/rsi/rsi_91x_usb.c:267
+>   __usb_hcd_giveback_urb+0x1f2/0x470 drivers/usb/core/hcd.c:1657
+>   usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1722
+>   dummy_timer+0x120f/0x2fa2 drivers/usb/gadget/udc/dummy_hcd.c:1965
+>   call_timer_fn+0x179/0x650 kernel/time/timer.c:1322
+>   expire_timers kernel/time/timer.c:1366 [inline]
+>   __run_timers kernel/time/timer.c:1685 [inline]
+>   __run_timers kernel/time/timer.c:1653 [inline]
+>   run_timer_softirq+0x5cc/0x14b0 kernel/time/timer.c:1698
+>   __do_softirq+0x221/0x912 kernel/softirq.c:292
+>   invoke_softirq kernel/softirq.c:373 [inline]
+>   irq_exit+0x178/0x1a0 kernel/softirq.c:413
+>   exiting_irq arch/x86/include/asm/apic.h:537 [inline]
+>   smp_apic_timer_interrupt+0x12f/0x500 arch/x86/kernel/apic/apic.c:1095
+>   apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:830
+>   </IRQ>
+> RIP: 0010:arch_local_irq_restore arch/x86/include/asm/irqflags.h:85 [inline]
+> RIP: 0010:console_unlock+0xa2a/0xc40 kernel/printk/printk.c:2471
+> Code: 00 89 ee 48 c7 c7 20 89 d3 86 e8 61 ad 03 00 65 ff 0d 72 b5 d9 7e e9
+> db f9 ff ff e8 80 a0 15 00 e8 2b ca 1a 00 ff 74 24 30 9d <e9> 18 fe ff ff
+> e8 6c a0 15 00 48 8d 7d 08 48 89 f8 48 c1 e8 03 42
+> RSP: 0018:ffff8881d5077200 EFLAGS: 00000216 ORIG_RAX: ffffffffffffff13
+> RAX: 0000000000000007 RBX: 0000000000000200 RCX: 0000000000000006
+> RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff8881d5068844
+> RBP: 0000000000000000 R08: ffff8881d5068000 R09: fffffbfff11ad791
+> R10: fffffbfff11ad790 R11: ffffffff88d6bc87 R12: 000000000000004d
+> R13: dffffc0000000000 R14: ffffffff829090d0 R15: ffffffff87077430
+>   vprintk_emit+0x171/0x3e0 kernel/printk/printk.c:1986
+>   vprintk_func+0x75/0x113 kernel/printk/printk_safe.c:386
+>   printk+0xba/0xed kernel/printk/printk.c:2046
+>   really_probe.cold+0x69/0x1f6 drivers/base/dd.c:628
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
+>   generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
+>   usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
+>   really_probe+0x281/0x6d0 drivers/base/dd.c:548
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
+>   hub_port_connect drivers/usb/core/hub.c:5098 [inline]
+>   hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
+>   port_event drivers/usb/core/hub.c:5359 [inline]
+>   hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
+>   process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
+>   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+>   kthread+0x318/0x420 kernel/kthread.c:255
+>   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 >
-> Allocated by task 12:
->   set_track mm/kasan/common.c:87 [inline]
->   __kasan_kmalloc mm/kasan/common.c:497 [inline]
->   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:470
->   rsi_init_sdio_interface drivers/net/wireless/rsi/rsi_91x_sdio.c:853
-> [inline]
->   rsi_probe+0x11a/0x140d drivers/net/wireless/rsi/rsi_91x_sdio.c:965
->   usb_probe_interface+0x31d/0x820 drivers/usb/core/driver.c:361
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_set_configuration+0xdf7/0x1740 drivers/usb/core/message.c:2021
->   generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
->   usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
->   hub_port_connect drivers/usb/core/hub.c:5089 [inline]
->   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
->   port_event drivers/usb/core/hub.c:5350 [inline]
->   hub_event+0x1398/0x3b00 drivers/usb/core/hub.c:5432
->   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
->   worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
->   kthread+0x313/0x420 kernel/kthread.c:253
->   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+> Allocated by task 102:
+>   save_stack+0x1b/0x80 mm/kasan/common.c:69
+>   set_track mm/kasan/common.c:77 [inline]
+>   __kasan_kmalloc mm/kasan/common.c:487 [inline]
+>   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:460
+>   kmalloc include/linux/slab.h:552 [inline]
+>   kzalloc include/linux/slab.h:748 [inline]
+>   rsi_init_usb_interface drivers/net/wireless/rsi/rsi_91x_usb.c:599 [inline]
+>   rsi_probe+0x11a/0x15a0 drivers/net/wireless/rsi/rsi_91x_usb.c:780
+>   usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
+>   really_probe+0x281/0x6d0 drivers/base/dd.c:548
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
+>   generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
+>   usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
+>   really_probe+0x281/0x6d0 drivers/base/dd.c:548
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
+>   hub_port_connect drivers/usb/core/hub.c:5098 [inline]
+>   hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
+>   port_event drivers/usb/core/hub.c:5359 [inline]
+>   hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
+>   process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
+>   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+>   kthread+0x318/0x420 kernel/kthread.c:255
+>   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 >
-> Freed by task 12:
->   set_track mm/kasan/common.c:87 [inline]
->   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:459
->   slab_free_hook mm/slub.c:1429 [inline]
->   slab_free_freelist_hook+0x5e/0x140 mm/slub.c:1456
->   slab_free mm/slub.c:3003 [inline]
->   kfree+0xce/0x280 mm/slub.c:3958
->   rsi_probe+0xf04/0x140d drivers/net/wireless/rsi/rsi_91x_sdio.c:1196
->   usb_probe_interface+0x31d/0x820 drivers/usb/core/driver.c:361
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_set_configuration+0xdf7/0x1740 drivers/usb/core/message.c:2021
->   generic_probe+0xa2/0xda drivers/usb/core/generic.c:210
->   usb_probe_device+0xc0/0x150 drivers/usb/core/driver.c:266
->   really_probe+0x2da/0xb10 drivers/base/dd.c:509
->   driver_probe_device+0x21d/0x350 drivers/base/dd.c:671
->   __device_attach_driver+0x1d8/0x290 drivers/base/dd.c:778
->   bus_for_each_drv+0x163/0x1e0 drivers/base/bus.c:454
->   __device_attach+0x223/0x3a0 drivers/base/dd.c:844
->   bus_probe_device+0x1f1/0x2a0 drivers/base/bus.c:514
->   device_add+0xad2/0x16e0 drivers/base/core.c:2106
->   usb_new_device.cold+0x537/0xccf drivers/usb/core/hub.c:2534
->   hub_port_connect drivers/usb/core/hub.c:5089 [inline]
->   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
->   port_event drivers/usb/core/hub.c:5350 [inline]
->   hub_event+0x1398/0x3b00 drivers/usb/core/hub.c:5432
->   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
->   worker_thread+0x9b/0xe20 kernel/workqueue.c:2415
->   kthread+0x313/0x420 kernel/kthread.c:253
->   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+> Freed by task 102:
+>   save_stack+0x1b/0x80 mm/kasan/common.c:69
+>   set_track mm/kasan/common.c:77 [inline]
+>   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:449
+>   slab_free_hook mm/slub.c:1423 [inline]
+>   slab_free_freelist_hook mm/slub.c:1474 [inline]
+>   slab_free mm/slub.c:3016 [inline]
+>   kfree+0xe4/0x2f0 mm/slub.c:3957
+>   rsi_91x_deinit+0x270/0x2f0 drivers/net/wireless/rsi/rsi_91x_main.c:407
+>   rsi_probe+0xcec/0x15a0 drivers/net/wireless/rsi/rsi_91x_usb.c:834
+>   usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
+>   really_probe+0x281/0x6d0 drivers/base/dd.c:548
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_set_configuration+0xdf6/0x1670 drivers/usb/core/message.c:2023
+>   generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
+>   usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
+>   really_probe+0x281/0x6d0 drivers/base/dd.c:548
+>   driver_probe_device+0x101/0x1b0 drivers/base/dd.c:721
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
+>   bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:454
+>   __device_attach+0x217/0x360 drivers/base/dd.c:894
+>   bus_probe_device+0x1e4/0x290 drivers/base/bus.c:514
+>   device_add+0xae6/0x16f0 drivers/base/core.c:2165
+>   usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2536
+>   hub_port_connect drivers/usb/core/hub.c:5098 [inline]
+>   hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
+>   port_event drivers/usb/core/hub.c:5359 [inline]
+>   hub_event+0x1b5c/0x3640 drivers/usb/core/hub.c:5441
+>   process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
+>   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+>   kthread+0x318/0x420 kernel/kthread.c:255
+>   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 >
-> The buggy address belongs to the object at ffff888214af0c80
+> The buggy address belongs to the object at ffff8881cebc0f00
 >   which belongs to the cache kmalloc-512 of size 512
-> The buggy address is located 0 bytes inside of
->   512-byte region [ffff888214af0c80, ffff888214af0e80)
+> The buggy address is located 232 bytes inside of
+>   512-byte region [ffff8881cebc0f00, ffff8881cebc1100)
 > The buggy address belongs to the page:
-> page:ffffea000852bc00 count:1 mapcount:0 mapping:ffff88812c3f4c00
-> index:0xffff888214af1180 compound_mapcount: 0
-> flags: 0x57ff00000010200(slab|head)
-> raw: 057ff00000010200 ffffea00086b3780 0000000800000008 ffff88812c3f4c00
-> raw: ffff888214af1180 00000000800c000a 00000001ffffffff 0000000000000000
+> page:ffffea00073af000 refcount:1 mapcount:0 mapping:ffff8881da002500
+> index:0x0 compound_mapcount: 0
+> flags: 0x200000000010200(slab|head)
+> raw: 0200000000010200 0000000000000000 0000000b00000001 ffff8881da002500
+> raw: 0000000000000000 00000000800c000c 00000001ffffffff 0000000000000000
 > page dumped because: kasan: bad access detected
 >
 > Memory state around the buggy address:
->   ffff888214af0b80: 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc
->   ffff888214af0c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> > ffff888214af0c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                     ^
->   ffff888214af0d00: fb fb fb fb fb fb f
+>   ffff8881cebc0e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>   ffff8881cebc0f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> > ffff8881cebc0f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>                                                            ^
+>   ffff8881cebc1000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>   ffff8881cebc1080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ==================================================================
 >
 >
 > ---
@@ -232,8 +257,6 @@ On Tue, Apr 23, 2019 at 2:36 PM syzbot
 >
 > syzbot will keep track of this bug report. See:
 > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
 
 Most likely the same issue as:
 
