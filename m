@@ -2,193 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67736101A99
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DBAE101A8B
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727435AbfKSH6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 02:58:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39080 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726921AbfKSH6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 02:58:16 -0500
-Received: from localhost (unknown [89.205.134.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B14452230E;
-        Tue, 19 Nov 2019 07:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574150295;
-        bh=PqZ+vBYVtXP51cnm6IFAe4jpuKFHVCDche3DsVEA078=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OhbvlJdUXYQ37tp7cdI1hB8sLwZKNij6jUZVufk/ZXiUnTlWmUh3oRMO9saJg3c+h
-         G3XRX6Dla6SC2c+s19CutsaVbbWV9zpCJmzW+qHgBQkCzqntDufl4FGaF94gTdWiHM
-         DGrrNcoOCLhrPRz/DgE1fvo1PNLegTyF5OCQ76xg=
-Date:   Tue, 19 Nov 2019 08:58:12 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jouni =?iso-8859-1?Q?H=F6gander?= <jouni.hogander@unikie.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH v3] net-sysfs: Fix reference count leak
-Message-ID: <20191119075812.GB1858193@kroah.com>
-References: <20191118123246.27618-1-jouni.hogander@unikie.com>
- <20191118132705.GB261521@kroah.com>
- <87eey4s41t.fsf@unikie.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87eey4s41t.fsf@unikie.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+        id S1727016AbfKSHyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 02:54:11 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:35520 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbfKSHyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:54:11 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAJ7rsp9033794;
+        Tue, 19 Nov 2019 07:53:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id; s=corp-2019-08-05;
+ bh=IyCiBE5FqGw0GPcIHmU7QGVoSGyMN7SqqTP1wqihQRo=;
+ b=GOgXevtc2/R5pg/O4/aIHosMydLGb31489wC/o0L+0RAAtoSbW9KasR+3jol/TGg2DWj
+ YYm3WaynA1ugeQmiB3WrR9O46wieuA8UPEwejgIpLEtbNA4CQd9nAw1zVbqOBGMMkmtJ
+ GdnKmQlZxLNMjlVdhj3eNtqTpoAU4DbfCG854A+Nl5haDKXxxZfDZa/BXJMZnBdOGrWF
+ ESbIRH7b9iwAWoBWVMflYime/k5LN+oC5ZCF63C07HLrva5a8FA3xMDIfTYp0EXdP8PG
+ X6inrZKcewuw5EuvlO+5okj7Iu8+XSlLtPGURT3ltaidIvkmQVe4NRja9Q8sykfLC2fR Tw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 2wa92pn24c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Nov 2019 07:53:58 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAJ7rnqe063648;
+        Tue, 19 Nov 2019 07:53:57 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 2wc0afxk2w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Nov 2019 07:53:56 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAJ7rt05016094;
+        Tue, 19 Nov 2019 07:53:55 GMT
+Received: from shipfan.cn.oracle.com (/10.113.210.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 18 Nov 2019 23:53:54 -0800
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+To:     mchehab+samsung@kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        robh@kernel.org, netdev@vger.kernel.org, yanjun.zhu@oracle.com,
+        rain.1986.08.12@gmail.com
+Subject: [PATCH 1/1] MAINTAINERS: forcedeth: Change Zhu Yanjun's email address
+Date:   Tue, 19 Nov 2019 03:03:48 -0500
+Message-Id: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9445 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=903
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1911190073
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9445 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=988 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1911190073
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 09:45:02AM +0200, Jouni Högander wrote:
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
-> 
-> > On Mon, Nov 18, 2019 at 02:32:46PM +0200, jouni.hogander@unikie.com wrote:
-> >> From: Jouni Hogander <jouni.hogander@unikie.com>
-> >> 
-> >> Netdev_register_kobject is calling device_initialize. In case of error
-> >> reference taken by device_initialize is not given up.
-> >> 
-> >> Drivers are supposed to call free_netdev in case of error. In non-error
-> >> case the last reference is given up there and device release sequence
-> >> is triggered. In error case this reference is kept and the release
-> >> sequence is never started.
-> >> 
-> >> Fix this reference count leak by allowing giving up the reference also
-> >> in error case in free_netdev.
-> >> 
-> >> Also replace BUG_ON with WARN_ON in free_netdev and in netdev_release.
-> >> 
-> >> This is the rootcause for couple of memory leaks reported by Syzkaller:
-> >> 
-> >> BUG: memory leak unreferenced object 0xffff8880675ca008 (size 256):
-> >>   comm "netdev_register", pid 281, jiffies 4294696663 (age 6.808s)
-> >>   hex dump (first 32 bytes):
-> >>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> >>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-> >>   backtrace:
-> >>     [<0000000058ca4711>] kmem_cache_alloc_trace+0x167/0x280
-> >>     [<000000002340019b>] device_add+0x882/0x1750
-> >>     [<000000001d588c3a>] netdev_register_kobject+0x128/0x380
-> >>     [<0000000011ef5535>] register_netdevice+0xa1b/0xf00
-> >>     [<000000007fcf1c99>] __tun_chr_ioctl+0x20d5/0x3dd0
-> >>     [<000000006a5b7b2b>] tun_chr_ioctl+0x2f/0x40
-> >>     [<00000000f30f834a>] do_vfs_ioctl+0x1c7/0x1510
-> >>     [<00000000fba062ea>] ksys_ioctl+0x99/0xb0
-> >>     [<00000000b1c1b8d2>] __x64_sys_ioctl+0x78/0xb0
-> >>     [<00000000984cabb9>] do_syscall_64+0x16f/0x580
-> >>     [<000000000bde033d>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >>     [<00000000e6ca2d9f>] 0xffffffffffffffff
-> >> 
-> >> BUG: memory leak
-> >> unreferenced object 0xffff8880668ba588 (size 8):
-> >>   comm "kobject_set_nam", pid 286, jiffies 4294725297 (age 9.871s)
-> >>   hex dump (first 8 bytes):
-> >>     6e 72 30 00 cc be df 2b                          nr0....+
-> >>   backtrace:
-> >>     [<00000000a322332a>] __kmalloc_track_caller+0x16e/0x290
-> >>     [<00000000236fd26b>] kstrdup+0x3e/0x70
-> >>     [<00000000dd4a2815>] kstrdup_const+0x3e/0x50
-> >>     [<0000000049a377fc>] kvasprintf_const+0x10e/0x160
-> >>     [<00000000627fc711>] kobject_set_name_vargs+0x5b/0x140
-> >>     [<0000000019eeab06>] dev_set_name+0xc0/0xf0
-> >>     [<0000000069cb12bc>] netdev_register_kobject+0xc8/0x320
-> >>     [<00000000f2e83732>] register_netdevice+0xa1b/0xf00
-> >>     [<000000009e1f57cc>] __tun_chr_ioctl+0x20d5/0x3dd0
-> >>     [<000000009c560784>] tun_chr_ioctl+0x2f/0x40
-> >>     [<000000000d759e02>] do_vfs_ioctl+0x1c7/0x1510
-> >>     [<00000000351d7c31>] ksys_ioctl+0x99/0xb0
-> >>     [<000000008390040a>] __x64_sys_ioctl+0x78/0xb0
-> >>     [<0000000052d196b7>] do_syscall_64+0x16f/0x580
-> >>     [<0000000019af9236>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >>     [<00000000bc384531>] 0xffffffffffffffff
-> >> 
-> >> Reported-by: syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com
-> >> Cc: David Miller <davem@davemloft.net>
-> >> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> >> Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
-> >> ---
-> >> v2 -> v3:
-> >> * Replaced BUG_ON with WARN_ON in free_netdev and netdev_release
-> >> v1 -> v2:
-> >> * Relying on driver calling free_netdev rather than calling
-> >>   put_device directly in error path
-> >> ---
-> >>  net/core/dev.c       | 14 +++++++-------
-> >>  net/core/net-sysfs.c |  6 +++++-
-> >>  2 files changed, 12 insertions(+), 8 deletions(-)
-> >> 
-> >> diff --git a/net/core/dev.c b/net/core/dev.c
-> >> index 99ac84ff398f..1d6c0bfb5ec5 100644
-> >> --- a/net/core/dev.c
-> >> +++ b/net/core/dev.c
-> >> @@ -9603,14 +9603,14 @@ void free_netdev(struct net_device *dev)
-> >>  
-> >>  	netdev_unregister_lockdep_key(dev);
-> >>  
-> >> -	/*  Compatibility with error handling in drivers */
-> >> -	if (dev->reg_state == NETREG_UNINITIALIZED) {
-> >> -		netdev_freemem(dev);
-> >> -		return;
-> >> -	}
-> >> +	/* reg_state is NETREG_UNINITIALIZED if there is an error in
-> >> +	 * registration.
-> >> +	 */
-> >> +	WARN_ON(dev->reg_state != NETREG_UNREGISTERED &&
-> >> +		dev->reg_state != NETREG_UNINITIALIZED);
-> >
-> > You "warn" about this, but do not actually handle the problem.  So what
-> > is this helping with?
-> >
-> 
-> Now as I have replaced BUG_ON with WARN_ON different reg_states are
-> actually handled. In free_netdev reference is given up and release
-> sequence is expected to start no matter what is the dev->reg_state. In
-> netdev_release memories are freed. There are just extra warnings in the
-> log from the functions.
-> 
-> > Systems with panic-on-warn just rebooted, and a "normal" system saw a
-> > traceback yet no error handling happened so why would the code even test
-> > this?
-> 
-> One use for panic-on-warn is the stabilation phase before "product"
-> quality. In this case you are interested in everything that is
-> unexpected. Having panic-on-warn set is easy way to make each warning in
-> the system visible to user and force to react on it.
-> 
-> Another example is my Syzkaller excercise. I gathered all the crashes
-> from the system and these include warnings as well. I will probably next
-> look at these warnings Syzkaller found and try to understand why they
-> are and do they need fixes.
+I prefer to use my personal email address for kernel related work.
 
-I know many "production" systems that run panic-on-warn so that if
-something "odd" happens, the system gets rebooted and restarted all
-automatically.  It makes sense in a large cluster/cloud system.
+Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > I'm not trying to be picky here, just to think about what you are doing
-> > with these checks please.
-> 
-> This state was not expected being anything else than
-> NETREG_UNREGISTERED. Probably error cases were not taken into account or
-> maybe error cases were not expected to end up to device release
-> sequence. Especially as cleaning up relies on normal device release
-> sequence on error cases this assumption is wrong.
-> 
-> Do you think better choise would be to remove BUG_ON completely rather
-> than replacing it with WARN_ON?
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e4f170d..8165658 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -643,7 +643,7 @@ F:	drivers/net/ethernet/alacritech/*
+ 
+ FORCEDETH GIGABIT ETHERNET DRIVER
+ M:	Rain River <rain.1986.08.12@gmail.com>
+-M:	Zhu Yanjun <yanjun.zhu@oracle.com>
++M:	Zhu Yanjun <zyjzyj2000@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/nvidia/*
+-- 
+2.7.4
 
-I don't know this code, and I'm not the maintainer of it, so I don't
-have a strong opinion.  Other than if this was code I was maintaining, I
-would not want it there :)
-
-Anyway, your original fix looks sane to me, and that's probably a good
-thing to just do now and then you can work on these other things.
-
-thanks,
-
-greg k-h
