@@ -2,89 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE30102ACC
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0552102AC6
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:28:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbfKSR3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 12:29:25 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:44686 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728141AbfKSR3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:29:24 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAJHTG3L069131;
-        Tue, 19 Nov 2019 11:29:16 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1574184556;
-        bh=r/cBAHM8oY922P/6C8P9pt6goo9s2PX5XRBXQYR1CPs=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=FHa8q0AkaQO/TTYzSCJp+gu59qGkDHoWhpifhhJKOVXbe/7yw1YNPIQ+Zmioo5Fb7
-         b2ZSb14bLzq+rRZx3GI8MukkkMcDhVLWLnTt2daCpnOBJhLMQlctIbLuySr/DNx+FL
-         UjWrquOZJbvuC5FhShxZEwsyCQytFg7kpXUUXSv0=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xAJHTGsr005655
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Nov 2019 11:29:16 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 19
- Nov 2019 11:29:16 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 19 Nov 2019 11:29:16 -0600
-Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJHTGpj083047;
-        Tue, 19 Nov 2019 11:29:16 -0600
-Subject: Re: [PATCH][next] net: phy: dp83869: fix return of uninitialized
- variable ret
-To:     Andrew Lunn <andrew@lunn.ch>, Colin King <colin.king@canonical.com>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20191118114835.39494-1-colin.king@canonical.com>
- <20191118232912.GC15395@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <1346c899-2114-875a-68a7-4ce0c08307dc@ti.com>
-Date:   Tue, 19 Nov 2019 11:27:45 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728527AbfKSR2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 12:28:22 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:54728 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728060AbfKSR2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:28:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ljY18yPjADPQ3q4miK00UfYs37VzBFw+sHL1UzkFa90=; b=fF90V6i0n0Be8rF1Fj46iF/a6A
+        WovrmZRg48gOgj7UEWhSr2kVdyUfKcqeR6yWFOq872OPfdYiqRNt/3FgvDYbbG95DT772r/ItWepi
+        luRrFh2eJleIg6VapAG4FIScsNoa6nQXz4gdbIJgU3EkAUQj14EO3EIIJxJZFzgY05R5IEVhSfkA+
+        PEwNimHwyyMqffWxH5JauZ+WbG8lO6rJ6vXgd06qe38GJO3D1K1Bt9pD5zzV44/9Fjo5Ee6z7Wwup
+        5ZhKLgC8VrRVp6HaNYbBw/EE0osK/ysDTJ1Vbc3CwqjaqxptWEIT3oLGLCoy6gjU+Y6/4e96yuL1U
+        9ABuP0UQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:36726 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iX7IV-0002mW-GH; Tue, 19 Nov 2019 17:28:15 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iX7IU-0000qH-T4; Tue, 19 Nov 2019 17:28:14 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net] net: phylink: fix link mode modification in PHY mode
 MIME-Version: 1.0
-In-Reply-To: <20191118232912.GC15395@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1iX7IU-0000qH-T4@rmk-PC.armlinux.org.uk>
+Date:   Tue, 19 Nov 2019 17:28:14 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+Modifying the link settings via phylink_ethtool_ksettings_set() and
+phylink_ethtool_set_pauseparam() didn't always work as intended for
+PHY based setups, as calling phylink_mac_config() would result in the
+unresolved configuration being committed to the MAC, rather than the
+configuration with the speed and duplex setting.
 
-On 11/18/19 5:29 PM, Andrew Lunn wrote:
-> On Mon, Nov 18, 2019 at 11:48:35AM +0000, Colin King wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> In the case where the call to phy_interface_is_rgmii returns zero
->> the variable ret is left uninitialized and this is returned at
->> the end of the function dp83869_configure_rgmii.  Fix this by
->> returning 0 instead of the uninitialized value in ret.
->>
->> Addresses-Coverity: ("Uninitialized scalar variable")
->> Fixes: 01db923e8377 ("net: phy: dp83869: Add TI dp83869 phy")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->
-> Dan: phy_modify_mmd() could fail. You check the return value for
-> phy_read and phy_write, so it would be consistent to also check
+This would work fine if the update caused the link to renegotiate,
+but if no settings have changed, phylib won't trigger a renegotiation
+cycle, and the MAC will be left incorrectly configured.
 
-Thanks for the heads up on this.
+Avoid calling phylink_mac_config() unless we are using an inband mode
+in phylink_ethtool_ksettings_set(), and use phy_set_asym_pause() as
+introduced in 4.20 to set the PHY settings in
+phylink_ethtool_set_pauseparam().
 
-I need to check the set/clear_mmd bits too.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-Dan
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 5f213dbd8511..342521ed7e7a 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1255,7 +1255,13 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
+ 	pl->link_config.duplex = our_kset.base.duplex;
+ 	pl->link_config.an_enabled = our_kset.base.autoneg != AUTONEG_DISABLE;
+ 
+-	if (!test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {
++	/* If we have a PHY, phylib will call our link state function if the
++	 * mode has changed, which will trigger a resolve and update the MAC
++	 * configuration. For a fixed link, this isn't able to change any
++	 * parameters, which just leaves inband mode.
++	 */
++	if (pl->link_an_mode == MLO_AN_INBAND &&
++	    !test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {
+ 		phylink_mac_config(pl, &pl->link_config);
+ 		phylink_mac_an_restart(pl);
+ 	}
+@@ -1335,15 +1341,16 @@ int phylink_ethtool_set_pauseparam(struct phylink *pl,
+ 	if (pause->tx_pause)
+ 		config->pause |= MLO_PAUSE_TX;
+ 
+-	if (!test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {
++	/* If we have a PHY, phylib will call our link state function if the
++	 * mode has changed, which will trigger a resolve and update the MAC
++	 * configuration.
++	 */
++	if (pl->phydev) {
++		phy_set_asym_pause(pl->phydev, pause->rx_pause,
++				   pause->tx_pause);
++	} else if (!test_bit(PHYLINK_DISABLE_STOPPED,
++			     &pl->phylink_disable_state)) {
+ 		switch (pl->link_an_mode) {
+-		case MLO_AN_PHY:
+-			/* Silently mark the carrier down, and then trigger a resolve */
+-			if (pl->netdev)
+-				netif_carrier_off(pl->netdev);
+-			phylink_run_resolve(pl);
+-			break;
+-
+ 		case MLO_AN_FIXED:
+ 			/* Should we allow fixed links to change against the config? */
+ 			phylink_resolve_flow(pl, config);
+-- 
+2.20.1
 
-
-> 	 Andrew
