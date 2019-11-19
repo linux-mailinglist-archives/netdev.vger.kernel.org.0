@@ -2,109 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 958691022E8
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D71E01022F5
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:24:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbfKSLSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 06:18:53 -0500
-Received: from foss.arm.com ([217.140.110.172]:50972 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbfKSLSx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 06:18:53 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 38842FEC;
-        Tue, 19 Nov 2019 03:18:52 -0800 (PST)
-Received: from localhost (unknown [10.37.6.20])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F07D3F703;
-        Tue, 19 Nov 2019 03:18:51 -0800 (PST)
-Date:   Tue, 19 Nov 2019 11:18:49 +0000
-From:   Andrew Murray <andrew.murray@arm.com>
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
-        james.quinlan@broadcom.com, mbrugger@suse.com,
-        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
-        jeremy.linton@arm.com, Robin Murphy <robin.murphy@arm.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Subject: Re: [PATCH v2 0/6] Raspberry Pi 4 PCIe support
-Message-ID: <20191119111848.GR43905@e119886-lin.cambridge.arm.com>
-References: <20191112155926.16476-1-nsaenzjulienne@suse.de>
+        id S1727673AbfKSLYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 06:24:10 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:53196 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725280AbfKSLYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 06:24:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574162650;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xZ1EHsE1uQDsa7EMidlyubvNKcMXaJrPEPXR8PNSbJk=;
+        b=C7HrE8bipAPDLtez5pNztB8O38DEsmuTnfj33j47O45nphDa4Kv68yCgkEAnmZv4GRmAKb
+        Zv9ZXnGbu2biwE6GiHtTD0df6Rfv17mQqWnX26dk9Aor/LIKVICojbdJjxX+lq+3FhTGJi
+        beg2RII5zoO4bADn611fkwR1/gpPU6g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-183-Y3W8lFmZM_WnVOIGB1bRDg-1; Tue, 19 Nov 2019 06:24:08 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 58CB81005500;
+        Tue, 19 Nov 2019 11:24:07 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 865E34D74F;
+        Tue, 19 Nov 2019 11:23:59 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 12:23:58 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        ilias.apalodimas@linaro.org, lorenzo.bianconi@redhat.com,
+        mcroce@redhat.com, jonathan.lemon@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v4 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191119122358.12276da4@carbon>
+In-Reply-To: <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+        <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191112155926.16476-1-nsaenzjulienne@suse.de>
-User-Agent: Mutt/1.10.1+81 (426a6c1) (2018-08-26)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: Y3W8lFmZM_WnVOIGB1bRDg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 04:59:19PM +0100, Nicolas Saenz Julienne wrote:
-> This series aims at providing support for Raspberry Pi 4's PCIe
-> controller, which is also shared with the Broadcom STB family of
-> devices.
-> 
-> There was a previous attempt to upstream this some years ago[1] but was
-> blocked as most STB PCIe integrations have a sparse DMA mapping[2] which
-> is something currently not supported by the kernel.  Luckily this is not
-> the case for the Raspberry Pi 4.
-> 
-> Note that the driver code is to be based on top of Rob Herring's series
-> simplifying inbound and outbound range parsing.
-> 
-> [1] https://patchwork.kernel.org/cover/10605933/
-> [2] https://patchwork.kernel.org/patch/10605957/
-> 
+On Mon, 18 Nov 2019 15:33:45 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-What happened to patch 3? I can't see it on the list or in patchwork?
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 1121faa99c12..6f684c3a3434 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -34,8 +34,15 @@
+>  #include <linux/ptr_ring.h>
+>  #include <linux/dma-direction.h>
+> =20
+> -#define PP_FLAG_DMA_MAP 1 /* Should page_pool do the DMA map/unmap */
+> -#define PP_FLAG_ALL=09PP_FLAG_DMA_MAP
+> +#define PP_FLAG_DMA_MAP=09=091 /* Should page_pool do the DMA map/unmap =
+*/
+> +#define PP_FLAG_DMA_SYNC_DEV=092 /* if set all pages that the driver get=
+s
+> +=09=09=09=09   * from page_pool will be
+> +=09=09=09=09   * DMA-synced-for-device according to the
+> +=09=09=09=09   * length provided by the device driver.
+> +=09=09=09=09   * Please note DMA-sync-for-CPU is still
+> +=09=09=09=09   * device driver responsibility
+> +=09=09=09=09   */
+> +#define PP_FLAG_ALL=09=09(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
+> =20
+[...]
 
-Thanks,
+Can you please change this to use the BIT(X) api.
 
-Andrew Murray
+#include <linux/bits.h>
 
-> ---
-> 
-> Changes since v1:
->   - add generic rounddown/roundup_pow_two64() patch
->   - Add MAINTAINERS patch
->   - Fix Kconfig
->   - Cleanup probe, use up to date APIs, exit on MSI failure
->   - Get rid of linux,pci-domain and other unused constructs
->   - Use edge triggered setup for MSI
->   - Cleanup MSI implementation
->   - Fix multiple cosmetic issues
->   - Remove supend/resume code
-> 
-> Jim Quinlan (3):
->   dt-bindings: PCI: Add bindings for brcmstb's PCIe device
->   PCI: brcmstb: add Broadcom STB PCIe host controller driver
->   PCI: brcmstb: add MSI capability
-> 
-> Nicolas Saenz Julienne (3):
->   linux/log2.h: Add roundup/rounddown_pow_two64() family of functions
->   ARM: dts: bcm2711: Enable PCIe controller
->   MAINTAINERS: Add brcmstb PCIe controller
-> 
->  .../bindings/pci/brcm,stb-pcie.yaml           |  110 ++
->  MAINTAINERS                                   |    4 +
->  arch/arm/boot/dts/bcm2711.dtsi                |   46 +
->  drivers/net/ethernet/mellanox/mlx4/en_clock.c |    3 +-
->  drivers/pci/controller/Kconfig                |    9 +
->  drivers/pci/controller/Makefile               |    1 +
->  drivers/pci/controller/pcie-brcmstb.c         | 1179 +++++++++++++++++
->  drivers/pci/controller/pcie-cadence-ep.c      |    7 +-
->  drivers/pci/controller/pcie-cadence.c         |    7 +-
->  drivers/pci/controller/pcie-rockchip-ep.c     |    9 +-
->  include/linux/log2.h                          |   52 +
->  kernel/dma/direct.c                           |    3 +-
->  12 files changed, 1412 insertions(+), 18 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml
->  create mode 100644 drivers/pci/controller/pcie-brcmstb.c
-> 
-> -- 
-> 2.24.0
-> 
+#define PP_FLAG_DMA_MAP=09=09BIT(0)
+#define PP_FLAG_DMA_SYNC_DEV=09BIT(1)
+
+
+
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index dfc2501c35d9..4f9aed7bce5a 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -47,6 +47,13 @@ static int page_pool_init(struct page_pool *pool,
+>  =09    (pool->p.dma_dir !=3D DMA_BIDIRECTIONAL))
+>  =09=09return -EINVAL;
+> =20
+> +=09/* In order to request DMA-sync-for-device the page needs to
+> +=09 * be mapped
+> +=09 */
+> +=09if ((pool->p.flags & PP_FLAG_DMA_SYNC_DEV) &&
+> +=09    !(pool->p.flags & PP_FLAG_DMA_MAP))
+> +=09=09return -EINVAL;
+> +
+
+I like that you have moved this check to setup time.
+
+There are two other parameters the DMA_SYNC_DEV depend on:
+
+ =09struct page_pool_params pp_params =3D {
+ =09=09.order =3D 0,
+-=09=09.flags =3D PP_FLAG_DMA_MAP,
++=09=09.flags =3D PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+ =09=09.pool_size =3D size,
+ =09=09.nid =3D cpu_to_node(0),
+ =09=09.dev =3D pp->dev->dev.parent,
+ =09=09.dma_dir =3D xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
++=09=09.offset =3D pp->rx_offset_correction,
++=09=09.max_len =3D MVNETA_MAX_RX_BUF_SIZE,
+ =09};
+
+Can you add a check, that .max_len must not be zero.  The reason is
+that I can easily see people misconfiguring this.  And the effect is
+that the DMA-sync-for-device is essentially disabled, without user
+realizing this. The not-realizing part is really bad, especially
+because bugs that can occur from this are very rare and hard to catch.
+
+I'm up for discussing if there should be a similar check for .offset.
+IMHO we should also check .offset is configured, and then be open to
+remove this check once a driver user want to use offset=3D0.  Does the
+mvneta driver already have a use-case for this (in non-XDP mode)?
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
