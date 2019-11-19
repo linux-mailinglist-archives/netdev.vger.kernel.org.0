@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D507102241
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 025D7102242
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727522AbfKSKuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 05:50:18 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33533 "EHLO
+        id S1727557AbfKSKuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 05:50:19 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38849 "EHLO
         mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfKSKuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:50:18 -0500
-Received: by mail-wr1-f66.google.com with SMTP id w9so23259298wrr.0
+        with ESMTP id S1726980AbfKSKuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:50:19 -0500
+Received: by mail-wr1-f66.google.com with SMTP id i12so23236967wro.5
         for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 02:50:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=v3SR/Wv2ZKizQBTT/BCaE/dXsNbERQRJO9ye1A6QXTc=;
-        b=iIqi5xs9y/GWsQD3CdgwmpBo8DbLB9/cDLLtKYIdzOrZB9ZidsCOQACBiDjAuCL0eG
-         grwC9hNskZie0VqQJg0XSUwQjVc2WFOwhLhsf05f7WY0YEyVUDo4xQhCIS3iaGyRyXXj
-         pkXhxnx2VGc9WnDZxhOU0hxeP+s0GFgH+cd2xUb6zSjoOnRiX+tj7kKPLQsmVq3V6j7t
-         mWo/iZd3R3/kBMhb9v7WK85KyrLF+IOluu5fJKlsHlOaNq6ETPpBEm0glhNlgwsVqIdn
-         6hPejd5w2ZBn2ysNdhqWMWxd69dggG4GerIV2ncGWR9WEHRO70d/Ag7/jWoKUt7kqc2d
-         bPYA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=VtahxqjVeuCdwoGzoPXc72omB/a3UxEWdQncKPHu5AQ=;
+        b=iNW9Eky+z+ELXzIaMIpYMLxGObSuDpDFwwQrl0nWnobC71IOob/eltUGs1CUL/8iSa
+         MPLCLKHtlof/6a+b0hCeLcaiqS3yez7DoTzCf5iv1DsHjb07PKw5goZvDfNvUUo+oGe+
+         B5kmyJLqds0NCPoredHuTRWYq5h9FPE2GkFu2EWW7bvZMi3uCgKcLbrHmqTqiLEcCB4v
+         Y5wtWuL3jMsy5YTpPGJR3tPX2+uuAKFqSNXX6cuIbXbMbhC1nyoeK02HJ7ybJPPhyLAc
+         qrB0jk3gJM0m8JIEu2+Yu9Hfhi4nGNp3aBfqFS3G6XAU6tDMNQt6ts4DPQ0YDwZb+IwI
+         ftKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=v3SR/Wv2ZKizQBTT/BCaE/dXsNbERQRJO9ye1A6QXTc=;
-        b=Tjt6FUcmxnJ0MdnDJy8Zah07Q08Wui1B50P8+VXOLumlCedcUh4KZpl68uRoCD7fYs
-         lswrngLKw0w/F6h0QuIdzzxAYi2vYtSVqce2JtBqIue8Mj4S+cfI0p/By/e9kPszoQwk
-         zr9dKjfdo/VFgNOxAJHvQYiy7XJcUKBNjEVQLYJUGO3qwPEzXh1t6ym/kNcvleJBPelh
-         QlSfDIrdK9JUHil6F7C3oOPWC1nAR/kVzySW04d9vNGdnrogb2yu7o0Z4YjMxlMlyhlH
-         0iBMTiR/n46HNNkxiowNLNcHK5xVfMELDQPAV7QfHTVvLOfPdt+qq3o3ad2p6C8PaX/R
-         zmgA==
-X-Gm-Message-State: APjAAAUl+ufcGPhbLnvs6xGH2ibLwJ7Dn1BVVngha18GEkW9u6/Av+0P
-        SlwFcqd3htoFML5lu/oVq4TNPA==
-X-Google-Smtp-Source: APXvYqwNaA49+RpaL1QNuDPtanP9i7V62tlt1DJYekp69Dex9AsqnAX9zFR0Z9qcRvyjc96tO40nvQ==
-X-Received: by 2002:adf:f18e:: with SMTP id h14mr18468274wro.348.1574160616374;
-        Tue, 19 Nov 2019 02:50:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=VtahxqjVeuCdwoGzoPXc72omB/a3UxEWdQncKPHu5AQ=;
+        b=ZjlW3j6EsMf6fFuxRDvac3ODTcIbOpOmuUj6pQvd++DMhXJbUuF2XH7EKI3KzoYwow
+         ed15URsP1KbmdGK5B07HO87ulNMmYixBmEl419pnPKG2M0uyLCiNMukgdANWOTlPPC6C
+         euv5dDz4UfZWl0KwroI6oCJa216IR26xFnRVtCI8kXu0YF/RwJatvsXyvXq9UYXoJNI/
+         lFPmk/ctubjaDaiGPxqs9GPmb7SRn99Ju9casQW+6BeS12wMUhhOFnKNfwT0FqFX2AfO
+         nufuwDEnOFerG2CdTVUMQeSFAlNlsl6xCcvCDhcAyAHainyXMKHOoifoNZtOo6sQu5dM
+         zdLQ==
+X-Gm-Message-State: APjAAAX7jGeZ5c0i9sAJTyucqqJS3pD3pUIst2Dn31EayaeoqtSbsWky
+        2vr4Ki+DgGBpQxLlH2GtGzvNCw==
+X-Google-Smtp-Source: APXvYqwsVb6LQAwZDbYFsQCXjKUiwldoMdtj1QrCtMI4ERl1Mqjmg/tSwHuMDU3NVeJ/IKBZueWglQ==
+X-Received: by 2002:adf:e2cd:: with SMTP id d13mr23459204wrj.221.1574160617301;
+        Tue, 19 Nov 2019 02:50:17 -0800 (PST)
 Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id g5sm2646708wma.43.2019.11.19.02.50.15
+        by smtp.gmail.com with ESMTPSA id g5sm2646708wma.43.2019.11.19.02.50.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 02:50:15 -0800 (PST)
+        Tue, 19 Nov 2019 02:50:16 -0800 (PST)
 From:   Quentin Monnet <quentin.monnet@netronome.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -50,37 +51,83 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Quentin Monnet <quentin.monnet@netronome.com>,
         Naresh Kamboju <naresh.kamboju@linaro.org>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH bpf-next 0/2] selftests: bpftool: skip build tests if not in tree
-Date:   Tue, 19 Nov 2019 10:50:08 +0000
-Message-Id: <20191119105010.19189-1-quentin.monnet@netronome.com>
+Subject: [PATCH bpf-next 1/2] selftests: bpftool: set EXIT trap after usage function
+Date:   Tue, 19 Nov 2019 10:50:09 +0000
+Message-Id: <20191119105010.19189-2-quentin.monnet@netronome.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191119105010.19189-1-quentin.monnet@netronome.com>
+References: <20191119105010.19189-1-quentin.monnet@netronome.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The build test script for bpftool attempts to detect the toplevel path of
-the kernel repository and attempts to build bpftool from there.
+The trap on EXIT is used to clean up any temporary directory left by the
+build attempts. It is not needed when the user simply calls the script
+with its --help option, and may not be needed either if we add checks
+(e.g. on the availability of bpftool files) before the build attempts.
 
-If it fails to find the correct directory, or if bpftool files are missing
-for another reason (e.g. kselftests built on a first machine and copied
-onto another, without bpftool sources), then it is preferable to skip the
-tests entirely rather than dumping useless error messages.
+Let's move this trap and related variables lower down in the code, so
+that we don't accidentally change the value returned from the script
+on early exits at pre-checks.
 
-The first patch moves the EXIT trap in the script lower down in the code,
-to avoid tampering with return value on early exits at the beginning of the
-script; then the second patch makes sure that we skip the build tests if
-bpftool's Makefile is not found at its expected location.
+Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ .../selftests/bpf/test_bpftool_build.sh       | 26 +++++++++----------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Jakub Kicinski (1):
-  selftests: bpftool: skip the build test if not in tree
-
-Quentin Monnet (1):
-  selftests: bpftool: set EXIT trap after usage function
-
- .../selftests/bpf/test_bpftool_build.sh       | 30 +++++++++++--------
- 1 file changed, 17 insertions(+), 13 deletions(-)
-
+diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
+index 4ba5a34bff56..1fc6f6247f9b 100755
+--- a/tools/testing/selftests/bpf/test_bpftool_build.sh
++++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
+@@ -1,18 +1,6 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ 
+-ERROR=0
+-TMPDIR=
+-
+-# If one build fails, continue but return non-0 on exit.
+-return_value() {
+-	if [ -d "$TMPDIR" ] ; then
+-		rm -rf -- $TMPDIR
+-	fi
+-	exit $ERROR
+-}
+-trap return_value EXIT
+-
+ case $1 in
+ 	-h|--help)
+ 		echo -e "$0 [-j <n>]"
+@@ -20,7 +8,7 @@ case $1 in
+ 		echo -e ""
+ 		echo -e "\tOptions:"
+ 		echo -e "\t\t-j <n>:\tPass -j flag to 'make'."
+-		exit
++		exit 0
+ 		;;
+ esac
+ 
+@@ -33,6 +21,18 @@ SCRIPT_REL_DIR=$(dirname $SCRIPT_REL_PATH)
+ KDIR_ROOT_DIR=$(realpath $PWD/$SCRIPT_REL_DIR/../../../../)
+ cd $KDIR_ROOT_DIR
+ 
++ERROR=0
++TMPDIR=
++
++# If one build fails, continue but return non-0 on exit.
++return_value() {
++	if [ -d "$TMPDIR" ] ; then
++		rm -rf -- $TMPDIR
++	fi
++	exit $ERROR
++}
++trap return_value EXIT
++
+ check() {
+ 	local dir=$(realpath $1)
+ 
 -- 
 2.17.1
 
