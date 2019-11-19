@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAFA102F97
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6996C102FA8
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 00:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727226AbfKSWzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:55:15 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46190 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbfKSWzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:55:14 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3F1551424DB5B;
-        Tue, 19 Nov 2019 14:55:14 -0800 (PST)
-Date:   Tue, 19 Nov 2019 14:55:13 -0800 (PST)
-Message-Id: <20191119.145513.561465860770576481.davem@davemloft.net>
-To:     hslester96@gmail.com
-Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] net: fec: fix clock count mis-match
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191118121826.26353-1-hslester96@gmail.com>
-References: <20191118121826.26353-1-hslester96@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 Nov 2019 14:55:14 -0800 (PST)
+        id S1727354AbfKSXBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 18:01:39 -0500
+Received: from mail-lf1-f43.google.com ([209.85.167.43]:44085 "EHLO
+        mail-lf1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726025AbfKSXBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 18:01:39 -0500
+Received: by mail-lf1-f43.google.com with SMTP id n186so6083727lfd.11;
+        Tue, 19 Nov 2019 15:01:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yW8LBEzAnheT1IwIq3nIKF7G0cRF++nm/AYiGQqnSk8=;
+        b=V+o89SHgX7wKqKFU4eRMRmF1FBTDZp9FN+MlGVo3Wnj575PDqDdi4e+nfAxjTIA+FW
+         NBhnlsm36UPcw6Lb/uJ2XW1Z5kZbQ0L61M84Vab69BVNtTSrqqk9FsXXwGhyjzXSOX2e
+         I8/lgRG9HCghhx2LfrRxUtPjJ9Q581RnRRaaMHrW3l2ZB+jf0/Z/jz57aCI4a3hqITAT
+         EXJPhTu4LRGpRA8T4dbGlMeR3nDvVss9d71cBHKTNgrxeVknKrHBapNYC6qthazLGkl8
+         xG1LoDh6GCyJou8twLBvLiPGNVOVQ1D8wTvFCyBU/R02FEZkcF6PpD2Mv7tStZGRiYn5
+         x5qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yW8LBEzAnheT1IwIq3nIKF7G0cRF++nm/AYiGQqnSk8=;
+        b=kWfVKUmM1B1+zNaf+LPqcqh8XCF5M3dh6g83/Wtnt+EWNsC4a5dk9gAjX0Ra3cQEEe
+         6ZhbqnZBCVqfVbowWPIZsImfy3rGp8v7nrtyguisI1goLr0NlzsehEGAsoWD0sJBtJXN
+         P7staRTXtZ5zO0PhkLEYA3Q5SM3gp2DfBrHDKtVMaGU+JdlraY31eDf6NydVH6n7Hb+l
+         s7kNXe0KNy4GJ2seIQespkT9rmwBtsyUqCUlXPghAqtnW3iWGPkvY82NTgz4sMeXrCl7
+         8IDIE41r9qFPZ7FDP8EL6+AiFQ9b0LuvepDE0mUXRTPDtOyw++DFqah/v1lNJN+8zu6D
+         D8+w==
+X-Gm-Message-State: APjAAAX5vz/8sZCa+PieTpqLOBxW6yj+yc6ZS+IqdwgQUdUAafBgJ+WK
+        PxINdAnkjjL3w0tMf94X3ZTOCom2H8tRWGBvIU0=
+X-Google-Smtp-Source: APXvYqzduu8V654TXWiYmsv+6bRFwWlvLgoyyJ8r1peoOouVgNh74iTIXMUBSNOY6LSQrfylymJVNumfyLCjpii+vj0=
+X-Received: by 2002:a19:3845:: with SMTP id d5mr109012lfj.162.1574204497327;
+ Tue, 19 Nov 2019 15:01:37 -0800 (PST)
+MIME-Version: 1.0
+References: <20191119224447.3781271-1-andriin@fb.com>
+In-Reply-To: <20191119224447.3781271-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 19 Nov 2019 15:01:25 -0800
+Message-ID: <CAADnVQKQZB04iuHeOMB_yTEnwZs1NYN=Vn-XyJ6PrA1ZZG7q5A@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] libbpf: fix call relocation offset
+ calculation bug
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
-Date: Mon, 18 Nov 2019 20:18:26 +0800
+On Tue, Nov 19, 2019 at 2:45 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Convert few selftests relying on bpf-to-bpf calls to use global functions
+> instead of static ones.
+>
+> Reported-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-> pm_runtime_put_autosuspend in probe will call suspend to disable clks
-> automatically if CONFIG_PM is defined. (If CONFIG_PM is not defined,
-> its implementation will be empty, then suspend will not be called.)
-> 
-> Therefore, we can call pm_runtime_get_sync to resume it first to enable
-> clks, which matches the suspend. (Only when CONFIG_PM is defined, otherwise
-> pm_runtime_get_sync will also be empty, then resume will not be called.)
-> 
-> Then it is fine to disable clks without causing clock count mis-match.
-> 
-> Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-
-Please fix the commit message typos pointed out by Andy Duan and resubmit,
-thank you.
+This one works. Applied.
+I manually added Fixes tag and Yonghong's Ack.
