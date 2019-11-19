@@ -2,114 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3368F1029A9
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:46:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 129431029C5
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728500AbfKSQqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 11:46:35 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:44559 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728487AbfKSQqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:46:35 -0500
-Received: by mail-qk1-f193.google.com with SMTP id m16so18388802qki.11
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:46:34 -0800 (PST)
+        id S1728578AbfKSQua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 11:50:30 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:41021 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728483AbfKSQu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:50:28 -0500
+Received: by mail-io1-f68.google.com with SMTP id r144so23945578iod.8
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:50:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9PNpRcE0uVma5xN3FBSJmZpM2jm61gwUGX17V4ua8zI=;
-        b=Lp72rfCT8FdLdR64JLtInWUYtmv7ZHvZLVuui7mNblNTGtWik+q1hUP3PiVgPdRFYL
-         9CyvmdkvCU2A1z7InZAJqbf+r1tdacBtLJcBY2laBa+9HiTlQ09CBsZbcdCC8Up6fBp7
-         avVI5z1BzMRJTmanbeye3rAlZIrbwk4LsLRlCgbZ7jYjIaz3GmiGMJmKfdoIK6aQXN32
-         JXuSilzZKo4HX8Ijk/IrPk8PZ6EYD3uvsi2/sl9LS5G+vQWjWtQ/nbDlaItMPGyhKHQe
-         kD3qqOSk1ZIZ25cuLIVhi/r31iZcklXQStlSKZ9fiSpCHflF0l3BMsWu+W3KwJtQJhGc
-         9q+w==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gJZxSWnOG8Gs2dy+Q5ughCz+Da0hQ1yJBJ+RDGbHpkw=;
+        b=nDDU/6xBhkkZKiUVL5Ocxj7cHCsYU4c0MefmZkqPYH0eKRB2JYB2UZt217GSyNryga
+         i0HmYl3s5H1A1Q62MU6oqERAk5Fn4PH/oL86+g4t4+AlS+MaRN/h6GJfSTST69GkI0G4
+         W5eu6cHoHNLVEfYFYA4fFqOuBbWxy2p78Vonc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9PNpRcE0uVma5xN3FBSJmZpM2jm61gwUGX17V4ua8zI=;
-        b=kK5fVOxtcgKOxNYM6+suTMQyw8FvZUQotm80CJcqld3dqTH4r0ukcT8dJn+tsrqGCS
-         2hpu9LOdaOhntwfh2Gh+2/4xotIgdT9UDVMv46Tx+1TVdR2OXlJPuRazdb+M0hKrWEUi
-         4CKYjnTfC0lQsxRwli/+SS4u4IPxKl9jsQO5d2Oaa7RFalzpDhrSdDJGa27pcG5PzHqi
-         +POdyB0HE1IgicUwbFh0ia/leYIndm58WbhfHDzrbWAXvSECEWN1BiZb2Y4kmjNQPnw8
-         8D9XtmxQ7E1H850fHN2ISlshrH6B4NPbX9sAQR4DW0tEEkr2RESWoJLqSsMhWRJ8l0He
-         lF5Q==
-X-Gm-Message-State: APjAAAWSxj/GTqX5JirKYm23UJuTsz8b2Oi+UTDpth77PCafmbby1gDQ
-        EK33dsWQIfgCtKHk8n3XMklbOQ==
-X-Google-Smtp-Source: APXvYqxxFVHS62/ZKoFpMFnPT6ZCy67+DTYrT/ZDPYcHXXjB4ULX6v17osKUteav+OwwEDyAF2NSdA==
-X-Received: by 2002:a05:620a:149a:: with SMTP id w26mr29908593qkj.361.1574181993809;
-        Tue, 19 Nov 2019 08:46:33 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id q16sm10356002qkm.27.2019.11.19.08.46.33
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 19 Nov 2019 08:46:33 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iX6e8-0001TG-KD; Tue, 19 Nov 2019 12:46:32 -0400
-Date:   Tue, 19 Nov 2019 12:46:32 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191119164632.GA4991@ziepe.ca>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
- <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
- <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gJZxSWnOG8Gs2dy+Q5ughCz+Da0hQ1yJBJ+RDGbHpkw=;
+        b=CQoV3QR7EbYvgFeGo/NzlgkTZwVG7HBgiOb0mNt4GaJJkbgZqw+yatHmcHbBtT3Cc+
+         c+op9o/o6hALxBN7v4EGkqhbzweaprSQ3TBIfTqOjZi3BJ2mEFPIJMXuychlM5FXH2wZ
+         AQ36c0/w29L5rtz4cUDWsVg8k8RupxRqPEOsxDyIK9xJrtYx3QixjKxvxnxbmdBev5io
+         mv+yAD2476jRtPjLY1Pxghe6uc3Te7lrU5vcKAItpX4qWNx/b+1M6umdHfeS+WtUKifT
+         in0Ktx9Lqa36umlFkQKEy+4AqETgI6BwDBuckZh2+641KaL+2alfDFbcBtJZfhKpVuf6
+         rTyw==
+X-Gm-Message-State: APjAAAWi0Y3yHUYkjYz2q0fkkwEP8vepss26VqPnBXv2hqJKiMsmUQi9
+        5RMXeY+PHogHoWClg0hsGqFz53tcOg4=
+X-Google-Smtp-Source: APXvYqwJ3hBdcUAPP0Kpil0eG5as7X6aSyV/W3tHktC1ywH8csiXm5GpWvp+kIOX/wZDwnQopFnnHw==
+X-Received: by 2002:a6b:5505:: with SMTP id j5mr7804066iob.37.1574182226897;
+        Tue, 19 Nov 2019 08:50:26 -0800 (PST)
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com. [209.85.166.172])
+        by smtp.gmail.com with ESMTPSA id d11sm5527638ill.17.2019.11.19.08.50.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Nov 2019 08:50:25 -0800 (PST)
+Received: by mail-il1-f172.google.com with SMTP id s5so235000iln.4
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:50:24 -0800 (PST)
+X-Received: by 2002:a92:ca8d:: with SMTP id t13mr21900377ilo.58.1574182224501;
+ Tue, 19 Nov 2019 08:50:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20191118192123.82430-1-abhishekpandit@chromium.org>
+ <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid> <079C85BE-FBC5-4A2B-9EBF-0CEDB6F30C18@holtmann.org>
+In-Reply-To: <079C85BE-FBC5-4A2B-9EBF-0CEDB6F30C18@holtmann.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 19 Nov 2019 08:50:11 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=U4qOyLWTg3w-AfF3o_0VBTxanpaa6of70viL2v9g3Xgg@mail.gmail.com>
+Message-ID: <CAD=FV=U4qOyLWTg3w-AfF3o_0VBTxanpaa6of70viL2v9g3Xgg@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm config
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 03:37:03PM +0800, Jason Wang wrote:
+Hi,
 
-> > Jiri, Jason, me think that even virtio accelerated devices will need eswitch support. And hence, life cycling virtio accelerated devices via devlink makes a lot of sense to us.
-> > This way user has single tool to choose what type of device he want to use (similar to ip link add link type).
-> > So sub function flavour will be something like (virtio or sf).
-> 
-> Networking is only one of the types that is supported in virtio-mdev. The
-> codes are generic enough to support any kind of virtio device (block, scsi,
-> crypto etc). Sysfs is less flexible but type independent. I agree that
-> devlink is standard and feature richer but still network specific. It's
-> probably hard to add devlink to other type of physical drivers. I'm thinking
-> whether it's possible to combine syfs and devlink: e.g the mdev is available
-> only after the sub fuction is created and fully configured by devlink.
+On Mon, Nov 18, 2019 at 9:39 PM Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Abhishek,
+>
+> > Add documentation for pcm parameters.
+> >
+> > Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> > ---
+> >
+> > Changes in v6: None
+> > Changes in v5: None
+> > Changes in v4: None
+> > Changes in v3: None
+> > Changes in v2: None
+> >
+> > .../bindings/net/broadcom-bluetooth.txt       | 16 ++++++++++
+> > include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
+> > 2 files changed, 48 insertions(+)
+> > create mode 100644 include/dt-bindings/bluetooth/brcm.h
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> > index c749dc297624..8561e4684378 100644
+> > --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> > +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> > @@ -29,10 +29,20 @@ Optional properties:
+> >    - "lpo": external low power 32.768 kHz clock
+> >  - vbat-supply: phandle to regulator supply for VBAT
+> >  - vddio-supply: phandle to regulator supply for VDDIO
+> > + - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
+> > + - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
+> > + - brcm,bt-pcm-frame-type: short, long
+> > + - brcm,bt-pcm-sync-mode: slave, master
+> > + - brcm,bt-pcm-clock-mode: slave, master
+> >
+> > +See include/dt-bindings/bluetooth/brcm.h for SCO/PCM parameters. The default
+> > +value for all these values are 0 (except for brcm,bt-sco-routing which requires
+> > +a value) if you choose to leave it out.
+> >
+> > Example:
+> >
+> > +#include <dt-bindings/bluetooth/brcm.h>
+> > +
+> > &uart2 {
+> >        pinctrl-names = "default";
+> >        pinctrl-0 = <&uart2_pins>;
+> > @@ -40,5 +50,11 @@ Example:
+> >        bluetooth {
+> >                compatible = "brcm,bcm43438-bt";
+> >                max-speed = <921600>;
+> > +
+> > +               brcm,bt-sco-routing        = <BRCM_SCO_ROUTING_TRANSPORT>;
+>
+> in case you use transport which means HCI, you would not have values below. It is rather PCM here in the example.
+>
+> > +               brcm,bt-pcm-interface-rate = <BRCM_PCM_IF_RATE_512KBPS>;
+> > +               brcm,bt-pcm-frame-type     = <BRCM_PCM_FRAME_TYPE_SHORT>;
+> > +               brcm,bt-pcm-sync-mode      = <BRCM_PCM_SYNC_MODE_MASTER>;
+> > +               brcm,bt-pcm-clock-mode     = <BRCM_PCM_CLOCK_MODE_MASTER>;
+> >        };
+> > };
+>
+> And I am asking this again. Is this adding any value to use an extra include file? Inside the driver we are not really needing these values since they are handed to the hardware.
 
-The driver providing the virtio should really be in control of the
-life cycle policy. For net related virtio that is clearly devlink.
+Personally I find that they add value in that it makes it easier for
+someone tweaking the device tree to know what the expected valid
+values are and what they mean.  I think Matthias also found value in
+them since he suggested them in:
 
-Even for block we may find that network storage providers (ie some
-HW accelerated virtio-blk-over-ethernet) will want to use devlink to
-create a combination ethernet and accelerated virtio-block widget.
+https://lore.kernel.org/r/20191114175836.GI27773@google.com
 
-This is why the guid life cycle stuff should be in a library that can
-be used by the drivers that need it (assuming all drivers don't just
-use devlink as Parav proposes)
+There, he said:
 
-As always, this is all very hard to tell without actually seeing real
-accelerated drivers implement this. 
+> I'd suggest to define constants in include/dt-bindings/bluetooth/brcm.h
+> and use them instead of literals, with this we wouldn't rely on (optional)
+> comments to make the configuration human readable.
 
-Your patch series might be a bit premature in this regard.
+...which seems to make sense to me.
 
-Jason
+-Doug
