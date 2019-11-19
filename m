@@ -2,179 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9C41019DC
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 07:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08CBC1019EB
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727239AbfKSG5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 01:57:20 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42362 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727082AbfKSG5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 01:57:20 -0500
-Received: by mail-qk1-f196.google.com with SMTP id i3so4913317qkk.9;
-        Mon, 18 Nov 2019 22:57:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u+jeWdT6HWTb1SiVsdvOoED7kd1OzXTEqmkrgMVmLe4=;
-        b=ec3ThnPBroQs1KdrIxDdHnWXX5aSdcy1bVLbCZGfxoeIy25kQWJeY4u6oKxQA9uQl9
-         SE4MLtjjnJju9VXe1RfUn8+AITP8hTrX4uxh29N6vQCWgzY2ZVMkWueHDXR4nkFHTZ51
-         ng/6vEbYHd9FaJVEMvg93qLEijoxWPFtWWVPvNS2OCT7OA2nOIbuOHVwLXnbapwD55qv
-         qCCsn9SPjITWjmfz0dGYD8VM4p7BMOli09a6GvlOZnhpZ6qld85aDVScWj/UZU/057T9
-         MubXMJ/ifS4PhKTpZ1EbXBNw95sow4EoWOrhgNXWnISoFude8I/dQXYRg4Qt/Qx/hOc5
-         SQcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u+jeWdT6HWTb1SiVsdvOoED7kd1OzXTEqmkrgMVmLe4=;
-        b=K8PGVMWKuAyOSdGUyLgdsuYcdTiiF9+PeBj6NrqvK2rZ8xdOnWtiIMbl/iPYSQT4O7
-         6uLx8Av8aaLOHIWZO7itqyYJnXJ4JMZh3Mrm7kkowOITqHjo0R6N1rwfEwPoTB6lf4/d
-         B6r0GmPBxnQ+gzzALW8Ts31io08vID3hOlAvelm433oFCj0+PWI3ZlW1+19bvRX+xZ4J
-         ZCOBZsWPUamkdP61Q6xsIA6qRYjOxUA0tss1MzAClOdy2L8Bon1XdQegzZZgJTN/evj/
-         K1mWR2ZwCQUMMu5tzg8lfjefI/gZAxWyRjZHcLT0rxzzyHLEtwQyMq7ZRVmS1wYYRn+V
-         mCjA==
-X-Gm-Message-State: APjAAAWWVeyaJ87bs2pYVvOWQerqVf1smi7v35ZJux28JGJd79ny3nvD
-        v7+h+UZnMKp+ceGYph3ISlSLCLuEQbBDQsaU9Gs=
-X-Google-Smtp-Source: APXvYqyZu/hAmGZI40SLnJPzk46kN9gaNV1C85B0lg9O0tFUEvAs7+AA02ZDDor8bEPf+uxOcU7UNq4EJVb2+rLsMB8=
-X-Received: by 2002:a37:aa8b:: with SMTP id t133mr15874996qke.449.1574146636809;
- Mon, 18 Nov 2019 22:57:16 -0800 (PST)
+        id S1727594AbfKSHAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 02:00:37 -0500
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:14990 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726792AbfKSHAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:00:36 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dd3930f0000>; Mon, 18 Nov 2019 23:00:32 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 18 Nov 2019 23:00:34 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Mon, 18 Nov 2019 23:00:34 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 19 Nov
+ 2019 07:00:34 +0000
+Subject: Re: [PATCH v5 02/24] mm/gup: factor out duplicate code from four
+ routines
+To:     Jan Kara <jack@suse.cz>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+References: <20191115055340.1825745-1-jhubbard@nvidia.com>
+ <20191115055340.1825745-3-jhubbard@nvidia.com>
+ <20191118094604.GC17319@quack2.suse.cz>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <152e2ea9-edd9-f868-7731-ff467d692f5f@nvidia.com>
+Date:   Mon, 18 Nov 2019 23:00:33 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20191117070807.251360-1-andriin@fb.com> <20191117070807.251360-6-andriin@fb.com>
- <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 18 Nov 2019 22:57:05 -0800
-Message-ID: <CAEf4BzaNEU_vpa98QF1Ko_AFVX=3ncykEtWy0kiTNW9agsO+xg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern variables
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191118094604.GC17319@quack2.suse.cz>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1574146832; bh=u3YCRE77HsuXbqK9BxFmzDLl8JhQHMG9gXXaYRfagTQ=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=OHB+eUp2jQQmHLrGYBTtAkydhQax1jgPbRIdqXv/zT7mJheOoxm2jC/o00J+31bDd
+         psR1uWZTYTlZpkmYbJIlMzoHbpxnwxoe7ZrZ8UMQNDddfR1HU1k+hUj3JCOx3ZRd5b
+         XT8Ag7PAkGX6G4pIQ7geJmQblkDOtgu1RTN+An2f8z0fTBevVuF5GINewI0N+iPfcv
+         YgagSYh5LQVW6KL8izWZSAMBRDSFlAEl3uHonusWk1CkuRAUgvh73saFcEMPgIKbUo
+         7msrJOumHG3EP3Mzt2Z3Dov3XH2Wq2MWpaj0JPNxYk4UIQaUft9LMOT0FAc0/WGi6i
+         OtciRBna4adWA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 7:21 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sat, Nov 16, 2019 at 11:08:06PM -0800, Andrii Nakryiko wrote:
-> > Add support for extern variables, provided to BPF program by libbpf. Currently
-> > the following extern variables are supported:
-> >   - LINUX_KERNEL_VERSION; version of a kernel in which BPF program is
-> >     executing, follows KERNEL_VERSION() macro convention;
-> >   - CONFIG_xxx values; a set of values of actual kernel config. Tristate,
-> >     boolean, and integer values are supported. Strings are not supported at
-> >     the moment.
-> >
-> > All values are represented as 64-bit integers, with the follow value encoding:
-> >   - for boolean values, y is 1, n or missing value is 0;
-> >   - for tristate values, y is 1, m is 2, n or missing value is 0;
-> >   - for integers, the values is 64-bit integer, sign-extended, if negative; if
-> >     config value is missing, it's represented as 0, which makes explicit 0 and
-> >     missing config value indistinguishable. If this will turn out to be
-> >     a problem in practice, we'll need to deal with it somehow.
->
-> I read that statement as there is no extensibility for such api.
+On 11/18/19 1:46 AM, Jan Kara wrote:
+> On Thu 14-11-19 21:53:18, John Hubbard wrote:
+>> There are four locations in gup.c that have a fair amount of code
+>> duplication. This means that changing one requires making the same
+>> changes in four places, not to mention reading the same code four
+>> times, and wondering if there are subtle differences.
+>>
+>> Factor out the common code into static functions, thus reducing the
+>> overall line count and the code's complexity.
+>>
+>> Also, take the opportunity to slightly improve the efficiency of the
+>> error cases, by doing a mass subtraction of the refcount, surrounded
+>> by get_page()/put_page().
+>>
+>> Also, further simplify (slightly), by waiting until the the successful
+>> end of each routine, to increment *nr.
+>>
+>> Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+>> Cc: Jan Kara <jack@suse.cz>
+>> Cc: Ira Weiny <ira.weiny@intel.com>
+>> Cc: Christoph Hellwig <hch@lst.de>
+>> Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>> ---
+>>  mm/gup.c | 95 ++++++++++++++++++++++++--------------------------------
+>>  1 file changed, 40 insertions(+), 55 deletions(-)
+>>
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index 85caf76b3012..858541ea30ce 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -1969,6 +1969,29 @@ static int __gup_device_huge_pud(pud_t pud, pud_t=
+ *pudp, unsigned long addr,
+>>  }
+>>  #endif
+>> =20
+>> +static int __record_subpages(struct page *page, unsigned long addr,
+>> +			     unsigned long end, struct page **pages)
+>> +{
+>> +	int nr =3D 0;
+>> +	int nr_recorded_pages =3D 0;
+>> +
+>> +	do {
+>> +		pages[nr] =3D page;
+>> +		nr++;
+>> +		page++;
+>> +		nr_recorded_pages++;
+>> +	} while (addr +=3D PAGE_SIZE, addr !=3D end);
+>> +	return nr_recorded_pages;
+>=20
+> nr =3D=3D nr_recorded_pages so no need for both... BTW, structuring this =
+as a
+> for loop would be probably more logical and shorter now:
+>=20
+> 	for (nr =3D 0; addr !=3D end; addr +=3D PAGE_SIZE)
+> 		pages[nr++] =3D page++;
+> 	return nr;
+>=20
 
-What do you mean exactly?
+Nice touch, I've applied it.
 
-Are you worried about 0 vs undefined case? I don't think it's going to
-be a problem in practice. Looking at my .config, I see that integer
-config values set to their default values are still explicitly
-specified with those values. E.g.,
+thanks,
+--=20
+John Hubbard
+NVIDIA
 
-CONFIG_HZ_1000=y
-CONFIG_HZ=1000
 
-CONFIG_HZ default is 1000, if CONFIG_HZ_1000==y, but still I see it
-set. So while I won't claim that it's the case for any possible
-integer config, it seems to be pretty consistent in practice.
 
-Also, I see a lot of values set to explicit 0, like:
-
-CONFIG_BASE_SMALL=0
-
-So it seems like integers are typically spelled out explicitly in real
-configs and I think this 0 default is pretty sane.
-
-Next, speaking about extensibility. Once we have BTF type info for
-externs, our possibilities are much better. It will be possible to
-support bool, int, in64 for the same bool value. Libbpf will be able
-to validate the range and fail program load if declared extern type
-doesn't match actual value type and value range. So I think
-extensibility is there, but right now we are enforcing (logically)
-everything to be uin64_t. Unfortunately, with the way externs are done
-in ELF, I don't know neither type nor size, so can't be more strict
-than that.
-
-If we really need to know whether some config value is defined or not,
-regardless of its value, we can have it by convention. E.g.,
-CONFIG_DEFINED_XXX will be either 0 or 1, depending if corresponding
-CONFIG_XXX is defined explicitly or not. But I don't want to add that
-until we really have a use case where it matters.
-
->
-> > Generally speaking, libbpf is not aware of which CONFIG_XXX values is of which
-> > expected type (bool, tristate, int), so it doesn't enforce any specific set of
-> > values and just parses n/y/m as 0/1/2, respectively. CONFIG_XXX values not
-> > found in config file are set to 0.
->
-> This is not pretty either.
-
-What exactly: defaulting to zero or not knowing config value's type?
-Given all the options, defaulting to zero seems like the best way to
-go.
-
->
-> > +
-> > +             switch (*value) {
-> > +             case 'n':
-> > +                     *ext_val = 0;
-> > +                     break;
-> > +             case 'y':
-> > +                     *ext_val = 1;
-> > +                     break;
-> > +             case 'm':
-> > +                     *ext_val = 2;
-> > +                     break;
-
-reading some more code from scripts/kconfig/symbol.c, I'll need to
-handle N/Y/M and 0x hexadecimals, will add in v2 after collecting some
-more feedback on this version.
-
-> > +             case '"':
-> > +                     pr_warn("extern '%s': strings are not supported\n",
-> > +                             ext->name);
-> > +                     err = -EINVAL;
-> > +                     goto out;
-> > +             default:
-> > +                     errno = 0;
-> > +                     *ext_val = strtoull(value, &value_end, 10);
-> > +                     if (errno) {
-> > +                             err = -errno;
-> > +                             pr_warn("extern '%s': failed to parse value: %d\n",
-> > +                                     ext->name, err);
-> > +                             goto out;
-> > +                     }
->
-> BPF has bpf_strtol() helper. I think it would be cleaner to pass whatever
-> .config has as bytes to the program and let program parse n/y/m, strings and
-> integers.
-
-Config value is not changing. This is an incredible waste of CPU
-resources to re-parse same value over and over again. And it's
-incredibly much worse usability as well. Again, once we have BTF for
-externs, we can just declare values as const char[] and then user will
-be able to do its own parsing. Until then, I think pre-parsing values
-into convenient u64 types are much better and handles all the typical
-cases.
-
->
-> LINUX_KERNEL_VERSION is a special case and can stay as u64.
->
+> The rest of the patch looks good to me.
+>=20
+> 								Honza
+>=20
