@@ -2,94 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD6D01028D3
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5381028D8
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:04:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728060AbfKSQCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 11:02:54 -0500
-Received: from mail-vk1-f202.google.com ([209.85.221.202]:38400 "EHLO
-        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727728AbfKSQCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:02:53 -0500
-Received: by mail-vk1-f202.google.com with SMTP id s17so10009037vkb.5
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:02:51 -0800 (PST)
+        id S1728362AbfKSQEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 11:04:10 -0500
+Received: from mail-il1-f193.google.com ([209.85.166.193]:35851 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727728AbfKSQEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:04:09 -0500
+Received: by mail-il1-f193.google.com with SMTP id s75so20143770ilc.3
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:04:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=eYHCshOL4Ta7/kAHI9D4sL+6xf6whnvt+kf8BS/U26M=;
-        b=n1wYswlzZmgIS2fyBjO1hZx2GQvP5UwStG1Qxwq0CVNJOE9rynDL+2TllNeWYu5ZVY
-         4P4wuTDAkMOel/GIhfU0la1y+oPLMIUGuoCgNlyn0X1Eb70UWwQ8eSImcOWB3KGqfDK3
-         pC4xQu6aoBn0XXHI92WO/5Wu5blmE8vcrEOIgTqGj/YZDJLByAgH7UK/QPH+xGg46CAW
-         /vpV594QLj/DoufDikAA6vaxvnCWI5Pk0lmce8iLN8VaMRtz7tQAs4q5ZOr5rtI7jkui
-         K8tk8FhpUdeUMWs1jtIzUv5SOBeqF6lglUcDLHFuHga/lgY+1j89hPBBIBSJs1iYX8sF
-         tByg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0n+Ri5ngsQuRhhoRNrG05rRLmRCmZ1hhPN4FwF7ZaY0=;
+        b=GVZpkzDb9Nr59zMGPmDdF8Fvz/6kRENShsoH2YywUtgf4QBZ+ptBApCsz+n6B8ADmp
+         jpeX8rl8kyfVbzMnRYda+FSC53Dj8/J91fPTID6zVLCZWx2I+vpX///BJbT59huRkZx+
+         o3ZlMDyGy4+LT1huuHZCc+J7fmAISGQI18R0Zs7uE0XxVTD8K5B+DyLSHbWM7O9rZ2YS
+         MDOTJsZ5opXUJmiSncdiJF8wiG0GhkOvLhzHIaoYhXMWtUHo+JGE4i/Z3Sa2n/o3ic1i
+         xxAw+kCAOUXUElpKoAv+x6nf2mCIGy6dEFzgHGt6AYrRLXB/7+Q200FRDbb8uh6HbEpl
+         Kg3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=eYHCshOL4Ta7/kAHI9D4sL+6xf6whnvt+kf8BS/U26M=;
-        b=jcykJsc72Q8fR+ArJrPyJAUy8jRB8d1ue7QeCQLvYoRALWLdWTa0pmiAQ91yTPzO+I
-         jBOmYLMPCzHRxkbW/pMsBEyziH7MQAS5oOCWBf+aFMhKNGQTPd95baS1bcykSM4eo6m9
-         6RwAbEHjPYnf/rZ0ItwCyi14zOsLWx0FMQRB8o6rRKTCw7sLpVjfGt/3SnFQw+5n/bHg
-         qBDpj4oKFQHcAppCOugCMieGOYzNUEuxVnJu/8E70ZVpM2Xi3DPUhLTtc1lT+TpQGDFW
-         2m8pP2QRydse7VQHUrOEAyhgWY8YSinO+3lJRHHbLYyi5mROKcRhSw++J3bOsJRpYu5z
-         nn5g==
-X-Gm-Message-State: APjAAAWtjzRmnAD3tsdGPk2hju3Wfhj28o0n9WgGrxKIWVdjs2u7bRA0
-        P5XxDlQUE1PAV6HHTUXpbMb6zN/cYSO5WluWKCsHjtCFCnu/Chg1iQn4n+1c18iL70yR+yQpQ73
-        cWENcElR5itesZ4XlcE6NP/vQxzetLFqpSBPFvX4syF0w/ioMobJ9j2EzGzt148/pqlscSg==
-X-Google-Smtp-Source: APXvYqyzpPP0SH4ZozicPnv6RfyqLyERiu42j1B/cUXDJr7h07wxB82lRTGCkbFqha+L1I0r809IVCkRpctJ9k4=
-X-Received: by 2002:a1f:2a82:: with SMTP id q124mr20465392vkq.8.1574179371151;
- Tue, 19 Nov 2019 08:02:51 -0800 (PST)
-Date:   Tue, 19 Nov 2019 08:02:47 -0800
-Message-Id: <20191119160247.29158-1-adisuresh@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH net v4] gve: fix dma sync bug where not all pages synced
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0n+Ri5ngsQuRhhoRNrG05rRLmRCmZ1hhPN4FwF7ZaY0=;
+        b=RmWqiy60LCUahKC7DfdMe7fqahGPSVkPg3Yj5y/qDegEl6yR6pGtOSt1DJLrrZc3M5
+         q7IpO/7LqJyaoAHuMLV0p9v6gKQWiYSZcLMIvOJULu+2FGf5ArWOoJCHYiNjGZrhdpyF
+         Qs3MKamYyLwgqP7SXNGb8fYYijqad/bHQEH8kM9SxgqChTxsf3N6b08QDjaSCh9vIESQ
+         +XTJARjoPgdNV8j+M4rfZR2kVWhpfnkUY4VYiQEaEIMteaS/5OX/2+zt4gWmB/VvujUl
+         gbsZ75IckyG09JE8tQbDBdWBs9mqV8QCf5NLcAJUQ6Y6BSO/yE2CyrCl0Ek2z97mIFTB
+         spJA==
+X-Gm-Message-State: APjAAAWeM3E9lRtizlLSRihemg9Vmhh1d0D8XF0VbO2lSOcsr9REcQ0q
+        b79XDeEFppDcnY+SX86vJ2GFWGn868nzgfLd0vcGmheL
+X-Google-Smtp-Source: APXvYqwrqu+s186BC89/S183qNyqaTJvIFoEsZl6axGHm/47j81zDotW63JONzIt7rDgTd7CL4hKbRtYCAOvQQFrYMU=
+X-Received: by 2002:a92:1017:: with SMTP id y23mr22918642ill.258.1574179448644;
+ Tue, 19 Nov 2019 08:04:08 -0800 (PST)
+MIME-Version: 1.0
+References: <20191119024706.161479-1-adisuresh@google.com> <20191118.185125.2116597513753649065.davem@davemloft.net>
+In-Reply-To: <20191118.185125.2116597513753649065.davem@davemloft.net>
 From:   Adi Suresh <adisuresh@google.com>
-To:     netdev@vger.kernel.org
-Cc:     Adi Suresh <adisuresh@google.com>,
-        Catherine Sullivan <csully@google.com>
+Date:   Tue, 19 Nov 2019 08:03:57 -0800
+Message-ID: <CAHOA=qwsqmnwOzXxREbuigPmG5mD+OY6XQmRNGRv40cwvTaTsA@mail.gmail.com>
+Subject: Re: [PATCH net v3] gve: fix dma sync bug where not all pages synced
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous commit had a bug where the last page in the memory range
-could not be synced. This change fixes the behavior so that all the
-required pages are synced.
+Fixed in v4.
 
-Fixes: 9cfeeb576d49 ("gve: Fixes DMA synchronization")
-Signed-off-by: Adi Suresh <adisuresh@google.com>
-Reviewed-by: Catherine Sullivan <csully@google.com>
----
- Addressed in v4:
- - Used correct 12 digits of hash of commit in Fixes tag
-   
- drivers/net/ethernet/google/gve/gve_tx.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index 0a9a7ee2a866..f4889431f9b7 100644
---- a/drivers/net/ethernet/google/gve/gve_tx.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -393,12 +393,13 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
- static void gve_dma_sync_for_device(struct device *dev, dma_addr_t *page_buses,
- 				    u64 iov_offset, u64 iov_len)
- {
-+	u64 last_page = (iov_offset + iov_len - 1) / PAGE_SIZE;
-+	u64 first_page = iov_offset / PAGE_SIZE;
- 	dma_addr_t dma;
--	u64 addr;
-+	u64 page;
- 
--	for (addr = iov_offset; addr < iov_offset + iov_len;
--	     addr += PAGE_SIZE) {
--		dma = page_buses[addr / PAGE_SIZE];
-+	for (page = first_page; page <= last_page; page++) {
-+		dma = page_buses[page];
- 		dma_sync_single_for_device(dev, dma, PAGE_SIZE, DMA_TO_DEVICE);
- 	}
- }
--- 
-2.24.0.432.g9d3f5f5b63-goog
-
+On Mon, Nov 18, 2019 at 6:51 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Adi Suresh <adisuresh@google.com>
+> Date: Mon, 18 Nov 2019 18:47:06 -0800
+>
+> > Fixes: 4a55e8417c5d ("gve: Fixes DMA synchronization")
+>
+> This commit doesn't exist in any tree.
+>
+> [davem@localhost net]$ git describe 4a55e8417c5d
+> fatal: Not a valid object name 4a55e8417c5d
+>
+> The gve patch submission process is getting very frustrating for me,
+> just FYI...
