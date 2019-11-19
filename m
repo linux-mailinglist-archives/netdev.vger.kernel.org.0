@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BC21028D0
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7ADC1028D1
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 17:00:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728447AbfKSQA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 11:00:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22648 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728443AbfKSQA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:00:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574179227;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KFQgOXKdcqVR725cIUY92plMBj047wuNX7Vjz6FMKAk=;
-        b=H456H4qevKtd9szaF+epmPN6jq4eAAlHjPqbxCk3XcU1BxJ5KTbDR8Oyysa7r2oKZdZL/H
-        Gk4hYpTZw3jrCx86zt13RNQBav4keaDOk0FGZU1ctPLLs/X737A/LTtvcDXtU8I3qwZAZe
-        wEmvBouvXWhNaiXvP4iafhfsj+ETK8Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-27-Jmeb5-wNNOyZ_bqPDIbm4g-1; Tue, 19 Nov 2019 11:00:24 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CCF0802691;
-        Tue, 19 Nov 2019 16:00:23 +0000 (UTC)
-Received: from ovpn-117-12.ams2.redhat.com (ovpn-117-12.ams2.redhat.com [10.36.117.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 215A41001925;
-        Tue, 19 Nov 2019 16:00:21 +0000 (UTC)
-Message-ID: <f3a53240733bee0322100e9747b6c2e1049b058c.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 1/2] ipv6: introduce and uses route look
- hints for list input
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+        id S1728449AbfKSQAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 11:00:45 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:34087 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728106AbfKSQAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 11:00:44 -0500
+Received: by mail-pl1-f193.google.com with SMTP id h13so12003428plr.1
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 08:00:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vkm6NyRf8L3VzvQbaeoc5kwbhFthWYUIRF62nRUGNI0=;
+        b=BlW79nk4ohmEcMGGg8a0tuzxkBUzH8lrOffCSzOLwxJHJA19GxxJF5nzTW1RjUNw9S
+         jrIFMpYqNtveL5oqfdwbt9Hp68ZwGuC+ftv/s/tPQBjzQJiKVC5c+XJK6sYyvtGaLUn+
+         Cicyx3cwJlxPkjOTrzaEks1UsvvGqfycbEzZmVJh9oiQ9T9MWtpgTmFMfnLs9dAIyygw
+         a++iojRoH4RSbwYjxlLCJnKC6g1vFU+6iqiPufillwJeRWESrHS32ARH9zsHL1vQ/T4T
+         Go550dSDOqYhCQNm6DTHqsRxpM39N6bKt6w3KZwzbbdf3W3ugu0aYNDy+nksS4HV0fSL
+         IpHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vkm6NyRf8L3VzvQbaeoc5kwbhFthWYUIRF62nRUGNI0=;
+        b=mmfYXhuwyx/wOLk+/8PJDVGuG0J2YODSJ4kJ5oYaFUY+IJR1AU//+3bakDD3s2m1KW
+         9i829GI8t8009x9USUrLXt77d9ULL+A0ITmY9OBg4TmC6xAXry7hqcAApjjM9yFuxOzK
+         NI0cJZlbffohQhJS93zqql+Mn2zZShfUFf92LBtWLoJsf4x4wezDMW3dHrNHgZOSQOTH
+         z6kF5/Dll4OlmR5k8Mnjp1v+G5wMt1d0geTUsiRXfI5EozjHmP4tmSsJ7+Dhbae4tYe3
+         Yyz/DAHkJv+/8I46sJZ7Nvklr+EuKOj3jJJnqshIddcTo4dSLNe0gp3bjetgna0mqshw
+         Pcjg==
+X-Gm-Message-State: APjAAAX0+MA/Qr1fqN+cFMXLIH5zawVmr/GFyZcJxUEgRG4pCN3v/P4F
+        MfwlPerHwfOgYyNU5d35I8k=
+X-Google-Smtp-Source: APXvYqwh8WhMYcb/AjZCmKB5DYCU1rJFSoPehnCqyhNF//W0hs0MVYjj0+4uhl8+1z+6aPsjBb+l5g==
+X-Received: by 2002:a17:90a:77c8:: with SMTP id e8mr7203654pjs.83.1574179244156;
+        Tue, 19 Nov 2019 08:00:44 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:3071:8113:4ecc:7f4c])
+        by smtp.googlemail.com with ESMTPSA id u9sm26101876pfm.102.2019.11.19.08.00.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Nov 2019 08:00:43 -0800 (PST)
+Subject: Re: [PATCH net-next v3 2/2] ipv4: use dst hint for ipv4 list receive
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Edward Cree <ecree@solarflare.com>
-Date:   Tue, 19 Nov 2019 17:00:21 +0100
-In-Reply-To: <5bb4b0b2-cc12-2cce-0122-54bd72ab04e7@gmail.com>
 References: <cover.1574165644.git.pabeni@redhat.com>
-         <422ebfbf2fcb8a6ce23bcd97ab1f7c3a0c633cbd.1574165644.git.pabeni@redhat.com>
-         <5bb4b0b2-cc12-2cce-0122-54bd72ab04e7@gmail.com>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
+ <f242674de1892d14ed602047c3817cc7212a618d.1574165644.git.pabeni@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <34b44ddc-046b-a829-62af-7c32d6a0cbbe@gmail.com>
+Date:   Tue, 19 Nov 2019 09:00:42 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: Jmeb5-wNNOyZ_bqPDIbm4g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <f242674de1892d14ed602047c3817cc7212a618d.1574165644.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 11/19/19 7:38 AM, Paolo Abeni wrote:
+> @@ -535,11 +550,20 @@ static void ip_sublist_rcv_finish(struct list_head *head)
+>  	}
+>  }
+>  
+> +static struct sk_buff *ip_extract_route_hint(struct net *net,
+> +					     struct sk_buff *skb, int rt_type)
+> +{
+> +	if (fib4_has_custom_rules(net) || rt_type != RTN_LOCAL)
 
-On Tue, 2019-11-19 at 08:39 -0700, David Ahern wrote:
-> +static struct sk_buff *ip6_extract_route_hint(struct net *net,
-> > +=09=09=09=09=09      struct sk_buff *skb)
-> > +{
-> > +=09if (IS_ENABLED(IPV6_SUBTREES) || fib6_has_custom_rules(net))
->=20
-> ... but basing on SUBTREES being disabled is going to limit its use. If
-> no routes are source based (fib6_src is not set), you should be able to
-> re-use the hint with SUBTREES enabled. e.g., track fib6_src use with a
-> per-namespace counter - similar to fib6_rules_require_fldissect.
-
-Thank you for the feedback! Would you consider this as an intermediate
-step? e.g. get these patches in, and then I'll implement subtree
-support?=20
-I'm asking because I don't have subtree setup handy, it will a little
-time to get there.
-
-Thanks!
-
-Paolo
-
+Why the local only limitation for v4 but not v6? Really, why limit this
+to LOCAL at all? same destination with same tos and no custom rules
+means even for forwarding the lookup should be the same and you can
+re-use the dst.
