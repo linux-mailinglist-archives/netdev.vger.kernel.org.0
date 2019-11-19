@@ -2,125 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E4A0102246
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AAAA102262
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:56:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727509AbfKSKu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 05:50:58 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:49634 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbfKSKu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:50:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=rTGmdtHfB8D+RXUW/nszfm1Tcj14HyPbpRvI//ea+GA=; b=drUfrpN76KRffTDF1jsGzfqTC
-        /VufvbrXBdvCeS/Bn72PdKZ6nWw7FS8HuMuNK6xDZ+EbF0RmLiJyRL+++KnDkfKzhfelqu4Tly/fz
-        o3EtlTtN6ka0Z7PZKQxe1JAmh0FYvEYUw9t6bOJM9sc5NuejfDTOgsIwdNRrCSv32oK1hPEgwA9JE
-        jzaeI+Z/E3/hAEwQNbogIKkg6hx+jRucW/zYdeaxL+SlUFSlrVShNU/atb/epVueWAOMWVHJ9IpYW
-        osIjd/7baZcWM6egLSc9GfDA23Hpfi/XQolc/gYd4hJNY/mpqyUYjQFvolV2s6eCvNYS4GlK1kK2K
-        yjrdNvjNw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:37534)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iX15t-0000kB-5o; Tue, 19 Nov 2019 10:50:49 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iX15p-0000et-Nh; Tue, 19 Nov 2019 10:50:45 +0000
-Date:   Tue, 19 Nov 2019 10:50:45 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Michael Walle <michael@walle.cc>
-Cc:     hkallweit1@gmail.com, andrew@lunn.ch, davem@davemloft.net,
-        f.fainelli@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] net: phy: add callback for custom
- interrupt handler to struct phy_driver
-Message-ID: <20191119105045.GY25745@shell.armlinux.org.uk>
-References: <acb8507d-d5a3-2190-8d5c-988f1062f2e7@gmail.com>
- <bd47f8e1ebc04fa98856ed8d89b91419@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd47f8e1ebc04fa98856ed8d89b91419@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727529AbfKSK4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 05:56:41 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34722 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727456AbfKSK4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:56:41 -0500
+Received: by mail-wr1-f67.google.com with SMTP id e6so23302661wrw.1
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 02:56:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=B3cvFN0sV7vP1/4W3mkjIAztsEiOA8058seTVeqat30=;
+        b=oiiDJnMqz/YYfH3eiMD1VlCX4h8Iwu+l8wk1MGiL12I8I/AB+SNye3vxEXWHtmpdAB
+         HjwuH2uPg2JNvhEDwIRrNc0NZM36xSQsujRJa1DeC72Egca6mTnhgKtMg4Pm/rQFaZG5
+         092hqkIVElBokk+oxA3uKlifFtmrVZDIFseUAhSVHBvUYUbjeAaWWuGPjYSvFlOeBL8q
+         05BiD0kSoO8WlvCsUbA0U8O+2FzRu3EFElYEj6pMSdSFOQ2UXg/dnZXk/CgXBGtDYk6L
+         s+AVt566+UvamOFKoYxpsZQYdvlGQ1j+3/JLisJGoklXbhY9wHN82u3GcMmmNKD5IVYk
+         3e1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=B3cvFN0sV7vP1/4W3mkjIAztsEiOA8058seTVeqat30=;
+        b=F8KRTjNjsYcVqXfOFK98UtcbarlSirWjVcApuCM12u87KhH5neO6H5g7QlvuVPKfmw
+         1v5tO3IFqPb6c0Gc694DzlCJHa1RxdJ/BAbtfHgx9i9sibbKO2T2H4ovFBpZ/xeyRIGC
+         OFiLUsUHbPWIcNEPcJ2BVuFMEqbRX63wa3J2eJ0m/nmC68+vNxYlwrWmYkKnakbOnBuR
+         bHH5Dj89xl/NNhTmR4LvJkFVCqkX5VFas/x8o4XAhf3FTqrFkxwp/jnbXi5OBvxZB6yw
+         1PicaA1zT023GYA3USIMNk03dml6QDJ/jcQJu2vaqR5H7SFwpr5p8HJm9bp/Y4fHDbnU
+         WVJQ==
+X-Gm-Message-State: APjAAAUPxrWJuGvEyC3TQJ6dFs6oDEkH+2Z7wV874ZtNARbywNcP/Z5L
+        WgFfF/4Fn80V0ncNnZPsl2elxw==
+X-Google-Smtp-Source: APXvYqxorn4an1kHyY3fcuCNkfqdOqwRG82ntdv09csfGXY1ckFBneZAIWevm9urjffF8erk4aoJgw==
+X-Received: by 2002:a5d:6a8d:: with SMTP id s13mr35281585wru.23.1574160997872;
+        Tue, 19 Nov 2019 02:56:37 -0800 (PST)
+Received: from cbtest32.netronome.com ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id u4sm26531835wrq.22.2019.11.19.02.56.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 02:56:37 -0800 (PST)
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: [PATCH bpf-next] tools: bpf: fix build for 'make -s tools/bpf O=<dir>'
+Date:   Tue, 19 Nov 2019 10:56:26 +0000
+Message-Id: <20191119105626.21453-1-quentin.monnet@netronome.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 11:33:47AM +0100, Michael Walle wrote:
-> 
-> Hi,
-> 
-> this is an old thread and I know its already applied. But I'd like to hear
-> your opinion on the following problem below.
-> 
-> > The phylib interrupt handler handles link change events only currently.
-> > However PHY drivers may want to use other interrupt sources too,
-> > e.g. to report temperature monitoring events. Therefore add a callback
-> > to struct phy_driver allowing PHY drivers to implement a custom
-> > interrupt handler.
-> > 
-> > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> > Suggested-by: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> > Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/phy/phy.c | 9 +++++++--
-> >  include/linux/phy.h   | 3 +++
-> >  2 files changed, 10 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> > index d90d9863e..068f0a126 100644
-> > --- a/drivers/net/phy/phy.c
-> > +++ b/drivers/net/phy/phy.c
-> > @@ -772,8 +772,13 @@ static irqreturn_t phy_interrupt(int irq, void
-> > *phy_dat)
-> >  	if (phydev->drv->did_interrupt && !phydev->drv->did_interrupt(phydev))
-> >  		return IRQ_NONE;
-> > 
-> > -	/* reschedule state queue work to run as soon as possible */
-> > -	phy_trigger_machine(phydev);
-> > +	if (phydev->drv->handle_interrupt) {
-> > +		if (phydev->drv->handle_interrupt(phydev))
-> > +			goto phy_err;
-> 
-> There are PHYs which clears the interrupt already by reading the interrupt
-> status register. To do something useful in handle_interrupt() I have to read
-> the interrupt status register, thus clearing the pending interrupts.
-> 
-> 
-> > +	} else {
-> > +		/* reschedule state queue work to run as soon as possible */
-> > +		phy_trigger_machine(phydev);
-> > +	}
-> > 
-> >  	if (phy_clear_interrupt(phydev))
-> >  		goto phy_err;
-> 
-> But here the interrupts are cleared again, which means we might loose
-> interrupt causes in between.
-> 
-> I could think of two different fixes:
->  (1) handle_interrupt() has to take care to clear the interrupts and skip
-> the phy_clear_interrupt() above.
->  (2) handle_interrupt() might return a special return code which skips the
-> phy_clear_interrupt
-> 
-> TBH, I'd prefer (1) but I don't know if it is allowed to change semantics
-> afterwards. (Also, I've found no driver where handle_interrupt() is actually
-> used for now?)
+Building selftests with 'make TARGETS=bpf kselftest' was fixed in commit
+55d554f5d140 ("tools: bpf: Use !building_out_of_srctree to determine
+srctree"). However, by updating $(srctree) in tools/bpf/Makefile for
+in-tree builds only, we leave out the case where we pass an output
+directory to build BPF tools, but $(srctree) is not set. This
+typically happens for:
 
-I made the argument at the time that phylib should stop being a middle-
-layer, but instead let PHY drivers take care of interrupt handling
-themselves, just like we do elsewhere in the kernel.  I think your
-case just shows that trying to keep the interrupt handling structured
-inside phylib and trying to make all PHYs fit is just going to be
-painful.
+    $ make -s tools/bpf O=/tmp/foo
+    Makefile:40: /tools/build/Makefile.feature: No such file or directory
 
+Fix it by updating $(srctree) in the Makefile not only for out-of-tree
+builds, but also if $(srctree) is empty.
+
+Detected with test_bpftool_build.sh.
+
+Fixes: 55d554f5d140 ("tools: bpf: Use !building_out_of_srctree to determine srctree")
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ tools/bpf/Makefile | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
+index 5d1995fd369c..5535650800ab 100644
+--- a/tools/bpf/Makefile
++++ b/tools/bpf/Makefile
+@@ -16,7 +16,13 @@ CFLAGS += -D__EXPORTED_HEADERS__ -I$(srctree)/include/uapi -I$(srctree)/include
+ # isn't set and when invoked from selftests build, where srctree
+ # is set to ".". building_out_of_srctree is undefined for in srctree
+ # builds
++ifeq ($(srctree),)
++update_srctree := 1
++endif
+ ifndef building_out_of_srctree
++update_srctree := 1
++endif
++ifeq ($(update_srctree),1)
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+ srctree := $(patsubst %/,%,$(dir $(srctree)))
+ endif
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.17.1
+
