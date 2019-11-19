@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EB3102ED8
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D06F5102EF2
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:16:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbfKSWHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:07:44 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37071 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727140AbfKSWHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:07:44 -0500
-Received: by mail-lj1-f193.google.com with SMTP id d5so25150505ljl.4;
-        Tue, 19 Nov 2019 14:07:41 -0800 (PST)
+        id S1727148AbfKSWQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 17:16:45 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42462 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbfKSWQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:16:44 -0500
+Received: by mail-pg1-f194.google.com with SMTP id q17so12195016pgt.9;
+        Tue, 19 Nov 2019 14:16:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/NIY0wwmd8kAAZ+E6bHh2DYRDKjCV9YXkhsBIS0hJcs=;
-        b=TmoEW5GcPBJMZqxK1rUqJR+pE+JkTQcZyhd9lOiEtnWQEuFPNrgX5RYkHLUP9k2dzB
-         F4v4WkOhxv2utmOmoTqSNP5+evY5Tmy6uMdT9Q34YFY0Cx6LLn9ru8FaoWrd0IJm7HNi
-         IwWzM59zcT00oGu7h+67Osw+f47swWpY3WSsj5LoLK0A36rTSGInVPFWkWvMOc7TduUe
-         Rkw/epEcJCLQd8Ry59u/bRUDt6kN+1ycbwiMu8u+/wZTn+ISKto9UYEniYR8N7r9I3fr
-         iW3sKN+rAi2seboekh8qieg6ZU+am7W8u4iHTQMH85GfLVc0xFKEZ3ZPj19FwgK+9PPQ
-         Hi8Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=kdSnoFs5QOPF1zFy2ec0MLYaOL4Y9PS1R5OSSbKxTXg=;
+        b=NS8K30wuvVATVsDKdmgNbSU8rs9qSkJltS6TSr0KumrB05dwBoucVJ/mDx9LOzakf1
+         coJUag2F2dexBoxTNFU8agvpdslhS/INK81F+8eJ5nQqvKTqqwk1dqc6HTe2z0/LuUrQ
+         rOa/WRENPll2RLVGf7GhGZxVmkKN5AW5s27l7Zs3PDFT+IDPvF/oh+ZoVNblo5ncMP2o
+         EAcLOVbykxJja5ARxSPvNvmO5tr1ZCiURoI8K3hLYbrRdVkLfIuLLGCuIP1hGWRxnUYZ
+         gAJwqi0xsZqx+1qXAEQLsSCLiRwrtRZ8HTW11Gwaw+bzry+lmB4RnhQtuDEQsUrFVPzB
+         /OQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/NIY0wwmd8kAAZ+E6bHh2DYRDKjCV9YXkhsBIS0hJcs=;
-        b=V3zfMBzN6JQTjeHDh/YwbkerSHx2rGL1Gsb0TN9dlaUHYURifgNfNxcbM1X7Q53V5s
-         sfh4/8ee7bcRuuwXqVgoXVUY/yFrfsrgzglA+xOl+77LpDqq9NoWgYJi8ODMA+IZZUIt
-         X+Ywe01LMEL7cd5WCyOp4w9dMczlcbdy8pRYA8KLg6WCq2DBGh5+dt62aIn43EZiFDaN
-         vJENq9K+1uo8OzYw6aPVW77IG9TR+3ECGUplLviidWGOV8U8ZMP1xwAD0p0MY//l1iyL
-         Nd2tVZE0appwjMR6Vc+WgXshof2VI2e2HCt9bcKRx+ZH0ROgs0zUhbh6HxZ3MPH3lkYC
-         9kZw==
-X-Gm-Message-State: APjAAAUWCAZak4yDXvR2KRzwus74fZYgvJAlj2h2wOozS2qL2quqHLDg
-        3oPp/gm3jdBmiui0nirZ7pCF0IlyUXOFO+1/wWM=
-X-Google-Smtp-Source: APXvYqyoQLekI+Vh3I0S26z+Ix5Ed7Z6kLQCJi/wzt6okOYA5unIq30BI/YrCgYtnyaqmaVRPh68qgdfUOqklLCj8As=
-X-Received: by 2002:a2e:b5b8:: with SMTP id f24mr5665605ljn.188.1574201260547;
- Tue, 19 Nov 2019 14:07:40 -0800 (PST)
-MIME-Version: 1.0
-References: <20191119001951.92930-1-lrizzo@google.com> <20191119140301.6ff669e1@cakuba.netronome.com>
-In-Reply-To: <20191119140301.6ff669e1@cakuba.netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=kdSnoFs5QOPF1zFy2ec0MLYaOL4Y9PS1R5OSSbKxTXg=;
+        b=psujkttycEKTKqO4GC4PGFQlhCJPHdGDPpkyhPeueG5NqeVUh2ah5vON65vbOrNAZn
+         c4K6584pnQKdtkQrndOvFhjs3WSdrhGanO0DHMUCv4Mf2eed/JOQ1ZEXmi3ockTJStHD
+         F+eDDJPCW3rBr62qRfH++lPfb52W8RGNifoT/R3q0FkmvNDGY0dtaZHhwf9ZtK/u9WY1
+         +xTkCiLXtMPyGPGtVazWO4cFnv/sP4uxjCvSofTC/I7ayaWYWhsuhmUsKX/O0qPthRVf
+         H+2Y/vJZDi8KdJexr6kiN2UG3RK8n8aP56Jk+ZJBTftnXqkigjglFuGuEalyh2elLZHv
+         ZPVQ==
+X-Gm-Message-State: APjAAAXnWPx1Ko7Y9a6vXOkIs/sGcx1tNN3XdOTVX5hV+BET4wFanBHC
+        4wH1az7dZrymN1Qg9I0sLKA=
+X-Google-Smtp-Source: APXvYqxW3frxUydGxeiIqouiCqG50A2+0ODVHlbo4pWLPB0bhqVxoJ7pyXxVaqSAbxz1FkkF642ANA==
+X-Received: by 2002:a63:4415:: with SMTP id r21mr8391688pga.184.1574201803678;
+        Tue, 19 Nov 2019 14:16:43 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:72f7])
+        by smtp.gmail.com with ESMTPSA id k6sm24195617pfi.119.2019.11.19.14.16.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 19 Nov 2019 14:16:42 -0800 (PST)
+Date:   Tue, 19 Nov 2019 14:16:41 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 19 Nov 2019 14:07:28 -0800
-Message-ID: <CAADnVQJADNUsJEGvstJco3cQ9YVyU9To5vVLH+SyXZ7zgi4pYw@mail.gmail.com>
-Subject: Re: [PATCH v2] net-af_xdp: use correct number of channels from ethtool
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Luigi Rizzo <lrizzo@google.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, rizzo@iet.unipi.it
-Content-Type: text/plain; charset="UTF-8"
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] libbpf: fix call relocation offset calculation
+ bug
+Message-ID: <20191119221639.wygkmhkqp42fpana@ast-mbp.dhcp.thefacebook.com>
+References: <20191119062151.777260-1-andriin@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119062151.777260-1-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 2:04 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Mon, 18 Nov 2019 16:19:51 -0800, Luigi Rizzo wrote:
-> > Drivers use different fields to report the number of channels, so take
-> > the maximum of all data channels (rx, tx, combined) when determining the
-> > size of the xsk map. The current code used only 'combined' which was set
-> > to 0 in some drivers e.g. mlx4.
-> >
-> > Tested: compiled and run xdpsock -q 3 -r -S on mlx4
-> > Signed-off-by: Luigi Rizzo <lrizzo@google.com>
->
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Mon, Nov 18, 2019 at 10:21:51PM -0800, Andrii Nakryiko wrote:
+>  
+> -static __attribute__ ((noinline))
+> -int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
+> +__attribute__ ((noinline))
+> +int test_pkt_access_subprog2(int val, struct __sk_buff *skb)
+>  {
+>  	return skb->len * val;
+>  }
 
-Applied. Thanks
+Did you run test_progs -n 8?
+
+Above breaks it with:
+10: (61) r1 = *(u32 *)(r6 +40)
+func 'test_pkt_access_subprog2' doesn't have 6-th argument
+invalid bpf_context access off=40 size=4
+
+The point of the subprog2 is to test the scenario where BTF disagress with llvm
+optimizations.
+
