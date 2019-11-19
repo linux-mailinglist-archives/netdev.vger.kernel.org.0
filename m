@@ -2,283 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7477102F76
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D936102F79
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbfKSWoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:44:55 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13410 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727336AbfKSWoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:44:54 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAJMbFCi024969
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 14:44:53 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=facqMwmleW9Fb+AeY+coAC0JW9/cAuOasWQ752redXQ=;
- b=MnHC5O7trfiyTbFf8rPduFKPbAtFJ77ou/RyDGsgSUVxzMPw0UL1/gcLE9DJ3IPhbEik
- V4KvKBiU/k3suQcyGVTCGY/uNsIikkyIPoW0TODoxNeRvw940+bJxnKbP8pofzOfNate
- Z8puyGuTLMIATPtzhb5enEllCutYFg7/RgY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2wchf72me1-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 14:44:53 -0800
-Received: from 2401:db00:2050:5102:face:0:3b:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 19 Nov 2019 14:44:50 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 5F9642EC1A59; Tue, 19 Nov 2019 14:44:48 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] libbpf: fix call relocation offset calculation bug
-Date:   Tue, 19 Nov 2019 14:44:47 -0800
-Message-ID: <20191119224447.3781271-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727038AbfKSWrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 17:47:22 -0500
+Received: from sonic306-28.consmr.mail.ne1.yahoo.com ([66.163.189.90]:37880
+        "EHLO sonic306-28.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725978AbfKSWrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:47:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1574203639; bh=TJtpEcBOBDPAHkA5ODDpplBILw3At1N9YjMKukHkf9Q=; h=From:To:Subject:Date:References:From:Subject; b=Uxx3wCPLCKwTvMFJMKcCnzyj698KpOcsr4VbwX+kYx8+v6l6vxQ1CSM/y9JQcq2gjSk2DjiFMtkkwPac1ur1bCnyozqwVq0jX6A7VZBkMnWcDlcQnKZkAbDrymY2p0rj7aqwnmGd2XvJ3PjickAHwYj2FC5KPzKSL2Zvf4/eyK8kJ4uI0YzpPOFvwOczlPypgofMcoxWbNwpuh/Uujrtexsu45Ce1MCGMMvQjIFMmex5N16Ja3XhuAC8Tvpld7f6iVVgQtyAmdUaq3iPuUJq0L/QfGwHpFdIUKFt6FYIxwmAPkfc9+YhnqJdctI4qEaxFljBVIEcZrHtKMy+BIHuEQ==
+X-YMail-OSG: XjgfHpMVM1k85aFmEcfIcpZk1Rp28Vd5gbKgTgMtjQuMQc163SBNZxXPkucuBTF
+ 3977U.BJAAgopZMc6iSDFzKGXy8.WH_I8O2_3wrnLnPdKIiQsImfaDvusDyb6ZTMDWF6ZpywwOO7
+ Hh1tFozg7aMRdes7ko_SkzNnTMDhcDeAL_CsXWFhUxQP7PnomfdE___Ggo6FT0luyQptVa3UQIe4
+ f_tedCl2_Fd_YBPtwhkEu.nJ88FcMw7_Zr.AGlTnn8c1QCIIfW_ZFiQ_P3xZG9knjAyn3X1wQ.Bg
+ IgXDDwhpSwvNDDzn46ByE1JVGMe0mbDpBb1mqltrERLJcNQOrFpOPRh4SHFNIE9kce5DJbrZs.jr
+ y0_jg5lCYGqC7zcAQy73zHWFTc7hJtZXhyjHgwbNaIpQb1waMV7yIf3biuzwSGuP1iBOX4Tq9NMF
+ ZnHGYi0eDP4tgvCpSu4_O03cGSG2IBT9Za9XGi8tsKLm0dthIueE3oX8jq0Al.DIOQW.2U6mWMc6
+ vSQ8jcdB55Wb6jpi7RPZbtILkdX1EQ5UbJRHhHv6ggNoBxNpdjZIWAOQDxrUaAEUpY.q8DK4aW7E
+ rVCtyG4JXGxRPyl3d85eJsI88df.SjumxKOv8QL0PmaBW5F2gdOwesKLkh4vrxo1Y3uZixNwDJAT
+ SV.AQIzCCSBniCg9LB2za4tFilyCw75ROSrpMvuGdUbifk1H6nSkYO571UxOW9TSCWtwvp3.d4zJ
+ VjHkmk7TObap5W39zvFFbRExSUzGwSd7vxB9zdx1AGWNHD0mrcyRqAvt9N4tCdsFt2Ze35jTYBcc
+ DmXjRGl8kr84y6Q2FtxxnVVhRsPA0C4ZMfej2MYZinY7ADSZRtaI0CMxQsluW5Gfnn_vKCDIKJ1B
+ n9RqY.Hz7cughyzAAW5z4B25pBmlBAAT6VweMIWxUGXMqPcpEUguvFuq3YnZ1V2267FEup3ACa4D
+ bpJIZJhhsJjnqN3kv0kOTwAaK5uoUTM3gtOf2YE3O_W3tGID7UrbTHQuWKQxAlIl5Rj8sFWcXNhW
+ dHrtxBBk5_k1sz0lXxud0agwcFVBe4VMR3j6A1Uwm3rcm0Fm5Xvi1eKIxrJ9OjcOwnYILKqndj_x
+ so_Ejv_3pPLlTaMXfPnDpd7krs9LOdeS0UdEsEHz2oWrYw.kDWF.pZIC2YHjDeqMBQbgRejgEJhK
+ 632jkN2s8PeiZR57gYXf3wTOrLTdiB20wpboVFfybXwS.9V2stMauic_oMwn2iQCuI5RLn2xK0SU
+ KarUcViOe6hQjry1ej47Kke.Cv3TjbSnJvl.6ibMYkReldfq5_GLo66kC26n6e_iLHfNCbRFLpXe
+ kXpC_t1ShegCMd4EVZ09.JXTnNBm_o3Y500_YIHhlunTvwGheGc0zWsINhwvGSAOXTYspf.28b7V
+ e_1bouBc9
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.ne1.yahoo.com with HTTP; Tue, 19 Nov 2019 22:47:19 +0000
+Received: by smtp418.mail.bf1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID f0ce218b5cf5f7d004bf13262887f557;
+          Tue, 19 Nov 2019 22:47:17 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH v11 00/25] LSM: Module stacking for AppArmor
+Date:   Tue, 19 Nov 2019 14:47:02 -0800
+Message-Id: <20191119224714.13491-1-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-19_08:2019-11-15,2019-11-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- suspectscore=8 lowpriorityscore=0 spamscore=0 mlxscore=0 bulkscore=0
- adultscore=0 malwarescore=0 clxscore=1015 mlxlogscore=560 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911190180
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+References: <20191119224714.13491-1-casey.ref@schaufler-ca.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When relocating subprogram call, libbpf doesn't take into account
-relo->text_off, which comes from symbol's value. This generally works fine for
-subprograms implemented as static functions, but breaks for global functions.
+Reposting relevant patches to netdev.
 
-Taking a simplified test_pkt_access.c as an example:
+This patchset provides the changes required for
+the AppArmor security module to stack safely with any other.
 
-__attribute__ ((noinline))
-static int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
-{
-        return skb->len * 2;
-}
+v11: Rebase to 5.4-rc6
+     Incorporate feedback from v10
+     - Disambiguate reading /proc/.../attr/display by restricting
+       all use of the interface to the current process.
+     - Fix a merge error in AppArmor's display attribute check
 
-__attribute__ ((noinline))
-static int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
-{
-        return skb->len + val;
-}
+v10: Ask the security modules if the display can be changed.
 
-SEC("classifier/test_pkt_access")
-int test_pkt_access(struct __sk_buff *skb)
-{
-        if (test_pkt_access_subprog1(skb) != skb->len * 2)
-                return TC_ACT_SHOT;
-        if (test_pkt_access_subprog2(2, skb) != skb->len + 2)
-                return TC_ACT_SHOT;
-        return TC_ACT_UNSPEC;
-}
+v9: There is no version 9
 
-When compiled, we get two relocations, pointing to '.text' symbol. .text has
-st_value set to 0 (it points to the beginning of .text section):
+v8: Incorporate feedback from v7
+    - Minor clean-up in display value management
+    - refactor "compound" context creation to use a common
+      append_ctx() function.
 
-0000000000000008  000000050000000a R_BPF_64_32            0000000000000000 .text
-0000000000000040  000000050000000a R_BPF_64_32            0000000000000000 .text
+v7: Incorporate feedback from v6
+    - Make setting the display a privileged operation. The
+      availability of compound contexts reduces the need for
+      setting the display.
 
-test_pkt_access_subprog1 and test_pkt_access_subprog2 offsets (targets of two
-calls) are encoded within call instruction's imm32 part as -1 and 2,
-respectively:
+v6: Incorporate feedback from v5
+    - Add subj_<lsm>= and obj_<lsm>= fields to audit records
+    - Add /proc/.../attr/context to get the full context in
+      lsmname\0value\0... format as suggested by Simon McVittie
+    - Add SO_PEERCONTEXT for getsockopt() to get the full context
+      in the same format, also suggested by Simon McVittie.
+    - Add /sys/kernel/security/lsm_display_default to provide
+      the display default value.
 
-0000000000000000 test_pkt_access_subprog1:
-       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       1:       64 00 00 00 01 00 00 00 w0 <<= 1
-       2:       95 00 00 00 00 00 00 00 exit
+v5: Incorporate feedback from v4
+    - Initialize the lsmcontext in security_secid_to_secctx()
+    - Clear the lsmcontext in all security_release_secctx() cases
+    - Don't use the "display" on strictly internal context
+      interfaces.
+    - The SELinux binder hooks check for cases where the context
+      "display" isn't compatible with SELinux.
 
-0000000000000018 test_pkt_access_subprog2:
-       3:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       4:       04 00 00 00 02 00 00 00 w0 += 2
-       5:       95 00 00 00 00 00 00 00 exit
+v4: Incorporate feedback from v3
+    - Mark new lsm_<blob>_alloc functions static
+    - Replace the lsm and slot fields of the security_hook_list
+      with a pointer to a LSM allocated lsm_id structure. The
+      LSM identifies if it needs a slot explicitly. Use the
+      lsm_id rather than make security_add_hooks return the
+      slot value.
+    - Validate slot values used in security.c
+    - Reworked the "display" process attribute handling so that
+      it works right and doesn't use goofy list processing.
+    - fix display value check in dentry_init_security
+    - Replace audit_log of secids with '?' instead of deleting
+      the audit log
 
-0000000000000000 test_pkt_access:
-       0:       bf 16 00 00 00 00 00 00 r6 = r1
-===>   1:       85 10 00 00 ff ff ff ff call -1
-       2:       bc 01 00 00 00 00 00 00 w1 = w0
-       3:       b4 00 00 00 02 00 00 00 w0 = 2
-       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-       5:       64 02 00 00 01 00 00 00 w2 <<= 1
-       6:       5e 21 08 00 00 00 00 00 if w1 != w2 goto +8 <LBB0_3>
-       7:       bf 61 00 00 00 00 00 00 r1 = r6
-===>   8:       85 10 00 00 02 00 00 00 call 2
-       9:       bc 01 00 00 00 00 00 00 w1 = w0
-      10:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-      11:       04 02 00 00 02 00 00 00 w2 += 2
-      12:       b4 00 00 00 ff ff ff ff w0 = -1
-      13:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB0_3>
-      14:       b4 00 00 00 02 00 00 00 w0 = 2
-0000000000000078 LBB0_3:
-      15:       95 00 00 00 00 00 00 00 exit
+v3: Incorporate feedback from v2
+    - Make lsmblob parameter and variable names more
+      meaningful, changing "le" and "l" to "blob".
+    - Improve consistency of constant naming.
+    - Do more sanity checking during LSM initialization.
+    - Be a bit clearer about what is temporary scaffolding.
+    - Rather than clutter security_getpeersec_dgram with
+      otherwise unnecessary checks remove the apparmor
+      stub, which does nothing useful.
 
-Now, if we compile example with global functions, the setup changes.
-Relocations are now against specifically test_pkt_access_subprog1 and
-test_pkt_access_subprog2 symbols, with test_pkt_access_subprog2 pointing 24
-bytes into its respective section (.text), i.e., 3 instructions in:
+Patche 0001 moves management of the sock security blob from the individual
+modules to the infrastructure.
 
-0000000000000008  000000070000000a R_BPF_64_32            0000000000000000 test_pkt_access_subprog1
-0000000000000048  000000080000000a R_BPF_64_32            0000000000000018 test_pkt_access_subprog2
+Patches 0002-0012 replace system use of a "secid" with
+a structure "lsmblob" containing information from the
+security modules to be held and reused later. At this
+point lsmblob contains an array of u32 secids, one "slot"
+for each of the security modules compiled into the
+kernel that used secids. A "slot" is allocated when
+a security module requests one.
+The infrastructure is changed to use the slot number
+to pass the correct secid to or from the security module
+hooks.
 
-Calls instructions now encode offsets relative to function symbols and are both
-set ot -1:
+It is important that the lsmblob be a fixed size entity
+that does not have to be allocated. Several of the places
+where it is used would have performance and/or locking
+issues with dynamic allocation.
 
-0000000000000000 test_pkt_access_subprog1:
-       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
-       1:       64 00 00 00 01 00 00 00 w0 <<= 1
-       2:       95 00 00 00 00 00 00 00 exit
+Patch 0013 provides a mechanism for a process to
+identify which security module's hooks should be used
+when displaying or converting a security context string.
+A new interface /proc/self/attr/display contains the name
+of the security module to show. Reading from this file
+will present the name of the module, while writing to
+it will set the value. Only names of active security
+modules are accepted. Internally, the name is translated
+to the appropriate "slot" number for the module which
+is then stored in the task security blob. Setting the
+display requires that all modules using the /proc interfaces
+allow the transition. The "display" of other processess
+can be neither read nor written. All suggested cases
+for reading the display of a different process have race
+conditions.
 
-0000000000000018 test_pkt_access_subprog2:
-       3:       61 20 00 00 00 00 00 00 r0 = *(u32 *)(r2 + 0)
-       4:       0c 10 00 00 00 00 00 00 w0 += w1
-       5:       95 00 00 00 00 00 00 00 exit
+Patch 0014 Starts the process of changing how a security
+context is represented. Since it is possible for a
+security context to have been generated by more than one
+security module it is now necessary to note which module
+created a security context so that the correct "release"
+hook can be called. There are several places where the
+module that created a security context cannot be inferred.
 
-0000000000000000 test_pkt_access:
-       0:       bf 16 00 00 00 00 00 00 r6 = r1
-===>   1:       85 10 00 00 ff ff ff ff call -1
-       2:       bc 01 00 00 00 00 00 00 w1 = w0
-       3:       b4 00 00 00 02 00 00 00 w0 = 2
-       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-       5:       64 02 00 00 01 00 00 00 w2 <<= 1
-       6:       5e 21 09 00 00 00 00 00 if w1 != w2 goto +9 <LBB2_3>
-       7:       b4 01 00 00 02 00 00 00 w1 = 2
-       8:       bf 62 00 00 00 00 00 00 r2 = r6
-===>   9:       85 10 00 00 ff ff ff ff call -1
-      10:       bc 01 00 00 00 00 00 00 w1 = w0
-      11:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
-      12:       04 02 00 00 02 00 00 00 w2 += 2
-      13:       b4 00 00 00 ff ff ff ff w0 = -1
-      14:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB2_3>
-      15:       b4 00 00 00 02 00 00 00 w0 = 2
-0000000000000080 LBB2_3:
-      16:       95 00 00 00 00 00 00 00 exit
+This is achieved by introducing a "lsmcontext" structure
+which contains the context string, its length and the
+"slot" number of the security module that created it.
+The security_release_secctx() interface is changed,
+replacing the (string,len) pointer pair with a lsmcontext
+pointer.
 
-Thus the right formula to calculate target call offset after relocation should
-take into account relocation's target symbol value (offset within section),
-call instruction's imm32 offset, and (subtracting, to get relative instruction
-offset) instruction index of call instruction itself. All that is shifted by
-number of instructions in main program, given all sub-programs are copied over
-after main program.
+Patches 0015-0017 convert the security interfaces from
+(string,len) pointer pairs to a lsmcontext pointer.
+The slot number identifying the creating module is
+added by the infrastructure. Where the security context
+is stored for extended periods the data type is changed.
 
-Convert few selftests relying on bpf-to-bpf calls to use global functions
-instead of static ones.
+The Netlabel code is converted to save lsmblob structures
+instead of secids in Patches 0018-0019.
 
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Patch 0020 adds checks to the binder hooks which verify
+that if both ends of a transaction use the same "display".
+
+Patches 0021-0022 add addition data to the audit records
+to identify the LSM specific data for all active modules.
+
+Patches 0023-0024 add new interfaces for getting the
+compound security contexts.
+
+Finally, with all interference on the AppArmor hooks
+removed, Patch 0025 removes the exclusive bit from
+AppArmor. An unnecessary stub hook was also removed.
+
+The Ubuntu project is using an earlier version of
+this patchset in their distribution to enable stacking
+for containers.
+
+Performance measurements to date have the change
+within the "noise". The sockperf and dbench results
+are on the order of 0.2% to 0.8% difference, with
+better performance being as common as worse. The
+benchmarks were run with AppArmor and Smack on Ubuntu.
+
+https://github.com/cschaufler/lsm-stacking.git#stack-5.4-rc6-v11-apparmor
+
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 ---
- tools/lib/bpf/libbpf.c                             | 8 ++++++--
- tools/testing/selftests/bpf/progs/test_btf_haskv.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_btf_newkv.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_btf_nokv.c  | 4 ++--
- 4 files changed, 12 insertions(+), 8 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 15e91a1d6c11..a7d183f7ac72 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1870,9 +1870,13 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
- 				pr_warn("incorrect bpf_call opcode\n");
- 				return -LIBBPF_ERRNO__RELOC;
- 			}
-+			if (sym.st_value % 8) {
-+				pr_warn("bad call relo offset: %lu\n", sym.st_value);
-+				return -LIBBPF_ERRNO__RELOC;
-+			}
- 			prog->reloc_desc[i].type = RELO_CALL;
- 			prog->reloc_desc[i].insn_idx = insn_idx;
--			prog->reloc_desc[i].text_off = sym.st_value;
-+			prog->reloc_desc[i].text_off = sym.st_value / 8;
- 			obj->has_pseudo_calls = true;
- 			continue;
- 		}
-@@ -3573,7 +3577,7 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
- 			 prog->section_name);
- 	}
- 	insn = &prog->insns[relo->insn_idx];
--	insn->imm += prog->main_prog_cnt - relo->insn_idx;
-+	insn->imm += relo->text_off + prog->main_prog_cnt - relo->insn_idx;
- 	return 0;
- }
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_haskv.c b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-index 763c51447c19..62ad7e22105e 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-@@ -26,7 +26,7 @@ struct dummy_tracepoint_args {
- };
- 
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -44,7 +44,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
- {
- 	return test_long_fname_2(arg);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_newkv.c b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-index 96f9e8451029..fb8d91a1dbe0 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-@@ -34,7 +34,7 @@ struct dummy_tracepoint_args {
- };
- 
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -57,7 +57,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
- {
- 	return test_long_fname_2(arg);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_nokv.c b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-index 434188c37774..3f4422044759 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-@@ -23,7 +23,7 @@ struct dummy_tracepoint_args {
- };
- 
- __attribute__((noinline))
--static int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(struct dummy_tracepoint_args *arg)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
-@@ -41,7 +41,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--static int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(struct dummy_tracepoint_args *arg)
- {
- 	return test_long_fname_2(arg);
- }
--- 
-2.17.1
-
+ arch/alpha/include/uapi/asm/socket.h    |   1 +
+ arch/mips/include/uapi/asm/socket.h     |   1 +
+ arch/parisc/include/uapi/asm/socket.h   |   1 +
+ arch/sparc/include/uapi/asm/socket.h    |   1 +
+ drivers/android/binder.c                |  26 +-
+ fs/ceph/xattr.c                         |   6 +-
+ fs/nfs/nfs4proc.c                       |  22 +-
+ fs/nfsd/nfs4xdr.c                       |  20 +-
+ fs/proc/base.c                          |   2 +
+ include/linux/audit.h                   |   1 +
+ include/linux/cred.h                    |   3 +-
+ include/linux/lsm_hooks.h               |  37 +-
+ include/linux/security.h                | 175 ++++++++--
+ include/net/af_unix.h                   |   2 +-
+ include/net/netlabel.h                  |   8 +-
+ include/net/scm.h                       |  15 +-
+ include/uapi/asm-generic/socket.h       |   1 +
+ kernel/audit.c                          |  72 +++-
+ kernel/audit.h                          |   9 +-
+ kernel/audit_fsnotify.c                 |   1 +
+ kernel/auditfilter.c                    |  10 +-
+ kernel/auditsc.c                        | 127 ++++---
+ kernel/cred.c                           |  12 +-
+ net/core/sock.c                         |   7 +-
+ net/ipv4/cipso_ipv4.c                   |   6 +-
+ net/ipv4/ip_sockglue.c                  |  12 +-
+ net/netfilter/nf_conntrack_netlink.c    |  20 +-
+ net/netfilter/nf_conntrack_standalone.c |  11 +-
+ net/netfilter/nfnetlink_queue.c         |  26 +-
+ net/netfilter/nft_meta.c                |  13 +-
+ net/netfilter/xt_SECMARK.c              |   5 +-
+ net/netlabel/netlabel_kapi.c            |   6 +-
+ net/netlabel/netlabel_unlabeled.c       |  97 +++---
+ net/netlabel/netlabel_unlabeled.h       |   2 +-
+ net/netlabel/netlabel_user.c            |  13 +-
+ net/netlabel/netlabel_user.h            |   6 +-
+ net/unix/af_unix.c                      |   6 +-
+ net/xfrm/xfrm_policy.c                  |   2 +
+ net/xfrm/xfrm_state.c                   |   2 +
+ security/apparmor/include/apparmor.h    |   3 +-
+ security/apparmor/include/net.h         |   6 +-
+ security/apparmor/lsm.c                 | 117 +++----
+ security/commoncap.c                    |   7 +-
+ security/integrity/ima/ima.h            |  15 +-
+ security/integrity/ima/ima_api.c        |  11 +-
+ security/integrity/ima/ima_appraise.c   |   6 +-
+ security/integrity/ima/ima_main.c       |  49 +--
+ security/integrity/ima/ima_policy.c     |  19 +-
+ security/integrity/integrity_audit.c    |   1 +
+ security/loadpin/loadpin.c              |   8 +-
+ security/safesetid/lsm.c                |   8 +-
+ security/security.c                     | 593 +++++++++++++++++++++++++++++---
+ security/selinux/hooks.c                | 109 +++---
+ security/selinux/include/classmap.h     |   2 +-
+ security/selinux/include/objsec.h       |   5 +
+ security/selinux/include/security.h     |   1 +
+ security/selinux/netlabel.c             |  25 +-
+ security/selinux/ss/services.c          |   4 +-
+ security/smack/smack.h                  |   6 +
+ security/smack/smack_lsm.c              | 124 ++++---
+ security/smack/smack_netfilter.c        |   8 +-
+ security/smack/smackfs.c                |  10 +-
+ security/tomoyo/tomoyo.c                |   8 +-
+ security/yama/yama_lsm.c                |   7 +-
+ 64 files changed, 1376 insertions(+), 563 deletions(-)
