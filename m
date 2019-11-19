@@ -2,103 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC522101FB8
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:12:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6F0102028
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbfKSJMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 04:12:32 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26960 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726170AbfKSJMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:12:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574154750;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=56y7kkudD7CbdgMyxGZkhBkFd2RlhLUxyg0zNxoDgd8=;
-        b=hazgf3SYbSTgYO+9XcMGK2z+MMUCRhEMrMnWzjp0C00Pcu5QpvqYfXpMDBAZKiwYUUcTfv
-        26dfTObHWexnd1Cc47mEJVcqgyZxv+s/wb9MIy/7w9CcH1SjQtlhBA39QS0Ea+2dih76pY
-        oKybVgi+37vqqaBImc4k4f8qFw5bQQ8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-qsd2p0DVOnO7meu3idVowQ-1; Tue, 19 Nov 2019 04:12:29 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B3D688026A4;
-        Tue, 19 Nov 2019 09:12:27 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-117-86.ams2.redhat.com [10.36.117.86])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7F91E4647C;
-        Tue, 19 Nov 2019 09:12:27 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 29941A80A4E; Tue, 19 Nov 2019 10:12:26 +0100 (CET)
-Date:   Tue, 19 Nov 2019 10:12:26 +0100
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net-next] r8169: disable TSO on a single version of
- RTL8168c to fix performance
-Message-ID: <20191119091226.GJ3372@calimero.vinschen.de>
-Mail-Followup-To: Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev@vger.kernel.org, nic_swsd@realtek.com,
-        David Miller <davem@davemloft.net>
-References: <20191118095503.25611-1-vinschen@redhat.com>
- <44352432-e6ad-3e3c-4fea-9ad59f7c4ae9@gmail.com>
+        id S1727001AbfKSJXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 04:23:23 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:40829 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfKSJXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:23:22 -0500
+Received: by mail-lf1-f65.google.com with SMTP id v24so5502393lfi.7
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:23:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=vEC81GcLttEcJAjNdIB9ExJmxUvRup+AThBWqWVUKJs=;
+        b=JUpcFk6rJA46S/I6GusqCj/PQ985nXzbFTn8a30qh1FMxth5gfELLgoZq+Pob+6xmS
+         Z1HAEmAracreUslwnirYP1yIk5BxCHQs1oqfoio1ewjc8Cg/RU8OsYjupMiThdakA5Ai
+         tQdl5CtF9bsJxqfMioyKPQjyV0i6tAJ1sK0P8NV25UeeAya592YGtHGgDRAQ/CoMkLp9
+         8WSK93TRciKx3CXPKI2b5Q8+drPFt4S8+1vfwvlWZLWf3P7UsZ1ugnnwVI5m5PRpesv2
+         fS6IQtmwBiRCDUwjHx1+n+BHpq6fooRIgUTRt8OXRHi6EqdPYWzlks5nWnEGekI6IZ96
+         25cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version:content-transfer-encoding;
+        bh=vEC81GcLttEcJAjNdIB9ExJmxUvRup+AThBWqWVUKJs=;
+        b=qwbHoFCB9d/ygzmufjAXrZuhvsAGbhkJwpBo5CxBbbPV6kdRLWcMDkCMbXi3Wpni/0
+         T8CUCBS+CyVBecw1IIyiLzDiyLeN+1dcI/6njXvwRFcyQCuxyE1DNjoniUeoQMJHkwmm
+         6U5DhoYqiPZelJGCZwcYDyv0lk6z4HE4giCe2kYvoNEfFrLhCNhfbJI8uXhNRrBD6aAJ
+         U9JbMUh7UAwIozSaMl2msHC/DpmffubyvXByVOTKZ+ImXRsUUU9TtD11hKfXzOPBi316
+         iSNqj0dl6BODTQY0yyCnbSxM5xuke+Agid35igedWYfdcCGWQmQtlo8iE3Qn8ZLDfdf5
+         p6HA==
+X-Gm-Message-State: APjAAAUMIOd9sE6A9tlbfFJuuC7xQ6Hc7DiN8HrkQX930rnBSOFYbD0M
+        xYieLSrHnMQ68CVS1zZ8SJ0+Fg==
+X-Google-Smtp-Source: APXvYqz+znk21ZeWTGR59C/2gLajA7W6WAiuVbp81pij031nrln0Ps4u4OLZy+4wn9735BBEeKkj2w==
+X-Received: by 2002:a19:5e06:: with SMTP id s6mr2933229lfb.176.1574155400032;
+        Tue, 19 Nov 2019 01:23:20 -0800 (PST)
+Received: from GL-434 ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id w20sm9947665lff.46.2019.11.19.01.23.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 19 Nov 2019 01:23:19 -0800 (PST)
+From:   jouni.hogander@unikie.com (Jouni =?utf-8?Q?H=C3=B6gander?=)
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH] net-sysfs: Fix memory leak in register_queue_kobjects
+References: <20191114111325.2027-1-jouni.hogander@unikie.com>
+Date:   Tue, 19 Nov 2019 11:23:18 +0200
+In-Reply-To: <20191114111325.2027-1-jouni.hogander@unikie.com> (jouni
+        hogander's message of "Thu, 14 Nov 2019 13:13:25 +0200")
+Message-ID: <871ru4rzi1.fsf@unikie.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.2 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <44352432-e6ad-3e3c-4fea-9ad59f7c4ae9@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: qsd2p0DVOnO7meu3idVowQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Nov 18 20:33, Heiner Kallweit wrote:
-> On 18.11.2019 10:55, Corinna Vinschen wrote:
-> > During performance testing, I found that one of my r8169 NICs suffered
-> > a major performance loss, a 8168c model.
-> >=20
-> > Running netperf's TCP_STREAM test didn't return the expected
-> > throughput of > 900 Mb/s, but rather only about 22 Mb/s.  Strange
-> > enough, running the TCP_MAERTS and UDP_STREAM tests all returned with
-> > throughput > 900 Mb/s, as did TCP_STREAM with the other r8169 NICs I ca=
-n
-> > test (either one of 8169s, 8168e, 8168f).
-> >=20
-> > Bisecting turned up commit 93681cd7d94f83903cb3f0f95433d10c28a7e9a5,
-> > "r8169: enable HW csum and TSO" as the culprit.
-> >=20
-> > I added my 8168c version, RTL_GIGA_MAC_VER_22, to the code
-> > special-casing the 8168evl as per the patch below.  This fixed the
-> > performance problem for me.
-> >=20
-> > Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
-> > Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
->=20
-> Thanks for reporting and the fix. Just two small nits:
-> - fix should be annotated "net", not "net-next"
-> - comment blocks in net subsystem don't have /* on a separate line
+jouni.hogander@unikie.com writes:
 
-See my v2 patch.
+> From: Jouni Hogander <jouni.hogander@unikie.com>
+>
+> net_rx_queue_update_kobjects and netdev_queue_update_kobjects are
+> leaking memory in their error paths. Leak was originally reported
+> by Syzkaller:
+>
+> BUG: memory leak
+> unreferenced object 0xffff8880679f8b08 (size 8):
+>   comm "netdev_register", pid 269, jiffies 4294693094 (age 12.132s)
+>   hex dump (first 8 bytes):
+>     72 78 2d 30 00 36 20 d4                          rx-0.6 .
+>   backtrace:
+>     [<000000008c93818e>] __kmalloc_track_caller+0x16e/0x290
+>     [<000000001f2e4e49>] kvasprintf+0xb1/0x140
+>     [<000000007f313394>] kvasprintf_const+0x56/0x160
+>     [<00000000aeca11c8>] kobject_set_name_vargs+0x5b/0x140
+>     [<0000000073a0367c>] kobject_init_and_add+0xd8/0x170
+>     [<0000000088838e4b>] net_rx_queue_update_kobjects+0x152/0x560
+>     [<000000006be5f104>] netdev_register_kobject+0x210/0x380
+>     [<00000000e31dab9d>] register_netdevice+0xa1b/0xf00
+>     [<00000000f68b2465>] __tun_chr_ioctl+0x20d5/0x3dd0
+>     [<000000004c50599f>] tun_chr_ioctl+0x2f/0x40
+>     [<00000000bbd4c317>] do_vfs_ioctl+0x1c7/0x1510
+>     [<00000000d4c59e8f>] ksys_ioctl+0x99/0xb0
+>     [<00000000946aea81>] __x64_sys_ioctl+0x78/0xb0
+>     [<0000000038d946e5>] do_syscall_64+0x16f/0x580
+>     [<00000000e0aa5d8f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     [<00000000285b3d1a>] 0xffffffffffffffff
+>
+> Cc: David Miller <davem@davemloft.net>
+> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+> ---
+>  net/core/net-sysfs.c | 34 ++++++++++++++++++++++++----------
+>  1 file changed, 24 insertions(+), 10 deletions(-)
+>
+> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> index 865ba6ca16eb..2f44c6a3bcae 100644
+> --- a/net/core/net-sysfs.c
+> +++ b/net/core/net-sysfs.c
+> @@ -923,20 +923,25 @@ static int rx_queue_add_kobject(struct net_device *=
+dev, int index)
+>  	error =3D kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
+>  				     "rx-%u", index);
+>  	if (error)
+> -		return error;
+> +		goto err_init_and_add;
+>=20=20
+>  	dev_hold(queue->dev);
+>=20=20
+>  	if (dev->sysfs_rx_queue_group) {
+>  		error =3D sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+> -		if (error) {
+> -			kobject_put(kobj);
+> -			return error;
+> -		}
+> +		if (error)
+> +			goto err_sysfs_create;
+>  	}
+>=20=20
+>  	kobject_uevent(kobj, KOBJ_ADD);
+>=20=20
+> +	return error;
+> +
+> +err_sysfs_create:
+> +	kobject_put(kobj);
+> +err_init_and_add:
+> +	kfree_const(kobj->name);
+> +
+>  	return error;
+>  }
+>  #endif /* CONFIG_SYSFS */
+> @@ -968,6 +973,7 @@ net_rx_queue_update_kobjects(struct net_device *dev, =
+int old_num, int new_num)
+>  		if (dev->sysfs_rx_queue_group)
+>  			sysfs_remove_group(kobj, dev->sysfs_rx_queue_group);
+>  		kobject_put(kobj);
+> +		kfree_const(kobj->name);
+>  	}
+>=20=20
+>  	return error;
+> @@ -1461,21 +1467,28 @@ static int netdev_queue_add_kobject(struct net_de=
+vice *dev, int index)
+>  	error =3D kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+>  				     "tx-%u", index);
+>  	if (error)
+> -		return error;
+> +		goto err_init_and_add;
+>=20=20
+>  	dev_hold(queue->dev);
+>=20=20
+>  #ifdef CONFIG_BQL
+>  	error =3D sysfs_create_group(kobj, &dql_group);
+> -	if (error) {
+> -		kobject_put(kobj);
+> -		return error;
+> -	}
+> +	if (error)
+> +		goto err_sysfs_create;
+>  #endif
+>=20=20
+>  	kobject_uevent(kobj, KOBJ_ADD);
+>=20=20
+>  	return 0;
+> +
+> +#ifdef CONFIG_BQL
+> +err_sysfs_create:
+> +	kobject_put(kobj);
+> +#endif
+> +err_init_and_add:
+> +	kfree_const(kobj->name);
+> +
+> +	return error;
+>  }
+>  #endif /* CONFIG_SYSFS */
+>=20=20
+> @@ -1503,6 +1516,7 @@ netdev_queue_update_kobjects(struct net_device *dev=
+, int old_num, int new_num)
+>  		sysfs_remove_group(&queue->kobj, &dql_group);
+>  #endif
+>  		kobject_put(&queue->kobj);
+> +		kfree_const(queue->kobj.name);
+>  	}
+>=20=20
+>  	return error;
 
-> Apart from that:
-> Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
->=20
-> Out of curiosity: Did you test also with iperf3? If yes,
-> do you see the same issue?
+This patch should be ignored. Rootcause for this memory leak is
+reference count leak. I will upload another patch.
 
-I didn't test with iperf3 originally, but I did so now.  The results are
-the same.  941 Mbits/sec vs. 23.3 Mbits/sec.
+BR,
 
-
-Thanks,
-Corinna
-
+Jouni H=C3=B6gander
