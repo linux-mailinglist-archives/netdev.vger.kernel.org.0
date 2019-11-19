@@ -2,88 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04222101744
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 07:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B3811017EE
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 07:05:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731698AbfKSF7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 00:59:13 -0500
-Received: from mail-il1-f194.google.com ([209.85.166.194]:45598 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730873AbfKSFr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 00:47:59 -0500
-Received: by mail-il1-f194.google.com with SMTP id o18so18458361ils.12;
-        Mon, 18 Nov 2019 21:47:59 -0800 (PST)
+        id S1729951AbfKSGEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 01:04:43 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:43217 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728668AbfKSGEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 01:04:42 -0500
+Received: by mail-lj1-f194.google.com with SMTP id y23so21841560ljh.10;
+        Mon, 18 Nov 2019 22:04:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=IPbz9l190FdmmP/HIacCh9FEoAxpsKjWPjvXe684Hi8=;
-        b=XHjzPY426lID6GEuEBPHFjTp/lisw9NDm0k1lmLR6G1YFopEh5wKt9cmkl3lstJUy5
-         S32P0X9iVj9mpTQs+zB4Rd5Wee2mACD/+79dFlmwbfaHBgkbqrgSNa58zzms/nIbH7BB
-         XDrT0DUJqFO8BAO4GWosLVMg2N+JdA4O72YpJhXot6i7xPjQiB0Ibi0WPeLqLEntMq1M
-         qW3ENXNVvJQtyJrjMp3POrto4Y89ezTcTz0pHqsx0GrJxKZmQ/u+n8Pd3Zaee5Avlv5r
-         70a/Czns9D1ZHY09tiDo605EEkytT9o9067hU5D8rE+jzEeVe97TA8dynz76C2UR362R
-         5Azw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LWwgCpo+ONcCb1xvseKQ8V1GFmEQ8iCPPdkSeh2r6dE=;
+        b=Pzo7t/rdLPqs5Nh2p+mkIgQ+P64x4igcfBM1hW/EFhKBXktBcoEdHd4i1xc6go+vDe
+         Ki3j3wlgAUso/nWk2wqVzKzEHyoKr/dtEHuCxoUtlQiS/ZyvqlEyCNshAFkDSAGRjNrr
+         Q2fONQKrfaS7iMz21SbEZ4lggxI/mu85xksbOwA2t+cwhB8VFVeJE/A4PGH1GqWi+U+E
+         IbjnhBKUZ/yDt7iVe45EBNvSus8oPgEHqqBXBbU9B5SsPRb+FmJdI7bxh4ROMD0t175A
+         YsWIofbiM8o8V2AyNusI5krU33Z7BdAFg6tCQmqeSJO5pkH75ohFRe9XTUQfCdCVXIbK
+         TqMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=IPbz9l190FdmmP/HIacCh9FEoAxpsKjWPjvXe684Hi8=;
-        b=NsSUIvBGID2HP9Wt/FlYr3cbLVfO6Qf4VMJmdJDqp1WwovD7aZMmkfRfeINfTQ6nky
-         YRgUKyVMcQW+9ue6tctZLP6Wn5/LwyQyxeYWhED9iwZrrH5UMtk43bWe4lNVAXcqnkat
-         ITknwR6UPdFShCQ9Gv/xEmLOXCVlX7NLQl8vrpgU2A3BHDTNECxearzASSA89ZNa6d2d
-         Q4vAGnxbLd05tNFsvns2w+KrpJgACSXDqVsmp9ABaj7cNVAxe73rowA+B/Ndc4EPkBhe
-         XdzUaQlt1JJyXhQ7IPE996kyNTmcsBFmmH+jcDVJP3d+uIKCcSBaXa6LJhDcTzTvUcSh
-         Gb6A==
-X-Gm-Message-State: APjAAAVHWZsvreb1H1n810eruq2oO4MqFUDQWsxo75BMl6WmyQsl8glB
-        LApm2+s8+dniQ3cbGYQ5xYA=
-X-Google-Smtp-Source: APXvYqzX7QU2fknvTCLaROE5n/eN1zTPJpliVi7yGVgZU1K2YvZg2/ZGxiI0abhRTKOg+8K+zRv47g==
-X-Received: by 2002:a92:6611:: with SMTP id a17mr19096397ilc.148.1574142478680;
-        Mon, 18 Nov 2019 21:47:58 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id z24sm4023653ioc.47.2019.11.18.21.47.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 21:47:58 -0800 (PST)
-Date:   Mon, 18 Nov 2019 21:47:49 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        Willem de Bruijn <willemb@google.com>
-Message-ID: <5dd38205959a5_613b2afc5fa285c4e6@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191118154051.242699-1-willemdebruijn.kernel@gmail.com>
-References: <20191118154051.242699-1-willemdebruijn.kernel@gmail.com>
-Subject: RE: [PATCH] net/tls: enable sk_msg redirect to tls socket egress
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LWwgCpo+ONcCb1xvseKQ8V1GFmEQ8iCPPdkSeh2r6dE=;
+        b=JARsTbbGTzUxRijVlvSZ6PTc9FdHBoGKjiP7wULR3/mL2jEmCNvqU3F8M47gzjtwym
+         EEGkwiI7CH72Fl2biL1zYzhdxbiSjUE6PQXLgrphz69gexBM4UPErWuciAjBB0viBrg2
+         mDZc+OIQsE/ril4sknuOEFcZbW16lHA8WO5uUWpzcQDa0UcfHleoCiB9zKaWQJa89qMA
+         YswXwrQ3Zy6auD7pzbsGefbtvNiVO2ChAIqy0Kye30tnR5ntt528fgPDPloaDBJBNN8M
+         OOD9PsLsZXqAKyxBGBkNX1MGkAPbzNIrKCFqoDXoqa+cQUk2PrN5CY+MF9sGxuQrUfkb
+         Ov5w==
+X-Gm-Message-State: APjAAAU78UhCDeWExt/Mag5Mon6XvmamHqJxnnz8n5LE2q2qdXxRTzhl
+        hyeXZCyVh0L/lTSDeH451JEOG1D/zWjD5T2hSuA=
+X-Google-Smtp-Source: APXvYqwtBfqqZPW51aleFh11Rq4IMdt72P+yjWQChrFc5L2+g8hcqM9UfSWGDKHEwtgDfjNdefSRYxkwkV8XSN5wPEs=
+X-Received: by 2002:a2e:970a:: with SMTP id r10mr2346980lji.142.1574143479689;
+ Mon, 18 Nov 2019 22:04:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20191114194636.811109457@goodmis.org> <20191114194738.938540273@goodmis.org>
+ <20191115215125.mbqv7taqnx376yed@ast-mbp.dhcp.thefacebook.com> <20191117171835.35af6c0e@gandalf.local.home>
+In-Reply-To: <20191117171835.35af6c0e@gandalf.local.home>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 18 Nov 2019 22:04:28 -0800
+Message-ID: <CAADnVQ+OzTikM9EhrfsC7NFsVYhATW1SVHxK64w3xn9qpk81pg@mail.gmail.com>
+Subject: Re: [RFC][PATCH 1/2] ftrace: Add modify_ftrace_direct()
+To:     Steven Rostedt <rostedt@goodmis.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> Bring back tls_sw_sendpage_locked. sk_msg redirection into a socket
-> with TLS_TX takes the following path:
-> 
->   tcp_bpf_sendmsg_redir
->     tcp_bpf_push_locked
->       tcp_bpf_push
->         kernel_sendpage_locked
->           sock->ops->sendpage_locked
-> 
-> Also update the flags test in tls_sw_sendpage_locked to allow flag
-> MSG_NO_SHARED_FRAGS. bpf_tcp_sendmsg sets this.
-> 
-> Link: https://lore.kernel.org/netdev/CA+FuTSdaAawmZ2N8nfDDKu3XLpXBbMtcCT0q4FntDD2gn8ASUw@mail.gmail.com/T/#t
-> Link: https://github.com/wdebruij/kerneltools/commits/icept.2
-> Fixes: 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect through ULP")
-> Fixes: f3de19af0f5b ("Revert \"net/tls: remove unused function tls_sw_sendpage_locked\"")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
+On Sun, Nov 17, 2019 at 2:18 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Fri, 15 Nov 2019 13:51:26 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+>
+> > Thanks a lot for implementing it.
+> > Switching to iterator just to modify the call.. hmm.
+> > So "call direct_bpf_A" gets replaced to "call ftrace_stub" to do the iterator
+> > only to patch "call direct_bpf_B" later. I'm struggling to see why do that when
+> > arch can provide call to call rewrite easily. x86 and others have such ability
+> > already. I don't understand why you want to sacrifice simplicity here.
+> > Anyway with all 3 apis (register, modify, unreg) it looks complete.
+> > I'll start playing with it on Monday.
+>
+> Now if you take my latest for-next branch, and add the patch below,
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+I took your for-next without the extra patch and used it from bpf trampoline.
+It's looking good so far. Passed basic testing. Will add more stress tests.
+
+Do you mind doing:
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 73eb2e93593f..6ddb203ca550 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -256,16 +256,16 @@ struct ftrace_direct_func
+*ftrace_find_direct_func(unsigned long addr);
+ # define ftrace_direct_func_count 0
+ static inline int register_ftrace_direct(unsigned long ip, unsigned long addr)
+ {
+-       return -ENODEV;
++       return -ENOTSUPP;
+ }
+ static inline int unregister_ftrace_direct(unsigned long ip, unsigned
+long addr)
+ {
+-       return -ENODEV;
++       return -ENOTSUPP;
+ }
+ static inline int modify_ftrace_direct(unsigned long ip,
+                                       unsigned long old_addr,
+unsigned long new_addr)
+ {
+-       return -ENODEV;
++       return -ENOTSUPP;
+ }
+
+otherwise ENODEV is a valid error when ip is incorrect which is
+indistinguishable from ftrace not compiled in.
