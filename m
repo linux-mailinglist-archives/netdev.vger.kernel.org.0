@@ -2,72 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C738102F8C
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:50:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAFA102F97
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 23:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727336AbfKSWux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 17:50:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46166 "EHLO
+        id S1727226AbfKSWzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 17:55:15 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:46190 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726290AbfKSWuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:50:52 -0500
+        with ESMTP id S1726196AbfKSWzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 17:55:14 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EC2671423DA68;
-        Tue, 19 Nov 2019 14:50:51 -0800 (PST)
-Date:   Tue, 19 Nov 2019 14:50:48 -0800 (PST)
-Message-Id: <20191119.145048.487849503145486152.davem@davemloft.net>
-To:     anders.roxell@linaro.org
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, paulmck@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ipmr: fix suspicious RCU warning
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3F1551424DB5B;
+        Tue, 19 Nov 2019 14:55:14 -0800 (PST)
+Date:   Tue, 19 Nov 2019 14:55:13 -0800 (PST)
+Message-Id: <20191119.145513.561465860770576481.davem@davemloft.net>
+To:     hslester96@gmail.com
+Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] net: fec: fix clock count mis-match
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191118090925.2474-1-anders.roxell@linaro.org>
-References: <20191118090925.2474-1-anders.roxell@linaro.org>
+In-Reply-To: <20191118121826.26353-1-hslester96@gmail.com>
+References: <20191118121826.26353-1-hslester96@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 Nov 2019 14:50:52 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 Nov 2019 14:55:14 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
-Date: Mon, 18 Nov 2019 10:09:25 +0100
+From: Chuhong Yuan <hslester96@gmail.com>
+Date: Mon, 18 Nov 2019 20:18:26 +0800
 
-> @@ -108,9 +108,18 @@ static void igmpmsg_netlink_event(struct mr_table *mrt, struct sk_buff *pkt);
->  static void mroute_clean_tables(struct mr_table *mrt, int flags);
->  static void ipmr_expire_process(struct timer_list *t);
->  
-> +#ifdef CONFIG_PROVE_LOCKING
-> +int ip_mr_initialized;
-> +void ip_mr_now_initialized(void) { ip_mr_initialized = 1; }
-> +#else
-> +const int ip_mr_initialized = 1;
-> +void ip_mr_now_initialized(void) { }
-> +#endif
+> pm_runtime_put_autosuspend in probe will call suspend to disable clks
+> automatically if CONFIG_PM is defined. (If CONFIG_PM is not defined,
+> its implementation will be empty, then suspend will not be called.)
+> 
+> Therefore, we can call pm_runtime_get_sync to resume it first to enable
+> clks, which matches the suspend. (Only when CONFIG_PM is defined, otherwise
+> pm_runtime_get_sync will also be empty, then resume will not be called.)
+> 
+> Then it is fine to disable clks without causing clock count mis-match.
+> 
+> Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 
-This seems excessive and a bit not so pretty.
-
-> +
->  #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
->  #define ipmr_for_each_table(mrt, net) \
-> -	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
-> +	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
-> +			(lockdep_rtnl_is_held() || !ip_mr_initialized))
->  
->  static struct mr_table *ipmr_mr_table_iter(struct net *net,
->  					   struct mr_table *mrt)
-
-The problematic code path is ipmr_rules_init() done during ipmr_net_init().
-
-You can just wrap this call around RCU locking or take the RTNL mutex.
-
-That way you don't need to rediculous ip_mr_initialized knob which frankly
-doesn't even seem accurate to me.  It's a centralized global variable
-which is holding state about multiple network namespace objects which makes
-absolutely no sense at all, it's wrong.
+Please fix the commit message typos pointed out by Andy Duan and resubmit,
+thank you.
