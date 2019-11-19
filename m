@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4788101CE2
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 09:21:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF031101BBF
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 09:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbfKSIUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 03:20:42 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:19033 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727455AbfKSIQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 03:16:58 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd3a4f10000>; Tue, 19 Nov 2019 00:16:49 -0800
+        id S1727486AbfKSIQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 03:16:57 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:15391 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbfKSIQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 03:16:55 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dd3a4f80002>; Tue, 19 Nov 2019 00:16:56 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 19 Nov 2019 00:16:52 -0800
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 19 Nov 2019 00:16:53 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 19 Nov 2019 00:16:52 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 19 Nov
- 2019 08:16:51 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Tue, 19 Nov 2019 08:16:50 +0000
+        by hqpgpgate101.nvidia.com on Tue, 19 Nov 2019 00:16:53 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 19 Nov
+ 2019 08:16:53 +0000
+Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Tue, 19 Nov 2019 08:16:51 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dd3a4f10001>; Tue, 19 Nov 2019 00:16:50 -0800
+        id <B5dd3a4f20004>; Tue, 19 Nov 2019 00:16:51 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -58,9 +58,9 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
         John Hubbard <jhubbard@nvidia.com>,
         Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v6 04/24] mm: Cleanup __put_devmap_managed_page() vs ->page_free()
-Date:   Tue, 19 Nov 2019 00:16:23 -0800
-Message-ID: <20191119081643.1866232-5-jhubbard@nvidia.com>
+Subject: [PATCH v6 05/24] mm: devmap: refactor 1-based refcounting for ZONE_DEVICE pages
+Date:   Tue, 19 Nov 2019 00:16:24 -0800
+Message-ID: <20191119081643.1866232-6-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191119081643.1866232-1-jhubbard@nvidia.com>
 References: <20191119081643.1866232-1-jhubbard@nvidia.com>
@@ -69,166 +69,141 @@ X-NVConfidentiality: public
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574151409; bh=tsex47R2BQW/HRhxz4q5zTudp/GozzJHGnDF0/waCbA=;
+        t=1574151416; bh=byIqgGf1EJth9UpGxCEb3oipovUAmrOXJL84EZuQwTc=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
          Content-Type:Content-Transfer-Encoding;
-        b=gp1SuuI66a3PONdY/pqKkgxYKXOfezgEqAEr9rPrdLuGxPmHb7ilMqLVoaeHD4LnO
-         ZjOI1t5XS/C/Zd4vfaPb6e4PxFYZcPVGzhnQn6daxkNy8pE+LwcG0RlPBTgCeoFHjY
-         /ca2D2ugd937CcZf0TjAt7BKiWNaalp3qxkabhpRsGos3lC2tsq0Tkvf7SIp1EQYDp
-         acQVpOBMk7yUosdu0ZzEij5vpFX7qw07GT5VLUlILc+RirOJmf/vf+u9VVR+7Lt/zK
-         gxgQVPpYam3E+UzFTN2K5dhowUXmTUQ8b5vbBXVAUxeABfLOr/FQLMlkjVrw9hnVGZ
-         ie08E2O4oknlg==
+        b=WFQ2Rb/OjRFBK0FDh/p6JD8yf0znlCjWfjoHYDa7jgaZly6AXOdF8ZdU4Nnmje3BF
+         2e8vkwaYAMDZtAiwALmXv6NNdu6hjWABW2HjIsPq0ekWQ3UT2DZW4dTyicZeG+mxjt
+         ev4ZASM8E0cPNXNQHUbZK1iSh33dmIUJTKlg3ZI4nMxGZzVCWes/3iw1BLuf05ZcP4
+         yELPeHXX2qrgEWdeaUx81KJV5b5jSn5ecaU5Rmi19cLa9czyMr49M3199ISq47lHxy
+         YTF1az3J+H6j3nqpKX+q3yKU4b/1IbPRneHjm343IiKSHRLmeCa2du13vL6fBS1hRc
+         o3KWlqqsaqi+A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+An upcoming patch changes and complicates the refcounting and
+especially the "put page" aspects of it. In order to keep
+everything clean, refactor the devmap page release routines:
 
-After the removal of the device-public infrastructure there are only 2
-->page_free() call backs in the kernel. One of those is a device-private
-callback in the nouveau driver, the other is a generic wakeup needed in
-the DAX case. In the hopes that all ->page_free() callbacks can be
-migrated to common core kernel functionality, move the device-private
-specific actions in __put_devmap_managed_page() under the
-is_device_private_page() conditional, including the ->page_free()
-callback. For the other page types just open-code the generic wakeup.
+* Rename put_devmap_managed_page() to page_is_devmap_managed(),
+  and limit the functionality to "read only": return a bool,
+  with no side effects.
 
-Yes, the wakeup is only needed in the MEMORY_DEVICE_FSDAX case, but it
-does no harm in the MEMORY_DEVICE_DEVDAX and MEMORY_DEVICE_PCI_P2PDMA
-case.
+* Add a new routine, put_devmap_managed_page(), to handle checking
+  what kind of page it is, and what kind of refcount handling it
+  requires.
 
-Cc: Jan Kara <jack@suse.cz>
+* Rename __put_devmap_managed_page() to free_devmap_managed_page(),
+  and limit the functionality to unconditionally freeing a devmap
+  page.
+
+This is originally based on a separate patch by Ira Weiny, which
+applied to an early version of the put_user_page() experiments.
+Since then, J=C3=A9r=C3=B4me Glisse suggested the refactoring described abo=
+ve.
+
 Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Suggested-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/nvdimm/pmem.c |  6 ----
- mm/memremap.c         | 80 ++++++++++++++++++++++++-------------------
- 2 files changed, 44 insertions(+), 42 deletions(-)
+ include/linux/mm.h | 27 ++++++++++++++++++++++++---
+ mm/memremap.c      | 16 ++--------------
+ 2 files changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-index f9f76f6ba07b..21db1ce8c0ae 100644
---- a/drivers/nvdimm/pmem.c
-+++ b/drivers/nvdimm/pmem.c
-@@ -338,13 +338,7 @@ static void pmem_release_disk(void *__pmem)
- 	put_disk(pmem->disk);
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index a2adf95b3f9c..96228376139c 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -967,9 +967,10 @@ static inline bool is_zone_device_page(const struct pa=
+ge *page)
+ #endif
+=20
+ #ifdef CONFIG_DEV_PAGEMAP_OPS
+-void __put_devmap_managed_page(struct page *page);
++void free_devmap_managed_page(struct page *page);
+ DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
+-static inline bool put_devmap_managed_page(struct page *page)
++
++static inline bool page_is_devmap_managed(struct page *page)
+ {
+ 	if (!static_branch_unlikely(&devmap_managed_key))
+ 		return false;
+@@ -978,7 +979,6 @@ static inline bool put_devmap_managed_page(struct page =
+*page)
+ 	switch (page->pgmap->type) {
+ 	case MEMORY_DEVICE_PRIVATE:
+ 	case MEMORY_DEVICE_FS_DAX:
+-		__put_devmap_managed_page(page);
+ 		return true;
+ 	default:
+ 		break;
+@@ -986,6 +986,27 @@ static inline bool put_devmap_managed_page(struct page=
+ *page)
+ 	return false;
  }
 =20
--static void pmem_pagemap_page_free(struct page *page)
--{
--	wake_up_var(&page->_refcount);
--}
--
- static const struct dev_pagemap_ops fsdax_pagemap_ops =3D {
--	.page_free		=3D pmem_pagemap_page_free,
- 	.kill			=3D pmem_pagemap_kill,
- 	.cleanup		=3D pmem_pagemap_cleanup,
- };
++static inline bool put_devmap_managed_page(struct page *page)
++{
++	bool is_devmap =3D page_is_devmap_managed(page);
++
++	if (is_devmap) {
++		int count =3D page_ref_dec_return(page);
++
++		/*
++		 * devmap page refcounts are 1-based, rather than 0-based: if
++		 * refcount is 1, then the page is free and the refcount is
++		 * stable because nobody holds a reference on the page.
++		 */
++		if (count =3D=3D 1)
++			free_devmap_managed_page(page);
++		else if (!count)
++			__put_page(page);
++	}
++
++	return is_devmap;
++}
++
+ #else /* CONFIG_DEV_PAGEMAP_OPS */
+ static inline bool put_devmap_managed_page(struct page *page)
+ {
 diff --git a/mm/memremap.c b/mm/memremap.c
-index 03ccbdfeb697..e899fa876a62 100644
+index e899fa876a62..2ba773859031 100644
 --- a/mm/memremap.c
 +++ b/mm/memremap.c
-@@ -27,7 +27,8 @@ static void devmap_managed_enable_put(void)
+@@ -411,20 +411,8 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+ EXPORT_SYMBOL_GPL(get_dev_pagemap);
 =20
- static int devmap_managed_enable_get(struct dev_pagemap *pgmap)
+ #ifdef CONFIG_DEV_PAGEMAP_OPS
+-void __put_devmap_managed_page(struct page *page)
++void free_devmap_managed_page(struct page *page)
  {
--	if (!pgmap->ops || !pgmap->ops->page_free) {
-+	if (pgmap->type =3D=3D MEMORY_DEVICE_PRIVATE &&
-+	    (!pgmap->ops || !pgmap->ops->page_free)) {
- 		WARN(1, "Missing page_free method\n");
- 		return -EINVAL;
- 	}
-@@ -414,44 +415,51 @@ void __put_devmap_managed_page(struct page *page)
- {
- 	int count =3D page_ref_dec_return(page);
-=20
--	/*
--	 * If refcount is 1 then page is freed and refcount is stable as nobody
--	 * holds a reference on the page.
--	 */
--	if (count =3D=3D 1) {
--		/* Clear Active bit in case of parallel mark_page_accessed */
--		__ClearPageActive(page);
--		__ClearPageWaiters(page);
-+	/* still busy */
-+	if (count > 1)
-+		return;
-=20
--		mem_cgroup_uncharge(page);
-+	/* only triggered by the dev_pagemap shutdown path */
-+	if (count =3D=3D 0) {
-+		__put_page(page);
-+		return;
-+	}
-=20
--		/*
--		 * When a device_private page is freed, the page->mapping field
--		 * may still contain a (stale) mapping value. For example, the
--		 * lower bits of page->mapping may still identify the page as
--		 * an anonymous page. Ultimately, this entire field is just
--		 * stale and wrong, and it will cause errors if not cleared.
--		 * One example is:
--		 *
--		 *  migrate_vma_pages()
--		 *    migrate_vma_insert_page()
--		 *      page_add_new_anon_rmap()
--		 *        __page_set_anon_rmap()
--		 *          ...checks page->mapping, via PageAnon(page) call,
--		 *            and incorrectly concludes that the page is an
--		 *            anonymous page. Therefore, it incorrectly,
--		 *            silently fails to set up the new anon rmap.
--		 *
--		 * For other types of ZONE_DEVICE pages, migration is either
--		 * handled differently or not done at all, so there is no need
--		 * to clear page->mapping.
--		 */
--		if (is_device_private_page(page))
--			page->mapping =3D NULL;
-+	/* notify page idle for dax */
-+	if (!is_device_private_page(page)) {
-+		wake_up_var(&page->_refcount);
-+		return;
-+	}
-=20
--		page->pgmap->ops->page_free(page);
--	} else if (!count)
+-	int count =3D page_ref_dec_return(page);
+-
+-	/* still busy */
+-	if (count > 1)
+-		return;
+-
+-	/* only triggered by the dev_pagemap shutdown path */
+-	if (count =3D=3D 0) {
 -		__put_page(page);
-+	/* Clear Active bit in case of parallel mark_page_accessed */
-+	__ClearPageActive(page);
-+	__ClearPageWaiters(page);
-+
-+	mem_cgroup_uncharge(page);
-+
-+	/*
-+	 * When a device_private page is freed, the page->mapping field
-+	 * may still contain a (stale) mapping value. For example, the
-+	 * lower bits of page->mapping may still identify the page as an
-+	 * anonymous page. Ultimately, this entire field is just stale
-+	 * and wrong, and it will cause errors if not cleared.  One
-+	 * example is:
-+	 *
-+	 *  migrate_vma_pages()
-+	 *    migrate_vma_insert_page()
-+	 *      page_add_new_anon_rmap()
-+	 *        __page_set_anon_rmap()
-+	 *          ...checks page->mapping, via PageAnon(page) call,
-+	 *            and incorrectly concludes that the page is an
-+	 *            anonymous page. Therefore, it incorrectly,
-+	 *            silently fails to set up the new anon rmap.
-+	 *
-+	 * For other types of ZONE_DEVICE pages, migration is either
-+	 * handled differently or not done at all, so there is no need
-+	 * to clear page->mapping.
-+	 */
-+	page->mapping =3D NULL;
-+	page->pgmap->ops->page_free(page);
+-		return;
+-	}
+-
+ 	/* notify page idle for dax */
+ 	if (!is_device_private_page(page)) {
+ 		wake_up_var(&page->_refcount);
+@@ -461,5 +449,5 @@ void __put_devmap_managed_page(struct page *page)
+ 	page->mapping =3D NULL;
+ 	page->pgmap->ops->page_free(page);
  }
- EXPORT_SYMBOL(__put_devmap_managed_page);
+-EXPORT_SYMBOL(__put_devmap_managed_page);
++EXPORT_SYMBOL(free_devmap_managed_page);
  #endif /* CONFIG_DEV_PAGEMAP_OPS */
 --=20
 2.24.0
