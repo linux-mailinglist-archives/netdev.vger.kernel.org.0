@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 111D710230A
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:31:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA5E10231E
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 12:35:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727763AbfKSLaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 06:30:52 -0500
-Received: from mx2.suse.de ([195.135.220.15]:60704 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725280AbfKSLaw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 06:30:52 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id EFF35BC38;
-        Tue, 19 Nov 2019 11:30:49 +0000 (UTC)
-Message-ID: <052d07fb4eb79b29dd58cab577d59bab6684329a.camel@suse.de>
-Subject: Re: [PATCH v2 1/6] linux/log2.h: Add roundup/rounddown_pow_two64()
- family of functions
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Andrew Murray <andrew.murray@arm.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, linux-pci@vger.kernel.org,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        linux-rdma@vger.kernel.org, maz@kernel.org, phil@raspberrypi.org,
-        iommu@lists.linux-foundation.org,
-        linux-rockchip@lists.infradead.org, f.fainelli@gmail.com,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-arm-kernel@lists.infradead.org, mbrugger@suse.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jeremy.linton@arm.com, Tom Joseph <tjoseph@cadence.com>,
-        wahrenst@gmx.net, james.quinlan@broadcom.com,
-        Robin Murphy <robin.murphy@arm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>
-Date:   Tue, 19 Nov 2019 12:30:47 +0100
-In-Reply-To: <20191119111320.GP43905@e119886-lin.cambridge.arm.com>
-References: <20191112155926.16476-1-nsaenzjulienne@suse.de>
-         <20191112155926.16476-2-nsaenzjulienne@suse.de>
-         <20191119111320.GP43905@e119886-lin.cambridge.arm.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-JCAElqvKu605DtMG+rxz"
-User-Agent: Evolution 3.34.1 
+        id S1728021AbfKSLdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 06:33:42 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39604 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728002AbfKSLdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 06:33:41 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t26so3142955wmi.4
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 03:33:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4uuUUTFItp2hkRWm7utdDbiOrPEc2C/0EgZNLd715sU=;
+        b=psJwVZr4W1eswyTNoI4nS/fUin/6nKR0d6nlfUbA5kwE7fV9QziqwSIRODWtDoeEsL
+         RQYonNOvGGzY9ypv8dU0jY48MCP3epYQT7t4BQoOuAnQR3LYQK6w+0QsWoFqSwYJEEXR
+         lMabPi2qaFe9T07s+Thqb80eX4LsXuC279PdzyV1FS4Knb+NArtAmK92VkmAqXEDbskH
+         1f5h0KcpiWDspy0yqyu6p4LQy2rQWhgBPV88OZ3alUevRq09gu5sQASRf37C3sCZOcy+
+         wzt6LS/DLgNyt/1pJJte0Xs3XjUt08W0Dekng3CtRVPlJtaKczSBJ2RGj21/cOgFYw4R
+         f9IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4uuUUTFItp2hkRWm7utdDbiOrPEc2C/0EgZNLd715sU=;
+        b=l3AtDpCt2YNkoUzf14aFmfLXD2/alU0m09iv4XiVJ9Z2AXCdXFNTSMRhXb8jXfqxwj
+         qr4PCDgDpmFKDlQRGzq2VPncewQ/5n/ArHx14XvSBP20t8shcKPvLVpHsrXu9HnbGxHa
+         7sW3KY2DOXGNLXBp0Wqkvtntg4oi7y9EUpk4YqhNcDfXG7Oqz2+FVd1jeGXwo291Sxp7
+         Z98Gpv2JjtDGBEbJweNpFVvpU/nwfbIZsT1wIPDsoAyTXDZvDM8A7avGf0rtDoTy1sjy
+         Gecl9xR6AfYncdsZ8XHmN+H97pZ7mVGKsZmk7IyDMQd/uc0+TOsBCK674mAxOJ9KKOe5
+         BwnA==
+X-Gm-Message-State: APjAAAXslLpBnp5OAZ7kCYK474OgCR4bUCkVseXn9qhCbzM1BSq7H9PB
+        aeGyD5IXGkVSwRyGRDAG1VVYaQ==
+X-Google-Smtp-Source: APXvYqy8wzmdkAHBNOOnA9k3O6Bw6ULipgwWO75NMokntNA/XO85N9odi10xMcktCDvzarjE13HF5g==
+X-Received: by 2002:a1c:64d4:: with SMTP id y203mr5020995wmb.27.1574163219676;
+        Tue, 19 Nov 2019 03:33:39 -0800 (PST)
+Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id m3sm26355751wrw.20.2019.11.19.03.33.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 03:33:39 -0800 (PST)
+Date:   Tue, 19 Nov 2019 13:33:36 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com,
+        mcroce@redhat.com, jonathan.lemon@gmail.com
+Subject: Re: [PATCH v4 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191119113336.GA25152@apalos.home>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+ <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
+ <20191119122358.12276da4@carbon>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119122358.12276da4@carbon>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > index dfc2501c35d9..4f9aed7bce5a 100644
+> > --- a/net/core/page_pool.c
+> > +++ b/net/core/page_pool.c
+> > @@ -47,6 +47,13 @@ static int page_pool_init(struct page_pool *pool,
+> >  	    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
+> >  		return -EINVAL;
+> >  
+> > +	/* In order to request DMA-sync-for-device the page needs to
+> > +	 * be mapped
+> > +	 */
+> > +	if ((pool->p.flags & PP_FLAG_DMA_SYNC_DEV) &&
+> > +	    !(pool->p.flags & PP_FLAG_DMA_MAP))
+> > +		return -EINVAL;
+> > +
+> 
+> I like that you have moved this check to setup time.
+> 
+> There are two other parameters the DMA_SYNC_DEV depend on:
+> 
+>  	struct page_pool_params pp_params = {
+>  		.order = 0,
+> -		.flags = PP_FLAG_DMA_MAP,
+> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+>  		.pool_size = size,
+>  		.nid = cpu_to_node(0),
+>  		.dev = pp->dev->dev.parent,
+>  		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> +		.offset = pp->rx_offset_correction,
+> +		.max_len = MVNETA_MAX_RX_BUF_SIZE,
+>  	};
+> 
+> Can you add a check, that .max_len must not be zero.  The reason is
+> that I can easily see people misconfiguring this.  And the effect is
+> that the DMA-sync-for-device is essentially disabled, without user
+> realizing this. The not-realizing part is really bad, especially
+> because bugs that can occur from this are very rare and hard to catch.
 
---=-JCAElqvKu605DtMG+rxz
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
++1 we sync based on the min() value of those 
 
-Hi Andrew, thanks for the review.
-> > +/**
-> > + * __roundup_pow_of_two64() - round 64bit value up to nearest power of=
- two
-> > + * @n: value to round up
-> > + */
-> > +static inline __attribute__((const)) __u64 __roundup_pow_of_two64(__u6=
-4 n)
->=20
-> To be consistent with other functions in the same file (__ilog_u64) you m=
-ay
-> want to rename this to __roundup_pow_of_two_u64.
+> 
+> I'm up for discussing if there should be a similar check for .offset.
+> IMHO we should also check .offset is configured, and then be open to
+> remove this check once a driver user want to use offset=0.  Does the
+> mvneta driver already have a use-case for this (in non-XDP mode)?
 
-Sounds good to me.
+Not sure about this, since it does not break anything apart from some
+performance hit
 
-> Also do you know why u64 is used in some places and __u64 in others?
-
-That's unwarranted, it should be __u64 everywhere.
-
-> > +{
-> > +	return 1UL << fls64(n - 1);
->=20
-> Does this need to be (and for the others):
->=20
-> return 1ULL << fls64(n - 1);
->=20
-> Notice that the PCI drivers you convert, all use 1ULL.
-
-Noted
-
-Regards,
-Nicolas
-
-
---=-JCAElqvKu605DtMG+rxz
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3T0mcACgkQlfZmHno8
-x/6BgQf9EPIQKoR6phksU0S8lgk9wqpGnUdxBbs82aHnTqsDgCrCDSnKXEYjrytg
-JP7gToqXjInWjAuYTza/e4u4j4nQShrZSrX/Wo7n0g/iOPzIrKgFEwt/I8JlZnxn
-eGSGgGDLXcFOIXzSy7aNsDEOHM1JS3Nan1xj+4vfNYb5bx3U7VlJuAAVsNZ7aLHu
-1JSo56OTcTN6DejhWw1GzvlTsqzLUa41v8BUgW19GyOv185sXkbfJImn1hgkRuKj
-JHu3GwUlrQkRrcAs0xqLRflUJHE8If7t+Xh+Su4ToLjWKyWvMu4fnPpwFXCyHhyG
-T2k6eYGiEuyKMYHxJg9YLmvjNMdJuA==
-=s9/D
------END PGP SIGNATURE-----
-
---=-JCAElqvKu605DtMG+rxz--
-
+Cheers
+/Ilias
+> 
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
