@@ -2,93 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46810102109
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:42:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7682F10212E
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 10:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbfKSJlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 04:41:37 -0500
-Received: from mx2.suse.de ([195.135.220.15]:51456 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727336AbfKSJlg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 04:41:36 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E917CB28C;
-        Tue, 19 Nov 2019 09:41:34 +0000 (UTC)
-Date:   Tue, 19 Nov 2019 10:41:34 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc:     Qian Cai <cai@lca.pw>, Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-Message-ID: <20191119094134.6hzbjc7l5ite6bpg@pathway.suse.cz>
-References: <20190904065455.GE3838@dhcp22.suse.cz>
- <20190904071911.GB11968@jagdpanzerIV>
- <20190904074312.GA25744@jagdpanzerIV>
- <1567599263.5576.72.camel@lca.pw>
- <20190904144850.GA8296@tigerII.localdomain>
- <1567629737.5576.87.camel@lca.pw>
- <20190905113208.GA521@jagdpanzerIV>
- <1573751570.5937.122.camel@lca.pw>
- <20191118152738.az364dczadskgimc@pathway.suse.cz>
- <20191119004119.GC208047@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191119004119.GC208047@google.com>
-User-Agent: NeoMutt/20170912 (1.9.0)
+        id S1726351AbfKSJvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 04:51:50 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34364 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725280AbfKSJvu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 04:51:50 -0500
+Received: by mail-lj1-f193.google.com with SMTP id 139so22583049ljf.1
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 01:51:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=OvPPW0nP0UgfQ0cd2818ZC0QNHA4p+yIjRu9N/3wtYo=;
+        b=b0zMvW/wq2UtrrKOBg69aowD6IdVyfCUiFgBBEnIsLKbEUATLJgG7eq0CKVpLnYzIu
+         N87KEg2JkDUa33vjatjXejzuAi7b38SU1602d1Xv/1cIWH6m9rPqcLszivTzGCoCVtVT
+         +iD0x0IoKf5aSguQzD/6oeiamabFsnW6k0uHhJ0qte0jhIylyJ8OKuv+Dl8fnoi+L3Lg
+         Acsse4jazlQfSnihmgxo9JBeALXdMAWl+wd6Jx2V0UpHs7bRunH0XTT7DZNq2YQIn4QM
+         VFTz3vcEn2J7WwKT+TRLkph1XIH5Fmu6H0iZFlgQHLBH2Gjn+HzGWYk+J6dPdkMnt1a7
+         xdRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OvPPW0nP0UgfQ0cd2818ZC0QNHA4p+yIjRu9N/3wtYo=;
+        b=MIBOiX392Tt+O2gxFSwP1BAh0WvsSvQqET+ccVMZqpQ9iS+BnHjHWpyZqWZern7VUE
+         d2m9wsvB8B8zBvF0+DWizDrx1dl3mD9/BUOmfRrihKGGH486ZBGdcyH+UucMPp0Ay9ey
+         MhLVXt+U2bccoel80T1lH7pW5x0IuO2HrVy86VCgz+7DvNywTKeTwu7iToUK1MI5G8j6
+         oIcVIaCtxX/7QsIW6FrJtXUiM+1BFdZsHKCtXWEUAPMwCsNfLJls473NGfSnsNXi7QsC
+         GoBSx5D1umDb7HNLL/afE+4mg1jr2NBRvmgY64PRZrQ6010SpWERFd/D4fGLEd2srOYC
+         r9rQ==
+X-Gm-Message-State: APjAAAXbon0Vt0MGNEagTpetJiI4dhbRLUvxkniioOFgaXBAU0QNHTaU
+        bKkitVG4ypKY4LWq2IVsv0acwIW4W/8=
+X-Google-Smtp-Source: APXvYqxMvaVkSetWh90rAx0T6PpSLO0pIrQeIlGZ8ZyAvCBmgwf8t9GvqxePdN4upw5fidq0dsMsbA==
+X-Received: by 2002:a2e:9194:: with SMTP id f20mr3088778ljg.154.1574157106443;
+        Tue, 19 Nov 2019 01:51:46 -0800 (PST)
+Received: from localhost.localdomain ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id k25sm9534905ljg.22.2019.11.19.01.51.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 01:51:45 -0800 (PST)
+From:   jouni.hogander@unikie.com
+To:     netdev@vger.kernel.org
+Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
+        David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
+Date:   Tue, 19 Nov 2019 11:51:21 +0200
+Message-Id: <20191119095121.6295-1-jouni.hogander@unikie.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 2019-11-19 09:41:19, Sergey Senozhatsky wrote:
-> On (19/11/18 16:27), Petr Mladek wrote:
-> > > > @@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
-> > > >  	pending_output = (curr_log_seq != log_next_seq);
-> > > >  	logbuf_unlock_irqrestore(flags);
-> > > >  
-> > > > +	if (!pending_output)
-> > > > +		return printed_len;
-> > > > +
-> > > >  	/* If called from the scheduler, we can not call up(). */
-> > > > -	if (!in_sched && pending_output) {
-> > > > +	if (!in_sched) {
-> > > >  		/*
-> > > >  		 * Disable preemption to avoid being preempted while holding
-> > > >  		 * console_sem which would prevent anyone from printing to
-> > > > @@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
-> > > >  		if (console_trylock_spinning())
-> > > >  			console_unlock();
-> > > >  		preempt_enable();
-> > > > -	}
-> > > >  
-> > > > -	if (pending_output)
-> > > > +		wake_up_interruptible(&log_wait);
-> > 
-> > I do not like this. As a result, normal printk() will always deadlock
-> > in the scheduler code, including WARN() calls. The chance of the
-> > deadlock is small now. It happens only when there is another
-> > process waiting for console_sem.
-> 
-> Why would it *always* deadlock? If this is the case, why we don't *always*
-> deadlock doing the very same wake_up_process() from console_unlock()?
+From: Jouni Hogander <jouni.hogander@unikie.com>
 
-I speak about _normal_ printk() and not about printk_deferred().
+kobject_init_and_add takes reference even when it fails. This has
+to be given up by the caller in error handling. Otherwise memory
+allocated by kobject_init_and_add is never freed.
 
-wake_up_process() is called in console_unlock() only when
-sem->wait_list is not empty, see up() in kernel/locking/semaphore.c.
-printk() itself uses console_trylock() and does not wait.
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+---
+ net/core/net-sysfs.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-I believe that this is the rason why printk_sched() was added
-so late in 2012. It was more than 10 years after adding
-the semaphore into console_unlock(). IMHO, the deadlock
-was rare. Of course, it was also hard to debug but it
-would not take 10 years.
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 865ba6ca16eb..4f404bf33e44 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -923,21 +923,23 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
+ 				     "rx-%u", index);
+ 	if (error)
+-		return error;
++		goto err;
+ 
+ 	dev_hold(queue->dev);
+ 
+ 	if (dev->sysfs_rx_queue_group) {
+ 		error = sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+-		if (error) {
+-			kobject_put(kobj);
+-			return error;
+-		}
++		if (error)
++			goto err;
+ 	}
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
+ 	return error;
++
++err:
++	kobject_put(kobj);
++	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+ 
+@@ -1461,21 +1463,21 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+ 				     "tx-%u", index);
+ 	if (error)
+-		return error;
++		goto err;
+ 
+ 	dev_hold(queue->dev);
+ 
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+-	if (error) {
+-		kobject_put(kobj);
+-		return error;
+-	}
++	if (error)
++		goto err;
+ #endif
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
+-	return 0;
++err:
++	kobject_put(kobj);
++	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+ 
+-- 
+2.17.1
 
-Best Regards,
-Petr
