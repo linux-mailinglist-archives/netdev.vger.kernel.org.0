@@ -2,105 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA55102C6A
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 20:15:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67278102C90
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 20:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbfKSTPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 14:15:49 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:34031 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbfKSTPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 14:15:49 -0500
-Received: by mail-qk1-f196.google.com with SMTP id 205so18914794qkk.1
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 11:15:49 -0800 (PST)
+        id S1726892AbfKSTao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 14:30:44 -0500
+Received: from mail-pj1-f74.google.com ([209.85.216.74]:33883 "EHLO
+        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfKSTan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 14:30:43 -0500
+Received: by mail-pj1-f74.google.com with SMTP id c44so1595202pje.1
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 11:30:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wzoIv3PgQ5xg77XVjLm23G3rCo4a5omAce2oLdpNLf0=;
-        b=XE0/ul2UH6r1RgftX+x3FfxRVtupCc0p5j0CssMbeJpj9XpIfEt7ladYWvfy54o6Rg
-         amj5FPwjOky3fb6cVFljYWKTaVErqw09vP6ui7h+2TyUDXQCqE70A37nvgt7HyZHrxf3
-         V8JUDy38dL0v1I7A9N5JdjR6YDfEaFMIToaDZunT+tn8ckvBTwGr3IpDyuqEmRjiHgMH
-         q2ZF0rGJkIdipvVsCY3GQEa0Qj+LYYmBMvgm3d1hv8DF+ar6Gg7dHjFuyFaUPTfKOwKF
-         eaurWEbbTu1OVxsgNwi+CoRdCzltDRJW+MyY+sIifQYyLzEUKqiGh4y8eqxhprl0CCkp
-         Abeg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=C47Ki3HabBbaxKIHhsS43LGLmAjUHPP9alFct2tZKio=;
+        b=AQhhVmFWnFPcXgEc/Fk9f4e4x5ge44nDIJoAhq06dkr8uxhVWVodJBcAw6jHJBnHSv
+         XVLDjEH6hlcjYJCj8rmlXhSI/MzVybNW+HRETZq0VCQE23W/K10hRk2FBE0iUcwF4eF9
+         pocSqz04vLq6s74RaiVdieK/1p1PXI3RWfzPnp2NwquFVjrOT0w/+XdF+FmKOFzDDZfy
+         nVFpwnL1fjbAmDA3yMmCu6c0GSj2cuTtbUtJhIZPof7fXdPVAkhiXCYs5FAvRIja2vNE
+         y/33W28eNuTi/lhOFQG1DbNU/ICiItg7jIV1B243hN15HdPLDo6YW7tXTQXzBdHtFWrU
+         /q2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wzoIv3PgQ5xg77XVjLm23G3rCo4a5omAce2oLdpNLf0=;
-        b=sz41/rLSEF/ONGWRt5WpeRv32yb8FRCCS5JxZO+uSW8iVl08Qp9YY5c9FNgq75CW99
-         Lfl1pWRuwdKq7t642GZQFPf4QuZefUJ66RtNtwHbFd8+ZlBfbFiP48Z8lLu77lfB2UY4
-         9H9xlFlo19uwLx4ot7NSlwc7zfegTBB3yxcLjJlN41uDbOTsIhuZjgjSmFKCSSEFoSzJ
-         fe6x/11A0nKAQ68fLiAd3TX9wXUWMURHv21hI0vnPJXLfiSXRTBWezAzB6KpBwJjP6p2
-         imnFn9ejTh6vxlCyZ4gv/Jo3Ul+G3uWrxHHo193png9o1xhGbtdZc9U9eg7IW/PFAN/L
-         gBIQ==
-X-Gm-Message-State: APjAAAW6rWkDxiIPDFdMb2kUwmzX5DO+2nzXXpwmXbWNXiphbqdwp4tW
-        8QlQJA6DfMQBPFck/NyBMG3vgg==
-X-Google-Smtp-Source: APXvYqxRNsEg1levwxBxtexcCKoGDcNnCXh67oEXnQ2zgfRUQ9XoNmJhJPOHNIKTRGaI5LuduX6avA==
-X-Received: by 2002:a37:9f48:: with SMTP id i69mr30497457qke.273.1574190948542;
-        Tue, 19 Nov 2019 11:15:48 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id m13sm10540375qka.109.2019.11.19.11.15.48
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 19 Nov 2019 11:15:48 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iX8yZ-0002e8-NJ; Tue, 19 Nov 2019 15:15:47 -0400
-Date:   Tue, 19 Nov 2019 15:15:47 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191119191547.GL4991@ziepe.ca>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
- <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
- <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
- <20191119164632.GA4991@ziepe.ca>
- <20191119134822-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191119134822-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=C47Ki3HabBbaxKIHhsS43LGLmAjUHPP9alFct2tZKio=;
+        b=lxOGDv8f+k95T7pp4TnwHiMf+q4kJd2cmxZB5NGPKlhKApFE03K+Ckqry0tR9jLTvp
+         B0gD9Aw0dz8HCfu/OD+T68Z7fKpm1+QbFnidLciebuZ8uD6qwfykIapSf0oF3dLjeg8q
+         vhQqmyRnJof6T8atj24mRQ7ognS1U6a0yBoTyu+r5hkU6qSQqSuBpPLPqDfthWFwpapN
+         KJf9S1dL9q+/0eJ6k1jOfNCNbM2ceeqyy5bghq0d6LFhBJhvZh2ac878jf+lexmw0yba
+         u9BdjonjWhYpaZX4sVVLu0pq+CBIfJZDY7hv7MJOpB/gUXySG3EXQt1FUhJQyUHehlpY
+         leSg==
+X-Gm-Message-State: APjAAAVaEbfYgoA3GUA5T55AbQkz74WrJqH/Yr3YN0OqP3+lwIgQTKzt
+        0WCC4uDMZhepWK6Mn0hUxiM7KCnMet+D
+X-Google-Smtp-Source: APXvYqzNIz68u9dcwE5s1aVXZ2ZnlnOhQePgjaRrwKXmA62Rg/x1cqHffWrblYFqeoJW0i+OdYASh4loV7Gh
+X-Received: by 2002:a63:a34e:: with SMTP id v14mr7487127pgn.58.1574191842857;
+ Tue, 19 Nov 2019 11:30:42 -0800 (PST)
+Date:   Tue, 19 Nov 2019 11:30:27 -0800
+Message-Id: <20191119193036.92831-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH v2 bpf-next 0/9] add bpf batch ops to process more than 1 elem
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Yonghong Song <yhs@fb.com>, Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Brian Vazquez <brianvv@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 01:58:42PM -0500, Michael S. Tsirkin wrote:
-> On Tue, Nov 19, 2019 at 12:46:32PM -0400, Jason Gunthorpe wrote:
-> > As always, this is all very hard to tell without actually seeing real
-> > accelerated drivers implement this. 
-> > 
-> > Your patch series might be a bit premature in this regard.
-> 
-> Actually drivers implementing this have been posted, haven't they?
-> See e.g. https://lwn.net/Articles/804379/
+This patch series introduce batch ops that can be added to bpf maps to
+lookup/lookup_and_delete/update/delete more than 1 element at the time,
+this is specially useful when syscall overhead is a problem and in case
+of hmap it will provide a reliable way of traversing them.
 
-Is that a real driver? It looks like another example quality
-thing. 
+The implementation inclues a generic approach that could potentially be
+used by any bpf map and adds it to arraymap, it also includes the specific
+implementation of hashmaps which are traversed using buckets instead
+of keys.
 
-For instance why do we need any of this if it has '#define
-IFCVF_MDEV_LIMIT 1' ?
+The bpf syscall subcommands introduced are:
 
-Surely for this HW just use vfio over the entire PCI function and be
-done with it?
+  BPF_MAP_LOOKUP_BATCH
+  BPF_MAP_LOOKUP_AND_DELETE_BATCH
+  BPF_MAP_UPDATE_BATCH
+  BPF_MAP_DELETE_BATCH
 
-Jason
+The UAPI attribute is:
+
+  struct { /* struct used by BPF_MAP_*_BATCH commands */
+         __aligned_u64   in_batch;       /* start batch,
+                                          * NULL to start from beginning
+                                          */
+         __aligned_u64   out_batch;      /* output: next start batch */
+         __aligned_u64   keys;
+         __aligned_u64   values;
+         __u32           count;          /* input/output:
+                                          * input: # of key/value
+                                          * elements
+                                          * output: # of filled elements
+                                          */
+         __u32           map_fd;
+         __u64           elem_flags;
+         __u64           flags;
+  } batch;
+
+
+in_batch and out_batch are only used for lookup and lookup_and_delete since
+those are the only two operations that attempt to traverse the map.
+
+update/delete batch ops should provide the keys/values that user wants
+to modify.
+
+Here are the previous discussions on the batch processing:
+ - https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
+ - https://lore.kernel.org/bpf/20190829064502.2750303-1-yhs@fb.com/
+ - https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
+
+Changelog since v1:
+ - Fix SOB ordering and remove Co-authored-by tag (Alexei)
+
+Changelog since RFC:
+ - Change batch to in_batch and out_batch to support more flexible opaque
+   values to iterate the bpf maps.
+ - Remove update/delete specific batch ops for htab and use the generic
+   implementations instead.
+
+Brian Vazquez (5):
+  bpf: add bpf_map_{value_size,update_value,map_copy_value} functions
+  bpf: add generic support for lookup and lookup_and_delete batch ops
+  bpf: add generic support for update and delete batch ops
+  bpf: add lookup and updated batch ops to arraymap
+  selftests/bpf: add batch ops testing to array bpf map
+
+Yonghong Song (4):
+  bpf: add batch ops to all htab bpf map
+  tools/bpf: sync uapi header bpf.h
+  libbpf: add libbpf support to batch ops
+  selftests/bpf: add batch ops testing for hmap and hmap_percpu
+
+ include/linux/bpf.h                           |  21 +
+ include/uapi/linux/bpf.h                      |  21 +
+ kernel/bpf/arraymap.c                         |   2 +
+ kernel/bpf/hashtab.c                          | 244 ++++++++
+ kernel/bpf/syscall.c                          | 571 ++++++++++++++----
+ tools/include/uapi/linux/bpf.h                |  21 +
+ tools/lib/bpf/bpf.c                           |  61 ++
+ tools/lib/bpf/bpf.h                           |  14 +
+ tools/lib/bpf/libbpf.map                      |   4 +
+ .../map_lookup_and_delete_batch_array.c       | 119 ++++
+ .../map_lookup_and_delete_batch_htab.c        | 257 ++++++++
+ 11 files changed, 1215 insertions(+), 120 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_array.c
+ create mode 100644 tools/testing/selftests/bpf/map_tests/map_lookup_and_delete_batch_htab.c
+
+-- 
+2.24.0.432.g9d3f5f5b63-goog
+
