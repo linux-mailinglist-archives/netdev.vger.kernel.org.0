@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4072510275C
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 15:52:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4421027BF
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 16:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727865AbfKSOwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 09:52:01 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:39492 "EHLO
+        id S1728230AbfKSPL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 10:11:27 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57857 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726637AbfKSOwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 09:52:01 -0500
+        by vger.kernel.org with ESMTP id S1727836AbfKSPL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 10:11:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574175120;
+        s=mimecast20190719; t=1574176285;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zK34bLZfC0kMTqcBrBRGMoyuea89Tp/PR9ZllIQfK5s=;
-        b=NvExESGXFJMwhTeVvpaIHvduFTU5fKl8suyLmDDOyMCIsc4VJlOYtPf8Uotijy/TkCuN2L
-        qH1NNMlIBozSHcVAfwfBh7XYWRz75gjOfdoJkRMIL+wXygpWIETWuDmmH7IkiWKf3EoFEy
-        bX5jglk4EDilEA7mAECmmsB/xKil2Aw=
+        bh=9N9IO0/XD+xiSOuz/a6MQLrZktW895fzHFoi9+HvgOo=;
+        b=gt5pWSV8xPm4lOxdvpAjLwyx9/Vv+rw5Bjpy9WY+apnt570ixj0iamRcC/giZR2+vyIsNa
+        P3hmP6SyxPgbl5d+3fplMDVS73f5G1L+zvMg5VWyHb6OVN7tbN0w+h9O7fNLpcY7kuHnGm
+        spHkwxfTaqb8hLuMgsbAkigc4csw3TI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-Ur00PPigN-uPprX8Vu_kpQ-1; Tue, 19 Nov 2019 09:51:57 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-91-37ldGzVCN8O_frxDcRm73g-1; Tue, 19 Nov 2019 10:11:21 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB66D18BDCE7;
-        Tue, 19 Nov 2019 14:51:53 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00370DB61;
+        Tue, 19 Nov 2019 15:11:19 +0000 (UTC)
 Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C6C25F795;
-        Tue, 19 Nov 2019 14:51:45 +0000 (UTC)
-Date:   Tue, 19 Nov 2019 15:51:43 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 36C9A1001B32;
+        Tue, 19 Nov 2019 15:11:10 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 16:11:09 +0100
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com,
         mcroce@redhat.com, jonathan.lemon@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v4 net-next 3/3] net: mvneta: get rid of huge dma sync
- in mvneta_rx_refill
-Message-ID: <20191119155143.0683f754@carbon>
-In-Reply-To: <20191119121911.GC3449@localhost.localdomain>
+Subject: Re: [PATCH v4 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191119161109.7cd83965@carbon>
+In-Reply-To: <20191119113336.GA25152@apalos.home>
 References: <cover.1574083275.git.lorenzo@kernel.org>
-        <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
-        <20191119123850.5cd60c0e@carbon>
-        <20191119121911.GC3449@localhost.localdomain>
+        <84b90677751f54c1c8d47f4036bce5999982379c.1574083275.git.lorenzo@kernel.org>
+        <20191119122358.12276da4@carbon>
+        <20191119113336.GA25152@apalos.home>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: Ur00PPigN-uPprX8Vu_kpQ-1
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: 37ldGzVCN8O_frxDcRm73g-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -57,82 +57,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Nov 2019 14:19:11 +0200
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+On Tue, 19 Nov 2019 13:33:36 +0200
+Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
 
-> > On Mon, 18 Nov 2019 15:33:46 +0200
-> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >  =20
-> > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethe=
-rnet/marvell/mvneta.c
-> > > index f7713c2c68e1..a06d109c9e80 100644
-> > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > +++ b/drivers/net/ethernet/marvell/mvneta.c =20
-> > [...] =20
-> > > @@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
-mvneta_rx_queue *rxq,
-> > >  =09=09err =3D xdp_do_redirect(pp->dev, xdp, prog);
-> > >  =09=09if (err) {
-> > >  =09=09=09ret =3D MVNETA_XDP_DROPPED;
-> > > -=09=09=09page_pool_recycle_direct(rxq->page_pool,
-> > > -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
-> > > +=09=09=09__page_pool_put_page(rxq->page_pool,
-> > > +=09=09=09=09=09virt_to_head_page(xdp->data),
-> > > +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
-> > > +=09=09=09=09=09true);
-> > >  =09=09} else {
-> > >  =09=09=09ret =3D MVNETA_XDP_REDIR;
-> > >  =09=09}
-> > > @@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
-mvneta_rx_queue *rxq,
-> > >  =09case XDP_TX:
-> > >  =09=09ret =3D mvneta_xdp_xmit_back(pp, xdp);
-> > >  =09=09if (ret !=3D MVNETA_XDP_TX)
-> > > -=09=09=09page_pool_recycle_direct(rxq->page_pool,
-> > > -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
-> > > +=09=09=09__page_pool_put_page(rxq->page_pool,
-> > > +=09=09=09=09=09virt_to_head_page(xdp->data),
-> > > +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
-> > > +=09=09=09=09=09true);
-> > >  =09=09break;
-> > >  =09default:
-> > >  =09=09bpf_warn_invalid_xdp_action(act);
-> > > @@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
-mvneta_rx_queue *rxq,
-> > >  =09=09trace_xdp_exception(pp->dev, prog, act);
-> > >  =09=09/* fall through */
-> > >  =09case XDP_DROP:
-> > > -=09=09page_pool_recycle_direct(rxq->page_pool,
-> > > -=09=09=09=09=09 virt_to_head_page(xdp->data));
-> > > +=09=09__page_pool_put_page(rxq->page_pool,
-> > > +=09=09=09=09     virt_to_head_page(xdp->data),
-> > > +=09=09=09=09     xdp->data_end - xdp->data_hard_start,
-> > > +=09=09=09=09     true); =20
+> > > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > > index dfc2501c35d9..4f9aed7bce5a 100644
+> > > --- a/net/core/page_pool.c
+> > > +++ b/net/core/page_pool.c
+> > > @@ -47,6 +47,13 @@ static int page_pool_init(struct page_pool *pool,
+> > >  =09    (pool->p.dma_dir !=3D DMA_BIDIRECTIONAL))
+> > >  =09=09return -EINVAL;
+> > > =20
+> > > +=09/* In order to request DMA-sync-for-device the page needs to
+> > > +=09 * be mapped
+> > > +=09 */
+> > > +=09if ((pool->p.flags & PP_FLAG_DMA_SYNC_DEV) &&
+> > > +=09    !(pool->p.flags & PP_FLAG_DMA_MAP))
+> > > +=09=09return -EINVAL;
+> > > + =20
 > >=20
-> > This does beg for the question: Should we create an API wrapper for
-> > this in the header file?
+> > I like that you have moved this check to setup time.
 > >=20
-> > But what to name it?
+> > There are two other parameters the DMA_SYNC_DEV depend on:
 > >=20
-> > I know Jonathan doesn't like the "direct" part of the  previous functio=
-n
-> > name page_pool_recycle_direct.  (I do considered calling this 'napi'
-> > instead, as it would be inline with networking use-cases, but it seemed
-> > limited if other subsystem end-up using this).
+> >  =09struct page_pool_params pp_params =3D {
+> >  =09=09.order =3D 0,
+> > -=09=09.flags =3D PP_FLAG_DMA_MAP,
+> > +=09=09.flags =3D PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+> >  =09=09.pool_size =3D size,
+> >  =09=09.nid =3D cpu_to_node(0),
+> >  =09=09.dev =3D pp->dev->dev.parent,
+> >  =09=09.dma_dir =3D xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> > +=09=09.offset =3D pp->rx_offset_correction,
+> > +=09=09.max_len =3D MVNETA_MAX_RX_BUF_SIZE,
+> >  =09};
 > >=20
-> > Does is 'page_pool_put_page_len' sound better?
-> >=20
-> > But I want also want hide the bool 'allow_direct' in the API name.
-> > (As it makes it easier to identify users that uses this from softirq)
-> >=20
-> > Going for 'page_pool_put_page_len_napi' starts to be come rather long. =
+> > Can you add a check, that .max_len must not be zero.  The reason is
+> > that I can easily see people misconfiguring this.  And the effect is
+> > that the DMA-sync-for-device is essentially disabled, without user
+> > realizing this. The not-realizing part is really bad, especially
+> > because bugs that can occur from this are very rare and hard to catch. =
 =20
 >=20
-> What about removing the second 'page'? Something like:
-> - page_pool_put_len_napi()
+> +1 we sync based on the min() value of those=20
+>=20
+> >=20
+> > I'm up for discussing if there should be a similar check for .offset.
+> > IMHO we should also check .offset is configured, and then be open to
+> > remove this check once a driver user want to use offset=3D0.  Does the
+> > mvneta driver already have a use-case for this (in non-XDP mode)? =20
+>=20
+> Not sure about this, since it does not break anything apart from some
+> performance hit
 
-Well, we (unfortunately) already have page_pool_put(), which is used
-for refcnt on the page_pool object itself.
+I don't follow the 'performance hit' comment.  This is checked at setup
+time (page_pool_init), thus it doesn't affect runtime.
+
+This is a generic optimization principle that I use a lot. Moving code
+checks out of fast-path, and instead do more at setup/load-time, or
+even at shutdown-time (like we do for page_pool e.g. check refcnt
+invariance).  This principle is also heavily used by BPF, that adjust
+BPF-instructions at load-time.  It is core to getting the performance
+we need for high-speed networking.
 
 --=20
 Best regards,
