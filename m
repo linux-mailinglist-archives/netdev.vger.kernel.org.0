@@ -2,245 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8A8101958
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 07:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F36501019CA
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 07:52:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbfKSG0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 01:26:20 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:36281 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbfKSG0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 01:26:19 -0500
-Received: by mail-qt1-f195.google.com with SMTP id y10so23388098qto.3;
-        Mon, 18 Nov 2019 22:26:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hfdNB6sn43NQko5mnZDhGuXbjUSr6tLeQ+sk79fPkQ4=;
-        b=EdJckZsUT2nJIMhjUu0rk/uiIuQ6oYAtTsZtukRCJsgA+95fZyQ94VbP/qH/+LxRlg
-         GDhnmlqk/as1d/nh2IFDFUpVdgFhB8sDzCx7Hxo/wA0Y1VnU11gsjht9sraan0UHkvPU
-         MWQpy5NoYf4H1tyDfxujtYs84SdCa6xww5J9vB3q1f/+ZE8l35tCH9ud1cY2POTeY5/P
-         OYquA9LpDogQUVO2sVlIDBJp8nJfEH3bOVDuaBctcr7K/YN3mAnmXkSpqjoh53LR0bP2
-         NDeNdpbTjO7puoKQGMuacRk0i7sOJPlySdl0m8TqPSJeapnNZXtmZvq1z9wZb12/3gl5
-         SWNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hfdNB6sn43NQko5mnZDhGuXbjUSr6tLeQ+sk79fPkQ4=;
-        b=iGVmabgeTuQs3COQFGWc/xSMfegkMnir+tvrBtIIc4hKZmlb25CwxldiIHCJNX1ACF
-         35MC8fieDIo4IbCfojtkIOyB2mTtjEjL3qzmf/K+ZMf0lQ1JePU4lN+stbBGbGTY56ZX
-         rzojiUfJFfbkO806VAJKaMOd9i6V8g/5/mYzkd0K9e8azfyhwz50vk3LTaA/FrrFqpgq
-         RUnFm6hKxrUPZgH11zNZNfLXhlnizdmkoVxbycgio94SPsAtrsZ0i0bX/a2529A6L4LI
-         4dbN+0aVUW3nyTyaeLPBNPcqk+a6PqLCwFyKl/Zlp+ySyAOhn4DQb3T84+j2dNGzh6jX
-         yu4g==
-X-Gm-Message-State: APjAAAWi3U1LPrkHhKU1n6lucJe/efhLGWqjYyCWTeJFG5VlDXub5aZC
-        YNgwVqGvKf4QSBz4PoHkyCHoAQl0lNAUZBowobQ=
-X-Google-Smtp-Source: APXvYqzKHPdo2rcwI6UiD8diySovXma8SHi5uiopRCKmGsAXF0voWXGLLscK0rsdPH1R+FTEaRO2/QaFRyiWDFVNs1U=
-X-Received: by 2002:ac8:7a83:: with SMTP id x3mr30800698qtr.141.1574144777952;
- Mon, 18 Nov 2019 22:26:17 -0800 (PST)
+        id S1728064AbfKSGvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 01:51:50 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53430 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728033AbfKSGvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 01:51:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574146306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hX/zeLvZ53085kniihStb7+sdQx7Tne25n9PV2JR6Kk=;
+        b=GNg5srdL5VWXuP/8bPeKe6RWp9BUtayV68T55cXk114s7tilqkpu28PWISOpLI2cy8jHS5
+        Lhwt+klp7nmJxQYhCGETfVCG8EkqZSKWWMXg9SY8sOj9bdV+NB76RNjIcaZoTUzrsRcPBK
+        +EE5XyAa93/PSZ9N/iA50Tnng0Gd+cA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-114-zDJqApmwN7KP60fKXZq5hA-1; Tue, 19 Nov 2019 01:51:43 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55F431005509;
+        Tue, 19 Nov 2019 06:51:41 +0000 (UTC)
+Received: from [10.72.12.74] (ovpn-12-74.pek2.redhat.com [10.72.12.74])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6059E614F2;
+        Tue, 19 Nov 2019 06:51:31 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+To:     Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
+ <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
+ <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
+Date:   Tue, 19 Nov 2019 14:51:29 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20191119062151.777260-1-andriin@fb.com>
-In-Reply-To: <20191119062151.777260-1-andriin@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 18 Nov 2019 22:26:07 -0800
-Message-ID: <CAEf4Bza+bvRHqQ=NTgP_W4W3dscZ9VqLbxYZwns4YB+85KRqwA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix call relocation offset calculation bug
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: zDJqApmwN7KP60fKXZq5hA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 10:21 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> When relocating subprogram call, libbpf doesn't take into account
-> relo->text_off, which comes from symbol's value. This generally works fine for
-> subprograms implemented as static functions, but breaks for global functions.
->
-> Taking a simplified test_pkt_access.c as an example:
->
-> __attribute__ ((noinline))
-> static int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
-> {
->         return skb->len * 2;
-> }
->
-> __attribute__ ((noinline))
-> static int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
-> {
->         return skb->len + val;
-> }
->
-> SEC("classifier/test_pkt_access")
-> int test_pkt_access(struct __sk_buff *skb)
-> {
->         if (test_pkt_access_subprog1(skb) != skb->len * 2)
->                 return TC_ACT_SHOT;
->         if (test_pkt_access_subprog2(2, skb) != skb->len + 2)
->                 return TC_ACT_SHOT;
->         return TC_ACT_UNSPEC;
-> }
->
-> When compiled, we get two relocations, pointing to '.text' symbol. .text has
-> st_value set to 0 (it points to the beginning of .text section):
->
-> 0000000000000008  000000050000000a R_BPF_64_32            0000000000000000 .text
-> 0000000000000040  000000050000000a R_BPF_64_32            0000000000000000 .text
->
-> test_pkt_access_subprog1 and test_pkt_access_subprog2 offsets (targets of two
-> calls) are encoded within call instruction's imm32 part as -1 and 2,
-> respectively:
->
-> 0000000000000000 test_pkt_access_subprog1:
->        0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
->        1:       64 00 00 00 01 00 00 00 w0 <<= 1
->        2:       95 00 00 00 00 00 00 00 exit
->
-> 0000000000000018 test_pkt_access_subprog2:
->        3:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
->        4:       04 00 00 00 02 00 00 00 w0 += 2
->        5:       95 00 00 00 00 00 00 00 exit
->
-> 0000000000000000 test_pkt_access:
->        0:       bf 16 00 00 00 00 00 00 r6 = r1
-> ===>   1:       85 10 00 00 ff ff ff ff call -1
->        2:       bc 01 00 00 00 00 00 00 w1 = w0
->        3:       b4 00 00 00 02 00 00 00 w0 = 2
->        4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
->        5:       64 02 00 00 01 00 00 00 w2 <<= 1
->        6:       5e 21 08 00 00 00 00 00 if w1 != w2 goto +8 <LBB0_3>
->        7:       bf 61 00 00 00 00 00 00 r1 = r6
-> ===>   8:       85 10 00 00 02 00 00 00 call 2
->        9:       bc 01 00 00 00 00 00 00 w1 = w0
->       10:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
->       11:       04 02 00 00 02 00 00 00 w2 += 2
->       12:       b4 00 00 00 ff ff ff ff w0 = -1
->       13:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB0_3>
->       14:       b4 00 00 00 02 00 00 00 w0 = 2
-> 0000000000000078 LBB0_3:
->       15:       95 00 00 00 00 00 00 00 exit
->
-> Now, if we compile example with global functions, the setup changes.
-> Relocations are now against specifically test_pkt_access_subprog1 and
-> test_pkt_access_subprog2 symbols, with test_pkt_access_subprog2 pointing 24
-> bytes into its respective section (.text), i.e., 3 instructions in:
->
-> 0000000000000008  000000070000000a R_BPF_64_32            0000000000000000 test_pkt_access_subprog1
-> 0000000000000048  000000080000000a R_BPF_64_32            0000000000000018 test_pkt_access_subprog2
->
-> Calls instructions now encode offsets relative to function symbols and are both
-> set ot -1:
->
-> 0000000000000000 test_pkt_access_subprog1:
->        0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
->        1:       64 00 00 00 01 00 00 00 w0 <<= 1
->        2:       95 00 00 00 00 00 00 00 exit
->
-> 0000000000000018 test_pkt_access_subprog2:
->        3:       61 20 00 00 00 00 00 00 r0 = *(u32 *)(r2 + 0)
->        4:       0c 10 00 00 00 00 00 00 w0 += w1
->        5:       95 00 00 00 00 00 00 00 exit
->
-> 0000000000000000 test_pkt_access:
->        0:       bf 16 00 00 00 00 00 00 r6 = r1
-> ===>   1:       85 10 00 00 ff ff ff ff call -1
->        2:       bc 01 00 00 00 00 00 00 w1 = w0
->        3:       b4 00 00 00 02 00 00 00 w0 = 2
->        4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
->        5:       64 02 00 00 01 00 00 00 w2 <<= 1
->        6:       5e 21 09 00 00 00 00 00 if w1 != w2 goto +9 <LBB2_3>
->        7:       b4 01 00 00 02 00 00 00 w1 = 2
->        8:       bf 62 00 00 00 00 00 00 r2 = r6
-> ===>   9:       85 10 00 00 ff ff ff ff call -1
->       10:       bc 01 00 00 00 00 00 00 w1 = w0
->       11:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
->       12:       04 02 00 00 02 00 00 00 w2 += 2
->       13:       b4 00 00 00 ff ff ff ff w0 = -1
->       14:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB2_3>
->       15:       b4 00 00 00 02 00 00 00 w0 = 2
-> 0000000000000080 LBB2_3:
->       16:       95 00 00 00 00 00 00 00 exit
->
-> Thus the right formula to calculate target call offset after relocation should
-> take into account relocation's target symbol value (offset within section),
-> call instruction's imm32 offset, and (subtracting, to get relative instruction
-> offset) instruction index of call instruction itself. All that is shifted by
-> number of instructions in main program, given all sub-programs are copied over
-> after main program.
->
-> Convert test_pkt_access.c to global functions to verify this works.
->
-> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
 
-Forgot to include Fixes: tag, please let me know if I should post v2
-with it added.
+On 2019/11/19 =E4=B8=8B=E5=8D=8812:36, Parav Pandit wrote:
+> Hi Jason Wang,
+>
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Monday, November 18, 2019 10:08 PM
+>>
+>> On 2019/11/16 =E4=B8=8A=E5=8D=887:25, Parav Pandit wrote:
+>>> Hi Jeff,
+>>>
+>>>> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+>>>> Sent: Friday, November 15, 2019 4:34 PM
+>>>>
+>>>> From: Dave Ertman <david.m.ertman@intel.com>
+>>>>
+>>>> This is the initial implementation of the Virtual Bus, virtbus_device
+>>>> and virtbus_driver.  The virtual bus is a software based bus intended
+>>>> to support lightweight devices and drivers and provide matching
+>>>> between them and probing of the registered drivers.
+>>>>
+>>>> The primary purpose of the virual bus is to provide matching services
+>>>> and to pass the data pointer contained in the virtbus_device to the
+>>>> virtbus_driver during its probe call.  This will allow two separate
+>>>> kernel objects to match up and start communication.
+>>>>
+>>> It is fundamental to know that rdma device created by virtbus_driver wi=
+ll be
+>> anchored to which bus for an non abusive use.
+>>> virtbus or parent pci bus?
+>>> I asked this question in v1 version of this patch.
+>>>
+>>> Also since it says - 'to support lightweight devices', documenting that
+>> information is critical to avoid ambiguity.
+>>> Since for a while I am working on the subbus/subdev_bus/xbus/mdev [1]
+>> whatever we want to call it, it overlaps with your comment about 'to sup=
+port
+>> lightweight devices'.
+>>> Hence let's make things crystal clear weather the purpose is 'only matc=
+hing
+>> service' or also 'lightweight devices'.
+>>> If this is only matching service, lets please remove lightweight device=
+s part..
+>>
+>> Yes, if it's matching + lightweight device, its function is almost a dup=
+lication of
+>> mdev. And I'm working on extending mdev[1] to be a generic module to
+>> support any types of virtual devices a while. The advantage of mdev is:
+>>
+>> 1) ready for the userspace driver (VFIO based)
+>> 2) have a sysfs/GUID based management interface
+>>
+>> So for 1, it's not clear that how userspace driver would be supported he=
+re, or
+>> it's completely not being accounted in this series? For 2, it looks to m=
+e that this
+>> series leave it to the implementation, this means management to learn se=
+veral
+>> vendor specific interfaces which seems a burden.
+>>
+>> Note, technically Virtual Bus could be implemented on top of [1] with th=
+e full
+>> lifecycle API.
+>>
+>> [1] https://lkml.org/lkml/2019/11/18/261
+>>
+>>
+>>> You additionally need modpost support for id table integration to modif=
+o,
+>> modprobe and other tools.
+>>> A small patch similar to this one [2] is needed.
+>>> Please include in the series.
+>>>
+>>> [..]
+>>
+>> And probably a uevent method. But rethinking of this, matching through a
+>> single virtual bus seems not good. What if driver want to do some specif=
+ic
+>> matching? E.g for virtio, we may want a vhost-net driver that only match
+>> networking device. With a single bus, it probably means you need another=
+ bus
+>> on top and provide the virtio specific matching there.
+>> This looks not straightforward as allowing multiple type of buses.
+>>
+> The purpose of the bus is to attach two drivers,
 
-Fixes: 48cca7e44f9f ("libbpf: add support for bpf_call")
 
->  tools/lib/bpf/libbpf.c                              | 8 ++++++--
->  tools/testing/selftests/bpf/progs/test_pkt_access.c | 8 ++++----
->  2 files changed, 10 insertions(+), 6 deletions(-)
+Right, I just start to think whether it was generic to support the case=20
+as virtio or mdev to avoid function duplications.
+
+
+>   mlx5_core (creator of netdevices) and mlx5_ib (create of rdma devices) =
+on single PCI function.
+> Meaning 'multiple classes of devices' are created on top of single underl=
+ying parent device.
+
+
+This is not what I read, the doc said:
+
+"
++One use case example is an rdma driver needing to connect with several
++different types of PCI LAN devices to be able to request resources from
++them (queue sets).=C2=A0 Each LAN driver that supports rdma will register =
+a
++virtbus_device on the virtual bus for each physical function. The rdma
++driver will register as a virtbus_driver on the virtual bus to be
++matched up with multiple virtbus_devices and receive a pointer to a
++struct containing the callbacks that the PCI LAN drivers support for
++registering with them.
+
+"
+
+So it means to connect a single rdma driver with several RDMA capable=20
+LAN drivers on top of several PCI functions. If this is true, I'm not=20
+quite sure the advantage of using a bus since it's more like aggregation=20
+as what bond/team did.
+
+
 >
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 15e91a1d6c11..a7d183f7ac72 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1870,9 +1870,13 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
->                                 pr_warn("incorrect bpf_call opcode\n");
->                                 return -LIBBPF_ERRNO__RELOC;
->                         }
-> +                       if (sym.st_value % 8) {
-> +                               pr_warn("bad call relo offset: %lu\n", sym.st_value);
-> +                               return -LIBBPF_ERRNO__RELOC;
-> +                       }
->                         prog->reloc_desc[i].type = RELO_CALL;
->                         prog->reloc_desc[i].insn_idx = insn_idx;
-> -                       prog->reloc_desc[i].text_off = sym.st_value;
-> +                       prog->reloc_desc[i].text_off = sym.st_value / 8;
->                         obj->has_pseudo_calls = true;
->                         continue;
->                 }
-> @@ -3573,7 +3577,7 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
->                          prog->section_name);
->         }
->         insn = &prog->insns[relo->insn_idx];
-> -       insn->imm += prog->main_prog_cnt - relo->insn_idx;
-> +       insn->imm += relo->text_off + prog->main_prog_cnt - relo->insn_idx;
->         return 0;
->  }
->
-> diff --git a/tools/testing/selftests/bpf/progs/test_pkt_access.c b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-> index 3a7b4b607ed3..dd0d2dfe55d8 100644
-> --- a/tools/testing/selftests/bpf/progs/test_pkt_access.c
-> +++ b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-> @@ -35,14 +35,14 @@ int _version SEC("version") = 1;
->   *
->   * Which makes it an interesting test for BTF-enabled verifier.
->   */
-> -static __attribute__ ((noinline))
-> -int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
-> +__attribute__ ((noinline))
-> +int test_pkt_access_subprog1(struct __sk_buff *skb)
->  {
->         return skb->len * 2;
->  }
->
-> -static __attribute__ ((noinline))
-> -int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
-> +__attribute__ ((noinline))
-> +int test_pkt_access_subprog2(int val, struct __sk_buff *skb)
->  {
->         return skb->len * val;
->  }
-> --
-> 2.17.1
->
+> So bus is just the 'matching service' and nothing more. It is not meant t=
+o address virtio, mdev, sub functions usecases.
+
+
+Probably, for virtio mdev we need more than just matching: life cycle=20
+management, cooperation with VFIO and we also want to be prepared for=20
+the device slicing (like sub functions).
+
+Thanks
+
