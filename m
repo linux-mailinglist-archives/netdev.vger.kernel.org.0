@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12EB6102AAC
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:19:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE30102ACC
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 18:29:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728517AbfKSRS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 12:18:59 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:54600 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727805AbfKSRS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:18:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d7gaQXaOZuD56XOR2d5iryMWvBxv9PFeFj7jATwMUok=; b=MOKrtpvf/Noiak6ccZp4jfzPug
-        q0xW786z+zN2nJa8RBmO9OTzfZuoR/odUimAuHrywu3tTDJyFwn58SPT5Ag0WI0xQxGe0FBMPYe12
-        WeHX41M2plUTVD3fcW8cg25N2LEJBetBWZCjMn9j7T1La44vrniEz4Ao5O+kb6q/s31mYBLIIBDg8
-        K4FTEP+RVMRuf92UJLfNLphtaZbpybkdDGnRh2SeRK6Hdz7ha78n3ZSaHwLRgsqI2j7iyCv/Cmu+V
-        xjBuJAwC3CMBZj/guvYki5atcZU2UdWpdFWwi++51Mc9kM5WVg0L2PMth0LN6wxKQdmFVNi/fvllD
-        h9vau+tg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:37072 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iX79Q-0002jT-Os; Tue, 19 Nov 2019 17:18:52 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iX79Q-0000hw-0u; Tue, 19 Nov 2019 17:18:52 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net] net: phylink: update documentation on create and destroy
+        id S1728575AbfKSR3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 12:29:25 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:44686 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728141AbfKSR3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 12:29:24 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAJHTG3L069131;
+        Tue, 19 Nov 2019 11:29:16 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1574184556;
+        bh=r/cBAHM8oY922P/6C8P9pt6goo9s2PX5XRBXQYR1CPs=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=FHa8q0AkaQO/TTYzSCJp+gu59qGkDHoWhpifhhJKOVXbe/7yw1YNPIQ+Zmioo5Fb7
+         b2ZSb14bLzq+rRZx3GI8MukkkMcDhVLWLnTt2daCpnOBJhLMQlctIbLuySr/DNx+FL
+         UjWrquOZJbvuC5FhShxZEwsyCQytFg7kpXUUXSv0=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xAJHTGsr005655
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 19 Nov 2019 11:29:16 -0600
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 19
+ Nov 2019 11:29:16 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 19 Nov 2019 11:29:16 -0600
+Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJHTGpj083047;
+        Tue, 19 Nov 2019 11:29:16 -0600
+Subject: Re: [PATCH][next] net: phy: dp83869: fix return of uninitialized
+ variable ret
+To:     Andrew Lunn <andrew@lunn.ch>, Colin King <colin.king@canonical.com>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20191118114835.39494-1-colin.king@canonical.com>
+ <20191118232912.GC15395@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <1346c899-2114-875a-68a7-4ce0c08307dc@ti.com>
+Date:   Tue, 19 Nov 2019 11:27:45 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iX79Q-0000hw-0u@rmk-PC.armlinux.org.uk>
-Date:   Tue, 19 Nov 2019 17:18:52 +0000
+In-Reply-To: <20191118232912.GC15395@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the documentation on phylink's create and destroy functions to
-explicitly state that the rtnl lock must not be held while calling
-these.
+Andrew
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On 11/18/19 5:29 PM, Andrew Lunn wrote:
+> On Mon, Nov 18, 2019 at 11:48:35AM +0000, Colin King wrote:
+>> From: Colin Ian King <colin.king@canonical.com>
+>>
+>> In the case where the call to phy_interface_is_rgmii returns zero
+>> the variable ret is left uninitialized and this is returned at
+>> the end of the function dp83869_configure_rgmii.  Fix this by
+>> returning 0 instead of the uninitialized value in ret.
+>>
+>> Addresses-Coverity: ("Uninitialized scalar variable")
+>> Fixes: 01db923e8377 ("net: phy: dp83869: Add TI dp83869 phy")
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>
+> Dan: phy_modify_mmd() could fail. You check the return value for
+> phy_read and phy_write, so it would be consistent to also check
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 8b5e1086523c..342521ed7e7a 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -580,6 +580,8 @@ static int phylink_register_sfp(struct phylink *pl,
-  * Create a new phylink instance, and parse the link parameters found in @np.
-  * This will parse in-band modes, fixed-link or SFP configuration.
-  *
-+ * Note: the rtnl lock must not be held when calling this function.
-+ *
-  * Returns a pointer to a &struct phylink, or an error-pointer value. Users
-  * must use IS_ERR() to check for errors from this function.
-  */
-@@ -659,6 +661,8 @@ EXPORT_SYMBOL_GPL(phylink_create);
-  *
-  * Destroy a phylink instance. Any PHY that has been attached must have been
-  * cleaned up via phylink_disconnect_phy() prior to calling this function.
-+ *
-+ * Note: the rtnl lock must not be held when calling this function.
-  */
- void phylink_destroy(struct phylink *pl)
- {
--- 
-2.20.1
+Thanks for the heads up on this.
 
+I need to check the set/clear_mmd bits too.
+
+Dan
+
+
+> 	 Andrew
