@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 290B41021FE
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:22:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A644102202
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 11:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727532AbfKSKV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 05:21:59 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:32915 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbfKSKV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:21:59 -0500
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20191119102157epoutp0448f72e47a62cc37f31d6941a209740a5~YiTHhmbMF0795607956epoutp04d
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 10:21:57 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20191119102157epoutp0448f72e47a62cc37f31d6941a209740a5~YiTHhmbMF0795607956epoutp04d
+        id S1727716AbfKSKWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 05:22:08 -0500
+Received: from mailout1.samsung.com ([203.254.224.24]:39466 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727591AbfKSKWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 05:22:04 -0500
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20191119102202epoutp01996065889cc69571e3d951c143eb58c7~YiTMT6ofW0612806128epoutp01O
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 10:22:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20191119102202epoutp01996065889cc69571e3d951c143eb58c7~YiTMT6ofW0612806128epoutp01O
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1574158917;
-        bh=T6O+E13fVaWu75RPABvYGvtZVGkZnllG5PcDKyrpcfY=;
+        s=mail20170921; t=1574158922;
+        bh=giaC8e3t68Zws4SFTQRyK+lQ99Gv3gmyFIFl7bI7GhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uX4RUGY67yS23HBNvqkxsmrFsZcr3kJB3p33km1EvcwOEVkRaqZxjeJaOKtzUFBkA
-         7diyuulJ7waYi4Zy3KWJE1IgXHJ4XW6oRiUDhd80z7Ykt82g+lILPQS/hlh21IdZ8t
-         GFpSDXJXgvsJIFvsBd9khGbTlmx+iXop+5qMVOlk=
+        b=S4ZMl20juRNpdutESt5gT44wIwV5BjoWLrgaAPmvchTscCx0nPImNGG3li7206cFU
+         kNUyr0Dr68N73MuxBv2jARQZOE87Y/6/FdJVkgRpxUkGmBrUEFXJLx+GfW2ygW1+iI
+         9rqcU1rxghAq8yFVN4MQRQ50Sf8tjgg4LMdeFEjE=
 Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
         epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20191119102156epcas5p2dec926c5447366d0a63c16554307882a~YiTGuxBrX2839028390epcas5p2J;
-        Tue, 19 Nov 2019 10:21:56 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        20191119102201epcas5p26e77afa93f5e79ac27a673f94431a2e5~YiTLyUUqf1672116721epcas5p2G;
+        Tue, 19 Nov 2019 10:22:01 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
         epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        08.00.04403.442C3DD5; Tue, 19 Nov 2019 19:21:56 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20191119102155epcas5p34ca3dfaba9eef8de24d1bc9d64ef5335~YiTF4oN5R2344423444epcas5p3m;
-        Tue, 19 Nov 2019 10:21:55 +0000 (GMT)
+        1F.00.04403.942C3DD5; Tue, 19 Nov 2019 19:22:01 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20191119102201epcas5p4e215c25d5d07269a7afb1f86fac0be65~YiTLYkMH12821228212epcas5p4p;
+        Tue, 19 Nov 2019 10:22:01 +0000 (GMT)
 Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20191119102155epsmtrp1df3f68d94e432d94e8b0ffc2aa727732~YiTF348V_1898818988epsmtrp16;
-        Tue, 19 Nov 2019 10:21:55 +0000 (GMT)
-X-AuditID: b6c32a4a-3b3ff70000001133-fa-5dd3c2449ee7
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20191119102201epsmtrp251279e5a4f57d71f101ea270c40c4340~YiTLXrDY82129221292epsmtrp2j;
+        Tue, 19 Nov 2019 10:22:01 +0000 (GMT)
+X-AuditID: b6c32a4a-3cbff70000001133-0b-5dd3c2493a40
 Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
         epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        FD.55.03814.342C3DD5; Tue, 19 Nov 2019 19:21:55 +0900 (KST)
+        6F.55.03814.942C3DD5; Tue, 19 Nov 2019 19:22:01 +0900 (KST)
 Received: from ubuntu.sa.corp.samsungelectronics.net (unknown
         [107.108.83.125]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20191119102153epsmtip128e6261608a3a5f01fedab4a085b9c73~YiTELmfGs0068200682epsmtip1K;
-        Tue, 19 Nov 2019 10:21:53 +0000 (GMT)
+        20191119102159epsmtip1dba7c7040027ecf90e7da6f8ef02b58f~YiTJux4Sh3094930949epsmtip1c;
+        Tue, 19 Nov 2019 10:21:59 +0000 (GMT)
 From:   Pankaj Sharma <pankj.sharma@samsung.com>
 To:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -52,73 +52,74 @@ Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
         dmurphy@ti.com, rcsekar@samsung.com, pankaj.dubey@samsung.com,
         Pankaj Sharma <pankj.sharma@samsung.com>,
         Sriram Dash <sriram.dash@samsung.com>
-Subject: [PATCH 1/2] can: m_can_platform: set net_device structure as driver
- data
-Date:   Tue, 19 Nov 2019 15:50:37 +0530
-Message-Id: <1574158838-4616-2-git-send-email-pankj.sharma@samsung.com>
+Subject: [PATCH 2/2] can: m_can_platform: remove unnecessary
+ m_can_class_resume() call
+Date:   Tue, 19 Nov 2019 15:50:38 +0530
+Message-Id: <1574158838-4616-3-git-send-email-pankj.sharma@samsung.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrFIsWRmVeSWpSXmKPExsWy7bCmlq7LocuxButWcVnMOd/CYtF9egur
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrFIsWRmVeSWpSXmKPExsWy7bCmuq7nocuxBt+PKFnMOd/CYtF9egur
         xarvU5ktLu+aw2axftEUFotjC8QsFm39wm6xvOs+s8WsCztYLW6sZ7dYem8nqwO3x5aVN5k8
-        Pl66zejR/9fAo2/LKkaP4ze2M3l83iQXwBbFZZOSmpNZllqkb5fAlXH71Ubmgn3sFa/3XmZv
-        YNzC1sXIySEhYCKxZd179i5GLg4hgd2MEvM2zmCFcD4xSvT1rIDKfGOU6Ho7g6WLkQOsZefl
-        QIj4XkaJpRc2QnW0MEms23eBCWQum4CexKX3k8F2iAiESizrnQBWxCxwiVFizvkVrCAJYYFg
-        ibsP/4M1sAioSvy9fpEZZAOvgLvEnb+lEPfJSdw818kMYnMKeEg8mDGTCWSOhMARNomvSx6x
-        QhS5SPz+OJMZwhaWeHV8CzuELSXxsr8Nys6WWLi7H+qDCom2GcIQYXuJA1fmgIWZBTQl1u/S
-        BwkzC/BJ9P5+wgRRzSvR0SYEUa0mMfXpO0YIW0bizqPN0FD0kHi59jwLJBhmM0r0bvjDOoFR
-        dhbC1AWMjKsYJVMLinPTU4tNC4zyUsv1ihNzi0vz0vWS83M3MYJThJbXDsZl53wOMQpwMCrx
-        8J5QuRwrxJpYVlyZe4hRgoNZSYTX79GFWCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8k1ivxggJ
-        pCeWpGanphakFsFkmTg4pRoYL7z7/8Bh9o3DT5o3bA77vEz7lIpisLgvu+7XDRmXQ7/f0tMs
-        fRQUmdTzLnWu/BWFhZYzP396//F6e8MT0daV784fWeF57IfUbLeqV2xHojVWWM1k9gp+rFjO
-        +u/SMoa7ty/dDl2z6UDF8YNzT+ppHOY7zHJwSUh73DmBXD6Dib/CbhVM3210/ZgSS3FGoqEW
-        c1FxIgAQ6dQSDQMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOLMWRmVeSWpSXmKPExsWy7bCSnK7zocuxBldO8VvMOd/CYtF9egur
+        Pl66zejR/9fAo2/LKkaP4ze2M3l83iQXwBbFZZOSmpNZllqkb5fAlfF40yS2ghb2is6vJxgb
+        GJvYuhg5OSQETCQ2TpzJ0sXIxSEksJtRovfoYTYI5xOjxIe2G4wQzjdGiUnfprDDtExrOc4M
+        kdjLKNG3aSErhNPCJNE28w8zSBWbgJ7EpfeTwZaICIRKLOudAFbELHCJUWLO+RWsIAlhgQiJ
+        bT2zgIo4OFgEVCUmbwgHCfMKuEtsbz8HdaCcxM1znWAzOQU8JB7MmMkEMkdC4AibxOxbJ5hB
+        eiUEXCR2zLSHqBeWeHV8C9SlUhKf3+2FmpMtsXB3PwtEeYVE2wxhiLC9xIErc8DCzAKaEut3
+        6YOEmQX4JHp/P2GCqOaV6GgTgqhWk5j69B0jhC0jcefRZqjhHhIPb0+FhuJsRokXj9axTmCU
+        nYUwdQEj4ypGydSC4tz01GLTAqO81HK94sTc4tK8dL3k/NxNjOAUoeW1g3HZOZ9DjAIcjEo8
+        vCdULscKsSaWFVfmHmKU4GBWEuH1e3QhVog3JbGyKrUoP76oNCe1+BCjNAeLkjjvJNarMUIC
+        6YklqdmpqQWpRTBZJg5OqQZGu+rco5Hrph8r26U5W1uCyfehXuSanf+9QmYssnZaGuH5Yp7K
+        DC7XI+dr1eY3PXqbIifHe1JAbP0T6e8bllX9LDMVLRBm7PcP3fV4DetZk1nvs93Fn6nPWfSt
+        YxPXBuWK0rsl677x3H50e8us1TkWCoq2fZV3r551fL/3ZmC5skX45zMxfCHiSizFGYmGWsxF
+        xYkAUDndcg0DAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrJLMWRmVeSWpSXmKPExsWy7bCSnK7nocuxBl8XcVrMOd/CYtF9egur
         xarvU5ktLu+aw2axftEUFotjC8QsFm39wm6xvOs+s8WsCztYLW6sZ7dYem8nqwO3x5aVN5k8
-        Pl66zejR/9fAo2/LKkaP4ze2M3l83iQXwBbFZZOSmpNZllqkb5fAlXH71Ubmgn3sFa/3XmZv
-        YNzC1sXIwSEhYCKx83JgFyMXh5DAbkaJnz9bmSDiMhKLP1d3MXICmcISK/89Z4eoaWKSWH91
-        CitIgk1AT+LS+8lsILaIQLjEzgldTCBFzAJ3GCV+/J/HCjJIWCBQ4s8sfZAaFgFVib/XLzKD
-        hHkF3CXu/C2FmC8ncfNcJzOIzSngIfFgxkwmEFsIqOTP5mcsExj5FjAyrGKUTC0ozk3PLTYs
-        MMpLLdcrTswtLs1L10vOz93ECA5OLa0djCdOxB9iFOBgVOLhPaFyOVaINbGsuDL3EKMEB7OS
-        CK/fowuxQrwpiZVVqUX58UWlOanFhxilOViUxHnl849FCgmkJ5akZqemFqQWwWSZODilGhg5
-        n00vCWZ7M51VJCbH2HjXuisXtV0SKo4ccLtan9i8oPtVhHSvk1VHSJ2+24fJTuosx9k66/oZ
-        7G3nvHzQrjdpz61866MGtS4Ja3g1Di5s9Uo9eMEq/KPX2jWGy3/W3WCeXjf7cDvTxUO3jW4v
-        mdTnHuSRU1Pa1OC64gx/++FDe5b/kOh+U6HEUpyRaKjFXFScCACoME4cSgIAAA==
-X-CMS-MailID: 20191119102155epcas5p34ca3dfaba9eef8de24d1bc9d64ef5335
+        Pl66zejR/9fAo2/LKkaP4ze2M3l83iQXwBbFZZOSmpNZllqkb5fAlfF40yS2ghb2is6vJxgb
+        GJvYuhg5OSQETCSmtRxn7mLk4hAS2M0osf38TMYuRg6ghIzE4s/VEDXCEiv/PWeHqGliklj8
+        7AIzSIJNQE/i0vvJYINEBMIldk7oYgIpYha4wyjx4/88VpCEsECYxPIPW9hAhrIIqEpM3hAO
+        EuYVcJfY3n4O6gg5iZvnOsFmcgp4SDyYMZMJxBYCqvmz+RnLBEa+BYwMqxglUwuKc9Nziw0L
+        jPJSy/WKE3OLS/PS9ZLzczcxggNUS2sH44kT8YcYBTgYlXh4T6hcjhViTSwrrsw9xCjBwawk
+        wuv36EKsEG9KYmVValF+fFFpTmrxIUZpDhYlcV75/GORQgLpiSWp2ampBalFMFkmDk6pBsby
+        bTPZd3Ltb16cbPLgvn6ffeiMX72ne92rVOffvFe6J2H/oRNqcoJ7EiycdsQ7xS3bv3+Zb6XD
+        6iBh+chLh7T4NGufb95Xox0U/V1u2oFZ/ZV8zH2xstv/P7b/aliT5vmLISz4w6vzM8oqEmbY
+        LpzzOORt4MzD6v6c9gd44rUm/LDl0/mueUOJpTgj0VCLuag4EQBMiBZnTAIAAA==
+X-CMS-MailID: 20191119102201epcas5p4e215c25d5d07269a7afb1f86fac0be65
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 CMS-TYPE: 105P
-X-CMS-RootMailID: 20191119102155epcas5p34ca3dfaba9eef8de24d1bc9d64ef5335
+X-CMS-RootMailID: 20191119102201epcas5p4e215c25d5d07269a7afb1f86fac0be65
 References: <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
-        <CGME20191119102155epcas5p34ca3dfaba9eef8de24d1bc9d64ef5335@epcas5p3.samsung.com>
+        <CGME20191119102201epcas5p4e215c25d5d07269a7afb1f86fac0be65@epcas5p4.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A device driver for CAN controller hardware registers itself with the
-Linux network layer as a network device. So, the driver data for m_can
-should ideally be of type net_device.
+The function m_can_runtime_resume() is getting recursively called from
+m_can_class_resume(). This results in a lock up.
+
+We need not call m_can_class_resume() during m_can_runtime_resume().
 
 Fixes: f524f829b75a ("can: m_can: Create a m_can platform framework")
 
 Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
 Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
 ---
- drivers/net/can/m_can/m_can_platform.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/m_can/m_can_platform.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 6ac4c35..2eaa354 100644
+index 2eaa354..38ea5e6 100644
 --- a/drivers/net/can/m_can/m_can_platform.c
 +++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -107,7 +107,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
+@@ -166,8 +166,6 @@ static int __maybe_unused m_can_runtime_resume(struct device *dev)
+ 	if (err)
+ 		clk_disable_unprepare(mcan_class->hclk);
  
- 	mcan_class->is_peripheral = false;
- 
--	platform_set_drvdata(pdev, mcan_class->dev);
-+	platform_set_drvdata(pdev, mcan_class->net);
- 
- 	m_can_init_ram(mcan_class);
+-	m_can_class_resume(dev);
+-
+ 	return err;
+ }
  
 -- 
 2.7.4
