@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E35102B70
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 19:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94380102B79
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 19:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727423AbfKSSFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 13:05:00 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:33901 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbfKSSE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 13:04:59 -0500
-Received: by mail-ed1-f68.google.com with SMTP id b72so17855624edf.1;
-        Tue, 19 Nov 2019 10:04:58 -0800 (PST)
+        id S1727500AbfKSSFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 13:05:21 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:36234 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbfKSSFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 13:05:21 -0500
+Received: by mail-ed1-f66.google.com with SMTP id f7so17851492edq.3;
+        Tue, 19 Nov 2019 10:05:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=oFtPlM8bp4YZq5tEz5jaE0jJ45ejP47y6jweEOMQsG4=;
-        b=hjUc7PgPburUkFgDclP12pdTqM6mo+i4A6B+QGh90+sQta/7D65iBEIlnDcfOfApWV
-         3tVPti/E5jFj+Sn98EpjUp9MffhZyHJMBZLQZDIWgCAnNP99oLIM5xCJW4egbU5PqoPB
-         TKLh0r5xSQuQsP6cqdcww4feQe8QYOAqB1G/K6NMUQ6lA+UryRZ+wImJ0V6oXwE0ddFl
-         Hvq2/mMsa5g8es1ekJOjx6ieBWMIuOJrtoUXfW4wFwmKiSNrGxD11KIhNBtPO0YRvqTR
-         eRZrFrLub/BR3kBKjw4mK9l71SlWQV64szrSc2jyS0eeOpPV6N8QO9rWVWIIFf7DFhtw
-         m05A==
+        bh=NL97UkYGOYaCXrCUGlod/sNLaKp9jjXMYyPN1IFhmP0=;
+        b=k58l+ullnOW41FPVH7Nk+41ol6Fl/NdR87LvCf5brg6rdpVJ3qvFSPDaBwRPU29kui
+         8qhmmZXAO71B45tby5wKpRQEjTTF2SlLys/8Nj+EdLkcPQU8cn9Fzqk2dLGy2iryeNA1
+         GF9E450ICSlcQijxVWGwIsZ4qEGz7Mpmw3iExgo6Ci0wTal+ORxGZjlrinXBdOxoBusv
+         K7BSVMo+VqNoufOuOxfbzgctJsV/qlSW7c9abq/KSeRUiC+JHn0w/8C0W8ePIDQ/LTNi
+         lseTNeo+RGaMoScsAyQvMsABCdre3DyYaF5907ALRkvhu161Dv7P1G4Zw9+GLS0n+Pui
+         qYVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=oFtPlM8bp4YZq5tEz5jaE0jJ45ejP47y6jweEOMQsG4=;
-        b=RKZJWtYwZjfrJYEAgaUuj4nGgcFcY+CGBxNPS3hkowYYQ3Cgm87MyUqn4snGNRL65T
-         u1979JKE/bQMzfjhP7+mczVvzyuFzHfEBsb6lTfBuZLqW4IjL1ZFOyDS1I0LHFqRIODG
-         ZrlMu5O9J1d2qK//gh0Fz0q43pk8M5+ckPQDhi/6oerVjATSXq8iAT35gH7FvrDAwmaP
-         mNo+N2iSsSK8zLnrcXyEQKrbIhLW0YiZmKiDw+OzQOIttYI+dGDL1uLZ8D+ZfcbdLazV
-         zUIxsayDIdQbiqUsMkAwB87xuXbJgmSe37XeiTtwjxAK7moho5DjohfG1Uu/cLJVNJdd
-         CZMA==
-X-Gm-Message-State: APjAAAX5jgSBekkDs3J/1e/Gf1MAKaKPqnm1ML6c/u2x0TcTrvjlP6km
-        1CSJYGhk0UPGjOL/kAlSFSdBCFKP
-X-Google-Smtp-Source: APXvYqzy6PplpTGVNrM8nw2UNZ1kfPaJg3YQXDVkszdKErD2W01beQ8VLsysOgnlgQ+lpY8NL+pmmA==
-X-Received: by 2002:a17:906:9417:: with SMTP id q23mr37020913ejx.37.1574186697091;
-        Tue, 19 Nov 2019 10:04:57 -0800 (PST)
+        bh=NL97UkYGOYaCXrCUGlod/sNLaKp9jjXMYyPN1IFhmP0=;
+        b=A9jNC3g55aGpIhizbQ07BhkilednId3ghLGDrx3Hm4GzoAxkz68qrp1khdky471psi
+         rIlQqWuW+rBTmqeMRqT7vFVaoEl3ijgGF4QVUmQlMZtfkwbH+uWrecNPwLJMWsZ5UDyy
+         IbLzK3fsTHndQW9oYdK3sd6JZLJUrjesZjDZM+e3mCGrKHsBBb+evs0R2N9/m6w55tVa
+         qdeU/DtR+85VEP3AhL/xmgV22b75faAbe0WtljFThqX7+DR0/jT15vhmm3cp1LxxbFOs
+         87J3xXv4UtE+EVlTCX17hmLYf1cJfRgj4wDLXoiK3zE8jj9OSgNSgvRPNYFRKAy9Xn6G
+         EBAw==
+X-Gm-Message-State: APjAAAVm+uKjHsyVOMrK22c1oamOfF4tdIWvhScm4fBpQqYG9ie7e988
+        6QHVEotkTmW9ar4YEgeUgl+bAnpa
+X-Google-Smtp-Source: APXvYqxc8YbNt7Sc7G9risSRhJ/CyBajAZ/xX5tpV70b2P2nM4FhTjcTo5L5VxYfec/ZG0GJOU+s+Q==
+X-Received: by 2002:a17:906:32d0:: with SMTP id k16mr35185124ejk.155.1574186718103;
+        Tue, 19 Nov 2019 10:05:18 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m11sm405472eds.19.2019.11.19.10.04.54
+        by smtp.googlemail.com with ESMTPSA id q2sm1368409edj.38.2019.11.19.10.05.15
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 19 Nov 2019 10:04:56 -0800 (PST)
-Subject: Re: [PATCH] phy: mdio_bus: Check ENOTSUPP instead of ENOSYS in
- mdiobus_register_reset
-To:     Michal Simek <michal.simek@xilinx.com>,
-        linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-References: <8712e54912598b3ca6f00d00ff8fbfdd1c53e7e8.1574170028.git.michal.simek@xilinx.com>
+        Tue, 19 Nov 2019 10:05:17 -0800 (PST)
+Subject: Re: [PATCH] mdio_bus: Fix init if CONFIG_RESET_CONTROLLER=n
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20191119112524.24841-1-geert+renesas@glider.be>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -110,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <99a8ea54-9a27-9e0a-9aaa-8aeef7feabe2@gmail.com>
-Date:   Tue, 19 Nov 2019 10:04:53 -0800
+Message-ID: <1afede33-897b-8718-d977-351357dffe4f@gmail.com>
+Date:   Tue, 19 Nov 2019 10:05:13 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <8712e54912598b3ca6f00d00ff8fbfdd1c53e7e8.1574170028.git.michal.simek@xilinx.com>
+In-Reply-To: <20191119112524.24841-1-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,15 +125,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/19 5:27 AM, Michal Simek wrote:
-> Origin patch was using ENOTSUPP instead of ENOSYS. Silently changing error
-> value ends up in an access to bad area on Microblaze with axi ethernet
-> driver.
+On 11/19/19 3:25 AM, Geert Uytterhoeven wrote:
+> Commit 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after
+> initialization to constant") accidentally changed a check from -ENOTSUPP
+> to -ENOSYS, causing failures if reset controller support is not enabled.
+> E.g. on r7s72100/rskrza1:
 > 
-> Fixes: 1d4639567d97 ("mdio_bus: Fix PTR_ERR applied after initialization to constant")
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+>     sh-eth e8203000.ethernet: MDIO init failed: -524
+>     sh-eth: probe of e8203000.ethernet failed with error -524
+> 
+> Fixes: 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after initialization to constant")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-This has been fixed in the "net" tree already:
+This has been fixed in the "net" tree with:
 
 https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=075e238d12c21c8bde700d21fb48be7a3aa80194
 -- 
