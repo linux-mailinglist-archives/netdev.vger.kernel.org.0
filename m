@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DBAE101A8B
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:54:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33107101AA5
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 08:59:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbfKSHyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 02:54:11 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:35520 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbfKSHyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:54:11 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAJ7rsp9033794;
-        Tue, 19 Nov 2019 07:53:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
- date : message-id; s=corp-2019-08-05;
- bh=IyCiBE5FqGw0GPcIHmU7QGVoSGyMN7SqqTP1wqihQRo=;
- b=GOgXevtc2/R5pg/O4/aIHosMydLGb31489wC/o0L+0RAAtoSbW9KasR+3jol/TGg2DWj
- YYm3WaynA1ugeQmiB3WrR9O46wieuA8UPEwejgIpLEtbNA4CQd9nAw1zVbqOBGMMkmtJ
- GdnKmQlZxLNMjlVdhj3eNtqTpoAU4DbfCG854A+Nl5haDKXxxZfDZa/BXJMZnBdOGrWF
- ESbIRH7b9iwAWoBWVMflYime/k5LN+oC5ZCF63C07HLrva5a8FA3xMDIfTYp0EXdP8PG
- X6inrZKcewuw5EuvlO+5okj7Iu8+XSlLtPGURT3ltaidIvkmQVe4NRja9Q8sykfLC2fR Tw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2wa92pn24c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Nov 2019 07:53:58 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAJ7rnqe063648;
-        Tue, 19 Nov 2019 07:53:57 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2wc0afxk2w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Nov 2019 07:53:56 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAJ7rt05016094;
-        Tue, 19 Nov 2019 07:53:55 GMT
-Received: from shipfan.cn.oracle.com (/10.113.210.105)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 18 Nov 2019 23:53:54 -0800
-From:   Zhu Yanjun <yanjun.zhu@oracle.com>
-To:     mchehab+samsung@kernel.org, davem@davemloft.net,
+        id S1727336AbfKSH7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 02:59:01 -0500
+Received: from mail-ua1-f67.google.com ([209.85.222.67]:36257 "EHLO
+        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726921AbfKSH7B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 02:59:01 -0500
+Received: by mail-ua1-f67.google.com with SMTP id z9so6221330uan.3;
+        Mon, 18 Nov 2019 23:59:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PRw07XCFW2nbwWC0OIMMG5Z5kRG46gKFzow6yKd7+cM=;
+        b=DQPxQDsPkoQRnm8IWQ46ldblk9QmcMp9+sn9ByC8jhBb5xfOIATvCq9Yz1sM/4yfVf
+         yBnni68M3IYaZr5gjy4aPi/VyGPczD2kwbXntPj71CfKm6YwSVOMMeY3eDkl6EjzcUj8
+         L+ghd6Ad+NaB+hfqlu+z8f+cQhntWGm+LaCBfWJWQF0dNafqfDyswqspB0joLQ3cPGq9
+         fy6KUZS3/57R42MDchiverlSVM66h/TRs1IYCilQKOdMjde8QypXDkBBynu30djXZ7BR
+         8QOWPrYqGl35ITne1FG3Z+loFaeX0fb5VCeiFu/EPRtRFXf4v66QDI3T60Tf8aBOE3ey
+         V/Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PRw07XCFW2nbwWC0OIMMG5Z5kRG46gKFzow6yKd7+cM=;
+        b=jbiA6odQOEuLYlH34vgyLiwZjc7lB4VoSYvTzuHHbyomW5/lbps/Xlc+ChEc+t/l/V
+         bux+OKOcKj7x6nA1tO6aKQ4I4h3ql3wxKGCflGRMuORkKNMtiU06O/yrKPrz4w1Uusfq
+         AX3gFK2rUfIIrrsiT/DfEnvAmXA/rSFyCr28OO2IFzyBkavqfB8aT8VyU3etSqFOndoU
+         paVqYu63WaBXm06x+TeB9EpBb34PIEUZ6yiVmtaBFTeqxCaiW11afQtrkDdMx433ssv2
+         t4b66ayFwZvvV1RUCYwLFmd6sCC0vyiFAJjwSqAlIl5WFDXaPDx9dNkf+n5iypebIRio
+         Jk8A==
+X-Gm-Message-State: APjAAAVJdI9fLrFZT6WDOipT6GaiG+5XYnbdYmauGcpYYgpbS0MQ+zDQ
+        EEcL30Scjq7lid97lyAMKH+vX3v6l4J8z//VNtM=
+X-Google-Smtp-Source: APXvYqysC8+XpmOyo7+68+S1jc5tlaMecLlA8Jnp5FRUKcdJ1vdUQU8Xazb6fNRshj5v/ELhOn7AC90iG05upSknKaE=
+X-Received: by 2002:a9f:3772:: with SMTP id a47mr8648367uae.53.1574150340611;
+ Mon, 18 Nov 2019 23:59:00 -0800 (PST)
+MIME-Version: 1.0
+References: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
+In-Reply-To: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
+From:   Rain River <rain.1986.08.12@gmail.com>
+Date:   Tue, 19 Nov 2019 16:06:09 +0800
+Message-ID: <CAJr_XRBBy121cVKhUQohyt-DxTLVWUHpMEURu3gnjr9nHtMxRw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] MAINTAINERS: forcedeth: Change Zhu Yanjun's email address
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>
+Cc:     mchehab+samsung@kernel.org, David Miller <davem@davemloft.net>,
         gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        robh@kernel.org, netdev@vger.kernel.org, yanjun.zhu@oracle.com,
-        rain.1986.08.12@gmail.com
-Subject: [PATCH 1/1] MAINTAINERS: forcedeth: Change Zhu Yanjun's email address
-Date:   Tue, 19 Nov 2019 03:03:48 -0500
-Message-Id: <1574150628-3905-1-git-send-email-yanjun.zhu@oracle.com>
-X-Mailer: git-send-email 2.7.4
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9445 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=903
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1911190073
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9445 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=988 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-1911190073
+        robh@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I prefer to use my personal email address for kernel related work.
+On Tue, Nov 19, 2019 at 3:54 PM Zhu Yanjun <yanjun.zhu@oracle.com> wrote:
+>
+> I prefer to use my personal email address for kernel related work.
+>
+> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
 
-Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e4f170d..8165658 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -643,7 +643,7 @@ F:	drivers/net/ethernet/alacritech/*
- 
- FORCEDETH GIGABIT ETHERNET DRIVER
- M:	Rain River <rain.1986.08.12@gmail.com>
--M:	Zhu Yanjun <yanjun.zhu@oracle.com>
-+M:	Zhu Yanjun <zyjzyj2000@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/nvidia/*
--- 
-2.7.4
+Acked-by: Rain River <rain.1986.08.12@gmail.com>
 
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e4f170d..8165658 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -643,7 +643,7 @@ F:  drivers/net/ethernet/alacritech/*
+>
+>  FORCEDETH GIGABIT ETHERNET DRIVER
+>  M:     Rain River <rain.1986.08.12@gmail.com>
+> -M:     Zhu Yanjun <yanjun.zhu@oracle.com>
+> +M:     Zhu Yanjun <zyjzyj2000@gmail.com>
+>  L:     netdev@vger.kernel.org
+>  S:     Maintained
+>  F:     drivers/net/ethernet/nvidia/*
+> --
+> 2.7.4
+>
