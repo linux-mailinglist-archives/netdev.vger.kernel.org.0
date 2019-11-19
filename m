@@ -2,94 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C09E5102741
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 15:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4072510275C
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 15:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbfKSOrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 09:47:12 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:33978 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727693AbfKSOrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 09:47:12 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAJEl3L1127708;
-        Tue, 19 Nov 2019 08:47:03 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1574174823;
-        bh=OXUbZruzHdM6LcZR/07PxuUSjLDUqi60DA1vaZg2jFs=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=my9n7z/+Rv8yLMeHxUFRDKMKyXZCTkd2eq1EOENBQJhIjjv+X2MCk+ILG43vMY/NV
-         OzT4NwDWpErX+LIvRquDkBzX9slilH2Ze8hsSjOylwIjXAt5BPPbCh9LGE2yx2QCyR
-         YA8OKf8gkUrwNRlae7WFchWC2WpNlYRdPXV9pRjU=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xAJEl2VQ068335
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 19 Nov 2019 08:47:03 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 19
- Nov 2019 08:47:01 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 19 Nov 2019 08:47:01 -0600
-Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAJEl1j4013921;
-        Tue, 19 Nov 2019 08:47:01 -0600
-Subject: Re: [PATCH 2/2] can: m_can_platform: remove unnecessary
- m_can_class_resume() call
-To:     Pankaj Sharma <pankj.sharma@samsung.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <rcsekar@samsung.com>, <pankaj.dubey@samsung.com>,
-        Sriram Dash <sriram.dash@samsung.com>
-References: <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
- <CGME20191119102201epcas5p4e215c25d5d07269a7afb1f86fac0be65@epcas5p4.samsung.com>
- <1574158838-4616-3-git-send-email-pankj.sharma@samsung.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <0af3a926-fa28-2ddd-a6ef-1c516f674fc9@ti.com>
-Date:   Tue, 19 Nov 2019 08:45:30 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727865AbfKSOwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 09:52:01 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:39492 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726637AbfKSOwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 09:52:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574175120;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zK34bLZfC0kMTqcBrBRGMoyuea89Tp/PR9ZllIQfK5s=;
+        b=NvExESGXFJMwhTeVvpaIHvduFTU5fKl8suyLmDDOyMCIsc4VJlOYtPf8Uotijy/TkCuN2L
+        qH1NNMlIBozSHcVAfwfBh7XYWRz75gjOfdoJkRMIL+wXygpWIETWuDmmH7IkiWKf3EoFEy
+        bX5jglk4EDilEA7mAECmmsB/xKil2Aw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-349-Ur00PPigN-uPprX8Vu_kpQ-1; Tue, 19 Nov 2019 09:51:57 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB66D18BDCE7;
+        Tue, 19 Nov 2019 14:51:53 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C6C25F795;
+        Tue, 19 Nov 2019 14:51:45 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 15:51:43 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, ilias.apalodimas@linaro.org,
+        mcroce@redhat.com, jonathan.lemon@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v4 net-next 3/3] net: mvneta: get rid of huge dma sync
+ in mvneta_rx_refill
+Message-ID: <20191119155143.0683f754@carbon>
+In-Reply-To: <20191119121911.GC3449@localhost.localdomain>
+References: <cover.1574083275.git.lorenzo@kernel.org>
+        <7bd772e5376af0c55e7319b7974439d4981aa167.1574083275.git.lorenzo@kernel.org>
+        <20191119123850.5cd60c0e@carbon>
+        <20191119121911.GC3449@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <1574158838-4616-3-git-send-email-pankj.sharma@samsung.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: Ur00PPigN-uPprX8Vu_kpQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pankaj
+On Tue, 19 Nov 2019 14:19:11 +0200
+Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 
-On 11/19/19 4:20 AM, Pankaj Sharma wrote:
-> The function m_can_runtime_resume() is getting recursively called from
-> m_can_class_resume(). This results in a lock up.
->
-> We need not call m_can_class_resume() during m_can_runtime_resume().
->
-> Fixes: f524f829b75a ("can: m_can: Create a m_can platform framework")
->
-> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
-> Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
-> ---
->   drivers/net/can/m_can/m_can_platform.c | 2 --
->   1 file changed, 2 deletions(-)
->
-> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-> index 2eaa354..38ea5e6 100644
-> --- a/drivers/net/can/m_can/m_can_platform.c
-> +++ b/drivers/net/can/m_can/m_can_platform.c
-> @@ -166,8 +166,6 @@ static int __maybe_unused m_can_runtime_resume(struct device *dev)
->   	if (err)
->   		clk_disable_unprepare(mcan_class->hclk);
->   
-> -	m_can_class_resume(dev);
-> -
->   	return err;
->   }
->   
-Acked-by: Dan Murphy <dmurphy@ti.com>
+> > On Mon, 18 Nov 2019 15:33:46 +0200
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >  =20
+> > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethe=
+rnet/marvell/mvneta.c
+> > > index f7713c2c68e1..a06d109c9e80 100644
+> > > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > > +++ b/drivers/net/ethernet/marvell/mvneta.c =20
+> > [...] =20
+> > > @@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
+mvneta_rx_queue *rxq,
+> > >  =09=09err =3D xdp_do_redirect(pp->dev, xdp, prog);
+> > >  =09=09if (err) {
+> > >  =09=09=09ret =3D MVNETA_XDP_DROPPED;
+> > > -=09=09=09page_pool_recycle_direct(rxq->page_pool,
+> > > -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
+> > > +=09=09=09__page_pool_put_page(rxq->page_pool,
+> > > +=09=09=09=09=09virt_to_head_page(xdp->data),
+> > > +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
+> > > +=09=09=09=09=09true);
+> > >  =09=09} else {
+> > >  =09=09=09ret =3D MVNETA_XDP_REDIR;
+> > >  =09=09}
+> > > @@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
+mvneta_rx_queue *rxq,
+> > >  =09case XDP_TX:
+> > >  =09=09ret =3D mvneta_xdp_xmit_back(pp, xdp);
+> > >  =09=09if (ret !=3D MVNETA_XDP_TX)
+> > > -=09=09=09page_pool_recycle_direct(rxq->page_pool,
+> > > -=09=09=09=09=09=09 virt_to_head_page(xdp->data));
+> > > +=09=09=09__page_pool_put_page(rxq->page_pool,
+> > > +=09=09=09=09=09virt_to_head_page(xdp->data),
+> > > +=09=09=09=09=09xdp->data_end - xdp->data_hard_start,
+> > > +=09=09=09=09=09true);
+> > >  =09=09break;
+> > >  =09default:
+> > >  =09=09bpf_warn_invalid_xdp_action(act);
+> > > @@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct =
+mvneta_rx_queue *rxq,
+> > >  =09=09trace_xdp_exception(pp->dev, prog, act);
+> > >  =09=09/* fall through */
+> > >  =09case XDP_DROP:
+> > > -=09=09page_pool_recycle_direct(rxq->page_pool,
+> > > -=09=09=09=09=09 virt_to_head_page(xdp->data));
+> > > +=09=09__page_pool_put_page(rxq->page_pool,
+> > > +=09=09=09=09     virt_to_head_page(xdp->data),
+> > > +=09=09=09=09     xdp->data_end - xdp->data_hard_start,
+> > > +=09=09=09=09     true); =20
+> >=20
+> > This does beg for the question: Should we create an API wrapper for
+> > this in the header file?
+> >=20
+> > But what to name it?
+> >=20
+> > I know Jonathan doesn't like the "direct" part of the  previous functio=
+n
+> > name page_pool_recycle_direct.  (I do considered calling this 'napi'
+> > instead, as it would be inline with networking use-cases, but it seemed
+> > limited if other subsystem end-up using this).
+> >=20
+> > Does is 'page_pool_put_page_len' sound better?
+> >=20
+> > But I want also want hide the bool 'allow_direct' in the API name.
+> > (As it makes it easier to identify users that uses this from softirq)
+> >=20
+> > Going for 'page_pool_put_page_len_napi' starts to be come rather long. =
+=20
+>=20
+> What about removing the second 'page'? Something like:
+> - page_pool_put_len_napi()
+
+Well, we (unfortunately) already have page_pool_put(), which is used
+for refcnt on the page_pool object itself.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
