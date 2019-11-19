@@ -2,92 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE56102559
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:27:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D89F410255F
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 14:27:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727316AbfKSN1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 08:27:15 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46934 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfKSN1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 08:27:15 -0500
-Received: by mail-wr1-f66.google.com with SMTP id b3so23815449wrs.13
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 05:27:13 -0800 (PST)
+        id S1727916AbfKSN1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 08:27:53 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:39361 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727809AbfKSN1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 08:27:51 -0500
+Received: by mail-pf1-f195.google.com with SMTP id x28so12186088pfo.6;
+        Tue, 19 Nov 2019 05:27:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
-        h=sender:from:to:cc:subject:date:message-id;
-        bh=EGefV7mNK+kl1gbQFeTNeXk1t+zkh+oZ0TH06o9BTAQ=;
-        b=dH9qKRozXP3KGtiH9uJ20dq843ddNU4Kp6buGyZNiWSli31NjWeasZ0fjM9+/WH6rG
-         cuXqvAacyuw+TjejZTJakkXuiEfx9r2oI0FYPibxm93297dDQxRQFAfwQnrwHTIeFpqT
-         3PMWvCYoLXzw8e8VkV/cPIo+iwOgTSngc+huCnwRSTv9ikP2Z9+Y/OYnGS0CJmKdLKU6
-         NsmwoeF1aS9rzaESFzr1AX5jAbX1oABu0xzYOipU79jfDeE6szLLhKS13Edomi2fnLCp
-         J0r4b2EoPpIsDvCaHYy729/KBUdjTZVbfqxBZegxB4aRwkas5t2Hc4Gx9w4MEYn16huL
-         /Cpw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=991wadlKoIf5fyh5RZSIF1k5KlgY19LbPsWb2sODItY=;
+        b=MMs2kPisReK9mXyL4pp0T6LGlkthL7Rahzcv0siIQvE9qzrBJ6lJJ3f+OJFvxRWl4X
+         q+6+PdC6zw1/nKHpUVmRrAt8hDCXa3EAv3wWfxfvyjBJuEVB0W1WAAkhgU5ieRybU/ds
+         wb7xMnwp/YDAhBH5B2oig5sIbXF6u8C6eqfWeOVUgh3DcHqH3X+4svPaNqinYLeAjzSZ
+         9EHdigRNiQN4kUDkpn9k4ISHsbCcPMt79zd2im8uhkLZrFhy8sirOOzSpm/ZVmMxjbGB
+         LVjj8DdssvVU4eheIbU4tF3YGz6PhkJHJDVaZgyz8tXbVdlqs5uoJBk+SxECBiedgeLP
+         qk0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id;
-        bh=EGefV7mNK+kl1gbQFeTNeXk1t+zkh+oZ0TH06o9BTAQ=;
-        b=HsWF3OZxJYNjdCZYPmfsRq/MSq/oNc5bCrl1jY9uoHzAyVQXR50FgMQOju5phJJMOp
-         RBX/O6rsD1tBviTGqSDe16UioZJrb5gudfGDguKAmdHK6L/FV2q/1UCWicPdiHuQLYlP
-         vjaIvqV2D8xaSq3AWpOBfqxrnU47P5uW4qc5ZzzeFxZLLJHdXIKsk/oNWT6Rc+n2YmjR
-         vkG64rPVU63MlVjavO0vQzWZCGVg0k29sZpTxFjqbmVKpHX/ZOmtgNZRli0qs0YdKGxr
-         qAQZjSGeYx3io4yqAEfJ95ChY65znpkhvzY1zI+UiIn3cDs+IaOshraWayDp359qCWNc
-         awPQ==
-X-Gm-Message-State: APjAAAXpT5c/Uy3UC4VUF62e3m5elalHni4RATghZj9bXMpXZcAlmAIQ
-        wt/4/nqnTLWP9fymalo4Dgi/Pg==
-X-Google-Smtp-Source: APXvYqwWMrQSCn0yw+DxOB4jlYK+39UBztYpH/0OFf16lTrP8qAvd7dbA5m+dfTHLEaP9PMowm96Mg==
-X-Received: by 2002:adf:f147:: with SMTP id y7mr29780144wro.236.1574170033042;
-        Tue, 19 Nov 2019 05:27:13 -0800 (PST)
-Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
-        by smtp.gmail.com with ESMTPSA id t185sm3334612wmf.45.2019.11.19.05.27.12
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 19 Nov 2019 05:27:12 -0800 (PST)
-From:   Michal Simek <michal.simek@xilinx.com>
-To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
-        michal.simek@xilinx.com, git@xilinx.com
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH] phy: mdio_bus: Check ENOTSUPP instead of ENOSYS in mdiobus_register_reset
-Date:   Tue, 19 Nov 2019 14:27:11 +0100
-Message-Id: <8712e54912598b3ca6f00d00ff8fbfdd1c53e7e8.1574170028.git.michal.simek@xilinx.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=991wadlKoIf5fyh5RZSIF1k5KlgY19LbPsWb2sODItY=;
+        b=lI5n5CUzXmDgi/guXYzSdEXo6N8uf30kE4Yp4X5VdcvBb6lrqzW0czBVDJE33hU0Bw
+         aohkbCFE3FTFSfWAS0rpiSNvpztfZq3ROtssSmpYjXrJf5/v9KA5I2gP2zKvXiUyudof
+         DzU6KDQftycKd3FkWFimrPVIytOaZuUtJJ9q7fooGrXruW4jWcJQf/RZjZ4UDRbHW3CR
+         oHMl9LuQxbM6FTzfB2awmj9mqp4NJ9FxKipOiytZGD7wkNMtOlP8ULCzQOB4meDVw9ce
+         jjqPk6hg3F5Nt0/swUKo57RysqiFg65bIYCcQwEszRfbRGPBWbbDWPxKCtKvXkqj/9Wh
+         SkqA==
+X-Gm-Message-State: APjAAAVCySjWlVe03v+1ESR2QIci7CWnMG0JswWNnsuPFRxStDvaX515
+        GkHHzyqc9lGJKNuhOs+kMAcO4sCH+8g=
+X-Google-Smtp-Source: APXvYqw+xmNRYKHWxKazJushimkHPpsyMxOqggFVxLHTXURgx9mAc4U98J1uBHVY50FzDbdJFxfJzg==
+X-Received: by 2002:a63:9d41:: with SMTP id i62mr5791328pgd.310.1574170070321;
+        Tue, 19 Nov 2019 05:27:50 -0800 (PST)
+Received: from ubuntu-18.04-x8664 ([128.1.49.85])
+        by smtp.gmail.com with ESMTPSA id v189sm25990458pfv.133.2019.11.19.05.27.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 05:27:49 -0800 (PST)
+From:   Wenbo Zhang <ethercflow@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org.com, daniel@iogearbox.net, yhs@fb.com,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH bpf-next v10 0/2] bpf: adding get_file_path helper
+Date:   Tue, 19 Nov 2019 08:27:36 -0500
+Message-Id: <cover.1574162990.git.ethercflow@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Origin patch was using ENOTSUPP instead of ENOSYS. Silently changing error
-value ends up in an access to bad area on Microblaze with axi ethernet
-driver.
+This patch series introduce a bpf helper that can be used to map a file
+descriptor to a pathname.
 
-Fixes: 1d4639567d97 ("mdio_bus: Fix PTR_ERR applied after initialization to constant")
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+This requirement is mainly discussed here:
 
-I didn't track it down where exactly that access happens but the patch is
-clearly just changing something without description.
+  https://github.com/iovisor/bcc/issues/237
 
-The origin patch has been merged between rc7 and rc8 and would be good to
-get this fix to v5.4.
----
- drivers/net/phy/mdio_bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This implementation supports both local and mountable pseudo file systems,
+and ensure we're in user context which is safe for this helper to run.
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 35876562e32a..dbacb0031877 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -65,7 +65,7 @@ static int mdiobus_register_reset(struct mdio_device *mdiodev)
- 		reset = devm_reset_control_get_exclusive(&mdiodev->dev,
- 							 "phy");
- 	if (IS_ERR(reset)) {
--		if (PTR_ERR(reset) == -ENOENT || PTR_ERR(reset) == -ENOSYS)
-+		if (PTR_ERR(reset) == -ENOENT || PTR_ERR(reset) == -ENOTSUPP)
- 			reset = NULL;
- 		else
- 			return PTR_ERR(reset);
+Changes since v9:
+
+* Associate help patch with its selftests patch to this series
+
+* Refactor selftests code for further simplification  
+
+
+Changes since v8:
+
+* format helper description 
+ 
+
+Changes since v7:
+
+* Use fget_raw instead of fdget_raw, as fdget_raw is only used inside fs/
+
+* Ensure we're in user context which is safe fot the help to run
+
+* Filter unmountable pseudo filesystem, because they don't have real path
+
+* Supplement the description of this helper function
+
+
+Changes since v6:
+
+* Fix missing signed-off-by line
+
+
+Changes since v5:
+
+* Refactor helper avoid unnecessary goto end by having two explicit returns
+
+
+Changes since v4:
+
+* Rename bpf_fd2path to bpf_get_file_path to be consistent with other
+helper's names
+
+* When fdget_raw fails, set ret to -EBADF instead of -EINVAL
+
+* Remove fdput from fdget_raw's error path
+
+* Use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
+into the buffer or an error code if the path was too long
+
+* Modify the normal path's return value to return copied string length
+including NUL
+
+* Update helper description's Return bits.
+
+* Refactor selftests code for further simplification  
+
+
+Changes since v3:
+
+* Remove unnecessary LOCKDOWN_BPF_READ
+
+* Refactor error handling section for enhanced readability
+
+* Provide a test case in tools/testing/selftests/bpf
+
+* Refactor sefltests code to use real global variables instead of maps
+
+
+Changes since v2:
+
+* Fix backward compatibility
+
+* Add helper description
+
+* Refactor selftests use global data instead of perf_buffer to simplified
+code
+
+* Fix signed-off name
+
+
+Wenbo Zhang (2):
+  bpf: add new helper get_file_path for mapping a file descriptor to a
+    pathname
+  selftests/bpf: test for bpf_get_file_path() from tracepoint
+
+ include/uapi/linux/bpf.h                      |  29 ++-
+ kernel/trace/bpf_trace.c                      |  63 +++++++
+ tools/include/uapi/linux/bpf.h                |  29 ++-
+ .../selftests/bpf/prog_tests/get_file_path.c  | 171 ++++++++++++++++++
+ .../selftests/bpf/progs/test_get_file_path.c  |  43 +++++
+ 5 files changed, 333 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_path.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_path.c
+
 -- 
 2.17.1
 
