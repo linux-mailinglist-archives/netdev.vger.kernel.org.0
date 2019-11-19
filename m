@@ -2,369 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C012B10124E
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 04:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4939B10125F
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 05:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727504AbfKSD6m convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 18 Nov 2019 22:58:42 -0500
-Received: from mga09.intel.com ([134.134.136.24]:14881 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727217AbfKSD6l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Nov 2019 22:58:41 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Nov 2019 19:58:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,322,1569308400"; 
-   d="scan'208";a="215441102"
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
-  by fmsmga001.fm.intel.com with ESMTP; 18 Nov 2019 19:58:40 -0800
-Received: from orsmsx123.amr.corp.intel.com (10.22.240.116) by
- ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 18 Nov 2019 19:58:39 -0800
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.229]) by
- ORSMSX123.amr.corp.intel.com ([169.254.1.236]) with mapi id 14.03.0439.000;
- Mon, 18 Nov 2019 19:58:39 -0800
-From:   "Ertman, David M" <david.m.ertman@intel.com>
+        id S1727665AbfKSEIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 23:08:43 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49370 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727464AbfKSEIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 23:08:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574136522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4KHnBphqylub5AyGngwSZIrs22cExMLF/6Fas0WmnvQ=;
+        b=OgEkU7+0aIyvooI55kRm0zklnwbMKuvz/Q/9kLoQ7M+yjt5EW98pEfZpA9kllzJJK44jS8
+        vY1a79PhqxQRyfm6qcmbsOwWfmlOYdi6MbSJO8HB6EarYSEF9bb3hQG/6JhGWdxhULcOFW
+        igqDGpDWAaZnPrsiRKusi41ASSHUykQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-192-9KDg-R-QMyC7gJzz-rja_w-1; Mon, 18 Nov 2019 23:08:39 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 619B71005500;
+        Tue, 19 Nov 2019 04:08:37 +0000 (UTC)
+Received: from [10.72.12.132] (ovpn-12-132.pek2.redhat.com [10.72.12.132])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DA718608E2;
+        Tue, 19 Nov 2019 04:08:16 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
 To:     Parav Pandit <parav@mellanox.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+Cc:     Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         "nhorman@redhat.com" <nhorman@redhat.com>,
         "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Topic: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHVnATHptCZx1o750+cmj+dZwSi7aeNZheAgAPN0JA=
-Date:   Tue, 19 Nov 2019 03:58:38 +0000
-Message-ID: <2B0E3F215D1AB84DA946C8BEE234CCC97B301493@ORSMSX101.amr.corp.intel.com>
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
 References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
  <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
-In-Reply-To: <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
+Date:   Tue, 19 Nov 2019 12:08:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: 9KDg-R-QMyC7gJzz-rja_w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Parav Pandit <parav@mellanox.com>
-> Sent: Friday, November 15, 2019 3:26 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
-> gregkh@linuxfoundation.org
-> Cc: Ertman, David M <david.m.ertman@intel.com>;
-> netdev@vger.kernel.org; linux-rdma@vger.kernel.org;
-> nhorman@redhat.com; sassmann@redhat.com; jgg@ziepe.ca; Patil, Kiran
-> <kiran.patil@intel.com>
-> Subject: RE: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-> 
+
+On 2019/11/16 =E4=B8=8A=E5=8D=887:25, Parav Pandit wrote:
 > Hi Jeff,
-> 
-> > From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> > Sent: Friday, November 15, 2019 4:34 PM
-> >
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> >
-> > This is the initial implementation of the Virtual Bus, virtbus_device
-> > and virtbus_driver.  The virtual bus is a software based bus intended
-> > to support lightweight devices and drivers and provide matching
-> > between them and probing of the registered drivers.
-> >
-> > The primary purpose of the virual bus is to provide matching services
-> > and to pass the data pointer contained in the virtbus_device to the
-> > virtbus_driver during its probe call.  This will allow two separate
-> > kernel objects to match up and start communication.
-> >
-> It is fundamental to know that rdma device created by virtbus_driver will be
-> anchored to which bus for an non abusive use.
+>
+>> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+>> Sent: Friday, November 15, 2019 4:34 PM
+>>
+>> From: Dave Ertman <david.m.ertman@intel.com>
+>>
+>> This is the initial implementation of the Virtual Bus, virtbus_device an=
+d
+>> virtbus_driver.  The virtual bus is a software based bus intended to sup=
+port
+>> lightweight devices and drivers and provide matching between them and
+>> probing of the registered drivers.
+>>
+>> The primary purpose of the virual bus is to provide matching services an=
+d to
+>> pass the data pointer contained in the virtbus_device to the virtbus_dri=
+ver
+>> during its probe call.  This will allow two separate kernel objects to m=
+atch up
+>> and start communication.
+>>
+> It is fundamental to know that rdma device created by virtbus_driver will=
+ be anchored to which bus for an non abusive use.
 > virtbus or parent pci bus?
 > I asked this question in v1 version of this patch.
+>
+> Also since it says - 'to support lightweight devices', documenting that i=
+nformation is critical to avoid ambiguity.
+>
+> Since for a while I am working on the subbus/subdev_bus/xbus/mdev [1] wha=
+tever we want to call it, it overlaps with your comment about 'to support l=
+ightweight devices'.
+> Hence let's make things crystal clear weather the purpose is 'only matchi=
+ng service' or also 'lightweight devices'.
+> If this is only matching service, lets please remove lightweight devices =
+part..
 
-The model we will be using is a PCI LAN driver that will allocate and
-register a virtbus_device.  The virtbus_device will be anchored to the virtual
-bus, not the PCI bus.
 
-The virtbus does not have a requirement that elements registering with it
-have any association with another outside bus or device.
+Yes, if it's matching + lightweight device, its function is almost a=20
+duplication of mdev. And I'm working on extending mdev[1] to be a=20
+generic module to support any types of virtual devices a while. The=20
+advantage of mdev is:
 
-RDMA is not attached to any bus when it's init is called.  The virtbus_driver
-that it will create will be attached to the virtual bus.
+1) ready for the userspace driver (VFIO based)
+2) have a sysfs/GUID based management interface
 
-The RDMA driver will register a virtbus_driver object.  Its probe will
-accept the data pointer from the virtbus_device that the PCI LAN driver
-created.
+So for 1, it's not clear that how userspace driver would be supported=20
+here, or it's completely not being accounted in this series? For 2, it=20
+looks to me that this series leave it to the implementation, this means=20
+management to learn several vendor specific interfaces which seems a burden=
+.
 
-> 
-> Also since it says - 'to support lightweight devices', documenting that
-> information is critical to avoid ambiguity.
-> 
-> Since for a while I am working on the subbus/subdev_bus/xbus/mdev [1]
-> whatever we want to call it, it overlaps with your comment about 'to support
-> lightweight devices'.
-> Hence let's make things crystal clear weather the purpose is 'only matching
-> service' or also 'lightweight devices'.
-> If this is only matching service, lets please remove lightweight devices part..
-> 
+Note, technically Virtual Bus could be implemented on top of [1] with=20
+the full lifecycle API.
 
-This is only for matching services for kernel objects, I will work on
-phrasing this clearer.
+[1] https://lkml.org/lkml/2019/11/18/261
 
-> You additionally need modpost support for id table integration to modifo,
-> modprobe and other tools.
+
+>
+> You additionally need modpost support for id table integration to modifo,=
+ modprobe and other tools.
 > A small patch similar to this one [2] is needed.
 > Please include in the series.
-> 
-
-modpost support added - thanks for that catch!
-
+>
 > [..]
-> 
-> > +static const
-> > +struct virtbus_dev_id *virtbus_match_id(const struct virtbus_dev_id *id,
-> > +					struct virtbus_device *vdev)
-> > +{
-> > +	while (id->name[0]) {
-> > +		if (!strcmp(vdev->name, id->name)) {
-> > +			vdev->dev_id = id;
-> Matching function shouldn't be modifying the id.
-
-This is not the main id of the virtbus_device.  This is copying the
-element in the driver id_table that was matched into the virtbus_device
-struct, so that when the virtbus_device struct is passed to the
-virtbus_driver's probe, it can access the correct driver_data.
-
-I chose a poor name for this field, I will change the name of this part of the
-struct to matched_element and include a comment on what is going on here.
-
-> 
-> > +			return id;
-> > +		}
-> > +		id++;
-> > +	}
-> > +	return NULL;
-> > +}
-> > +
-> > +#define to_virtbus_dev(x)	(container_of((x), struct virtbus_device,
-> dev))
-> > +#define to_virtbus_drv(x)	(container_of((x), struct virtbus_driver, \
-> > +				 driver))
-> > +
-> > +/**
-> > + * virtbus_match - bind virtbus device to virtbus driver
-> > + * @dev: device
-> > + * @drv: driver
-> > + *
-> > + * Virtbus device IDs are always in "<name>.<instance>" format.
-> We might have to change this scheme depending on the first question I
-> asked in the email about device anchoring.
-> 
-> > +
-> > +struct bus_type virtual_bus_type = {
-> > +	.name		= "virtbus",
-> > +	.match		= virtbus_match,
-> > +	.probe		= virtbus_probe,
-> > +	.remove		= virtbus_remove,
-> > +	.shutdown	= virtbus_shutdown,
-> > +	.suspend	= virtbus_suspend,
-> > +	.resume		= virtbus_resume,
-> > +};
-> Drop the tab alignment.
-> 
-
-Dropped :)
-
-> > +
-> > +/**
-> > + * virtbus_dev_register - add a virtual bus device
-> > + * @vdev: virtual bus device to add
-> > + */
-> > +int virtbus_dev_register(struct virtbus_device *vdev) {
-> > +	int ret;
-> > +
-> > +	if (!vdev)
-> > +		return -EINVAL;
-> No need for this check.
-> Driver shouldn't be called null device registration.
-
-check removed.
-
-> 
-> > +
-> > +	device_initialize(&vdev->dev);
-> > +
-> > +	vdev->dev.bus = &virtual_bus_type;
-> > +	/* All device IDs are automatically allocated */
-> > +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> This is bug, once device_initialize() is done, it must do put_device() and
-> follow the release sequence.
-> 
-
-changed to use put_device().
-
-> > +	vdev->id = ret;
-> > +	dev_set_name(&vdev->dev, "%s.%d", vdev->name, vdev->id);
-> > +
-> > +	dev_dbg(&vdev->dev, "Registering VirtBus device '%s'\n",
-> I think 'virtbus' naming is better instead of 'VirtBus' all over. We don't do "Pci'
-> in prints etc.
-> 
-
-Changed to virtbus.
-
-> > +		dev_name(&vdev->dev));
-> > +
-> > +	ret = device_add(&vdev->dev);
-> > +	if (!ret)
-> > +		return ret;
-> > +
-> > +	/* Error adding virtual device */
-> > +	device_del(&vdev->dev);
-> > +	ida_simple_remove(&virtbus_dev_ida, vdev->id);
-> > +	vdev->id = VIRTBUS_DEVID_NONE;
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(virtbus_dev_register);
-> > +
-> > +/**
-> > + * virtbus_dev_unregister - remove a virtual bus device
-> > + * vdev: virtual bus device we are removing  */ void
-> > +virtbus_dev_unregister(struct virtbus_device *vdev) {
-> > +	if (!IS_ERR_OR_NULL(vdev)) {
-> > +		device_del(&vdev->dev);
-> > +
-> > +		ida_simple_remove(&virtbus_dev_ida, vdev->id);
-> I believe this should be done in the release() because above device_del()
-> may not ensure that all references to the devices are dropped.
-> 
-
-ida_release moved to .release() function.
-
-> > +		vdev->id = VIRTBUS_DEVID_NONE;
-> > +	}
-> > +}
-> > +EXPORT_SYMBOL_GPL(virtbus_dev_unregister);
-> > +
-> > +struct virtbus_object {
-> > +	struct virtbus_device vdev;
-> > +	char name[];
-> > +};
-> > +
-> This shouldn't be needed once. More below.
-> 
-> > +/**
-> > + * virtbus_dev_release - Destroy a virtbus device
-> > + * @vdev: virtual device to release
-> > + *
-> > + * Note that the vdev->data which is separately allocated needs to be
-> > + * separately freed on it own.
-> > + */
-> > +static void virtbus_dev_release(struct device *dev) {
-> > +	struct virtbus_object *vo = container_of(dev, struct virtbus_object,
-> > +						 vdev.dev);
-> > +
-> > +	kfree(vo);
-> > +}
-> > +
-> > +/**
-> > + * virtbus_dev_alloc - allocate a virtbus device
-> > + * @name: name to associate with the vdev
-> > + * @data: pointer to data to be associated with this device  */
-> > +struct virtbus_device *virtbus_dev_alloc(const char *name, void *data) {
-> > +	struct virtbus_object *vo;
-> > +
-> Data should not be used.
-> Caller needs to give a size of the object to allocate.
-> I discussed the example in detail with Jason in v1 of this patch. Please refer in
-> that email.
-> It should be something like this.
-> 
-> /* size = sizeof(struct i40_virtbus_dev), and it is the first member */
-> virtbus_dev_alloc(size)
-> {
-> 	[..]
-> }
-> 
-> struct i40_virtbus_dev {
-> 	struct virbus_dev virtdev;
-> 	/*... more fields that you want to share with other driver and to use
-> in probe() */ };
-> 
-> irdma_probe(..)
-> {
-> 	struct i40_virtbus_dev dev = container_of(dev, struct
-> i40_virtbus_dev, dev); }
-> 
-> [..]
-> 
-> > diff --git a/include/linux/virtual_bus.h b/include/linux/virtual_bus.h
-> > new file mode 100644 index 000000000000..b6f2406180f8
-> > --- /dev/null
-> > +++ b/include/linux/virtual_bus.h
-> > @@ -0,0 +1,55 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/*
-> > + * virtual_bus.h - lightweight software bus
-> > + *
-> > + * Copyright (c) 2019-20 Intel Corporation
-> > + *
-> > + * Please see Documentation/driver-api/virtual_bus.rst for more
-> > +information  */
-> > +
-> > +#ifndef _VIRTUAL_BUS_H_
-> > +#define _VIRTUAL_BUS_H_
-> > +
-> > +#include <linux/device.h>
-> > +
-> > +#define VIRTBUS_DEVID_NONE	(-1)
-> > +#define VIRTBUS_NAME_SIZE	20
-> > +
-> > +struct virtbus_dev_id {
-> > +	char name[VIRTBUS_NAME_SIZE];
-> > +	u64 driver_data;
-> > +};
-> > +
-> > +struct virtbus_device {
-> > +	const char			*name;
-> > +	int				id;
-> > +	const struct virtbus_dev_id	*dev_id;
-> > +	struct device			dev;
-> Drop the tab based alignment and just please follow format of virtbus_driver
-> you did below.
-> > +	void				*data;
-> Please drop data. we need only wrapper API virtbus_get/set_drvdata().
-> > +};
-> 
-
-Data dropped in favor of the device creator using a struct to contain the
-virtbus_device and data field, and the virtbus_driver using a container_of()
-to get to the data after receiving the virtbus_device struct in probe.
-
-Function virtbus_dev_alloc removed from patch (since the device creator will
-need to allocate for the container object).
-
-> [1] https://lore.kernel.org/linux-rdma/20191107160448.20962-1-
-> parav@mellanox.com/
-> [2] https://lore.kernel.org/patchwork/patch/1046991/
 
 
-Thanks for the feedback!
+And probably a uevent method. But rethinking of this, matching through a=20
+single virtual bus seems not good. What if driver want to do some=20
+specific matching? E.g for virtio, we may want a vhost-net driver that=20
+only match networking device. With a single bus, it probably means you=20
+need another bus on top and provide the virtio specific matching there.=20
+This looks not straightforward as allowing multiple type of buses.
 
--Dave E
+Thanks
+
