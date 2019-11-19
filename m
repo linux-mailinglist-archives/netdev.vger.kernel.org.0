@@ -2,123 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98365101224
-	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 04:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0686D10122C
+	for <lists+netdev@lfdr.de>; Tue, 19 Nov 2019 04:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727481AbfKSDVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Nov 2019 22:21:33 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45278 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727018AbfKSDVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 22:21:33 -0500
-Received: by mail-pl1-f193.google.com with SMTP id w7so10937875plz.12;
-        Mon, 18 Nov 2019 19:21:33 -0800 (PST)
+        id S1727594AbfKSD16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Nov 2019 22:27:58 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40760 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727242AbfKSD16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Nov 2019 22:27:58 -0500
+Received: by mail-qt1-f193.google.com with SMTP id o49so22979943qta.7
+        for <netdev@vger.kernel.org>; Mon, 18 Nov 2019 19:27:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=AJSVdvbi212zCUDsjBqGjD7qtdajE6+qPwR1HzaIyho=;
-        b=XAsjp0UfvBJaaNSKz53ndim8SsS53XqDhf+5/udM2dsqWIeqGVOC3axEMLay6pskwu
-         iLXBwOZdteWt8F4DYXpabbg12dy0hfASmooqVzcKUeAiZbewE3dP647mfEg5hdmo+Grc
-         774RVyR7XWxR951pd+rZ9SUuFBpJa7QyxxUhp8WnnuQb39N8PNWKHN82jiZZjBNa8p+F
-         jGH8JCjERXrBK32Qn3sIn/mDEgRup5ShLbW0MLuwvBunlOuM4tyZz2wO5kjxCXqw5YVy
-         9oYfpOekOIp+ccFs/mleVqlE7w6XzaEIYut5wDh67JU7eCmLdusctls8elqWxD9tcCel
-         d1SA==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DVMWJPHKS5b0D789uPoJ9Xa2YJCvazHd/Qt98OC2/JU=;
+        b=CRuTq0JewoxfdZz8Y99vLaSYTr45Ta2V/UgojmbgS8Sz5pLVEmMxUzdrSgIZsoJdB4
+         BoffGkoPm+0W+nPVjU8vUgs50MU5MwZ4PR4So/wWzbMA7GEs1CkhHACtPWy6+mxkUyfp
+         ekLnQCZ8QmjUBC2S/+nwih9Tp7FmERUaPF9YFNdyds+YxwPBa6qNVk5Xq0Qc4S+owyoP
+         OEnb+0khYEAr7islGtx0nH5NwG7R4wk9ke+NMql1pTomaS4BWEMjHT6D3nNHPB9ipCC9
+         axJR2mwMpzlOxn+5bLScKoX2yu6kixxIOS/qxPCZr6P/QyskTql4jguBQLPSjSS3nEJW
+         Z7UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=AJSVdvbi212zCUDsjBqGjD7qtdajE6+qPwR1HzaIyho=;
-        b=Cwe1pkJ3WLErwBDezvI75+RBIBpQ/GqviCX9J21wwycrDT2IoOsUPtiod2coBnOQGJ
-         mEQw6OcWR0BVtD53KJ0oa1g0B56+/vrl4F4XfjavVkIkA+dNG6+iNvz585TBDGFkZSaK
-         JyQUnpmmFgZGuS4G1otomIsloUVKpm32CYWUlDMN0mpnEae+NZyqd29uVQclXkR5IvV+
-         uF5wzkrH8KG9+UTI24MiUH/p2hVCJp7POenuWQ2rlxuZG9jJQvC7aZRorAj17IA4HQUj
-         6vL8aBCiz0irXy5fw6UCusngFRu3iJBld/Fzxzp1xAh1zOWGyAqT43W1H5TTIpU0EGqp
-         RxsA==
-X-Gm-Message-State: APjAAAXSu9ZWvLju6sRHe/4k1i/baNKpLlr/VBiu3qOw5mHsfafCQli8
-        JZ6pSUUrtZk/XgsA3ABGJuc=
-X-Google-Smtp-Source: APXvYqwHySuggv2EYKl7B2OgoSD6B53sTlzBDOVVTaqfvIwzxELqlOUIP0zisQ0Rc4OBeJhOdMMX1w==
-X-Received: by 2002:a17:90a:195e:: with SMTP id 30mr3318897pjh.60.1574133692723;
-        Mon, 18 Nov 2019 19:21:32 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::db2d])
-        by smtp.gmail.com with ESMTPSA id 81sm25657044pfx.142.2019.11.18.19.21.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Nov 2019 19:21:31 -0800 (PST)
-Date:   Mon, 18 Nov 2019 19:21:29 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern
- variables
-Message-ID: <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
-References: <20191117070807.251360-1-andriin@fb.com>
- <20191117070807.251360-6-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DVMWJPHKS5b0D789uPoJ9Xa2YJCvazHd/Qt98OC2/JU=;
+        b=qgMJ7JHOAq98J7VXHYmJLCCueoQ3Cg4HusZSPaBH32XbY46eqz0Ixtvxf4/sk1vknV
+         ySdkwJjcW6OSkAAg90YHzEeKxxH+4xK8WAmSHQWo8sSWpVuMGXpBcg1eY2tZjE6AcgyN
+         IY0xuU8fYYVfCGRwv8I+Y9+BOb4yzTcO1lwOKLerCArmecW3zz61WaBYrYSE5Raftn3W
+         cPwz6A6NwUzO5qa1lrKQcp1epoAKfsoxK8F6wqCcFqVhtbtbntT/fTD+C4109vg0lZT3
+         gkCp01y0k4BfUQoXOG16Yrn0nq6Q7Kg9YwSIbtSBdbtVxcFrOF3QuUW8MBylBphEvja/
+         zs+g==
+X-Gm-Message-State: APjAAAVRykka6uf9i1uaOnOUfNhI9dE/v7LaSXbe0jcxNJJn1tj3Gg/2
+        1xNJs22kFiydaRNryOTnO+dLbCfRacW3YMDZIxe7ug==
+X-Google-Smtp-Source: APXvYqw5qE3tSdNUDhpR0IKDiQkN4t6llCwNKpHqlCQYmtBfEyv17dlcknaQgjDTgE//xnUWJZf+Q9RVKDisBNM1XBE=
+X-Received: by 2002:ac8:721a:: with SMTP id a26mr30490320qtp.208.1574134075348;
+ Mon, 18 Nov 2019 19:27:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191117070807.251360-6-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+References: <1574130314-25626-1-git-send-email-zhengbin13@huawei.com>
+In-Reply-To: <1574130314-25626-1-git-send-email-zhengbin13@huawei.com>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Tue, 19 Nov 2019 11:27:43 +0800
+Message-ID: <CAB4CAwcwxTPB_VAJyXxWnrcQbDOqxHdJcriSjCU6odgw2ng1Vg@mail.gmail.com>
+Subject: Re: [PATCH -next v2] rtl8xxxu: Remove set but not used variable 'vif','dev','len'
+To:     zhengbin <zhengbin13@huawei.com>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 16, 2019 at 11:08:06PM -0800, Andrii Nakryiko wrote:
-> Add support for extern variables, provided to BPF program by libbpf. Currently
-> the following extern variables are supported:
->   - LINUX_KERNEL_VERSION; version of a kernel in which BPF program is
->     executing, follows KERNEL_VERSION() macro convention;
->   - CONFIG_xxx values; a set of values of actual kernel config. Tristate,
->     boolean, and integer values are supported. Strings are not supported at
->     the moment.
-> 
-> All values are represented as 64-bit integers, with the follow value encoding:
->   - for boolean values, y is 1, n or missing value is 0;
->   - for tristate values, y is 1, m is 2, n or missing value is 0;
->   - for integers, the values is 64-bit integer, sign-extended, if negative; if
->     config value is missing, it's represented as 0, which makes explicit 0 and
->     missing config value indistinguishable. If this will turn out to be
->     a problem in practice, we'll need to deal with it somehow.
+On Tue, Nov 19, 2019 at 10:18 AM zhengbin <zhengbin13@huawei.com> wrote:
+>
+> Fixes gcc '-Wunused-but-set-variable' warning:
+>
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5396:24: warning: variable vif set but not used [-Wunused-but-set-variable]
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5397:17: warning: variable dev set but not used [-Wunused-but-set-variable]
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c: In function rtl8xxxu_c2hcmd_callback:
+> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:5400:6: warning: variable len set but not used [-Wunused-but-set-variable]
+>
+> They are introduced by commit e542e66b7c2e ("rtl8xxxu:
+> add bluetooth co-existence support for single antenna"), but never used,
+> so remove them.
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
+> ---
+> v1->v2: modify comment, it --> they
+Reviewed-by: Chris Chiu <chiu@endlessm.com>
 
-I read that statement as there is no extensibility for such api.
+>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 6 ------
+>  1 file changed, 6 deletions(-)
+>
+> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> index 1d94cab..aa2bb2a 100644
+> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> @@ -5393,18 +5393,13 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
+>  {
+>         struct rtl8xxxu_priv *priv;
+>         struct rtl8723bu_c2h *c2h;
+> -       struct ieee80211_vif *vif;
+> -       struct device *dev;
+>         struct sk_buff *skb = NULL;
+>         unsigned long flags;
+> -       int len;
+>         u8 bt_info = 0;
+>         struct rtl8xxxu_btcoex *btcoex;
+>
+>         priv = container_of(work, struct rtl8xxxu_priv, c2hcmd_work);
+> -       vif = priv->vif;
+>         btcoex = &priv->bt_coex;
+> -       dev = &priv->udev->dev;
+>
+>         if (priv->rf_paths > 1)
+>                 goto out;
+> @@ -5415,7 +5410,6 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
+>                 spin_unlock_irqrestore(&priv->c2hcmd_lock, flags);
+>
+>                 c2h = (struct rtl8723bu_c2h *)skb->data;
+> -               len = skb->len - 2;
+>
+>                 switch (c2h->id) {
+>                 case C2H_8723B_BT_INFO:
+> --
+> 2.7.4
+>
 
-> Generally speaking, libbpf is not aware of which CONFIG_XXX values is of which
-> expected type (bool, tristate, int), so it doesn't enforce any specific set of
-> values and just parses n/y/m as 0/1/2, respectively. CONFIG_XXX values not
-> found in config file are set to 0.
+Those variables are handled by the derived helper functions
+rtl8723bu_handle_bt_xxx and no longer needed in
+rtl8xxxu_c2hcmd_callback(). Thanks for reporting.
 
-This is not pretty either.
-
-> +
-> +		switch (*value) {
-> +		case 'n':
-> +			*ext_val = 0;
-> +			break;
-> +		case 'y':
-> +			*ext_val = 1;
-> +			break;
-> +		case 'm':
-> +			*ext_val = 2;
-> +			break;
-> +		case '"':
-> +			pr_warn("extern '%s': strings are not supported\n",
-> +				ext->name);
-> +			err = -EINVAL;
-> +			goto out;
-> +		default:
-> +			errno = 0;
-> +			*ext_val = strtoull(value, &value_end, 10);
-> +			if (errno) {
-> +				err = -errno;
-> +				pr_warn("extern '%s': failed to parse value: %d\n",
-> +					ext->name, err);
-> +				goto out;
-> +			}
-
-BPF has bpf_strtol() helper. I think it would be cleaner to pass whatever
-.config has as bytes to the program and let program parse n/y/m, strings and
-integers.
-
-LINUX_KERNEL_VERSION is a special case and can stay as u64.
-
+Chris
