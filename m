@@ -2,60 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CEA1045B5
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 22:25:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD251045C9
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 22:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbfKTVY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 16:24:59 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:60478 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726695AbfKTVY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 16:24:58 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4106014C3B20D;
-        Wed, 20 Nov 2019 13:24:58 -0800 (PST)
-Date:   Wed, 20 Nov 2019 13:24:56 -0800 (PST)
-Message-Id: <20191120.132456.312016037901463888.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [pull request][net 00/12] Mellanox, mlx5 fixes 2019-11-20
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191120203519.24094-1-saeedm@mellanox.com>
-References: <20191120203519.24094-1-saeedm@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 20 Nov 2019 13:24:58 -0800 (PST)
+        id S1726165AbfKTVaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 16:30:24 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:58176 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725854AbfKTVaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 16:30:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574285422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rtwpA4pT/CgUxGCYsbiwstNxREBeZqu/WGJTSfvVrww=;
+        b=VZpR92FKcCDNmLf+8nX0xJ4ixIrHosO1DVV6Pc76wpwEyJ6h+ODtpF7hQtZJVKvxQch3CI
+        saLrWT4MhLYWkFA7VTyu4COASvdATSii2oxV06YLsb5YlAQLw/zu3GUEEe72vV2MqvwzeP
+        MLr8ChhO8eVzL9jcCyiD+LFgiy7ErDE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-278-x1AVbhzYMWWY7W_5uvBRdQ-1; Wed, 20 Nov 2019 16:30:19 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7BF0818C35A2;
+        Wed, 20 Nov 2019 21:30:17 +0000 (UTC)
+Received: from krava (ovpn-204-103.brq.redhat.com [10.40.204.103])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 52FF351C85;
+        Wed, 20 Nov 2019 21:30:12 +0000 (UTC)
+Date:   Wed, 20 Nov 2019 22:30:11 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Subject: Re: [RFC] bpf: emit audit messages upon successful prog load and
+ unload
+Message-ID: <20191120213011.GA6829@krava>
+References: <20191120143810.8852-1-jolsa@kernel.org>
+ <20191120211438.x5dn2ns755bv3q63@ast-mbp.dhcp.thefacebook.com>
+MIME-Version: 1.0
+In-Reply-To: <20191120211438.x5dn2ns755bv3q63@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: x1AVbhzYMWWY7W_5uvBRdQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Wed, 20 Nov 2019 20:35:41 +0000
+On Wed, Nov 20, 2019 at 01:14:40PM -0800, Alexei Starovoitov wrote:
+> On Wed, Nov 20, 2019 at 03:38:10PM +0100, Jiri Olsa wrote:
+> >=20
+> > The only info really needed from BPF side is the globally unique
+> > prog ID where then audit user space tooling can query / dump all
+> > info needed about the specific BPF program right upon load event
+> > and enrich the record, thus these changes needed here can be kept
+> > small and non-intrusive to the core.
+>=20
+> ...
+>=20
+> > +static void bpf_audit_prog(const struct bpf_prog *prog, enum bpf_event=
+ event)
+> > +{
+> > +=09bool has_task_context =3D event =3D=3D BPF_EVENT_LOAD;
+> > +=09struct audit_buffer *ab;
+> > +
+> > +=09if (audit_enabled =3D=3D AUDIT_OFF)
+> > +=09=09return;
+> > +=09ab =3D audit_log_start(audit_context(), GFP_ATOMIC, AUDIT_BPF);
+> > +=09if (unlikely(!ab))
+> > +=09=09return;
+> > +=09if (has_task_context)
+> > +=09=09audit_log_task(ab);
+> > +=09audit_log_format(ab, "%sprog-id=3D%u event=3D%s",
+> > +=09=09=09 has_task_context ? " " : "",
+> > +=09=09=09 prog->aux->id, bpf_event_audit_str[event]);
+> > +=09audit_log_end(ab);
+>=20
+> Single prog ID is enough for perf_event based framework to track everythi=
+ng
+> about the programs and should be enough for audit.
+> Could you please resend as proper patch with explicit 'From:' ?
+> Since I'm not sure what is the proper authorship of the patch.. Daniel's =
+or yours.
 
-> This series introduces some fixes to mlx5 driver.
-> 
-> Please pull and let me know if there is any problem.
+it's Daniel's I'll resend
 
-Pulled.
+jirka
 
-> For -stable v4.9:
->  ('net/mlx5e: Fix set vf link state error flow')
-> 
-> For -stable v4.14
->  ('net/mlxfw: Verify FSM error code translation doesn't exceed array size')
-> 
-> For -stable v4.19
->  ('net/mlx5: Fix auto group size calculation')
-> 
-> For -stable v5.3
->  ('net/mlx5e: Fix error flow cleanup in mlx5e_tc_tun_create_header_ipv4/6')
->  ('net/mlx5e: Do not use non-EXT link modes in EXT mode')
->  ('net/mlx5: Update the list of the PCI supported devices')
-
-Queued up.
