@@ -2,180 +2,314 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7631031E6
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B4C1031F1
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727394AbfKTDPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 22:15:37 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:39124 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727264AbfKTDPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:15:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574219735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pYSQR6cjfnJIT1vfOCF2hDFIXTDQo109Z4Iwx+wsbqg=;
-        b=Ujlj+Ni7VDAuKijC0pEcmciWFKr4B2SQHT/Gn00cwc0HpA0Ns4yFq80TCxI45yz2mmCDOh
-        kzu79gtk8MqcViF8U112J/6tXnzuxNmL4yn9BKWG+4JwNJbn49h7ONWOEXqj5qXXcuyh/z
-        GeqmkYMgMAbO6tIqmg4Xj8lIjfvDto8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-310-74XahVNiPoyJ0BajaFUarQ-1; Tue, 19 Nov 2019 22:15:31 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 263A21883522;
-        Wed, 20 Nov 2019 03:15:30 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0C22066D43;
-        Wed, 20 Nov 2019 03:15:30 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id AC24C4BB5B;
-        Wed, 20 Nov 2019 03:15:29 +0000 (UTC)
-Date:   Tue, 19 Nov 2019 22:15:28 -0500 (EST)
-From:   Jason Wang <jasowang@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        gregkh@linuxfoundation.org, Dave Ertman <david.m.ertman@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
-        Kiran Patil <kiran.patil@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
-In-Reply-To: <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com> <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com> <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com> <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com> <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com> <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com> <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com> <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+        id S1727582AbfKTDRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 22:17:30 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:46148 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727262AbfKTDRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:17:30 -0500
+Received: by mail-qv1-f67.google.com with SMTP id w11so9133856qvu.13;
+        Tue, 19 Nov 2019 19:17:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iYKH6k0SVNQ3Leul/7qL9M7OVubACMYCgk22zO0C33k=;
+        b=ebLP50L7CdysJH6OeKsQNOdF9h02cNeskBoyvhCmzTmL17tyqZA4Gp80GFyq5VGORj
+         oukA+ZVzAu5wacjE+Q8zfyPDvWlm0RgcH3qUZ728us8B4FDkjncqUTrDNrN91UxRgMv5
+         axhdFylL1ewn5wK4x6JDs1c6yAhJaTfbQWGop4orsUBwQcS7qFZB/4qTB1ebwvLpnOzY
+         reE+QUuHSFMRsVQG8MZi8MTP6qAp65HzEs+hZTXm+n9yHrH16noXLYJl03d9GM9I2yMz
+         gXwPXF0xoW3jgnYIZKZQgvbdW8tukwX4YlXC4KArJwiHGGqa/1rm1CbSFBASLT2q5lwh
+         hBJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iYKH6k0SVNQ3Leul/7qL9M7OVubACMYCgk22zO0C33k=;
+        b=bPjY72nw+NwYTDncG+9TPprydHmO5GyB4y0KLa5CIXdKN4nYCVMneOHHjHJ9GUEcKU
+         yQFUFHYG5eyc1RXM0/q+l/9sg4KKyCFp9dhiBJvkQMSk6bbE7wJWgYFTKihfT4GjfNgY
+         mYBJoYtH9x+6mmLhmjRIyt3vp+32b+3MfWji71G56bgfLBucQdndeLw7r71oQ+xDRVQi
+         huzxNL0okHquVW249Lvxd1AesIeg2/8QKeIpwyt4uWS4jafHkJK0RzdulriUXq+FOEZX
+         n3cPo2RxBUfdxddMBRkJ/Fbz8WcJDvJpBwLtLCh9UvNjLVdKHzA4grda/7Awz2gDKLMx
+         64mA==
+X-Gm-Message-State: APjAAAV3JGzm8RR7RrYiRgXfN4ee9/vNGYdJesC2mQSklMBKNi8jILuK
+        /izAqLSPkO3vnFo5sWHyS/2jyPcXnVb2wFyhBoA=
+X-Google-Smtp-Source: APXvYqwBQvSUxPxwHMi77LtfMG6Z0WuHODK2Navzv8WmnjSiSaWAt05TLjEbAJ36wHVXIXOP8bJo810HuVcwNXzzZTw=
+X-Received: by 2002:ad4:558e:: with SMTP id e14mr577301qvx.247.1574219848367;
+ Tue, 19 Nov 2019 19:17:28 -0800 (PST)
 MIME-Version: 1.0
-X-Originating-IP: [10.68.5.20, 10.4.195.3]
-Thread-Topic: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHVnATItanP+SK9PEuJkGaYy2/dTKeM1NrAgAURC4CAAAcf0IAAJnyAgAAC1aCAAAnmgIAAf31QXxyMZiM=
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: 74XahVNiPoyJ0BajaFUarQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20191117070807.251360-1-andriin@fb.com> <20191117070807.251360-6-andriin@fb.com>
+ <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzaNEU_vpa98QF1Ko_AFVX=3ncykEtWy0kiTNW9agsO+xg@mail.gmail.com>
+ <CAEf4Bza1T6h+MWadVjuCrPCY7pkyK9kw-fPdaRx2v3yzSsmcbg@mail.gmail.com>
+ <7012feeb-c1e8-1228-c8ce-464ea252799c@fb.com> <a38eda6e-eaed-c266-6ba5-00299902e249@iogearbox.net>
+In-Reply-To: <a38eda6e-eaed-c266-6ba5-00299902e249@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 19 Nov 2019 19:17:17 -0800
+Message-ID: <CAEf4Bza99x9QZiK-H73abGQNVrb-rf5YB_gtYU11Es6CoHLUOw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern variables
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 19, 2019 at 3:32 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 11/19/19 4:58 PM, Alexei Starovoitov wrote:
+> > On 11/19/19 7:42 AM, Andrii Nakryiko wrote:
+> >> On Mon, Nov 18, 2019 at 10:57 PM Andrii Nakryiko
+> >> <andrii.nakryiko@gmail.com> wrote:
+> >>> On Mon, Nov 18, 2019 at 7:21 PM Alexei Starovoitov
+> >>> <alexei.starovoitov@gmail.com> wrote:
+> >>>> On Sat, Nov 16, 2019 at 11:08:06PM -0800, Andrii Nakryiko wrote:
+> >>>>> Add support for extern variables, provided to BPF program by libbpf. Currently
+> >>>>> the following extern variables are supported:
+> >>>>>     - LINUX_KERNEL_VERSION; version of a kernel in which BPF program is
+> >>>>>       executing, follows KERNEL_VERSION() macro convention;
+> >>>>>     - CONFIG_xxx values; a set of values of actual kernel config. Tristate,
+> >>>>>       boolean, and integer values are supported. Strings are not supported at
+> >>>>>       the moment.
+> >>>>>
+> >>>>> All values are represented as 64-bit integers, with the follow value encoding:
+> >>>>>     - for boolean values, y is 1, n or missing value is 0;
+> >>>>>     - for tristate values, y is 1, m is 2, n or missing value is 0;
+> >>>>>     - for integers, the values is 64-bit integer, sign-extended, if negative; if
+> >>>>>       config value is missing, it's represented as 0, which makes explicit 0 and
+> >>>>>       missing config value indistinguishable. If this will turn out to be
+> >>>>>       a problem in practice, we'll need to deal with it somehow.
+> >>>>
+> >>>> I read that statement as there is no extensibility for such api.
+> >>>
+> >>> What do you mean exactly?
+> >>>
+> >>> Are you worried about 0 vs undefined case? I don't think it's going to
+> >>> be a problem in practice. Looking at my .config, I see that integer
+> >>> config values set to their default values are still explicitly
+> >>> specified with those values. E.g.,
+> >>>
+> >>> CONFIG_HZ_1000=y
+> >>> CONFIG_HZ=1000
+> >>>
+> >>> CONFIG_HZ default is 1000, if CONFIG_HZ_1000==y, but still I see it
+> >>> set. So while I won't claim that it's the case for any possible
+> >>> integer config, it seems to be pretty consistent in practice.
+> >>>
+> >>> Also, I see a lot of values set to explicit 0, like:
+> >>>
+> >>> CONFIG_BASE_SMALL=0
+> >>>
+> >>> So it seems like integers are typically spelled out explicitly in real
+> >>> configs and I think this 0 default is pretty sane.
+> >>>
+> >>> Next, speaking about extensibility. Once we have BTF type info for
+> >>> externs, our possibilities are much better. It will be possible to
+> >>> support bool, int, in64 for the same bool value. Libbpf will be able
+> >>> to validate the range and fail program load if declared extern type
+> >>> doesn't match actual value type and value range. So I think
+> >>> extensibility is there, but right now we are enforcing (logically)
+> >>> everything to be uin64_t. Unfortunately, with the way externs are done
+> >>> in ELF, I don't know neither type nor size, so can't be more strict
+> >>> than that.
+> >>>
+> >>> If we really need to know whether some config value is defined or not,
+> >>> regardless of its value, we can have it by convention. E.g.,
+> >>> CONFIG_DEFINED_XXX will be either 0 or 1, depending if corresponding
+> >>> CONFIG_XXX is defined explicitly or not. But I don't want to add that
+> >>> until we really have a use case where it matters.
+> >>>
+> >>>>> Generally speaking, libbpf is not aware of which CONFIG_XXX values is of which
+> >>>>> expected type (bool, tristate, int), so it doesn't enforce any specific set of
+> >>>>> values and just parses n/y/m as 0/1/2, respectively. CONFIG_XXX values not
+> >>>>> found in config file are set to 0.
+> >>>>
+> >>>> This is not pretty either.
+> >>>
+> >>> What exactly: defaulting to zero or not knowing config value's type?
+> >>> Given all the options, defaulting to zero seems like the best way to
+> >>> go.
+> >>>
+> >>>>> +
+> >>>>> +             switch (*value) {
+> >>>>> +             case 'n':
+> >>>>> +                     *ext_val = 0;
+> >>>>> +                     break;
+> >>>>> +             case 'y':
+> >>>>> +                     *ext_val = 1;
+> >>>>> +                     break;
+> >>>>> +             case 'm':
+> >>>>> +                     *ext_val = 2;
+> >>>>> +                     break;
+> >>>
+> >>> reading some more code from scripts/kconfig/symbol.c, I'll need to
+> >>> handle N/Y/M and 0x hexadecimals, will add in v2 after collecting some
+> >>> more feedback on this version.
+> >>>
+> >>>>> +             case '"':
+> >>>>> +                     pr_warn("extern '%s': strings are not supported\n",
+> >>>>> +                             ext->name);
+> >>>>> +                     err = -EINVAL;
+> >>>>> +                     goto out;
+> >>>>> +             default:
+> >>>>> +                     errno = 0;
+> >>>>> +                     *ext_val = strtoull(value, &value_end, 10);
+> >>>>> +                     if (errno) {
+> >>>>> +                             err = -errno;
+> >>>>> +                             pr_warn("extern '%s': failed to parse value: %d\n",
+> >>>>> +                                     ext->name, err);
+> >>>>> +                             goto out;
+> >>>>> +                     }
+> >>>>
+> >>>> BPF has bpf_strtol() helper. I think it would be cleaner to pass whatever
+> >>>> .config has as bytes to the program and let program parse n/y/m, strings and
+> >>>> integers.
+> >>>
+> >>> Config value is not changing. This is an incredible waste of CPU
+> >>> resources to re-parse same value over and over again. And it's
+> >>> incredibly much worse usability as well. Again, once we have BTF for
+> >>> externs, we can just declare values as const char[] and then user will
+> >>> be able to do its own parsing. Until then, I think pre-parsing values
+> >>> into convenient u64 types are much better and handles all the typical
+> >>> cases.
+> >>
+> >> One more thing I didn't realize I didn't state explicitly, because
+> >> I've been thinking and talking about that for so long now, that it
+> >> kind of internalized completely.
+> >>
+> >> These externs, including CONFIG_XXX ones, are meant to interoperate
+> >> nicely with field relocations within BPF CO-RE concept. They are,
+> >> among other things, are meant to disable parts of BPF program logic
+> >> through verifier's dead code elimination by doing something like:
+> >>
+> >> if (CONFIG_SOME_FEATURES_ENABLED) {
+> >>       BPF_CORE_READ(t, some_extra_field);
+> b>>       /* or */
+> >>       bpf_helper_that_only_present_when_feature_is_enabled();
+> >> } else {
+> >>       /* fallback logic */
+> >> }
+> >>
+> >> With CONFIG_SOME_FEATURES_ENABLED not being a read-only integer
+> >> constant when BPF program is loaded, this is impossible. So it
+> >> absolutely must be some sort of easy to use integer constant.
+> >
+> > Hmm. what difference do you see between u64 and char[] ?
+> > The const propagation logic in the verifier should work the same way.
+> > If it doesn't it's a bug in the verifier and it's not ok to hack
+> > extern api to workaround the bug.
+> >
+> > What you're advocating with libbpf-side of conversion to integers
+> > reminds me of our earlier attempts with cgroup_sysctl hooks where
+> > we started with ints only to realize that in practice it's too
+> > limited. Then bpf_strtol was introduced and api got much cleaner.
+> > Same thing here. Converting char[] into ints or whatever else
+> > is the job of the program. Not of libbpf. The verifier can be taught
+> > to optimize bpf_strtol() into const when const char[] is passed in.
+> >
+> > As far as is_enabled() check doing it as 0/1 the way you're proposing
+> > has in-band signaling issues that you admitted in the commit log.
+> > For is_enabled() may be new builtin() on llvm side would be better?
+> > Something like __builtin_preserve_field_info(field, BPF_FIELD_EXISTS)
+> > but can be used on _any_ extern function or variable.
+> > Like __builtin_is_extern_resolved(extern_name);
+> > Then on libbpf side CONFIG_* that are not in config.gz won't be seen
+> > by the program (instead of seen as 0 in your proposal) and the code
+> > will look like:
+> > if (__builtin_is_extern_resolved(CONFIG_NETNS)) {
+> >     ..do things;
+> > } else {
+> > }
+> > The verifier dead code elimination will take care of branches.
+>
+> I sort of like the option of __builtin_is_extern_resolved() better than
+> plain 0 to provide an option for the developer to explicitly check for
 
+I think we can actually have both and let user decide which semantics
+works better for seem.
+If extern is defined as a weak symbol, we'll default to 0 the way that
+I proposed initially. If extern is not weak, than it will have to be
+guarded with __builtin_extern_resolved(), otherwise read will cause
+verifier to reject the read. Does that work?
 
------ Original Message -----
->=20
->=20
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Tuesday, November 19, 2019 1:37 AM
-> >=20
-> > On 2019/11/19 =E4=B8=8B=E5=8D=883:13, Parav Pandit wrote:
-> > >> From: Jason Wang <jasowang@redhat.com>
-> > >> Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtua=
-l
-> > >> Bus
-> > >>
-> > >>
-> > > [..]
-> > >
-> > >> Probably, for virtio mdev we need more than just matching: life cycl=
-e
-> > >> management, cooperation with VFIO and we also want to be prepared fo=
-r
-> > >> the device slicing (like sub functions).
-> > > Well I am revising my patches to life cycle sub functions via devlink
-> > > interface for few reasons, as
-> > >
-> > > (a) avoid mdev bus abuse (still named as mdev in your v13 series,
-> > > though it is actually for vfio-mdev)
-> >=20
-> >=20
-> > Yes, but it could be simply renamed to "vfio-mdev".
-> >=20
-> >=20
-> > > (b) support iommu
-> >=20
-> >=20
-> > That is already supported by mdev.
-> >=20
-> >=20
-> > > (c) manage and have coupling with devlink eswitch framework, which is
-> > > very rich in several aspects
-> >=20
-> >=20
-> > Good point.
-> >=20
-> >=20
-> > > (d) get rid of limited sysfs interface for mdev creation, as netlink =
-is
-> > standard and flexible to add params etc.
-> >=20
-> >=20
-> > Standard but net specific.
-> >=20
-> >=20
-> > >
-> > > If you want to get a glimpse of old RFC work of my revised series, pl=
-ease
-> > refer to [1].
-> >=20
-> >=20
-> > Will do.
-> >=20
-> >=20
-> > >
-> > > Jiri, Jason, me think that even virtio accelerated devices will need
-> > > eswitch
-> > support. And hence, life cycling virtio accelerated devices via devlink
-> > makes a
-> > lot of sense to us.
-> > > This way user has single tool to choose what type of device he want t=
-o
-> > > use
-> > (similar to ip link add link type).
-> > > So sub function flavour will be something like (virtio or sf).
-> >=20
-> >=20
-> > Networking is only one of the types that is supported in virtio-mdev.
-> > The codes are generic enough to support any kind of virtio device (bloc=
-k,
-> > scsi, crypto etc). Sysfs is less flexible but type independent.
-> > I agree that devlink is standard and feature richer but still network
-> > specific.
-> > It's probably hard to add devlink to other type of physical drivers. I'=
-m
-> > thinking whether it's possible to combine syfs and devlink:
-> > e.g the mdev is available only after the sub fuction is created and ful=
-ly
-> > configured by devlink.
-> >=20
->=20
-> Nop. Devlink is NOT net specific. It works at the bus/device level.
-> Any block/scsi/crypto can register devlink instance and implement the
-> necessary ops as long as device has bus.
->=20
+> that. But I'd like to take a step back in the discussion on the topic of
+> bpf_object__init_extern_map(). I'm wondering why it must be part of libbpf
+> at all to read the kernel config and resolve CONFIG_ / LINUX_KERNEL_VERSION
+> automatically. This feels a bit too much assumptions and automagic resolving.
+> Can't the application on top of libbpf pass in a callback where the extern
+> resolution would be outsourced into application rather than in libbpf?
 
-Well, uapi/linux/devlink.h told me:
+What you are describing is already possible today, it's called global
+data. Specifically, .rodata would have exactly the same constant
+tracking capabilities, yet be completely application-provided. We
+definitely need to improve the API to initialize it, though, but it's
+separate from this whole extern discussion. I'm going to work on that
+soon as well.
 
-"
- * include/uapi/linux/devlink.h - Network physical device Netlink interface
-"
+The point of externs, though, is to denote something that's not
+allocated and populated by BPF program or its userspace control app,
+it's something that's provided by some outside "entity": libbpf itself
+(e.g., for LINUX_KERNEL_VERSION and kernel config), kernel (for
+whatever we are going to expose from kernel eventually), or another
+BPF object (as part of static or dynamic linking). Right now kernel-
+and other BPF object-provided use cases are not yet developed, but it
+fits in this model (even though it will probably have a considerably
+different internal implementation). You can think about Kconfig as
+being provided by kernel itself, but of course implemented by libbpf.
+Think about writing kernel code. You'd expect to have CONFIG_HZ
+available to you without any parsing, such that you can just use it in
+your expressions. Similarly, #ifdef CONFIG_TASK_IO_ACCOUNTING form is
+a norm in kernel code. With these externs, BPF programs will feel even
+more like they are extension of kernel, with all the similar
+"facilities" at user's disposal.
 
-And the userspace tool was packaged into iproute2, the command was
-named as "TC", "PORT", "ESWITCH". All of those were strong hints that it
-was network specific. Even for networking, only few vendors choose to
-implement this.
+I don't think it's a good idea to require all application that would
+benefit from knowing few CONFIG_XXX values to re-implement their own
+config parsing logic. We'll end up with lots of slightly incompatible
+implementations. While not complicated, the logic still requires quite
+a lot of coding, so we are going to save a bunch of effort for
+prospective users of this feature.
 
-So technically it could be extended but how hard it can be achieved in
-reality?
+On the other hand, kernel config is a pretty well-defined and common
+problem, that we can actually solve it nicely and provide a great and
+intuitive way to get and use it. It's also extensible, and once we
+have BTF types for externs, libbpf will become even more clever,
+allowing users to specify whether they want to get value as bool, or
+some tristate enum, or integer, or maybe just a raw string
+representation. Before we have that, I think defaulting to uniform
+int64_t makes a lot of sense and doesn't preclude further improvements
+and extensions.
 
-I still don't see why devlink is conflicted with GUID/sysfs, you can
-hook sysfs events to devlink or do post or pre configuration through
-devlink. This is much more easier than forcing all vendors to use
-devlink.
+> Reason I'm asking is two-fold: i) this concept feels quite generic and my
+> take is that this could be applied to many other things as well beyond just
+> plain kernel config, ii) callback would also allow to experiment first what
+> would work best in practice wrt kernel config as one specific example, and
+> in a later step, libbpf could provide this as one built-in callback option
+> for the user to opt-into if its found to be generic/useful enough.
+>
+> > The BPF program itself doesn't need to read the value of CONFIG_
+> > it only needs to know whether it was defined.
+> > Such builtin would match semantics better.
+> > If CONFIG_ is tri-state doing
+> > if (*(u8*)CONFIG_FOO == 'y' || *(u8*)CONFIG_FOO == 'm')
+>
+> Passing in raw buffer feels more natural, agree, but then, again, if we had
+> a callback it would be up to the one who's implementing it.
 
-Thanks
+See above, I think weak vs strong extern would give us the best of
+both worlds. Applications not caring to distinguished "undefined" vs
+0, would just specify it as a weak symbol. Default strong extern,
+though, will enforce that whoever tries to fetch value needs to ensure
+that extern was actually found and resolved.
 
+>
+> > is cleaner than *(u64*)CONFIG_FOO == 1 || 2.
+> > and constant propagation in the verifier should work the same way.
