@@ -2,144 +2,355 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C56103210
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04208103219
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:44:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbfKTDiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 22:38:24 -0500
-Received: from mail-eopbgr00061.outbound.protection.outlook.com ([40.107.0.61]:41184
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727262AbfKTDiX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 22:38:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TjS4ByRE7t+BYpJ5+zVeVZo1no8s4AFx9xpZasNcr8t54VUwXYIuBOgJDs9ypbgW1/ZczVS2VP1590vFoAKUFTiFRAIPxta9mlykldx7xxZ7Q2DBMpZPHU9n45qGY7Qp3bF5tJ4BfQAi90ryom8L9LPjmHhByXe2BndmsdWT5uaU6KuCLJp8RUXFde5O3HTEQbvJacbwoxfCDl07WtODKY4nDMn/6rpp4Ej6+y9f0cRqqv9zdF7xNnp+L51udmXCCWIXC9YXNxkU2MwKL45QMUIT/23ihjw0TstEsoYyXpI2k8Q3LuTEXSq5fzgpV52jSzvGvqEwUxhnbjEMfZUpEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1GM7yP400xVVufhsm69K+RE08hU1qNpi5ol4xeVtvCM=;
- b=ng/bwDcRtK4j4sOYCAFDPFm/Qd9uVasKAqgU4hCKgPPinXlOafHzq/xA2Oh4MpyOyNpaF8L4qSqiwVK2vbo37lEJORJsFDKqmedyUtvem0zZcbReh11DW2s3xFuMd5/Szsk2wL1fA5rFa1bU3ECTsjXay51+YPA1VXUli8AYc7gpQMfdLZHio7I56B9iYvyTzoYF6w5LoFj4ceAROE54BCiX+cvd8KlEU41oMatqcnXVKUO0PHfgA7cTv8JbBs28GSqHBUHrDpux8q3/VppyaN9PadWvcv3aSEwuo/+EVpNd41X4BPV+6f1W+gR4xQFpuR23kBU0l0QO+zjeoF43QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1GM7yP400xVVufhsm69K+RE08hU1qNpi5ol4xeVtvCM=;
- b=IF8KsxqFU5gwgPrXGKDUmte3C5v3IPgG0f5J7xdCCr9sS7MQ3gxefeRfHtSMarnKmzk/TOwhEoSll/geXMaaJQ3q1DZUcmvhtq17nh+NimTzX3A8F1nBOZvcWSMFtSsHAMYRupa7Vw+p2RsqDkrPwcM64iW834R1iCYzriFPz3M=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6609.eurprd05.prod.outlook.com (20.178.117.74) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.30; Wed, 20 Nov 2019 03:38:18 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2451.029; Wed, 20 Nov 2019
- 03:38:18 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-Subject: RE: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Topic: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHVnATItanP+SK9PEuJkGaYy2/dTKeM1NrAgAURC4CAAAcf0IAAJnyAgAAC1aCAAAnmgIAAf31QXxyMZiP9B+YeIA==
-Date:   Wed, 20 Nov 2019 03:38:18 +0000
-Message-ID: <AM0PR05MB48664221FB6B1C14BDF6C74AD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
- <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
- <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
- <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
-In-Reply-To: <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [68.203.16.89]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0454dd17-11d2-4ddb-93a9-08d76d6b159b
-x-ms-traffictypediagnostic: AM0PR05MB6609:
-x-microsoft-antispam-prvs: <AM0PR05MB6609C1B77EF2C2DD6C760388D14F0@AM0PR05MB6609.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 02272225C5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(376002)(39860400002)(366004)(396003)(13464003)(189003)(199004)(66946007)(33656002)(478600001)(99286004)(256004)(54906003)(7696005)(86362001)(66476007)(5660300002)(26005)(446003)(55016002)(25786009)(7736002)(66066001)(305945005)(7416002)(11346002)(229853002)(476003)(6916009)(74316002)(14454004)(6436002)(81166006)(8936002)(81156014)(9686003)(4326008)(6246003)(486006)(71190400001)(71200400001)(6116002)(8676002)(6506007)(186003)(3846002)(76176011)(52536014)(102836004)(66446008)(2906002)(64756008)(66556008)(76116006)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6609;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0aT8vgkFb/O4lG1aQ1TGQUV5VgBmzRC+6ABCzie3VefSDtyVsIg9iMTcf3wJ8HLA1ja6sXxuu07/3yYVV/D9RE2oJ8GXTsGLHVtb67mJMaKidALtElLUHl1D9TZYmIQt/zd6CXFHY3DTZ4oghb+sPbj30hvk6zmXcV+eG3E+ARWxjTs2pr9eYksJr3VKS6QmrFL5vGJjFCzphc6dYZtSAeNTkLmCuTtID7qFGGzDrPzh88ofhOoBJY/8dQ3PPhJxni9O2hzSAaacFw3PZ+unbF2nanjGxPyeu7DrSAKpKW6CdLuTZMsk6oo8sg9GnBiY/WnldbrwDtFgya9bQYZ/mpTsNSxTBb6mF2G6x6iYFNOtqIvwz6+6MrhRps9F+ygU7ah806wCKX3mWvIDl9YcikYlQt1ey0LC18+r3Nsb83h8nx6MKEz4CY6TvKTCYpeX
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727532AbfKTDol (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 22:44:41 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:37172 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727343AbfKTDol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:44:41 -0500
+Received: by mail-qv1-f65.google.com with SMTP id s18so9177379qvr.4;
+        Tue, 19 Nov 2019 19:44:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YFYmk1c4LFW+dPg+5TCuCt2gylH4jJwQm4WOE1MX9E8=;
+        b=YhBqxolSGUB8H5f5EdqOoTqDK7MDxsEHlBw+3+a7dHMS7cms9/bHhX1+FUnKSd6hJs
+         5O7EzOhOLR+2Z+2Idkz8FpUgJrtCWGJUYLquD1CNWStUZRG+dlyRYuVwlF7iZM7Aobww
+         czYt7Z0r/DC6DV4mCiF66dOUh5fHOod7cLaHRZ07Y8/xdfPfYwPJje1jwE+GJctVmEjs
+         3+KxkeiMP0WLsDNAR3fP2j/uXVJdjRAAxH0xddYcWnePpbzzJcQvsv3ZjLYUdQZsnEEr
+         tZ3lR0X3a672JMFl5KfW+W/+RIq+gqi4FwgBUE3VlRtIdLnR8fzjLzJJ3hCNNTJs956w
+         aQSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YFYmk1c4LFW+dPg+5TCuCt2gylH4jJwQm4WOE1MX9E8=;
+        b=QJBFMNzQIM97htUzglxyv518fi6tjC83ZaT46r/La5dtBdwxn3btXYrLcKCPBop6NI
+         JFRHpAIWQ7cenM5M6zJIRMODWjIklL7sXDViSn1mI6iJc4HMokSbU9wQc0BfiL85HgBv
+         /GwgEESGwPV6zOPL/9PLAKrnQUwOXTFdtayICAqvXSWZmZkT47Qvq1OzKlOxngdzsN1N
+         V/o2q/p9lXWUKYzvpPXUq2lmFFGJHZoOLTy+acdon4NX3AzR9rxEkXOkssQ6tLwFQGW5
+         d1o5wFdHWDZFyN5BzKPzZcEg3mR5tbntO4Ab6AbFzgIu8qL0Wk5ff51ADlnWwr2HqSdj
+         PEfg==
+X-Gm-Message-State: APjAAAU7JiRk3iitijhvlBlkAnz+kWNfvXzYjyAHsYPcQBz0ZuM1WlMr
+        UexcR+7Z6jF5IYAEG1yMOp8jBusdLLnTg6OrfGc=
+X-Google-Smtp-Source: APXvYqxnw/v+WcoNTVHMy/XAEQDtFkTGa55g6ky92RVrmy50ZpV5CkE3xG/Ke3iomA/je39+NNfkzOnWxb3nnl4FW40=
+X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr695293qvb.224.1574221479531;
+ Tue, 19 Nov 2019 19:44:39 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0454dd17-11d2-4ddb-93a9-08d76d6b159b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2019 03:38:18.6151
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YzBLP60z2GMZZPmtS6HvxwjU5efmcxxEkfAUHO/wXcwVwuFvAa9iLbJzk3UjFp0rG08S4HMVrQs2tYJxwbmjqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6609
+References: <20191117070807.251360-1-andriin@fb.com> <20191117070807.251360-6-andriin@fb.com>
+ <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzaNEU_vpa98QF1Ko_AFVX=3ncykEtWy0kiTNW9agsO+xg@mail.gmail.com>
+ <CAEf4Bza1T6h+MWadVjuCrPCY7pkyK9kw-fPdaRx2v3yzSsmcbg@mail.gmail.com> <7012feeb-c1e8-1228-c8ce-464ea252799c@fb.com>
+In-Reply-To: <7012feeb-c1e8-1228-c8ce-464ea252799c@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 19 Nov 2019 19:44:28 -0800
+Message-ID: <CAEf4BzaW4-XTxZTt2ZLvzuc2UsmmPa3Bkoej7B0pUJWcM--eVQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern variables
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gU2VudDogVHVl
-c2RheSwgTm92ZW1iZXIgMTksIDIwMTkgOToxNSBQTQ0KPiANCj4gLS0tLS0gT3JpZ2luYWwgTWVz
-c2FnZSAtLS0tLQ0KPiA+DQo+ID4NCj4gPiA+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJl
-ZGhhdC5jb20+DQo+ID4gPiBTZW50OiBUdWVzZGF5LCBOb3ZlbWJlciAxOSwgMjAxOSAxOjM3IEFN
-DQo+ID4gPg0KPiA+DQo+ID4gTm9wLiBEZXZsaW5rIGlzIE5PVCBuZXQgc3BlY2lmaWMuIEl0IHdv
-cmtzIGF0IHRoZSBidXMvZGV2aWNlIGxldmVsLg0KPiA+IEFueSBibG9jay9zY3NpL2NyeXB0byBj
-YW4gcmVnaXN0ZXIgZGV2bGluayBpbnN0YW5jZSBhbmQgaW1wbGVtZW50IHRoZQ0KPiA+IG5lY2Vz
-c2FyeSBvcHMgYXMgbG9uZyBhcyBkZXZpY2UgaGFzIGJ1cy4NCj4gPg0KPiANCj4gV2VsbCwgdWFw
-aS9saW51eC9kZXZsaW5rLmggdG9sZCBtZToNCj4gDQo+ICINCj4gICogaW5jbHVkZS91YXBpL2xp
-bnV4L2RldmxpbmsuaCAtIE5ldHdvcmsgcGh5c2ljYWwgZGV2aWNlIE5ldGxpbmsgaW50ZXJmYWNl
-ICINCj4gDQo+IEFuZCB0aGUgdXNlcnNwYWNlIHRvb2wgd2FzIHBhY2thZ2VkIGludG8gaXByb3V0
-ZTIsIHRoZSBjb21tYW5kIHdhcyBuYW1lZA0KPiBhcyAiVEMiLCAiUE9SVCIsICJFU1dJVENIIi4g
-QWxsIG9mIHRob3NlIHdlcmUgc3Ryb25nIGhpbnRzIHRoYXQgaXQgd2FzIG5ldHdvcmsNCj4gc3Bl
-Y2lmaWMuIEV2ZW4gZm9yIG5ldHdvcmtpbmcsIG9ubHkgZmV3IHZlbmRvcnMgY2hvb3NlIHRvIGlt
-cGxlbWVudCB0aGlzLg0KPiANCkl0IGlzIHVuZGVyIGlwcm91dGUyIHRvb2wgYnV0IGl0IGlzIG5v
-dCBsaW1pdGVkIHRvIG5ldHdvcmtpbmcuDQpUaG91Z2ggdG9kYXkgbW9zdCB1c2VycyBhcmUgbmV0
-d29ya2luZyBkcml2ZXJzLg0KDQpJIGRvIG5vdCBrbm93IGhvdyBvdnMgb2ZmbG9hZHMgYXJlIGRv
-bmUgd2l0aG91dCBkZXZsaW5rIGJ5IG90aGVyIHZlbmRvcnMgZG9pbmcgaW4ta2VybmVsIGRyaXZl
-cnMuDQoNCj4gU28gdGVjaG5pY2FsbHkgaXQgY291bGQgYmUgZXh0ZW5kZWQgYnV0IGhvdyBoYXJk
-IGl0IGNhbiBiZSBhY2hpZXZlZCBpbiByZWFsaXR5Pw0KPiANCldoYXQgYXJlIHRoZSBtaXNzaW5n
-IHRoaW5ncz8NCkkgYW0gZXh0ZW5kaW5nIGl0IGZvciBzdWJmdW5jdGlvbnMgbGlmZWN5Y2xlLiBJ
-IHNlZSB2aXJ0aW8gYXMgeWV0IGFub3RoZXIgZmxhdm91ci90eXBlIG9mIHN1YmZ1bmN0aW9uLg0K
-DQo+IEkgc3RpbGwgZG9uJ3Qgc2VlIHdoeSBkZXZsaW5rIGlzIGNvbmZsaWN0ZWQgd2l0aCBHVUlE
-L3N5c2ZzLCB5b3UgY2FuIGhvb2sgc3lzZnMNCkl0IGlzIG5vdCBjb25mbGljdGluZy4gSWYgeW91
-IGxvb2sgYXQgd2hhdCBhbGwgZGV2bGluayBpbmZyYXN0cnVjdHVyZSBwcm92aWRlcywgeW91IHdp
-bGwgZW5kIHVwIHJlcGxpY2F0aW5nIGFsbCBvZiBpdCB2aWEgc3lzZnMuLg0KSXQgZ290IHN5c2Nh
-bGxlciBzdXBwb3J0IHRvbywgd2hpY2ggaXMgZ3JlYXQgZm9yIHZhbGlkYXRpb24uDQpJIGhhdmUg
-cG9zdGVkIHN1YmZ1bmN0aW9uIHNlcmllcyB3aXRoIG1kZXYgYW5kIHVzZWQgZGV2bGluayBmb3Ig
-YWxsIHJlc3Qgb2YgdGhlIGVzdyBhbmQgbWdtdC4gaW50ZXJmYWNlIHRvIHV0aWxpemUgaXQuDQoN
-CnNyaW92IHZpYSBzeXNmcyBhbmQgZGV2bGluayBzcmlvdi9lc3cgaGFuZGxpbmcgaGFzIHNvbWUg
-c2V2ZXJlIGxvY2tpbmcgaXNzdWVzLCBtYWlubHkgYmVjYXVzZSB0aGV5IGFyZSBmcm9tIHR3byBk
-aWZmZXJlbnQgaW50ZXJmYWNlcy4NCg0KPiBldmVudHMgdG8gZGV2bGluayBvciBkbyBwb3N0IG9y
-IHByZSBjb25maWd1cmF0aW9uIHRocm91Z2ggZGV2bGluay4gVGhpcyBpcyBtdWNoDQo+IG1vcmUg
-ZWFzaWVyIHRoYW4gZm9yY2luZyBhbGwgdmVuZG9ycyB0byB1c2UgZGV2bGluay4NCj4NCkl0IGlz
-IG5vdCBhYm91dCBmb3JjaW5nLiBJdCBpcyBhYm91dCBsZXZlcmFnaW5nIGV4aXN0aW5nIGtlcm5l
-bCBmcmFtZXdvcmsgYXZhaWxhYmxlIHdpdGhvdXQgcmVpbnZlbnRpbmcgdGhlIHdoZWVsLg0KSSBh
-bSAxMDAlIHN1cmUsIGltcGxlbWVudGluZyBoZWFsdGgsIGR1bXBzLCB0cmFjZXMsIHJlcG9ydGVy
-cywgc3lzY2FsbGVyLCBtb25pdG9ycywgaW50ZXJydXB0IGNvbmZpZ3MsIGV4dGVuZGluZyBwYXJh
-bXMgdmlhIHN5c2ZzIHdpbGwgYmUgbm8tZ28uDQpzeXNmcyBpcyBub3QgbWVhbnQgZm9yIHN1Y2gg
-dGhpbmdzIGFueW1vcmUuIEFueSBtb2Rlcm4gZGV2aWNlIG1hbmFnZW1lbnQgd2lsbCBuZWVkIGFs
-bCBvZiBpdC4NCg==
+On Tue, Nov 19, 2019 at 7:58 AM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 11/19/19 7:42 AM, Andrii Nakryiko wrote:
+> > On Mon, Nov 18, 2019 at 10:57 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> >>
+> >> On Mon, Nov 18, 2019 at 7:21 PM Alexei Starovoitov
+> >> <alexei.starovoitov@gmail.com> wrote:
+> >>>
+> >>> On Sat, Nov 16, 2019 at 11:08:06PM -0800, Andrii Nakryiko wrote:
+> >>>> Add support for extern variables, provided to BPF program by libbpf. Currently
+> >>>> the following extern variables are supported:
+> >>>>    - LINUX_KERNEL_VERSION; version of a kernel in which BPF program is
+> >>>>      executing, follows KERNEL_VERSION() macro convention;
+> >>>>    - CONFIG_xxx values; a set of values of actual kernel config. Tristate,
+> >>>>      boolean, and integer values are supported. Strings are not supported at
+> >>>>      the moment.
+> >>>>
+> >>>> All values are represented as 64-bit integers, with the follow value encoding:
+> >>>>    - for boolean values, y is 1, n or missing value is 0;
+> >>>>    - for tristate values, y is 1, m is 2, n or missing value is 0;
+> >>>>    - for integers, the values is 64-bit integer, sign-extended, if negative; if
+> >>>>      config value is missing, it's represented as 0, which makes explicit 0 and
+> >>>>      missing config value indistinguishable. If this will turn out to be
+> >>>>      a problem in practice, we'll need to deal with it somehow.
+> >>>
+> >>> I read that statement as there is no extensibility for such api.
+> >>
+> >> What do you mean exactly?
+> >>
+> >> Are you worried about 0 vs undefined case? I don't think it's going to
+> >> be a problem in practice. Looking at my .config, I see that integer
+> >> config values set to their default values are still explicitly
+> >> specified with those values. E.g.,
+> >>
+> >> CONFIG_HZ_1000=y
+> >> CONFIG_HZ=1000
+> >>
+> >> CONFIG_HZ default is 1000, if CONFIG_HZ_1000==y, but still I see it
+> >> set. So while I won't claim that it's the case for any possible
+> >> integer config, it seems to be pretty consistent in practice.
+> >>
+> >> Also, I see a lot of values set to explicit 0, like:
+> >>
+> >> CONFIG_BASE_SMALL=0
+> >>
+> >> So it seems like integers are typically spelled out explicitly in real
+> >> configs and I think this 0 default is pretty sane.
+> >>
+> >> Next, speaking about extensibility. Once we have BTF type info for
+> >> externs, our possibilities are much better. It will be possible to
+> >> support bool, int, in64 for the same bool value. Libbpf will be able
+> >> to validate the range and fail program load if declared extern type
+> >> doesn't match actual value type and value range. So I think
+> >> extensibility is there, but right now we are enforcing (logically)
+> >> everything to be uin64_t. Unfortunately, with the way externs are done
+> >> in ELF, I don't know neither type nor size, so can't be more strict
+> >> than that.
+> >>
+> >> If we really need to know whether some config value is defined or not,
+> >> regardless of its value, we can have it by convention. E.g.,
+> >> CONFIG_DEFINED_XXX will be either 0 or 1, depending if corresponding
+> >> CONFIG_XXX is defined explicitly or not. But I don't want to add that
+> >> until we really have a use case where it matters.
+> >>
+> >>>
+> >>>> Generally speaking, libbpf is not aware of which CONFIG_XXX values is of which
+> >>>> expected type (bool, tristate, int), so it doesn't enforce any specific set of
+> >>>> values and just parses n/y/m as 0/1/2, respectively. CONFIG_XXX values not
+> >>>> found in config file are set to 0.
+> >>>
+> >>> This is not pretty either.
+> >>
+> >> What exactly: defaulting to zero or not knowing config value's type?
+> >> Given all the options, defaulting to zero seems like the best way to
+> >> go.
+> >>
+> >>>
+> >>>> +
+> >>>> +             switch (*value) {
+> >>>> +             case 'n':
+> >>>> +                     *ext_val = 0;
+> >>>> +                     break;
+> >>>> +             case 'y':
+> >>>> +                     *ext_val = 1;
+> >>>> +                     break;
+> >>>> +             case 'm':
+> >>>> +                     *ext_val = 2;
+> >>>> +                     break;
+> >>
+> >> reading some more code from scripts/kconfig/symbol.c, I'll need to
+> >> handle N/Y/M and 0x hexadecimals, will add in v2 after collecting some
+> >> more feedback on this version.
+> >>
+> >>>> +             case '"':
+> >>>> +                     pr_warn("extern '%s': strings are not supported\n",
+> >>>> +                             ext->name);
+> >>>> +                     err = -EINVAL;
+> >>>> +                     goto out;
+> >>>> +             default:
+> >>>> +                     errno = 0;
+> >>>> +                     *ext_val = strtoull(value, &value_end, 10);
+> >>>> +                     if (errno) {
+> >>>> +                             err = -errno;
+> >>>> +                             pr_warn("extern '%s': failed to parse value: %d\n",
+> >>>> +                                     ext->name, err);
+> >>>> +                             goto out;
+> >>>> +                     }
+> >>>
+> >>> BPF has bpf_strtol() helper. I think it would be cleaner to pass whatever
+> >>> .config has as bytes to the program and let program parse n/y/m, strings and
+> >>> integers.
+> >>
+> >> Config value is not changing. This is an incredible waste of CPU
+> >> resources to re-parse same value over and over again. And it's
+> >> incredibly much worse usability as well. Again, once we have BTF for
+> >> externs, we can just declare values as const char[] and then user will
+> >> be able to do its own parsing. Until then, I think pre-parsing values
+> >> into convenient u64 types are much better and handles all the typical
+> >> cases.
+> >
+> >
+> > One more thing I didn't realize I didn't state explicitly, because
+> > I've been thinking and talking about that for so long now, that it
+> > kind of internalized completely.
+> >
+> > These externs, including CONFIG_XXX ones, are meant to interoperate
+> > nicely with field relocations within BPF CO-RE concept. They are,
+> > among other things, are meant to disable parts of BPF program logic
+> > through verifier's dead code elimination by doing something like:
+> >
+> >
+> > if (CONFIG_SOME_FEATURES_ENABLED) {
+> >      BPF_CORE_READ(t, some_extra_field);
+> >      /* or */
+> >      bpf_helper_that_only_present_when_feature_is_enabled();
+> > } else {
+> >      /* fallback logic */
+> > }
+> >
+> > With CONFIG_SOME_FEATURES_ENABLED not being a read-only integer
+> > constant when BPF program is loaded, this is impossible. So it
+> > absolutely must be some sort of easy to use integer constant.
+>
+> Hmm. what difference do you see between u64 and char[] ?
+> The const propagation logic in the verifier should work the same way.
+> If it doesn't it's a bug in the verifier and it's not ok to hack
+> extern api to workaround the bug.
+
+For some specific subset of cases (mostly bool and tristate), yes,
+verifier should be able to track raw byte value, because there is no
+transformation applied to those values. With integers it's certainly
+not the case.
+
+Imagine something like:
+
+if (CONFIG_HZ > 1000) {
+  ... do something ...
+else if (CONFIG_HZ > 100) {
+  ... something else ...
+} else {
+  ... yet another fallback ...
+}
+
+With CONFIG_HZ being integer, entire if/else if/else will be
+eliminated by verifier. If you do bpf_strtoul(), it's not possible,
+unless we do those more further optimizations (implementing const
+versions of helpers). The latter would be a good addition, if possible
+to implement generically, of course, but I'm not sure we need to block
+on that.
+
+>
+> What you're advocating with libbpf-side of conversion to integers
+> reminds me of our earlier attempts with cgroup_sysctl hooks where
+> we started with ints only to realize that in practice it's too
+> limited. Then bpf_strtol was introduced and api got much cleaner.
+> Same thing here. Converting char[] into ints or whatever else
+> is the job of the program. Not of libbpf. The verifier can be taught
+> to optimize bpf_strtol() into const when const char[] is passed in.
+
+Given config values are constant and won't change throughout lifetime
+of kernel, it's much more practical and easier to parse any
+complicated value in userspace and pass necessary well-structured and
+easy to use (and thus - performant) data to BPF side through global
+data. But if BPF developer knows that CONFIG_HZ has to be integer
+(because it's defined in Kconfig as having a type int), then it's
+going to be integer, there is no doubt about that.
+
+So while I can imagine some extreme cases where we might need parsing
+string, I think most such cases can be painlessly solved in userspace.
+
+Having said that, I don't oppose having an option to expose strings
+and allow to work with them, either from userspace or BPF side. It is
+extension of what I implemented and can be easily added.
+
+>
+> As far as is_enabled() check doing it as 0/1 the way you're proposing
+> has in-band signaling issues that you admitted in the commit log.
+> For is_enabled() may be new builtin() on llvm side would be better?
+> Something like __builtin_preserve_field_info(field, BPF_FIELD_EXISTS)
+> but can be used on _any_ extern function or variable.
+> Like __builtin_is_extern_resolved(extern_name);
+> Then on libbpf side CONFIG_* that are not in config.gz won't be seen
+> by the program (instead of seen as 0 in your proposal) and the code
+> will look like:
+> if (__builtin_is_extern_resolved(CONFIG_NETNS)) {
+>    ..do things;
+> } else {
+> }
+> The verifier dead code elimination will take care of branches.
+> The BPF program itself doesn't need to read the value of CONFIG_
+> it only needs to know whether it was defined.
+> Such builtin would match semantics better.
+
+I agree such __builtin is useful and we should add it. But also I
+believe that a lot of common cases would be much simpler and nicer if
+we have this not defined = 0 logic. But I think we can satisfy both
+sides without sacrificing anything. If you define extern as weak:
+
+extern __attribute__((weak)) uint64_t CONFIG_MISSING;
+
+Libbpf will set it to zero, if it's not recognized/found. So check
+like below will nicely work:
+
+if (CONFIG_MISSING) {
+  .. do something ...
+}
+
+If the extern is strong, then the above check will fail, and will have
+to be written with using __builtin:
+
+if (__builtin_extern_resolved(CONFIG_MISSING)) {
+  .. do something ..
+}
+
+This puts control over semantics into users hands. WDYT?
+
+
+> If CONFIG_ is tri-state doing
+> if (*(u8*)CONFIG_FOO == 'y' || *(u8*)CONFIG_FOO == 'm')
+> is cleaner than *(u64*)CONFIG_FOO == 1 || 2.
+> and constant propagation in the verifier should work the same way.
+
+Once we get BTF info for externs, you'll be able to do just that very cleanly:
+
+extern bool CONFIG_FOO; - true, if =y, false if =n, false, if extern
+is weak and undefined in config
+extern char CONFIG_FOO; will get 'y'/'n'/'m' values
+extern enum tristate CONFIG_FOO - YES/NO/MODULE (or whatever we define
+in enum tristate)
+extern char CONFIG_FOO[]; - will get raw zero-terminated "y\0", "n\0", or "m\0"
+
+Until we have BTF, though, we can dictate that all those should be
+defined uniformly as uin64_t and be handled as in my current patch.
+Then, with introduction of BTF, libbpf will do necessary extra
+transformations and enforcement of type (e.g., if defined as `extern
+bool CONFIG_FOO`, but actual value is m (module) - that will be an
+error and enforced by libbpf).
+
+Only if currently users will still use something like bool or int,
+instead of uint64_t, that might break later because with BTF for
+externs libbpf will suddenly start enforcing more restrictions. But I
+think it's just going to be a misuse of current API and shouldn't be
+considered a breaking change.
+
+So, to summarize, we proceed with uint64_t for everything, with added
+bits of weak vs strong handling. Then in parallel we'll work on adding
+BTF for externs and __builtin_extern_resolved (and corresponding new
+kind of BTF relocation) and will keep making this whole API even
+better, while already having something useful and extensible.
+
+As for strings, I'd prefer to add them in a follow up patch, but if
+you guys insist, I can add them anyways. One reservation about strings
+I do still have is how better to represent strings:
+
+extern const char *CONFIG_SOME_STRING;   /* pointer to a string
+literal, stored in soem other place */
+/* or */
+extern const char CONFIG_SOME_STRING[];  /* inlined string contents */
+
+The latter can be implemented and used (to some degree) today. But the
+former would more seamlessly blend with exposing string-based
+variables from kernel. Also,
+
+extern __attribute__((weak)) const char *CONFIG_SOME_STRING;
+
+would more naturally resolve to NULL, if not explicitly defined in
+kernel config.
+
+But I'm feeling less strongly about strings overall.
+
+Thoughts?
