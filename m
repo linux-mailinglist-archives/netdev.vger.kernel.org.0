@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5648A1032CB
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 06:08:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C60CF1032DA
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 06:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbfKTFIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 00:08:20 -0500
-Received: from mout-p-101.mailbox.org ([80.241.56.151]:11584 "EHLO
-        mout-p-101.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726593AbfKTFIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 00:08:19 -0500
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        id S1727125AbfKTFIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 00:08:43 -0500
+Received: from mout-p-202.mailbox.org ([80.241.56.172]:63780 "EHLO
+        mout-p-202.mailbox.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726229AbfKTFIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 00:08:42 -0500
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
         (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 47HrLT1YBxzKmgb;
-        Wed, 20 Nov 2019 06:08:17 +0100 (CET)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 47HrLv44n5zQlBC;
+        Wed, 20 Nov 2019 06:08:39 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
-        with ESMTP id Ao3trqnTVvOG; Wed, 20 Nov 2019 06:08:14 +0100 (CET)
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id rctiAPjJ6XkF; Wed, 20 Nov 2019 06:08:36 +0100 (CET)
 From:   Aleksa Sarai <cyphar@cyphar.com>
 To:     Al Viro <viro@zeniv.linux.org.uk>,
         Jeff Layton <jlayton@kernel.org>,
@@ -37,7 +37,7 @@ To:     Al Viro <viro@zeniv.linux.org.uk>,
         Andrii Nakryiko <andriin@fb.com>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Aleksa Sarai <cyphar@cyphar.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Eric Biederman <ebiederm@xmission.com>,
         Andy Lutomirski <luto@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Kees Cook <keescook@chromium.org>,
@@ -63,9 +63,9 @@ Cc:     Aleksa Sarai <cyphar@cyphar.com>,
         linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
         linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
-Subject: [PATCH RESEND v17 01/13] namei: only return -ECHILD from follow_dotdot_rcu()
-Date:   Wed, 20 Nov 2019 16:06:19 +1100
-Message-Id: <20191120050631.12816-2-cyphar@cyphar.com>
+Subject: [PATCH RESEND v17 02/13] nsfs: clean-up ns_get_path() signature to return int
+Date:   Wed, 20 Nov 2019 16:06:20 +1100
+Message-Id: <20191120050631.12816-3-cyphar@cyphar.com>
 In-Reply-To: <20191120050631.12816-1-cyphar@cyphar.com>
 References: <20191120050631.12816-1-cyphar@cyphar.com>
 MIME-Version: 1.0
@@ -75,37 +75,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's over-zealous to return hard errors under RCU-walk here, given that
-a REF-walk will be triggered for all other cases handling ".." under
-RCU.
+ns_get_path() and ns_get_path_cb() only ever return either NULL or an
+ERR_PTR. It is far more idiomatic to simply return an integer, and it
+makes all of the callers of ns_get_path() more straightforward to read.
 
-The original purpose of this check was to ensure that if a rename occurs
-such that a directory is moved outside of the bind-mount which the
-resolution started in, it would be detected and blocked to avoid being
-able to mess with paths outside of the bind-mount. However, triggering a
-new REF-walk is just as effective a solution.
-
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Fixes: 397d425dc26d ("vfs: Test for and handle paths that are unreachable from their mnt_root")
-Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+Fixes: e149ed2b805f ("take the targets of /proc/*/ns/* symlinks to separate fs")
 Signed-off-by: Aleksa Sarai <cyphar@cyphar.com>
 ---
- fs/namei.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nsfs.c               | 29 ++++++++++++++---------------
+ fs/proc/namespaces.c    |  6 +++---
+ include/linux/proc_ns.h |  4 ++--
+ kernel/bpf/offload.c    | 12 ++++++------
+ kernel/events/core.c    |  2 +-
+ 5 files changed, 26 insertions(+), 27 deletions(-)
 
-diff --git a/fs/namei.c b/fs/namei.c
-index 671c3c1a3425..5a47d9c09581 100644
---- a/fs/namei.c
-+++ b/fs/namei.c
-@@ -1359,7 +1359,7 @@ static int follow_dotdot_rcu(struct nameidata *nd)
- 			nd->path.dentry = parent;
- 			nd->seq = seq;
- 			if (unlikely(!path_connected(&nd->path)))
--				return -ENOENT;
-+				return -ECHILD;
- 			break;
- 		} else {
- 			struct mount *mnt = real_mount(nd->path.mnt);
+diff --git a/fs/nsfs.c b/fs/nsfs.c
+index a0431642c6b5..f3d2833c5781 100644
+--- a/fs/nsfs.c
++++ b/fs/nsfs.c
+@@ -52,7 +52,7 @@ static void nsfs_evict(struct inode *inode)
+ 	ns->ops->put(ns);
+ }
+ 
+-static void *__ns_get_path(struct path *path, struct ns_common *ns)
++static int __ns_get_path(struct path *path, struct ns_common *ns)
+ {
+ 	struct vfsmount *mnt = nsfs_mnt;
+ 	struct dentry *dentry;
+@@ -71,13 +71,13 @@ static void *__ns_get_path(struct path *path, struct ns_common *ns)
+ got_it:
+ 	path->mnt = mntget(mnt);
+ 	path->dentry = dentry;
+-	return NULL;
++	return 0;
+ slow:
+ 	rcu_read_unlock();
+ 	inode = new_inode_pseudo(mnt->mnt_sb);
+ 	if (!inode) {
+ 		ns->ops->put(ns);
+-		return ERR_PTR(-ENOMEM);
++		return -ENOMEM;
+ 	}
+ 	inode->i_ino = ns->inum;
+ 	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+@@ -89,7 +89,7 @@ static void *__ns_get_path(struct path *path, struct ns_common *ns)
+ 	dentry = d_alloc_anon(mnt->mnt_sb);
+ 	if (!dentry) {
+ 		iput(inode);
+-		return ERR_PTR(-ENOMEM);
++		return -ENOMEM;
+ 	}
+ 	d_instantiate(dentry, inode);
+ 	dentry->d_fsdata = (void *)ns->ops;
+@@ -98,23 +98,22 @@ static void *__ns_get_path(struct path *path, struct ns_common *ns)
+ 		d_delete(dentry);	/* make sure ->d_prune() does nothing */
+ 		dput(dentry);
+ 		cpu_relax();
+-		return ERR_PTR(-EAGAIN);
++		return -EAGAIN;
+ 	}
+ 	goto got_it;
+ }
+ 
+-void *ns_get_path_cb(struct path *path, ns_get_path_helper_t *ns_get_cb,
++int ns_get_path_cb(struct path *path, ns_get_path_helper_t *ns_get_cb,
+ 		     void *private_data)
+ {
+-	void *ret;
++	int ret;
+ 
+ 	do {
+ 		struct ns_common *ns = ns_get_cb(private_data);
+ 		if (!ns)
+-			return ERR_PTR(-ENOENT);
+-
++			return -ENOENT;
+ 		ret = __ns_get_path(path, ns);
+-	} while (ret == ERR_PTR(-EAGAIN));
++	} while (ret == -EAGAIN);
+ 
+ 	return ret;
+ }
+@@ -131,7 +130,7 @@ static struct ns_common *ns_get_path_task(void *private_data)
+ 	return args->ns_ops->get(args->task);
+ }
+ 
+-void *ns_get_path(struct path *path, struct task_struct *task,
++int ns_get_path(struct path *path, struct task_struct *task,
+ 		  const struct proc_ns_operations *ns_ops)
+ {
+ 	struct ns_get_path_task_args args = {
+@@ -147,7 +146,7 @@ int open_related_ns(struct ns_common *ns,
+ {
+ 	struct path path = {};
+ 	struct file *f;
+-	void *err;
++	int err;
+ 	int fd;
+ 
+ 	fd = get_unused_fd_flags(O_CLOEXEC);
+@@ -164,11 +163,11 @@ int open_related_ns(struct ns_common *ns,
+ 		}
+ 
+ 		err = __ns_get_path(&path, relative);
+-	} while (err == ERR_PTR(-EAGAIN));
++	} while (err == -EAGAIN);
+ 
+-	if (IS_ERR(err)) {
++	if (err) {
+ 		put_unused_fd(fd);
+-		return PTR_ERR(err);
++		return err;
+ 	}
+ 
+ 	f = dentry_open(&path, O_RDONLY, current_cred());
+diff --git a/fs/proc/namespaces.c b/fs/proc/namespaces.c
+index dd2b35f78b09..08dd94df1a66 100644
+--- a/fs/proc/namespaces.c
++++ b/fs/proc/namespaces.c
+@@ -42,14 +42,14 @@ static const char *proc_ns_get_link(struct dentry *dentry,
+ 	const struct proc_ns_operations *ns_ops = PROC_I(inode)->ns_ops;
+ 	struct task_struct *task;
+ 	struct path ns_path;
+-	void *error = ERR_PTR(-EACCES);
++	int error = -EACCES;
+ 
+ 	if (!dentry)
+ 		return ERR_PTR(-ECHILD);
+ 
+ 	task = get_proc_task(inode);
+ 	if (!task)
+-		return error;
++		return ERR_PTR(-EACCES);
+ 
+ 	if (ptrace_may_access(task, PTRACE_MODE_READ_FSCREDS)) {
+ 		error = ns_get_path(&ns_path, task, ns_ops);
+@@ -57,7 +57,7 @@ static const char *proc_ns_get_link(struct dentry *dentry,
+ 			nd_jump_link(&ns_path);
+ 	}
+ 	put_task_struct(task);
+-	return error;
++	return ERR_PTR(error);
+ }
+ 
+ static int proc_ns_readlink(struct dentry *dentry, char __user *buffer, int buflen)
+diff --git a/include/linux/proc_ns.h b/include/linux/proc_ns.h
+index d31cb6215905..aed366b4795c 100644
+--- a/include/linux/proc_ns.h
++++ b/include/linux/proc_ns.h
+@@ -76,10 +76,10 @@ static inline int ns_alloc_inum(struct ns_common *ns)
+ 
+ extern struct file *proc_ns_fget(int fd);
+ #define get_proc_ns(inode) ((struct ns_common *)(inode)->i_private)
+-extern void *ns_get_path(struct path *path, struct task_struct *task,
++extern int ns_get_path(struct path *path, struct task_struct *task,
+ 			const struct proc_ns_operations *ns_ops);
+ typedef struct ns_common *ns_get_path_helper_t(void *);
+-extern void *ns_get_path_cb(struct path *path, ns_get_path_helper_t ns_get_cb,
++extern int ns_get_path_cb(struct path *path, ns_get_path_helper_t ns_get_cb,
+ 			    void *private_data);
+ 
+ extern int ns_get_name(char *buf, size_t size, struct task_struct *task,
+diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
+index ba635209ae9a..a2253a044f90 100644
+--- a/kernel/bpf/offload.c
++++ b/kernel/bpf/offload.c
+@@ -302,14 +302,14 @@ int bpf_prog_offload_info_fill(struct bpf_prog_info *info,
+ 	struct inode *ns_inode;
+ 	struct path ns_path;
+ 	char __user *uinsns;
+-	void *res;
++	int res;
+ 	u32 ulen;
+ 
+ 	res = ns_get_path_cb(&ns_path, bpf_prog_offload_info_fill_ns, &args);
+-	if (IS_ERR(res)) {
++	if (res) {
+ 		if (!info->ifindex)
+ 			return -ENODEV;
+-		return PTR_ERR(res);
++		return res;
+ 	}
+ 
+ 	down_read(&bpf_devs_lock);
+@@ -526,13 +526,13 @@ int bpf_map_offload_info_fill(struct bpf_map_info *info, struct bpf_map *map)
+ 	};
+ 	struct inode *ns_inode;
+ 	struct path ns_path;
+-	void *res;
++	int res;
+ 
+ 	res = ns_get_path_cb(&ns_path, bpf_map_offload_info_fill_ns, &args);
+-	if (IS_ERR(res)) {
++	if (res) {
+ 		if (!info->ifindex)
+ 			return -ENODEV;
+-		return PTR_ERR(res);
++		return res;
+ 	}
+ 
+ 	ns_inode = ns_path.dentry->d_inode;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 00a014670ed0..3772a04ca802 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -7258,7 +7258,7 @@ static void perf_fill_ns_link_info(struct perf_ns_link_info *ns_link_info,
+ {
+ 	struct path ns_path;
+ 	struct inode *ns_inode;
+-	void *error;
++	int error;
+ 
+ 	error = ns_get_path(&ns_path, task, ns_ops);
+ 	if (!error) {
 -- 
 2.24.0
 
