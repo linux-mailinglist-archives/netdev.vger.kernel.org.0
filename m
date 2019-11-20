@@ -2,57 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9841037A8
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 11:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 785B61037C1
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 11:42:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728581AbfKTKgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 05:36:16 -0500
-Received: from michel.telenet-ops.be ([195.130.137.88]:44470 "EHLO
-        michel.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727697AbfKTKgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 05:36:16 -0500
+        id S1728781AbfKTKmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 05:42:42 -0500
+Received: from albert.telenet-ops.be ([195.130.137.90]:52052 "EHLO
+        albert.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728581AbfKTKmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 05:42:42 -0500
 Received: from ramsan ([84.195.182.253])
-        by michel.telenet-ops.be with bizsmtp
-        id UAcC2100J5USYZQ06AcCJG; Wed, 20 Nov 2019 11:36:13 +0100
-Received: from geert (helo=localhost)
-        by ramsan with local-esmtp (Exim 4.90_1)
+        by albert.telenet-ops.be with bizsmtp
+        id UAif210035USYZQ06Aifvk; Wed, 20 Nov 2019 11:42:40 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1iXNLH-0007E4-Vq; Wed, 20 Nov 2019 11:36:12 +0100
-Date:   Wed, 20 Nov 2019 11:36:11 +0100 (CET)
+        id 1iXNRW-0007LP-Vi; Wed, 20 Nov 2019 11:42:38 +0100
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iXNRW-00084S-TZ; Wed, 20 Nov 2019 11:42:38 +0100
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     =?ISO-8859-15?Q?Marek_Beh=FAn?= <marek.behun@nic.cz>,
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         David Bauer <mail@david-bauer.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH net 1/1] mdio_bus: fix mdio_register_device when
- RESET_CONTROLLER is disabled
-In-Reply-To: <20191119102744.GD32742@smile.fi.intel.com>
-Message-ID: <alpine.DEB.2.21.1911201053330.25420@ramsan.of.borg>
-References: <20191118181505.32298-1-marek.behun@nic.cz> <20191119102744.GD32742@smile.fi.intel.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH net 1/1] mdio_bus: fix mdio_register_device when RESET_CONTROLLER is disabled
+Date:   Wed, 20 Nov 2019 11:42:34 +0100
+Message-Id: <alpine.DEB.2.21.1911201053330.25420@ramsan.of.borg>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1988560550-1574246171=:25420"
+In-Reply-To: <20191119102744.GD32742@smile.fi.intel.com>
+References: <20191118181505.32298-1-marek.behun@nic.cz> <20191119102744.GD32742@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1988560550-1574246171=:25420
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
-
  	Hi all,
 
 On Tue, 19 Nov 2019, Andy Shevchenko wrote:
-> On Mon, Nov 18, 2019 at 07:15:05PM +0100, Marek Behún wrote:
+> On Mon, Nov 18, 2019 at 07:15:05PM +0100, Marek BehÃºn wrote:
 >> When CONFIG_RESET_CONTROLLER is disabled, the
 >> devm_reset_control_get_exclusive function returns -ENOTSUPP. This is not
 >> handled in subsequent check and then the mdio device fails to probe.
@@ -129,5 +126,3 @@ Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
  							    -- Linus Torvalds
-
---8323329-1988560550-1574246171=:25420--
