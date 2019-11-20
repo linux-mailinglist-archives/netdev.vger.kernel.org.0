@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E282104210
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E468104213
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:27:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728339AbfKTR1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 12:27:02 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55163 "EHLO
+        id S1728212AbfKTR1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 12:27:53 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39950 "EHLO
         mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727639AbfKTR1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:27:02 -0500
-Received: by mail-wm1-f66.google.com with SMTP id x26so183408wmk.4
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 09:27:00 -0800 (PST)
+        with ESMTP id S1727639AbfKTR1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:27:53 -0500
+Received: by mail-wm1-f66.google.com with SMTP id y5so487431wmi.5
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 09:27:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=O9NM3AuzPLu6szAJZtY1J9I3WX0osMbqUOTF+jQVm0s=;
-        b=Hb0rPCBlj8gviGzb/bLe9PKCotIKW6BjnBZBC0w4UgDeDqg+5W3F74lCPUBXWMDzZ4
-         R9VffT6wZU2N6GGWL7GcN63e2oLaxDsANvdGi/+q39lIVYgCg+IPql+ep4Lm0cCGLdui
-         mSF4gTSimfrBybd4/v1aIkPniClkrsXADSpXLt9ZFyvIjK3JTLIFTpg2aBuKoTCkC8pw
-         MhjlUMh4VhXiWvgbKnCEmAoqtpPSnMzUPSM7tZoPgN6T7dSA0zT6e+qIJFFfpN1daKal
-         fgsUjO4HYmCTy2GdnAZqSIAQc8IN/5eaAPMgq09VyfRkEkQK0PWJtR2BtVvultGL/Bqg
-         +mSQ==
+        bh=ULqX+PhB8rVigfApzVN1hTvp/5xDuRhjEuggQtNz+1U=;
+        b=EilpFIUMOIFBvbZs7Dkg83HlP9Vi/Q1tUd4A0WuGMB9ZD2ZXcIWjArq7xLaaez8lDa
+         BIaDIlyVBU0dlf7dyDAN9WPKMlxPlsth4VtQz9SbnefFV4pAcZcZPjnAeqH1+yg1bm2G
+         99ZzpCaxS2kIbGKhVRVaso1A7Zazy41TAadl1X3SqkDvL+Fbz73Y0OjdenvcXXFV2oFa
+         RKXJPW9gAIGWs7AOCA2jxdYXOI3CNGQuzYWhBqbvZkk8fjDVTPdkA+u/Np7PevGj6tPD
+         hnI9wQluwKXO6JognkB3IplWOk/BzjBgu9uDdo+MtTGwdplfoyj6EFXSIGJDLWrxJ666
+         LkeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=O9NM3AuzPLu6szAJZtY1J9I3WX0osMbqUOTF+jQVm0s=;
-        b=H9Q16aCcQVJzrLcL4cPHXMIzuWXY8OLsqZ1KhDE/TW6sRGKNwfAErpVrc1y8kJDJeK
-         Wka4x2fOAZfTE+JtPfYF+dx+g1xYkcdVMXumNH8I19xjZl//A9jGihJRkWVtLQ8nyMdR
-         R1UB4GCND9WGqvEeIJP8j4XdIBDRK18ptTaYxCqxWTk07iHyAgU5jSUnrUQfg3BW0IY3
-         /1WVzQLePXQKjn8G94H8zF8JhHcbgvMrZtoLCiNrWHczDsjFfeh3f0i7KxZ7xkwmxSc/
-         lqrGT4AksdYYZamXGJ0RK3fKeCnVTVR/lizHE99wbJw86ev+1XhmfY7f52Q8QRtw0G5B
-         XUAQ==
-X-Gm-Message-State: APjAAAWztgvIZTdmOVmt92s42wQMZqMymVgRbYMASNgFKwLo2z3NwJuV
-        zK3/Qxeb1+N5Jrd6kBl3LKsppTVeKttJx48iedA=
-X-Google-Smtp-Source: APXvYqx3aT+8zX+GOqzH4x/0/sKfxF8g0n2XcWckpkKIo1Gn/zuh/s2rqYaMNe2Vs/6AZPTLTqtTg5L5k9PurVr24e0=
-X-Received: by 2002:a1c:7e91:: with SMTP id z139mr4640117wmc.15.1574270820128;
- Wed, 20 Nov 2019 09:27:00 -0800 (PST)
+        bh=ULqX+PhB8rVigfApzVN1hTvp/5xDuRhjEuggQtNz+1U=;
+        b=bHGgF5xLBYA2+tD/OYuLiGQdKeod2YYtrGzbxBz1541+g/aCVDndXfg2iCIyoWIxIm
+         cE10CVj5c6/ufkjB1mt3jClA0AyK4MpJ/0XZe0jzO4/gfjnooyRrzCBDY4ubPtJeyb7T
+         fzjOvSIbFtYdbiaIPdrVM2GtUf3C4PWpy50MqLLPIKufNJO8rzAbUZ+l4RxaYwuZu56M
+         RM5X4SkZiHHaopWa+MnzMyaPM7cUazDRorSySKrLKIv2hWeqbb82Fdo79l/pfNhFDfNp
+         oZnJ0mCuRoaN3+NqSkwPZsAexvrZtpuEyIAcFRmsp4qavlRDgQHvLBWv98llYUdjSJY0
+         9D5w==
+X-Gm-Message-State: APjAAAUceCKN17nQ3LooV5GNWT/l8H5pm7wMblwo5ZkecyNYCCv9LKJ7
+        Dfcnp7teGRVwzcpebOEczikjVWO16Ws35Y5M0fE=
+X-Google-Smtp-Source: APXvYqwhy7JxduDGn+hVwmQEW534X7cC5j/AY9sI2a8TNo8HkaIf89SkAXXMZfAmGKw3zTCohwHD/eyPI8C47lXdJjc=
+X-Received: by 2002:a1c:2e09:: with SMTP id u9mr4557325wmu.108.1574270871606;
+ Wed, 20 Nov 2019 09:27:51 -0800 (PST)
 MIME-Version: 1.0
-References: <1574162259-28181-1-git-send-email-sunil.kovvuri@gmail.com>
- <20191119134638.6814285a@cakuba.netronome.com> <20191119.140222.1092498595946013025.davem@davemloft.net>
-In-Reply-To: <20191119.140222.1092498595946013025.davem@davemloft.net>
+References: <1574007266-17123-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
+ <20191118132811.091d086c@cakuba.netronome.com> <CA+sq2CcrS4QmdVWhkpMb850j_g3kvvE1BriiQ2GyB-6Ti1ue2A@mail.gmail.com>
+ <20191119133841.16f91648@cakuba.netronome.com>
+In-Reply-To: <20191119133841.16f91648@cakuba.netronome.com>
 From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Wed, 20 Nov 2019 22:56:49 +0530
-Message-ID: <CA+sq2CeHTxmpv5moJvW8QZn=z+NqqkZJefM6Zg0ru56HwhFMQA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/15] octeontx2-af: SSO, TIM HW blocks and other
- config support
-To:     David Miller <davem@davemloft.net>
-Cc:     jakub.kicinski@netronome.com,
-        Linux Netdev List <netdev@vger.kernel.org>,
+Date:   Wed, 20 Nov 2019 22:57:40 +0530
+Message-ID: <CA+sq2CcuXCbjSfijCUcU+e+TuGetSPsOhTRT98QisQD0q0LxKQ@mail.gmail.com>
+Subject: Re: [PATCH 02/15] octeontx2-af: Add support for importing firmware data
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linu Cherian <lcherian@marvell.com>,
+        Rakesh Babu <rsaladi2@marvell.com>,
+        Vamsi Attunuru <vamsi.attunuru@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -59,32 +63,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 3:32 AM David Miller <davem@davemloft.net> wrote:
+On Wed, Nov 20, 2019 at 3:09 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
 >
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Date: Tue, 19 Nov 2019 13:46:38 -0800
+> On Tue, 19 Nov 2019 13:01:41 +0530, Sunil Kovvuri wrote:
+> > On Tue, Nov 19, 2019 at 2:58 AM Jakub Kicinskiwrote:
+> > > Again, confusing about what this code is actually doing. Looks like
+> > > it's responding to some mailbox requests..
+> > >
+> > > Please run checkpatch --strict and fix all the whitespace issues, incl.
+> > > missing spaces around comments and extra new lines.
+> >
+> > I did check that and didn't see any issues.
+> >
+> > ./scripts/checkpatch.pl --patch --strict
+> > 0002-octeontx2-af-Add-support-for-importing-firmware-data.patch
+> > total: 0 errors, 0 warnings, 0 checks, 349 lines checked
+> >
+> > 0002-octeontx2-af-Add-support-for-importing-firmware-data.patch has no
+> > obvious style problems and is ready for submission.
 >
-> > As I asked in my review of patch 4 in v1, please provide us with
-> > accurate description of how does a system with a octeontx2 operate.
-> > Best in the form of RST documentation in the Documentation/ directory,
-> > otherwise it's very hard for upstream folks to review what you're doing.
+> Oh well, checkpatch didn't catch any errors so you didn't care to look
+> for mistakes I pointed out yourself?
 >
-> Yes, please do this.
+> Let me ask you again, please fix all the whitespace issues incl.
+> missing spaces around comments and extra new lines.
 
-Sure, will submit v3 with documentation which provides a high level
-overview of the hardware
-and the kernel drivers.
-
->
-> Some of us are strongly suspecting that there is a third agent (via
-> an SDK or similar) that programs part of this chip in a complete system
-> and if that is the case you must fully disclose how all of this is
-> intended to work.
->
-
-The ones which configures HW are the drivers which may be in kernel or
-userspace.
-Few minor things are setup by firmware before kernel boots.
+Okay will check and fix.
 
 Thanks,
 Sunil.
