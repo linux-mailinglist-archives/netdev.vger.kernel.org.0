@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7280E104608
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 22:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E84BA10462E
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 22:54:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726396AbfKTVtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 16:49:10 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:46155 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbfKTVtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 16:49:10 -0500
-Received: by mail-lf1-f66.google.com with SMTP id a17so758102lfi.13;
-        Wed, 20 Nov 2019 13:49:08 -0800 (PST)
+        id S1726750AbfKTVyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 16:54:31 -0500
+Received: from mail-il1-f171.google.com ([209.85.166.171]:42826 "EHLO
+        mail-il1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725819AbfKTVyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 16:54:31 -0500
+Received: by mail-il1-f171.google.com with SMTP id n18so1125735ilt.9
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 13:54:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IqWvbI85foXB2tMi8++iH5gdZ4/mMi6Zfv03IvvR9P8=;
-        b=rx+sqppEQ0sP4Ou4xkvZVXNG2RbISHlRVU5LbZZS/LRBLr9tx6bM2IuY9vsxDz9NMU
-         F2ZudgbHLTwGeOuqIoQYO80/M6rDE8MMaAjxZ0bKmZ6Zs7zeC42vvNqbHeOJH1f4PlLz
-         PsGwd7j3b1dgGAY4CK+yPRq0rjmoYQrqgnF5JjDxhz7yNqZ5HKm5QACFYIpLm2g1dCsG
-         Ee9o5aLmIQmYoCG6pItat+5fZ2bi+gGv2ln0GM3O0IM1lqllC4ZfLSca6YcUQ/vKR82z
-         wqUFALdK5DXulO9Obe2lPvxJpMiuJKCFiDF5qqg2Y1KP/a4KwZSYP/Dly0EOkgG2V5WA
-         JoYg==
+         :cc;
+        bh=oKeP7m/q+Qz7M+vSbIsEHiVBRFlkNfZoezDW8+L7BPI=;
+        b=D7bfVZzwGPVsoJ8NBlYS4BG4Of2QRnH7ynfwV8ChkUvitbGYzDpt/tNgtRvzRuN2YN
+         lBwDtnCObORl0gVNsxqEKCLlLW3l6mdrKCxZIGCw3IjsOYKKH8/TrRLIm+sxOU+rxRwf
+         J5Cn0QSbjebTxIFxE2sLd5wPX3CdVZsFUv8C2OKtjxui2oyCt+DZg8KafEcARuc/OcvK
+         B0c3eYfYLhjtBcg05cVcSYcCDxcZ4zOYGMcYhFxC65eUCpwxUtOcSYUiYrqvajr7HsE6
+         cZ0vaIBublC3Kh694+tcHo1HWhV4qu+OjLAfIn88+NswhVrsGCRG23jF5ixJGfTFRb1g
+         c6Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IqWvbI85foXB2tMi8++iH5gdZ4/mMi6Zfv03IvvR9P8=;
-        b=ALQ35/BDJY9dJsKMF/nfPcLO4W7h041T3CA9dI767Rpid6Oq5UpQ7+7Vw2Zj/bF2OC
-         juBSiyJXhkiz3wgiR78c8AWlSWTPZ0g5jO7czIAwoxwPsCCt6NpZ28J0D+lDbm1nxPnp
-         Sv5xkBmuVy+hWK0jPugnAjXPFLBKPaU+wcYl6H6gv4R+Ge0xmUQ+NKdUtqDBzuAVRe5R
-         629hiVLtBLGamzaWpTe01oV6mdTLtRfwUeS7Ie79ogH29LJGBQyUNTdIq33Kt0/Wj5m0
-         N/O0AK2dQ8tT41kc0mBnNyFh1qQiNHWhsmaVR0uLXnsiTUBuNmWqTXbPTVUvyQ/u62dQ
-         65BQ==
-X-Gm-Message-State: APjAAAVeG03fMCMadmdqxV8fIpZf3uVasdxNSnEyxJC/2MKjVZL2OvDl
-        KXimAuI24endKJMPlKOK1NYSDyl46IhiVfdArRk=
-X-Google-Smtp-Source: APXvYqxJ679uUeT4jErpXKpTt+NoyNlLXhqh0v6We4OpY+B56ogc4PtKTP5b8ryx/+bJzEUYobyXShKyFgL7tg+tH4o=
-X-Received: by 2002:ac2:5453:: with SMTP id d19mr4944939lfn.181.1574286547649;
- Wed, 20 Nov 2019 13:49:07 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=oKeP7m/q+Qz7M+vSbIsEHiVBRFlkNfZoezDW8+L7BPI=;
+        b=Aaj1fBMuqxcfcZrC8RIjAfFHQKkyfHaEOiRKQMjeWvYa51UgMIiHVU8neqWlkrf+bR
+         MtdgCCK5pg5hNI4QUjbY1YuoOxXEY477fvRlLp4MWc4Ykzv4WbA2RSMBdGH1toI3uHa2
+         A8Kx4M0zpPcKDsRIwU8QY4zegbUrMc72IfiWF8RbfIjHjoLZhbFqSeWAQDsDTHqSD9Em
+         Au78CcmZ2ZIUihpvBmIZX5QUQUB29ot27tWjp54J7GWuJn0X4cvitbs5w8cwPtpbPbCJ
+         8sFqrrOvJrChGaK8Gt7NjBkPi6Z0dEw97ooiXAaDjrsB1XZ0Jk4WrzxRBSNyGOhBNYIK
+         kVjg==
+X-Gm-Message-State: APjAAAWXTePYxxdnSAR/vCOiIXNGzi/xFfywnDF4oov9ZmcNec9G3TGE
+        7T7/Js2R1RqeJzYosFkSzyjeGKYS31oCIAH89GusnA==
+X-Google-Smtp-Source: APXvYqyhlKWJKvp7c79HjmAEye9+9jc1uJhunkW8INPlBnz9/qS8ZdpUFfhYx+vHEKXmX8Yew2X/ueUycN5yPJy4HVA=
+X-Received: by 2002:a92:ca8d:: with SMTP id t13mr5832413ilo.58.1574286870288;
+ Wed, 20 Nov 2019 13:54:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20191120213816.8186-1-jolsa@kernel.org> <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
-In-Reply-To: <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 20 Nov 2019 13:48:56 -0800
-Message-ID: <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and unload
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+References: <20191120083919.GH27852@unicorn.suse.cz> <CANn89iJYXh7AwK8_Aiz3wXqugG0icPNW6OPsPxwOvpH90kr+Ew@mail.gmail.com>
+ <20191120181046.GA29650@unicorn.suse.cz> <CANn89iLfX2CYKU7hPZkPTNiUoCUyW2PLznsVnxomu4JEWmkefQ@mail.gmail.com>
+ <20191120195226.GB29650@unicorn.suse.cz> <e9d19a66-94af-b4e8-255d-38a8cdc6f218@gmail.com>
+ <20191120204948.GC29650@unicorn.suse.cz> <CANn89iJeq2CCBrdgt=fFxG3Uk7f4CHbLfsOM2S8q3ucC6znzEA@mail.gmail.com>
+ <20191120211348.GD29650@unicorn.suse.cz>
+In-Reply-To: <20191120211348.GD29650@unicorn.suse.cz>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 20 Nov 2019 13:54:18 -0800
+Message-ID: <CANn89i+a7LHSN6sx2NCUXyUph6Uk7B5vh5ZTUAoVExphN0GmTQ@mail.gmail.com>
+Subject: Re: possible race in __inet_lookup_established()
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>, Firo Yang <firo.yang@suse.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 1:46 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
+On Wed, Nov 20, 2019 at 1:13 PM Michal Kubecek <mkubecek@suse.cz> wrote:
 >
-> On 11/20/19 10:38 PM, Jiri Olsa wrote:
-> > From: Daniel Borkmann <daniel@iogearbox.net>
+> On Wed, Nov 20, 2019 at 12:57:48PM -0800, Eric Dumazet wrote:
+> > On Wed, Nov 20, 2019 at 12:49 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > > Firo suggested something like
+> > >
+> > > ------------------------------------------------------------------------
+> > > --- a/net/ipv4/inet_hashtables.c
+> > > +++ b/net/ipv4/inet_hashtables.c
+> > > @@ -362,6 +362,8 @@ struct sock *__inet_lookup_established(struct net *net,
+> > >
+> > >  begin:
+> > >         sk_nulls_for_each_rcu(sk, node, &head->chain) {
+> > > +               if (unlikely(!node))
+> > > +                       goto begin;
+> > >                 if (sk->sk_hash != hash)
+> > >                         continue;
+> > >                 if (likely(INET_MATCH(sk, net, acookie,
+> > > ------------------------------------------------------------------------
+> > >
+> > > It depends on implementation details but I believe it would work. It
+> > > would be nicer if we could detect the switch to a listening socket but
+> > > I don't see how to make such test race free without introducing
+> > > unacceptable performance penalty.
 > >
-> > Allow for audit messages to be emitted upon BPF program load and
-> > unload for having a timeline of events. The load itself is in
-> > syscall context, so additional info about the process initiating
-> > the BPF prog creation can be logged and later directly correlated
-> > to the unload event.
+> > No, we do not want to add more checks in the fast path really.
 > >
-> > The only info really needed from BPF side is the globally unique
-> > prog ID where then audit user space tooling can query / dump all
-> > info needed about the specific BPF program right upon load event
-> > and enrich the record, thus these changes needed here can be kept
-> > small and non-intrusive to the core.
+> > I was more thinking about not breaking the RCU invariants.
 > >
-> > Raw example output:
-> >
-> >    # auditctl -D
-> >    # auditctl -a always,exit -F arch=3Dx86_64 -S bpf
-> >    # ausearch --start recent -m 1334
-> >    [...]
-> >    ----
-> >    time->Wed Nov 20 12:45:51 2019
-> >    type=3DPROCTITLE msg=3Daudit(1574271951.590:8974): proctitle=3D"./te=
-st_verifier"
-> >    type=3DSYSCALL msg=3Daudit(1574271951.590:8974): arch=3Dc000003e sys=
-call=3D321 success=3Dyes exit=3D14 a0=3D5 a1=3D7ffe2d923e80 a2=3D78 a3=3D0 =
-items=3D0 ppid=3D742 pid=3D949 auid=3D0 uid=3D0 gid=3D0 euid=3D0 suid=3D0 f=
-suid=3D0 egid=3D0 sgid=3D0 fsgid=3D0 tty=3Dpts0 ses=3D2 comm=3D"test_verifi=
-er" exe=3D"/root/bpf-next/tools/testing/selftests/bpf/test_verifier" subj=
-=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=3D(null)
-> >    type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8974): auid=3D0 uid=
-=3D0 gid=3D0 ses=3D2 subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0=
-.c1023 pid=3D949 comm=3D"test_verifier" exe=3D"/root/bpf-next/tools/testing=
-/selftests/bpf/test_verifier" prog-id=3D3260 event=3DLOAD
-> >    ----
-> >    time->Wed Nov 20 12:45:51 2019
-> > type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8975): prog-id=3D3260 e=
-vent=3DUNLOAD
-> >    ----
-> >    [...]
-> >
-> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > (ie : adding back the nulls stuff that I removed in 3b24d854cb35
+> > ("tcp/dccp: do not touch
+> > listener sk_refcnt under synflood")
 >
-> LGTM, thanks for the rebase!
+> Yes, that would do the trick. It would add some cycles to listener
+> lookup but that is less harm than slowing down established socket
+> lookup.
+>
 
-Applied to bpf-next. Thanks!
+It should not change cycles spent in listener lookup.
+
+Only the test to check for the iteration end will not use NULL, that's about it.
