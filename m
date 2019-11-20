@@ -2,134 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 366EC103DCC
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 15:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E917D103DD1
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 15:57:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731789AbfKTOys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 09:54:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731775AbfKTOys (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 09:54:48 -0500
-Received: from localhost.localdomain.com (unknown [77.139.212.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4050206F4;
-        Wed, 20 Nov 2019 14:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574261686;
-        bh=yk9UnCRQag+MRhAsMPjqi4p3IqpYTg+dCcYvgMZ8Cis=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bbKEvLkA7WaEfGjhvDYX9xpXNiiDHWffvmeNhpNmyvf5FOgRrK9MHH4Z21Wti7T1m
-         KAuQ2F9VAPcMtf3NQAkrWpdxicXFyF0KFkEodYWqyvyE93sw2InoDtZvQioy+odck7
-         QdV00OLawbqwN9GzlKYakAzOrV2wDU4NvVIDLRIw=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, ilias.apalodimas@linaro.org,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com, mcroce@redhat.com,
-        jonathan.lemon@gmail.com
-Subject: [PATCH v5 net-next 3/3] net: mvneta: get rid of huge dma sync in mvneta_rx_refill
-Date:   Wed, 20 Nov 2019 16:54:19 +0200
-Message-Id: <1e945f45259c09da6f5876a11e0bedd955c9d695.1574261017.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1574261017.git.lorenzo@kernel.org>
-References: <cover.1574261017.git.lorenzo@kernel.org>
+        id S1731855AbfKTO5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 09:57:30 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37863 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731102AbfKTO5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 09:57:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574261848;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/e2L4fQWIbJeH29Bf8OxPRM2k6SA+48XsmsKWLAdNU8=;
+        b=DaTCOZ0T7avormhKmjfK8toj9qw7OqE5l57WwZcYMaTZM8U45hBzfSw1rQHOG+CI1UJNXu
+        iycay0agqDfqzXOM/dLU/SMF9u1oM0cOJExXR0FK6DMHVOXH+qjvSkB1tmZKW0KFJEaMCp
+        4YWJHEvT8OJD3vGYjOuWYPCh+dIlVLc=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-416-nMdpoABiPDWnNhDrcvdjqQ-1; Wed, 20 Nov 2019 09:57:25 -0500
+Received: by mail-qt1-f197.google.com with SMTP id s8so926qtq.17
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 06:57:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WqDORYpJqHQ9F17SzT1sEQBjLsrWPnppxBhytxuFIy4=;
+        b=hJFQgQx0S4oq8vA+zwCrtg7LBAL0Cow1cgOiM2G4Iahjb6aoNsvIHtHFKUrvZ6SFtd
+         OzpFaQQXJTQ1oCMZ/FLyhpWdDjbX7zJbTGFIVYazh784MCH4210WIo3Z3TLQPJ23j6nW
+         8F5fLDHvtr2cRBA/4aX8XUfiG1Vr8uCIA2s9C9ryPoWc/sSy2Mu1OJwA9VXNl71Xlz0g
+         xJFRbgyWfUp5E8BqTioi7chOYWBCeifD5F5A1Mw+B/LLxnNm4DuzDRgTBQK8X1t9zS6L
+         FUn67e1vLTIwPEFylpjhWsmOy0/MJAHVfoDr3CSMS8/lMFGUeLCiCYYDLe1YYDebB9jB
+         4p4A==
+X-Gm-Message-State: APjAAAXdyIXP8L1jBlPT8pfpIymwQeVT5dltPzs1KR/t40zaLULNJ/Gt
+        C1sabkh+hmU3VqUPyf/0H/v1ow8jqCpV7Rh7yOY3buOEFxNrMR40w/zXPKGTwdaaSTsdQB6DgwC
+        V1HjM6XIJKNh15wAY
+X-Received: by 2002:a37:6643:: with SMTP id a64mr2892528qkc.144.1574261845192;
+        Wed, 20 Nov 2019 06:57:25 -0800 (PST)
+X-Google-Smtp-Source: APXvYqw6JJ9cNfodNG4pgBosP1ZHICUrPMUHOY0gwifDWTQqZF970JqUvdyeDoC863pJc6/AhmD/xw==
+X-Received: by 2002:a37:6643:: with SMTP id a64mr2892489qkc.144.1574261844817;
+        Wed, 20 Nov 2019 06:57:24 -0800 (PST)
+Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
+        by smtp.gmail.com with ESMTPSA id z3sm14404597qtu.83.2019.11.20.06.57.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2019 06:57:23 -0800 (PST)
+Date:   Wed, 20 Nov 2019 09:57:17 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191120093607-mutt-send-email-mst@kernel.org>
+References: <20191119134822-mutt-send-email-mst@kernel.org>
+ <20191119191547.GL4991@ziepe.ca>
+ <20191119163147-mutt-send-email-mst@kernel.org>
+ <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <20191120022141-mutt-send-email-mst@kernel.org>
+ <20191120130319.GA22515@ziepe.ca>
+ <20191120083908-mutt-send-email-mst@kernel.org>
+ <20191120143054.GF22515@ziepe.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191120143054.GF22515@ziepe.ca>
+X-MC-Unique: nMdpoABiPDWnNhDrcvdjqQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get rid of costly dma_sync_single_for_device in mvneta_rx_refill
-since now the driver can let page_pool API to manage needed DMA
-sync with a proper size.
+On Wed, Nov 20, 2019 at 10:30:54AM -0400, Jason Gunthorpe wrote:
+> On Wed, Nov 20, 2019 at 08:43:20AM -0500, Michael S. Tsirkin wrote:
+> > On Wed, Nov 20, 2019 at 09:03:19AM -0400, Jason Gunthorpe wrote:
+> > > On Wed, Nov 20, 2019 at 02:38:08AM -0500, Michael S. Tsirkin wrote:
+> > > > > > I don't think that extends as far as actively encouraging users=
+pace
+> > > > > > drivers poking at hardware in a vendor specific way. =20
+> > > > >=20
+> > > > > Yes, it does, if you can implement your user space requirements u=
+sing
+> > > > > vfio then why do you need a kernel driver?
+> > > >=20
+> > > > People's requirements differ. You are happy with just pass through =
+a VF
+> > > > you can already use it. Case closed. There are enough people who ha=
+ve
+> > > > a fixed userspace that people have built virtio accelerators,
+> > > > now there's value in supporting that, and a vendor specific
+> > > > userspace blob is not supporting that requirement.
+> > >=20
+> > > I have no idea what you are trying to explain here. I'm not advocatin=
+g
+> > > for vfio pass through.
+> >=20
+> > You seem to come from an RDMA background, used to userspace linking to
+> > vendor libraries to do basic things like push bits out on the network,
+> > because users live on the performance edge and rebuild their
+> > userspace often anyway.
+> >=20
+> > Lots of people are not like that, they would rather have the
+> > vendor-specific driver live in the kernel, with userspace being
+> > portable, thank you very much.
+>=20
+> You are actually proposing a very RDMA like approach with a split
+> kernel/user driver design. Maybe the virtio user driver will turn out
+> to be 'portable'.
+>=20
+> Based on the last 20 years of experience, the kernel component has
+> proven to be the larger burden and drag than the userspace part. I
+> think the high interest in DPDK, SPDK and others show this is a common
+> principle.
 
-- XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
-- XDP_DROP DMA sync managed by page_pool API:	~585Kpps
+And I guess the interest in BPF shows the opposite?
+I don't see how this kind of argument proves anything.  DPDK/SPDK are
+written by a group of developers who care about raw speed and nothing
+else. I guess in that setting you want a userspace driver. I know you
+work for a hardware company so to you it looks like that's all people
+care about.  More power to you, but that need seems to be
+addressed by dpdk.
+But lots of people would rather have e.g. better security
+than a 0.1% faster networking.
 
-Tested-by: Matteo Croce <mcroce@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 26 +++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+> At the very least for new approaches like this it makes alot of sense
+> to have a user space driver until enough HW is available that a
+> proper, well thought out kernel side can be built.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index f7713c2c68e1..a06d109c9e80 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1846,7 +1846,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 			    struct mvneta_rx_queue *rxq,
- 			    gfp_t gfp_mask)
- {
--	enum dma_data_direction dma_dir;
- 	dma_addr_t phys_addr;
- 	struct page *page;
- 
-@@ -1856,9 +1855,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 		return -ENOMEM;
- 
- 	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
--	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
--	dma_sync_single_for_device(pp->dev->dev.parent, phys_addr,
--				   MVNETA_MAX_RX_BUF_SIZE, dma_dir);
- 	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
- 
- 	return 0;
-@@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
- 		if (err) {
- 			ret = MVNETA_XDP_DROPPED;
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		} else {
- 			ret = MVNETA_XDP_REDIR;
- 		}
-@@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	case XDP_TX:
- 		ret = mvneta_xdp_xmit_back(pp, xdp);
- 		if (ret != MVNETA_XDP_TX)
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-@@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		trace_xdp_exception(pp->dev, prog, act);
- 		/* fall through */
- 	case XDP_DROP:
--		page_pool_recycle_direct(rxq->page_pool,
--					 virt_to_head_page(xdp->data));
-+		__page_pool_put_page(rxq->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		ret = MVNETA_XDP_DROPPED;
- 		break;
- 	}
-@@ -3067,11 +3069,13 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
- 	struct bpf_prog *xdp_prog = READ_ONCE(pp->xdp_prog);
- 	struct page_pool_params pp_params = {
- 		.order = 0,
--		.flags = PP_FLAG_DMA_MAP,
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
- 		.pool_size = size,
- 		.nid = cpu_to_node(0),
- 		.dev = pp->dev->dev.parent,
- 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = pp->rx_offset_correction,
-+		.max_len = MVNETA_MAX_RX_BUF_SIZE,
- 	};
- 	int err;
- 
--- 
-2.21.0
+But hardware is available, driver has been posted by Intel.
+Have you looked at that?
+
+So I am not sure it's a good idea to discuss whether code is "proper" or
+"so-called", that just does not sound like constructive criticism.
+And I think it might be helpful if you look at the code and provide
+comments, so far your comments are just on the cover letter and commit
+logs. If you look at that you might find your answer to why Alex did not
+nak this.
+
+> For instance, this VFIO based approach might be very suitable to the
+> intel VF based ICF driver, but we don't yet have an example of non-VF
+> HW that might not be well suited to VFIO.
+>=20
+> Jason
+
+I don't think we should keep moving the goalposts like this.
+
+If people write drivers and find some infrastruture useful,
+and it looks more or less generic on the outset, then I don't
+see why it's a bad idea to merge it.
+
+*We don't want to decide how to support this hardware, write a userspace dr=
+iver*
+isn't a reasonable approach IMHO.
+
+--=20
+MST
 
