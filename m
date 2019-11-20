@@ -2,217 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13411103971
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDC5103970
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbfKTMDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 07:03:19 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46450 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727192AbfKTMDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:03:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574251397;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cPLrgLaGuZaJcH9r1bYOExIf6a7HxnQs/VX4R6E/rqg=;
-        b=DJgbtQCElSggYt2CzlQ9OiB/VFRNX05/VKWVT9kRsJVJ9gfxpGbTzBx3Qw2bu2VyCMRZkR
-        4QXubxpDzvmVgKJfAliqbU08dF7i1M3ZzOLSSvcz0jshtHDJNidW2S1YtLf9Qu2lYGC9bh
-        9fAeJ9bBLu02QbhgBN8CTEXCMDy9fvs=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-307-B-GvTKtLMX-PV0YHBgAb4A-1; Wed, 20 Nov 2019 07:03:16 -0500
-Received: by mail-wm1-f70.google.com with SMTP id o25so645227wmh.8
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 04:03:15 -0800 (PST)
+        id S1728996AbfKTMDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 07:03:17 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39334 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727791AbfKTMDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:03:16 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t26so7520955wmi.4
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 04:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yjRiD2kmmMRgYTSYZHwBpw4xHFxxldWWaxVd0ST+IRI=;
+        b=uLwZwRXuR7RR9MWQK50X/fnTYqFKIzC0nCXYKI+LmwX3scSCk73r3mAOaoRVd3g6ZI
+         b46HmYnowlwgWdkbwTBojaPSiqsNTL0qLPZo0G72Q/GNKaHPHGvcQ5hp7YoaUInLMfIt
+         dfBV0V9AuG5BZwkIba3EF0KqxrLPIr+EIMQrGsLn63IBEl0gy6YxM0bYD8hdSyX6L2Ky
+         RMTZ/hBr9SeI4T3D7PmBNGU7l+X0BJRA9wbj6Pk/V5AT9vPByRr7IPFBEwdyAEn66qEw
+         rJG+QB881r9nolN9HdkGGUjNweL+PKnyww3lR+KIa8yFfJEw9QNx53xLc/Ge/PXPT9Qb
+         9WIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FOyJ5t3F1d+Ww8VG/GvZOln/dLXZzdutGh+ZvZUhBto=;
-        b=Ga6exLTaIB+jr9lJMK2FNtGGVMP4eFXVnTlRHeqEKOAJg7SfATrXPKYH3nL/yNdn0H
-         xSV6+F6IAf3yg8l+1PuxAnamquYocvAsExRiWRuXvqO/sNUqWALyZ2/zd8klLmVwwTyV
-         sTZK76BUci+IcnfN1yqrVOomf0PVhzqLs2P3+eqm8Ln30rTCnt8kre5LjhH4/iPMJhN7
-         ZpVVxkxdOHAHPlD0/ArQwUnrNpEtbJDdtlnjPU6y5TcvApNjlFFiZ9gMNRRjLuKr/USn
-         3eDHDnd5YmNUYvamOP1ftBnvfSTfEWFeznTC+szHvco7YW1xyX7dV+ET3Ete+XgxrJtJ
-         yhkQ==
-X-Gm-Message-State: APjAAAVCyDiBf/lECayELl1Nfws6Z0cZrdA6zeJ9A1xdCsxf3kh1qIdr
-        pywFbWJlVf+I9GBoOVyk5/GrHgMsChjGwJG5DoGqTgrvHXvUrF888dVAHxf7r5hUYa1JCgDgDHT
-        EUwtfUso3iCcCCx50
-X-Received: by 2002:a5d:570a:: with SMTP id a10mr2756217wrv.107.1574251394216;
-        Wed, 20 Nov 2019 04:03:14 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz33Aj8kvQESisy7rMEIOYNw9KoxhpUBoSDqC6m1YCd6Hc66GXIFyZ9wQ8otMuTjyRfxiTwIg==
-X-Received: by 2002:a5d:570a:: with SMTP id a10mr2756131wrv.107.1574251393545;
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yjRiD2kmmMRgYTSYZHwBpw4xHFxxldWWaxVd0ST+IRI=;
+        b=nEt68CFKT71YWDVkjXfzT5NwlJmq+InpEcr7PMP5LbiXOwzdVzI+zu2diSoC4DDHNL
+         PGmyEnid7jsCPm4simTIplO0SciVX3q8Ltb4wmpHHeFd707Mt3g0VYrG2lce20ZZQYEg
+         vr9iE/VOUKjHzNb/I4MfDZ7+KIb0UoPWVUjNSYbOevYNx9NWvgSwWGBIYxkK7LftCvcU
+         LZ5xIsEWFdCwUUtuU6215VvZPEGX9HoAS21+Mi0Av409aKMtpr0KIoYAsfldaoMZAv49
+         u5O/7c79yl5hwoUQCgxVfzKs7PCQ8Pp200e4b/SHFoSQ82/DuRO/RfJAfLIDv0pm9cTD
+         vfGg==
+X-Gm-Message-State: APjAAAUYeGNITywpB+3Uk8WBWS3CvznFTwXndJ4voLTsDbSNe9Khoxk8
+        Lp8mgzZp+sZSFj4XKqdRzUjB6Q==
+X-Google-Smtp-Source: APXvYqwZgu5xYG/oAHHARg5Rpjkn9pw3zFuIkK7AtEPOhtiRgFkglPya9zGGZ6vw98QIXmK/udISlg==
+X-Received: by 2002:a1c:6309:: with SMTP id x9mr2646067wmb.108.1574251393563;
         Wed, 20 Nov 2019 04:03:13 -0800 (PST)
-Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
-        by smtp.gmail.com with ESMTPSA id 65sm35828136wrs.9.2019.11.20.04.03.11
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id d7sm31464695wrx.11.2019.11.20.04.03.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 20 Nov 2019 04:03:12 -0800 (PST)
-Date:   Wed, 20 Nov 2019 13:03:10 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     syzbot <syzbot+e2e5c07bf353b2f79daa@syzkaller.appspotmail.com>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        "David S. Miller" <davem@davemloft.net>, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, jiri@mellanox.com, kafai@fb.com,
-        kvm <kvm@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        syzkaller-bugs@googlegroups.com, vadimp@mellanox.com,
-        virtualization@lists.linux-foundation.org, yhs@fb.com
-Subject: Re: general protection fault in virtio_transport_release
-Message-ID: <CAGxU2F7qYQAFJ957bLxKGQrHApxomGQXbaFMDVc7r0bWv_M2Zw@mail.gmail.com>
-References: <0000000000004ce83f0597b24bba@google.com>
+Date:   Wed, 20 Nov 2019 13:03:11 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Tiwei Bie <tiwei.bie@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191120120311.GA2297@nanopsycho>
+References: <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
+ <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
+ <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
+ <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
+ <AM0PR05MB48664221FB6B1C14BDF6C74AD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191120034839-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <0000000000004ce83f0597b24bba@google.com>
-X-MC-Unique: B-GvTKtLMX-PV0YHBgAb4A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20191120034839-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 1:35 PM syzbot <syzbot+e2e5c07bf353b2f79daa@syzkall=
-er.appspotmail.com> wrote:
+Wed, Nov 20, 2019 at 09:52:23AM CET, mst@redhat.com wrote:
+>On Wed, Nov 20, 2019 at 03:38:18AM +0000, Parav Pandit wrote:
+>> 
+>> 
+>> > From: Jason Wang <jasowang@redhat.com>
+>> > Sent: Tuesday, November 19, 2019 9:15 PM
+>> > 
+>> > ----- Original Message -----
+>> > >
+>> > >
+>> > > > From: Jason Wang <jasowang@redhat.com>
+>> > > > Sent: Tuesday, November 19, 2019 1:37 AM
+>> > > >
+>> > >
+>> > > Nop. Devlink is NOT net specific. It works at the bus/device level.
+>> > > Any block/scsi/crypto can register devlink instance and implement the
+>> > > necessary ops as long as device has bus.
+>> > >
+>> > 
+>> > Well, uapi/linux/devlink.h told me:
+>> > 
+>> > "
+>> >  * include/uapi/linux/devlink.h - Network physical device Netlink interface "
+>> > 
+>> > And the userspace tool was packaged into iproute2, the command was named
+>> > as "TC", "PORT", "ESWITCH". All of those were strong hints that it was network
+>> > specific. Even for networking, only few vendors choose to implement this.
+>> > 
+>> It is under iproute2 tool but it is not limited to networking.
 >
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    1e8795b1 mscc.c: fix semicolon.cocci warnings
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D15d77406e0000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3De855e9c92c947=
-4fe
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3De2e5c07bf353b2f=
-79daa
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D1537f46ae00=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D11359c6ae0000=
-0
->
-> The bug was bisected to:
->
-> commit f366cd2a2e510b155e18b21a2d149332aa08eb61
-> Author: Vadim Pasternak <vadimp@mellanox.com>
-> Date:   Mon Oct 21 10:30:30 2019 +0000
->
->      mlxsw: reg: Add macro for getting QSFP module EEPROM page number
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=3D148945aae0=
-0000
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=3D168945aae0=
-0000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D128945aae0000=
-0
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit=
-:
-> Reported-by: syzbot+e2e5c07bf353b2f79daa@syzkaller.appspotmail.com
-> Fixes: f366cd2a2e51 ("mlxsw: reg: Add macro for getting QSFP module EEPRO=
-M
-> page number")
+>Want to fix the documentation then?
+>That's sure to confuse people ...
 
-I'm working on this issue.
-
-I think the problem is related to
-ac03046ece2b "vsock/virtio: free packets during the socket release"
-
-I'll send a patch ASAP.
-
-Thanks,
-Stefano
+Will do.
 
 >
-> RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000004
-> RBP: 0000000000000005 R08: 0000000000000001 R09: 00007ffd5b250031
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401e00
-> R13: 0000000000401e90 R14: 0000000000000000 R15: 0000000000000000
-> kasan: CONFIG_KASAN_INLINE enabled
-> kasan: GPF could be caused by NULL-ptr deref or user memory access
-> general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 8862 Comm: syz-executor079 Not tainted 5.4.0-rc6+ #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:virtio_transport_release+0x13b/0xcb0
-> net/vmw_vsock/virtio_transport_common.c:826
-> Code: e8 aa e6 2b fa 66 41 83 fd 01 0f 84 34 02 00 00 e8 3a e5 2b fa 48 8=
-b
-> 95 30 ff ff ff 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f
-> 85 22 0a 00 00 48 8b bb 98 00 00 00 48 b8 00 00 00
-> RSP: 0018:ffff888092dbfaf0 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87474aa0
-> RDX: 0000000000000013 RSI: ffffffff874747d6 RDI: 0000000000000001
-> RBP: ffff888092dbfc00 R08: ffff88809245a380 R09: fffffbfff1555fe1
-> R10: fffffbfff1555fe0 R11: 0000000000000003 R12: ffff888092dbfbd8
-> R13: 0000000000000007 R14: 0000000000000007 R15: 0000000000000000
-> FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000200000c4 CR3: 0000000008e6d000 CR4: 00000000001406f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   __vsock_release+0x80/0x2d0 net/vmw_vsock/af_vsock.c:733
->   vsock_release+0x35/0xa0 net/vmw_vsock/af_vsock.c:806
->   __sock_release+0xce/0x280 net/socket.c:590
->   sock_close+0x1e/0x30 net/socket.c:1268
->   __fput+0x2ff/0x890 fs/file_table.c:280
->   ____fput+0x16/0x20 fs/file_table.c:313
->   task_work_run+0x145/0x1c0 kernel/task_work.c:113
->   exit_task_work include/linux/task_work.h:22 [inline]
->   do_exit+0x904/0x2e60 kernel/exit.c:817
->   do_group_exit+0x135/0x360 kernel/exit.c:921
->   __do_sys_exit_group kernel/exit.c:932 [inline]
->   __se_sys_exit_group kernel/exit.c:930 [inline]
->   __x64_sys_exit_group+0x44/0x50 kernel/exit.c:930
->   do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x43f1d8
-> Code: Bad RIP value.
-> RSP: 002b:00007ffd5b25f838 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043f1d8
-> RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-> RBP: 00000000004befa8 R08: 00000000000000e7 R09: ffffffffffffffd0
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-> R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
-> Modules linked in:
-> ---[ end trace 4b9b883ea3ab661f ]---
-> RIP: 0010:virtio_transport_release+0x13b/0xcb0
-> net/vmw_vsock/virtio_transport_common.c:826
-> Code: e8 aa e6 2b fa 66 41 83 fd 01 0f 84 34 02 00 00 e8 3a e5 2b fa 48 8=
-b
-> 95 30 ff ff ff 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f
-> 85 22 0a 00 00 48 8b bb 98 00 00 00 48 b8 00 00 00
-> RSP: 0018:ffff888092dbfaf0 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff87474aa0
-> RDX: 0000000000000013 RSI: ffffffff874747d6 RDI: 0000000000000001
-> RBP: ffff888092dbfc00 R08: ffff88809245a380 R09: fffffbfff1555fe1
-> R10: fffffbfff1555fe0 R11: 0000000000000003 R12: ffff888092dbfbd8
-> R13: 0000000000000007 R14: 0000000000000007 R15: 0000000000000000
-> FS:  00000000009db880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000000000043f1ae CR3: 0000000008e6d000 CR4: 00000000001406f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>-- 
+>MST
 >
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisect=
-ion
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
->
-
