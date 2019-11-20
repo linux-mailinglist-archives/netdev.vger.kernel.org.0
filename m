@@ -2,157 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E17E104267
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 503CE104270
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727645AbfKTRsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 12:48:17 -0500
-Received: from mail-pg1-f180.google.com ([209.85.215.180]:46056 "EHLO
-        mail-pg1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfKTRsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:48:17 -0500
-Received: by mail-pg1-f180.google.com with SMTP id k1so61794pgg.12
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 09:48:16 -0800 (PST)
+        id S1728072AbfKTRtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 12:49:00 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41082 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727442AbfKTRs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:48:59 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 207so76742pge.8
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 09:48:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kfwd6o/B4wTdPHroXp8plb7makuSyAsm1O51sSrr52E=;
-        b=L+8k1NT8lp8gvIusBmuxtdEsPGp03J00Pa4/bA0Ftq240Qf6u1/IATHqXlaHe9K+9/
-         HhXmQJhjdzZP/iTFp28dkst9jt8+xEEeSZCc2cEa0CttcENigNbl6QMdh1R4EPBy2no3
-         8ejJ1YJXyBFuy74Qz2/6mulst5XsavKqNTwE0bl8z1dN2Ksegm9PhZiy+NjyFrRjoCUj
-         vgRK6/3lvZDXCcMIutrbVpfIUaUQ+VjxpvjNQnHuhH1PEEvxSC5c5lj0/sjU3VOTOU19
-         6TZ7YelxlgFZz94doLlAX1TxB5g+AOsp48JniqPfMSlJTpPr/7u9ZpRkmmtEV0eQomQA
-         iq1A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=QIA4xcTPAOc4j8L6suhXgAN7lEFxYh9ipUT9LHA38BE=;
+        b=VqY1ztva6RAqhmEwEp+qwsX+xppXOD+OyagZ0Z3Db9v921BjnBpefIz67GCp7Qggo7
+         pHwEOTqVw1KW8SbAWlDviS1I6l0L/+H5m4D6kyyBlzCBsLJqe1Z1APG7lEBhrd95B8h2
+         dhDTYmXdUJJQcNygcLRbRijN9sf3Oy/QCjvkSi8gMIVWl0Wq7vMTpHXUytpIwWPdeWgy
+         Bv0N6d0tSFBTVTBTNJB4atQuxocn0TnUWV2M61ZAMPIbbT2K4xwiTAtt1WWcDDmPbBkQ
+         a/6xa6VRFUetqS4EtmGo8oDuu1pfc58feIj8jfAq92ZsWaU6XWvtgWFQDuwOVafNDhuK
+         saXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kfwd6o/B4wTdPHroXp8plb7makuSyAsm1O51sSrr52E=;
-        b=rNuFpfk4avXSB2BIkU12lVQyUbDl4wmy6sY4UWhi2lqDj/t2K3bOVlu86tv2RAytoG
-         XcsdwAp+H+KY+rNRuxEk+iwF3gz5vuJ9T0g+h0xo50Pr1Iibk72PlLmKX9p8pxfhwGm2
-         GSygKXflTpWwfwbW41/GK60jrMSLHBBOyBlip+NxSn0CCfdoH56NhUVKgzZ1PIIirGt4
-         Li3ENnioL9Wx5keX0ho5aLlko495l3gU+HfcTub3RjDRFP6azw6gmUTN6UQ7sXEKpvid
-         FWD2syhMuVjjTEMRQzITi+PvOy81wmhuzopJz1x852gMU+tyobGVzXLi5oFoAG0fls+J
-         CHLA==
-X-Gm-Message-State: APjAAAXjXMNuSg+MSdSYff0BY/MJDlV4JcLEpmyfPajGi7CjNjCWtP3T
-        D+8XRohAipHmU19n8BPsp5eQGrTX
-X-Google-Smtp-Source: APXvYqxcKzywXTdd/xrePiyHkHcG1jmH3ML53n/X3fn2/KlcZOwsoZgYaCE4PtMBcXS7Lm6w0WyABw==
-X-Received: by 2002:a63:4961:: with SMTP id y33mr4708437pgk.264.1574272095978;
-        Wed, 20 Nov 2019 09:48:15 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=QIA4xcTPAOc4j8L6suhXgAN7lEFxYh9ipUT9LHA38BE=;
+        b=rDa/yK0Lp8eiq3ecVZ3e6+J0WByFtynsEcBkACokERbbyIOeTX+le6mU4PY12p7bc8
+         F1+8ARgN2WAgfgUNBxnECHGY9xe9CAhCBNaIqgDBlVvxGZvK8aKDgxwiZCqoQHu4Yp1I
+         yF5wO93rR98HVsvP2Lr4J30hG1NXRVe4iHpabb7Fo53jZBZjNiJ7rSGnS5KrRHYRb+fZ
+         wvqR7QOou8eyPc4he1UuEuujMMsmld3eX4d1Ek+squ8JeWbHkb3z+wfE6qq/N829eTHy
+         sa3FgrogthC+R5lx8C5tKqZjgPk/2NQ/2s/xsmkZwBWtN7mB0iS0VkPtUytyD1Taa+NQ
+         rbiA==
+X-Gm-Message-State: APjAAAWVci2iIIJytybcAVhFxBeZYR7Jkh9FknGPm75xbuBbAO7fhfXm
+        iyGqN3HZWWd1o+xmCURg3EAgcozY
+X-Google-Smtp-Source: APXvYqyVRibpOgvxJQmoYIU2KmlwE20k6PStifSIShCtErr1FYGA2UvDyd9nNV+soYn6U6dh+kW1gA==
+X-Received: by 2002:a63:a50d:: with SMTP id n13mr4569316pgf.72.1574272137960;
+        Wed, 20 Nov 2019 09:48:57 -0800 (PST)
 Received: from machine421.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id y24sm32230522pfr.116.2019.11.20.09.48.13
+        by smtp.googlemail.com with ESMTPSA id y24sm32230522pfr.116.2019.11.20.09.48.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 20 Nov 2019 09:48:15 -0800 (PST)
+        Wed, 20 Nov 2019 09:48:57 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        Geetha sowjanya <gakula@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v3 00/16] octeontx2-af: SSO, TIM HW blocks and other config support
-Date:   Wed, 20 Nov 2019 23:17:50 +0530
-Message-Id: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH v3 01/16] octeontx2-af: Interface backpressure configuration support
+Date:   Wed, 20 Nov 2019 23:17:51 +0530
+Message-Id: <1574272086-21055-2-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
+References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-SO HW block provides packet (or work) queueing, scheduling and
-synchronization. Also supports priorities and ordering. TIM or the
-timer HW block enables software to schedule SSO work for a future time.
+Enables backpressure and assigns BPID for CGX and LBK channels.
+96xx support upto 512 BPIDs, these BPIDs are statically divided
+across CGX/LBK/SDP interfaces as follows.
+BPIDs   0 - 191 are mapped to LMAC channels.
+BPIDs 192 - 255 are mapped to LBK channels.
+BPIDs 256 - 511 are mapped to SDP channels.
 
-This patch series adds support for SSO and TIM HW blocks, enables them
-to be configured and used by RVU PF/VF devices or drivers.
+BPIDs across CGX LMAC channels are divided as follows.
+CGX(0)_LMAC(0)_CHAN(0 - 15) mapped to BPIDs(0 - 15)
+CGX(0)_LMAC(1)_CHAN(0 - 15) mapped to BPIDs(16 - 31)
+.......
+CGX(1)_LMAC(0)_CHAN(0 - 15) mapped to BPIDs(64 - 79)
+....
 
-Also added support for
-- Backpressure configuration.
-- Pause frames or flow control enabling/disabling.
-- Added a shared data structure between firmware and RVU admin function
-  (AF) which will be used to get static information like interface MAC
-  addresses, link modes, speeds, autoneg support etc.
-- FEC (Forward error correction) config support for CGX.
-- Retrieve FEC stats, PHY EEPROM etc from firmware
-- Retrieving CGX LMAC info and to toggle it.
-- Added debug prints for each of error interrupts raised by NIX,
-  NPA and SSO blocks. These will help in identifying configuration
-  and underlying HW functionality issues.
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  26 +++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 152 ++++++++++++++++++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npa.c    |  13 +-
+ 3 files changed, 184 insertions(+), 7 deletions(-)
 
-Changes from v2:
-   * Added documentation to give a high level overview of HW and
-     different drivers which will be upstreamed and how they interact.
-   * Fixed white space issues.
-      - Sugested by Jakub Kicinski
-
-Changes from v1:
-   * Made changes to TIM HW block support patch to use
-      generic API to get HW ticks.
-   * Removed inline keyword
-     - Suggested by David Miller.
-   * Fixed sparse warnings
-     - Reported by Kbuild test robot.
-
-Andrew Pinski (1):
-  octeontx2-af: Add TIM unit support.
-
-Christina Jacob (1):
-  octeontx2-af: Support to get CGX link info like current speed, fec etc
-
-Geetha sowjanya (2):
-  octeontx2-af: Interface backpressure configuration support
-  octeontx2-af: Ingress and egress pause frame configuration
-
-Jerin Jacob (2):
-  octeontx2-af: add debug msgs for NPA block errors
-  octeontx2-af: add debug msgs for NIX block errors
-
-Kiran Kumar K (1):
-  octeontx2-af: NPC Tx parsed data key extraction profile
-
-Linu Cherian (1):
-  octeontx2-af: Add support for importing firmware data
-
-Pavan Nikhilesh (3):
-  octeontx2-af: Config support for per HWGRP thresholds
-  octeontx2-af: add debug msgs for SSO block errors
-  octeontx2-af: add debugfs support for sso
-
-Radha Mohan Chintakuntla (1):
-  octeontx2-af: Add SSO unit support to the AF driver
-
-Subbaraya Sundeep (1):
-  octeontx2-af: verify ingress channel in MCAM entry
-
-Sunil Goutham (3):
-  octeontx2-af: Cleanup CGX config permission checks
-  octeontx2-af: Set discovery ID for RVUM block
-  Documentation: net: octeontx2: Add RVU HW and drivers overview.
-
- Documentation/networking/device_drivers/index.rst  |    1 +
- .../device_drivers/marvell/octeontx2.rst           |  162 +
- .../marvell/resource_virtualization_unit.svg       | 3297 ++++++++++++++++++++
- MAINTAINERS                                        |    1 +
- drivers/net/ethernet/marvell/octeontx2/af/Makefile |    3 +-
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  434 ++-
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |   26 +-
- .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |   78 +-
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  322 +-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |  197 +-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   72 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  178 +-
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  699 +++++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |  388 ++-
- .../net/ethernet/marvell/octeontx2/af/rvu_npa.c    |  243 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  282 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  192 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_sso.c    | 1146 +++++++
- .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |   44 +
- .../net/ethernet/marvell/octeontx2/af/rvu_tim.c    |  322 ++
- 20 files changed, 7950 insertions(+), 137 deletions(-)
- create mode 100644 Documentation/networking/device_drivers/marvell/octeontx2.rst
- create mode 100644 Documentation/networking/device_drivers/marvell/resource_virtualization_unit.svg
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_sso.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_tim.c
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index a589748..68ec248 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -125,7 +125,7 @@ static inline struct mbox_msghdr *otx2_mbox_alloc_msg(struct otx2_mbox *mbox,
+ M(READY,		0x001, ready, msg_req, ready_msg_rsp)		\
+ M(ATTACH_RESOURCES,	0x002, attach_resources, rsrc_attach, msg_rsp)	\
+ M(DETACH_RESOURCES,	0x003, detach_resources, rsrc_detach, msg_rsp)	\
+-M(MSIX_OFFSET,		0x004, msix_offset, msg_req, msix_offset_rsp)	\
++M(MSIX_OFFSET,		0x005, msix_offset, msg_req, msix_offset_rsp)	\
+ M(VF_FLR,		0x006, vf_flr, msg_req, msg_rsp)		\
+ M(GET_HW_CAP,		0x008, get_hw_cap, msg_req, get_hw_cap_rsp)	\
+ /* CGX mbox IDs (range 0x200 - 0x3FF) */				\
+@@ -210,7 +210,10 @@ M(NIX_SET_RX_CFG,	0x8010, nix_set_rx_cfg, nix_rx_cfg, msg_rsp)	\
+ M(NIX_LSO_FORMAT_CFG,	0x8011, nix_lso_format_cfg,			\
+ 				 nix_lso_format_cfg,			\
+ 				 nix_lso_format_cfg_rsp)		\
+-M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)
++M(NIX_RXVLAN_ALLOC,	0x8012, nix_rxvlan_alloc, msg_req, msg_rsp)	\
++M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
++				nix_bp_cfg_rsp)	\
++M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
+ 
+ /* Messages initiated by AF (range 0xC00 - 0xDFF) */
+ #define MBOX_UP_CGX_MESSAGES						\
+@@ -670,6 +673,25 @@ struct nix_lso_format_cfg_rsp {
+ 	u8 lso_format_idx;
+ };
+ 
++struct nix_bp_cfg_req {
++	struct mbox_msghdr hdr;
++	u16	chan_base; /* Starting channel number */
++	u8	chan_cnt; /* Number of channels */
++	u8	bpid_per_chan;
++	/* bpid_per_chan = 0  assigns single bp id for range of channels */
++	/* bpid_per_chan = 1 assigns separate bp id for each channel */
++};
++
++/* PF can be mapped to either CGX or LBK interface,
++ * so maximum 64 channels are possible.
++ */
++#define NIX_MAX_BPID_CHAN	64
++struct nix_bp_cfg_rsp {
++	struct mbox_msghdr hdr;
++	u16	chan_bpid[NIX_MAX_BPID_CHAN]; /* Channel and bpid mapping */
++	u8	chan_cnt; /* Number of channel for which bpids are assigned */
++};
++
+ /* NPC mbox message structs */
+ 
+ #define NPC_MCAM_ENTRY_INVALID	0xFFFF
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 8a59f7d..cb1d653 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -18,6 +18,8 @@
+ #include "cgx.h"
+ 
+ static int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add);
++static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
++			    int type, int chan_id);
+ 
+ enum mc_tbl_sz {
+ 	MC_TBL_SZ_256,
+@@ -253,6 +255,142 @@ static void nix_interface_deinit(struct rvu *rvu, u16 pcifunc, u8 nixlf)
+ 	rvu_npc_disable_mcam_entries(rvu, pcifunc, nixlf);
+ }
+ 
++int rvu_mbox_handler_nix_bp_disable(struct rvu *rvu,
++				    struct nix_bp_cfg_req *req,
++				    struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_pfvf *pfvf;
++	int blkaddr, pf, type;
++	u16 chan_base, chan;
++	u64 cfg;
++
++	pf = rvu_get_pf(pcifunc);
++	type = is_afvf(pcifunc) ? NIX_INTF_TYPE_LBK : NIX_INTF_TYPE_CGX;
++	if (!is_pf_cgxmapped(rvu, pf) && type != NIX_INTF_TYPE_LBK)
++		return 0;
++
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
++
++	chan_base = pfvf->rx_chan_base + req->chan_base;
++	for (chan = chan_base; chan < (chan_base + req->chan_cnt); chan++) {
++		cfg = rvu_read64(rvu, blkaddr, NIX_AF_RX_CHANX_CFG(chan));
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CHANX_CFG(chan),
++			    cfg & ~BIT_ULL(16));
++	}
++	return 0;
++}
++
++static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
++			    int type, int chan_id)
++{
++	int bpid, blkaddr, lmac_chan_cnt;
++	struct rvu_hwinfo *hw = rvu->hw;
++	u16 cgx_bpid_cnt, lbk_bpid_cnt;
++	struct rvu_pfvf *pfvf;
++	u8 cgx_id, lmac_id;
++	u64 cfg;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, req->hdr.pcifunc);
++	cfg = rvu_read64(rvu, blkaddr, NIX_AF_CONST);
++	lmac_chan_cnt = cfg & 0xFF;
++
++	cgx_bpid_cnt = hw->cgx_links * lmac_chan_cnt;
++	lbk_bpid_cnt = hw->lbk_links * ((cfg >> 16) & 0xFF);
++
++	pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
++
++	/* Backpressure IDs range division
++	 * CGX  channles are mapped to (0 - 191) BPIDs
++	 * LBK	channles are mapped to (192 - 255) BPIDs
++	 * SDP  channles are mapped to (256 - 511) BPIDs
++	 *
++	 * Lmac channles and bpids mapped as follows
++	 * cgx(0)_lmac(0)_chan(0 - 15) = bpid(0 - 15)
++	 * cgx(0)_lmac(1)_chan(0 - 15) = bpid(16 - 31) ....
++	 * cgx(1)_lmac(0)_chan(0 - 15) = bpid(64 - 79) ....
++	 */
++	switch (type) {
++	case NIX_INTF_TYPE_CGX:
++		if ((req->chan_base + req->chan_cnt) > 15)
++			return -EINVAL;
++		rvu_get_cgx_lmac_id(pfvf->cgx_lmac, &cgx_id, &lmac_id);
++		/* Assign bpid based on cgx, lmac and chan id */
++		bpid = (cgx_id * hw->lmac_per_cgx * lmac_chan_cnt) +
++			(lmac_id * lmac_chan_cnt) + req->chan_base;
++
++		if (req->bpid_per_chan)
++			bpid += chan_id;
++		if (bpid > cgx_bpid_cnt)
++			return -EINVAL;
++		break;
++
++	case NIX_INTF_TYPE_LBK:
++		if ((req->chan_base + req->chan_cnt) > 63)
++			return -EINVAL;
++		bpid = cgx_bpid_cnt + req->chan_base;
++		if (req->bpid_per_chan)
++			bpid += chan_id;
++		if (bpid > (cgx_bpid_cnt + lbk_bpid_cnt))
++			return -EINVAL;
++		break;
++	default:
++		return -EINVAL;
++	}
++	return bpid;
++}
++
++int rvu_mbox_handler_nix_bp_enable(struct rvu *rvu,
++				   struct nix_bp_cfg_req *req,
++				   struct nix_bp_cfg_rsp *rsp)
++{
++	int blkaddr, pf, type, chan_id = 0;
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_pfvf *pfvf;
++	u16 chan_base, chan;
++	s16 bpid, bpid_base;
++	u64 cfg;
++
++	pf = rvu_get_pf(pcifunc);
++	type = is_afvf(pcifunc) ? NIX_INTF_TYPE_LBK : NIX_INTF_TYPE_CGX;
++
++	/* Enable backpressure only for CGX mapped PFs and LBK interface */
++	if (!is_pf_cgxmapped(rvu, pf) && type != NIX_INTF_TYPE_LBK)
++		return 0;
++
++	pfvf = rvu_get_pfvf(rvu, pcifunc);
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
++
++	bpid_base = rvu_nix_get_bpid(rvu, req, type, chan_id);
++	chan_base = pfvf->rx_chan_base + req->chan_base;
++	bpid = bpid_base;
++
++	for (chan = chan_base; chan < (chan_base + req->chan_cnt); chan++) {
++		if (bpid < 0) {
++			dev_warn(rvu->dev, "Fail to enable backpessure\n");
++			return -EINVAL;
++		}
++
++		cfg = rvu_read64(rvu, blkaddr, NIX_AF_RX_CHANX_CFG(chan));
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CHANX_CFG(chan),
++			    cfg | (bpid & 0xFF) | BIT_ULL(16));
++		chan_id++;
++		bpid = rvu_nix_get_bpid(rvu, req, type, chan_id);
++	}
++
++	for (chan = 0; chan < req->chan_cnt; chan++) {
++		/* Map channel and bpid assign to it */
++		rsp->chan_bpid[chan] = ((req->chan_base + chan) & 0x7F) << 10 |
++					(bpid_base & 0x3FF);
++		if (req->bpid_per_chan)
++			bpid_base++;
++	}
++	rsp->chan_cnt = req->chan_cnt;
++
++	return 0;
++}
++
+ static void nix_setup_lso_tso_l3(struct rvu *rvu, int blkaddr,
+ 				 u64 format, bool v4, u64 *fidx)
+ {
+@@ -545,6 +683,11 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
+ 	 */
+ 	inst.res_addr = (u64)aq->res->iova;
+ 
++	/* Hardware uses same aq->res->base for updating result of
++	 * previous instruction hence wait here till it is done.
++	 */
++	spin_lock(&aq->lock);
++
+ 	/* Clean result + context memory */
+ 	memset(aq->res->base, 0, aq->res->entry_sz);
+ 	/* Context needs to be written at RES_ADDR + 128 */
+@@ -589,11 +732,10 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
+ 		break;
+ 	default:
+ 		rc = NIX_AF_ERR_AQ_ENQUEUE;
++		spin_unlock(&aq->lock);
+ 		return rc;
+ 	}
+ 
+-	spin_lock(&aq->lock);
+-
+ 	/* Submit the instruction to AQ */
+ 	rc = nix_aq_enqueue_wait(rvu, block, &inst);
+ 	if (rc) {
+@@ -698,6 +840,8 @@ static int nix_lf_hwctx_disable(struct rvu *rvu, struct hwctx_disable_req *req)
+ 	if (req->ctype == NIX_AQ_CTYPE_CQ) {
+ 		aq_req.cq.ena = 0;
+ 		aq_req.cq_mask.ena = 1;
++		aq_req.cq.bp_ena = 0;
++		aq_req.cq_mask.bp_ena = 1;
+ 		q_cnt = pfvf->cq_ctx->qsize;
+ 		bmap = pfvf->cq_bmap;
+ 	}
+@@ -3060,6 +3204,10 @@ int rvu_nix_init(struct rvu *rvu)
+ 
+ 		/* Initialize CGX/LBK/SDP link credits, min/max pkt lengths */
+ 		nix_link_config(rvu, blkaddr);
++
++		/* Enable Channel backpressure */
++		rvu_write64(rvu, blkaddr, NIX_AF_RX_CFG, BIT_ULL(0));
++
+ 	}
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
+index 6e7c7f4..67471cb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
+@@ -94,6 +94,11 @@ int rvu_npa_aq_enq_inst(struct rvu *rvu, struct npa_aq_enq_req *req,
+ 	 */
+ 	inst.res_addr = (u64)aq->res->iova;
+ 
++	/* Hardware uses same aq->res->base for updating result of
++	 * previous instruction hence wait here till it is done.
++	 */
++	spin_lock(&aq->lock);
++
+ 	/* Clean result + context memory */
+ 	memset(aq->res->base, 0, aq->res->entry_sz);
+ 	/* Context needs to be written at RES_ADDR + 128 */
+@@ -138,10 +143,10 @@ int rvu_npa_aq_enq_inst(struct rvu *rvu, struct npa_aq_enq_req *req,
+ 		break;
+ 	}
+ 
+-	if (rc)
++	if (rc) {
++		spin_unlock(&aq->lock);
+ 		return rc;
+-
+-	spin_lock(&aq->lock);
++	}
+ 
+ 	/* Submit the instruction to AQ */
+ 	rc = npa_aq_enqueue_wait(rvu, block, &inst);
+@@ -218,6 +223,8 @@ static int npa_lf_hwctx_disable(struct rvu *rvu, struct hwctx_disable_req *req)
+ 	} else if (req->ctype == NPA_AQ_CTYPE_AURA) {
+ 		aq_req.aura.ena = 0;
+ 		aq_req.aura_mask.ena = 1;
++		aq_req.aura.bp_ena = 0;
++		aq_req.aura_mask.bp_ena = 1;
+ 		cnt = pfvf->aura_ctx->qsize;
+ 		bmap = pfvf->aura_bmap;
+ 	}
 -- 
 2.7.4
 
