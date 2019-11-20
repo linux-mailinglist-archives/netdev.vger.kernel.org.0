@@ -2,97 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 916101033F1
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 06:36:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 124F710343B
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 07:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbfKTFgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 00:36:41 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31698 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725554AbfKTFgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 00:36:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574228199;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=knznamAEiTfG9nRki0ZkB5/yRqneVEsD5AOtQiV05Uk=;
-        b=GQ04AGt0HfWZv9EINlhOuHDucUzO4CRVGDESO2KMqZ0oLxLRomPPw1z8ErHUmS8vOMUhJ9
-        c/mi45sUIw2gXbLfUl0j0NaAKjKmQIxZrCPz0hVoAhP9OLuLFBSTvu7WuLx/my4+6bDLVj
-        nZ89UEQ8gHLnwX688v/d+2E9pkKSR/k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-162-rr-kAgRyNyeLrJBfzRHjFw-1; Wed, 20 Nov 2019 00:36:36 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09F91800052;
-        Wed, 20 Nov 2019 05:36:35 +0000 (UTC)
-Received: from [10.72.12.82] (ovpn-12-82.pek2.redhat.com [10.72.12.82])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 817EA60BFB;
-        Wed, 20 Nov 2019 05:35:24 +0000 (UTC)
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-From:   Jason Wang <jasowang@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-References: <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191119164632.GA4991@ziepe.ca>
- <20191119134822-mutt-send-email-mst@kernel.org>
- <20191119191547.GL4991@ziepe.ca>
- <20191119163147-mutt-send-email-mst@kernel.org>
- <20191119231023.GN4991@ziepe.ca>
- <20191119191053-mutt-send-email-mst@kernel.org>
- <20191120014653.GR4991@ziepe.ca>
- <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
-Message-ID: <3ef5bc09-dd74-44bc-30f1-b773fac448a2@redhat.com>
-Date:   Wed, 20 Nov 2019 13:34:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727544AbfKTGPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 01:15:48 -0500
+Received: from mga09.intel.com ([134.134.136.24]:33771 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726014AbfKTGPr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Nov 2019 01:15:47 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Nov 2019 22:15:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,220,1571727600"; 
+   d="scan'208";a="357337027"
+Received: from jesusale-mobl4.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.32.22])
+  by orsmga004.jf.intel.com with ESMTP; 19 Nov 2019 22:15:43 -0800
+Subject: Re: [PATCH] xsk: fix xsk_poll()'s return type
+To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+References: <20191120001042.30830-1-luc.vanoostenryck@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <103f550e-4a78-e540-4a57-bdecc2f066cf@intel.com>
+Date:   Wed, 20 Nov 2019 07:15:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20191120001042.30830-1-luc.vanoostenryck@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: rr-kAgRyNyeLrJBfzRHjFw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/11/20 =E4=B8=8A=E5=8D=8811:59, Jason Wang wrote:
-> Well, VFIO have multiple types of API. The design is to stick the VFIO
-> DMA model like container work for making DMA API work for userspace
-> driver. We can invent something our own but it must duplicate with the
-> exist API and it will be extra overhead when VFIO DMA API starts to
-> support stuffs like nesting or PASID.
+On 2019-11-20 01:10, Luc Van Oostenryck wrote:
+> xsk_poll() is defined as returning 'unsigned int' but the
+> .poll method is declared as returning '__poll_t', a bitwise type.
+> 
+> Fix this by using the proper return type and using the EPOLL
+> constants instead of the POLL ones, as required for __poll_t.
 >
-> So in conclusion for vhost-mdev:
->
-> - DMA is still done through VFIO manner e.g container fd etc.
-> - device API is totally virtio specific.
->
-> Compared with vfio-pci device, the only difference is the device API,
-> we don't use device fd but vhost-net fd,
+
+Thanks for the cleanup!
+
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
+
+Daniel/Alexei: This should go through bpf-next.
 
 
-Correction here, device fd is used here instead of vhost-net fd.
-
-Thanks
+Björn
 
 
->   but of course we can switch
-> to use device fd. I'm sure we can settle this part down by having a
-> way that is acceptable by both sides.
 
+> CC: Björn Töpel <bjorn.topel@intel.com>
+> CC: Magnus Karlsson <magnus.karlsson@intel.com>
+> CC: Jonathan Lemon <jonathan.lemon@gmail.com>
+> CC: netdev@vger.kernel.org
+> Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+> ---
+>   net/xdp/xsk.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 9044073fbf22..7b59f36eec0d 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -418,10 +418,10 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>   	return __xsk_sendmsg(sk);
+>   }
+>   
+> -static unsigned int xsk_poll(struct file *file, struct socket *sock,
+> +static __poll_t xsk_poll(struct file *file, struct socket *sock,
+>   			     struct poll_table_struct *wait)
+>   {
+> -	unsigned int mask = datagram_poll(file, sock, wait);
+> +	__poll_t mask = datagram_poll(file, sock, wait);
+>   	struct sock *sk = sock->sk;
+>   	struct xdp_sock *xs = xdp_sk(sk);
+>   	struct net_device *dev;
+> @@ -443,9 +443,9 @@ static unsigned int xsk_poll(struct file *file, struct socket *sock,
+>   	}
+>   
+>   	if (xs->rx && !xskq_empty_desc(xs->rx))
+> -		mask |= POLLIN | POLLRDNORM;
+> +		mask |= EPOLLIN | EPOLLRDNORM;
+>   	if (xs->tx && !xskq_full_desc(xs->tx))
+> -		mask |= POLLOUT | POLLWRNORM;
+> +		mask |= EPOLLOUT | EPOLLWRNORM;
+>   
+>   	return mask;
+>   }
+> 
