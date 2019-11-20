@@ -2,117 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6487E1034C4
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 08:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E7611034D0
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 08:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbfKTHDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 02:03:13 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:11798 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbfKTHDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 02:03:12 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd4e52b0000>; Tue, 19 Nov 2019 23:03:07 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 19 Nov 2019 23:03:11 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 19 Nov 2019 23:03:11 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 20 Nov
- 2019 07:03:10 +0000
-Subject: Re: [PATCH v6 15/24] fs/io_uring: set FOLL_PIN via pin_user_pages()
-To:     Jens Axboe <axboe@kernel.dk>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191119081643.1866232-1-jhubbard@nvidia.com>
- <20191119081643.1866232-16-jhubbard@nvidia.com>
- <2ae65d1b-a3eb-74ed-afce-c493de5bbfd3@kernel.dk>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <42c80c0a-ad2c-fe74-babd-57680882c7e2@nvidia.com>
-Date:   Tue, 19 Nov 2019 23:03:10 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <2ae65d1b-a3eb-74ed-afce-c493de5bbfd3@kernel.dk>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574233387; bh=ccH+u52vDWCSpx4Mj41DBPFk4Bnr7E1/buLUhbEm50I=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=aoAjA12TDjtYHcqzP6KlOL/T+xFannzF2Ut7WBeMCWKWq7l/9YzjhnMxWFHzZfpR5
-         Iws/71eVjdglCRCFx0borbQjrcWdlbhRBVNYLCTSxJhf+kal1fvOFNYQqlhw4wL9J6
-         MFYFTVnA4OaNermjnVJWu68MlONq0QSjgN/vAiaH7Huv88r7BI/N2hl/4JJ3pl29Td
-         suI6xx3hgozM4FOPwAaNkBjGwwYRC1+cHh6/xlUHPqKTdx1Jisq/17DuqUYf/0K2Yd
-         KJ8+BKNAyQOQiWBn8l76F+wCEq0it7z2sVeN/sAFeVR43NYKvAY4EyGL+PsQeLhyI4
-         eAwjKJTXDphsw==
+        id S1727230AbfKTHIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 02:08:31 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:33620 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbfKTHIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 02:08:30 -0500
+Received: by mail-lf1-f65.google.com with SMTP id d6so19268269lfc.0
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 23:08:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=rCfbeD7G07Jn9t2krPhRa+p06jbA96TDRZuHPMaGxOQ=;
+        b=0nGMj5PfbLvtm0kiyaF1UbKjG7nhGjNNUfFMvfiwvmXOpkgwXZ2AW94VOkEcW97ba2
+         GZ+wNoT4KiHQhTBl1Df6RSes5B3P8jJdamte2YnBzHycGo9y4zcNbYuIpQRdHGfTXToo
+         1NrPt2ROUOUExL8Y1aIrZvkX/OVy3z08NmWnpA7IC3GryPyuoePpqw/DgR1O4RC+Pmae
+         dEwOjnr3SMmNNwCRhOj+AXIZgKoK1s6O2ddYsne03m8b+KYInKP1AWyO7liVv5yom3H+
+         bkqx/AhDvzesom6t7hd8glt3Lh+RQ8u9F1/yDyBUqEEmCQeEa5UndUCf1jhvoALZ7iwD
+         il+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=rCfbeD7G07Jn9t2krPhRa+p06jbA96TDRZuHPMaGxOQ=;
+        b=M+uXFbuet87W19I+fHq++s8J6hs3YT3XKZIlbt8enbIqKOEm/z3y8OHtyjjPppjQyo
+         laRt883IH/XJN/MzI5Xg5tAt5MdaNukp2jtgDPTZwYV3wLM9Og4J5YSMvWAyoeorNkPJ
+         KEyR4dUb8U6PF/zHl9xUI24S6pI9wYdzW6AB9jMpdzsOnChoFrF4guSa1j9xbrPP+GUi
+         ZYRMaajnu6eGZy0VOGEajyuLCOcl7mlFp2vzPsXxkNfmTnzoxia5uPQdsHleKkM4RzRy
+         iNaxCTaE4GDKi76QQ4rhoTirLjPqTpN+5zLvRd4n8hmttzmqF0ZYnDEW6mrIYZ6Fsyne
+         YvzA==
+X-Gm-Message-State: APjAAAXSfu+oGPErHGdpYFaDiNKOwTxi5U5MJIWsDf2SlcaiR8e/84Wz
+        qUv/5rRujgznUku64jUSXpK03HzQREk=
+X-Google-Smtp-Source: APXvYqxAnaTnksAULMoiPv/1KD51HttHjCTAKbrJhC62ZbZ0OE7Pft4aOW856qaSK88rV2jhgZaxSA==
+X-Received: by 2002:a19:7d06:: with SMTP id y6mr1449671lfc.120.1574233708565;
+        Tue, 19 Nov 2019 23:08:28 -0800 (PST)
+Received: from localhost.localdomain ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id y6sm11208778ljn.40.2019.11.19.23.08.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2019 23:08:27 -0800 (PST)
+From:   jouni.hogander@unikie.com
+To:     netdev@vger.kernel.org
+Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
+        David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
+Date:   Wed, 20 Nov 2019 09:08:16 +0200
+Message-Id: <20191120070816.12893-1-jouni.hogander@unikie.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/19 8:10 AM, Jens Axboe wrote:
-> On 11/19/19 1:16 AM, John Hubbard wrote:
->> Convert fs/io_uring to use the new pin_user_pages() call, which sets
->> FOLL_PIN. Setting FOLL_PIN is now required for code that requires
->> tracking of pinned pages, and therefore for any code that calls
->> put_user_page().
->>
->> In partial anticipation of this work, the io_uring code was already
->> calling put_user_page() instead of put_page(). Therefore, in order to
->> convert from the get_user_pages()/put_page() model, to the
->> pin_user_pages()/put_user_page() model, the only change required
->> here is to change get_user_pages() to pin_user_pages().
->>
->> Reviewed-by: Jan Kara <jack@suse.cz>
->> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> 
-> You dropped my reviewed-by now... Given the file, you'd probably want
-> to keep that.
+From: Jouni Hogander <jouni.hogander@unikie.com>
 
-Hi Jens,
+kobject_init_and_add takes reference even when it fails. This has
+to be given up by the caller in error handling. Otherwise memory
+allocated by kobject_init_and_add is never freed. Originally found
+by Syzkaller:
 
-Yes, I was being too conservative I guess. I changed the patch somewhat
-and dropped the reviewed-by because of those changes...I'm adding it
-back for v7 based on this, thanks!
+BUG: memory leak
+unreferenced object 0xffff8880679f8b08 (size 8):
+  comm "netdev_register", pid 269, jiffies 4294693094 (age 12.132s)
+  hex dump (first 8 bytes):
+    72 78 2d 30 00 36 20 d4                          rx-0.6 .
+  backtrace:
+    [<000000008c93818e>] __kmalloc_track_caller+0x16e/0x290
+    [<000000001f2e4e49>] kvasprintf+0xb1/0x140
+    [<000000007f313394>] kvasprintf_const+0x56/0x160
+    [<00000000aeca11c8>] kobject_set_name_vargs+0x5b/0x140
+    [<0000000073a0367c>] kobject_init_and_add+0xd8/0x170
+    [<0000000088838e4b>] net_rx_queue_update_kobjects+0x152/0x560
+    [<000000006be5f104>] netdev_register_kobject+0x210/0x380
+    [<00000000e31dab9d>] register_netdevice+0xa1b/0xf00
+    [<00000000f68b2465>] __tun_chr_ioctl+0x20d5/0x3dd0
+    [<000000004c50599f>] tun_chr_ioctl+0x2f/0x40
+    [<00000000bbd4c317>] do_vfs_ioctl+0x1c7/0x1510
+    [<00000000d4c59e8f>] ksys_ioctl+0x99/0xb0
+    [<00000000946aea81>] __x64_sys_ioctl+0x78/0xb0
+    [<0000000038d946e5>] do_syscall_64+0x16f/0x580
+    [<00000000e0aa5d8f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    [<00000000285b3d1a>] 0xffffffffffffffff
 
-thanks,
--- 
-John Hubbard
-NVIDIA
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
+---
+ net/core/net-sysfs.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 865ba6ca16eb..4f404bf33e44 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -923,21 +923,23 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
+ 				     "rx-%u", index);
+ 	if (error)
+-		return error;
++		goto err;
  
+ 	dev_hold(queue->dev);
+ 
+ 	if (dev->sysfs_rx_queue_group) {
+ 		error = sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+-		if (error) {
+-			kobject_put(kobj);
+-			return error;
+-		}
++		if (error)
++			goto err;
+ 	}
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
+ 	return error;
++
++err:
++	kobject_put(kobj);
++	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+ 
+@@ -1461,21 +1463,21 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+ 				     "tx-%u", index);
+ 	if (error)
+-		return error;
++		goto err;
+ 
+ 	dev_hold(queue->dev);
+ 
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+-	if (error) {
+-		kobject_put(kobj);
+-		return error;
+-	}
++	if (error)
++		goto err;
+ #endif
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
+-	return 0;
++err:
++	kobject_put(kobj);
++	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+ 
+-- 
+2.17.1
+
