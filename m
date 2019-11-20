@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 476E3103077
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 00:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB171103093
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 01:11:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727518AbfKSX6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 18:58:02 -0500
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:43875 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727140AbfKSX6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 18:58:01 -0500
-Received: by mail-lj1-f169.google.com with SMTP id y23so25382069ljh.10
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 15:58:00 -0800 (PST)
+        id S1727556AbfKTAKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 19:10:49 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:43057 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727390AbfKTAKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 19:10:48 -0500
+Received: by mail-wr1-f68.google.com with SMTP id n1so25997980wra.10;
+        Tue, 19 Nov 2019 16:10:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=J36FJ7YQ1uESgxSZKv52HL/pbmln3+90eNYNeoovl/E=;
-        b=UqrW9fKk+nqgaCf5nAiGa2nCxO+KlX37J2KmCc5NOVA9P7xK/L3B2RailH9l1DGjc7
-         ROrW1HeuZYw0eAEWzFlsqwNNtDhLzNe6wEI8z9tzlm/sP/SRGq1dEpU3+VZ1qAAYHNOi
-         GoRUGZRVceDsWo2jpjIh3Bi8cojrrp564bjF1D84EnbC+b4bwkyANPZW3P23g6tLXfM0
-         PC7jEo8cuU6DwUJaXaTBi2fD0wTkBvRDnJkk4UDUHGL3GjtdzzQoHd2jdfRAPtmZ/XZ2
-         jFXQLLywUlGEbaKiPMiNH1XYMebN2PdBAWSOs+hFUILZxpGKvvlZnkIjqotoCjHxTXYp
-         8k6A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MoB+EnvvzF+TKOzDdDl2FIhJAJ8fgDbMtbJ023hVTI4=;
+        b=n6HD1bl3yqCxiiZi/5cAU7oaqd3YvVeEzm0imWuGoncldGWUBcBJFY+tUYFnUvc6NR
+         ruC3CkPh4rl7UQaou1MLZgqlZ3gbze8sWqx7fvrkYBgjxkDVQkMepCnFoa69p3ufqSus
+         0UzveAt1dil/L3VK6mHkZxeC8Tpo8RuYqm7CgEmHaV/Led8vAg6QXk0ssyyct1K6cubq
+         ByRJ7MYJ//J4apv+UBVkJqaTqEGtlYBCH+NuFPf9wSOMh0e100+aKvmfHEWH5/qz8Quw
+         4QZz3p3h3qxHu15IRDch1dTPst+dBtvqdgxX9PZN+nHq/eBTMYhUyaewgWLIZgXSWwHB
+         MQFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=J36FJ7YQ1uESgxSZKv52HL/pbmln3+90eNYNeoovl/E=;
-        b=d/a4azQjWiwuTVyc8W4i+F1ro+PU1IUC3LWOVf34b8LGOUo01COKa8rfJyzTKzb4oa
-         EpEvhB8RpBxSqhGnsbwTxbgKXQuRc9i+Ciyrj4Q8XdFLLkJzjs4wEMQ0VSENG47YWSBt
-         9uhW6SRXTqwxFK++QlPQj0Ke3tRISY5C1hdFWcPf2yjFxvXHXC6knxaR5NuzhYwU2NvX
-         J/W/tQOMlgAe+mDZp7MUSxu5v2OdtoYpRwqPOMTPt+wqgHgarL5jNm8LNyPwXUB588D2
-         3PvKyy75UaApBni2gBQPoGydses3aSspVsuhvnuBYK4h3gESUgVGZJGi6sb/712zl/sr
-         ae5Q==
-X-Gm-Message-State: APjAAAX03XeoJSXf1d/RO5PvnuVh5Q3gB9zWE4Ac/+LmaehALs1NmYDs
-        oGqFqPCqt2k19RSqdvXfyep3hg==
-X-Google-Smtp-Source: APXvYqw6/huSdfKLXBwY1DFWkZarClq2M56NGB5rZ+8gW4qViuYgKp1croNuII9JORpkEFWazWISKA==
-X-Received: by 2002:a2e:2903:: with SMTP id u3mr108224lje.131.1574207879627;
-        Tue, 19 Nov 2019 15:57:59 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 28sm11421950lfy.38.2019.11.19.15.57.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MoB+EnvvzF+TKOzDdDl2FIhJAJ8fgDbMtbJ023hVTI4=;
+        b=OmgKKv1GwtnrMMa2UQ1Uu6B2VJ7vdkHF6COUOfjJBcyul9nEHqUKXR9jfjq9/QzDNz
+         n2RHfmGMd+KY2EBkirFnBPXXPd/fVNjgCoheK9d0bamkZwrY9+5pKjHVMtItPC5bsMBq
+         DG5B6WPo5sQO3WNpbX4Tw3P7OQbTKq6bEQFVzGR2kE0kzkei+rigBEBNmpj4IPplq9TH
+         FX5Pfe/tpVCAsDBZFuVmnK14jmcnEe8mku0+8T1S/SEGWH7IerH9YXXKoWEOFrpO8uJr
+         ZULIdx6a+cqHtq/2XUAy3mgl2de43+8fL0PKZitRrF62TOKK6e5wwPBMnIRCmOOJMfP3
+         Kqrw==
+X-Gm-Message-State: APjAAAVXK0ZPPEVB2oAi1+pSwLhj7Tsp3K/Z+jvEUtnosAyYzThMpu95
+        AymOr/4Ih1qigqcpdoJrh4poli55
+X-Google-Smtp-Source: APXvYqyhCHFze67C4bKsGwkObAnuEKi1rv6KW1kAORRxBjQtICjr3+zanSk3P0TNEvtjwmazRR28VA==
+X-Received: by 2002:adf:c401:: with SMTP id v1mr90873wrf.375.1574208645317;
+        Tue, 19 Nov 2019 16:10:45 -0800 (PST)
+Received: from localhost.localdomain ([2a02:a03f:40e1:9900:5dce:1599:e3b5:7d61])
+        by smtp.gmail.com with ESMTPSA id r25sm4781457wmh.6.2019.11.19.16.10.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 15:57:59 -0800 (PST)
-Date:   Tue, 19 Nov 2019 15:57:44 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     <sameehj@amazon.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: Re: [PATCH V2 net-next v2 1/3] net: ena: implement XDP drop support
-Message-ID: <20191119155744.6c5338b0@cakuba.netronome.com>
-In-Reply-To: <20191119133419.9734-2-sameehj@amazon.com>
-References: <20191119133419.9734-1-sameehj@amazon.com>
-        <20191119133419.9734-2-sameehj@amazon.com>
-Organization: Netronome Systems, Ltd.
+        Tue, 19 Nov 2019 16:10:44 -0800 (PST)
+From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH] xsk: fix xsk_poll()'s return type
+Date:   Wed, 20 Nov 2019 01:10:42 +0100
+Message-Id: <20191120001042.30830-1-luc.vanoostenryck@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Nov 2019 15:34:17 +0200, sameehj@amazon.com wrote:
-> @@ -1082,11 +1180,16 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
->  			  rx_ring->qid, ena_rx_ctx.descs, ena_rx_ctx.l3_proto,
->  			  ena_rx_ctx.l4_proto, ena_rx_ctx.hash);
->  
-> +		if (ena_xdp_present_ring(rx_ring))
-> +			xdp_verdict = ena_xdp_handle_buff(rx_ring, &xdp);
-> +
->  		/* allocate skb and fill it */
-> -		skb = ena_rx_skb(rx_ring, rx_ring->ena_bufs, ena_rx_ctx.descs,
-> -				 &next_to_clean);
-> +		if (xdp_verdict == XDP_PASS)
-> +			skb = ena_rx_skb(rx_ring,
-> +					 rx_ring->ena_bufs,
-> +					 ena_rx_ctx.descs,
-> +					 &next_to_clean);
+xsk_poll() is defined as returning 'unsigned int' but the
+.poll method is declared as returning '__poll_t', a bitwise type.
 
-XDP may move the start of frame (consume or add headers), the start of
-frame used when constructing the skb must reflect the changes made by
-XDP.
+Fix this by using the proper return type and using the EPOLL
+constants instead of the POLL ones, as required for __poll_t.
 
->  
-> -		/* exit if we failed to retrieve a buffer */
->  		if (unlikely(!skb)) {
->  			for (i = 0; i < ena_rx_ctx.descs; i++) {
->  				rx_ring->free_ids[next_to_clean] =
+CC: Björn Töpel <bjorn.topel@intel.com>
+CC: Magnus Karlsson <magnus.karlsson@intel.com>
+CC: Jonathan Lemon <jonathan.lemon@gmail.com>
+CC: netdev@vger.kernel.org
+Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+---
+ net/xdp/xsk.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 9044073fbf22..7b59f36eec0d 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -418,10 +418,10 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 	return __xsk_sendmsg(sk);
+ }
+ 
+-static unsigned int xsk_poll(struct file *file, struct socket *sock,
++static __poll_t xsk_poll(struct file *file, struct socket *sock,
+ 			     struct poll_table_struct *wait)
+ {
+-	unsigned int mask = datagram_poll(file, sock, wait);
++	__poll_t mask = datagram_poll(file, sock, wait);
+ 	struct sock *sk = sock->sk;
+ 	struct xdp_sock *xs = xdp_sk(sk);
+ 	struct net_device *dev;
+@@ -443,9 +443,9 @@ static unsigned int xsk_poll(struct file *file, struct socket *sock,
+ 	}
+ 
+ 	if (xs->rx && !xskq_empty_desc(xs->rx))
+-		mask |= POLLIN | POLLRDNORM;
++		mask |= EPOLLIN | EPOLLRDNORM;
+ 	if (xs->tx && !xskq_full_desc(xs->tx))
+-		mask |= POLLOUT | POLLWRNORM;
++		mask |= EPOLLOUT | EPOLLWRNORM;
+ 
+ 	return mask;
+ }
+-- 
+2.24.0
 
