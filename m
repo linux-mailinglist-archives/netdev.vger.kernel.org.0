@@ -2,202 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56073103D0E
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 15:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8415E103D4A
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 15:31:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731527AbfKTOP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 09:15:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:34469 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730565AbfKTOP2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 09:15:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574259327;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9EdQEdvTzZPxTFCzpiAyH5bmob1fKXU8vcyQev9OzUA=;
-        b=Cz1cfiahUK3PH9WeHWGB635vOV8U8cbaGHeHh23/Nk2YBd4a8JLaQLSHkr1A8nNw+xAxmH
-        +GHChyXmN7liluDrT4YBy73mUIG5fF3VAXq8ZDlwBuXVkga3nr14FYicIPZTdpv4wJYgrX
-        mvzbB1zjnLFib4Pizt4Ujen8168cWjw=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-285-i_SFlFmuNAC55HAbg6J08Q-1; Wed, 20 Nov 2019 09:15:26 -0500
-Received: by mail-qk1-f199.google.com with SMTP id w85so1599284qka.13
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 06:15:25 -0800 (PST)
+        id S1731214AbfKTOa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 09:30:58 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40569 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730952AbfKTOa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 09:30:58 -0500
+Received: by mail-qt1-f193.google.com with SMTP id o49so29122869qta.7
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 06:30:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qFog+YvhASaLqT/ReeSMx1fMaqvhH0iNVVW28c/WLoE=;
+        b=V90BkQYZx694+cYQzV+12mnMzB4rvwTVSL531dPwldTmN40zOSo8vtI17ULgI9iV1G
+         d6w8nfqV4nRQ4iAABdVVvTt+jH5bsF2ld371y0T8+Ews0h8zZSOEfhdj4lKL6v3mHVBd
+         QC2Fir248pTW0cfxLSDfXCv0Xjy0RT0IArmQKd4a60qCI6mY+RauFuJmgBP8oF3XmPJl
+         JFYvyGrA5KXaIeMIXYgiPBCqNSWRbxA3jeRrYEFHsXD2vrjsmMMYGDB+iMrQaQaikZPs
+         kuI2APdGVbeHNN/iGaZ7tCJcMQQjkc4sgtuFSX3YbH7w/2DC0//e2Bg+CdJC42aW7/O9
+         Wwpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lOq4H+J+eAB7Zt4IheQtqfp4O5c85nHSkJQVDqKg41g=;
-        b=rj+o0PAGCvR/khOY+EN8BeTtVV+fCYzbMv9GW2mCyysNAsTIB7CRBMiVjOqAP2SUu0
-         SzyqTPMkfPTNqot+y58aGAXfX+Nm4qq/jqA5dyq9cAlj00+jUpKZigcqiYUvEH+s/Xvh
-         zZhH+n5qfREEhCPbMih3sdWLwgSiZrpt7Qh8+QwwJYldQTXzkTY4hvuSa+qQXNQCk+sl
-         NbpJUkeSbZFc1X4wYLSNN+bwWTwwh3OFwyjs6mgXyygeV/x+9dxDmHfpehjCry0HIGLD
-         jeX6Ln9V0drUKhaTB7zAsaOQhIFLrzpV0BAWzg+0MhoPWbCEbSTMkr3happEtVFLFiXa
-         FoTg==
-X-Gm-Message-State: APjAAAW9bH7JRBIh4xqDHG/CUPPh/cPsR/dQG+gSRZ4YOvZQjm32ZvnY
-        podVeCjrgvL5GPSNcj6dNx6o5Gzz00/UfmSHdyz46P9ieqlIXNWieksgc/8CzEAYaUaCmWZuGNi
-        vVHIPQibhe3jm5S7x
-X-Received: by 2002:ac8:6d0b:: with SMTP id o11mr2759135qtt.253.1574259325522;
-        Wed, 20 Nov 2019 06:15:25 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy/qUPcXmLfhAED7hKKcfmUTUEOpmeGXhUC/+Yngs0gbEI2Vh9YfvpOEgljbcIQwRjFpBJZ2A==
-X-Received: by 2002:ac8:6d0b:: with SMTP id o11mr2759099qtt.253.1574259325090;
-        Wed, 20 Nov 2019 06:15:25 -0800 (PST)
-Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
-        by smtp.gmail.com with ESMTPSA id g7sm11874321qkl.20.2019.11.20.06.15.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Nov 2019 06:15:23 -0800 (PST)
-Date:   Wed, 20 Nov 2019 09:15:17 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qFog+YvhASaLqT/ReeSMx1fMaqvhH0iNVVW28c/WLoE=;
+        b=hKFST35/fF4pSbWdnrrytptxJT8wZj3pCDHcqR/OezXPISZKZG470vAaWLFLIdYyqL
+         GivBs/lm/I/8r19frL4DtiG+14klAa6kKxqSTbN4XrTVHj7UFLb1cj0FiI1RpVGcBAPU
+         M/Kdozlc1M2yi6Ot+jMKE2Wph40rQLgXo9QTpuvjkLfNwTDlC7cDBK2+cl6QrH8p0RHg
+         U/FFFY2AKOpRoYLrP4N2RfKaRJYR+JWfnJgoMoNzp6yj/rxFu2FR9/VS4pAO/Ihx+i/O
+         h+1eZU9eJKb7ViT65xeRquYsTGKFk66ns2MUtKtOYNvvf6Ru35cP+gLRww4tITgnY1Zb
+         NO2w==
+X-Gm-Message-State: APjAAAUMvsktZV4n/PTg3WGCSkedEL8TW5VxU33vurZbO4rTLc8F+jy8
+        +3pV4Fi+yEblXd1w+RbMyr5zwQ==
+X-Google-Smtp-Source: APXvYqxkSLPZKhcx3oFV8puZ8cUO+WnEtyVyuwoo1SsoIXgnA7yJnf7OSkSxpOvcpUJSp/jczjDJ9Q==
+X-Received: by 2002:ac8:424d:: with SMTP id r13mr2900493qtm.111.1574260255890;
+        Wed, 20 Nov 2019 06:30:55 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id w20sm11618284qkj.87.2019.11.20.06.30.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 20 Nov 2019 06:30:55 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iXR0Q-0006xX-Ob; Wed, 20 Nov 2019 10:30:54 -0400
+Date:   Wed, 20 Nov 2019 10:30:54 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     Jason Wang <jasowang@redhat.com>,
         Parav Pandit <parav@mellanox.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
+        "Bie, Tiwei" <tiwei.bie@intel.com>
 Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191120084358-mutt-send-email-mst@kernel.org>
-References: <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191119164632.GA4991@ziepe.ca>
+Message-ID: <20191120143054.GF22515@ziepe.ca>
+References: <20191119164632.GA4991@ziepe.ca>
  <20191119134822-mutt-send-email-mst@kernel.org>
  <20191119191547.GL4991@ziepe.ca>
  <20191119163147-mutt-send-email-mst@kernel.org>
  <20191119231023.GN4991@ziepe.ca>
  <20191119191053-mutt-send-email-mst@kernel.org>
  <20191120014653.GR4991@ziepe.ca>
- <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
- <20191120133835.GC22515@ziepe.ca>
+ <20191120022141-mutt-send-email-mst@kernel.org>
+ <20191120130319.GA22515@ziepe.ca>
+ <20191120083908-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20191120133835.GC22515@ziepe.ca>
-X-MC-Unique: i_SFlFmuNAC55HAbg6J08Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20191120083908-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 09:38:35AM -0400, Jason Gunthorpe wrote:
-> On Tue, Nov 19, 2019 at 10:59:20PM -0500, Jason Wang wrote:
->=20
-> > > > The interface between vfio and userspace is
-> > > > based on virtio which is IMHO much better than
-> > > > a vendor specific one. userspace stays vendor agnostic.
-> > >=20
-> > > Why is that even a good thing? It is much easier to provide drivers
-> > > via qemu/etc in user space then it is to make kernel upgrades. We've
-> > > learned this lesson many times.
-> >=20
-> > For upgrades, since we had a unified interface. It could be done
-> > through:
-> >=20
-> > 1) switch the datapath from hardware to software (e.g vhost)
-> > 2) unload and load the driver
-> > 3) switch teh datapath back
-> >=20
-> > Having drivers in user space have other issues, there're a lot of
-> > customers want to stick to kernel drivers.
->=20
-> So you want to support upgrade of kernel modules, but runtime
-> upgrading the userspace part is impossible? Seems very strange to me.
+On Wed, Nov 20, 2019 at 08:43:20AM -0500, Michael S. Tsirkin wrote:
+> On Wed, Nov 20, 2019 at 09:03:19AM -0400, Jason Gunthorpe wrote:
+> > On Wed, Nov 20, 2019 at 02:38:08AM -0500, Michael S. Tsirkin wrote:
+> > > > > I don't think that extends as far as actively encouraging userspace
+> > > > > drivers poking at hardware in a vendor specific way.  
+> > > > 
+> > > > Yes, it does, if you can implement your user space requirements using
+> > > > vfio then why do you need a kernel driver?
+> > > 
+> > > People's requirements differ. You are happy with just pass through a VF
+> > > you can already use it. Case closed. There are enough people who have
+> > > a fixed userspace that people have built virtio accelerators,
+> > > now there's value in supporting that, and a vendor specific
+> > > userspace blob is not supporting that requirement.
+> > 
+> > I have no idea what you are trying to explain here. I'm not advocating
+> > for vfio pass through.
+> 
+> You seem to come from an RDMA background, used to userspace linking to
+> vendor libraries to do basic things like push bits out on the network,
+> because users live on the performance edge and rebuild their
+> userspace often anyway.
+> 
+> Lots of people are not like that, they would rather have the
+> vendor-specific driver live in the kernel, with userspace being
+> portable, thank you very much.
 
-It's still true, you have to kill userspace to update a shared library.
+You are actually proposing a very RDMA like approach with a split
+kernel/user driver design. Maybe the virtio user driver will turn out
+to be 'portable'.
 
-Not to mention that things like rust encourage static builds so you
-can't update a library even if you were willing to risk doing
-that.
+Based on the last 20 years of experience, the kernel component has
+proven to be the larger burden and drag than the userspace part. I
+think the high interest in DPDK, SPDK and others show this is a common
+principle.
 
-> > > This is why we have had the philosophy that if it doesn't need to be
-> > > in the kernel it should be in userspace.
-> >=20
-> > Let me clarify again. For this framework, it aims to support both
-> > kernel driver and userspce driver. For this series, it only contains
-> > the kernel driver part. What it did is to allow kernel virtio driver
-> > to control vDPA devices. Then we can provide a unified interface for
-> > all of the VM, containers and bare metal. For this use case, I don't
-> > see a way to leave the driver in userspace other than injecting
-> > traffic back through vhost/TAP which is ugly.
->=20
-> Binding to the other kernel virtio drivers is a reasonable
-> justification, but none of this comes through in the patch cover
-> letters or patch commit messages.
+At the very least for new approaches like this it makes alot of sense
+to have a user space driver until enough HW is available that a
+proper, well thought out kernel side can be built.
 
-Yea this could have been communicated better.
+For instance, this VFIO based approach might be very suitable to the
+intel VF based ICF driver, but we don't yet have an example of non-VF
+HW that might not be well suited to VFIO.
 
-> > > > That has lots of security and portability implications and isn't
-> > > > appropriate for everyone.
-> > >=20
-> > > This is already using vfio. It doesn't make sense to claim that using
-> > > vfio properly is somehow less secure or less portable.
-> > >=20
-> > > What I find particularly ugly is that this 'IFC VF NIC' driver
-> > > pretends to be a mediated vfio device, but actually bypasses all the
-> > > mediated device ops for managing dma security and just directly plugs
-> > > the system IOMMU for the underlying PCI device into vfio.
-> >=20
-> > Well, VFIO have multiple types of API. The design is to stick the VFIO
-> > DMA model like container work for making DMA API work for userspace
-> > driver.
->=20
-> Well, it doesn't, that model, for security, is predicated on vfio
-> being the exclusive owner of the device. For instance if the kernel
-> driver were to perform DMA as well then security would be lost.
-
-The assumption at least IFC driver makes is that the kernel
-driver does no DMA.
-
-> > > I suppose this little hack is what is motivating this abuse of vfio i=
-n
-> > > the first place?
-> > >=20
-> > > Frankly I think a kernel driver touching a PCI function for which vfi=
-o
-> > > is now controlling the system iommu for is a violation of the securit=
-y
-> > > model, and I'm very surprised AlexW didn't NAK this idea.
-> > >
-> > > Perhaps it is because none of the patches actually describe how the
-> > > DMA security model for this so-called mediated device works? :(
-> > >
-> > > Or perhaps it is because this submission is split up so much it is
-> > > hard to see what is being proposed? (I note this IFC driver is the
-> > > first user of the mdev_set_iommu_device() function)
-> >=20
-> > Are you objecting the mdev_set_iommu_deivce() stuffs here?
->=20
-> I'm questioning if it fits the vfio PCI device security model, yes.
-
-If you look at the IFC patch you'll find it doesn't do DMA, that's
-what makes it secure.
-
-> > > > It is kernel's job to abstract hardware away and present a unified
-> > > > interface as far as possible.
-> > >=20
-> > > Sure, you could create a virtio accelerator driver framework in our
-> > > new drivers/accel I hear was started. That could make some sense, if
-> > > we had HW that actually required/benefited from kernel involvement.
-> >=20
-> > The framework is not designed specifically for your card. It tries to b=
-e
-> > generic to support every types of virtio hardware devices, it's not
-> > tied to any bus (e.g PCI) and any vendor. So it's not only a question
-> > of how to slice a PCIE ethernet device.
->=20
-> That doesn't explain why this isn't some new driver subsystem and
-> instead treats vfio as a driver multiplexer.
->=20
-> Jason
-
-That motivation's missing.
-
---=20
-MST
-
+Jason
