@@ -2,92 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47C1D1036FE
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 10:50:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9841037A8
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 11:36:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728079AbfKTJuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 04:50:21 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:34365 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727826AbfKTJuU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 04:50:20 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47Hybs2hFjz9sPW;
-        Wed, 20 Nov 2019 20:50:16 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1574243417;
-        bh=jarMthNl+BB7P/L/XYhT8oysem+LhuxZinotaVL4Jmk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=CnG1+tqGXOuruHWjTs93StwM/sz/9Zkg2fkvxs2ODkKaRCWwFUbuQUugrsCZVExMn
-         zSNJG1Olp2ufdDH1lrRG2/R8Jo9n+NmUCXmZ4vuv8ZdkvpAl+QX6Xs+z2IxRpcXvSb
-         P1YlX1BY9l4aEw7wbsHeUx7BwSE+po4UM2ZgD6pmoHluGeeomB3u51Gl7pzKxU5Sdl
-         yMGReQ7sejBnCj3XnQoIEyQ+qf0HHUHCDWuUQ2bnbcG19UwxRSEer6/raYvGaFnHqU
-         9suY/aRniYnUvux6Brs3O3+OVMUIRswCZEQiCJrHnQ5jQA1sI/TMeN2AaBp/XlyAF7
-         CI5dVV182xioQ==
-Date:   Wed, 20 Nov 2019 20:50:09 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20191120205009.188c2394@canb.auug.org.au>
+        id S1728581AbfKTKgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 05:36:16 -0500
+Received: from michel.telenet-ops.be ([195.130.137.88]:44470 "EHLO
+        michel.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727697AbfKTKgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 05:36:16 -0500
+Received: from ramsan ([84.195.182.253])
+        by michel.telenet-ops.be with bizsmtp
+        id UAcC2100J5USYZQ06AcCJG; Wed, 20 Nov 2019 11:36:13 +0100
+Received: from geert (helo=localhost)
+        by ramsan with local-esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iXNLH-0007E4-Vq; Wed, 20 Nov 2019 11:36:12 +0100
+Date:   Wed, 20 Nov 2019 11:36:11 +0100 (CET)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+cc:     =?ISO-8859-15?Q?Marek_Beh=FAn?= <marek.behun@nic.cz>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Bauer <mail@david-bauer.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH net 1/1] mdio_bus: fix mdio_register_device when
+ RESET_CONTROLLER is disabled
+In-Reply-To: <20191119102744.GD32742@smile.fi.intel.com>
+Message-ID: <alpine.DEB.2.21.1911201053330.25420@ramsan.of.borg>
+References: <20191118181505.32298-1-marek.behun@nic.cz> <20191119102744.GD32742@smile.fi.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/V6756Ingn_QCm6UxIl0GuAW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/mixed; boundary="8323329-1988560550-1574246171=:25420"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/V6756Ingn_QCm6UxIl0GuAW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Hi all,
+--8323329-1988560550-1574246171=:25420
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 
-n commit
+ 	Hi all,
 
-  d4ffb02dee2f ("net/tls: enable sk_msg redirect to tls socket egress")
+On Tue, 19 Nov 2019, Andy Shevchenko wrote:
+> On Mon, Nov 18, 2019 at 07:15:05PM +0100, Marek Behún wrote:
+>> When CONFIG_RESET_CONTROLLER is disabled, the
+>> devm_reset_control_get_exclusive function returns -ENOTSUPP. This is not
+>> handled in subsequent check and then the mdio device fails to probe.
+>>
+>> When CONFIG_RESET_CONTROLLER is enabled, its code checks in OF for reset
+>> device, and since it is not present, returns -ENOENT. -ENOENT is handled.
+>> Add -ENOTSUPP also.
+>>
+>> This happened to me when upgrading kernel on Turris Omnia. You either
+>> have to enable CONFIG_RESET_CONTROLLER or use this patch.
+>
+> In the long term prospective shouldn't it use
+> reset_control_get_optional_exclusive() instead?
 
-Fixes tag
+I was thinking the same, hence I tried.
 
-  Fixes: f3de19af0f5b ("Revert \"net/tls: remove unused function tls_sw_sen=
-dpage_locked\"")
+Without a reset (i.e. the returned reset is now NULL instead of
+-ENOENT):
 
-has these problem(s):
+     WARNING: CPU: 1 PID: 120 at drivers/base/dd.c:519 really_probe+0xb0/0x314
+     Modules linked in:
+     CPU: 1 PID: 120 Comm: kworker/1:2 Not tainted 5.4.0-rc8-koelsch-08348-gbc6931ed2139022b-dirty #615
+     Hardware name: Generic R-Car Gen2 (Flattened Device Tree)
+     Workqueue: events deferred_probe_work_func
+     [<c020e268>] (unwind_backtrace) from [<c020a428>] (show_stack+0x10/0x14)
+     [<c020a428>] (show_stack) from [<c07a075c>] (dump_stack+0x88/0xa8)
+     [<c07a075c>] (dump_stack) from [<c0220980>] (__warn+0xb8/0xd0)
+     [<c0220980>] (__warn) from [<c0220a08>] (warn_slowpath_fmt+0x70/0x9c)
+     [<c0220a08>] (warn_slowpath_fmt) from [<c05150b0>] (really_probe+0xb0/0x314)
+     [<c05150b0>] (really_probe) from [<c0515598>] (driver_probe_device+0x13c/0x154)
+     [<c0515598>] (driver_probe_device) from [<c0513784>] (bus_for_each_drv+0xa0/0xb4)
+     [<c0513784>] (bus_for_each_drv) from [<c05153c0>] (__device_attach+0xac/0x124)
+     [<c05153c0>] (__device_attach) from [<c05143f0>] (bus_probe_device+0x28/0x80)
+     [<c05143f0>] (bus_probe_device) from [<c051227c>] (device_add+0x4d8/0x698)
+     [<c051227c>] (device_add) from [<c0581110>] (phy_device_register+0x3c/0x74)
+     [<c0581110>] (phy_device_register) from [<c0675efc>] (of_mdiobus_register_phy+0x144/0x17c)
+     [<c0675efc>] (of_mdiobus_register_phy) from [<c06760f8>] (of_mdiobus_register+0x1c4/0x2d0)
+     [<c06760f8>] (of_mdiobus_register) from [<c0589f18>] (sh_eth_drv_probe+0x778/0x8ac)
+     [<c0589f18>] (sh_eth_drv_probe) from [<c0516ce8>] (platform_drv_probe+0x48/0x94)
+     [<c0516ce8>] (platform_drv_probe) from [<c05151f8>] (really_probe+0x1f8/0x314)
+     [<c05151f8>] (really_probe) from [<c0515598>] (driver_probe_device+0x13c/0x154)
 
-  - Subject does not match target commit subject
-    Just use
-	git log -1 --format=3D'Fixes: %h ("%s")'
+The difference with the non-optional case is that
+__devm_reset_control_get() registers a cleanup function if there's
+no error condition, even for NULL (which is futile, will send a patch).
 
-Did you mean:
+However, more importantly, mdiobus_register_reset() calls a devm_*()
+function on "&mdiodev->dev" ("mdio_bus ee700000.ethernet-ffffffff:01"),
+which is a different device than the one being probed
+(("ee700000.ethernet"), see also the callstack below).
+In fact "&mdiodev->dev" hasn't been probed yet, leading to the WARNING
+when it is probed later.
 
-Fixes: f3de19af0f5b ("net/tls: remove unused function tls_sw_sendpage_locke=
-d")
+     [<c0582de8>] (mdiobus_register_device) from [<c05810e0>] (phy_device_register+0xc/0x74)
+     [<c05810e0>] (phy_device_register) from [<c0675ef4>] (of_mdiobus_register_phy+0x144/0x17c)
+     [<c0675ef4>] (of_mdiobus_register_phy) from [<c06760f0>] (of_mdiobus_register+0x1c4/0x2d0)
+     [<c06760f0>] (of_mdiobus_register) from [<c0589f0c>] (sh_eth_drv_probe+0x778/0x8ac)
+     [<c0589f0c>] (sh_eth_drv_probe) from [<c0516ce8>] (platform_drv_probe+0x48/0x94)
 
---=20
-Cheers,
-Stephen Rothwell
+Has commit 71dd6c0dff51b5f1 ("net: phy: add support for
+reset-controller") been tested with an actual reset present?
 
---Sig_/V6756Ingn_QCm6UxIl0GuAW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Are Ethernet drivers not (no longer) allowed to register MDIO busses?
 
------BEGIN PGP SIGNATURE-----
+Thanks!
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3VDFEACgkQAVBC80lX
-0GwjrAf8Cr5xgQcepBQx2ubjwqRBw8z7vRH8A13GDkrPMIxNFNCBpBytMSmN+D8y
-u1sPM8gm9rRx5nQku01EHXvNl54HveDUF+1nzG+T7W7z0A570CXzSZ29TEdKbBQn
-jnxKCwXE2TIab74BXU5gWhOioKNO/qWcKXL2WIrWMbZiV4Nnl3TVaCQ/wvAavyrc
-y1UzAC5dngIcVnB8nYIgz+hDeAUzzmlO1Hm7H92l3azrNbY5JP0YMz1AjFXMW0ty
-lfLwJ87s8fT5TL4yyAnh5xZV2yH0r+Snjw60I8rEMwNDAXvEdTxbmryuqKbuGmZ2
-y2JbAUH50d2kNDh7tWCQwXQWRfzd/w==
-=2rr0
------END PGP SIGNATURE-----
+Gr{oetje,eeting}s,
 
---Sig_/V6756Ingn_QCm6UxIl0GuAW--
+ 						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
+
+--8323329-1988560550-1574246171=:25420--
