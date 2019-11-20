@@ -2,276 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A57103A0E
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B8A103A20
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729740AbfKTMaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 07:30:10 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39774 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729732AbfKTMaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:30:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=M8v4W8doiLZIftJn9nVhqdFmfF/mFUpz1pxcf204r4c=; b=GP/bTfOl3l9MUUTL8d/p27fuyX
-        aQP5hK4gSnXeFSx3oROTMikj0A+vsbvTapXA8YlB1d6hD3Huh5WdWqoRXzCv1Q7plLe1zBt5QxubM
-        cVIvxipZYO49qqr+QiRSNDNU6j3t6SY1G1zsi9pIsg7a6gF3zqFbmznXv1jL7pCrUdDBC9YBLQXoC
-        z+AP7wKTWuzxT50cSCfnW5QpcCBdg9h4TfhnMF4x6mw9OOFiUFELDoQ63+HLwXBXgzjoVskqWZkYk
-        bcv++z1gHA0ZsVOz2EObjRPFM/zpWHW62xCTIM5YS+gpARXkuMGRkCywN6VQIww5R/hTLrI6lOmTi
-        xYCPIyuw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46546 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iXP7Q-0008Io-0N; Wed, 20 Nov 2019 12:30:00 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iXP7P-0006DS-47; Wed, 20 Nov 2019 12:29:59 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2] net: sfp: soft status and control support
+        id S1729788AbfKTMfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 07:35:14 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:57342 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729782AbfKTMfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:35:14 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAKCY3H8079949;
+        Wed, 20 Nov 2019 12:34:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
+ bh=1mIC35+eNFMPCfiPugk21WBGXDV6EWboy/r9beQ7IHU=;
+ b=MX188vRXVc2QXEjhjNw/5j+0TJ9/lJ+uRJp6Q8vFOQRYvVeVUlD7sWhV9yPXjeMprDS/
+ G0c8l35MnoIj9K/udadA0AeEIIf680K4HvO9HOAFY/MrpmXzV881dIVgD8BSgkB/6Q+n
+ PbryTvL4TopadcMJxx3e7UMsCYa3C8C4r9yXhSAsp1q32j+5RQJ2AWsW8NYPzdaJSFOH
+ l9mOIFPJ9IOvvQaEXnfsywbh2Y+5JBf5Rqs8Hdvc7k/f5eZB35422bVS6QV5+NciJgQz
+ iMmFTSEG3I4vzHZvYanQay9e/vhlxInki81HWL9zTFiGLmtF6FjwsaINWDJQOveFhSoh wg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2wa8htw9t3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Nov 2019 12:34:57 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAKCTFLB053490;
+        Wed, 20 Nov 2019 12:34:56 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2wcemfj9d1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 20 Nov 2019 12:34:56 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xAKCYrar006458;
+        Wed, 20 Nov 2019 12:34:54 GMT
+Received: from kili.mountain (/41.210.147.113)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 20 Nov 2019 04:34:51 -0800
+Date:   Wed, 20 Nov 2019 15:34:38 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jiri Pirko <jiri@mellanox.com>, David Ahern <dsahern@gmail.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] net: rtnetlink: prevent underflows in do_setvfinfo()
+Message-ID: <20191120123438.vxn2ngnxzpcaqot4@kili.mountain>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iXP7P-0006DS-47@rmk-PC.armlinux.org.uk>
-Date:   Wed, 20 Nov 2019 12:29:59 +0000
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9446 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1911200113
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9446 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1911200114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the soft status and control register, which allows
-TX_FAULT and RX_LOS to be monitored and TX_DISABLE to be set.  We
-make use of this when the board does not support GPIOs for these
-signals.
+The "ivm->vf" variable is a u32, but the problem is that a number of
+drivers cast it to an int and then forget to check for negatives.  An
+example of this is in the cxgb4 driver.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+  2890  static int cxgb4_mgmt_get_vf_config(struct net_device *dev,
+  2891                                      int vf, struct ifla_vf_info *ivi)
+                                            ^^^^^^
+  2892  {
+  2893          struct port_info *pi = netdev_priv(dev);
+  2894          struct adapter *adap = pi->adapter;
+  2895          struct vf_info *vfinfo;
+  2896  
+  2897          if (vf >= adap->num_vfs)
+                    ^^^^^^^^^^^^^^^^^^^
+  2898                  return -EINVAL;
+  2899          vfinfo = &adap->vfinfo[vf];
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are 48 functions affected.
+
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:8435 hclge_set_vf_vlan_filter() warn: can 'vfid' underflow 's32min-2147483646'
+drivers/net/ethernet/freescale/enetc/enetc_pf.c:377 enetc_pf_set_vf_mac() warn: can 'vf' underflow 's32min-2147483646'
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:2899 cxgb4_mgmt_get_vf_config() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:2960 cxgb4_mgmt_set_vf_rate() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3019 cxgb4_mgmt_set_vf_rate() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3038 cxgb4_mgmt_set_vf_vlan() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3086 cxgb4_mgmt_set_vf_link_state() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/chelsio/cxgb/cxgb2.c:791 get_eeprom() warn: can 'i' underflow 's32min-(-4),0,4-s32max'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:82 bnxt_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:164 bnxt_set_vf_trust() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:186 bnxt_get_vf_config() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:228 bnxt_set_vf_mac() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:264 bnxt_set_vf_vlan() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:293 bnxt_set_vf_bw() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:333 bnxt_set_vf_link_state() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c:2595 bnx2x_vf_op_prep() warn: can 'vfidx' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c:2595 bnx2x_vf_op_prep() warn: can 'vfidx' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2281 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2285 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2286 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2292 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
+drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2297 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1832 qlcnic_sriov_set_vf_mac() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1864 qlcnic_sriov_set_vf_tx_rate() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1937 qlcnic_sriov_set_vf_vlan() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:2005 qlcnic_sriov_get_vf_config() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:2036 qlcnic_sriov_set_vf_spoofchk() warn: can 'vf' underflow 's32min-254'
+drivers/net/ethernet/emulex/benet/be_main.c:1914 be_get_vf_config() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/emulex/benet/be_main.c:1915 be_get_vf_config() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/emulex/benet/be_main.c:1922 be_set_vf_tvt() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/emulex/benet/be_main.c:1951 be_clear_vf_tvt() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/emulex/benet/be_main.c:2063 be_set_vf_tx_rate() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/emulex/benet/be_main.c:2091 be_set_vf_link_state() warn: can 'vf' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:2609 ice_set_vf_port_vlan() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3050 ice_get_vf_cfg() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3103 ice_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3181 ice_set_vf_mac() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3237 ice_set_vf_trust() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3286 ice_set_vf_link_state() warn: can 'vf_id' underflow 's32min-65534'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:3919 i40e_validate_vf() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:3957 i40e_ndo_set_vf_mac() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4104 i40e_ndo_set_vf_port_vlan() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4263 i40e_ndo_set_vf_bw() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4309 i40e_ndo_get_vf_config() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4371 i40e_ndo_set_vf_link_state() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4441 i40e_ndo_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4441 i40e_ndo_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-2147483646'
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4504 i40e_ndo_set_vf_trust() warn: can 'vf_id' underflow 's32min-2147483646'
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/net/phy/sfp.c | 110 ++++++++++++++++++++++++++++++++++--------
- include/linux/sfp.h   |   4 ++
- 2 files changed, 94 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 69bedef96ca7..da9e7dd50b95 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -201,7 +201,10 @@ struct sfp {
- 	struct gpio_desc *gpio[GPIO_MAX];
- 	int gpio_irq[GPIO_MAX];
+I reported this bug to the linux-rdma mailing list in April and this
+patch wasn't considered very elegant.  I can see how that's true.  The
+developer offered to write a fix which would update all the drivers to
+use u32 throughout.  I reminded him in September that this bug still
+needs to be fixed.
+
+I think there may be security implications and this patch is easy to
+backport to stable kernels so in that sense, it might be a better
+approach.  Also this patch might prevent underflows in future drivers.
+
+ net/core/rtnetlink.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 000eddb1207d..9f7aa448bd11 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2251,6 +2251,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_MAC]) {
+ 		struct ifla_vf_mac *ivm = nla_data(tb[IFLA_VF_MAC]);
  
-+	bool need_poll;
-+
- 	struct mutex st_mutex;			/* Protects state */
-+	unsigned int state_soft_mask;
- 	unsigned int state;
- 	struct delayed_work poll;
- 	struct delayed_work timeout;
-@@ -395,24 +398,90 @@ static int sfp_i2c_configure(struct sfp *sfp, struct i2c_adapter *i2c)
- }
++		if (ivm->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_mac)
+ 			err = ops->ndo_set_vf_mac(dev, ivm->vf,
+@@ -2262,6 +2264,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_VLAN]) {
+ 		struct ifla_vf_vlan *ivv = nla_data(tb[IFLA_VF_VLAN]);
  
- /* Interface */
--static unsigned int sfp_get_state(struct sfp *sfp)
-+static int sfp_read(struct sfp *sfp, bool a2, u8 addr, void *buf, size_t len)
- {
--	return sfp->get_state(sfp);
-+	return sfp->read(sfp, a2, addr, buf, len);
- }
++		if (ivv->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_vlan)
+ 			err = ops->ndo_set_vf_vlan(dev, ivv->vf, ivv->vlan,
+@@ -2294,6 +2298,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 		if (len == 0)
+ 			return -EINVAL;
  
--static void sfp_set_state(struct sfp *sfp, unsigned int state)
-+static int sfp_write(struct sfp *sfp, bool a2, u8 addr, void *buf, size_t len)
- {
--	sfp->set_state(sfp, state);
-+	return sfp->write(sfp, a2, addr, buf, len);
- }
++		if (ivvl[0]->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = ops->ndo_set_vf_vlan(dev, ivvl[0]->vf, ivvl[0]->vlan,
+ 					   ivvl[0]->qos, ivvl[0]->vlan_proto);
+ 		if (err < 0)
+@@ -2304,6 +2310,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 		struct ifla_vf_tx_rate *ivt = nla_data(tb[IFLA_VF_TX_RATE]);
+ 		struct ifla_vf_info ivf;
  
--static int sfp_read(struct sfp *sfp, bool a2, u8 addr, void *buf, size_t len)
-+static unsigned int sfp_soft_get_state(struct sfp *sfp)
- {
--	return sfp->read(sfp, a2, addr, buf, len);
-+	unsigned int state = 0;
-+	u8 status;
-+
-+	if (sfp_read(sfp, true, SFP_STATUS, &status, sizeof(status)) ==
-+		     sizeof(status)) {
-+		if (status & SFP_STATUS_RX_LOS)
-+			state |= SFP_F_LOS;
-+		if (status & SFP_STATUS_TX_FAULT)
-+			state |= SFP_F_TX_FAULT;
-+	}
-+
-+	return state & sfp->state_soft_mask;
- }
++		if (ivt->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_get_vf_config)
+ 			err = ops->ndo_get_vf_config(dev, ivt->vf, &ivf);
+@@ -2322,6 +2330,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_RATE]) {
+ 		struct ifla_vf_rate *ivt = nla_data(tb[IFLA_VF_RATE]);
  
--static int sfp_write(struct sfp *sfp, bool a2, u8 addr, void *buf, size_t len)
-+static void sfp_soft_set_state(struct sfp *sfp, unsigned int state)
- {
--	return sfp->write(sfp, a2, addr, buf, len);
-+	u8 status;
-+
-+	if (sfp_read(sfp, true, SFP_STATUS, &status, sizeof(status)) ==
-+		     sizeof(status)) {
-+		if (state & SFP_F_TX_DISABLE)
-+			status |= SFP_STATUS_TX_DISABLE_FORCE;
-+		else
-+			status &= ~SFP_STATUS_TX_DISABLE_FORCE;
-+
-+		sfp_write(sfp, true, SFP_STATUS, &status, sizeof(status));
-+	}
-+}
-+
-+static void sfp_soft_start_poll(struct sfp *sfp)
-+{
-+	const struct sfp_eeprom_id *id = &sfp->id;
-+
-+	sfp->state_soft_mask = 0;
-+	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_DISABLE &&
-+	    !sfp->gpio[GPIO_TX_DISABLE])
-+		sfp->state_soft_mask |= SFP_F_TX_DISABLE;
-+	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_TX_FAULT &&
-+	    !sfp->gpio[GPIO_TX_FAULT])
-+		sfp->state_soft_mask |= SFP_F_TX_FAULT;
-+	if (id->ext.enhopts & SFP_ENHOPTS_SOFT_RX_LOS &&
-+	    !sfp->gpio[GPIO_LOS])
-+		sfp->state_soft_mask |= SFP_F_LOS;
-+
-+	if (sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT) &&
-+	    !sfp->need_poll)
-+		mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
-+}
-+
-+static void sfp_soft_stop_poll(struct sfp *sfp)
-+{
-+	sfp->state_soft_mask = 0;
-+}
-+
-+static unsigned int sfp_get_state(struct sfp *sfp)
-+{
-+	unsigned int state = sfp->get_state(sfp);
-+
-+	if (state & SFP_F_PRESENT &&
-+	    sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT))
-+		state |= sfp_soft_get_state(sfp);
-+
-+	return state;
-+}
-+
-+static void sfp_set_state(struct sfp *sfp, unsigned int state)
-+{
-+	sfp->set_state(sfp, state);
-+
-+	if (state & SFP_F_PRESENT &&
-+	    sfp->state_soft_mask & SFP_F_TX_DISABLE)
-+		sfp_soft_set_state(sfp, state);
- }
++		if (ivt->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_rate)
+ 			err = ops->ndo_set_vf_rate(dev, ivt->vf,
+@@ -2334,6 +2344,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_SPOOFCHK]) {
+ 		struct ifla_vf_spoofchk *ivs = nla_data(tb[IFLA_VF_SPOOFCHK]);
  
- static unsigned int sfp_check(void *buf, size_t len)
-@@ -1344,11 +1413,6 @@ static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
- 	}
- }
++		if (ivs->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_spoofchk)
+ 			err = ops->ndo_set_vf_spoofchk(dev, ivs->vf,
+@@ -2345,6 +2357,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_LINK_STATE]) {
+ 		struct ifla_vf_link_state *ivl = nla_data(tb[IFLA_VF_LINK_STATE]);
  
--static void sfp_sm_mod_init(struct sfp *sfp)
--{
--	sfp_module_tx_enable(sfp);
--}
++		if (ivl->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_link_state)
+ 			err = ops->ndo_set_vf_link_state(dev, ivl->vf,
+@@ -2358,6 +2372,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 
+ 		err = -EOPNOTSUPP;
+ 		ivrssq_en = nla_data(tb[IFLA_VF_RSS_QUERY_EN]);
++		if (ivrssq_en->vf >= INT_MAX)
++			return -EINVAL;
+ 		if (ops->ndo_set_vf_rss_query_en)
+ 			err = ops->ndo_set_vf_rss_query_en(dev, ivrssq_en->vf,
+ 							   ivrssq_en->setting);
+@@ -2368,6 +2384,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_TRUST]) {
+ 		struct ifla_vf_trust *ivt = nla_data(tb[IFLA_VF_TRUST]);
+ 
++		if (ivt->vf >= INT_MAX)
++			return -EINVAL;
+ 		err = -EOPNOTSUPP;
+ 		if (ops->ndo_set_vf_trust)
+ 			err = ops->ndo_set_vf_trust(dev, ivt->vf, ivt->setting);
+@@ -2378,15 +2396,18 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
+ 	if (tb[IFLA_VF_IB_NODE_GUID]) {
+ 		struct ifla_vf_guid *ivt = nla_data(tb[IFLA_VF_IB_NODE_GUID]);
+ 
++		if (ivt->vf >= INT_MAX)
++			return -EINVAL;
+ 		if (!ops->ndo_set_vf_guid)
+ 			return -EOPNOTSUPP;
 -
- static void sfp_sm_probe_for_phy(struct sfp *sfp)
- {
- 	/* Setting the serdes link mode is guesswork: there's no
-@@ -1511,7 +1575,7 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		 (int)sizeof(id.ext.datecode), id.ext.datecode);
- 
- 	/* Check whether we support this module */
--	if (!sfp->type->module_supported(&sfp->id)) {
-+	if (!sfp->type->module_supported(&id)) {
- 		dev_err(sfp->dev,
- 			"module is not supported - phys id 0x%02x 0x%02x\n",
- 			sfp->id.base.phys_id, sfp->id.base.phys_ext_id);
-@@ -1701,6 +1765,7 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 		if (sfp->mod_phy)
- 			sfp_sm_phy_detach(sfp);
- 		sfp_module_tx_disable(sfp);
-+		sfp_soft_stop_poll(sfp);
- 		sfp_sm_next(sfp, SFP_S_DOWN, 0);
- 		return;
- 	}
-@@ -1712,7 +1777,10 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 		    sfp->sm_dev_state != SFP_DEV_UP)
- 			break;
- 
--		sfp_sm_mod_init(sfp);
-+		if (!(sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE))
-+			sfp_soft_start_poll(sfp);
-+
-+		sfp_module_tx_enable(sfp);
- 
- 		/* Initialise the fault clearance retries */
- 		sfp->sm_retries = 5;
-@@ -1968,7 +2036,10 @@ static void sfp_poll(struct work_struct *work)
- 	struct sfp *sfp = container_of(work, struct sfp, poll.work);
- 
- 	sfp_check_state(sfp);
--	mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
-+
-+	if (sfp->state_soft_mask & (SFP_F_LOS | SFP_F_TX_FAULT) ||
-+	    sfp->need_poll)
-+		mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
- }
- 
- static struct sfp *sfp_alloc(struct device *dev)
-@@ -2013,7 +2084,6 @@ static int sfp_probe(struct platform_device *pdev)
- 	const struct sff_data *sff;
- 	struct i2c_adapter *i2c;
- 	struct sfp *sfp;
--	bool poll = false;
- 	int err, i;
- 
- 	sfp = sfp_alloc(&pdev->dev);
-@@ -2120,7 +2190,7 @@ static int sfp_probe(struct platform_device *pdev)
- 
- 		sfp->gpio_irq[i] = gpiod_to_irq(sfp->gpio[i]);
- 		if (!sfp->gpio_irq[i]) {
--			poll = true;
-+			sfp->need_poll = true;
- 			continue;
- 		}
- 
-@@ -2132,11 +2202,11 @@ static int sfp_probe(struct platform_device *pdev)
- 						dev_name(sfp->dev), sfp);
- 		if (err) {
- 			sfp->gpio_irq[i] = 0;
--			poll = true;
-+			sfp->need_poll = true;
- 		}
+ 		return handle_vf_guid(dev, ivt, IFLA_VF_IB_NODE_GUID);
  	}
  
--	if (poll)
-+	if (sfp->need_poll)
- 		mod_delayed_work(system_wq, &sfp->poll, poll_jiffies);
+ 	if (tb[IFLA_VF_IB_PORT_GUID]) {
+ 		struct ifla_vf_guid *ivt = nla_data(tb[IFLA_VF_IB_PORT_GUID]);
  
- 	/* We could have an issue in cases no Tx disable pin is available or
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 3b35efd85bb1..487fd9412d10 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -428,6 +428,10 @@ enum {
- 	SFP_TEC_CUR			= 0x6c,
++		if (ivt->vf >= INT_MAX)
++			return -EINVAL;
+ 		if (!ops->ndo_set_vf_guid)
+ 			return -EOPNOTSUPP;
  
- 	SFP_STATUS			= 0x6e,
-+	SFP_STATUS_TX_DISABLE		= BIT(7),
-+	SFP_STATUS_TX_DISABLE_FORCE	= BIT(6),
-+	SFP_STATUS_TX_FAULT		= BIT(2),
-+	SFP_STATUS_RX_LOS		= BIT(1),
- 	SFP_ALARM0			= 0x70,
- 	SFP_ALARM0_TEMP_HIGH		= BIT(7),
- 	SFP_ALARM0_TEMP_LOW		= BIT(6),
 -- 
-2.20.1
+2.11.0
 
