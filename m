@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A58A1042A5
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B371B1042C0
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:00:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727656AbfKTR4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 12:56:48 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:34238 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfKTR4s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:56:48 -0500
-Received: by mail-lf1-f66.google.com with SMTP id l28so297922lfj.1
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 09:56:45 -0800 (PST)
+        id S1727927AbfKTSAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 13:00:44 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46451 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727442AbfKTSAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:00:44 -0500
+Received: by mail-wr1-f65.google.com with SMTP id b3so884637wrs.13
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 10:00:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bl5kBgWdszXsG8N0e3S4l930mGgZvfqr7UV5sZ7mUOo=;
-        b=O+cX8tWFxNysHoItpeEJNk0pNBgwNu0H7fUUicTQwdtGYsbYVhzBEplJiBfx5yAnjf
-         uMHOsdwqO9t/owd0PI45okUiT43FkYQWMo7dUReZv/+nFo07r2te/xW/iv3HcMxPMVrk
-         KfMlaNvwGgJruvMKemkHJzk9XcGG/qpVN0S17sfxpc9k36AL1IG3nmtNXgZZiKTyCYmn
-         RJsyurEiVnp/3ZYRJ95FjnFTrNZ2807W+fBu0fSNs9bvV2/srYP35JVabA2yKwZQhF5v
-         j0tOpPNNvreJK/Ct2vQO8b02Uik5NMn/Ki0W9gSXW9PcTOtiUlnzZAE8zEvBt7OB6yS/
-         eIrQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=45ERKgsJ66WHcj3ysRCeTHTAykcbP4bDCeaBEe1z3BE=;
+        b=hxHmPvV+uviGWfk84DTeR/WH6CrnZHW8HudF6W6l/EHhWrNU3oFjKuYTf5VbEtICrc
+         MLFzmAH24BJUke5jSMFtvxNYolI6HG1SgEYfl3319JnWbhX9Fxbqp1U5IQMZvhJOXNif
+         wS8fV5sbBQjIXnwV5Xb66vT71kwSUnBcGBNY+wOlAA+/ZTTBfueNXf287gIQsjEh29ad
+         edwjycp9Gpv1QYQRrUXRy3r4U565Jh1SgrF9AEiRX3nB+0BpoKB3Uk0nXG9LX5vBn6jh
+         SLKxSI8AnvbkUebN7MyOFlUuhCiiG8+SxojEeuX9lzvXkV/Kf7oiPz8bd6ETeHLwOsy1
+         DD9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bl5kBgWdszXsG8N0e3S4l930mGgZvfqr7UV5sZ7mUOo=;
-        b=WtM5r3OC8sErFju5TnwuId27YN0bW4y/FwO+VP8fuQsPRwTf9tFTEBw/rKL5RZpRFR
-         jl/rk/LmxXk/sraTv/bXxu/76v1gNUdwuzlfGfhYKQ3peDQSyaK/yLyVsR88lMX7+tWh
-         z6DS4QxrYYVSlyA4yaZyvBRc02jlPRtr0W8mcbxybyWHEYZT98zptm7ysR+BWtNsHLOw
-         wAURo9Ol2qp730k0xBV1QOsY86aK/luM7NtiAa1yag35C5Mb/6sDjYUzGFzbDN9y9aIg
-         f81bDZJdJHTwR/Tod5PLU46rk12JDGLuzRejSqv1mggH9fnBk95py/8q83BITV6ymsO4
-         SQpg==
-X-Gm-Message-State: APjAAAVYWzyNABdWQ0I6aK2eywfxJZ0l7eokNdt05Z+5iCtWtw/+BGno
-        xhoHnqP9p0HkrhmZ+bxFxnBGwA==
-X-Google-Smtp-Source: APXvYqxBu2/koOXhPpcBF7ELkKjKnjvTKET5ynVVYiWDoE6SOEsIzluFawS7TU5CV/e8nKyp3tVMiw==
-X-Received: by 2002:a05:6512:71:: with SMTP id i17mr4045051lfo.113.1574272604473;
-        Wed, 20 Nov 2019 09:56:44 -0800 (PST)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n83sm3089550lfd.70.2019.11.20.09.56.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Nov 2019 09:56:43 -0800 (PST)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     dsahern@gmail.com
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, jiri@resnulli.us,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shalom Toledo <shalomt@mellanox.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH iproute2-next] devlink: fix requiring either handle
-Date:   Wed, 20 Nov 2019 09:56:06 -0800
-Message-Id: <20191120175606.13641-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=45ERKgsJ66WHcj3ysRCeTHTAykcbP4bDCeaBEe1z3BE=;
+        b=kbWSDWuKyib+hk3r6szj1UbtWHvv4eI3ql3915J2VVHk+ywRNZaZXM8EnpZlvfoqhe
+         zTqxEG87MEs/QF+VZyxObxt8x1vSN7h3wPVU9QB09CPMITnVjaXuGf+6AeT1sx4iFjtp
+         4RCQtwRCD3UtleMxcm0Y8Aa+idtTjk0V2ZMrI1iLt3ZhpCK4jSiWoN+cwlckLfJft9rk
+         naFmo+jZhf8TZyX36ilWKHxfwnZI8BIXGaTZmH8UolmRxU3FyvYxS65A/A/a1Jg+l36q
+         F5uCXia2rWS72+olCWsHWtEhrVU4rBJTud+mi6mGBOf+qnDR6if05Z6QOhNsJgHZfBaL
+         QL9g==
+X-Gm-Message-State: APjAAAWJic+TNdIjcdnbkhVxicU1xrB7afF2+YL95NmtbP2DSRL6kTEk
+        /RoKW/S9W7/zVa9urnR8VeQasw==
+X-Google-Smtp-Source: APXvYqw4lec8f3DNCtlWAxGF4ebRZYYuJmMsNnJdRbNuA9bpBVf75DMOUNW08ffLS5CUnS/0oewp4Q==
+X-Received: by 2002:a05:6000:1286:: with SMTP id f6mr2338830wrx.44.1574272841592;
+        Wed, 20 Nov 2019 10:00:41 -0800 (PST)
+Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id n1sm60962wrr.24.2019.11.20.10.00.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2019 10:00:40 -0800 (PST)
+Date:   Wed, 20 Nov 2019 20:00:38 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, lorenzo.bianconi@redhat.com,
+        mcroce@redhat.com, jonathan.lemon@gmail.com
+Subject: Re: [PATCH v5 net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for device
+Message-ID: <20191120180038.GA26040@apalos.home>
+References: <cover.1574261017.git.lorenzo@kernel.org>
+ <4a22dd0ef91220748c4d3da366082a13190fb794.1574261017.git.lorenzo@kernel.org>
+ <20191120184901.59306f16@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191120184901.59306f16@carbon>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-devlink sb occupancy show requires device or port handle.
-It passes both device and port handle bits as required to
-dl_argv_parse() so since commit 1896b100af46 ("devlink: catch
-missing strings in dl_args_required") devlink will now
-complain that only one is present:
+> [...]
+> > @@ -281,8 +309,8 @@ static bool __page_pool_recycle_direct(struct page *page,
+> >  	return true;
+> >  }
+> >  
+> > -void __page_pool_put_page(struct page_pool *pool,
+> > -			  struct page *page, bool allow_direct)
+> > +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> > +			  unsigned int dma_sync_size, bool allow_direct)
+> >  {
+> >  	/* This allocator is optimized for the XDP mode that uses
+> >  	 * one-frame-per-page, but have fallbacks that act like the
+> > @@ -293,6 +321,10 @@ void __page_pool_put_page(struct page_pool *pool,
+> >  	if (likely(page_ref_count(page) == 1)) {
+> >  		/* Read barrier done in page_ref_count / READ_ONCE */
+> >  
+> > +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> > +			page_pool_dma_sync_for_device(pool, page,
+> > +						      dma_sync_size);
+> > +
+> >  		if (allow_direct && in_serving_softirq())
+> >  			if (__page_pool_recycle_direct(page, pool))
+> >  				return;
+> 
+> I am slightly concerned this touch the fast-path code. But at-least on
+> Intel, I don't think this is measurable.  And for the ARM64 board it
+> was a huge win... thus I'll accept this.
 
-$ devlink sb occupancy show pci/0000:06:00.0/0
-BUG: unknown argument required but not found
-
-Drop the bit for the handle which was not found from required.
-
-Reported-by: Shalom Toledo <shalomt@mellanox.com>
-Fixes: 1896b100af46 ("devlink: catch missing strings in dl_args_required")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
-Tested-by: Shalom Toledo <shalomt@mellanox.com>
----
- devlink/devlink.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index ea3f992ee0d7..0b8985f32636 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -1179,6 +1179,7 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 					  &opts->port_index, &handle_bit);
- 		if (err)
- 			return err;
-+		o_required &= ~(DL_OPT_HANDLE | DL_OPT_HANDLEP) | handle_bit;
- 		o_found |= handle_bit;
- 	} else if (o_required & DL_OPT_HANDLE) {
- 		err = dl_argv_handle(dl, &opts->bus_name, &opts->dev_name);
--- 
-2.23.0
-
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
