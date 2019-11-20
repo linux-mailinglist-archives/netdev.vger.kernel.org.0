@@ -2,139 +2,738 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9FA10449C
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 20:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FDCE1044A2
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 20:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727741AbfKTTw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 14:52:29 -0500
-Received: from mx2.suse.de ([195.135.220.15]:34608 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726440AbfKTTw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 14:52:28 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C8248B21F;
-        Wed, 20 Nov 2019 19:52:26 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 592C2E1EB1; Wed, 20 Nov 2019 20:52:26 +0100 (CET)
-Date:   Wed, 20 Nov 2019 20:52:26 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, Firo Yang <firo.yang@suse.com>
-Subject: Re: possible race in __inet_lookup_established()
-Message-ID: <20191120195226.GB29650@unicorn.suse.cz>
-References: <20191120083919.GH27852@unicorn.suse.cz>
- <CANn89iJYXh7AwK8_Aiz3wXqugG0icPNW6OPsPxwOvpH90kr+Ew@mail.gmail.com>
- <20191120181046.GA29650@unicorn.suse.cz>
- <CANn89iLfX2CYKU7hPZkPTNiUoCUyW2PLznsVnxomu4JEWmkefQ@mail.gmail.com>
+        id S1727182AbfKTTzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 14:55:06 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38675 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbfKTTzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 14:55:06 -0500
+Received: by mail-pf1-f195.google.com with SMTP id c13so272013pfp.5
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 11:55:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QTqu9u50Mu3nVTkONLMDBgscuhS2TQsQzdUrUPNa0gQ=;
+        b=FfDPaSBlCwF9xbdKyNKHtbsE99bNYhhpJriKyT7qNxjyogvYJbkksDf+NfgK1ly87S
+         tLfn84++o+Y3ErOHgh9V99uVQ9smx5IPbPRaCW+5nFcxz96CF1FKj1rblrXxNETpW3Yy
+         rJVOxJQGnBSOx/HUmWdk1ZS/IA2UOCizyCWKxo02BjyyrA+JlCcpw+vymVh0fVav9faz
+         timNdCB3gJRBPB7hvBn8LvGA3J+pVM4ntcUh7WHIuhtz6UF3DFKhCmKmGROuWHxFuPgr
+         i6TStGfbRheIX54NWAaFSbzvgkv25jMptn+GmIWxkhDwmw3jYQIeBjMxLUnCDayafLO1
+         Casg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QTqu9u50Mu3nVTkONLMDBgscuhS2TQsQzdUrUPNa0gQ=;
+        b=aGbjFFilp80qE1kU9LGlQIEb63I1t1un0SBlz97xm2yd7FsdjVmBE+O572kvcDrr14
+         MZxK3QPlZAZRN7f9oSXr++aXvBK6qB5R8UNJl1fxwfKz5HvsWhQjGVWWpjT24DEp7n/B
+         HwmIvAJM5Zz0+iaFdYd/kCljH5qbe+35iwqn4F0Ao2VwQ4zyLD0cSolVJoxv+dhdI9+K
+         31h+y4GOBDY3sXo3OD8pJ2o8vVAQSzQdPD/ERWSiZH3sN77TSbbPWjIHvFp2VnqgS273
+         8WEl0z/9h0N0sPJgvrIQpX854MvRe+oAGqVvE3NCF7nGPHJS8cz5e0JMAWil5HokkobS
+         jkDQ==
+X-Gm-Message-State: APjAAAVsYXqf7wRysTvg8notN5mXcAByI4CuD4G1eMAUsOrOVxHR1eBB
+        ahWR5loCJs13wj2H7lcc0JP5s8UGq/SWKg==
+X-Google-Smtp-Source: APXvYqz3+1cBmXryHY1gVcxhuWE70EG9dmOrfz0iu1hrOtSnXCH/Km9YRSkWnPUiea0jMg+AWRsjPg==
+X-Received: by 2002:a63:215d:: with SMTP id s29mr3886688pgm.200.1574279704444;
+        Wed, 20 Nov 2019 11:55:04 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id r184sm194123pfc.106.2019.11.20.11.55.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2019 11:55:04 -0800 (PST)
+Date:   Wed, 20 Nov 2019 11:54:56 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 205605] New: Memory leak in ip_mc_source (Networking /
+ IPv4)
+Message-ID: <20191120115456.6250c45e@hermes.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLfX2CYKU7hPZkPTNiUoCUyW2PLznsVnxomu4JEWmkefQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 11:13:09AM -0800, Eric Dumazet wrote:
-> On Wed, Nov 20, 2019 at 10:10 AM Michal Kubecek <mkubecek@suse.cz> wrote:
-> >
-> > On Wed, Nov 20, 2019 at 08:12:10AM -0800, Eric Dumazet wrote:
-> > > On Wed, Nov 20, 2019 at 12:39 AM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > >
-> > > > Hello Eric,
-> > > >
-> > > > we are investigating a crash in socket lookup in a distribution kernel
-> > > > based on v4.12 but the possible problem we found seems to also apply to
-> > > > current mainline (or net) code.
-> > > >
-> > > > The common pattern is:
-> > > >
-> > > > - the crash always happens in __inet_lookup_established() in
-> > > >
-> > > >         sk_nulls_for_each_rcu(sk, node, &head->chain) {
-> > > >                 if (sk->sk_hash != hash)     <-----------------
-> > > >                         continue;
-> > > >
-> > > >   as sk is an invalid pointer; in particular, &sk->sk_nulls_node is null
-> > > >   so dereferencing sk->sk_hash faults
-> > > >
-> > > > - the reason is that previous sk value pointed to a listening socket
-> > > >   rather than an established one; as listening socket uses sk_node, end
-> > > >   of the chain is marked by a null pointer which is not detected as
-> > > >   a chain end by sk_nulls_for_each_rcu()
-> > > >
-> > > > - there is no socket matching skb which is a TCP pure ACK having
-> > > >   127.0.0.1 as both source and destination
-> > > >
-> > > > - the chain pointed to by head variable is empty
-> > > >
-> > > > Firo Yang came with the theory that this could be a race between socket
-> > > > lookup and freing the socket and replacing it with a listening one:
-> > > >
-> > > > 1. CPU A gets a pointer to an established socket as sk in the
-> > > > sk_nulls_for_each_rcu() loop in __inet_lookup_established() but does not
-> > > > thake a reference to it.
-> > > >
-> > > > 2. CPU B frees the socket
-> > > >
-> > > > 3. Slab object pointed to by sk is reused for a new listening socket.
-> > > > This socket has null sk->sk_node->next which uses the same spot as
-> > > > sk->sk_nulls_node->next
-> > > >
-> > > > 4. CPU A tests sk->sk_nulls_node->next with is_a_nulls() (false) and
-> > > > follows the pointer, resulting in a fault dereferencing sk->sk_hash.
-> > > >
-> > > > Unless we missed something, there is no protection against established
-> > > > socket being freed and replaced by a new listening one while
-> > > > __inet_lookup_established() has a pointer to it. The RCU loop only
-> > > > prevents the slab object being reused for a different slab cache or
-> > > > something completely different but as established and listening sockets
-> > > > share the same slab cache, it does not protect us from switching from
-> > > > established to listening.
-> > > >
-> > > > As far as I can say, this kind of race could have happened for quite
-> > > > long but before your commit ou3b24d854cb35 ("tcp/dccp: do not touch
-> > > > listener sk_refcnt under synflood"), the worst that could happen would
-> > > > be switching to a chain in listener lookup table, following it to its
-> > > > end and then (most likely) restarting the lookup or failing. Now that
-> > > > established and listening sockets use different list types, replacing
-> > > > one with the other can be deadly.
-> > > >
-> > > > Do you agree that this race is possible or is there something we missed
-> > > > that would prevent it?
-> > > >
-> > > A listener is hashed on icsk_listen_portaddr_node, so I do not see how a
-> > > listener could be found in the establish chain ?
-> >
-> > It is not really in the chain. What we suspect is that between sk is
-> > assigned pointer to an established socket in __inet_lookup_established()
-> > and using sk->sk_nulls_node->next to go to the next (or stop if it's odd
-> > nulls value), this established socket could be freed and its slab object
-> > reused for a listening socket. As listening sockets no longer use a
-> > nulls hashlist but a normal hashlist, in the most common case where the
-> > socket is last in the chain, sk->sk_node->next (which occupies the same
-> > place as sk->sk_nulls_node->next) would be NULL so that is_a_nulls()
-> > does not recognize the chain end and the loop would go on to next socket
-> > in the chain.
-> >
-> 
-> I hear you, but where is the sk->sk_nulls_node->next would be set to
-> NULL exactly ?
 
-In __inet_hash() when the new listening socket is inserted into the
-listening hashtable:
 
-	if (IS_ENABLED(CONFIG_IPV6) && sk->sk_reuseport &&
-		sk->sk_family == AF_INET6)
-		hlist_add_tail_rcu(&sk->sk_node, &ilb->head);
-	else
-		hlist_add_head_rcu(&sk->sk_node, &ilb->head);
+Begin forwarded message:
 
-If the chain is empty, sk->sk_node->next will be set to NULL by either
-branch. And even if it's not, the loop in __inet_lookup_established()
-would follow the chain from listening hashtable and still get to the
-NULL end marker eventually.
+Date: Wed, 20 Nov 2019 15:09:47 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 205605] New: Memory leak in ip_mc_source (Networking / IPv4)
 
-Michal
+
+https://bugzilla.kernel.org/show_bug.cgi?id=205605
+
+            Bug ID: 205605
+           Summary: Memory leak in ip_mc_source (Networking / IPv4)
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 4.19.83
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: tristmd@gmail.com
+        Regression: No
+
+Info
+===
+
+Bug: Memory leak in ip_mc_source (Networking / IPv4)
+Kernel: 4.19.83 (other version probably also affected)
+Tested on: Debian 9 x86_64
+Report date: 2019-11-20
+
+Report
+===
+
+There is a memory leak in the function "ip_mc_source" located in
+"net/ipv4/igmp.c"
+
+Details:
+
+Syzkaller hit 'memory leak in ip_mc_source' bug.
+BUG: memory leak
+unreferenced object 0xffff888027e796c0 (size 64):
+  comm "syz-executor300", pid 2091, jiffies 4294798836 (age 14.231s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 ac 1e 00 01 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000006f09add3>] ip_mc_source+0xabb/0x1140 net/ipv4/igmp.c:2412
+    [<00000000048dc00d>] do_ip_setsockopt.isra.14+0x1860/0x3c60
+net/ipv4/ip_sockglue.c:996
+    [<0000000087e46a3b>] ip_setsockopt+0x40/0xf0 net/ipv4/ip_sockglue.c:1246
+    [<00000000a3cc60d4>] raw_setsockopt+0xd9/0x100 net/ipv4/raw.c:861
+    [<000000001fc763e1>] __sys_setsockopt+0x18e/0x370 net/socket.c:1901
+    [<00000000ea3dd357>] __do_sys_setsockopt net/socket.c:1912 [inline]
+    [<00000000ea3dd357>] __se_sys_setsockopt net/socket.c:1909 [inline]
+    [<00000000ea3dd357>] __x64_sys_setsockopt+0xba/0x150 net/socket.c:1909
+    [<00000000357c1bdf>] do_syscall_64+0x167/0x6c0 arch/x86/entry/common.c:293
+    [<000000000a84791e>] entry_SYSCALL_64_after_hwframe+0x49/0xbe
+    [<000000006f276b76>] 0xffffffffffffffff
+
+
+Reproducer (Syzkaller)
+===
+
+# {Threaded:false Collide:false Repeat:false RepeatTimes:0 Procs:1 Sandbox:none
+Fault:false FaultCall:-1 FaultNth:0 Leak:true EnableTun:false EnableNetDev:true
+EnableNetReset:false EnableCgroups:false EnableBinfmtMisc:false
+EnableCloseFds:false EnableKCSAN:false UseTmpDir:true HandleSegv:false
+Repro:false Trace:false}
+r0 = socket$nl_xfrm(0x10, 0x3, 0x6)
+r1 = socket$inet_icmp_raw(0x2, 0x3, 0x1)
+setsockopt$inet_mreqsrc(r1, 0x0, 0x27, &(0x7f0000000000)={@multicast2,
+@dev={0xac, 0x14, 0x14, 0x25}, @initdev={0xac, 0x1e, 0x0, 0x0}}, 0xc)
+ioctl$sock_ifreq(r0, 0x8922, &(0x7f0000000240)={'lo\x00', @ifru_flags})
+
+
+Reproducer (C code)
+===
+
+#define _GNU_SOURCE 
+
+#include <arpa/inet.h>
+#include <endian.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <netinet/in.h>
+#include <sched.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/mount.h>
+#include <sys/prctl.h>
+#include <sys/resource.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
+
+#include <linux/capability.h>
+#include <linux/if_addr.h>
+#include <linux/if_ether.h>
+#include <linux/if_link.h>
+#include <linux/if_tun.h>
+#include <linux/in6.h>
+#include <linux/ip.h>
+#include <linux/neighbour.h>
+#include <linux/net.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <linux/tcp.h>
+#include <linux/veth.h>
+
+unsigned long long procid;
+
+static uint64_t current_time_ms(void)
+{
+        struct timespec ts;
+        if (clock_gettime(CLOCK_MONOTONIC, &ts))
+        exit(1);
+        return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
+}
+
+static void use_temporary_dir(void)
+{
+        char tmpdir_template[] = "./syzkaller.XXXXXX";
+        char* tmpdir = mkdtemp(tmpdir_template);
+        if (!tmpdir)
+        exit(1);
+        if (chmod(tmpdir, 0777))
+        exit(1);
+        if (chdir(tmpdir))
+        exit(1);
+}
+
+static bool write_file(const char* file, const char* what, ...)
+{
+        char buf[1024];
+        va_list args;
+        va_start(args, what);
+        vsnprintf(buf, sizeof(buf), what, args);
+        va_end(args);
+        buf[sizeof(buf) - 1] = 0;
+        int len = strlen(buf);
+        int fd = open(file, O_WRONLY | O_CLOEXEC);
+        if (fd == -1)
+                return false;
+        if (write(fd, buf, len) != len) {
+                int err = errno;
+                close(fd);
+                errno = err;
+                return false;
+        }
+        close(fd);
+        return true;
+}
+
+static struct {
+        char* pos;
+        int nesting;
+        struct nlattr* nested[8];
+        char buf[1024];
+} nlmsg;
+
+static void netlink_init(int typ, int flags, const void* data, int size)
+{
+        memset(&nlmsg, 0, sizeof(nlmsg));
+        struct nlmsghdr* hdr = (struct nlmsghdr*)nlmsg.buf;
+        hdr->nlmsg_type = typ;
+        hdr->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | flags;
+        memcpy(hdr + 1, data, size);
+        nlmsg.pos = (char*)(hdr + 1) + NLMSG_ALIGN(size);
+}
+
+static void netlink_attr(int typ, const void* data, int size)
+{
+        struct nlattr* attr = (struct nlattr*)nlmsg.pos;
+        attr->nla_len = sizeof(*attr) + size;
+        attr->nla_type = typ;
+        memcpy(attr + 1, data, size);
+        nlmsg.pos += NLMSG_ALIGN(attr->nla_len);
+}
+
+static void netlink_nest(int typ)
+{
+        struct nlattr* attr = (struct nlattr*)nlmsg.pos;
+        attr->nla_type = typ;
+        nlmsg.pos += sizeof(*attr);
+        nlmsg.nested[nlmsg.nesting++] = attr;
+}
+
+static void netlink_done(void)
+{
+        struct nlattr* attr = nlmsg.nested[--nlmsg.nesting];
+        attr->nla_len = nlmsg.pos - (char*)attr;
+}
+
+static int netlink_send(int sock)
+{
+        if (nlmsg.pos > nlmsg.buf + sizeof(nlmsg.buf) || nlmsg.nesting)
+        exit(1);
+        struct nlmsghdr* hdr = (struct nlmsghdr*)nlmsg.buf;
+        hdr->nlmsg_len = nlmsg.pos - nlmsg.buf;
+        struct sockaddr_nl addr;
+        memset(&addr, 0, sizeof(addr));
+        addr.nl_family = AF_NETLINK;
+        unsigned n = sendto(sock, nlmsg.buf, hdr->nlmsg_len, 0, (struct
+sockaddr*)&addr, sizeof(addr));
+        if (n != hdr->nlmsg_len)
+        exit(1);
+        n = recv(sock, nlmsg.buf, sizeof(nlmsg.buf), 0);
+        if (n < sizeof(struct nlmsghdr) + sizeof(struct nlmsgerr))
+        exit(1);
+        if (hdr->nlmsg_type != NLMSG_ERROR)
+        exit(1);
+        return -((struct nlmsgerr*)(hdr + 1))->error;
+}
+
+static void netlink_add_device_impl(const char* type, const char* name)
+{
+        struct ifinfomsg hdr;
+        memset(&hdr, 0, sizeof(hdr));
+        netlink_init(RTM_NEWLINK, NLM_F_EXCL | NLM_F_CREATE, &hdr,
+sizeof(hdr));
+        if (name)
+                netlink_attr(IFLA_IFNAME, name, strlen(name));
+        netlink_nest(IFLA_LINKINFO);
+        netlink_attr(IFLA_INFO_KIND, type, strlen(type));
+}
+
+static void netlink_add_device(int sock, const char* type, const char* name)
+{
+        netlink_add_device_impl(type, name);
+        netlink_done();
+        int err = netlink_send(sock);
+        (void)err;
+}
+
+static void netlink_add_veth(int sock, const char* name, const char* peer)
+{
+        netlink_add_device_impl("veth", name);
+        netlink_nest(IFLA_INFO_DATA);
+        netlink_nest(VETH_INFO_PEER);
+        nlmsg.pos += sizeof(struct ifinfomsg);
+        netlink_attr(IFLA_IFNAME, peer, strlen(peer));
+        netlink_done();
+        netlink_done();
+        netlink_done();
+        int err = netlink_send(sock);
+        (void)err;
+}
+
+static void netlink_add_hsr(int sock, const char* name, const char* slave1,
+const char* slave2)
+{
+        netlink_add_device_impl("hsr", name);
+        netlink_nest(IFLA_INFO_DATA);
+        int ifindex1 = if_nametoindex(slave1);
+        netlink_attr(IFLA_HSR_SLAVE1, &ifindex1, sizeof(ifindex1));
+        int ifindex2 = if_nametoindex(slave2);
+        netlink_attr(IFLA_HSR_SLAVE2, &ifindex2, sizeof(ifindex2));
+        netlink_done();
+        netlink_done();
+        int err = netlink_send(sock);
+        (void)err;
+}
+
+static void netlink_device_change(int sock, const char* name, bool up,
+                                  const char* master, const void* mac, int
+macsize)
+{
+        struct ifinfomsg hdr;
+        memset(&hdr, 0, sizeof(hdr));
+        if (up)
+                hdr.ifi_flags = hdr.ifi_change = IFF_UP;
+        netlink_init(RTM_NEWLINK, 0, &hdr, sizeof(hdr));
+        netlink_attr(IFLA_IFNAME, name, strlen(name));
+        if (master) {
+                int ifindex = if_nametoindex(master);
+                netlink_attr(IFLA_MASTER, &ifindex, sizeof(ifindex));
+        }
+        if (macsize)
+                netlink_attr(IFLA_ADDRESS, mac, macsize);
+        int err = netlink_send(sock);
+        (void)err;
+}
+
+static int netlink_add_addr(int sock, const char* dev, const void* addr, int
+addrsize)
+{
+        struct ifaddrmsg hdr;
+        memset(&hdr, 0, sizeof(hdr));
+        hdr.ifa_family = addrsize == 4 ? AF_INET : AF_INET6;
+        hdr.ifa_prefixlen = addrsize == 4 ? 24 : 120;
+        hdr.ifa_scope = RT_SCOPE_UNIVERSE;
+        hdr.ifa_index = if_nametoindex(dev);
+        netlink_init(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, &hdr,
+sizeof(hdr));
+        netlink_attr(IFA_LOCAL, addr, addrsize);
+        netlink_attr(IFA_ADDRESS, addr, addrsize);
+        return netlink_send(sock);
+}
+
+static void netlink_add_addr4(int sock, const char* dev, const char* addr)
+{
+        struct in_addr in_addr;
+        inet_pton(AF_INET, addr, &in_addr);
+        int err = netlink_add_addr(sock, dev, &in_addr, sizeof(in_addr));
+        (void)err;
+}
+
+static void netlink_add_addr6(int sock, const char* dev, const char* addr)
+{
+        struct in6_addr in6_addr;
+        inet_pton(AF_INET6, addr, &in6_addr);
+        int err = netlink_add_addr(sock, dev, &in6_addr, sizeof(in6_addr));
+        (void)err;
+}
+
+#define DEV_IPV4 "172.20.20.%d"
+#define DEV_IPV6 "fe80::%02x"
+#define DEV_MAC 0x00aaaaaaaaaa
+
+static void netdevsim_add(unsigned int addr, unsigned int port_count)
+{
+        char buf[16];
+        sprintf(buf, "%u %u", addr, port_count);
+        write_file("/sys/bus/netdevsim/new_device", buf);
+}
+static void initialize_netdevices(void)
+{
+        char netdevsim[16];
+        sprintf(netdevsim, "netdevsim%d", (int)procid);
+        struct {
+                const char* type;
+                const char* dev;
+        } devtypes[] = {
+            {"ip6gretap", "ip6gretap0"},
+            {"bridge", "bridge0"},
+            {"vcan", "vcan0"},
+            {"bond", "bond0"},
+            {"team", "team0"},
+            {"dummy", "dummy0"},
+            {"nlmon", "nlmon0"},
+            {"caif", "caif0"},
+            {"batadv", "batadv0"},
+            {"vxcan", "vxcan1"},
+            {"netdevsim", netdevsim},
+            {"veth", 0},
+        };
+        const char* devmasters[] = {"bridge", "bond", "team"};
+        struct {
+                const char* name;
+                int macsize;
+                bool noipv6;
+        } devices[] = {
+            {"lo", ETH_ALEN},
+            {"sit0", 0},
+            {"bridge0", ETH_ALEN},
+            {"vcan0", 0, true},
+            {"tunl0", 0},
+            {"gre0", 0},
+            {"gretap0", ETH_ALEN},
+            {"ip_vti0", 0},
+            {"ip6_vti0", 0},
+            {"ip6tnl0", 0},
+            {"ip6gre0", 0},
+            {"ip6gretap0", ETH_ALEN},
+            {"erspan0", ETH_ALEN},
+            {"bond0", ETH_ALEN},
+            {"veth0", ETH_ALEN},
+            {"veth1", ETH_ALEN},
+            {"team0", ETH_ALEN},
+            {"veth0_to_bridge", ETH_ALEN},
+            {"veth1_to_bridge", ETH_ALEN},
+            {"veth0_to_bond", ETH_ALEN},
+            {"veth1_to_bond", ETH_ALEN},
+            {"veth0_to_team", ETH_ALEN},
+            {"veth1_to_team", ETH_ALEN},
+            {"veth0_to_hsr", ETH_ALEN},
+            {"veth1_to_hsr", ETH_ALEN},
+            {"hsr0", 0},
+            {"dummy0", ETH_ALEN},
+            {"nlmon0", 0},
+            {"vxcan1", 0, true},
+            {"caif0", ETH_ALEN},
+            {"batadv0", ETH_ALEN},
+            {netdevsim, ETH_ALEN},
+        };
+        int sock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+        if (sock == -1)
+        exit(1);
+        unsigned i;
+        for (i = 0; i < sizeof(devtypes) / sizeof(devtypes[0]); i++)
+                netlink_add_device(sock, devtypes[i].type, devtypes[i].dev);
+        for (i = 0; i < sizeof(devmasters) / (sizeof(devmasters[0])); i++) {
+                char master[32], slave0[32], veth0[32], slave1[32], veth1[32];
+                sprintf(slave0, "%s_slave_0", devmasters[i]);
+                sprintf(veth0, "veth0_to_%s", devmasters[i]);
+                netlink_add_veth(sock, slave0, veth0);
+                sprintf(slave1, "%s_slave_1", devmasters[i]);
+                sprintf(veth1, "veth1_to_%s", devmasters[i]);
+                netlink_add_veth(sock, slave1, veth1);
+                sprintf(master, "%s0", devmasters[i]);
+                netlink_device_change(sock, slave0, false, master, 0, 0);
+                netlink_device_change(sock, slave1, false, master, 0, 0);
+        }
+        netlink_device_change(sock, "bridge_slave_0", true, 0, 0, 0);
+        netlink_device_change(sock, "bridge_slave_1", true, 0, 0, 0);
+        netlink_add_veth(sock, "hsr_slave_0", "veth0_to_hsr");
+        netlink_add_veth(sock, "hsr_slave_1", "veth1_to_hsr");
+        netlink_add_hsr(sock, "hsr0", "hsr_slave_0", "hsr_slave_1");
+        netlink_device_change(sock, "hsr_slave_0", true, 0, 0, 0);
+        netlink_device_change(sock, "hsr_slave_1", true, 0, 0, 0);
+        netdevsim_add((int)procid, 4);
+        for (i = 0; i < sizeof(devices) / (sizeof(devices[0])); i++) {
+                char addr[32];
+                sprintf(addr, DEV_IPV4, i + 10);
+                netlink_add_addr4(sock, devices[i].name, addr);
+                if (!devices[i].noipv6) {
+                        sprintf(addr, DEV_IPV6, i + 10);
+                        netlink_add_addr6(sock, devices[i].name, addr);
+                }
+                uint64_t macaddr = DEV_MAC + ((i + 10ull) << 40);
+                netlink_device_change(sock, devices[i].name, true, 0, &macaddr,
+devices[i].macsize);
+        }
+        close(sock);
+}
+static void initialize_netdevices_init(void)
+{
+        int sock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+        if (sock == -1)
+        exit(1);
+        struct {
+                const char* type;
+                int macsize;
+                bool noipv6;
+                bool noup;
+        } devtypes[] = {
+            {"nr", 7, true},
+            {"rose", 5, true, true},
+        };
+        unsigned i;
+        for (i = 0; i < sizeof(devtypes) / sizeof(devtypes[0]); i++) {
+                char dev[32], addr[32];
+                sprintf(dev, "%s%d", devtypes[i].type, (int)procid);
+                sprintf(addr, "172.30.%d.%d", i, (int)procid + 1);
+                netlink_add_addr4(sock, dev, addr);
+                if (!devtypes[i].noipv6) {
+                        sprintf(addr, "fe88::%02x:%02x", i, (int)procid + 1);
+                        netlink_add_addr6(sock, dev, addr);
+                }
+                int macsize = devtypes[i].macsize;
+                uint64_t macaddr = 0xbbbbbb + ((unsigned long long)i << (8 *
+(macsize - 2))) +
+                                 (procid << (8 * (macsize - 1)));
+                netlink_device_change(sock, dev, !devtypes[i].noup, 0,
+&macaddr, macsize);
+        }
+        close(sock);
+}
+
+static void setup_common()
+{
+        if (mount(0, "/sys/fs/fuse/connections", "fusectl", 0, 0)) {
+        }
+}
+
+static void loop();
+
+static void sandbox_common()
+{
+        prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
+        setpgrp();
+        setsid();
+        struct rlimit rlim;
+        rlim.rlim_cur = rlim.rlim_max = (200 << 20);
+        setrlimit(RLIMIT_AS, &rlim);
+        rlim.rlim_cur = rlim.rlim_max = 32 << 20;
+        setrlimit(RLIMIT_MEMLOCK, &rlim);
+        rlim.rlim_cur = rlim.rlim_max = 136 << 20;
+        setrlimit(RLIMIT_FSIZE, &rlim);
+        rlim.rlim_cur = rlim.rlim_max = 1 << 20;
+        setrlimit(RLIMIT_STACK, &rlim);
+        rlim.rlim_cur = rlim.rlim_max = 0;
+        setrlimit(RLIMIT_CORE, &rlim);
+        rlim.rlim_cur = rlim.rlim_max = 256;
+        setrlimit(RLIMIT_NOFILE, &rlim);
+        if (unshare(CLONE_NEWNS)) {
+        }
+        if (unshare(CLONE_NEWIPC)) {
+        }
+        if (unshare(0x02000000)) {
+        }
+        if (unshare(CLONE_NEWUTS)) {
+        }
+        if (unshare(CLONE_SYSVSEM)) {
+        }
+        typedef struct {
+                const char* name;
+                const char* value;
+        } sysctl_t;
+        static const sysctl_t sysctls[] = {
+            {"/proc/sys/kernel/shmmax", "16777216"},
+            {"/proc/sys/kernel/shmall", "536870912"},
+            {"/proc/sys/kernel/shmmni", "1024"},
+            {"/proc/sys/kernel/msgmax", "8192"},
+            {"/proc/sys/kernel/msgmni", "1024"},
+            {"/proc/sys/kernel/msgmnb", "1024"},
+            {"/proc/sys/kernel/sem", "1024 1048576 500 1024"},
+        };
+        unsigned i;
+        for (i = 0; i < sizeof(sysctls) / sizeof(sysctls[0]); i++)
+                write_file(sysctls[i].name, sysctls[i].value);
+}
+
+int wait_for_loop(int pid)
+{
+        if (pid < 0)
+        exit(1);
+        int status = 0;
+        while (waitpid(-1, &status, __WALL) != pid) {
+        }
+        return WEXITSTATUS(status);
+}
+
+static void drop_caps(void)
+{
+        struct __user_cap_header_struct cap_hdr = {};
+        struct __user_cap_data_struct cap_data[2] = {};
+        cap_hdr.version = _LINUX_CAPABILITY_VERSION_3;
+        cap_hdr.pid = getpid();
+        if (syscall(SYS_capget, &cap_hdr, &cap_data))
+        exit(1);
+        const int drop = (1 << CAP_SYS_PTRACE) | (1 << CAP_SYS_NICE);
+        cap_data[0].effective &= ~drop;
+        cap_data[0].permitted &= ~drop;
+        cap_data[0].inheritable &= ~drop;
+        if (syscall(SYS_capset, &cap_hdr, &cap_data))
+        exit(1);
+}
+
+static int do_sandbox_none(void)
+{
+        if (unshare(CLONE_NEWPID)) {
+        }
+        int pid = fork();
+        if (pid != 0)
+                return wait_for_loop(pid);
+        setup_common();
+        sandbox_common();
+        drop_caps();
+        initialize_netdevices_init();
+        if (unshare(CLONE_NEWNET)) {
+        }
+        initialize_netdevices();
+        loop();
+        exit(1);
+}
+
+#define KMEMLEAK_FILE "/sys/kernel/debug/kmemleak"
+
+static void setup_leak()
+{
+        if (!write_file(KMEMLEAK_FILE, "scan"))
+        exit(1);
+        sleep(5);
+        if (!write_file(KMEMLEAK_FILE, "scan"))
+        exit(1);
+        if (!write_file(KMEMLEAK_FILE, "clear"))
+        exit(1);
+}
+
+static void check_leaks(void)
+{
+        int fd = open(KMEMLEAK_FILE, O_RDWR);
+        if (fd == -1)
+        exit(1);
+        uint64_t start = current_time_ms();
+        if (write(fd, "scan", 4) != 4)
+        exit(1);
+        sleep(1);
+        while (current_time_ms() - start < 4 * 1000)
+                sleep(1);
+        if (write(fd, "scan", 4) != 4)
+        exit(1);
+        static char buf[128 << 10];
+        ssize_t n = read(fd, buf, sizeof(buf) - 1);
+        if (n < 0)
+        exit(1);
+        int nleaks = 0;
+        if (n != 0) {
+                sleep(1);
+                if (write(fd, "scan", 4) != 4)
+        exit(1);
+                if (lseek(fd, 0, SEEK_SET) < 0)
+        exit(1);
+                n = read(fd, buf, sizeof(buf) - 1);
+                if (n < 0)
+        exit(1);
+                buf[n] = 0;
+                char* pos = buf;
+                char* end = buf + n;
+                while (pos < end) {
+                        char* next = strstr(pos + 1, "unreferenced object");
+                        if (!next)
+                                next = end;
+                        char prev = *next;
+                        *next = 0;
+                        fprintf(stderr, "BUG: memory leak\n%s\n", pos);
+                        *next = prev;
+                        pos = next;
+                        nleaks++;
+                }
+        }
+        if (write(fd, "clear", 5) != 5)
+        exit(1);
+        close(fd);
+        if (nleaks)
+                exit(1);
+}
+
+uint64_t r[2] = {0xffffffffffffffff, 0xffffffffffffffff};
+
+void loop(void)
+{
+                intptr_t res = 0;
+        res = syscall(__NR_socket, 0x10, 3, 6);
+        if (res != -1)
+                r[0] = res;
+        res = syscall(__NR_socket, 2, 3, 1);
+        if (res != -1)
+                r[1] = res;
+*(uint32_t*)0x20000000 = htobe32(0xe0000002);
+*(uint8_t*)0x20000004 = 0xac;
+*(uint8_t*)0x20000005 = 0x14;
+*(uint8_t*)0x20000006 = 0x14;
+*(uint8_t*)0x20000007 = 0x25;
+*(uint8_t*)0x20000008 = 0xac;
+*(uint8_t*)0x20000009 = 0x1e;
+*(uint8_t*)0x2000000a = 0;
+*(uint8_t*)0x2000000b = 1;
+        syscall(__NR_setsockopt, r[1], 0, 0x27, 0x20000000, 0xc);
+memcpy((void*)0x20000240,
+"lo\000\000\000\000\000\000\000\000\000\000\000\000\000\000", 16);
+*(uint16_t*)0x20000250 = 0;
+        syscall(__NR_ioctl, r[0], 0x8922, 0x20000240);
+
+}
+int main(void)
+{
+                syscall(__NR_mmap, 0x20000000, 0x1000000, 3, 0x32, -1, 0);
+        setup_leak();
+                        use_temporary_dir();
+                        do_sandbox_none();
+        check_leaks();
+        return 0;
+}
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
