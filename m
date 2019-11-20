@@ -2,90 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B3F1030C9
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 01:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 236B11030CA
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 01:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbfKTAfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 19:35:34 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40782 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbfKTAfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 19:35:33 -0500
-Received: by mail-lf1-f66.google.com with SMTP id v24so7759020lfi.7
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 16:35:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ullADfQgkA48BrR4+aJPh9qmRppfYHkw29yHAiIZ8XM=;
-        b=Q3O21H/clKlhd2sfP3lVeCOw87BdpWOJrFnw7vk5Wb20L26gsWhv5iZlE+C8bE5RvO
-         G1WRGbrS9Td3eLwaofuPL+IABWSf5EJDWFjCwJYLfl05I4ev7S70xJAErShd9tO4J1g0
-         Prpn5hq6zgbuHKiyoC9ctin5JpQ7cG4Rs7UeskH+bdz1qBkOMXEzwNm6UtcG3G4DFItr
-         Xia8CFCTBUmYmdg5Bo3uCuwz3HTfk6pmxD0gYCsVR/VgVfEgEOdgNOpsTXbirO5FELgj
-         1sKKOErfhqUT27bgfOmx6mrKFRwxYN5PMBpNFEgnuT5h1/lfvmZzTugMVV+kc1savN6U
-         c2Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ullADfQgkA48BrR4+aJPh9qmRppfYHkw29yHAiIZ8XM=;
-        b=hLW+xXq5dDD+z4vN2cffnUiq3lexFnDMIwrGwsFtQly+LzviGb79TyqTNbGGw+zvTm
-         BVk77rj3esxb3+xkL0Z4sWXf6PcelRY50OCcDRD85Fm2Wd1WE7GgmbgwyD62e40ls83P
-         /sl/XmeeHsMXFYVZmKa5t0VvUt8zvOyM1fya4enQ47yt/5WTMQ4AdlB6OyuNlCsihN7n
-         kP3ZCiyqDIwL8q8stZQQT9oI/mRcBa1JOziNPqkvTjMlmqodxIcMjroAUnjN/p+2Kx9v
-         GAV7VP2ldOQyf91W3JH+XF6eRX2Bga+OraNl+sxHrcfp7cwc5yW5fAZ84lcbwM00vlPZ
-         cEzA==
-X-Gm-Message-State: APjAAAVtPTnN8DCH/rV8xBbupzEoALaWq3yqvbLxfwg3WvJ6lqjkyCxg
-        slZFXdUeBZ4kD3kyTruU/hSHIkRWtgg=
-X-Google-Smtp-Source: APXvYqxPkYuSHQIMaEaXea8dxZNOItOwx9KvXao2LrHCCP8mtm021f3GgHMPjo/s+ybGouKBA9Yf4A==
-X-Received: by 2002:ac2:5119:: with SMTP id q25mr287290lfb.175.1574210131608;
-        Tue, 19 Nov 2019 16:35:31 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 12sm10837481lju.55.2019.11.19.16.35.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 16:35:31 -0800 (PST)
-Date:   Tue, 19 Nov 2019 16:35:19 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@resnulli.us,
-        nirranjan@chelsio.com, vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next v5 0/3] cxgb4: add TC-MATCHALL classifier
- offload
-Message-ID: <20191119163519.07765c0c@cakuba.netronome.com>
-In-Reply-To: <cover.1574176510.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574176510.git.rahul.lakkireddy@chelsio.com>
-Organization: Netronome Systems, Ltd.
+        id S1727403AbfKTAgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 19:36:02 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38458 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727357AbfKTAgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 19:36:02 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAK0Xo5J012411
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 16:36:01 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=3kUpRZHj702Y/yob3JDZBCRSHqUTPZrzsJVFLNJXR9Q=;
+ b=VJF1L/hsJ8vkk3EoMMx5hrZOZpSBEExKvVE8OSzM82/gij8WNtClqk6RFyGZGfAmBYtU
+ qbbYJfXZWqkWZuuRrmB3OHYyQEwKfXTYui+0nRjcdWgVvNWPJNU5lpWt3XN/hkniVdkH
+ p+6Op7uEaJIYIS8SOsC4H5MhsxFf498XI0A= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wb1pwdh4u-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 16:36:01 -0800
+Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 19 Nov 2019 16:35:58 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 43A072EC1A59; Tue, 19 Nov 2019 16:35:57 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: integrate verbose verifier log into test_progs
+Date:   Tue, 19 Nov 2019 16:35:48 -0800
+Message-ID: <20191120003548.4159797-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-19_08:2019-11-15,2019-11-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ malwarescore=0 clxscore=1015 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=8 impostorscore=0 bulkscore=0 spamscore=0 mlxscore=0
+ priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1911200004
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019 05:46:05 +0530, Rahul Lakkireddy wrote:
-> This series of patches add support to offload TC-MATCHALL classifier
-> to hardware to classify all outgoing and incoming traffic on the
-> underlying port. Only 1 egress and 1 ingress rule each can be
-> offloaded on the underlying port.
-> 
-> Patch 1 adds support for TC-MATCHALL classifier offload on the egress
-> side. TC-POLICE is the only action that can be offloaded on the egress
-> side and is used to rate limit all outgoing traffic to specified max
-> rate.
-> 
-> Patch 2 adds logic to reject the current rule offload if its priority
-> conflicts with existing rules in the TCAM.
-> 
-> Patch 3 adds support for TC-MATCHALL classifier offload on the ingress
-> side. The same set of actions supported by existing TC-FLOWER
-> classifier offload can be applied on all the incoming traffic.
-> 
-> Thanks,
-> Rahul
-> 
-> v5:
-> - Fixed commit message and comment to include comparison for equal
->   priority in patch 2.
+Add exra level of verboseness, activated by -vvv argument. When -vv is
+specified, verbose libbpf and verifier log (level 1) is output, even for
+successful tests. With -vvv, verifier log goes to level 2.
 
-LGTM, thanks!
+This is extremely useful to debug verifier failures, as well as just see the
+state and flow of verification. Before this, you'd have to go and modify
+load_program()'s source code inside libbpf to specify extra log_level flags,
+which is suboptimal to say the least.
+
+Currently -vv and -vvv triggering verifier output is integrated into
+test_stub's bpf_prog_load as well as bpf_verif_scale.c tests.
+
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ .../selftests/bpf/prog_tests/bpf_verif_scale.c |  4 +++-
+ tools/testing/selftests/bpf/test_progs.c       | 18 ++++++++++++------
+ tools/testing/selftests/bpf/test_progs.h       | 10 ++++++++--
+ tools/testing/selftests/bpf/test_stub.c        |  4 ++++
+ 4 files changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+index 1c01ee2600a9..9486c13af6b2 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+@@ -15,6 +15,8 @@ static int libbpf_debug_print(enum libbpf_print_level level,
+ 	return 0;
+ }
+ 
++extern int extra_prog_load_log_flags;
++
+ static int check_load(const char *file, enum bpf_prog_type type)
+ {
+ 	struct bpf_prog_load_attr attr;
+@@ -24,7 +26,7 @@ static int check_load(const char *file, enum bpf_prog_type type)
+ 	memset(&attr, 0, sizeof(struct bpf_prog_load_attr));
+ 	attr.file = file;
+ 	attr.prog_type = type;
+-	attr.log_level = 4;
++	attr.log_level = 4 | extra_prog_load_log_flags;
+ 	attr.prog_flags = BPF_F_TEST_RND_HI32;
+ 	err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
+ 	bpf_object__close(obj);
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index a05a807840c0..7fa7d08a8104 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -45,7 +45,7 @@ static void dump_test_log(const struct prog_test_def *test, bool failed)
+ 
+ 	fflush(stdout); /* exports env.log_buf & env.log_cnt */
+ 
+-	if (env.verbose || test->force_log || failed) {
++	if (env.verbosity > VERBOSE_NONE || test->force_log || failed) {
+ 		if (env.log_cnt) {
+ 			env.log_buf[env.log_cnt] = '\0';
+ 			fprintf(env.stdout, "%s", env.log_buf);
+@@ -346,14 +346,14 @@ static const struct argp_option opts[] = {
+ 	{ "verifier-stats", ARG_VERIFIER_STATS, NULL, 0,
+ 	  "Output verifier statistics", },
+ 	{ "verbose", ARG_VERBOSE, "LEVEL", OPTION_ARG_OPTIONAL,
+-	  "Verbose output (use -vv for extra verbose output)" },
++	  "Verbose output (use -vv or -vvv for progressively verbose output)" },
+ 	{},
+ };
+ 
+ static int libbpf_print_fn(enum libbpf_print_level level,
+ 			   const char *format, va_list args)
+ {
+-	if (!env.very_verbose && level == LIBBPF_DEBUG)
++	if (env.verbosity < VERBOSE_VERY && level == LIBBPF_DEBUG)
+ 		return 0;
+ 	vprintf(format, args);
+ 	return 0;
+@@ -419,6 +419,8 @@ int parse_num_list(const char *s, struct test_selector *sel)
+ 	return 0;
+ }
+ 
++extern int extra_prog_load_log_flags;
++
+ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+ {
+ 	struct test_env *env = state->input;
+@@ -460,9 +462,14 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+ 		env->verifier_stats = true;
+ 		break;
+ 	case ARG_VERBOSE:
++		env->verbosity = VERBOSE_NORMAL;
+ 		if (arg) {
+ 			if (strcmp(arg, "v") == 0) {
+-				env->very_verbose = true;
++				env->verbosity = VERBOSE_VERY;
++				extra_prog_load_log_flags = 1;
++			} else if (strcmp(arg, "vv") == 0) {
++				env->verbosity = VERBOSE_SUPER;
++				extra_prog_load_log_flags = 2;
+ 			} else {
+ 				fprintf(stderr,
+ 					"Unrecognized verbosity setting ('%s'), only -v and -vv are supported\n",
+@@ -470,7 +477,6 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+ 				return -EINVAL;
+ 			}
+ 		}
+-		env->verbose = true;
+ 		break;
+ 	case ARGP_KEY_ARG:
+ 		argp_usage(state);
+@@ -489,7 +495,7 @@ static void stdio_hijack(void)
+ 	env.stdout = stdout;
+ 	env.stderr = stderr;
+ 
+-	if (env.verbose) {
++	if (env.verbosity > VERBOSE_NONE) {
+ 		/* nothing to do, output to stdout by default */
+ 		return;
+ 	}
+diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+index 0c48f64f732b..8477df835979 100644
+--- a/tools/testing/selftests/bpf/test_progs.h
++++ b/tools/testing/selftests/bpf/test_progs.h
+@@ -39,6 +39,13 @@ typedef __u16 __sum16;
+ #include "trace_helpers.h"
+ #include "flow_dissector_load.h"
+ 
++enum verbosity {
++	VERBOSE_NONE,
++	VERBOSE_NORMAL,
++	VERBOSE_VERY,
++	VERBOSE_SUPER,
++};
++
+ struct test_selector {
+ 	const char *name;
+ 	bool *num_set;
+@@ -49,8 +56,7 @@ struct test_env {
+ 	struct test_selector test_selector;
+ 	struct test_selector subtest_selector;
+ 	bool verifier_stats;
+-	bool verbose;
+-	bool very_verbose;
++	enum verbosity verbosity;
+ 
+ 	bool jit_enabled;
+ 
+diff --git a/tools/testing/selftests/bpf/test_stub.c b/tools/testing/selftests/bpf/test_stub.c
+index 84e81a89e2f9..47e132726203 100644
+--- a/tools/testing/selftests/bpf/test_stub.c
++++ b/tools/testing/selftests/bpf/test_stub.c
+@@ -5,6 +5,8 @@
+ #include <bpf/libbpf.h>
+ #include <string.h>
+ 
++int extra_prog_load_log_flags = 0;
++
+ int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
+ 		       struct bpf_object **pobj, int *prog_fd)
+ {
+@@ -15,6 +17,7 @@ int bpf_prog_test_load(const char *file, enum bpf_prog_type type,
+ 	attr.prog_type = type;
+ 	attr.expected_attach_type = 0;
+ 	attr.prog_flags = BPF_F_TEST_RND_HI32;
++	attr.log_level = extra_prog_load_log_flags;
+ 
+ 	return bpf_prog_load_xattr(&attr, pobj, prog_fd);
+ }
+@@ -35,6 +38,7 @@ int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,
+ 	load_attr.license = license;
+ 	load_attr.kern_version = kern_version;
+ 	load_attr.prog_flags = BPF_F_TEST_RND_HI32;
++	load_attr.log_level = extra_prog_load_log_flags;
+ 
+ 	return bpf_load_program_xattr(&load_attr, log_buf, log_buf_sz);
+ }
+-- 
+2.17.1
+
