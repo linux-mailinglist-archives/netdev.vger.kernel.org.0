@@ -2,148 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D31104390
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:42:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DFC91043BA
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbfKTSmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 13:42:49 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:38050 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbfKTSmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:42:49 -0500
-Received: by mail-pl1-f194.google.com with SMTP id q18so181877pls.5
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 10:42:49 -0800 (PST)
+        id S1727124AbfKTS4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 13:56:41 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35512 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfKTS4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:56:41 -0500
+Received: by mail-qt1-f194.google.com with SMTP id n4so706872qte.2;
+        Wed, 20 Nov 2019 10:56:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=GsndgZbkO9+HcdbJnEXp/EJ5InPgj0aLpbzZc/Z2+C4=;
-        b=qV2kq1fafXm0YfbMR0Y07OgPg7xv8eVuoTIFPb6KRSqQr4YddD+5Ddj/cexIaPJ5LK
-         Hqvqx5lCGuSNIr0AOUiKSUAI+2hTdXwbTCEipcLUWgmgM8tyMEI0a3aKV/BAmmhmekLj
-         Oewr+RZh9BJEHmf+wEcai4MrpHu7V90Y8jRYWSctaD/aHOlzXk2zQqHnga7gIHzZ/VmX
-         sEFHTw2OisawOPgNy2pMZCXWbm/OAGfSEXjoKf4RlKQm10e/o7mnQKkyq+XVS2faZTgJ
-         4P9q3hnDnvyNGtzU7SHXjvlWei/6hk2ddnb/vuzqwsgK7R4VL7jW24MrNBdCWzn3YIMw
-         RC5Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AGdskKahMLrQ7700HUtIxdAUNyehyfxrPKNv8FqY4Rw=;
+        b=LW7JeeNASmzSiXfAn9/naBcr5YNrxZurq+H3FYCIzMRLYc4R3U/LM2kfOKc7LEzb2u
+         U0kfaTubWaBGRhFrevJDp3rZn0y0522WQABSwEdQdCIQkTW4fqAu3nfm8IWC6oYn+Z/s
+         gqIdF70zTpr0kv5KRc06xw+XbN6FYuqkpSO2D6O2nbLjxveyhKOk/j9r07KNgfQ2wgHW
+         G1aHEFjfBLj4FCdHqPEyjZRS/OWYg46ihBmGYkURXkeinkf3/8dLk5Aci90KRatyHm9p
+         01mZRdZSXk8eaAj4aszrBwiBQhdJSlD2aaUvVErHvCwDBlEXWMRDvA69pexCPJhl0Gv4
+         jouA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=GsndgZbkO9+HcdbJnEXp/EJ5InPgj0aLpbzZc/Z2+C4=;
-        b=bUbVbe7pDn2YqzgKoQ1M1nYoYblUH5fIp2NnL/+Wtq3Xlg6B+HKu71TnVcR3quGjrM
-         /CURte0TSxLXqGw6yU/kVCztLA8POJ5Wo1U8Ifiq3qNriO+Pdn6qQ2jFDuNWUPzga+HW
-         bhY2oUtZAO4LR2DLTgdzicxTAJVBVRWhGNVnLDcolJrt81GdfPF8biPujuC6aqTdkYvb
-         jaJ+Ej1VTz/FoBhYNCDMJFQv6GDpq9wNKnesVY0RxArl7gE1kE/JpWlyRrG+iccKJ2Hw
-         lfrikRWtqoYVC+8vNzEYyoSgFDb4RUiKvrOKjhplVMwuF7F026LIJHmC7JvPmVIB+bdc
-         IE+Q==
-X-Gm-Message-State: APjAAAUnkZGJRhio7Ot5k8fjggIUKf0W8RKQIgjL7UFfbtZWwvNCUUQL
-        w6X9gjyi2MSvVnoN5ML5ywM=
-X-Google-Smtp-Source: APXvYqz3ehkmwC2h80g4G21iXJtftZVIa/xDegN6HgXQ7rdgC3z6tPgJ2Gk+1EBF3sWmgP4jBVQejQ==
-X-Received: by 2002:a17:902:1:: with SMTP id 1mr4322027pla.338.1574275368575;
-        Wed, 20 Nov 2019 10:42:48 -0800 (PST)
-Received: from [172.26.111.194] ([2620:10d:c090:180::ee2d])
-        by smtp.gmail.com with ESMTPSA id r22sm90812pfg.54.2019.11.20.10.42.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Nov 2019 10:42:48 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, ilias.apalodimas@linaro.org,
-        lorenzo.bianconi@redhat.com, mcroce@redhat.com
-Subject: Re: [PATCH v5 net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for device
-Date:   Wed, 20 Nov 2019 10:42:47 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <3DD728CA-CF0B-4F26-AF64-4E1C357D0F0C@gmail.com>
-In-Reply-To: <20191120184901.59306f16@carbon>
-References: <cover.1574261017.git.lorenzo@kernel.org>
- <4a22dd0ef91220748c4d3da366082a13190fb794.1574261017.git.lorenzo@kernel.org>
- <20191120184901.59306f16@carbon>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AGdskKahMLrQ7700HUtIxdAUNyehyfxrPKNv8FqY4Rw=;
+        b=T7ht0SE2O8UQKILxSzryhFx7ZLr7X+by9QyMWclUkx0hGqQ2bhZuBNlRbLdWGRFjKd
+         5GKzu6wKn5XpCVvRpO+Z1lQtZXl2vhT5UopYl42jIZoQNe3s5QpU6l5sfsoNceoAT1Ca
+         jK+saRJRKObjFDgAvF2OPUFjSuCJwgoV4FGn7lq7j84yeShkAX2kIZY1JXkA1BQl4M/H
+         KdqGWDZBGbBdYWbHAP96GNpeUZGINY93YBKi4hQsKaB5Ku+XAAgNW3mKxDisFHj3Ps9m
+         nJSqsamco3rHCJ/QanRncANm2rPt+bhSkY/qwiGFb0F12NbKv39vlbSEuZr1a6lJ1PCP
+         KSUQ==
+X-Gm-Message-State: APjAAAWIUB2BrRKTQc2FTgf7gTPbd5RyIM0TMGEXpsbg//fT9dvrpUBQ
+        yKIW8Jai9TY2DAMQ/6qn+9JgBzVfWAy0KR2lrnaQysH0
+X-Google-Smtp-Source: APXvYqxwdNliyQp6cjOxPnqq9F/l1eQhgf0BZ+bErQ8vgFqWr2UyPnLuuei5Nj1IH2A7nDow+EBC7Qxm0Hjz6WfnUBA=
+X-Received: by 2002:ac8:6613:: with SMTP id c19mr4175068qtp.117.1574276198214;
+ Wed, 20 Nov 2019 10:56:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+References: <cover.1574126683.git.daniel@iogearbox.net> <41436f9a5d5dd8ef5e88e05b1439e68428fdf2a3.1574126683.git.daniel@iogearbox.net>
+In-Reply-To: <41436f9a5d5dd8ef5e88e05b1439e68428fdf2a3.1574126683.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Nov 2019 10:56:27 -0800
+Message-ID: <CAEf4BzaVvPa5dLfPCfiXik9tnbXZaW2omxXiFwdJbFb7s1Z=PQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/8] bpf: add poke dependency tracking for prog
+ array maps
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 20 Nov 2019, at 9:49, Jesper Dangaard Brouer wrote:
-
-> On Wed, 20 Nov 2019 16:54:18 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Mon, Nov 18, 2019 at 5:38 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
->> Introduce the following parameters in order to add the possibility to 
->> sync
->> DMA memory for device before putting allocated pages in the page_pool
->> caches:
->> - PP_FLAG_DMA_SYNC_DEV: if set in page_pool_params flags, all pages 
->> that
->>   the driver gets from page_pool will be DMA-synced-for-device 
->> according
->>   to the length provided by the device driver. Please note 
->> DMA-sync-for-CPU
->>   is still device driver responsibility
->> - offset: DMA address offset where the DMA engine starts copying rx 
->> data
->> - max_len: maximum DMA memory size page_pool is allowed to flush. 
->> This
->>   is currently used in __page_pool_alloc_pages_slow routine when 
->> pages
->>   are allocated from page allocator
->> These parameters are supposed to be set by device drivers.
->>
->> This optimization reduces the length of the DMA-sync-for-device.
->> The optimization is valid because pages are initially
->> DMA-synced-for-device as defined via max_len. At RX time, the driver
->> will perform a DMA-sync-for-CPU on the memory for the packet length.
->> What is important is the memory occupied by packet payload, because
->> this is the area CPU is allowed to read and modify. As we don't track
->> cache-lines written into by the CPU, simply use the packet payload 
->> length
->> as dma_sync_size at page_pool recycle time. This also take into 
->> account
->> any tail-extend.
->>
->> Tested-by: Matteo Croce <mcroce@redhat.com>
->> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->> ---
+> This work adds program tracking to prog array maps. This is needed such
+> that upon prog array updates/deletions we can fix up all programs which
+> make use of this tail call map. We add ops->map_poke_{un,}track() helpers
+> to maps to maintain the list of programs and ops->map_poke_run() for
+> triggering the actual update. bpf_array_aux is extended to contain the
+> list head and poke_mutex in order to serialize program patching during
+> updates/deletions. bpf_free_used_maps() will untrack the program shortly
+> before dropping the reference to the map.
 >
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> The prog_array_map_poke_run() is triggered during updates/deletions and
+> walks the maintained prog list. It checks in their poke_tabs whether the
+> map and key is matching and runs the actual bpf_arch_text_poke() for
+> patching in the nop or new jmp location. Depending on the type of update,
+> we use one of BPF_MOD_{NOP_TO_JUMP,JUMP_TO_NOP,JUMP_TO_JUMP}.
 >
-> [...]
->> @@ -281,8 +309,8 @@ static bool __page_pool_recycle_direct(struct 
->> page *page,
->>  	return true;
->>  }
->>
->> -void __page_pool_put_page(struct page_pool *pool,
->> -			  struct page *page, bool allow_direct)
->> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
->> +			  unsigned int dma_sync_size, bool allow_direct)
->>  {
->>  	/* This allocator is optimized for the XDP mode that uses
->>  	 * one-frame-per-page, but have fallbacks that act like the
->> @@ -293,6 +321,10 @@ void __page_pool_put_page(struct page_pool 
->> *pool,
->>  	if (likely(page_ref_count(page) == 1)) {
->>  		/* Read barrier done in page_ref_count / READ_ONCE */
->>
->> +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
->> +			page_pool_dma_sync_for_device(pool, page,
->> +						      dma_sync_size);
->> +
->>  		if (allow_direct && in_serving_softirq())
->>  			if (__page_pool_recycle_direct(page, pool))
->>  				return;
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  include/linux/bpf.h   |  36 ++++++++++
+>  kernel/bpf/arraymap.c | 151 +++++++++++++++++++++++++++++++++++++++++-
+>  kernel/bpf/core.c     |   9 ++-
+>  3 files changed, 193 insertions(+), 3 deletions(-)
 >
-> I am slightly concerned this touch the fast-path code. But at-least on
-> Intel, I don't think this is measurable.  And for the ARM64 board it
-> was a huge win... thus I'll accept this.
 
-For the next series:
+[...]
 
-The "in_serving_softirq()" check shows up on profiling.  I'd
-like to remove this and just have a "direct" flag, where the
-caller takes the responsibility of the correct context.
--- 
-Jonathan
+>  #endif /* _LINUX_BPF_H */
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index 5be12db129cc..d2b559c6659e 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -586,10 +586,14 @@ int bpf_fd_array_map_update_elem(struct bpf_map *map, struct file *map_file,
+>         if (IS_ERR(new_ptr))
+>                 return PTR_ERR(new_ptr);
+>
+> +       bpf_map_poke_lock(map);
+>         old_ptr = xchg(array->ptrs + index, new_ptr);
+> +       if (map->ops->map_poke_run)
+> +               map->ops->map_poke_run(map, index, old_ptr, new_ptr);
+> +       bpf_map_poke_unlock(map);
+
+so this is a bit subtle, if I understand correctly. I was originally
+going to suggest that if no map->ops->map_poke_run is set, then
+bpf_map_pole_{lock,unlock} shouldn't be called at all. But then I
+realized that this creates a race, where xchg can happen in different
+order than map_poke_runs. Am I right?
+
+If yes, I wonder if it will be better to express this logic more
+explicitly as below, to avoid someone else "optimizing" the code
+later:
+
+if (map->ops->map_poke_run) {
+    bpf_map_poke_lock(map);
+    old_ptr = xchg(array->ptrs + index, new_ptr);
+    bpf_map_poke_unlock(map);
+} else {
+    old_ptr = xchg(array->ptrs + index, new_ptr);
+}
+
+This will make it more apparent that something different is happing
+when poke tracking is supported by a map.
+
+Am I overthinking this?
+
+> +
+>         if (old_ptr)
+>                 map->ops->map_fd_put_ptr(old_ptr);
+> -
+>         return 0;
+>  }
+>
+
+[...]
+
+> +static void prog_array_map_poke_untrack(struct bpf_map *map,
+> +                                       struct bpf_prog_aux *prog_aux)
+> +{
+> +       struct prog_poke_elem *elem, *tmp;
+> +       struct bpf_array_aux *aux;
+> +
+> +       aux = container_of(map, struct bpf_array, map)->aux;
+> +       mutex_lock(&aux->poke_mutex);
+> +       list_for_each_entry_safe(elem, tmp, &aux->poke_progs, list) {
+> +               if (elem->aux == prog_aux) {
+> +                       list_del_init(&elem->list);
+> +                       kfree(elem);
+
+break; ?
+
+> +               }
+> +       }
+> +       mutex_unlock(&aux->poke_mutex);
+> +}
+> +
+
+[...]
+
+> +
+> +                       ret = bpf_arch_text_poke(poke->ip, type,
+> +                                                old ? (u8 *)old->bpf_func +
+> +                                                poke->adj_off : NULL,
+> +                                                new ? (u8 *)new->bpf_func +
+> +                                                poke->adj_off : NULL);
+
+nit: extract old/new address calculation, so it's not multi-line
+wrapped? It's a bit hard to follow.
+
+> +                       BUG_ON(ret < 0 && ret != -EINVAL);
+> +               }
+> +       }
+> +}
+> +
+
+[...]
