@@ -2,169 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F4010464C
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 23:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDA9E10465C
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 23:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfKTWHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 17:07:43 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27102 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725819AbfKTWHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 17:07:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574287662;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WKtm25Ps4MeWjgK6jPgD7e0SXC/v+lNrkASHkARakjI=;
-        b=PPC0N1e9BqP+dzuId8oZqBBoSCsTlCwYd4MqVdF2t3pbU9hJJZ7YUbLCwEmZT3G8omSlx5
-        iS7efD+dNS3MHx9HOnB55w/q6+m1SASqovYq/IaYI0R7ZPS21A2Yrs+/laoCoTflltgcy9
-        7N2WzSUKtmT/9MKLgYe7suVnnk9xHmA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-197-bKikakWVP_mL_hSahyl8og-1; Wed, 20 Nov 2019 17:07:39 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A97C801E74;
-        Wed, 20 Nov 2019 22:07:37 +0000 (UTC)
-Received: from x1.home (ovpn-116-56.phx2.redhat.com [10.3.116.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6306F5F923;
-        Wed, 20 Nov 2019 22:07:33 +0000 (UTC)
-Date:   Wed, 20 Nov 2019 15:07:32 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191120150732.2fffa141@x1.home>
-In-Reply-To: <20191120181108.GJ22515@ziepe.ca>
-References: <20191119164632.GA4991@ziepe.ca>
-        <20191119134822-mutt-send-email-mst@kernel.org>
-        <20191119191547.GL4991@ziepe.ca>
-        <20191119163147-mutt-send-email-mst@kernel.org>
-        <20191119231023.GN4991@ziepe.ca>
-        <20191119191053-mutt-send-email-mst@kernel.org>
-        <20191120014653.GR4991@ziepe.ca>
-        <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
-        <20191120133835.GC22515@ziepe.ca>
-        <20191120102856.7e01e2e2@x1.home>
-        <20191120181108.GJ22515@ziepe.ca>
-Organization: Red Hat
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: bKikakWVP_mL_hSahyl8og-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+        id S1726529AbfKTWW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 17:22:26 -0500
+Received: from mail-eopbgr10048.outbound.protection.outlook.com ([40.107.1.48]:31714
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726358AbfKTWWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Nov 2019 17:22:25 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YyWL8BwA7YOmlKc9SSZDRacTdA42JXTFv7loerm5SNweF47bPzP/rLmts1olDIkwXNaHDpvXO+Y5mXGHrdVaDk6ec8QLTV/W5iPap/ybVmmRFhvTfClePFuPq8BgQPG+tOzFw+sGR9WSOnZU5xJj+P7DaeWUg7yJnaVbhSRUZ3BzYxUaiUMaI9FxiJMO79OXYkOUdPBIMRrqPoYmOxxQRcib7wuM+vEm4qC2SN3cHubuhbqxLsKNYWYVVw7bBVBPrhYuqPqsqFFrbHYSk5sWq2fLa6MztuEjAk7v8PHvso1u5rWNdxOtXegiG552x3YpGjibQhQkQsO8OkK31tMh2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ihsl6FMboNVvQ1CHXI62fJBlDCrEPdPnNWus7JO6WX4=;
+ b=eyixXeiKnWmgKeLg7YWazI9EKp7hpAUVSNhVbAxQpmMvHH5M22UZOcsA3VoYNNEsa1lP+H7k8+LsSbPZ+4A/WjUBWZRew0Kkv17N6qNkIcEXZYbLESyS0AyBN1g1Rp4N/2FxGgochEgC+tSriAAMT9NJaWh6aNb9F0LzcW73EquhUGNz+H4D87m8+DqJowkAchWiHEpFupWwdWJ7i8tXYQ2k9MO1KUlTxGMg9QN6BQ+1ElP+74G85xvjxrVldPXlHdSkO+S0Pvz24ySIg7vof1tdnkhkJqeTaIbSvz/zC1nkyiZqHYsdbBwCbuzon7vKKOLK3uBUbvpYj1QTcRcG3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ihsl6FMboNVvQ1CHXI62fJBlDCrEPdPnNWus7JO6WX4=;
+ b=d9J8qitLXI5VHazMxtsJ4wCq+ixiU0oRJcp0BsBEezXsNVn9/8M4OFB+XLszxW+m9+9oeMIRVQq34gP+Xv0TjjCVo7/AKjqtELTqe77dDwWvTEBbsWVZhSQUqQfs85vy712OLOHhGqGXGSmMXo5HDAFDBC4IPlppdP5p/ar8Qec=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB5341.eurprd05.prod.outlook.com (20.178.8.218) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2474.17; Wed, 20 Nov 2019 22:22:21 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2474.015; Wed, 20 Nov 2019
+ 22:22:21 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: [PATCH mlx5-next 0/5] Mellanox, mlx5-next updates 2019-11-20
+Thread-Topic: [PATCH mlx5-next 0/5] Mellanox, mlx5-next updates 2019-11-20
+Thread-Index: AQHVn/D5J01bRWykDkqcH1UDlc+PeQ==
+Date:   Wed, 20 Nov 2019 22:22:21 +0000
+Message-ID: <20191120222128.29646-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR03CA0001.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::14) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 5302b7cf-5952-4849-b723-08d76e081c27
+x-ms-traffictypediagnostic: VI1PR05MB5341:|VI1PR05MB5341:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB53411BA91523A5A8CD3E7BBEBE4F0@VI1PR05MB5341.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 02272225C5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(199004)(189003)(476003)(102836004)(316002)(99286004)(66476007)(15650500001)(8936002)(14454004)(386003)(2906002)(6506007)(52116002)(110136005)(6436002)(6486002)(66556008)(54906003)(2616005)(66446008)(478600001)(64756008)(66066001)(66946007)(6636002)(5660300002)(486006)(50226002)(81166006)(71190400001)(71200400001)(7736002)(186003)(305945005)(81156014)(36756003)(25786009)(8676002)(4326008)(6512007)(450100002)(14444005)(256004)(86362001)(6116002)(3846002)(1076003)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5341;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JmGBa+jGlm1PIfiCeDpwvTPhT0Nlf3u4/fgRDgTkcbBpspWafpS1T16l7EgA3vs4T/ca6MynrdkjeaZNkoE9q1Gtnr7boYsjnlqdnOMgBCdhB7bnaYmz7mZkZS6pcM5/2IzUU3LY7QLhzWk4Ecfa5ntJlUbilWWC9ajwLsex4effjlmLCqbefiHzw/T69JFCanpZdFXr+7HcUmdUU/KJJOgDEhLPuRn7djKW93/5qzquc/1Z709qmKwsYh6GMNLMZJaR1EHUdkfZau4oac5JLez5XbrsUZp6Saeae61cvNFstp8SJYed6MaJya3DlbUEn7hBI4lYdgrcvFjfTREgWOYuDPHNlXZyfNRLR1+R75aHz/K77duWtMxR6MXypCKFZRT+XZPgd6a04bkchKyUbphD6A83gTcqe2kCPE3Ds+4FW7P0YaVV3kQ18IxVQbPv
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5302b7cf-5952-4849-b723-08d76e081c27
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2019 22:22:21.1130
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JCAm8JHjamrSx8NKORKmjnXTYQ2DdRU6XWQ+HC1ZP3LTJEXnbDaO0BMtFV1Ox0TjpMMYJDGyMVaT4JDdc3MP3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5341
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019 14:11:08 -0400
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
+This series adds misc updates to mlx5 shared header files and, to include
+new HW layouts for registers that are going to be used in upcoming
+submission to net-next.
 
-> On Wed, Nov 20, 2019 at 10:28:56AM -0700, Alex Williamson wrote:
-> > > > Are you objecting the mdev_set_iommu_deivce() stuffs here?   =20
-> > >=20
-> > > I'm questioning if it fits the vfio PCI device security model, yes. =
-=20
-> >=20
-> > The mdev IOMMU backing device model is for when an mdev device has
-> > IOMMU based isolation, either via the PCI requester ID or via requester
-> > ID + PASID.  For example, an SR-IOV VF may be used by a vendor to
-> > provide IOMMU based translation and isolation, but the VF may not be
-> > complete otherwise to provide a self contained device.  It might
-> > require explicit coordination and interaction with the PF driver, ie.
-> > mediation.   =20
->=20
-> In this case the PF does not look to be involved, the ICF kernel
-> driver is only manipulating registers in the same VF that the vfio
-> owns the IOMMU for.
+From Aya, Resource dump registers for devlink health dump.
+From Eran, MCAM and MIRC registers for firmware flash re-activate flow.
+From Leon, Don't write read only fields to vport context.
 
-The mdev_set_iommu_device() call is probably getting caught up in the
-confusion of mdev as it exists today being vfio specific.  What I
-described in my reply is vfio specific.  The vfio iommu backend is
-currently the only code that calls mdev_get_iommu_device(), JasonW
-doesn't use it in the virtio-mdev code, so this seems like a stray vfio
-specific interface that's setup by IFC but never used.
+In case of no objection this series will be applied to mlx5-next tree
+and sent later as pull request to both net-next and rdma-next trees,
+with the corresponding features on top.
 
-> This is why I keep calling it a "so-called mediated device" because it
-> is absolutely not clear what the kernel driver is mediating. Nearly
-> all its work is providing a subsystem-style IOCTL interface under the
-> existing vfio multiplexer unrelated to vfio requirements for DMA.
+Thanks,
+Saeed.
 
-Names don't always evolve well to what an interface becomes, see for
-example vfio.  However, even in the vfio sense of mediated devices we
-have protocol translation.  The mdev vendor driver translates vfio API
-callbacks into hardware specific interactions.  Is this really much
-different?
+---
 
-> > The IOMMU backing device is certainly not meant to share an IOMMU
-> > address space with host drivers, except as necessary for the
-> > mediation of the device.  The vfio model manages the IOMMU domain of
-> > the backing device exclusively, any attempt to dual-host the device
-> > respective to the IOMMU should fault in the dma/iommu-ops.  Thanks, =20
->=20
-> Sounds more reasonable if the kernel dma_ops are prevented while vfio
-> is using the device.
+Aya Levin (1):
+  net/mlx5: Expose resource dump register mapping
 
-AFAIK we can't mix DMA ops and IOMMU ops at the same time and the
-domain information necessary for the latter is owned within the vfio
-IOMMU backend.
+Eran Ben Elisha (3):
+  net/mlx5: Add structures layout for new MCAM access reg groups
+  net/mlx5: Read MCAM register groups 1 and 2
+  net/mlx5: Add structures and defines for MIRC register
 
-> However, to me it feels wrong that just because a driver wishes to use
-> PASID or IOMMU features it should go through vfio and mediated
-> devices.
+Leon Romanovsky (1):
+  net/mlx5: Don't write read-only fields in MODIFY_HCA_VPORT_CONTEXT
+    command
 
-I don't think I said this.  IOMMU backing of an mdev is an acceleration
-feature as far as vfio-mdev is concerned.  There are clearly other ways
-to use the IOMMU.
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |  15 +-
+ .../net/ethernet/mellanox/mlx5/core/vport.c   |  27 +--
+ include/linux/mlx5/device.h                   |  14 +-
+ include/linux/mlx5/driver.h                   |   4 +-
+ include/linux/mlx5/mlx5_ifc.h                 | 162 +++++++++++++++++-
+ 5 files changed, 193 insertions(+), 29 deletions(-)
 
-> It is not even necessary as we have several examples already of
-> drivers using these features without vfio.
-
-Of course.
-
-> I feel like mdev is suffering from mission creep. I see people
-> proposing to use mdev for many wild things, the Mellanox SF stuff in
-> the other thread and this 'virtio subsystem' being the two that have
-> come up publicly this month.
-
-Tell me about it... ;)
-=20
-> Putting some boundaries on mdev usage would really help people know
-> when to use it. My top two from this discussion would be:
->=20
-> - mdev devices should only bind to vfio. It is not a general kernel
->   driver matcher mechanism. It is not 'virtual-bus'.
-
-I think this requires the driver-core knowledge to really appreciate.
-Otherwise there's apparently a common need to create sub-devices and
-without closer inspection of the bus:driver API contract, it's too easy
-to try to abstract the device:driver API via the bus.  mdev already has
-a notion that the device itself can use any API, but the interface to
-the bus is the vendor provided, vfio compatible callbacks.
-
-> - mdev & vfio are not a substitute for a proper kernel subsystem. We
->   shouldn't export a complex subsystem-like ioctl API through
->   vfio ioctl extensions. Make a proper subsystem, it is not so hard.
-
-This is not as clear to me, is "ioctl" used once or twice too often or
-are you describing a defined structure of callbacks as an ioctl API?
-The vfio mdev interface is just an extension of the file descriptor
-based vfio device API.  The device needs to handle actual ioctls, but
-JasonW's virtio-mdev series had their own set of callbacks.  Maybe a
-concrete example of this item would be helpful.  Thanks,
-
-Alex
+--=20
+2.21.0
 
