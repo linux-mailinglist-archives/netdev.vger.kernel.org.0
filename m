@@ -2,270 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B8A103A20
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:35:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F49103A2C
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729788AbfKTMfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 07:35:14 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:57342 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729782AbfKTMfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:35:14 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAKCY3H8079949;
-        Wed, 20 Nov 2019 12:34:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
- bh=1mIC35+eNFMPCfiPugk21WBGXDV6EWboy/r9beQ7IHU=;
- b=MX188vRXVc2QXEjhjNw/5j+0TJ9/lJ+uRJp6Q8vFOQRYvVeVUlD7sWhV9yPXjeMprDS/
- G0c8l35MnoIj9K/udadA0AeEIIf680K4HvO9HOAFY/MrpmXzV881dIVgD8BSgkB/6Q+n
- PbryTvL4TopadcMJxx3e7UMsCYa3C8C4r9yXhSAsp1q32j+5RQJ2AWsW8NYPzdaJSFOH
- l9mOIFPJ9IOvvQaEXnfsywbh2Y+5JBf5Rqs8Hdvc7k/f5eZB35422bVS6QV5+NciJgQz
- iMmFTSEG3I4vzHZvYanQay9e/vhlxInki81HWL9zTFiGLmtF6FjwsaINWDJQOveFhSoh wg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2wa8htw9t3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Nov 2019 12:34:57 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAKCTFLB053490;
-        Wed, 20 Nov 2019 12:34:56 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 2wcemfj9d1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Nov 2019 12:34:56 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xAKCYrar006458;
-        Wed, 20 Nov 2019 12:34:54 GMT
-Received: from kili.mountain (/41.210.147.113)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 20 Nov 2019 04:34:51 -0800
-Date:   Wed, 20 Nov 2019 15:34:38 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jiri Pirko <jiri@mellanox.com>, David Ahern <dsahern@gmail.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: rtnetlink: prevent underflows in do_setvfinfo()
-Message-ID: <20191120123438.vxn2ngnxzpcaqot4@kili.mountain>
+        id S1729820AbfKTMhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 07:37:51 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:33167 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727736AbfKTMhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:37:50 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iXPEu-0005Wx-3t; Wed, 20 Nov 2019 13:37:44 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:7957:e6e8:9a3f:15ac] (unknown [IPv6:2a03:f580:87bc:d400:7957:e6e8:9a3f:15ac])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 7958B480196;
+        Wed, 20 Nov 2019 12:37:40 +0000 (UTC)
+To:     Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
+        davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, nagasure@xilinx.com
+References: <1574251865-19592-1-git-send-email-srinivas.neeli@xilinx.com>
+ <1574251865-19592-3-git-send-email-srinivas.neeli@xilinx.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH 2/2] can: xilinx_can: Fix usage of skb memory
+Message-ID: <30572daa-1c75-37a2-20f5-c1f818acc603@pengutronix.de>
+Date:   Wed, 20 Nov 2019 13:37:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9446 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1911200113
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9446 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-1911200114
+In-Reply-To: <1574251865-19592-3-git-send-email-srinivas.neeli@xilinx.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="VJ7JV65o8ehgq8fGg8Ur0l68J44ivsOpz"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "ivm->vf" variable is a u32, but the problem is that a number of
-drivers cast it to an int and then forget to check for negatives.  An
-example of this is in the cxgb4 driver.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--VJ7JV65o8ehgq8fGg8Ur0l68J44ivsOpz
+Content-Type: multipart/mixed; boundary="hle4YSMSiBFJwCiISAd8u83kxFrR0E3Xa";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
+ davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ git@xilinx.com, nagasure@xilinx.com
+Message-ID: <30572daa-1c75-37a2-20f5-c1f818acc603@pengutronix.de>
+Subject: Re: [PATCH 2/2] can: xilinx_can: Fix usage of skb memory
+References: <1574251865-19592-1-git-send-email-srinivas.neeli@xilinx.com>
+ <1574251865-19592-3-git-send-email-srinivas.neeli@xilinx.com>
+In-Reply-To: <1574251865-19592-3-git-send-email-srinivas.neeli@xilinx.com>
 
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-  2890  static int cxgb4_mgmt_get_vf_config(struct net_device *dev,
-  2891                                      int vf, struct ifla_vf_info *ivi)
-                                            ^^^^^^
-  2892  {
-  2893          struct port_info *pi = netdev_priv(dev);
-  2894          struct adapter *adap = pi->adapter;
-  2895          struct vf_info *vfinfo;
-  2896  
-  2897          if (vf >= adap->num_vfs)
-                    ^^^^^^^^^^^^^^^^^^^
-  2898                  return -EINVAL;
-  2899          vfinfo = &adap->vfinfo[vf];
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+--hle4YSMSiBFJwCiISAd8u83kxFrR0E3Xa
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-There are 48 functions affected.
+On 11/20/19 1:11 PM, Srinivas Neeli wrote:
+> As per linux can framework, driver not allowed to touch the skb memory
+> after can_put_echo_skb() call.
+> This patch fixes the same.
+> https://www.spinics.net/lists/linux-can/msg02199.html
 
-drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:8435 hclge_set_vf_vlan_filter() warn: can 'vfid' underflow 's32min-2147483646'
-drivers/net/ethernet/freescale/enetc/enetc_pf.c:377 enetc_pf_set_vf_mac() warn: can 'vf' underflow 's32min-2147483646'
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:2899 cxgb4_mgmt_get_vf_config() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:2960 cxgb4_mgmt_set_vf_rate() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3019 cxgb4_mgmt_set_vf_rate() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3038 cxgb4_mgmt_set_vf_vlan() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c:3086 cxgb4_mgmt_set_vf_link_state() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/chelsio/cxgb/cxgb2.c:791 get_eeprom() warn: can 'i' underflow 's32min-(-4),0,4-s32max'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:82 bnxt_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:164 bnxt_set_vf_trust() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:186 bnxt_get_vf_config() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:228 bnxt_set_vf_mac() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:264 bnxt_set_vf_vlan() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:293 bnxt_set_vf_bw() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c:333 bnxt_set_vf_link_state() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c:2595 bnx2x_vf_op_prep() warn: can 'vfidx' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c:2595 bnx2x_vf_op_prep() warn: can 'vfidx' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2281 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2285 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2286 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2292 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
-drivers/net/ethernet/broadcom/bnx2x/bnx2x_vfpf.c:2297 bnx2x_post_vf_bulletin() warn: can 'vf' underflow 's32min-63'
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1832 qlcnic_sriov_set_vf_mac() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1864 qlcnic_sriov_set_vf_tx_rate() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:1937 qlcnic_sriov_set_vf_vlan() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:2005 qlcnic_sriov_get_vf_config() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c:2036 qlcnic_sriov_set_vf_spoofchk() warn: can 'vf' underflow 's32min-254'
-drivers/net/ethernet/emulex/benet/be_main.c:1914 be_get_vf_config() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/emulex/benet/be_main.c:1915 be_get_vf_config() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/emulex/benet/be_main.c:1922 be_set_vf_tvt() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/emulex/benet/be_main.c:1951 be_clear_vf_tvt() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/emulex/benet/be_main.c:2063 be_set_vf_tx_rate() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/emulex/benet/be_main.c:2091 be_set_vf_link_state() warn: can 'vf' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:2609 ice_set_vf_port_vlan() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3050 ice_get_vf_cfg() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3103 ice_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3181 ice_set_vf_mac() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3237 ice_set_vf_trust() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c:3286 ice_set_vf_link_state() warn: can 'vf_id' underflow 's32min-65534'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:3919 i40e_validate_vf() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:3957 i40e_ndo_set_vf_mac() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4104 i40e_ndo_set_vf_port_vlan() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4263 i40e_ndo_set_vf_bw() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4309 i40e_ndo_get_vf_config() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4371 i40e_ndo_set_vf_link_state() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4441 i40e_ndo_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4441 i40e_ndo_set_vf_spoofchk() warn: can 'vf_id' underflow 's32min-2147483646'
-drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4504 i40e_ndo_set_vf_trust() warn: can 'vf_id' underflow 's32min-2147483646'
+NACK.
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
+Don't make a copy of the CAN frame, move the can_put_echo_skb() after
+you don't need the skb anymore.
 
-I reported this bug to the linux-rdma mailing list in April and this
-patch wasn't considered very elegant.  I can see how that's true.  The
-developer offered to write a fix which would update all the drivers to
-use u32 throughout.  I reminded him in September that this bug still
-needs to be fixed.
+Marc
 
-I think there may be security implications and this patch is easy to
-backport to stable kernels so in that sense, it might be a better
-approach.  Also this patch might prevent underflows in future drivers.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
- net/core/rtnetlink.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 000eddb1207d..9f7aa448bd11 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2251,6 +2251,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_MAC]) {
- 		struct ifla_vf_mac *ivm = nla_data(tb[IFLA_VF_MAC]);
- 
-+		if (ivm->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_mac)
- 			err = ops->ndo_set_vf_mac(dev, ivm->vf,
-@@ -2262,6 +2264,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_VLAN]) {
- 		struct ifla_vf_vlan *ivv = nla_data(tb[IFLA_VF_VLAN]);
- 
-+		if (ivv->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_vlan)
- 			err = ops->ndo_set_vf_vlan(dev, ivv->vf, ivv->vlan,
-@@ -2294,6 +2298,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 		if (len == 0)
- 			return -EINVAL;
- 
-+		if (ivvl[0]->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = ops->ndo_set_vf_vlan(dev, ivvl[0]->vf, ivvl[0]->vlan,
- 					   ivvl[0]->qos, ivvl[0]->vlan_proto);
- 		if (err < 0)
-@@ -2304,6 +2310,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 		struct ifla_vf_tx_rate *ivt = nla_data(tb[IFLA_VF_TX_RATE]);
- 		struct ifla_vf_info ivf;
- 
-+		if (ivt->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_get_vf_config)
- 			err = ops->ndo_get_vf_config(dev, ivt->vf, &ivf);
-@@ -2322,6 +2330,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_RATE]) {
- 		struct ifla_vf_rate *ivt = nla_data(tb[IFLA_VF_RATE]);
- 
-+		if (ivt->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_rate)
- 			err = ops->ndo_set_vf_rate(dev, ivt->vf,
-@@ -2334,6 +2344,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_SPOOFCHK]) {
- 		struct ifla_vf_spoofchk *ivs = nla_data(tb[IFLA_VF_SPOOFCHK]);
- 
-+		if (ivs->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_spoofchk)
- 			err = ops->ndo_set_vf_spoofchk(dev, ivs->vf,
-@@ -2345,6 +2357,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_LINK_STATE]) {
- 		struct ifla_vf_link_state *ivl = nla_data(tb[IFLA_VF_LINK_STATE]);
- 
-+		if (ivl->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_link_state)
- 			err = ops->ndo_set_vf_link_state(dev, ivl->vf,
-@@ -2358,6 +2372,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 
- 		err = -EOPNOTSUPP;
- 		ivrssq_en = nla_data(tb[IFLA_VF_RSS_QUERY_EN]);
-+		if (ivrssq_en->vf >= INT_MAX)
-+			return -EINVAL;
- 		if (ops->ndo_set_vf_rss_query_en)
- 			err = ops->ndo_set_vf_rss_query_en(dev, ivrssq_en->vf,
- 							   ivrssq_en->setting);
-@@ -2368,6 +2384,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_TRUST]) {
- 		struct ifla_vf_trust *ivt = nla_data(tb[IFLA_VF_TRUST]);
- 
-+		if (ivt->vf >= INT_MAX)
-+			return -EINVAL;
- 		err = -EOPNOTSUPP;
- 		if (ops->ndo_set_vf_trust)
- 			err = ops->ndo_set_vf_trust(dev, ivt->vf, ivt->setting);
-@@ -2378,15 +2396,18 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 	if (tb[IFLA_VF_IB_NODE_GUID]) {
- 		struct ifla_vf_guid *ivt = nla_data(tb[IFLA_VF_IB_NODE_GUID]);
- 
-+		if (ivt->vf >= INT_MAX)
-+			return -EINVAL;
- 		if (!ops->ndo_set_vf_guid)
- 			return -EOPNOTSUPP;
--
- 		return handle_vf_guid(dev, ivt, IFLA_VF_IB_NODE_GUID);
- 	}
- 
- 	if (tb[IFLA_VF_IB_PORT_GUID]) {
- 		struct ifla_vf_guid *ivt = nla_data(tb[IFLA_VF_IB_PORT_GUID]);
- 
-+		if (ivt->vf >= INT_MAX)
-+			return -EINVAL;
- 		if (!ops->ndo_set_vf_guid)
- 			return -EOPNOTSUPP;
- 
--- 
-2.11.0
+--hle4YSMSiBFJwCiISAd8u83kxFrR0E3Xa--
 
+--VJ7JV65o8ehgq8fGg8Ur0l68J44ivsOpz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3VM4wACgkQWsYho5Hk
+nSBrPggAplHwHyBXpA/MuKwjV84TSemich3Q5fZBolKKoLgLUsbjoFC8Ca5zRciK
+VM6IAyZWEHq4xuh5T2gcPegBYt1eQm1ECa2J1UNFpfAoY7YB28+L8H6ncQrE9QdC
+nZS+6F4PMdGAYMJ0HzWE9NAom62sw/8A18MuYV4zgFapX1BuiWxe3QFbh02bHAtV
+AuFI2B7NtM/M/p+pswzxii9y7BB0g4qvz0jJgQHh4W5I8nKrMZyKx+ulCQRaV4mA
+qqBRyCYbtVexQBru5181nsuHxDish1KASQP5OCAD48Ip763mOcqmRTYuG4Wp3HAk
++Gl47CTBvwWDWgA+larxa1AMq1wBGA==
+=SK8i
+-----END PGP SIGNATURE-----
+
+--VJ7JV65o8ehgq8fGg8Ur0l68J44ivsOpz--
