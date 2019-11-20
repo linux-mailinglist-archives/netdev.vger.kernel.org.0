@@ -2,152 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5ED103391
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 06:14:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 916101033F1
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 06:36:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfKTFOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 00:14:05 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53359 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbfKTFOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 00:14:05 -0500
-Received: by mail-wm1-f67.google.com with SMTP id u18so5613069wmc.3
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 21:14:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=his8lKo9hSH/XwYSk9rUBhNb2CWrxWuRbEzCXHEu4gs=;
-        b=OwEhPHZG1R4/gDe1G9+pSYLXHvYacEBrmFFLKZ7GBmfeZPweIc3cVbf/DG8//cp+9z
-         qVvffCFPvh+MN6fRLLdLj8kPMLMeD3HLkGJ1xSa2tFdJAe3ijIhjrcnP6MCQd68H16Qf
-         9zx6+C2F7z6BzK9dXW6OGlwv8c2Qpi+GOVIdjKPOCnBW+s3AI8FK9omvEwIMZeTH2xth
-         am2/oDgfa73jN8V0s/hPOis4xnYzi6yZNHGlmJGRBjaW4eKt5GQ3ZXhODonTx97lju96
-         ugtm4dFmMZqjE5VC5se08IhcuE4XGLnAZmzmbx6D+pGrnD+hpf7J5nJvMJno9PCzsYlG
-         9lpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=his8lKo9hSH/XwYSk9rUBhNb2CWrxWuRbEzCXHEu4gs=;
-        b=dXf9H4ks3UhyHMlnM6NXIG+6pZ8uNNHd4XtYz08ECV/WnXS/Cf7mJ3QQ/8+PHvyzWM
-         CBHQpaELdWvT/FxqtFz8OLJ+negIfSXHAgMweSnw0+dhs/kdZtRN2CzHdDsNv0yEw5+K
-         jUarSTvvSevdI9c4tPIZTohZxy9bZFALR8COrlsjW0r0A85KsKHNK1yMj/tBYkQeYpM3
-         GiGocob+YcGEmg3yGbTHrGr22KhFxPXVCwni+ahSLqoYWUgKsPUFaR3d2/xzkvqEsRpV
-         X3AMhJK8mhzrUWl4Pz2ynFN0vijf+BIlBM1ExkpozQHBcHNcxrkL/+cKLdtH8/Yvw2ra
-         YyUQ==
-X-Gm-Message-State: APjAAAVQ/fVQ3MnzvpD+9UsEVFfS+EbdzOlgoA6xnq4pJefGbhiciNIL
-        1yKWtREkvrt28rutQ+xlfh1+u/t38Z+BUmYPggg=
-X-Google-Smtp-Source: APXvYqwNdgeAj62u1OIM4ZH6Myi46IZp91Mpt/J/PwumYXy2YjoFOf4SGP39SS3l/H14ZyPGZZprpjkZ+1V/lSFqYQU=
-X-Received: by 2002:a1c:3b08:: with SMTP id i8mr918652wma.56.1574226843058;
- Tue, 19 Nov 2019 21:14:03 -0800 (PST)
+        id S1726293AbfKTFgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 00:36:41 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31698 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725554AbfKTFgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 00:36:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574228199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=knznamAEiTfG9nRki0ZkB5/yRqneVEsD5AOtQiV05Uk=;
+        b=GQ04AGt0HfWZv9EINlhOuHDucUzO4CRVGDESO2KMqZ0oLxLRomPPw1z8ErHUmS8vOMUhJ9
+        c/mi45sUIw2gXbLfUl0j0NaAKjKmQIxZrCPz0hVoAhP9OLuLFBSTvu7WuLx/my4+6bDLVj
+        nZ89UEQ8gHLnwX688v/d+2E9pkKSR/k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-162-rr-kAgRyNyeLrJBfzRHjFw-1; Wed, 20 Nov 2019 00:36:36 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09F91800052;
+        Wed, 20 Nov 2019 05:36:35 +0000 (UTC)
+Received: from [10.72.12.82] (ovpn-12-82.pek2.redhat.com [10.72.12.82])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 817EA60BFB;
+        Wed, 20 Nov 2019 05:35:24 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+From:   Jason Wang <jasowang@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Tiwei Bie <tiwei.bie@intel.com>
+References: <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191119164632.GA4991@ziepe.ca>
+ <20191119134822-mutt-send-email-mst@kernel.org>
+ <20191119191547.GL4991@ziepe.ca>
+ <20191119163147-mutt-send-email-mst@kernel.org>
+ <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
+Message-ID: <3ef5bc09-dd74-44bc-30f1-b773fac448a2@redhat.com>
+Date:   Wed, 20 Nov 2019 13:34:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <cover.1574155869.git.lucien.xin@gmail.com> <af3c3d95717d8ff70c2c21621cb2f49c310593e2.1574155869.git.lucien.xin@gmail.com>
- <a84fb50a28d9a931e641924962eb05e8cfca12bf.1574155869.git.lucien.xin@gmail.com>
- <20191119162724.2ea1d240@cakuba.netronome.com>
-In-Reply-To: <20191119162724.2ea1d240@cakuba.netronome.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 20 Nov 2019 13:15:00 +0800
-Message-ID: <CADvbK_cuyBZW5D0PnkQrEQaOQVrWbt3DLdaOMvQkRgEh40NfOQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] net: sched: add erspan option support to act_tunnel_key
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Simon Horman <simon.horman@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: rr-kAgRyNyeLrJBfzRHjFw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 8:27 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Tue, 19 Nov 2019 17:31:47 +0800, Xin Long wrote:
-> > @@ -149,6 +159,49 @@ tunnel_key_copy_vxlan_opt(const struct nlattr *nla, void *dst, int dst_len,
-> >       return sizeof(struct vxlan_metadata);
-> >  }
-> >
-> > +static int
-> > +tunnel_key_copy_erspan_opt(const struct nlattr *nla, void *dst, int dst_len,
-> > +                        struct netlink_ext_ack *extack)
-> > +{
-> > +     struct nlattr *tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX + 1];
-> > +     int err;
-> > +
-> > +     err = nla_parse_nested(tb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX, nla,
-> > +                            erspan_opt_policy, extack);
-> > +     if (err < 0)
-> > +             return err;
-> > +
-> > +     if (!tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER]) {
-> > +             NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option ver");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     if (dst) {
-> > +             struct erspan_metadata *md = dst;
-> > +
-> > +             nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER];
-> > +             md->version = nla_get_u8(nla);
-> > +
-> > +             if (md->version == 1 &&
-> > +                 tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX]) {
-> > +                     nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX];
-> > +                     md->u.index = nla_get_be32(nla);
-> > +             } else if (md->version == 2 &&
-> > +                        tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR] &&
-> > +                        tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID]) {
-> > +                     nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR];
-> > +                     md->u.md2.dir = nla_get_u8(nla);
-> > +                     nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID];
-> > +                     set_hwid(&md->u.md2, nla_get_u8(nla));
-> > +             } else {
-> > +                     NL_SET_ERR_MSG(extack, "erspan ver is incorrect or some option is missed");
->
-> I think s/missed/missing/
-ah right.
 
+On 2019/11/20 =E4=B8=8A=E5=8D=8811:59, Jason Wang wrote:
+> Well, VFIO have multiple types of API. The design is to stick the VFIO
+> DMA model like container work for making DMA API work for userspace
+> driver. We can invent something our own but it must duplicate with the
+> exist API and it will be extra overhead when VFIO DMA API starts to
+> support stuffs like nesting or PASID.
 >
-> But I think it'd be better if the validation was done also when dst is
-> not yet allocated. I don't think it matters today, just think it'd be
-> cleaner.
-sure, I can improve in that way.
+> So in conclusion for vhost-mdev:
+>
+> - DMA is still done through VFIO manner e.g container fd etc.
+> - device API is totally virtio specific.
+>
+> Compared with vfio-pci device, the only difference is the device API,
+> we don't use device fd but vhost-net fd,
 
->
-> > +                     return -EINVAL;
-> > +             }
-> > +     }
-> > +
-> > +     return sizeof(struct erspan_metadata);
-> > +}
-> > +
-> >  static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
-> >                               int dst_len, struct netlink_ext_ack *extack)
-> >  {
-> > @@ -190,6 +243,18 @@ static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
-> >                       opts_len += opt_len;
-> >                       type = TUNNEL_VXLAN_OPT;
-> >                       break;
-> > +             case TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN:
-> > +                     if (type) {
-> > +                             NL_SET_ERR_MSG(extack, "Wrong type for erspan options");
->
-> Wrong or duplicate, right? If I'm reading this right unlike for Geneve
-> opts there can be only one instance of opts for other types.
-yes, 'Duplicate' is better,
-will change to "Duplicate type for erspan options", as well as for vxlan.
 
-Thanks.
+Correction here, device fd is used here instead of vhost-net fd.
 
->
-> > +                             return -EINVAL;
-> > +                     }
-> > +                     opt_len = tunnel_key_copy_erspan_opt(attr, dst,
-> > +                                                          dst_len, extack);
-> > +                     if (opt_len < 0)
-> > +                             return opt_len;
-> > +                     opts_len += opt_len;
-> > +                     type = TUNNEL_ERSPAN_OPT;
-> > +                     break;
-> >               }
-> >       }
-> >
+Thanks
+
+
+>   but of course we can switch
+> to use device fd. I'm sure we can settle this part down by having a
+> way that is acceptable by both sides.
+
