@@ -2,60 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1523A104317
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:16:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07103104381
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:35:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbfKTSP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 13:15:58 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57660 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727656AbfKTSP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:15:58 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1AAE914BD135D;
-        Wed, 20 Nov 2019 10:15:56 -0800 (PST)
-Date:   Wed, 20 Nov 2019 10:15:53 -0800 (PST)
-Message-Id: <20191120.101553.1725688714844743661.davem@davemloft.net>
-To:     lucien.xin@gmail.com
-Cc:     netdev@vger.kernel.org, simon.horman@netronome.com
-Subject: Re: [PATCH net-next] lwtunnel: add support for multiple geneve opts
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <9c4231b54baf60619c110c818ca7a6eb37a2e52e.1574156351.git.lucien.xin@gmail.com>
-References: <9c4231b54baf60619c110c818ca7a6eb37a2e52e.1574156351.git.lucien.xin@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 20 Nov 2019 10:15:56 -0800 (PST)
+        id S1727955AbfKTSfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 13:35:05 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39541 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727563AbfKTSfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:35:04 -0500
+Received: by mail-qt1-f196.google.com with SMTP id t8so606366qtc.6;
+        Wed, 20 Nov 2019 10:35:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pZuTqS/YMEv/CcY1o7IiiVS2Y53ZWuBFrP+npt1ogsY=;
+        b=PwiGmkAsHFIQSikwWTw2kyOfJBRSgz7MoaD/KW1sF78yU1n7DMo4gNLQibYPaquQ0F
+         uZMt1QwspE5+ej5ZPt0vv2+toMlev85HVZ+nZv+Oe7KNv7Nt2PV4pg2s/MzJTbvPgzfe
+         qWQWCYrrSjaQGI5vWRda+uAfWILN/cjnBnnKMaE/PZu6fuOBT8bbSQ9L4UlWyrCo2AeI
+         eplNgbY/hhhPA25rFRfrjSqT0ONQCOmkPCipahWYv1JJjBFTgMXAtMVC+T3VsmmKw0Md
+         +jnzDv33bKeLbo1zTw/u6C3j77nFdHMJbt1ZO49b8zPKBYQ6duelQaBX3Oy5nM0XSUDx
+         LDtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pZuTqS/YMEv/CcY1o7IiiVS2Y53ZWuBFrP+npt1ogsY=;
+        b=KmyOLmtmtrlLH04yIA2McFTAOoTfNruYu0lo2LBaeXNoyhOMbcwpVnsaz+ZOt/ixY0
+         mA+tdbprcaTNPYm1jNacWB0xCP+OEEJ4fFrx4v2XIAoTXEI4g+FOpkPuuUAv80jbLhjQ
+         WwQbM6x9hNuDKUKgKWrEMmkl70p08fyQjjDmeQyG7A02Ug1sCvdOTN0Xbu+AAQoz1R2a
+         Sg4BDGpmiYOpM2foQjb9m4LuT8NLQcf+MbWFmkuXjG2o6Oe4ZKc1UuJSogDSl5porZmg
+         z4dmR/CiBwESvoy9kGPTQUam3srRAzI2nvQxaKpgNk5TV6QggDANFv+xXTEpiGxMQAoE
+         uv4A==
+X-Gm-Message-State: APjAAAXga+OE5ndidwsIQY9E4AJLHzz7G1ra7O5yTUhE3pDn6c/8e5N0
+        hqz4jJiAsqjIL4EkP7Fp+1Z4fzjFKHjv+tALpvI=
+X-Google-Smtp-Source: APXvYqxsNBnP+52k3EteNymAqmsOcfqcASX2OtZAIp6heNGM55bRBl2CcWa36sWE69G71V52d8Klc+nsHZ+WlWChBiU=
+X-Received: by 2002:ac8:199d:: with SMTP id u29mr3940883qtj.93.1574274903227;
+ Wed, 20 Nov 2019 10:35:03 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1574126683.git.daniel@iogearbox.net> <a08b0f2ed58fe90eb733d5ad8409285ee126c888.1574126683.git.daniel@iogearbox.net>
+In-Reply-To: <a08b0f2ed58fe90eb733d5ad8409285ee126c888.1574126683.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Nov 2019 10:34:52 -0800
+Message-ID: <CAEf4BzZrRo=TGZRNO8e5q-N3CW4KLDOOBONSRAqM7yWOHBndvg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/8] bpf: add initial poke descriptor table for
+ jit images
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
-Date: Tue, 19 Nov 2019 17:39:11 +0800
+On Mon, Nov 18, 2019 at 5:38 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Add initial poke table data structures and management to the BPF
+> prog that can later be used by JITs. Also add an instance of poke
+> specific data for tail call maps; plan for later work is to extend
+> this also for BPF static keys.
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  include/linux/bpf.h    | 20 ++++++++++++++++++++
+>  include/linux/filter.h | 10 ++++++++++
+>  kernel/bpf/core.c      | 34 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 64 insertions(+)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 836e49855bf9..cad4382c1265 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -488,6 +488,24 @@ struct bpf_func_info_aux {
+>         bool unreliable;
+>  };
+>
+> +enum bpf_jit_poke_reason {
+> +       BPF_POKE_REASON_TAIL_CALL,
+> +};
+> +
+> +/* Descriptor of pokes pointing /into/ the JITed image. */
+> +struct bpf_jit_poke_descriptor {
+> +       void *ip;
+> +       union {
+> +               struct {
+> +                       struct bpf_map *map;
+> +                       u32 key;
+> +               } tail_call;
+> +       };
+> +       u8 ip_stable;
 
-> geneve RFC (draft-ietf-nvo3-geneve-14) allows a geneve packet to carry
-> multiple geneve opts, so it's necessary for lwtunnel to support adding
-> multiple geneve opts in one lwtunnel route. But vxlan and erspan opts
-> are still only allowed to add one option.
-> 
-> With this patch, iproute2 could make it like:
-> 
->   # ip r a 1.1.1.0/24 encap ip id 1 geneve_opts 0:0:12121212,1:2:12121212 \
->     dst 10.1.0.2 dev geneve1
-> 
->   # ip r a 1.1.1.0/24 encap ip id 1 vxlan_opts 456 \
->     dst 10.1.0.2 dev erspan1
-> 
->   # ip r a 1.1.1.0/24 encap ip id 1 erspan_opts 1:123:0:0 \
->     dst 10.1.0.2 dev erspan1
-> 
-> Which are pretty much like cls_flower and act_tunnel_key.
-> 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+this one is bool, any reason you used u8 instead?
 
-Applied, thanks Xin.
+> +       u8 adj_off;
+> +       u16 reason;
+> +};
+> +
+
+[...]
