@@ -2,172 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 902CC104133
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 17:45:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB214104187
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 17:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729966AbfKTQp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 11:45:29 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:44961 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729901AbfKTQp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 11:45:28 -0500
-Received: by mail-qt1-f193.google.com with SMTP id o11so182609qtr.11
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 08:45:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=q1Cjbt1crzEAWmbqF8+hcYqt5jaBaZcCfokyHmlm+ZE=;
-        b=jN7A5asvd6GYVcpqiyvx4PrQ1taaPGc3wWST/UZf8modwzUdyuMV0Ldym4k2MugPls
-         HQGQEGZW00LzrXy5HPuVBjwRuFbWfU05hdBTEbZToMwdUTNdTtQVj9m9puaZqvHH9X+G
-         PpYEvEeWGvR0B2vA2WQxgPP/FveyyT1eaa0ztp0oUEspEXqYKgckX4NMcMjP96niJEAp
-         jyHu2bSeQYhrFisDhP3b6+zkyFisrMbchDyzNS/kCGNg18LHkBSiK3UDoRnjeLP+mec5
-         UBzUGa3NKhNWggwMX1DpWnhkqtejG3/1lW4JohsNw9UuCU9O0kfLL5EZhGqUyRDFoFtN
-         MpIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=q1Cjbt1crzEAWmbqF8+hcYqt5jaBaZcCfokyHmlm+ZE=;
-        b=VPJTuOOtxFMAZpruPZVk4oHUPRA0zK+TqjeN908Nn7eR7hftFZmcVl4R10FQXGniWk
-         TByvU2WLy6BY13OEc1uYpA+agi+gurIB3SYNCC7KlpKDvaM472WrVipZ8Y6Df0/8O9Xp
-         LhZGovT7UzZuPNIJofOWHOaJ777EPhb8YD7iCZHKVwAKlIfSG9BRPER426psf6wU5PqQ
-         jr4oroz9Gxp8Qr9jvv1zybW/InzONb8hK0eox2xDXEazyBq/VhdJT+a++X4zPvdw3o9W
-         vtur4lAytafrTI59/4RGBVFgIJsVeUupTsRd4fyzdtutf2Z086QNMPWNlC2Pg1zatEWu
-         9C8A==
-X-Gm-Message-State: APjAAAUcNYTVY47WgwDLO59HeOf5O4xVntcGxGOBVz+dyz0dj6tg+3xU
-        HffNmDhcl98h2G/iVto9HDmubg==
-X-Google-Smtp-Source: APXvYqwbHsjBsBVLwFNKQge8I0L4IlOfNnRWURPlA6eW2epxh/y9TADVEeZ/MKxrIQtLu9b5PHBosA==
-X-Received: by 2002:ac8:641:: with SMTP id e1mr3584184qth.319.1574268326456;
-        Wed, 20 Nov 2019 08:45:26 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id j89sm14324797qte.72.2019.11.20.08.45.25
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 20 Nov 2019 08:45:25 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iXT6b-0007oA-2a; Wed, 20 Nov 2019 12:45:25 -0400
-Date:   Wed, 20 Nov 2019 12:45:25 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191120164525.GH22515@ziepe.ca>
-References: <20191119191547.GL4991@ziepe.ca>
- <20191119163147-mutt-send-email-mst@kernel.org>
- <20191119231023.GN4991@ziepe.ca>
- <20191119191053-mutt-send-email-mst@kernel.org>
- <20191120014653.GR4991@ziepe.ca>
- <20191120022141-mutt-send-email-mst@kernel.org>
- <20191120130319.GA22515@ziepe.ca>
- <20191120083908-mutt-send-email-mst@kernel.org>
- <20191120143054.GF22515@ziepe.ca>
- <20191120093607-mutt-send-email-mst@kernel.org>
+        id S1732947AbfKTQzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 11:55:00 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:36924 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732934AbfKTQy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 11:54:59 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D3CC7B8007D;
+        Wed, 20 Nov 2019 16:54:57 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 20 Nov
+ 2019 16:54:51 +0000
+Subject: Re: [PATCH net-next v4 0/5] net: introduce and use route hint
+To:     Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        "Eric Dumazet" <eric.dumazet@gmail.com>
+References: <cover.1574252982.git.pabeni@redhat.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <7b5fe6ee-4fa2-a6bd-890c-160fff3ec74d@solarflare.com>
+Date:   Wed, 20 Nov 2019 16:54:47 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191120093607-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <cover.1574252982.git.pabeni@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25054.003
+X-TM-AS-Result: No-6.276800-8.000000-10
+X-TMASE-MatchedRID: hls5oAVArl/mLzc6AOD8DfHkpkyUphL9Rf40pT7Zmv5v/W4eavUSapT4
+        r6hJ177amkxoTJDlzWNb4Fh2UiAd4PXWu0SHMjQBLTHwnYOikQ19twJClWWSl3SvE1gDT3721DQ
+        W12L1ci58Ad4EgPHGQ8RqIRn9VYOdYMunTeJZsMlQUls+WYG/w7LUwzrY3osFFvJGNU1BtTDlMv
+        pqkHcOysOBiom+a8tvAG6+QM9NR6iuiou+aTfj1smiSRTHZQzXdc0p8KbvPW1oe+v2w6RhK9kbV
+        xyiYfRTNNN0dk/lb44qq3YUbX8N0L9ZdlL8eonaRjjVhf+j/wpKdDgyPBo71yq2rl3dzGQ1z0mb
+        Rnu/n++d/9kSGm/YvXa9CHaEyjwVTBnadAgCdc9U6q4Cl4ofkCcb9ysEzj2xk46vCHW9WxRJyfs
+        VBqEdnFx4+7VedSCX3JLkghNbODAGxECHxaZMBwbZYBYdvap6SswcLuSaZJZzlLqE1zO6+EMMpr
+        cbiest
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.276800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25054.003
+X-MDID: 1574268898-Jo39NCoo-7Jf
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 09:57:17AM -0500, Michael S. Tsirkin wrote:
-> On Wed, Nov 20, 2019 at 10:30:54AM -0400, Jason Gunthorpe wrote:
-> > On Wed, Nov 20, 2019 at 08:43:20AM -0500, Michael S. Tsirkin wrote:
-> > > On Wed, Nov 20, 2019 at 09:03:19AM -0400, Jason Gunthorpe wrote:
-> > > > On Wed, Nov 20, 2019 at 02:38:08AM -0500, Michael S. Tsirkin wrote:
-> > > > > > > I don't think that extends as far as actively encouraging userspace
-> > > > > > > drivers poking at hardware in a vendor specific way.  
-> > > > > > 
-> > > > > > Yes, it does, if you can implement your user space requirements using
-> > > > > > vfio then why do you need a kernel driver?
-> > > > > 
-> > > > > People's requirements differ. You are happy with just pass through a VF
-> > > > > you can already use it. Case closed. There are enough people who have
-> > > > > a fixed userspace that people have built virtio accelerators,
-> > > > > now there's value in supporting that, and a vendor specific
-> > > > > userspace blob is not supporting that requirement.
-> > > > 
-> > > > I have no idea what you are trying to explain here. I'm not advocating
-> > > > for vfio pass through.
-> > > 
-> > > You seem to come from an RDMA background, used to userspace linking to
-> > > vendor libraries to do basic things like push bits out on the network,
-> > > because users live on the performance edge and rebuild their
-> > > userspace often anyway.
-> > > 
-> > > Lots of people are not like that, they would rather have the
-> > > vendor-specific driver live in the kernel, with userspace being
-> > > portable, thank you very much.
-> > 
-> > You are actually proposing a very RDMA like approach with a split
-> > kernel/user driver design. Maybe the virtio user driver will turn out
-> > to be 'portable'.
-> > 
-> > Based on the last 20 years of experience, the kernel component has
-> > proven to be the larger burden and drag than the userspace part. I
-> > think the high interest in DPDK, SPDK and others show this is a common
-> > principle.
-> 
-> And I guess the interest in BPF shows the opposite?
-
-There is room for both, I wouldn't discount either approach entirely
-out of hand.
-
-> > At the very least for new approaches like this it makes alot of sense
-> > to have a user space driver until enough HW is available that a
-> > proper, well thought out kernel side can be built.
-> 
-> But hardware is available, driver has been posted by Intel.
-> Have you looked at that?
-
-I'm not sure pointing at that driver is so helpful, it is very small
-and mostly just reflects virtio ops into some undocumented register
-pokes.
-
-There is no explanation at all for the large scale architecture
-choices:
- - Why vfio
- - Why mdev without providing a device IOMMU
- - Why use GUID lifecycle management for singlton function PF/VF
-   drivers
- - Why not use devlink
- - Why not use vfio-pci with a userspace driver
-
-These are legitimate questions and answers like "because we like it
-this way" or "this is how the drivers are written today" isn't very
-satisfying at all.
-
-> > For instance, this VFIO based approach might be very suitable to the
-> > intel VF based ICF driver, but we don't yet have an example of non-VF
-> > HW that might not be well suited to VFIO.
+On 20/11/2019 12:47, Paolo Abeni wrote:
+> This series leverages the listification infrastructure to avoid
+> unnecessary route lookup on ingress packets. In absence of custom rules,
+> packets with equal daddr will usually land on the same dst.
 >
-> I don't think we should keep moving the goalposts like this.
+> When processing packet bursts (lists) we can easily reference the previous
+> dst entry. When we hit the 'same destination' condition we can avoid the
+> route lookup, coping the already available dst.
+>
+> Detailed performance numbers are available in the individual commit
+> messages.
+I wonder if you could use static keys for the fib*_has_custom_rules()
+ and if that would gain you any extra speed?
+Other than that,
+Acked-by: Edward Cree <ecree@solarflare.com>
+ for the series.
+>
+> v3 -> v4:
+>  - move helpers to their own patches (Eric D.)
+>  - enable hints for SUBTREE builds (David A.)
+>  - re-enable hints for ipv4 forward (David A.)
+>
+> v2 -> v3:
+>  - use fib*_has_custom_rules() helpers (David A.)
+>  - add ip*_extract_route_hint() helper (Edward C.)
+>  - use prev skb as hint instead of copying data (Willem )
+>
+> v1 -> v2:
+>  - fix build issue with !CONFIG_IP*_MULTIPLE_TABLES
+>  - fix potential race in ip6_list_rcv_finish()
+>
+> Paolo Abeni (5):
+>   ipv6: add fib6_has_custom_rules() helper
+>   ipv6: keep track of routes using src
+>   ipv6: introduce and uses route look hints for list input.
+>   ipv4: move fib4_has_custom_rules() helper to public header
+>   ipv4: use dst hint for ipv4 list receive
+>
+>  include/net/ip6_fib.h    | 39 +++++++++++++++++++++++++++++++++++++
+>  include/net/ip_fib.h     | 10 ++++++++++
+>  include/net/netns/ipv6.h |  3 +++
+>  include/net/route.h      |  4 ++++
+>  net/ipv4/fib_frontend.c  | 10 ----------
+>  net/ipv4/ip_input.c      | 35 +++++++++++++++++++++++++++++----
+>  net/ipv4/route.c         | 42 ++++++++++++++++++++++++++++++++++++++++
+>  net/ipv6/ip6_fib.c       |  4 ++++
+>  net/ipv6/ip6_input.c     | 26 +++++++++++++++++++++++--
+>  net/ipv6/route.c         |  3 +++
+>  10 files changed, 160 insertions(+), 16 deletions(-)
+>
 
-It is ABI, it should be done as best we can as we have to live with it
-for a long time. Right now HW is just starting to come to market with
-VDPA and it feels rushed to design a whole subsystem style ABI around
-one, quite simplistic, driver example.
-
-> If people write drivers and find some infrastruture useful,
-> and it looks more or less generic on the outset, then I don't
-> see why it's a bad idea to merge it.
-
-Because it is userspace ABI, caution is always justified when defining
-new ABI.
-
-Jason
