@@ -2,72 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E431038D7
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 12:39:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0C81038FA
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 12:42:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729265AbfKTLjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 06:39:12 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39114 "EHLO
+        id S1728492AbfKTLmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 06:42:49 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39166 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728184AbfKTLjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 06:39:11 -0500
+        with ESMTP id S1727952AbfKTLmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 06:42:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=YfqBa5t6/zfbK3PDsPH49E/noO60NMWG9e7AqbzYRkw=; b=eBZvtGXqEXJA+QBzOfsivLA60
-        R5NljMQuyrT0/Vl1xOR+L7bRJnwdKAQmO5RgXca3Bp3HZlxPG0IX5HycMHlBeEsWJuscURKPx5jEK
-        fvTuUpVUiLzvdPuqF/yj2BsTewGtoqkRbwjL88kHN7z6MRN1MpZJiC7Vihyr/Ofew3Iod4R+DudRo
-        iOxPabSgj6dESjYUWkXgnAvK7BG2YBct7s2HAqlvWWxd23UdCF2p6oTWObVq1BJA9IYTRgupL8X6G
-        fYQH4Ks8WIBwq4I4fiQgh8ywxpplBTdUVqgR99QlY/z59OW4PcztJWTq6PTbMLVbHr1ncic+Rryre
-        MTa3JDWvw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38026)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=trN7D8LqA6+pGKME8/thA18A4u2FIHFAYvwi+we/mmI=; b=DAzff7Lb3dC+9+ST1JslxrJdJY
+        J8b2G5ZcV92ZeMo5wR2aybUD6XeaCFt1jal7XR8Qx2R6kN6iIvvZIuXgro6j1pEJLNfQjE5zWx8Ac
+        1t7gK20SJZFtRmD4sxIFo7/L4HELB3CPtwx7Elae4vdCyBXnCDFWphHV728RXvmgZ/5YsoBPVFdC4
+        BYc4Goa6Ic4RUzwC+RSpzAkcfvaWgFvS3yxPNUGa0yE6p0JldZX9fkgwx16PoJv+1kR13qP7pJAC6
+        3Mh6DtR4C1ZeOdhyW8dlgr7Y2gxyzHWldaGzxVEpe/cN6//OBnHvBrEM8ZtHTf5n+EE0MOk1Kzq6n
+        gq5FP45A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:39536 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iXOK7-00083B-AJ; Wed, 20 Nov 2019 11:39:03 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iXOK4-0001hU-Dg; Wed, 20 Nov 2019 11:39:00 +0000
-Date:   Wed, 20 Nov 2019 11:39:00 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iXONf-00084J-5e; Wed, 20 Nov 2019 11:42:43 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iXONe-0005el-H8; Wed, 20 Nov 2019 11:42:42 +0000
+In-Reply-To: <20191120113900.GP25745@shell.armlinux.org.uk>
+References: <20191120113900.GP25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/2] Add rudimentary SFP module quirk support
-Message-ID: <20191120113900.GP25745@shell.armlinux.org.uk>
+Subject: [PATCH net-next 1/2] net: sfp: add support for module quirks
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1iXONe-0005el-H8@rmk-PC.armlinux.org.uk>
+Date:   Wed, 20 Nov 2019 11:42:42 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SFP module EEPROM describes the capabilities of the module, but
-doesn't describe the host interface.  We have a certain amount of
-guess-work to work out how to configure the host - which works most
-of the time.
+Add support for applying module quirks to the list of supported
+ethtool link modes.
 
-However, there are some (such as GPON) modules which are able to
-support different host interfaces, such as 1000BASE-X and 2500BASE-X.
-The module will switch between each mode until it achieves link with
-the host.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/sfp-bus.c | 54 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-There is no defined way to describe this in the SFP EEPROM, so we can
-only recognise the module and handle it appropriately.  This series
-adds the necessary recognition of the modules using a quirk system,
-and tweaks the support mask to allow them to link with the host at
-2500BASE-X, thereby allowing the user to achieve full line rate.
-
- drivers/net/phy/sfp-bus.c | 79 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 79 insertions(+)
-
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 2f826a303ad8..aebb6978e91a 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -10,6 +10,12 @@
+ 
+ #include "sfp.h"
+ 
++struct sfp_quirk {
++	const char *vendor;
++	const char *part;
++	void (*modes)(const struct sfp_eeprom_id *id, unsigned long *modes);
++};
++
+ /**
+  * struct sfp_bus - internal representation of a sfp bus
+  */
+@@ -22,6 +28,7 @@ struct sfp_bus {
+ 	const struct sfp_socket_ops *socket_ops;
+ 	struct device *sfp_dev;
+ 	struct sfp *sfp;
++	const struct sfp_quirk *sfp_quirk;
+ 
+ 	const struct sfp_upstream_ops *upstream_ops;
+ 	void *upstream;
+@@ -31,6 +38,46 @@ struct sfp_bus {
+ 	bool started;
+ };
+ 
++static const struct sfp_quirk sfp_quirks[] = {
++};
++
++static size_t sfp_strlen(const char *str, size_t maxlen)
++{
++	size_t size, i;
++
++	/* Trailing characters should be filled with space chars */
++	for (i = 0, size = 0; i < maxlen; i++)
++		if (str[i] != ' ')
++			size = i + 1;
++
++	return size;
++}
++
++static bool sfp_match(const char *qs, const char *str, size_t len)
++{
++	if (!qs)
++		return true;
++	if (strlen(qs) != len)
++		return false;
++	return !strncmp(qs, str, len);
++}
++
++static const struct sfp_quirk *sfp_lookup_quirk(const struct sfp_eeprom_id *id)
++{
++	const struct sfp_quirk *q;
++	unsigned int i;
++	size_t vs, ps;
++
++	vs = sfp_strlen(id->base.vendor_name, ARRAY_SIZE(id->base.vendor_name));
++	ps = sfp_strlen(id->base.vendor_pn, ARRAY_SIZE(id->base.vendor_pn));
++
++	for (i = 0, q = sfp_quirks; i < ARRAY_SIZE(sfp_quirks); i++, q++)
++		if (sfp_match(q->vendor, id->base.vendor_name, vs) &&
++		    sfp_match(q->part, id->base.vendor_pn, ps))
++			return q;
++
++	return NULL;
++}
+ /**
+  * sfp_parse_port() - Parse the EEPROM base ID, setting the port type
+  * @bus: a pointer to the &struct sfp_bus structure for the sfp module
+@@ -245,6 +292,9 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
+ 			phylink_set(modes, 1000baseX_Full);
+ 	}
+ 
++	if (bus->sfp_quirk)
++		bus->sfp_quirk->modes(id, modes);
++
+ 	bitmap_or(support, support, modes, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 
+ 	phylink_set(support, Autoneg);
+@@ -622,6 +672,8 @@ int sfp_module_insert(struct sfp_bus *bus, const struct sfp_eeprom_id *id)
+ 	const struct sfp_upstream_ops *ops = sfp_get_upstream_ops(bus);
+ 	int ret = 0;
+ 
++	bus->sfp_quirk = sfp_lookup_quirk(id);
++
+ 	if (ops && ops->module_insert)
+ 		ret = ops->module_insert(bus->upstream, id);
+ 
+@@ -635,6 +687,8 @@ void sfp_module_remove(struct sfp_bus *bus)
+ 
+ 	if (ops && ops->module_remove)
+ 		ops->module_remove(bus->upstream);
++
++	bus->sfp_quirk = NULL;
+ }
+ EXPORT_SYMBOL_GPL(sfp_module_remove);
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
