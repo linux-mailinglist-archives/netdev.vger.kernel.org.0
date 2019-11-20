@@ -2,72 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D7E1031F8
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:18:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC75E103206
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727619AbfKTDSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 22:18:05 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49180 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727264AbfKTDSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:18:05 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4FDA2146D5FD8;
-        Tue, 19 Nov 2019 19:18:04 -0800 (PST)
-Date:   Tue, 19 Nov 2019 19:18:03 -0800 (PST)
-Message-Id: <20191119.191803.1036643221927656820.davem@davemloft.net>
-To:     geert@linux-m68k.org
-Cc:     f.fainelli@gmail.com, geert+renesas@glider.be,
-        yuehaibing@huawei.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mdio_bus: Fix init if CONFIG_RESET_CONTROLLER=n
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAMuHMdW+Lkj1VRbS-1Qw8YsbPYueFrM770eBRv=e_sTg8vbiVg@mail.gmail.com>
-References: <20191119112524.24841-1-geert+renesas@glider.be>
-        <1afede33-897b-8718-d977-351357dffe4f@gmail.com>
-        <CAMuHMdW+Lkj1VRbS-1Qw8YsbPYueFrM770eBRv=e_sTg8vbiVg@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 19 Nov 2019 19:18:04 -0800 (PST)
+        id S1727383AbfKTDZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 22:25:05 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31514 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727348AbfKTDZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:25:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574220304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gnzJFkYQzZLXrS7rakKLHp8MIchUy3GNK0X8yTSiLKw=;
+        b=YHHIzMC7Hc5yhTPX3B2XV2ezp4neAOGDHnrYi61xm5ech2119eRIalk7WPsnNd5QxmV+Xh
+        GM2FTWVBbai5yxrMilW5007vbBfdiRYwYglrbBnnJ+BW/wP8stMrFf5euilB9Nm+VSWvXG
+        garnjbZjixQjnUX4FHm8bbCvxJPZmYE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-73-4ZHJJ5y4OfCC5tnCoyFtSg-1; Tue, 19 Nov 2019 22:25:00 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA38B180496F;
+        Wed, 20 Nov 2019 03:24:58 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BB3B760FC5;
+        Wed, 20 Nov 2019 03:24:58 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 7B4CD4BB65;
+        Wed, 20 Nov 2019 03:24:58 +0000 (UTC)
+Date:   Tue, 19 Nov 2019 22:24:51 -0500 (EST)
+From:   Jason Wang <jasowang@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Tiwei Bie <tiwei.bie@intel.com>
+Message-ID: <1655636323.35622504.1574220291482.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20191119164632.GA4991@ziepe.ca>
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com> <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com> <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com> <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com> <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com> <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com> <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com> <20191119164632.GA4991@ziepe.ca>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+MIME-Version: 1.0
+X-Originating-IP: [10.68.5.20, 10.4.195.21]
+Thread-Topic: virtual-bus: Implementation of Virtual Bus
+Thread-Index: PY6mRN7cE/SzrGkgwT22KgxjMQGbiQ==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: 4ZHJJ5y4OfCC5tnCoyFtSg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 19 Nov 2019 19:55:53 +0100
 
-> Hi Florian,
-> 
-> On Tue, Nov 19, 2019 at 7:05 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->> On 11/19/19 3:25 AM, Geert Uytterhoeven wrote:
->> > Commit 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after
->> > initialization to constant") accidentally changed a check from -ENOTSUPP
->> > to -ENOSYS, causing failures if reset controller support is not enabled.
->> > E.g. on r7s72100/rskrza1:
->> >
->> >     sh-eth e8203000.ethernet: MDIO init failed: -524
->> >     sh-eth: probe of e8203000.ethernet failed with error -524
->> >
->> > Fixes: 1d4639567d970de0 ("mdio_bus: Fix PTR_ERR applied after initialization to constant")
->> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>
->> This has been fixed in the "net" tree with:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=075e238d12c21c8bde700d21fb48be7a3aa80194
-> 
-> Ah, hadn't seen that one.
-> 
-> However, that one (a) keeps the unneeded check for -ENOSYS, and (b)
-> carries a wrong Fixes tag.
 
-Linus took Geert's fix so I reverted the one in 'net' and cherry picked
-Geert's fix from Linus's tree.
+----- Original Message -----
+> On Tue, Nov 19, 2019 at 03:37:03PM +0800, Jason Wang wrote:
+>=20
+> > > Jiri, Jason, me think that even virtio accelerated devices will need
+> > > eswitch support. And hence, life cycling virtio accelerated devices v=
+ia
+> > > devlink makes a lot of sense to us.
+> > > This way user has single tool to choose what type of device he want t=
+o
+> > > use (similar to ip link add link type).
+> > > So sub function flavour will be something like (virtio or sf).
+> >=20
+> > Networking is only one of the types that is supported in virtio-mdev. T=
+he
+> > codes are generic enough to support any kind of virtio device (block, s=
+csi,
+> > crypto etc). Sysfs is less flexible but type independent. I agree that
+> > devlink is standard and feature richer but still network specific. It's
+> > probably hard to add devlink to other type of physical drivers. I'm
+> > thinking
+> > whether it's possible to combine syfs and devlink: e.g the mdev is
+> > available
+> > only after the sub fuction is created and fully configured by devlink.
+>=20
+> The driver providing the virtio should really be in control of the
+> life cycle policy. For net related virtio that is clearly devlink.
 
-Just FYI...
+As replied in another thread, there were already existed devices
+(Intel IFC VF) that doesn't use devlink.
+
+>=20
+> Even for block we may find that network storage providers (ie some
+> HW accelerated virtio-blk-over-ethernet) will want to use devlink to
+> create a combination ethernet and accelerated virtio-block widget.
+>=20
+>
+
+Note, there's already commercial virtio-blk done at PF level provided
+by Ali ECS instance. So it's looks pretty clear to me it's almost
+impossible to have every vendors to use devlink. Tie virtio soluton to
+devlink seems a burden and actually devlink doesn't conflict with the
+simple sysfs interface.
+
+Thanks
+
