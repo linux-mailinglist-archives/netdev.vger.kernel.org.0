@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7D01035ED
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 09:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9794D1035EE
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 09:23:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbfKTIXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727850AbfKTIXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 20 Nov 2019 03:23:41 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:42402 "EHLO inva020.nxp.com"
+Received: from inva021.nxp.com ([92.121.34.21]:52214 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726038AbfKTIXk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 03:23:40 -0500
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9488F1A04CB;
-        Wed, 20 Nov 2019 09:23:38 +0100 (CET)
+        id S1727626AbfKTIXl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Nov 2019 03:23:41 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B4C62002C2;
+        Wed, 20 Nov 2019 09:23:39 +0100 (CET)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 99C9E1A04AB;
-        Wed, 20 Nov 2019 09:23:33 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 41A7220087B;
+        Wed, 20 Nov 2019 09:23:34 +0100 (CET)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 3DE53402B0;
-        Wed, 20 Nov 2019 16:23:27 +0800 (SGT)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 4E4D5402B3;
+        Wed, 20 Nov 2019 16:23:28 +0800 (SGT)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
@@ -31,45 +31,71 @@ To:     netdev@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>
-Subject: [PATCH 0/5] Support PTP clock and hardware timestamping for DSA Felix driver
-Date:   Wed, 20 Nov 2019 16:23:13 +0800
-Message-Id: <20191120082318.3909-1-yangbo.lu@nxp.com>
+Subject: [PATCH 1/5] net: mscc: ocelot: export ocelot_hwstamp_get/set functions
+Date:   Wed, 20 Nov 2019 16:23:14 +0800
+Message-Id: <20191120082318.3909-2-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191120082318.3909-1-yangbo.lu@nxp.com>
+References: <20191120082318.3909-1-yangbo.lu@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch-set is to support PTP clock and hardware timestamping
-for DSA Felix driver. Some functions in ocelot.c/ocelot_board.c
-driver were reworked/exported, so that DSA Felix driver was able
-to reuse them as much as possible.
+Export ocelot_hwstamp_get/set functions so that DSA driver
+is able to reuse them.
 
-On TX path, timestamping works on packet which requires timestamp.
-The injection header will be configured accordingly, and skb clone
-requires timestamp will be added into a list. The TX timestamp
-is final handled in threaded interrupt handler when PTP timestamp
-FIFO is ready.
-On RX path, timestamping is always working. The RX timestamp could
-be got from extraction header.
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 8 ++++----
+ include/soc/mscc/ocelot.h          | 2 ++
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-Yangbo Lu (5):
-  net: mscc: ocelot: export ocelot_hwstamp_get/set functions
-  net: mscc: ocelot: convert to use ocelot_get_txtstamp()
-  net: mscc: ocelot: convert to use ocelot_port_add_txtstamp_skb()
-  net: dsa: ocelot: define PTP registers for felix_vsc9959
-  net: dsa: ocelot: add hardware timestamping support for Felix
-
- drivers/net/dsa/ocelot/felix.c           |  89 ++++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix_vsc9959.c   |  16 +++++
- drivers/net/ethernet/mscc/ocelot.c       | 113 +++++++++++++++++++++++++------
- drivers/net/ethernet/mscc/ocelot.h       |   6 --
- drivers/net/ethernet/mscc/ocelot_board.c |  53 +--------------
- include/soc/mscc/ocelot.h                |  13 +++-
- net/dsa/tag_ocelot.c                     |  14 +++-
- 7 files changed, 222 insertions(+), 82 deletions(-)
-
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 90c46ba..7302724 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1049,15 +1049,14 @@ static int ocelot_get_port_parent_id(struct net_device *dev,
+ 	return 0;
+ }
+ 
+-static int ocelot_hwstamp_get(struct ocelot *ocelot, int port,
+-			      struct ifreq *ifr)
++int ocelot_hwstamp_get(struct ocelot *ocelot, int port, struct ifreq *ifr)
+ {
+ 	return copy_to_user(ifr->ifr_data, &ocelot->hwtstamp_config,
+ 			    sizeof(ocelot->hwtstamp_config)) ? -EFAULT : 0;
+ }
++EXPORT_SYMBOL(ocelot_hwstamp_get);
+ 
+-static int ocelot_hwstamp_set(struct ocelot *ocelot, int port,
+-			      struct ifreq *ifr)
++int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct hwtstamp_config cfg;
+@@ -1120,6 +1119,7 @@ static int ocelot_hwstamp_set(struct ocelot *ocelot, int port,
+ 
+ 	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
+ }
++EXPORT_SYMBOL(ocelot_hwstamp_set);
+ 
+ static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ {
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index a836afe..2bac4bc 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -533,6 +533,8 @@ int ocelot_fdb_del(struct ocelot *ocelot, int port,
+ int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+ 		    bool untagged);
+ int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid);
++int ocelot_hwstamp_get(struct ocelot *ocelot, int port, struct ifreq *ifr);
++int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr);
+ int ocelot_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts);
+ void ocelot_get_hwtimestamp(struct ocelot *ocelot, struct timespec64 *ts);
+ 
 -- 
 2.7.4
 
