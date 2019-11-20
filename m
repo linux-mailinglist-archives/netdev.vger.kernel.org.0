@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2E2104638
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 22:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 843EB104647
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 23:05:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfKTV5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 16:57:43 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33633 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbfKTV5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 16:57:43 -0500
-Received: by mail-pf1-f194.google.com with SMTP id c184so464585pfb.0
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 13:57:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W/h65e/DPMPUqDFXPqNUwZg+U+D50bRb24+GA0BMPGY=;
-        b=t9YYLrBnWX61MiaC9DsVHv0nOcJlR0dXdY+HM9+yq+014T9Ja+hM/rfDJ6gK+oci0K
-         Jvdoi8foekS8fGHMDBX6Dn7ORmoG5m4x4XGxdEZwnqminkO/jtcPptNzfcxfpsloVctL
-         WhH4duy646BvssNZfALBCJYgYhP0+NOTW3bKnJxXj72O/YPH7zxT//KMER06WOlGJNoL
-         +QL9LFI199wUL/9tHz+TepmAorYBqzO5Syhp2M0ZH4yMq6PnxweI5bt/7PWqiVdFvE3s
-         yFxBWoEbTGD76LviSLMiMZF5xLXs3y7YxWu2RlkPO9cBOWlB6KhU1nqbL8mEsD16fl9n
-         SVKA==
+        id S1726202AbfKTWFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 17:05:11 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54512 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726038AbfKTWFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 17:05:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574287510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4YpMbJX5XyxRp8q7h/jm7rfnus2WLxi2XgTkFPCvRSw=;
+        b=BgICZNakp9UJkI95K9ANlTaCed9PRBFxMH/3uCeNXOrXekyh08WN32/6Y0jR6B6V9ehrH2
+        H8u1mKSbXxtmlVEFEsduXkd31JuFiYLSebYgA0qMuORP+ZidU6/Vmc5CzqtZIDyu5CJxO/
+        Almz6tBc9c6wOTWocXJDDjeNWhrHaTw=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-364-08AxcJzhNxmHyxwNLVxp5w-1; Wed, 20 Nov 2019 17:05:08 -0500
+Received: by mail-qv1-f69.google.com with SMTP id b1so843052qvm.0
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 14:05:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W/h65e/DPMPUqDFXPqNUwZg+U+D50bRb24+GA0BMPGY=;
-        b=KfUChoS3tZJVqf32FnRWH3J6SBNElZEkTR9uXnW6R0qey9EV9CM55ty2rnDH0IFeWU
-         Nz0sHnmeIRil4DIjSLIinB0dzYpJzonHxfZ0mEckQoPIi3uyNZvHLt28S6OqwulaLZ39
-         xnGmDjOXmnfIQ2fza5kNQ1iug9n2vTstfxu7fGmcGOyCfHXh16InYa+9WdAJy1Xf//4x
-         wg9K2JniYqxUXlMkUrnIm6M5xoSQddKJjuVSNLD6IF4/k17v68c2kEbcq4ps072L7xAl
-         N9fdOVV47HafuZiPvf1sE813i3sWyBzgJp/h4xtvS4VpbuNh/Shlwy2W0de3+60I0bI5
-         001w==
-X-Gm-Message-State: APjAAAVD/gTBIJPZRsLKxoerCYHrRlwP0ZSmBCAw5OAOF6mDgCzk3buf
-        MXfAA32xw0gFRoVGkRc8NUSe/qJF9P0V3/0d7/Rcad2OwT4=
-X-Google-Smtp-Source: APXvYqxDAzzS4CIPX61BLOdjHgN21/KdZU/2JdX3F4WkPdj6+ZdM3Iq/JqL+Sj0vAKh1B8ScuIojG+fmq+SZu2leD+0=
-X-Received: by 2002:a65:44ca:: with SMTP id g10mr5702431pgs.104.1574287062060;
- Wed, 20 Nov 2019 13:57:42 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ix0u7hdNyTJABkb8oloHDZIWR+Nd0ngaOCu5R4X4iSI=;
+        b=aGAuwDfVjtG7JZWfRCzgOrf2iNmgDjsNRoHZlglMkzBV+ZRX1v51X5gFPJx5FZcr8H
+         /CvrG1vS7hI75FvbyswVebpJlq8PYgrN7T+YOC8bQiUE/Fs1fBp9Sc9IgNPeSAs0IxdI
+         3J0qlSzdGhc9deV4enATTv23hVHfEVCiZiO7+Tps8a7y8HDSM7ie4j4E7DQLLaoCpzqo
+         TgRj8Qrs6RmzQOMh4r81Ogn9B3exnPZP/OYUF1qPQmLUzGZL2oTUte9xp5Zqr8vFLc+B
+         SVn6Ts1BBi/Kv20kEVX3rEi7pcw+LGtpeeZUbJ09e0/Af3tThiAGgqNQXYBmt7RQUyD6
+         E2HA==
+X-Gm-Message-State: APjAAAUIBGZ8xWi+OSqeQVY79p89U6q1sAgI3ofrk+Zf7gm43OcTl9YA
+        4dk1XjCqV1flz09zpZ2s42pjPDxhAt/sZCDVNlA+2w4Y3tOkHBj5c8uoCeXHHVdhiJdztRkAA28
+        TDudezCSCjqCzdNwU
+X-Received: by 2002:ac8:51c3:: with SMTP id d3mr5040947qtn.14.1574287508113;
+        Wed, 20 Nov 2019 14:05:08 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxdsih9DHA5lFir/c/3IJa6bxqZOBG7X8LxPArtXfaUgPz+4d3X0P+nI2I9fnkkPKWKJeAeIg==
+X-Received: by 2002:ac8:51c3:: with SMTP id d3mr5040914qtn.14.1574287507889;
+        Wed, 20 Nov 2019 14:05:07 -0800 (PST)
+Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
+        by smtp.gmail.com with ESMTPSA id i75sm353431qke.22.2019.11.20.14.05.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2019 14:05:06 -0800 (PST)
+Date:   Wed, 20 Nov 2019 17:05:00 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191120165748-mutt-send-email-mst@kernel.org>
+References: <20191119163147-mutt-send-email-mst@kernel.org>
+ <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <20191120022141-mutt-send-email-mst@kernel.org>
+ <20191120130319.GA22515@ziepe.ca>
+ <20191120083908-mutt-send-email-mst@kernel.org>
+ <20191120143054.GF22515@ziepe.ca>
+ <20191120093607-mutt-send-email-mst@kernel.org>
+ <20191120164525.GH22515@ziepe.ca>
 MIME-Version: 1.0
-References: <485b2235cb9c1dc53d7094969c131f05f2df5258.1574203001.git.dcaratti@redhat.com>
-In-Reply-To: <485b2235cb9c1dc53d7094969c131f05f2df5258.1574203001.git.dcaratti@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 20 Nov 2019 13:57:31 -0800
-Message-ID: <CAM_iQpXhULU2TLN9nVSoFU4pNoC_NGeC6f-3_=KFVPA3xpkV1Q@mail.gmail.com>
-Subject: Re: [PATCH net] net/sched: act_pedit: fix WARN() in the traffic path
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191120164525.GH22515@ziepe.ca>
+X-MC-Unique: 08AxcJzhNxmHyxwNLVxp5w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 2:48 PM Davide Caratti <dcaratti@redhat.com> wrote:
->
-> when configuring act_pedit rules, the number of keys is validated only on
-> addition of a new entry. This is not sufficient to avoid hitting a WARN()
-> in the traffic path: for example, it is possible to replace a valid entry
-> with a new one having 0 extended keys, thus causing splats in dmesg like:
->
->  pedit BUG: index 42
->  WARNING: CPU: 2 PID: 4054 at net/sched/act_pedit.c:410 tcf_pedit_act+0xc84/0x1200 [act_pedit]
->  [...]
->  RIP: 0010:tcf_pedit_act+0xc84/0x1200 [act_pedit]
->  Code: 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ac 00 00 00 48 8b 44 24 10 48 c7 c7 a0 c4 e4 c0 8b 70 18 e8 1c 30 95 ea <0f> 0b e9 a0 fa ff ff e8 00 03 f5 ea e9 14 f4 ff ff 48 89 58 40 e9
->  RSP: 0018:ffff888077c9f320 EFLAGS: 00010286
->  RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffffac2983a2
->  RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffff888053927bec
->  RBP: dffffc0000000000 R08: ffffed100a726209 R09: ffffed100a726209
->  R10: 0000000000000001 R11: ffffed100a726208 R12: ffff88804beea780
->  R13: ffff888079a77400 R14: ffff88804beea780 R15: ffff888027ab2000
->  FS:  00007fdeec9bd740(0000) GS:ffff888053900000(0000) knlGS:0000000000000000
->  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  CR2: 00007ffdb3dfd000 CR3: 000000004adb4006 CR4: 00000000001606e0
->  Call Trace:
->   tcf_action_exec+0x105/0x3f0
->   tcf_classify+0xf2/0x410
->   __dev_queue_xmit+0xcbf/0x2ae0
->   ip_finish_output2+0x711/0x1fb0
->   ip_output+0x1bf/0x4b0
->   ip_send_skb+0x37/0xa0
->   raw_sendmsg+0x180c/0x2430
->   sock_sendmsg+0xdb/0x110
->   __sys_sendto+0x257/0x2b0
->   __x64_sys_sendto+0xdd/0x1b0
->   do_syscall_64+0xa5/0x4e0
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
->  RIP: 0033:0x7fdeeb72e993
->  Code: 48 8b 0d e0 74 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 0d d6 2c 00 00 75 13 49 89 ca b8 2c 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 34 c3 48 83 ec 08 e8 4b cc 00 00 48 89 04 24
->  RSP: 002b:00007ffdb3de8a18 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
->  RAX: ffffffffffffffda RBX: 000055c81972b700 RCX: 00007fdeeb72e993
->  RDX: 0000000000000040 RSI: 000055c81972b700 RDI: 0000000000000003
->  RBP: 00007ffdb3dea130 R08: 000055c819728510 R09: 0000000000000010
->  R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000040
->  R13: 000055c81972b6c0 R14: 000055c81972969c R15: 0000000000000080
->
-> Fix this moving the check on 'nkeys' earlier in tcf_pedit_init(), so that
-> attempts to install rules having 0 keys are always rejected with -EINVAL.
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+On Wed, Nov 20, 2019 at 12:45:25PM -0400, Jason Gunthorpe wrote:
+> > > For instance, this VFIO based approach might be very suitable to the
+> > > intel VF based ICF driver, but we don't yet have an example of non-VF
+> > > HW that might not be well suited to VFIO.
+> >
+> > I don't think we should keep moving the goalposts like this.
+>=20
+> It is ABI, it should be done as best we can as we have to live with it
+> for a long time. Right now HW is just starting to come to market with
+> VDPA and it feels rushed to design a whole subsystem style ABI around
+> one, quite simplistic, driver example.
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+Well one has to enable hardware in some way. It's not really reasonable
+to ask for multiple devices to be available just so there's a driver and
+people can use them. At this rate no one will want to be the first to
+ship new devices ;)
 
-Thanks!
+> > If people write drivers and find some infrastruture useful,
+> > and it looks more or less generic on the outset, then I don't
+> > see why it's a bad idea to merge it.
+>=20
+> Because it is userspace ABI, caution is always justified when defining
+> new ABI.
+
+
+Reasonable caution, sure. Asking Alex to block Intel's driver until
+someone else catches up and ships competing hardware isn't reasonable
+though. If that's your proposal I guess we'll have to agree to disagree.
+
+--=20
+MST
+
