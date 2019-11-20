@@ -2,122 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEDC5103970
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F33103990
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728996AbfKTMDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 07:03:17 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39334 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727791AbfKTMDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:03:16 -0500
-Received: by mail-wm1-f68.google.com with SMTP id t26so7520955wmi.4
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 04:03:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yjRiD2kmmMRgYTSYZHwBpw4xHFxxldWWaxVd0ST+IRI=;
-        b=uLwZwRXuR7RR9MWQK50X/fnTYqFKIzC0nCXYKI+LmwX3scSCk73r3mAOaoRVd3g6ZI
-         b46HmYnowlwgWdkbwTBojaPSiqsNTL0qLPZo0G72Q/GNKaHPHGvcQ5hp7YoaUInLMfIt
-         dfBV0V9AuG5BZwkIba3EF0KqxrLPIr+EIMQrGsLn63IBEl0gy6YxM0bYD8hdSyX6L2Ky
-         RMTZ/hBr9SeI4T3D7PmBNGU7l+X0BJRA9wbj6Pk/V5AT9vPByRr7IPFBEwdyAEn66qEw
-         rJG+QB881r9nolN9HdkGGUjNweL+PKnyww3lR+KIa8yFfJEw9QNx53xLc/Ge/PXPT9Qb
-         9WIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yjRiD2kmmMRgYTSYZHwBpw4xHFxxldWWaxVd0ST+IRI=;
-        b=nEt68CFKT71YWDVkjXfzT5NwlJmq+InpEcr7PMP5LbiXOwzdVzI+zu2diSoC4DDHNL
-         PGmyEnid7jsCPm4simTIplO0SciVX3q8Ltb4wmpHHeFd707Mt3g0VYrG2lce20ZZQYEg
-         vr9iE/VOUKjHzNb/I4MfDZ7+KIb0UoPWVUjNSYbOevYNx9NWvgSwWGBIYxkK7LftCvcU
-         LZ5xIsEWFdCwUUtuU6215VvZPEGX9HoAS21+Mi0Av409aKMtpr0KIoYAsfldaoMZAv49
-         u5O/7c79yl5hwoUQCgxVfzKs7PCQ8Pp200e4b/SHFoSQ82/DuRO/RfJAfLIDv0pm9cTD
-         vfGg==
-X-Gm-Message-State: APjAAAUYeGNITywpB+3Uk8WBWS3CvznFTwXndJ4voLTsDbSNe9Khoxk8
-        Lp8mgzZp+sZSFj4XKqdRzUjB6Q==
-X-Google-Smtp-Source: APXvYqwZgu5xYG/oAHHARg5Rpjkn9pw3zFuIkK7AtEPOhtiRgFkglPya9zGGZ6vw98QIXmK/udISlg==
-X-Received: by 2002:a1c:6309:: with SMTP id x9mr2646067wmb.108.1574251393563;
-        Wed, 20 Nov 2019 04:03:13 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id d7sm31464695wrx.11.2019.11.20.04.03.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Nov 2019 04:03:12 -0800 (PST)
-Date:   Wed, 20 Nov 2019 13:03:11 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tiwei Bie <tiwei.bie@intel.com>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191120120311.GA2297@nanopsycho>
-References: <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
- <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
- <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
- <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
- <AM0PR05MB48664221FB6B1C14BDF6C74AD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191120034839-mutt-send-email-mst@kernel.org>
+        id S1729185AbfKTMIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 07:08:54 -0500
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:12770 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726689AbfKTMIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:08:53 -0500
+Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa2.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: oglyA8zYRJbbpo+FAZZPJKIeYqd/yaqsyOYVgbUT1aAew4yjDHZnHAHf+uNIohehAUfXXWZduh
+ cXOh0PKg48nLEa3CTJ2mgA+g9UBSj42zOEC0qgXWFuF2WDcstGG7unPldwpuDTySQBGmKGrplo
+ c2a6FNn/PaEsZNUzV7xSMgrUaI+NexI7OeATxZUl4t2fgvNW6/5dvcmhYlH2MXJ5naq2Mn9bBz
+ up95ZAg1IIkYkVzzjqAkcCEdqbJ7SyZeX/Q+mkYup4+auuRGd8L7o10jlYP8S2d5ryWCdDmXBr
+ ZKI=
+X-IronPort-AV: E=Sophos;i="5.69,221,1571727600"; 
+   d="scan'208";a="57347229"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Nov 2019 05:08:52 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 20 Nov 2019 05:08:52 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 20 Nov 2019 05:08:52 -0700
+Date:   Wed, 20 Nov 2019 13:08:50 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] Convert Ocelot and Felix switches to PHYLINK
+Message-ID: <20191120120849.xdizdx4vntor2fvv@soft-dev3.microsemi.net>
+References: <20191118181030.23921-1-olteanv@gmail.com>
+ <20191118231339.ztotkr536udxuzsl@soft-dev3.microsemi.net>
+ <CA+h21hpKN+7ifvFUt6KMYARf19i=Jfw_dwciuPxPC6ZyHRF2XQ@mail.gmail.com>
+ <20191119204855.vgiwtrzx3426hbrc@soft-dev3.microsemi.net>
+ <20191119214257.GB19542@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20191120034839-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191119214257.GB19542@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 20, 2019 at 09:52:23AM CET, mst@redhat.com wrote:
->On Wed, Nov 20, 2019 at 03:38:18AM +0000, Parav Pandit wrote:
->> 
->> 
->> > From: Jason Wang <jasowang@redhat.com>
->> > Sent: Tuesday, November 19, 2019 9:15 PM
->> > 
->> > ----- Original Message -----
->> > >
->> > >
->> > > > From: Jason Wang <jasowang@redhat.com>
->> > > > Sent: Tuesday, November 19, 2019 1:37 AM
->> > > >
->> > >
->> > > Nop. Devlink is NOT net specific. It works at the bus/device level.
->> > > Any block/scsi/crypto can register devlink instance and implement the
->> > > necessary ops as long as device has bus.
->> > >
->> > 
->> > Well, uapi/linux/devlink.h told me:
->> > 
->> > "
->> >  * include/uapi/linux/devlink.h - Network physical device Netlink interface "
->> > 
->> > And the userspace tool was packaged into iproute2, the command was named
->> > as "TC", "PORT", "ESWITCH". All of those were strong hints that it was network
->> > specific. Even for networking, only few vendors choose to implement this.
->> > 
->> It is under iproute2 tool but it is not limited to networking.
->
->Want to fix the documentation then?
->That's sure to confuse people ...
+The 11/19/2019 22:42, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> > Before this commit it was ok to use PHY_INTERFACE_MODE_NA but now that
+> > is not true anymore. In this case we have 4 ports that have phy and
+> > then 6 sfp ports. So I was looking to describe this in DT but without
+> > any success. If you have any advice that would be great.
+> 
+> Is it the copper ports causing the trouble, or the SFP?  Ideally, you
+> should describe the SFPs as SFPs. But i don't think the driver has the
+> needed support for that yet. So you might need to use fixed-link for
+> the moment.
 
-Will do.
+It was both of them. So I have done few small changes to these patches.
+- first I added the phy-mode in DT on the interfaces that have a
+  phy(internal or external)
+- add a check for PHY_INTERFACE_MODE_NA before the port is probed so it
+  would not create net device if the phy mode is PHY_INTERFACE_MODE_NA
+  because in that case the phylink was not created.
 
->
->-- 
->MST
->
+With these changes now only the ports that have phy are probed. This is
+the same behaviour as before these patches. I have tried to configure
+the sfp ports as fixed-links but unfortunetly it didn't work, I think
+because of some missconfiguration on MAC or SerDes, which I need to
+figure out. But I think this can be fix in a different patch.
+
+I have done few tests and they seem to work fine.
+Here are my changes.
+
+diff --git a/arch/mips/boot/dts/mscc/ocelot_pcb120.dts b/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
+index 33991fd209f5..0800a86b7f16 100644
+--- a/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
++++ b/arch/mips/boot/dts/mscc/ocelot_pcb120.dts
+@@ -60,18 +60,22 @@
+ 
+ &port0 {
+ 	phy-handle = <&phy0>;
++	phy-mode = "sgmii";
+ };
+ 
+ &port1 {
+ 	phy-handle = <&phy1>;
++	phy-mode = "sgmii";
+ };
+ 
+ &port2 {
+ 	phy-handle = <&phy2>;
++	phy-mode = "sgmii";
+ };
+ 
+ &port3 {
+ 	phy-handle = <&phy3>;
++	phy-mode = "sgmii";
+ };
+ 
+ &port4 {
+diff --git a/arch/mips/boot/dts/mscc/ocelot_pcb123.dts b/arch/mips/boot/dts/mscc/ocelot_pcb123.dts
+index ef852f382da8..6b0b1fb358ad 100644
+--- a/arch/mips/boot/dts/mscc/ocelot_pcb123.dts
++++ b/arch/mips/boot/dts/mscc/ocelot_pcb123.dts
+@@ -47,17 +47,21 @@
+ };
+ 
+ &port0 {
++	phy-mode = "sgmii";
+ 	phy-handle = <&phy0>;
+ };
+ 
+ &port1 {
++	phy-mode = "sgmii";
+ 	phy-handle = <&phy1>;
+ };
+ 
+ &port2 {
++	phy-mode = "sgmii";
+ 	phy-handle = <&phy2>;
+ };
+ 
+ &port3 {
++	phy-mode = "sgmii";
+ 	phy-handle = <&phy3>;
+ };
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index aecaf4ef6ef4..9dad031900b5 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -513,6 +513,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		if (IS_ERR(regs))
+ 			continue;
+ 
++		of_get_phy_mode(portnp, &phy_mode);
++		if (phy_mode == PHY_INTERFACE_MODE_NA)
++			continue;
++
+ 		err = ocelot_probe_port(ocelot, port, regs);
+ 		if (err) {
+ 			of_node_put(portnp);
+@@ -523,11 +527,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		priv = container_of(ocelot_port, struct ocelot_port_private,
+ 				    port);
+ 
+-		of_get_phy_mode(portnp, &phy_mode);
+-
+ 		switch (phy_mode) {
+-		case PHY_INTERFACE_MODE_NA:
+-			continue;
+ 		case PHY_INTERFACE_MODE_SGMII:
+ 			break;
+ 		case PHY_INTERFACE_MODE_QSGMII:
+@@ -549,20 +549,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		}
+ 
+ 		serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
+-		if (IS_ERR(serdes)) {
+-			err = PTR_ERR(serdes);
+-			if (err == -EPROBE_DEFER)
+-				dev_dbg(ocelot->dev, "deferring probe\n");
+-			else
+-				dev_err(ocelot->dev,
+-					"missing SerDes phys for port%d\n",
+-					port);
+-
+-			of_node_put(portnp);
+-			goto out_put_ports;
+-		}
+-
+-		if (serdes) {
++		if (!IS_ERR(serdes)) {
+ 			err = phy_set_mode_ext(serdes, PHY_MODE_ETHERNET,
+ 					       phy_mode);
+ 			if (err) {
+-- 
+2.17.1
+
+
+> 
+>    Andrew
+
+-- 
+/Horatiu
