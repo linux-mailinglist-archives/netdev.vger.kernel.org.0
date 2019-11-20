@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 137A21039D7
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9900B1039DD
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 13:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729651AbfKTMQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 07:16:12 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:26766 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728251AbfKTMQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:16:12 -0500
+        id S1728881AbfKTMQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 07:16:37 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38556 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728251AbfKTMQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 07:16:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574252171;
+        s=mimecast20190719; t=1574252196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lUx/oPuU8l45zB4UFv6PrHlbcIdlFEBdtOeWR6Ax4ag=;
-        b=fHASW/z7gwRarX2NqtrlBqM/MpSFuWcebacm/Lc6R6yY7WDiutLt5m6fe4oETS1Xnopr0+
-        h+O/w8bdaT9y5S9px8yjl3IRkFysumPa5ieRmjFcT3ymQDKho0rYbrwKGG1ftOWJE+rlo/
-        c4gWtVCzBsZMBRaIoy+guA12tXN/Uyg=
+        bh=XWaVnaz8RstxNE3lcMqcdMGrh3NHR58Op5ZleG5vvi4=;
+        b=FdeIwDeyhrHJm2YDcEP+veMPP3/QlIMwRPII+rMxRiraHUGeuOvUhg+zQBOgwLu/POrk9W
+        m+4/Trg0nADVI4EUcnUC1Xfb6Mjd16QStB/3OZPBHYXQj5istdJ1EKTv8fDAxeZDWuh3HX
+        hX8UUI/vBKXmOkFmuOh55FrRC34+s7I=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-277-ASlJa_AbN22MfG8N4rssBA-1; Wed, 20 Nov 2019 07:16:09 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-13-4_7EX-wTN4eEsG-VipjqBA-1; Wed, 20 Nov 2019 07:16:33 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7970107ACCC;
-        Wed, 20 Nov 2019 12:16:07 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6FB3107B012;
+        Wed, 20 Nov 2019 12:16:31 +0000 (UTC)
 Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39ADFA7F4;
-        Wed, 20 Nov 2019 12:16:02 +0000 (UTC)
-Date:   Wed, 20 Nov 2019 13:16:01 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 877F863646;
+        Wed, 20 Nov 2019 12:16:27 +0000 (UTC)
+Date:   Wed, 20 Nov 2019 13:16:26 +0100
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     Saeed Mahameed <saeedm@mellanox.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next V3 2/3] page_pool: Don't recycle non-reusable
- pages
-Message-ID: <20191120131601.700ad1c4@carbon>
-In-Reply-To: <20191120001456.11170-3-saeedm@mellanox.com>
+        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH net-next V3 3/3] net/mlx5e: Rx, Update page pool numa
+ node when changed
+Message-ID: <20191120131626.013c0c9e@carbon>
+In-Reply-To: <20191120001456.11170-4-saeedm@mellanox.com>
 References: <20191120001456.11170-1-saeedm@mellanox.com>
-        <20191120001456.11170-3-saeedm@mellanox.com>
+        <20191120001456.11170-4-saeedm@mellanox.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: ASlJa_AbN22MfG8N4rssBA-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: 4_7EX-wTN4eEsG-VipjqBA-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -57,17 +55,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019 00:15:19 +0000
+On Wed, 20 Nov 2019 00:15:21 +0000
 Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-> A page is NOT reusable when at least one of the following is true:
-> 1) allocated when system was under some pressure. (page_is_pfmemalloc)
-> 2) belongs to a different NUMA node than pool->p.nid.
+> Once every napi poll cycle, check if numa node is different than
+> the page pool's numa id, and update it using page_pool_update_nid().
 >=20
-> To update pool->p.nid users should call page_pool_update_nid().
->=20
-> Holding on to such pages in the pool will hurt the consumer performance
-> when the pool migrates to a different numa node.
+> Alternatively, we could have registered an irq affinity change handler,
+> but page_pool_update_nid() must be called from napi context anyways, so
+> the handler won't actually help.
 >=20
 > Performance testing:
 > XDP drop/tx rate and TCP single/multi stream, on mlx5 driver
@@ -103,14 +99,8 @@ Saeed Mahameed <saeedm@mellanox.com> wrote:
 > In all test cases we see improvement for the far numa case, and no
 > impact on the close numa case.
 >=20
-> The impact of adding a check per page is very negligible, and shows no
-> performance degradation whatsoever, also functionality wise it seems more
-> correct and more robust for page pool to verify when pages should be
-> recycled, since page pool can't guarantee where pages are coming from.
->=20
 > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 > Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
