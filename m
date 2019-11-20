@@ -2,232 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79470103260
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 04:59:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC5C10326F
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 05:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727608AbfKTD72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 22:59:28 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29996 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727586AbfKTD72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 22:59:28 -0500
+        id S1727506AbfKTEI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 23:08:59 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57047 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727378AbfKTEI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 23:08:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574222366;
+        s=mimecast20190719; t=1574222936;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CXnwiK0Y1iLRPCM3j/TkttSX1L0IsRa9v3ZpAGpmQhg=;
-        b=hxCmqDk/lJy+o9okI7F0iiKSkxcoDdjktz6FROTYFs95/i1GqKHFB6NmNjnYJP//KfA5cF
-        3UI7+H61IXHDdm+R8lTO6gulHsNjFZvmzYXMGFIdPsj0O5It296TYsvdrh7RL5jzC+Qqax
-        PWCUvHeY2weNUOcK/Rh+M6zSQq8l4RQ=
+        bh=eKMsh0I0427Hc47ZGW8U4JW4E9uwhWhpTorO0a8P+g4=;
+        b=ODuXaynLGIzXPNxCEkXq356X22q8gyAiwhclsFpPXNMrM894uphPHM5kHNQ5cOpy4hSs+Q
+        fpUc5EPz7bGV0xiO44y5DGPUqEyzTrgx+CbV+dSphlD9wIJB/ZFyIRAR/eJG28jubqnixV
+        zRjW7yEDGGLxyLHZE82Qw2VatWDpnPQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-7mbJFjw5NYa9Fba_z-EB-w-1; Tue, 19 Nov 2019 22:59:23 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-176-S5qix1UzPDm6KZ0sYsMppA-1; Tue, 19 Nov 2019 23:08:53 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A4D55801FBF;
-        Wed, 20 Nov 2019 03:59:21 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 921D867673;
-        Wed, 20 Nov 2019 03:59:21 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 66C691809567;
-        Wed, 20 Nov 2019 03:59:21 +0000 (UTC)
-Date:   Tue, 19 Nov 2019 22:59:20 -0500 (EST)
-From:   Jason Wang <jasowang@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EC27D801FA1;
+        Wed, 20 Nov 2019 04:08:50 +0000 (UTC)
+Received: from [10.72.12.82] (ovpn-12-82.pek2.redhat.com [10.72.12.82])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C783C6063A;
+        Wed, 20 Nov 2019 04:08:02 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         Tiwei Bie <tiwei.bie@intel.com>
-Message-ID: <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20191120014653.GR4991@ziepe.ca>
-References: <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com> <20191119164632.GA4991@ziepe.ca> <20191119134822-mutt-send-email-mst@kernel.org> <20191119191547.GL4991@ziepe.ca> <20191119163147-mutt-send-email-mst@kernel.org> <20191119231023.GN4991@ziepe.ca> <20191119191053-mutt-send-email-mst@kernel.org> <20191120014653.GR4991@ziepe.ca>
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
+ <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
+ <AM0PR05MB4866C40A177D3D60BFC558F7D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <13946106-dab2-6bbe-df79-ca6dfdeb4c51@redhat.com>
+ <AM0PR05MB486685F7C839AD8A5F3EEA91D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <ead356f5-db81-cb01-0d74-b9e34965a20f@redhat.com>
+ <AM0PR05MB486605742430D120769F6C45D14C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <743601510.35622214.1574219728585.JavaMail.zimbra@redhat.com>
+ <AM0PR05MB48664221FB6B1C14BDF6C74AD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <21106743-57b2-2ca7-258c-e37a0880c70f@redhat.com>
+Date:   Wed, 20 Nov 2019 12:07:59 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Originating-IP: [10.68.5.20, 10.4.195.6]
-Thread-Topic: virtual-bus: Implementation of Virtual Bus
-Thread-Index: n9NEk+gP4p+eAlBUPqjybmA1P5VVfg==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: 7mbJFjw5NYa9Fba_z-EB-w-1
+In-Reply-To: <AM0PR05MB48664221FB6B1C14BDF6C74AD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: S5qix1UzPDm6KZ0sYsMppA-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ Original Message -----
-> On Tue, Nov 19, 2019 at 07:16:21PM -0500, Michael S. Tsirkin wrote:
-> > On Tue, Nov 19, 2019 at 07:10:23PM -0400, Jason Gunthorpe wrote:
-> > > On Tue, Nov 19, 2019 at 04:33:40PM -0500, Michael S. Tsirkin wrote:
-> > > > On Tue, Nov 19, 2019 at 03:15:47PM -0400, Jason Gunthorpe wrote:
-> > > > > On Tue, Nov 19, 2019 at 01:58:42PM -0500, Michael S. Tsirkin wrot=
-e:
-> > > > > > On Tue, Nov 19, 2019 at 12:46:32PM -0400, Jason Gunthorpe wrote=
-:
-> > > > > > > As always, this is all very hard to tell without actually see=
-ing
-> > > > > > > real
-> > > > > > > accelerated drivers implement this.
-> > > > > > >=20
-> > > > > > > Your patch series might be a bit premature in this regard.
-> > > > > >=20
-> > > > > > Actually drivers implementing this have been posted, haven't th=
-ey?
-> > > > > > See e.g. https://lwn.net/Articles/804379/
-> > > > >=20
-> > > > > Is that a real driver? It looks like another example quality
-> > > > > thing.
-> > > > >=20
-> > > > > For instance why do we need any of this if it has '#define
-> > > > > IFCVF_MDEV_LIMIT 1' ?
-> > > > >=20
-> > > > > Surely for this HW just use vfio over the entire PCI function and=
- be
-> > > > > done with it?
-> > > >=20
-> > > > What this does is allow using it with unmodified virtio drivers
-> > > > within guests.  You won't get this with passthrough as it only
-> > > > implements parts of virtio in hardware.
-> > >=20
-> > > I don't mean use vfio to perform passthrough, I mean to use vfio to
-> > > implement the software parts in userspace while vfio to talk to the
-> > > hardware.
-> >=20
-> > You repeated vfio twice here, hard to decode what you meant actually.
->=20
-> 'while using vifo to talk to the hardware'
->=20
-> > >   kernel -> vfio -> user space virtio driver -> qemu -> guest
-> >
-> > Exactly what has been implemented for control path.
->=20
-> I do not mean the modified mediated vfio this series proposes, I mean
-> vfio-pci, on a full PCI VF, exactly like we have today.
->=20
-> > The interface between vfio and userspace is
-> > based on virtio which is IMHO much better than
-> > a vendor specific one. userspace stays vendor agnostic.
->=20
-> Why is that even a good thing? It is much easier to provide drivers
-> via qemu/etc in user space then it is to make kernel upgrades. We've
-> learned this lesson many times.
 
-For upgrades, since we had a unified interface. It could be done
-through:
-
-1) switch the datapath from hardware to software (e.g vhost)
-2) unload and load the driver
-3) switch teh datapath back
-
-Having drivers in user space have other issues, there're a lot of
-customers want to stick to kernel drivers.
-
->=20
-> This is why we have had the philosophy that if it doesn't need to be
-> in the kernel it should be in userspace.
-
-Let me clarify again. For this framework, it aims to support both
-kernel driver and userspce driver. For this series, it only contains
-the kernel driver part. What it did is to allow kernel virtio driver
-to control vDPA devices. Then we can provide a unified interface for
-all of the VM, containers and bare metal. For this use case, I don't
-see a way to leave the driver in userspace other than injecting
-traffic back through vhost/TAP which is ugly.
-
->=20
-> > > Generally we don't want to see things in the kernel that can be done
-> > > in userspace, and to me, at least for this driver, this looks
-> > > completely solvable in userspace.
-> >=20
-> > I don't think that extends as far as actively encouraging userspace
-> > drivers poking at hardware in a vendor specific way.
->=20
-> Yes, it does, if you can implement your user space requirements using
-> vfio then why do you need a kernel driver?
+On 2019/11/20 =E4=B8=8A=E5=8D=8811:38, Parav Pandit wrote:
 >
-
-VFIO is only for userspace driver, we want kernel virtio driver run as
-well. That's why a unified API is designed for both.
-
-> The kernel needs to be involved when there are things only the kernel
-> can do. If IFC has such things they should be spelled out to justify
-> using a mediated device.
-
-Why? It allows a full functional virtio driver run on the host.
-
-
->=20
-> > That has lots of security and portability implications and isn't
-> > appropriate for everyone.
->=20
-> This is already using vfio. It doesn't make sense to claim that using
-> vfio properly is somehow less secure or less portable.
->=20
-> What I find particularly ugly is that this 'IFC VF NIC' driver
-> pretends to be a mediated vfio device, but actually bypasses all the
-> mediated device ops for managing dma security and just directly plugs
-> the system IOMMU for the underlying PCI device into vfio.
-
-Well, VFIO have multiple types of API. The design is to stick the VFIO
-DMA model like container work for making DMA API work for userspace
-driver. We can invent something our own but it must duplicate with the
-exist API and it will be extra overhead when VFIO DMA API starts to
-support stuffs like nesting or PASID.
-
-So in conclusion for vhost-mdev:
-
-- DMA is still done through VFIO manner e.g container fd etc.
-- device API is totally virtio specific.
-
-Compared with vfio-pci device, the only difference is the device API,
-we don't use device fd but vhost-net fd, but of course we can switch
-to use device fd. I'm sure we can settle this part down by having a
-way that is acceptable by both sides.
-
->=20
-> I suppose this little hack is what is motivating this abuse of vfio in
-> the first place?
->=20
-> Frankly I think a kernel driver touching a PCI function for which vfio
-> is now controlling the system iommu for is a violation of the security
-> model, and I'm very surprised AlexW didn't NAK this idea.
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Tuesday, November 19, 2019 9:15 PM
+>>
+>> ----- Original Message -----
+>>>
+>>>> From: Jason Wang <jasowang@redhat.com>
+>>>> Sent: Tuesday, November 19, 2019 1:37 AM
+>>>>
+>>> Nop. Devlink is NOT net specific. It works at the bus/device level.
+>>> Any block/scsi/crypto can register devlink instance and implement the
+>>> necessary ops as long as device has bus.
+>>>
+>> Well, uapi/linux/devlink.h told me:
+>>
+>> "
+>>   * include/uapi/linux/devlink.h - Network physical device Netlink inter=
+face "
+>>
+>> And the userspace tool was packaged into iproute2, the command was named
+>> as "TC", "PORT", "ESWITCH". All of those were strong hints that it was n=
+etwork
+>> specific. Even for networking, only few vendors choose to implement this=
+.
+>>
+> It is under iproute2 tool but it is not limited to networking.
+> Though today most users are networking drivers.
 >
-> Perhaps it is because none of the patches actually describe how the
-> DMA security model for this so-called mediated device works? :(
+> I do not know how ovs offloads are done without devlink by other vendors =
+doing in-kernel drivers.
 >
-> Or perhaps it is because this submission is split up so much it is
-> hard to see what is being proposed? (I note this IFC driver is the
-> first user of the mdev_set_iommu_device() function)
+>> So technically it could be extended but how hard it can be achieved in r=
+eality?
+>>
+> What are the missing things?
+> I am extending it for subfunctions lifecycle. I see virtio as yet another=
+ flavour/type of subfunction.
+
+
+Just to make sure we're on the same page. Sub function is only one of=20
+the possible cases for virtio. As I replied in another thread, we had=20
+already had NIC that does virtio at PF or VF level. For reality, I mean=20
+the effort spent on convincing all vendors to use devlink.
+
+
 >
+>> I still don't see why devlink is conflicted with GUID/sysfs, you can hoo=
+k sysfs
+> It is not conflicting. If you look at what all devlink infrastructure pro=
+vides, you will end up replicating all of it via sysfs..
 
-Are you objecting the mdev_set_iommu_deivce() stuffs here?
 
-> > It is kernel's job to abstract hardware away and present a unified
-> > interface as far as possible.
->=20
-> Sure, you could create a virtio accelerator driver framework in our
-> new drivers/accel I hear was started. That could make some sense, if
-> we had HW that actually required/benefited from kernel involvement.
+To clarify, I'm not saying duplicating all stuffs through sysfs. I meant=20
+whether we can:
 
-The framework is not designed specifically for your card. It tries to be
-generic to support every types of virtio hardware devices, it's not
-tied to any bus (e.g PCI) and any vendor. So it's not only a question
-of how to slice a PCIE ethernet device.
+1) create sub fucntion and do must to have pre configuration through=20
+devlink
+2) only after sub function is created one more available instance was=20
+added and shown through sysfs
+3) user can choose to create and use that mdev instance as it did for=20
+other type of device like vGPU
+4) devlink can still use to report other stuffs
+
+
+> It got syscaller support too, which is great for validation.
+> I have posted subfunction series with mdev and used devlink for all rest =
+of the esw and mgmt. interface to utilize it.
+>
+> sriov via sysfs and devlink sriov/esw handling has some severe locking is=
+sues, mainly because they are from two different interfaces.
+>
+>> events to devlink or do post or pre configuration through devlink. This =
+is much
+>> more easier than forcing all vendors to use devlink.
+>>
+> It is not about forcing. It is about leveraging existing kernel framework=
+ available without reinventing the wheel.
+> I am 100% sure, implementing health, dumps, traces, reporters, syscaller,=
+ monitors, interrupt configs, extending params via sysfs will be no-go.
+> sysfs is not meant for such things anymore. Any modern device management =
+will need all of it.
+
+
+I'm not familiar with other type of devices, but they should have their=20
+own vendor specific way to do that. That the real problems.
 
 Thanks
 
->=20
-> Jason
->=20
->=20
 
