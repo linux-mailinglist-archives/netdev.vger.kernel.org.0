@@ -2,73 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 848EF1030E9
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 02:00:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 453561030FF
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 02:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727415AbfKTA7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 19:59:55 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44159 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727262AbfKTA7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 19:59:55 -0500
-Received: by mail-lf1-f67.google.com with SMTP id n186so6265468lfd.11;
-        Tue, 19 Nov 2019 16:59:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5fRxUlXXstDWJi/psai//6bkR6LldBMpFWpi5SyjDnw=;
-        b=QTRroSQJxknUqXKls0Hh2QgV8M1osOyU25GQyapVQRw7hQDgCVUSwj3SRDHmL2IMjD
-         tSIWD9ezfNk0M/D74J5z2YzwZgrOt28yEffsqn0iE29Z0wEV107pF/Z8MYesIAulM7Wo
-         iY1G3ZceBeqd+wrQjqT1nJQLhPzU+86gd5gvqX4Z9YMBOQt6Cpvphpe+Ll9lnhgdhK9A
-         3XJ9M9x0jAkqzzGYqzjapqNpG2SnfX1tHhJVczGTSSnwwPT8p4j7f9/w5msG3zcUT8ku
-         Ud4X2KGjyp8omL97cLv2Drzv/g4BUZ/PTXgvxDq23I42EkcwPoQHD4iayQd1/xoBljri
-         7ISg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5fRxUlXXstDWJi/psai//6bkR6LldBMpFWpi5SyjDnw=;
-        b=aHRaL0aiOXG4A96+kj0FVXVDPP+QVeLa4OJ4tlAN966Qi6+j5qcfvigkik0ErXSfpp
-         l80wllhXZasSVyCN+G5eqBInEMDFHkcvxP/BIqV5MERT+7LrkROIFiauYFczDBi671St
-         HLZ2yGwIYZnMP7zEkXjN3GtClU9y8eQ3jsOtazK/7fhmTVuhraTiSyuBGPVXpvDeXtjj
-         EPwudfNS1R9NWHD0bYkLfCIiQrhsfflH3NgdBOoMIMRONpwivAmaWiRTESDnpY5Js4i4
-         w41wxZuacN0b32H8z93GfyVepjsYmiYjO+xFGEBe0jhrcjTIvpS3QDVCtuDXeKOsrIOq
-         1WvA==
-X-Gm-Message-State: APjAAAWXgBId0hZThEpaT2qO6lANnQsKgR8oZQlD8C1evg4mo1qYyOar
-        Fa+pCwz6SFEQ5E/hpS2qfn9AmmclH/JAAzW8ja8=
-X-Google-Smtp-Source: APXvYqxlujAa4PK79p3Yw0hwc+VTqczue6SXzUgBIrjhCPdS0ktMtzQf6eEbjA/3v1jQZr4j4ddZZ3OMhKZWUO3YtIo=
-X-Received: by 2002:a19:c384:: with SMTP id t126mr375251lff.100.1574211591000;
- Tue, 19 Nov 2019 16:59:51 -0800 (PST)
+        id S1727471AbfKTBMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 20:12:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43270 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727262AbfKTBMS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Nov 2019 20:12:18 -0500
+Received: from paulmck-ThinkPad-P72.home (unknown [199.201.64.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDA892245C;
+        Wed, 20 Nov 2019 01:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574212337;
+        bh=YVHFJP4Tg+uw9cqmlPx827g2cuX+27hpz2I8QmaOS+E=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=QmEXo52I896jnaFA1ELwMs8w57Kzti/fIf87OBz7rLXE31Q5zdp+oLYAhOP+HkaBj
+         elfKj6ziCzfzU9TF1DxdlhYnovU1XYAFD93P/XlWopjt6X+VyNybvJeLqz3+O3dQ3u
+         5iyiPL+e4mvcU2WjoXjNLeXIek5fNCgsRUsnXoA8=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 45B9435227AB; Tue, 19 Nov 2019 17:12:17 -0800 (PST)
+Date:   Tue, 19 Nov 2019 17:12:17 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     anders.roxell@linaro.org, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ipmr: fix suspicious RCU warning
+Message-ID: <20191120011217.GM2889@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20191118090925.2474-1-anders.roxell@linaro.org>
+ <20191119.145048.487849503145486152.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20191119142113.15388-1-yuehaibing@huawei.com>
-In-Reply-To: <20191119142113.15388-1-yuehaibing@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 19 Nov 2019 16:59:39 -0800
-Message-ID: <CAADnVQKzNSC-RgTrbS6LvquR5D51qw4Gr7mpKCp5ADugaZr_aA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Make array_map_mmap static
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191119.145048.487849503145486152.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 19, 2019 at 6:21 AM YueHaibing <yuehaibing@huawei.com> wrote:
->
-> Fix sparse warning:
->
-> kernel/bpf/arraymap.c:481:5: warning:
->  symbol 'array_map_mmap' was not declared. Should it be static?
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+On Tue, Nov 19, 2019 at 02:50:48PM -0800, David Miller wrote:
+> From: Anders Roxell <anders.roxell@linaro.org>
+> Date: Mon, 18 Nov 2019 10:09:25 +0100
+> 
+> > @@ -108,9 +108,18 @@ static void igmpmsg_netlink_event(struct mr_table *mrt, struct sk_buff *pkt);
+> >  static void mroute_clean_tables(struct mr_table *mrt, int flags);
+> >  static void ipmr_expire_process(struct timer_list *t);
+> >  
+> > +#ifdef CONFIG_PROVE_LOCKING
+> > +int ip_mr_initialized;
+> > +void ip_mr_now_initialized(void) { ip_mr_initialized = 1; }
+> > +#else
+> > +const int ip_mr_initialized = 1;
+> > +void ip_mr_now_initialized(void) { }
+> > +#endif
+> 
+> This seems excessive and a bit not so pretty.
+> 
+> > +
+> >  #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
+> >  #define ipmr_for_each_table(mrt, net) \
+> > -	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
+> > +	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
+> > +			(lockdep_rtnl_is_held() || !ip_mr_initialized))
+> >  
+> >  static struct mr_table *ipmr_mr_table_iter(struct net *net,
+> >  					   struct mr_table *mrt)
+> 
+> The problematic code path is ipmr_rules_init() done during ipmr_net_init().
+> 
+> You can just wrap this call around RCU locking or take the RTNL mutex.
 
-Applied. Thanks
+Agreed, that would work quite well.
+
+							Thanx, Paul
+
+> That way you don't need to rediculous ip_mr_initialized knob which frankly
+> doesn't even seem accurate to me.  It's a centralized global variable
+> which is holding state about multiple network namespace objects which makes
+> absolutely no sense at all, it's wrong.
