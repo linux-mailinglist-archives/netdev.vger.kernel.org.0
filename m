@@ -2,76 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3767710427E
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:49:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D814E104293
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 18:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728397AbfKTRto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 12:49:44 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:53841 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728364AbfKTRtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:49:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574272181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ODjoOFrCfJWqH0REftGehGkeWkjV+sQmFgs/zUioQPI=;
-        b=P6ibUNPaoyGn4efNlYLD1e8DHi0PH1ptbaUqX2uTqGzBIwIgbFcb0F7AryRORTOZ1Ufcgh
-        o5gJNVH5/01CEn306yCjEs9TUod9BA/2BPVQJH7TwsTQNI/m/LxWZuzb3jvVyHo8ZtU4BB
-        AzlQdg77bE6JIItQevbYvWPRqOPU+F4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-214-5dlIfxnZMYCoUr3U-Ua0aw-1; Wed, 20 Nov 2019 12:49:40 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55D3E477;
-        Wed, 20 Nov 2019 17:49:39 +0000 (UTC)
-Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DF7B51C7;
-        Wed, 20 Nov 2019 17:49:31 +0000 (UTC)
-Date:   Wed, 20 Nov 2019 18:49:30 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, lorenzo.bianconi@redhat.com,
-        mcroce@redhat.com, jonathan.lemon@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v5 net-next 3/3] net: mvneta: get rid of huge dma sync
- in mvneta_rx_refill
-Message-ID: <20191120184930.421e7b82@carbon>
-In-Reply-To: <1e945f45259c09da6f5876a11e0bedd955c9d695.1574261017.git.lorenzo@kernel.org>
-References: <cover.1574261017.git.lorenzo@kernel.org>
-        <1e945f45259c09da6f5876a11e0bedd955c9d695.1574261017.git.lorenzo@kernel.org>
+        id S1728030AbfKTRxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 12:53:06 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44136 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727468AbfKTRxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 12:53:06 -0500
+Received: by mail-ot1-f67.google.com with SMTP id c19so324608otr.11;
+        Wed, 20 Nov 2019 09:53:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uwv8oDObgXlOHyppocybq9RAMpKlTk5h/NeR2cnrypw=;
+        b=SLo2M2SrfMO0joR4Vi096PRmD1SA0rKm0JSdxaK4CNATZCVgPHzjySrCsyQt78pljL
+         XlawP6bVlLgkXjKJ1oW/awX+PrBQFlJY2G6R5t/4CIBWn/lAIIK3kDe3y/VvGpsxRerS
+         rtzuPJqpNW9RtKyTFZqJybtXWvt8k6BJBwjBlpLiYwhN63myP91D2KS85DXEsA5pGOIN
+         Ghn1MGLQzURbo41KD0KNmbAnxdTvYY8iLZOmNlRc5LKBR4qIguqUcRFzjD4pzN6nbfrr
+         T7pZ6KkyFjtsAKOtneu+qzFY+TOkcPL30IKwjmh1yT7vRE42LAWZsGO1XaslIgCTjpar
+         vpaA==
+X-Gm-Message-State: APjAAAVdX26L1m8bhAyKJ1adxv3FsEDaYCMyMoWmrBs0DRroxs25iOVd
+        0X08H+rJx0jsX/IzTJwO39gUNpS4
+X-Google-Smtp-Source: APXvYqyYxpO+Yok/l/BmbsETZT/OFjJIE4+Qicr0Tx22dVgGKtoXrmGUpNs3GpfhXq/uvndGbsFHkg==
+X-Received: by 2002:a9d:f45:: with SMTP id 63mr2959739ott.214.1574272385455;
+        Wed, 20 Nov 2019 09:53:05 -0800 (PST)
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
+        by smtp.gmail.com with ESMTPSA id h39sm8799317oth.9.2019.11.20.09.53.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Nov 2019 09:53:04 -0800 (PST)
+Received: by mail-ot1-f54.google.com with SMTP id c19so324551otr.11;
+        Wed, 20 Nov 2019 09:53:04 -0800 (PST)
+X-Received: by 2002:a9d:7f12:: with SMTP id j18mr2846999otq.221.1574272384642;
+ Wed, 20 Nov 2019 09:53:04 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: 5dlIfxnZMYCoUr3U-Ua0aw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191118112324.22725-1-linux@rasmusvillemoes.dk> <20191118112324.22725-46-linux@rasmusvillemoes.dk>
+In-Reply-To: <20191118112324.22725-46-linux@rasmusvillemoes.dk>
+From:   Li Yang <leoyang.li@nxp.com>
+Date:   Wed, 20 Nov 2019 11:52:53 -0600
+X-Gmail-Original-Message-ID: <CADRPPNTgNtFL9Wok_ZNJSoo=4vokdU7c7z9JM-_e-w=pcDfwDg@mail.gmail.com>
+Message-ID: <CADRPPNTgNtFL9Wok_ZNJSoo=4vokdU7c7z9JM-_e-w=pcDfwDg@mail.gmail.com>
+Subject: Re: [PATCH v5 45/48] net/wan/fsl_ucc_hdlc: fix reading of __be16 registers
+To:     David Miller <davem@davemloft.net>
+Cc:     Qiang Zhao <qiang.zhao@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019 16:54:19 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Mon, Nov 18, 2019 at 5:26 AM Rasmus Villemoes
+<linux@rasmusvillemoes.dk> wrote:
+>
 
-> Get rid of costly dma_sync_single_for_device in mvneta_rx_refill
-> since now the driver can let page_pool API to manage needed DMA
-> sync with a proper size.
->=20
-> - XDP_DROP DMA sync managed by mvneta driver:=09~420Kpps
-> - XDP_DROP DMA sync managed by page_pool API:=09~585Kpps
->=20
-> Tested-by: Matteo Croce <mcroce@redhat.com>
+Hi David,
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+What do you think about the patch 45-47 from the series for net
+related changes?  If it is ok with you, I can merge them with the
+whole series through the soc tree with your ACK.
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Regards,
+Leo
 
+> When releasing the allocated muram resource, we rely on reading back
+> the offsets from the riptr/tiptr registers. But those registers are
+> __be16 (and we indeed write them using iowrite16be), so we can't just
+> read them back with a normal C dereference.
+>
+> This is not currently a real problem, since for now the driver is
+> PPC32-only. But it will soon be allowed to be used on arm and arm64 as
+> well.
+>
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> ---
+>  drivers/net/wan/fsl_ucc_hdlc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+> index 405b24a5a60d..8d13586bb774 100644
+> --- a/drivers/net/wan/fsl_ucc_hdlc.c
+> +++ b/drivers/net/wan/fsl_ucc_hdlc.c
+> @@ -732,8 +732,8 @@ static int uhdlc_open(struct net_device *dev)
+>
+>  static void uhdlc_memclean(struct ucc_hdlc_private *priv)
+>  {
+> -       qe_muram_free(priv->ucc_pram->riptr);
+> -       qe_muram_free(priv->ucc_pram->tiptr);
+> +       qe_muram_free(ioread16be(&priv->ucc_pram->riptr));
+> +       qe_muram_free(ioread16be(&priv->ucc_pram->tiptr));
+>
+>         if (priv->rx_bd_base) {
+>                 dma_free_coherent(priv->dev,
+> --
+> 2.23.0
+>
