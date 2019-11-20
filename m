@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8005C103148
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 02:49:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14065103147
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 02:48:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727468AbfKTBtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 20:49:11 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:44924 "EHLO huawei.com"
+        id S1727378AbfKTBsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 20:48:30 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6252 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726874AbfKTBtL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Nov 2019 20:49:11 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 709A05E6B61AEABDA449;
-        Wed, 20 Nov 2019 09:49:09 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 20 Nov 2019 09:49:03 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <vladimir.oltean@nxp.com>, <claudiu.manoil@nxp.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>
+        id S1727140AbfKTBsa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Nov 2019 20:48:30 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 3A98710A35CD555D8F51;
+        Wed, 20 Nov 2019 09:48:26 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Wed, 20 Nov 2019
+ 09:48:18 +0800
+Subject: Re: [PATCH V2 net] net: hns3: fix a wrong reset interrupt status mask
+To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH net v2] net: dsa: ocelot: add dependency for NET_DSA_MSCC_FELIX
-Date:   Wed, 20 Nov 2019 09:47:22 +0800
-Message-ID: <20191120014722.8075-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191119.154125.1492881397881625788.davem@davemloft.net>
-References: <20191119.154125.1492881397881625788.davem@davemloft.net>
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>
+References: <1574214285-43543-1-git-send-email-tanhuazhong@huawei.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <6561cf1f-1af5-7852-8de7-1377b228f2a5@huawei.com>
+Date:   Wed, 20 Nov 2019 09:48:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
+In-Reply-To: <1574214285-43543-1-git-send-email-tanhuazhong@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_NET_DSA_MSCC_FELIX=y, and CONFIG_NET_VENDOR_MICROSEMI=n,
-below errors can be found:
-drivers/net/dsa/ocelot/felix.o: In function `felix_vlan_del':
-felix.c:(.text+0x26e): undefined reference to `ocelot_vlan_del'
-drivers/net/dsa/ocelot/felix.o: In function `felix_vlan_add':
-felix.c:(.text+0x352): undefined reference to `ocelot_vlan_add'
+Sorry, please ignore this patch.
+Will resend later.
 
-and warning as below:
-WARNING: unmet direct dependencies detected for MSCC_OCELOT_SWITCH
-Depends on [n]: NETDEVICES [=y] && ETHERNET [=y] &&
-NET_VENDOR_MICROSEMI [=n] && NET_SWITCHDEV [=y] && HAS_IOMEM [=y]
-Selected by [y]:
-NET_DSA_MSCC_FELIX [=y] && NETDEVICES [=y] && HAVE_NET_DSA [=y]
-&& NET_DSA [=y] && PCI [=y]
-
-This patch is to select NET_VENDOR_MICROSEMI for NET_DSA_MSCC_FELIX.
-
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- v2: modify 'depends on' to 'select'.
- drivers/net/dsa/ocelot/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 0031ca8..652604b 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -2,6 +2,7 @@
- config NET_DSA_MSCC_FELIX
- 	tristate "Ocelot / Felix Ethernet switch support"
- 	depends on NET_DSA && PCI
-+	select NET_VENDOR_MICROSEMI
- 	select MSCC_OCELOT_SWITCH
- 	select NET_DSA_TAG_OCELOT
- 	help
--- 
-2.7.4
+On 2019/11/20 9:44, Huazhong Tan wrote:
+> According to hardware user manual, bits5~7 in register
+> HCLGE_MISC_VECTOR_INT_STS means reset interrupts status,
+> but HCLGE_RESET_INT_M is defined as bits0~2 now. So it
+> will make hclge_reset_err_handle() read the wrong reset
+> interrupt status.
+> 
+> This patch fixes this wrong bit mask.
+> 
+> Fixes: 2336f19d7892 ("net: hns3: check reset interrupt status when reset fails")
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> ---
+>   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> index 59b8243..615cde1 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> @@ -166,7 +166,7 @@ enum HLCGE_PORT_TYPE {
+>   #define HCLGE_GLOBAL_RESET_BIT		0
+>   #define HCLGE_CORE_RESET_BIT		1
+>   #define HCLGE_IMP_RESET_BIT		2
+> -#define HCLGE_RESET_INT_M		GENMASK(2, 0)
+> +#define HCLGE_RESET_INT_M		GENMASK(7, 5)
+>   #define HCLGE_FUN_RST_ING		0x20C00
+>   #define HCLGE_FUN_RST_ING_B		0
+>   
+> 
 
