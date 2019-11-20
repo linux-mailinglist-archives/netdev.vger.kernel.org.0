@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B371B1042C0
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E88D1042D5
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 19:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbfKTSAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 13:00:44 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46451 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727442AbfKTSAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:00:44 -0500
-Received: by mail-wr1-f65.google.com with SMTP id b3so884637wrs.13
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 10:00:43 -0800 (PST)
+        id S1728024AbfKTSFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 13:05:18 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46070 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727644AbfKTSFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 13:05:17 -0500
+Received: by mail-wr1-f67.google.com with SMTP id z10so911232wrs.12
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 10:05:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=45ERKgsJ66WHcj3ysRCeTHTAykcbP4bDCeaBEe1z3BE=;
-        b=hxHmPvV+uviGWfk84DTeR/WH6CrnZHW8HudF6W6l/EHhWrNU3oFjKuYTf5VbEtICrc
-         MLFzmAH24BJUke5jSMFtvxNYolI6HG1SgEYfl3319JnWbhX9Fxbqp1U5IQMZvhJOXNif
-         wS8fV5sbBQjIXnwV5Xb66vT71kwSUnBcGBNY+wOlAA+/ZTTBfueNXf287gIQsjEh29ad
-         edwjycp9Gpv1QYQRrUXRy3r4U565Jh1SgrF9AEiRX3nB+0BpoKB3Uk0nXG9LX5vBn6jh
-         SLKxSI8AnvbkUebN7MyOFlUuhCiiG8+SxojEeuX9lzvXkV/Kf7oiPz8bd6ETeHLwOsy1
-         DD9A==
+        bh=iWjoarTRI2uMmQJVs0cTKC49IVOo4cntdWf6MRSUmiQ=;
+        b=GIV9OEENEc8Nk4ZQFf7hjWtiyFTrLIB2HWtWxOoJwr32Tp61aYf9No2YO9KV4n0J8q
+         N4uX/Pwv3e1GNmptxJSVteX9HNrncYrIGDEr12yo7linDILPau6yJC5NYBEQXxe79gjW
+         dNLAVbb4wN1oYvx8lsncwr2q9jOPKlUcHR8L19gOf2pwMkbq28bqBX7K0sLBqaW+PFpa
+         NyxtsHSVU+P57cGBlG9ujU4GI3l2bNjQbVICg4TNbLuR3mvsyuSKnIw1XdK/xeEIs+t8
+         kHhnBJk9V0XNtp6hXQKLeQyX0jVaZqunB33Xh4f49pmHToqkBeCTSvUQjMtlLxxlnuMG
+         1LQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=45ERKgsJ66WHcj3ysRCeTHTAykcbP4bDCeaBEe1z3BE=;
-        b=kbWSDWuKyib+hk3r6szj1UbtWHvv4eI3ql3915J2VVHk+ywRNZaZXM8EnpZlvfoqhe
-         zTqxEG87MEs/QF+VZyxObxt8x1vSN7h3wPVU9QB09CPMITnVjaXuGf+6AeT1sx4iFjtp
-         4RCQtwRCD3UtleMxcm0Y8Aa+idtTjk0V2ZMrI1iLt3ZhpCK4jSiWoN+cwlckLfJft9rk
-         naFmo+jZhf8TZyX36ilWKHxfwnZI8BIXGaTZmH8UolmRxU3FyvYxS65A/A/a1Jg+l36q
-         F5uCXia2rWS72+olCWsHWtEhrVU4rBJTud+mi6mGBOf+qnDR6if05Z6QOhNsJgHZfBaL
-         QL9g==
-X-Gm-Message-State: APjAAAWJic+TNdIjcdnbkhVxicU1xrB7afF2+YL95NmtbP2DSRL6kTEk
-        /RoKW/S9W7/zVa9urnR8VeQasw==
-X-Google-Smtp-Source: APXvYqw4lec8f3DNCtlWAxGF4ebRZYYuJmMsNnJdRbNuA9bpBVf75DMOUNW08ffLS5CUnS/0oewp4Q==
-X-Received: by 2002:a05:6000:1286:: with SMTP id f6mr2338830wrx.44.1574272841592;
-        Wed, 20 Nov 2019 10:00:41 -0800 (PST)
+        bh=iWjoarTRI2uMmQJVs0cTKC49IVOo4cntdWf6MRSUmiQ=;
+        b=FoTCie+8XeQ8O9/TKi7eee7UR/snXVKXHFQpQJnJVIgeSDgQINclYvABajVhpJTovB
+         39W066tahJ6o4lfXb0I1Xwj94J2rXfLRtOTFZ8YRQZTAonjfOO9CN9D45nXbCFouuOVp
+         lGTdOmOe0bCSwFoQlZrV4XUf6vZjc41KL8dsi7ZT21pOda69pR8LFJk8MpTxHlteSPKb
+         3HZRTM/X+vxnwYDNZJKyhLnN7wKXplJH0zCx95wDOEXmfZSBiKacKz/8w+Dhh35l1TrP
+         uUSEudi492C/23x58OFu3V0+cbSuwdidJDbbvl0teqsC9W8H1xSFA6YeCg2U2uYBMFbs
+         u8IA==
+X-Gm-Message-State: APjAAAUt8q+WoKh+ATZOXwoGS4Sy1kyoDUdXq11HaQPZ30ghNQlTY3pn
+        2E+V/B6KngSb8xEbqzpBY7jHLA==
+X-Google-Smtp-Source: APXvYqzSuKilU3N+/DQ/Rf/o5L2FF7c4FI6ozRdFQT68W5qvtuh9oC+Ein0AKKcwPj2KGs7dKZEfyg==
+X-Received: by 2002:adf:b746:: with SMTP id n6mr5077992wre.65.1574273115837;
+        Wed, 20 Nov 2019 10:05:15 -0800 (PST)
 Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
-        by smtp.gmail.com with ESMTPSA id n1sm60962wrr.24.2019.11.20.10.00.40
+        by smtp.gmail.com with ESMTPSA id 19sm59017wrc.47.2019.11.20.10.05.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Nov 2019 10:00:40 -0800 (PST)
-Date:   Wed, 20 Nov 2019 20:00:38 +0200
+        Wed, 20 Nov 2019 10:05:15 -0800 (PST)
+Date:   Wed, 20 Nov 2019 20:05:12 +0200
 From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         davem@davemloft.net, lorenzo.bianconi@redhat.com,
         mcroce@redhat.com, jonathan.lemon@gmail.com
-Subject: Re: [PATCH v5 net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for device
-Message-ID: <20191120180038.GA26040@apalos.home>
+Subject: Re: [PATCH v5 net-next 0/3] add DMA-sync-for-device capability to
+ page_pool API
+Message-ID: <20191120180512.GB26040@apalos.home>
 References: <cover.1574261017.git.lorenzo@kernel.org>
- <4a22dd0ef91220748c4d3da366082a13190fb794.1574261017.git.lorenzo@kernel.org>
- <20191120184901.59306f16@carbon>
+ <20191120163708.3b37077a@carbon>
+ <20191120154522.GC21993@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191120184901.59306f16@carbon>
+In-Reply-To: <20191120154522.GC21993@localhost.localdomain>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> [...]
-> > @@ -281,8 +309,8 @@ static bool __page_pool_recycle_direct(struct page *page,
-> >  	return true;
-> >  }
-> >  
-> > -void __page_pool_put_page(struct page_pool *pool,
-> > -			  struct page *page, bool allow_direct)
-> > +void __page_pool_put_page(struct page_pool *pool, struct page *page,
-> > +			  unsigned int dma_sync_size, bool allow_direct)
-> >  {
-> >  	/* This allocator is optimized for the XDP mode that uses
-> >  	 * one-frame-per-page, but have fallbacks that act like the
-> > @@ -293,6 +321,10 @@ void __page_pool_put_page(struct page_pool *pool,
-> >  	if (likely(page_ref_count(page) == 1)) {
-> >  		/* Read barrier done in page_ref_count / READ_ONCE */
-> >  
-> > +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> > +			page_pool_dma_sync_for_device(pool, page,
-> > +						      dma_sync_size);
-> > +
-> >  		if (allow_direct && in_serving_softirq())
-> >  			if (__page_pool_recycle_direct(page, pool))
-> >  				return;
+On Wed, Nov 20, 2019 at 05:45:22PM +0200, Lorenzo Bianconi wrote:
+> > On Wed, 20 Nov 2019 16:54:16 +0200
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > 
+> > > Do not change naming convention for the moment since the changes will
+> > > hit other drivers as well. I will address it in another series.
+> > 
+> > Yes, I agree, as I also said over IRC (freenode #xdp).
+> > 
+> > The length (dma_sync_size) API addition to __page_pool_put_page() is
+> > for now confined to this driver (mvneta).  We can postpone the API-name
+> > discussion, as you have promised here (and on IRC) that you will
+> > "address it in another series".  (Guess, given timing, the followup
+> > series and discussion will happen after the merge window...)
 > 
-> I am slightly concerned this touch the fast-path code. But at-least on
-> Intel, I don't think this is measurable.  And for the ARM64 board it
-> was a huge win... thus I'll accept this.
+> Right, I will work on it after next merging window.
+
+As we discussed we can go a step further as page_pool_put_page() and
+page_pool_recycle_direct() can probably go away. Syncing with the len make more
+sense as long. As we document the 'allow_direct' flag sufficiently we can just
+rename __page_pool_put_page -> page_pool_put_page and keep one function only. 
+
+In any case this patchset is fine for this merge window
+
+for the series
 
 Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
