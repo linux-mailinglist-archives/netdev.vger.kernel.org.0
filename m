@@ -2,94 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7D7103097
-	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 01:13:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A16610309B
+	for <lists+netdev@lfdr.de>; Wed, 20 Nov 2019 01:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbfKTAM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Nov 2019 19:12:58 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:41213 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727262AbfKTAM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Nov 2019 19:12:58 -0500
-Received: by mail-lj1-f193.google.com with SMTP id m4so20484126ljj.8
-        for <netdev@vger.kernel.org>; Tue, 19 Nov 2019 16:12:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=itw5eR7cwMUhlcxQjdV1khV3Xs6+i+HEyoR89Rm7OBI=;
-        b=YwtjgNpnHtSceOi2bA+YL7pylgmjYuF1hI02gl8jScq8Uqm4bPAsov+FfLzul4tr0Z
-         S4GdwgC1u7QXjNFNEfphQVVNGjMBt//JcMiSZlfNAojI4Rd6WFQvdF5uG0hqF7vZhmwB
-         Wl/URNX598LYN33+iMC72YWiCS3nUZysea1v6bzqQ4NOEsgMSu9yfPZrvUTvGnzZuFni
-         2ibjk1MlPKgQjbj/RAwKbnHgtxacwgXcVjUHaeLoJHADiFrsYWj5WDVItedc+qOy73dK
-         87/A0vidFg7hvNAAeYc02kNtXJ0njUnTjKoJ7tgk8chppj7HFA/7LNJSHdPy5CsffoOE
-         maqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=itw5eR7cwMUhlcxQjdV1khV3Xs6+i+HEyoR89Rm7OBI=;
-        b=JY85vZ1dPrT3EZKmiWTRawut5/9WeHXAjXgBdp2z6oGMhjyKPPeJV7UtqOHpLxgFoI
-         vpNAYHglC3wYMzdbsiUpJJ66Q7UcpO3iW5wWQ7nd9Mb4FYHcAFyneKM9D01Vs8qtlyvy
-         ceU5vxrxrnetT99WkNoCtL/TcKLtGGiixgkScHd044Nb5Yu6QFf0DnGSflXXvbl/oocM
-         zbRSCkGOcxbJ9dHe2+6EiJW1J98uMZKBAL4Pyy0Lb0u2L6tlXzRr/orDTIfVmnnFyuE1
-         5FLUZsQjbaFqAkpqwvJfm4BLuZq4tXuAV435KXF4RrCMhpS8H0S+OKQuSXrl/qqTRNFE
-         gdaQ==
-X-Gm-Message-State: APjAAAX/Dm0VtAsGO/T4IEAs4mhVj61ZsBhDGa/4o35ZPUpbF+iKeXJf
-        l/Wihxw+AKgAHvMBu8I0rW80ng==
-X-Google-Smtp-Source: APXvYqzl0ncoOVQp47dU9bgLqL+1QOknA3M+P7/slzNlmgbdziaq8wjN2LuB06kLgkliQhF59i9EOg==
-X-Received: by 2002:a2e:7c12:: with SMTP id x18mr159708ljc.130.1574208776111;
-        Tue, 19 Nov 2019 16:12:56 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u7sm10539769ljj.102.2019.11.19.16.12.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 16:12:55 -0800 (PST)
-Date:   Tue, 19 Nov 2019 16:12:41 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        simon.horman@netronome.com
-Subject: Re: [PATCH net-next 1/4] net: sched: add vxlan option support to
- act_tunnel_key
-Message-ID: <20191119161241.5b010232@cakuba.netronome.com>
-In-Reply-To: <af3c3d95717d8ff70c2c21621cb2f49c310593e2.1574155869.git.lucien.xin@gmail.com>
-References: <cover.1574155869.git.lucien.xin@gmail.com>
-        <af3c3d95717d8ff70c2c21621cb2f49c310593e2.1574155869.git.lucien.xin@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1727438AbfKTAP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Nov 2019 19:15:29 -0500
+Received: from mail-eopbgr50065.outbound.protection.outlook.com ([40.107.5.65]:50450
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727226AbfKTAP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Nov 2019 19:15:28 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VRrrwyeFkdFx+TawXIA88xT7pi0Agnso/iwT2ZKWNh0uBO1lUUnsQANoHbrkRBYXD1/AF5xvXTlAaFL0HT9hRBjFHyxQ0dPB+eImbWRRpYmR7jyd7G6E3YdlYrHgTp61Zm8gnkGAd51D8O6Es2HbV4jhoPg/8zLpadAIj5bHv69+7NapisPzM0dDnxOwIt15dgpL5mFIXFagZP8nmvCKgdcmApJBUyS2CX6IIXrTbSJ5ZbD7nApz3e2rA6yS224EDo1ftCTvATC8VQ9zu+YPES9x56wYGgif19tst33o72lzFUGgMWbIRBAeGHD4ew6NzkGudxixFGjmFCjHoLGwaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w53b4wuOJS4p6492nG3Zz20WhPAcG6FevpBxQ/Lcqyo=;
+ b=gCgozUZAXdmdwNF1EiSt00rG27Tls7nWSDK2lP+YdLgcfHtvFPJLlkYoXqcMWHZUUTRBRP1Z4PAhagxJAmW+CA5q204ePe567sZdXiM6mSVjIlPuObRfYoP5t2im2qeJr0NQwe81cfNmzcc0J5XGqJ4x649+0M0z2IVF3LXr15+YzUnCPchNjfXF0Bvcj6pFq+Tv/riQh8wUgjGUiqYlqo+aLCWNnDDU5taWjqrwOCYGLDJ/0LjUF80ZFH1nHTCWigzlQN8YFq4UzFZWGySa5+3+Z5u64g58iB64qIR6dkgQEOdszgI7IHdg8ixE3TPzomYfHHoiZxjmSJXuQE9eKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w53b4wuOJS4p6492nG3Zz20WhPAcG6FevpBxQ/Lcqyo=;
+ b=IDOUhLsLStq522VRvW6P5H2xtrHwW8DILhzmJtwJtNYSEXc44KljOoMMAy404pPLYxLPmVXfnW4AXw626BUw9f5o2C6TMvXf93v4+0PITzltpSu3Z+A7v3FoHPBYdNVwcjPpXC3s3GEHITYPGPkyprAablCLyOyQI7NzueSng9o=
+Received: from AM6PR05MB5094.eurprd05.prod.outlook.com (20.177.34.93) by
+ AM6PR05MB5378.eurprd05.prod.outlook.com (20.177.188.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2474.17; Wed, 20 Nov 2019 00:15:15 +0000
+Received: from AM6PR05MB5094.eurprd05.prod.outlook.com
+ ([fe80::5cde:d406:1656:17b4]) by AM6PR05MB5094.eurprd05.prod.outlook.com
+ ([fe80::5cde:d406:1656:17b4%6]) with mapi id 15.20.2451.029; Wed, 20 Nov 2019
+ 00:15:15 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [PATCH net-next V3 0/3] page_pool: API for numa node change handling
+Thread-Topic: [PATCH net-next V3 0/3] page_pool: API for numa node change
+ handling
+Thread-Index: AQHVnzeUldfLnBUTe0q7mcdCU78m5Q==
+Date:   Wed, 20 Nov 2019 00:15:14 +0000
+Message-ID: <20191120001456.11170-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BY5PR13CA0008.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::21) To AM6PR05MB5094.eurprd05.prod.outlook.com
+ (2603:10a6:20b:9::29)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 5c92b7d7-d67c-41f0-02d2-08d76d4eb739
+x-ms-traffictypediagnostic: AM6PR05MB5378:|AM6PR05MB5378:
+x-ms-exchange-purlcount: 2
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB5378785F6BA9E31D403E1A40BE4F0@AM6PR05MB5378.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02272225C5
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(376002)(39860400002)(346002)(396003)(189003)(199004)(6116002)(3846002)(256004)(14444005)(66946007)(110136005)(107886003)(305945005)(81156014)(6506007)(386003)(81166006)(36756003)(6512007)(2906002)(54906003)(14454004)(71190400001)(71200400001)(316002)(7736002)(64756008)(66556008)(66476007)(66446008)(486006)(476003)(2616005)(102836004)(50226002)(99286004)(52116002)(186003)(5660300002)(6486002)(86362001)(478600001)(8936002)(6306002)(25786009)(6436002)(26005)(4326008)(1076003)(966005)(66066001)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5378;H:AM6PR05MB5094.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HCq96NQEuNjW8XDd1h65hvRe8ct/rRg9hGazoUOzg67/qlUH64DF4kKn8c6hQLhHP0H6LfCNLf6g167lcRjk1WbEiRbX0GM7iMHFTpitlmR5vksak2u/D3Xw6Xfkea4CMfU2G4N3CfYsNsYtkxByb1eDiIevCFgkO2DRbETzTB5GDNk0WK9fBdllo9xHdvS4j+XLS1qQvfVz9q1z7KvQ6L74bawajlmfw5/x4ZHyy5EywJ6gfz8Dvh1+tZJ3aqoZFEIhgyW9Y869XkT0H98HMRAgGj02Xws0ScOFMng8QJicM+shU6wY3ygQ45Iykl9ue3fXJfXlIMbcv3YD46QQYhY0FYrEqIvCzKWx1Kf3tUuzCGvtj/3SN01lJpPARlNbRz9raHXu0JMXjpziwfGQIR2k7t4KtIgp4IxbpjE4e1/i08WrVV8jtSC7fTpmK0HTVakXkjWDXkA0M7p6XZRn2bLFZNGdpk2AiXZ+1rz0IS8=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c92b7d7-d67c-41f0-02d2-08d76d4eb739
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2019 00:15:14.9375
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bxFFOUIht1NE67zdLMJtRWn+N3JPdncf2rWJlPXx+bEKyHC6qGfqT41RHvVvrhZNHSn8mbjXNtI4xXNdXRphqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5378
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Nov 2019 17:31:46 +0800, Xin Long wrote:
-> @@ -54,6 +55,7 @@ static int tunnel_key_act(struct sk_buff *skb, const struct tc_action *a,
->  static const struct nla_policy
->  enc_opts_policy[TCA_TUNNEL_KEY_ENC_OPTS_MAX + 1] = {
+This series extends page pool API to allow page pool consumers to update
+page pool numa node on the fly. This is required since on some systems,
+rx rings irqs can migrate between numa nodes, due to irq balancer or user
+defined scripts, current page pool has no way to know of such migration
+and will keep allocating and holding on to pages from a wrong numa node,
+which is bad for the consumer performance.
 
-[TCA_TUNNEL_KEY_ENC_OPTS_UNSPEC] = 
-	{ .strict_start_type = TCA_TUNNEL_KEY_ENC_OPTS_VXLAN, }
+1) Add API to update numa node id of the page pool
+Consumers will call this API to update the page pool numa node id.
 
->  	[TCA_TUNNEL_KEY_ENC_OPTS_GENEVE]	= { .type = NLA_NESTED },
-> +	[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN]		= { .type = NLA_NESTED },
->  };
->  
->  static const struct nla_policy
-> @@ -64,6 +66,11 @@ geneve_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX + 1] = {
->  						       .len = 128 },
->  };
->  
-> +static const struct nla_policy
-> +vxlan_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX + 1] = {
+2) Don't recycle non-reusable pages:
+Page pool will check upon page return whether a page is suitable for
+recycling or not.=20
+ 2.1) when it belongs to a different num node.
+ 2.2) when it was allocated under memory pressure.
 
-[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_UNSPEC] =
-	{ .strict_type_start = TCA_TUNNEL_KEY_ENC_OPT_VXLAN_UNSPEC + 1,	}
+3) mlx5 will use the new API to update page pool numa id on demand.
 
-> +	[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]	   = { .type = NLA_U32 },
-> +};
-> +
->  static int
->  tunnel_key_copy_geneve_opt(const struct nlattr *nla, void *dst, int dst_len,
->  			   struct netlink_ext_ack *extack)
+The series is a joint work between me and Jonathan, we tested it and it
+proved itself worthy to avoid page allocator bottlenecks and improve
+packet rate and cpu utilization significantly for the described
+scenarios above.
+
+Performance testing:
+XDP drop/tx rate and TCP single/multi stream, on mlx5 driver
+while migrating rx ring irq from close to far numa:
+
+mlx5 internal page cache was locally disabled to get pure page pool
+results.
+
+CPU: Intel(R) Xeon(R) CPU E5-2603 v4 @ 1.70GHz
+NIC: Mellanox Technologies MT27700 Family [ConnectX-4] (100G)
+
+XDP Drop/TX single core:
+NUMA  | XDP  | Before    | After
+---------------------------------------
+Close | Drop | 11   Mpps | 10.9 Mpps
+Far   | Drop | 4.4  Mpps | 5.8  Mpps
+
+Close | TX   | 6.5 Mpps  | 6.5 Mpps
+Far   | TX   | 3.5 Mpps  | 4   Mpps
+
+Improvement is about 30% drop packet rate, 15% tx packet rate for numa
+far test.
+No degradation for numa close tests.
+
+TCP single/multi cpu/stream:
+NUMA  | #cpu | Before  | After
+--------------------------------------
+Close | 1    | 18 Gbps | 18 Gbps
+Far   | 1    | 15 Gbps | 18 Gbps
+Close | 12   | 80 Gbps | 80 Gbps
+Far   | 12   | 68 Gbps | 80 Gbps
+
+In all test cases we see improvement for the far numa case, and no
+impact on the close numa case.
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Performance analysis and conclusions by Jesper [1]:
+Impact on XDP drop x86_64 is inconclusive and shows only 0.3459ns
+slow-down, as this is below measurement accuracy of system.
+
+v2->v3:
+ - Rebase on top of latest net-next and Jesper's page pool object
+   release patchset [2]
+ - No code changes
+ - Performance analysis by Jesper added to the cover letter.
+
+v1->v2:
+  - Drop last patch, as requested by Ilias and Jesper.
+  - Fix documentation's performance numbers order.
+
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_p=
+ool04_inflight_changes.org#performance-notes
+[2] https://patchwork.ozlabs.org/cover/1192098/
+
+Thanks,
+Saeed.
+
+---
+
+Saeed Mahameed (3):
+  page_pool: Add API to update numa node
+  page_pool: Don't recycle non-reusable pages
+  net/mlx5e: Rx, Update page pool numa node when changed
+
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  3 +++
+ include/net/page_pool.h                       |  7 ++++++
+ include/trace/events/page_pool.h              | 22 +++++++++++++++++++
+ net/core/page_pool.c                          | 22 ++++++++++++++++++-
+ 4 files changed, 53 insertions(+), 1 deletion(-)
+
+--=20
+2.21.0
+
