@@ -2,86 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E36221051CB
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 12:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3BA1051E6
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 12:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727319AbfKULuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 06:50:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40054 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726833AbfKULuQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 06:50:16 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A0BE20898;
-        Thu, 21 Nov 2019 11:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574337015;
-        bh=lC4uVUDLgruOavBG//yTCj3hlVhHQ/crx0MRzaQ50Dc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U+qHtGJjbwudgUX/Q28eKVarNu6QZI5nQ3bHrd6YXrWIODI+v5nPC1o/xvvs/Qta/
-         PMe/a87ciYqe7K9+thM80j4eToFITOyPQL5wRGTBu/tGS0iFJg72kvNc1nzSDUnCzY
-         MPPdj1ufj1w+8udzUbl7N0dBzlXVt19nwRH1/UVM=
-Date:   Thu, 21 Nov 2019 12:50:13 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <thoiland@redhat.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>,
+        id S1726546AbfKUL6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 06:58:23 -0500
+Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:21309
+        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726197AbfKUL6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 06:58:22 -0500
+X-IronPort-AV: E=Sophos;i="5.69,224,1571695200"; 
+   d="scan'208";a="327507864"
+Received: from portablejulia.rsr.lip6.fr ([132.227.76.63])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Nov 2019 12:58:18 +0100
+Date:   Thu, 21 Nov 2019 12:58:18 +0100 (CET)
+From:   Julia Lawall <julia.lawall@lip6.fr>
+X-X-Sender: julia@hadrien
+To:     Michal Kubecek <mkubecek@suse.cz>
+cc:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        jakub.kicinski@netronome.com, ast@kernel.org,
+        natechancellor@gmail.com, jiang.xuexin@zte.com.cn,
+        cocci <cocci@systeme.lip6.fr>, f.fainelli@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
+        vivien.didelot@gmail.com, dan.carpenter@oracle.com,
+        wang.yi59@zte.com.cn, hawk@kernel.org, arnd@arndb.de,
+        jiri@mellanox.com, xue.zhihong@zte.com.cn,
+        zhanglin <zhang.lin16@zte.com.cn>,
+        Thomas Gleixner <tglx@linutronix.de>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linyunsheng@huawei.com, pablo@netfilter.org,
+        Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
-Message-ID: <20191121115013.GA427938@kroah.com>
-References: <20191120203538.199367-1-Jason@zx2c4.com>
- <877e3t8qv7.fsf@toke.dk>
+        davem@davemloft.net
+Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
+ ethtool_get_wol()
+In-Reply-To: <20191121111917.GE29650@unicorn.suse.cz>
+Message-ID: <alpine.DEB.2.21.1911211245180.12163@hadrien>
+References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn> <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com> <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net> <20191121111917.GE29650@unicorn.suse.cz>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <877e3t8qv7.fsf@toke.dk>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 11:29:16AM +0100, Toke Høiland-Jørgensen wrote:
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
-> 
-> > RFC Note:
-> >   This is a RFC for folks who want to play with this early, because
-> >   Herbert's cryptodev-2.6 tree hasn't yet made it into net-next. I'll
-> >   repost this as a v1 (possibly with feedback incorporated) once the
-> >   various trees are in the right place. This compiles on top of the
-> >   Frankenzinc patchset from Ard, though it hasn't yet received suitable
-> >   testing there for me to call it v1 just yet. Preliminary testing with
-> >   the usual netns.sh test suite on x86 indicates it's at least mostly
-> >   functional, but I'll be giving things further scrutiny in the days to
-> >   come.
-> 
-> Hi Jason
-> 
-> Great to see this! Just a few small comments for now:
-> 
-> > +/*
-> > + * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-> > + */
-> 
-> Could you please get rid of the "All Rights Reserved" (here, and
-> everywhere else)? All rights are *not* reserved: this is licensed under
-> the GPL. Besides, that phrase is in general dubious at best:
-> https://en.wikipedia.org/wiki/All_rights_reserved
 
-Don't take legal questions/advice on a developer mailing list :)
 
-This text is fine as-is, please consult your RedHat lawyers for why that
-is so.
+On Thu, 21 Nov 2019, Michal Kubecek wrote:
 
-And if RedHat does have issues with this, have them please clean up the
-instances in the kernel where they have this same text before asking
-anyone else to do so.
+> On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
+> > On 26.10.19 21:40, Joe Perches wrote:
+> > > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
+> > >> memset() the structure ethtool_wolinfo that has padded bytes
+> > >> but the padded bytes have not been zeroed out.
+> > > []
+> > >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> > > []
+> > >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
+> > >>
+> > >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
+> > >>  {
+> > >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+> > >> +	struct ethtool_wolinfo wol;
+> > >>
+> > >>  	if (!dev->ethtool_ops->get_wol)
+> > >>  		return -EOPNOTSUPP;
+> > >>
+> > >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
+> > >> +	wol.cmd = ETHTOOL_GWOL;
+> > >>  	dev->ethtool_ops->get_wol(dev, &wol);
+> > >>
+> > >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
+> > >
+> > > It seems likely there are more of these.
+> > >
+> > > Is there any way for coccinelle to find them?
+> >
+> > Just curios: is static struct initialization (on stack) something that
+> > should be avoided ? I've been under the impression that static
+> > initialization allows thinner code and gives the compiler better chance
+> > for optimizations.
+>
+> Not in general. The (potential) problem here is that the structure has
+> padding and it is as a whole (i.e. including the padding) copied to
+> userspace. While I'm not aware of a compiler that wouldn't actually
+> initialize the whole data block including the padding in this case, the
+> C standard provides no guarantee about that so that to be sure we cannot
+> leak leftover kernel data to userspace, we need to explicitly initialize
+> the whole block.
 
-thanks,
+I'm not sure that it is likely that the compiler will do anything other
+than ensure that all the fields are initialized.  Among the files that I
+could compile, the only case with actual padding and no memset, memcpy,
+copy_from_user or structure assignment that I could find was
 
-greg k-h
+drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
+
+There is the code struct drm_amdgpu_info_device dev_info = {};
+
+but I couldn't see any thing in the assembly language that seemed to zero
+the structure.  gcc probably thought its job was done because all fields
+are subsequently initialized.  But the size of the structure does not seem
+to be the same as the sum of the size of the fields.
+
+The set of fields was collected with Coccinelle, which could be unreliable
+for this task.
+
+julia
+
+>
+> If the structure is not going to be copied to userspace (or otherwise
+> exposed), using the initializer is fully sufficient and looks cleaner.
+>
+> Michal Kubecek
+> _______________________________________________
+> Cocci mailing list
+> Cocci@systeme.lip6.fr
+> https://systeme.lip6.fr/mailman/listinfo/cocci
+>
