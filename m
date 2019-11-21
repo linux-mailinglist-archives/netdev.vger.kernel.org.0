@@ -2,86 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B517104E85
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E23B104E9E
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfKUI4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:56:40 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35549 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbfKUI4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:56:39 -0500
-Received: by mail-wr1-f65.google.com with SMTP id s5so3378631wrw.2
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 00:56:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=F2vcbszjzqtUgO+UplRcSrFW0BfrUiYd8h4dMIEn1sE=;
-        b=E2U6Xl1gAvEyEPkta74iKZuIalJdnMFyPeOnUvz3YfF6kq5Ma2X7lADQ91R/6Sxot2
-         DaedUTG1fQxO3wso0exn+JP00XZj1wmn9mtOMNdq4cGsECB9ISBbCN3lrtI5gXOIWUGl
-         +838hes+hTnQBJvMSdbNCvK/hJWQ9yl4SqmxnD2iM+XIrMUZWSw+YuAVZK0a4LmkteKk
-         Ew4/I+w8hLAmn2DR7sG+MDiJteQgc0/oCwO6i/ssgvRyT9RRxiWx5FnPoclXvu/+1cin
-         YZG3CqmQEd1L1bG2V+ic8viJhZ2i5kIJxmSV8Pc5ROnhv3NpU0+0q/TKdkw+jGRrJr3f
-         J9lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=F2vcbszjzqtUgO+UplRcSrFW0BfrUiYd8h4dMIEn1sE=;
-        b=tYYEcQnOBwakRDUzWNBz8LtjAujP2nmG8hGqtFuHhSZBFQzvguqqcygiRbZfFre/Dh
-         gAglYM5nnIac8IQeSjzIhLNqwbMkBQ+T29MA0nbj1tPBoUvi8oHj1H2J8fxdjJKC89X+
-         syMEMhRoOjddXIgs8NoSqWpQVTqr+Ibnj5oFCzRiezffvtxR8/lOjkeH1tKBaX1wH/NB
-         fdx8U//XNzJWvxzbq2Wpp7/qYHeYIPySt2QEptRJYJqTg0zaRHj6dHRfB3uXuTBvUL2A
-         c/jSMDzpzDz64pEvPXGcsX3P0b+P+c7g6oLKEgbGJdzsEdQnCqYs2AvPaoodU8BVILad
-         ldXQ==
-X-Gm-Message-State: APjAAAWXYI5EiGiFnUlurhIlaJ+c6EKJsJHsiaAwiE3zYVPotPGaIrGU
-        NyH3Gc34SrAdSovrlGDCgettDQ==
-X-Google-Smtp-Source: APXvYqym6t/Z/L47bRwg/Epw8NAu3r9GSYJCQdwUJDr6+LXu/CKRuVQX7GpTiaIS2KdaHfmWbZNfPQ==
-X-Received: by 2002:a5d:464b:: with SMTP id j11mr2398300wrs.394.1574326598064;
-        Thu, 21 Nov 2019 00:56:38 -0800 (PST)
-Received: from localhost (ip-94-113-116-128.net.upcbroadband.cz. [94.113.116.128])
-        by smtp.gmail.com with ESMTPSA id x10sm487548wrp.58.2019.11.21.00.56.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 00:56:37 -0800 (PST)
-Date:   Thu, 21 Nov 2019 09:56:37 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        id S1726532AbfKUI7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:59:08 -0500
+Received: from www62.your-server.de ([213.133.104.62]:37476 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbfKUI7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:59:07 -0500
+Received: from [2a02:1205:507e:bf80:bef8:7f66:49c8:72e5] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iXiIr-0002uy-MS; Thu, 21 Nov 2019 09:59:05 +0100
+Date:   Thu, 21 Nov 2019 09:59:05 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Shalom Toledo <shalomt@mellanox.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCH iproute2-next] devlink: fix requiring either handle
-Message-ID: <20191121085637.GA2234@nanopsycho>
-References: <20191120175606.13641-1-jakub.kicinski@netronome.com>
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH bpf-next 0/2] selftests: bpftool: skip build tests if not
+ in tree
+Message-ID: <20191121085905.GD31576@pc-11.home>
+References: <20191119105010.19189-1-quentin.monnet@netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191120175606.13641-1-jakub.kicinski@netronome.com>
+In-Reply-To: <20191119105010.19189-1-quentin.monnet@netronome.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25639/Wed Nov 20 11:02:53 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 20, 2019 at 06:56:06PM CET, jakub.kicinski@netronome.com wrote:
->devlink sb occupancy show requires device or port handle.
->It passes both device and port handle bits as required to
->dl_argv_parse() so since commit 1896b100af46 ("devlink: catch
->missing strings in dl_args_required") devlink will now
->complain that only one is present:
->
->$ devlink sb occupancy show pci/0000:06:00.0/0
->BUG: unknown argument required but not found
->
->Drop the bit for the handle which was not found from required.
->
->Reported-by: Shalom Toledo <shalomt@mellanox.com>
->Fixes: 1896b100af46 ("devlink: catch missing strings in dl_args_required")
->Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
->Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
->Tested-by: Shalom Toledo <shalomt@mellanox.com>
+On Tue, Nov 19, 2019 at 10:50:08AM +0000, Quentin Monnet wrote:
+> The build test script for bpftool attempts to detect the toplevel path of
+> the kernel repository and attempts to build bpftool from there.
+> 
+> If it fails to find the correct directory, or if bpftool files are missing
+> for another reason (e.g. kselftests built on a first machine and copied
+> onto another, without bpftool sources), then it is preferable to skip the
+> tests entirely rather than dumping useless error messages.
+> 
+> The first patch moves the EXIT trap in the script lower down in the code,
+> to avoid tampering with return value on early exits at the beginning of the
+> script; then the second patch makes sure that we skip the build tests if
+> bpftool's Makefile is not found at its expected location.
+> 
+> Jakub Kicinski (1):
+>   selftests: bpftool: skip the build test if not in tree
+> 
+> Quentin Monnet (1):
+>   selftests: bpftool: set EXIT trap after usage function
+> 
+>  .../selftests/bpf/test_bpftool_build.sh       | 30 +++++++++++--------
+>  1 file changed, 17 insertions(+), 13 deletions(-)
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-
-Thanks!
+Applied, thanks!
