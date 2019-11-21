@@ -2,95 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B65105117
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 12:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD3010514B
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 12:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbfKULHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 06:07:44 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:33495 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726698AbfKULHo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 06:07:44 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 88a73f4b;
-        Thu, 21 Nov 2019 10:14:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type:content-transfer-encoding; s=mail; bh=61fXfe0NKcvB
-        w4Cmm/ja0FOScFY=; b=vtSF7wZWkBeha5UYHrE8FnqSWUpC5AjG1seQCjGUgS1y
-        5leda5Fst05ia/zT3iqtIHlNQc332cXRpJ4/VDcC21uBMjQtA0fW173PNm7+K3g+
-        d2DHMusY0FbFG8C8IATbK96axfp1xwFRmZHDgIXfh2Xdkqiy2oxLjJHqKgXHvDf/
-        WSKhRlvCf2mKVoQwXwRxBy4MQTlyJCoWD5LQKswuVKgJH2OdIh+YxQPlk7+UdMZp
-        2lE8DiELGw5RsrsJYJyfyRDsckI715699ZjkHefG4WkDUUjYk8bTfAagIhtmBp2R
-        tgCcy9H9YuN6QfyaDl9yD5bIbfaHkH6fliSzVdx6Iw==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e550f2ca (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Thu, 21 Nov 2019 10:14:37 +0000 (UTC)
-Received: by mail-oi1-f169.google.com with SMTP id s71so2764258oih.11;
-        Thu, 21 Nov 2019 03:07:40 -0800 (PST)
-X-Gm-Message-State: APjAAAV1zu/0BWjjtD9HcgpgX/1RXOIia9+S2sJhMIAIoDVrTx81T2Fe
-        hNAFmRWNY2fuulb8gkuMUfev3AR+nlpRJ1A7Yek=
-X-Google-Smtp-Source: APXvYqwPmTp2nkwJI5k2zldgO4vWMe6qszxEiAUe/OMq8cL+iGm0YkPWg1k+1+3UKuqspMztajBKI2eo8plROEGY/bY=
-X-Received: by 2002:aca:af0c:: with SMTP id y12mr7355506oie.52.1574334459737;
- Thu, 21 Nov 2019 03:07:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20191120203538.199367-1-Jason@zx2c4.com> <877e3t8qv7.fsf@toke.dk>
-In-Reply-To: <877e3t8qv7.fsf@toke.dk>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 21 Nov 2019 12:07:28 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
-Message-ID: <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
+        id S1726852AbfKULTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 06:19:22 -0500
+Received: from mx2.suse.de ([195.135.220.15]:60160 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726165AbfKULTW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 06:19:22 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 93A30B049;
+        Thu, 21 Nov 2019 11:19:19 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 9A4A9E03A4; Thu, 21 Nov 2019 12:19:17 +0100 (CET)
+Date:   Thu, 21 Nov 2019 12:19:17 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc:     Joe Perches <joe@perches.com>, zhanglin <zhang.lin16@zte.com.cn>,
+        davem@davemloft.net, cocci <cocci@systeme.lip6.fr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        jakub.kicinski@netronome.com, ast@kernel.org,
+        jiang.xuexin@zte.com.cn, f.fainelli@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
+        vivien.didelot@gmail.com, dan.carpenter@oracle.com,
+        wang.yi59@zte.com.cn, hawk@kernel.org, arnd@arndb.de,
+        jiri@mellanox.com, xue.zhihong@zte.com.cn,
+        natechancellor@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
+        pablo@netfilter.org, bpf@vger.kernel.org
+Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
+ ethtool_get_wol()
+Message-ID: <20191121111917.GE29650@unicorn.suse.cz>
+References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+ <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com>
+ <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 11:29 AM Toke H=C3=B8iland-J=C3=B8rgensen
-<thoiland@redhat.com> wrote:
-> Could you please get rid of the "All Rights Reserved" (here, and
-> everywhere else)? All rights are *not* reserved: this is licensed under
-> the GPL. Besides, that phrase is in general dubious at best:
-> https://en.wikipedia.org/wiki/All_rights_reserved
+On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
+> On 26.10.19 21:40, Joe Perches wrote:
+> > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
+> >> memset() the structure ethtool_wolinfo that has padded bytes
+> >> but the padded bytes have not been zeroed out.
+> > []
+> >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> > []
+> >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
+> >>  
+> >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
+> >>  {
+> >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+> >> +	struct ethtool_wolinfo wol;
+> >>  
+> >>  	if (!dev->ethtool_ops->get_wol)
+> >>  		return -EOPNOTSUPP;
+> >>  
+> >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
+> >> +	wol.cmd = ETHTOOL_GWOL;
+> >>  	dev->ethtool_ops->get_wol(dev, &wol);
+> >>  
+> >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
+> > 
+> > It seems likely there are more of these.
+> > 
+> > Is there any way for coccinelle to find them?
+> 
+> Just curios: is static struct initialization (on stack) something that
+> should be avoided ? I've been under the impression that static
+> initialization allows thinner code and gives the compiler better chance
+> for optimizations.
 
-I've seen people make arguments for this in both ways, and code from
-major corporation enters the kernel every day bearing that line, which
-means lawyers of important kernel contributors disagree with you.
-Neither one of us are lawyers. Lacking any wide scale precedent for
-such changes, or the expertise to even be properly persuaded in any
-direction, I follow the advice of my council to stick to the norm and
-not to mess with copyright headers.
+Not in general. The (potential) problem here is that the structure has
+padding and it is as a whole (i.e. including the padding) copied to
+userspace. While I'm not aware of a compiler that wouldn't actually
+initialize the whole data block including the padding in this case, the
+C standard provides no guarantee about that so that to be sure we cannot
+leak leftover kernel data to userspace, we need to explicitly initialize
+the whole block.
 
-I think there are some Linux Foundation mailing lists that have
-license lawyers on them, relating to SPDX mainly. Maybe we can ask
-there?
+If the structure is not going to be copied to userspace (or otherwise
+exposed), using the initializer is fully sufficient and looks cleaner.
 
-> > +     MAX_QUEUED_INCOMING_HANDSHAKES =3D 4096, /* TODO: replace this wi=
-th DQL */
-> > +     MAX_STAGED_PACKETS =3D 128,
-> > +     MAX_QUEUED_PACKETS =3D 1024 /* TODO: replace this with DQL */
->
-> Yes, please (on the TODO) :)
->
-> FWIW, since you're using pointer rings I think the way to do this is
-> probably to just keep the limits in place as a maximum size, and then
-> use DQL (or CoDel) to throttle enqueue to those pointer rings instead of
-> just letting them fill.
->
-> Happy to work with you on this (as I believe I've already promised), but
-> we might as well do that after the initial version is merged...
-
-I've actually implemented this a few times, but DQL always seems too
-slow to react properly, and I haven't yet been able to figure out
-what's happening. Let's indeed work on this after the initial version
-is merged. I think this change, and several more like it, will be the
-topic of some interesting discussions. But that doesn't need to happen
-/now/ I don't think.
+Michal Kubecek
