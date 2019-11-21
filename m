@@ -2,136 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C5210559A
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:29:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB4310554F
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbfKUP3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 10:29:46 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:3802 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbfKUP3p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:29:45 -0500
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xALFTXPc009027;
-        Thu, 21 Nov 2019 07:29:34 -0800
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: [PATCH net-next 3/3] cxgb4: add stats for MQPRIO QoS offload Tx path
-Date:   Thu, 21 Nov 2019 20:50:49 +0530
-Message-Id: <9898b911b3d8b71496894340d400339be3a14eb5.1574347161.git.rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
-In-Reply-To: <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
-In-Reply-To: <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
+        id S1727304AbfKUPVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 10:21:55 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50782 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726279AbfKUPVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:21:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574349714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xoi/mEqRIrWnRpvTl0NDdwq5Vb/YMexVa8/yaCTR3QA=;
+        b=b7Plpv5bOiJAaDAdZ7qJ3+NQ3Jlhke4HJSBqpWcI+LKraNetwF+gadcsDtWeuNjxNsL0e6
+        aMVCJcTU04W2bXywyb9RGW6PszSIPcKk1j7mCG6S7RBZ+MTkaPZXXf1roeIq2dqmvFioiL
+        k8FDc47WY32ZDuGcNhRmHAm5rDK7kyc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-13-xvKQWEQKM6WbCa3BZgGTOA-1; Thu, 21 Nov 2019 10:21:53 -0500
+Received: by mail-wm1-f70.google.com with SMTP id f16so1721295wmb.2
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 07:21:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v1PSvxZigoBGfcnTdo+vCEuQthQ6gbSlafKpw/APSmQ=;
+        b=S2v+A2glnIJohck/xI02mBbIPuUXzzuqpd0fBHdseE0qBb7FVDEQQZbjtIFLn3tbE3
+         KxCjr6YPucHjAW406656jdMp585EcLVIQ6Lqm10+nEv1d8nw6GAYc2eeePT70eZBiLop
+         p4L6f1Z1YUiFJjZPRjSDqZYBlpV1MVySbv0FFOm9SIkYQMi08IMhghrRcNghj+Gw7FFX
+         zzfS55mVtP7Pi/gAjKcA8z1WTY5kyyius+j56fF27vSN26wkDQemRaPzgEJyT+QTgvcA
+         GwYwb9/pCHJ7tjMG3kfdQG2/FvedRifTxOCOPZAYf7ekjABmhj2+WELUY6upV9mMsloj
+         Jbvg==
+X-Gm-Message-State: APjAAAW7wOigHjf+r1DyV1ePI0cz7GHtkLLahCPiJsNhEUWgU+MTWfFq
+        tnH69FJn/7mZA/7K1BdFyAtVHpW2XWhmrtI9g1K8CUR6cggjlcWjcj9mCVcqdn7U26eiCOG124W
+        lyDNgOhuJUBJ/ljjt
+X-Received: by 2002:a1c:3dc4:: with SMTP id k187mr10402991wma.167.1574349711883;
+        Thu, 21 Nov 2019 07:21:51 -0800 (PST)
+X-Google-Smtp-Source: APXvYqySb9ZwhXcrSGZTnTFX5ITs/qVK8z9OeOvPDmE4FyZUCogUa+d5o5clfV/hdSBv8nnPcYrKmw==
+X-Received: by 2002:a1c:3dc4:: with SMTP id k187mr10402963wma.167.1574349711644;
+        Thu, 21 Nov 2019 07:21:51 -0800 (PST)
+Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
+        by smtp.gmail.com with ESMTPSA id s9sm3077160wmj.22.2019.11.21.07.21.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 07:21:51 -0800 (PST)
+Date:   Thu, 21 Nov 2019 16:21:48 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jorgen Hansen <jhansen@vmware.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 3/6] vsock: add local transport support in the
+ vsock core
+Message-ID: <20191121152148.slv26oesn25dpjb6@steredhat>
+References: <20191119110121.14480-1-sgarzare@redhat.com>
+ <20191119110121.14480-4-sgarzare@redhat.com>
+ <MWHPR05MB3376F4452F0CF38C1AFABA2EDA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
+MIME-Version: 1.0
+In-Reply-To: <MWHPR05MB3376F4452F0CF38C1AFABA2EDA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
+X-MC-Unique: xvKQWEQKM6WbCa3BZgGTOA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export necessary stats for traffic flowing through MQPRIO QoS offload
-Tx path.
+On Thu, Nov 21, 2019 at 03:04:18PM +0000, Jorgen Hansen wrote:
+> > From: Stefano Garzarella [mailto:sgarzare@redhat.com]
+> > Sent: Tuesday, November 19, 2019 12:01 PM
+> > To: netdev@vger.kernel.org
+> >
+> > This patch allows to register a transport able to handle
+> > local communication (loopback).
+> >=20
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > ---
+> >  include/net/af_vsock.h   |  2 ++
+> >  net/vmw_vsock/af_vsock.c | 17 ++++++++++++++++-
+> >  2 files changed, 18 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+> > index 4206dc6d813f..b1c717286993 100644
+> > --- a/include/net/af_vsock.h
+> > +++ b/include/net/af_vsock.h
+> > @@ -98,6 +98,8 @@ struct vsock_transport_send_notify_data {
+> >  #define VSOCK_TRANSPORT_F_G2H=09=090x00000002
+> >  /* Transport provides DGRAM communication */
+> >  #define VSOCK_TRANSPORT_F_DGRAM=09=090x00000004
+> > +/* Transport provides local (loopback) communication */
+> > +#define VSOCK_TRANSPORT_F_LOCAL=09=090x00000008
+> >=20
+> >  struct vsock_transport {
+> >  =09struct module *module;
+> > diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> > index cc8659838bf2..c9e5bad59dc1 100644
+> > --- a/net/vmw_vsock/af_vsock.c
+> > +++ b/net/vmw_vsock/af_vsock.c
+> > @@ -136,6 +136,8 @@ static const struct vsock_transport *transport_h2g;
+> >  static const struct vsock_transport *transport_g2h;
+> >  /* Transport used for DGRAM communication */
+> >  static const struct vsock_transport *transport_dgram;
+> > +/* Transport used for local communication */
+> > +static const struct vsock_transport *transport_local;
+> >  static DEFINE_MUTEX(vsock_register_mutex);
+> >=20
+> >  /**** UTILS ****/
+> > @@ -2130,7 +2132,7 @@ EXPORT_SYMBOL_GPL(vsock_core_get_transport);
+> >=20
+> >  int vsock_core_register(const struct vsock_transport *t, int features)
+> >  {
+> > -=09const struct vsock_transport *t_h2g, *t_g2h, *t_dgram;
+> > +=09const struct vsock_transport *t_h2g, *t_g2h, *t_dgram, *t_local;
+> >  =09int err =3D mutex_lock_interruptible(&vsock_register_mutex);
+> >=20
+> >  =09if (err)
+> > @@ -2139,6 +2141,7 @@ int vsock_core_register(const struct
+> > vsock_transport *t, int features)
+> >  =09t_h2g =3D transport_h2g;
+> >  =09t_g2h =3D transport_g2h;
+> >  =09t_dgram =3D transport_dgram;
+> > +=09t_local =3D transport_local;
+> >=20
+> >  =09if (features & VSOCK_TRANSPORT_F_H2G) {
+> >  =09=09if (t_h2g) {
+> > @@ -2164,9 +2167,18 @@ int vsock_core_register(const struct
+> > vsock_transport *t, int features)
+> >  =09=09t_dgram =3D t;
+> >  =09}
+> >=20
+> > +=09if (features & VSOCK_TRANSPORT_F_LOCAL) {
+> > +=09=09if (t_local) {
+> > +=09=09=09err =3D -EBUSY;
+> > +=09=09=09goto err_busy;
+> > +=09=09}
+> > +=09=09t_local =3D t;
+> > +=09}
+> > +
+> >  =09transport_h2g =3D t_h2g;
+> >  =09transport_g2h =3D t_g2h;
+> >  =09transport_dgram =3D t_dgram;
+> > +=09transport_local =3D t_local;
+> >=20
+> >  err_busy:
+> >  =09mutex_unlock(&vsock_register_mutex);
+> > @@ -2187,6 +2199,9 @@ void vsock_core_unregister(const struct
+> > vsock_transport *t)
+> >  =09if (transport_dgram =3D=3D t)
+> >  =09=09transport_dgram =3D NULL;
+> >=20
+> > +=09if (transport_local =3D=3D t)
+> > +=09=09transport_local =3D NULL;
+> > +
+> >  =09mutex_unlock(&vsock_register_mutex);
+> >  }
+> >  EXPORT_SYMBOL_GPL(vsock_core_unregister);
+> > --
+> > 2.21.0
+>=20
+> Having loopback support as a separate transport fits nicely, but do we ne=
+ed to support
+> different variants of loopback? It could just be built in.
 
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h         |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c | 13 ++++++++++++-
- drivers/net/ethernet/chelsio/cxgb4/sge.c           | 14 ++++++++++++++
- 4 files changed, 28 insertions(+), 1 deletion(-)
+I agree with you, indeed initially I developed it as built in, but
+DEPMOD found a cyclic dependency because vsock_transport use
+virtio_transport_common that use vsock, so if I include vsock_transport
+in the vsock module, DEPMOD is not happy.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 04cb8909feeb..a70ac2097892 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -850,6 +850,7 @@ struct sge_eohw_txq {
- 	struct sge_txq q; /* HW Txq */
- 	struct adapter *adap; /* Backpointer to adapter */
- 	unsigned long tso; /* # of TSO requests */
-+	unsigned long uso; /* # of USO requests */
- 	unsigned long tx_cso; /* # of Tx checksum offloads */
- 	unsigned long vlan_ins; /* # of Tx VLAN insertions */
- 	unsigned long mapping_err; /* # of I/O MMU packet mapping errors */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index fa229d0f1016..93868dca186a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -2797,6 +2797,7 @@ do { \
- 		RL("RxAN", stats.an);
- 		RL("RxNoMem", stats.nomem);
- 		TL("TSO:", tso);
-+		TL("USO:", uso);
- 		TL("TxCSO:", tx_cso);
- 		TL("VLANins:", vlan_ins);
- 		TL("TxQFull:", q.stops);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index f57457453561..20ab3b6285a2 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -242,9 +242,10 @@ static void collect_sge_port_stats(const struct adapter *adap,
- 				   const struct port_info *p,
- 				   struct queue_port_stats *s)
- {
--	int i;
- 	const struct sge_eth_txq *tx = &adap->sge.ethtxq[p->first_qset];
- 	const struct sge_eth_rxq *rx = &adap->sge.ethrxq[p->first_qset];
-+	struct sge_eohw_txq *eohw_tx;
-+	unsigned int i;
- 
- 	memset(s, 0, sizeof(*s));
- 	for (i = 0; i < p->nqsets; i++, rx++, tx++) {
-@@ -257,6 +258,16 @@ static void collect_sge_port_stats(const struct adapter *adap,
- 		s->gro_pkts += rx->stats.lro_pkts;
- 		s->gro_merged += rx->stats.lro_merged;
- 	}
-+
-+	if (adap->sge.eohw_txq) {
-+		eohw_tx = &adap->sge.eohw_txq[p->first_qset];
-+		for (i = 0; i < p->nqsets; i++, eohw_tx++) {
-+			s->tso += eohw_tx->tso;
-+			s->uso += eohw_tx->uso;
-+			s->tx_csum += eohw_tx->tx_cso;
-+			s->vlan_ins += eohw_tx->vlan_ins;
-+		}
-+	}
- }
- 
- static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 308e54d7c5e3..f9441e803d6b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -2262,6 +2262,19 @@ static void ethofld_hard_xmit(struct net_device *dev,
- 				d->addr);
- 	}
- 
-+	if (skb_shinfo(skb)->gso_size) {
-+		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
-+			eohw_txq->uso++;
-+		else
-+			eohw_txq->tso++;
-+		eohw_txq->tx_cso += skb_shinfo(skb)->gso_segs;
-+	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+		eohw_txq->tx_cso++;
-+	}
-+
-+	if (skb_vlan_tag_present(skb))
-+		eohw_txq->vlan_ins++;
-+
- 	txq_advance(&eohw_txq->q, ndesc);
- 	cxgb4_ring_tx_db(adap, &eohw_txq->q, ndesc);
- 	eosw_txq_advance_index(&eosw_txq->last_pidx, 1, eosw_txq->ndesc);
-@@ -4546,6 +4559,7 @@ int t4_sge_alloc_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq,
- 	spin_lock_init(&txq->lock);
- 	txq->adap = adap;
- 	txq->tso = 0;
-+	txq->uso = 0;
- 	txq->tx_cso = 0;
- 	txq->vlan_ins = 0;
- 	txq->mapping_err = 0;
--- 
-2.24.0
+I don't know how to break this cyclic dependency, do you have any ideas?
+
+Thanks,
+Stefano
 
