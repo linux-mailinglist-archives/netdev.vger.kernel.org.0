@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EE8104B77
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 08:15:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F90104B38
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 08:14:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbfKUHON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 02:14:13 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:4442 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727354AbfKUHOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 02:14:10 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd639360000>; Wed, 20 Nov 2019 23:13:58 -0800
+        id S1727329AbfKUHOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 02:14:07 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:13095 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727175AbfKUHOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 02:14:05 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dd6393b0000>; Wed, 20 Nov 2019 23:14:03 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
   by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 20 Nov 2019 23:13:57 -0800
+  Wed, 20 Nov 2019 23:14:00 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 20 Nov 2019 23:13:57 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+        by hqpgpgate101.nvidia.com on Wed, 20 Nov 2019 23:14:00 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 21 Nov
  2019 07:13:56 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
  Transport; Thu, 21 Nov 2019 07:13:56 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dd639340004>; Wed, 20 Nov 2019 23:13:56 -0800
+        id <B5dd639340005>; Wed, 20 Nov 2019 23:13:56 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -56,69 +56,65 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: [PATCH v7 14/24] drm/via: set FOLL_PIN via pin_user_pages_fast()
-Date:   Wed, 20 Nov 2019 23:13:44 -0800
-Message-ID: <20191121071354.456618-15-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v7 15/24] fs/io_uring: set FOLL_PIN via pin_user_pages()
+Date:   Wed, 20 Nov 2019 23:13:45 -0800
+Message-ID: <20191121071354.456618-16-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191121071354.456618-1-jhubbard@nvidia.com>
 References: <20191121071354.456618-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574320438; bh=ky7gpstoQdJr5rtxFEQnjpS0lvKe5L6cg7jiu/68ipE=;
+        t=1574320443; bh=/H9b+aFChAqx04E818JcymcP2r9Q91gVxUQ0f1y3FiI=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Type:Content-Transfer-Encoding;
-        b=b/W5NpF8GDUEmpJ8O36zDZzz5riJMX7tgi2g9xl8ZnK03CSjgBYqaPDLvsSWlW/ui
-         aDMzpxnbtQ9twvU1dadKWqbpvmzPAwZQ1yWQlYdqtNd7MxMJWNY7A34M5O0Qf6e/Ph
-         AYFTGMGUpTL/VPDLBMCm2znB7fQZt9HrJOI5dDG6BE1HG0HYFb68e8mqXNhJY2CJaO
-         /AODTG+M4Zhkv9nKjLEqa5Ws8hiJjWqilHAp/AIvgyWxNGAwXstBpbLNTp5RCEK/a+
-         vvP3UCk8F+hB1t7hCVz/W7jdeclauOC3JA2UB0tqYufCeuwKrH8Dkm6NPX0lbIwLR+
-         yAFvQJFUkJ0xA==
+         Content-Transfer-Encoding:Content-Type;
+        b=ae5eh6USUeLSTBA3O+2eYU5oJ3XYCWbHe/Atk9InBjJQPAiJ2wQqIfoYw9wA8OMtn
+         h3do92KKTz0rl9Tepf6TWe96vAmLS338kH0quLHfmcbMtuCZuR2iXw8vZZvi1SPmjb
+         HltRLeLOAwa3jsD5QpzamQ67sDkFEXNsUDkn0lXposvPhEgLQuwo0s4fotTM5sLPRg
+         c60VUD+66DCi96WxpG6Z4X/QHJmppYMBgWg8Ghav1bAvtyAlpo5RFlealsnzwOYydQ
+         sHRYpoPL2ANz4vgyhxnqLGgOJ+X6yMO33VkURFctks1LV+tbHvRAqHkZR/Q/J6vgZT
+         0tUDHRblYyXuw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert drm/via to use the new pin_user_pages_fast() call, which sets
+Convert fs/io_uring to use the new pin_user_pages() call, which sets
 FOLL_PIN. Setting FOLL_PIN is now required for code that requires
 tracking of pinned pages, and therefore for any code that calls
 put_user_page().
 
-In partial anticipation of this work, the drm/via driver was already
+In partial anticipation of this work, the io_uring code was already
 calling put_user_page() instead of put_page(). Therefore, in order to
 convert from the get_user_pages()/put_page() model, to the
 pin_user_pages()/put_user_page() model, the only change required
-is to change get_user_pages() to pin_user_pages().
+here is to change get_user_pages() to pin_user_pages().
 
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: Jens Axboe <axboe@kernel.dk>
+Reviewed-by: Jan Kara <jack@suse.cz>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/gpu/drm/via/via_dmablit.c | 2 +-
+ fs/io_uring.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/via/via_dmablit.c b/drivers/gpu/drm/via/via_dm=
-ablit.c
-index 3db000aacd26..37c5e572993a 100644
---- a/drivers/gpu/drm/via/via_dmablit.c
-+++ b/drivers/gpu/drm/via/via_dmablit.c
-@@ -239,7 +239,7 @@ via_lock_all_dma_pages(drm_via_sg_info_t *vsg,  drm_via=
-_dmablit_t *xfer)
- 	vsg->pages =3D vzalloc(array_size(sizeof(struct page *), vsg->num_pages))=
-;
- 	if (NULL =3D=3D vsg->pages)
- 		return -ENOMEM;
--	ret =3D get_user_pages_fast((unsigned long)xfer->mem_addr,
-+	ret =3D pin_user_pages_fast((unsigned long)xfer->mem_addr,
- 			vsg->num_pages,
- 			vsg->direction =3D=3D DMA_FROM_DEVICE ? FOLL_WRITE : 0,
- 			vsg->pages);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 2c819c3c855d..15715eeebaec 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3449,7 +3449,7 @@ static int io_sqe_buffer_register(struct io_ring_ctx =
+*ctx, void __user *arg,
+=20
+ 		ret =3D 0;
+ 		down_read(&current->mm->mmap_sem);
+-		pret =3D get_user_pages(ubuf, nr_pages,
++		pret =3D pin_user_pages(ubuf, nr_pages,
+ 				      FOLL_WRITE | FOLL_LONGTERM,
+ 				      pages, vmas);
+ 		if (pret =3D=3D nr_pages) {
 --=20
 2.24.0
 
