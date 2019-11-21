@@ -2,74 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF2311048B9
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:49:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90CD61048BA
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:49:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726038AbfKUCtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 21:49:33 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48902 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725854AbfKUCtd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 21:49:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=X2dTZUuEhVfJVuxVb7eF/imdZcpp2QFjkGnvhLREBoc=; b=VVrASxLXl7hGmVwDURYGWD2n8b
-        Vf2a2mBZECbxqWkv/8QPGb+3+LwCb/caKzl0KLTqGNxkcS1+OKsWqOzUdYnEF3yx/yb8O3FWdMlcW
-        MNb6BQcihKcNuQZATdJl64geMuHysrCyd3C9qoMuGXZ6LWocWzRYYelDxplOwJU95Yy8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iXcXA-0007Aw-VN; Thu, 21 Nov 2019 03:49:28 +0100
-Date:   Thu, 21 Nov 2019 03:49:28 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH 4/5] net: dsa: ocelot: define PTP registers for
- felix_vsc9959
-Message-ID: <20191121024928.GN18325@lunn.ch>
-References: <20191120082318.3909-1-yangbo.lu@nxp.com>
- <20191120082318.3909-5-yangbo.lu@nxp.com>
+        id S1726529AbfKUCto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 21:49:44 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51544 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbfKUCtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 21:49:43 -0500
+Received: by mail-wm1-f65.google.com with SMTP id g206so1702270wme.1
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 18:49:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5cvbvE6GE7g9/dXzyiGB/2f+wTts3umRMXHbDNpPbGc=;
+        b=GqEJGaAGEs1CgwCl6iqi+d88d0emEdO60JTgxsazyEn3mNoriElullE16TlTXGgXlN
+         WI2jLus89YZvt4lGSRyRpJ3K/GVg1hgMqfOaky870B2/roRv90k1gS3K5gOCeQ1rLIPa
+         0Gk+Xv3iOc+wTjQXlsEybMLWZojHgZwIKmvD+N7DuAsHAROh3M7g6mTftBeASFrk3iwz
+         rlfuJFHdxJMTSo6276lbTf2U/sdOOXGF+rAJwSgCvso4nN9IRHkks4WZDTCzUZ7Dhu6X
+         RgseWox+W3tiwGoD7ASLi6CPHkFqjBqAQBSWEuSg2mDyscpic8NDdduYWbAe6k3x1JRv
+         HHtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5cvbvE6GE7g9/dXzyiGB/2f+wTts3umRMXHbDNpPbGc=;
+        b=RCwQliTvJ4Vekd+8lCrcVi8ASp2U88gQKkksuePN7KYGDnC9XhUUSKyi60TLw3WFxk
+         QdB5M75YfWZH5WSL8MuASOHq7Fa4zftWl/C/mbC3ZZu5uLKUoH3Rir6OjuAu5LVftl75
+         asXu5c5ETet6ssEFcrNyfBEMLjoaY0+VM4Xu5HCpx48EUjBbHUcnRHbrOn1l2vPOjWHI
+         c1lzBw0z6MN/+qNxRqA7VzHR7zLSWDZNaSkrKLM+NLaIdxo79d5onbABhpe9XLyTln0z
+         lTl4iHbfjmmQqahB71MmEm/QIqzMX3jgyl9HpEZKWxK1NtHlOPdTSh02dXoCH2ylWrTw
+         27FA==
+X-Gm-Message-State: APjAAAWw0c/kPtbWW5s2T0HhlCXrbq9ovmZWI1B+rfp8bJ1qiWj/1Ac/
+        1xmguLqO1Clqaw1RJ39rpM2vSF7qrtbPXF7uGEOmBw==
+X-Google-Smtp-Source: APXvYqzwZdOUiijLzdQC2YcAbrwpWA40m8yTNnD3T6cpmG7xpD/bbhz4Sia/3Itives9a2lATJGK/AL9GF7rVfCYKYc=
+X-Received: by 2002:a1c:5fc4:: with SMTP id t187mr7310283wmb.142.1574304580009;
+ Wed, 20 Nov 2019 18:49:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191120082318.3909-5-yangbo.lu@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com> <20191120164137.6f66a560@cakuba.netronome.com>
+In-Reply-To: <20191120164137.6f66a560@cakuba.netronome.com>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Thu, 21 Nov 2019 08:19:29 +0530
+Message-ID: <CA+sq2CdbXgdsGjG-+34mNztxJ-eQkySB6k2SumkXMUkp7bKtwQ@mail.gmail.com>
+Subject: Re: [PATCH v3 16/16] Documentation: net: octeontx2: Add RVU HW and
+ drivers overview.
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sunil Goutham <sgoutham@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static const u32 vsc9959_ptp_regmap[] = {
-> +	REG(PTP_PIN_CFG,                   0x000000),
-> +	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
-> +	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
-> +	REG(PTP_PIN_TOD_NSEC,              0x00000c),
-> +	REG(PTP_CFG_MISC,                  0x0000a0),
-> +	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
-> +	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
-> +};
-> +
+On Thu, Nov 21, 2019 at 6:11 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+>
+> Please double check this renders the way you expect. You may want to
+> add empty lines before lists.
 
-> +	[PTP] = {
-> +		.start	= 0x0090000,
-> +		.end	= 0x00900cb,
-> +		.name	= "ptp",
-> +	},
+Okay, will recheck.
 
-Seems like an odd end value. Is the last word used for something else?
+> > +
+> > +=============================================
+> > +Marvell OcteonTx2 RVU Kernel Drivers
+> > +=============================================
+>
+> Shouldn't these lines be the length of the text?
 
-Also, the last regmap register you defined is 0xa8. So could end
-actually be 900ab?
+Haven't done this documentation before, will other files and fix if necessary,
 
-	 Andrew
+> > +
+> > +Resource provisioning examples
+> > + - A PF/VF with NIX-LF & NPA-LF resources works as a pure network device
+> > + - A PF/VF with CPT-LF resource works as a pure cyrpto offload device.
+>
+> s/cyrpto/crypto/
+
+Thanks, will fix.
+
+> > +
+> > +.. kernel-figure::  resource_virtualization_unit.svg
+> > +   :alt:     RVU
+> > +   :align:   center
+> > +   :figwidth:        60em
+> > +
+> > +   RVU HW block connectivity
+>
+> The diagram isn't really bringing much value if you ask me. The text in
+> the last section is quite a bit better. Perhaps show packet flow?
+
+If someone doesn't want read the text fully, then i thought the
+diagram would help
+in getting an idea about the RVU HW block connectivity.
+
+> > +Firmware setups following stuff before kernel boots
+> > + - Enables required number of RVU PFs based on number of physical links.
+> > + - Number of VFs per PF are either static or configurable at compile time.
+>
+> compile time of the firmware?
+
+Yes, firmware.
+
+>
+> > +   Based on config, firmware assigns VFs to each of the PFs.
+> > + - Also assigns MSIX vectors to each of PF and VFs.
+> > + - These are not changed after kernel boot.
+>
+> Can they be changed without FW rebuild?
+
+No, they cannot be.
+
+>
+> Thanks for the description, I was hoping you'd also provide more info
+> on how the software componets of the system fit together. Today we only
+> have an AF driver upstream. Without the PF or VF drivers the card is
+> pretty much unusable with only the upstream drivers, right?
+>
+
+I will start submitting netdev drivers (PF and VF) right after this patchset.
+And just FYI this is not a NIC card, this HW is found only on the ARM64
+based OcteonTX2 SOC.
+
+> There is a bunch of cgx_* exports in the AF module, which seem to have
+> no uses upstream, too (they are only called from rvu_cgx.c which is
+> compiled into the same module).
+
+In the very first patchset submitted CGX and AF drivers were separate modules.
+Based on suggestions we merged both of them into a single module.
+The export symbols are not needed, i will submit a separate patch to
+clean them up.
