@@ -2,77 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D376104D50
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:09:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85224104D42
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbfKUIJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:09:18 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:43008 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726695AbfKUIJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:09:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=bjGRLwfuMb0KXd0FCEvSlOPHB
-        1ia+ZdvebE1Qfjk0xIPaaN6+377zVjuy7MX6od/n+Ypynkidg7OwUwBS60AiZi/ja5PA813wfHYpx
-        G61KhLW7wIeXPKZ1HQUycaJghDaK9nrtCWk/DiKHx8+cnDicKKaQRlVBDfxs+ynhDsODiktmek3X+
-        hD81fS5c2dwa/9Pu5OTzHE2U44Cv1CHpHcsdJO+8pUJwa08fuBKF49MRsQ1TPPvWVKQIOJxk2ToMF
-        wvep0vUxBizO6E9e5EdZ5n8MNUQCrys2mUcoS9kTnBD8oy4tBFbS+6BvhL8ZnpaCaGAvcsQ36sqNY
-        CMfVo+RLA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iXhUW-000862-44; Thu, 21 Nov 2019 08:07:04 +0000
-Date:   Thu, 21 Nov 2019 00:07:04 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 03/24] mm/gup: move try_get_compound_head() to top,
- fix minor issues
-Message-ID: <20191121080704.GB30991@infradead.org>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
- <20191121071354.456618-4-jhubbard@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191121071354.456618-4-jhubbard@nvidia.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S1726362AbfKUIHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:07:42 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:44010 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726165AbfKUIHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:07:41 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B227914F222C0;
+        Thu, 21 Nov 2019 00:07:40 -0800 (PST)
+Date:   Thu, 21 Nov 2019 00:07:38 -0800 (PST)
+Message-Id: <20191121.000738.2137637687912174348.davem@davemloft.net>
+To:     tuong.t.lien@dektech.com.au
+Cc:     jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+Subject: Re: [net-next v2] tipc: support in-order name publication events
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <00f001d5a039$7a0d7520$6e285f60$@dektech.com.au>
+References: <20191121025325.15366-1-tuong.t.lien@dektech.com.au>
+        <20191120.221357.2118936276393168423.davem@davemloft.net>
+        <00f001d5a039$7a0d7520$6e285f60$@dektech.com.au>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 21 Nov 2019 00:07:40 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks good,
+From: "Tuong Lien Tong" <tuong.t.lien@dektech.com.au>
+Date: Thu, 21 Nov 2019 14:01:17 +0700
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Hi David,
+> 
+> The fact is we still want to keep it with that explicit meaning, so make the
+> code easy to understand. Yes, the 'time_after32()' or another macro can give
+> the same result but makes no sense in this particular scenario. Otherwise,
+> do you like something such as:
+> 
+> #define publication_after(...) time_after32(...)
+
+Yes, that's fine.
