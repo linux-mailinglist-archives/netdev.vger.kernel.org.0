@@ -2,246 +2,444 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32FB5105C0D
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E08105C1C
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:36:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfKUVfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 16:35:41 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44977 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726293AbfKUVfl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 16:35:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574372139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YslT4VlrB9mGxRqN5ZKGkdoWX+pImdvI3tx38/mJv/g=;
-        b=F3+4lkP3uqyXkGQy92eLDyAWlOZz+Dqr0YZIfkLtyHHYVwohbTEqIdCNRsxde0wfDY7knz
-        XBDvHo51Hj2F1EIeKg+VyyiD24pZJ2SWYGKVbsb+MJOoqWwlrQoTt76Qmvo17+pHXH9ajy
-        RZwA4C+3Vw5Wc333VaXIQm3zSkrXFs4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-353-_8mqkejRPqeFlprORl3o9g-1; Thu, 21 Nov 2019 16:35:36 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42006801E58;
-        Thu, 21 Nov 2019 21:35:30 +0000 (UTC)
-Received: from x1.home (ovpn-116-56.phx2.redhat.com [10.3.116.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C5BA6E703;
-        Thu, 21 Nov 2019 21:35:26 +0000 (UTC)
-Date:   Thu, 21 Nov 2019 14:35:25 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0?= =?UTF-8?B?bWU=?= Glisse 
-        <jglisse@redhat.com>, Magnus Karlsson <magnus.karlsson@intel.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        "Jason Gunthorpe" <jgg@mellanox.com>
-Subject: Re: [PATCH v7 09/24] vfio, mm: fix get_user_pages_remote() and
- FOLL_LONGTERM
-Message-ID: <20191121143525.50deb72f@x1.home>
-In-Reply-To: <20191121071354.456618-10-jhubbard@nvidia.com>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
-        <20191121071354.456618-10-jhubbard@nvidia.com>
-Organization: Red Hat
+        id S1726744AbfKUVgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 16:36:46 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:42219 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726297AbfKUVgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 16:36:46 -0500
+Received: by mail-qt1-f196.google.com with SMTP id t20so5382968qtn.9
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 13:36:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZXH/qSaia/mtRLdnPBEb9WQPrUWDOjWQAMBCnXB/vUw=;
+        b=ZnaLPGPSDZhOWgJOm+5wJhr6bYh1sg+f4cUQFnP73ZzRuZJ6YYiLlXXV7vH2lp2DaD
+         VmEpvWp49Me4Wcqe8k0f04+BPOCNHtAZkfiCVDIOquO2SdkeLiKSIi9MlHP/TWYuu2Pw
+         LWJSB9tidxBsJ9lTffpfnDWjQfXGGJVu34VPh1ebJCGI6sBM5JCMc0tr20sI11AouWZG
+         lQbdCWDAP+nuwA0Kj/R8Vbgr9PuuvcjEEdpRxFeWW0E/VuXUd8YUHLl1h3hX9bPuOWDC
+         8p+cZUBzFfM2QdpsQzLw+1d0ZtNT3DVnv7y0FGzgMyAExHRNOCKL+aC73i9w9NCsnQm+
+         rOMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZXH/qSaia/mtRLdnPBEb9WQPrUWDOjWQAMBCnXB/vUw=;
+        b=dBoiqpNMXBwfsX4oBjb9tFHanOEsi/y0ETH7PGq1InJXZ40VpsyItlX107dq5a4Iuo
+         z9nQeroj9sdfUYMHv6rcxkYTwTY7LhCQ9rdsJyDMySI1hzNqhd1c6Gvs357oPfApRqmD
+         v7SSbJQyuPG6M8cKDiRgG4LkM3o4RHoJ6bZ3H9xDuQ3jXKznEDsPCoUU0Ix4XaiNbFh7
+         CjK9SVrqqoaSp7Vrmd0wAwpnZ0+O++bHLga+CCIlTzmVrrBoMMIgbtN5lzG812rlN3zf
+         21rn9ImUDxd25lTxnORBSX+9j63nmKtX8IKCUPkQF2+v44Bsxnz+pAy/2/ggN0xYLE/e
+         KQtg==
+X-Gm-Message-State: APjAAAVAOorYk8mVU75D0yNlwQyP33CQyZZN9GoYYTDbPUoMqF0KlA9M
+        STg3JdyNN8GrSnb09+p4bBBbWBka+FzN0SAMOksOug==
+X-Google-Smtp-Source: APXvYqwCEWsk+yQF5Aykpihy5xSsrZK+aZL23vsQZD7o/EIuD5IdI269YxEVt21icfYqz+mHdWs1I5+JOLn5uSGYdIg=
+X-Received: by 2002:ac8:1e13:: with SMTP id n19mr4815349qtl.384.1574372204088;
+ Thu, 21 Nov 2019 13:36:44 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: _8mqkejRPqeFlprORl3o9g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191119193036.92831-1-brianvv@google.com> <20191119193036.92831-3-brianvv@google.com>
+ <de05c3f2-5b70-b9af-445c-9cf43b55737c@fb.com>
+In-Reply-To: <de05c3f2-5b70-b9af-445c-9cf43b55737c@fb.com>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Thu, 21 Nov 2019 13:36:33 -0800
+Message-ID: <CAMzD94TfpQaFN=7cQR9kmHun0gZNF2oMwEJu7aZMYhsYhvgRDg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/9] bpf: add generic support for lookup and
+ lookup_and_delete batch ops
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019 23:13:39 -0800
-John Hubbard <jhubbard@nvidia.com> wrote:
+Hi Yonghong,
+thanks for reviewing the patch, I will fix all the direct returns and
+small fixes in next version.
 
-> As it says in the updated comment in gup.c: current FOLL_LONGTERM
-> behavior is incompatible with FAULT_FLAG_ALLOW_RETRY because of the
-> FS DAX check requirement on vmas.
->=20
-> However, the corresponding restriction in get_user_pages_remote() was
-> slightly stricter than is actually required: it forbade all
-> FOLL_LONGTERM callers, but we can actually allow FOLL_LONGTERM callers
-> that do not set the "locked" arg.
->=20
-> Update the code and comments accordingly, and update the VFIO caller
-> to take advantage of this, fixing a bug as a result: the VFIO caller
-> is logically a FOLL_LONGTERM user.
->=20
-> Also, remove an unnessary pair of calls that were releasing and
-> reacquiring the mmap_sem. There is no need to avoid holding mmap_sem
-> just in order to call page_to_pfn().
->=20
-> Also, move the DAX check ("if a VMA is DAX, don't allow long term
-> pinning") from the VFIO call site, all the way into the internals
-> of get_user_pages_remote() and __gup_longterm_locked(). That is:
-> get_user_pages_remote() calls __gup_longterm_locked(), which in turn
-> calls check_dax_vmas(). It's lightly explained in the comments as well.
->=20
-> Thanks to Jason Gunthorpe for pointing out a clean way to fix this,
-> and to Dan Williams for helping clarify the DAX refactoring.
->=20
-> Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Dan Williams <dan.j.williams@intel.com>
-> Cc: Jerome Glisse <jglisse@redhat.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 30 +++++-------------------------
->  mm/gup.c                        | 27 ++++++++++++++++++++++-----
->  2 files changed, 27 insertions(+), 30 deletions(-)
+On Thu, Nov 21, 2019 at 9:36 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 11/19/19 11:30 AM, Brian Vazquez wrote:
+> > This commit introduces generic support for the bpf_map_lookup_batch and
+> > bpf_map_lookup_and_delete_batch ops. This implementation can be used by
+> > almost all the bpf maps since its core implementation is relying on the
+> > existing map_get_next_key, map_lookup_elem and map_delete_elem
+> > functions. The bpf syscall subcommands introduced are:
+> >
+> >    BPF_MAP_LOOKUP_BATCH
+> >    BPF_MAP_LOOKUP_AND_DELETE_BATCH
+> >
+> > The UAPI attribute is:
+> >
+> >    struct { /* struct used by BPF_MAP_*_BATCH commands */
+> >           __aligned_u64   in_batch;       /* start batch,
+> >                                            * NULL to start from beginning
+> >                                            */
+> >           __aligned_u64   out_batch;      /* output: next start batch */
+> >           __aligned_u64   keys;
+> >           __aligned_u64   values;
+> >           __u32           count;          /* input/output:
+> >                                            * input: # of key/value
+> >                                            * elements
+> >                                            * output: # of filled elements
+> >                                            */
+> >           __u32           map_fd;
+> >           __u64           elem_flags;
+> >           __u64           flags;
+> >    } batch;
+> >
+> > in_batch/out_batch are opaque values use to communicate between
+> > user/kernel space, in_batch/out_batch must be of key_size length.
+> >
+> > To start iterating from the beginning in_batch must be null,
+> > count is the # of key/value elements to retrieve. Note that the 'keys'
+> > buffer must be a buffer of key_size * count size and the 'values' buffer
+> > must be value_size * count, where value_size must be aligned to 8 bytes
+> > by userspace if it's dealing with percpu maps. 'count' will contain the
+> > number of keys/values successfully retrieved. Note that 'count' is an
+> > input/output variable and it can contain a lower value after a call.
+> >
+> > If there's no more entries to retrieve, ENOENT will be returned. If error
+> > is ENOENT, count might be > 0 in case it copied some values but there were
+> > no more entries to retrieve.
+> >
+> > Note that if the return code is an error and not -EFAULT,
+> > count indicates the number of elements successfully processed.
+> >
+> > Suggested-by: Stanislav Fomichev <sdf@google.com>
+> > Signed-off-by: Brian Vazquez <brianvv@google.com>
+> > Signed-off-by: Yonghong Song <yhs@fb.com>
+> > ---
+> >   include/linux/bpf.h      |  11 +++
+> >   include/uapi/linux/bpf.h |  19 +++++
+> >   kernel/bpf/syscall.c     | 176 +++++++++++++++++++++++++++++++++++++++
+> >   3 files changed, 206 insertions(+)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 5b81cde47314e..767a823dbac74 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -41,6 +41,11 @@ struct bpf_map_ops {
+> >       int (*map_get_next_key)(struct bpf_map *map, void *key, void *next_key);
+> >       void (*map_release_uref)(struct bpf_map *map);
+> >       void *(*map_lookup_elem_sys_only)(struct bpf_map *map, void *key);
+> > +     int (*map_lookup_batch)(struct bpf_map *map, const union bpf_attr *attr,
+> > +                             union bpf_attr __user *uattr);
+> > +     int (*map_lookup_and_delete_batch)(struct bpf_map *map,
+> > +                                        const union bpf_attr *attr,
+> > +                                        union bpf_attr __user *uattr);
+> >
+> >       /* funcs callable from userspace and from eBPF programs */
+> >       void *(*map_lookup_elem)(struct bpf_map *map, void *key);
+> > @@ -797,6 +802,12 @@ void bpf_map_charge_move(struct bpf_map_memory *dst,
+> >   void *bpf_map_area_alloc(size_t size, int numa_node);
+> >   void bpf_map_area_free(void *base);
+> >   void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr);
+> > +int  generic_map_lookup_batch(struct bpf_map *map,
+> > +                           const union bpf_attr *attr,
+> > +                           union bpf_attr __user *uattr);
+> > +int  generic_map_lookup_and_delete_batch(struct bpf_map *map,
+> > +                                      const union bpf_attr *attr,
+> > +                                      union bpf_attr __user *uattr);
+> >
+> >   extern int sysctl_unprivileged_bpf_disabled;
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 4842a134b202a..e60b7b7cda61a 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -107,6 +107,8 @@ enum bpf_cmd {
+> >       BPF_MAP_LOOKUP_AND_DELETE_ELEM,
+> >       BPF_MAP_FREEZE,
+> >       BPF_BTF_GET_NEXT_ID,
+> > +     BPF_MAP_LOOKUP_BATCH,
+> > +     BPF_MAP_LOOKUP_AND_DELETE_BATCH,
+> >   };
+> >
+> >   enum bpf_map_type {
+> > @@ -400,6 +402,23 @@ union bpf_attr {
+> >               __u64           flags;
+> >       };
+> >
+> > +     struct { /* struct used by BPF_MAP_*_BATCH commands */
+> > +             __aligned_u64   in_batch;       /* start batch,
+> > +                                              * NULL to start from beginning
+> > +                                              */
+> > +             __aligned_u64   out_batch;      /* output: next start batch */
+> > +             __aligned_u64   keys;
+> > +             __aligned_u64   values;
+> > +             __u32           count;          /* input/output:
+> > +                                              * input: # of key/value
+> > +                                              * elements
+> > +                                              * output: # of filled elements
+> > +                                              */
+> > +             __u32           map_fd;
+> > +             __u64           elem_flags;
+> > +             __u64           flags;
+> > +     } batch;
+> > +
+> >       struct { /* anonymous struct used by BPF_PROG_LOAD command */
+> >               __u32           prog_type;      /* one of enum bpf_prog_type */
+> >               __u32           insn_cnt;
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index cc714c9d5b4cc..d0d3d0e0eaca4 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -1127,6 +1127,124 @@ static int map_get_next_key(union bpf_attr *attr)
+> >       return err;
+> >   }
+> >
+> > +static int __generic_map_lookup_batch(struct bpf_map *map,
+> > +                                   const union bpf_attr *attr,
+> > +                                   union bpf_attr __user *uattr,
+> > +                                   bool do_delete)
+> > +{
+> > +     void __user *ubatch = u64_to_user_ptr(attr->batch.in_batch);
+> > +     void __user *uobatch = u64_to_user_ptr(attr->batch.out_batch);
+> > +     void __user *values = u64_to_user_ptr(attr->batch.values);
+> > +     void __user *keys = u64_to_user_ptr(attr->batch.keys);
+> > +     void *buf, *prev_key, *key, *value;
+> > +     u32 value_size, cp, max_count;
+> > +     bool first_key = false;
+> > +     int err, retry = 3;
+> > +
+> > +     if (attr->batch.elem_flags & ~BPF_F_LOCK)
+> > +             return -EINVAL;
+> > +
+> > +     if ((attr->batch.elem_flags & BPF_F_LOCK) &&
+> > +         !map_value_has_spin_lock(map)) {
+> > +             err = -EINVAL;
+> > +             goto err_put;
+> > +     }
+>
+> Direct return -EINVAL?
+>
+> > +
+> > +     if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+> > +         map->map_type == BPF_MAP_TYPE_STACK) {
+> > +             err = -ENOTSUPP;
+> > +             goto err_put;
+> > +     }
+>
+> Direct return -ENOTSUPP?
+>
+> > +
+> > +     value_size = bpf_map_value_size(map);
+> > +
+> > +     max_count = attr->batch.count;
+> > +     if (!max_count)
+> > +             return 0;
+> > +
+> > +     err = -ENOMEM;
+> > +     buf = kmalloc(map->key_size + value_size, GFP_USER | __GFP_NOWARN);
+> > +     if (!buf)
+> > +             goto err_put;
+>
+> Direct return -ENOMEM?
+>
+> > +
+> > +     err = -EFAULT;
+> > +     first_key = false;
+> > +     if (ubatch && copy_from_user(buf, ubatch, map->key_size))
+> > +             goto free_buf;
+> > +     key = buf;
+> > +     value = key + map->key_size;
+> > +     if (!ubatch) {
+> > +             prev_key = NULL;
+> > +             first_key = true;
+> > +     }
+> > +
+> > +
+> One extra line.
+>
+> > +     for (cp = 0; cp < max_count; cp++) {
+> > +             if (cp || first_key) {
+> > +                     rcu_read_lock();
+> > +                     err = map->ops->map_get_next_key(map, prev_key, key);
+> > +                     rcu_read_unlock();
+> > +                     if (err)
+> > +                             break;
+> > +             }
+> > +             err = bpf_map_copy_value(map, key, value,
+> > +                                      attr->batch.elem_flags, do_delete);
+> > +
+> > +             if (err == -ENOENT) {
+> > +                     if (retry) {
+> > +                             retry--;
+>
+> What is the 'retry' semantics here? After 'continue', cp++ is executed.
 
-Tested with device assignment and Intel mdev vGPU assignment with QEMU
-userspace:
+Good catch, I'll move cp++ to a proper place. retry is used to prevent
+the cases where the map is doing many concurrent additions and
+deletions, this could result in map_get_next_key succeeding but
+bpf_map_copy_value failing, in which case I think it'd be better to
+try and find a next elem, but we don't want to do this for more than 3
+times.
 
-Tested-by: Alex Williamson <alex.williamson@redhat.com>
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
+>
+> > +                             continue;
+> > +                     }
+> > +                     err = -EINTR;
+>
+> Why returning -EINTR?
 
-Feel free to include for 19/24 as well.  Thanks,
+I thought that this is the err more appropriate for the behaviour I
+describe above. Should I handle that case? WDYT?
 
-Alex
 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_ty=
-pe1.c
-> index d864277ea16f..c7a111ad9975 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -340,7 +340,6 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsign=
-ed long vaddr,
->  {
->  =09struct page *page[1];
->  =09struct vm_area_struct *vma;
-> -=09struct vm_area_struct *vmas[1];
->  =09unsigned int flags =3D 0;
->  =09int ret;
-> =20
-> @@ -348,33 +347,14 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsi=
-gned long vaddr,
->  =09=09flags |=3D FOLL_WRITE;
-> =20
->  =09down_read(&mm->mmap_sem);
-> -=09if (mm =3D=3D current->mm) {
-> -=09=09ret =3D get_user_pages(vaddr, 1, flags | FOLL_LONGTERM, page,
-> -=09=09=09=09     vmas);
-> -=09} else {
-> -=09=09ret =3D get_user_pages_remote(NULL, mm, vaddr, 1, flags, page,
-> -=09=09=09=09=09    vmas, NULL);
-> -=09=09/*
-> -=09=09 * The lifetime of a vaddr_get_pfn() page pin is
-> -=09=09 * userspace-controlled. In the fs-dax case this could
-> -=09=09 * lead to indefinite stalls in filesystem operations.
-> -=09=09 * Disallow attempts to pin fs-dax pages via this
-> -=09=09 * interface.
-> -=09=09 */
-> -=09=09if (ret > 0 && vma_is_fsdax(vmas[0])) {
-> -=09=09=09ret =3D -EOPNOTSUPP;
-> -=09=09=09put_page(page[0]);
-> -=09=09}
-> -=09}
-> -=09up_read(&mm->mmap_sem);
-> -
-> +=09ret =3D get_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTE=
-RM,
-> +=09=09=09=09    page, NULL, NULL);
->  =09if (ret =3D=3D 1) {
->  =09=09*pfn =3D page_to_pfn(page[0]);
-> -=09=09return 0;
-> +=09=09ret =3D 0;
-> +=09=09goto done;
->  =09}
-> =20
-> -=09down_read(&mm->mmap_sem);
-> -
->  =09vaddr =3D untagged_addr(vaddr);
-> =20
->  =09vma =3D find_vma_intersection(mm, vaddr, vaddr + 1);
-> @@ -384,7 +364,7 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsign=
-ed long vaddr,
->  =09=09if (is_invalid_reserved_pfn(*pfn))
->  =09=09=09ret =3D 0;
->  =09}
-> -
-> +done:
->  =09up_read(&mm->mmap_sem);
->  =09return ret;
->  }
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 14fcdc502166..cce2c9676853 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -29,6 +29,13 @@ struct follow_page_context {
->  =09unsigned int page_mask;
->  };
-> =20
-> +static __always_inline long __gup_longterm_locked(struct task_struct *ts=
-k,
-> +=09=09=09=09=09=09  struct mm_struct *mm,
-> +=09=09=09=09=09=09  unsigned long start,
-> +=09=09=09=09=09=09  unsigned long nr_pages,
-> +=09=09=09=09=09=09  struct page **pages,
-> +=09=09=09=09=09=09  struct vm_area_struct **vmas,
-> +=09=09=09=09=09=09  unsigned int flags);
->  /*
->   * Return the compound head page with ref appropriately incremented,
->   * or NULL if that failed.
-> @@ -1167,13 +1174,23 @@ long get_user_pages_remote(struct task_struct *ts=
-k, struct mm_struct *mm,
->  =09=09struct vm_area_struct **vmas, int *locked)
->  {
->  =09/*
-> -=09 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
-> +=09 * Parts of FOLL_LONGTERM behavior are incompatible with
->  =09 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
-> -=09 * vmas.  As there are no users of this flag in this call we simply
-> -=09 * disallow this option for now.
-> +=09 * vmas. However, this only comes up if locked is set, and there are
-> +=09 * callers that do request FOLL_LONGTERM, but do not set locked. So,
-> +=09 * allow what we can.
->  =09 */
-> -=09if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
-> -=09=09return -EINVAL;
-> +=09if (gup_flags & FOLL_LONGTERM) {
-> +=09=09if (WARN_ON_ONCE(locked))
-> +=09=09=09return -EINVAL;
-> +=09=09/*
-> +=09=09 * This will check the vmas (even if our vmas arg is NULL)
-> +=09=09 * and return -ENOTSUPP if DAX isn't allowed in this case:
-> +=09=09 */
-> +=09=09return __gup_longterm_locked(tsk, mm, start, nr_pages, pages,
-> +=09=09=09=09=09     vmas, gup_flags | FOLL_TOUCH |
-> +=09=09=09=09=09     FOLL_REMOTE);
-> +=09}
-> =20
->  =09return __get_user_pages_locked(tsk, mm, start, nr_pages, pages, vmas,
->  =09=09=09=09       locked,
+>
+> > +                     break;
+> > +             }
+> > +
+> > +             if (err)
+> > +                     goto free_buf;
+> > +
+> > +             if (copy_to_user(keys + cp * map->key_size, key,
+> > +                              map->key_size)) {
+> > +                     err = -EFAULT;
+> > +                     goto free_buf;
+> > +             }
+> > +             if (copy_to_user(values + cp * value_size, value, value_size)) {
+> > +                     err = -EFAULT;
+> > +                     goto free_buf;
+> > +             }
+> > +
+> > +             prev_key = key;
+> > +             retry = 3;
+> > +     }
+> > +     if (!err) {
+> > +             rcu_read_lock();
+> > +             err = map->ops->map_get_next_key(map, prev_key, key);
+>
+> if err != 0, the 'key' will be invalid and it cannot be used by below
+> copy_to_user.
+>
+> > +             rcu_read_unlock();
+> > +     } > +
+> > +     if ((copy_to_user(&uattr->batch.count, &cp, sizeof(cp)) ||
+>
+> The 'cp' may not be accurate if 'retry' is triggered in the above.
+>
+> > +                 (copy_to_user(uobatch, key, map->key_size))))
+> > +             err = -EFAULT;
+> > +
+> > +free_buf:
+> > +     kfree(buf);
+> > +err_put:
+>
+> err_put can be removed.
+>
+> > +     return err;
+> > +}
+> > +
+> > +int generic_map_lookup_batch(struct bpf_map *map,
+> > +                          const union bpf_attr *attr,
+> > +                          union bpf_attr __user *uattr)
+> > +{
+> > +     return __generic_map_lookup_batch(map, attr, uattr, false);
+> > +}
+> > +
+> > +int generic_map_lookup_and_delete_batch(struct bpf_map *map,
+> > +                                     const union bpf_attr *attr,
+> > +                                     union bpf_attr __user *uattr)
+> > +{
+> > +     return __generic_map_lookup_batch(map, attr, uattr, true);
+> > +}
+> > +
+> >   #define BPF_MAP_LOOKUP_AND_DELETE_ELEM_LAST_FIELD value
+> >
+> >   static int map_lookup_and_delete_elem(union bpf_attr *attr)
+> > @@ -2956,6 +3074,57 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> >       return err;
+> >   }
+> >
+> > +#define BPF_MAP_BATCH_LAST_FIELD batch.flags
+> > +
+> > +#define BPF_DO_BATCH(fn)                     \
+> > +     do {                                    \
+> > +             if (!fn) {                      \
+> > +                     err = -ENOTSUPP;        \
+> > +                     goto err_put;           \
+> > +             }                               \
+> > +             err = fn(map, attr, uattr);     \
+> > +     } while (0)
+> > +
+> > +static int bpf_map_do_batch(const union bpf_attr *attr,
+> > +                         union bpf_attr __user *uattr,
+> > +                         int cmd)
+> > +{
+> > +     struct bpf_map *map;
+> > +     int err, ufd;
+> > +     struct fd f;
+> > +
+> > +     if (CHECK_ATTR(BPF_MAP_BATCH))
+> > +             return -EINVAL;
+> > +
+> > +     ufd = attr->batch.map_fd;
+> > +     f = fdget(ufd);
+> > +     map = __bpf_map_get(f);
+> > +     if (IS_ERR(map))
+> > +             return PTR_ERR(map);
+> > +
+> > +     if ((cmd == BPF_MAP_LOOKUP_BATCH ||
+> > +          cmd == BPF_MAP_LOOKUP_AND_DELETE_BATCH) &&
+> > +         !(map_get_sys_perms(map, f) & FMODE_CAN_READ)) {
+> > +             err = -EPERM;
+> > +             goto err_put;
+> > +     }
+> > +
+> > +     if (cmd != BPF_MAP_LOOKUP_BATCH &&
+>
+> Here should be BPF_MAP_LOOKUP_AND_DELETE_BATCH.
+> BPF_MAP_LOOKUP_BATCH does not need FMODE_CAN_WRITE.
 
+ACK.
+>
+> > +         !(map_get_sys_perms(map, f) & FMODE_CAN_WRITE)) {
+> > +             err = -EPERM;
+> > +             goto err_put;
+> > +     }
+> > +
+> > +     if (cmd == BPF_MAP_LOOKUP_BATCH)
+> > +             BPF_DO_BATCH(map->ops->map_lookup_batch);
+> > +     else
+> > +             BPF_DO_BATCH(map->ops->map_lookup_and_delete_batch);
+> > +
+> > +err_put:
+> > +     fdput(f);
+> > +     return err;
+> > +}
+> > +
+> >   SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
+> >   {
+> >       union bpf_attr attr = {};
+> > @@ -3053,6 +3222,13 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
+> >       case BPF_MAP_LOOKUP_AND_DELETE_ELEM:
+> >               err = map_lookup_and_delete_elem(&attr);
+> >               break;
+> > +     case BPF_MAP_LOOKUP_BATCH:
+> > +             err = bpf_map_do_batch(&attr, uattr, BPF_MAP_LOOKUP_BATCH);
+> > +             break;
+> > +     case BPF_MAP_LOOKUP_AND_DELETE_BATCH:
+> > +             err = bpf_map_do_batch(&attr, uattr,
+> > +                                    BPF_MAP_LOOKUP_AND_DELETE_BATCH);
+> > +             break;
+> >       default:
+> >               err = -EINVAL;
+> >               break;
+> >
