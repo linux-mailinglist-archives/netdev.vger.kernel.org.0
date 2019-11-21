@@ -2,131 +2,373 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D62105A53
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:23:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07111105A58
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbfKUTX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 14:23:57 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:36598 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbfKUTX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 14:23:56 -0500
-Received: by mail-lf1-f66.google.com with SMTP id f16so3569457lfm.3
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 11:23:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=1CQMrPqYDZiPzh1i6tKCLp+Qy1EVADnqJvRMkQP5iM4=;
-        b=lEPr/XIiz+z7mWvLc9qFjLxDgTo1K9BlDewX+S+nLongf7vxNEuZzhijHKJzA94aDF
-         jGB+K6mxksM3Lcq6DOrpLtipitEaPdss1Xwe2NTY7EeBS0p/+T+Ik+Wf9S36GX/DqoPD
-         tRQSLDYN3qb0BKi6jJWD94FwnQ7s0HEHEv8tE/GDzsKdP2KVs0l3hL2g7Yaj0dU4EpL2
-         YkQAwYym94iXCYlDDtWgPPGGSIUHisZGZ7m1geTE6eyPs7wrYFslAVKh4KVsbTNt5MeB
-         bdNEtj2pxd3qREZi9aPlB8L+PhPtlyR/2jz4R8jIH9coMu4QPsav+cpGYoLVG/R9Bi3B
-         sEXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=1CQMrPqYDZiPzh1i6tKCLp+Qy1EVADnqJvRMkQP5iM4=;
-        b=GGwQXDVGZ7fDrx5DRff197FicYIZJJPc5wtKn4c7A7znAqMzQ0qy/8UVEdTarAmcCs
-         lHxdOXYAAe3pukYO0sAoXtIL/ssdpGt6Z5Hjv5M2zBjxrmO30h2w4bdW9ODpq51ucrAc
-         7P7tWLjJ7xdjHN1s3BmU6cWgHtdA39i13ksVl6VAsLJk3csnVBCxK0b47pHdkQ0oFMlR
-         1ZyS8gh7u4uPcLbvCBL2RTZvdoai0WqqIg3v24gp1EHMSzWrihgaDghbFC6ypby+Dzxq
-         c08bxSMooIbNd8Koql0pSrgwiMs72ugJC74a8Y0iwKd6tTb/xE8IyXcAX+5kRkdUTgPH
-         hOeQ==
-X-Gm-Message-State: APjAAAVQKktVtwDWMpx4rXPg906kWzHT3/54xO7XlvQijBg70AlAR4rY
-        7q32Ig/0vADr1AfLfvlkn5op2A==
-X-Google-Smtp-Source: APXvYqz9rNE0KtfG6Hpahgp3qSQ/2mHFXGSfVqGqh3O0cjGT6VAylCoMfyTINgycqlIiZzaLZGT7LQ==
-X-Received: by 2002:ac2:4643:: with SMTP id s3mr4174345lfo.23.1574364233140;
-        Thu, 21 Nov 2019 11:23:53 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i18sm1971505lfc.82.2019.11.21.11.23.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 11:23:52 -0800 (PST)
-Date:   Thu, 21 Nov 2019 11:23:35 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH v3 16/16] Documentation: net: octeontx2: Add RVU HW and
- drivers overview.
-Message-ID: <20191121112335.7c2916d8@cakuba.netronome.com>
-In-Reply-To: <CA+sq2Cfv25A0RW4h_KXi=74g=F61o=KPXyEH7HMisxx1tp8PeA@mail.gmail.com>
-References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
-        <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com>
-        <20191120164137.6f66a560@cakuba.netronome.com>
-        <CA+sq2CdbXgdsGjG-+34mNztxJ-eQkySB6k2SumkXMUkp7bKtwQ@mail.gmail.com>
-        <20191121104316.1bd09fcb@cakuba.netronome.com>
-        <CA+sq2Cfv25A0RW4h_KXi=74g=F61o=KPXyEH7HMisxx1tp8PeA@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726881AbfKUTYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 14:24:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51572 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726293AbfKUTYx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 14:24:53 -0500
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F82E206DA;
+        Thu, 21 Nov 2019 19:24:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574364291;
+        bh=v8qwQtqO7+7IXbxNF6mpOp8cvKguvA76ua3zCs+gonk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=fUeRdg6h8COOSs/5Nkm9wBl5fm+v7gyjB8Y2x3CPtKQ/O3IlZGaFkq2/wpFItK0gJ
+         UOXDasy2HpPAPqor+OAy3nMDrP7ysE4YZy+OpB21jCJIgKlj9qXYb+GBqbAUphWtSq
+         hX92GJw++WnO4iFH57Ex+ml++wkJ8rbZHR3fbGoM=
+Received: by mail-qk1-f181.google.com with SMTP id i19so4133278qki.2;
+        Thu, 21 Nov 2019 11:24:51 -0800 (PST)
+X-Gm-Message-State: APjAAAUo5vQaLx+WOs+YkpweBOGNygkFaFc2HUUmtA8tWh2sY3/c5RAf
+        rM3iGjk5uSf4ADPSYCiQ8NBb9+qxjVknFXx5/g==
+X-Google-Smtp-Source: APXvYqzBsWNUu1nzTcj5u5+SkuECwizSqPemoqPhEa2uIgUAQSq3Vk/bIVg/iQeB116Ri4RGcaeCFiqA8mabOmm0WcA=
+X-Received: by 2002:a37:81c6:: with SMTP id c189mr2575110qkd.223.1574364290557;
+ Thu, 21 Nov 2019 11:24:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191119221925.28426-1-grygorii.strashko@ti.com> <20191119221925.28426-7-grygorii.strashko@ti.com>
+In-Reply-To: <20191119221925.28426-7-grygorii.strashko@ti.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 21 Nov 2019 13:24:39 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKfWOZeXXxqyKtH98cbccXUoV7djRtxzyoq0hA_qx-bpQ@mail.gmail.com>
+Message-ID: <CAL_JsqKfWOZeXXxqyKtH98cbccXUoV7djRtxzyoq0hA_qx-bpQ@mail.gmail.com>
+Subject: Re: [PATCH v7 net-next 06/13] dt-bindings: net: ti: add new cpsw
+ switch driver bindings
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 00:43:14 +0530, Sunil Kovvuri wrote:
-> On Fri, Nov 22, 2019 at 12:13 AM Jakub Kicinski wrote:
-> > On Thu, 21 Nov 2019 08:19:29 +0530, Sunil Kovvuri wrote:  
-> > > > Thanks for the description, I was hoping you'd also provide more info
-> > > > on how the software componets of the system fit together. Today we only
-> > > > have an AF driver upstream. Without the PF or VF drivers the card is
-> > > > pretty much unusable with only the upstream drivers, right?  
-> > >
-> > > I will start submitting netdev drivers (PF and VF) right after this patchset.
-> > > And just FYI this is not a NIC card, this HW is found only on the ARM64
-> > > based OcteonTX2 SOC.  
-> >
-> > Right, that's kind of my point, it's not a simple NIC, so we want
-> > to know what are all the software components. How does a real life
-> > application make use of this HW.
-> >
-> > Seems like your DPDK documentation lays that out pretty nicely:
-> >
-> > https://doc.dpdk.org/guides/platform/octeontx2.html
-> >
-> > It appears the data path components are supposed to be controlled by
-> > DPDK.
-> >
-> > After reading that DPDK documentation I feel like you'd need to do some
-> > convincing to prove it makes sense to go forward with this AF driver at
-> > all. For all practical purposes nobody will make use of this HW other
-> > than through the DPDK-based SDK, so perhaps just keep your drivers in
-> > the SDK and everyone will be happy?  
-> 
-> Based on what you concluded that nobody would use the HW otherthan with DPDK ?
+On Tue, Nov 19, 2019 at 4:19 PM Grygorii Strashko
+<grygorii.strashko@ti.com> wrote:
+>
+> Add bindings for the new TI CPSW switch driver. Comparing to the legacy
+> bindings (net/cpsw.txt):
+> - ports definition follows DSA bindings (net/dsa/dsa.txt) and ports can be
+> marked as "disabled" if not physically wired.
+> - all deprecated properties dropped;
+> - all legacy propertiies dropped which represent constant HW cpapbilities
+> (cpdma_channels, ale_entries, bd_ram_size, mac_control, slaves,
+> active_slave)
+> - TI CPTS DT properties are reused as is, but grouped in "cpts" sub-node
+> - TI Davinci MDIO DT bindings are reused as is, because Davinci MDIO is
+> reused.
+>
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>  .../bindings/net/ti,cpsw-switch.yaml          | 240 ++++++++++++++++++
+>  1 file changed, 240 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
 
-Based on the fact that you only have a DPDK SDK for it?
+I see David has applied this already, but it still has numerous
+problems. Please send a follow-up.
 
-> Just because it's not a NIC, it doesn't mean it cannot be used with
-> applications otherthan DPDK.
-> Imagine a server (on the lines of Intel xeon) with on-chip NIC instead
-> of a external PCIe NIC.
-> A server machine is used for lots of workload applications which are
-> not DPDK based.
-> Marvell's ThunderX machine is one such example,
-> - It is an SoC with an on-chip NIC.
-> - Both kernel and DPDK network drivers are upstreamed.
->   kernel: drivers/net/ethernet/cavium/thunder
->   DPDK: https://doc.dpdk.org/guides/nics/thunderx.html
+>
+> diff --git a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
+> new file mode 100644
+> index 000000000000..81ae8cafabc1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
+> @@ -0,0 +1,240 @@
+> +# SPDX-License-Identifier: GPL-2.0
 
-Are you saying someone will use a Octeon as just an ARM
-server? Seriously someone will buy an NPU and use it for
-something else than network processing? 
+For new bindings, please dual license:
 
-> Even for a DPDK only application, there is still a management ethernet
-> needed to which user can do ssh etc
-> when there is no console available. And there is no need to supply
-> whole SDK to customer, just supply
-> firmware, get latest kernel and DPDK from mainline and use it.
-> 
-> Sorry, i don't understand why a driver for on-chip ethernet cannot be
-> upstreamed.
+(GPL-2.0-only OR BSD-2-Clause)
 
-Well you didn't bother to upstream it until now. You're just pushing
-admin parts of your DPDK solution. Can you honestly be surprised the
-upstream netdev community doesn't like that?
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/ti,cpsw-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TI SoC Ethernet Switch Controller (CPSW) Device Tree Bindings
+> +
+> +maintainers:
+> +  - Grygorii Strashko <grygorii.strashko@ti.com>
+> +  - Sekhar Nori <nsekhar@ti.com>
+> +
+> +description:
+> +  The 3-port switch gigabit ethernet subsystem provides ethernet packet
+> +  communication and can be configured as an ethernet switch. It provides the
+> +  gigabit media independent interface (GMII),reduced gigabit media
+> +  independent interface (RGMII), reduced media independent interface (RMII),
+> +  the management data input output (MDIO) for physical layer device (PHY)
+> +  management.
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - const: ti,cpsw-switch
+> +      - items:
+> +         - const: ti,am335x-cpsw-switch
+> +         - const: ti,cpsw-switch
+> +      - items:
+> +        - const: ti,am4372-cpsw-switch
+> +        - const: ti,cpsw-switch
+> +      - items:
+> +        - const: ti,dra7-cpsw-switch
+> +        - const: ti,cpsw-switch
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description:
+> +       The physical base address and size of full the CPSW module IO range
+> +
+> +  ranges: true
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description: CPSW functional clock
+> +
+> +  clock-names:
+> +    maxItems: 1
+> +    items:
+> +      - const: fck
+> +
+> +  interrupts:
+> +    items:
+> +      - description: RX_THRESH interrupt
+> +      - description: RX interrupt
+> +      - description: TX interrupt
+> +      - description: MISC interrupt
+> +
+> +  interrupt-names:
+> +    items:
+> +      - const: "rx_thresh"
+> +      - const: "rx"
+> +      - const: "tx"
+> +      - const: "misc"
+> +
+> +  pinctrl-names: true
+> +
+> +  syscon:
+> +    $ref: /schemas/types.yaml#definitions/phandle
+> +    description:
+> +      Phandle to the system control device node which provides access to
+> +      efuse IO range with MAC addresses
+
+Can't you use nvmem binding for this?
+
+> +
+> +
+
+Drop the extra blank line.
+
+> +  ethernet-ports:
+> +    type: object
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^port@[0-9]+$":
+> +          type: object
+
+> +          minItems: 1
+> +          maxItems: 2
+
+These apply to arrays and don't make sense here.
+
+> +          description: CPSW external ports
+> +
+> +          allOf:
+> +            - $ref: ethernet-controller.yaml#
+> +
+> +          properties:
+> +            reg:
+> +              maxItems: 1
+> +              enum: [1, 2]
+
+You're mixing array and scalar constraints. What you want is:
+
+reg:
+  items:
+    - enum: [1, 2]
+
+> +              description: CPSW port number
+> +
+> +            phys:
+> +              $ref: /schemas/types.yaml#definitions/phandle-array
+
+Drop this. 'phys' is standard and has a type definition already.
+
+> +              maxItems: 1
+> +              description:  phandle on phy-gmii-sel PHY
+> +
+> +            label:
+> +              $ref: /schemas/types.yaml#/definitions/string-array
+
+Same here.
+
+> +              maxItems: 1
+
+This too. 'label' should never be an array.
+
+> +              description: label associated with this port
+> +
+> +            ti,dual-emac-pvid:
+> +              $ref: /schemas/types.yaml#/definitions/uint32
+> +              maxItems: 1
+> +              minimum: 1
+> +              maximum: 1024
+
+allOf:
+  - $ref: /schemas/types.yaml#/definitions/uint32
+minimum: 1
+maximum: 1024
+
+> +              description:
+> +                Specifies default PORT VID to be used to segregate
+> +                ports. Default value - CPSW port number.
+> +
+> +          required:
+> +            - reg
+> +            - phys
+> +
+> +  mdio:
+> +    type: object
+> +    allOf:
+> +      - $ref: "ti,davinci-mdio.yaml#"
+> +    description:
+> +      CPSW MDIO bus.
+> +
+> +  cpts:
+> +    type: object
+> +    description:
+> +      The Common Platform Time Sync (CPTS) module
+> +
+> +    properties:
+> +      clocks:
+> +        maxItems: 1
+> +        description: CPTS reference clock
+> +
+> +      clock-names:
+> +        maxItems: 1
+
+Can drop this. Implied by 'items' list length.
+
+> +        items:
+> +          - const: cpts
+> +
+> +      cpts_clock_mult:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Numerator to convert input clock ticks into ns
+> +
+> +      cpts_clock_shift:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Denominator to convert input clock ticks into ns.
+> +          Mult and shift will be calculated basing on CPTS rftclk frequency if
+> +          both cpts_clock_shift and cpts_clock_mult properties are not provided.
+> +
+> +    required:
+> +      - clocks
+> +      - clock-names
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - ranges
+> +  - clocks
+> +  - clock-names
+> +  - interrupts
+> +  - interrupt-names
+> +  - '#address-cells'
+> +  - '#size-cells'
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/dra7.h>
+> +
+> +    mac_sw: switch@0 {
+> +        compatible = "ti,dra7-cpsw-switch","ti,cpsw-switch";
+> +        reg = <0x0 0x4000>;
+> +        ranges = <0 0 0x4000>;
+> +        clocks = <&gmac_main_clk>;
+> +        clock-names = "fck";
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        syscon = <&scm_conf>;
+> +        inctrl-names = "default", "sleep";
+> +
+> +        interrupts = <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
+> +        interrupt-names = "rx_thresh", "rx", "tx", "misc";
+> +
+> +        ethernet-ports {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                cpsw_port1: port@1 {
+> +                        reg = <1>;
+> +                        label = "port1";
+> +                        mac-address = [ 00 00 00 00 00 00 ];
+> +                        phys = <&phy_gmii_sel 1>;
+> +                        phy-handle = <&ethphy0_sw>;
+> +                        phy-mode = "rgmii";
+> +                        ti,dual_emac_pvid = <1>;
+> +                };
+> +
+> +                cpsw_port2: port@2 {
+> +                        reg = <2>;
+> +                        label = "wan";
+> +                        mac-address = [ 00 00 00 00 00 00 ];
+> +                        phys = <&phy_gmii_sel 2>;
+> +                        phy-handle = <&ethphy1_sw>;
+> +                        phy-mode = "rgmii";
+> +                        ti,dual_emac_pvid = <2>;
+> +                };
+> +        };
+> +
+> +        davinci_mdio_sw: mdio@1000 {
+> +                compatible = "ti,cpsw-mdio","ti,davinci_mdio";
+> +                reg = <0x1000 0x100>;
+> +                clocks = <&gmac_clkctrl DRA7_GMAC_GMAC_CLKCTRL 0>;
+> +                clock-names = "fck";
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +                bus_freq = <1000000>;
+> +
+> +                ethphy0_sw: ethernet-phy@0 {
+> +                        reg = <0>;
+> +                };
+> +
+> +                ethphy1_sw: ethernet-phy@1 {
+> +                        reg = <1>;
+> +                };
+> +        };
+> +
+> +        cpts {
+> +                clocks = <&gmac_clkctrl DRA7_GMAC_GMAC_CLKCTRL 25>;
+> +                clock-names = "cpts";
+> +        };
+> +    };
+> --
+> 2.17.1
+>
