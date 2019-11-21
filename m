@@ -2,105 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B718104808
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 02:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38728104822
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 02:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfKUBZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 20:25:10 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:37138 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfKUBZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 20:25:09 -0500
-Received: by mail-il1-f199.google.com with SMTP id q1so1447734ile.4
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 17:25:09 -0800 (PST)
+        id S1726290AbfKUBiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 20:38:21 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:38869 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725819AbfKUBiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 20:38:20 -0500
+Received: by mail-qv1-f66.google.com with SMTP id q19so772274qvs.5
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 17:38:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=c40M1cst4ML5N7ApczvXgI2sQfbBl98vL2Dm1XX73oQ=;
+        b=aPQefoVORKlqsxMSCgSGYy45ZOjexE/92layDmnOnX7nQDs7xmKRpalOXJSDjbJWGd
+         JNtn/yTU9UddEN+q/ZbGxvSXBbB4poMjtT0rg3uUYt1xImEcGUmj9gr9Ps11PSWzpTd3
+         hzWsBfItntrDqlh8NpaayzGJ4K+P6/bXTL99hoKRJfeB76gWwGJ9/xP38+j0DvSeU2ZV
+         ypkvbEAylZS/TzK0fHFSgW8zl+NHZ29XP9XjfVXKLvCr0uoQguuAuZSTcQt7yCgoycs4
+         gbDG4zVb0LTYwjSHTxpzpQA+OHe//fk/wI9GWHfIG4l2Bd/hNCmoC86VoSKJDqbAyLVb
+         z6xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=HGyv/05KW+XaAobLS4i93zd1a8c80e9dkbLyOS+7nTE=;
-        b=Hsvfq/0KTs2ZGkp1iSX7D0pdeR7ApwObGpIlHeBYx3zzEl5WAF/G8IKhzV4TDjCNiM
-         E7w1KeLurX+dbDV+W8oUdXhe2EhqA7IMyNwkJnCY4n0TfHnvRFL8Wsj/sVxI+Q9q0SZY
-         C8IB6vAdPOOMyDLlP4QpIBfEG8xh6GVx3/Xqj6zsCODeHarZw029/xWiQRRAc1B1/20U
-         V3cV5Bxnp9GLNJwmTPth8pGAcaCKuwZd/Zm52xiiqHyqcK0FAwA5MMWmLimweB7J4B+G
-         gqiGuVgMElZRw60lN9qF6omRVq9cOMM59XRCIphDcLupJoVgB5ovgkCi8bRwIY+gYLyG
-         6q7w==
-X-Gm-Message-State: APjAAAUmRUAyIL++1PKDJkCU0k0zLtKXzERlq5uPw17fcKt7BZTS8AVv
-        SLnXupf/OETg6w6kYSLBKARdOUtbT5mBwaHkj1Km+eA/CYYE
-X-Google-Smtp-Source: APXvYqyNlnQAK4ZFQ8xtVKsrfLGKh0YwPC6jcC3BdISmDpdRiUc7tjqlJun3ACKExzZGjgvD0VKvfs71YGybjkC0G0adfy4GDNSA
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=c40M1cst4ML5N7ApczvXgI2sQfbBl98vL2Dm1XX73oQ=;
+        b=QUPx+6kYeDeqyWp2+r/YhFurSCYVGd7uoOr+DQxC1fG4Rl53TvZ8Uet08quXGyI0G+
+         mVF7TiCM+2P6ZHpWRIbDBP+2vDc2KbgXmfa4u1K25Ldo9pDvJgxY33VnvV3js7LBWQIs
+         9F9dcOAtYmogEEaq28MFdOPDzQDbl9hcUtvqFNTRCyXTTRLA4FbPvL1ws2XUGUNRFUf8
+         ujxqUQS/UtaH41RKFhkJDdtz1ZtbXnEcp5qI2rcf27PHeYZ5wgCKnsg0x2Ch1aRGTVHM
+         lR553Av3/xzLPI6Nt2PTw8k2yUXnd2lc8MMgCpjf5rBABwgd8Tuw3D05cGYa2WLwu0Uh
+         qLFQ==
+X-Gm-Message-State: APjAAAVc6zWGsBnUagFOmN7pn4EQvjvzakNrgEgcXXSwiSvka0ZqHbXF
+        c6kzJGZzusxoQHO6iMbKo3dVeg==
+X-Google-Smtp-Source: APXvYqxfD0egClyACS2Sz5SOlGnKnevgwWbZBp6kTtoP7xYygY+jpMRDwbE+sqwiF3tdcI6b23Czhw==
+X-Received: by 2002:a0c:f4d2:: with SMTP id o18mr5856536qvm.100.1574300298519;
+        Wed, 20 Nov 2019 17:38:18 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id t65sm617238qkh.99.2019.11.20.17.38.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 20 Nov 2019 17:38:17 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iXbQH-0000cf-5H; Wed, 20 Nov 2019 21:38:17 -0400
+Date:   Wed, 20 Nov 2019 21:38:17 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191121013817.GA16914@ziepe.ca>
+References: <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <20191120022141-mutt-send-email-mst@kernel.org>
+ <20191120130319.GA22515@ziepe.ca>
+ <20191120083908-mutt-send-email-mst@kernel.org>
+ <20191120143054.GF22515@ziepe.ca>
+ <20191120093607-mutt-send-email-mst@kernel.org>
+ <20191120164525.GH22515@ziepe.ca>
+ <20191120165748-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:1ac5:: with SMTP id 188mr6129457jai.77.1574299508737;
- Wed, 20 Nov 2019 17:25:08 -0800 (PST)
-Date:   Wed, 20 Nov 2019 17:25:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fd119d0597d12a56@google.com>
-Subject: kernel panic: stack is corrupted in vhost_net_ioctl
-From:   syzbot <syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, jakub.kicinski@netronome.com,
-        jasowang@redhat.com, john.fastabend@gmail.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191120165748-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Nov 20, 2019 at 05:05:00PM -0500, Michael S. Tsirkin wrote:
+> On Wed, Nov 20, 2019 at 12:45:25PM -0400, Jason Gunthorpe wrote:
+> > > > For instance, this VFIO based approach might be very suitable to the
+> > > > intel VF based ICF driver, but we don't yet have an example of non-VF
+> > > > HW that might not be well suited to VFIO.
+> > >
+> > > I don't think we should keep moving the goalposts like this.
+> > 
+> > It is ABI, it should be done as best we can as we have to live with it
+> > for a long time. Right now HW is just starting to come to market with
+> > VDPA and it feels rushed to design a whole subsystem style ABI around
+> > one, quite simplistic, driver example.
+> 
+> Well one has to enable hardware in some way. It's not really reasonable
+> to ask for multiple devices to be available just so there's a driver and
+> people can use them.
 
-syzbot found the following crash on:
+Er, this has actually been a fairly standard ask for new subsystems.
 
-HEAD commit:    6c9594bd Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17059c6ae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7654f9089a2e8c85
-dashboard link: https://syzkaller.appspot.com/bug?extid=f2a62d07a5198c819c7b
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17bacb3ae00000
+I think virtio is well grounded here compared to other things I've
+seen, but it should still be done with a lot more NIC community involvement.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f2a62d07a5198c819c7b@syzkaller.appspotmail.com
+> At this rate no one will want to be the first to ship new devices ;)
 
-Kernel panic - not syncing: stack-protector: Kernel stack is corrupted in:  
-vhost_net_ioctl+0x1d8c/0x1dc0 drivers/vhost/net.c:366
-CPU: 1 PID: 7993 Comm: syz-executor.0 Not tainted 5.4.0-rc7+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x1fb/0x318 lib/dump_stack.c:118
-  panic+0x264/0x7a9 kernel/panic.c:221
-  __stack_chk_fail+0x1f/0x20 kernel/panic.c:667
-  vhost_net_ioctl+0x1d8c/0x1dc0 drivers/vhost/net.c:366
-  do_vfs_ioctl+0x744/0x1730 fs/ioctl.c:46
-  ksys_ioctl fs/ioctl.c:713 [inline]
-  __do_sys_ioctl fs/ioctl.c:720 [inline]
-  __se_sys_ioctl fs/ioctl.c:718 [inline]
-  __x64_sys_ioctl+0xe3/0x120 fs/ioctl.c:718
-  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45a639
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f473d635c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a639
-RDX: 0000000020d7c000 RSI: 000000004008af30 RDI: 0000000000000003
-RBP: 000000000075c070 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f473d6366d4
-R13: 00000000004c5b18 R14: 00000000004dab78 R15: 00000000ffffffff
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+Why?
+ 
+> > > If people write drivers and find some infrastruture useful,
+> > > and it looks more or less generic on the outset, then I don't
+> > > see why it's a bad idea to merge it.
+> > 
+> > Because it is userspace ABI, caution is always justified when defining
+> > new ABI.
+> 
+> Reasonable caution, sure. Asking Alex to block Intel's driver until
+> someone else catches up and ships competing hardware isn't reasonable
+> though. If that's your proposal I guess we'll have to agree to disagree.
 
+Vendors may be willing to participate, as Mellanox is doing,
+pre-product.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Jason
