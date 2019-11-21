@@ -2,139 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EA410495E
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA502104969
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:46:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfKUD3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 22:29:39 -0500
-Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:58241
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725819AbfKUD3j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 22:29:39 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HH/R8YEOBoGCQ3JaV4Bykv7/h0L/TvaRpPKdghTE5T1I668yuGbfTA90gUQYeoBpPnVIZPh1ODkL0lnSBo2UistDkTZtYxijMHK9UgLvIeSoMO3dANqxAxdy0w7gJ3xzrP1cYZEw+RZ787rbsCYedLI+oMeVtE8bYBaX180uagyoCf5RNR2Vqft5giwFoAT+8ePToe/8RTbxQ60Wt8X4qruoiV2lFdAOVNhNkTA7XNUcgJ13kJ6n8lD3RMOa+vwPw75wOp61W4QTTFCDJ9LbHlkv6TTSYhdR7B3JHG1wtLCl2avSPYSmpIwBg+lW0xI3f+z6ooaePSTYNSDMDgArmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ryZAfIonAG6T97iHOWM41DdVxdvKPnc6wUTLBTzFwVE=;
- b=PooEEITcFLxA6YmlJPmaOu8EyFSeQUd3KbwiESrpdjW72tb1f7ItlRrGSdc0we336m/8wi/qqqNlE9UtFWBdyXT6EmkPi2jUg2Pln4S5UnTiQSs/yXPOeYoiBN1boFYE0z2D8xALU7RWWsdg3ogGRdKnE9tUPxayB0G5Ha3phv4Ata6Jt/DGhJZDAEZ02koaWRlvllD5P7tXfahtlwWyBvDrs2KU1N6Zrsvnm2ndFEPLtEJ1f+muTn2JOnnhOyC1oatpp0w9Ds9J8VoOWZ53SmKop+zXeuPbM7lw/XgG2JFymUkGhD28ExpoHS632tWfLiIFyuL/xBmjorCUmDfWpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ryZAfIonAG6T97iHOWM41DdVxdvKPnc6wUTLBTzFwVE=;
- b=UppHdviV5y0QSrkXjjrib+YKEH6apAYxSZFXn545gpnJ6xBDr5IDFEYZZNNioCemlh1QbZwSp0PtdDVIhcAlgTjYCY2e0J6RpT0e4UOYrUhFyboeiaoXx8VcRaZ3jJtZ1ZJ06lHAZwkjH7I3hgeBEpQ7bGJvYKfj0tBqAxkkojE=
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
- VI1PR0401MB2607.eurprd04.prod.outlook.com (10.168.66.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.22; Thu, 21 Nov 2019 03:29:36 +0000
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2d81:2d60:747c:d0ad]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2d81:2d60:747c:d0ad%3]) with mapi id 15.20.2474.019; Thu, 21 Nov 2019
- 03:29:35 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: RE: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping support
- for Felix
-Thread-Topic: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping support
- for Felix
-Thread-Index: AQHVn3vT5anZ2SIeYkGi0HvtelcSgKeU73wAgAAHq9A=
-Date:   Thu, 21 Nov 2019 03:29:35 +0000
-Message-ID: <VI1PR0401MB2237DBAA2897CBDADC34A80AF84E0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
-References: <20191120082318.3909-1-yangbo.lu@nxp.com>
- <20191120082318.3909-6-yangbo.lu@nxp.com> <20191121025610.GO18325@lunn.ch>
-In-Reply-To: <20191121025610.GO18325@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yangbo.lu@nxp.com; 
-x-originating-ip: [92.121.36.198]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 241afee3-afa0-425c-2f6e-08d76e33086c
-x-ms-traffictypediagnostic: VI1PR0401MB2607:|VI1PR0401MB2607:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0401MB2607FB80E0E27E82F23BC55BF84E0@VI1PR0401MB2607.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1824;
-x-forefront-prvs: 0228DDDDD7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(13464003)(199004)(189003)(7696005)(186003)(52536014)(33656002)(55016002)(229853002)(74316002)(86362001)(9686003)(486006)(14454004)(5660300002)(2906002)(7736002)(6916009)(76176011)(6436002)(305945005)(71200400001)(26005)(8936002)(76116006)(316002)(99286004)(71190400001)(102836004)(478600001)(256004)(6246003)(8676002)(54906003)(6506007)(11346002)(64756008)(66556008)(81156014)(476003)(66476007)(446003)(3846002)(66446008)(4326008)(66946007)(6116002)(81166006)(66066001)(25786009)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2607;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0JIW+Yji3rB8+7Hxl3i0Fcwpa03zh0lHpt/hNTkf4fX5DL2h+QBDc5zo09koCv6gWPY7wYhbmM3diaM/ExhYaLkQYtm0LhrBZ0dB+waY9Lscr/J2REfCX4QmFjvbvQ5Uz+ouKB8MT5wp/wCsspQwv9W7U1s+3uXm57ZhVdProfMhP1h+TbisfRINnQbZ724FlbUWxzramXQKkXkw3kMVO89fGAmkJZ4St93gHhALa6Mj7kkE5OPR29ylFbhILrc4btsjGl1jXZ77GZiU79HaovErwjL20zrk2KE9G59ZFYB4ywkjJss/eGuagu2ABGsdwrnKUd9cPF2UzjCTBQiRSpGNc4avG7IdZRDSglyACppGAJyOHt89SIFguLdoj4x9vVX2833xCRyzZUXZxBQGsvaTjx1Heoblcaf4RV2kD6d3Y3p7r27lc1LXL3mQ9ix1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1725936AbfKUDqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 22:46:15 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:33390 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725819AbfKUDqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:46:15 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t26so2703169wmi.0
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 19:46:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nVabUmsDrDJsMwtMdopMRT/Nhc9VcGPpXeM9oM7xC7w=;
+        b=OeNlWD1Pfghcs3iuAYedeWpid5NZ5LNI+AB8M/v8cSCbCrdRfT9b0Kpl/cUS4ZLday
+         7H8nwxuW2E/4zl4nBuYO4kv7lhNJEMQwCu9zb06do+Nb/XiK/ML5JkHypoFzyUcA6tzB
+         mQ9nX+WPh2Af2+APL+57r3xpyvmvutHg8np0icTnWj6ifS7rdtXcdvH6wpGvMqcwhEM3
+         R/vm5+ahsxnhf1ZzrnZbg9O3bFCAoWOdVLfuthuk91EJ8ekrHvFhunCBDy4wDB5aRx63
+         ERJEYDOL9JtC+E31I+7B0l3rKbaOZk1xZXF4S7NdO+0DKJte0u9b6U60eWRVEoZk68hY
+         2zfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=nVabUmsDrDJsMwtMdopMRT/Nhc9VcGPpXeM9oM7xC7w=;
+        b=oTTm/LXvQQVYRONlhbr6vvsXBtMzyAtmvUbb+jG3vcJdsmXVf29bBGfR73aIooBnni
+         g4jOXTUCNF4WNZezFKH/Un+UwyqtY4UBgwa5/W34hedkCWrXRfOQCfMUNJzm/NF/kuHz
+         0kK1aOA0YeqRpoDQXAaWIck1woEkvOff4dSA05YKQw88XulYSVijZFYPcWMWnRqWKqDP
+         fwSlfQJVGs/FN4KL94ew+Fw5zCRyLb4U+JKc1ILqq3YKcbrfpqhIqpwlJuyxWz5XXP7A
+         O9Db9tYYxn/T/pcYSelZkC/7GIs8xQap0UG/kMLdzs/Iy/7vmE1PkypjMN6VcK0DMze5
+         +6MA==
+X-Gm-Message-State: APjAAAXtPFAQa/ik9TWOqAYNrBjGu9A3PCMomx2QbpC7Mu4N+FbQB8jH
+        WM8HZ7/88nkHIU9VJijpsfrLLMxh
+X-Google-Smtp-Source: APXvYqwdgi5FrbkuID4qURQOdiXEwdhW2o2MOWyIll9Aku4CqOmjwulUC2uZXiAzoyLxiu7VqTqajg==
+X-Received: by 2002:a1c:7904:: with SMTP id l4mr7411845wme.141.1574307971808;
+        Wed, 20 Nov 2019 19:46:11 -0800 (PST)
+Received: from [10.230.29.119] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v6sm1725819wrt.13.2019.11.20.19.46.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Nov 2019 19:46:10 -0800 (PST)
+Subject: Re: [PATCH net-next 1/2] net: sfp: add support for module quirks
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20191120113900.GP25745@shell.armlinux.org.uk>
+ <E1iXONe-0005el-H8@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <fa421735-1879-761c-b551-d14ae9b6b8cc@gmail.com>
+Date:   Wed, 20 Nov 2019 19:46:07 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 241afee3-afa0-425c-2f6e-08d76e33086c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 03:29:35.8760
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: keyRKLoGBNroZsDLGa1aXQQrZy6ZGTyK5iGxMlF/mG0BUq5M0iXFJ/orxtkOCYVYaMcnTRl2CGC1qQssBdxBOw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2607
+In-Reply-To: <E1iXONe-0005el-H8@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Andrew Lunn
-> Sent: Thursday, November 21, 2019 10:56 AM
-> To: Y.b. Lu <yangbo.lu@nxp.com>
-> Cc: netdev@vger.kernel.org; Alexandre Belloni
-> <alexandre.belloni@bootlin.com>; Microchip Linux Driver Support
-> <UNGLinuxDriver@microchip.com>; David S . Miller <davem@davemloft.net>;
-> Vladimir Oltean <vladimir.oltean@nxp.com>; Claudiu Manoil
-> <claudiu.manoil@nxp.com>; Vivien Didelot <vivien.didelot@gmail.com>;
-> Florian Fainelli <f.fainelli@gmail.com>; Richard Cochran
-> <richardcochran@gmail.com>
-> Subject: Re: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping supp=
-ort
-> for Felix
->=20
-> > +static irqreturn_t felix_irq_handler(int irq, void *data) {
-> > +	struct ocelot *ocelot =3D (struct ocelot *)data;
-> > +
-> > +	/* The INTB interrupt is used for both PTP TX timestamp interrupt
-> > +	 * and preemption status change interrupt on each port.
-> > +	 *
-> > +	 * - Get txtstamp if have
-> > +	 * - TODO: handle preemption. Without handling it, driver may get
-> > +	 *   interrupt storm.
-> > +	 */
->=20
-> I assume there are no register bits to enable/disable these two interrupt
-> sources?
->=20
-> What is preemption?
 
-[Y.b. Lu] For PTP timestamp interrupt, there are not register bits to enabl=
-e/disable interrupt source, and to clean interrupt status.
-That's why use threaded handler with oneshot flag.
-For preemption, it is a feature of TSN Qbu. I'm not familiar with it. The f=
-unction hasn't been supported/enabled in driver.
-It seems it has status bit to check, but has no bits to enable/disable inte=
-rrupt source either.
+On 11/20/2019 3:42 AM, Russell King wrote:
+> Add support for applying module quirks to the list of supported
+> ethtool link modes.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Thanks.
->=20
->      Andrew
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
