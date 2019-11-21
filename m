@@ -2,108 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBEC4104F1F
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19213104F21
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:23:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbfKUJWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 04:22:08 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:55642 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726132AbfKUJWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 04:22:07 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAL9Jqmw061121;
-        Thu, 21 Nov 2019 09:21:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
- bh=YVJb3xjnvo+lZOSP+MrYXMysiTQ6g7glOzUX2cp7MDw=;
- b=J+qXxwYnKqLACMMhg8LeqwB4wxt/1iuEIVpfqVEI8yYizrtJrnRoDcondkiilRw9r8V7
- pXHS1l6N7nDKS37/5eEbZU/z8jeitqye4GriZd7n994pDUEEf28+2v435pcZMFsZ4Dzx
- EZfNL84eKdmDhbaOfvM+KTRUgueNUDkVzXxq9q5ihhhfsuUmUHXrmZoucnRaFGG9XzQ8
- dyEr5SGopadaniuBMQZLeOJuJEW3XpgWopqvm0NdsWyfJTddafwwG6S5bEse/GwzQ/ws
- kMkfuGCw6q/w/Rq9WZQixY+C25K2BtCQow3fvS4tpRC+JpthTGUySkHTW//8y1g9qRkx iQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 2wa9rqtqeq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Nov 2019 09:21:58 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAL9JDxf017116;
-        Thu, 21 Nov 2019 09:21:57 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2wdfrrh9nf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Nov 2019 09:21:57 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAL9LuEr021279;
-        Thu, 21 Nov 2019 09:21:56 GMT
-Received: from kili.mountain (/41.210.154.230)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 21 Nov 2019 01:21:55 -0800
-Date:   Thu, 21 Nov 2019 12:21:46 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>
-Cc:     Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] octeontx2-af: Fix uninitialized variable in debugfs
-Message-ID: <20191121092146.hnvdwnzpirskw3wr@kili.mountain>
+        id S1726529AbfKUJXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 04:23:44 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:44155 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726132AbfKUJXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 04:23:43 -0500
+Received: by mail-qt1-f193.google.com with SMTP id o11so2888074qtr.11;
+        Thu, 21 Nov 2019 01:23:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=on4Iq+B2dQHBEVKEbGkwbSWsSiyy1vP9STHLN/cESR4=;
+        b=MOh+jfGVqxBNt21EOqrv0VJGgMyEqU6fBzYFgasfzGY5KMLq3ck3Sz+iIg8T5+S1RF
+         uWUwORfX32CKmSv+62i3kv/+V+iCsfcFzWU6/B32zNqRao6A7ysQ2jXIzBucRgCqnK9B
+         ysHx5sK19D3JL9TodKN9zNYWnxteF7eKVwBd0BhtNAOsNc32cPDL68CFct+41nueLcON
+         p5/9CFpC/Mq9nfM7b8ljDnEKJXSIAos11bK53zRokhLHTdfGNtSmsDwSZSQCNDmT6VQx
+         uZeRBnHKL13jimMBwXCPwUPWOZRxyQJwzSShjFfRkR8hmmg1rdjH0cTd3OtLHmrMUphx
+         XODA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=on4Iq+B2dQHBEVKEbGkwbSWsSiyy1vP9STHLN/cESR4=;
+        b=Nh2dYErp5Wa/sRhw6/JAIK3sCDn1X0EYWuK8Q1yXn5ZmEs0da2ij0FFR4IyG0tSRmG
+         ieXt4i4ddjfQOsDoqD16I74/la8mQ8DCEK+qu5Mom00Ag9I9r0RVnfYLFF4JXOW+/bv6
+         BE80H7SmdvMsIrgdeAqw2D8FomrgDQKqYJvNwPVo5I3IYvnvyj21mLi/ym09gl0GkddD
+         6iKZLzNILYxSbEIgGbaFXKsdYLFsyBqfcIGcYnJp3O9y+Phc0K3B3zgXfs487O4FSta9
+         G1dzlyn+tLLmXLCN0ZIEcUjSGIDY+7mVmx6mIZdxnN4C2Hm5Cut+HqNUYJNCwgY2/W0T
+         pyZQ==
+X-Gm-Message-State: APjAAAWbw417QziUu0X0JY4kWKhPRQAg8dL5LLzInF57Ra18HLfPNLuV
+        txMYf3g2FCeN/PoAslatA0nnzYlZp5m0kKY2IDY=
+X-Google-Smtp-Source: APXvYqzZ8nnA+s0cPCCjLmUa/bYFlF2jPnOot3ZoQt0rjsMtlfv0YKp0l6uuj0DIdt2GWoktQtu/xtq5b6rmZQr9QyA=
+X-Received: by 2002:ac8:4517:: with SMTP id q23mr7581464qtn.359.1574328222931;
+ Thu, 21 Nov 2019 01:23:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9447 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1911210084
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9447 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-1911210084
+References: <20191119160757.27714-2-bjorn.topel@gmail.com> <201911211536.JzaBr1Ub%lkp@intel.com>
+In-Reply-To: <201911211536.JzaBr1Ub%lkp@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 21 Nov 2019 10:23:31 +0100
+Message-ID: <CAJ+HfNiq4QhHbO5reVKC7n95unqVWHSRnX0-+HoqdHb3iXoUbQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: introduce BPF dispatcher
+To:     kbuild test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If rvu_get_blkaddr() fails, then this rvu_cgx_nix_cuml_stats() returns
-zero and we write some uninitialized data into the debugfs output.
+On Thu, 21 Nov 2019 at 08:27, kbuild test robot <lkp@intel.com> wrote:
+>
+[...]
+> >> kernel/bpf/dispatcher.c:151:14: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>        *ipsp++ = (s64)d->progs[i]->bpf_func;
+>                  ^
 
-On the error paths, the use of the uninitialized "*stat" is harmless,
-but it will lead to a Smatch warning (static analysis) and a UBSan
-warning (runtime analysis) so we should prevent that as well.
-
-Fixes: f967488d095e ("octeontx2-af: Add per CGX port level NIX Rx/Tx counters")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 0bbb2eb1446e..11e5921c55b9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -608,6 +608,8 @@ int rvu_cgx_nix_cuml_stats(struct rvu *rvu, void *cgxd, int lmac_id,
- 	u16 pcifunc;
- 	int pf, lf;
- 
-+	*stat = 0;
-+
- 	if (!cgxd || !rvu)
- 		return -EINVAL;
- 
-@@ -624,7 +626,6 @@ int rvu_cgx_nix_cuml_stats(struct rvu *rvu, void *cgxd, int lmac_id,
- 		return 0;
- 	block = &rvu->hw->block[blkaddr];
- 
--	*stat = 0;
- 	for (lf = 0; lf < block->lf.max; lf++) {
- 		/* Check if a lf is attached to this PF or one of its VFs */
- 		if (!((block->fn_map[lf] & ~RVU_PFVF_FUNC_MASK) == (pcifunc &
--- 
-2.11.0
-
+I'll fix the cast warning on i386 in the v2.
