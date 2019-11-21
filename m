@@ -2,120 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF7C8105725
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 17:36:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01284105756
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 17:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbfKUQgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 11:36:19 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38337 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfKUQgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 11:36:19 -0500
-Received: by mail-pf1-f193.google.com with SMTP id c13so1962669pfp.5
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 08:36:17 -0800 (PST)
+        id S1726714AbfKUQpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 11:45:07 -0500
+Received: from mail-lj1-f174.google.com ([209.85.208.174]:45625 "EHLO
+        mail-lj1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbfKUQpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 11:45:06 -0500
+Received: by mail-lj1-f174.google.com with SMTP id n21so3943371ljg.12;
+        Thu, 21 Nov 2019 08:45:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KAJW0s0QdbX7OOUDsXuAKaGlGhF39TgqfVvzDVSdOg4=;
-        b=SVCUGeieLI+P7FI3q6KZppUnhzVI7RUUssrPgs1LDEWA7AdiAapKwqIuZ/eDUDX27Q
-         dPNxnCaYL20AkERz+EkNfe4X577+fVokTorYlwqOrq+Gn1QOVPsZwrXNZMWU+C4qs+hV
-         jwqxe10FGgTH8GgvJC5uVwEKUxNXLE5U5pGR6ilihsJesnJgKcY2DawWhVMWD0WrbwQP
-         0PJTlFKaifkYAGVOEYnlRAZNSIGHCf4wiXyh9lNuPdT3zgOc6PTqwB9fUPbV0h2h8jPG
-         jrCh7dpYFsu1ON16UUkzKe3zKqjmxewQ1Jzg/eRf6UVGGiHpvoRTV+kg7G1vIkhzrCRj
-         FoxQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=21h+0RVMSN5bPJMsfn8C8MDLWl2wJXcidLyw5k/b5VE=;
+        b=CXxgijnbjro9+D2ukT4DYoZobPeP0C4z+Ed8YK2o/dAU8FUUCKWG5Z3DQIHRk4I5Go
+         5YVyHs5AWCh78ohQbr9w/b6ATDiLaEtDNutqWpnjYbn3HAywx2SCxfnBl4CmlLJtqT2r
+         vRGQ2uh+ZOQleJQzXYdUahozM6tfSsoBtJlatLPnhdI1VoGgdV+BtjKZjh/4EfSkEoTq
+         H7eFWE+I2oOKwQ+GqQP9KB5rJyfBh0dEZNwgr36gtoKg7+8LLpMJKJkN8Bnmv3DZaVZ2
+         4avPoNFjO/LspJPwHKwCsozOdNYL6IZUQuWwpm7LpJniNil243dE3DA1nIvOsMEvi+p+
+         x5og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KAJW0s0QdbX7OOUDsXuAKaGlGhF39TgqfVvzDVSdOg4=;
-        b=lCDUcc6bctiqMNAfJEXwCHZZBbGgTVNlPRJYGTrqwt4FYWSMCwPkuJMjt1E571rp+5
-         vjmlIEkORlHJQanfwIeApRLi7t419BjX58ZPpVlEGDrCfyojQyefxdtKMQvCVwu+RzFI
-         o9CgoLsPGZ0gdAVCXCx8GitMvLz38WQ+C4kk4L24wR9eTtMoJMk+BiOZ8SidXjIHG6uo
-         kNUskljuFVQQeC1EXe2mpoYoBQfc/B/3JOHhQ5ZlEHg5xf5gzvaSXJcZX7VutCd6EkUy
-         r+G7QsoSGs3o+wTRIEjBkSLCzxj+QcstKfw5ndb4xsqdBchWR/XDHFM0F9bqZN8tEZrK
-         Zfkg==
-X-Gm-Message-State: APjAAAWQbh4N1uQr+IrukD2/dOZKN1Y9r4eZLpvPRyi50MxjCq+TAMY3
-        eMHkigX10SSKnjwhGL1fI9xz+z5PgqFXnA==
-X-Google-Smtp-Source: APXvYqxYJ35f3o5VGyrMxLuPcMKnIlcYmVpgiSPtvU75la/WQFoz2xjtyyWtHn4TadpuRhtQq21mmw==
-X-Received: by 2002:a62:384f:: with SMTP id f76mr11886541pfa.155.1574354176461;
-        Thu, 21 Nov 2019 08:36:16 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id w62sm4315041pfb.15.2019.11.21.08.36.15
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 08:36:15 -0800 (PST)
-Date:   Thu, 21 Nov 2019 08:36:07 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 205621] New: Linux next-20191121 NULL dereference on
- start-up, leading to unusable system
-Message-ID: <20191121083607.09dafe7d@hermes.lan>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=21h+0RVMSN5bPJMsfn8C8MDLWl2wJXcidLyw5k/b5VE=;
+        b=nhESxHnRXqv9LEdl7hnnTcLoTBxKVwdSAARpEXv15GuYo8OKLEFEgqUS4uveiPhRl0
+         7rBRHHJ/tWPBtnWJkM1WLGsXYM0FNSbgEA4uk15AHpoJGLxQurahXpBlLsUeTIVj3jU5
+         RjYQa0yof8nl3z+d123o20/HfMvs3nyBL1uUM5k2nsvDsOOdF1Ivzus7OOuFfcArN1m6
+         jL7DcioGwAPSazJEWl7gqsDglth7SABu7Vf41zOlKDCHOOWfR8W5Scs7vIFgUUDamoTt
+         QypB2fGqCr9yfnbBNvtrb5B3EZmpFDu1zlXvviMC53WQwAV5YD/5KGnVYvmHoyEZ2Ut8
+         wySA==
+X-Gm-Message-State: APjAAAWxf1CcYn1pZ7cvK0Pi5o5nzLToHczmAOmL36eUKwjk4sa070c0
+        5xUihy3cMujC6U3qe87vRP+lCH2yDAd8LRNpDxKT7roL
+X-Google-Smtp-Source: APXvYqxPP6pX2a3DQ7zx/cfVE3s5CRLYlkFBgnZuVcnBhWS6o+wQohnUz27w5P3JJktz4QNiFfbIomGw4JhOj+xOQh8=
+X-Received: by 2002:a2e:2e10:: with SMTP id u16mr8769168lju.51.1574354703031;
+ Thu, 21 Nov 2019 08:45:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAADnVQJ8NN3YV3Dws_V0gAiM21dH0=UDw6G=2O0OhYQ7Jj1CuA@mail.gmail.com>
+In-Reply-To: <CAADnVQJ8NN3YV3Dws_V0gAiM21dH0=UDw6G=2O0OhYQ7Jj1CuA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 21 Nov 2019 08:44:50 -0800
+Message-ID: <CAADnVQJF3H=8_wLZOcC0jyOL-YsJ7-T5WpiiNA7XvvLOHfhCmA@mail.gmail.com>
+Subject: Re: test failures after merge
+To:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 20, 2019 at 11:17 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> Hi Andrii,
+>
+> after bpf-next got merged into net-next new failures appeared:
+> ./test_progs -n 5/1
+> test_core_reloc:FAIL:check_result output byte #0: EXP 0x01 GOT 0x01
+> Could you please take a look?
+> Thanks!
 
-
-Begin forwarded message:
-
-Date: Thu, 21 Nov 2019 14:48:31 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 205621] New: Linux next-20191121 NULL dereference on start-up, leading to unusable system
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=205621
-
-            Bug ID: 205621
-           Summary: Linux next-20191121 NULL dereference on start-up,
-                    leading to unusable system
-           Product: Networking
-           Version: 2.5
-    Kernel Version: next-20191121
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: blocking
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: nicholas.johnson-opensource@outlook.com.au
-        Regression: No
-
-Created attachment 286005
-  --> https://bugzilla.kernel.org/attachment.cgi?id=286005&action=edit  
-The .config
-
-Linux next-20191121 - .config file attached.
-
-NULL dereference on start-up, leading to unusable system.
-
-Used "git clone --depth=1 --single-branch --branch next-20191115
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git"
-
-Where I am, I cannot use serial console to save the stack trace.
-
-I will attach a photo of the screen.
-
-The top few functions are:
-
-kernfs_find_and_get_ns
-sysfs_remove_group
-netdev_queue_update_kobjects
-netdev_unregister_kobject
-
-This leads me to believe that it is part of networking.
-
-I will do a bisect if I have to, but given how time consuming they are on a
-quad-core machine, I hope somebody else with a 32-core Threadripper can step up
-to the task.
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
+I bisected and turned out it was caused by audit patch.
+For some reason the test is stable with auditctl -e 0
+and randomly fails when audit is on.
