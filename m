@@ -2,198 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFA610556D
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:25:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC053105581
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbfKUPZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 10:25:26 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30469 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726613AbfKUPZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:25:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574349924;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kBm3B1uW0ATy8DLnD/N50So/7howYiU9bWi3eGPQ8KQ=;
-        b=BZyUrSto5o2CWfb2u7Au4/2bJfT9L7J+OoaA3WWxf0XbhkePDBeJq6b4l0XD3z4mBoW/eM
-        wHbGEWik78dbrFTdjTsO+3MR2dsXszCjFxy5IjyPMPp0ka+yufqtQcy5zoWq47rG5qIUjO
-        NQJqbkatmPhXdV3+dtl4TYJ1j9CNAxQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-337-N5QS5iwqMSWIqzfcSfG7fw-1; Thu, 21 Nov 2019 10:25:21 -0500
-Received: by mail-wm1-f71.google.com with SMTP id f191so1998571wme.1
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 07:25:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Luh/FRsdrygdtryuzjcgAMyRo3l6t+Zhjzz9aLHJ0EU=;
-        b=f9zG0s+5au4PdJQpLvqKG74EFWFIs+0pQ6R+3hje3iH5rjmUvRypXn8paD+8ITGxPP
-         Y9yEX6fIXHQAg3Zc9HqZuOb1FQORsOP0+JFnVsVsCdx1gqiAsnIQy3zSvJ9xowdUlikM
-         RHJzTsrKF2IP+aVzNVNrQqyJ6sjnN5b1ciuQtCG2K6P6qWsPn0FrnzMmhWnhFaTew7hk
-         QVXbVNa82SkOdLGV8DSBinGzGcbE3drklDaJXhCJKRfhTQBTB46jjQK8LGthI3PBBXSJ
-         ikTf0zvROeLnsIhToDzAz2DVbYE05YQHg1L3BmVD35Kb5Lko97uQuWrAcI1WOZ0EoS8b
-         YL4Q==
-X-Gm-Message-State: APjAAAUIrUK4pmKWNqRX0eSMiWvy3gSTkbbjutE8SrUXbrGG0hMX8KBv
-        SRAKdkO0c2Pn2UqGwZKvLhaBNVID/g0v6Be0mONUg4yJJp6TIGrxVkaPsSIPh/oDbuDiJDuZROw
-        QDygH/69T5LQUcEZo
-X-Received: by 2002:a05:600c:2410:: with SMTP id 16mr10111951wmp.36.1574349920264;
-        Thu, 21 Nov 2019 07:25:20 -0800 (PST)
-X-Google-Smtp-Source: APXvYqw6kCXHNhqyKfZOnNRC+6rkdzH+5TteBCvmm65ewNpd7LRKY0hfW8ym9t1TkIRcJ7FqzYeccA==
-X-Received: by 2002:a05:600c:2410:: with SMTP id 16mr10111918wmp.36.1574349919938;
-        Thu, 21 Nov 2019 07:25:19 -0800 (PST)
-Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
-        by smtp.gmail.com with ESMTPSA id w17sm3864052wrt.45.2019.11.21.07.25.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 07:25:19 -0800 (PST)
-Date:   Thu, 21 Nov 2019 16:25:17 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [PATCH net-next 4/6] vsock: add vsock_loopback transport
-Message-ID: <20191121152517.zfedz6hg6ftcb2ks@steredhat>
-References: <20191119110121.14480-1-sgarzare@redhat.com>
- <20191119110121.14480-5-sgarzare@redhat.com>
- <20191121093458.GB439743@stefanha-x1.localdomain>
- <20191121095948.bc7lc3ptsh6jxizw@steredhat>
+        id S1727191AbfKUP0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 10:26:46 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:53357 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726574AbfKUP0q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 10:26:46 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 8153aecb;
+        Thu, 21 Nov 2019 14:33:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=9rO4z5sa5cW/KppMdFyBM7L655M=; b=TjKXwA
+        JIypICoKtVIfvC1uTqy8daQ00OJ9H5PiBR9zcuuFSG7u1kR4cBCEXHyvUbKDwgGw
+        s5iHyQv+/ADmqU5NKFV60z2ABEHhm83h4WRRQh1hA7sm7mM8MFpKvs3KIC/Vt3Ei
+        MG+YkSv5KlM8aBPUFZuExYEfpn+MMViw76ygzsanGv7u2BpoF2HSTArnbY/vo5rA
+        NT8JHTBDZss46jcH+/Br3nnFpK5MTAr2FkVVsw27ZJngF6DZpEP3lBU+9CYHk40i
+        dhhIQt9P3dA5BbpYP1kUSC8a/PgURS61I9xGk2eX7HyjB8Mqu446q0c1zSfi0MOW
+        C4MSMadnTHtLu2fQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bf8a06f6 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 21 Nov 2019 14:33:38 +0000 (UTC)
+Received: by mail-ot1-f51.google.com with SMTP id r24so3215243otk.12;
+        Thu, 21 Nov 2019 07:26:43 -0800 (PST)
+X-Gm-Message-State: APjAAAUR72CHIfOJFQO73Rg4tLzvxUlOseJo/bxeKgtCCQLNWc7DsSqp
+        B4k+j0J6LDQcl5ZReZhRhNITHEDvQcNMwDg83Rw=
+X-Google-Smtp-Source: APXvYqy+OOPTbY4wI1lR6UWfKKpza4kME2TCJyAP6+JIFH/G2GBY8787MbunIO+puAfzydaD9ym9gJwPeXC9rAw7Oaw=
+X-Received: by 2002:a9d:4788:: with SMTP id b8mr6990169otf.120.1574350002882;
+ Thu, 21 Nov 2019 07:26:42 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191121095948.bc7lc3ptsh6jxizw@steredhat>
-X-MC-Unique: N5QS5iwqMSWIqzfcSfG7fw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+References: <20191120203538.199367-1-Jason@zx2c4.com> <877e3t8qv7.fsf@toke.dk>
+ <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com> <CANiq72mGPmMVBCmOMc_xJbKuOvbmmPAotGx67nSVQrYmXd2x3A@mail.gmail.com>
+In-Reply-To: <CANiq72mGPmMVBCmOMc_xJbKuOvbmmPAotGx67nSVQrYmXd2x3A@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 21 Nov 2019 16:26:31 +0100
+X-Gmail-Original-Message-ID: <CAHmME9q6UHweyNBmAOanJB=BBSyjydwurJin2eJd9R+nAe2YYQ@mail.gmail.com>
+Message-ID: <CAHmME9q6UHweyNBmAOanJB=BBSyjydwurJin2eJd9R+nAe2YYQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 10:59:48AM +0100, Stefano Garzarella wrote:
-> On Thu, Nov 21, 2019 at 09:34:58AM +0000, Stefan Hajnoczi wrote:
-> > On Tue, Nov 19, 2019 at 12:01:19PM +0100, Stefano Garzarella wrote:
-> >=20
-> > Ideas for long-term changes below.
-> >=20
-> > Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> >=20
->=20
-> Thanks for reviewing!
->=20
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index 760049454a23..c2a3dc3113ba 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -17239,6 +17239,7 @@ F:=09net/vmw_vsock/diag.c
-> > >  F:=09net/vmw_vsock/af_vsock_tap.c
-> > >  F:=09net/vmw_vsock/virtio_transport_common.c
-> > >  F:=09net/vmw_vsock/virtio_transport.c
-> > > +F:=09net/vmw_vsock/vsock_loopback.c
-> > >  F:=09drivers/net/vsockmon.c
-> > >  F:=09drivers/vhost/vsock.c
-> > >  F:=09tools/testing/vsock/
-> >=20
-> > At this point you are most active in virtio-vsock and I am reviewing
-> > patches on a best-effort basis.  Feel free to add yourself as
-> > maintainer.
-> >=20
->=20
-> Sure, I'd be happy to maintain it.
->=20
-> > > diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loo=
-pback.c
-> > > new file mode 100644
-> > > index 000000000000..3d1c1a88305f
-> > > --- /dev/null
-> > > +++ b/net/vmw_vsock/vsock_loopback.c
-> > > @@ -0,0 +1,217 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * loopback transport for vsock using virtio_transport_common APIs
-> > > + *
-> > > + * Copyright (C) 2013-2019 Red Hat, Inc.
-> > > + * Author: Asias He <asias@redhat.com>
-> > > + *         Stefan Hajnoczi <stefanha@redhat.com>
-> > > + *         Stefano Garzarella <sgarzare@redhat.com>
-> > > + *
-> > > + */
-> > > +#include <linux/spinlock.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/list.h>
-> > > +#include <linux/virtio_vsock.h>
-> >=20
-> > Is it time to rename the generic functionality in
-> > virtio_transport_common.c?  This doesn't have anything to do with virti=
-o
-> > :).
-> >=20
->=20
-> Completely agree, new transports could use it to handle the protocol with=
-out
-> reimplementing things already done.
->=20
-> > > +
-> > > +static struct workqueue_struct *vsock_loopback_workqueue;
-> > > +static struct vsock_loopback *the_vsock_loopback;
-> >=20
-> > the_vsock_loopback could be a static global variable (not a pointer) an=
-d
-> > vsock_loopback_workqueue could also be included in the struct.
-> >=20
-> > The RCU pointer is really a way to synchronize vsock_loopback_send_pkt(=
-)
-> > and vsock_loopback_cancel_pkt() with module exit.  There is no other
-> > reason for using a pointer.
-> >=20
-> > It's cleaner to implement the synchronization once in af_vsock.c (or
-> > virtio_transport_common.c) instead of making each transport do it.
-> > Maybe try_module_get() and related APIs provide the necessary semantics
-> > so that core vsock code can hold the transport module while it's being
-> > used to send/cancel a packet.
->=20
-> Right, the module cannot be unloaded until open sockets, so here the
-> synchronization is not needed.
->=20
-> The synchronization come from virtio-vsock device that can be
-> hot-unplugged while sockets are still open, but that can't happen here.
->=20
-> I will remove the pointers and RCU in the v2.
->=20
-> Can I keep your R-b or do you prefer to watch v2 first?
->=20
-> >=20
-> > > +MODULE_ALIAS_NETPROTO(PF_VSOCK);
-> >=20
-> > Why does this module define the alias for PF_VSOCK?  Doesn't another
-> > module already define this alias?
->=20
-> It is a way to load this module when PF_VSOCK is starting to be used.
-> MODULE_ALIAS_NETPROTO(PF_VSOCK) is already defined in vmci_transport
-> and hyperv_transport. IIUC it is used for the same reason.
->=20
-> In virtio_transport we don't need it because it will be loaded when
-> the PCI device is discovered.
->=20
-> Do you think there's a better way?
-> Should I include the vsock_loopback transport directly in af_vsock
-> without creating a new module?
->=20
+On Thu, Nov 21, 2019 at 3:44 PM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+> Any reason for the .clang-format in drivers/? If yes, it would be nice
+> to state it in the comment of the file.
 
-That last thing I said may not be possible:
-I remembered that I tried, but DEPMOD found a cyclic dependency because
-vsock_transport use virtio_transport_common that use vsock, so if I
-include vsock_transport in the vsock module, DEPMOD is not happy.
+It's a total accident in porting my scripts from the older Zinc-based
+patchset to this newer Frankenzinc-based one. It won't be there in the
+next submission and is already gone from
+https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/linux.git/commit/?h=wireguard
 
-Do you think it's okay in this case to keep MODULE_ALIAS_NETPROTO(PF_VSOCK)
-or is there a better way?
-
-Thanks,
-Stefano
-
+Jason
