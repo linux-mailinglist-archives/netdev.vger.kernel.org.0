@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CEF1104980
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E283104982
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:04:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726014AbfKUED6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 23:03:58 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44519 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbfKUED6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:03:58 -0500
-Received: by mail-wr1-f66.google.com with SMTP id i12so2546443wrn.11
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 20:03:55 -0800 (PST)
+        id S1726346AbfKUEES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 23:04:18 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:55483 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725819AbfKUEES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:04:18 -0500
+Received: by mail-wm1-f66.google.com with SMTP id b11so2089929wmb.5
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 20:04:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=G8nCip2FBM01nIhitsJJYOcveraGXqBAPsEOgZC9/u4=;
-        b=RJDsuKd6StGSQ1bxnq2jZ9fbFHXKss5Jyk2AmJL2NhjCCnyJ7BhSbp75b11JBytkLh
-         5Oguyj/0LiVzNoxw9JJ1ffBksq0zL8J+44OyKg4KDhd+GmqMPIDQdIwIF8kcGl7leGhZ
-         TCIx629VRUMp2y39bX+vZK9KGLsav0PCGYjBwYXN5d5bo5rUS1lvS+eEdeoacxiJTor6
-         T1fke/BAI8bADGYRSfA8QRM0niKs9UL7bsJBxueHm+TfNx8X4SnOLNd/qkWouRSNpGVu
-         WfJB6VAIHUDYKF6GOS8TNZfOcStqrto7JzPxZheDZb/pTZ/cGmVuQ1wy8Zxroor+oGzX
-         P2Vg==
+        bh=58/9Hj9cEs6Gy9KWo6pVQja7AiySnI3agTrBCcxYUuU=;
+        b=r3k2cB1bzc1n6Sa4vdGxpqNyDVIn/xwrFY79xMjdDmOq1OGhghg74bu416R7Wku7n2
+         5WXtYQkFSgy9fYCvL67fBz/6LyKM4fL3arM47kgyCE/OwUJ7SpXWErAcZP4z3LqBKGGw
+         KUO5/fNEzBAsh7yjo+yqoZIggK8Wjkzo6eF8S1mhFmgk76tGkb1a5/5FdFuJvBtLKC8w
+         6g6mO25v/nDQpAzE4N8J4f72kG8A5HCw/JrmYMQIBCNiKS2Ozka9qShLnnZGMaLYxizV
+         gxVSt+5a9gDRaBwK8lHRmG9kkk4r2oji9jnvqJDjqzaTrTuu11S6cGclib1V4eXsuDdz
+         bx+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=G8nCip2FBM01nIhitsJJYOcveraGXqBAPsEOgZC9/u4=;
-        b=qArXuMuDF+MnXpp+v3XSP0S5LWjxuKzH14PDDetSEIWNIQm0v0AiuGl35UbRpo2+xo
-         /zCbTQfVe9WQ6vfNu2L2HUlWgsFck6eLuyqK/pU8c10vC1UGsPtUF0vabjntM5MgaQxk
-         NHSFBXGpywu8b8sTUHRiFJ9MrDny0g4e2IzvhT0aNcFT6FzzQYMM1/miXxDcas9KxYaV
-         IE7j0bW21F5FEENg1TU00j7LJXot1Z7IN97u7PYTfXFgxMMbwMMu93Nr925cICbV7/OP
-         8f0QdaShcOzOIccaH6aKzNIQON6YX4G+Ailuz2wCEAnZBYQW7PP6Jprjf0mTV7z/2KZ7
-         KfXA==
-X-Gm-Message-State: APjAAAU0n3sVZTFFyFcjYRGKrtB8+XUfHubkD5t+tzYBvqDbUdjESXmS
-        C0bSWZ1m8EgNMETrouwUVi45HXJH
-X-Google-Smtp-Source: APXvYqzSyiOmqEuKLoS80rcMiBXuATbBO2Z0kTojkfKoHzCxR7VRxU6JYZqNrLmcgsuns4iHpSKQjw==
-X-Received: by 2002:adf:82c6:: with SMTP id 64mr7571543wrc.151.1574309035149;
-        Wed, 20 Nov 2019 20:03:55 -0800 (PST)
+        bh=58/9Hj9cEs6Gy9KWo6pVQja7AiySnI3agTrBCcxYUuU=;
+        b=GNiZdxOO+oy3gfgHM4leD9QYKj3+L1PCyorh4ZE4WI/xxQXD+Q/A+qxPukkh2beqdK
+         fVgPexAlFLeDBHjlN+L/Fmyt9mJIP0xqSUuqO+zFcmb9mIpO5yuFSl6WdVySJhTqNg8W
+         hMWqjYNOcjcin8t/WT39rEyPpSA/2yowOFxmotnlyDiKAYGHt8k0ZSJnim6VbVdwtQXl
+         Nh1Yuu/rINCl7XlomJLFtZKVvDtCE0clqjyR6UgxF4yibOG25Cdp/PUOQqAnCDBa+5ca
+         /+dmlbvIB483uOkfQYuY7dhwsGTN6P1nJst9IDXhe0Oe8tdHoZKcCOWNJyVdXI7wMtm/
+         5cMQ==
+X-Gm-Message-State: APjAAAUcDsoaQguyVgqtajYxEW0Gmi06SLg67kwbrBaWEetNVZHICxQL
+        f1IN/STluyonMf9k3WcFhV0=
+X-Google-Smtp-Source: APXvYqwA5MDudF5ETAYOVR43IMhqjkkY9uPZS9lbrVJ6+NkCMQVSF7TKdsGxDPL8L+ikbPeCBsqJcQ==
+X-Received: by 2002:a1c:9dd3:: with SMTP id g202mr7430136wme.43.1574309055121;
+        Wed, 20 Nov 2019 20:04:15 -0800 (PST)
 Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x8sm1752959wrm.7.2019.11.20.20.03.52
+        by smtp.gmail.com with ESMTPSA id b1sm1634651wrs.74.2019.11.20.20.04.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Nov 2019 20:03:54 -0800 (PST)
-Subject: Re: [PATCH 1/5] net: mscc: ocelot: export ocelot_hwstamp_get/set
- functions
+        Wed, 20 Nov 2019 20:04:14 -0800 (PST)
+Subject: Re: [PATCH 2/5] net: mscc: ocelot: convert to use
+ ocelot_get_txtstamp()
 To:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
@@ -56,7 +56,7 @@ To:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>
 References: <20191120082318.3909-1-yangbo.lu@nxp.com>
- <20191120082318.3909-2-yangbo.lu@nxp.com>
+ <20191120082318.3909-3-yangbo.lu@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <93a33488-9ac1-6600-902c-aa2f6b0beccd@gmail.com>
-Date:   Wed, 20 Nov 2019 20:03:50 -0800
+Message-ID: <24c9859a-abed-10c1-e2bd-6ceeca0e185c@gmail.com>
+Date:   Wed, 20 Nov 2019 20:04:10 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191120082318.3909-2-yangbo.lu@nxp.com>
+In-Reply-To: <20191120082318.3909-3-yangbo.lu@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,8 +129,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/20/2019 12:23 AM, Yangbo Lu wrote:
-> Export ocelot_hwstamp_get/set functions so that DSA driver
-> is able to reuse them.
+> The method getting TX timestamp by reading timestamp FIFO and
+> matching skbs list is common for DSA Felix driver too.
+> So move code out of ocelot_board.c, convert to use
+> ocelot_get_txtstamp() function and export it.
 > 
 > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 
