@@ -2,124 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3BA1051E6
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 12:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7F61051F7
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:01:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfKUL6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 06:58:23 -0500
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:21309
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726197AbfKUL6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 06:58:22 -0500
-X-IronPort-AV: E=Sophos;i="5.69,224,1571695200"; 
-   d="scan'208";a="327507864"
-Received: from portablejulia.rsr.lip6.fr ([132.227.76.63])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Nov 2019 12:58:18 +0100
-Date:   Thu, 21 Nov 2019 12:58:18 +0100 (CET)
-From:   Julia Lawall <julia.lawall@lip6.fr>
-X-X-Sender: julia@hadrien
-To:     Michal Kubecek <mkubecek@suse.cz>
-cc:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        jakub.kicinski@netronome.com, ast@kernel.org,
-        natechancellor@gmail.com, jiang.xuexin@zte.com.cn,
-        cocci <cocci@systeme.lip6.fr>, f.fainelli@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com,
-        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
-        vivien.didelot@gmail.com, dan.carpenter@oracle.com,
-        wang.yi59@zte.com.cn, hawk@kernel.org, arnd@arndb.de,
-        jiri@mellanox.com, xue.zhihong@zte.com.cn,
-        zhanglin <zhang.lin16@zte.com.cn>,
-        Thomas Gleixner <tglx@linutronix.de>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linyunsheng@huawei.com, pablo@netfilter.org,
-        Joe Perches <joe@perches.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        id S1726998AbfKUMAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 07:00:35 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22971 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726342AbfKUMAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 07:00:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574337634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q5rBJ14foXXsUIH3cvZz1qwUhkNTdgEVQ2KMu92pgrc=;
+        b=AyelN1s+AkXr34ib9Rkxq7/AZG9NJ49hakZrKNdFQAu39K6Be910XjW6TGCsHQ9FRXgVLZ
+        UvVCq6oOC6Fa400cuU2vGcLcH8itmX3uYsiiVrpubHN4wzoiotgZNELLOk8Tp8THq1+S+u
+        7qHPFRV16cWS9CRpjux7qEktpTFmQrw=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-45-hWfkcAcKP_yGa-xu0F6F0Q-1; Thu, 21 Nov 2019 07:00:30 -0500
+Received: by mail-lf1-f71.google.com with SMTP id v204so860746lfa.0
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 04:00:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=x7Br6MUt5GIrekmwoW3W/dVDofzaSmCZ4ehtQgntfJg=;
+        b=AhhMUjbXCHn+4ZfiGWe+k0vqCbLO284lWD9aKUD3ywSLuusSgkvgHa0a2GUvvzm3t+
+         HzfokuAO538OOmtWyw5WoezLPT4X5eJ0xSwSG1NjjRS4RxT8J/W8Hw+/+YHx8iNNdmKs
+         SgAYVxZtikE6nGddT9ai2QmmUKCbstrdCkHOMX5D60acDFT+Avk37PjI0o5/LLbNZIL1
+         2t8zQo7aKf+5yBKZpvAVdrlhoDPw0kGFscE0k6Q/VHb3H9S6kWMx0OXvotPeX51ighB/
+         zjRyDhmRkxu+iA7iGbubdcrI9Q7ycu04te5E+8/VVz9ZZ+CRq00ETaq+0ZIfQ0c4i+au
+         THQA==
+X-Gm-Message-State: APjAAAWajYypaKJvJ1slgvqjGC2OrHNyBMTgsNcZcsaV7FB9/nuudgL/
+        ddPGmDXmRTl12OYo/njSTdgbVzl4Cx9O+tvT3z0LVjEAWWIPhi5PSHTNsuTWdhId5JW7tXQ3yDq
+        Z8tllmlx06/WliwOD
+X-Received: by 2002:ac2:4a71:: with SMTP id q17mr7003192lfp.179.1574337629227;
+        Thu, 21 Nov 2019 04:00:29 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwoeKMb/g8JM/lXuuI1qNoHv9YuoiOe6iH1WkPLFXbg9oIhgY0S6Dx/PfPzgSPCEeKonyhh5w==
+X-Received: by 2002:ac2:4a71:: with SMTP id q17mr7003168lfp.179.1574337628964;
+        Thu, 21 Nov 2019 04:00:28 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id k25sm1144384ljg.22.2019.11.21.04.00.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 04:00:27 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C838A1818BA; Thu, 21 Nov 2019 13:00:26 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        davem@davemloft.net
-Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
- ethtool_get_wol()
-In-Reply-To: <20191121111917.GE29650@unicorn.suse.cz>
-Message-ID: <alpine.DEB.2.21.1911211245180.12163@hadrien>
-References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn> <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com> <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net> <20191121111917.GE29650@unicorn.suse.cz>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
+In-Reply-To: <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
+References: <20191120203538.199367-1-Jason@zx2c4.com> <877e3t8qv7.fsf@toke.dk> <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 21 Nov 2019 13:00:26 +0100
+Message-ID: <87lfs9782t.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-MC-Unique: hWfkcAcKP_yGa-xu0F6F0Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-
-On Thu, 21 Nov 2019, Michal Kubecek wrote:
-
-> On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
-> > On 26.10.19 21:40, Joe Perches wrote:
-> > > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
-> > >> memset() the structure ethtool_wolinfo that has padded bytes
-> > >> but the padded bytes have not been zeroed out.
-> > > []
-> > >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-> > > []
-> > >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
-> > >>
-> > >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
-> > >>  {
-> > >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
-> > >> +	struct ethtool_wolinfo wol;
-> > >>
-> > >>  	if (!dev->ethtool_ops->get_wol)
-> > >>  		return -EOPNOTSUPP;
-> > >>
-> > >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
-> > >> +	wol.cmd = ETHTOOL_GWOL;
-> > >>  	dev->ethtool_ops->get_wol(dev, &wol);
-> > >>
-> > >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
-> > >
-> > > It seems likely there are more of these.
-> > >
-> > > Is there any way for coccinelle to find them?
-> >
-> > Just curios: is static struct initialization (on stack) something that
-> > should be avoided ? I've been under the impression that static
-> > initialization allows thinner code and gives the compiler better chance
-> > for optimizations.
+>> > +     MAX_QUEUED_INCOMING_HANDSHAKES =3D 4096, /* TODO: replace this w=
+ith DQL */
+>> > +     MAX_STAGED_PACKETS =3D 128,
+>> > +     MAX_QUEUED_PACKETS =3D 1024 /* TODO: replace this with DQL */
+>>
+>> Yes, please (on the TODO) :)
+>>
+>> FWIW, since you're using pointer rings I think the way to do this is
+>> probably to just keep the limits in place as a maximum size, and then
+>> use DQL (or CoDel) to throttle enqueue to those pointer rings instead of
+>> just letting them fill.
+>>
+>> Happy to work with you on this (as I believe I've already promised), but
+>> we might as well do that after the initial version is merged...
 >
-> Not in general. The (potential) problem here is that the structure has
-> padding and it is as a whole (i.e. including the padding) copied to
-> userspace. While I'm not aware of a compiler that wouldn't actually
-> initialize the whole data block including the padding in this case, the
-> C standard provides no guarantee about that so that to be sure we cannot
-> leak leftover kernel data to userspace, we need to explicitly initialize
-> the whole block.
+> I've actually implemented this a few times, but DQL always seems too
+> slow to react properly, and I haven't yet been able to figure out
+> what's happening. Let's indeed work on this after the initial version
+> is merged. I think this change, and several more like it, will be the
+> topic of some interesting discussions. But that doesn't need to happen
+> /now/ I don't think.
 
-I'm not sure that it is likely that the compiler will do anything other
-than ensure that all the fields are initialized.  Among the files that I
-could compile, the only case with actual padding and no memset, memcpy,
-copy_from_user or structure assignment that I could find was
+Agreed. Let's wait until the initial version is merged and use that as a
+base to benchmark against... :)
 
-drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c
+-Toke
 
-There is the code struct drm_amdgpu_info_device dev_info = {};
-
-but I couldn't see any thing in the assembly language that seemed to zero
-the structure.  gcc probably thought its job was done because all fields
-are subsequently initialized.  But the size of the structure does not seem
-to be the same as the sum of the size of the fields.
-
-The set of fields was collected with Coccinelle, which could be unreliable
-for this task.
-
-julia
-
->
-> If the structure is not going to be copied to userspace (or otherwise
-> exposed), using the initializer is fully sufficient and looks cleaner.
->
-> Michal Kubecek
-> _______________________________________________
-> Cocci mailing list
-> Cocci@systeme.lip6.fr
-> https://systeme.lip6.fr/mailman/listinfo/cocci
->
