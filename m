@@ -2,56 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D0910496A
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:47:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8BB104971
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:53:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726165AbfKUDq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 22:46:56 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55704 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbfKUDq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:46:56 -0500
-Received: by mail-wm1-f67.google.com with SMTP id b11so2059273wmb.5
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 19:46:53 -0800 (PST)
+        id S1726014AbfKUDwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 22:52:35 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40861 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbfKUDwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:52:35 -0500
+Received: by mail-wr1-f67.google.com with SMTP id q15so2558159wrw.7
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 19:52:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SFSS33RYQJevNmSO1nSQwiYK6FWtFiyxP7dcvcAUsa4=;
-        b=ZSnksmLIL5j5euF/V3GLfklE0J8+rXlCgPF30ov/qaZixJ7/laFrXwZ63CSaDhaaQF
-         VL7MO0lFnJUCOazx1OUTNi1IC4x/wN85wFRwp+HKKQ9Xx/dp2LjQljf97PSnl9x2zNgE
-         /T8kS8WFMEVAAUL87wSSTfjhqyVrq5jeUKmWJSMCl0OkOlncqae3zyjSzpX3urqN7nL6
-         uxUreuN6riT7Y96eL19TLuFdlpQtHubJNlFmWu436P5dU51GLvhJajXT7Y2S1o3kLbth
-         TmSFYtn3clOhsF8UBO1AbdFAqNbFnqJddEdFebp3y2ZnimPbeTXBJu/lXw4Rz8QiRiRG
-         pR3Q==
+        bh=CBJEC54lfW7nGNvoS8z3f1NL1oBbm+5yulPmVtSm9Fc=;
+        b=T86OQc0dYHfGxCim2gA+9692kiFKz2t2M7AYUc7YK4dqesj0UHulrrMonDoF7LTS+6
+         +Rr/rROGw8OB+mSwKuQw73GnGd7DDNJDiv0DhOQq5JeBvQs+uAq/EBQAeXhZBDxDr46j
+         q2EUQ0KR03hHdd3yYAHZWXAD1D+x9qOQNdcj8KcnOgJOWKLJTmwhcGm5hMqrNQFrpV2d
+         2nd2HKbKtqOQmQQUDgBqXqldMI/TnqRwGC7eNzgzjFaTjUJWS62U25fXMTio81dYlA4k
+         qANUg/dxwAnKzyKKJmarOBFbbVzH5Q90GF+aSwuqQv2ffaan5H4d2+RSu0EwqTf0vr11
+         baIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=SFSS33RYQJevNmSO1nSQwiYK6FWtFiyxP7dcvcAUsa4=;
-        b=rySThq4w20EicQn3T96wKpSwN8Dgg2PmIHt8pv5ogyCGSBW5jOEihWCcFQJrix+Yy7
-         o+p7MZtc+mtIIazZTSB8PQd2r9/MP+RLQKRZuN8fTgbLSiGQ4odyQ9mdn2G4zfzIEA0X
-         9BLK6KbEBr9YB6Wf/ddF+Nb2SVDSkBkHXJZtO7BF16RMawuikTt/2EQwImDcX1jp/l/d
-         5I8qpAwi0hovZh9PsgDFlhWNRJhiNntCvrwSaT++Pb0njQbYMo5alqZSxUvH6BVmvXWE
-         GIVYPg3XWBPQJEWKLNMcaj/Pr0SXr8wvwL7nGtTe2qxYo5LxUaTv8IDNoOKv6LvGn1Fx
-         G35g==
-X-Gm-Message-State: APjAAAUIsIatzIKeF8N+KfGOzYCekkaWvyxiBOlWebbWTBnWawI4veVF
-        ovFraq4e8tYE0eGa+lVgWQABjKxS
-X-Google-Smtp-Source: APXvYqw3+HCm55USl4E0S7b9zGtoYanisJ/mH6eZFWGZ1+T16P6792PsGb+a6T9E73o8wUllo9vpSQ==
-X-Received: by 2002:a7b:ce12:: with SMTP id m18mr7647987wmc.130.1574308012990;
-        Wed, 20 Nov 2019 19:46:52 -0800 (PST)
+        bh=CBJEC54lfW7nGNvoS8z3f1NL1oBbm+5yulPmVtSm9Fc=;
+        b=ccw5/VyXL3/7L3nN8a4QQeEdH1EEgDVwybfmqsXeXzXzDvYV00mJ9TNtedCWjK4dVe
+         kPNvHQ4AX7gLuA1t2wCTYRGVT0dixv8ENm5YrrSIcB8X5fpWJbLiCTiu4ybAeEI00UW6
+         0Z+fl6vDfPJ/pm/ku5N0KyrKxTdXFb292BadlenUfos6uMcS9XdXMem+3SNAIBQ03FPb
+         4u+GO6syHNdexjUUDXSpc9TgYb365HL0h1pGYwzI2I3B5Mk24GJxqusK+4NYvNnoS/6O
+         HfZa+jEJPvr5uE5LMPHQKmpNuejmWHIAGXS3BXorS7o9AhTEcCZ+QObognwVJiAucAxq
+         YhoQ==
+X-Gm-Message-State: APjAAAX/g1utN+qX1k06xrjChxF0nkdkkUktEwF0YZ3IT1p64GNjwNE1
+        Ea+z3kNT79g09EurC6VGzgo=
+X-Google-Smtp-Source: APXvYqyH0YTyEjd/BvsuLLZyEj1q87fGKgJ3TI+zD++haNDB6wQ74A3/KSEtM3bu+mbUuO8JjxLD/A==
+X-Received: by 2002:adf:f344:: with SMTP id e4mr7886781wrp.365.1574308352677;
+        Wed, 20 Nov 2019 19:52:32 -0800 (PST)
 Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h5sm1728960wrx.16.2019.11.20.19.46.51
+        by smtp.gmail.com with ESMTPSA id r2sm1720739wrp.64.2019.11.20.19.52.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Nov 2019 19:46:52 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net: sfp: add some quirks for GPON modules
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20191120113900.GP25745@shell.armlinux.org.uk>
- <E1iXONj-0005ev-NC@rmk-PC.armlinux.org.uk>
+        Wed, 20 Nov 2019 19:52:31 -0800 (PST)
+Subject: Re: [RFC PATCH net-next] net: phylink: rename mac_link_state() op to
+ mac_pcs_get_state()
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+References: <E1iX2jg-0005Us-6U@rmk-PC.armlinux.org.uk>
+ <20191121021740.GE18325@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +125,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <ec2a2b96-d6ca-5d33-cba4-ddb5acc6e264@gmail.com>
-Date:   Wed, 20 Nov 2019 19:46:49 -0800
+Message-ID: <08304ec7-09f7-c116-e942-6d384ee67f47@gmail.com>
+Date:   Wed, 20 Nov 2019 19:52:25 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1iXONj-0005ev-NC@rmk-PC.armlinux.org.uk>
+In-Reply-To: <20191121021740.GE18325@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,16 +141,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/20/2019 3:42 AM, Russell King wrote:
-> Marc Micalizzi reports that Huawei MA5671A and Alcatel/Lucent G-010S-P
-> modules are capable of 2500base-X, but incorrectly report their
-> capabilities in the EEPROM.  It seems rather common that GPON modules
-> mis-report.
+On 11/20/2019 6:17 PM, Andrew Lunn wrote:
+>> This is something I'd like to do to make it clearer what phylink expects
+>> of this function, and that it shouldn't just read-back how the MAC was
+>> configured.  However, it will require some testing and review as it
+>> changes quite a lot, and there's some things, particularly in DSA, that
+>> don't seem quite right from a phylink point of view, such as messing
+>> with state->interface in this function.
 > 
-> Let's fix these modules by adding some quirks.
+> Hi Russell
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Could you have more detail about DSA issues? Do you means the 6250
+> setting interface to PHY_INTERFACE_MODE_NA?
+> 
+> I think you and i have pretty similar marvell hardware. So i don't
+> think i can do much additional testing. Ideally we want Florian to do
+> some testing on b53.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+I will try to test that across the hardware I have at hand, can take a
+few days to get all platforms working with net-next. At first glance,
+this is just a simple rename and change of return type, I would not
+expect problems to arise from that.
 -- 
 Florian
