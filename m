@@ -2,106 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D131C104FE1
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A166104FF3
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfKUKCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 05:02:03 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57699 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726014AbfKUKCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:02:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574330521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XEzzNkobngto7A7JkTiA2JRstWm/Qwf1aRo6Iv3/3m8=;
-        b=EchkKaqhY9VXE48F7d0sXw71wwBxAGvamgpaxJqm47pT3/rV9EaY9U6Wh6XtgyB1ax8o0L
-        PyjYhbUb3xtvu4QIVgOTdm6fj6OpBtyNRbsARmgc1ZK4OAjxyeaSzhaUTg/muwbZ1nT83F
-        XN4ENy6FWgJOTAm8yu4hP/SIPIoN6mg=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-194-lZLHbHvvOqKhDQJFiWeEYg-1; Thu, 21 Nov 2019 05:02:00 -0500
-Received: by mail-wr1-f71.google.com with SMTP id e3so1769337wrs.17
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 02:02:00 -0800 (PST)
+        id S1727073AbfKUKDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 05:03:43 -0500
+Received: from mail-pf1-f174.google.com ([209.85.210.174]:39061 "EHLO
+        mail-pf1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727051AbfKUKDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:03:42 -0500
+Received: by mail-pf1-f174.google.com with SMTP id x28so1414597pfo.6
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 02:03:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=65iHVro3BNR8Ku4frZfnL/k6cf3O15sJNdEGobAEz3E=;
+        b=LjmlK/SvxdBhK5uwlg4uv8FbUb2/3hzJZQHwmvXRwxLuOug1ZWmeoEUS6CNXjF3BP2
+         nkrP8+P1jPkh/orXUDzSsLtPbaKxwQnPXm2ITzKnqfYWF5qeQr1peWDcredVdiAWqjBr
+         dcwYodA0eQaO41woQD3xNboLcB2X39W11RjQi5JLQHgG3rghwFf9D6X2N/cG6Iam3Wxq
+         D0pfib431kpcny/L4sU8DcjDskQy+3pP38XA+hSvd1Vi6am5kqgDLW1IK3Qbvnlpafsa
+         VSL1Nv7NiejVWFsSwTQ75f+W5yJkv/2QZkG8NbFVWS8myi7AYHQg0isLZn4JPbkA5jrA
+         9/JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tFqAKgUAsSLJXhwvvIOsI4T22gRsWSmbmVmEZ/F0Ht4=;
-        b=oGEVNRjm0/XBP+KtFIqDhehOvAkuC/GpvvKNExR/zjyTFXeOEl8dJUH9giql8bFbD4
-         xhy+Yp1a6JBssMC6xBkwy+Ka643alLmgBrtS5ldMydfpLYTFGYzLBLAt3z+jfAMdQxAH
-         BoFETIhboTPGoYB9dPgQz9QrXuBgqDetKEDzgl2/8QALCEuOrYLiXXojNlK2ydnLOz3G
-         YG7jsolHSO1prdlCmo14/KGa2N/sxyK+DqXSE+wXB9909L+P6HyQAUn4RZwyHWvbb4J3
-         u+S7U3OcPY+ulwbT1EwAqgosdWCVJDRHRqBUrO6rvHJvoaWJ7bV9KVQhYaBw7PABK1Qr
-         pIrg==
-X-Gm-Message-State: APjAAAUr6ylXVu1Gn1RVauPm8tgRlBzzc8fgwAMGgnhJnlMn3sza24kc
-        GpPbcx9KetE4wwp+QOxATYPAJuUxYj583wVHqCAXolHYFEVC1YE1Tje6B+d0nKnp/u0Z1RE9tKb
-        7ivOQ43CDj7a+4WbR
-X-Received: by 2002:adf:db8e:: with SMTP id u14mr274456wri.274.1574330519204;
-        Thu, 21 Nov 2019 02:01:59 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxy6brRF1ev/m1DKBfFjA6HTGnTBIhroRW1ilhIuPxww1/cdIQc+e2rt6PwX9NqSCpO1cJSPg==
-X-Received: by 2002:adf:db8e:: with SMTP id u14mr274435wri.274.1574330519006;
-        Thu, 21 Nov 2019 02:01:59 -0800 (PST)
-Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
-        by smtp.gmail.com with ESMTPSA id f188sm2272358wmf.3.2019.11.21.02.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 02:01:58 -0800 (PST)
-Date:   Thu, 21 Nov 2019 11:01:56 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [PATCH net-next 5/6] vsock: use local transport when it is loaded
-Message-ID: <20191121100156.v4ehwmstlhujrviv@steredhat>
-References: <20191119110121.14480-1-sgarzare@redhat.com>
- <20191119110121.14480-6-sgarzare@redhat.com>
- <20191121094614.GC439743@stefanha-x1.localdomain>
-MIME-Version: 1.0
-In-Reply-To: <20191121094614.GC439743@stefanha-x1.localdomain>
-X-MC-Unique: lZLHbHvvOqKhDQJFiWeEYg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=65iHVro3BNR8Ku4frZfnL/k6cf3O15sJNdEGobAEz3E=;
+        b=agU4/H0M8spu+udo7ehlZnx3L04e5fHU7AwDNIHsMkb1AkORd8VmVHQyjoV7uFcOwO
+         JcJN+RpXkMwRrQUcb9hKkpIiPSboTiIZQ8ODzOaSPRSgE4fNDuPhYXLZkjxbrrREnokh
+         0IqdGPVdfjC7jwy4ME8dbvT+RTRw2H7QOaaoJLNYTJhEplreAL0xH0AaniaFcnDSMqxQ
+         rzyYKatyQKpqCV3bYnx8jehJezhdchPYH6muQPckJ1SqRWAGTVhoPje6ptJosiZxPPvw
+         SOjmG6PdXkxyW9DZtYwh6/zsTE5tDTafxXBpasyb5ATDzVoRUWPL5XOb+WXEAU91YULV
+         a70A==
+X-Gm-Message-State: APjAAAWQhHtbuRoYQmI3EEi1Eyw7qd46okRZdGlM7EvDzmBAuodYEixp
+        aNYknyxDj1gZZDJVkI+hSouol81+
+X-Google-Smtp-Source: APXvYqwHsb3hmhjXv1rjgWxuH6SLSdRxnCT/Cqrs5eo0Rz1lEOS9Eiy2zErZk1dcxm5GaC/DuuAAwQ==
+X-Received: by 2002:a63:f658:: with SMTP id u24mr8280674pgj.129.1574330617318;
+        Thu, 21 Nov 2019 02:03:37 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f25sm2842894pfk.10.2019.11.21.02.03.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 Nov 2019 02:03:36 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, simon.horman@netronome.com,
+        jakub.kicinski@netronome.com
+Subject: [PATCHv2 net-next 0/4] net: sched: support vxlan and erspan options
+Date:   Thu, 21 Nov 2019 18:03:25 +0800
+Message-Id: <cover.1574330535.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 09:46:14AM +0000, Stefan Hajnoczi wrote:
-> On Tue, Nov 19, 2019 at 12:01:20PM +0100, Stefano Garzarella wrote:
-> > @@ -420,9 +436,10 @@ int vsock_assign_transport(struct vsock_sock *vsk,=
- struct vsock_sock *psk)
-> >  =09=09new_transport =3D transport_dgram;
-> >  =09=09break;
-> >  =09case SOCK_STREAM:
-> > -=09=09if (remote_cid <=3D VMADDR_CID_HOST ||
-> > -=09=09    (transport_g2h &&
-> > -=09=09     remote_cid =3D=3D transport_g2h->get_local_cid()))
-> > +=09=09if (vsock_use_local_transport(remote_cid))
-> > +=09=09=09new_transport =3D transport_local;
-> > +=09=09else if (remote_cid =3D=3D VMADDR_CID_HOST ||
-> > +=09=09=09 remote_cid =3D=3D VMADDR_CID_HYPERVISOR)
-> >  =09=09=09new_transport =3D transport_g2h;
-> >  =09=09else
-> >  =09=09=09new_transport =3D transport_h2g;
->=20
-> We used to send VMADDR_CID_RESERVED to the host.  Now we send
-> VMADDR_CID_RESERVED (LOCAL) to the guest when there is no
-> transport_local loaded?
->=20
-> If this is correct, is there a justification for this change?  It seems
-> safest to retain existing behavior.
+This patchset is to add vxlan and erspan options support in
+cls_flower and act_tunnel_key. The form is pretty much like
+geneve_opts in:
 
-You're right, I'll revert this change in v2.
+  https://patchwork.ozlabs.org/patch/935272/
+  https://patchwork.ozlabs.org/patch/954564/
 
-Thanks,
-Stefano
+but only one option is allowed for vxlan and erspan.
+
+v1->v2:
+  - see each patch changelog.
+
+Xin Long (4):
+  net: sched: add vxlan option support to act_tunnel_key
+  net: sched: add erspan option support to act_tunnel_key
+  net: sched: allow flower to match vxlan options
+  net: sched: allow flower to match erspan options
+
+ include/uapi/linux/pkt_cls.h              |  29 ++++
+ include/uapi/linux/tc_act/tc_tunnel_key.h |  29 ++++
+ net/sched/act_tunnel_key.c                | 203 +++++++++++++++++++++++-
+ net/sched/cls_flower.c                    | 254 ++++++++++++++++++++++++++++++
+ 4 files changed, 514 insertions(+), 1 deletion(-)
+
+-- 
+2.1.0
 
