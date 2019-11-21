@@ -2,134 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F86A104953
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EA410495E
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:29:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbfKUDZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 22:25:12 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:36556 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfKUDZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:25:11 -0500
-Received: by mail-io1-f71.google.com with SMTP id z12so1207324iop.3
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 19:25:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=tTMBJza7I+CNlM4ltV11PewawOOCN3wvlJFFx+joNqM=;
-        b=G5W9kAZhzbQZzilIWuBEbnNp7Ge0dJ7/O4rPzY5Pser0otMT9lHVIP1Did++CRE1XS
-         dV32ruMZCZhKNgDSuz8zDKuJaRT7EOshrmITriaT4X1ebR2vPKnoVoOXw7ddELheS7gK
-         q9keZj6/A+HOl40fsVKq/VBKRMTRleJ4sWIh2EASxmRg5jve9W9GbY6q2UoGWaAgvMc3
-         NKZHQVt8heN+F2FJrDWkTCOH5DmydZY2U1ae7XL7o3sAvUAsZXrZJ0VFne8hwhzQtOp/
-         q3cL/HGJdc5EG7EhLYt4SsAomS9HZaQejn23NCPObBW9hIHPpiIY1Xih4qTTegC6Km/7
-         aKEw==
-X-Gm-Message-State: APjAAAURhfwKjyRC1CpqcSZUjKhfAq8uPXawSbo6oI5Z5WimPMtwEh9H
-        ca7aAOAkXnGiKQzLTdObqFIXoyfGNHZ8pxnDd8GcmkuG4WKp
-X-Google-Smtp-Source: APXvYqwD2pIardansrgjP3LnHaQttGRCTOnZldnYzP3s94Fh1+Un8226PhVEKKjwmoGDMMNOiKFEH1JWUfNLlRdS1MyLXbWYqpyd
+        id S1726351AbfKUD3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 22:29:39 -0500
+Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:58241
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725819AbfKUD3j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Nov 2019 22:29:39 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HH/R8YEOBoGCQ3JaV4Bykv7/h0L/TvaRpPKdghTE5T1I668yuGbfTA90gUQYeoBpPnVIZPh1ODkL0lnSBo2UistDkTZtYxijMHK9UgLvIeSoMO3dANqxAxdy0w7gJ3xzrP1cYZEw+RZ787rbsCYedLI+oMeVtE8bYBaX180uagyoCf5RNR2Vqft5giwFoAT+8ePToe/8RTbxQ60Wt8X4qruoiV2lFdAOVNhNkTA7XNUcgJ13kJ6n8lD3RMOa+vwPw75wOp61W4QTTFCDJ9LbHlkv6TTSYhdR7B3JHG1wtLCl2avSPYSmpIwBg+lW0xI3f+z6ooaePSTYNSDMDgArmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ryZAfIonAG6T97iHOWM41DdVxdvKPnc6wUTLBTzFwVE=;
+ b=PooEEITcFLxA6YmlJPmaOu8EyFSeQUd3KbwiESrpdjW72tb1f7ItlRrGSdc0we336m/8wi/qqqNlE9UtFWBdyXT6EmkPi2jUg2Pln4S5UnTiQSs/yXPOeYoiBN1boFYE0z2D8xALU7RWWsdg3ogGRdKnE9tUPxayB0G5Ha3phv4Ata6Jt/DGhJZDAEZ02koaWRlvllD5P7tXfahtlwWyBvDrs2KU1N6Zrsvnm2ndFEPLtEJ1f+muTn2JOnnhOyC1oatpp0w9Ds9J8VoOWZ53SmKop+zXeuPbM7lw/XgG2JFymUkGhD28ExpoHS632tWfLiIFyuL/xBmjorCUmDfWpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ryZAfIonAG6T97iHOWM41DdVxdvKPnc6wUTLBTzFwVE=;
+ b=UppHdviV5y0QSrkXjjrib+YKEH6apAYxSZFXn545gpnJ6xBDr5IDFEYZZNNioCemlh1QbZwSp0PtdDVIhcAlgTjYCY2e0J6RpT0e4UOYrUhFyboeiaoXx8VcRaZ3jJtZ1ZJ06lHAZwkjH7I3hgeBEpQ7bGJvYKfj0tBqAxkkojE=
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
+ VI1PR0401MB2607.eurprd04.prod.outlook.com (10.168.66.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.22; Thu, 21 Nov 2019 03:29:36 +0000
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::2d81:2d60:747c:d0ad]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::2d81:2d60:747c:d0ad%3]) with mapi id 15.20.2474.019; Thu, 21 Nov 2019
+ 03:29:35 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: RE: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping support
+ for Felix
+Thread-Topic: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping support
+ for Felix
+Thread-Index: AQHVn3vT5anZ2SIeYkGi0HvtelcSgKeU73wAgAAHq9A=
+Date:   Thu, 21 Nov 2019 03:29:35 +0000
+Message-ID: <VI1PR0401MB2237DBAA2897CBDADC34A80AF84E0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+References: <20191120082318.3909-1-yangbo.lu@nxp.com>
+ <20191120082318.3909-6-yangbo.lu@nxp.com> <20191121025610.GO18325@lunn.ch>
+In-Reply-To: <20191121025610.GO18325@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [92.121.36.198]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 241afee3-afa0-425c-2f6e-08d76e33086c
+x-ms-traffictypediagnostic: VI1PR0401MB2607:|VI1PR0401MB2607:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0401MB2607FB80E0E27E82F23BC55BF84E0@VI1PR0401MB2607.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1824;
+x-forefront-prvs: 0228DDDDD7
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(13464003)(199004)(189003)(7696005)(186003)(52536014)(33656002)(55016002)(229853002)(74316002)(86362001)(9686003)(486006)(14454004)(5660300002)(2906002)(7736002)(6916009)(76176011)(6436002)(305945005)(71200400001)(26005)(8936002)(76116006)(316002)(99286004)(71190400001)(102836004)(478600001)(256004)(6246003)(8676002)(54906003)(6506007)(11346002)(64756008)(66556008)(81156014)(476003)(66476007)(446003)(3846002)(66446008)(4326008)(66946007)(6116002)(81166006)(66066001)(25786009)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2607;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0JIW+Yji3rB8+7Hxl3i0Fcwpa03zh0lHpt/hNTkf4fX5DL2h+QBDc5zo09koCv6gWPY7wYhbmM3diaM/ExhYaLkQYtm0LhrBZ0dB+waY9Lscr/J2REfCX4QmFjvbvQ5Uz+ouKB8MT5wp/wCsspQwv9W7U1s+3uXm57ZhVdProfMhP1h+TbisfRINnQbZ724FlbUWxzramXQKkXkw3kMVO89fGAmkJZ4St93gHhALa6Mj7kkE5OPR29ylFbhILrc4btsjGl1jXZ77GZiU79HaovErwjL20zrk2KE9G59ZFYB4ywkjJss/eGuagu2ABGsdwrnKUd9cPF2UzjCTBQiRSpGNc4avG7IdZRDSglyACppGAJyOHt89SIFguLdoj4x9vVX2833xCRyzZUXZxBQGsvaTjx1Heoblcaf4RV2kD6d3Y3p7r27lc1LXL3mQ9ix1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a02:878b:: with SMTP id t11mr6699673jai.20.1574306709039;
- Wed, 20 Nov 2019 19:25:09 -0800 (PST)
-Date:   Wed, 20 Nov 2019 19:25:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000028f3c20597d2d8ee@google.com>
-Subject: WARNING in j1939_sk_queue_activate_next
-From:   syzbot <syzbot+49595536c57ef38095ed@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
-        robin@protonic.nl, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 241afee3-afa0-425c-2f6e-08d76e33086c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 03:29:35.8760
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: keyRKLoGBNroZsDLGa1aXQQrZy6ZGTyK5iGxMlF/mG0BUq5M0iXFJ/orxtkOCYVYaMcnTRl2CGC1qQssBdxBOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2607
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Andrew,
 
-syzbot found the following crash on:
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Andrew Lunn
+> Sent: Thursday, November 21, 2019 10:56 AM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: netdev@vger.kernel.org; Alexandre Belloni
+> <alexandre.belloni@bootlin.com>; Microchip Linux Driver Support
+> <UNGLinuxDriver@microchip.com>; David S . Miller <davem@davemloft.net>;
+> Vladimir Oltean <vladimir.oltean@nxp.com>; Claudiu Manoil
+> <claudiu.manoil@nxp.com>; Vivien Didelot <vivien.didelot@gmail.com>;
+> Florian Fainelli <f.fainelli@gmail.com>; Richard Cochran
+> <richardcochran@gmail.com>
+> Subject: Re: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping supp=
+ort
+> for Felix
+>=20
+> > +static irqreturn_t felix_irq_handler(int irq, void *data) {
+> > +	struct ocelot *ocelot =3D (struct ocelot *)data;
+> > +
+> > +	/* The INTB interrupt is used for both PTP TX timestamp interrupt
+> > +	 * and preemption status change interrupt on each port.
+> > +	 *
+> > +	 * - Get txtstamp if have
+> > +	 * - TODO: handle preemption. Without handling it, driver may get
+> > +	 *   interrupt storm.
+> > +	 */
+>=20
+> I assume there are no register bits to enable/disable these two interrupt
+> sources?
+>=20
+> What is preemption?
 
-HEAD commit:    1f12177b Merge branch 'cpsw-switchdev'
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16cd57f6e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ce691bc139ec9632
-dashboard link: https://syzkaller.appspot.com/bug?extid=49595536c57ef38095ed
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14685836e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12f8b2f2e00000
+[Y.b. Lu] For PTP timestamp interrupt, there are not register bits to enabl=
+e/disable interrupt source, and to clean interrupt status.
+That's why use threaded handler with oneshot flag.
+For preemption, it is a feature of TSN Qbu. I'm not familiar with it. The f=
+unction hasn't been supported/enabled in driver.
+It seems it has status bit to check, but has no bits to enable/disable inte=
+rrupt source either.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+49595536c57ef38095ed@syzkaller.appspotmail.com
-
-vcan0: j1939_tp_rxtimer: 0x00000000bc4b6db0: rx timeout, send abort
-vcan0: j1939_xtp_rx_abort_one: 0x00000000bc4b6db0: 0x00000: (3) A timeout  
-occurred and this is the connection abort to close the session.
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 9 at net/can/j1939/socket.c:180  
-j1939_sk_queue_activate_next_locked net/can/j1939/socket.c:180 [inline]
-WARNING: CPU: 0 PID: 9 at net/can/j1939/socket.c:180  
-j1939_sk_queue_activate_next+0x359/0x460 net/can/j1939/socket.c:204
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.4.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x35 kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
-RIP: 0010:j1939_sk_queue_activate_next_locked net/can/j1939/socket.c:180  
-[inline]
-RIP: 0010:j1939_sk_queue_activate_next+0x359/0x460  
-net/can/j1939/socket.c:204
-Code: e8 1c 83 c0 0a 89 45 cc eb 9f 48 c7 c7 b4 1a c7 89 e8 cb b1 2d fb e9  
-6a fd ff ff e8 c1 b1 2d fb e9 19 fe ff ff e8 17 f9 f1 fa <0f> 0b 48 8b 45  
-c0 48 8d b8 b0 00 00 00 48 89 f8 48 c1 e8 03 42 0f
-RSP: 0018:ffff8880a98af918 EFLAGS: 00010206
-RAX: ffff8880a98a2240 RBX: ffff888099561000 RCX: ffffffff86816668
-RDX: 0000000000000100 RSI: ffffffff86816709 RDI: 0000000000000005
-RBP: ffff8880a98af970 R08: ffff8880a98a2240 R09: fffffbfff14f0f4c
-R10: fffffbfff14f0f4b R11: ffffffff8a787a5f R12: ffff888099561510
-R13: ffff88809175cc00 R14: ffff888099561548 R15: dffffc0000000000
-  j1939_session_deactivate_activate_next+0x3d/0x50  
-net/can/j1939/transport.c:1046
-  j1939_xtp_rx_abort_one.cold+0x21a/0x35e net/can/j1939/transport.c:1275
-  j1939_xtp_rx_abort net/can/j1939/transport.c:1286 [inline]
-  j1939_tp_cmd_recv net/can/j1939/transport.c:1972 [inline]
-  j1939_tp_recv+0x783/0x9b0 net/can/j1939/transport.c:2005
-  j1939_can_recv+0x502/0x610 net/can/j1939/main.c:101
-  deliver net/can/af_can.c:569 [inline]
-  can_rcv_filter+0x292/0x8e0 net/can/af_can.c:603
-  can_receive+0x2e7/0x530 net/can/af_can.c:660
-  can_rcv+0x133/0x1b0 net/can/af_can.c:686
-  __netif_receive_skb_one_core+0x113/0x1a0 net/core/dev.c:5150
-  __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5264
-  process_backlog+0x206/0x750 net/core/dev.c:6095
-  napi_poll net/core/dev.c:6532 [inline]
-  net_rx_action+0x508/0x1120 net/core/dev.c:6600
-  __do_softirq+0x262/0x98c kernel/softirq.c:292
-  run_ksoftirqd kernel/softirq.c:603 [inline]
-  run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
-  smpboot_thread_fn+0x6a3/0xa40 kernel/smpboot.c:165
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks.
+>=20
+>      Andrew
