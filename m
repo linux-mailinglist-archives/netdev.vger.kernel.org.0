@@ -2,76 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77DB9104F78
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:41:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61AB3104F87
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbfKUJl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 04:41:27 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43484 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbfKUJl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 04:41:26 -0500
-Received: by mail-wr1-f65.google.com with SMTP id n1so3474654wra.10;
-        Thu, 21 Nov 2019 01:41:25 -0800 (PST)
+        id S1726676AbfKUJqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 04:46:21 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35309 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbfKUJqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 04:46:20 -0500
+Received: by mail-wm1-f65.google.com with SMTP id 8so2930396wmo.0;
+        Thu, 21 Nov 2019 01:46:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RHzvhSWDIF17bAOokqKZSwpGKUwX4v9Vyo2hjUcr/+k=;
-        b=l5ugN99eVoPqJAzMroS78+UwJlBGWflqU7XpwuKuaho/2AZyQTwfl8OiFO3oA+ohSt
-         KtUNfBZadkJUH9Uu/Yb8oN1MXyOVuNZvtKT5g2IEVgtIt7yl6TfhMlQT5HGJt00J2YW/
-         mObSrPqXpaUUAtiX79kHoVL19FjQPOKdsdm0lgY52NiiqCxcC2FzE1NuJe7URA6gF2qU
-         mmitP3uU3+hmHp7VcLJo4m/nUXB36caSt6Slqy6Yp/WQDaIrmFtcBemG4P0v0+pxftcA
-         9lWjT4EFx/EuQ4Z0o0gjtbh58TeMCMs4yanggLm0NrvM+Rf6cY8MZy8iAdqEIo1Tt5vV
-         tS0g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Zq604zfFYaP1lg3EZmX/ZaHb/wgc+8oQ8qyObi+Xugk=;
+        b=EqWQIKk+Pc+6l/iTZqHgRlRZKxdn4V5MLvDyH0ww5S+V+fMSCiyEKuvRNjME92kpzR
+         xcVvIZLkVoemqT088j6zTquIIRlUtFPaJuPbj1gRvRqz9mkwPyu9vQ6n8z+t2yM32vCz
+         pDquaI0iz8FNlE2lh/MIGSO4oj+ofk8tt9/yAQbbgYHMgE+uXnFhDEaOF55hmhCeo6gZ
+         LqyQHu1s+IZNMbJwy0SkDh4yiE8HuRicUZlJt7NAsuUyMRaekXE7UDU7Rx6NE/3Efqhc
+         grH+DPrIOumY2l92QPIrd6f2xxrX25HXk1PnobD//XAPU3rxd+ttp1nIZ8rmAVLfSebm
+         3s0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RHzvhSWDIF17bAOokqKZSwpGKUwX4v9Vyo2hjUcr/+k=;
-        b=c4vhwdiLBQbFuq9x3lNRFsWZpnXnfj0gubiAWsTG59M4znCAHzPKbcd35+HzJH6Pet
-         3jZS2vlAaoDIOO+sBMxszkseczDhor18T5aCnaNnBlOz4GMj12mbG5MczM+PlfM3WW6A
-         sm8K3HpBxZN9zBvw5QIA1FSvBKBiK3LWEjKB8TUQJpclCal6yYPLnbDA9L8NE57NwDUd
-         t0XcqDAo7Da7K9fa59X/YJ6Z1VivsC9lD7yYiluiFTuyewpE9gko3yZ9ZeiJloucNQBC
-         R8BgNV3PdkdwpG35muWUDqKzfar2WVqlfvaRKjptr/kKN+FtoyXhBLgQHloC7EuJT/Ho
-         eUvw==
-X-Gm-Message-State: APjAAAVHOxYjnHIo5L6UW77krXnSdBEIB0EtgK9Nxcp/WCOl20pno5hw
-        3OZW1+ZgOGtQzUMK32nDFocU2k0GPq466YXy2/s=
-X-Google-Smtp-Source: APXvYqy+r7Kvxfm5IbjSNLg82FBuYIhyWRE4hcSw0THrmoDVd/MQsKSKqcMSk1AFRQHIbEPFE4tEibFQ0MOH5oMZHZo=
-X-Received: by 2002:a5d:4e0a:: with SMTP id p10mr8922401wrt.229.1574329284460;
- Thu, 21 Nov 2019 01:41:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20191121092146.hnvdwnzpirskw3wr@kili.mountain>
-In-Reply-To: <20191121092146.hnvdwnzpirskw3wr@kili.mountain>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Thu, 21 Nov 2019 15:11:13 +0530
-Message-ID: <CA+sq2Cf=u509E-er_N8rzgkP4XdetNpogNqn+AVv-9AzmoQKrg@mail.gmail.com>
-Subject: Re: [PATCH net-next] octeontx2-af: Fix uninitialized variable in debugfs
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Zq604zfFYaP1lg3EZmX/ZaHb/wgc+8oQ8qyObi+Xugk=;
+        b=AM6K2jmbaSoUD1F4Szq71VAX+xRT8cY3f2NmD+rFgLyQu/4lteks7icnqhcVB9bKBj
+         3BwJQu48gLTmLwP2MqpkXoV8YokyUGAKdSR2/9N2HkA5hWZrBtxieZ/fZ8ZVWITq/h1Z
+         1qdU1QtLWjxbAiqq1+7rSjdjBUJKFpcEuY9K4Z8TXkanEzyTpZ/J3x/cvgIOOo1rf+0S
+         AnZofn04Da+Hl1g7QVdZsYu4CTTfJLNf9FdWe9UK5HBDKdCKb48cl6qnHWDrc5kFkKff
+         +WzuNpNvuh6WBov5+SyMUWyZAPh84G1B/sI49vqKl0//jg7OPlNNYgUb1c5w25uzyEs9
+         Kv9A==
+X-Gm-Message-State: APjAAAVgfqFQ6b+bUgUqKe1TgrWOIm05idTZC42dhy7o8Rcxz9XWJeyW
+        KrvLwai52/XERqvlKvS2NElskpV6qvI=
+X-Google-Smtp-Source: APXvYqyZ8t14KdyBL7WZHEesuhWgOkStCUSzngEXJC35eulov2avg9DZSJMo7BWYsnIIGFoYvTWJJg==
+X-Received: by 2002:a1c:a406:: with SMTP id n6mr9076240wme.90.1574329576856;
+        Thu, 21 Nov 2019 01:46:16 -0800 (PST)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id i203sm1972471wma.35.2019.11.21.01.46.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 01:46:15 -0800 (PST)
+Date:   Thu, 21 Nov 2019 09:46:14 +0000
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jorgen Hansen <jhansen@vmware.com>
+Subject: Re: [PATCH net-next 5/6] vsock: use local transport when it is loaded
+Message-ID: <20191121094614.GC439743@stefanha-x1.localdomain>
+References: <20191119110121.14480-1-sgarzare@redhat.com>
+ <20191119110121.14480-6-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="+nBD6E3TurpgldQp"
+Content-Disposition: inline
+In-Reply-To: <20191119110121.14480-6-sgarzare@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 2:53 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> If rvu_get_blkaddr() fails, then this rvu_cgx_nix_cuml_stats() returns
-> zero and we write some uninitialized data into the debugfs output.
->
-> On the error paths, the use of the uninitialized "*stat" is harmless,
-> but it will lead to a Smatch warning (static analysis) and a UBSan
-> warning (runtime analysis) so we should prevent that as well.
->
 
-Thanks for the fix.
+--+nBD6E3TurpgldQp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks,
-Sunil.
+On Tue, Nov 19, 2019 at 12:01:20PM +0100, Stefano Garzarella wrote:
+> @@ -420,9 +436,10 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+>  		new_transport = transport_dgram;
+>  		break;
+>  	case SOCK_STREAM:
+> -		if (remote_cid <= VMADDR_CID_HOST ||
+> -		    (transport_g2h &&
+> -		     remote_cid == transport_g2h->get_local_cid()))
+> +		if (vsock_use_local_transport(remote_cid))
+> +			new_transport = transport_local;
+> +		else if (remote_cid == VMADDR_CID_HOST ||
+> +			 remote_cid == VMADDR_CID_HYPERVISOR)
+>  			new_transport = transport_g2h;
+>  		else
+>  			new_transport = transport_h2g;
+
+We used to send VMADDR_CID_RESERVED to the host.  Now we send
+VMADDR_CID_RESERVED (LOCAL) to the guest when there is no
+transport_local loaded?
+
+If this is correct, is there a justification for this change?  It seems
+safest to retain existing behavior.
+
+--+nBD6E3TurpgldQp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl3WXOYACgkQnKSrs4Gr
+c8iT+Qf9ESuEFX++6Sq/wJtYnpiX6cvGw7bvw+fxkdiksMzIPBWT6ZbC/ZrRv87z
+zBMNmGrLElTPu3lN4ISYgd1gjrLn1iTTnkj/A42X5VvjEqfQYXNz84gBMP7jRcxo
+XufjkgajBvxcssZgAPOAMjx/4BbGlW3cwUNoTa7oy9PCQlhBPVDvqPWSM4sQ61cP
+GJ2hFaCeYTmCbYKnyrvqmoXIewMF1XAjAuuXSHz7zVlCpbHL21piJByTKAUnqL7N
+6W6nMibNjso9qI0AYAOsCkFRnhIshBqRhRhO96/1ZEBmLe7kH6gXYpgScRs4IRYD
+V7w4kz76mzwiZZZLiW4/K5FOBe8v9Q==
+=HSd8
+-----END PGP SIGNATURE-----
+
+--+nBD6E3TurpgldQp--
