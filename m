@@ -2,176 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB22D104758
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 01:15:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 533AF10476C
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 01:18:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbfKUAPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 19:15:09 -0500
-Received: from winds.org ([68.75.195.9]:37910 "EHLO winds.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726343AbfKUAPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Nov 2019 19:15:09 -0500
-Received: by winds.org (Postfix, from userid 100)
-        id 58DC210D2363; Wed, 20 Nov 2019 19:15:07 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by winds.org (Postfix) with ESMTP id 53BBF10636C3;
-        Wed, 20 Nov 2019 19:15:07 -0500 (EST)
-Date:   Wed, 20 Nov 2019 19:15:07 -0500 (EST)
-From:   Byron Stanoszek <gandalf@winds.org>
-To:     Florian Westphal <fw@strlen.de>
-cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: Kernel 5.4 regression - memory leak in network layer
-In-Reply-To: <20191120202822.GF20235@breakpoint.cc>
-Message-ID: <alpine.LNX.2.21.1.1911201706510.2521@winds.org>
-References: <alpine.LNX.2.21.1.1911191047410.30058@winds.org> <20191119162222.GA20235@breakpoint.cc> <20191120202822.GF20235@breakpoint.cc>
-User-Agent: Alpine 2.21.1 (LNX 202 2017-01-01)
+        id S1726351AbfKUASU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 19:18:20 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:43184 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbfKUASU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 19:18:20 -0500
+Received: by mail-pj1-f67.google.com with SMTP id a10so582160pju.10;
+        Wed, 20 Nov 2019 16:18:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Q65laBuYdJWvTVk53HpqiScmboCGkwX/f4b20vWYhQE=;
+        b=kBI9PxBEvKtv6pVRxz8DkT5sSjqXsz8tQmmGEf9CFdr027PtuTrxD7WhT9LTu5t0Ja
+         72W+6wWAktMxi2VHcywB3IRQprKqPB9loFcoMjw0rwL96X7aMDHJMq0QHdbEGouvC4w/
+         DK6mavi78MYLrYVwY2iSbbFlXBdy8kWs6vHjj1EKJJ6SX6UPsYsN4NtYMIiFffMIuHpA
+         E5h7euz1wpaRv6JZEgNLXfZsjV8RywfO2XcsDrSpY6oWPkNd8wj7knlvFERqTYiImobo
+         leqHPnZQZwor1G5QD8QetZliXkqUqjefVKoMu4yos6aK7AfZXXsHdMgbHg+LAWnrrtWG
+         9iQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Q65laBuYdJWvTVk53HpqiScmboCGkwX/f4b20vWYhQE=;
+        b=cBaGAW6xaE5Kf8if/7KTX8Bo+6cJRmi9ZIPbeGHCKoatvl9gwGkqzNiKB9iPdPpB9e
+         EfYX9LLPgezPYUoYNMKhAGFU27hzIcyae+ohZzw1W0mly0KsrZFPNHvBMPDcqFmKGsoF
+         xyf70IhsIx9aOu0R+hAS5MxPCmCuUJdEGesBS0KFH5n0TGzlWCbyvB+ipwlaETiYhO82
+         nEzen3G1892xs4gV3l8ds0UnJXfXEk2Z7z5u5ax020qo+VzIDoL7+jU12LA8efhE7N36
+         RYQ1tvPBsOcStZrg6FNIbDgmKUWlDFyH7CPlVu8YIhO/qKQ8wI/fa9w9VerfdBxM9+jF
+         73+A==
+X-Gm-Message-State: APjAAAV+nESq4gQLbg3oIL78Ao/AMteokfwv8cA+ijvSKVFHezVymwwQ
+        HuMWwGzU4OrwEe+sc9NW6bQ=
+X-Google-Smtp-Source: APXvYqwX7aTnAehgqZCSk/f4+z9Kck2FOBVp4uerkHFeeXzEobo9uJjcIZ+SDqioicaEA8DAM0oENw==
+X-Received: by 2002:a17:90a:ead5:: with SMTP id ev21mr7528948pjb.76.1574295498387;
+        Wed, 20 Nov 2019 16:18:18 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::d7b8])
+        by smtp.gmail.com with ESMTPSA id t1sm549540pfq.156.2019.11.20.16.18.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Nov 2019 16:18:17 -0800 (PST)
+Date:   Wed, 20 Nov 2019 16:18:13 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern
+ variables
+Message-ID: <20191121001811.eyksi2acyhvy4skr@ast-mbp.dhcp.thefacebook.com>
+References: <20191117070807.251360-1-andriin@fb.com>
+ <20191117070807.251360-6-andriin@fb.com>
+ <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzaNEU_vpa98QF1Ko_AFVX=3ncykEtWy0kiTNW9agsO+xg@mail.gmail.com>
+ <CAEf4Bza1T6h+MWadVjuCrPCY7pkyK9kw-fPdaRx2v3yzSsmcbg@mail.gmail.com>
+ <7012feeb-c1e8-1228-c8ce-464ea252799c@fb.com>
+ <CAEf4BzaW4-XTxZTt2ZLvzuc2UsmmPa3Bkoej7B0pUJWcM--eVQ@mail.gmail.com>
+ <11d4fde2-6cf5-72eb-9c04-b424f7314672@fb.com>
+ <CAEf4BzakAJ5dEF35+g7RBgieXfVzjKQHm_Dej-9f_K_qXNuG2Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzakAJ5dEF35+g7RBgieXfVzjKQHm_Dej-9f_K_qXNuG2Q@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Nov 2019, Florian Westphal wrote:
+On Wed, Nov 20, 2019 at 02:47:58PM -0800, Andrii Nakryiko wrote:
+> 
+> Given all this, I think realistically we can pick few combinations:
+> 
+> 1. Only support int/hex as uint64_t. Anything y/n/m or a string will
+> fail in runtime.
+> Pros:
+>   - we get at least something to use in practice (LINUX_KERNEL_VERSION
+> and int CONFIG_XXXs).
+> Cons:
+>   - undefined weak extern will have to be assumed either uint64_t 0
+> (and succeed) or undefined string (and fail). No clearly best behavior
+> here.
 
-> Florian Westphal <fw@strlen.de> wrote:
->> Byron Stanoszek <gandalf@winds.org> wrote:
->>> unreferenced object 0xffff88821a48a180 (size 64):
->>>   comm "softirq", pid 0, jiffies 4294709480 (age 192.558s)
->>>   hex dump (first 32 bytes):
->>>     01 00 00 00 01 06 ff ff 00 00 00 00 00 00 00 00  ................
->>>     00 20 72 3d 82 88 ff ff 00 00 00 00 00 00 00 00  . r=............
->>>   backtrace:
->>>     [<00000000edf73c5e>] skb_ext_add+0xc0/0xf0
->>>     [<00000000ca960770>] br_nf_pre_routing+0x171/0x489
->>>     [<0000000063a55d83>] br_handle_frame+0x171/0x300
->>
->> Brnf related, I will have a look.
->
-> Not reproducible.
->
-> I'm on
->
-> c74386d50fbaf4a54fd3fe560f1abc709c0cff4b ("afs: Fix missing timeout reset").
+what that uint64 going to be when config_ is defined?
+If your answer is 1 than it's not extensible.
 
-I confirm I still see the issue on that commit.
+>   - no ability to do "feature detection" logic in BPF program.
+> 2. Stick to uint64_t for bool/tristate/int/hex. Don't support strings
+> yet. Improve in backwards compatible way once we get BTF type info for
+> externs (adding strings at that time).
+> Pros:
+>   - well-defined and logical behavior
+>   - easily extensible once we get BTF for externs. No new flags, no
+> changes in behavior.
 
-> Does your setup use any other settings (ethtool, sysctl, qdiscs, tunnels
-> and the like)?
+extensible with new flag == not extensible.
+The choices for bpf program that we pick for extern must keep working
+when llvm starts generating BTF for externs.
 
-Yeah, I'm using macvlan. Here are my settings:
+> My preferences would be 2, if not, then 1.
 
-$ ethtool -i eth0
-driver: e1000e
-version: 3.2.6-k
-firmware-version: 0.13-4
-expansion-rom-version:
-bus-info: 0000:00:1f.6
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: no
+I'm proposing something else.
+I see libbpf as a tool to pass /boot/config.gz into bpf program. From program
+pov CONFIG_FOO is a label. It's not a variable of type u8 or type u64.
+Example:
+CONFIG_A=100
+CONFIG_B=y
+CONFIG_C="abcd"
+will be a map of one element with value:
+char ar[]= { 0x64, 0, 0, 0, 'y', 'a', 'b', 'c', 'd', 0};
 
-$ ethtool -i eth1
-driver: igb
-version: 5.6.0-k
-firmware-version: 3.25, 0x800005cf
-expansion-rom-version:
-bus-info: 0000:01:00.0
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: yes
+CONFIG_A = &ar[0];
+CONFIG_B = &ar[4];
+CONFIG_C = &ar[5];
 
-Commands to set up network:
-
-ethtool -K eth0 tx off rx off
-ethtool -K eth1 tx off rx off
-ifconfig lo 127.0.0.1
-ifconfig eth0 up
-brctl addbr br0
-brctl addif br0 eth0
-brctl setfd br0 0
-ifconfig eth1 up
-brctl addbr br1
-brctl addif br1 eth1
-brctl setfd br1 0
-ifconfig br0 172.17.2.10 netmask 255.255.0.0
-ifconfig br1 192.168.0.1 netmask 255.255.255.0
-ip l add link br1 mac1 address BE:77:00:00:00:70 type macvlan mode bridge
-ip l set mac1 up
-ip a add 192.168.0.70/24 broadcast + dev mac1
-
-$ iptables-save -c
-# Generated by iptables-save v1.8.3 on Wed Nov 20 17:26:29 2019
-*raw
-:PREROUTING ACCEPT [3701999:2657924997]
-:OUTPUT ACCEPT [1122825:291796686]
-COMMIT
-# Completed on Wed Nov 20 17:26:29 2019
-# Generated by iptables-save v1.8.3 on Wed Nov 20 17:26:29 2019
-*nat
-:PREROUTING ACCEPT [612068:41087443]
-:INPUT ACCEPT [17:2254]
-:OUTPUT ACCEPT [55:3780]
-:POSTROUTING ACCEPT [36:2340]
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 102 -j DNAT --to-destination 192.168.0.2
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 2222 -j DNAT --to-destination 192.168.0.2
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 5900 -j DNAT --to-destination 192.168.0.4
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 44818 -j DNAT --to-destination 192.168.0.2
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 51234 -j DNAT --to-destination 192.168.0.9
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 51235 -j DNAT --to-destination 192.168.0.9
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 51236 -j DNAT --to-destination 192.168.0.9
-[0:0] -A PREROUTING -d 172.17.2.10/32 -i br0 -p tcp -m tcp --dport 44444 -j DNAT --to-destination 192.168.0.9
-[2:120] -A POSTROUTING -o br0 -j MASQUERADE
-[17:1320] -A POSTROUTING -o br1 -j MASQUERADE
-[0:0] -A POSTROUTING -o eth2 -j MASQUERADE
-COMMIT
-# Completed on Wed Nov 20 17:26:29 2019
-# Generated by iptables-save v1.8.3 on Wed Nov 20 17:26:29 2019
-*filter
-:INPUT ACCEPT [3093143:2617432037]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [1122803:291795238]
-COMMIT
-# Completed on Wed Nov 20 17:26:29 2019
-
-Setting up another box as IP 172.17.2.11 and 192.168.0.99 and running this
-command from the original box reliably adds about 2MB of memory marked used
-according to "free":
-
-netperf -H 172.17.2.11 -t UDP_RR
-
-or
-
-netperf -H 192.168.0.99 -t UDP_RR
-
-Local /Remote
-Socket Size   Request  Resp.   Elapsed  Trans.
-Send   Recv   Size     Size    Time     Rate
-bytes  Bytes  bytes    bytes   secs.    per sec
-
-212992 212992 1        1       10.00    4000.98
-212992 212992
-
-Nothing else at the moment is attached to the bridges:
-
-$ brctl show
-bridge name     bridge id               STP enabled     interfaces
-br0             8000.2046a101b1fb       no              eth0
-br1             8000.2046a101b1fc       no              eth1
-
-As for network-related sysctls, I've got:
-
-# Enable IP Forwarding
-net.ipv4.ip_forward = 1
-
-# Increase the number of in-flight AF_UNIX datagrams per socket
-net.unix.max_dgram_qlen = 1000
-
-Regards,
-  -Byron
-
+libbpf parses config.gz and converts all int/hex into 4 byte or 8 byte
+integers depending on number of text digits it sees in config.gz
+with alignment. All other strings and characters are passed as-is.
+If program says
+extern u8 CONFIG_A, CONFIG_B, CONFIG_C;
+It will read 1st byte from these three labels.
+Later when llvm emits BTF those u8 swill stay as-is and will read the same
+things. With BTF if program says 'extern _Bool CONFIG_B;' then it will be an
+explicit direction for libbpf to convert that CONFIG_B value into _Bool at
+program load time and represent it as sizeof(_Bool) in map element. If program
+says 'extern uint32_t CONFIG_C;' the libbpf will keep first 4 bytes of that
+string in there. If program says 'extern uint64_t CONFIG_C;' the libbpf will
+keep first 4 character plus one byte for zero plus 3 bytes of padding in map
+element.
+'extern char CONFIG_C[5];' is also ok. Either with or without BTF.
+In both cases it will be 5 bytes in map element.
+Without BTF doing 'extern char *CONFIG_C;' will read garbage 8 bytes from that
+label. With BTF 'extern char *CONFIG_C;' will be converted to pointer to inner
+bytes of map element.
+In other words BTF types will be directives of how libbpf should convert
+strings in text file to be consumed by bpf program. Since we don't have types
+now int/hex are the only ones that libbpf will convert unconditionally. The
+logic of parsing config.gz is generic. It can parse any file with 'var=value'
+lines this way. All names will be preserved.
+In that sense LINUX_KERNEL_VERSION is a text file that has one line:
+LINUX_KERNEL_VESRION=1234
+If digits fit into u32 it should be u32.
+This way users can feed any configuration.txt file into libbpf and into their
+programs. Without BTF the map element is a collection of raw bytes and the
+program needs to be smart about reading them with correct sizes. With BTF
+libbpf will be converting .txt into requested types and failing to load
+if libbpf cannot convert string from text into requested type.
