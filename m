@@ -2,59 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB3A4105A9D
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3595105AA4
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:54:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbfKUTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 14:50:18 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50234 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726379AbfKUTuS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 14:50:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=idWpHQ/nnw+4hOuXenxT8j2yx3qPjOnf1q6Eq3KqWUM=; b=SkmYuTDF0Z/Nyn4W1aaPwWN/ag
-        +jBgzLFgxMI0FOqyr15NFjRdVza41fVD0cOoYmz5QwKaqGRQ29LMbWA1ETw1DkKzlvG2+vCAgiBUR
-        7KYoJH/VFtNUdp2Y2/DJDE5Y+kOuSqMWMUdkXw/NE/i7WEpxb5E2uq3tIJfabPWWqAtg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iXsSy-00023J-0u; Thu, 21 Nov 2019 20:50:12 +0100
-Date:   Thu, 21 Nov 2019 20:50:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk
-Subject: Re: [PATCH net-next 1/3] dpaa2-eth: do not hold rtnl_lock on
- phylink_create() or _destroy()
-Message-ID: <20191121195012.GA6602@lunn.ch>
-References: <1574363727-5437-1-git-send-email-ioana.ciornei@nxp.com>
- <1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726970AbfKUTyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 14:54:24 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52530 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726887AbfKUTyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 14:54:24 -0500
+Received: from localhost (unknown [IPv6:2001:558:600a:cc:f9f3:9371:b0b8:cb13])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 37D6215044652;
+        Thu, 21 Nov 2019 11:54:23 -0800 (PST)
+Date:   Thu, 21 Nov 2019 11:54:22 -0800 (PST)
+Message-Id: <20191121.115422.718114631247576545.davem@davemloft.net>
+To:     krzk@kernel.org
+Cc:     linux-kernel@vger.kernel.org, pantelis.antoniou@gmail.com,
+        alex.aring@gmail.com, stefan@datenfreihafen.org,
+        kvalo@codeaurora.org, pontus.fuchs@gmail.com,
+        ath9k-devel@qca.qualcomm.com, sgruszka@redhat.com,
+        helmut.schaa@googlemail.com, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: Re: [PATCH] drivers: net: Fix Kconfig indentation, continued
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191121132828.28828-1-krzk@kernel.org>
+References: <20191121132828.28828-1-krzk@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 21 Nov 2019 11:54:23 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 09:15:25PM +0200, Ioana Ciornei wrote:
-> The rtnl_lock should not be held when calling phylink_create() or
-> phylink_destroy() since it leads to the deadlock listed below:
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Thu, 21 Nov 2019 21:28:28 +0800
+
+> Adjust indentation from spaces to tab (+optional two spaces) as in
+> coding style.  This fixes various indentation mixups (seven spaces,
+> tab+one space, etc).
 > 
-> [   18.656576]  rtnl_lock+0x18/0x20
-> [   18.659798]  sfp_bus_add_upstream+0x28/0x90
-> [   18.663974]  phylink_create+0x2cc/0x828
-> [   18.667803]  dpaa2_mac_connect+0x14c/0x2a8
-> [   18.671890]  dpaa2_eth_connect_mac+0x94/0xd8
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Hi Ioana
-
-Have you done any testing with CONFIG_PROVE_LOCKING enabled. It should
-find this sort of problem if the code paths get exercised.
-
-     Andrew
+Applied to net-next.
