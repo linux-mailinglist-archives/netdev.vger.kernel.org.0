@@ -2,112 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2C6105347
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D21810534D
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:39:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbfKUNiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 08:38:22 -0500
-Received: from mx2.suse.de ([195.135.220.15]:45360 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726532AbfKUNiW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 08:38:22 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DB831B19F;
-        Thu, 21 Nov 2019 13:38:18 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 22A6EE03A4; Thu, 21 Nov 2019 14:38:17 +0100 (CET)
-Date:   Thu, 21 Nov 2019 14:38:17 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
-        Joe Perches <joe@perches.com>,
-        zhanglin <zhang.lin16@zte.com.cn>, davem@davemloft.net,
-        cocci <cocci@systeme.lip6.fr>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        jakub.kicinski@netronome.com, ast@kernel.org,
-        jiang.xuexin@zte.com.cn, f.fainelli@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com,
-        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
-        vivien.didelot@gmail.com, wang.yi59@zte.com.cn, hawk@kernel.org,
-        arnd@arndb.de, jiri@mellanox.com, xue.zhihong@zte.com.cn,
-        natechancellor@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
-        pablo@netfilter.org, bpf@vger.kernel.org
-Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
- ethtool_get_wol()
-Message-ID: <20191121133817.GF29650@unicorn.suse.cz>
-References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
- <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com>
- <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net>
- <20191121111917.GE29650@unicorn.suse.cz>
- <20191121120733.GF5604@kadam>
+        id S1726977AbfKUNjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 08:39:39 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:7454 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfKUNjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 08:39:39 -0500
+Received: from [192.168.1.4] (unknown [116.237.146.20])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 21E0A5C16C7;
+        Thu, 21 Nov 2019 21:39:25 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <2c5a5ebd-7099-17d6-b058-0df4b6a6199d@ucloud.cn>
+Date:   Thu, 21 Nov 2019 21:39:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191121120733.GF5604@kadam>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk5VSEpNS0tLT01KTkxDSExZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBw6OAw5Czg1MQ89SR0fSy0I
+        NTwKC01VSlVKTkxPSE9ITk1OTU1LVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SExVSk9NVUlLWVdZCAFZQUpLT01INwY+
+X-HM-Tid: 0a6e8e305fd32087kuqy21e0a5c16c7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 03:07:33PM +0300, Dan Carpenter wrote:
-> On Thu, Nov 21, 2019 at 12:19:17PM +0100, Michal Kubecek wrote:
-> > On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
-> > > On 26.10.19 21:40, Joe Perches wrote:
-> > > > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
-> > > >> memset() the structure ethtool_wolinfo that has padded bytes
-> > > >> but the padded bytes have not been zeroed out.
-> > > > []
-> > > >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-> > > > []
-> > > >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
-> > > >>  
-> > > >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
-> > > >>  {
-> > > >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
-> > > >> +	struct ethtool_wolinfo wol;
-> > > >>  
-> > > >>  	if (!dev->ethtool_ops->get_wol)
-> > > >>  		return -EOPNOTSUPP;
-> > > >>  
-> > > >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
-> > > >> +	wol.cmd = ETHTOOL_GWOL;
-> > > >>  	dev->ethtool_ops->get_wol(dev, &wol);
-> > > >>  
-> > > >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
-> > > > 
-> > > > It seems likely there are more of these.
-> > > > 
-> > > > Is there any way for coccinelle to find them?
-> > > 
-> > > Just curios: is static struct initialization (on stack) something that
-> > > should be avoided ? I've been under the impression that static
-> > > initialization allows thinner code and gives the compiler better chance
-> > > for optimizations.
-> > 
-> > Not in general. The (potential) problem here is that the structure has
-> > padding and it is as a whole (i.e. including the padding) copied to
-> > userspace. While I'm not aware of a compiler that wouldn't actually
-> > initialize the whole data block including the padding in this case, the
-> > C standard provides no guarantee about that so that to be sure we cannot
-> > leak leftover kernel data to userspace, we need to explicitly initialize
-> > the whole block.
-> 
-> GCC will not always initialize the struct holes.  This patch fixes a
-> real bug that GCC on my system (v7.4)
+The normal FWD rules that fwd to pf-rep or vf-rep can real offloaded
 
-Just checked (again) to be sure. No matter if the function is inlined or
-not, gcc 7.4.1 initializes the structure by one movl (of 0x5) and two
-movq (of 0x0), i.e. initializes all sizeof(struct ethtool_wolinfo) = 20
-bytes including the padding.
-
-One could certainly construct examples where a real life compiler would
-only initialize the fields. That's why I said "in this case".
-
-Michal Kubecek
-
-
+在 2019/11/21 21:05, Paul Blakey 写道:
+> I see, I will test that, and how about normal FWD rules?
+>
+> Paul.
+>
+>
+>> -----Original Message-----
+>> From: wenxu <wenxu@ucloud.cn>
+>> Sent: Thursday, November 21, 2019 2:35 PM
+>> To: Paul Blakey <paulb@mellanox.com>
+>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>> <markb@mellanox.com>
+>> Subject: Re: Question about flow table offload in mlx5e
+>>
+>>
+>> 在 2019/11/21 19:39, Paul Blakey 写道:
+>>> They are good fixes, exactly what we had when we tested this, thanks.
+>>>
+>>> Regarding encap, I don't know what changes you did, how does the encap
+>> rule look? Is it a FWD to vxlan device? If not it should be, as our driver
+>> expects that.
+>> It is fwd to a gretap devices
+>>> I tried it on my setup via tc, by changing the callback of tc
+>> (mlx5e_rep_setup_tc_cb) to that of ft (mlx5e_rep_setup_ft_cb),
+>>> and testing a vxlan encap rule:
+>>> sudo tc qdisc add dev ens1f0_0 ingress
+>>> sudo ifconfig ens1f0 7.7.7.7/24 up
+>>> sudo ip link add name vxlan0 type vxlan dev ens1f0 remote 7.7.7.8 dstport
+>> 4789 external
+>>> sudo ifconfig vxlan0 up
+>>> sudo tc filter add dev ens1f0_0 ingress prio 1 chain 0 protocol ip flower
+>> dst_mac aa:bb:cc:dd:ee:ff ip_proto udp skip_sw  action tunnel_key set
+>> src_ip 0.0.0.0 dst_ip 7.7.7.8 id 1234 dst_port 4789 pipe action mirred egress
+>> redirect dev vxlan
+>>> then tc show:
+>>> filter protocol ip pref 1 flower chain 0 handle 0x1 dst_mac aa:bb:cc:dd:ee:ff
+>> ip_proto udp skip_sw in_hw in_hw_count 1
+>>>         tunnel_key set src_ip 0.0.0.0 dst_ip 7.7.7.8 key_id 1234 dst_port 4789
+>> csum pipe
+>>>         Stats: used 119 sec      0 pkt
+>>>         mirred (Egress Redirect to device vxlan0)
+>>>         Stats: used 119 sec      0 pkt
+>> Can you send packet that match this offloaded flow to check it is real
+>> offloaded?
+>>
+>> In the flowtable offload with my patches both TC_SETUP_BLOCK and
+>> TC_SETUP_FT can offload the rule success
+>>
+>> But in the TC_SETUP_FT case the packet is not real offloaded.
+>>
+>>
+>> I  will test like u did.
+>>
+>>>
+>>>
+>>>> -----Original Message-----
+>>>> From: wenxu <wenxu@ucloud.cn>
+>>>> Sent: Thursday, November 21, 2019 10:29 AM
+>>>> To: Paul Blakey <paulb@mellanox.com>
+>>>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>>>> <markb@mellanox.com>
+>>>> Subject: Re: Question about flow table offload in mlx5e
+>>>>
+>>>>
+>>>> On 11/21/2019 3:42 PM, Paul Blakey wrote:
+>>>>> Hi,
+>>>>>
+>>>>> The original design was the block setup to use TC_SETUP_FT type, and
+>> the
+>>>> tc event type to be case TC_SETUP_CLSFLOWER.
+>>>>> We will post a patch to change that. I would advise to wait till we fix that
+>>>> 😊
+>>>>> I'm not sure how you get to this function mlx5e_rep_setup_ft_cb() if it
+>> the
+>>>> nf_flow_table_offload ndo_setup_tc event was TC_SETUP_BLOCK, and
+>> not
+>>>> TC_SETUP_FT.
+>>>>
+>>>>
+>>>> Yes I change the TC_SETUP_BLOCK to TC_SETUP_FT in the
+>>>> nf_flow_table_offload_setup.
+>>>>
+>>>> Two fixes patch provide:
+>>>>
+>>>> http://patchwork.ozlabs.org/patch/1197818/
+>>>>
+>>>> http://patchwork.ozlabs.org/patch/1197876/
+>>>>
+>>>> So this change made by me is not correct currently?
+>>>>
+>>>>> In our driver en_rep.c we have:
+>>>>>> -------switch (type) {
+>>>>>> -------case TC_SETUP_BLOCK:
+>>>>>> ------->-------return flow_block_cb_setup_simple(type_data,
+>>>>>> ------->------->------->------->------->-------
+>> &mlx5e_rep_block_tc_cb_list,
+>>>>>> ------->------->------->------->------->-------  mlx5e_rep_setup_tc_cb,
+>>>>>> ------->------->------->------->------->-------  priv, priv, true);
+>>>>>> -------case TC_SETUP_FT:
+>>>>>> ------->-------return flow_block_cb_setup_simple(type_data,
+>>>>>> ------->------->------->------->------->-------
+>> &mlx5e_rep_block_ft_cb_list,
+>>>>>> ------->------->------->------->------->-------  mlx5e_rep_setup_ft_cb,
+>>>>>> ------->------->------->------->------->-------  priv, priv, true);
+>>>>>> -------default:
+>>>>>> ------->-------return -EOPNOTSUPP;
+>>>>>> -------}
+>>>>> In nf_flow_table_offload.c:
+>>>>>> -------bo.binder_type>-=
+>> FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>>>>>> -------bo.extack>------= &extack;
+>>>>>> -------INIT_LIST_HEAD(&bo.cb_list);
+>>>>>> -------err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK,
+>>>> &bo);
+>>>>>> -------if (err < 0)
+>>>>>> ------->-------return err;
+>>>>>> -------return nf_flow_table_block_setup(flowtable, &bo, cmd);
+>>>>> }
+>>>>> EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
+>>>>>
+>>>>>
+>>>>> So unless you changed that as well, you should have gotten to
+>>>> mlx5e_rep_setup_tc_cb and not mlx5e_rep_setup_tc_ft.
+>>>>> Regarding the encap action, there should be no difference on which
+>> chain
+>>>> the rule is on.
+>>>>
+>>>>
+>>>> But for the same encap rule can be real offloaded when setup through
+>>>> through TC_SETUP_BLOCK. But TC_SETUP_FT can't.
+>>>>
+>>>> So it is the problem of TC_SETUP_FT in mlx5e_rep_setup_ft_cb ?
+>>>>
+>>>>>> -----Original Message-----
+>>>>>> From: wenxu <wenxu@ucloud.cn>
+>>>>>> Sent: Thursday, November 21, 2019 9:30 AM
+>>>>>> To: Paul Blakey <paulb@mellanox.com>
+>>>>>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>>>>>> <markb@mellanox.com>
+>>>>>> Subject: Question about flow table offload in mlx5e
+>>>>>>
+>>>>>> Hi  paul,
+>>>>>>
+>>>>>> The flow table offload in the mlx5e is based on TC_SETUP_FT.
+>>>>>>
+>>>>>>
+>>>>>> It is almost the same as TC_SETUP_BLOCK.
+>>>>>>
+>>>>>> It just set MLX5_TC_FLAG(FT_OFFLOAD) flags and change
+>>>>>> cls_flower.common.chain_index = FDB_FT_CHAIN;
+>>>>>>
+>>>>>> In following codes line 1380 and 1392
+>>>>>>
+>>>>>> 1368 static int mlx5e_rep_setup_ft_cb(enum tc_setup_type type, void
+>>>>>> *type_data,
+>>>>>> 1369                                  void *cb_priv)
+>>>>>> 1370 {
+>>>>>> 1371         struct flow_cls_offload *f = type_data;
+>>>>>> 1372         struct flow_cls_offload cls_flower;
+>>>>>> 1373         struct mlx5e_priv *priv = cb_priv;
+>>>>>> 1374         struct mlx5_eswitch *esw;
+>>>>>> 1375         unsigned long flags;
+>>>>>> 1376         int err;
+>>>>>> 1377
+>>>>>> 1378         flags = MLX5_TC_FLAG(INGRESS) |
+>>>>>> 1379                 MLX5_TC_FLAG(ESW_OFFLOAD) |
+>>>>>> 1380                 MLX5_TC_FLAG(FT_OFFLOAD);
+>>>>>> 1381         esw = priv->mdev->priv.eswitch;
+>>>>>> 1382
+>>>>>> 1383         switch (type) {
+>>>>>> 1384         case TC_SETUP_CLSFLOWER:
+>>>>>> 1385                 if (!mlx5_eswitch_prios_supported(esw) || f-
+>>>>>>> common.chain_index)
+>>>>>> 1386                         return -EOPNOTSUPP;
+>>>>>> 1387
+>>>>>> 1388                 /* Re-use tc offload path by moving the ft flow to the
+>>>>>> 1389                  * reserved ft chain.
+>>>>>> 1390                  */
+>>>>>> 1391                 memcpy(&cls_flower, f, sizeof(*f));
+>>>>>> 1392                cls_flower.common.chain_index = FDB_FT_CHAIN;
+>>>>>> 1393                 err = mlx5e_rep_setup_tc_cls_flower(priv, &cls_flower,
+>>>> flags);
+>>>>>> 1394                 memcpy(&f->stats, &cls_flower.stats, sizeof(f->stats));
+>>>>>>
+>>>>>>
+>>>>>> I want to add tunnel offload support in the flow table, I  add some
+>> patches
+>>>> in
+>>>>>> nf_flow_table_offload.
+>>>>>>
+>>>>>> Also add the indr setup support in the mlx driver. And Now I can  flow
+>>>> table
+>>>>>> offload with decap.
+>>>>>>
+>>>>>>
+>>>>>> But I meet a problem with the encap.  The encap rule can be added in
+>>>>>> hardware  successfully But it can't be offloaded.
+>>>>>>
+>>>>>> But I think the rule I added is correct.  If I mask the line 1392. The rule
+>> also
+>>>> can
+>>>>>> be add success and can be offloaded.
+>>>>>>
+>>>>>> So there are some limit for encap operation for FT_OFFLOAD in
+>>>>>> FDB_FT_CHAIN?
+>>>>>>
+>>>>>>
+>>>>>> BR
+>>>>>>
+>>>>>> wenxu
+>>>>>>
