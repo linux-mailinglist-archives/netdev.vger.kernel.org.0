@@ -2,254 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCC81048C1
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A65C1048C4
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:56:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfKUCxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 21:53:41 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:33344 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725842AbfKUCxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 21:53:41 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 7A7D54AF1C;
-        Thu, 21 Nov 2019 13:53:33 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mail_dkim; t=1574304813; bh=LlO7n
-        KztIVyqvziKQdGceYjrt2e/ZYxxlQOK27zdMrU=; b=EVCrXCBZ6QlzFJ55lgdWF
-        T7GsZnSezQe7stkiTl/uMysSnEZ0vVWiG69RtB18x/5MMphW68GPQrHzSBrm6B9R
-        R1ShOoZ+zYOkWRgHMCQ6cTKLwtLqMOpbZHxSq9+WTggQDIaRs9YRUAPxb1IYW//N
-        AhjlIz6p4W0UQRHVjGSkXU=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id MwSZpTy-gbZo; Thu, 21 Nov 2019 13:53:33 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 24D794AF1E;
-        Thu, 21 Nov 2019 13:53:32 +1100 (AEDT)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id A22EE4AF1C;
-        Thu, 21 Nov 2019 13:53:31 +1100 (AEDT)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next v2] tipc: support in-order name publication events
-Date:   Thu, 21 Nov 2019 09:53:25 +0700
-Message-Id: <20191121025325.15366-1-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
+        id S1726083AbfKUC4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 21:56:13 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:48922 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725819AbfKUC4N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Nov 2019 21:56:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=tHff8yLVcaE8TMTvwAjzjBhJUzckKAjVkorXlk/oom0=; b=3rF4LKf/hzt5hHnkKLDPaRyHf5
+        Vk5+eAx/zgu89QhgGxfsagQKA6v2X8/YNq7FK8LANfH6p0Un8NI7fhj7dWBRkOZ8uOFDdlfA26/GA
+        XX2D3jKI0V3ZG3EqaV5Ppb47HlqTtGLRikZiabdq6rHhmjfwIwqMpjJ+jUnf2f9QPsBo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iXcde-0007Cl-LI; Thu, 21 Nov 2019 03:56:10 +0100
+Date:   Thu, 21 Nov 2019 03:56:10 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     netdev@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH 5/5] net: dsa: ocelot: add hardware timestamping support
+ for Felix
+Message-ID: <20191121025610.GO18325@lunn.ch>
+References: <20191120082318.3909-1-yangbo.lu@nxp.com>
+ <20191120082318.3909-6-yangbo.lu@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191120082318.3909-6-yangbo.lu@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is observed that TIPC service binding order will not be kept in the
-publication event report to user if the service is subscribed after the
-bindings.
+> +static irqreturn_t felix_irq_handler(int irq, void *data)
+> +{
+> +	struct ocelot *ocelot = (struct ocelot *)data;
+> +
+> +	/* The INTB interrupt is used for both PTP TX timestamp interrupt
+> +	 * and preemption status change interrupt on each port.
+> +	 *
+> +	 * - Get txtstamp if have
+> +	 * - TODO: handle preemption. Without handling it, driver may get
+> +	 *   interrupt storm.
+> +	 */
 
-For example, services are bound by application in the following order:
+I assume there are no register bits to enable/disable these two
+interrupt sources?
 
-Server: bound port A to {18888,66,66} scope 2
-Server: bound port A to {18888,33,33} scope 2
+What is preemption?
 
-Now, if a client subscribes to the service range (e.g. {18888, 0-100}),
-it will get the 'TIPC_PUBLISHED' events in that binding order only when
-the subscription is started before the bindings.
-Otherwise, if started after the bindings, the events will arrive in the
-opposite order:
-
-Client: received event for published {18888,33,33}
-Client: received event for published {18888,66,66}
-
-For the latter case, it is clear that the bindings have existed in the
-name table already, so when reported, the events' order will follow the
-order of the rbtree binding nodes (- a node with lesser 'lower'/'upper'
-range value will be first).
-
-This is correct as we provide the tracking on a specific service status
-(available or not), not the relationship between multiple services.
-However, some users expect to see the same order of arriving events
-irrespective of when the subscription is issued. This turns out to be
-easy to fix. We now add functionality to ensure that publication events
-always are issued in the same temporal order as the corresponding
-bindings were performed.
-
-v2: replace the unnecessary macro - 'publication_after()' with inline
-function.
-
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/name_table.c | 53 +++++++++++++++++++++++++++++++++++++++++++--------
- net/tipc/name_table.h |  4 ++++
- 2 files changed, 49 insertions(+), 8 deletions(-)
-
-diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
-index 66a65c2cdb23..3a3ff0a7d13b 100644
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -35,6 +35,7 @@
-  */
- 
- #include <net/sock.h>
-+#include <linux/list_sort.h>
- #include "core.h"
- #include "netlink.h"
- #include "name_table.h"
-@@ -66,6 +67,7 @@ struct service_range {
- /**
-  * struct tipc_service - container for all published instances of a service type
-  * @type: 32 bit 'type' value for service
-+ * @publ_cnt: increasing counter for publications in this service
-  * @ranges: rb tree containing all service ranges for this service
-  * @service_list: links to adjacent name ranges in hash chain
-  * @subscriptions: list of subscriptions for this service type
-@@ -74,6 +76,7 @@ struct service_range {
-  */
- struct tipc_service {
- 	u32 type;
-+	unsigned int publ_cnt;
- 	struct rb_root ranges;
- 	struct hlist_node service_list;
- 	struct list_head subscriptions;
-@@ -109,6 +112,7 @@ static struct publication *tipc_publ_create(u32 type, u32 lower, u32 upper,
- 	INIT_LIST_HEAD(&publ->binding_node);
- 	INIT_LIST_HEAD(&publ->local_publ);
- 	INIT_LIST_HEAD(&publ->all_publ);
-+	INIT_LIST_HEAD(&publ->list);
- 	return publ;
- }
- 
-@@ -244,6 +248,8 @@ static struct publication *tipc_service_insert_publ(struct net *net,
- 	p = tipc_publ_create(type, lower, upper, scope, node, port, key);
- 	if (!p)
- 		goto err;
-+	/* Suppose there shouldn't be a huge gap btw publs i.e. >INT_MAX */
-+	p->id = sc->publ_cnt++;
- 	if (in_own_node(net, node))
- 		list_add(&p->local_publ, &sr->local_publ);
- 	list_add(&p->all_publ, &sr->all_publ);
-@@ -277,6 +283,22 @@ static struct publication *tipc_service_remove_publ(struct service_range *sr,
- 	return NULL;
- }
- 
-+static inline int publication_after(struct publication *pa,
-+				    struct publication *pb)
-+{
-+	return ((int)(pb->id - pa->id) < 0);
-+}
-+
-+static int tipc_publ_sort(void *priv, struct list_head *a,
-+			  struct list_head *b)
-+{
-+	struct publication *pa, *pb;
-+
-+	pa = container_of(a, struct publication, list);
-+	pb = container_of(b, struct publication, list);
-+	return publication_after(pa, pb);
-+}
-+
- /**
-  * tipc_service_subscribe - attach a subscription, and optionally
-  * issue the prescribed number of events if there is any service
-@@ -286,36 +308,51 @@ static void tipc_service_subscribe(struct tipc_service *service,
- 				   struct tipc_subscription *sub)
- {
- 	struct tipc_subscr *sb = &sub->evt.s;
-+	struct publication *p, *first, *tmp;
-+	struct list_head publ_list;
- 	struct service_range *sr;
- 	struct tipc_name_seq ns;
--	struct publication *p;
- 	struct rb_node *n;
--	bool first;
-+	u32 filter;
- 
- 	ns.type = tipc_sub_read(sb, seq.type);
- 	ns.lower = tipc_sub_read(sb, seq.lower);
- 	ns.upper = tipc_sub_read(sb, seq.upper);
-+	filter = tipc_sub_read(sb, filter);
- 
- 	tipc_sub_get(sub);
- 	list_add(&sub->service_list, &service->subscriptions);
- 
--	if (tipc_sub_read(sb, filter) & TIPC_SUB_NO_STATUS)
-+	if (filter & TIPC_SUB_NO_STATUS)
- 		return;
- 
-+	INIT_LIST_HEAD(&publ_list);
- 	for (n = rb_first(&service->ranges); n; n = rb_next(n)) {
- 		sr = container_of(n, struct service_range, tree_node);
- 		if (sr->lower > ns.upper)
- 			break;
- 		if (!tipc_sub_check_overlap(&ns, sr->lower, sr->upper))
- 			continue;
--		first = true;
- 
-+		first = NULL;
- 		list_for_each_entry(p, &sr->all_publ, all_publ) {
--			tipc_sub_report_overlap(sub, sr->lower, sr->upper,
--						TIPC_PUBLISHED,	p->port,
--						p->node, p->scope, first);
--			first = false;
-+			if (filter & TIPC_SUB_PORTS)
-+				list_add_tail(&p->list, &publ_list);
-+			else if (!first || publication_after(first, p))
-+				/* Pick this range's *first* publication */
-+				first = p;
- 		}
-+		if (first)
-+			list_add_tail(&first->list, &publ_list);
-+	}
-+
-+	/* Sort the publications before reporting */
-+	list_sort(NULL, &publ_list, tipc_publ_sort);
-+	list_for_each_entry_safe(p, tmp, &publ_list, list) {
-+		tipc_sub_report_overlap(sub, p->lower, p->upper,
-+					TIPC_PUBLISHED, p->port, p->node,
-+					p->scope, true);
-+		list_del_init(&p->list);
- 	}
- }
- 
-diff --git a/net/tipc/name_table.h b/net/tipc/name_table.h
-index f79066334cc8..3d5da71ce41e 100644
---- a/net/tipc/name_table.h
-+++ b/net/tipc/name_table.h
-@@ -58,6 +58,7 @@ struct tipc_group;
-  * @node: network address of publishing socket's node
-  * @port: publishing port
-  * @key: publication key, unique across the cluster
-+ * @id: publication id
-  * @binding_node: all publications from the same node which bound this one
-  * - Remote publications: in node->publ_list
-  *   Used by node/name distr to withdraw publications when node is lost
-@@ -69,6 +70,7 @@ struct tipc_group;
-  *   Used by closest_first and multicast receive lookup algorithms
-  * @all_publ: all publications identical to this one, whatever node and scope
-  *   Used by round-robin lookup algorithm
-+ * @list: to form a list of publications in temporal order
-  * @rcu: RCU callback head used for deferred freeing
-  */
- struct publication {
-@@ -79,10 +81,12 @@ struct publication {
- 	u32 node;
- 	u32 port;
- 	u32 key;
-+	unsigned int id;
- 	struct list_head binding_node;
- 	struct list_head binding_sock;
- 	struct list_head local_publ;
- 	struct list_head all_publ;
-+	struct list_head list;
- 	struct rcu_head rcu;
- };
- 
--- 
-2.13.7
-
+     Andrew
