@@ -2,77 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85744104D8A
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25421104D9C
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:14:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727270AbfKUIK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:10:56 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:43306 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727219AbfKUIKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:10:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=DZddNdyW5FRrAXgTdc6w5huJMr/L+GTDCsXkrpDZQWE=; b=Mafq4UPzuRzO9+6g0idvgtn8y
-        WcDSiCT7hQFVoaJkaXestyiwMGnqfYjgbEOz0r27XeQ+Y5KvjD4Nuhy0YaDkgeX1N2nHrE2fymh9/
-        Kl6qsPzn8bgO9GwKGkSXLJ6yif29++yxYwWthonAbKTOkkQzaykODs/kBCpIPvEL9IlVjXYjhMRJE
-        HObsxeSD97VjwE1Ac50vXPpo12MNChRAcbknrDS9loF08kQwig/wzQVsPl/cwUiTKkHvJYvfDWnFU
-        FO6tlhkm1YjoPatb8/UhLvWJuQFmCn5wpi+24IGZ7mIRAGQpgH/fHbaZ8f9hs4dGNlP7WUQjseLo0
-        O4T8RJ40Q==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iXhXf-0001ki-FW; Thu, 21 Nov 2019 08:10:19 +0000
-Date:   Thu, 21 Nov 2019 00:10:19 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        id S1726802AbfKUIOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:14:17 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7160 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726536AbfKUIOR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 03:14:17 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 703AAC08955488A0329B;
+        Thu, 21 Nov 2019 16:14:15 +0800 (CST)
+Received: from [127.0.0.1] (10.74.221.148) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Thu, 21 Nov 2019
+ 16:14:05 +0800
+Subject: Re: [PATCH v3] lib: optimize cpumask_local_spread()
+To:     Michal Hocko <mhocko@kernel.org>
+References: <1573091048-10595-1-git-send-email-zhangshaokun@hisilicon.com>
+ <20191108103102.GF15658@dhcp22.suse.cz>
+ <c6f24942-c8d6-e46a-f433-152d29af8c71@hisilicon.com>
+ <20191112115630.GD2763@dhcp22.suse.cz>
+ <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
+ <20191114144317.GJ20866@dhcp22.suse.cz>
+ <9af13fea-95a6-30cb-2c0e-770aa649a549@hisilicon.com>
+ <20191115133625.GD29990@dhcp22.suse.cz>
+CC:     <linux-kernel@vger.kernel.org>, yuqi jin <jinyuqi@huawei.com>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Paul Burton" <paul.burton@mips.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [PATCH v7 09/24] vfio, mm: fix get_user_pages_remote() and
- FOLL_LONGTERM
-Message-ID: <20191121081019.GF30991@infradead.org>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
- <20191121071354.456618-10-jhubbard@nvidia.com>
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        <netdev@vger.kernel.org>
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+Message-ID: <5011c668-65f4-c571-e166-dbc29a8adc27@hisilicon.com>
+Date:   Thu, 21 Nov 2019 16:14:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191121071354.456618-10-jhubbard@nvidia.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20191115133625.GD29990@dhcp22.suse.cz>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.221.148]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Should this be two patches, one for th core infrastructure and one for
-the user?  These changes also look like another candidate to pre-load.
+Hi Michal,
+
+On 2019/11/15 21:36, Michal Hocko wrote:
+> On Fri 15-11-19 17:09:13, Shaokun Zhang wrote:
+> [...]
+>> Oh, my mistake, for the previous instance, I don't list all IRQs and
+>> just choose one IRQ from one NUMA node. You can see that the IRQ
+>> number is not consistent :-).
+>> IRQ from 345 to 368 will be bound to CPU cores which are in NUMA node2
+>> and each IRQ is corresponding to one core.
+>>
+> 
+> This is quite confusing then. I would suggest providing all IRQ used for
+
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+node 0 size: 63379 MB
+node 0 free: 61899 MB
+node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
+node 1 size: 64509 MB
+node 1 free: 63942 MB
+node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
+node 2 size: 64509 MB
+node 2 free: 63056 MB
+node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+node 3 size: 63997 MB
+node 3 free: 63420 MB
+node distances:
+node   0   1   2   3
+  0:  10  16  32  33
+  1:  16  10  25  32
+  2:  32  25  10  16
+  3:  33  32  16  10
+
+Before the patch:
+/* I/O device is located on NUMA node2 */
+Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
+2
+Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
+48
+Euler:/sys/bus/pci # cat /proc/irq/346/smp_affinity_list
+49
+.
+.
+.
+Euler:/sys/bus/pci # cat /proc/irq/367/smp_affinity_list
+70
+Euler:/sys/bus/pci # cat /proc/irq/368/smp_affinity_list
+71
+
+/* there we expect irq form 24 to 47 binding to node3 */
+Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+0
+Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+1
+.
+.
+.
+Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+22
+Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+23
+
+Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
+24
+Euler:/sys/bus/pci # cat /proc/irq/394/smp_affinity_list
+25
+.
+.
+.
+/* There are total 64 irqs on eth IO device. */
+Euler:/sys/bus/pci # cat /proc/irq/407/smp_affinity_list
+38
+Euler:/sys/bus/pci # cat /proc/irq/408/smp_affinity_list
+39                              	
+Euler:/sys/bus/pci #
+
+After the patch:
+Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
+2
+
+Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
+48
+Euler:/sys/bus/pci # cat /proc/irq/346/smp_affinity_list
+49
+.
+.
+.
+Euler:/sys/bus/pci # cat /proc/irq/367/smp_affinity_list
+70
+Euler:/sys/bus/pci # cat /proc/irq/368/smp_affinity_list
+71
+
+Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+72
+Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+73
+.
+.
+.
+Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+94
+Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+95
+/* when the cores of socket were used up, we choose the node which is closer to node 2
+before this patch choose the same node here is a coincident event*/
+Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
+24
+Euler:/sys/bus/pci # cat /proc/irq/394/smp_affinity_list
+25
+.
+.
+.
+/* There are total 64 irqs on eth IO device. */
+Euler:/sys/bus/pci # cat /proc/irq/407/smp_affinity_list
+38
+Euler:/sys/bus/pci # cat /proc/irq/408/smp_affinity_list
+39
+Euler:/sys/bus/pci #
+
+Thanks,
+Shaokun
+
+> the device with the specific node affinity to see the difference in the
+> setup.
+> 
+
