@@ -2,159 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F74105C09
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32FB5105C0D
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:35:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfKUVey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 16:34:54 -0500
-Received: from mail-eopbgr740132.outbound.protection.outlook.com ([40.107.74.132]:10144
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726840AbfKUVex (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 16:34:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qy+XoBzziNznr6ML0sEhqjZ0lyNZMoEOrCbxY9uWmbjRzsJqX3rY4F7z5URWg1b018WfFT+YKDOjRX+rP7PVFCbUMYC/osSC5r6933IpAV1UVl23Jl/dyki99IrEoxjpb3rOD9fZu0BBaAyiwrkhxNuE1UqVivZWmgTt4GjfDpOmQmMmP240F1+gURdskkmmVoEmgX8VSfsyMFx2gTj86jdcpE8K3LKS3LQnGm8KPzUoAVXeo258dCK5vzwR31eWd5igrUy8lsQwgHpkT+1LpPIeUk37WDJB4fAEAXyoCE5yZTD7OJRPAFFjzt2rWBuW7gQ5lxu64ioZf6aZ49GyRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PeOZopHmlIW/l1KUh/KCiAmKtVnLTKqzjDlxkpqIcSc=;
- b=My1SKqNLU15k2grumlncST+dazB7Vd10SJAL9VzTT6tAzDYsv+P0LvMLsxBY6jD4JIbcg13o9YlSf/9TQ9PECJc0fcf5/lADUqvejRlZa+UwNjxzBtgSR7j1obI0IHLWoDbuknVd0y16feqnA9lEbarhqRuff8t7cEnZmcwIoz4dqgkTNkiuO1sDC5Sm5O5ov8BbAwgC/sDYYGwbSdtBm2xK8hyNONt/fuqovN8eN5cs4EQwTP2dXQ9hw+2u1DgSaAw8gAXXjwvJXPm4jnO2g0vQN+ZzQHbvsCbGiQYHtUczRJBooWLS9HuFumJWU0X+ZHdkaadnGzybUvhX06cedg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PeOZopHmlIW/l1KUh/KCiAmKtVnLTKqzjDlxkpqIcSc=;
- b=deuD4GP+zWRq0clHOh6+U983bBLTZSEFdtQ71zOXhlhH65TP2ZbnK/nESFtQMP82gvDBVHOnrMBotsaGhEqEkkBZMQ+akoOxRe/1F1bz2IoubZ6MJjKndAlxyZGZWha7kk2T5E0kX4esZ6DchhXq5LXueGB/nbkZd3WJ1ObquTM=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
- DM6PR21MB1228.namprd21.prod.outlook.com (20.179.50.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.8; Thu, 21 Nov 2019 21:34:49 +0000
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::a8b2:cdb:8839:3031]) by DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::a8b2:cdb:8839:3031%4]) with mapi id 15.20.2495.010; Thu, 21 Nov 2019
- 21:34:49 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net,v2 2/2] hv_netvsc: Fix send_table offset in case of a host bug
-Date:   Thu, 21 Nov 2019 13:33:41 -0800
-Message-Id: <1574372021-29439-3-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1574372021-29439-1-git-send-email-haiyangz@microsoft.com>
-References: <1574372021-29439-1-git-send-email-haiyangz@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MWHPR1401CA0005.namprd14.prod.outlook.com
- (2603:10b6:301:4b::15) To DM6PR21MB1242.namprd21.prod.outlook.com
- (2603:10b6:5:169::22)
+        id S1726977AbfKUVfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 16:35:41 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44977 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726293AbfKUVfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 16:35:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574372139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YslT4VlrB9mGxRqN5ZKGkdoWX+pImdvI3tx38/mJv/g=;
+        b=F3+4lkP3uqyXkGQy92eLDyAWlOZz+Dqr0YZIfkLtyHHYVwohbTEqIdCNRsxde0wfDY7knz
+        XBDvHo51Hj2F1EIeKg+VyyiD24pZJ2SWYGKVbsb+MJOoqWwlrQoTt76Qmvo17+pHXH9ajy
+        RZwA4C+3Vw5Wc333VaXIQm3zSkrXFs4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-353-_8mqkejRPqeFlprORl3o9g-1; Thu, 21 Nov 2019 16:35:36 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42006801E58;
+        Thu, 21 Nov 2019 21:35:30 +0000 (UTC)
+Received: from x1.home (ovpn-116-56.phx2.redhat.com [10.3.116.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C5BA6E703;
+        Thu, 21 Nov 2019 21:35:26 +0000 (UTC)
+Date:   Thu, 21 Nov 2019 14:35:25 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0?= =?UTF-8?B?bWU=?= Glisse 
+        <jglisse@redhat.com>, Magnus Karlsson <magnus.karlsson@intel.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        "Jason Gunthorpe" <jgg@mellanox.com>
+Subject: Re: [PATCH v7 09/24] vfio, mm: fix get_user_pages_remote() and
+ FOLL_LONGTERM
+Message-ID: <20191121143525.50deb72f@x1.home>
+In-Reply-To: <20191121071354.456618-10-jhubbard@nvidia.com>
+References: <20191121071354.456618-1-jhubbard@nvidia.com>
+        <20191121071354.456618-10-jhubbard@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR1401CA0005.namprd14.prod.outlook.com (2603:10b6:301:4b::15) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Thu, 21 Nov 2019 21:34:48 +0000
-X-Mailer: git-send-email 1.8.3.1
-X-Originating-IP: [13.77.154.182]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: e3cdd14a-1381-40ad-3594-08d76ecaa2c5
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1228:|DM6PR21MB1228:|DM6PR21MB1228:
-X-MS-Exchange-Transport-Forked: True
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM6PR21MB1228A450BF9E5EF9A20B722EAC4E0@DM6PR21MB1228.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-Forefront-PRVS: 0228DDDDD7
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(199004)(189003)(10090500001)(446003)(2906002)(50226002)(16586007)(6436002)(6666004)(22452003)(48376002)(6486002)(36756003)(25786009)(66476007)(66556008)(16526019)(316002)(26005)(186003)(6116002)(76176011)(4326008)(3846002)(50466002)(6506007)(52116002)(51416003)(386003)(305945005)(10290500003)(81166006)(66946007)(81156014)(4720700003)(11346002)(478600001)(5660300002)(956004)(2616005)(7736002)(47776003)(8676002)(66066001)(8936002)(6512007)(142933001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1228;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jrt86CrQzNXOYMH+KzSFCicny2kLiOOZbldOrchiflDxaGYDzwJNJ9ZQAhxysEkRTViwLbnGC5eSd/HmpXFUSfNANu6HOIx66bMbncivNCMNuiJOxHK4UA1kBsL/N95doGWLFWkO31CfbYkqwZC96nbQ5aUKvR1u+wxbBsBF9Ra71XucatirIofyFFhzwPd+xlpwRYDeAYgDqy+yAwEkBvlDwyQCYrX1PCFxZdfvj+RTINgRfep+sIF1H1tLBWbb4nD3IKgmZXLVMm08kGjOD4ABGbLygpbowKoMCyZGoY3GWprnWgoScoyQGphR818e4DPGcjd1xjILgVERyyKrLWSaj7H0Jnkm8fT8d32j+RjBxfK83p8LznyMdJmQbYG/+EBKcSC3+mtZnKrHLexYNip2eRtpx+/yKFktl70rhym2q4ZvPrJE+WBAsJ0u2Bh7
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3cdd14a-1381-40ad-3594-08d76ecaa2c5
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2019 21:34:49.0406
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +Ioz8BwHFycldOtpUe2b3Te1ftYgubdBYYaM+AB1D4KrjKKZP7jloZ1wsdj2wRx0R2B5ApptoJdNu0LJ+Q9cVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1228
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: _8mqkejRPqeFlprORl3o9g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If negotiated NVSP version <= NVSP_PROTOCOL_VERSION_6, the offset may
-be wrong (too small) due to a host bug. This can cause missing the
-end of the send indirection table, and add multiple zero entries from
-leading zeros before the data region. This bug adds extra burden on
-channel 0.
+On Wed, 20 Nov 2019 23:13:39 -0800
+John Hubbard <jhubbard@nvidia.com> wrote:
 
-So fix the offset by computing it from the data structure sizes. This
-will ensure netvsc driver runs normally on unfixed hosts, and future
-fixed hosts.
+> As it says in the updated comment in gup.c: current FOLL_LONGTERM
+> behavior is incompatible with FAULT_FLAG_ALLOW_RETRY because of the
+> FS DAX check requirement on vmas.
+>=20
+> However, the corresponding restriction in get_user_pages_remote() was
+> slightly stricter than is actually required: it forbade all
+> FOLL_LONGTERM callers, but we can actually allow FOLL_LONGTERM callers
+> that do not set the "locked" arg.
+>=20
+> Update the code and comments accordingly, and update the VFIO caller
+> to take advantage of this, fixing a bug as a result: the VFIO caller
+> is logically a FOLL_LONGTERM user.
+>=20
+> Also, remove an unnessary pair of calls that were releasing and
+> reacquiring the mmap_sem. There is no need to avoid holding mmap_sem
+> just in order to call page_to_pfn().
+>=20
+> Also, move the DAX check ("if a VMA is DAX, don't allow long term
+> pinning") from the VFIO call site, all the way into the internals
+> of get_user_pages_remote() and __gup_longterm_locked(). That is:
+> get_user_pages_remote() calls __gup_longterm_locked(), which in turn
+> calls check_dax_vmas(). It's lightly explained in the comments as well.
+>=20
+> Thanks to Jason Gunthorpe for pointing out a clean way to fix this,
+> and to Dan Williams for helping clarify the DAX refactoring.
+>=20
+> Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Jerome Glisse <jglisse@redhat.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 30 +++++-------------------------
+>  mm/gup.c                        | 27 ++++++++++++++++++++++-----
+>  2 files changed, 27 insertions(+), 30 deletions(-)
 
-Fixes: 5b54dac856cb ("hyperv: Add support for virtual Receive Side Scaling (vRSS)")
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/hyperv/netvsc.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+Tested with device assignment and Intel mdev vGPU assignment with QEMU
+userspace:
 
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 9b0532e..eab83e7 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -1178,6 +1178,7 @@ static int netvsc_receive(struct net_device *ndev,
- }
- 
- static void netvsc_send_table(struct net_device *ndev,
-+			      struct netvsc_device *nvscdev,
- 			      const struct nvsp_message *nvmsg,
- 			      u32 msglen)
- {
-@@ -1193,6 +1194,16 @@ static void netvsc_send_table(struct net_device *ndev,
- 		return;
- 	}
- 
-+	/* If negotiated version <= NVSP_PROTOCOL_VERSION_6, the offset may be
-+	 * wrong due to a host bug. So fix the offset here.
-+	 */
-+	if (nvscdev->nvsp_version <= NVSP_PROTOCOL_VERSION_6 &&
-+	    msglen >= sizeof(struct nvsp_message_header) +
-+	    sizeof(union nvsp_6_message_uber) + count * sizeof(u32))
-+		offset = sizeof(struct nvsp_message_header) +
-+			 sizeof(union nvsp_6_message_uber);
-+
-+	/* Boundary check for all versions */
- 	if (offset > msglen - count * sizeof(u32)) {
- 		netdev_err(ndev, "Received send-table offset too big:%u\n",
- 			   offset);
-@@ -1218,12 +1229,13 @@ static void netvsc_send_vf(struct net_device *ndev,
- }
- 
- static void netvsc_receive_inband(struct net_device *ndev,
-+				  struct netvsc_device *nvscdev,
- 				  const struct nvsp_message *nvmsg,
- 				  u32 msglen)
- {
- 	switch (nvmsg->hdr.msg_type) {
- 	case NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE:
--		netvsc_send_table(ndev, nvmsg, msglen);
-+		netvsc_send_table(ndev, nvscdev, nvmsg, msglen);
- 		break;
- 
- 	case NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION:
-@@ -1257,7 +1269,7 @@ static int netvsc_process_raw_pkt(struct hv_device *device,
- 		break;
- 
- 	case VM_PKT_DATA_INBAND:
--		netvsc_receive_inband(ndev, nvmsg, msglen);
-+		netvsc_receive_inband(ndev, net_device, nvmsg, msglen);
- 		break;
- 
- 	default:
--- 
-1.8.3.1
+Tested-by: Alex Williamson <alex.williamson@redhat.com>
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
+
+Feel free to include for 19/24 as well.  Thanks,
+
+Alex
+
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_ty=
+pe1.c
+> index d864277ea16f..c7a111ad9975 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -340,7 +340,6 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsign=
+ed long vaddr,
+>  {
+>  =09struct page *page[1];
+>  =09struct vm_area_struct *vma;
+> -=09struct vm_area_struct *vmas[1];
+>  =09unsigned int flags =3D 0;
+>  =09int ret;
+> =20
+> @@ -348,33 +347,14 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsi=
+gned long vaddr,
+>  =09=09flags |=3D FOLL_WRITE;
+> =20
+>  =09down_read(&mm->mmap_sem);
+> -=09if (mm =3D=3D current->mm) {
+> -=09=09ret =3D get_user_pages(vaddr, 1, flags | FOLL_LONGTERM, page,
+> -=09=09=09=09     vmas);
+> -=09} else {
+> -=09=09ret =3D get_user_pages_remote(NULL, mm, vaddr, 1, flags, page,
+> -=09=09=09=09=09    vmas, NULL);
+> -=09=09/*
+> -=09=09 * The lifetime of a vaddr_get_pfn() page pin is
+> -=09=09 * userspace-controlled. In the fs-dax case this could
+> -=09=09 * lead to indefinite stalls in filesystem operations.
+> -=09=09 * Disallow attempts to pin fs-dax pages via this
+> -=09=09 * interface.
+> -=09=09 */
+> -=09=09if (ret > 0 && vma_is_fsdax(vmas[0])) {
+> -=09=09=09ret =3D -EOPNOTSUPP;
+> -=09=09=09put_page(page[0]);
+> -=09=09}
+> -=09}
+> -=09up_read(&mm->mmap_sem);
+> -
+> +=09ret =3D get_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTE=
+RM,
+> +=09=09=09=09    page, NULL, NULL);
+>  =09if (ret =3D=3D 1) {
+>  =09=09*pfn =3D page_to_pfn(page[0]);
+> -=09=09return 0;
+> +=09=09ret =3D 0;
+> +=09=09goto done;
+>  =09}
+> =20
+> -=09down_read(&mm->mmap_sem);
+> -
+>  =09vaddr =3D untagged_addr(vaddr);
+> =20
+>  =09vma =3D find_vma_intersection(mm, vaddr, vaddr + 1);
+> @@ -384,7 +364,7 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsign=
+ed long vaddr,
+>  =09=09if (is_invalid_reserved_pfn(*pfn))
+>  =09=09=09ret =3D 0;
+>  =09}
+> -
+> +done:
+>  =09up_read(&mm->mmap_sem);
+>  =09return ret;
+>  }
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 14fcdc502166..cce2c9676853 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -29,6 +29,13 @@ struct follow_page_context {
+>  =09unsigned int page_mask;
+>  };
+> =20
+> +static __always_inline long __gup_longterm_locked(struct task_struct *ts=
+k,
+> +=09=09=09=09=09=09  struct mm_struct *mm,
+> +=09=09=09=09=09=09  unsigned long start,
+> +=09=09=09=09=09=09  unsigned long nr_pages,
+> +=09=09=09=09=09=09  struct page **pages,
+> +=09=09=09=09=09=09  struct vm_area_struct **vmas,
+> +=09=09=09=09=09=09  unsigned int flags);
+>  /*
+>   * Return the compound head page with ref appropriately incremented,
+>   * or NULL if that failed.
+> @@ -1167,13 +1174,23 @@ long get_user_pages_remote(struct task_struct *ts=
+k, struct mm_struct *mm,
+>  =09=09struct vm_area_struct **vmas, int *locked)
+>  {
+>  =09/*
+> -=09 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
+> +=09 * Parts of FOLL_LONGTERM behavior are incompatible with
+>  =09 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
+> -=09 * vmas.  As there are no users of this flag in this call we simply
+> -=09 * disallow this option for now.
+> +=09 * vmas. However, this only comes up if locked is set, and there are
+> +=09 * callers that do request FOLL_LONGTERM, but do not set locked. So,
+> +=09 * allow what we can.
+>  =09 */
+> -=09if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
+> -=09=09return -EINVAL;
+> +=09if (gup_flags & FOLL_LONGTERM) {
+> +=09=09if (WARN_ON_ONCE(locked))
+> +=09=09=09return -EINVAL;
+> +=09=09/*
+> +=09=09 * This will check the vmas (even if our vmas arg is NULL)
+> +=09=09 * and return -ENOTSUPP if DAX isn't allowed in this case:
+> +=09=09 */
+> +=09=09return __gup_longterm_locked(tsk, mm, start, nr_pages, pages,
+> +=09=09=09=09=09     vmas, gup_flags | FOLL_TOUCH |
+> +=09=09=09=09=09     FOLL_REMOTE);
+> +=09}
+> =20
+>  =09return __get_user_pages_locked(tsk, mm, start, nr_pages, pages, vmas,
+>  =09=09=09=09       locked,
 
