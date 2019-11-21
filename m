@@ -2,138 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CD61048BA
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:49:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDCC81048C1
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 03:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfKUCto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 21:49:44 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:51544 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbfKUCtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 21:49:43 -0500
-Received: by mail-wm1-f65.google.com with SMTP id g206so1702270wme.1
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 18:49:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5cvbvE6GE7g9/dXzyiGB/2f+wTts3umRMXHbDNpPbGc=;
-        b=GqEJGaAGEs1CgwCl6iqi+d88d0emEdO60JTgxsazyEn3mNoriElullE16TlTXGgXlN
-         WI2jLus89YZvt4lGSRyRpJ3K/GVg1hgMqfOaky870B2/roRv90k1gS3K5gOCeQ1rLIPa
-         0Gk+Xv3iOc+wTjQXlsEybMLWZojHgZwIKmvD+N7DuAsHAROh3M7g6mTftBeASFrk3iwz
-         rlfuJFHdxJMTSo6276lbTf2U/sdOOXGF+rAJwSgCvso4nN9IRHkks4WZDTCzUZ7Dhu6X
-         RgseWox+W3tiwGoD7ASLi6CPHkFqjBqAQBSWEuSg2mDyscpic8NDdduYWbAe6k3x1JRv
-         HHtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5cvbvE6GE7g9/dXzyiGB/2f+wTts3umRMXHbDNpPbGc=;
-        b=RCwQliTvJ4Vekd+8lCrcVi8ASp2U88gQKkksuePN7KYGDnC9XhUUSKyi60TLw3WFxk
-         QdB5M75YfWZH5WSL8MuASOHq7Fa4zftWl/C/mbC3ZZu5uLKUoH3Rir6OjuAu5LVftl75
-         asXu5c5ETet6ssEFcrNyfBEMLjoaY0+VM4Xu5HCpx48EUjBbHUcnRHbrOn1l2vPOjWHI
-         c1lzBw0z6MN/+qNxRqA7VzHR7zLSWDZNaSkrKLM+NLaIdxo79d5onbABhpe9XLyTln0z
-         lTl4iHbfjmmQqahB71MmEm/QIqzMX3jgyl9HpEZKWxK1NtHlOPdTSh02dXoCH2ylWrTw
-         27FA==
-X-Gm-Message-State: APjAAAWw0c/kPtbWW5s2T0HhlCXrbq9ovmZWI1B+rfp8bJ1qiWj/1Ac/
-        1xmguLqO1Clqaw1RJ39rpM2vSF7qrtbPXF7uGEOmBw==
-X-Google-Smtp-Source: APXvYqzwZdOUiijLzdQC2YcAbrwpWA40m8yTNnD3T6cpmG7xpD/bbhz4Sia/3Itives9a2lATJGK/AL9GF7rVfCYKYc=
-X-Received: by 2002:a1c:5fc4:: with SMTP id t187mr7310283wmb.142.1574304580009;
- Wed, 20 Nov 2019 18:49:40 -0800 (PST)
-MIME-Version: 1.0
-References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
- <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com> <20191120164137.6f66a560@cakuba.netronome.com>
-In-Reply-To: <20191120164137.6f66a560@cakuba.netronome.com>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Thu, 21 Nov 2019 08:19:29 +0530
-Message-ID: <CA+sq2CdbXgdsGjG-+34mNztxJ-eQkySB6k2SumkXMUkp7bKtwQ@mail.gmail.com>
-Subject: Re: [PATCH v3 16/16] Documentation: net: octeontx2: Add RVU HW and
- drivers overview.
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sunil Goutham <sgoutham@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726623AbfKUCxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 21:53:41 -0500
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:33344 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725842AbfKUCxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 21:53:41 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id 7A7D54AF1C;
+        Thu, 21 Nov 2019 13:53:33 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received; s=mail_dkim; t=1574304813; bh=LlO7n
+        KztIVyqvziKQdGceYjrt2e/ZYxxlQOK27zdMrU=; b=EVCrXCBZ6QlzFJ55lgdWF
+        T7GsZnSezQe7stkiTl/uMysSnEZ0vVWiG69RtB18x/5MMphW68GPQrHzSBrm6B9R
+        R1ShOoZ+zYOkWRgHMCQ6cTKLwtLqMOpbZHxSq9+WTggQDIaRs9YRUAPxb1IYW//N
+        AhjlIz6p4W0UQRHVjGSkXU=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id MwSZpTy-gbZo; Thu, 21 Nov 2019 13:53:33 +1100 (AEDT)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id 24D794AF1E;
+        Thu, 21 Nov 2019 13:53:32 +1100 (AEDT)
+Received: from localhost.localdomain (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id A22EE4AF1C;
+        Thu, 21 Nov 2019 13:53:31 +1100 (AEDT)
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net-next v2] tipc: support in-order name publication events
+Date:   Thu, 21 Nov 2019 09:53:25 +0700
+Message-Id: <20191121025325.15366-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 6:11 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
->
-> Please double check this renders the way you expect. You may want to
-> add empty lines before lists.
+It is observed that TIPC service binding order will not be kept in the
+publication event report to user if the service is subscribed after the
+bindings.
 
-Okay, will recheck.
+For example, services are bound by application in the following order:
 
-> > +
-> > +=============================================
-> > +Marvell OcteonTx2 RVU Kernel Drivers
-> > +=============================================
->
-> Shouldn't these lines be the length of the text?
+Server: bound port A to {18888,66,66} scope 2
+Server: bound port A to {18888,33,33} scope 2
 
-Haven't done this documentation before, will other files and fix if necessary,
+Now, if a client subscribes to the service range (e.g. {18888, 0-100}),
+it will get the 'TIPC_PUBLISHED' events in that binding order only when
+the subscription is started before the bindings.
+Otherwise, if started after the bindings, the events will arrive in the
+opposite order:
 
-> > +
-> > +Resource provisioning examples
-> > + - A PF/VF with NIX-LF & NPA-LF resources works as a pure network device
-> > + - A PF/VF with CPT-LF resource works as a pure cyrpto offload device.
->
-> s/cyrpto/crypto/
+Client: received event for published {18888,33,33}
+Client: received event for published {18888,66,66}
 
-Thanks, will fix.
+For the latter case, it is clear that the bindings have existed in the
+name table already, so when reported, the events' order will follow the
+order of the rbtree binding nodes (- a node with lesser 'lower'/'upper'
+range value will be first).
 
-> > +
-> > +.. kernel-figure::  resource_virtualization_unit.svg
-> > +   :alt:     RVU
-> > +   :align:   center
-> > +   :figwidth:        60em
-> > +
-> > +   RVU HW block connectivity
->
-> The diagram isn't really bringing much value if you ask me. The text in
-> the last section is quite a bit better. Perhaps show packet flow?
+This is correct as we provide the tracking on a specific service status
+(available or not), not the relationship between multiple services.
+However, some users expect to see the same order of arriving events
+irrespective of when the subscription is issued. This turns out to be
+easy to fix. We now add functionality to ensure that publication events
+always are issued in the same temporal order as the corresponding
+bindings were performed.
 
-If someone doesn't want read the text fully, then i thought the
-diagram would help
-in getting an idea about the RVU HW block connectivity.
+v2: replace the unnecessary macro - 'publication_after()' with inline
+function.
 
-> > +Firmware setups following stuff before kernel boots
-> > + - Enables required number of RVU PFs based on number of physical links.
-> > + - Number of VFs per PF are either static or configurable at compile time.
->
-> compile time of the firmware?
+Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+---
+ net/tipc/name_table.c | 53 +++++++++++++++++++++++++++++++++++++++++++--------
+ net/tipc/name_table.h |  4 ++++
+ 2 files changed, 49 insertions(+), 8 deletions(-)
 
-Yes, firmware.
+diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
+index 66a65c2cdb23..3a3ff0a7d13b 100644
+--- a/net/tipc/name_table.c
++++ b/net/tipc/name_table.c
+@@ -35,6 +35,7 @@
+  */
+ 
+ #include <net/sock.h>
++#include <linux/list_sort.h>
+ #include "core.h"
+ #include "netlink.h"
+ #include "name_table.h"
+@@ -66,6 +67,7 @@ struct service_range {
+ /**
+  * struct tipc_service - container for all published instances of a service type
+  * @type: 32 bit 'type' value for service
++ * @publ_cnt: increasing counter for publications in this service
+  * @ranges: rb tree containing all service ranges for this service
+  * @service_list: links to adjacent name ranges in hash chain
+  * @subscriptions: list of subscriptions for this service type
+@@ -74,6 +76,7 @@ struct service_range {
+  */
+ struct tipc_service {
+ 	u32 type;
++	unsigned int publ_cnt;
+ 	struct rb_root ranges;
+ 	struct hlist_node service_list;
+ 	struct list_head subscriptions;
+@@ -109,6 +112,7 @@ static struct publication *tipc_publ_create(u32 type, u32 lower, u32 upper,
+ 	INIT_LIST_HEAD(&publ->binding_node);
+ 	INIT_LIST_HEAD(&publ->local_publ);
+ 	INIT_LIST_HEAD(&publ->all_publ);
++	INIT_LIST_HEAD(&publ->list);
+ 	return publ;
+ }
+ 
+@@ -244,6 +248,8 @@ static struct publication *tipc_service_insert_publ(struct net *net,
+ 	p = tipc_publ_create(type, lower, upper, scope, node, port, key);
+ 	if (!p)
+ 		goto err;
++	/* Suppose there shouldn't be a huge gap btw publs i.e. >INT_MAX */
++	p->id = sc->publ_cnt++;
+ 	if (in_own_node(net, node))
+ 		list_add(&p->local_publ, &sr->local_publ);
+ 	list_add(&p->all_publ, &sr->all_publ);
+@@ -277,6 +283,22 @@ static struct publication *tipc_service_remove_publ(struct service_range *sr,
+ 	return NULL;
+ }
+ 
++static inline int publication_after(struct publication *pa,
++				    struct publication *pb)
++{
++	return ((int)(pb->id - pa->id) < 0);
++}
++
++static int tipc_publ_sort(void *priv, struct list_head *a,
++			  struct list_head *b)
++{
++	struct publication *pa, *pb;
++
++	pa = container_of(a, struct publication, list);
++	pb = container_of(b, struct publication, list);
++	return publication_after(pa, pb);
++}
++
+ /**
+  * tipc_service_subscribe - attach a subscription, and optionally
+  * issue the prescribed number of events if there is any service
+@@ -286,36 +308,51 @@ static void tipc_service_subscribe(struct tipc_service *service,
+ 				   struct tipc_subscription *sub)
+ {
+ 	struct tipc_subscr *sb = &sub->evt.s;
++	struct publication *p, *first, *tmp;
++	struct list_head publ_list;
+ 	struct service_range *sr;
+ 	struct tipc_name_seq ns;
+-	struct publication *p;
+ 	struct rb_node *n;
+-	bool first;
++	u32 filter;
+ 
+ 	ns.type = tipc_sub_read(sb, seq.type);
+ 	ns.lower = tipc_sub_read(sb, seq.lower);
+ 	ns.upper = tipc_sub_read(sb, seq.upper);
++	filter = tipc_sub_read(sb, filter);
+ 
+ 	tipc_sub_get(sub);
+ 	list_add(&sub->service_list, &service->subscriptions);
+ 
+-	if (tipc_sub_read(sb, filter) & TIPC_SUB_NO_STATUS)
++	if (filter & TIPC_SUB_NO_STATUS)
+ 		return;
+ 
++	INIT_LIST_HEAD(&publ_list);
+ 	for (n = rb_first(&service->ranges); n; n = rb_next(n)) {
+ 		sr = container_of(n, struct service_range, tree_node);
+ 		if (sr->lower > ns.upper)
+ 			break;
+ 		if (!tipc_sub_check_overlap(&ns, sr->lower, sr->upper))
+ 			continue;
+-		first = true;
+ 
++		first = NULL;
+ 		list_for_each_entry(p, &sr->all_publ, all_publ) {
+-			tipc_sub_report_overlap(sub, sr->lower, sr->upper,
+-						TIPC_PUBLISHED,	p->port,
+-						p->node, p->scope, first);
+-			first = false;
++			if (filter & TIPC_SUB_PORTS)
++				list_add_tail(&p->list, &publ_list);
++			else if (!first || publication_after(first, p))
++				/* Pick this range's *first* publication */
++				first = p;
+ 		}
++		if (first)
++			list_add_tail(&first->list, &publ_list);
++	}
++
++	/* Sort the publications before reporting */
++	list_sort(NULL, &publ_list, tipc_publ_sort);
++	list_for_each_entry_safe(p, tmp, &publ_list, list) {
++		tipc_sub_report_overlap(sub, p->lower, p->upper,
++					TIPC_PUBLISHED, p->port, p->node,
++					p->scope, true);
++		list_del_init(&p->list);
+ 	}
+ }
+ 
+diff --git a/net/tipc/name_table.h b/net/tipc/name_table.h
+index f79066334cc8..3d5da71ce41e 100644
+--- a/net/tipc/name_table.h
++++ b/net/tipc/name_table.h
+@@ -58,6 +58,7 @@ struct tipc_group;
+  * @node: network address of publishing socket's node
+  * @port: publishing port
+  * @key: publication key, unique across the cluster
++ * @id: publication id
+  * @binding_node: all publications from the same node which bound this one
+  * - Remote publications: in node->publ_list
+  *   Used by node/name distr to withdraw publications when node is lost
+@@ -69,6 +70,7 @@ struct tipc_group;
+  *   Used by closest_first and multicast receive lookup algorithms
+  * @all_publ: all publications identical to this one, whatever node and scope
+  *   Used by round-robin lookup algorithm
++ * @list: to form a list of publications in temporal order
+  * @rcu: RCU callback head used for deferred freeing
+  */
+ struct publication {
+@@ -79,10 +81,12 @@ struct publication {
+ 	u32 node;
+ 	u32 port;
+ 	u32 key;
++	unsigned int id;
+ 	struct list_head binding_node;
+ 	struct list_head binding_sock;
+ 	struct list_head local_publ;
+ 	struct list_head all_publ;
++	struct list_head list;
+ 	struct rcu_head rcu;
+ };
+ 
+-- 
+2.13.7
 
->
-> > +   Based on config, firmware assigns VFs to each of the PFs.
-> > + - Also assigns MSIX vectors to each of PF and VFs.
-> > + - These are not changed after kernel boot.
->
-> Can they be changed without FW rebuild?
-
-No, they cannot be.
-
->
-> Thanks for the description, I was hoping you'd also provide more info
-> on how the software componets of the system fit together. Today we only
-> have an AF driver upstream. Without the PF or VF drivers the card is
-> pretty much unusable with only the upstream drivers, right?
->
-
-I will start submitting netdev drivers (PF and VF) right after this patchset.
-And just FYI this is not a NIC card, this HW is found only on the ARM64
-based OcteonTX2 SOC.
-
-> There is a bunch of cgx_* exports in the AF module, which seem to have
-> no uses upstream, too (they are only called from rvu_cgx.c which is
-> compiled into the same module).
-
-In the very first patchset submitted CGX and AF drivers were separate modules.
-Based on suggestions we merged both of them into a single module.
-The export symbols are not needed, i will submit a separate patch to
-clean them up.
