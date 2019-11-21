@@ -2,55 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFC810497E
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:00:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEF1104980
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725936AbfKUEA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 23:00:26 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42104 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbfKUEA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:00:26 -0500
-Received: by mail-pf1-f196.google.com with SMTP id s5so937814pfh.9
-        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 20:00:25 -0800 (PST)
+        id S1726014AbfKUED6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 23:03:58 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:44519 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725819AbfKUED6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:03:58 -0500
+Received: by mail-wr1-f66.google.com with SMTP id i12so2546443wrn.11
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 20:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9jM+9ByUkyMl4HNjgzPDTvAyKRdgmZZ619EraQu35qI=;
-        b=FSRqXWm8TUpRPH6Iig4jPEeeNtIUesL89MrWxELcd64rJTSmPOOq/0B0LM9IhA5Kt8
-         i5PlWAk4b7rkPAv1uGDimOanNAl4hMNtn1YRZBzqxC8wy0G09un0rIlox+QYvpubqFJt
-         X5dK81imcpdjb26nKxklxqsiFMyfW6fHq0lpfWoNAxSEOgV+4at7KFgwXXLDjwZVttN7
-         eqzlvL+fvA4+AbTX0RRwBPCEWa5VMs8mfRy8coLewm3cMg0Pg5LEcZsivVZUp1UF+LXP
-         UAB4/OMh64BFJZrOMt+o2cbhORQDBI5incm3RpDnCp1PE5JR8BXwBMsv4qY97itP8Eqk
-         ChVQ==
+        bh=G8nCip2FBM01nIhitsJJYOcveraGXqBAPsEOgZC9/u4=;
+        b=RJDsuKd6StGSQ1bxnq2jZ9fbFHXKss5Jyk2AmJL2NhjCCnyJ7BhSbp75b11JBytkLh
+         5Oguyj/0LiVzNoxw9JJ1ffBksq0zL8J+44OyKg4KDhd+GmqMPIDQdIwIF8kcGl7leGhZ
+         TCIx629VRUMp2y39bX+vZK9KGLsav0PCGYjBwYXN5d5bo5rUS1lvS+eEdeoacxiJTor6
+         T1fke/BAI8bADGYRSfA8QRM0niKs9UL7bsJBxueHm+TfNx8X4SnOLNd/qkWouRSNpGVu
+         WfJB6VAIHUDYKF6GOS8TNZfOcStqrto7JzPxZheDZb/pTZ/cGmVuQ1wy8Zxroor+oGzX
+         P2Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=9jM+9ByUkyMl4HNjgzPDTvAyKRdgmZZ619EraQu35qI=;
-        b=NuRWMzdghSOsXNerUjriv3QjlS2mFDCkcVB5vUEpULzVh3r9valY7JgWjpdjSITeuP
-         CYDDRZT/a/VWFxfys9BRHwCCUWJ88SqBVC3y5ad9OA61Na4/QIilAvKfF+Qai2DtxykP
-         MGlfGg7FS0P5ZJCmMGauXMdzCMX0k6m8OQ9h1wh6GrYub99zBiNmKOHIV+ZBS+aOnU6X
-         c7qQcvhUcC7/Safg7GLnHUgOTOCBc+34j6GUINkzJky9nHrZKkk0iU/AnpEqk7vzdewD
-         O1dXlt32DXA3wAJDxqNCnJEaPdBvI0iyIQgWqO1ATrPM6gIQuwqflilC4iQjQHSEcZ8B
-         a5Bw==
-X-Gm-Message-State: APjAAAXDQQLeUNgUeqM2PxLXW25sda1upa/FhAJd5HfN7wGkZWFOc2z+
-        JYiLGkNE76SLGzNK2U8sqdN398fU
-X-Google-Smtp-Source: APXvYqz2dV0VovV3s3dbCwFCsdciiKCY0RR1Sm1gTeSWfTGV3kKw/y5xePlN70zYrLnzbcD+SMOHxA==
-X-Received: by 2002:a62:888c:: with SMTP id l134mr8322176pfd.216.1574308824626;
-        Wed, 20 Nov 2019 20:00:24 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G8nCip2FBM01nIhitsJJYOcveraGXqBAPsEOgZC9/u4=;
+        b=qArXuMuDF+MnXpp+v3XSP0S5LWjxuKzH14PDDetSEIWNIQm0v0AiuGl35UbRpo2+xo
+         /zCbTQfVe9WQ6vfNu2L2HUlWgsFck6eLuyqK/pU8c10vC1UGsPtUF0vabjntM5MgaQxk
+         NHSFBXGpywu8b8sTUHRiFJ9MrDny0g4e2IzvhT0aNcFT6FzzQYMM1/miXxDcas9KxYaV
+         IE7j0bW21F5FEENg1TU00j7LJXot1Z7IN97u7PYTfXFgxMMbwMMu93Nr925cICbV7/OP
+         8f0QdaShcOzOIccaH6aKzNIQON6YX4G+Ailuz2wCEAnZBYQW7PP6Jprjf0mTV7z/2KZ7
+         KfXA==
+X-Gm-Message-State: APjAAAU0n3sVZTFFyFcjYRGKrtB8+XUfHubkD5t+tzYBvqDbUdjESXmS
+        C0bSWZ1m8EgNMETrouwUVi45HXJH
+X-Google-Smtp-Source: APXvYqzSyiOmqEuKLoS80rcMiBXuATbBO2Z0kTojkfKoHzCxR7VRxU6JYZqNrLmcgsuns4iHpSKQjw==
+X-Received: by 2002:adf:82c6:: with SMTP id 64mr7571543wrc.151.1574309035149;
+        Wed, 20 Nov 2019 20:03:55 -0800 (PST)
 Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r10sm710500pgn.68.2019.11.20.20.00.23
+        by smtp.gmail.com with ESMTPSA id x8sm1752959wrm.7.2019.11.20.20.03.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Nov 2019 20:00:24 -0800 (PST)
-Subject: Re: [PATCH net-next v2] net: sfp: soft status and control support
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <E1iXP7P-0006DS-47@rmk-PC.armlinux.org.uk>
+        Wed, 20 Nov 2019 20:03:54 -0800 (PST)
+Subject: Re: [PATCH 1/5] net: mscc: ocelot: export ocelot_hwstamp_get/set
+ functions
+To:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>
+References: <20191120082318.3909-1-yangbo.lu@nxp.com>
+ <20191120082318.3909-2-yangbo.lu@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -106,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <0db08726-b94e-23bf-0035-03a4d6868044@gmail.com>
-Date:   Wed, 20 Nov 2019 20:00:22 -0800
+Message-ID: <93a33488-9ac1-6600-902c-aa2f6b0beccd@gmail.com>
+Date:   Wed, 20 Nov 2019 20:03:50 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1iXP7P-0006DS-47@rmk-PC.armlinux.org.uk>
+In-Reply-To: <20191120082318.3909-2-yangbo.lu@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,13 +128,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/20/2019 4:29 AM, Russell King wrote:
-> Add support for the soft status and control register, which allows
-> TX_FAULT and RX_LOS to be monitored and TX_DISABLE to be set.  We
-> make use of this when the board does not support GPIOs for these
-> signals.
+On 11/20/2019 12:23 AM, Yangbo Lu wrote:
+> Export ocelot_hwstamp_get/set functions so that DSA driver
+> is able to reuse them.
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
