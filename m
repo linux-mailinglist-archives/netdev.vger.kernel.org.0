@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB697104CA9
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 08:34:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0443104CBD
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 08:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbfKUHeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 02:34:17 -0500
-Received: from ozlabs.org ([203.11.71.1]:40223 "EHLO ozlabs.org"
+        id S1726454AbfKUHlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 02:41:04 -0500
+Received: from verein.lst.de ([213.95.11.211]:44505 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726165AbfKUHeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 02:34:17 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47JWXP0Vqmz9sPT;
-        Thu, 21 Nov 2019 18:34:12 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1574321654;
-        bh=pHBKt/pIY8/pjggPAOVBDfJjTlf2BbnB05Uov87WqvI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VxbBSn76Z6vf8xj15aFRw6osvug0l9Ufr0h6eQWilkoNexlE0bfOBa894L3JopsaZ
-         WaoBvWVQBbFyusX+FWnKIz6vmPl0JSy8Jjct6VDIwuPxvPdzCl8Q6um7IwQVWBK3o/
-         suWdyMgjX2Wdq/booEetrcnFLMkZXeha2IZb/k51uCWee5yHkxQbWn06aFfG9o1KEV
-         1aOEvj4xPmPMcOUsbbLzfoxxq+5lX16zdnfSHnQo/rRcnMsd5d2zT4hdGb0dS2D9rO
-         fIUtduC0aJ9LAdWKGNa8DsZMcXG5vU8G+MlxNuS+xSNgLzazn2RiU/Xu7jxvRo/EHm
-         o8wlB4vLlgD1w==
-Date:   Thu, 21 Nov 2019 18:34:04 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20191121183404.6e183d06@canb.auug.org.au>
+        id S1726014AbfKUHlE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 02:41:04 -0500
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id E48C268B05; Thu, 21 Nov 2019 08:41:00 +0100 (CET)
+Date:   Thu, 21 Nov 2019 08:41:00 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     laurentiu.tudor@nxp.com, hch@lst.de, robin.murphy@arm.com,
+        joro@8bytes.org, ruxandra.radulescu@nxp.com,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, ioana.ciornei@nxp.com, leoyang.li@nxp.com,
+        diana.craciun@nxp.com, madalin.bucur@nxp.com, camelia.groza@nxp.com
+Subject: Re: [PATCH v3 0/4] dma-mapping: introduce new dma unmap and sync
+ variants
+Message-ID: <20191121074100.GD24024@lst.de>
+References: <20191113122407.1171-1-laurentiu.tudor@nxp.com> <20191113.121132.1658930697082028145.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/gFd=x/UNjRv++bq.voC0wX8";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191113.121132.1658930697082028145.davem@davemloft.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/gFd=x/UNjRv++bq.voC0wX8
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, Nov 13, 2019 at 12:11:32PM -0800, David Miller wrote:
+> > This series introduces a few new dma unmap and sync api variants that,
+> > on top of what the originals do, return the virtual address
+> > corresponding to the input dma address. In order to do that a new dma
+> > map op is added, .get_virt_addr that takes the input dma address and
+> > returns the virtual address backing it up.
+> > The second patch adds an implementation for this new dma map op in the
+> > generic iommu dma glue code and wires it in.
+> > The third patch updates the dpaa2-eth driver to use the new apis.
+> 
+> The driver should store the mapping in it's private software state if
+> it needs this kind of conversion.
 
-Hi all,
+I think the problem for this driver (and a few others) is that they
+somehow manage to split I/O completions at a different boundary
+than submissions.  For me with my block I/O background this seems
+weird, but I'll need networking folks to double check the theory.
 
-[Sorry, I should have reported this earlier]
+> This is huge precendence for this, and there is therefore no need to
+> add even more complication and methods and burdon to architecture code
+> for the sake of this.
 
-After merging the net-next tree, today's linux-next build (powerpc
-allyesconfig) produced this warning:
+Unfortunately there are various drivers that abuse iommu_iova_to_phys
+to get a struct page to unmap.  Two of theose are network drivers
+that went in through you (dpaa2 and thunder), additonally the 
+caam crypto driver (which I think is the same SOC family as dpaa,
+but I'm not sure) and the AMD GPU driver.
 
-net/netfilter/nf_flow_table_offload.c: In function 'nf_flow_rule_match':
-net/netfilter/nf_flow_table_offload.c:80:21: warning: unsigned conversion f=
-rom 'int' to '__be16' {aka 'short unsigned int'} changes value from '327680=
-' to '0' [-Woverflow]
-   80 |   mask->tcp.flags =3D TCP_FLAG_RST | TCP_FLAG_FIN;
-      |                     ^~~~~~~~~~~~
+We also have drivers that just don't unmap and this don't work with
+iommus or dma-debug (IBM EMAC another net driver).
 
-Introduced by commit
-
-  c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/gFd=x/UNjRv++bq.voC0wX8
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3WPewACgkQAVBC80lX
-0GyIegf9FP8sPu8uRe2P5VhysaTMn+lMv4Wuj2nhSYtF4kyfYIktFH9/bYHEDCyM
-sas2ghltHdxd7433oEr9eZK2m8TwKzw1brMBOFl2TTvORKnK8xmKGMcXlOk0H0Vb
-z5pFF5V+yoefHZTQznF0uFil8QsSJwbrSAhAosYEWcC4O2L0OewE9DaRlJQCs7dA
-7amWOV1G5Sa9PnyZ4H3NRbp2foxXOGuNDKDPaWRgwagthu3xt5obfpgKgxGAW07P
-X+1f7rY67mJR/NGKr6/H4jTYzUXqd4GHmu+B7uUYgs0LCNjc6GuTo7o6Q8D8cKr+
-WJHmdG4PiC+jk4o8TezaC6ifqAIdYA==
-=faZe
------END PGP SIGNATURE-----
-
---Sig_/gFd=x/UNjRv++bq.voC0wX8--
+That being said I hate these new API, but I still think they are less
+bad than these IOMMU API abuses people do now.  If experienced
+networking folks know a way to get rid of both I'm all for it.
