@@ -2,70 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94BBE104CD2
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 08:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5624E104D23
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:04:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbfKUHqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 02:46:24 -0500
-Received: from mga12.intel.com ([192.55.52.136]:4523 "EHLO mga12.intel.com"
+        id S1726792AbfKUIEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:04:04 -0500
+Received: from verein.lst.de ([213.95.11.211]:44639 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726861AbfKUHqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 02:46:20 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Nov 2019 23:46:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,224,1571727600"; 
-   d="scan'208";a="216077580"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Nov 2019 23:46:16 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Kevin Scott <kevin.c.scott@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] ice: Update FW API minor version
-Date:   Wed, 20 Nov 2019 23:46:12 -0800
-Message-Id: <20191121074612.3055661-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191121074612.3055661-1-jeffrey.t.kirsher@intel.com>
-References: <20191121074612.3055661-1-jeffrey.t.kirsher@intel.com>
+        id S1725842AbfKUIEE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 03:04:04 -0500
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C80DF68BFE; Thu, 21 Nov 2019 09:03:56 +0100 (CET)
+Date:   Thu, 21 Nov 2019 09:03:56 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+Subject: Re: [PATCH v7 02/24] mm/gup: factor out duplicate code from four
+ routines
+Message-ID: <20191121080356.GA24784@lst.de>
+References: <20191121071354.456618-1-jhubbard@nvidia.com> <20191121071354.456618-3-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191121071354.456618-3-jhubbard@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Scott <kevin.c.scott@intel.com>
+On Wed, Nov 20, 2019 at 11:13:32PM -0800, John Hubbard wrote:
+> There are four locations in gup.c that have a fair amount of code
+> duplication. This means that changing one requires making the same
+> changes in four places, not to mention reading the same code four
+> times, and wondering if there are subtle differences.
+> 
+> Factor out the common code into static functions, thus reducing the
+> overall line count and the code's complexity.
+> 
+> Also, take the opportunity to slightly improve the efficiency of the
+> error cases, by doing a mass subtraction of the refcount, surrounded
+> by get_page()/put_page().
+> 
+> Also, further simplify (slightly), by waiting until the the successful
+> end of each routine, to increment *nr.
 
-Update FW API minor version to align to current value advertised
-by FW in new NVM images.
+Any reason for the spurious underscore in the function name?
 
-Signed-off-by: Kevin Scott <kevin.c.scott@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_controlq.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Otherwise this looks fine and might be a worthwhile cleanup to feed
+Andrew for 5.5 independent of the gut of the changes.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.h b/drivers/net/ethernet/intel/ice/ice_controlq.h
-index 4df9da359135..bf0ebe6149e8 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.h
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.h
-@@ -22,7 +22,7 @@
-  */
- #define EXP_FW_API_VER_BRANCH		0x00
- #define EXP_FW_API_VER_MAJOR		0x01
--#define EXP_FW_API_VER_MINOR		0x03
-+#define EXP_FW_API_VER_MINOR		0x05
- 
- /* Different control queue types: These are mainly for SW consumption. */
- enum ice_ctl_q {
--- 
-2.23.0
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
