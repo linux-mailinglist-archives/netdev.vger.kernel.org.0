@@ -2,146 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD4C105517
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 785E0105520
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:14:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbfKUPKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 10:10:38 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:60890 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726396AbfKUPKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:10:38 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3EC90B40086;
-        Thu, 21 Nov 2019 15:10:33 +0000 (UTC)
-Received: from [10.17.20.62] (10.17.20.62) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 21 Nov
- 2019 15:10:29 +0000
-Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
-To:     Jason Wang <jasowang@redhat.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Jeff Kirsher" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     Dave Ertman <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Bie, Tiwei" <tiwei.bie@intel.com>
-References: <20191115223355.1277139-1-jeffrey.t.kirsher@intel.com>
- <AM0PR05MB4866CF61828A458319899664D1700@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
-From:   Martin Habets <mhabets@solarflare.com>
-Message-ID: <30b968cf-0e11-a2c6-5b9f-5518df11dfb7@solarflare.com>
-Date:   Thu, 21 Nov 2019 15:10:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1726858AbfKUPOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 10:14:04 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45663 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726716AbfKUPOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:14:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574349242;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=S/ndUKKJCxI76HoRVTG7jNdszQTcPJXiUk69ASnD9hc=;
+        b=BFZPun6Wui8mst5ik4v+igZbbNO52U03jnmSpDZ1ATsGYUxUJFr+Ti3ykcD52EkazKpp+B
+        ko2SioijMq46xlosEU/tY9Nt7mHwLezU+K1xLd3BvLSJRmSAi5PvMABX2yMrB2PxStfrsf
+        GYB6ESIY9PDnA2Y+Db56AsDis/pFM7w=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-286-sbaU5VrmMxWepkgX6OVgmw-1; Thu, 21 Nov 2019 10:13:59 -0500
+Received: by mail-wm1-f71.google.com with SMTP id y14so1959233wmi.4
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 07:13:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iHsCY/CMXwIcgnSHclUoHJ8eh4Q1rh48lgjW6W5ihDs=;
+        b=d5/VlY9ZAHp0xuD8bGT53YmEJzntXc3bWBFqT4r9Pt/RTGQgD7Otyj8G89l2wUZASW
+         dNTEmwpDuq6Xib8W2dNxBLlZIk7opGGQOALRyzzPoE9K4gHXo/EadZSeAWW7YpKYzIkM
+         71XoUrQKcijVhueyZlLWEGOnnYQd0YVl50uyPVy65wlPkv/x1CUHYtC0qfZNOLXwmfwt
+         Jevh0o4XetrKwv7BxsBR3uhaniqrQ7b2O9JaNgBQnBrJwWDafbrRd0ORtyKlUNf2kZXS
+         EDyiQopRcHa5ySTedeVl5OS+QYonjD/7l2lzmkrxs7PeCifaZJ/OLYhyIKIk7Alo75EO
+         iBvg==
+X-Gm-Message-State: APjAAAUUaCuOQ4rLORUuomUr8+UIY3TcO93EMoxRXCmSHCLJn3y5kpR3
+        vrvGlsKDY4L2uACxifxqAhLBRuQ3qBzCpvu44Rr+DE5XU5WjStswWoNHChIHe69rYBrgNO0j0S8
+        HDWRPqd8w6c4Ufwjz
+X-Received: by 2002:adf:fd4a:: with SMTP id h10mr10771260wrs.90.1574349237925;
+        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwffrnaWrX2CTnz1mrGFjyWf4QxuPdCHsb+nu0fFKK6LVRRphnlRgzFqP4BBbEKQFy/2FMiLQ==
+X-Received: by 2002:adf:fd4a:: with SMTP id h10mr10771237wrs.90.1574349237686;
+        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
+Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
+        by smtp.gmail.com with ESMTPSA id z7sm1978953wma.46.2019.11.21.07.13.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
+Date:   Thu, 21 Nov 2019 16:13:55 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jorgen Hansen <jhansen@vmware.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 0/6] vsock: add local transport support
+Message-ID: <20191121151355.grgfbte6xniqe6xo@steredhat>
+References: <20191119110121.14480-1-sgarzare@redhat.com>
+ <MWHPR05MB3376B8241546664BBCA6FC37DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <a40c09ee-0915-f10c-650e-7539726a887b@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ukex01.SolarFlarecom.com (10.17.10.4) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25056.003
-X-TM-AS-Result: No-19.137600-8.000000-10
-X-TMASE-MatchedRID: pS5owHKhBO1EgaBf5eVRwvZvT2zYoYOwC/ExpXrHizxG7aLtT3oj+1V6
-        aspoCMU5Vdnu62RDFl3KlvyYvAsge5tfgr8OpXQ1k3rl+MaNgxB/9Mg6o+wMi2MunwKby/AX8bf
-        335SL+13odsFwcKBbWFeW9JSfjqoz5yodNBcVanvxWp8B+pjaLEjkgoGa55VaGlfXMQvierc5lg
-        Gvol4htcuyL1xicPTjiRwyBTNWvIkp3x8GZfcBJ+CdOJAyA+r+KsyJ61LbQNE4XREg9Ki10zdhc
-        m28o6c5aq8vueB+8A4mILDD37WsMB6ElTNWlXcRKhQHv3RCSeobqh1kJGkuzuQydRUvl3QT6I9N
-        7ME4lokxicNUzIllOzgKnJS0afWRUjOzl6DaSNi8coKUcaOOvRhH6ApagZfO31GU/N5W5BCwYDW
-        nvg3cdYXq9ri0zfwLZ9lUscLzlMdarFKFj/o9tEaMPBFKXyAUjhdrcmlB7cPwOeqRlsRlmL7Ito
-        zLGgGlFr4+WtcC2nG8mPUQrzsMxcTbdJDW4qIevOAv94sAIMRPEvlTYRZqW2+fXVEQ/fGeKXRoJ
-        DhFIVLfJak/J36VrfYx6jUoivPIoY4CCMZTc/2ie2FBq5CMBsnlJe2gk8vIU20Pec0W1lZiQVtY
-        RZRKYoI5J68buzlI7MOZRXlUGwukTrky6gW005QIUr76ankw+KgiyLtJrSCd9kYGaE+7T3d7bci
-        /LVuNWgY0bZC9uZO88GErcrkUGR4YrUf5Zsout0cS/uxH87AHgh3sKJBzP7cykxYb8lUiKRF4XB
-        XsUf59LQinZ4QefNQdB5NUNSsi1GcRAJRT6PP3FLeZXNZS4DXnYt5w4ccjtcsE/u6ZQxsQVhgP3
-        pPVUJFMT0dtEBA7U7BMBGNa2anSQta5VZxu6g==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--19.137600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25056.003
-X-MDID: 1574349035-oAJ5_rzQ6a9u
+In-Reply-To: <MWHPR05MB3376B8241546664BBCA6FC37DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
+X-MC-Unique: sbaU5VrmMxWepkgX6OVgmw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/11/2019 04:08, Jason Wang wrote:
-> 
-> On 2019/11/16 上午7:25, Parav Pandit wrote:
->> Hi Jeff,
->>
->>> From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
->>> Sent: Friday, November 15, 2019 4:34 PM
->>>
->>> From: Dave Ertman <david.m.ertman@intel.com>
->>>
->>> This is the initial implementation of the Virtual Bus, virtbus_device and
->>> virtbus_driver.  The virtual bus is a software based bus intended to support
->>> lightweight devices and drivers and provide matching between them and
->>> probing of the registered drivers.
->>>
->>> The primary purpose of the virual bus is to provide matching services and to
->>> pass the data pointer contained in the virtbus_device to the virtbus_driver
->>> during its probe call.  This will allow two separate kernel objects to match up
->>> and start communication.
->>>
->> It is fundamental to know that rdma device created by virtbus_driver will be anchored to which bus for an non abusive use.
->> virtbus or parent pci bus?
->> I asked this question in v1 version of this patch.
->>
->> Also since it says - 'to support lightweight devices', documenting that information is critical to avoid ambiguity.
->>
->> Since for a while I am working on the subbus/subdev_bus/xbus/mdev [1] whatever we want to call it, it overlaps with your comment about 'to support lightweight devices'.
->> Hence let's make things crystal clear weather the purpose is 'only matching service' or also 'lightweight devices'.
->> If this is only matching service, lets please remove lightweight devices part..
-> 
-> 
-> Yes, if it's matching + lightweight device, its function is almost a duplication of mdev. And I'm working on extending mdev[1] to be a generic module to support any types of virtual devices a while. The advantage of mdev is:
-> 
-> 1) ready for the userspace driver (VFIO based)
-> 2) have a sysfs/GUID based management interface
+On Thu, Nov 21, 2019 at 02:45:32PM +0000, Jorgen Hansen wrote:
+> > From: Stefano Garzarella [mailto:sgarzare@redhat.com]
+> > Sent: Tuesday, November 19, 2019 12:01 PM
+> > This series introduces a new transport (vsock_loopback) to handle
+> > local communication.
+> > This could be useful to test vsock core itself and to allow developers
+> > to test their applications without launching a VM.
+> >=20
+> > Before this series, vmci and virtio transports allowed this behavior,
+> > but only in the guest.
+> > We are moving the loopback handling in a new transport, because it
+> > might be useful to provide this feature also in the host or when
+> > no H2G/G2H transports (hyperv, virtio, vmci) are loaded.
+> >=20
+> > The user can use the loopback with the new VMADDR_CID_LOCAL (that
+> > replaces VMADDR_CID_RESERVED) in any condition.
+> > Otherwise, if the G2H transport is loaded, it can also use the guest
+> > local CID as previously supported by vmci and virtio transports.
+> > If G2H transport is not loaded, the user can also use VMADDR_CID_HOST
+> > for local communication.
+> >=20
+> > Patch 1 is a cleanup to build virtio_transport_common without virtio
+> > Patch 2 adds the new VMADDR_CID_LOCAL, replacing
+> > VMADDR_CID_RESERVED
+> > Patch 3 adds a new feature flag to register a loopback transport
+> > Patch 4 adds the new vsock_loopback transport based on the loopback
+> >         implementation of virtio_transport
+> > Patch 5 implements the logic to use the local transport for loopback
+> >         communication
+> > Patch 6 removes the loopback from virtio_transport
+> >=20
+> > @Jorgen: Do you think it might be a problem to replace
+> > VMADDR_CID_RESERVED with VMADDR_CID_LOCAL?
+>=20
+> No, that should be fine. It has never allowed for use with stream sockets=
+ in
+> AF_VSOCK. The only potential use would be for datagram sockets, but that
+> side appears to be unaffected by your changes, since loopback is only
+> introduced for SOCK_STREAM.
+>=20
 
-In my view this virtual-bus is more generic and more flexible than mdev.
-What for you are the advantages of mdev to me are some of it's disadvantages.
+Yes, datagram sockets are not affected.
 
-The way I see it we can provide rdma support in the driver using virtual-bus.
-At the moment we would need separate mdev support in the driver for vdpa, but I hope at some point mdev
-would become a layer on top of virtual-bus.
-Besides these users we also support internal tools for our hardware factory provisioning, and for testing/debugging.
-I could easily imagine such tools using a virtual-bus device. With mdev those interfaces would be more convoluted.
+Thanks for the clarification,
+Stefano
 
-> So for 1, it's not clear that how userspace driver would be supported here, or it's completely not being accounted in this series? For 2, it looks to me that this series leave it to the implementation, this means management to learn several vendor specific interfaces which seems a burden.
-> 
-> Note, technically Virtual Bus could be implemented on top of [1] with the full lifecycle API.
-
-Seems easier to me to do that the other way around: mdev could be implemented on top of virtual-bus.
-
-Best regards,
-Martin
-
-> [1] https://lkml.org/lkml/2019/11/18/261
-> 
-> 
->>
->> You additionally need modpost support for id table integration to modifo, modprobe and other tools.
->> A small patch similar to this one [2] is needed.
->> Please include in the series.
->>
->> [..]
-> 
-> 
-> And probably a uevent method. But rethinking of this, matching through a single virtual bus seems not good. What if driver want to do some specific matching? E.g for virtio, we may want a vhost-net driver that only match networking device. With a single bus, it probably means you need another bus on top and provide the virtio specific matching there. This looks not straightforward as allowing multiple type of buses.
-> 
-> Thanks
-> 
