@@ -2,152 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 759CF105D39
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 00:41:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0A8105D65
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 00:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726705AbfKUXlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 18:41:47 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34898 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbfKUXlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 18:41:47 -0500
-Received: by mail-lj1-f194.google.com with SMTP id r7so5233313ljg.2
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 15:41:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=U/NYMVfpDgcrOYIDYMCLg/PUSAirJCRUEzzkMLwO8gM=;
-        b=t5GfUg8zWrh4YJAAGa/KaUUK9Pht0QAEJloqyFP8qFqMlaRsKMGUl8I4Vl0rGX2S11
-         PYnLdmYcHz9Psz0K/NQq34DywjFEt+m8YT4Ybogtey46HS006vSF3dxh/ObWngTq9laC
-         T7imTTq2odEanAz97fEMljz/TJHm6pftBM5UucdDon6bP+1mMgFKt8iHBVJsHS10IJ45
-         r9jgCb1ARzIHxc+mjnu1zLYu9/PCQhkiWS4ojOlwlyOwagsdeE3JNSTtoDoy3QvmTDxP
-         IPigRaKrGnUuWG0fuZq/Z9pzg3sHNtgphbqxk7cwl2FyHzJKJlqtrCeMnvEO7T4xvo9v
-         Zu6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=U/NYMVfpDgcrOYIDYMCLg/PUSAirJCRUEzzkMLwO8gM=;
-        b=jTerVyLanxniikY83k7JHgK3ItkdKCgSY2nR+9dZoyLn5z6/RH53KNU603yTjr997I
-         S42CTa1Ww2wufbuZY01ts/GxirBgA6ObwUZZu3z4pVvrbMyflFOU+VRZLaHM5Rav9bVZ
-         b2SweEJ/YV4WAvzc2CJSBXjK2MFaLMAntBm1PiqlzJq2x/c/yqpqxMlKpkN5K24kbeOL
-         BCfnBfXZovuHSo7PDws5Fcc/AGO6c3s927+GPtYbDwsdbfBYzEFOGqtBii/mgD88hhUV
-         yHgdNpnVteXefSmA5GUWFwwJmo6LMrpAoAkEolcfr0wvb5ZhBgT8CCr1odOXLxNY6ogr
-         J6PA==
-X-Gm-Message-State: APjAAAXaWE1rsikFUwUH4/jCdIJhVBHWV7ctJf01wDfJFGBYF4wuDqMP
-        hkEf54Z3y4NmpGGHn/ZlIL0BEuPoWAyWw7Wx9PH+
-X-Google-Smtp-Source: APXvYqxoUOb+MFtHuWPh2qjo1P+X41fELBJVqTXNUG/wLBCaYpO1NPnnOFQCyDl7kzwpTvntD7FtzWhs00nttRX4zTM=
-X-Received: by 2002:a2e:970e:: with SMTP id r14mr9565457lji.57.1574379702619;
- Thu, 21 Nov 2019 15:41:42 -0800 (PST)
+        id S1726329AbfKUXsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 18:48:22 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35710 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725956AbfKUXsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 18:48:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Dqq07qjaLtHh6dGNj7IksBQ32SXK7l6MBVk0AK3DEuk=; b=cQge2uHZbWmeLO/zgfeohrHWj
+        oVMC++Y0++SZ2XSYIwHICBtSvFh83ogC3u2SC3S3DOdnvXqTwnXyzn9e8rObw1nGkt3POMtxegaPi
+        fkwC5fqR7VmApEfunCJub05WF1EeJIRbfOLADPNNaBVaBF3xS17h9j7wUsFkTZBdpSaVmnA11Saiw
+        faWYnDMhR8dTUAFmIDIHr3UD8PlGJKq7I4ynniYkJf+uzIvPMvnewYtQMqwOTqwD3sEULDL/1JZCj
+        ygH6jEvoKrjXiXGCxApy2HO0AZLueQaw+mYq/v9/sYoErPBKaXxbOwCHP3Q2TfSsHZs+Ny+VOLPGQ
+        L4qhTNYTA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38704)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iXwBM-0001R3-Eq; Thu, 21 Nov 2019 23:48:16 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iXwBI-00039c-UH; Thu, 21 Nov 2019 23:48:12 +0000
+Date:   Thu, 21 Nov 2019 23:48:12 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch
+Subject: Re: [PATCH net-next 1/3] dpaa2-eth: do not hold rtnl_lock on
+ phylink_create() or _destroy()
+Message-ID: <20191121234812.GC25745@shell.armlinux.org.uk>
+References: <1574363727-5437-1-git-send-email-ioana.ciornei@nxp.com>
+ <1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-References: <20191120213816.8186-1-jolsa@kernel.org> <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
- <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
-In-Reply-To: <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 21 Nov 2019 18:41:31 -0500
-Message-ID: <CAHC9VhQbQoXacbTCNJPGNzFOv30PwLeiWu4ROQFU46=saTeTNQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and unload
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1574363727-5437-2-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 4:49 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
-> On Wed, Nov 20, 2019 at 1:46 PM Daniel Borkmann <daniel@iogearbox.net> wr=
-ote:
-> > On 11/20/19 10:38 PM, Jiri Olsa wrote:
-> > > From: Daniel Borkmann <daniel@iogearbox.net>
-> > >
-> > > Allow for audit messages to be emitted upon BPF program load and
-> > > unload for having a timeline of events. The load itself is in
-> > > syscall context, so additional info about the process initiating
-> > > the BPF prog creation can be logged and later directly correlated
-> > > to the unload event.
-> > >
-> > > The only info really needed from BPF side is the globally unique
-> > > prog ID where then audit user space tooling can query / dump all
-> > > info needed about the specific BPF program right upon load event
-> > > and enrich the record, thus these changes needed here can be kept
-> > > small and non-intrusive to the core.
-> > >
-> > > Raw example output:
-> > >
-> > >    # auditctl -D
-> > >    # auditctl -a always,exit -F arch=3Dx86_64 -S bpf
-> > >    # ausearch --start recent -m 1334
-> > >    [...]
-> > >    ----
-> > >    time->Wed Nov 20 12:45:51 2019
-> > >    type=3DPROCTITLE msg=3Daudit(1574271951.590:8974): proctitle=3D"./=
-test_verifier"
-> > >    type=3DSYSCALL msg=3Daudit(1574271951.590:8974): arch=3Dc000003e s=
-yscall=3D321 success=3Dyes exit=3D14 a0=3D5 a1=3D7ffe2d923e80 a2=3D78 a3=3D=
-0 items=3D0 ppid=3D742 pid=3D949 auid=3D0 uid=3D0 gid=3D0 euid=3D0 suid=3D0=
- fsuid=3D0 egid=3D0 sgid=3D0 fsgid=3D0 tty=3Dpts0 ses=3D2 comm=3D"test_veri=
-fier" exe=3D"/root/bpf-next/tools/testing/selftests/bpf/test_verifier" subj=
-=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=3D(null)
-> > >    type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8974): auid=3D0 ui=
-d=3D0 gid=3D0 ses=3D2 subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c=
-0.c1023 pid=3D949 comm=3D"test_verifier" exe=3D"/root/bpf-next/tools/testin=
-g/selftests/bpf/test_verifier" prog-id=3D3260 event=3DLOAD
-> > >    ----
-> > >    time->Wed Nov 20 12:45:51 2019
-> > > type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8975): prog-id=3D3260=
- event=3DUNLOAD
-> > >    ----
-> > >    [...]
-> > >
-> > > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> >
-> > LGTM, thanks for the rebase!
->
-> Applied to bpf-next. Thanks!
+On Thu, Nov 21, 2019 at 09:15:25PM +0200, Ioana Ciornei wrote:
+> The rtnl_lock should not be held when calling phylink_create() or
+> phylink_destroy() since it leads to the deadlock listed below:
+> 
+> [   18.656576]  rtnl_lock+0x18/0x20
+> [   18.659798]  sfp_bus_add_upstream+0x28/0x90
+> [   18.663974]  phylink_create+0x2cc/0x828
+> [   18.667803]  dpaa2_mac_connect+0x14c/0x2a8
+> [   18.671890]  dpaa2_eth_connect_mac+0x94/0xd8
+> 
+> Fix this by moving the _lock() and _unlock() calls just outside of
+> phylink_of_phy_connect() and phylink_disconnect_phy().
+> 
+> Fixes: 719479230893 ("dpaa2-eth: add MAC/PHY support through phylink")
+> Reported-by: Russell King <linux@armlinux.org.uk>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ----
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 4 ++++
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 7ff147e89426..40290fea9e36 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -3431,12 +3431,10 @@ static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
+>  		set_mac_addr(netdev_priv(net_dev));
+>  		update_tx_fqids(priv);
+>  
+> -		rtnl_lock();
+>  		if (priv->mac)
+>  			dpaa2_eth_disconnect_mac(priv);
+>  		else
+>  			dpaa2_eth_connect_mac(priv);
+> -		rtnl_unlock();
 
-[NOTE: added linux-audit to the To/CC line]
+As I said previously, this will not be safe if net_dev is actively
+published to userspace, and I'm very disappointed that you have not
+taken on board what I wrote.
 
-Wait a minute, why was the linux-audit list not CC'd on this?  Why are
-you merging a patch into -next that adds to the uapi definition *and*
-creates a new audit record while we are at -rc8?
+	Thread 1				Thread 2
+						rtnl_lock()
+	dpaa2_eth_disconnect_mac();
+	dpaa2_mac_disconnect(priv->mac)
+	 phylink_disconnect_phy(mac->phylink);
+						dpaa2_eth_get_link_ksettings()
+	 phylink_destroy(mac->phylink);
+						phylink_ethtool_ksettings_get(priv->mac->phylink, ...)
+	  kfree(pl);
+	  					phylink_ethtool_ksettings_get()
+						now dereferences freed
+						memory
+	kfree(priv->mac);
+	priv->mac = NULL;
 
-Aside from that I'm concerned that you are relying on audit userspace
-changes that might not be okay; I see the PR below, but I don't see
-any comment on it from Steve (it is his audit userspace).  I also
-don't see a corresponding test added to the audit-testsuite, which is
-a common requirement for new audit functionality (link below).  I'm
-also fairly certain we don't want this new BPF record to look like how
-you've coded it up in bpf_audit_prog(); duplicating the fields with
-audit_log_task() is wrong, you've either already got them via an
-associated record (which you get from passing non-NULL as the first
-parameter to audit_log_start()), or you don't because there is no
-associated syscall/task (which you get from passing NULL as the first
-parameter).  Please revert, un-merge, etc. this patch from bpf-next;
-it should not go into Linus' tree as written.
+Similar can happen with priv->mac.
 
-Audit userspace PR:
-* https://github.com/linux-audit/audit-userspace/pull/104
+As long as the netdev is published, paths such as those in thread 2 are
+possible while thread 1 is running concurrently.
 
-Audit test suite:
-* https://github.com/linux-audit/audit-testsuite
+So, your patch is at best a band-aid around the deadlock issue I pointed
+out, but in doing so exposes another problem.
 
-Audit folks, here is a link to the thread in the archives:
-* https://lore.kernel.org/bpf/20191120213816.8186-1-jolsa@kernel.org/T/#u
+I think there is a fundamental design problem, and merely tweaking some
+locks will not fix it.
 
---=20
-paul moore
-www.paul-moore.com
+As I've already stated, the phylink is not designed to be created and
+destroyed on a published network device.
+
+>  	}
+>  
+>  	return IRQ_HANDLED;
+> @@ -3675,9 +3673,7 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+>  #ifdef CONFIG_DEBUG_FS
+>  	dpaa2_dbg_remove(priv);
+>  #endif
+> -	rtnl_lock();
+>  	dpaa2_eth_disconnect_mac(priv);
+> -	rtnl_unlock();
+>  
+>  	unregister_netdev(net_dev);
+>  
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> index 84233e467ed1..0200308d1bc7 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> @@ -277,7 +277,9 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+>  	}
+>  	mac->phylink = phylink;
+>  
+> +	rtnl_lock();
+>  	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
+> +	rtnl_unlock();
+>  	if (err) {
+>  		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
+>  		goto err_phylink_destroy;
+> @@ -301,7 +303,9 @@ void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
+>  	if (!mac->phylink)
+>  		return;
+>  
+> +	rtnl_lock();
+>  	phylink_disconnect_phy(mac->phylink);
+> +	rtnl_unlock();
+>  	phylink_destroy(mac->phylink);
+>  	dpmac_close(mac->mc_io, 0, mac->mc_dev->mc_handle);
+>  }
+> -- 
+> 1.9.1
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
