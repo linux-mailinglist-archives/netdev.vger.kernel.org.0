@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5624E104D23
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 883FE104D32
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:04:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbfKUIEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:04:04 -0500
-Received: from verein.lst.de ([213.95.11.211]:44639 "EHLO verein.lst.de"
+        id S1726952AbfKUIEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:04:25 -0500
+Received: from verein.lst.de ([213.95.11.211]:44668 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbfKUIEE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 03:04:04 -0500
+        id S1725842AbfKUIEY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 03:04:24 -0500
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id C80DF68BFE; Thu, 21 Nov 2019 09:03:56 +0100 (CET)
-Date:   Thu, 21 Nov 2019 09:03:56 +0100
+        id 0915C68C7B; Thu, 21 Nov 2019 09:04:20 +0100 (CET)
+Date:   Thu, 21 Nov 2019 09:04:19 +0100
 From:   Christoph Hellwig <hch@lst.de>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -21,7 +21,6 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Alex Williamson <alex.williamson@redhat.com>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
         Dan Williams <dan.j.williams@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         Dave Chinner <david@fromorbit.com>,
@@ -45,41 +44,21 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: Re: [PATCH v7 02/24] mm/gup: factor out duplicate code from four
- routines
-Message-ID: <20191121080356.GA24784@lst.de>
-References: <20191121071354.456618-1-jhubbard@nvidia.com> <20191121071354.456618-3-jhubbard@nvidia.com>
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v7 04/24] mm: Cleanup __put_devmap_managed_page() vs
+ ->page_free()
+Message-ID: <20191121080419.GB24784@lst.de>
+References: <20191121071354.456618-1-jhubbard@nvidia.com> <20191121071354.456618-5-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191121071354.456618-3-jhubbard@nvidia.com>
+In-Reply-To: <20191121071354.456618-5-jhubbard@nvidia.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 11:13:32PM -0800, John Hubbard wrote:
-> There are four locations in gup.c that have a fair amount of code
-> duplication. This means that changing one requires making the same
-> changes in four places, not to mention reading the same code four
-> times, and wondering if there are subtle differences.
-> 
-> Factor out the common code into static functions, thus reducing the
-> overall line count and the code's complexity.
-> 
-> Also, take the opportunity to slightly improve the efficiency of the
-> error cases, by doing a mass subtraction of the refcount, surrounded
-> by get_page()/put_page().
-> 
-> Also, further simplify (slightly), by waiting until the the successful
-> end of each routine, to increment *nr.
-
-Any reason for the spurious underscore in the function name?
-
-Otherwise this looks fine and might be a worthwhile cleanup to feed
-Andrew for 5.5 independent of the gut of the changes.
+Looks good,
 
 Reviewed-by: Christoph Hellwig <hch@lst.de>
