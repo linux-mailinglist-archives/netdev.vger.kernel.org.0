@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C487104FF5
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:04:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4828104FF8
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbfKUKDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 05:03:47 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39786 "EHLO
+        id S1727112AbfKUKD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 05:03:58 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43881 "EHLO
         mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726822AbfKUKDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:03:47 -0500
-Received: by mail-pl1-f196.google.com with SMTP id o9so1340165plk.6
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 02:03:46 -0800 (PST)
+        with ESMTP id S1727097AbfKUKD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:03:57 -0500
+Received: by mail-pl1-f196.google.com with SMTP id a18so1328140plm.10
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 02:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=aCy1wPKPscgw575L5dBHLzsjbqT1fEQcMlZAJIuGLUw=;
-        b=ueIeoGjwEYycaRdgiD6YHQn6eMEEZYF9+yBAKm4mrxZqVinSsuG9h3B0+5jJi3US13
-         0HpsYmZ5oPi8TBxQIlEaFFr3QYH+gdlDCArTd4+pYdNhJ+9UTtJK2w2MQy6WrnPP1ypR
-         sDhy/2ujMKvW6u3YGyJ9BaanKBweOsLB2trdpNxLhct5GuT7kgp8HeHz1Bs0ZOf8VVaW
-         m5VorTwpL4RCgJGxZ2IJHZwjFRLMLYQIt0l1AgSoOUDae7FVqaxvbiBZU+S+sodXl4Wq
-         1ay5+bjYt2Z4u4vpC5IiUg/Bq04A2hFFaWYf8stCTKLEA69Qr6b7kaK1SjndHnB31C+r
-         2uBw==
+        bh=4f3S2iP2dvBR0tjKD6jw83p2/B2Buvy/DUYbZAqyF9Q=;
+        b=qnBm8JcKfMa7Qd1HjovefpndYUBVVq5OfB2Vcna9lT/pla9R7qC0lCmiqDnw0elQru
+         lr6LiEISWHESYfcQuiNQ7EVv6S32yBbhakartI3fPI5x3PT7YLkMsjfWkuwgxZgNgn92
+         LJAIixCBoQU+CCbkJUGCQjzHxguDeL3JC+1dEUBeuKYaf/puqqWUCH9bMTK4AbXIjbQp
+         VT0IRHryEGtQBF5FV02zv0xSnxKZLNuYD+YULeWYoZt5Are0uaIRYaOBc02JrgRftFrG
+         8sriGaC6/dYZXwPCIKlCwzaVcjUG7x9Hb1+kzqYlAyecVfH80exA9CEspmXBPNqJVT+K
+         kNHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=aCy1wPKPscgw575L5dBHLzsjbqT1fEQcMlZAJIuGLUw=;
-        b=F+vzmeedgW7voxH73ED86wvG4tN8lslMQuf/Ycq4DPw0+TmLNQnFgqxQfNDsR3D82E
-         IdXBmNaku3XzL0+AJhXxJac1Mlxo9NTuPAgGhhIjoPfP6LN5a/ZV+8kbt4pen8WH2qaG
-         ogeqMG5/940zQVcGVc7xReHttJL4nIsrUmY7DmFfDTMLSGH9aDZAsvwJ0ljB8t/hYEI8
-         Usmsdk/ywErxwLo8q8LN2crs3PVzKoVw4ewBLzYkTlAhUFqW5+H8VOMV6EDQoAWZdQAm
-         MdSgJHPI/q5bS7eJGuqgxk0VNMUPRT8AklWSmW9pw8RERqDr1xrsCwn4Sb0QAhuh9rtq
-         +zPw==
-X-Gm-Message-State: APjAAAV/ZE2qxMOaJl2GkPqGPGss/s5XcObkqZVVUGvP8sqBDsSPHqLh
-        pjCWKrm8qZ7KEC858Rph4+E5uyFi
-X-Google-Smtp-Source: APXvYqwjqbzWThPuQG3SHeTDBaZhRw1jWrY67DBIVRlewFE+sQux8sO4P5v3LK8mfz1FW3oN2Kyd/g==
-X-Received: by 2002:a17:902:ba91:: with SMTP id k17mr7967252pls.100.1574330625889;
-        Thu, 21 Nov 2019 02:03:45 -0800 (PST)
+        bh=4f3S2iP2dvBR0tjKD6jw83p2/B2Buvy/DUYbZAqyF9Q=;
+        b=YsC1s62v3vcKy2DKyAalEyOoGIwRkbDE0aF87vLBu+iki8KtWLI1tOpO8qJbLOI8HQ
+         Sp5aJ6NfjLqFI+2yd++YouDrNmrWiNMof0L2ay2az4L57inNfAX6OKtYJLqKxeRPPyJO
+         roO1Qo2J0CeHUWIQlHtmCb9CxtjNslRz4q5mNPKnRW2hGdOjyEWxF8r7UDcpYH2XKgQ5
+         KYrvgNOcolzZy5BefKqj43SJA+bsBTBQSgJTyOg/n3wL6zzrtJ/JswFDFFaM5uTZbQKC
+         IjDP3lMbnmyX1670L+dWr4riXgF8gN4JlAuAANsJMIW3S7oaZYaaekrZ/HgU9rJS8aJu
+         UFNQ==
+X-Gm-Message-State: APjAAAXGLLliUmUgmxbWaIm3rAmhrWziCPXuTnyAf9sMBESTmkPC8YOU
+        IntdIp0MJs0sR3gu75lujlVxtq6O
+X-Google-Smtp-Source: APXvYqzuqg/uge54J32dqXVUvu2AzlE8K2iNIgFeeZmH7SB1x84pTVUKe0isr3LTEBG6VGzQsE+Oww==
+X-Received: by 2002:a17:902:760b:: with SMTP id k11mr7730935pll.126.1574330634459;
+        Thu, 21 Nov 2019 02:03:54 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p7sm2670398pfn.14.2019.11.21.02.03.44
+        by smtp.gmail.com with ESMTPSA id d38sm2328123pgd.59.2019.11.21.02.03.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Nov 2019 02:03:45 -0800 (PST)
+        Thu, 21 Nov 2019 02:03:53 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, simon.horman@netronome.com,
         jakub.kicinski@netronome.com
-Subject: [PATCHv2 net-next 1/4] net: sched: add vxlan option support to act_tunnel_key
-Date:   Thu, 21 Nov 2019 18:03:26 +0800
-Message-Id: <a67eb8fbc6f2244cd8ae67747ebc4dd42d0516d0.1574330535.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 2/4] net: sched: add erspan option support to act_tunnel_key
+Date:   Thu, 21 Nov 2019 18:03:27 +0800
+Message-Id: <82fd552a95b82c06cc3c700a9c444086cd74b89e.1574330535.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1574330535.git.lucien.xin@gmail.com>
+In-Reply-To: <a67eb8fbc6f2244cd8ae67747ebc4dd42d0516d0.1574330535.git.lucien.xin@gmail.com>
 References: <cover.1574330535.git.lucien.xin@gmail.com>
+ <a67eb8fbc6f2244cd8ae67747ebc4dd42d0516d0.1574330535.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1574330535.git.lucien.xin@gmail.com>
 References: <cover.1574330535.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -61,14 +62,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to allow setting vxlan options using the
+This patch is to allow setting erspan options using the
 act_tunnel_key action. Different from geneve options,
-only one option can be set. And also, geneve options
-and vxlan options can't be set at the same time.
+only one option can be set. And also, geneve options,
+vxlan options or erspan options can't be set at the
+same time.
 
-gbp is the only param for vxlan options:
+Options are expressed as ver:index:dir:hwid, when ver
+is set to 1, index will be applied while dir and hwid
+will be ignored, and when ver is set to 2, dir and
+hwid will be used while index will be ignored.
 
-  # ip link add name vxlan0 type vxlan dstport 0 external
+  # ip link add name erspan1 type erspan external
   # tc qdisc add dev eth0 ingress
   # tc filter add dev eth0 protocol ip parent ffff: \
            flower indev eth0 \
@@ -78,160 +83,172 @@ gbp is the only param for vxlan options:
                   dst_ip 10.0.99.193 \
                   dst_port 6081 \
                   id 11 \
-  		  vxlan_opts 01020304 \
-          action mirred egress redirect dev vxlan0
+  		erspan_opts 1:2:0:0 \
+          action mirred egress redirect dev erspan1
 
 v1->v2:
-  - add .strict_start_type for enc_opts_policy as Jakub noticed.
-  - use Duplicate instead of Wrong in err msg for extack as Jakub
-    suggested.
+  - do the validation when dst is not yet allocated as Jakub suggested.
+  - use Duplicate instead of Wrong in err msg for extack.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/tc_act/tc_tunnel_key.h | 13 +++++
- net/sched/act_tunnel_key.c                | 85 ++++++++++++++++++++++++++++++-
- 2 files changed, 97 insertions(+), 1 deletion(-)
+ include/uapi/linux/tc_act/tc_tunnel_key.h |  16 ++++
+ net/sched/act_tunnel_key.c                | 118 ++++++++++++++++++++++++++++++
+ 2 files changed, 134 insertions(+)
 
 diff --git a/include/uapi/linux/tc_act/tc_tunnel_key.h b/include/uapi/linux/tc_act/tc_tunnel_key.h
-index 41c8b46..f302c2a 100644
+index f302c2a..3f10dc4 100644
 --- a/include/uapi/linux/tc_act/tc_tunnel_key.h
 +++ b/include/uapi/linux/tc_act/tc_tunnel_key.h
-@@ -50,6 +50,10 @@ enum {
+@@ -54,6 +54,10 @@ enum {
  						 * TCA_TUNNEL_KEY_ENC_OPTS_
  						 * attributes
  						 */
-+	TCA_TUNNEL_KEY_ENC_OPTS_VXLAN,		/* Nested
++	TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN,		/* Nested
 +						 * TCA_TUNNEL_KEY_ENC_OPTS_
 +						 * attributes
 +						 */
  	__TCA_TUNNEL_KEY_ENC_OPTS_MAX,
  };
  
-@@ -67,4 +71,13 @@ enum {
- #define TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX \
- 	(__TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX - 1)
+@@ -80,4 +84,16 @@ enum {
+ #define TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX \
+ 	(__TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX - 1)
  
 +enum {
-+	TCA_TUNNEL_KEY_ENC_OPT_VXLAN_UNSPEC,
-+	TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP,		/* u32 */
-+	__TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX,
++	TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_UNSPEC,
++	TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER,		/* u8 */
++	TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX,		/* be32 */
++	TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR,		/* u8 */
++	TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID,		/* u8 */
++	__TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX,
 +};
 +
-+#define TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX \
-+	(__TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX - 1)
++#define TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX \
++	(__TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX - 1)
 +
  #endif
 diff --git a/net/sched/act_tunnel_key.c b/net/sched/act_tunnel_key.c
-index cb34e5d..ff0909b 100644
+index ff0909b..30b5825 100644
 --- a/net/sched/act_tunnel_key.c
 +++ b/net/sched/act_tunnel_key.c
-@@ -10,6 +10,7 @@
- #include <linux/skbuff.h>
+@@ -11,6 +11,7 @@
  #include <linux/rtnetlink.h>
  #include <net/geneve.h>
-+#include <net/vxlan.h>
+ #include <net/vxlan.h>
++#include <net/erspan.h>
  #include <net/netlink.h>
  #include <net/pkt_sched.h>
  #include <net/dst.h>
-@@ -53,7 +54,10 @@ static int tunnel_key_act(struct sk_buff *skb, const struct tc_action *a,
- 
- static const struct nla_policy
- enc_opts_policy[TCA_TUNNEL_KEY_ENC_OPTS_MAX + 1] = {
-+	[TCA_TUNNEL_KEY_ENC_OPTS_UNSPEC]	= {
-+		.strict_start_type = TCA_TUNNEL_KEY_ENC_OPTS_VXLAN },
+@@ -58,6 +59,7 @@ enc_opts_policy[TCA_TUNNEL_KEY_ENC_OPTS_MAX + 1] = {
+ 		.strict_start_type = TCA_TUNNEL_KEY_ENC_OPTS_VXLAN },
  	[TCA_TUNNEL_KEY_ENC_OPTS_GENEVE]	= { .type = NLA_NESTED },
-+	[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN]		= { .type = NLA_NESTED },
+ 	[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN]		= { .type = NLA_NESTED },
++	[TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN]	= { .type = NLA_NESTED },
  };
  
  static const struct nla_policy
-@@ -64,6 +68,11 @@ geneve_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX + 1] = {
- 						       .len = 128 },
+@@ -73,6 +75,14 @@ vxlan_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX + 1] = {
+ 	[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]	   = { .type = NLA_U32 },
  };
  
 +static const struct nla_policy
-+vxlan_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX + 1] = {
-+	[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]	   = { .type = NLA_U32 },
++erspan_opt_policy[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX + 1] = {
++	[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER]	   = { .type = NLA_U8 },
++	[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX]	   = { .type = NLA_U32 },
++	[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR]	   = { .type = NLA_U8 },
++	[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID]	   = { .type = NLA_U8 },
 +};
 +
  static int
  tunnel_key_copy_geneve_opt(const struct nlattr *nla, void *dst, int dst_len,
  			   struct netlink_ext_ack *extack)
-@@ -116,10 +125,36 @@ tunnel_key_copy_geneve_opt(const struct nlattr *nla, void *dst, int dst_len,
- 	return opt_len;
+@@ -151,6 +161,59 @@ tunnel_key_copy_vxlan_opt(const struct nlattr *nla, void *dst, int dst_len,
+ 	return sizeof(struct vxlan_metadata);
  }
  
 +static int
-+tunnel_key_copy_vxlan_opt(const struct nlattr *nla, void *dst, int dst_len,
-+			  struct netlink_ext_ack *extack)
++tunnel_key_copy_erspan_opt(const struct nlattr *nla, void *dst, int dst_len,
++			   struct netlink_ext_ack *extack)
 +{
-+	struct nlattr *tb[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX + 1];
++	struct nlattr *tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX + 1];
 +	int err;
++	u8 ver;
 +
-+	err = nla_parse_nested(tb, TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX, nla,
-+			       vxlan_opt_policy, extack);
++	err = nla_parse_nested(tb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX, nla,
++			       erspan_opt_policy, extack);
 +	if (err < 0)
 +		return err;
 +
-+	if (!tb[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]) {
-+		NL_SET_ERR_MSG(extack, "Missing tunnel key vxlan option gbp");
++	if (!tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER]) {
++		NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option ver");
++		return -EINVAL;
++	}
++
++	ver = nla_get_u8(tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER]);
++	if (ver == 1) {
++		if (!tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX]) {
++			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option index");
++			return -EINVAL;
++		}
++	} else if (ver == 2) {
++		if (!tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR] ||
++		    !tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID]) {
++			NL_SET_ERR_MSG(extack, "Missing tunnel key erspan option dir or hwid");
++			return -EINVAL;
++		}
++	} else {
++		NL_SET_ERR_MSG(extack, "Tunnel key erspan option ver is incorrect");
 +		return -EINVAL;
 +	}
 +
 +	if (dst) {
-+		struct vxlan_metadata *md = dst;
++		struct erspan_metadata *md = dst;
 +
-+		md->gbp = nla_get_u32(tb[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]);
++		md->version = ver;
++		if (ver == 1) {
++			nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX];
++			md->u.index = nla_get_be32(nla);
++		} else {
++			nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR];
++			md->u.md2.dir = nla_get_u8(nla);
++			nla = tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID];
++			set_hwid(&md->u.md2, nla_get_u8(nla));
++		}
 +	}
 +
-+	return sizeof(struct vxlan_metadata);
++	return sizeof(struct erspan_metadata);
 +}
 +
  static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
  				int dst_len, struct netlink_ext_ack *extack)
  {
--	int err, rem, opt_len, len = nla_len(nla), opts_len = 0;
-+	int err, rem, opt_len, len = nla_len(nla), opts_len = 0, type = 0;
- 	const struct nlattr *attr, *head = nla_data(nla);
- 
- 	err = nla_validate_deprecated(head, len, TCA_TUNNEL_KEY_ENC_OPTS_MAX,
-@@ -130,6 +165,10 @@ static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
- 	nla_for_each_attr(attr, head, len, rem) {
- 		switch (nla_type(attr)) {
- 		case TCA_TUNNEL_KEY_ENC_OPTS_GENEVE:
-+			if (type && type != TUNNEL_GENEVE_OPT) {
-+				NL_SET_ERR_MSG(extack, "Duplicate type for geneve options");
-+				return -EINVAL;
-+			}
- 			opt_len = tunnel_key_copy_geneve_opt(attr, dst,
- 							     dst_len, extack);
- 			if (opt_len < 0)
-@@ -139,6 +178,19 @@ static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
- 				dst_len -= opt_len;
- 				dst += opt_len;
- 			}
-+			type = TUNNEL_GENEVE_OPT;
-+			break;
-+		case TCA_TUNNEL_KEY_ENC_OPTS_VXLAN:
+@@ -192,6 +255,18 @@ static int tunnel_key_copy_opts(const struct nlattr *nla, u8 *dst,
+ 			opts_len += opt_len;
+ 			type = TUNNEL_VXLAN_OPT;
+ 			break;
++		case TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN:
 +			if (type) {
-+				NL_SET_ERR_MSG(extack, "Duplicate type for vxlan options");
++				NL_SET_ERR_MSG(extack, "Duplicate type for erspan options");
 +				return -EINVAL;
 +			}
-+			opt_len = tunnel_key_copy_vxlan_opt(attr, dst,
-+							    dst_len, extack);
++			opt_len = tunnel_key_copy_erspan_opt(attr, dst,
++							     dst_len, extack);
 +			if (opt_len < 0)
 +				return opt_len;
 +			opts_len += opt_len;
-+			type = TUNNEL_VXLAN_OPT;
- 			break;
++			type = TUNNEL_ERSPAN_OPT;
++			break;
  		}
  	}
-@@ -175,6 +227,14 @@ static int tunnel_key_opts_set(struct nlattr *nla, struct ip_tunnel_info *info,
+ 
+@@ -235,6 +310,14 @@ static int tunnel_key_opts_set(struct nlattr *nla, struct ip_tunnel_info *info,
  #else
  		return -EAFNOSUPPORT;
  #endif
-+	case TCA_TUNNEL_KEY_ENC_OPTS_VXLAN:
++	case TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN:
 +#if IS_ENABLED(CONFIG_INET)
-+		info->key.tun_flags |= TUNNEL_VXLAN_OPT;
++		info->key.tun_flags |= TUNNEL_ERSPAN_OPT;
 +		return tunnel_key_copy_opts(nla, ip_tunnel_info_opts(info),
 +					    opts_len, extack);
 +#else
@@ -240,38 +257,50 @@ index cb34e5d..ff0909b 100644
  	default:
  		NL_SET_ERR_MSG(extack, "Cannot set tunnel options for unknown tunnel type");
  		return -EINVAL;
-@@ -451,6 +511,25 @@ static int tunnel_key_geneve_opts_dump(struct sk_buff *skb,
+@@ -530,6 +613,37 @@ static int tunnel_key_vxlan_opts_dump(struct sk_buff *skb,
  	return 0;
  }
  
-+static int tunnel_key_vxlan_opts_dump(struct sk_buff *skb,
-+				      const struct ip_tunnel_info *info)
++static int tunnel_key_erspan_opts_dump(struct sk_buff *skb,
++				       const struct ip_tunnel_info *info)
 +{
-+	struct vxlan_metadata *md = (struct vxlan_metadata *)(info + 1);
++	struct erspan_metadata *md = (struct erspan_metadata *)(info + 1);
 +	struct nlattr *start;
 +
-+	start = nla_nest_start_noflag(skb, TCA_TUNNEL_KEY_ENC_OPTS_VXLAN);
++	start = nla_nest_start_noflag(skb, TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN);
 +	if (!start)
 +		return -EMSGSIZE;
 +
-+	if (nla_put_u32(skb, TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP, md->gbp)) {
-+		nla_nest_cancel(skb, start);
-+		return -EMSGSIZE;
-+	}
++	if (nla_put_u8(skb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER, md->version))
++		goto err;
++
++	if (md->version == 1 &&
++	    nla_put_be32(skb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX, md->u.index))
++		goto err;
++
++	if (md->version == 2 &&
++	    (nla_put_u8(skb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR,
++			md->u.md2.dir) ||
++	     nla_put_u8(skb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID,
++			get_hwid(&md->u.md2))))
++		goto err;
 +
 +	nla_nest_end(skb, start);
 +	return 0;
++err:
++	nla_nest_cancel(skb, start);
++	return -EMSGSIZE;
 +}
 +
  static int tunnel_key_opts_dump(struct sk_buff *skb,
  				const struct ip_tunnel_info *info)
  {
-@@ -468,6 +547,10 @@ static int tunnel_key_opts_dump(struct sk_buff *skb,
- 		err = tunnel_key_geneve_opts_dump(skb, info);
+@@ -551,6 +665,10 @@ static int tunnel_key_opts_dump(struct sk_buff *skb,
+ 		err = tunnel_key_vxlan_opts_dump(skb, info);
  		if (err)
  			goto err_out;
-+	} else if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
-+		err = tunnel_key_vxlan_opts_dump(skb, info);
++	} else if (info->key.tun_flags & TUNNEL_ERSPAN_OPT) {
++		err = tunnel_key_erspan_opts_dump(skb, info);
 +		if (err)
 +			goto err_out;
  	} else {
