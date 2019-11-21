@@ -2,112 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F377105B1A
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 21:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C3D105B1D
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 21:27:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfKUUZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 15:25:45 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34832 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbfKUUZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 15:25:45 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xALKPeDd092219;
-        Thu, 21 Nov 2019 14:25:40 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1574367940;
-        bh=j6UDmmyjdDsVZH6BoXnkfo8wX14pJC2HOeaKzGhqW/A=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=irCrJxC9jxu2m+ml73K4tDxWp1qaUFAY2zJ1VxUAh70pWLfENFJ5AfuwucQDCt8MY
-         Z9xXm0uy5m63lWQoNQf5L5aQkJrg8UAQamARYEQ5B/QDDeiVu0YvXye7k3H3H+5iUf
-         17mE9wIs0+OUJMfNQW/vTir6vyhwvE3Un61YVadU=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xALKPeXj087655
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 21 Nov 2019 14:25:40 -0600
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 21
- Nov 2019 14:25:39 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Thu, 21 Nov 2019 14:25:39 -0600
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xALKPcB5042197;
-        Thu, 21 Nov 2019 14:25:38 -0600
-Subject: Re: dp83867: Why does ti,fifo-depth set only TX, and why is it
- mandatory?
-From:   Dan Murphy <dmurphy@ti.com>
-To:     Adrian Bunk <bunk@kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        <netdev@vger.kernel.org>
-References: <20191114162431.GA21979@localhost>
- <190bd4d3-4bbd-3684-da31-2335b7c34c2a@ti.com>
- <20191114194715.GA29047@localhost>
- <d20a0c5a-507c-dd75-0951-e0733daf4a6e@ti.com>
-Message-ID: <08b61f8c-bd7b-7ea7-2e47-50ddb540d67f@ti.com>
-Date:   Thu, 21 Nov 2019 14:24:01 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <d20a0c5a-507c-dd75-0951-e0733daf4a6e@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727028AbfKUU1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 15:27:32 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38084 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfKUU1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 15:27:32 -0500
+Received: by mail-io1-f67.google.com with SMTP id u24so3331690iob.5
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 12:27:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=SnK7qVKobjjCwRGLW+dbn/lzHsjSbO1HGvbDLFNO1Q8=;
+        b=VvW4SdmPGW4ZeD0iX6JjOzOix6RNi/R/zcpm8fWrhh2ol6ir9OCwBYRL3jMUxjFTK2
+         /zTDKDtLmPtHOwlpXzKnUj7RUebV5wcjZMFA4yioFPsc/o8nP0HwcKwwPqkJEF8gjX14
+         sOSRSkI2llU8UMBpcLdxhgKTAoOEx7dcm9cTLxuvs1mk1sykNx8qCr/lHodUYmrxp5R7
+         osZUmVsVvMgPHgsMIxmYkMzbdEnQRR22ZYWbzbnooSPrB14GHiq2FKBLArkomKHNhan+
+         iCxRCVvONwGhgYKdCygzKS/lgVRPoifMtsXdZH/rJUqnPasa5qpzh0HeThGA2lyHElq2
+         wttw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=SnK7qVKobjjCwRGLW+dbn/lzHsjSbO1HGvbDLFNO1Q8=;
+        b=RTqhavRHHlwYsYLb8GzbTTIZNznDPQanWCtTSoM7CJQC2pHqPbYoxwWmOBrzo2pEsC
+         2rU5qwVikkNzaK7ImcUSp65WVUMnMXqrTn0Sr4NlxGj5Xp335AbE1oEkF+y3CQ7xsT01
+         d5p5p4qrk6ENIztIlsLtfC6Piz6DN9h9OazztcWc6Djv7c3ED4i/4E+z0qVqLoctnqyQ
+         Qth/mM0HXRdRMS02k7LY7QZsm+4Qu51tjwmc4TjyJko46P7nnhkoxH+umy1zcPQMFaMq
+         ITj7fmWIWtPqKwpuZG1piMGKirwoR192LedHZD8ggkN50+goBOcQX+hh/VhkpWwtTZ4F
+         FAmA==
+X-Gm-Message-State: APjAAAVabAF/4EIUpOWSCHzPzecvYgk7tcjhYvGyrZwbcKqfjjoStyeM
+        it8RmZYD0fOzwGga6TW+OPw=
+X-Google-Smtp-Source: APXvYqzoiL56PKXhOSgRfcEHdQ7d3rQwRAgZYHMpcISoQY9o4emaGYgxmlLv0deDAq16Gxbo7f5h1w==
+X-Received: by 2002:a5d:94ca:: with SMTP id y10mr9699943ior.104.1574368051282;
+        Thu, 21 Nov 2019 12:27:31 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id w75sm1702887ill.78.2019.11.21.12.27.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 12:27:30 -0800 (PST)
+Date:   Thu, 21 Nov 2019 12:27:23 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5dd6f32b2816_30202ae8b398a5b469@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAADnVQLX3U4uSASVeha54oZsgi6DhNuYSXyW6=uKuf=ijC5vdQ@mail.gmail.com>
+References: <157435350971.16582.7099707189039358561.stgit@john-Precision-5820-Tower>
+ <CAADnVQLX3U4uSASVeha54oZsgi6DhNuYSXyW6=uKuf=ijC5vdQ@mail.gmail.com>
+Subject: Re: [net PATCH] bpf: skmsg, fix potential psock NULL pointer
+ dereference
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adrian
+Alexei Starovoitov wrote:
+> On Thu, Nov 21, 2019 at 8:28 AM John Fastabend <john.fastabend@gmail.com> wrote:
+> >
+> > Report from Dan Carpenter,
+> >
+> >  net/core/skmsg.c:792 sk_psock_write_space()
+> >  error: we previously assumed 'psock' could be null (see line 790)
+> >
+> >  net/core/skmsg.c
+> >    789 psock = sk_psock(sk);
+> >    790 if (likely(psock && sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)))
+> >  Check for NULL
+> >    791 schedule_work(&psock->work);
+> >    792 write_space = psock->saved_write_space;
+> >                      ^^^^^^^^^^^^^^^^^^^^^^^^
+> >    793          rcu_read_unlock();
+> >    794          write_space(sk);
+> >
+> > Ensure psock dereference on line 792 only occurs if psock is not null.
+> >
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> 
+> lgtm.
+> John, do you feel strongly about it going to net tree asap?
+> Can it go to net-next ? The merge window is right around the corner.
 
-On 11/14/19 2:01 PM, Dan Murphy wrote:
-> Adrian
->
-> On 11/14/19 1:47 PM, Adrian Bunk wrote:
->> On Thu, Nov 14, 2019 at 11:53:36AM -0600, Dan Murphy wrote:
->>> Adrian
->> Hi Dan,
->>
->>> ...
->>>> 2. Why is it a mandatory property?
->>>> Perhaps I am missing something obvious, but why can't the driver 
->>>> either
->>>> leave the value untouched or set the maximum when nothing is 
->>>> configured?
->>> When the driver was originally written it was written only for RGMII
->>> interfaces as that is the MII that the data sheet references and 
->>> does not
->>> reference SGMII.  We did not have SGMII samples available at that time.
->>> According to the HW guys setting the FIFO depth is required for RGMII
->>> interfaces.
->> My reading of the datasheets is that it isn't needed at all for RGMII,
->> only for SGMII and gigabit GMII.
->>
->> Which makes it weird that it is only written in the RGMII case where it
->> is documented to be disabled.
->>
->> And there is a documented default value so writing shouldn't be 
->> mandatory
->> in any case.
->>
->> Perhaps I am looking at the wrong datasheets or there's a hardware 
->> errata?
->>
-OK the HW team said that FIFO depth is no longer a mandatory field to be 
-written for either RGMII or SGMII.
-
-So my suggestion here is that we deprecate, but support in the driver, 
-the ti-fifo-depth, and add the already documented
-
-rx-fifo-depth and tx-fifo-depth as optional DT entries.
-
-So I can change the driver and DT docs and test the RGMII device as 
-above as long as we are in agreement
-
-Dan
-
+Agree we can send it to net-next, its been in the kernel for multiple
+versions anyways.
