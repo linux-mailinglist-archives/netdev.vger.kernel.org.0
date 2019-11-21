@@ -2,64 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99493105A3D
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:15:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D62105A53
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 20:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726961AbfKUTPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 14:15:54 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:43656 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726881AbfKUTPx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 14:15:53 -0500
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6F89B1A0654;
-        Thu, 21 Nov 2019 20:15:52 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 63B3E1A0354;
-        Thu, 21 Nov 2019 20:15:52 +0100 (CET)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 1DBA3203CE;
-        Thu, 21 Nov 2019 20:15:52 +0100 (CET)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 3/3] dpaa2-eth: return all supported link modes in PHY_INTERFACE_MODE_NA
-Date:   Thu, 21 Nov 2019 21:15:27 +0200
-Message-Id: <1574363727-5437-4-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1574363727-5437-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1574363727-5437-1-git-send-email-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726563AbfKUTX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 14:23:57 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:36598 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfKUTX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 14:23:56 -0500
+Received: by mail-lf1-f66.google.com with SMTP id f16so3569457lfm.3
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 11:23:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=1CQMrPqYDZiPzh1i6tKCLp+Qy1EVADnqJvRMkQP5iM4=;
+        b=lEPr/XIiz+z7mWvLc9qFjLxDgTo1K9BlDewX+S+nLongf7vxNEuZzhijHKJzA94aDF
+         jGB+K6mxksM3Lcq6DOrpLtipitEaPdss1Xwe2NTY7EeBS0p/+T+Ik+Wf9S36GX/DqoPD
+         tRQSLDYN3qb0BKi6jJWD94FwnQ7s0HEHEv8tE/GDzsKdP2KVs0l3hL2g7Yaj0dU4EpL2
+         YkQAwYym94iXCYlDDtWgPPGGSIUHisZGZ7m1geTE6eyPs7wrYFslAVKh4KVsbTNt5MeB
+         bdNEtj2pxd3qREZi9aPlB8L+PhPtlyR/2jz4R8jIH9coMu4QPsav+cpGYoLVG/R9Bi3B
+         sEXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=1CQMrPqYDZiPzh1i6tKCLp+Qy1EVADnqJvRMkQP5iM4=;
+        b=GGwQXDVGZ7fDrx5DRff197FicYIZJJPc5wtKn4c7A7znAqMzQ0qy/8UVEdTarAmcCs
+         lHxdOXYAAe3pukYO0sAoXtIL/ssdpGt6Z5Hjv5M2zBjxrmO30h2w4bdW9ODpq51ucrAc
+         7P7tWLjJ7xdjHN1s3BmU6cWgHtdA39i13ksVl6VAsLJk3csnVBCxK0b47pHdkQ0oFMlR
+         1ZyS8gh7u4uPcLbvCBL2RTZvdoai0WqqIg3v24gp1EHMSzWrihgaDghbFC6ypby+Dzxq
+         c08bxSMooIbNd8Koql0pSrgwiMs72ugJC74a8Y0iwKd6tTb/xE8IyXcAX+5kRkdUTgPH
+         hOeQ==
+X-Gm-Message-State: APjAAAVQKktVtwDWMpx4rXPg906kWzHT3/54xO7XlvQijBg70AlAR4rY
+        7q32Ig/0vADr1AfLfvlkn5op2A==
+X-Google-Smtp-Source: APXvYqz9rNE0KtfG6Hpahgp3qSQ/2mHFXGSfVqGqh3O0cjGT6VAylCoMfyTINgycqlIiZzaLZGT7LQ==
+X-Received: by 2002:ac2:4643:: with SMTP id s3mr4174345lfo.23.1574364233140;
+        Thu, 21 Nov 2019 11:23:53 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i18sm1971505lfc.82.2019.11.21.11.23.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 11:23:52 -0800 (PST)
+Date:   Thu, 21 Nov 2019 11:23:35 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH v3 16/16] Documentation: net: octeontx2: Add RVU HW and
+ drivers overview.
+Message-ID: <20191121112335.7c2916d8@cakuba.netronome.com>
+In-Reply-To: <CA+sq2Cfv25A0RW4h_KXi=74g=F61o=KPXyEH7HMisxx1tp8PeA@mail.gmail.com>
+References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
+        <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com>
+        <20191120164137.6f66a560@cakuba.netronome.com>
+        <CA+sq2CdbXgdsGjG-+34mNztxJ-eQkySB6k2SumkXMUkp7bKtwQ@mail.gmail.com>
+        <20191121104316.1bd09fcb@cakuba.netronome.com>
+        <CA+sq2Cfv25A0RW4h_KXi=74g=F61o=KPXyEH7HMisxx1tp8PeA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The include/linux/phylink.h states:
- * When @state->interface is %PHY_INTERFACE_MODE_NA, phylink expects
- * MAC driver to return all supported link modes.
+On Fri, 22 Nov 2019 00:43:14 +0530, Sunil Kovvuri wrote:
+> On Fri, Nov 22, 2019 at 12:13 AM Jakub Kicinski wrote:
+> > On Thu, 21 Nov 2019 08:19:29 +0530, Sunil Kovvuri wrote:  
+> > > > Thanks for the description, I was hoping you'd also provide more info
+> > > > on how the software componets of the system fit together. Today we only
+> > > > have an AF driver upstream. Without the PF or VF drivers the card is
+> > > > pretty much unusable with only the upstream drivers, right?  
+> > >
+> > > I will start submitting netdev drivers (PF and VF) right after this patchset.
+> > > And just FYI this is not a NIC card, this HW is found only on the ARM64
+> > > based OcteonTX2 SOC.  
+> >
+> > Right, that's kind of my point, it's not a simple NIC, so we want
+> > to know what are all the software components. How does a real life
+> > application make use of this HW.
+> >
+> > Seems like your DPDK documentation lays that out pretty nicely:
+> >
+> > https://doc.dpdk.org/guides/platform/octeontx2.html
+> >
+> > It appears the data path components are supposed to be controlled by
+> > DPDK.
+> >
+> > After reading that DPDK documentation I feel like you'd need to do some
+> > convincing to prove it makes sense to go forward with this AF driver at
+> > all. For all practical purposes nobody will make use of this HW other
+> > than through the DPDK-based SDK, so perhaps just keep your drivers in
+> > the SDK and everyone will be happy?  
+> 
+> Based on what you concluded that nobody would use the HW otherthan with DPDK ?
 
-Make the necessary adjustment to meet the requirements.
+Based on the fact that you only have a DPDK SDK for it?
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 1 +
- 1 file changed, 1 insertion(+)
+> Just because it's not a NIC, it doesn't mean it cannot be used with
+> applications otherthan DPDK.
+> Imagine a server (on the lines of Intel xeon) with on-chip NIC instead
+> of a external PCIe NIC.
+> A server machine is used for lots of workload applications which are
+> not DPDK based.
+> Marvell's ThunderX machine is one such example,
+> - It is an SoC with an on-chip NIC.
+> - Both kernel and DPDK network drivers are upstreamed.
+>   kernel: drivers/net/ethernet/cavium/thunder
+>   DPDK: https://doc.dpdk.org/guides/nics/thunderx.html
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index efc587515661..d93d71724e5a 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -95,6 +95,7 @@ static void dpaa2_mac_validate(struct phylink_config *config,
- 	phylink_set(mask, Asym_Pause);
- 
- 	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_NA:
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
--- 
-1.9.1
+Are you saying someone will use a Octeon as just an ARM
+server? Seriously someone will buy an NPU and use it for
+something else than network processing? 
 
+> Even for a DPDK only application, there is still a management ethernet
+> needed to which user can do ssh etc
+> when there is no console available. And there is no need to supply
+> whole SDK to customer, just supply
+> firmware, get latest kernel and DPDK from mainline and use it.
+> 
+> Sorry, i don't understand why a driver for on-chip ethernet cannot be
+> upstreamed.
+
+Well you didn't bother to upstream it until now. You're just pushing
+admin parts of your DPDK solution. Can you honestly be surprised the
+upstream netdev community doesn't like that?
