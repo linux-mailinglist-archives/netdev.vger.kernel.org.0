@@ -2,108 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E2F104DDA
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37CC104DEB
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:29:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbfKUI2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:28:02 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:8421 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfKUI2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:28:01 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd64a8d0000>; Thu, 21 Nov 2019 00:27:58 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 21 Nov 2019 00:27:56 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 21 Nov 2019 00:27:56 -0800
-Received: from [10.2.169.101] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 21 Nov
- 2019 08:27:56 +0000
-Subject: Re: [PATCH v7 01/24] mm/gup: pass flags arg to __gup_device_*
- functions
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
- <20191121071354.456618-2-jhubbard@nvidia.com>
- <20191121080644.GA30991@infradead.org>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <72299562-df12-cbe6-b9c8-05d08625d923@nvidia.com>
-Date:   Thu, 21 Nov 2019 00:25:08 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726165AbfKUI3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:29:03 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:8372 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbfKUI3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:29:02 -0500
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DA117412D6;
+        Thu, 21 Nov 2019 16:28:57 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+Date:   Thu, 21 Nov 2019 16:28:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191121080644.GA30991@infradead.org>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574324878; bh=fBEs8zvhTdiK+GxG6jBbxLF9y/0PajclAlx5MVf68dY=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=qd3vyt4F6HTwKKFCyZDRI1qul9fTK80VD0HOAtpUJsLmp+uOnJP/0/mfORMpRDIWh
-         msa/9tW2R6G3NEV2vxUdIVUrSBPbm+dg7h5ks0ydjI1ZXAilO+KUn3onxdYvYd5yLN
-         th/eVTL36YxBubARAfxgWsMF5jHbNrsWfvpc1zmtToQtEJyTHI9jhj2Fav/Qg69ylO
-         Vy7wGuKCXhdmLuU5+JPthKW1n/P1IS7DJEMqLH2TUUbpLDARMfwqNpDJNlkgiwpB9C
-         7ZnSeTY/le1R03Z0KIA9sli+2LeQchnYq98ah5HhIRhjwHluG7JOQqaaQVMgGA+5Gr
-         gsPwOYerki+jg==
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk1VQk1CS0tLSEhCTktDS01ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pxw6CSo6Ojg9TA8dF04KPTAz
+        HBoKCiJVSlVKTkxPSElPQkhDTENNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBTUNIQjcG
+X-HM-Tid: 0a6e8d14252a2086kuqyda117412d6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/21/19 12:06 AM, Christoph Hellwig wrote:
-> On Wed, Nov 20, 2019 at 11:13:31PM -0800, John Hubbard wrote:
->> A subsequent patch requires access to gup flags, so
->> pass the flags argument through to the __gup_device_*
->> functions.
-> 
-> Looks fine, but why not fold this into the patch using the flags.
 
-Yes, I'll do that.
+On 11/21/2019 3:42 PM, Paul Blakey wrote:
+> Hi,
+>
+> The original design was the block setup to use TC_SETUP_FT type, and the tc event type to be case TC_SETUP_CLSFLOWER.
+> We will post a patch to change that. I would advise to wait till we fix that 😊
+> I'm not sure how you get to this function mlx5e_rep_setup_ft_cb() if it the nf_flow_table_offload ndo_setup_tc event was TC_SETUP_BLOCK, and not TC_SETUP_FT.
 
-> 
-> Also you can use up your full 73 chars per line in the commit log.
-> 
 
-OK.
+Yes I change the TC_SETUP_BLOCK to TC_SETUP_FT in the nf_flow_table_offload_setup.
 
-thanks,
--- 
-John Hubbard
-NVIDIA
+Two fixes patch provide:
+
+http://patchwork.ozlabs.org/patch/1197818/
+
+http://patchwork.ozlabs.org/patch/1197876/
+
+So this change made by me is not correct currently?
+
+>
+> In our driver en_rep.c we have:
+>> -------switch (type) {
+>> -------case TC_SETUP_BLOCK:
+>> ------->-------return flow_block_cb_setup_simple(type_data,
+>> ------->------->------->------->------->-------  &mlx5e_rep_block_tc_cb_list,
+>> ------->------->------->------->------->-------  mlx5e_rep_setup_tc_cb,
+>> ------->------->------->------->------->-------  priv, priv, true);
+>> -------case TC_SETUP_FT:
+>> ------->-------return flow_block_cb_setup_simple(type_data,
+>> ------->------->------->------->------->-------  &mlx5e_rep_block_ft_cb_list,
+>> ------->------->------->------->------->-------  mlx5e_rep_setup_ft_cb,
+>> ------->------->------->------->------->-------  priv, priv, true);
+>> -------default:
+>> ------->-------return -EOPNOTSUPP;
+>> -------}
+> In nf_flow_table_offload.c:
+>> -------bo.binder_type>-= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>> -------bo.extack>------= &extack;
+>> -------INIT_LIST_HEAD(&bo.cb_list);
+>> -------err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
+>> -------if (err < 0)
+>> ------->-------return err;
+>> -------return nf_flow_table_block_setup(flowtable, &bo, cmd);
+> }
+> EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
+>
+>
+> So unless you changed that as well, you should have gotten to mlx5e_rep_setup_tc_cb and not mlx5e_rep_setup_tc_ft.
+>
+> Regarding the encap action, there should be no difference on which chain the rule is on.
+
+
+But for the same encap rule can be real offloaded when setup through through TC_SETUP_BLOCK. But TC_SETUP_FT can't.
+
+So it is the problem of TC_SETUP_FT in mlx5e_rep_setup_ft_cb ?
+
+>
+>
+>> -----Original Message-----
+>> From: wenxu <wenxu@ucloud.cn>
+>> Sent: Thursday, November 21, 2019 9:30 AM
+>> To: Paul Blakey <paulb@mellanox.com>
+>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>> <markb@mellanox.com>
+>> Subject: Question about flow table offload in mlx5e
+>>
+>> Hi  paul,
+>>
+>> The flow table offload in the mlx5e is based on TC_SETUP_FT.
+>>
+>>
+>> It is almost the same as TC_SETUP_BLOCK.
+>>
+>> It just set MLX5_TC_FLAG(FT_OFFLOAD) flags and change
+>> cls_flower.common.chain_index = FDB_FT_CHAIN;
+>>
+>> In following codes line 1380 and 1392
+>>
+>> 1368 static int mlx5e_rep_setup_ft_cb(enum tc_setup_type type, void
+>> *type_data,
+>> 1369                                  void *cb_priv)
+>> 1370 {
+>> 1371         struct flow_cls_offload *f = type_data;
+>> 1372         struct flow_cls_offload cls_flower;
+>> 1373         struct mlx5e_priv *priv = cb_priv;
+>> 1374         struct mlx5_eswitch *esw;
+>> 1375         unsigned long flags;
+>> 1376         int err;
+>> 1377
+>> 1378         flags = MLX5_TC_FLAG(INGRESS) |
+>> 1379                 MLX5_TC_FLAG(ESW_OFFLOAD) |
+>> 1380                 MLX5_TC_FLAG(FT_OFFLOAD);
+>> 1381         esw = priv->mdev->priv.eswitch;
+>> 1382
+>> 1383         switch (type) {
+>> 1384         case TC_SETUP_CLSFLOWER:
+>> 1385                 if (!mlx5_eswitch_prios_supported(esw) || f-
+>>> common.chain_index)
+>> 1386                         return -EOPNOTSUPP;
+>> 1387
+>> 1388                 /* Re-use tc offload path by moving the ft flow to the
+>> 1389                  * reserved ft chain.
+>> 1390                  */
+>> 1391                 memcpy(&cls_flower, f, sizeof(*f));
+>> 1392                cls_flower.common.chain_index = FDB_FT_CHAIN;
+>> 1393                 err = mlx5e_rep_setup_tc_cls_flower(priv, &cls_flower, flags);
+>> 1394                 memcpy(&f->stats, &cls_flower.stats, sizeof(f->stats));
+>>
+>>
+>> I want to add tunnel offload support in the flow table, I  add some patches in
+>> nf_flow_table_offload.
+>>
+>> Also add the indr setup support in the mlx driver. And Now I can  flow table
+>> offload with decap.
+>>
+>>
+>> But I meet a problem with the encap.  The encap rule can be added in
+>> hardware  successfully But it can't be offloaded.
+>>
+>> But I think the rule I added is correct.  If I mask the line 1392. The rule also can
+>> be add success and can be offloaded.
+>>
+>> So there are some limit for encap operation for FT_OFFLOAD in
+>> FDB_FT_CHAIN?
+>>
+>>
+>> BR
+>>
+>> wenxu
+>>
