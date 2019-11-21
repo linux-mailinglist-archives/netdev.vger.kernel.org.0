@@ -2,152 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 626B41054AE
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 15:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E50D61054C8
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 15:44:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfKUOjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 09:39:54 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:59991 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726293AbfKUOjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 09:39:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574347192;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lJDYWSgP00g7qIjqTZLTHnhWuHMmstvkVgAhwaYoRHs=;
-        b=OsfjO340y8YCVflKGYo2v2hZeH0TjPZpY0xKcDkKVKMnjHwvT0y2V/VjlKTGkQUwK5h9qQ
-        HnpdKjtjre9FP+TFJGJzaDzQHFpFmZS+sAaWQ3aIOD/XcAd0afvOL0bHtRpm/wdI67Rt/X
-        zdE+Q1bVhAokLR8q+OUBYHJGJkhh4d8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-280-OUxjw_4_OD6Gq5Bg9m8Kzw-1; Thu, 21 Nov 2019 09:39:48 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A32FB18B9FC1;
-        Thu, 21 Nov 2019 14:39:47 +0000 (UTC)
-Received: from ovpn-117-89.ams2.redhat.com (ovpn-117-89.ams2.redhat.com [10.36.117.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E0C46E70C;
-        Thu, 21 Nov 2019 14:39:46 +0000 (UTC)
-Message-ID: <65c66f8c860b7fc0c01f65feecae08aebb5cb0c9.camel@redhat.com>
-Subject: Re: [PATCH net] udp: drop skb extensions before marking skb
- stateless
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Byron Stanoszek <gandalf@winds.org>
-Date:   Thu, 21 Nov 2019 15:39:45 +0100
-In-Reply-To: <20191121055623.20952-1-fw@strlen.de>
-References: <20191121053031.GI20235@breakpoint.cc>
-         <20191121055623.20952-1-fw@strlen.de>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
+        id S1726747AbfKUOor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 09:44:47 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:43875 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfKUOor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 09:44:47 -0500
+Received: by mail-lf1-f66.google.com with SMTP id l14so2838348lfh.10;
+        Thu, 21 Nov 2019 06:44:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VXzx9aTYeMQl18LE4uxvxrgXEVm/FTvT7LouxOHpbMQ=;
+        b=TGuAsPNxZIOi0BiAVSPyzbWWKoSZoS1L8Cz+haDYOSMklBR+DWYI4RKgqpsqbcye04
+         R3hqlOwHQVqKs2yc/wp9LpHYlmz66NiVPyblTYlWal10g1In1XNsHIO0n+iL8GZWia+z
+         Y6O5mE/7aW6j5nbU5/C8KfEi6CBcIwfppx6j9X1xKLpLKH4lQqhi1+G/OiJuFl/klz+Q
+         OyInQQNir6trcmP1uiaQOqMGd5BDEPPcdOlEQDFHS5FCm2GNyAkdtScTFymV0pQU+bMx
+         idmQVKhthdewPpu5lWoTzDVEtkM2Q1Z4kuQMmfI9yLl58hs0lemvP4AfKccUoBGPd69z
+         C8EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VXzx9aTYeMQl18LE4uxvxrgXEVm/FTvT7LouxOHpbMQ=;
+        b=Bxe2tOe13ROAIsC0F3HyX+PyVK45+HB9jM4f5KEIziDe6I8Xyl21JHivPnvnmQsCLD
+         /MCvJsEGS6ndLXgt+/8ZuM7+G5DXYhdLBYTThh/PfCAiCB3ekIhbVoW7iNpd4bHJ0nAI
+         BCGWEkmu+a6JIy9hY7noQuZAB9HqvQcjT+RU/S3l5SkxbF0yTRRrwjC3a4+RCgc8pWYp
+         KfGvh8r9f79CUCYjMNXhtjCUtPncqzvuA7cK9XDBAhxoHfzXV8e4D4TMIIK1xcQmMkPt
+         YR/AZvB5s22kuHvso71rQvv6EB8uvB451vMM3TMlRcYsoV4U28YjvLl3wPRk9u7ipioS
+         0baQ==
+X-Gm-Message-State: APjAAAXO5fmzpF0hvYYvbX6Ah8SukhaqFbPqG3EhBsw0RAtO3NcQ92uk
+        MTfTZ1hzqU+MaOoBKSu2Llom0TddZdnwLMTCYMs=
+X-Google-Smtp-Source: APXvYqzD4PNqVRcS5zHB0VNgXjeposUpPgmg7qw+BbT+QY3NiPTZ5wQKYTBMR5cEMS0bjInbclgss5aB67f/Zy3yE2k=
+X-Received: by 2002:a19:f701:: with SMTP id z1mr2971084lfe.133.1574347485888;
+ Thu, 21 Nov 2019 06:44:45 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: OUxjw_4_OD6Gq5Bg9m8Kzw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20191120203538.199367-1-Jason@zx2c4.com> <877e3t8qv7.fsf@toke.dk> <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
+In-Reply-To: <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Thu, 21 Nov 2019 15:44:34 +0100
+Message-ID: <CANiq72mGPmMVBCmOMc_xJbKuOvbmmPAotGx67nSVQrYmXd2x3A@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-11-21 at 06:56 +0100, Florian Westphal wrote:
-> Once udp stack has set the UDP_SKB_IS_STATELESS flag, later skb free
-> assumes all skb head state has been dropped already.
->=20
-> This will leak the extension memory in case the skb has extensions other
-> than the ipsec secpath, e.g. bridge nf data.
->=20
-> To fix this, set the UDP_SKB_IS_STATELESS flag only if we don't have
-> extensions or if the extension space can be free'd.
->=20
-> Fixes: 895b5c9f206eb7d25dc1360a ("netfilter: drop bridge nf reset from nf=
-_reset")
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Reported-by: Byron Stanoszek <gandalf@winds.org>
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  include/linux/skbuff.h |  6 ++++++
->  net/ipv4/udp.c         | 27 ++++++++++++++++++++++-----
->  2 files changed, 28 insertions(+), 5 deletions(-)
->=20
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 64a395c7f689..8688f7adfda7 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -4169,12 +4169,18 @@ static inline void skb_ext_reset(struct sk_buff *=
-skb)
->  =09=09skb->active_extensions =3D 0;
->  =09}
->  }
-> +
-> +static inline bool skb_has_extensions(struct sk_buff *skb)
-> +{
-> +=09return unlikely(skb->active_extensions);
-> +}
->  #else
->  static inline void skb_ext_put(struct sk_buff *skb) {}
->  static inline void skb_ext_reset(struct sk_buff *skb) {}
->  static inline void skb_ext_del(struct sk_buff *skb, int unused) {}
->  static inline void __skb_ext_copy(struct sk_buff *d, const struct sk_buf=
-f *s) {}
->  static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buf=
-f *s) {}
-> +static inline bool skb_has_extensions(struct sk_buff *skb) { return fals=
-e; }
->  #endif /* CONFIG_SKB_EXTENSIONS */
-> =20
->  static inline void nf_reset_ct(struct sk_buff *skb)
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 1d58ce829dca..447defbfccdd 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1297,6 +1297,27 @@ int udp_sendpage(struct sock *sk, struct page *pag=
-e, int offset,
-> =20
->  #define UDP_SKB_IS_STATELESS 0x80000000
-> =20
-> +/* all head states (dst, sk, nf conntrack) except skb extensions are
-> + * cleared by udp_rcv().
-> + *
-> + * We need to preserve secpath, if present, to eventually process
-> + * IP_CMSG_PASSSEC at recvmsg() time.
-> + *
-> + * Other extensions can be cleared.
-> + */
-> +static bool udp_try_make_stateless(struct sk_buff *skb)
-> +{
-> +=09if (!skb_has_extensions(skb))
-> +=09=09return true;
-> +
-> +=09if (!secpath_exists(skb)) {
-> +=09=09skb_ext_reset(skb);
-> +=09=09return true;
-> +=09}
-> +
-> +=09return false;
-> +}
-> +
->  static void udp_set_dev_scratch(struct sk_buff *skb)
->  {
->  =09struct udp_dev_scratch *scratch =3D udp_skb_scratch(skb);
-> @@ -1308,11 +1329,7 @@ static void udp_set_dev_scratch(struct sk_buff *sk=
-b)
->  =09scratch->csum_unnecessary =3D !!skb_csum_unnecessary(skb);
->  =09scratch->is_linear =3D !skb_is_nonlinear(skb);
->  #endif
-> -=09/* all head states execept sp (dst, sk, nf) are always cleared by
-> -=09 * udp_rcv() and we need to preserve secpath, if present, to eventual=
-ly
-> -=09 * process IP_CMSG_PASSSEC at recvmsg() time
-> -=09 */
-> -=09if (likely(!skb_sec_path(skb)))
-> +=09if (udp_try_make_stateless(skb))
->  =09=09scratch->_tsize_state |=3D UDP_SKB_IS_STATELESS;
->  }
+Hi Jason,
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+On Thu, Nov 21, 2019 at 12:09 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> [...]
 
+Any reason for the .clang-format in drivers/? If yes, it would be nice
+to state it in the comment of the file.
+
+Cheers,
+Miguel
