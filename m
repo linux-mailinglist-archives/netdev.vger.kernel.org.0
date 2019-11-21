@@ -2,104 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F7B105BF5
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 975C1105BF7
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 22:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfKUV31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 16:29:27 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:34884 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbfKUV30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 16:29:26 -0500
-Received: by mail-oi1-f196.google.com with SMTP id n16so4629170oig.2;
-        Thu, 21 Nov 2019 13:29:25 -0800 (PST)
+        id S1726907AbfKUV3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 16:29:47 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:40373 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726380AbfKUV3r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 16:29:47 -0500
+Received: by mail-il1-f196.google.com with SMTP id v17so917249ilg.7;
+        Thu, 21 Nov 2019 13:29:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=VLu1PIc6pmlku/Q8epaZRy/2fDcU3T/yGg/spbWkpcw=;
+        b=RIdPTtBQHXhAFCsyVU7V1Pl7hB5NkCPT7OkTuji00DZEtMGHiaucSvq81aKCU/MdIT
+         EMzNtly1s+a6hmc8T9rtK2QSTztl7EOiIdwMJsl6tN5Rx884qpGxknbH1l/abSdSHdNg
+         y4ac1Z378gErTB9amZ6MBq4zvW+h/GiIYsvLVS7jePIDrV48oLN+xF+ozHIDR+pYdDaa
+         PtmXhcpOH/17d3hZuXVHbqoQMGZ0auAsI8KpptQrMPWDY4WkRWQsh6uW+z/yBKyB3PnF
+         1wK58VmB7F3AHky2sk3fewJhWP4+5dB0Q29useKPwslxDG6M3e5W+PVkTVAORZsLmUdk
+         5CvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eGbzdNGOz3Yt/u7Eg4Uy04gh1oqlzxGRM1Q5IoNwLyo=;
-        b=oq+KBdWNqg48CN7mCNZVLmMylCyaroBTDIEad25MjBX1Nsfxk6oI9UOgM+OK0lMx0p
-         WX6qldlPHvNMCsK4LJ7JoxVdD8P13Lh6Ib/PyNl11JAGqQTPQjtTYgn8Yc9bNusfeUj0
-         nOJHT4lyww1SA8KTP8fFXiPGj8XwecCEXa6dHR3lO5S3gGTktPIEEFDo09simKLYLpHE
-         ST1agA4yZ+kZC/ldtN0ySbFF1HWU8U0IPCZBpFr6N9SJCnWrTVmEsmb4AFYQ0kE19kfv
-         PtRE7ICNjDHHHZT+NlUKEoD7zeov93v10T//Ist0nD8hNmAvB358hTUL/Lc4fAd6+sda
-         znDA==
-X-Gm-Message-State: APjAAAW9hIvuWaOOql1cVmLXAMfM0LBUVgzhSLo0Z/AiwWsAG4b+fRSC
-        PsjQbEal8nNGs6AYvmjzJg==
-X-Google-Smtp-Source: APXvYqzotq60JyOQtDHz/zQ7q1sK4SuGVHd+xXyqMSXmeZsC7zXDHbM2laGjpVcYF8WIemWHY5+y9Q==
-X-Received: by 2002:aca:57d7:: with SMTP id l206mr9713923oib.32.1574371764980;
-        Thu, 21 Nov 2019 13:29:24 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id m20sm1408047otr.47.2019.11.21.13.29.24
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=VLu1PIc6pmlku/Q8epaZRy/2fDcU3T/yGg/spbWkpcw=;
+        b=JGT5zDFiCStBMAd9QC3boxct9Z5Y2C+8k5CB6hkj9FmLL04q6SIb688Vj16r6mrGy1
+         L2YioHeztQ+9idhekfopybWdSWqgjl4hAGM7UJ9ZSLQ8Q/ONRMu36OIWpY3TO1NkCa9C
+         RO2OGIGWWMTSiS8JI1k0kQ4OfIAQtYRedBZauiA9Nu+q98ZqlQbs09oOmZklLwVVy3bb
+         wMu3GytrQqIlRuf/V8A4HL98x46IAGwJ1n0yL2j4HDKaHm0okhDtSf9lkIw9NHfvu01/
+         ni/MOGMfcz1EksumIAOcYxrpdszss/tEUA3DRAybou0yWGwPptUQMVGobqWwALl9HH74
+         3Suw==
+X-Gm-Message-State: APjAAAVvcpPA6BbIuz9Zp5O64aMFdGY/bTlKwcRQMDvjC6PvThuDxMCr
+        Da0ldETHUt1/hfONMTzff6k=
+X-Google-Smtp-Source: APXvYqzyqVajM5tEtF4LH+k2TA1NwOUVIigIb+rC/llEZZBpEqVc6BeHgYcYiv+CbFTNlDowOCrfkg==
+X-Received: by 2002:a92:9c95:: with SMTP id x21mr12600786ill.115.1574371786808;
+        Thu, 21 Nov 2019 13:29:46 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id f2sm1367477iog.30.2019.11.21.13.29.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 13:29:24 -0800 (PST)
-Date:   Thu, 21 Nov 2019 15:29:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-bluetooth@vger.kernel.org, dianders@chromium.org,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH v6 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm
- config
-Message-ID: <20191121212923.GA24437@bogus>
-References: <20191118192123.82430-1-abhishekpandit@chromium.org>
- <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Thu, 21 Nov 2019 13:29:45 -0800 (PST)
+Date:   Thu, 21 Nov 2019 13:29:38 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Message-ID: <5dd701c21871b_4e932af130aba5bc48@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191121133612.430414-1-toke@redhat.com>
+References: <20191121133612.430414-1-toke@redhat.com>
+Subject: RE: [PATCH] xdp: Fix cleanup on map free for devmap_hash map type
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 11:21:22AM -0800, Abhishek Pandit-Subedi wrote:
-> Add documentation for pcm parameters.
-> 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Tetsuo pointed out that it was not only the device unregister hook that=
+ was
+> broken for devmap_hash types, it was also cleanup on map free. So bette=
+r
+> fix this as well.
+> =
+
+> While we're add it, there's no reason to allocate the netdev_map array =
+for
+              ^^^
+              at
+> DEVMAP_HASH, so skip that and adjust the cost accordingly.
+
+Beyond saving space without pulling these apart the free would have gotte=
+n
+fairly ugly.
+
+> =
+
+> Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devi=
+ces by hashed index")
+> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > ---
-> 
-> Changes in v6: None
-> Changes in v5: None
-> Changes in v4: None
-> Changes in v3: None
-> Changes in v2: None
+>  kernel/bpf/devmap.c | 74 ++++++++++++++++++++++++++++-----------------=
 
-Really? I'm staring at v2 that looks a bit different.
+>  1 file changed, 46 insertions(+), 28 deletions(-)
 
->  .../bindings/net/broadcom-bluetooth.txt       | 16 ++++++++++
->  include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
->  2 files changed, 48 insertions(+)
->  create mode 100644 include/dt-bindings/bluetooth/brcm.h
-> 
-> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> index c749dc297624..8561e4684378 100644
-> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> @@ -29,10 +29,20 @@ Optional properties:
->     - "lpo": external low power 32.768 kHz clock
->   - vbat-supply: phandle to regulator supply for VBAT
->   - vddio-supply: phandle to regulator supply for VDDIO
-> + - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
-> + - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
-> + - brcm,bt-pcm-frame-type: short, long
-> + - brcm,bt-pcm-sync-mode: slave, master
-> + - brcm,bt-pcm-clock-mode: slave, master
+small typo in commit message otherwise
 
-Little of this seems unique to Broadcom. We already have some standard 
-audio related properties for audio interfaces such as 'format', 
-'frame-master' and 'bitclock-master'. Ultimately, this would be tied 
-into the audio complex of SoCs and need to work with the audio 
-bindings. We also have HDMI audio bindings. 
-
-Maybe sco-routing is unique to BT and still needed in some form though 
-if you describe the connection to the SoC audio complex, then maybe 
-not? I'd assume every BT chip has some audio routing configuration.
-
-Rob
+Acked-by: John Fastabend <john.fastabend@gmail.com>=
