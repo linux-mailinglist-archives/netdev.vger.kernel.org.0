@@ -2,56 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 517FE105AD1
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 21:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 796B7105AD4
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 21:07:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbfKUUCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 15:02:19 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52640 "EHLO
+        id S1726563AbfKUUHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 15:07:02 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52726 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfKUUCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 15:02:19 -0500
+        with ESMTP id S1726379AbfKUUHB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 15:07:01 -0500
 Received: from localhost (unknown [IPv6:2001:558:600a:cc:f9f3:9371:b0b8:cb13])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CE1E01504493F;
-        Thu, 21 Nov 2019 12:02:18 -0800 (PST)
-Date:   Thu, 21 Nov 2019 12:02:18 -0800 (PST)
-Message-Id: <20191121.120218.822468406949238769.davem@davemloft.net>
-To:     rahul.lakkireddy@chelsio.com
-Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        herbert@gondor.apana.org.au, nirranjan@chelsio.com,
-        atul.gupta@chelsio.com, vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next 2/3] cxgb4: add UDP segmentation offload
- support
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 646E215044951;
+        Thu, 21 Nov 2019 12:07:01 -0800 (PST)
+Date:   Thu, 21 Nov 2019 12:07:00 -0800 (PST)
+Message-Id: <20191121.120700.742038888535498481.davem@davemloft.net>
+To:     mhabets@solarflare.com
+Cc:     linux-net-drivers@solarflare.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net] sfc: Only cancel the PPS workqueue if it exists
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <2ddeefa22022f3949901c96892b8bf56a369f724.1574347161.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
-        <cover.1574347161.git.rahul.lakkireddy@chelsio.com>
-        <2ddeefa22022f3949901c96892b8bf56a369f724.1574347161.git.rahul.lakkireddy@chelsio.com>
+In-Reply-To: <157435873481.1746063.7779522257910378266.stgit@mh-desktop.uk.solarflarecom.com>
+References: <157435873481.1746063.7779522257910378266.stgit@mh-desktop.uk.solarflarecom.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 21 Nov 2019 12:02:19 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 21 Nov 2019 12:07:01 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Date: Thu, 21 Nov 2019 20:50:48 +0530
+From: Martin Habets <mhabets@solarflare.com>
+Date: Thu, 21 Nov 2019 17:52:15 +0000
 
-> @@ -1345,6 +1355,25 @@ static inline int cxgb4_validate_skb(struct sk_buff *skb,
->  	return 0;
->  }
->  
-> +static inline void *write_eo_udp_wr(struct sk_buff *skb,
-> +				    struct fw_eth_tx_eo_wr *wr, u32 hdr_len)
-> +{
+> The workqueue only exists for the primary PF. For other functions
+> we hit a WARN_ON in kernel/workqueue.c.
+> 
+> Fixes: 7c236c43b838 ("sfc: Add support for IEEE-1588 PTP")
+> Signed-off-by: Martin Habets <mhabets@solarflare.com>
 
-Do not use inline in foo.c files, let the compiler decide.
-
-I know this source file is already a rotting mess of inline function
-directives, but let's not add more.
+Applied and queued up for -stable, thanks.
