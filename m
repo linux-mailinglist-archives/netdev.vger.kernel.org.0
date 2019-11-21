@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4A7104F97
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42B49104FBD
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 10:54:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfKUJtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 04:49:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38294 "EHLO mx1.suse.de"
+        id S1726968AbfKUJyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 04:54:17 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42156 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726165AbfKUJtN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 04:49:13 -0500
+        id S1726132AbfKUJyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 04:54:16 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8A829AE39;
-        Thu, 21 Nov 2019 09:49:10 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 1B5FCAC46;
+        Thu, 21 Nov 2019 09:54:13 +0000 (UTC)
 Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 0C6121E47FC; Thu, 21 Nov 2019 10:49:08 +0100 (CET)
-Date:   Thu, 21 Nov 2019 10:49:08 +0100
+        id 5A11F1E47FC; Thu, 21 Nov 2019 10:54:11 +0100 (CET)
+Date:   Thu, 21 Nov 2019 10:54:11 +0100
 From:   Jan Kara <jack@suse.cz>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Christoph Hellwig <hch@lst.de>,
@@ -53,7 +53,7 @@ Cc:     Christoph Hellwig <hch@lst.de>,
         "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
 Subject: Re: [PATCH v7 02/24] mm/gup: factor out duplicate code from four
  routines
-Message-ID: <20191121094908.GB18190@quack2.suse.cz>
+Message-ID: <20191121095411.GC18190@quack2.suse.cz>
 References: <20191121071354.456618-1-jhubbard@nvidia.com>
  <20191121071354.456618-3-jhubbard@nvidia.com>
  <20191121080356.GA24784@lst.de>
@@ -69,7 +69,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Thu 21-11-19 00:29:59, John Hubbard wrote:
-> On 11/21/19 12:03 AM, Christoph Hellwig wrote:
+> > 
 > > Otherwise this looks fine and might be a worthwhile cleanup to feed
 > > Andrew for 5.5 independent of the gut of the changes.
 > > 
@@ -80,17 +80,10 @@ On Thu 21-11-19 00:29:59, John Hubbard wrote:
 > series should be targeted at 5.6 (not 5.5), is that what you have in mind?
 > And get the preparatory patches (1-9, and maybe even 10-16) into 5.5?
 
-Yeah, actually I feel the same. The merge window is going to open on Sunday
-and the series isn't still fully baked and happily sitting in linux-next
-(and larger changes should really sit in linux-next for at least a week,
-preferably two, before the merge window opens to get some reasonable test
-coverage).  So I'd take out the independent easy patches that are already
-reviewed, get them merged into Andrew's (or whatever other appropriate
-tree) now so that they get at least a week of testing in linux-next before
-going upstream.  And the more involved bits will have to wait for 5.6 -
-which means let's just continue working on them as we do now because
-ideally in 4 weeks we should have them ready with all the reviews so that
-they can be picked up and integrated into linux-next.
+One more note :) If you are going to push pin_user_pages() interfaces
+(which I'm fine with), it would probably make sense to push also the
+put_user_pages() -> unpin_user_pages() renaming so that that inconsistency
+in naming does not exist in the released upstream kernel.
 
 								Honza
 -- 
