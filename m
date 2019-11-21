@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89810104E96
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:58:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B517104E85
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:56:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbfKUI5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:57:48 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:10315 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbfKUI5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:57:47 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dd651870000>; Thu, 21 Nov 2019 00:57:43 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 21 Nov 2019 00:57:42 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 21 Nov 2019 00:57:42 -0800
-Received: from [10.2.169.101] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 21 Nov
- 2019 08:57:41 +0000
-Subject: Re: [PATCH v7 05/24] mm: devmap: refactor 1-based refcounting for
- ZONE_DEVICE pages
-To:     Christoph Hellwig <hch@lst.de>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
- <20191121071354.456618-6-jhubbard@nvidia.com> <20191121080555.GC24784@lst.de>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <c5f8750f-af82-8aec-ce70-116acf24fa82@nvidia.com>
-Date:   Thu, 21 Nov 2019 00:54:53 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726623AbfKUI4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:56:40 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35549 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726165AbfKUI4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:56:39 -0500
+Received: by mail-wr1-f65.google.com with SMTP id s5so3378631wrw.2
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 00:56:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=F2vcbszjzqtUgO+UplRcSrFW0BfrUiYd8h4dMIEn1sE=;
+        b=E2U6Xl1gAvEyEPkta74iKZuIalJdnMFyPeOnUvz3YfF6kq5Ma2X7lADQ91R/6Sxot2
+         DaedUTG1fQxO3wso0exn+JP00XZj1wmn9mtOMNdq4cGsECB9ISBbCN3lrtI5gXOIWUGl
+         +838hes+hTnQBJvMSdbNCvK/hJWQ9yl4SqmxnD2iM+XIrMUZWSw+YuAVZK0a4LmkteKk
+         Ew4/I+w8hLAmn2DR7sG+MDiJteQgc0/oCwO6i/ssgvRyT9RRxiWx5FnPoclXvu/+1cin
+         YZG3CqmQEd1L1bG2V+ic8viJhZ2i5kIJxmSV8Pc5ROnhv3NpU0+0q/TKdkw+jGRrJr3f
+         J9lQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=F2vcbszjzqtUgO+UplRcSrFW0BfrUiYd8h4dMIEn1sE=;
+        b=tYYEcQnOBwakRDUzWNBz8LtjAujP2nmG8hGqtFuHhSZBFQzvguqqcygiRbZfFre/Dh
+         gAglYM5nnIac8IQeSjzIhLNqwbMkBQ+T29MA0nbj1tPBoUvi8oHj1H2J8fxdjJKC89X+
+         syMEMhRoOjddXIgs8NoSqWpQVTqr+Ibnj5oFCzRiezffvtxR8/lOjkeH1tKBaX1wH/NB
+         fdx8U//XNzJWvxzbq2Wpp7/qYHeYIPySt2QEptRJYJqTg0zaRHj6dHRfB3uXuTBvUL2A
+         c/jSMDzpzDz64pEvPXGcsX3P0b+P+c7g6oLKEgbGJdzsEdQnCqYs2AvPaoodU8BVILad
+         ldXQ==
+X-Gm-Message-State: APjAAAWXYI5EiGiFnUlurhIlaJ+c6EKJsJHsiaAwiE3zYVPotPGaIrGU
+        NyH3Gc34SrAdSovrlGDCgettDQ==
+X-Google-Smtp-Source: APXvYqym6t/Z/L47bRwg/Epw8NAu3r9GSYJCQdwUJDr6+LXu/CKRuVQX7GpTiaIS2KdaHfmWbZNfPQ==
+X-Received: by 2002:a5d:464b:: with SMTP id j11mr2398300wrs.394.1574326598064;
+        Thu, 21 Nov 2019 00:56:38 -0800 (PST)
+Received: from localhost (ip-94-113-116-128.net.upcbroadband.cz. [94.113.116.128])
+        by smtp.gmail.com with ESMTPSA id x10sm487548wrp.58.2019.11.21.00.56.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 00:56:37 -0800 (PST)
+Date:   Thu, 21 Nov 2019 09:56:37 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Shalom Toledo <shalomt@mellanox.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCH iproute2-next] devlink: fix requiring either handle
+Message-ID: <20191121085637.GA2234@nanopsycho>
+References: <20191120175606.13641-1-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20191121080555.GC24784@lst.de>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574326663; bh=YGQbxCYiHGws7JmssYZZfu4b/BH3QCdRJ1MPzdi8DdI=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=FbrZ4378j2iyBO9hvWSMloyNdNsTUz/psuT/NCUARgzB35AW0Wq9ueJvfblZCosk7
-         /+/rxtO6ichr/aFPIlD7xLBQtc9hq7EFIF6lCnNn9hnclEWNCKgA7YoyhRbt/m4Vsk
-         wRmCgWdXHHISljd4LjYmGbzccrPj5+Fa1JlqaI75caluLphJJldJZkgCWUPC0xholt
-         6X13AINTENnATeVUOSXXiPHblxU1cCkaaO1aE9kIv76y0chkTgEt3S0BIhZzBbKb9q
-         pD1vYn6vGejSUU1Vf+Wlw9+f+WagzvL/JI66W61oW1V6Mdo52NCQD9IyiBTxjX+ttQ
-         VAYphrAfRS+XQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191120175606.13641-1-jakub.kicinski@netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/21/19 12:05 AM, Christoph Hellwig wrote:
-> So while this looks correct and I still really don't see the major
-> benefit of the new code organization, especially as it bloats all
-> put_page callers.
-> 
-> I'd love to see code size change stats for an allyesconfig on this
-> commit.
-> 
+Wed, Nov 20, 2019 at 06:56:06PM CET, jakub.kicinski@netronome.com wrote:
+>devlink sb occupancy show requires device or port handle.
+>It passes both device and port handle bits as required to
+>dl_argv_parse() so since commit 1896b100af46 ("devlink: catch
+>missing strings in dl_args_required") devlink will now
+>complain that only one is present:
+>
+>$ devlink sb occupancy show pci/0000:06:00.0/0
+>BUG: unknown argument required but not found
+>
+>Drop the bit for the handle which was not found from required.
+>
+>Reported-by: Shalom Toledo <shalomt@mellanox.com>
+>Fixes: 1896b100af46 ("devlink: catch missing strings in dl_args_required")
+>Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+>Tested-by: Shalom Toledo <shalomt@mellanox.com>
 
-Right, I'm running that now, will post the results. (btw, if there is
-a script and/or standard format I should use, I'm all ears. I'll dig
-through lwn...)
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Thanks!
