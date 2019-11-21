@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E74431052F5
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C32E81052F9
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:28:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726976AbfKUN2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 08:28:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48072 "EHLO mail.kernel.org"
+        id S1727022AbfKUN2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 08:28:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726293AbfKUN2g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 08:28:36 -0500
+        id S1726293AbfKUN2m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 08:28:42 -0500
 Received: from localhost.localdomain (unknown [118.189.143.39])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 18E7C2075E;
-        Thu, 21 Nov 2019 13:28:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 484B52089D;
+        Thu, 21 Nov 2019 13:28:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574342914;
-        bh=yk5GM0NXJKt/7nsN9WD0Rld5luQSmJfRULGuoUReOiQ=;
+        s=default; t=1574342921;
+        bh=ZiIBZ4TQV7E0oa+xHvh5rSStAblfSch8fZw7AmKhkE8=;
         h=From:To:Cc:Subject:Date:From;
-        b=rb5+EQ/03KnGuIvUAOmcsQMzohHcFw2cgPIxWrQhfxF6rSDNKFbVzuba5Nz0hwPlN
-         m6TJZZWQzP/4IJqG3AfDs8xHzgZOLW6z0IvzHtAY8RwzFnQ3XkZSsOjzi8Uzpj8Gxe
-         mKBt/CWm0SbSmQs/fR9CYqzcwcLrThJyu0dCx9z8=
+        b=QjIiOkFNMd+ni7otmKS0Ve6YEB/twRv0GOBz8eownXbB9sC4Na0xEP9zElfpnuzLP
+         382mY5sBgS/FZz8iQumoLxYmB31IYSsbOulr0PfasKZqpk60FrQXadW7cGhSwxM2yE
+         +n1XfJ+s8BVimVYKwMr8dxOn8y5yHuP7VEvJ0CO0=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Pontus Fuchs <pontus.fuchs@gmail.com>,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-wpan@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: [PATCH] drivers: net: Fix Kconfig indentation, continued
-Date:   Thu, 21 Nov 2019 21:28:28 +0800
-Message-Id: <20191121132828.28828-1-krzk@kernel.org>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: [PATCH] net: Fix Kconfig indentation, continued
+Date:   Thu, 21 Nov 2019 21:28:35 +0800
+Message-Id: <20191121132835.28886-1-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -52,504 +51,495 @@ tab+one space, etc).
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/net/Kconfig                           | 64 +++++++++----------
- drivers/net/caif/Kconfig                      | 36 +++++------
- .../net/ethernet/freescale/fs_enet/Kconfig    |  8 +--
- drivers/net/ieee802154/Kconfig                | 12 ++--
- drivers/net/wireless/ath/Kconfig              | 12 ++--
- drivers/net/wireless/ath/ar5523/Kconfig       | 14 ++--
- drivers/net/wireless/ath/ath9k/Kconfig        | 58 ++++++++---------
- drivers/net/wireless/atmel/Kconfig            | 42 ++++++------
- drivers/net/wireless/ralink/rt2x00/Kconfig    | 44 ++++++-------
- drivers/net/wireless/ti/wl12xx/Kconfig        |  8 +--
- 10 files changed, 149 insertions(+), 149 deletions(-)
+ net/Kconfig                |  26 ++---
+ net/ipv4/Kconfig           | 218 ++++++++++++++++++-------------------
+ net/ipv6/netfilter/Kconfig |  28 ++---
+ net/nfc/hci/Kconfig        |  14 +--
+ net/xfrm/Kconfig           |  10 +-
+ 5 files changed, 148 insertions(+), 148 deletions(-)
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index df1c7989e13d..d02f12a5254e 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -153,22 +153,22 @@ config IPVLAN_L3S
- 	select NET_L3_MASTER_DEV
+diff --git a/net/Kconfig b/net/Kconfig
+index 3101bfcbdd7a..bd191f978a23 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -258,7 +258,7 @@ config XPS
+ 	default y
  
- config IPVLAN
--    tristate "IP-VLAN support"
--    depends on INET
--    depends on IPV6 || !IPV6
--    ---help---
--      This allows one to create virtual devices off of a main interface
--      and packets will be delivered based on the dest L3 (IPv6/IPv4 addr)
--      on packets. All interfaces (including the main interface) share L2
--      making it transparent to the connected L2 switch.
-+	tristate "IP-VLAN support"
-+	depends on INET
-+	depends on IPV6 || !IPV6
-+	---help---
-+	  This allows one to create virtual devices off of a main interface
-+	  and packets will be delivered based on the dest L3 (IPv6/IPv4 addr)
-+	  on packets. All interfaces (including the main interface) share L2
-+	  making it transparent to the connected L2 switch.
+ config HWBM
+-       bool
++	bool
  
--      Ipvlan devices can be added using the "ip" command from the
--      iproute2 package starting with the iproute2-3.19 release:
-+	  Ipvlan devices can be added using the "ip" command from the
-+	  iproute2 package starting with the iproute2-3.19 release:
- 
--      "ip link add link <main-dev> [ NAME ] type ipvlan"
-+	  "ip link add link <main-dev> [ NAME ] type ipvlan"
- 
--      To compile this driver as a module, choose M here: the module
--      will be called ipvlan.
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called ipvlan.
- 
- config IPVTAP
- 	tristate "IP-VLAN based tap driver"
-@@ -185,11 +185,11 @@ config IPVTAP
- 	  will be called ipvtap.
- 
- config VXLAN
--       tristate "Virtual eXtensible Local Area Network (VXLAN)"
--       depends on INET
--       select NET_UDP_TUNNEL
--       select GRO_CELLS
--       ---help---
-+	tristate "Virtual eXtensible Local Area Network (VXLAN)"
-+	depends on INET
-+	select NET_UDP_TUNNEL
-+	select GRO_CELLS
-+	---help---
- 	  This allows one to create vxlan virtual interfaces that provide
- 	  Layer 2 Networks over Layer 3 Networks. VXLAN is often used
- 	  to tunnel virtual network infrastructure in virtualized environments.
-@@ -200,12 +200,12 @@ config VXLAN
- 	  will be called vxlan.
- 
- config GENEVE
--       tristate "Generic Network Virtualization Encapsulation"
--       depends on INET
--       depends on IPV6 || !IPV6
--       select NET_UDP_TUNNEL
--       select GRO_CELLS
--       ---help---
-+	tristate "Generic Network Virtualization Encapsulation"
-+	depends on INET
-+	depends on IPV6 || !IPV6
-+	select NET_UDP_TUNNEL
-+	select GRO_CELLS
-+	---help---
- 	  This allows one to create geneve virtual interfaces that provide
- 	  Layer 2 Networks over Layer 3 Networks. GENEVE is often used
- 	  to tunnel virtual network infrastructure in virtualized environments.
-@@ -244,8 +244,8 @@ config MACSEC
- config NETCONSOLE
- 	tristate "Network console logging support"
+ config CGROUP_NET_PRIO
+ 	bool "Network priority cgroup"
+@@ -309,12 +309,12 @@ config BPF_STREAM_PARSER
+ 	select STREAM_PARSER
+ 	select NET_SOCK_MSG
  	---help---
--	If you want to log kernel messages over the network, enable this.
--	See <file:Documentation/networking/netconsole.txt> for details.
-+	  If you want to log kernel messages over the network, enable this.
-+	  See <file:Documentation/networking/netconsole.txt> for details.
+-	 Enabling this allows a stream parser to be used with
+-	 BPF_MAP_TYPE_SOCKMAP.
++	  Enabling this allows a stream parser to be used with
++	  BPF_MAP_TYPE_SOCKMAP.
  
- config NETCONSOLE_DYNAMIC
- 	bool "Dynamic reconfiguration of logging targets"
-@@ -362,12 +362,12 @@ config NET_VRF
- 	  support enables VRF devices.
+-	 BPF_MAP_TYPE_SOCKMAP provides a map type to use with network sockets.
+-	 It can be used to enforce socket policy, implement socket redirects,
+-	 etc.
++	  BPF_MAP_TYPE_SOCKMAP provides a map type to use with network sockets.
++	  It can be used to enforce socket policy, implement socket redirects,
++	  etc.
  
- config VSOCKMON
--    tristate "Virtual vsock monitoring device"
--    depends on VHOST_VSOCK
--    ---help---
--     This option enables a monitoring net device for vsock sockets. It is
--     mostly intended for developers or support to debug vsock issues. If
--     unsure, say N.
-+	tristate "Virtual vsock monitoring device"
-+	depends on VHOST_VSOCK
-+	---help---
-+	  This option enables a monitoring net device for vsock sockets. It is
-+	  mostly intended for developers or support to debug vsock issues. If
-+	  unsure, say N.
- 
- endif # NET_CORE
- 
-diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
-index 96d7cef3289f..e74e2bb61236 100644
---- a/drivers/net/caif/Kconfig
-+++ b/drivers/net/caif/Kconfig
-@@ -16,37 +16,37 @@ config CAIF_TTY
- 	depends on CAIF && TTY
- 	default n
+ config NET_FLOW_LIMIT
+ 	bool
+@@ -349,12 +349,12 @@ config NET_DROP_MONITOR
+ 	tristate "Network packet drop alerting service"
+ 	depends on INET && TRACEPOINTS
  	---help---
--	The CAIF TTY transport driver is a Line Discipline (ldisc)
--	identified as N_CAIF. When this ldisc is opened from user space
--	it will redirect the TTY's traffic into the CAIF stack.
-+	  The CAIF TTY transport driver is a Line Discipline (ldisc)
-+	  identified as N_CAIF. When this ldisc is opened from user space
-+	  it will redirect the TTY's traffic into the CAIF stack.
+-	This feature provides an alerting service to userspace in the
+-	event that packets are discarded in the network stack.  Alerts
+-	are broadcast via netlink socket to any listening user space
+-	process.  If you don't need network drop alerts, or if you are ok
+-	just checking the various proc files and other utilities for
+-	drop statistics, say N here.
++	  This feature provides an alerting service to userspace in the
++	  event that packets are discarded in the network stack.  Alerts
++	  are broadcast via netlink socket to any listening user space
++	  process.  If you don't need network drop alerts, or if you are ok
++	  just checking the various proc files and other utilities for
++	  drop statistics, say N here.
  
- config CAIF_SPI_SLAVE
- 	tristate "CAIF SPI transport driver for slave interface"
- 	depends on CAIF && HAS_DMA
- 	default n
- 	---help---
--	The CAIF Link layer SPI Protocol driver for Slave SPI interface.
--	This driver implements a platform driver to accommodate for a
--	platform specific SPI device. A sample CAIF SPI Platform device is
--	provided in <file:Documentation/networking/caif/spi_porting.txt>.
-+	  The CAIF Link layer SPI Protocol driver for Slave SPI interface.
-+	  This driver implements a platform driver to accommodate for a
-+	  platform specific SPI device. A sample CAIF SPI Platform device is
-+	  provided in <file:Documentation/networking/caif/spi_porting.txt>.
+ endmenu
  
- config CAIF_SPI_SYNC
- 	bool "Next command and length in start of frame"
- 	depends on CAIF_SPI_SLAVE
- 	default n
- 	---help---
--	Putting the next command and length in the start of the frame can
--	help to synchronize to the next transfer in case of over or under-runs.
--	This option also needs to be enabled on the modem.
-+	  Putting the next command and length in the start of the frame can
-+	  help to synchronize to the next transfer in case of over or under-runs.
-+	  This option also needs to be enabled on the modem.
+@@ -433,7 +433,7 @@ config NET_DEVLINK
+ 	imply NET_DROP_MONITOR
  
- config CAIF_HSI
--       tristate "CAIF HSI transport driver"
--       depends on CAIF
--       default n
--       ---help---
--       The CAIF low level driver for CAIF over HSI.
--       Be aware that if you enable this then you also need to
--       enable a low-level HSI driver.
-+	tristate "CAIF HSI transport driver"
-+	depends on CAIF
-+	default n
-+	---help---
-+	  The CAIF low level driver for CAIF over HSI.
-+	  Be aware that if you enable this then you also need to
-+	  enable a low-level HSI driver.
+ config PAGE_POOL
+-       bool
++	bool
  
- config CAIF_VIRTIO
- 	tristate "CAIF virtio transport driver"
-@@ -56,7 +56,7 @@ config CAIF_VIRTIO
- 	select GENERIC_ALLOCATOR
- 	default n
- 	---help---
--	The CAIF driver for CAIF over Virtio.
-+	  The CAIF driver for CAIF over Virtio.
- 
- if CAIF_VIRTIO
- source "drivers/vhost/Kconfig.vringh"
-diff --git a/drivers/net/ethernet/freescale/fs_enet/Kconfig b/drivers/net/ethernet/freescale/fs_enet/Kconfig
-index 245d9a68a71f..7f20840fde07 100644
---- a/drivers/net/ethernet/freescale/fs_enet/Kconfig
-+++ b/drivers/net/ethernet/freescale/fs_enet/Kconfig
-@@ -1,9 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config FS_ENET
--       tristate "Freescale Ethernet Driver"
--       depends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)
--       select MII
--       select PHYLIB
-+	tristate "Freescale Ethernet Driver"
-+	depends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)
-+	select MII
-+	select PHYLIB
- 
- config FS_ENET_MPC5121_FEC
- 	def_bool y if (FS_ENET && PPC_MPC512x)
-diff --git a/drivers/net/ieee802154/Kconfig b/drivers/net/ieee802154/Kconfig
-index 8af5b7e9f4ed..c92a62dbf398 100644
---- a/drivers/net/ieee802154/Kconfig
-+++ b/drivers/net/ieee802154/Kconfig
-@@ -74,9 +74,9 @@ config IEEE802154_ATUSB
- 	  The module will be called 'atusb'.
- 
- config IEEE802154_ADF7242
--       tristate "ADF7242 transceiver driver"
--       depends on IEEE802154_DRIVERS && MAC802154
--       depends on SPI
-+	tristate "ADF7242 transceiver driver"
-+	depends on IEEE802154_DRIVERS && MAC802154
-+	depends on SPI
- 	---help---
- 	  Say Y here to enable the ADF7242 SPI 802.15.4 wireless
- 	  controller.
-@@ -107,9 +107,9 @@ config IEEE802154_CA8210_DEBUGFS
- 	  management entities.
- 
- config IEEE802154_MCR20A
--       tristate "MCR20A transceiver driver"
--       depends on IEEE802154_DRIVERS && MAC802154
--       depends on SPI
-+	tristate "MCR20A transceiver driver"
-+	depends on IEEE802154_DRIVERS && MAC802154
-+	depends on SPI
- 	---help---
- 	  Say Y here to enable the MCR20A SPI 802.15.4 wireless
- 	  controller.
-diff --git a/drivers/net/wireless/ath/Kconfig b/drivers/net/wireless/ath/Kconfig
-index 56616d988c96..7b90b8546162 100644
---- a/drivers/net/wireless/ath/Kconfig
-+++ b/drivers/net/wireless/ath/Kconfig
-@@ -30,12 +30,12 @@ config ATH_DEBUG
- 	  Right now only ath9k makes use of this.
- 
- config ATH_TRACEPOINTS
--       bool "Atheros wireless tracing"
--       depends on ATH_DEBUG
--       depends on EVENT_TRACING
--       ---help---
--	 This option enables tracepoints for atheros wireless drivers.
--	 Currently, ath9k makes use of this facility.
-+	bool "Atheros wireless tracing"
-+	depends on ATH_DEBUG
-+	depends on EVENT_TRACING
-+	---help---
-+	  This option enables tracepoints for atheros wireless drivers.
-+	  Currently, ath9k makes use of this facility.
- 
- config ATH_REG_DYNAMIC_USER_REG_HINTS
- 	bool "Atheros dynamic user regulatory hints"
-diff --git a/drivers/net/wireless/ath/ar5523/Kconfig b/drivers/net/wireless/ath/ar5523/Kconfig
-index 65b39c7d035d..e82df5f1ea67 100644
---- a/drivers/net/wireless/ath/ar5523/Kconfig
-+++ b/drivers/net/wireless/ath/ar5523/Kconfig
-@@ -1,9 +1,9 @@
- # SPDX-License-Identifier: ISC
- config AR5523
--       tristate "Atheros AR5523 wireless driver support"
--       depends on MAC80211 && USB
--       select ATH_COMMON
--       select FW_LOADER
--       ---help---
--	 This module add support for AR5523 based USB dongles such as D-Link
--	 DWL-G132, Netgear WPN111 and many more.
-+	tristate "Atheros AR5523 wireless driver support"
-+	depends on MAC80211 && USB
-+	select ATH_COMMON
-+	select FW_LOADER
-+	---help---
-+	  This module add support for AR5523 based USB dongles such as D-Link
-+	  DWL-G132, Netgear WPN111 and many more.
-diff --git a/drivers/net/wireless/ath/ath9k/Kconfig b/drivers/net/wireless/ath/ath9k/Kconfig
-index c99f42284465..78620c6b64a2 100644
---- a/drivers/net/wireless/ath/ath9k/Kconfig
-+++ b/drivers/net/wireless/ath/ath9k/Kconfig
-@@ -144,13 +144,13 @@ config ATH9K_RFKILL
- 	  a platform that can toggle the RF-Kill GPIO.
- 
- config ATH9K_CHANNEL_CONTEXT
--       bool "Channel Context support"
--       depends on ATH9K
--       default n
--       ---help---
--	 This option enables channel context support in ath9k, which is needed
--	 for multi-channel concurrency. Enable this if P2P PowerSave support
--	 is required.
-+	bool "Channel Context support"
-+	depends on ATH9K
-+	default n
-+	---help---
-+	  This option enables channel context support in ath9k, which is needed
-+	  for multi-channel concurrency. Enable this if P2P PowerSave support
-+	  is required.
- 
- config ATH9K_PCOEM
- 	bool "Atheros ath9k support for PC OEM cards" if EXPERT
-@@ -162,32 +162,32 @@ config ATH9K_PCI_NO_EEPROM
- 	depends on ATH9K_PCI
- 	default n
+ config FAILOVER
+ 	tristate "Generic failover module"
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index 03381f3e12ba..fc816b187170 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -180,8 +180,8 @@ config NET_IPIP
+ config NET_IPGRE_DEMUX
+ 	tristate "IP: GRE demultiplexer"
  	help
--	 This separate driver provides a loader in order to support the
--	 AR500X to AR92XX-generation of ath9k PCI(e) WiFi chips, which have
--	 their initialization data (which contains the real PCI Device ID
--	 that ath9k will need) stored together with the calibration data out
--	 of reach for the ath9k chip.
-+	  This separate driver provides a loader in order to support the
-+	  AR500X to AR92XX-generation of ath9k PCI(e) WiFi chips, which have
-+	  their initialization data (which contains the real PCI Device ID
-+	  that ath9k will need) stored together with the calibration data out
-+	  of reach for the ath9k chip.
+-	 This is helper module to demultiplex GRE packets on GRE version field criteria.
+-	 Required by ip_gre and pptp modules.
++	  This is helper module to demultiplex GRE packets on GRE version field criteria.
++	  Required by ip_gre and pptp modules.
  
--	 These devices are usually various network appliances, routers or
--	 access Points and such.
-+	  These devices are usually various network appliances, routers or
-+	  access Points and such.
+ config NET_IP_TUNNEL
+ 	tristate
+@@ -459,200 +459,200 @@ config TCP_CONG_BIC
+ 	tristate "Binary Increase Congestion (BIC) control"
+ 	default m
+ 	---help---
+-	BIC-TCP is a sender-side only change that ensures a linear RTT
+-	fairness under large windows while offering both scalability and
+-	bounded TCP-friendliness. The protocol combines two schemes
+-	called additive increase and binary search increase. When the
+-	congestion window is large, additive increase with a large
+-	increment ensures linear RTT fairness as well as good
+-	scalability. Under small congestion windows, binary search
+-	increase provides TCP friendliness.
+-	See http://www.csc.ncsu.edu/faculty/rhee/export/bitcp/
++	  BIC-TCP is a sender-side only change that ensures a linear RTT
++	  fairness under large windows while offering both scalability and
++	  bounded TCP-friendliness. The protocol combines two schemes
++	  called additive increase and binary search increase. When the
++	  congestion window is large, additive increase with a large
++	  increment ensures linear RTT fairness as well as good
++	  scalability. Under small congestion windows, binary search
++	  increase provides TCP friendliness.
++	  See http://www.csc.ncsu.edu/faculty/rhee/export/bitcp/
  
--	 If unsure say N.
-+	  If unsure say N.
+ config TCP_CONG_CUBIC
+ 	tristate "CUBIC TCP"
+ 	default y
+ 	---help---
+-	This is version 2.0 of BIC-TCP which uses a cubic growth function
+-	among other techniques.
+-	See http://www.csc.ncsu.edu/faculty/rhee/export/bitcp/cubic-paper.pdf
++	  This is version 2.0 of BIC-TCP which uses a cubic growth function
++	  among other techniques.
++	  See http://www.csc.ncsu.edu/faculty/rhee/export/bitcp/cubic-paper.pdf
  
- config ATH9K_HTC
--       tristate "Atheros HTC based wireless cards support"
--       depends on USB && MAC80211
--       select ATH9K_HW
--       select MAC80211_LEDS
--       select LEDS_CLASS
--       select NEW_LEDS
--       select ATH9K_COMMON
+ config TCP_CONG_WESTWOOD
+ 	tristate "TCP Westwood+"
+ 	default m
+ 	---help---
+-	TCP Westwood+ is a sender-side only modification of the TCP Reno
+-	protocol stack that optimizes the performance of TCP congestion
+-	control. It is based on end-to-end bandwidth estimation to set
+-	congestion window and slow start threshold after a congestion
+-	episode. Using this estimation, TCP Westwood+ adaptively sets a
+-	slow start threshold and a congestion window which takes into
+-	account the bandwidth used  at the time congestion is experienced.
+-	TCP Westwood+ significantly increases fairness wrt TCP Reno in
+-	wired networks and throughput over wireless links.
++	  TCP Westwood+ is a sender-side only modification of the TCP Reno
++	  protocol stack that optimizes the performance of TCP congestion
++	  control. It is based on end-to-end bandwidth estimation to set
++	  congestion window and slow start threshold after a congestion
++	  episode. Using this estimation, TCP Westwood+ adaptively sets a
++	  slow start threshold and a congestion window which takes into
++	  account the bandwidth used  at the time congestion is experienced.
++	  TCP Westwood+ significantly increases fairness wrt TCP Reno in
++	  wired networks and throughput over wireless links.
+ 
+ config TCP_CONG_HTCP
+ 	tristate "H-TCP"
+ 	default m
+ 	---help---
+-	H-TCP is a send-side only modifications of the TCP Reno
+-	protocol stack that optimizes the performance of TCP
+-	congestion control for high speed network links. It uses a
+-	modeswitch to change the alpha and beta parameters of TCP Reno
+-	based on network conditions and in a way so as to be fair with
+-	other Reno and H-TCP flows.
++	  H-TCP is a send-side only modifications of the TCP Reno
++	  protocol stack that optimizes the performance of TCP
++	  congestion control for high speed network links. It uses a
++	  modeswitch to change the alpha and beta parameters of TCP Reno
++	  based on network conditions and in a way so as to be fair with
++	  other Reno and H-TCP flows.
+ 
+ config TCP_CONG_HSTCP
+ 	tristate "High Speed TCP"
+ 	default n
+ 	---help---
+-	Sally Floyd's High Speed TCP (RFC 3649) congestion control.
+-	A modification to TCP's congestion control mechanism for use
+-	with large congestion windows. A table indicates how much to
+-	increase the congestion window by when an ACK is received.
+- 	For more detail	see http://www.icir.org/floyd/hstcp.html
++	  Sally Floyd's High Speed TCP (RFC 3649) congestion control.
++	  A modification to TCP's congestion control mechanism for use
++	  with large congestion windows. A table indicates how much to
++	  increase the congestion window by when an ACK is received.
++	  For more detail see http://www.icir.org/floyd/hstcp.html
+ 
+ config TCP_CONG_HYBLA
+ 	tristate "TCP-Hybla congestion control algorithm"
+ 	default n
+ 	---help---
+-	TCP-Hybla is a sender-side only change that eliminates penalization of
+-	long-RTT, large-bandwidth connections, like when satellite legs are
+-	involved, especially when sharing a common bottleneck with normal
+-	terrestrial connections.
++	  TCP-Hybla is a sender-side only change that eliminates penalization of
++	  long-RTT, large-bandwidth connections, like when satellite legs are
++	  involved, especially when sharing a common bottleneck with normal
++	  terrestrial connections.
+ 
+ config TCP_CONG_VEGAS
+ 	tristate "TCP Vegas"
+ 	default n
+ 	---help---
+-	TCP Vegas is a sender-side only change to TCP that anticipates
+-	the onset of congestion by estimating the bandwidth. TCP Vegas
+-	adjusts the sending rate by modifying the congestion
+-	window. TCP Vegas should provide less packet loss, but it is
+-	not as aggressive as TCP Reno.
++	  TCP Vegas is a sender-side only change to TCP that anticipates
++	  the onset of congestion by estimating the bandwidth. TCP Vegas
++	  adjusts the sending rate by modifying the congestion
++	  window. TCP Vegas should provide less packet loss, but it is
++	  not as aggressive as TCP Reno.
+ 
+ config TCP_CONG_NV
+-       tristate "TCP NV"
+-       default n
 -       ---help---
--	 Support for Atheros HTC based cards.
--	 Chipsets supported: AR9271
+-       TCP NV is a follow up to TCP Vegas. It has been modified to deal with
+-       10G networks, measurement noise introduced by LRO, GRO and interrupt
+-       coalescence. In addition, it will decrease its cwnd multiplicatively
+-       instead of linearly.
++	tristate "TCP NV"
++	default n
++	---help---
++	  TCP NV is a follow up to TCP Vegas. It has been modified to deal with
++	  10G networks, measurement noise introduced by LRO, GRO and interrupt
++	  coalescence. In addition, it will decrease its cwnd multiplicatively
++	  instead of linearly.
+ 
+-       Note that in general congestion avoidance (cwnd decreased when # packets
+-       queued grows) cannot coexist with congestion control (cwnd decreased only
+-       when there is packet loss) due to fairness issues. One scenario when they
+-       can coexist safely is when the CA flows have RTTs << CC flows RTTs.
++	  Note that in general congestion avoidance (cwnd decreased when # packets
++	  queued grows) cannot coexist with congestion control (cwnd decreased only
++	  when there is packet loss) due to fairness issues. One scenario when they
++	  can coexist safely is when the CA flows have RTTs << CC flows RTTs.
+ 
+-       For further details see http://www.brakmo.org/networking/tcp-nv/
++	  For further details see http://www.brakmo.org/networking/tcp-nv/
+ 
+ config TCP_CONG_SCALABLE
+ 	tristate "Scalable TCP"
+ 	default n
+ 	---help---
+-	Scalable TCP is a sender-side only change to TCP which uses a
+-	MIMD congestion control algorithm which has some nice scaling
+-	properties, though is known to have fairness issues.
+-	See http://www.deneholme.net/tom/scalable/
++	  Scalable TCP is a sender-side only change to TCP which uses a
++	  MIMD congestion control algorithm which has some nice scaling
++	  properties, though is known to have fairness issues.
++	  See http://www.deneholme.net/tom/scalable/
+ 
+ config TCP_CONG_LP
+ 	tristate "TCP Low Priority"
+ 	default n
+ 	---help---
+-	TCP Low Priority (TCP-LP), a distributed algorithm whose goal is
+-	to utilize only the excess network bandwidth as compared to the
+-	``fair share`` of bandwidth as targeted by TCP.
+-	See http://www-ece.rice.edu/networks/TCP-LP/
++	  TCP Low Priority (TCP-LP), a distributed algorithm whose goal is
++	  to utilize only the excess network bandwidth as compared to the
++	  ``fair share`` of bandwidth as targeted by TCP.
++	  See http://www-ece.rice.edu/networks/TCP-LP/
+ 
+ config TCP_CONG_VENO
+ 	tristate "TCP Veno"
+ 	default n
+ 	---help---
+-	TCP Veno is a sender-side only enhancement of TCP to obtain better
+-	throughput over wireless networks. TCP Veno makes use of state
+-	distinguishing to circumvent the difficult judgment of the packet loss
+-	type. TCP Veno cuts down less congestion window in response to random
+-	loss packets.
+-	See <http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1177186>
++	  TCP Veno is a sender-side only enhancement of TCP to obtain better
++	  throughput over wireless networks. TCP Veno makes use of state
++	  distinguishing to circumvent the difficult judgment of the packet loss
++	  type. TCP Veno cuts down less congestion window in response to random
++	  loss packets.
++	  See <http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1177186>
+ 
+ config TCP_CONG_YEAH
+ 	tristate "YeAH TCP"
+ 	select TCP_CONG_VEGAS
+ 	default n
+ 	---help---
+-	YeAH-TCP is a sender-side high-speed enabled TCP congestion control
+-	algorithm, which uses a mixed loss/delay approach to compute the
+-	congestion window. It's design goals target high efficiency,
+-	internal, RTT and Reno fairness, resilience to link loss while
+-	keeping network elements load as low as possible.
++	  YeAH-TCP is a sender-side high-speed enabled TCP congestion control
++	  algorithm, which uses a mixed loss/delay approach to compute the
++	  congestion window. It's design goals target high efficiency,
++	  internal, RTT and Reno fairness, resilience to link loss while
++	  keeping network elements load as low as possible.
+ 
+-	For further details look here:
+-	  http://wil.cs.caltech.edu/pfldnet2007/paper/YeAH_TCP.pdf
++	  For further details look here:
++	    http://wil.cs.caltech.edu/pfldnet2007/paper/YeAH_TCP.pdf
+ 
+ config TCP_CONG_ILLINOIS
+ 	tristate "TCP Illinois"
+ 	default n
+ 	---help---
+-	TCP-Illinois is a sender-side modification of TCP Reno for
+-	high speed long delay links. It uses round-trip-time to
+-	adjust the alpha and beta parameters to achieve a higher average
+-	throughput and maintain fairness.
++	  TCP-Illinois is a sender-side modification of TCP Reno for
++	  high speed long delay links. It uses round-trip-time to
++	  adjust the alpha and beta parameters to achieve a higher average
++	  throughput and maintain fairness.
+ 
+-	For further details see:
+-	  http://www.ews.uiuc.edu/~shaoliu/tcpillinois/index.html
++	  For further details see:
++	    http://www.ews.uiuc.edu/~shaoliu/tcpillinois/index.html
+ 
+ config TCP_CONG_DCTCP
+ 	tristate "DataCenter TCP (DCTCP)"
+ 	default n
+ 	---help---
+-	DCTCP leverages Explicit Congestion Notification (ECN) in the network to
+-	provide multi-bit feedback to the end hosts. It is designed to provide:
++	  DCTCP leverages Explicit Congestion Notification (ECN) in the network to
++	  provide multi-bit feedback to the end hosts. It is designed to provide:
+ 
+-	- High burst tolerance (incast due to partition/aggregate),
+-	- Low latency (short flows, queries),
+-	- High throughput (continuous data updates, large file transfers) with
+-	  commodity, shallow-buffered switches.
++	  - High burst tolerance (incast due to partition/aggregate),
++	  - Low latency (short flows, queries),
++	  - High throughput (continuous data updates, large file transfers) with
++	    commodity, shallow-buffered switches.
+ 
+-	All switches in the data center network running DCTCP must support
+-	ECN marking and be configured for marking when reaching defined switch
+-	buffer thresholds. The default ECN marking threshold heuristic for
+-	DCTCP on switches is 20 packets (30KB) at 1Gbps, and 65 packets
+-	(~100KB) at 10Gbps, but might need further careful tweaking.
++	  All switches in the data center network running DCTCP must support
++	  ECN marking and be configured for marking when reaching defined switch
++	  buffer thresholds. The default ECN marking threshold heuristic for
++	  DCTCP on switches is 20 packets (30KB) at 1Gbps, and 65 packets
++	  (~100KB) at 10Gbps, but might need further careful tweaking.
+ 
+-	For further details see:
+-	  http://simula.stanford.edu/~alizade/Site/DCTCP_files/dctcp-final.pdf
++	  For further details see:
++	    http://simula.stanford.edu/~alizade/Site/DCTCP_files/dctcp-final.pdf
+ 
+ config TCP_CONG_CDG
+ 	tristate "CAIA Delay-Gradient (CDG)"
+ 	default n
+ 	---help---
+-	CAIA Delay-Gradient (CDG) is a TCP congestion control that modifies
+-	the TCP sender in order to:
++	  CAIA Delay-Gradient (CDG) is a TCP congestion control that modifies
++	  the TCP sender in order to:
+ 
+ 	  o Use the delay gradient as a congestion signal.
+ 	  o Back off with an average probability that is independent of the RTT.
+ 	  o Coexist with flows that use loss-based congestion control.
+ 	  o Tolerate packet loss unrelated to congestion.
+ 
+-	For further details see:
+-	  D.A. Hayes and G. Armitage. "Revisiting TCP congestion control using
+-	  delay gradients." In Networking 2011. Preprint: http://goo.gl/No3vdg
++	  For further details see:
++	    D.A. Hayes and G. Armitage. "Revisiting TCP congestion control using
++	    delay gradients." In Networking 2011. Preprint: http://goo.gl/No3vdg
+ 
+ config TCP_CONG_BBR
+ 	tristate "BBR TCP"
+ 	default n
+ 	---help---
+ 
+-	BBR (Bottleneck Bandwidth and RTT) TCP congestion control aims to
+-	maximize network utilization and minimize queues. It builds an explicit
+-	model of the the bottleneck delivery rate and path round-trip
+-	propagation delay. It tolerates packet loss and delay unrelated to
+-	congestion. It can operate over LAN, WAN, cellular, wifi, or cable
+-	modem links. It can coexist with flows that use loss-based congestion
+-	control, and can operate with shallow buffers, deep buffers,
+-	bufferbloat, policers, or AQM schemes that do not provide a delay
+-	signal. It requires the fq ("Fair Queue") pacing packet scheduler.
++	  BBR (Bottleneck Bandwidth and RTT) TCP congestion control aims to
++	  maximize network utilization and minimize queues. It builds an explicit
++	  model of the the bottleneck delivery rate and path round-trip
++	  propagation delay. It tolerates packet loss and delay unrelated to
++	  congestion. It can operate over LAN, WAN, cellular, wifi, or cable
++	  modem links. It can coexist with flows that use loss-based congestion
++	  control, and can operate with shallow buffers, deep buffers,
++	  bufferbloat, policers, or AQM schemes that do not provide a delay
++	  signal. It requires the fq ("Fair Queue") pacing packet scheduler.
+ 
+ choice
+ 	prompt "Default TCP congestion control"
+diff --git a/net/ipv6/netfilter/Kconfig b/net/ipv6/netfilter/Kconfig
+index 69443e9a3aa5..0594131fa46d 100644
+--- a/net/ipv6/netfilter/Kconfig
++++ b/net/ipv6/netfilter/Kconfig
+@@ -128,9 +128,9 @@ config IP6_NF_MATCH_HL
+ 	depends on NETFILTER_ADVANCED
+ 	select NETFILTER_XT_MATCH_HL
+ 	---help---
+-	This is a backwards-compat option for the user's convenience
+-	(e.g. when running oldconfig). It selects
+-	CONFIG_NETFILTER_XT_MATCH_HL.
++	  This is a backwards-compat option for the user's convenience
++	  (e.g. when running oldconfig). It selects
++	  CONFIG_NETFILTER_XT_MATCH_HL.
+ 
+ config IP6_NF_MATCH_IPV6HEADER
+ 	tristate '"ipv6header" IPv6 Extension Headers Match'
+@@ -184,9 +184,9 @@ config IP6_NF_TARGET_HL
+ 	depends on NETFILTER_ADVANCED && IP6_NF_MANGLE
+ 	select NETFILTER_XT_TARGET_HL
+ 	---help---
+-	This is a backwards-compatible option for the user's convenience
+-	(e.g. when running oldconfig). It selects
+-	CONFIG_NETFILTER_XT_TARGET_HL.
++	  This is a backwards-compatible option for the user's convenience
++	  (e.g. when running oldconfig). It selects
++	  CONFIG_NETFILTER_XT_TARGET_HL.
+ 
+ config IP6_NF_FILTER
+ 	tristate "Packet filtering"
+@@ -245,14 +245,14 @@ config IP6_NF_RAW
+ 
+ # security table for MAC policy
+ config IP6_NF_SECURITY
+-       tristate "Security table"
+-       depends on SECURITY
+-       depends on NETFILTER_ADVANCED
+-       help
+-	 This option adds a `security' table to iptables, for use
+-	 with Mandatory Access Control (MAC) policy.
 -
--	 For more information: http://wireless.kernel.org/en/users/Drivers/ath9k_htc
--
--	 The built module will be ath9k_htc.
-+	tristate "Atheros HTC based wireless cards support"
-+	depends on USB && MAC80211
-+	select ATH9K_HW
-+	select MAC80211_LEDS
-+	select LEDS_CLASS
-+	select NEW_LEDS
-+	select ATH9K_COMMON
-+	---help---
-+	  Support for Atheros HTC based cards.
-+	  Chipsets supported: AR9271
+-	 If unsure, say N.
++	tristate "Security table"
++	depends on SECURITY
++	depends on NETFILTER_ADVANCED
++	help
++	  This option adds a `security' table to iptables, for use
++	  with Mandatory Access Control (MAC) policy.
 +
-+	  For more information: http://wireless.kernel.org/en/users/Drivers/ath9k_htc
-+
-+	  The built module will be ath9k_htc.
++	  If unsure, say N.
  
- config ATH9K_HTC_DEBUGFS
- 	bool "Atheros ath9k_htc debugging"
-diff --git a/drivers/net/wireless/atmel/Kconfig b/drivers/net/wireless/atmel/Kconfig
-index 4c0556b3a5ba..c2142c70f25d 100644
---- a/drivers/net/wireless/atmel/Kconfig
-+++ b/drivers/net/wireless/atmel/Kconfig
-@@ -13,29 +13,29 @@ config WLAN_VENDOR_ATMEL
- if WLAN_VENDOR_ATMEL
- 
- config ATMEL
--      tristate "Atmel at76c50x chipset  802.11b support"
--      depends on CFG80211 && (PCI || PCMCIA)
--      select WIRELESS_EXT
--      select WEXT_PRIV
--      select FW_LOADER
--      select CRC32
--       ---help---
--	A driver 802.11b wireless cards based on the Atmel fast-vnet
--	chips. This driver supports standard Linux wireless extensions.
--
--	Many  cards based on this chipset do not have flash memory
--	and need their firmware loaded at start-up. If yours is
--	one of these, you will need to provide a firmware image
--	to be loaded into the card by the driver. The Atmel
--	firmware package can be downloaded from
--	<http://www.thekelleys.org.uk/atmel>
-+	tristate "Atmel at76c50x chipset  802.11b support"
-+	depends on CFG80211 && (PCI || PCMCIA)
-+	select WIRELESS_EXT
-+	select WEXT_PRIV
-+	select FW_LOADER
-+	select CRC32
-+	---help---
-+	  A driver 802.11b wireless cards based on the Atmel fast-vnet
-+	  chips. This driver supports standard Linux wireless extensions.
-+
-+	  Many  cards based on this chipset do not have flash memory
-+	  and need their firmware loaded at start-up. If yours is
-+	  one of these, you will need to provide a firmware image
-+	  to be loaded into the card by the driver. The Atmel
-+	  firmware package can be downloaded from
-+	  <http://www.thekelleys.org.uk/atmel>
- 
- config PCI_ATMEL
--      tristate "Atmel at76c506 PCI cards"
--      depends on ATMEL && PCI
--       ---help---
--	Enable support for PCI and mini-PCI cards containing the
--	Atmel at76c506 chip.
-+	tristate "Atmel at76c506 PCI cards"
-+	depends on ATMEL && PCI
-+	---help---
-+	  Enable support for PCI and mini-PCI cards containing the
-+	  Atmel at76c506 chip.
- 
- config PCMCIA_ATMEL
- 	tristate "Atmel at76c502/at76c504 PCMCIA cards"
-diff --git a/drivers/net/wireless/ralink/rt2x00/Kconfig b/drivers/net/wireless/ralink/rt2x00/Kconfig
-index f8a9244ce012..d4969d617822 100644
---- a/drivers/net/wireless/ralink/rt2x00/Kconfig
-+++ b/drivers/net/wireless/ralink/rt2x00/Kconfig
-@@ -95,20 +95,20 @@ config RT2800PCI_RT35XX
- 
- 
- config RT2800PCI_RT53XX
--       bool "rt2800pci - Include support for rt53xx devices (EXPERIMENTAL)"
--       default y
--       ---help---
--	 This adds support for rt53xx wireless chipset family to the
--	 rt2800pci driver.
--	 Supported chips: RT5390
-+	bool "rt2800pci - Include support for rt53xx devices (EXPERIMENTAL)"
-+	default y
-+	---help---
-+	  This adds support for rt53xx wireless chipset family to the
-+	  rt2800pci driver.
-+	  Supported chips: RT5390
- 
- config RT2800PCI_RT3290
--       bool "rt2800pci - Include support for rt3290 devices (EXPERIMENTAL)"
--       default y
--       ---help---
--	 This adds support for rt3290 wireless chipset family to the
--	 rt2800pci driver.
--	 Supported chips: RT3290
-+	bool "rt2800pci - Include support for rt3290 devices (EXPERIMENTAL)"
-+	default y
-+	---help---
-+	  This adds support for rt3290 wireless chipset family to the
-+	  rt2800pci driver.
-+	  Supported chips: RT3290
- endif
- 
- config RT2500USB
-@@ -174,18 +174,18 @@ config RT2800USB_RT3573
- 	  in the rt2800usb driver.
- 
- config RT2800USB_RT53XX
--       bool "rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)"
--       ---help---
--	 This adds support for rt53xx wireless chipset family to the
--	 rt2800usb driver.
--	 Supported chips: RT5370
-+	bool "rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)"
-+	---help---
-+	  This adds support for rt53xx wireless chipset family to the
-+	  rt2800usb driver.
-+	  Supported chips: RT5370
- 
- config RT2800USB_RT55XX
--       bool "rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)"
--       ---help---
--	 This adds support for rt55xx wireless chipset family to the
--	 rt2800usb driver.
--	 Supported chips: RT5572
-+	bool "rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)"
-+	---help---
-+	  This adds support for rt55xx wireless chipset family to the
-+	  rt2800usb driver.
-+	  Supported chips: RT5572
- 
- config RT2800USB_UNKNOWN
- 	bool "rt2800usb - Include support for unknown (USB) devices"
-diff --git a/drivers/net/wireless/ti/wl12xx/Kconfig b/drivers/net/wireless/ti/wl12xx/Kconfig
-index e409042ee9a0..9c4511604b67 100644
---- a/drivers/net/wireless/ti/wl12xx/Kconfig
-+++ b/drivers/net/wireless/ti/wl12xx/Kconfig
-@@ -1,10 +1,10 @@
+ config IP6_NF_NAT
+ 	tristate "ip6tables NAT support"
+diff --git a/net/nfc/hci/Kconfig b/net/nfc/hci/Kconfig
+index 97bd3a2c5c98..4822d6f46947 100644
+--- a/net/nfc/hci/Kconfig
++++ b/net/nfc/hci/Kconfig
+@@ -1,12 +1,12 @@
  # SPDX-License-Identifier: GPL-2.0-only
- config WL12XX
--       tristate "TI wl12xx support"
-+	tristate "TI wl12xx support"
- 	depends on MAC80211
--       select WLCORE
--       ---help---
-+	select WLCORE
-+	---help---
- 	  This module adds support for wireless adapters based on TI wl1271,
- 	  wl1273, wl1281 and wl1283 chipsets. This module does *not* include
- 	  support for wl1251.  For wl1251 support, use the separate homonymous
--	   driver instead.
-+	  driver instead.
+ config NFC_HCI
+-       depends on NFC
+-       tristate "NFC HCI implementation"
+-       default n
+-       help
+-	 Say Y here if you want to build support for a kernel NFC HCI
+-	 implementation. This is mostly needed for devices that only process
+-	 HCI frames, like for example the NXP pn544.
++	depends on NFC
++	tristate "NFC HCI implementation"
++	default n
++	help
++	  Say Y here if you want to build support for a kernel NFC HCI
++	  implementation. This is mostly needed for devices that only process
++	  HCI frames, like for example the NXP pn544.
+ 
+ config NFC_SHDLC
+ 	depends on NFC_HCI
+diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
+index 3981bc0d9e6c..6921a18201a0 100644
+--- a/net/xfrm/Kconfig
++++ b/net/xfrm/Kconfig
+@@ -3,13 +3,13 @@
+ # XFRM configuration
+ #
+ config XFRM
+-       bool
+-       depends on INET
+-       select GRO_CELLS
+-       select SKB_EXTENSIONS
++	bool
++	depends on INET
++	select GRO_CELLS
++	select SKB_EXTENSIONS
+ 
+ config XFRM_OFFLOAD
+-       bool
++	bool
+ 
+ config XFRM_ALGO
+ 	tristate
 -- 
 2.17.1
 
