@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A09105054
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12652105056
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:18:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbfKUKSr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Nov 2019 05:18:47 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48846 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726197AbfKUKSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:18:46 -0500
+        id S1726970AbfKUKSt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Nov 2019 05:18:49 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45621 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726343AbfKUKSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:18:48 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-376-mR6hwgN0NriBnyxl6_9_Vw-1; Thu, 21 Nov 2019 05:18:42 -0500
+ us-mta-180-doG22PcpMpS5zZcWbNTSPg-1; Thu, 21 Nov 2019 05:18:44 -0500
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A7EC3801E5B;
-        Thu, 21 Nov 2019 10:18:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6AC31800A02;
+        Thu, 21 Nov 2019 10:18:43 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-116-31.ams2.redhat.com [10.36.116.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3F3FC6FDCE;
-        Thu, 21 Nov 2019 10:18:40 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0154970537;
+        Thu, 21 Nov 2019 10:18:41 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
@@ -29,14 +29,14 @@ Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Sabrina Dubroca <sd@queasysnail.net>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH ipsec-next v6 4/6] esp4: prepare esp_input_done2 for non-UDP encapsulation
-Date:   Thu, 21 Nov 2019 11:18:26 +0100
-Message-Id: <d5487f6b72778252558fdef7ba83e151a4d14bd2.1574329035.git.sd@queasysnail.net>
+Subject: [PATCH ipsec-next v6 5/6] esp4: split esp_output_udp_encap and introduce esp_output_encap
+Date:   Thu, 21 Nov 2019 11:18:27 +0100
+Message-Id: <b776a50512dc1ed143106b7aaa62bf0f3c274944.1574329035.git.sd@queasysnail.net>
 In-Reply-To: <cover.1574329035.git.sd@queasysnail.net>
 References: <cover.1574329035.git.sd@queasysnail.net>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: mR6hwgN0NriBnyxl6_9_Vw-1
+X-MC-Unique: doG22PcpMpS5zZcWbNTSPg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: 8BIT
@@ -45,54 +45,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For espintcp encapsulation, we will need to get the source port from the
-TCP header instead of UDP. Introduce a variable to hold the port.
-
 Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Acked-by: David S. Miller <davem@davemloft.net>
 ---
- net/ipv4/esp4.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ net/ipv4/esp4.c | 57 ++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 37 insertions(+), 20 deletions(-)
 
 diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 5c967764041f..c5d826642229 100644
+index c5d826642229..033c61d27148 100644
 --- a/net/ipv4/esp4.c
 +++ b/net/ipv4/esp4.c
-@@ -601,6 +601,18 @@ int esp_input_done2(struct sk_buff *skb, int err)
- 	if (x->encap) {
- 		struct xfrm_encap_tmpl *encap = x->encap;
- 		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
-+		__be16 source;
+@@ -225,45 +225,62 @@ static void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)
+ 	tail[plen - 1] = proto;
+ }
+ 
+-static int esp_output_udp_encap(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
++static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
++					       int encap_type,
++					       struct esp_info *esp,
++					       __be16 sport,
++					       __be16 dport)
+ {
+-	int encap_type;
+ 	struct udphdr *uh;
+ 	__be32 *udpdata32;
+-	__be16 sport, dport;
+-	struct xfrm_encap_tmpl *encap = x->encap;
+-	struct ip_esp_hdr *esph = esp->esph;
+ 	unsigned int len;
+ 
+-	spin_lock_bh(&x->lock);
+-	sport = encap->encap_sport;
+-	dport = encap->encap_dport;
+-	encap_type = encap->encap_type;
+-	spin_unlock_bh(&x->lock);
+-
+ 	len = skb->len + esp->tailen - skb_transport_offset(skb);
+ 	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
+-		return -EMSGSIZE;
++		return ERR_PTR(-EMSGSIZE);
+ 
+-	uh = (struct udphdr *)esph;
++	uh = (struct udphdr *)esp->esph;
+ 	uh->source = sport;
+ 	uh->dest = dport;
+ 	uh->len = htons(len);
+ 	uh->check = 0;
+ 
++	*skb_mac_header(skb) = IPPROTO_UDP;
 +
-+		switch (x->encap->encap_type) {
-+		case UDP_ENCAP_ESPINUDP:
-+		case UDP_ENCAP_ESPINUDP_NON_IKE:
-+			source = uh->source;
-+			break;
-+		default:
-+			WARN_ON_ONCE(1);
-+			err = -EINVAL;
-+			goto out;
-+		}
++	if (encap_type == UDP_ENCAP_ESPINUDP_NON_IKE) {
++		udpdata32 = (__be32 *)(uh + 1);
++		udpdata32[0] = udpdata32[1] = 0;
++		return (struct ip_esp_hdr *)(udpdata32 + 2);
++	}
++
++	return (struct ip_esp_hdr *)(uh + 1);
++}
++
++static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
++			    struct esp_info *esp)
++{
++	struct xfrm_encap_tmpl *encap = x->encap;
++	struct ip_esp_hdr *esph;
++	__be16 sport, dport;
++	int encap_type;
++
++	spin_lock_bh(&x->lock);
++	sport = encap->encap_sport;
++	dport = encap->encap_dport;
++	encap_type = encap->encap_type;
++	spin_unlock_bh(&x->lock);
++
+ 	switch (encap_type) {
+ 	default:
+ 	case UDP_ENCAP_ESPINUDP:
+-		esph = (struct ip_esp_hdr *)(uh + 1);
+-		break;
+ 	case UDP_ENCAP_ESPINUDP_NON_IKE:
+-		udpdata32 = (__be32 *)(uh + 1);
+-		udpdata32[0] = udpdata32[1] = 0;
+-		esph = (struct ip_esp_hdr *)(udpdata32 + 2);
++		esph = esp_output_udp_encap(skb, encap_type, esp, sport, dport);
+ 		break;
+ 	}
  
- 		/*
- 		 * 1) if the NAT-T peer's IP or port changed then
-@@ -609,11 +621,11 @@ int esp_input_done2(struct sk_buff *skb, int err)
- 		 *    SRC ports.
- 		 */
- 		if (iph->saddr != x->props.saddr.a4 ||
--		    uh->source != encap->encap_sport) {
-+		    source != encap->encap_sport) {
- 			xfrm_address_t ipaddr;
+-	*skb_mac_header(skb) = IPPROTO_UDP;
++	if (IS_ERR(esph))
++		return PTR_ERR(esph);
++
+ 	esp->esph = esph;
  
- 			ipaddr.a4 = iph->saddr;
--			km_new_mapping(x, &ipaddr, uh->source);
-+			km_new_mapping(x, &ipaddr, source);
+ 	return 0;
+@@ -281,7 +298,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
  
- 			/* XXX: perhaps add an extra
- 			 * policy check here, to see
+ 	/* this is non-NULL only with UDP Encapsulation */
+ 	if (x->encap) {
+-		int err = esp_output_udp_encap(x, skb, esp);
++		int err = esp_output_encap(x, skb, esp);
+ 
+ 		if (err < 0)
+ 			return err;
 -- 
 2.23.0
 
