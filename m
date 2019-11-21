@@ -2,229 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4499010504E
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9A9105051
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 11:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfKUKRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 05:17:53 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45346 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfKUKRw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:17:52 -0500
-Received: by mail-lj1-f196.google.com with SMTP id n21so2519319ljg.12
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 02:17:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rheqpv+csTnpb1w5YOY3zSExeiGEQ+raK4EDVtBWW4w=;
-        b=WMnWzBkWpblOJXHtBpgKuaSg1YvLuhyexdSnT7EzahFtMeotDLWmNPrHV22uS2Xnt0
-         XWXvOqSxcySWzPWHPUKRN3PXUHe5ieefgqvfqQl785FRfOylPoynYMlZPAyRafkBz4CI
-         s/MJ41KHecozDEBLtZSGbZKkes+TBMJkXul/p2zkCYlAXcVjb2uKoV3zYMM7mqe9WxC/
-         XcOdVdmo/Zyv4xZ8l46yF1jJ5rujWc/oksgceMuZOviyEz4LD4nUzaW4VLD+mFhVuGpe
-         tBx0bTbxB1d2ILUaDw4JVtQDebmpySLCa0rd0Lx9aQQT53BG+Ss7JV5kSiOjSFeAEXDK
-         iCgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rheqpv+csTnpb1w5YOY3zSExeiGEQ+raK4EDVtBWW4w=;
-        b=lM4JKCbb6rnMgVgVtUneFWSfM58AbYUndgZBXlsVNsor4TkmFzAPBCdaZreVKGnPGd
-         NNTqPUW4Ngi0NHMzxUEJZObsbbPiTfr+1YSKAe8wv49fLQba6qoP+HweMbGwLigbFw36
-         F9+wS8T8q7dUoh2cNhEc5ZOhYr5RtvJ2iieJ0w8XgPfFElkvuI5S9iJZVVlx7iIK1RAb
-         M0DkUrffRERUfKgLErkUO0Ts/LFy4/CzdCGcLA7p4EPgouopzE7DfKesKAcvS4nXnO4/
-         6kNj1qUdEwfym4387xEOX6Z0B7KI18DDGn7k1f+TTWfvwYSe+jnQ5NizALolnPBYCUxh
-         3Hhg==
-X-Gm-Message-State: APjAAAUHCzGXoN9ImJ89k/0RNwobmZB5gn3Ms2cerEtkipXpksbOv9C8
-        jkH8d3DGQtnkjs9RvDwp9pSp6/iWJipmB1TzN6XScQ==
-X-Google-Smtp-Source: APXvYqzoPhxuoILpiM9Yoh4zgQ3kQEN+dWeTvGtJqk2XIWxJ/hY26LGyWTPuIJAWlt7jegKJCexwd25YDrog3m6wtW4=
-X-Received: by 2002:a2e:b163:: with SMTP id a3mr6535836ljm.72.1574331468835;
- Thu, 21 Nov 2019 02:17:48 -0800 (PST)
+        id S1726638AbfKUKSj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Nov 2019 05:18:39 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55444 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726197AbfKUKSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 05:18:39 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-145-Q1DmdlC2Nq6eY5C8tXyzCA-1; Thu, 21 Nov 2019 05:18:36 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 98029477;
+        Thu, 21 Nov 2019 10:18:34 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-116-31.ams2.redhat.com [10.36.116.31])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3820F694A4;
+        Thu, 21 Nov 2019 10:18:33 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next v6 0/6] ipsec: add TCP encapsulation support (RFC 8229)
+Date:   Thu, 21 Nov 2019 11:18:22 +0100
+Message-Id: <cover.1574329035.git.sd@queasysnail.net>
 MIME-Version: 1.0
-References: <20191120152255.18928-1-anders.roxell@linaro.org>
- <e07311c7-24b8-8c48-d6f2-a7c93976613c@gmail.com> <CADYN=9Jzxgun9k8v9oQT47ZUFGPhCnsDoYaohG-DXmA1De1zXg@mail.gmail.com>
-In-Reply-To: <CADYN=9Jzxgun9k8v9oQT47ZUFGPhCnsDoYaohG-DXmA1De1zXg@mail.gmail.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Thu, 21 Nov 2019 11:17:37 +0100
-Message-ID: <CADYN=9Kzz0DoK+hMaWqUyxXYrpTXpxG6YEWz-fo1Zgt+Z37T3Q@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ipmr: fix suspicious RCU warning
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, paulmck@kernel.org,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: Q1DmdlC2Nq6eY5C8tXyzCA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Nov 2019 at 08:15, Anders Roxell <anders.roxell@linaro.org> wrote:
->
-> On Wed, 20 Nov 2019 at 18:45, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >
-> >
-> >
-> > On 11/20/19 7:22 AM, Anders Roxell wrote:
+This patchset introduces support for TCP encapsulation of IKE and ESP
+messages, as defined by RFC 8229 [0]. It is an evolution of what
+Herbert Xu proposed in January 2018 [1] that addresses the main
+criticism against it, by not interfering with the TCP implementation
+at all. The networking stack now has infrastructure for this: TCP ULPs
+and Stream Parsers.
 
-[snippet]
+The first patches are preparation and refactoring, and the final patch
+adds the feature.
 
-> > > +     rtnl_lock();
-> > >       err = ipmr_rules_init(net);
-> > > +     rtnl_unlock();
-> > >       if (err < 0)
-> > >               goto ipmr_rules_fail;
-> >
-> > Hmmm... this might have performance impact for creation of a new netns
-> >
-> > Since the 'struct net' is not yet fully initialized (thus published/visible),
-> > should we really have to grab RTNL (again) only to silence a warning ?
-> >
-> > What about the following alternative ?
->
-> I tried what you suggested, unfortunately, I still got the warning.
+The main omission in this submission is IPv6 support. ESP
+encapsulation over UDP with IPv6 is currently not supported in the
+kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
+is not frequently used with IPv6.
 
-I was wrong, so if I also add "lockdep_rtnl_is_held()" to the
-"ipmr_for_each_table()" macro it works.
+Some of the code is taken directly, or slightly modified, from Herbert
+Xu's original submission [1]. The ULP and strparser pieces are
+new. This work was presented and discussed at the IPsec workshop and
+netdev 0x13 conference [2] in Prague, last March.
 
->
->
-> [   43.253850][    T1] =============================
-> [   43.255473][    T1] WARNING: suspicious RCU usage
-> [   43.259068][    T1]
-> 5.4.0-rc8-next-20191120-00003-g3aa7c2a8649e-dirty #6 Not tainted
-> [   43.263078][    T1] -----------------------------
-> [   43.265134][    T1] net/ipv4/ipmr.c:1759 RCU-list traversed in
-> non-reader section!!
-> [   43.267587][    T1]
-> [   43.267587][    T1] other info that might help us debug this:
-> [   43.267587][    T1]
-> [   43.271129][    T1]
-> [   43.271129][    T1] rcu_scheduler_active = 2, debug_locks = 1
-> [   43.274021][    T1] 2 locks held by swapper/0/1:
-> [   43.275532][    T1]  #0: ffff000065abeaa0 (&dev->mutex){....}, at:
-> __device_driver_lock+0xa0/0xb0
-> [   43.278930][    T1]  #1: ffffa000153017f0 (rtnl_mutex){+.+.}, at:
-> rtnl_lock+0x1c/0x28
-> [   43.282023][    T1]
-> [   43.282023][    T1] stack backtrace:
-> [   43.283921][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-> 5.4.0-rc8-next-20191120-00003-g3aa7c2a8649e-dirty #6
-> [   43.287152][    T1] Hardware name: linux,dummy-virt (DT)
-> [   43.288920][    T1] Call trace:
-> [   43.290057][    T1]  dump_backtrace+0x0/0x2d0
-> [   43.291535][    T1]  show_stack+0x20/0x30
-> [   43.292967][    T1]  dump_stack+0x204/0x2ac
-> [   43.294423][    T1]  lockdep_rcu_suspicious+0xf4/0x108
-> [   43.296163][    T1]  ipmr_device_event+0x100/0x1e8
-> [   43.297812][    T1]  notifier_call_chain+0x100/0x1a8
-> [   43.299486][    T1]  raw_notifier_call_chain+0x38/0x48
-> [   43.301248][    T1]  call_netdevice_notifiers_info+0x128/0x148
-> [   43.303158][    T1]  rollback_registered_many+0x684/0xb48
-> [   43.304963][    T1]  rollback_registered+0xd8/0x150
-> [   43.306595][    T1]  unregister_netdevice_queue+0x194/0x1b8
-> [   43.308406][    T1]  unregister_netdev+0x24/0x38
-> [   43.310012][    T1]  virtnet_remove+0x44/0x78
-> [   43.311519][    T1]  virtio_dev_remove+0x5c/0xc0
-> [   43.313114][    T1]  really_probe+0x508/0x920
-> [   43.314635][    T1]  driver_probe_device+0x164/0x230
-> [   43.316337][    T1]  device_driver_attach+0x8c/0xc0
-> [   43.318024][    T1]  __driver_attach+0x1e0/0x1f8
-> [   43.319584][    T1]  bus_for_each_dev+0xf0/0x188
-> [   43.321169][    T1]  driver_attach+0x34/0x40
-> [   43.322645][    T1]  bus_add_driver+0x204/0x3c8
-> [   43.324202][    T1]  driver_register+0x160/0x1f8
-> [   43.325788][    T1]  register_virtio_driver+0x7c/0x88
-> [   43.327480][    T1]  virtio_net_driver_init+0xa8/0xf4
-> [   43.329196][    T1]  do_one_initcall+0x4c0/0xad8
-> [   43.330767][    T1]  kernel_init_freeable+0x3e0/0x500
-> [   43.332444][    T1]  kernel_init+0x14/0x1f0
-> [   43.333901][    T1]  ret_from_fork+0x10/0x18
->
->
-> Cheers,
-> Anders
->
-> >
-> > diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-> > index 6e68def66822f47fc08d94eddd32a4bd4f9fdfb0..b6dcdce08f1d82c83756a319623e24ae0174092c 100644
-> > --- a/net/ipv4/ipmr.c
-> > +++ b/net/ipv4/ipmr.c
-> > @@ -94,7 +94,7 @@ static DEFINE_SPINLOCK(mfc_unres_lock);
-> >
-> >  static struct kmem_cache *mrt_cachep __ro_after_init;
-> >
-> > -static struct mr_table *ipmr_new_table(struct net *net, u32 id);
-> > +static struct mr_table *ipmr_new_table(struct net *net, u32 id, bool init);
-> >  static void ipmr_free_table(struct mr_table *mrt);
-> >
+[0] https://tools.ietf.org/html/rfc8229
+[1] https://patchwork.ozlabs.org/patch/859107/
+[2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
 
- static void ip_mr_forward(struct net *net, struct mr_table *mrt,
-@@ -110,7 +110,8 @@ static void ipmr_expire_process(struct timer_list *t);
+Changes since v5:
+ - rebase patch 1/6 on top of ipsec-next (conflict with commits
+   7c422d0ce975 ("net: add READ_ONCE() annotation in
+   __skb_wait_for_more_packets()") and 3f926af3f4d6 ("net: use
+   skb_queue_empty_lockless() in busy poll contexts"))
 
- #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
- #define ipmr_for_each_table(mrt, net) \
--       list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
-+       list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
-+                               lockdep_rtnl_is_held())
- static struct mr_table *ipmr_mr_table_iter(struct net *net,
-                                           struct mr_table *mrt)
+Changes since v4:
+ - prevent combining sockmap with espintcp, as this does not work
+   properly and I can't see a use case for it
 
+Changes since v3:
+ - fix sparse warning related to RCU tag on icsk_ulp_data
 
-Cheers,
-Anders
+Changes since v2:
+ - rename config option to INET_ESPINTCP and move it to
+   net/ipv4/Kconfig (patch 6/6)
 
-> >  static void ip_mr_forward(struct net *net, struct mr_table *mrt,
-> > @@ -245,7 +245,7 @@ static int __net_init ipmr_rules_init(struct net *net)
-> >
-> >         INIT_LIST_HEAD(&net->ipv4.mr_tables);
-> >
-> > -       mrt = ipmr_new_table(net, RT_TABLE_DEFAULT);
-> > +       mrt = ipmr_new_table(net, RT_TABLE_DEFAULT, true);
-> >         if (IS_ERR(mrt)) {
-> >                 err = PTR_ERR(mrt);
-> >                 goto err1;
-> > @@ -322,7 +322,7 @@ static int __net_init ipmr_rules_init(struct net *net)
-> >  {
-> >         struct mr_table *mrt;
-> >
-> > -       mrt = ipmr_new_table(net, RT_TABLE_DEFAULT);
-> > +       mrt = ipmr_new_table(net, RT_TABLE_DEFAULT, true);
-> >         if (IS_ERR(mrt))
-> >                 return PTR_ERR(mrt);
-> >         net->ipv4.mrt = mrt;
-> > @@ -392,7 +392,7 @@ static struct mr_table_ops ipmr_mr_table_ops = {
-> >         .cmparg_any = &ipmr_mr_table_ops_cmparg_any,
-> >  };
-> >
-> > -static struct mr_table *ipmr_new_table(struct net *net, u32 id)
-> > +static struct mr_table *ipmr_new_table(struct net *net, u32 id, bool init)
-> >  {
-> >         struct mr_table *mrt;
-> >
-> > @@ -400,9 +400,11 @@ static struct mr_table *ipmr_new_table(struct net *net, u32 id)
-> >         if (id != RT_TABLE_DEFAULT && id >= 1000000000)
-> >                 return ERR_PTR(-EINVAL);
-> >
-> > -       mrt = ipmr_get_table(net, id);
-> > -       if (mrt)
-> > -               return mrt;
-> > +       if (!init) {
-> > +               mrt = ipmr_get_table(net, id);
-> > +               if (mrt)
-> > +                       return mrt;
-> > +       }
-> >
-> >         return mr_table_alloc(net, id, &ipmr_mr_table_ops,
-> >                               ipmr_expire_process, ipmr_new_table_set);
-> > @@ -1547,7 +1549,7 @@ int ip_mroute_setsockopt(struct sock *sk, int optname, char __user *optval,
-> >                 if (sk == rtnl_dereference(mrt->mroute_sk)) {
-> >                         ret = -EBUSY;
-> >                 } else {
-> > -                       mrt = ipmr_new_table(net, uval);
-> > +                       mrt = ipmr_new_table(net, uval, false);
-> >                         if (IS_ERR(mrt))
-> >                                 ret = PTR_ERR(mrt);
-> >                         else
-> >
-> >
+Changes since v1:
+ - drop patch 1, already present in the tree as commit bd95e678e0f6
+   ("bpf: sockmap, fix use after free from sleep in psock backlog
+   workqueue")
+ - patch 1/6: fix doc error reported by kbuild test robot <lkp@intel.com>
+ - patch 6/6, fix things reported by Steffen Klassert:
+   - remove unneeded goto and improve error handling in
+     esp_output_tcp_finish
+   - clean up the ifdefs by providing dummy implementations of those
+     functions
+   - fix Kconfig select, missing NET_SOCK_MSG
+
+Sabrina Dubroca (6):
+  net: add queue argument to __skb_wait_for_more_packets and
+    __skb_{,try_}recv_datagram
+  xfrm: introduce xfrm_trans_queue_net
+  xfrm: add route lookup to xfrm4_rcv_encap
+  esp4: prepare esp_input_done2 for non-UDP encapsulation
+  esp4: split esp_output_udp_encap and introduce esp_output_encap
+  xfrm: add espintcp (RFC 8229)
+
+ include/linux/skbuff.h    |  11 +-
+ include/net/espintcp.h    |  39 +++
+ include/net/xfrm.h        |   4 +
+ include/uapi/linux/udp.h  |   1 +
+ net/core/datagram.c       |  27 +-
+ net/ipv4/Kconfig          |  11 +
+ net/ipv4/esp4.c           | 264 ++++++++++++++++++--
+ net/ipv4/udp.c            |   3 +-
+ net/ipv4/xfrm4_protocol.c |   9 +
+ net/unix/af_unix.c        |   7 +-
+ net/xfrm/Makefile         |   1 +
+ net/xfrm/espintcp.c       | 509 ++++++++++++++++++++++++++++++++++++++
+ net/xfrm/xfrm_input.c     |  21 +-
+ net/xfrm/xfrm_policy.c    |   7 +
+ net/xfrm/xfrm_state.c     |   3 +
+ 15 files changed, 871 insertions(+), 46 deletions(-)
+ create mode 100644 include/net/espintcp.h
+ create mode 100644 net/xfrm/espintcp.c
+
+-- 
+2.23.0
+
