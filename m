@@ -2,77 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F1971058D2
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 18:52:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BAC41058F3
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 18:59:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbfKURwW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Nov 2019 12:52:22 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:40936 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726279AbfKURwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 12:52:21 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3976380094;
-        Thu, 21 Nov 2019 17:52:20 +0000 (UTC)
-Received: from mh-desktop.uk.solarflarecom.com (10.17.20.62) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 21 Nov 2019 17:52:16 +0000
-Subject: [PATCH net] sfc: Only cancel the PPS workqueue if it exists
-From:   Martin Habets <mhabets@solarflare.com>
-To:     <davem@davemloft.net>, <linux-net-drivers@solarflare.com>
-CC:     <netdev@vger.kernel.org>
-Date:   Thu, 21 Nov 2019 17:52:15 +0000
-Message-ID: <157435873481.1746063.7779522257910378266.stgit@mh-desktop.uk.solarflarecom.com>
-User-Agent: StGit/0.19
+        id S1726803AbfKUR7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 12:59:10 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11494 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726293AbfKUR7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 12:59:09 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xALHwuii028279
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 09:59:08 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=ECdLI7PRMTkecmEifYeoU5ChGbGudEpoSCZqW9L/Vuc=;
+ b=k1YLRw4e1gW8ilqzMlNTMQEzcQladTfOWbt3v0orYeL1di7vqG57yQMJXKpSlmvkuf7m
+ cUzQd399Fk3XxEXzg/ilrezao2a5nf67QDuLx+7zlx1+JN1YkZsj1zCii89VmgiKk88b
+ p0hcYeahlGaiw7/M+MIQKHE4KkvyHhw3oz8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wde15g82m-20
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 09:59:08 -0800
+Received: from 2401:db00:30:6012:face:0:17:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 21 Nov 2019 09:59:04 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id A2B982EC1D61; Thu, 21 Nov 2019 09:59:01 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: ensure core_reloc_kernel is reading test_progs's data only
+Date:   Thu, 21 Nov 2019 09:59:00 -0800
+Message-ID: <20191121175900.3486133-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ukex01.SolarFlarecom.com (10.17.10.4) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25056.003
-X-TM-AS-Result: No-3.282600-8.000000-10
-X-TMASE-MatchedRID: tcTaF3INbPhMi6dAAjypohouoVvF2i0ZNV9S7O+u3KZjLp8Cm8vwFwoe
-        RRhCZWIBI5Skl4cZDuybHAuQ1dUnuWJZXQNDzktSEhGH3CRdKUXxuhkRWK22GFAysP7gVGBabsR
-        ChooNyl+jJuOOJcplEaLbzE92hJygEpkRdiT/iF6rm7DrUlmNkF+24nCsUSFNZiFQvkZhFu1q8/
-        xv2Um1avoLR4+zsDTttrrTuahHzlGAebHfFEfxVqQc+4nD+W8JtKheR+9HkH78bmlCAKkscV+p9
-        MCBG8FfJthbzeHwkmXlK8Z1XyQs2gsLr8bZ0c8qI4g9U3batJF8vVzzre9mnMW42NJBAYg7O1Er
-        at895EGsG1nrQlbYWUuFvzEYSdV+
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.282600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25056.003
-X-MDID: 1574358740-GmMyW50GUpnF
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-21_05:2019-11-21,2019-11-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=869
+ malwarescore=0 bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=8
+ phishscore=0 mlxscore=0 clxscore=1015 spamscore=0 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911210153
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The workqueue only exists for the primary PF. For other functions
-we hit a WARN_ON in kernel/workqueue.c.
+test_core_reloc_kernel.c selftest is the only CO-RE test that reads and
+returns for validation calling thread's information (pid, tgid, comm). Thus it
+has to make sure that only test_prog's invocations are honored.
 
-Fixes: 7c236c43b838 ("sfc: Add support for IEEE-1588 PTP")
-Signed-off-by: Martin Habets <mhabets@solarflare.com>
+Fixes: df36e621418b ("selftests/bpf: add CO-RE relocs testing setup")
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ethernet/sfc/ptp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/core_reloc.c        | 16 +++++++++++-----
+ .../selftests/bpf/progs/test_core_reloc_kernel.c |  4 ++++
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index 02ed6d1b716c..af15a737c675 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -1531,7 +1531,8 @@ void efx_ptp_remove(struct efx_nic *efx)
- 	(void)efx_ptp_disable(efx);
+diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+index ec9e2fdd6b89..05fe85281ff7 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
++++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
+@@ -2,6 +2,7 @@
+ #include <test_progs.h>
+ #include "progs/core_reloc_types.h"
+ #include <sys/mman.h>
++#include <sys/syscall.h>
  
- 	cancel_work_sync(&efx->ptp_data->work);
--	cancel_work_sync(&efx->ptp_data->pps_work);
-+	if (efx->ptp_data->pps_workwq)
-+		cancel_work_sync(&efx->ptp_data->pps_work);
+ #define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
  
- 	skb_queue_purge(&efx->ptp_data->rxq);
- 	skb_queue_purge(&efx->ptp_data->txq);
-
+@@ -452,6 +453,7 @@ static struct core_reloc_test_case test_cases[] = {
+ struct data {
+ 	char in[256];
+ 	char out[256];
++	uint64_t my_pid_tgid;
+ };
+ 
+ static size_t roundup_page(size_t sz)
+@@ -471,9 +473,12 @@ void test_core_reloc(void)
+ 	struct bpf_map *data_map;
+ 	struct bpf_program *prog;
+ 	struct bpf_object *obj;
++	uint64_t my_pid_tgid;
+ 	struct data *data;
+ 	void *mmap_data = NULL;
+ 
++	my_pid_tgid = getpid() | ((uint64_t)syscall(SYS_gettid) << 32);
++
+ 	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
+ 		test_case = &test_cases[i];
+ 		if (!test__start_subtest(test_case->case_name))
+@@ -517,11 +522,6 @@ void test_core_reloc(void)
+ 				goto cleanup;
+ 		}
+ 
+-		link = bpf_program__attach_raw_tracepoint(prog, tp_name);
+-		if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
+-			  PTR_ERR(link)))
+-			goto cleanup;
+-
+ 		data_map = bpf_object__find_map_by_name(obj, "test_cor.bss");
+ 		if (CHECK(!data_map, "find_data_map", "data map not found\n"))
+ 			goto cleanup;
+@@ -537,6 +537,12 @@ void test_core_reloc(void)
+ 
+ 		memset(mmap_data, 0, sizeof(*data));
+ 		memcpy(data->in, test_case->input, test_case->input_len);
++		data->my_pid_tgid = my_pid_tgid;
++
++		link = bpf_program__attach_raw_tracepoint(prog, tp_name);
++		if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
++			  PTR_ERR(link)))
++			goto cleanup;
+ 
+ 		/* trigger test run */
+ 		usleep(1);
+diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+index a4b5e0562ed5..d2fe8f337846 100644
+--- a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
++++ b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+@@ -11,6 +11,7 @@ char _license[] SEC("license") = "GPL";
+ static volatile struct data {
+ 	char in[256];
+ 	char out[256];
++	uint64_t my_pid_tgid;
+ } data;
+ 
+ struct core_reloc_kernel_output {
+@@ -38,6 +39,9 @@ int test_core_kernel(void *ctx)
+ 	uint32_t real_tgid = (uint32_t)pid_tgid;
+ 	int pid, tgid;
+ 
++	if (data.my_pid_tgid != pid_tgid)
++		return 0;
++
+ 	if (CORE_READ(&pid, &task->pid) ||
+ 	    CORE_READ(&tgid, &task->tgid))
+ 		return 1;
+-- 
+2.17.1
 
