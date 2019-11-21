@@ -2,75 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC6E1048C7
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:00:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A911048C8
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 04:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726038AbfKUDAF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 Nov 2019 22:00:05 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:53553 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbfKUDAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:00:05 -0500
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID xAL301fA010231, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id xAL301fA010231
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 21 Nov 2019 11:00:01 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTITCASV01.realtek.com.tw (172.21.6.18) with Microsoft SMTP Server (TLS) id
- 14.3.468.0; Thu, 21 Nov 2019 11:00:01 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 21 Nov 2019 11:00:00 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::f0a5:1a8b:cf45:7112]) by
- RTEXMB04.realtek.com.tw ([fe80::f0a5:1a8b:cf45:7112%4]) with mapi id
- 15.01.1779.005; Thu, 21 Nov 2019 11:00:00 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Prashant Malani <pmalani@chromium.org>
-CC:     "grundler@chromium.org" <grundler@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net] r8152: Re-order napi_disable in rtl8152_close
-Thread-Topic: [PATCH net] r8152: Re-order napi_disable in rtl8152_close
-Thread-Index: AQHVn9p0kCKKsPhQEkqnVEj6cHKxFKeU6+kA
-Date:   Thu, 21 Nov 2019 03:00:00 +0000
-Message-ID: <2b96129da21d412f8780325e6be95c9d@realtek.com>
-References: <20191120194020.8796-1-pmalani@chromium.org>
-In-Reply-To: <20191120194020.8796-1-pmalani@chromium.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726265AbfKUDBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 22:01:19 -0500
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:33035 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725819AbfKUDBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 22:01:19 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id BC5684AF1E;
+        Thu, 21 Nov 2019 14:01:16 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=content-transfer-encoding:mime-version:x-mailer:message-id
+        :date:date:subject:subject:from:from:received:received:received;
+         s=mail_dkim; t=1574305276; bh=gtlIVY48RyfRp/t62KUQbinD3IsJ7UWlz
+        L8VfWzhsog=; b=Gs+OiO9pO6ZvuVjtRFdJNHb5m6zOIRPz9bxXyC2apZfMf2UiP
+        f4xxzYLasrNdUoMCSW6NY5X3nwr+AZA05XznY0Dgte3B6yHkO27trz103TTqNwlW
+        LytNTuB4G9o0qWRkHgH7Z6KvdZYzuqjMRV/Uq1PqseOpVpT/IiHBaxIXqo=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id rhquVEPWG6LG; Thu, 21 Nov 2019 14:01:16 +1100 (AEDT)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id 691654AF1C;
+        Thu, 21 Nov 2019 14:01:16 +1100 (AEDT)
+Received: from tipc.example.com (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id 513814AED8;
+        Thu, 21 Nov 2019 14:01:15 +1100 (AEDT)
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     jon.maloy@ericsson.com, maloy@donjonn.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com,
+        netdev@vger.kernel.org
+Subject: [net-next] tipc: update replicast capability for broadcast send link
+Date:   Thu, 21 Nov 2019 10:01:09 +0700
+Message-Id: <20191121030109.4754-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prashant Malani [mailto:pmalani@chromium.org]
-> Sent: Thursday, November 21, 2019 3:40 AM
-[...]
-> @@ -4283,10 +4283,10 @@ static int rtl8152_close(struct net_device
-> *netdev)
->  	unregister_pm_notifier(&tp->pm_notifier);
->  #endif
->  	tasklet_disable(&tp->tx_tl);
+When setting up a cluster with non-replicast/replicast capability
+supported. This capability will be disabled for broadcast send link
+in order to be backwards compatible.
 
-Should tasklet_disable() be moved, too?
+However, when these non-support nodes left and be removed out the cluster=
+.
+We don't update this capability on broadcast send link. Then, some of
+features that based on this capability will also disabling as unexpected.
 
-> -	napi_disable(&tp->napi);
->  	clear_bit(WORK_ENABLE, &tp->flags);
->  	usb_kill_urb(tp->intr_urb);
->  	cancel_delayed_work_sync(&tp->schedule);
-> +	napi_disable(&tp->napi);
->  	netif_stop_queue(netdev);
+In this commit, we make sure the broadcast send link capabilities will
+be re-calculated as soon as a node removed/rejoined a cluster.
 
-Best Regards,
-Hayes
+Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+---
+ net/tipc/bcast.c | 4 ++--
+ net/tipc/bcast.h | 2 +-
+ net/tipc/link.c  | 2 +-
+ net/tipc/node.c  | 8 +++++++-
+ 4 files changed, 11 insertions(+), 5 deletions(-)
 
+diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
+index f41096a759fa..55aeba681cf4 100644
+--- a/net/tipc/bcast.c
++++ b/net/tipc/bcast.c
+@@ -87,9 +87,9 @@ int tipc_bcast_get_mtu(struct net *net)
+ 	return tipc_link_mss(tipc_bc_sndlink(net));
+ }
+=20
+-void tipc_bcast_disable_rcast(struct net *net)
++void tipc_bcast_toggle_rcast(struct net *net, bool supp)
+ {
+-	tipc_bc_base(net)->rcast_support =3D false;
++	tipc_bc_base(net)->rcast_support =3D supp;
+ }
+=20
+ static void tipc_bcbase_calc_bc_threshold(struct net *net)
+diff --git a/net/tipc/bcast.h b/net/tipc/bcast.h
+index dadad953e2be..9e847d9617d3 100644
+--- a/net/tipc/bcast.h
++++ b/net/tipc/bcast.h
+@@ -85,7 +85,7 @@ void tipc_bcast_remove_peer(struct net *net, struct tip=
+c_link *rcv_bcl);
+ void tipc_bcast_inc_bearer_dst_cnt(struct net *net, int bearer_id);
+ void tipc_bcast_dec_bearer_dst_cnt(struct net *net, int bearer_id);
+ int  tipc_bcast_get_mtu(struct net *net);
+-void tipc_bcast_disable_rcast(struct net *net);
++void tipc_bcast_toggle_rcast(struct net *net, bool supp);
+ int tipc_mcast_xmit(struct net *net, struct sk_buff_head *pkts,
+ 		    struct tipc_mc_method *method, struct tipc_nlist *dests,
+ 		    u16 *cong_link_cnt);
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index fb72031228c9..24d4d10756d3 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -550,7 +550,7 @@ bool tipc_link_bc_create(struct net *net, u32 ownnode=
+, u32 peer,
+=20
+ 	/* Disable replicast if even a single peer doesn't support it */
+ 	if (link_is_bc_rcvlink(l) && !(peer_caps & TIPC_BCAST_RCAST))
+-		tipc_bcast_disable_rcast(net);
++		tipc_bcast_toggle_rcast(net, false);
+=20
+ 	return true;
+ }
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index aaf595613e6e..ab04e00cb95b 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -496,6 +496,9 @@ struct tipc_node *tipc_node_create(struct net *net, u=
+32 addr, u8 *peer_id,
+ 			tn->capabilities &=3D temp_node->capabilities;
+ 		}
+=20
++		tipc_bcast_toggle_rcast(net,
++					(tn->capabilities & TIPC_BCAST_RCAST));
++
+ 		goto exit;
+ 	}
+ 	n =3D kzalloc(sizeof(*n), GFP_ATOMIC);
+@@ -557,6 +560,7 @@ struct tipc_node *tipc_node_create(struct net *net, u=
+32 addr, u8 *peer_id,
+ 	list_for_each_entry_rcu(temp_node, &tn->node_list, list) {
+ 		tn->capabilities &=3D temp_node->capabilities;
+ 	}
++	tipc_bcast_toggle_rcast(net, (tn->capabilities & TIPC_BCAST_RCAST));
+ 	trace_tipc_node_create(n, true, " ");
+ exit:
+ 	spin_unlock_bh(&tn->node_list_lock);
+@@ -740,7 +744,8 @@ static bool tipc_node_cleanup(struct tipc_node *peer)
+ 	list_for_each_entry_rcu(temp_node, &tn->node_list, list) {
+ 		tn->capabilities &=3D temp_node->capabilities;
+ 	}
+-
++	tipc_bcast_toggle_rcast(peer->net,
++				(tn->capabilities & TIPC_BCAST_RCAST));
+ 	spin_unlock_bh(&tn->node_list_lock);
+ 	return deleted;
+ }
+@@ -2198,6 +2203,7 @@ int tipc_nl_peer_rm(struct sk_buff *skb, struct gen=
+l_info *info)
+ 	list_for_each_entry_rcu(temp_node, &tn->node_list, list) {
+ 		tn->capabilities &=3D temp_node->capabilities;
+ 	}
++	tipc_bcast_toggle_rcast(net, (tn->capabilities & TIPC_BCAST_RCAST));
+ 	err =3D 0;
+ err_out:
+ 	tipc_node_put(peer);
+--=20
+2.20.1
 
