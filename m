@@ -2,237 +2,554 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8C310529F
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E74431052F5
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfKUNFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 08:05:55 -0500
-Received: from mail-eopbgr20069.outbound.protection.outlook.com ([40.107.2.69]:9702
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726293AbfKUNFz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 08:05:55 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R+2wFDq+dgSAdVv5hP5n+EFQG22TqxlgqYMobdoJQ5OOmcymYreKxuT2Y3dyn564LaB8AU79tdmQkZh9pmWGYC5i3dL5qi/N0nScnEVzjajyJezjwrWz2PJOAi/PR2ue9ZR6xrE441Bunk3SDuv52DCK5PHYeZ92M5H3cYCo2J5QY1/MyXAZiFdc1oijB1UsP/l1S5Chi/P5hRKeP4u92vk7zsJoGuxf3PRlHFWcYmTUMh7j77hdEcrw04PQ/DYN/7invBBVrfjpaa3myaxoQ9rBn4G/97il5vZDKR2+1IWGs+zJTgtYkuUsGzuvH9esvskeeQelnIvp20NQrafeJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hONVtqt5zlnBxR2jFJLPKx4jmD1TCEyUN4QznupP6E=;
- b=LTd4IiVHKsI0CZO2h25QodJNg6II3h5RrfdsEfrd2F2MfZ+bejeaf+6n1vCsrwn7WI/sH0jzwW6MnnRrWxo2esum5XbVGVeAQ2BhuKRhbdaKEd1BBKCTgXBqNkWN2B7Cdxiy9L9Yy6uW87sZD1Rn7C9WeTO/Apk7rdNCan3FW0uivytW+0De/a5ZZHqTXpI3P97Xf9F2rlqL24YPURIFdQ3MNAyi99zKtOpwkLE25iV9lg7/i0vDJyq3V4oEBHj3XGlxrw+zpxAKk1mDrdKpsA6FnhySscRraCkiIvHDLhL+eIO6JbJzbL2BsLCA2CsgBttOpqmdNU1X9/0AoyTN3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hONVtqt5zlnBxR2jFJLPKx4jmD1TCEyUN4QznupP6E=;
- b=k0oxV9vA9VO0YzeCrBswofxRzJKGjNJan8ULybGuFLFM6TnxSeA0j545Bl/mU0OIVNezJIlV8PonVD4zysSODD2kiHSslsXc8IurVM78gNwX1doA+6IGAM+XHFOTdOl6Eot7FovHdjMgVUHcbm10uSvuNoYm0g1Ezz6aCiptBfs=
-Received: from VI1PR05MB3422.eurprd05.prod.outlook.com (10.170.235.159) by
- VI1PR05MB4831.eurprd05.prod.outlook.com (20.177.49.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.29; Thu, 21 Nov 2019 13:05:49 +0000
-Received: from VI1PR05MB3422.eurprd05.prod.outlook.com
- ([fe80::e9ca:a1b7:1197:936f]) by VI1PR05MB3422.eurprd05.prod.outlook.com
- ([fe80::e9ca:a1b7:1197:936f%6]) with mapi id 15.20.2451.029; Thu, 21 Nov 2019
- 13:05:49 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     wenxu <wenxu@ucloud.cn>
-CC:     "pablo@netfilter.org" <pablo@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Bloch <markb@mellanox.com>
-Subject: RE: Question about flow table offload in mlx5e
-Thread-Topic: Question about flow table offload in mlx5e
-Thread-Index: AQHVoD2I/ci1XqDAS0+ihzjR81tg26eVO/4ggAAO9ACAAAbLAIAAPhcAgAAIURA=
-Date:   Thu, 21 Nov 2019 13:05:48 +0000
-Message-ID: <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
-References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
- <20191119.163923.660983355933809356.davem@davemloft.net>
- <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
- <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
- <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
-In-Reply-To: <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 34e2cb58-b569-4194-4dde-08d76e8387a3
-x-ms-traffictypediagnostic: VI1PR05MB4831:|VI1PR05MB4831:
-x-ms-exchange-purlcount: 2
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB48315DA61F1595FC2AA2D407CF4E0@VI1PR05MB4831.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0228DDDDD7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39850400004)(366004)(376002)(346002)(13464003)(199004)(189003)(71200400001)(6116002)(6306002)(3846002)(186003)(6506007)(5660300002)(52536014)(7736002)(71190400001)(478600001)(11346002)(55016002)(14454004)(102836004)(66066001)(107886003)(229853002)(6436002)(53546011)(966005)(446003)(25786009)(66946007)(26005)(6246003)(8936002)(2906002)(76176011)(86362001)(54906003)(9686003)(64756008)(81156014)(66556008)(81166006)(8676002)(66446008)(33656002)(4326008)(305945005)(316002)(76116006)(6916009)(74316002)(7696005)(66476007)(256004)(14444005)(99286004)(32563001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4831;H:VI1PR05MB3422.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9iR8pepZdASZiAA1FIZUQif9713OjfLzdSpjg2Tf5bLBtR1t9VebiZkcQYCUN2G8EZu3QzDIGPpCGaHa1vFZmnWlCYmHLNuFAz921hAssbMO8nsE7dXl7HE1qD0V5mKdKFtrap4vygm+1E+pGmnlXNW9rFDoJZ8y+BMy0bw3ntopMjnfzXe3xW6NXaaZGOwtmQvgDw+f6vIXh6HDgbK/XAhwtslqelsDRhIdUGkusWlJhrfsBvKNdsoHJJs+vY1VhKHfjENTgXx2dOeLttINIn2ElXo9CH+rNy8yeyCO43zi1dsqj/xqDQlitT94hMrswp9Xi/kNwCexhTrgqrXmCeGdJYaNa6XxE7kytEKG2A14uCIX6/0ohzwWOW+3qPX1xTy1FbvwsHNvFRdG0blPrNTxZTyn1qOFih13wyFtIBcdy7/VQUGNXzxGVEJiTYkLZgS8NkhM7lr9Qsiz9/VBr7NPJWpErl5Ype08JggSQFk=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34e2cb58-b569-4194-4dde-08d76e8387a3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 13:05:48.9266
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: X+K8dycG+av7eac7KHDGOPjcr2yxqJu/S/QUuvY7SVWIXh57mdWu7kynQtXGoI3njLVgH5AiQIvSCwDgfJ1dvw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4831
+        id S1726976AbfKUN2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 08:28:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48072 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726293AbfKUN2g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 08:28:36 -0500
+Received: from localhost.localdomain (unknown [118.189.143.39])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 18E7C2075E;
+        Thu, 21 Nov 2019 13:28:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574342914;
+        bh=yk5GM0NXJKt/7nsN9WD0Rld5luQSmJfRULGuoUReOiQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rb5+EQ/03KnGuIvUAOmcsQMzohHcFw2cgPIxWrQhfxF6rSDNKFbVzuba5Nz0hwPlN
+         m6TJZZWQzP/4IJqG3AfDs8xHzgZOLW6z0IvzHtAY8RwzFnQ3XkZSsOjzi8Uzpj8Gxe
+         mKBt/CWm0SbSmQs/fR9CYqzcwcLrThJyu0dCx9z8=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Pontus Fuchs <pontus.fuchs@gmail.com>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-wpan@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: [PATCH] drivers: net: Fix Kconfig indentation, continued
+Date:   Thu, 21 Nov 2019 21:28:28 +0800
+Message-Id: <20191121132828.28828-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SSBzZWUsIEkgd2lsbCB0ZXN0IHRoYXQsIGFuZCBob3cgYWJvdXQgbm9ybWFsIEZXRCBydWxlcz8N
-Cg0KUGF1bC4NCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IHdlbnh1
-IDx3ZW54dUB1Y2xvdWQuY24+DQo+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAyMSwgMjAxOSAy
-OjM1IFBNDQo+IFRvOiBQYXVsIEJsYWtleSA8cGF1bGJAbWVsbGFub3guY29tPg0KPiBDYzogcGFi
-bG9AbmV0ZmlsdGVyLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgTWFyayBCbG9jaA0KPiA8
-bWFya2JAbWVsbGFub3guY29tPg0KPiBTdWJqZWN0OiBSZTogUXVlc3Rpb24gYWJvdXQgZmxvdyB0
-YWJsZSBvZmZsb2FkIGluIG1seDVlDQo+IA0KPiANCj4g5ZyoIDIwMTkvMTEvMjEgMTk6MzksIFBh
-dWwgQmxha2V5IOWGmemBkzoNCj4gPiBUaGV5IGFyZSBnb29kIGZpeGVzLCBleGFjdGx5IHdoYXQg
-d2UgaGFkIHdoZW4gd2UgdGVzdGVkIHRoaXMsIHRoYW5rcy4NCj4gPg0KPiA+IFJlZ2FyZGluZyBl
-bmNhcCwgSSBkb24ndCBrbm93IHdoYXQgY2hhbmdlcyB5b3UgZGlkLCBob3cgZG9lcyB0aGUgZW5j
-YXANCj4gcnVsZSBsb29rPyBJcyBpdCBhIEZXRCB0byB2eGxhbiBkZXZpY2U/IElmIG5vdCBpdCBz
-aG91bGQgYmUsIGFzIG91ciBkcml2ZXINCj4gZXhwZWN0cyB0aGF0Lg0KPiBJdCBpcyBmd2QgdG8g
-YSBncmV0YXAgZGV2aWNlcw0KPiA+DQo+ID4gSSB0cmllZCBpdCBvbiBteSBzZXR1cCB2aWEgdGMs
-IGJ5IGNoYW5naW5nIHRoZSBjYWxsYmFjayBvZiB0Yw0KPiAobWx4NWVfcmVwX3NldHVwX3RjX2Ni
-KSB0byB0aGF0IG9mIGZ0IChtbHg1ZV9yZXBfc2V0dXBfZnRfY2IpLA0KPiA+IGFuZCB0ZXN0aW5n
-IGEgdnhsYW4gZW5jYXAgcnVsZToNCj4gPiBzdWRvIHRjIHFkaXNjIGFkZCBkZXYgZW5zMWYwXzAg
-aW5ncmVzcw0KPiA+IHN1ZG8gaWZjb25maWcgZW5zMWYwIDcuNy43LjcvMjQgdXANCj4gPiBzdWRv
-IGlwIGxpbmsgYWRkIG5hbWUgdnhsYW4wIHR5cGUgdnhsYW4gZGV2IGVuczFmMCByZW1vdGUgNy43
-LjcuOCBkc3Rwb3J0DQo+IDQ3ODkgZXh0ZXJuYWwNCj4gPiBzdWRvIGlmY29uZmlnIHZ4bGFuMCB1
-cA0KPiA+IHN1ZG8gdGMgZmlsdGVyIGFkZCBkZXYgZW5zMWYwXzAgaW5ncmVzcyBwcmlvIDEgY2hh
-aW4gMCBwcm90b2NvbCBpcCBmbG93ZXINCj4gZHN0X21hYyBhYTpiYjpjYzpkZDplZTpmZiBpcF9w
-cm90byB1ZHAgc2tpcF9zdyAgYWN0aW9uIHR1bm5lbF9rZXkgc2V0DQo+IHNyY19pcCAwLjAuMC4w
-IGRzdF9pcCA3LjcuNy44IGlkIDEyMzQgZHN0X3BvcnQgNDc4OSBwaXBlIGFjdGlvbiBtaXJyZWQg
-ZWdyZXNzDQo+IHJlZGlyZWN0IGRldiB2eGxhbg0KPiA+DQo+ID4gdGhlbiB0YyBzaG93Og0KPiA+
-IGZpbHRlciBwcm90b2NvbCBpcCBwcmVmIDEgZmxvd2VyIGNoYWluIDAgaGFuZGxlIDB4MSBkc3Rf
-bWFjIGFhOmJiOmNjOmRkOmVlOmZmDQo+IGlwX3Byb3RvIHVkcCBza2lwX3N3IGluX2h3IGluX2h3
-X2NvdW50IDENCj4gPiAgICAgICAgIHR1bm5lbF9rZXkgc2V0IHNyY19pcCAwLjAuMC4wIGRzdF9p
-cCA3LjcuNy44IGtleV9pZCAxMjM0IGRzdF9wb3J0IDQ3ODkNCj4gY3N1bSBwaXBlDQo+ID4gICAg
-ICAgICBTdGF0czogdXNlZCAxMTkgc2VjICAgICAgMCBwa3QNCj4gPiAgICAgICAgIG1pcnJlZCAo
-RWdyZXNzIFJlZGlyZWN0IHRvIGRldmljZSB2eGxhbjApDQo+ID4gICAgICAgICBTdGF0czogdXNl
-ZCAxMTkgc2VjICAgICAgMCBwa3QNCj4gDQo+IENhbiB5b3Ugc2VuZCBwYWNrZXQgdGhhdCBtYXRj
-aCB0aGlzIG9mZmxvYWRlZCBmbG93IHRvIGNoZWNrIGl0IGlzIHJlYWwNCj4gb2ZmbG9hZGVkPw0K
-PiANCj4gSW4gdGhlIGZsb3d0YWJsZSBvZmZsb2FkIHdpdGggbXkgcGF0Y2hlcyBib3RoIFRDX1NF
-VFVQX0JMT0NLIGFuZA0KPiBUQ19TRVRVUF9GVCBjYW4gb2ZmbG9hZCB0aGUgcnVsZSBzdWNjZXNz
-DQo+IA0KPiBCdXQgaW4gdGhlIFRDX1NFVFVQX0ZUIGNhc2UgdGhlIHBhY2tldCBpcyBub3QgcmVh
-bCBvZmZsb2FkZWQuDQo+IA0KPiANCj4gScKgIHdpbGwgdGVzdCBsaWtlIHUgZGlkLg0KPiANCj4g
-Pg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTog
-d2VueHUgPHdlbnh1QHVjbG91ZC5jbj4NCj4gPj4gU2VudDogVGh1cnNkYXksIE5vdmVtYmVyIDIx
-LCAyMDE5IDEwOjI5IEFNDQo+ID4+IFRvOiBQYXVsIEJsYWtleSA8cGF1bGJAbWVsbGFub3guY29t
-Pg0KPiA+PiBDYzogcGFibG9AbmV0ZmlsdGVyLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
-TWFyayBCbG9jaA0KPiA+PiA8bWFya2JAbWVsbGFub3guY29tPg0KPiA+PiBTdWJqZWN0OiBSZTog
-UXVlc3Rpb24gYWJvdXQgZmxvdyB0YWJsZSBvZmZsb2FkIGluIG1seDVlDQo+ID4+DQo+ID4+DQo+
-ID4+IE9uIDExLzIxLzIwMTkgMzo0MiBQTSwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+ID4+PiBIaSwN
-Cj4gPj4+DQo+ID4+PiBUaGUgb3JpZ2luYWwgZGVzaWduIHdhcyB0aGUgYmxvY2sgc2V0dXAgdG8g
-dXNlIFRDX1NFVFVQX0ZUIHR5cGUsIGFuZA0KPiB0aGUNCj4gPj4gdGMgZXZlbnQgdHlwZSB0byBi
-ZSBjYXNlIFRDX1NFVFVQX0NMU0ZMT1dFUi4NCj4gPj4+IFdlIHdpbGwgcG9zdCBhIHBhdGNoIHRv
-IGNoYW5nZSB0aGF0LiBJIHdvdWxkIGFkdmlzZSB0byB3YWl0IHRpbGwgd2UgZml4IHRoYXQNCj4g
-Pj4g8J+Yig0KPiA+Pj4gSSdtIG5vdCBzdXJlIGhvdyB5b3UgZ2V0IHRvIHRoaXMgZnVuY3Rpb24g
-bWx4NWVfcmVwX3NldHVwX2Z0X2NiKCkgaWYgaXQNCj4gdGhlDQo+ID4+IG5mX2Zsb3dfdGFibGVf
-b2ZmbG9hZCBuZG9fc2V0dXBfdGMgZXZlbnQgd2FzIFRDX1NFVFVQX0JMT0NLLCBhbmQNCj4gbm90
-DQo+ID4+IFRDX1NFVFVQX0ZULg0KPiA+Pg0KPiA+Pg0KPiA+PiBZZXMgSSBjaGFuZ2UgdGhlIFRD
-X1NFVFVQX0JMT0NLIHRvIFRDX1NFVFVQX0ZUIGluIHRoZQ0KPiA+PiBuZl9mbG93X3RhYmxlX29m
-ZmxvYWRfc2V0dXAuDQo+ID4+DQo+ID4+IFR3byBmaXhlcyBwYXRjaCBwcm92aWRlOg0KPiA+Pg0K
-PiA+PiBodHRwOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvMTE5NzgxOC8NCj4gPj4NCj4g
-Pj4gaHR0cDovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNoLzExOTc4NzYvDQo+ID4+DQo+ID4+
-IFNvIHRoaXMgY2hhbmdlIG1hZGUgYnkgbWUgaXMgbm90IGNvcnJlY3QgY3VycmVudGx5Pw0KPiA+
-Pg0KPiA+Pj4gSW4gb3VyIGRyaXZlciBlbl9yZXAuYyB3ZSBoYXZlOg0KPiA+Pj4+IC0tLS0tLS1z
-d2l0Y2ggKHR5cGUpIHsNCj4gPj4+PiAtLS0tLS0tY2FzZSBUQ19TRVRVUF9CTE9DSzoNCj4gPj4+
-PiAtLS0tLS0tPi0tLS0tLS1yZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlwZV9k
-YXRhLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0t
-LS0tDQo+ICZtbHg1ZV9yZXBfYmxvY2tfdGNfY2JfbGlzdCwNCj4gPj4+PiAtLS0tLS0tPi0tLS0t
-LS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLSAgbWx4NWVfcmVwX3NldHVwX3RjX2Ni
-LA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0tLS0t
-ICBwcml2LCBwcml2LCB0cnVlKTsNCj4gPj4+PiAtLS0tLS0tY2FzZSBUQ19TRVRVUF9GVDoNCj4g
-Pj4+PiAtLS0tLS0tPi0tLS0tLS1yZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlw
-ZV9kYXRhLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4t
-LS0tLS0tDQo+ICZtbHg1ZV9yZXBfYmxvY2tfZnRfY2JfbGlzdCwNCj4gPj4+PiAtLS0tLS0tPi0t
-LS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLSAgbWx4NWVfcmVwX3NldHVwX2Z0
-X2NiLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0t
-LS0tICBwcml2LCBwcml2LCB0cnVlKTsNCj4gPj4+PiAtLS0tLS0tZGVmYXVsdDoNCj4gPj4+PiAt
-LS0tLS0tPi0tLS0tLS1yZXR1cm4gLUVPUE5PVFNVUFA7DQo+ID4+Pj4gLS0tLS0tLX0NCj4gPj4+
-IEluIG5mX2Zsb3dfdGFibGVfb2ZmbG9hZC5jOg0KPiA+Pj4+IC0tLS0tLS1iby5iaW5kZXJfdHlw
-ZT4tPQ0KPiBGTE9XX0JMT0NLX0JJTkRFUl9UWVBFX0NMU0FDVF9JTkdSRVNTOw0KPiA+Pj4+IC0t
-LS0tLS1iby5leHRhY2s+LS0tLS0tPSAmZXh0YWNrOw0KPiA+Pj4+IC0tLS0tLS1JTklUX0xJU1Rf
-SEVBRCgmYm8uY2JfbGlzdCk7DQo+ID4+Pj4gLS0tLS0tLWVyciA9IGRldi0+bmV0ZGV2X29wcy0+
-bmRvX3NldHVwX3RjKGRldiwgVENfU0VUVVBfQkxPQ0ssDQo+ID4+ICZibyk7DQo+ID4+Pj4gLS0t
-LS0tLWlmIChlcnIgPCAwKQ0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLXJldHVybiBlcnI7DQo+ID4+
-Pj4gLS0tLS0tLXJldHVybiBuZl9mbG93X3RhYmxlX2Jsb2NrX3NldHVwKGZsb3d0YWJsZSwgJmJv
-LCBjbWQpOw0KPiA+Pj4gfQ0KPiA+Pj4gRVhQT1JUX1NZTUJPTF9HUEwobmZfZmxvd190YWJsZV9v
-ZmZsb2FkX3NldHVwKTsNCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gU28gdW5sZXNzIHlvdSBjaGFuZ2Vk
-IHRoYXQgYXMgd2VsbCwgeW91IHNob3VsZCBoYXZlIGdvdHRlbiB0bw0KPiA+PiBtbHg1ZV9yZXBf
-c2V0dXBfdGNfY2IgYW5kIG5vdCBtbHg1ZV9yZXBfc2V0dXBfdGNfZnQuDQo+ID4+PiBSZWdhcmRp
-bmcgdGhlIGVuY2FwIGFjdGlvbiwgdGhlcmUgc2hvdWxkIGJlIG5vIGRpZmZlcmVuY2Ugb24gd2hp
-Y2gNCj4gY2hhaW4NCj4gPj4gdGhlIHJ1bGUgaXMgb24uDQo+ID4+DQo+ID4+DQo+ID4+IEJ1dCBm
-b3IgdGhlIHNhbWUgZW5jYXAgcnVsZSBjYW4gYmUgcmVhbCBvZmZsb2FkZWQgd2hlbiBzZXR1cCB0
-aHJvdWdoDQo+ID4+IHRocm91Z2ggVENfU0VUVVBfQkxPQ0suIEJ1dCBUQ19TRVRVUF9GVCBjYW4n
-dC4NCj4gPj4NCj4gPj4gU28gaXQgaXMgdGhlIHByb2JsZW0gb2YgVENfU0VUVVBfRlQgaW4gbWx4
-NWVfcmVwX3NldHVwX2Z0X2NiID8NCj4gPj4NCj4gPj4+DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCj4gPj4+PiBGcm9tOiB3ZW54dSA8d2VueHVAdWNsb3VkLmNuPg0KPiA+Pj4+
-IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAyMSwgMjAxOSA5OjMwIEFNDQo+ID4+Pj4gVG86IFBh
-dWwgQmxha2V5IDxwYXVsYkBtZWxsYW5veC5jb20+DQo+ID4+Pj4gQ2M6IHBhYmxvQG5ldGZpbHRl
-ci5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IE1hcmsgQmxvY2gNCj4gPj4+PiA8bWFya2JA
-bWVsbGFub3guY29tPg0KPiA+Pj4+IFN1YmplY3Q6IFF1ZXN0aW9uIGFib3V0IGZsb3cgdGFibGUg
-b2ZmbG9hZCBpbiBtbHg1ZQ0KPiA+Pj4+DQo+ID4+Pj4gSGnCoCBwYXVsLA0KPiA+Pj4+DQo+ID4+
-Pj4gVGhlIGZsb3cgdGFibGUgb2ZmbG9hZCBpbiB0aGUgbWx4NWUgaXMgYmFzZWQgb24gVENfU0VU
-VVBfRlQuDQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEl0IGlzIGFsbW9zdCB0aGUgc2FtZSBhcyBU
-Q19TRVRVUF9CTE9DSy4NCj4gPj4+Pg0KPiA+Pj4+IEl0IGp1c3Qgc2V0IE1MWDVfVENfRkxBRyhG
-VF9PRkZMT0FEKSBmbGFncyBhbmQgY2hhbmdlDQo+ID4+Pj4gY2xzX2Zsb3dlci5jb21tb24uY2hh
-aW5faW5kZXggPSBGREJfRlRfQ0hBSU47DQo+ID4+Pj4NCj4gPj4+PiBJbiBmb2xsb3dpbmcgY29k
-ZXMgbGluZSAxMzgwIGFuZCAxMzkyDQo+ID4+Pj4NCj4gPj4+PiAxMzY4IHN0YXRpYyBpbnQgbWx4
-NWVfcmVwX3NldHVwX2Z0X2NiKGVudW0gdGNfc2V0dXBfdHlwZSB0eXBlLCB2b2lkDQo+ID4+Pj4g
-KnR5cGVfZGF0YSwNCj4gPj4+PiAxMzY5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZvaWQgKmNiX3ByaXYpDQo+ID4+Pj4g
-MTM3MCB7DQo+ID4+Pj4gMTM3McKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGZsb3dfY2xzX29mZmxv
-YWQgKmYgPSB0eXBlX2RhdGE7DQo+ID4+Pj4gMTM3MsKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGZs
-b3dfY2xzX29mZmxvYWQgY2xzX2Zsb3dlcjsNCj4gPj4+PiAxMzczwqDCoMKgwqDCoMKgwqDCoCBz
-dHJ1Y3QgbWx4NWVfcHJpdiAqcHJpdiA9IGNiX3ByaXY7DQo+ID4+Pj4gMTM3NMKgwqDCoMKgwqDC
-oMKgwqAgc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3Ow0KPiA+Pj4+IDEzNzXCoMKgwqDCoMKgwqDC
-oMKgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ID4+Pj4gMTM3NsKgwqDCoMKgwqDCoMKgwqAgaW50
-IGVycjsNCj4gPj4+PiAxMzc3DQo+ID4+Pj4gMTM3OMKgwqDCoMKgwqDCoMKgwqAgZmxhZ3MgPSBN
-TFg1X1RDX0ZMQUcoSU5HUkVTUykgfA0KPiA+Pj4+IDEzNznCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBNTFg1X1RDX0ZMQUcoRVNXX09GRkxPQUQpIHwNCj4gPj4+PiAxMzgwwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgTUxYNV9UQ19GTEFHKEZUX09GRkxPQUQpOw0KPiA+
-Pj4+IDEzODHCoMKgwqDCoMKgwqDCoMKgIGVzdyA9IHByaXYtPm1kZXYtPnByaXYuZXN3aXRjaDsN
-Cj4gPj4+PiAxMzgyDQo+ID4+Pj4gMTM4M8KgwqDCoMKgwqDCoMKgwqAgc3dpdGNoICh0eXBlKSB7
-DQo+ID4+Pj4gMTM4NMKgwqDCoMKgwqDCoMKgwqAgY2FzZSBUQ19TRVRVUF9DTFNGTE9XRVI6DQo+
-ID4+Pj4gMTM4NcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghbWx4NV9lc3dp
-dGNoX3ByaW9zX3N1cHBvcnRlZChlc3cpIHx8IGYtDQo+ID4+Pj4+IGNvbW1vbi5jaGFpbl9pbmRl
-eCkNCj4gPj4+PiAxMzg2wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIHJldHVybiAtRU9QTk9UU1VQUDsNCj4gPj4+PiAxMzg3DQo+ID4+Pj4gMTM4OMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIFJlLXVzZSB0YyBvZmZsb2FkIHBhdGggYnkg
-bW92aW5nIHRoZSBmdCBmbG93IHRvIHRoZQ0KPiA+Pj4+IDEzODnCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgICogcmVzZXJ2ZWQgZnQgY2hhaW4uDQo+ID4+Pj4gMTM5MMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKi8NCj4gPj4+PiAxMzkxwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgbWVtY3B5KCZjbHNfZmxvd2VyLCBmLCBzaXplb2YoKmYpKTsNCj4g
-Pj4+PiAxMzkywqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsc19mbG93ZXIuY29tbW9u
-LmNoYWluX2luZGV4ID0gRkRCX0ZUX0NIQUlOOw0KPiA+Pj4+IDEzOTPCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBlcnIgPSBtbHg1ZV9yZXBfc2V0dXBfdGNfY2xzX2Zsb3dlcihwcml2
-LCAmY2xzX2Zsb3dlciwNCj4gPj4gZmxhZ3MpOw0KPiA+Pj4+IDEzOTTCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBtZW1jcHkoJmYtPnN0YXRzLCAmY2xzX2Zsb3dlci5zdGF0cywgc2l6
-ZW9mKGYtPnN0YXRzKSk7DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEkgd2FudCB0byBhZGQgdHVu
-bmVsIG9mZmxvYWQgc3VwcG9ydCBpbiB0aGUgZmxvdyB0YWJsZSwgScKgIGFkZCBzb21lDQo+IHBh
-dGNoZXMNCj4gPj4gaW4NCj4gPj4+PiBuZl9mbG93X3RhYmxlX29mZmxvYWQuDQo+ID4+Pj4NCj4g
-Pj4+PiBBbHNvIGFkZCB0aGUgaW5kciBzZXR1cCBzdXBwb3J0IGluIHRoZSBtbHggZHJpdmVyLiBB
-bmQgTm93IEkgY2FuwqAgZmxvdw0KPiA+PiB0YWJsZQ0KPiA+Pj4+IG9mZmxvYWQgd2l0aCBkZWNh
-cC4NCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+Pj4gQnV0IEkgbWVldCBhIHByb2JsZW0gd2l0aCB0aGUg
-ZW5jYXAuwqAgVGhlIGVuY2FwIHJ1bGUgY2FuIGJlIGFkZGVkIGluDQo+ID4+Pj4gaGFyZHdhcmXC
-oCBzdWNjZXNzZnVsbHkgQnV0IGl0IGNhbid0IGJlIG9mZmxvYWRlZC4NCj4gPj4+Pg0KPiA+Pj4+
-IEJ1dCBJIHRoaW5rIHRoZSBydWxlIEkgYWRkZWQgaXMgY29ycmVjdC7CoCBJZiBJIG1hc2sgdGhl
-IGxpbmUgMTM5Mi4gVGhlIHJ1bGUNCj4gYWxzbw0KPiA+PiBjYW4NCj4gPj4+PiBiZSBhZGQgc3Vj
-Y2VzcyBhbmQgY2FuIGJlIG9mZmxvYWRlZC4NCj4gPj4+Pg0KPiA+Pj4+IFNvIHRoZXJlIGFyZSBz
-b21lIGxpbWl0IGZvciBlbmNhcCBvcGVyYXRpb24gZm9yIEZUX09GRkxPQUQgaW4NCj4gPj4+PiBG
-REJfRlRfQ0hBSU4/DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEJSDQo+ID4+Pj4NCj4gPj4+PiB3
-ZW54dQ0KPiA+Pj4+DQo=
+Adjust indentation from spaces to tab (+optional two spaces) as in
+coding style.  This fixes various indentation mixups (seven spaces,
+tab+one space, etc).
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/net/Kconfig                           | 64 +++++++++----------
+ drivers/net/caif/Kconfig                      | 36 +++++------
+ .../net/ethernet/freescale/fs_enet/Kconfig    |  8 +--
+ drivers/net/ieee802154/Kconfig                | 12 ++--
+ drivers/net/wireless/ath/Kconfig              | 12 ++--
+ drivers/net/wireless/ath/ar5523/Kconfig       | 14 ++--
+ drivers/net/wireless/ath/ath9k/Kconfig        | 58 ++++++++---------
+ drivers/net/wireless/atmel/Kconfig            | 42 ++++++------
+ drivers/net/wireless/ralink/rt2x00/Kconfig    | 44 ++++++-------
+ drivers/net/wireless/ti/wl12xx/Kconfig        |  8 +--
+ 10 files changed, 149 insertions(+), 149 deletions(-)
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index df1c7989e13d..d02f12a5254e 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -153,22 +153,22 @@ config IPVLAN_L3S
+ 	select NET_L3_MASTER_DEV
+ 
+ config IPVLAN
+-    tristate "IP-VLAN support"
+-    depends on INET
+-    depends on IPV6 || !IPV6
+-    ---help---
+-      This allows one to create virtual devices off of a main interface
+-      and packets will be delivered based on the dest L3 (IPv6/IPv4 addr)
+-      on packets. All interfaces (including the main interface) share L2
+-      making it transparent to the connected L2 switch.
++	tristate "IP-VLAN support"
++	depends on INET
++	depends on IPV6 || !IPV6
++	---help---
++	  This allows one to create virtual devices off of a main interface
++	  and packets will be delivered based on the dest L3 (IPv6/IPv4 addr)
++	  on packets. All interfaces (including the main interface) share L2
++	  making it transparent to the connected L2 switch.
+ 
+-      Ipvlan devices can be added using the "ip" command from the
+-      iproute2 package starting with the iproute2-3.19 release:
++	  Ipvlan devices can be added using the "ip" command from the
++	  iproute2 package starting with the iproute2-3.19 release:
+ 
+-      "ip link add link <main-dev> [ NAME ] type ipvlan"
++	  "ip link add link <main-dev> [ NAME ] type ipvlan"
+ 
+-      To compile this driver as a module, choose M here: the module
+-      will be called ipvlan.
++	  To compile this driver as a module, choose M here: the module
++	  will be called ipvlan.
+ 
+ config IPVTAP
+ 	tristate "IP-VLAN based tap driver"
+@@ -185,11 +185,11 @@ config IPVTAP
+ 	  will be called ipvtap.
+ 
+ config VXLAN
+-       tristate "Virtual eXtensible Local Area Network (VXLAN)"
+-       depends on INET
+-       select NET_UDP_TUNNEL
+-       select GRO_CELLS
+-       ---help---
++	tristate "Virtual eXtensible Local Area Network (VXLAN)"
++	depends on INET
++	select NET_UDP_TUNNEL
++	select GRO_CELLS
++	---help---
+ 	  This allows one to create vxlan virtual interfaces that provide
+ 	  Layer 2 Networks over Layer 3 Networks. VXLAN is often used
+ 	  to tunnel virtual network infrastructure in virtualized environments.
+@@ -200,12 +200,12 @@ config VXLAN
+ 	  will be called vxlan.
+ 
+ config GENEVE
+-       tristate "Generic Network Virtualization Encapsulation"
+-       depends on INET
+-       depends on IPV6 || !IPV6
+-       select NET_UDP_TUNNEL
+-       select GRO_CELLS
+-       ---help---
++	tristate "Generic Network Virtualization Encapsulation"
++	depends on INET
++	depends on IPV6 || !IPV6
++	select NET_UDP_TUNNEL
++	select GRO_CELLS
++	---help---
+ 	  This allows one to create geneve virtual interfaces that provide
+ 	  Layer 2 Networks over Layer 3 Networks. GENEVE is often used
+ 	  to tunnel virtual network infrastructure in virtualized environments.
+@@ -244,8 +244,8 @@ config MACSEC
+ config NETCONSOLE
+ 	tristate "Network console logging support"
+ 	---help---
+-	If you want to log kernel messages over the network, enable this.
+-	See <file:Documentation/networking/netconsole.txt> for details.
++	  If you want to log kernel messages over the network, enable this.
++	  See <file:Documentation/networking/netconsole.txt> for details.
+ 
+ config NETCONSOLE_DYNAMIC
+ 	bool "Dynamic reconfiguration of logging targets"
+@@ -362,12 +362,12 @@ config NET_VRF
+ 	  support enables VRF devices.
+ 
+ config VSOCKMON
+-    tristate "Virtual vsock monitoring device"
+-    depends on VHOST_VSOCK
+-    ---help---
+-     This option enables a monitoring net device for vsock sockets. It is
+-     mostly intended for developers or support to debug vsock issues. If
+-     unsure, say N.
++	tristate "Virtual vsock monitoring device"
++	depends on VHOST_VSOCK
++	---help---
++	  This option enables a monitoring net device for vsock sockets. It is
++	  mostly intended for developers or support to debug vsock issues. If
++	  unsure, say N.
+ 
+ endif # NET_CORE
+ 
+diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
+index 96d7cef3289f..e74e2bb61236 100644
+--- a/drivers/net/caif/Kconfig
++++ b/drivers/net/caif/Kconfig
+@@ -16,37 +16,37 @@ config CAIF_TTY
+ 	depends on CAIF && TTY
+ 	default n
+ 	---help---
+-	The CAIF TTY transport driver is a Line Discipline (ldisc)
+-	identified as N_CAIF. When this ldisc is opened from user space
+-	it will redirect the TTY's traffic into the CAIF stack.
++	  The CAIF TTY transport driver is a Line Discipline (ldisc)
++	  identified as N_CAIF. When this ldisc is opened from user space
++	  it will redirect the TTY's traffic into the CAIF stack.
+ 
+ config CAIF_SPI_SLAVE
+ 	tristate "CAIF SPI transport driver for slave interface"
+ 	depends on CAIF && HAS_DMA
+ 	default n
+ 	---help---
+-	The CAIF Link layer SPI Protocol driver for Slave SPI interface.
+-	This driver implements a platform driver to accommodate for a
+-	platform specific SPI device. A sample CAIF SPI Platform device is
+-	provided in <file:Documentation/networking/caif/spi_porting.txt>.
++	  The CAIF Link layer SPI Protocol driver for Slave SPI interface.
++	  This driver implements a platform driver to accommodate for a
++	  platform specific SPI device. A sample CAIF SPI Platform device is
++	  provided in <file:Documentation/networking/caif/spi_porting.txt>.
+ 
+ config CAIF_SPI_SYNC
+ 	bool "Next command and length in start of frame"
+ 	depends on CAIF_SPI_SLAVE
+ 	default n
+ 	---help---
+-	Putting the next command and length in the start of the frame can
+-	help to synchronize to the next transfer in case of over or under-runs.
+-	This option also needs to be enabled on the modem.
++	  Putting the next command and length in the start of the frame can
++	  help to synchronize to the next transfer in case of over or under-runs.
++	  This option also needs to be enabled on the modem.
+ 
+ config CAIF_HSI
+-       tristate "CAIF HSI transport driver"
+-       depends on CAIF
+-       default n
+-       ---help---
+-       The CAIF low level driver for CAIF over HSI.
+-       Be aware that if you enable this then you also need to
+-       enable a low-level HSI driver.
++	tristate "CAIF HSI transport driver"
++	depends on CAIF
++	default n
++	---help---
++	  The CAIF low level driver for CAIF over HSI.
++	  Be aware that if you enable this then you also need to
++	  enable a low-level HSI driver.
+ 
+ config CAIF_VIRTIO
+ 	tristate "CAIF virtio transport driver"
+@@ -56,7 +56,7 @@ config CAIF_VIRTIO
+ 	select GENERIC_ALLOCATOR
+ 	default n
+ 	---help---
+-	The CAIF driver for CAIF over Virtio.
++	  The CAIF driver for CAIF over Virtio.
+ 
+ if CAIF_VIRTIO
+ source "drivers/vhost/Kconfig.vringh"
+diff --git a/drivers/net/ethernet/freescale/fs_enet/Kconfig b/drivers/net/ethernet/freescale/fs_enet/Kconfig
+index 245d9a68a71f..7f20840fde07 100644
+--- a/drivers/net/ethernet/freescale/fs_enet/Kconfig
++++ b/drivers/net/ethernet/freescale/fs_enet/Kconfig
+@@ -1,9 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config FS_ENET
+-       tristate "Freescale Ethernet Driver"
+-       depends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)
+-       select MII
+-       select PHYLIB
++	tristate "Freescale Ethernet Driver"
++	depends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)
++	select MII
++	select PHYLIB
+ 
+ config FS_ENET_MPC5121_FEC
+ 	def_bool y if (FS_ENET && PPC_MPC512x)
+diff --git a/drivers/net/ieee802154/Kconfig b/drivers/net/ieee802154/Kconfig
+index 8af5b7e9f4ed..c92a62dbf398 100644
+--- a/drivers/net/ieee802154/Kconfig
++++ b/drivers/net/ieee802154/Kconfig
+@@ -74,9 +74,9 @@ config IEEE802154_ATUSB
+ 	  The module will be called 'atusb'.
+ 
+ config IEEE802154_ADF7242
+-       tristate "ADF7242 transceiver driver"
+-       depends on IEEE802154_DRIVERS && MAC802154
+-       depends on SPI
++	tristate "ADF7242 transceiver driver"
++	depends on IEEE802154_DRIVERS && MAC802154
++	depends on SPI
+ 	---help---
+ 	  Say Y here to enable the ADF7242 SPI 802.15.4 wireless
+ 	  controller.
+@@ -107,9 +107,9 @@ config IEEE802154_CA8210_DEBUGFS
+ 	  management entities.
+ 
+ config IEEE802154_MCR20A
+-       tristate "MCR20A transceiver driver"
+-       depends on IEEE802154_DRIVERS && MAC802154
+-       depends on SPI
++	tristate "MCR20A transceiver driver"
++	depends on IEEE802154_DRIVERS && MAC802154
++	depends on SPI
+ 	---help---
+ 	  Say Y here to enable the MCR20A SPI 802.15.4 wireless
+ 	  controller.
+diff --git a/drivers/net/wireless/ath/Kconfig b/drivers/net/wireless/ath/Kconfig
+index 56616d988c96..7b90b8546162 100644
+--- a/drivers/net/wireless/ath/Kconfig
++++ b/drivers/net/wireless/ath/Kconfig
+@@ -30,12 +30,12 @@ config ATH_DEBUG
+ 	  Right now only ath9k makes use of this.
+ 
+ config ATH_TRACEPOINTS
+-       bool "Atheros wireless tracing"
+-       depends on ATH_DEBUG
+-       depends on EVENT_TRACING
+-       ---help---
+-	 This option enables tracepoints for atheros wireless drivers.
+-	 Currently, ath9k makes use of this facility.
++	bool "Atheros wireless tracing"
++	depends on ATH_DEBUG
++	depends on EVENT_TRACING
++	---help---
++	  This option enables tracepoints for atheros wireless drivers.
++	  Currently, ath9k makes use of this facility.
+ 
+ config ATH_REG_DYNAMIC_USER_REG_HINTS
+ 	bool "Atheros dynamic user regulatory hints"
+diff --git a/drivers/net/wireless/ath/ar5523/Kconfig b/drivers/net/wireless/ath/ar5523/Kconfig
+index 65b39c7d035d..e82df5f1ea67 100644
+--- a/drivers/net/wireless/ath/ar5523/Kconfig
++++ b/drivers/net/wireless/ath/ar5523/Kconfig
+@@ -1,9 +1,9 @@
+ # SPDX-License-Identifier: ISC
+ config AR5523
+-       tristate "Atheros AR5523 wireless driver support"
+-       depends on MAC80211 && USB
+-       select ATH_COMMON
+-       select FW_LOADER
+-       ---help---
+-	 This module add support for AR5523 based USB dongles such as D-Link
+-	 DWL-G132, Netgear WPN111 and many more.
++	tristate "Atheros AR5523 wireless driver support"
++	depends on MAC80211 && USB
++	select ATH_COMMON
++	select FW_LOADER
++	---help---
++	  This module add support for AR5523 based USB dongles such as D-Link
++	  DWL-G132, Netgear WPN111 and many more.
+diff --git a/drivers/net/wireless/ath/ath9k/Kconfig b/drivers/net/wireless/ath/ath9k/Kconfig
+index c99f42284465..78620c6b64a2 100644
+--- a/drivers/net/wireless/ath/ath9k/Kconfig
++++ b/drivers/net/wireless/ath/ath9k/Kconfig
+@@ -144,13 +144,13 @@ config ATH9K_RFKILL
+ 	  a platform that can toggle the RF-Kill GPIO.
+ 
+ config ATH9K_CHANNEL_CONTEXT
+-       bool "Channel Context support"
+-       depends on ATH9K
+-       default n
+-       ---help---
+-	 This option enables channel context support in ath9k, which is needed
+-	 for multi-channel concurrency. Enable this if P2P PowerSave support
+-	 is required.
++	bool "Channel Context support"
++	depends on ATH9K
++	default n
++	---help---
++	  This option enables channel context support in ath9k, which is needed
++	  for multi-channel concurrency. Enable this if P2P PowerSave support
++	  is required.
+ 
+ config ATH9K_PCOEM
+ 	bool "Atheros ath9k support for PC OEM cards" if EXPERT
+@@ -162,32 +162,32 @@ config ATH9K_PCI_NO_EEPROM
+ 	depends on ATH9K_PCI
+ 	default n
+ 	help
+-	 This separate driver provides a loader in order to support the
+-	 AR500X to AR92XX-generation of ath9k PCI(e) WiFi chips, which have
+-	 their initialization data (which contains the real PCI Device ID
+-	 that ath9k will need) stored together with the calibration data out
+-	 of reach for the ath9k chip.
++	  This separate driver provides a loader in order to support the
++	  AR500X to AR92XX-generation of ath9k PCI(e) WiFi chips, which have
++	  their initialization data (which contains the real PCI Device ID
++	  that ath9k will need) stored together with the calibration data out
++	  of reach for the ath9k chip.
+ 
+-	 These devices are usually various network appliances, routers or
+-	 access Points and such.
++	  These devices are usually various network appliances, routers or
++	  access Points and such.
+ 
+-	 If unsure say N.
++	  If unsure say N.
+ 
+ config ATH9K_HTC
+-       tristate "Atheros HTC based wireless cards support"
+-       depends on USB && MAC80211
+-       select ATH9K_HW
+-       select MAC80211_LEDS
+-       select LEDS_CLASS
+-       select NEW_LEDS
+-       select ATH9K_COMMON
+-       ---help---
+-	 Support for Atheros HTC based cards.
+-	 Chipsets supported: AR9271
+-
+-	 For more information: http://wireless.kernel.org/en/users/Drivers/ath9k_htc
+-
+-	 The built module will be ath9k_htc.
++	tristate "Atheros HTC based wireless cards support"
++	depends on USB && MAC80211
++	select ATH9K_HW
++	select MAC80211_LEDS
++	select LEDS_CLASS
++	select NEW_LEDS
++	select ATH9K_COMMON
++	---help---
++	  Support for Atheros HTC based cards.
++	  Chipsets supported: AR9271
++
++	  For more information: http://wireless.kernel.org/en/users/Drivers/ath9k_htc
++
++	  The built module will be ath9k_htc.
+ 
+ config ATH9K_HTC_DEBUGFS
+ 	bool "Atheros ath9k_htc debugging"
+diff --git a/drivers/net/wireless/atmel/Kconfig b/drivers/net/wireless/atmel/Kconfig
+index 4c0556b3a5ba..c2142c70f25d 100644
+--- a/drivers/net/wireless/atmel/Kconfig
++++ b/drivers/net/wireless/atmel/Kconfig
+@@ -13,29 +13,29 @@ config WLAN_VENDOR_ATMEL
+ if WLAN_VENDOR_ATMEL
+ 
+ config ATMEL
+-      tristate "Atmel at76c50x chipset  802.11b support"
+-      depends on CFG80211 && (PCI || PCMCIA)
+-      select WIRELESS_EXT
+-      select WEXT_PRIV
+-      select FW_LOADER
+-      select CRC32
+-       ---help---
+-	A driver 802.11b wireless cards based on the Atmel fast-vnet
+-	chips. This driver supports standard Linux wireless extensions.
+-
+-	Many  cards based on this chipset do not have flash memory
+-	and need their firmware loaded at start-up. If yours is
+-	one of these, you will need to provide a firmware image
+-	to be loaded into the card by the driver. The Atmel
+-	firmware package can be downloaded from
+-	<http://www.thekelleys.org.uk/atmel>
++	tristate "Atmel at76c50x chipset  802.11b support"
++	depends on CFG80211 && (PCI || PCMCIA)
++	select WIRELESS_EXT
++	select WEXT_PRIV
++	select FW_LOADER
++	select CRC32
++	---help---
++	  A driver 802.11b wireless cards based on the Atmel fast-vnet
++	  chips. This driver supports standard Linux wireless extensions.
++
++	  Many  cards based on this chipset do not have flash memory
++	  and need their firmware loaded at start-up. If yours is
++	  one of these, you will need to provide a firmware image
++	  to be loaded into the card by the driver. The Atmel
++	  firmware package can be downloaded from
++	  <http://www.thekelleys.org.uk/atmel>
+ 
+ config PCI_ATMEL
+-      tristate "Atmel at76c506 PCI cards"
+-      depends on ATMEL && PCI
+-       ---help---
+-	Enable support for PCI and mini-PCI cards containing the
+-	Atmel at76c506 chip.
++	tristate "Atmel at76c506 PCI cards"
++	depends on ATMEL && PCI
++	---help---
++	  Enable support for PCI and mini-PCI cards containing the
++	  Atmel at76c506 chip.
+ 
+ config PCMCIA_ATMEL
+ 	tristate "Atmel at76c502/at76c504 PCMCIA cards"
+diff --git a/drivers/net/wireless/ralink/rt2x00/Kconfig b/drivers/net/wireless/ralink/rt2x00/Kconfig
+index f8a9244ce012..d4969d617822 100644
+--- a/drivers/net/wireless/ralink/rt2x00/Kconfig
++++ b/drivers/net/wireless/ralink/rt2x00/Kconfig
+@@ -95,20 +95,20 @@ config RT2800PCI_RT35XX
+ 
+ 
+ config RT2800PCI_RT53XX
+-       bool "rt2800pci - Include support for rt53xx devices (EXPERIMENTAL)"
+-       default y
+-       ---help---
+-	 This adds support for rt53xx wireless chipset family to the
+-	 rt2800pci driver.
+-	 Supported chips: RT5390
++	bool "rt2800pci - Include support for rt53xx devices (EXPERIMENTAL)"
++	default y
++	---help---
++	  This adds support for rt53xx wireless chipset family to the
++	  rt2800pci driver.
++	  Supported chips: RT5390
+ 
+ config RT2800PCI_RT3290
+-       bool "rt2800pci - Include support for rt3290 devices (EXPERIMENTAL)"
+-       default y
+-       ---help---
+-	 This adds support for rt3290 wireless chipset family to the
+-	 rt2800pci driver.
+-	 Supported chips: RT3290
++	bool "rt2800pci - Include support for rt3290 devices (EXPERIMENTAL)"
++	default y
++	---help---
++	  This adds support for rt3290 wireless chipset family to the
++	  rt2800pci driver.
++	  Supported chips: RT3290
+ endif
+ 
+ config RT2500USB
+@@ -174,18 +174,18 @@ config RT2800USB_RT3573
+ 	  in the rt2800usb driver.
+ 
+ config RT2800USB_RT53XX
+-       bool "rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)"
+-       ---help---
+-	 This adds support for rt53xx wireless chipset family to the
+-	 rt2800usb driver.
+-	 Supported chips: RT5370
++	bool "rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)"
++	---help---
++	  This adds support for rt53xx wireless chipset family to the
++	  rt2800usb driver.
++	  Supported chips: RT5370
+ 
+ config RT2800USB_RT55XX
+-       bool "rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)"
+-       ---help---
+-	 This adds support for rt55xx wireless chipset family to the
+-	 rt2800usb driver.
+-	 Supported chips: RT5572
++	bool "rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)"
++	---help---
++	  This adds support for rt55xx wireless chipset family to the
++	  rt2800usb driver.
++	  Supported chips: RT5572
+ 
+ config RT2800USB_UNKNOWN
+ 	bool "rt2800usb - Include support for unknown (USB) devices"
+diff --git a/drivers/net/wireless/ti/wl12xx/Kconfig b/drivers/net/wireless/ti/wl12xx/Kconfig
+index e409042ee9a0..9c4511604b67 100644
+--- a/drivers/net/wireless/ti/wl12xx/Kconfig
++++ b/drivers/net/wireless/ti/wl12xx/Kconfig
+@@ -1,10 +1,10 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config WL12XX
+-       tristate "TI wl12xx support"
++	tristate "TI wl12xx support"
+ 	depends on MAC80211
+-       select WLCORE
+-       ---help---
++	select WLCORE
++	---help---
+ 	  This module adds support for wireless adapters based on TI wl1271,
+ 	  wl1273, wl1281 and wl1283 chipsets. This module does *not* include
+ 	  support for wl1251.  For wl1251 support, use the separate homonymous
+-	   driver instead.
++	  driver instead.
+-- 
+2.17.1
+
