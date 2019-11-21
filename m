@@ -2,152 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4990510523A
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:23:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D1C105254
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfKUMXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 07:23:24 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:45402 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbfKUMXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 07:23:24 -0500
-Received: by mail-pf1-f194.google.com with SMTP id z4so1583545pfn.12
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 04:23:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=4lQjfr3tkzYcIAniemVyUkfAYvQyBYvY988WhIgzj9g=;
-        b=fwjqoXkXCeKlLmbCN1BUUzC0lYoWfW+uDR/iDOeEPsS2B1oHEUTJO71pmUmAXOuSQ2
-         ehvbs1x6x9vKsOqqugagXhQu/Z5YFHO9iQIACkYNB/m3Opn4fK/DoNUBpmXfFxRoNJo2
-         t5JjWJWvorAja1LATpYATukjVLwtevHUPyinZqG9ou3wVwia/YF84pNIWpGF5gMTHsUj
-         A41sK50FqPS2iiHFBipwAC0RaAD+YmpUUOyzH61L82GZJkmDv34bgtdClfKheP5nr0D/
-         Slx8GT3ACsuzNxuXCqt3CPd3mVIxfooSkGFINvgWO2OLa8V0bRc5PTs28qHgKRHKms5O
-         n2rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=4lQjfr3tkzYcIAniemVyUkfAYvQyBYvY988WhIgzj9g=;
-        b=i6eh9etJFsIV6RjWYXOvgpaZVxxFDZpvbxuJlTGupk85XHVlKTR51f1YHprrUEdo8X
-         tf0t4Bxg7Thtssoz4ug1suR5yQWlp9scj5qb3qLurswtso9KJ/BhtggxCyoVHOPblTuc
-         XyGGfK/qOAOKokIx+aVliWxzz3PwGW/TKPJ7k9vbRo5lYQIV0+pEiz+0UnIPkgeM7bBK
-         Guxgk1HYUczWvFzBpbRt7SA2xOVNfoT8fb7VkQnqQpQRj7Kw+L99DipHXFdU/6n5nwXG
-         nQrH2qQKRqfxiR2oP/jEwVOwuPUukFcTIPcMDzbGC1ig+j9/38UN2PVsMQJIBimuxGV2
-         VY/Q==
-X-Gm-Message-State: APjAAAWnncLsT0huEcnJEtdZ6HBplMZxT4NhWNFICtiR9EBGqvjanys5
-        djuSQr5/9XJZDnLPCQ3HX39Vmboh
-X-Google-Smtp-Source: APXvYqzHf8J42FKujMuXjmjBodhEfRF10XQP1gWmPy2mvu3uXMLrXEDPrWVh7Yn4XHpb80UlNr80eQ==
-X-Received: by 2002:a62:830a:: with SMTP id h10mr10809348pfe.6.1574339003457;
-        Thu, 21 Nov 2019 04:23:23 -0800 (PST)
-Received: from martin-VirtualBox.dlink.router ([171.61.89.87])
-        by smtp.gmail.com with ESMTPSA id v26sm3484394pfm.126.2019.11.21.04.23.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 21 Nov 2019 04:23:22 -0800 (PST)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        martin.varghese@nokia.com
-Subject: [PATCH net-next] Enhanced skb_mpls_pop to update ethertype of the packet in all the cases when an ethernet header is present is the packet.
-Date:   Thu, 21 Nov 2019 17:53:15 +0530
-Message-Id: <1574338995-14657-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1726714AbfKUMfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 07:35:54 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:1767 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbfKUMfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 07:35:54 -0500
+Received: from [192.168.1.4] (unknown [116.237.146.20])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 15DFC41D53;
+        Thu, 21 Nov 2019 20:35:49 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+Date:   Thu, 21 Nov 2019 20:35:28 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
+MIME-Version: 1.0
+In-Reply-To: <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk5VQk1OS0tLTUlCT0lOS05ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nyo6PAw*ETg*NQ8JIjItTS4o
+        FTpPFDJVSlVKTkxPSEhCTE5LT09IVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SExVSk9NVUlLWVdZCAFZQUJJTEI3Bg++
+X-HM-Tid: 0a6e8df625662086kuqy15dfc41d53
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
 
-The skb_mpls_pop was not updating ethertype of an ethernet packet if the
-packet was originally received from a non ARPHRD_ETHER device.
+在 2019/11/21 19:39, Paul Blakey 写道:
+> They are good fixes, exactly what we had when we tested this, thanks.
+>
+> Regarding encap, I don't know what changes you did, how does the encap rule look? Is it a FWD to vxlan device? If not it should be, as our driver expects that.
+It is fwd to a gretap devices
+>
+> I tried it on my setup via tc, by changing the callback of tc (mlx5e_rep_setup_tc_cb) to that of ft (mlx5e_rep_setup_ft_cb),
+> and testing a vxlan encap rule:
+> sudo tc qdisc add dev ens1f0_0 ingress
+> sudo ifconfig ens1f0 7.7.7.7/24 up
+> sudo ip link add name vxlan0 type vxlan dev ens1f0 remote 7.7.7.8 dstport 4789 external
+> sudo ifconfig vxlan0 up
+> sudo tc filter add dev ens1f0_0 ingress prio 1 chain 0 protocol ip flower dst_mac aa:bb:cc:dd:ee:ff ip_proto udp skip_sw  action tunnel_key set src_ip 0.0.0.0 dst_ip 7.7.7.8 id 1234 dst_port 4789 pipe action mirred egress redirect dev vxlan
+>
+> then tc show:
+> filter protocol ip pref 1 flower chain 0 handle 0x1 dst_mac aa:bb:cc:dd:ee:ff ip_proto udp skip_sw in_hw in_hw_count 1
+>         tunnel_key set src_ip 0.0.0.0 dst_ip 7.7.7.8 key_id 1234 dst_port 4789 csum pipe
+>         Stats: used 119 sec      0 pkt
+>         mirred (Egress Redirect to device vxlan0)
+>         Stats: used 119 sec      0 pkt
 
-In the below OVS data path flow, since the device corresponding to port 7
-is an l3 device (ARPHRD_NONE) the skb_mpls_pop function does not update
-the ethertype of the packet even though the previous push_eth action had
-added an ethernet header to the packet.
+Can you send packet that match this offloaded flow to check it is real offloaded?
 
-recirc_id(0),in_port(7),eth_type(0x8847),
-mpls(label=12/0xfffff,tc=0/0,ttl=0/0x0,bos=1/1),
-actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-pop_mpls(eth_type=0x800),4
+In the flowtable offload with my patches both TC_SETUP_BLOCK and TC_SETUP_FT can offload the rule success
 
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
- include/linux/skbuff.h    | 3 ++-
- net/core/skbuff.c         | 8 +++++---
- net/openvswitch/actions.c | 2 +-
- net/sched/act_mpls.c      | 2 +-
- 4 files changed, 9 insertions(+), 6 deletions(-)
+But in the TC_SETUP_FT case the packet is not real offloaded.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index dfe02b6..70204b9 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3530,7 +3530,8 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
- int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
- int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 		  int mac_len);
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len);
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-+		 bool ethernet);
- int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
- int skb_mpls_dec_ttl(struct sk_buff *skb);
- struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 867e61d..8ac377d 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5529,12 +5529,14 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-  * @skb: buffer
-  * @next_proto: ethertype of header after popped MPLS header
-  * @mac_len: length of the MAC header
-- *
-+ * @ethernet: flag to indicate if ethernet header is present in packet
-+ *	      ignored for device type ARPHRD_ETHER
-  * Expects skb->data at mac header.
-  *
-  * Returns 0 on success, -errno otherwise.
-  */
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-+		 bool ethernet)
- {
- 	int err;
- 
-@@ -5553,7 +5555,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
- 	skb_reset_mac_header(skb);
- 	skb_set_network_header(skb, mac_len);
- 
--	if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-+	if ((skb->dev && skb->dev->type == ARPHRD_ETHER) || ethernet) {
- 		struct ethhdr *hdr;
- 
- 		/* use mpls_hdr() to get ethertype to account for VLANs. */
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 12936c1..9e5d274 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -179,7 +179,7 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
- 	int err;
- 
--	err = skb_mpls_pop(skb, ethertype, skb->mac_len);
-+	err = skb_mpls_pop(skb, ethertype, skb->mac_len, true);
- 	if (err)
- 		return err;
- 
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index 4d8c822..5fa39fc 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -76,7 +76,7 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	switch (p->tcfm_action) {
- 	case TCA_MPLS_ACT_POP:
--		if (skb_mpls_pop(skb, p->tcfm_proto, mac_len))
-+		if (skb_mpls_pop(skb, p->tcfm_proto, mac_len, false))
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_PUSH:
--- 
-1.8.3.1
 
+I  will test like u did.
+
+>
+>
+>
+>> -----Original Message-----
+>> From: wenxu <wenxu@ucloud.cn>
+>> Sent: Thursday, November 21, 2019 10:29 AM
+>> To: Paul Blakey <paulb@mellanox.com>
+>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>> <markb@mellanox.com>
+>> Subject: Re: Question about flow table offload in mlx5e
+>>
+>>
+>> On 11/21/2019 3:42 PM, Paul Blakey wrote:
+>>> Hi,
+>>>
+>>> The original design was the block setup to use TC_SETUP_FT type, and the
+>> tc event type to be case TC_SETUP_CLSFLOWER.
+>>> We will post a patch to change that. I would advise to wait till we fix that
+>> 😊
+>>> I'm not sure how you get to this function mlx5e_rep_setup_ft_cb() if it the
+>> nf_flow_table_offload ndo_setup_tc event was TC_SETUP_BLOCK, and not
+>> TC_SETUP_FT.
+>>
+>>
+>> Yes I change the TC_SETUP_BLOCK to TC_SETUP_FT in the
+>> nf_flow_table_offload_setup.
+>>
+>> Two fixes patch provide:
+>>
+>> http://patchwork.ozlabs.org/patch/1197818/
+>>
+>> http://patchwork.ozlabs.org/patch/1197876/
+>>
+>> So this change made by me is not correct currently?
+>>
+>>> In our driver en_rep.c we have:
+>>>> -------switch (type) {
+>>>> -------case TC_SETUP_BLOCK:
+>>>> ------->-------return flow_block_cb_setup_simple(type_data,
+>>>> ------->------->------->------->------->-------  &mlx5e_rep_block_tc_cb_list,
+>>>> ------->------->------->------->------->-------  mlx5e_rep_setup_tc_cb,
+>>>> ------->------->------->------->------->-------  priv, priv, true);
+>>>> -------case TC_SETUP_FT:
+>>>> ------->-------return flow_block_cb_setup_simple(type_data,
+>>>> ------->------->------->------->------->-------  &mlx5e_rep_block_ft_cb_list,
+>>>> ------->------->------->------->------->-------  mlx5e_rep_setup_ft_cb,
+>>>> ------->------->------->------->------->-------  priv, priv, true);
+>>>> -------default:
+>>>> ------->-------return -EOPNOTSUPP;
+>>>> -------}
+>>> In nf_flow_table_offload.c:
+>>>> -------bo.binder_type>-= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>>>> -------bo.extack>------= &extack;
+>>>> -------INIT_LIST_HEAD(&bo.cb_list);
+>>>> -------err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK,
+>> &bo);
+>>>> -------if (err < 0)
+>>>> ------->-------return err;
+>>>> -------return nf_flow_table_block_setup(flowtable, &bo, cmd);
+>>> }
+>>> EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
+>>>
+>>>
+>>> So unless you changed that as well, you should have gotten to
+>> mlx5e_rep_setup_tc_cb and not mlx5e_rep_setup_tc_ft.
+>>> Regarding the encap action, there should be no difference on which chain
+>> the rule is on.
+>>
+>>
+>> But for the same encap rule can be real offloaded when setup through
+>> through TC_SETUP_BLOCK. But TC_SETUP_FT can't.
+>>
+>> So it is the problem of TC_SETUP_FT in mlx5e_rep_setup_ft_cb ?
+>>
+>>>
+>>>> -----Original Message-----
+>>>> From: wenxu <wenxu@ucloud.cn>
+>>>> Sent: Thursday, November 21, 2019 9:30 AM
+>>>> To: Paul Blakey <paulb@mellanox.com>
+>>>> Cc: pablo@netfilter.org; netdev@vger.kernel.org; Mark Bloch
+>>>> <markb@mellanox.com>
+>>>> Subject: Question about flow table offload in mlx5e
+>>>>
+>>>> Hi  paul,
+>>>>
+>>>> The flow table offload in the mlx5e is based on TC_SETUP_FT.
+>>>>
+>>>>
+>>>> It is almost the same as TC_SETUP_BLOCK.
+>>>>
+>>>> It just set MLX5_TC_FLAG(FT_OFFLOAD) flags and change
+>>>> cls_flower.common.chain_index = FDB_FT_CHAIN;
+>>>>
+>>>> In following codes line 1380 and 1392
+>>>>
+>>>> 1368 static int mlx5e_rep_setup_ft_cb(enum tc_setup_type type, void
+>>>> *type_data,
+>>>> 1369                                  void *cb_priv)
+>>>> 1370 {
+>>>> 1371         struct flow_cls_offload *f = type_data;
+>>>> 1372         struct flow_cls_offload cls_flower;
+>>>> 1373         struct mlx5e_priv *priv = cb_priv;
+>>>> 1374         struct mlx5_eswitch *esw;
+>>>> 1375         unsigned long flags;
+>>>> 1376         int err;
+>>>> 1377
+>>>> 1378         flags = MLX5_TC_FLAG(INGRESS) |
+>>>> 1379                 MLX5_TC_FLAG(ESW_OFFLOAD) |
+>>>> 1380                 MLX5_TC_FLAG(FT_OFFLOAD);
+>>>> 1381         esw = priv->mdev->priv.eswitch;
+>>>> 1382
+>>>> 1383         switch (type) {
+>>>> 1384         case TC_SETUP_CLSFLOWER:
+>>>> 1385                 if (!mlx5_eswitch_prios_supported(esw) || f-
+>>>>> common.chain_index)
+>>>> 1386                         return -EOPNOTSUPP;
+>>>> 1387
+>>>> 1388                 /* Re-use tc offload path by moving the ft flow to the
+>>>> 1389                  * reserved ft chain.
+>>>> 1390                  */
+>>>> 1391                 memcpy(&cls_flower, f, sizeof(*f));
+>>>> 1392                cls_flower.common.chain_index = FDB_FT_CHAIN;
+>>>> 1393                 err = mlx5e_rep_setup_tc_cls_flower(priv, &cls_flower,
+>> flags);
+>>>> 1394                 memcpy(&f->stats, &cls_flower.stats, sizeof(f->stats));
+>>>>
+>>>>
+>>>> I want to add tunnel offload support in the flow table, I  add some patches
+>> in
+>>>> nf_flow_table_offload.
+>>>>
+>>>> Also add the indr setup support in the mlx driver. And Now I can  flow
+>> table
+>>>> offload with decap.
+>>>>
+>>>>
+>>>> But I meet a problem with the encap.  The encap rule can be added in
+>>>> hardware  successfully But it can't be offloaded.
+>>>>
+>>>> But I think the rule I added is correct.  If I mask the line 1392. The rule also
+>> can
+>>>> be add success and can be offloaded.
+>>>>
+>>>> So there are some limit for encap operation for FT_OFFLOAD in
+>>>> FDB_FT_CHAIN?
+>>>>
+>>>>
+>>>> BR
+>>>>
+>>>> wenxu
+>>>>
