@@ -2,100 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8912E105CFD
+	by mail.lfdr.de (Postfix) with ESMTP id E12DF105CFE
 	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 00:05:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfKUXE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 18:04:56 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37710 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbfKUXE4 (ORCPT
+        id S1726762AbfKUXE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 18:04:58 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:55054 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfKUXE4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 18:04:56 -0500
-Received: by mail-lj1-f194.google.com with SMTP id d5so5137243ljl.4
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 15:04:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ujSnirx0MMYk1nWbIfrsLRgvcTHBcDKnqPSTu0uZhPM=;
-        b=Nc6/mbo0NU7TqyfZ0KlcWiAFlSVLQv17ZroqrY0RRWkOLd+EX3M0YN/8CWH1eoWDxm
-         2XpNdcx5yss6p7g5w7yowMTkhd7PhLgYbpaqA/BdiMguJHL7uZ8TFq9ct50g3xAb9MKi
-         uhYApgEyRVoNYA0UGHawQt2+EmxOwKrQGWpeHVB9t/hau3ZCsCa2P8QRC9000TmAfAaU
-         8WzEu4NDMYH1F3s30mvOmIRvbIfbo2uSIU29VSXlubGOa3SYWiqK5xXIvi3A7I0iz9Ix
-         VUVSNyhYKiy8s/u9kOjcbbaUoswVrPIZdGtdLvMJVR6nLYyPFZUKK98OIX58Vf1LFTdr
-         8P8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ujSnirx0MMYk1nWbIfrsLRgvcTHBcDKnqPSTu0uZhPM=;
-        b=ggqbFqiF1dVE7bNn4Nkxt1NTGzlGNQUsheEomXq0hr55dWQO176IBX+/3LzbKnJhmk
-         rvOQ8RdSf+sdTGHWgm5x0OYGg5va320CbEnIGwTVj5N43jrFQj8Us+MzojBNeRioAToL
-         u0SvNssxfB+pDBtgrHxPjPp/KEErSytLF3dth1886ilMYFA+pEQ/Uya+ATsvB05cZ+0W
-         Vgq9YvxI92nsFJsNnyngn5uLT6UYnBarpiDIPGx4YcKq9zxjUx+6LvbHyq238FT+AkTV
-         6BddLnnyJDQj6SSPXwGuhph3bnPXpEtjSQSomHTOT9uw2NBQ/OejgsZLS+zwBtHHc+CT
-         8byQ==
-X-Gm-Message-State: APjAAAXCUNF+DBvUq9Kdq7MC9t6RJjRgwSH7WiRfSy+pDjaNV0L0JvNl
-        efqzlmhTR8XC3L32vSE/uzYI+A==
-X-Google-Smtp-Source: APXvYqz0mplj+GIU5C+xgkex6FnLpZY91dYMJ1RaB5pMlahZp9Gr58LPzTcEQ5ePObyFharZ/pSU9g==
-X-Received: by 2002:a2e:8857:: with SMTP id z23mr10180706ljj.50.1574377493540;
-        Thu, 21 Nov 2019 15:04:53 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i6sm2129075lfo.12.2019.11.21.15.04.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 15:04:53 -0800 (PST)
-Date:   Thu, 21 Nov 2019 15:04:45 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net,v2 1/2] hv_netvsc: Fix offset usage in
- netvsc_send_table()
-Message-ID: <20191121150445.47fc3358@cakuba.netronome.com>
-In-Reply-To: <1574372021-29439-2-git-send-email-haiyangz@microsoft.com>
-References: <1574372021-29439-1-git-send-email-haiyangz@microsoft.com>
-        <1574372021-29439-2-git-send-email-haiyangz@microsoft.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 46557150AD820;
+        Thu, 21 Nov 2019 15:04:56 -0800 (PST)
+Date:   Thu, 21 Nov 2019 15:04:55 -0800 (PST)
+Message-Id: <20191121.150455.995586643384214573.davem@davemloft.net>
+To:     tuong.t.lien@dektech.com.au
+Cc:     jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+Subject: Re: [net-next v3] tipc: support in-order name publication events
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191121083458.19096-1-tuong.t.lien@dektech.com.au>
+References: <20191121083458.19096-1-tuong.t.lien@dektech.com.au>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 21 Nov 2019 15:04:56 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Nov 2019 13:33:40 -0800, Haiyang Zhang wrote:
-> To reach the data region, the existing code adds offset in struct
-> nvsp_5_send_indirect_table on the beginning of this struct. But the
-> offset should be based on the beginning of its container,
-> struct nvsp_message. This bug causes the first table entry missing,
-> and adds an extra zero from the zero pad after the data region.
-> This can put extra burden on the channel 0.
+From: Tuong Lien <tuong.t.lien@dektech.com.au>
+Date: Thu, 21 Nov 2019 15:34:58 +0700
+
+> It is observed that TIPC service binding order will not be kept in the
+> publication event report to user if the service is subscribed after the
+> bindings.
 > 
-> So, correct the offset usage. Also add a boundary check to ensure
-> not reading beyond data region.
+> For example, services are bound by application in the following order:
+> 
+> Server: bound port A to {18888,66,66} scope 2
+> Server: bound port A to {18888,33,33} scope 2
+> 
+> Now, if a client subscribes to the service range (e.g. {18888, 0-100}),
+> it will get the 'TIPC_PUBLISHED' events in that binding order only when
+> the subscription is started before the bindings.
+> Otherwise, if started after the bindings, the events will arrive in the
+> opposite order:
+> 
+> Client: received event for published {18888,33,33}
+> Client: received event for published {18888,66,66}
+> 
+> For the latter case, it is clear that the bindings have existed in the
+> name table already, so when reported, the events' order will follow the
+> order of the rbtree binding nodes (- a node with lesser 'lower'/'upper'
+> range value will be first).
+> 
+> This is correct as we provide the tracking on a specific service status
+> (available or not), not the relationship between multiple services.
+> However, some users expect to see the same order of arriving events
+> irrespective of when the subscription is issued. This turns out to be
+> easy to fix. We now add functionality to ensure that publication events
+> always are issued in the same temporal order as the corresponding
+> bindings were performed.
+> 
+> v2: replace the unnecessary macro - 'publication_after()' with inline
+> function.
+> v3: reuse 'time_after32()' instead of reinventing the same exact code.
+> 
+> Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
 
-Please provide a change log at the end of the commit message when
-posting new version in the future.
-
-> Fixes: 5b54dac856cb ("hyperv: Add support for virtual Receive Side Scaling (vRSS)")
-> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-
->  
-> -	tab = (u32 *)((unsigned long)&nvmsg->msg.v5_msg.send_table +
-> -		      nvmsg->msg.v5_msg.send_table.offset);
-> +	if (offset > msglen - count * sizeof(u32)) {
-
-Can't this underflow now? What if msglen is small?
-
-> +		netdev_err(ndev, "Received send-table offset too big:%u\n",
-> +			   offset);
-> +		return;
-> +	}
-> +
-> +	tab = (void *)nvmsg + offset;
->  
->  	for (i = 0; i < count; i++)
->  		net_device_ctx->tx_table[i] = tab[i];
+Applied, thanks.
