@@ -2,135 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF131049B1
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6A9F1049B7
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 05:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbfKUEkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 23:40:05 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:7194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725842AbfKUEkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:40:05 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAL4bcJT012095;
-        Wed, 20 Nov 2019 20:39:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=qjs4VYgMTzMQZNlBPF6RXc7vhklcpZBPPGNwDuP8/bs=;
- b=lyzqfdbrucY3LNNQC0idfAqzyCo9xi1J/T0Zd7kfOooGRpTT5zu8TqEA3qK+oK6LjFIX
- 2V9tpczQbAjUo6itadA2ML4+hez7ip/loxQQnICBhBw/faDJgkjGtbtzGtYaGvpYYYgs
- 8GpVZQ+l+vmsxlzyTebsOXlDHot5LjguDTo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2wchf7agxd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 20 Nov 2019 20:39:52 -0800
-Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
- ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 20 Nov 2019 20:39:51 -0800
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 20 Nov 2019 20:39:51 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R7ZY2w+GO7rQK3ObG01p0zrxSjRFWt/dul/KVe4mYYgqJURxL8Kczdt6DQM/c1TxCICJKTYob9YbJhGBE4y3jYVokLSm/ml2GsGphwNHKkOzmBTQVuj6yKBMj+ZEFU8enURatGN61tMXmtzKNs8JpSrO9IlodbFQevBQnQGGWdQtgEGsylhNxMYtIts45whb9rDS/ApG3dZ/8Htf3nTfUq6sQf3NJZhCStL4EIsofMggLq7v38ehXEuN7asMZ8eatTC4LIEi7D0qCkbV2o2PUxBp9d+o5SmZU5fsQj9FMlTeM3FKWKH0BvfifeRczLZU8An4b5n/NyYKH0MhT/qVlg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qjs4VYgMTzMQZNlBPF6RXc7vhklcpZBPPGNwDuP8/bs=;
- b=LXeeZhmXKwAsiewVEMlpjmbs7zRyp9gpt4avZwDSTOWukPQhCgwnwlhWERKEUh3/N6kG+7uD12AaORHklyvDlrBwsfQ+v0YCo/cPSbcu1Ti92akKwIrwyN1uwgVGfu3VyQIvXeSk969d15o7851ZF0KA5tAQ4oGVGeWxaxByvOHDXmFVgHUQaFyYx0nK8TM30i6170Kr58MBwAt5lyNPbPdh0+sspeQk/4e5F4beDPbL37QGyTY3tcnNje73C2MDnvcncKPanUYJJ5Rqw/V1uH6Y18b13F63b9FnJr4umaul7t6TfHvQIherfNN0djTqc5hPJf9n9ua9o9e187M0lw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qjs4VYgMTzMQZNlBPF6RXc7vhklcpZBPPGNwDuP8/bs=;
- b=QG4aW8WbimUmKayYpWGn8NCIyZJ4QTfr0dVBR3s9AT4xiCEd6qevAxEpCxJX4cS1kYIxAuPtsqlMZF+c8gcFEIwVkJXhDYP/03spfm/+fzmw5V3BRfEmMsDF9KWrhcSuMGMzHfqu0HE+txjcnA7dmluLHdQ4iiCg1mvPii6jRdQ=
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
- BYAPR15MB2727.namprd15.prod.outlook.com (20.179.158.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.17; Thu, 21 Nov 2019 04:39:48 +0000
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::e864:c934:8b54:4a40]) by BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::e864:c934:8b54:4a40%5]) with mapi id 15.20.2451.029; Thu, 21 Nov 2019
- 04:39:48 +0000
-From:   Alexei Starovoitov <ast@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern
- variables
-Thread-Topic: [PATCH bpf-next 5/6] libbpf: support libbpf-provided extern
- variables
-Thread-Index: AQHVnRXP1WCUmtit50O/zE+NHNTys6eR1rKAgAA8PYCAAJK8AIAABJUAgADFMgCAASxFAIAAEzkAgAAZN4CAACBWgIAAKLsA
-Date:   Thu, 21 Nov 2019 04:39:47 +0000
-Message-ID: <6c317a63-3204-d4e3-6a7c-66aa79723019@fb.com>
-References: <20191117070807.251360-1-andriin@fb.com>
- <20191117070807.251360-6-andriin@fb.com>
- <20191119032127.hixvyhvjjhx6mmzk@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzaNEU_vpa98QF1Ko_AFVX=3ncykEtWy0kiTNW9agsO+xg@mail.gmail.com>
- <CAEf4Bza1T6h+MWadVjuCrPCY7pkyK9kw-fPdaRx2v3yzSsmcbg@mail.gmail.com>
- <7012feeb-c1e8-1228-c8ce-464ea252799c@fb.com>
- <CAEf4BzaW4-XTxZTt2ZLvzuc2UsmmPa3Bkoej7B0pUJWcM--eVQ@mail.gmail.com>
- <11d4fde2-6cf5-72eb-9c04-b424f7314672@fb.com>
- <CAEf4BzakAJ5dEF35+g7RBgieXfVzjKQHm_Dej-9f_K_qXNuG2Q@mail.gmail.com>
- <20191121001811.eyksi2acyhvy4skr@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzaT=UhR0yDOTa_Q8KcZ0G0i9fYWTfdoW8qZCkcTNjxDRg@mail.gmail.com>
-In-Reply-To: <CAEf4BzaT=UhR0yDOTa_Q8KcZ0G0i9fYWTfdoW8qZCkcTNjxDRg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR18CA0030.namprd18.prod.outlook.com
- (2603:10b6:320:31::16) To BYAPR15MB2501.namprd15.prod.outlook.com
- (2603:10b6:a02:88::11)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::9b19]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4fd3f0ee-110f-4843-8b2f-08d76e3cd6cc
-x-ms-traffictypediagnostic: BYAPR15MB2727:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB27272AE459F58A939A45F935D74E0@BYAPR15MB2727.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2657;
-x-forefront-prvs: 0228DDDDD7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(39860400002)(396003)(346002)(376002)(366004)(199004)(189003)(7736002)(6512007)(8936002)(52116002)(76176011)(66446008)(478600001)(305945005)(66556008)(6436002)(256004)(46003)(31686004)(11346002)(2906002)(14454004)(81166006)(2616005)(558084003)(8676002)(64756008)(229853002)(486006)(86362001)(476003)(31696002)(66946007)(81156014)(446003)(6486002)(102836004)(386003)(6506007)(6116002)(53546011)(99286004)(110136005)(54906003)(186003)(25786009)(66476007)(6246003)(4326008)(71190400001)(36756003)(5660300002)(316002)(71200400001);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2727;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PjXYCTnNBfNfcmXT/flbAUZOwQzCGOnLx7JFCxo+e7MSbvliPxrRdA/NTyPHn0Py5lIzuKohXlxBNFoeN0y3EvCT3PsEClNHKevD1uqXGMT+mduVeEKB3Vta/V/sKifFhd2KtYeviZuvHwV4Rgn4oUlUI35ey1/tVqUgr8zEot8tWzGRTMl+ft6NTOFiLu4EfqmorVcXdDBS5dLkX4vfRWnGhMRreTbuE9PsGYmGR5/d2ljw7UCRApDy9jKgQAZLMFI36ElRGgiBgJZhPKuB3rkqMRulqz5nBYiii1EKQ4kVWetWx0sS4NDhIZ0mYnLXnxZRQz9A4xELxn89zp2nGzD9KyO8Sej8m9mt9L72Py8q3pGlCZd1d+8nTzMJ8Kp+rFnuBVe9xyqMuZ3c38P7YQsa90Ujn7/U6TvKVJGIB2eCYHhvBYY8UgkMJlE5zyTt
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <321991CEB3876644A20BA8AB7092FDF1@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726532AbfKUExk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 23:53:40 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49677 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725819AbfKUExj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 23:53:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574312017;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YWaGuKhIhUUGp4UntNvWpirK4fqEFD/lyV9V21q6Pnc=;
+        b=HiBmePjmk/JF9ZSEVCXlzXbNcFQq/4kgEO5YJrG0+xfrnZW/u7NyC0R+ZrximyHWbbUybH
+        yukuQtQXoCsLIbZCauo7+1odYsWZVDUd128LZPQPp165zorW9W0w7Hj8MQ61YXavVFTgG4
+        0CKRZ7NpKcsMOOud/cPwvww1RC1Dx9I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-mGZ8E1fBMgeu24kaYhZvLA-1; Wed, 20 Nov 2019 23:53:36 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5550C1804977;
+        Thu, 21 Nov 2019 04:53:34 +0000 (UTC)
+Received: from [10.72.12.204] (ovpn-12-204.pek2.redhat.com [10.72.12.204])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7963C5D717;
+        Thu, 21 Nov 2019 04:53:23 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Bie, Tiwei" <tiwei.bie@intel.com>
+References: <20191119191547.GL4991@ziepe.ca>
+ <20191119163147-mutt-send-email-mst@kernel.org>
+ <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <20191120022141-mutt-send-email-mst@kernel.org>
+ <20191120130319.GA22515@ziepe.ca>
+ <20191120083908-mutt-send-email-mst@kernel.org>
+ <20191120143054.GF22515@ziepe.ca>
+ <20191120093607-mutt-send-email-mst@kernel.org>
+ <20191120164525.GH22515@ziepe.ca>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c947af55-328e-b79b-5c65-3f5bcf042ba6@redhat.com>
+Date:   Thu, 21 Nov 2019 12:53:21 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fd3f0ee-110f-4843-8b2f-08d76e3cd6cc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 04:39:47.9565
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UlHGqYrKG24c0l9IAWWkCReuCs3OwOqd0JafvJIGzypbxnWbzX4Ti9BjCLCOw9us
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2727
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-20_08:2019-11-20,2019-11-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- suspectscore=0 lowpriorityscore=0 spamscore=0 mlxscore=0 bulkscore=0
- adultscore=0 malwarescore=0 clxscore=1015 mlxlogscore=807 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911210041
-X-FB-Internal: deliver
+In-Reply-To: <20191120164525.GH22515@ziepe.ca>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: mGZ8E1fBMgeu24kaYhZvLA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTEvMjAvMTkgNjoxMyBQTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBXZSBzaG91bGQg
-anVzdCBzYXkgbm8gdW50aWwgd2UgaGF2ZSB0eXBlcy4NCg0KT2suIEknbSBjb252aW5jZWQuIE5v
-bmUgb2YgdGhlIHByb3Bvc2FscyBhcmUgY2xlYW4gZW5vdWdoDQp1bnRpbCB3ZSBoYXZlIEJURiB3
-aXRoIGV4dGVybnMuDQo=
+
+On 2019/11/21 =E4=B8=8A=E5=8D=8812:45, Jason Gunthorpe wrote:
+> On Wed, Nov 20, 2019 at 09:57:17AM -0500, Michael S. Tsirkin wrote:
+>> On Wed, Nov 20, 2019 at 10:30:54AM -0400, Jason Gunthorpe wrote:
+>>> On Wed, Nov 20, 2019 at 08:43:20AM -0500, Michael S. Tsirkin wrote:
+>>>> On Wed, Nov 20, 2019 at 09:03:19AM -0400, Jason Gunthorpe wrote:
+>>>>> On Wed, Nov 20, 2019 at 02:38:08AM -0500, Michael S. Tsirkin wrote:
+>>>>>>>> I don't think that extends as far as actively encouraging userspac=
+e
+>>>>>>>> drivers poking at hardware in a vendor specific way.
+>>>>>>> Yes, it does, if you can implement your user space requirements usi=
+ng
+>>>>>>> vfio then why do you need a kernel driver?
+>>>>>> People's requirements differ. You are happy with just pass through a=
+ VF
+>>>>>> you can already use it. Case closed. There are enough people who hav=
+e
+>>>>>> a fixed userspace that people have built virtio accelerators,
+>>>>>> now there's value in supporting that, and a vendor specific
+>>>>>> userspace blob is not supporting that requirement.
+>>>>> I have no idea what you are trying to explain here. I'm not advocatin=
+g
+>>>>> for vfio pass through.
+>>>> You seem to come from an RDMA background, used to userspace linking to
+>>>> vendor libraries to do basic things like push bits out on the network,
+>>>> because users live on the performance edge and rebuild their
+>>>> userspace often anyway.
+>>>>
+>>>> Lots of people are not like that, they would rather have the
+>>>> vendor-specific driver live in the kernel, with userspace being
+>>>> portable, thank you very much.
+>>> You are actually proposing a very RDMA like approach with a split
+>>> kernel/user driver design. Maybe the virtio user driver will turn out
+>>> to be 'portable'.
+>>>
+>>> Based on the last 20 years of experience, the kernel component has
+>>> proven to be the larger burden and drag than the userspace part. I
+>>> think the high interest in DPDK, SPDK and others show this is a common
+>>> principle.
+>> And I guess the interest in BPF shows the opposite?
+> There is room for both, I wouldn't discount either approach entirely
+> out of hand.
+>
+>>> At the very least for new approaches like this it makes alot of sense
+>>> to have a user space driver until enough HW is available that a
+>>> proper, well thought out kernel side can be built.
+>> But hardware is available, driver has been posted by Intel.
+>> Have you looked at that?
+> I'm not sure pointing at that driver is so helpful, it is very small
+> and mostly just reflects virtio ops into some undocumented register
+> pokes.
+
+
+What do you expect to see then? The IFC driver is sufficient for=20
+demonstrating the design and implementation of the framework that is a=20
+vDPA driver. If you care about a better management API for mdev, we can=20
+discuss but it should be another topic which should not block this series.
+
+
+>
+> There is no explanation at all for the large scale architecture
+> choices:
+
+
+Most of the parts have been explained more or less in the cover letter.
+
+
+>   - Why vfio
+
+
+In cover letter it explains that userspace driver + vhost mdev is the=20
+goal. And VFIO is the most popular interface for developing userspace=20
+drivers. Having vendor specific userspace driver framework is possible=20
+but would be a pain for management and qemu.
+
+
+>   - Why mdev without providing a device IOMMU
+
+
+This is a question for mdev not directly related to the series . Either=20
+bus IOMMU or device IOMMU (as vGPU already did) is supported.
+
+
+>   - Why use GUID lifecycle management for singlton function PF/VF
+>     drivers
+
+
+It was just because it's the only existed interface right now, and=20
+management has been taught to use this interface.
+
+
+>   - Why not use devlink
+
+
+Technically it's possible. But for explanation, it's just because I=20
+don't get any question before start the draft the new version. I can add=20
+this in the cover letter of next version.
+
+
+>   - Why not use vfio-pci with a userspace driver
+
+
+In cover letter, it explains that the series is for kernel virtio driver.
+
+
+>
+> These are legitimate questions and answers like "because we like it
+> this way"
+
+
+Where are stuffs like this?
+
+
+>   or "this is how the drivers are written today" isn't very
+> satisfying at all.
+
+
+If you are talking about devlink + mdev. I would say for now, you're=20
+welcome to develop devlink based lifecycle for mdev.=C2=A0 But if you want =
+to=20
+discuss devlink support for each type of devices, it's obvious not the=20
+correct place.
+
+
+>
+>>> For instance, this VFIO based approach might be very suitable to the
+>>> intel VF based ICF driver, but we don't yet have an example of non-VF
+>>> HW that might not be well suited to VFIO.
+
+
+What's the reason that causes your HW not suited to VFIO? Mdev had=20
+already supported device IOMMU partially, let's just improve it if it=20
+doesn't meet your requirement. Or are there any fundamental barriers there?
+
+
+>> I don't think we should keep moving the goalposts like this.
+> It is ABI, it should be done as best we can as we have to live with it
+> for a long time. Right now HW is just starting to come to market with
+> VDPA and it feels rushed to design a whole subsystem style ABI around
+> one, quite simplistic, driver example.
+
+
+Well, I know there could be some special features in your hardware,=20
+let's just discuss here to seek a solution instead of keep saying "your=20
+framework does not fit our case" without any real details.
+
+
+>
+>> If people write drivers and find some infrastruture useful,
+>> and it looks more or less generic on the outset, then I don't
+>> see why it's a bad idea to merge it.
+> Because it is userspace ABI, caution is always justified when defining
+> new ABI.
+
+
+Well, if you read vhost-mdev patch, you will see it doesn't invent any=20
+userspace ABI. VFIO ABI is completely followed there.
+
+Thanks
+
+
+>
+> Jason
+>
+
