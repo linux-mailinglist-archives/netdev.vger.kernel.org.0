@@ -2,106 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7F61051F7
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:01:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9044A105218
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726998AbfKUMAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 07:00:35 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22971 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726342AbfKUMAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 07:00:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574337634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q5rBJ14foXXsUIH3cvZz1qwUhkNTdgEVQ2KMu92pgrc=;
-        b=AyelN1s+AkXr34ib9Rkxq7/AZG9NJ49hakZrKNdFQAu39K6Be910XjW6TGCsHQ9FRXgVLZ
-        UvVCq6oOC6Fa400cuU2vGcLcH8itmX3uYsiiVrpubHN4wzoiotgZNELLOk8Tp8THq1+S+u
-        7qHPFRV16cWS9CRpjux7qEktpTFmQrw=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-45-hWfkcAcKP_yGa-xu0F6F0Q-1; Thu, 21 Nov 2019 07:00:30 -0500
-Received: by mail-lf1-f71.google.com with SMTP id v204so860746lfa.0
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 04:00:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=x7Br6MUt5GIrekmwoW3W/dVDofzaSmCZ4ehtQgntfJg=;
-        b=AhhMUjbXCHn+4ZfiGWe+k0vqCbLO284lWD9aKUD3ywSLuusSgkvgHa0a2GUvvzm3t+
-         HzfokuAO538OOmtWyw5WoezLPT4X5eJ0xSwSG1NjjRS4RxT8J/W8Hw+/+YHx8iNNdmKs
-         SgAYVxZtikE6nGddT9ai2QmmUKCbstrdCkHOMX5D60acDFT+Avk37PjI0o5/LLbNZIL1
-         2t8zQo7aKf+5yBKZpvAVdrlhoDPw0kGFscE0k6Q/VHb3H9S6kWMx0OXvotPeX51ighB/
-         zjRyDhmRkxu+iA7iGbubdcrI9Q7ycu04te5E+8/VVz9ZZ+CRq00ETaq+0ZIfQ0c4i+au
-         THQA==
-X-Gm-Message-State: APjAAAWajYypaKJvJ1slgvqjGC2OrHNyBMTgsNcZcsaV7FB9/nuudgL/
-        ddPGmDXmRTl12OYo/njSTdgbVzl4Cx9O+tvT3z0LVjEAWWIPhi5PSHTNsuTWdhId5JW7tXQ3yDq
-        Z8tllmlx06/WliwOD
-X-Received: by 2002:ac2:4a71:: with SMTP id q17mr7003192lfp.179.1574337629227;
-        Thu, 21 Nov 2019 04:00:29 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwoeKMb/g8JM/lXuuI1qNoHv9YuoiOe6iH1WkPLFXbg9oIhgY0S6Dx/PfPzgSPCEeKonyhh5w==
-X-Received: by 2002:ac2:4a71:: with SMTP id q17mr7003168lfp.179.1574337628964;
-        Thu, 21 Nov 2019 04:00:28 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id k25sm1144384ljg.22.2019.11.21.04.00.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 04:00:27 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C838A1818BA; Thu, 21 Nov 2019 13:00:26 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
+        id S1726658AbfKUMKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 07:10:33 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:48768 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbfKUMKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 07:10:33 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xALC91JV013371;
+        Thu, 21 Nov 2019 12:09:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=Dq2dMuOCLQfRiUH1NYttnwcL5/6LTvSWv74kK3octXc=;
+ b=IQ4v7puYKBsqJf7LIh7pGx2BQCJtML1CYnkjnmUFHpDVuxslvk7uZcZC4RygdqRqAPVB
+ QJfB+ZRJe5qjGoKFJyySfdM68kKszk0q7Oe3b34iP4scY+QxypbF9B3lSInrF4ZT5w+B
+ s9q7hxIVNqcI4XmxEPntgd38OPJDn7T8wwkis0rBPltN8Ypac3YzmPLeyqTHnOXNlMf1
+ KP2mF62PjYGlo0SSt8LRuv3UQm40cw6QHxBthKHq7H+kh1q5HPYVsF1EptgXp1FrVmKu
+ lbdd0qZn8GgihIjSgcyQYaK5ycZ4DaIeV1uMTkReQHF6sKbHCSCkF9F/iy1vI6K2seMZ SA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2wa9rqunpd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Nov 2019 12:09:07 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xALC8wCC040000;
+        Thu, 21 Nov 2019 12:09:06 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2wdfrsanm3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Nov 2019 12:09:06 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xALC7x6X026371;
+        Thu, 21 Nov 2019 12:07:59 GMT
+Received: from kadam (/41.210.154.230)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 21 Nov 2019 04:07:57 -0800
+Date:   Thu, 21 Nov 2019 15:07:33 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+        Joe Perches <joe@perches.com>,
+        zhanglin <zhang.lin16@zte.com.cn>, davem@davemloft.net,
+        cocci <cocci@systeme.lip6.fr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Linus Torvalds <torvalds@linux-foundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: Re: [PATCH RFC net-next] net: WireGuard secure network tunnel
-In-Reply-To: <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
-References: <20191120203538.199367-1-Jason@zx2c4.com> <877e3t8qv7.fsf@toke.dk> <CAHmME9rmFw7xGKNMURBUSiezbsBEikOPiJxtEu=i2Quzf+JNDg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 21 Nov 2019 13:00:26 +0100
-Message-ID: <87lfs9782t.fsf@toke.dk>
+        jakub.kicinski@netronome.com, ast@kernel.org,
+        jiang.xuexin@zte.com.cn, f.fainelli@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        lirongqing@baidu.com, maxime.chevallier@bootlin.com,
+        vivien.didelot@gmail.com, wang.yi59@zte.com.cn, hawk@kernel.org,
+        arnd@arndb.de, jiri@mellanox.com, xue.zhihong@zte.com.cn,
+        natechancellor@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linyunsheng@huawei.com,
+        pablo@netfilter.org, bpf@vger.kernel.org
+Subject: Re: [Cocci] [PATCH] net: Zeroing the structure ethtool_wolinfo in
+ ethtool_get_wol()
+Message-ID: <20191121120733.GF5604@kadam>
+References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+ <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com>
+ <bc150c6a-6d3e-ff01-e40e-840e8a385bda@metux.net>
+ <20191121111917.GE29650@unicorn.suse.cz>
 MIME-Version: 1.0
-X-MC-Unique: hWfkcAcKP_yGa-xu0F6F0Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191121111917.GE29650@unicorn.suse.cz>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9447 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1911210111
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9447 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1911210111
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+On Thu, Nov 21, 2019 at 12:19:17PM +0100, Michal Kubecek wrote:
+> On Thu, Nov 21, 2019 at 11:23:34AM +0100, Enrico Weigelt, metux IT consult wrote:
+> > On 26.10.19 21:40, Joe Perches wrote:
+> > > On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
+> > >> memset() the structure ethtool_wolinfo that has padded bytes
+> > >> but the padded bytes have not been zeroed out.
+> > > []
+> > >> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> > > []
+> > >> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
+> > >>  
+> > >>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
+> > >>  {
+> > >> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+> > >> +	struct ethtool_wolinfo wol;
+> > >>  
+> > >>  	if (!dev->ethtool_ops->get_wol)
+> > >>  		return -EOPNOTSUPP;
+> > >>  
+> > >> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
+> > >> +	wol.cmd = ETHTOOL_GWOL;
+> > >>  	dev->ethtool_ops->get_wol(dev, &wol);
+> > >>  
+> > >>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
+> > > 
+> > > It seems likely there are more of these.
+> > > 
+> > > Is there any way for coccinelle to find them?
+> > 
+> > Just curios: is static struct initialization (on stack) something that
+> > should be avoided ? I've been under the impression that static
+> > initialization allows thinner code and gives the compiler better chance
+> > for optimizations.
+> 
+> Not in general. The (potential) problem here is that the structure has
+> padding and it is as a whole (i.e. including the padding) copied to
+> userspace. While I'm not aware of a compiler that wouldn't actually
+> initialize the whole data block including the padding in this case, the
+> C standard provides no guarantee about that so that to be sure we cannot
+> leak leftover kernel data to userspace, we need to explicitly initialize
+> the whole block.
 
->> > +     MAX_QUEUED_INCOMING_HANDSHAKES =3D 4096, /* TODO: replace this w=
-ith DQL */
->> > +     MAX_STAGED_PACKETS =3D 128,
->> > +     MAX_QUEUED_PACKETS =3D 1024 /* TODO: replace this with DQL */
->>
->> Yes, please (on the TODO) :)
->>
->> FWIW, since you're using pointer rings I think the way to do this is
->> probably to just keep the limits in place as a maximum size, and then
->> use DQL (or CoDel) to throttle enqueue to those pointer rings instead of
->> just letting them fill.
->>
->> Happy to work with you on this (as I believe I've already promised), but
->> we might as well do that after the initial version is merged...
->
-> I've actually implemented this a few times, but DQL always seems too
-> slow to react properly, and I haven't yet been able to figure out
-> what's happening. Let's indeed work on this after the initial version
-> is merged. I think this change, and several more like it, will be the
-> topic of some interesting discussions. But that doesn't need to happen
-> /now/ I don't think.
+GCC will not always initialize the struct holes.  This patch fixes a
+real bug that GCC on my system (v7.4)
 
-Agreed. Let's wait until the initial version is merged and use that as a
-base to benchmark against... :)
-
--Toke
+regards,
+dan carpenter
 
