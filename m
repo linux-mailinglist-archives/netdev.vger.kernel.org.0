@@ -2,494 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A8F1047A8
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 01:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13E151047AD
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 01:41:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbfKUAg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Nov 2019 19:36:58 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48262 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbfKUAg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 19:36:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MqrgQd4gZiQA1QOypKq4fdlLToRQmCYhgKQfQwMt0Bo=; b=dBNkGK2u7drdKb8KPEBPJzSUzj
-        xvfulMhw7oZDOiP9lsY1sPHFK8VJOWpHoudcu3Tt+XvzGvFY4JfeQHY8R9Arc8D/Ukfn5aSGf8o5g
-        HcORfnH/s6nOsnJ6ndBi2p9TTKy2FqCwm7RSl96zvHUaiGaNLdOWcK/0r5qsHAy7Ca638sIrP40Ds
-        0jRKRv6577XTjrQN+ijC5cr+Pbq4E7uhMOUl561QGt9fsCJwd7PcIqY14Ak4lb6IKRtFJ5ICpEd6C
-        8qbgr/Wy59KG9j1D+6SM6/KJUvGFfexkzkhr0pnyJYv3n7PYldHs7hvo05JoIMbabEIKktb9+Tp8i
-        cN5ILoVA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51956 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iXaSN-0003Aa-21; Thu, 21 Nov 2019 00:36:23 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iXaSM-0004t1-9L; Thu, 21 Nov 2019 00:36:22 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [CFT PATCH net-next v2] net: phylink: rename mac_link_state() op to
- mac_pcs_get_state()
+        id S1726346AbfKUAl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Nov 2019 19:41:57 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:40544 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726202AbfKUAl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Nov 2019 19:41:57 -0500
+Received: by mail-lf1-f67.google.com with SMTP id v24so1082267lfi.7
+        for <netdev@vger.kernel.org>; Wed, 20 Nov 2019 16:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=9a/7fGMMNS8/KWbgBFaFPQLcoptwh1r6lhKq50CN1G0=;
+        b=hIn8TcQgTZYAlqZCu0dI5eyi9jb8NZTiDTzZHSdIbKpK/wCzKMuk4qQp7Z/mjnGcf3
+         4BobXgaBLd2bdWH0GeBXEDOxEWjUgTWANiSLx8WRxrF3Dhx645PeLOm1vxEd3cmjY/i+
+         NAbr8iegloW8w2CTFSzqMZdbkEr+orRKMH8fbvA+6JyqFfl2BkmeO0kuXXwop0pp93xA
+         oUofq5MaaCFKtedhwcA1Hmqrnf8a8RCUxKv0RMvKPbOGQxvYKhtxBNbWNrZhMU26SYis
+         rJLeUHrtw/bcrM/LImcoPL3+sa31PTCBLYJpMVtstVUD+hq+WzKVY/FT2emwOFRVRzhr
+         mlhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=9a/7fGMMNS8/KWbgBFaFPQLcoptwh1r6lhKq50CN1G0=;
+        b=cCg24DG7+SwbHAaVcu4A3AkNUC7YDgUs08MJ1vby1zDBOyPdBJV2UdUJZPB+IfxPnD
+         NAIH3OWE3a8cS3OcfwJpQmGLITCNo2ltp9BEzFMnN09jnZQWlhKoqKNB15dqgdHuB/lZ
+         mD5+D6U9Zuo2zX+DBHZ1HwPbM9CIYbMEXBtxlZJisYKaY6yonHe1eKwhh+v7LLdn2QTK
+         GRT2IxJ2BxEk+JZpAwkBscimDUS+wbf8edQFKmWd6m+599ox2zim4hSaKA4v79SF82g9
+         wrRubjOJ2tZpT7a6FF1M4jDwvjDqK9w4gLJSfVcxIEHMAJZQ5YZa5Y0D9Z3GmtyfxVrd
+         RqwQ==
+X-Gm-Message-State: APjAAAV99qg4Tt6uoa/9JWED9fwIFRDs8fjKUmUJS0z6PNyLbeea4m1P
+        dPwEt5BQt7ZAiBwH0kmOZQ78wg==
+X-Google-Smtp-Source: APXvYqwgETYq/jCkSe4GuG7JhVKmSzc+9kK44ApcyVRgIy0bE9DqH9jezgOKjMZ5JpGPbBShnUUExw==
+X-Received: by 2002:ac2:59ce:: with SMTP id x14mr5350596lfn.49.1574296914663;
+        Wed, 20 Nov 2019 16:41:54 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o26sm306235lfi.57.2019.11.20.16.41.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2019 16:41:54 -0800 (PST)
+Date:   Wed, 20 Nov 2019 16:41:37 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     sunil.kovvuri@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH v3 16/16] Documentation: net: octeontx2: Add RVU HW and
+ drivers overview.
+Message-ID: <20191120164137.6f66a560@cakuba.netronome.com>
+In-Reply-To: <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com>
+References: <1574272086-21055-1-git-send-email-sunil.kovvuri@gmail.com>
+        <1574272086-21055-17-git-send-email-sunil.kovvuri@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iXaSM-0004t1-9L@rmk-PC.armlinux.org.uk>
-Date:   Thu, 21 Nov 2019 00:36:22 +0000
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename the mac_link_state() method to mac_pcs_get_state() to make it
-clear that it should be returning the MACs PCS current state, which
-is used for inband negotiation rather than just reading back what the
-MAC has been configured for. Update the documentation to explicitly
-mention that this is for inband.
+On Wed, 20 Nov 2019 23:18:06 +0530, sunil.kovvuri@gmail.com wrote:
+> From: Sunil Goutham <sgoutham@marvell.com>
+> 
+> Added high level overview of OcteonTx2 RVU HW and functionality of
+> various drivers which will be upstreamed.
+> 
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 
-We drop the return value as well; most of phylink doesn't check the
-return value and it is not clear what it should do on error - instead
-arrange for state->link to be false.
+Please double check this renders the way you expect. You may want to
+add empty lines before lists.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-This is something I'd like to do to make it clearer what phylink
-expects of this function, and that it shouldn't just read-back how
-the MAC was configured.
+> diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+> index c1f7f75..8aba64b 100644
+> --- a/Documentation/networking/device_drivers/index.rst
+> +++ b/Documentation/networking/device_drivers/index.rst
+> @@ -22,6 +22,7 @@ Contents:
+>     intel/iavf
+>     intel/ice
+>     google/gve
+> +   marvell/octeontx2
+>     mellanox/mlx5
+>     netronome/nfp
+>     pensando/ionic
+> diff --git a/Documentation/networking/device_drivers/marvell/octeontx2.rst b/Documentation/networking/device_drivers/marvell/octeontx2.rst
+> new file mode 100644
+> index 0000000..c8a5150
+> --- /dev/null
+> +++ b/Documentation/networking/device_drivers/marvell/octeontx2.rst
+> @@ -0,0 +1,162 @@
+> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +=============================================
+> +Marvell OcteonTx2 RVU Kernel Drivers
+> +=============================================
 
-This version drops the deeper changes, concentrating just on the
-phylink API rather than delving deeper into drivers, as I haven't
-received any feedback on that patch.
+Shouldn't these lines be the length of the text?
 
-It would be nice to see all these drivers tested with this change.
+> +
+> +Copyright (c) 2019 Marvell International Ltd.
+> +
+> +Contents
+> +========
+> +
+> +- `Overview`_
+> +- `Drivers`_
+> +- `Basic packet flow`_
+> +
+> +Overview
+> +========
+> +Resource virtualization unit (RVU) on Marvell's OcteonTX2 SOC maps HW
+> +resources from the network, crypto and other functional blocks into
+> +PCI-compatible physical and virtual functions. Each functional block
+> +again has multiple local functions (LFs) for provisioning to PCI devices.
+> +RVU supports multiple PCIe SRIOV physical functions (PFs) and virtual
+> +functions (VFs). PF0 is called the administrative / admin function (AF)
+> +and has privileges to provision RVU functional block's LFs to each of the
+> +PF/VF.
+> +
+> +RVU managed networking functional blocks
+> + - Network pool or buffer allocator (NPA)
+> + - Network interface controller (NIX)
+> + - Network parser CAM (NPC)
+> + - Schedule/Synchronize/Order unit (SSO)
+> + - Loopback interface (LBK)
+> +
+> +RVU managed non-networking functional blocks
+> + - Crypto accelerator (CPT)
+> + - Scheduled timers unit (TIM)
+> + - Schedule/Synchronize/Order unit (SSO)
+> +   Used for both networking and non networking usecases
+> +
+> +Resource provisioning examples
+> + - A PF/VF with NIX-LF & NPA-LF resources works as a pure network device
+> + - A PF/VF with CPT-LF resource works as a pure cyrpto offload device.
 
- drivers/net/ethernet/cadence/macb_main.c      |  8 +++---
- drivers/net/ethernet/marvell/mvneta.c         |  8 +++---
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 21 ++++++++--------
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  8 +++---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  8 +++---
- .../net/ethernet/xilinx/xilinx_axienet_main.c |  8 +++---
- drivers/net/phy/phylink.c                     | 15 +++++------
- include/linux/phylink.h                       | 25 ++++++++++---------
- net/dsa/dsa_priv.h                            |  4 +--
- net/dsa/port.c                                | 19 ++++++++------
- 10 files changed, 59 insertions(+), 65 deletions(-)
+s/cyrpto/crypto/
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 8fc2e21f0bb1..d5ae2e1e0b0e 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -505,10 +505,10 @@ static void macb_validate(struct phylink_config *config,
- 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
--static int macb_mac_link_state(struct phylink_config *config,
--			       struct phylink_link_state *state)
-+static void macb_mac_pcs_get_state(struct phylink_config *config,
-+				   struct phylink_link_state *state)
- {
--	return -EOPNOTSUPP;
-+	state->link = 0;
- }
- 
- static void macb_mac_an_restart(struct phylink_config *config)
-@@ -604,7 +604,7 @@ static void macb_mac_link_up(struct phylink_config *config, unsigned int mode,
- 
- static const struct phylink_mac_ops macb_phylink_ops = {
- 	.validate = macb_validate,
--	.mac_link_state = macb_mac_link_state,
-+	.mac_pcs_get_state = macb_mac_pcs_get_state,
- 	.mac_an_restart = macb_mac_an_restart,
- 	.mac_config = macb_mac_config,
- 	.mac_link_down = macb_mac_link_down,
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 12e03b15f0ab..6ea65cd30da6 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3688,8 +3688,8 @@ static void mvneta_validate(struct phylink_config *config,
- 	phylink_helper_basex_speed(state);
- }
- 
--static int mvneta_mac_link_state(struct phylink_config *config,
--				 struct phylink_link_state *state)
-+static void mvneta_mac_pcs_get_state(struct phylink_config *config,
-+				     struct phylink_link_state *state)
- {
- 	struct net_device *ndev = to_net_dev(config->dev);
- 	struct mvneta_port *pp = netdev_priv(ndev);
-@@ -3715,8 +3715,6 @@ static int mvneta_mac_link_state(struct phylink_config *config,
- 		state->pause |= MLO_PAUSE_RX;
- 	if (gmac_stat & MVNETA_GMAC_TX_FLOW_CTRL_ENABLE)
- 		state->pause |= MLO_PAUSE_TX;
--
--	return 1;
- }
- 
- static void mvneta_mac_an_restart(struct phylink_config *config)
-@@ -3909,7 +3907,7 @@ static void mvneta_mac_link_up(struct phylink_config *config, unsigned int mode,
- 
- static const struct phylink_mac_ops mvneta_phylink_ops = {
- 	.validate = mvneta_validate,
--	.mac_link_state = mvneta_mac_link_state,
-+	.mac_pcs_get_state = mvneta_mac_pcs_get_state,
- 	.mac_an_restart = mvneta_mac_an_restart,
- 	.mac_config = mvneta_mac_config,
- 	.mac_link_down = mvneta_mac_link_down,
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 17e24c1e1c2b..62dc2f362a16 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4823,8 +4823,8 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
--static void mvpp22_xlg_link_state(struct mvpp2_port *port,
--				  struct phylink_link_state *state)
-+static void mvpp22_xlg_pcs_get_state(struct mvpp2_port *port,
-+				     struct phylink_link_state *state)
- {
- 	u32 val;
- 
-@@ -4843,8 +4843,8 @@ static void mvpp22_xlg_link_state(struct mvpp2_port *port,
- 		state->pause |= MLO_PAUSE_RX;
- }
- 
--static void mvpp2_gmac_link_state(struct mvpp2_port *port,
--				  struct phylink_link_state *state)
-+static void mvpp2_gmac_pcs_get_state(struct mvpp2_port *port,
-+				     struct phylink_link_state *state)
- {
- 	u32 val;
- 
-@@ -4877,8 +4877,8 @@ static void mvpp2_gmac_link_state(struct mvpp2_port *port,
- 		state->pause |= MLO_PAUSE_TX;
- }
- 
--static int mvpp2_phylink_mac_link_state(struct phylink_config *config,
--					struct phylink_link_state *state)
-+static void mvpp2_phylink_mac_pcs_get_state(struct phylink_config *config,
-+					    struct phylink_link_state *state)
- {
- 	struct mvpp2_port *port = container_of(config, struct mvpp2_port,
- 					       phylink_config);
-@@ -4888,13 +4888,12 @@ static int mvpp2_phylink_mac_link_state(struct phylink_config *config,
- 		mode &= MVPP22_XLG_CTRL3_MACMODESELECT_MASK;
- 
- 		if (mode == MVPP22_XLG_CTRL3_MACMODESELECT_10G) {
--			mvpp22_xlg_link_state(port, state);
--			return 1;
-+			mvpp22_xlg_pcs_get_state(port, state);
-+			return;
- 		}
- 	}
- 
--	mvpp2_gmac_link_state(port, state);
--	return 1;
-+	mvpp2_gmac_pcs_get_state(port, state);
- }
- 
- static void mvpp2_mac_an_restart(struct phylink_config *config)
-@@ -5186,7 +5185,7 @@ static void mvpp2_mac_link_down(struct phylink_config *config,
- 
- static const struct phylink_mac_ops mvpp2_phylink_ops = {
- 	.validate = mvpp2_phylink_validate,
--	.mac_link_state = mvpp2_phylink_mac_link_state,
-+	.mac_pcs_get_state = mvpp2_phylink_mac_pcs_get_state,
- 	.mac_an_restart = mvpp2_mac_an_restart,
- 	.mac_config = mvpp2_mac_config,
- 	.mac_link_up = mvpp2_mac_link_up,
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 1923ba76a1ec..527ad2aadcca 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -361,8 +361,8 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 		mac->id, phy_modes(state->interface), err);
- }
- 
--static int mtk_mac_link_state(struct phylink_config *config,
--			      struct phylink_link_state *state)
-+static void mtk_mac_pcs_get_state(struct phylink_config *config,
-+				  struct phylink_link_state *state)
- {
- 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
- 					   phylink_config);
-@@ -391,8 +391,6 @@ static int mtk_mac_link_state(struct phylink_config *config,
- 		state->pause |= MLO_PAUSE_RX;
- 	if (pmsr & MAC_MSR_TX_FC)
- 		state->pause |= MLO_PAUSE_TX;
--
--	return 1;
- }
- 
- static void mtk_mac_an_restart(struct phylink_config *config)
-@@ -514,7 +512,7 @@ static void mtk_validate(struct phylink_config *config,
- 
- static const struct phylink_mac_ops mtk_phylink_ops = {
- 	.validate = mtk_validate,
--	.mac_link_state = mtk_mac_link_state,
-+	.mac_pcs_get_state = mtk_mac_pcs_get_state,
- 	.mac_an_restart = mtk_mac_an_restart,
- 	.mac_config = mtk_mac_config,
- 	.mac_link_down = mtk_mac_link_down,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 8cc4cd0cc515..644cb5d1fd4f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -868,10 +868,10 @@ static void stmmac_validate(struct phylink_config *config,
- 		      __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
--static int stmmac_mac_link_state(struct phylink_config *config,
--				 struct phylink_link_state *state)
-+static void stmmac_mac_pcs_get_state(struct phylink_config *config,
-+				     struct phylink_link_state *state)
- {
--	return -EOPNOTSUPP;
-+	state->link = 0;
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-@@ -965,7 +965,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 
- static const struct phylink_mac_ops stmmac_phylink_mac_ops = {
- 	.validate = stmmac_validate,
--	.mac_link_state = stmmac_mac_link_state,
-+	.mac_pcs_get_state = stmmac_mac_pcs_get_state,
- 	.mac_config = stmmac_mac_config,
- 	.mac_an_restart = stmmac_mac_an_restart,
- 	.mac_link_down = stmmac_mac_link_down,
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 8f32db6d2c45..20746b801959 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -1405,8 +1405,8 @@ static void axienet_validate(struct phylink_config *config,
- 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
--static int axienet_mac_link_state(struct phylink_config *config,
--				  struct phylink_link_state *state)
-+static void axienet_mac_pcs_get_state(struct phylink_config *config,
-+				      struct phylink_link_state *state)
- {
- 	struct net_device *ndev = to_net_dev(config->dev);
- 	struct axienet_local *lp = netdev_priv(ndev);
-@@ -1431,8 +1431,6 @@ static int axienet_mac_link_state(struct phylink_config *config,
- 
- 	state->an_complete = 0;
- 	state->duplex = 1;
--
--	return 1;
- }
- 
- static void axienet_mac_an_restart(struct phylink_config *config)
-@@ -1497,7 +1495,7 @@ static void axienet_mac_link_up(struct phylink_config *config,
- 
- static const struct phylink_mac_ops axienet_phylink_ops = {
- 	.validate = axienet_validate,
--	.mac_link_state = axienet_mac_link_state,
-+	.mac_pcs_get_state = axienet_mac_pcs_get_state,
- 	.mac_an_restart = axienet_mac_an_restart,
- 	.mac_config = axienet_mac_config,
- 	.mac_link_down = axienet_mac_link_down,
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 6ce2e6c63e75..3a886d106069 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -357,9 +357,9 @@ static void phylink_mac_an_restart(struct phylink *pl)
- 		pl->ops->mac_an_restart(pl->config);
- }
- 
--static int phylink_get_mac_state(struct phylink *pl, struct phylink_link_state *state)
-+static void phylink_mac_pcs_get_state(struct phylink *pl,
-+				      struct phylink_link_state *state)
- {
--
- 	linkmode_copy(state->advertising, pl->link_config.advertising);
- 	linkmode_zero(state->lp_advertising);
- 	state->interface = pl->link_config.interface;
-@@ -370,7 +370,7 @@ static int phylink_get_mac_state(struct phylink *pl, struct phylink_link_state *
- 	state->an_complete = 0;
- 	state->link = 1;
- 
--	return pl->ops->mac_link_state(pl->config, state);
-+	pl->ops->mac_pcs_get_state(pl->config, state);
- }
- 
- /* The fixed state is... fixed except for the link state,
-@@ -493,7 +493,7 @@ static void phylink_resolve(struct work_struct *w)
- 			break;
- 
- 		case MLO_AN_INBAND:
--			phylink_get_mac_state(pl, &link_state);
-+			phylink_mac_pcs_get_state(pl, &link_state);
- 
- 			/* If we have a phy, the "up" state is the union of
- 			 * both the PHY and the MAC */
-@@ -1138,7 +1138,7 @@ int phylink_ethtool_ksettings_get(struct phylink *pl,
- 		if (pl->phydev)
- 			break;
- 
--		phylink_get_mac_state(pl, &link_state);
-+		phylink_mac_pcs_get_state(pl, &link_state);
- 
- 		/* The MAC is reporting the link results from its own PCS
- 		 * layer via in-band status. Report these as the current
-@@ -1550,10 +1550,7 @@ static int phylink_mii_read(struct phylink *pl, unsigned int phy_id,
- 
- 	case MLO_AN_INBAND:
- 		if (phy_id == 0) {
--			val = phylink_get_mac_state(pl, &state);
--			if (val < 0)
--				return val;
--
-+			phylink_mac_pcs_get_state(pl, &state);
- 			val = phylink_mii_emul_read(reg, &state);
- 		}
- 		break;
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 300ecdb6790a..fed5488e3c75 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -72,7 +72,7 @@ struct phylink_config {
- /**
-  * struct phylink_mac_ops - MAC operations structure.
-  * @validate: Validate and update the link configuration.
-- * @mac_link_state: Read the current link state from the hardware.
-+ * @mac_pcs_get_state: Read the current link state from the hardware.
-  * @mac_config: configure the MAC for the selected mode and state.
-  * @mac_an_restart: restart 802.3z BaseX autonegotiation.
-  * @mac_link_down: take the link down.
-@@ -84,8 +84,8 @@ struct phylink_mac_ops {
- 	void (*validate)(struct phylink_config *config,
- 			 unsigned long *supported,
- 			 struct phylink_link_state *state);
--	int (*mac_link_state)(struct phylink_config *config,
--			      struct phylink_link_state *state);
-+	void (*mac_pcs_get_state)(struct phylink_config *config,
-+				  struct phylink_link_state *state);
- 	void (*mac_config)(struct phylink_config *config, unsigned int mode,
- 			   const struct phylink_link_state *state);
- 	void (*mac_an_restart)(struct phylink_config *config);
-@@ -127,18 +127,19 @@ void validate(struct phylink_config *config, unsigned long *supported,
- 	      struct phylink_link_state *state);
- 
- /**
-- * mac_link_state() - Read the current link state from the hardware
-+ * mac_pcs_get_state() - Read the current inband link state from the hardware
-  * @config: a pointer to a &struct phylink_config.
-  * @state: a pointer to a &struct phylink_link_state.
-  *
-- * Read the current link state from the MAC, reporting the current
-- * speed in @state->speed, duplex mode in @state->duplex, pause mode
-- * in @state->pause using the %MLO_PAUSE_RX and %MLO_PAUSE_TX bits,
-- * negotiation completion state in @state->an_complete, and link
-- * up state in @state->link.
-+ * Read the current inband link state from the MAC PCS, reporting the
-+ * current speed in @state->speed, duplex mode in @state->duplex, pause
-+ * mode in @state->pause using the %MLO_PAUSE_RX and %MLO_PAUSE_TX bits,
-+ * negotiation completion state in @state->an_complete, and link up state
-+ * in @state->link. If possible, @state->lp_advertising should also be
-+ * populated.
-  */
--int mac_link_state(struct phylink_config *config,
--		   struct phylink_link_state *state);
-+void mac_pcs_get_state(struct phylink_config *config,
-+		       struct phylink_link_state *state);
- 
- /**
-  * mac_config() - configure the MAC for the selected mode and state
-@@ -166,7 +167,7 @@ int mac_link_state(struct phylink_config *config,
-  *   1000base-X or Cisco SGMII mode depending on the @state->interface
-  *   mode). In both cases, link state management (whether the link
-  *   is up or not) is performed by the MAC, and reported via the
-- *   mac_link_state() callback. Changes in link state must be made
-+ *   mac_pcs_get_state() callback. Changes in link state must be made
-  *   by calling phylink_mac_change().
-  *
-  *   If in 802.3z mode, the link speed is fixed, dependent on the
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 53e7577896b6..2dd86d9bcda9 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -153,8 +153,8 @@ void dsa_port_link_unregister_of(struct dsa_port *dp);
- void dsa_port_phylink_validate(struct phylink_config *config,
- 			       unsigned long *supported,
- 			       struct phylink_link_state *state);
--int dsa_port_phylink_mac_link_state(struct phylink_config *config,
--				    struct phylink_link_state *state);
-+void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
-+					struct phylink_link_state *state);
- void dsa_port_phylink_mac_config(struct phylink_config *config,
- 				 unsigned int mode,
- 				 const struct phylink_link_state *state);
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 6e93c36bf0c0..46ac9ba21987 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -429,19 +429,22 @@ void dsa_port_phylink_validate(struct phylink_config *config,
- }
- EXPORT_SYMBOL_GPL(dsa_port_phylink_validate);
- 
--int dsa_port_phylink_mac_link_state(struct phylink_config *config,
--				    struct phylink_link_state *state)
-+void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
-+					struct phylink_link_state *state)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
- 
--	/* Only called for SGMII and 802.3z */
--	if (!ds->ops->phylink_mac_link_state)
--		return -EOPNOTSUPP;
-+	/* Only called for inband modes */
-+	if (!ds->ops->phylink_mac_link_state) {
-+		state->link = 0;
-+		return;
-+	}
- 
--	return ds->ops->phylink_mac_link_state(ds, dp->index, state);
-+	if (ds->ops->phylink_mac_link_state(ds, dp->index, state) < 0)
-+		state->link = 0;
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_state);
-+EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_pcs_get_state);
- 
- void dsa_port_phylink_mac_config(struct phylink_config *config,
- 				 unsigned int mode,
-@@ -510,7 +513,7 @@ EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_up);
- 
- const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
- 	.validate = dsa_port_phylink_validate,
--	.mac_link_state = dsa_port_phylink_mac_link_state,
-+	.mac_pcs_get_state = dsa_port_phylink_mac_pcs_get_state,
- 	.mac_config = dsa_port_phylink_mac_config,
- 	.mac_an_restart = dsa_port_phylink_mac_an_restart,
- 	.mac_link_down = dsa_port_phylink_mac_link_down,
--- 
-2.20.1
+> +
+> +.. kernel-figure::  resource_virtualization_unit.svg
+> +   :alt:	RVU
+> +   :align:	center
+> +   :figwidth:	60em
+> +
+> +   RVU HW block connectivity
 
+The diagram isn't really bringing much value if you ask me. The text in
+the last section is quite a bit better. Perhaps show packet flow?
+
+> +RVU functional blocks are highly configurable as per software requirements.
+> +
+> +Firmware setups following stuff before kernel boots
+> + - Enables required number of RVU PFs based on number of physical links.
+> + - Number of VFs per PF are either static or configurable at compile time.
+
+compile time of the firmware?
+
+> +   Based on config, firmware assigns VFs to each of the PFs.
+> + - Also assigns MSIX vectors to each of PF and VFs.
+> + - These are not changed after kernel boot.
+
+Can they be changed without FW rebuild?
+
+> +Drivers
+> +=======
+> +
+> +Linux kernel will have multiple drivers registering to different PF and VFs
+> +of RVU. Wrt networking there will be 3 flavours of drivers.
+> +
+> +Admin Function driver
+> +---------------------
+
+> +Physical Function driver
+> +------------------------
+
+Thanks for the description, I was hoping you'd also provide more info
+on how the software componets of the system fit together. Today we only
+have an AF driver upstream. Without the PF or VF drivers the card is
+pretty much unusable with only the upstream drivers, right?
+
+There is a bunch of cgx_* exports in the AF module, which seem to have
+no uses upstream, too (they are only called from rvu_cgx.c which is
+compiled into the same module).
+
+We'd like to see you build up a self-sufficient upstream-only solution,
+and adding more and more code to the AF driver with unused exports
+doesn't really inspire confidence this is the direction.
