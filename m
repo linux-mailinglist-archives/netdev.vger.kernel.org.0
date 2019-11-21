@@ -2,215 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6BA10525F
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 13:43:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8C310529F
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 14:05:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbfKUMny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 07:43:54 -0500
-Received: from mail-eopbgr140058.outbound.protection.outlook.com ([40.107.14.58]:41542
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S1726735AbfKUNFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 08:05:55 -0500
+Received: from mail-eopbgr20069.outbound.protection.outlook.com ([40.107.2.69]:9702
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726358AbfKUMnx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 07:43:53 -0500
+        id S1726293AbfKUNFz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 08:05:55 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Unzr6ggJns79ioW8Ssn9T0BM62/Q0wMnM601k9rSNvfqmZwYhJ9QTS0Cr/0cRnXHJ1OXjrlRes2uv6E2fABO40XQToRxcG3puO+vZjSniNd/3ceIzh+2zaP3dfUvpY6zshPdbfqR7HqzESJo+6bBXnzk1+PlZHQ2Ni+i4LXt2Jdcom68Upe319YnclVau/H2Q78un6BbN2Kho6zUUNqingfDV4kkjmDFDZUEzW2rg8TzZql/dIQ+D1s4Y46x+985aLDmhj8JuAM9lGcQ6maxx7z2zzGQCRKeZgYMFhkBwlrBmufR1z6PERqsP71dfZs38CkHMbSruffEEDQ7FrXnKw==
+ b=R+2wFDq+dgSAdVv5hP5n+EFQG22TqxlgqYMobdoJQ5OOmcymYreKxuT2Y3dyn564LaB8AU79tdmQkZh9pmWGYC5i3dL5qi/N0nScnEVzjajyJezjwrWz2PJOAi/PR2ue9ZR6xrE441Bunk3SDuv52DCK5PHYeZ92M5H3cYCo2J5QY1/MyXAZiFdc1oijB1UsP/l1S5Chi/P5hRKeP4u92vk7zsJoGuxf3PRlHFWcYmTUMh7j77hdEcrw04PQ/DYN/7invBBVrfjpaa3myaxoQ9rBn4G/97il5vZDKR2+1IWGs+zJTgtYkuUsGzuvH9esvskeeQelnIvp20NQrafeJg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RSQbtG0Alfc3yiZLZ/XoaxyxraUFXjeVkATBmZiB0Xw=;
- b=VCyQcp1Dxrp/87cToNh1Vv4dM8KHJGTRxDV1ZwaxbbLO4OpKcMeMLyvmW1D3/Eah18dxYd5oKMrp3yXFeXsNLLg7riF6x9H3eP+UUXgfJmNgbenvcWUqOBAq9ZDdK+s8qQhr0fd+MNjQsqd2r/QJMkM0QbF6i58nZ0eX/xOGntjdT+ueKmoRuCHfgl7CmCFDjKrLkl/VDNN0mha+d5I7JqAg6dirEFrON0nCLtJohs9hAeayHhh4sESLsfPG9gzJIGvQ8IDaKsktqV1mJoYD8Jfb/Vb4Di1uHAcZGAnQDfavtQvoylDv8iVU3UPf4I6ZK8vmfVOlBcjGiNUiyN+SXw==
+ bh=7hONVtqt5zlnBxR2jFJLPKx4jmD1TCEyUN4QznupP6E=;
+ b=LTd4IiVHKsI0CZO2h25QodJNg6II3h5RrfdsEfrd2F2MfZ+bejeaf+6n1vCsrwn7WI/sH0jzwW6MnnRrWxo2esum5XbVGVeAQ2BhuKRhbdaKEd1BBKCTgXBqNkWN2B7Cdxiy9L9Yy6uW87sZD1Rn7C9WeTO/Apk7rdNCan3FW0uivytW+0De/a5ZZHqTXpI3P97Xf9F2rlqL24YPURIFdQ3MNAyi99zKtOpwkLE25iV9lg7/i0vDJyq3V4oEBHj3XGlxrw+zpxAKk1mDrdKpsA6FnhySscRraCkiIvHDLhL+eIO6JbJzbL2BsLCA2CsgBttOpqmdNU1X9/0AoyTN3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RSQbtG0Alfc3yiZLZ/XoaxyxraUFXjeVkATBmZiB0Xw=;
- b=ir2vu09qK11+MIX/mrJZT56Aa49AKcdzGclq/tS8mE/sCFjLbm2fDMSw8j10ogTGxIja+wrTm0Ub2JOuGZiW8n6xGGJ15dwcWXXIYGN+hhUfv4RQ7aLlKoaLfn2mIY8zG54TrEyLQ1qk5zSolBvSweb/ZWRu72B7J4pc+n6D8EE=
-Received: from AM5PR0502MB3043.eurprd05.prod.outlook.com (10.175.46.9) by
- AM5PR0502MB2947.eurprd05.prod.outlook.com (10.175.39.148) with Microsoft SMTP
+ bh=7hONVtqt5zlnBxR2jFJLPKx4jmD1TCEyUN4QznupP6E=;
+ b=k0oxV9vA9VO0YzeCrBswofxRzJKGjNJan8ULybGuFLFM6TnxSeA0j545Bl/mU0OIVNezJIlV8PonVD4zysSODD2kiHSslsXc8IurVM78gNwX1doA+6IGAM+XHFOTdOl6Eot7FovHdjMgVUHcbm10uSvuNoYm0g1Ezz6aCiptBfs=
+Received: from VI1PR05MB3422.eurprd05.prod.outlook.com (10.170.235.159) by
+ VI1PR05MB4831.eurprd05.prod.outlook.com (20.177.49.151) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.16; Thu, 21 Nov 2019 12:43:47 +0000
-Received: from AM5PR0502MB3043.eurprd05.prod.outlook.com
- ([fe80::29d4:44d0:62ec:45db]) by AM5PR0502MB3043.eurprd05.prod.outlook.com
- ([fe80::29d4:44d0:62ec:45db%10]) with mapi id 15.20.2474.019; Thu, 21 Nov
- 2019 12:43:47 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [RFC PATCH 00/10] Add a new Qdisc, ETS
-Thread-Topic: [RFC PATCH 00/10] Add a new Qdisc, ETS
-Thread-Index: AQHVn6MipeEL1zH+9Uqkum7uhiStHqeUtFcAgADfAwA=
-Date:   Thu, 21 Nov 2019 12:43:47 +0000
-Message-ID: <87imndcscd.fsf@mellanox.com>
-References: <cover.1574253236.git.petrm@mellanox.com>
- <20191120152534.2041788e@cakuba.netronome.com>
-In-Reply-To: <20191120152534.2041788e@cakuba.netronome.com>
+ 15.20.2451.29; Thu, 21 Nov 2019 13:05:49 +0000
+Received: from VI1PR05MB3422.eurprd05.prod.outlook.com
+ ([fe80::e9ca:a1b7:1197:936f]) by VI1PR05MB3422.eurprd05.prod.outlook.com
+ ([fe80::e9ca:a1b7:1197:936f%6]) with mapi id 15.20.2451.029; Thu, 21 Nov 2019
+ 13:05:49 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     wenxu <wenxu@ucloud.cn>
+CC:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+Subject: RE: Question about flow table offload in mlx5e
+Thread-Topic: Question about flow table offload in mlx5e
+Thread-Index: AQHVoD2I/ci1XqDAS0+ihzjR81tg26eVO/4ggAAO9ACAAAbLAIAAPhcAgAAIURA=
+Date:   Thu, 21 Nov 2019 13:05:48 +0000
+Message-ID: <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+In-Reply-To: <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0148.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9::16) To AM5PR0502MB3043.eurprd05.prod.outlook.com
- (2603:10a6:203:a2::9)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [78.45.160.211]
+ smtp.mailfrom=paulb@mellanox.com; 
+x-originating-ip: [193.47.165.251]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7d610485-ebf0-452d-8be0-08d76e8073e9
-x-ms-traffictypediagnostic: AM5PR0502MB2947:|AM5PR0502MB2947:
+x-ms-office365-filtering-correlation-id: 34e2cb58-b569-4194-4dde-08d76e8387a3
+x-ms-traffictypediagnostic: VI1PR05MB4831:|VI1PR05MB4831:
+x-ms-exchange-purlcount: 2
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM5PR0502MB2947DF2E0AA390E4249FC02FDB4E0@AM5PR0502MB2947.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <VI1PR05MB48315DA61F1595FC2AA2D407CF4E0@VI1PR05MB4831.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-forefront-prvs: 0228DDDDD7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(366004)(396003)(39860400002)(376002)(43544003)(199004)(189003)(71200400001)(71190400001)(6486002)(6512007)(54906003)(229853002)(305945005)(36756003)(6436002)(99286004)(66946007)(6246003)(6916009)(66476007)(446003)(2616005)(66446008)(66556008)(186003)(66066001)(2906002)(25786009)(478600001)(4326008)(5660300002)(6506007)(3846002)(81166006)(11346002)(14454004)(81156014)(64756008)(102836004)(86362001)(6116002)(8936002)(8676002)(26005)(14444005)(5024004)(316002)(7736002)(256004)(76176011)(386003)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM5PR0502MB2947;H:AM5PR0502MB3043.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39850400004)(366004)(376002)(346002)(13464003)(199004)(189003)(71200400001)(6116002)(6306002)(3846002)(186003)(6506007)(5660300002)(52536014)(7736002)(71190400001)(478600001)(11346002)(55016002)(14454004)(102836004)(66066001)(107886003)(229853002)(6436002)(53546011)(966005)(446003)(25786009)(66946007)(26005)(6246003)(8936002)(2906002)(76176011)(86362001)(54906003)(9686003)(64756008)(81156014)(66556008)(81166006)(8676002)(66446008)(33656002)(4326008)(305945005)(316002)(76116006)(6916009)(74316002)(7696005)(66476007)(256004)(14444005)(99286004)(32563001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4831;H:VI1PR05MB3422.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gs35cRN6Ss4rsDXRMykxBHKfMpY3GrhOZqbLkO3uxqav7e+j7jSHQw0QQ054oVVsVIyWjv2MooPKXHMXrPFp9IfgwnylHppWHTOHpNmgu4fcRU65x4iPUjFbMnoG3lsd4DBnHuNkEn8dY4N7cQS8ZuwKpYeQ7AxTp5EsNrumbmPsPsk58NX8no9xT7ub4aYO2I20WjTpBVp9WXiUh3e2p8/6T/Jz/wCCpFYIVr3YXXYBQjaeFHo4AAPVF08dEIkQmpwgoNmUH6CU4fkzH+WGbZ1vIM5OCDl94Ng1F9c3mmNaRb+KmRaBNrnvqTwcC7P8xXKRZy31aoj90bTD0TBodHUfa5IMg57QZWt33p/bvYP+0YnQPhSre161xnqblWte3VYyy5kcd+NMILwLDtbpdI5ipIwLWvcxsOWkmxIVapg4HJBHv6zlynezlTmjd+Oa
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: 9iR8pepZdASZiAA1FIZUQif9713OjfLzdSpjg2Tf5bLBtR1t9VebiZkcQYCUN2G8EZu3QzDIGPpCGaHa1vFZmnWlCYmHLNuFAz921hAssbMO8nsE7dXl7HE1qD0V5mKdKFtrap4vygm+1E+pGmnlXNW9rFDoJZ8y+BMy0bw3ntopMjnfzXe3xW6NXaaZGOwtmQvgDw+f6vIXh6HDgbK/XAhwtslqelsDRhIdUGkusWlJhrfsBvKNdsoHJJs+vY1VhKHfjENTgXx2dOeLttINIn2ElXo9CH+rNy8yeyCO43zi1dsqj/xqDQlitT94hMrswp9Xi/kNwCexhTrgqrXmCeGdJYaNa6XxE7kytEKG2A14uCIX6/0ohzwWOW+3qPX1xTy1FbvwsHNvFRdG0blPrNTxZTyn1qOFih13wyFtIBcdy7/VQUGNXzxGVEJiTYkLZgS8NkhM7lr9Qsiz9/VBr7NPJWpErl5Ype08JggSQFk=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d610485-ebf0-452d-8be0-08d76e8073e9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 12:43:47.7228
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34e2cb58-b569-4194-4dde-08d76e8387a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 13:05:48.9266
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: N31aE3YjW+UrHtqVW1Boz2HrbSbfUOb/VUTM/1duLHiap+gow0qW5g2n1MaapURlbpTmPfNW/61KK6WOejU0uQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0502MB2947
+X-MS-Exchange-CrossTenant-userprincipalname: X+K8dycG+av7eac7KHDGOPjcr2yxqJu/S/QUuvY7SVWIXh57mdWu7kynQtXGoI3njLVgH5AiQIvSCwDgfJ1dvw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4831
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Jakub Kicinski <jakub.kicinski@netronome.com> writes:
-
-> On Wed, 20 Nov 2019 13:05:08 +0000, Petr Machata wrote:
->> The IEEE standard 802.1Qaz (and 802.1Q-2014) specifies four principal
->> transmission selection algorithms: strict priority, credit-based shaper,
->> ETS (bandwidth sharing), and vendor-specific. All these have their
->> corresponding knobs in DCB. But DCB does not have interfaces to configur=
-e
->> RED and ECN, unlike Qdiscs.
->>
->> In the Qdisc land, strict priority is implemented by PRIO. Credit-based
->> transmission selection algorithm can then be modeled by having e.g. TBF =
-or
->> CBS Qdisc below some of the PRIO bands. ETS would then be modeled by
->> placing a DRR Qdisc under the last PRIO band.
->>
->> The problem with this approach is that DRR on its own, as well as the
->> combination of PRIO and DRR, are tricky to configure and tricky to offlo=
-ad
->> to 802.1Qaz-compliant hardware. This is due to several reasons:
->>
->> - As any classful Qdisc, DRR supports adding classifiers to decide in wh=
-ich
->>   class to enqueue packets. Unlike PRIO, there's however no fallback in =
-the
->>   form of priomap. A way to achieve classification based on packet prior=
-ity
->>   is e.g. like this:
->>
->>     # tc filter add dev swp1 root handle 1: \
->> 		basic match 'meta(priority eq 0)' flowid 1:10
->>
->>   Expressing the priomap in this manner however forces drivers to deep d=
-ive
->>   into the classifier block to parse the individual rules.
->>
->>   A possible solution would be to extend the classes with a "defmap" a l=
-a
->>   split / defmap mechanism of CBQ, and introduce this as a last resort
->>   classification. However, unlike priomap, this doesn't have the guarant=
-ee
->>   of covering all priorities. Traffic whose priority is not covered is
->>   dropped by DRR as unclassified. But ASICs tend to implement dropping i=
-n
->>   the ACL block, not in scheduling pipelines. The need to treat these
->>   configurations correctly (if only to decide to not offload at all)
->>   complicates a driver.
->>
->>   It's not clear how to retrofit priomap with all its benefits to DRR
->>   without changing it beyond recognition.
->>
->> - The interplay between PRIO and DRR is also causing problems. 802.1Qaz =
-has
->>   all ETS TCs as a last resort. I believe switch ASICs that support ETS =
-at
->>   all will handle ETS traffic likewise. However the Linux model is more
->>   generic, allowing the DRR block in any band. Drivers would need to be
->>   careful to handle this case correctly, otherwise the offloaded model
->>   might not match the slow-path one.
->>
->>   In a similar vein, PRIO and DRR need to agree on the list of prioritie=
-s
->>   assigned to DRR. This is doubly problematic--the user needs to take ca=
-re
->>   to keep the two in sync, and the driver needs to watch for any holes i=
-n
->>   DRR coverage and treat the traffic correctly, as discussed above.
->>
->>   Note that at the time that DRR Qdisc is added, it has no classes, and
->>   thus any priorities assigned to that PRIO band are not covered. Thus t=
-his
->>   case is surprisingly rather common, and needs to be handled gracefully=
- by
->>   the driver.
->>
->> - Similarly due to DRR flexibility, when a Qdisc (such as RED) is attach=
-ed
->>   below it, it is not immediately clear which TC the class represents. T=
-his
->>   is unlike PRIO with its straightforward classid scheme. When DRR is
->>   combined with PRIO, the relationship between classes and TCs gets even
->>   more murky.
->>
->>   This is a problem for users as well: the TC mapping is rather importan=
-t
->>   for (devlink) shared buffer configuration and (ethtool) counters.
->
-> IMHO adding an API to simplify HW config is a double edged sword.
-> I think everyone will appreciate the simplicity of the new interface..
-> until the HW gets a little more smart and then we'll all have to
-
-For reference, the Spectrum hardware already is more smart. We could
-offload PRIO with several DRRs under different bands, the HW is
-expressive enough to describe this. But nobody seems to need this: it
-seems there are no customers needing anything more than what 802.1Qaz
-describes. The DCB interface, which is pretty much married to HW
-interfaces, is likewise very close to what 802.1Q specifies, and I don't
-believe that's by chance.
-
-> go back to the full interface and offload both that and the simple one,
-> or keep growing the new interface (for all practical sense just for HW)
-> Qdisc.
-
-If 802.1Q introduces an algorithm that can't be expressed as a single
-Qdisc, growing the ETS Qdisc is of course valid. E.g. the shaper
-operation is restricted to a single band, so it makes sense to express
-it as an independent unit. That's unlike the ETS algorithm, which needs
-cooperation between several bands, so you can't easily attach "ETS'ness"
-under individual PRIO bands.
-
-> Having written a MQ+GRED offload I sympathize with the complexity
-> concerns, also trying to explain how to set up such Qdiscs to users
-> results in a lot of blank stares.
->
-> Is there any chance at all we could simplify things by adding a better
-> user interface and a common translation layer in front of the drivers?
-
-One can imagine a library that handles these sorts of stuff. Drivers
-would forward TC events to it, it would figure out what's what, and
-somehow signal back to the driver. But packaging this as a Qdisc is such
-an interface as well. And because Qdisc interface is well understood not
-only by kernel hackers, but also by end users, a Qdisc takes care of
-that part of the problem as well.
+SSBzZWUsIEkgd2lsbCB0ZXN0IHRoYXQsIGFuZCBob3cgYWJvdXQgbm9ybWFsIEZXRCBydWxlcz8N
+Cg0KUGF1bC4NCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IHdlbnh1
+IDx3ZW54dUB1Y2xvdWQuY24+DQo+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAyMSwgMjAxOSAy
+OjM1IFBNDQo+IFRvOiBQYXVsIEJsYWtleSA8cGF1bGJAbWVsbGFub3guY29tPg0KPiBDYzogcGFi
+bG9AbmV0ZmlsdGVyLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgTWFyayBCbG9jaA0KPiA8
+bWFya2JAbWVsbGFub3guY29tPg0KPiBTdWJqZWN0OiBSZTogUXVlc3Rpb24gYWJvdXQgZmxvdyB0
+YWJsZSBvZmZsb2FkIGluIG1seDVlDQo+IA0KPiANCj4g5ZyoIDIwMTkvMTEvMjEgMTk6MzksIFBh
+dWwgQmxha2V5IOWGmemBkzoNCj4gPiBUaGV5IGFyZSBnb29kIGZpeGVzLCBleGFjdGx5IHdoYXQg
+d2UgaGFkIHdoZW4gd2UgdGVzdGVkIHRoaXMsIHRoYW5rcy4NCj4gPg0KPiA+IFJlZ2FyZGluZyBl
+bmNhcCwgSSBkb24ndCBrbm93IHdoYXQgY2hhbmdlcyB5b3UgZGlkLCBob3cgZG9lcyB0aGUgZW5j
+YXANCj4gcnVsZSBsb29rPyBJcyBpdCBhIEZXRCB0byB2eGxhbiBkZXZpY2U/IElmIG5vdCBpdCBz
+aG91bGQgYmUsIGFzIG91ciBkcml2ZXINCj4gZXhwZWN0cyB0aGF0Lg0KPiBJdCBpcyBmd2QgdG8g
+YSBncmV0YXAgZGV2aWNlcw0KPiA+DQo+ID4gSSB0cmllZCBpdCBvbiBteSBzZXR1cCB2aWEgdGMs
+IGJ5IGNoYW5naW5nIHRoZSBjYWxsYmFjayBvZiB0Yw0KPiAobWx4NWVfcmVwX3NldHVwX3RjX2Ni
+KSB0byB0aGF0IG9mIGZ0IChtbHg1ZV9yZXBfc2V0dXBfZnRfY2IpLA0KPiA+IGFuZCB0ZXN0aW5n
+IGEgdnhsYW4gZW5jYXAgcnVsZToNCj4gPiBzdWRvIHRjIHFkaXNjIGFkZCBkZXYgZW5zMWYwXzAg
+aW5ncmVzcw0KPiA+IHN1ZG8gaWZjb25maWcgZW5zMWYwIDcuNy43LjcvMjQgdXANCj4gPiBzdWRv
+IGlwIGxpbmsgYWRkIG5hbWUgdnhsYW4wIHR5cGUgdnhsYW4gZGV2IGVuczFmMCByZW1vdGUgNy43
+LjcuOCBkc3Rwb3J0DQo+IDQ3ODkgZXh0ZXJuYWwNCj4gPiBzdWRvIGlmY29uZmlnIHZ4bGFuMCB1
+cA0KPiA+IHN1ZG8gdGMgZmlsdGVyIGFkZCBkZXYgZW5zMWYwXzAgaW5ncmVzcyBwcmlvIDEgY2hh
+aW4gMCBwcm90b2NvbCBpcCBmbG93ZXINCj4gZHN0X21hYyBhYTpiYjpjYzpkZDplZTpmZiBpcF9w
+cm90byB1ZHAgc2tpcF9zdyAgYWN0aW9uIHR1bm5lbF9rZXkgc2V0DQo+IHNyY19pcCAwLjAuMC4w
+IGRzdF9pcCA3LjcuNy44IGlkIDEyMzQgZHN0X3BvcnQgNDc4OSBwaXBlIGFjdGlvbiBtaXJyZWQg
+ZWdyZXNzDQo+IHJlZGlyZWN0IGRldiB2eGxhbg0KPiA+DQo+ID4gdGhlbiB0YyBzaG93Og0KPiA+
+IGZpbHRlciBwcm90b2NvbCBpcCBwcmVmIDEgZmxvd2VyIGNoYWluIDAgaGFuZGxlIDB4MSBkc3Rf
+bWFjIGFhOmJiOmNjOmRkOmVlOmZmDQo+IGlwX3Byb3RvIHVkcCBza2lwX3N3IGluX2h3IGluX2h3
+X2NvdW50IDENCj4gPiAgICAgICAgIHR1bm5lbF9rZXkgc2V0IHNyY19pcCAwLjAuMC4wIGRzdF9p
+cCA3LjcuNy44IGtleV9pZCAxMjM0IGRzdF9wb3J0IDQ3ODkNCj4gY3N1bSBwaXBlDQo+ID4gICAg
+ICAgICBTdGF0czogdXNlZCAxMTkgc2VjICAgICAgMCBwa3QNCj4gPiAgICAgICAgIG1pcnJlZCAo
+RWdyZXNzIFJlZGlyZWN0IHRvIGRldmljZSB2eGxhbjApDQo+ID4gICAgICAgICBTdGF0czogdXNl
+ZCAxMTkgc2VjICAgICAgMCBwa3QNCj4gDQo+IENhbiB5b3Ugc2VuZCBwYWNrZXQgdGhhdCBtYXRj
+aCB0aGlzIG9mZmxvYWRlZCBmbG93IHRvIGNoZWNrIGl0IGlzIHJlYWwNCj4gb2ZmbG9hZGVkPw0K
+PiANCj4gSW4gdGhlIGZsb3d0YWJsZSBvZmZsb2FkIHdpdGggbXkgcGF0Y2hlcyBib3RoIFRDX1NF
+VFVQX0JMT0NLIGFuZA0KPiBUQ19TRVRVUF9GVCBjYW4gb2ZmbG9hZCB0aGUgcnVsZSBzdWNjZXNz
+DQo+IA0KPiBCdXQgaW4gdGhlIFRDX1NFVFVQX0ZUIGNhc2UgdGhlIHBhY2tldCBpcyBub3QgcmVh
+bCBvZmZsb2FkZWQuDQo+IA0KPiANCj4gScKgIHdpbGwgdGVzdCBsaWtlIHUgZGlkLg0KPiANCj4g
+Pg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTog
+d2VueHUgPHdlbnh1QHVjbG91ZC5jbj4NCj4gPj4gU2VudDogVGh1cnNkYXksIE5vdmVtYmVyIDIx
+LCAyMDE5IDEwOjI5IEFNDQo+ID4+IFRvOiBQYXVsIEJsYWtleSA8cGF1bGJAbWVsbGFub3guY29t
+Pg0KPiA+PiBDYzogcGFibG9AbmV0ZmlsdGVyLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
+TWFyayBCbG9jaA0KPiA+PiA8bWFya2JAbWVsbGFub3guY29tPg0KPiA+PiBTdWJqZWN0OiBSZTog
+UXVlc3Rpb24gYWJvdXQgZmxvdyB0YWJsZSBvZmZsb2FkIGluIG1seDVlDQo+ID4+DQo+ID4+DQo+
+ID4+IE9uIDExLzIxLzIwMTkgMzo0MiBQTSwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+ID4+PiBIaSwN
+Cj4gPj4+DQo+ID4+PiBUaGUgb3JpZ2luYWwgZGVzaWduIHdhcyB0aGUgYmxvY2sgc2V0dXAgdG8g
+dXNlIFRDX1NFVFVQX0ZUIHR5cGUsIGFuZA0KPiB0aGUNCj4gPj4gdGMgZXZlbnQgdHlwZSB0byBi
+ZSBjYXNlIFRDX1NFVFVQX0NMU0ZMT1dFUi4NCj4gPj4+IFdlIHdpbGwgcG9zdCBhIHBhdGNoIHRv
+IGNoYW5nZSB0aGF0LiBJIHdvdWxkIGFkdmlzZSB0byB3YWl0IHRpbGwgd2UgZml4IHRoYXQNCj4g
+Pj4g8J+Yig0KPiA+Pj4gSSdtIG5vdCBzdXJlIGhvdyB5b3UgZ2V0IHRvIHRoaXMgZnVuY3Rpb24g
+bWx4NWVfcmVwX3NldHVwX2Z0X2NiKCkgaWYgaXQNCj4gdGhlDQo+ID4+IG5mX2Zsb3dfdGFibGVf
+b2ZmbG9hZCBuZG9fc2V0dXBfdGMgZXZlbnQgd2FzIFRDX1NFVFVQX0JMT0NLLCBhbmQNCj4gbm90
+DQo+ID4+IFRDX1NFVFVQX0ZULg0KPiA+Pg0KPiA+Pg0KPiA+PiBZZXMgSSBjaGFuZ2UgdGhlIFRD
+X1NFVFVQX0JMT0NLIHRvIFRDX1NFVFVQX0ZUIGluIHRoZQ0KPiA+PiBuZl9mbG93X3RhYmxlX29m
+ZmxvYWRfc2V0dXAuDQo+ID4+DQo+ID4+IFR3byBmaXhlcyBwYXRjaCBwcm92aWRlOg0KPiA+Pg0K
+PiA+PiBodHRwOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvMTE5NzgxOC8NCj4gPj4NCj4g
+Pj4gaHR0cDovL3BhdGNod29yay5vemxhYnMub3JnL3BhdGNoLzExOTc4NzYvDQo+ID4+DQo+ID4+
+IFNvIHRoaXMgY2hhbmdlIG1hZGUgYnkgbWUgaXMgbm90IGNvcnJlY3QgY3VycmVudGx5Pw0KPiA+
+Pg0KPiA+Pj4gSW4gb3VyIGRyaXZlciBlbl9yZXAuYyB3ZSBoYXZlOg0KPiA+Pj4+IC0tLS0tLS1z
+d2l0Y2ggKHR5cGUpIHsNCj4gPj4+PiAtLS0tLS0tY2FzZSBUQ19TRVRVUF9CTE9DSzoNCj4gPj4+
+PiAtLS0tLS0tPi0tLS0tLS1yZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlwZV9k
+YXRhLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0t
+LS0tDQo+ICZtbHg1ZV9yZXBfYmxvY2tfdGNfY2JfbGlzdCwNCj4gPj4+PiAtLS0tLS0tPi0tLS0t
+LS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLSAgbWx4NWVfcmVwX3NldHVwX3RjX2Ni
+LA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0tLS0t
+ICBwcml2LCBwcml2LCB0cnVlKTsNCj4gPj4+PiAtLS0tLS0tY2FzZSBUQ19TRVRVUF9GVDoNCj4g
+Pj4+PiAtLS0tLS0tPi0tLS0tLS1yZXR1cm4gZmxvd19ibG9ja19jYl9zZXR1cF9zaW1wbGUodHlw
+ZV9kYXRhLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4t
+LS0tLS0tDQo+ICZtbHg1ZV9yZXBfYmxvY2tfZnRfY2JfbGlzdCwNCj4gPj4+PiAtLS0tLS0tPi0t
+LS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLSAgbWx4NWVfcmVwX3NldHVwX2Z0
+X2NiLA0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLT4tLS0tLS0tPi0tLS0tLS0+LS0tLS0tLT4tLS0t
+LS0tICBwcml2LCBwcml2LCB0cnVlKTsNCj4gPj4+PiAtLS0tLS0tZGVmYXVsdDoNCj4gPj4+PiAt
+LS0tLS0tPi0tLS0tLS1yZXR1cm4gLUVPUE5PVFNVUFA7DQo+ID4+Pj4gLS0tLS0tLX0NCj4gPj4+
+IEluIG5mX2Zsb3dfdGFibGVfb2ZmbG9hZC5jOg0KPiA+Pj4+IC0tLS0tLS1iby5iaW5kZXJfdHlw
+ZT4tPQ0KPiBGTE9XX0JMT0NLX0JJTkRFUl9UWVBFX0NMU0FDVF9JTkdSRVNTOw0KPiA+Pj4+IC0t
+LS0tLS1iby5leHRhY2s+LS0tLS0tPSAmZXh0YWNrOw0KPiA+Pj4+IC0tLS0tLS1JTklUX0xJU1Rf
+SEVBRCgmYm8uY2JfbGlzdCk7DQo+ID4+Pj4gLS0tLS0tLWVyciA9IGRldi0+bmV0ZGV2X29wcy0+
+bmRvX3NldHVwX3RjKGRldiwgVENfU0VUVVBfQkxPQ0ssDQo+ID4+ICZibyk7DQo+ID4+Pj4gLS0t
+LS0tLWlmIChlcnIgPCAwKQ0KPiA+Pj4+IC0tLS0tLS0+LS0tLS0tLXJldHVybiBlcnI7DQo+ID4+
+Pj4gLS0tLS0tLXJldHVybiBuZl9mbG93X3RhYmxlX2Jsb2NrX3NldHVwKGZsb3d0YWJsZSwgJmJv
+LCBjbWQpOw0KPiA+Pj4gfQ0KPiA+Pj4gRVhQT1JUX1NZTUJPTF9HUEwobmZfZmxvd190YWJsZV9v
+ZmZsb2FkX3NldHVwKTsNCj4gPj4+DQo+ID4+Pg0KPiA+Pj4gU28gdW5sZXNzIHlvdSBjaGFuZ2Vk
+IHRoYXQgYXMgd2VsbCwgeW91IHNob3VsZCBoYXZlIGdvdHRlbiB0bw0KPiA+PiBtbHg1ZV9yZXBf
+c2V0dXBfdGNfY2IgYW5kIG5vdCBtbHg1ZV9yZXBfc2V0dXBfdGNfZnQuDQo+ID4+PiBSZWdhcmRp
+bmcgdGhlIGVuY2FwIGFjdGlvbiwgdGhlcmUgc2hvdWxkIGJlIG5vIGRpZmZlcmVuY2Ugb24gd2hp
+Y2gNCj4gY2hhaW4NCj4gPj4gdGhlIHJ1bGUgaXMgb24uDQo+ID4+DQo+ID4+DQo+ID4+IEJ1dCBm
+b3IgdGhlIHNhbWUgZW5jYXAgcnVsZSBjYW4gYmUgcmVhbCBvZmZsb2FkZWQgd2hlbiBzZXR1cCB0
+aHJvdWdoDQo+ID4+IHRocm91Z2ggVENfU0VUVVBfQkxPQ0suIEJ1dCBUQ19TRVRVUF9GVCBjYW4n
+dC4NCj4gPj4NCj4gPj4gU28gaXQgaXMgdGhlIHByb2JsZW0gb2YgVENfU0VUVVBfRlQgaW4gbWx4
+NWVfcmVwX3NldHVwX2Z0X2NiID8NCj4gPj4NCj4gPj4+DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBN
+ZXNzYWdlLS0tLS0NCj4gPj4+PiBGcm9tOiB3ZW54dSA8d2VueHVAdWNsb3VkLmNuPg0KPiA+Pj4+
+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAyMSwgMjAxOSA5OjMwIEFNDQo+ID4+Pj4gVG86IFBh
+dWwgQmxha2V5IDxwYXVsYkBtZWxsYW5veC5jb20+DQo+ID4+Pj4gQ2M6IHBhYmxvQG5ldGZpbHRl
+ci5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IE1hcmsgQmxvY2gNCj4gPj4+PiA8bWFya2JA
+bWVsbGFub3guY29tPg0KPiA+Pj4+IFN1YmplY3Q6IFF1ZXN0aW9uIGFib3V0IGZsb3cgdGFibGUg
+b2ZmbG9hZCBpbiBtbHg1ZQ0KPiA+Pj4+DQo+ID4+Pj4gSGnCoCBwYXVsLA0KPiA+Pj4+DQo+ID4+
+Pj4gVGhlIGZsb3cgdGFibGUgb2ZmbG9hZCBpbiB0aGUgbWx4NWUgaXMgYmFzZWQgb24gVENfU0VU
+VVBfRlQuDQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEl0IGlzIGFsbW9zdCB0aGUgc2FtZSBhcyBU
+Q19TRVRVUF9CTE9DSy4NCj4gPj4+Pg0KPiA+Pj4+IEl0IGp1c3Qgc2V0IE1MWDVfVENfRkxBRyhG
+VF9PRkZMT0FEKSBmbGFncyBhbmQgY2hhbmdlDQo+ID4+Pj4gY2xzX2Zsb3dlci5jb21tb24uY2hh
+aW5faW5kZXggPSBGREJfRlRfQ0hBSU47DQo+ID4+Pj4NCj4gPj4+PiBJbiBmb2xsb3dpbmcgY29k
+ZXMgbGluZSAxMzgwIGFuZCAxMzkyDQo+ID4+Pj4NCj4gPj4+PiAxMzY4IHN0YXRpYyBpbnQgbWx4
+NWVfcmVwX3NldHVwX2Z0X2NiKGVudW0gdGNfc2V0dXBfdHlwZSB0eXBlLCB2b2lkDQo+ID4+Pj4g
+KnR5cGVfZGF0YSwNCj4gPj4+PiAxMzY5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHZvaWQgKmNiX3ByaXYpDQo+ID4+Pj4g
+MTM3MCB7DQo+ID4+Pj4gMTM3McKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGZsb3dfY2xzX29mZmxv
+YWQgKmYgPSB0eXBlX2RhdGE7DQo+ID4+Pj4gMTM3MsKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGZs
+b3dfY2xzX29mZmxvYWQgY2xzX2Zsb3dlcjsNCj4gPj4+PiAxMzczwqDCoMKgwqDCoMKgwqDCoCBz
+dHJ1Y3QgbWx4NWVfcHJpdiAqcHJpdiA9IGNiX3ByaXY7DQo+ID4+Pj4gMTM3NMKgwqDCoMKgwqDC
+oMKgwqAgc3RydWN0IG1seDVfZXN3aXRjaCAqZXN3Ow0KPiA+Pj4+IDEzNzXCoMKgwqDCoMKgwqDC
+oMKgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ID4+Pj4gMTM3NsKgwqDCoMKgwqDCoMKgwqAgaW50
+IGVycjsNCj4gPj4+PiAxMzc3DQo+ID4+Pj4gMTM3OMKgwqDCoMKgwqDCoMKgwqAgZmxhZ3MgPSBN
+TFg1X1RDX0ZMQUcoSU5HUkVTUykgfA0KPiA+Pj4+IDEzNznCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBNTFg1X1RDX0ZMQUcoRVNXX09GRkxPQUQpIHwNCj4gPj4+PiAxMzgwwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgTUxYNV9UQ19GTEFHKEZUX09GRkxPQUQpOw0KPiA+
+Pj4+IDEzODHCoMKgwqDCoMKgwqDCoMKgIGVzdyA9IHByaXYtPm1kZXYtPnByaXYuZXN3aXRjaDsN
+Cj4gPj4+PiAxMzgyDQo+ID4+Pj4gMTM4M8KgwqDCoMKgwqDCoMKgwqAgc3dpdGNoICh0eXBlKSB7
+DQo+ID4+Pj4gMTM4NMKgwqDCoMKgwqDCoMKgwqAgY2FzZSBUQ19TRVRVUF9DTFNGTE9XRVI6DQo+
+ID4+Pj4gMTM4NcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghbWx4NV9lc3dp
+dGNoX3ByaW9zX3N1cHBvcnRlZChlc3cpIHx8IGYtDQo+ID4+Pj4+IGNvbW1vbi5jaGFpbl9pbmRl
+eCkNCj4gPj4+PiAxMzg2wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHJldHVybiAtRU9QTk9UU1VQUDsNCj4gPj4+PiAxMzg3DQo+ID4+Pj4gMTM4OMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIFJlLXVzZSB0YyBvZmZsb2FkIHBhdGggYnkg
+bW92aW5nIHRoZSBmdCBmbG93IHRvIHRoZQ0KPiA+Pj4+IDEzODnCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgICogcmVzZXJ2ZWQgZnQgY2hhaW4uDQo+ID4+Pj4gMTM5MMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKi8NCj4gPj4+PiAxMzkxwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgbWVtY3B5KCZjbHNfZmxvd2VyLCBmLCBzaXplb2YoKmYpKTsNCj4g
+Pj4+PiAxMzkywqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsc19mbG93ZXIuY29tbW9u
+LmNoYWluX2luZGV4ID0gRkRCX0ZUX0NIQUlOOw0KPiA+Pj4+IDEzOTPCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBlcnIgPSBtbHg1ZV9yZXBfc2V0dXBfdGNfY2xzX2Zsb3dlcihwcml2
+LCAmY2xzX2Zsb3dlciwNCj4gPj4gZmxhZ3MpOw0KPiA+Pj4+IDEzOTTCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBtZW1jcHkoJmYtPnN0YXRzLCAmY2xzX2Zsb3dlci5zdGF0cywgc2l6
+ZW9mKGYtPnN0YXRzKSk7DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEkgd2FudCB0byBhZGQgdHVu
+bmVsIG9mZmxvYWQgc3VwcG9ydCBpbiB0aGUgZmxvdyB0YWJsZSwgScKgIGFkZCBzb21lDQo+IHBh
+dGNoZXMNCj4gPj4gaW4NCj4gPj4+PiBuZl9mbG93X3RhYmxlX29mZmxvYWQuDQo+ID4+Pj4NCj4g
+Pj4+PiBBbHNvIGFkZCB0aGUgaW5kciBzZXR1cCBzdXBwb3J0IGluIHRoZSBtbHggZHJpdmVyLiBB
+bmQgTm93IEkgY2FuwqAgZmxvdw0KPiA+PiB0YWJsZQ0KPiA+Pj4+IG9mZmxvYWQgd2l0aCBkZWNh
+cC4NCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+Pj4gQnV0IEkgbWVldCBhIHByb2JsZW0gd2l0aCB0aGUg
+ZW5jYXAuwqAgVGhlIGVuY2FwIHJ1bGUgY2FuIGJlIGFkZGVkIGluDQo+ID4+Pj4gaGFyZHdhcmXC
+oCBzdWNjZXNzZnVsbHkgQnV0IGl0IGNhbid0IGJlIG9mZmxvYWRlZC4NCj4gPj4+Pg0KPiA+Pj4+
+IEJ1dCBJIHRoaW5rIHRoZSBydWxlIEkgYWRkZWQgaXMgY29ycmVjdC7CoCBJZiBJIG1hc2sgdGhl
+IGxpbmUgMTM5Mi4gVGhlIHJ1bGUNCj4gYWxzbw0KPiA+PiBjYW4NCj4gPj4+PiBiZSBhZGQgc3Vj
+Y2VzcyBhbmQgY2FuIGJlIG9mZmxvYWRlZC4NCj4gPj4+Pg0KPiA+Pj4+IFNvIHRoZXJlIGFyZSBz
+b21lIGxpbWl0IGZvciBlbmNhcCBvcGVyYXRpb24gZm9yIEZUX09GRkxPQUQgaW4NCj4gPj4+PiBG
+REJfRlRfQ0hBSU4/DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEJSDQo+ID4+Pj4NCj4gPj4+PiB3
+ZW54dQ0KPiA+Pj4+DQo=
