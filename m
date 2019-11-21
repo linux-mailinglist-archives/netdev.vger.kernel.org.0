@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBCA4105A07
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 19:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71F65105A08
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 19:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfKUSzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 13:55:04 -0500
-Received: from mail-lj1-f178.google.com ([209.85.208.178]:32909 "EHLO
-        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbfKUSzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 13:55:04 -0500
-Received: by mail-lj1-f178.google.com with SMTP id t5so4481890ljk.0
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 10:55:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=s0QE2H3Vz9dC7+kh9U1TNiHNA5HCZZ8y58YvdRMNQ0w=;
-        b=iXWZz+pUxPzYExr3rOlakeWNdIY7t3PY9kYAeOZg8J+3xeg0qDJDe6NbXJtTSrg6HR
-         RSVltooYlCv///5P4kDARA3j9lcogfmZtcWPrOmKRa+csencor1YXsdNISX7PDkHx8jA
-         UeytBQsPkfPxuWFy1XBlAPyC13RFqcY8oNIKoWnuN4ydmZVO89mGWqIGSE0eY+4dB4RC
-         hOPmNgIJhXI3/FuAStWJzemRJMbbQj8WJoUv7DMg9SewXRUIgp1D2vS3T6QwQbopCj2U
-         Lwp+UrfpJXlzjd9TcHMT7qanbA3WGmtRCsKqomHZtvzsu11toirf0fMVbZ5LKXcbbnvz
-         9yKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=s0QE2H3Vz9dC7+kh9U1TNiHNA5HCZZ8y58YvdRMNQ0w=;
-        b=gqatEuKoPLxqnSWeQB320tg6iqI/Zc+9lfTSLVevN5PjcPFJSPgS3uPEejQ237om+l
-         Fdc7UkAQbZdQwZ5kqTmjhC5L71RWDur1v/1UvebLMtcdtWFXFHDDgWmGIGzg6DSvGMh5
-         BFGV3pQYYnsucLirlJ6vqLA/b9otnr2Iqza0JQk9owF123Bz6qOFEHViIQfmm3tnzYwp
-         qStRuG3nNbHOrkzzQf8AaioM/84+xbwddfcd70OzawwCOBd073MCFNGp9eSaYniH6dps
-         NEmmeZp2ODB/tp+dej8EcNm3Rc9dHkM8Z4burIec5MqN2LfXvgzxwqm2oBaXp1UyMLZu
-         +81g==
-X-Gm-Message-State: APjAAAXG3gwfAg3A3/OOm8uS1rw5KUB2n9I4k/QUg7EyUmL4iJvTHUSX
-        UfNhjYdBkR2fURvzqPMHBJR+bQ==
-X-Google-Smtp-Source: APXvYqxjJc0PWkm4YppKvBFhe/DYDA/Habs8+jVbl1eMARhBhqlMrW508Hxhabo5bXDxeIR5BYvIhw==
-X-Received: by 2002:a2e:9ecf:: with SMTP id h15mr9070774ljk.173.1574362501949;
-        Thu, 21 Nov 2019 10:55:01 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z127sm1895315lfa.19.2019.11.21.10.55.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 10:55:01 -0800 (PST)
-Date:   Thu, 21 Nov 2019 10:54:42 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        simon.horman@netronome.com
-Subject: Re: [PATCHv2 net-next 0/4] net: sched: support vxlan and erspan
- options
-Message-ID: <20191121105442.1d79a17e@cakuba.netronome.com>
-In-Reply-To: <cover.1574330535.git.lucien.xin@gmail.com>
-References: <cover.1574330535.git.lucien.xin@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726858AbfKUSzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 13:55:10 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:60674 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfKUSzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 13:55:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=FNZZ6BHsoiG9MNUNKseUGwnKby5k7q5SzmDqGflstPs=; b=sa2loDpPloW1x0j07a6fZofeM
+        5r7HJ+GwMZzWJ4rEnLZ3EMrXtaTGRf5J/vHedYbja79fEeVQlRR+q1O1kp8iVzhPgjNoI5RL2Dpas
+        KJgOhKXwJM+NaS1Wl1WPiZJHWQDbsPX6BI1UaJDsTyNwqJIAoCzEr2zotB5wNNyzC7sfvYoCnpC2q
+        g0vAWweC+u8yPEdTWBDMrNgvD1WKS0X7NW/5bkxsmK0jTlcpcBdGsupGs2MgQnlyU2n7ZCEiezrZR
+        3XhsmbY3uOF5eiS8xssVZLrb1BZKKueF/g2eycmTKyJn8UZ8dnTN87W5ZYY/iJ8jxxA8NeGNzowkk
+        rnmBJ2paA==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59334)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iXrbY-00009O-LF; Thu, 21 Nov 2019 18:55:00 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iXrbV-0002xU-Ko; Thu, 21 Nov 2019 18:54:57 +0000
+Date:   Thu, 21 Nov 2019 18:54:57 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net: sfp: soft status and control support
+Message-ID: <20191121185457.GA25745@shell.armlinux.org.uk>
+References: <E1iXP7P-0006DS-47@rmk-PC.armlinux.org.uk>
+ <DB6PR0402MB27891CA467D04389FA68B0CFE04E0@DB6PR0402MB2789.eurprd04.prod.outlook.com>
+ <20191121162309.GZ25745@shell.armlinux.org.uk>
+ <VI1PR0402MB28007002CABED79C95DC093DE04E0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB28007002CABED79C95DC093DE04E0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Nov 2019 18:03:25 +0800, Xin Long wrote:
-> This patchset is to add vxlan and erspan options support in
-> cls_flower and act_tunnel_key. The form is pretty much like
-> geneve_opts in:
+On Thu, Nov 21, 2019 at 06:33:41PM +0000, Ioana Ciornei wrote:
 > 
->   https://patchwork.ozlabs.org/patch/935272/
->   https://patchwork.ozlabs.org/patch/954564/
+> > Subject: Re: [PATCH net-next v2] net: sfp: soft status and control support
+> > 
+> > On Thu, Nov 21, 2019 at 03:51:07PM +0000, Ioana Ciornei wrote:
+> > > > Subject: [PATCH net-next v2] net: sfp: soft status and control
+> > > > support
+> > > >
+> > > > Add support for the soft status and control register, which allows
+> > > > TX_FAULT and RX_LOS to be monitored and TX_DISABLE to be set.  We
+> > > > make use of this when the board does not support GPIOs for these
+> > signals.
+> > >
+> > > Hi Russell,
+> > >
+> > > With this addition, shouldn't the following print be removed?
+> > >
+> > > [    2.967583] sfp sfp-mac4: No tx_disable pin: SFP modules will always be
+> > emitting.
+> > 
+> > No, because modules do not have to provide the soft controls.
+> > 
 > 
-> but only one option is allowed for vxlan and erspan.
+> I understand that the soft controls are optional but can't we read
+> byte 93 (Enhanced Options) and see if bit 6 (Optional soft TX_DISABLE control)
+> is set or not (ie the soft TX_DISABLE is implemented)?
 
-I have only cursory understanding of the flower parts, but looks good
-to me:
+At cage initialisation time, when we don't know whether there's a
+module present or not?
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
