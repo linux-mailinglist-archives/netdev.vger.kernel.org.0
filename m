@@ -2,157 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0F23105990
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 19:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 975B2105999
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 19:33:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbfKUSaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 13:30:30 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11752 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726279AbfKUSaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 13:30:30 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xALIFQeh007135;
-        Thu, 21 Nov 2019 10:30:12 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=m4QiLfx40epBvo/jkKhx1Y8a6t+YvWIHlLoivQrZgxM=;
- b=BfY/b7eAQUdYnHQJQkiE6tTaE7kEdFr7r3ZIEYwLwbZ7qzNphPTmpiMGewNzBF92QXRL
- xo2NXS3oOdd/DBbW6UuCFT/V+EsQbFWqLaAJjqrMytqExYV1c+x7ftcpUxfiOSdphN46
- EQggnqQb9JL9B1p7DEsOzVT9Hp2R9kvks2Q= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wd91htem7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 21 Nov 2019 10:30:12 -0800
-Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 21 Nov 2019 10:30:11 -0800
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 21 Nov 2019 10:30:11 -0800
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 21 Nov 2019 10:30:11 -0800
+        id S1726858AbfKUSdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 13:33:47 -0500
+Received: from mail-eopbgr150053.outbound.protection.outlook.com ([40.107.15.53]:61982
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726541AbfKUSdq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 13:33:46 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wa9QRG1hBlmd9su6AHFKLhUc58FLxPApnC+c0WenuXwsbyAgxdo2kWHVhn89nUY3KC2DYtn8dQEjaWRtprUmnDIYeyTC4fd/hBqO3/399SMoB5b7oLlO/qjiSKrl0PjDoeHU04UFctRxMUb634ZB2/u17TuJh9ybXdndfo7whHJPmUadf/n5ZwlRfe2I1A0aBCaY8qxryM0zHAyEdMmwGIU96KDHgxllVLHuhB1E/Ioqm3HPIL5hTSn4RTKdA3GFTPbfXCovTEgJ8ShcIBeme35sy9Bs9lBvwhtqEz41taqIYchrAwHEiVdC4OcZnERWwgXkr1qZeVgLthyLh0k0AQ==
+ b=hqPLy95twvTQvxk3Tr5f5SxZ3iJZum00vwhHbvsrXDFKUGUO84CerCo+fQB34aM9kik2OB7Vk7pyytKoI3DgcJzyrgV9UnkuJn6loCAdqp0+a6mNoo6lPQpuPBfsVeGR4lszcrHw2KhuDHWBowMoTrsyPnnGPyfezFYxfni7Z9OQ/er88d9aITdD5/82ntdEPxi1hmhlsDVLCGnR/9p+EQz1g+/xmb886rUoRU6RfnzK5jTEEF1HP010HXLkiSSdzd51/J5WGZDNOy9xn/sHEXtX61435FSfAqgDTxcZDGlVbvKf0BpWVw+3FfQ9ojw00IhKtilrwYuC0E90oug1EA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m4QiLfx40epBvo/jkKhx1Y8a6t+YvWIHlLoivQrZgxM=;
- b=afVQ3bEetB3YQ7AB54hvX/lt/HOIJoirhl7rfZNvVaZHhaKkgjCjk/Nl2n736WrDqyevA3GFvJEtulFgxaIm9QUCWU0exqKn4BQskajje0R4qIWKh0R6Bnn5q56Nt67UiN9z/n6neKzTR7awQ5l0v7YBZlUmEs+orN4H6/wEnwuXVfOXcWfTIK3UJ5NtKk7TZxysWuI5UtJRkFqVGs8DR3+upoOnXOZSkurSLK2SQ6KKFCiv6tRJUawcIYuq0LcAVzXP8/b6ScErPxRXZfEjBk1W2UJKs7bVHQsnUs5JtMyVfyNX09C6VAKydz2RNlJmkIWfVMILQoA/6H2gLNDWYw==
+ bh=arKGob4EKNjYMRQwY0jzHi+N1H7JTTHUt4l742LVkcA=;
+ b=ASCtYiDYy634LQ/s0dKkRl9CMHUL0VTxk/VpwcLRHtRs9yrDpjFwM0B8Ub3n/SKk7bVC2i7WuK76mQEGuRDBJ19S+d8yPTWMjybdY8WpO3kLv9Drl1lm4dWYLmoB5oFUaxYe2Bla18jDu9XPHOJGsOIaPer3jMdiWyI4oDuojAqxBtImRFOSAmmUaUkIQJnXoK772OhHDe66+Jxnez5D/y/KJUYtvszQqsa6v5fE6248JlaevMZNNqItzgm709YOJ6yu6NjZkxI22WYu7+xjWzU3T4NoXp+UBcMeFtBqVt81nkdikQcDt9DWjFzdhHMnCxIKAc7zjj/LhDHQkw8KBw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m4QiLfx40epBvo/jkKhx1Y8a6t+YvWIHlLoivQrZgxM=;
- b=VE+rH3K5dAJ53aL40jIT4fsDwraSFTJPDAKK0+vad5MQ5yoenzCbmY6NenYYESlmhVSqA0JW/Bz3IkW3uxXk14zGfF96OMAoXBuwwdXS9e2tXQgg0CU/3hVacrSVU9cdwr7hsGgPzXBKJvFWU9zoP8VpZxs35C26ZT2YspGNz3o=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.60.27) by
- BYAPR15MB2837.namprd15.prod.outlook.com (20.178.237.216) with Microsoft SMTP
+ bh=arKGob4EKNjYMRQwY0jzHi+N1H7JTTHUt4l742LVkcA=;
+ b=kccdTz/KbKZCL8IJhni76XpRWHiFzwcAMTjpitaylfx3SEKu+mNidWGnS6sn3M/WIaOKV4+yYGAMItpgQHXzOUxpWWi7BurFBiufcrh1m9n2Y2D9lKPW7pQhd4X19rsVxtn2M8QBsknsBQHrboze0wLqLREQSQMgDG+GFZYSQhA=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3679.eurprd04.prod.outlook.com (52.134.13.11) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.16; Thu, 21 Nov 2019 18:30:10 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::a9f8:a9c0:854c:d680]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::a9f8:a9c0:854c:d680%4]) with mapi id 15.20.2474.019; Thu, 21 Nov 2019
- 18:30:10 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Brian Vazquez <brianvv@google.com>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 7/9] libbpf: add libbpf support to batch ops
-Thread-Topic: [PATCH v2 bpf-next 7/9] libbpf: add libbpf support to batch ops
-Thread-Index: AQHVnw/00b+a1L6Vt0u6+x6SeXV3ZaeV9UWA
-Date:   Thu, 21 Nov 2019 18:30:09 +0000
-Message-ID: <434eb25b-5d1a-4b33-232e-6735fc00e531@fb.com>
-References: <20191119193036.92831-1-brianvv@google.com>
- <20191119193036.92831-8-brianvv@google.com>
-In-Reply-To: <20191119193036.92831-8-brianvv@google.com>
+ 15.20.2451.23; Thu, 21 Nov 2019 18:33:41 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::5cc0:798:7cb8:9661]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::5cc0:798:7cb8:9661%11]) with mapi id 15.20.2474.019; Thu, 21 Nov 2019
+ 18:33:41 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v2] net: sfp: soft status and control support
+Thread-Topic: [PATCH net-next v2] net: sfp: soft status and control support
+Thread-Index: AQHVn55B+2XHK4O/1UyEg1IaXClvUKeVxsjwgAAJ6ICAAB+UsA==
+Date:   Thu, 21 Nov 2019 18:33:41 +0000
+Message-ID: <VI1PR0402MB28007002CABED79C95DC093DE04E0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <E1iXP7P-0006DS-47@rmk-PC.armlinux.org.uk>
+ <DB6PR0402MB27891CA467D04389FA68B0CFE04E0@DB6PR0402MB2789.eurprd04.prod.outlook.com>
+ <20191121162309.GZ25745@shell.armlinux.org.uk>
+In-Reply-To: <20191121162309.GZ25745@shell.armlinux.org.uk>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR10CA0065.namprd10.prod.outlook.com
- (2603:10b6:300:2c::27) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:112::27)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:b385]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d599a916-5134-4ce1-7d7f-08d76eb0d70f
-x-ms-traffictypediagnostic: BYAPR15MB2837:
-x-microsoft-antispam-prvs: <BYAPR15MB28371D09D5BE04AF9FF23377D34E0@BYAPR15MB2837.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:227;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bc5776e1-fbd8-4e0b-a8c9-08d76eb15544
+x-ms-traffictypediagnostic: VI1PR0402MB3679:
+x-microsoft-antispam-prvs: <VI1PR0402MB367954F2F17AFBF34722D3C5E04E0@VI1PR0402MB3679.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 0228DDDDD7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(189003)(199004)(2906002)(102836004)(81166006)(256004)(81156014)(14444005)(25786009)(86362001)(31696002)(446003)(5024004)(2616005)(66556008)(186003)(64756008)(66446008)(14454004)(99286004)(8936002)(8676002)(66476007)(66946007)(7416002)(305945005)(7736002)(6512007)(498600001)(76176011)(229853002)(52116002)(5660300002)(36756003)(110136005)(54906003)(71190400001)(71200400001)(6116002)(11346002)(6486002)(4326008)(46003)(6246003)(386003)(6436002)(31686004)(6506007)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2837;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(346002)(376002)(396003)(136003)(189003)(199004)(14454004)(6916009)(54906003)(7736002)(66066001)(99286004)(86362001)(316002)(305945005)(508600001)(74316002)(25786009)(102836004)(66946007)(4744005)(66446008)(76116006)(6506007)(26005)(5660300002)(229853002)(66556008)(66476007)(9686003)(4326008)(186003)(64756008)(71190400001)(71200400001)(55016002)(6436002)(11346002)(52536014)(446003)(2906002)(7696005)(6116002)(8936002)(3846002)(76176011)(44832011)(6246003)(33656002)(8676002)(81156014)(81166006)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3679;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wtODOubgVHBdFb/v6D0G9O9CLbZw7VVmCInf70fxl1ZDtEqqKdrfq6wcdU8was+q4SxncOJecJoINdsqWfiHrQ9R53wdIyiUgjNfyS1TrYvb263wIoPEhvXLn/oxr5HVmWJD6mtpSxbK6QSTg4lFPj9m/Me+TNJOV2CS8cUS9K3EMqcdAg2alsQMRLWz4KtyWrRzAafOtumSj8RGZWSmLoTsm1COkOp0/47xUL5CQqgvgTDohxC1TmXZPs42Bdzpbml8iSunfCEx4tyw48G2V0lHEBC4/RQ3i7mf+ZfSoW8hdfF77BfcMR+UA/7YtY7HNGMFxQCj/BP/wLgzvg8AxSWfiPf2wO7D0oDvw9BazK+R/4+1ZkjOUnYuGXyAyn2JQEQsQ4+itD3rn1f4PMrFbBMokNr8VNuIvj4VxpEKd72xeeO/Ct9qyUpJDBQT+Lib
+x-microsoft-antispam-message-info: 8XUq0Ei3nkkXtEkRrzVPWI6fdRaCDPa+ca/iIfXowk2RtE+w4ZdccOt73xnKvu4uqNC9mWfYDeVZxZbAUm6om0ly4NV5S5rSj8o7HOntydfkCnMaAY81F281a9F6/H26wuNZadgrwn1IZHOxAmlC+bsEDnm7qvlMzOJd5EmPHSKySSruLYUoeYyWhNIbrBkjBJFd11KBb9+H5wmzu2ICmpmLOM7fPTR/VRNutwMv1iM2dcrFnZYlN190JviDO/yqIl3IkRqDuNXd3lBBOZr68gmgddlTOMibn4SZFMQdMMA417wQywBvecexFrHDsmU+n4hnCieLxk7b5aM7ozCwvDP6E4EWmdpnJJvChuT5pZ74QRmUQ1hNAaxNSek1/2HVdKtf8oF7Xd7MizA4CMlhQliuFQPfoSnaC78zKYYUowKuYMggTBF9UAobd/8ftuZy
 x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A435BD64616A7243AD9EA37FFAA62FE1@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: d599a916-5134-4ce1-7d7f-08d76eb0d70f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 18:30:09.9229
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc5776e1-fbd8-4e0b-a8c9-08d76eb15544
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 18:33:41.3904
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zMzKtgpPFUEHeghQzs0omqTLO1eYYlXsLKLSn5yU8j1rxjDUwCoBbWf464410d1W
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2837
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-21_05:2019-11-21,2019-11-21 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- impostorscore=0 suspectscore=0 priorityscore=1501 lowpriorityscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0 spamscore=0
- clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911210155
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: LVSjfAPmAJgCJlWAzWw7JBqJpA8/9zPQcvJNcNcJzmXI3gZY09mwF2SGFzRsm83JPe1H6aisvYqNea9Ja9trxg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3679
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDExLzE5LzE5IDExOjMwIEFNLCBCcmlhbiBWYXpxdWV6IHdyb3RlOg0KPiBGcm9tOiBZ
-b25naG9uZyBTb25nIDx5aHNAZmIuY29tPg0KPiANCj4gQWRkZWQgZm91ciBsaWJicGYgQVBJIGZ1
-bmN0aW9ucyB0byBzdXBwb3J0IG1hcCBiYXRjaCBvcGVyYXRpb25zOg0KPiAgICAuIGludCBicGZf
-bWFwX2RlbGV0ZV9iYXRjaCggLi4uICkNCj4gICAgLiBpbnQgYnBmX21hcF9sb29rdXBfYmF0Y2go
-IC4uLiApDQo+ICAgIC4gaW50IGJwZl9tYXBfbG9va3VwX2FuZF9kZWxldGVfYmF0Y2goIC4uLiAp
-DQo+ICAgIC4gaW50IGJwZl9tYXBfdXBkYXRlX2JhdGNoKCAuLi4gKQ0KPiANCj4gU2lnbmVkLW9m
-Zi1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCj4gLS0tDQo+ICAgdG9vbHMvbGliL2Jw
-Zi9icGYuYyAgICAgIHwgNjEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-Kw0KPiAgIHRvb2xzL2xpYi9icGYvYnBmLmggICAgICB8IDE0ICsrKysrKysrKw0KPiAgIHRvb2xz
-L2xpYi9icGYvbGliYnBmLm1hcCB8ICA0ICsrKw0KPiAgIDMgZmlsZXMgY2hhbmdlZCwgNzkgaW5z
-ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL3Rvb2xzL2xpYi9icGYvYnBmLmMgYi90b29s
-cy9saWIvYnBmL2JwZi5jDQo+IGluZGV4IDk4NTk2ZTE1MzkwZmIuLjlhY2Q5MzA5YjQ3YjMgMTAw
-NjQ0DQo+IC0tLSBhL3Rvb2xzL2xpYi9icGYvYnBmLmMNCj4gKysrIGIvdG9vbHMvbGliL2JwZi9i
-cGYuYw0KPiBAQCAtNDQzLDYgKzQ0Myw2NyBAQCBpbnQgYnBmX21hcF9mcmVlemUoaW50IGZkKQ0K
-PiAgIAlyZXR1cm4gc3lzX2JwZihCUEZfTUFQX0ZSRUVaRSwgJmF0dHIsIHNpemVvZihhdHRyKSk7
-DQo+ICAgfQ0KPiAgIA0KWy4uLl0+ICAgTElCQlBGX0FQSSBpbnQgYnBmX29ial9waW4oaW50IGZk
-LCBjb25zdCBjaGFyICpwYXRobmFtZSk7DQo+ICAgTElCQlBGX0FQSSBpbnQgYnBmX29ial9nZXQo
-Y29uc3QgY2hhciAqcGF0aG5hbWUpOw0KPiAgIExJQkJQRl9BUEkgaW50IGJwZl9wcm9nX2F0dGFj
-aChpbnQgcHJvZ19mZCwgaW50IGF0dGFjaGFibGVfZmQsDQo+IGRpZmYgLS1naXQgYS90b29scy9s
-aWIvYnBmL2xpYmJwZi5tYXAgYi90b29scy9saWIvYnBmL2xpYmJwZi5tYXANCj4gaW5kZXggOGRk
-YzJjNDBlNDgyZC4uNTY0NjJmZWE2NmY3NCAxMDA2NDQNCj4gLS0tIGEvdG9vbHMvbGliL2JwZi9s
-aWJicGYubWFwDQo+ICsrKyBiL3Rvb2xzL2xpYi9icGYvbGliYnBmLm1hcA0KPiBAQCAtMjA3LDQg
-KzIwNyw4IEBAIExJQkJQRl8wLjAuNiB7DQo+ICAgCQlicGZfcHJvZ3JhbV9fc2l6ZTsNCj4gICAJ
-CWJ0Zl9fZmluZF9ieV9uYW1lX2tpbmQ7DQo+ICAgCQlsaWJicGZfZmluZF92bWxpbnV4X2J0Zl9p
-ZDsNCj4gKwkJYnBmX21hcF9kZWxldGVfYmF0Y2g7DQo+ICsJCWJwZl9tYXBfbG9va3VwX2FuZF9k
-ZWxldGVfYmF0Y2g7DQo+ICsJCWJwZl9tYXBfbG9va3VwX2JhdGNoOw0KPiArCQlicGZfbWFwX3Vw
-ZGF0ZV9iYXRjaDsNCg0KUGxlYXNlIGluc2VydCBuZXcgQVBJIGZ1bmN0aW9ucyBmb2xsb3dpbmcg
-YWxwaGFiZXQgb3JkZXJpbmcuDQoNCj4gICB9IExJQkJQRl8wLjAuNTsNCj4gDQo=
+
+> Subject: Re: [PATCH net-next v2] net: sfp: soft status and control suppor=
+t
+>=20
+> On Thu, Nov 21, 2019 at 03:51:07PM +0000, Ioana Ciornei wrote:
+> > > Subject: [PATCH net-next v2] net: sfp: soft status and control
+> > > support
+> > >
+> > > Add support for the soft status and control register, which allows
+> > > TX_FAULT and RX_LOS to be monitored and TX_DISABLE to be set.  We
+> > > make use of this when the board does not support GPIOs for these
+> signals.
+> >
+> > Hi Russell,
+> >
+> > With this addition, shouldn't the following print be removed?
+> >
+> > [    2.967583] sfp sfp-mac4: No tx_disable pin: SFP modules will always=
+ be
+> emitting.
+>=20
+> No, because modules do not have to provide the soft controls.
+>=20
+
+I understand that the soft controls are optional but can't we read
+byte 93 (Enhanced Options) and see if bit 6 (Optional soft TX_DISABLE contr=
+ol)
+is set or not (ie the soft TX_DISABLE is implemented)?
+
+Ioana
+
