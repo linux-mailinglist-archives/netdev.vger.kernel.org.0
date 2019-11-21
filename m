@@ -2,123 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 785E0105520
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:14:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 133B9105523
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 16:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbfKUPOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 10:14:04 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45663 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726716AbfKUPOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 10:14:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574349242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S/ndUKKJCxI76HoRVTG7jNdszQTcPJXiUk69ASnD9hc=;
-        b=BFZPun6Wui8mst5ik4v+igZbbNO52U03jnmSpDZ1ATsGYUxUJFr+Ti3ykcD52EkazKpp+B
-        ko2SioijMq46xlosEU/tY9Nt7mHwLezU+K1xLd3BvLSJRmSAi5PvMABX2yMrB2PxStfrsf
-        GYB6ESIY9PDnA2Y+Db56AsDis/pFM7w=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-286-sbaU5VrmMxWepkgX6OVgmw-1; Thu, 21 Nov 2019 10:13:59 -0500
-Received: by mail-wm1-f71.google.com with SMTP id y14so1959233wmi.4
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 07:13:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iHsCY/CMXwIcgnSHclUoHJ8eh4Q1rh48lgjW6W5ihDs=;
-        b=d5/VlY9ZAHp0xuD8bGT53YmEJzntXc3bWBFqT4r9Pt/RTGQgD7Otyj8G89l2wUZASW
-         dNTEmwpDuq6Xib8W2dNxBLlZIk7opGGQOALRyzzPoE9K4gHXo/EadZSeAWW7YpKYzIkM
-         71XoUrQKcijVhueyZlLWEGOnnYQd0YVl50uyPVy65wlPkv/x1CUHYtC0qfZNOLXwmfwt
-         Jevh0o4XetrKwv7BxsBR3uhaniqrQ7b2O9JaNgBQnBrJwWDafbrRd0ORtyKlUNf2kZXS
-         EDyiQopRcHa5ySTedeVl5OS+QYonjD/7l2lzmkrxs7PeCifaZJ/OLYhyIKIk7Alo75EO
-         iBvg==
-X-Gm-Message-State: APjAAAUUaCuOQ4rLORUuomUr8+UIY3TcO93EMoxRXCmSHCLJn3y5kpR3
-        vrvGlsKDY4L2uACxifxqAhLBRuQ3qBzCpvu44Rr+DE5XU5WjStswWoNHChIHe69rYBrgNO0j0S8
-        HDWRPqd8w6c4Ufwjz
-X-Received: by 2002:adf:fd4a:: with SMTP id h10mr10771260wrs.90.1574349237925;
-        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwffrnaWrX2CTnz1mrGFjyWf4QxuPdCHsb+nu0fFKK6LVRRphnlRgzFqP4BBbEKQFy/2FMiLQ==
-X-Received: by 2002:adf:fd4a:: with SMTP id h10mr10771237wrs.90.1574349237686;
-        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
-Received: from steredhat (a-nu5-32.tin.it. [212.216.181.31])
-        by smtp.gmail.com with ESMTPSA id z7sm1978953wma.46.2019.11.21.07.13.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 07:13:57 -0800 (PST)
-Date:   Thu, 21 Nov 2019 16:13:55 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jorgen Hansen <jhansen@vmware.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
+        id S1726920AbfKUPO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 10:14:27 -0500
+Received: from mail-eopbgr800089.outbound.protection.outlook.com ([40.107.80.89]:2014
+        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726634AbfKUPO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 10:14:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q6RLD3+HZSLP+8YO6c+RJj5i2XVwBborEKugqGA5tFzOeVWfcqSN3OyXJHCvxKMU3XNL9rwI7RXtuQM426kwqIHaoQS++Z8xAR/KLkbQa6R/VOZ5AMmQqwq0tz9fE4gW/VtZQ16Ojz5P0w4iEHRulN079dEJ6DHS8XbvfQk7h4KFuKq/+8RyyVX4BaTKgNyWq8HUtUYiQMUdCdsnHBKzTbKa2PXCqS1J3K5vrzHS37Y0lahZnzxDatMDXzlw+lbwLS2rtpXzxq7Vm8eMBHlhcCgOAq94y8fXo2ctBtyV6m/0a493Mx0ihytZq+FmklHtc75CPc1xn0IZVITYzQgf0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Cyec1X109nXfDP3CaBAon6V4mLUItT4b73iZ3ITqmlg=;
+ b=B0Gk/i/TXF8pPGOjGp+lziqyGtsobsAfo18zdSfApe6JXpfRmCv0pAQPVf86MhgWBRU3RizWrBeSmWXp9vJGqzj833NbO92BzY62I3hvaBcyQq9YV2Uw+botUAKU+DE8iT5Vf8YOnzZJSmGnEMi2G97AZbUOPCjiM5keP6Yt7zKToQO8P8XGwMdcx/vp0xxWgI/UXvYXh4Of1HgQUuEPm3AkyToroe43XeGHiXolJg5KrtOk1iXa14Y2VHkDNqkuJWGxvGEfXPUBVg/2Fu5xLgVzsoL/2u/iNy9m0MWCi3lpQ8JO1wH3qLSCbdJwoEFrN5zspe0G8GJcqrHxa4lNzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Cyec1X109nXfDP3CaBAon6V4mLUItT4b73iZ3ITqmlg=;
+ b=GlYhQFBccD+Rv52Ur/XyugPUtOnLLtqE1tLBXU1Rr/n3+xGaTB0OMb/94WfULE9fD/SHGGYgIhS2X5tcVfh9ebJeqJlNaRmSYKlK0yjWToKSBEO4QtCZjgV0oZs/v+mFcnZNBYjQvkC9dxLBfQXkx5I8ltDXySvq2z8JB9Xz+P8=
+Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
+ MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2474.9; Thu, 21 Nov 2019 15:14:19 +0000
+Received: from MWHPR05MB3376.namprd05.prod.outlook.com
+ ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
+ ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2474.015; Thu, 21 Nov 2019
+ 15:14:19 +0000
+From:   Jorgen Hansen <jhansen@vmware.com>
+To:     'Stefano Garzarella' <sgarzare@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 0/6] vsock: add local transport support
-Message-ID: <20191121151355.grgfbte6xniqe6xo@steredhat>
-References: <20191119110121.14480-1-sgarzare@redhat.com>
- <MWHPR05MB3376B8241546664BBCA6FC37DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
-MIME-Version: 1.0
-In-Reply-To: <MWHPR05MB3376B8241546664BBCA6FC37DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
-X-MC-Unique: sbaU5VrmMxWepkgX6OVgmw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+        "syzbot+e2e5c07bf353b2f79daa@syzkaller.appspotmail.com" 
+        <syzbot+e2e5c07bf353b2f79daa@syzkaller.appspotmail.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: RE: [PATCH net-next] vsock: avoid to assign transport if its
+ initialization fails
+Thread-Topic: [PATCH net-next] vsock: avoid to assign transport if its
+ initialization fails
+Thread-Index: AQHVoEr3gbB/ABgYRUWOC82bK3DwS6eVurcg
+Date:   Thu, 21 Nov 2019 15:14:19 +0000
+Message-ID: <MWHPR05MB33769A7039F0862F581BF176DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
+References: <20191121090609.13048-1-sgarzare@redhat.com>
+In-Reply-To: <20191121090609.13048-1-sgarzare@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jhansen@vmware.com; 
+x-originating-ip: [208.91.2.1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cada2032-9b7a-40da-5bac-08d76e957b80
+x-ms-traffictypediagnostic: MWHPR05MB3376:
+x-microsoft-antispam-prvs: <MWHPR05MB337630CCDC56BF5799C71CC8DA4E0@MWHPR05MB3376.namprd05.prod.outlook.com>
+x-vmwhitelist: True
+x-ms-oob-tlc-oobclassifiers: OLM:1186;
+x-forefront-prvs: 0228DDDDD7
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(346002)(366004)(39860400002)(396003)(189003)(199004)(76116006)(76176011)(186003)(66946007)(5660300002)(2501003)(26005)(81156014)(229853002)(81166006)(8936002)(9686003)(74316002)(316002)(54906003)(52536014)(305945005)(110136005)(446003)(11346002)(55016002)(8676002)(33656002)(6436002)(86362001)(25786009)(2906002)(66066001)(7736002)(478600001)(256004)(14444005)(99286004)(71200400001)(71190400001)(7696005)(6506007)(14454004)(66446008)(4326008)(66476007)(66556008)(6246003)(64756008)(3846002)(6116002)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB3376;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: vmware.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: P1JgPG+m7tWQ0mMW4rTuSb0RVlULels4i83CKOq05NuHCjplZoSliOfFhNI1sZ8Xq0380TtMqoTWB4H/qD/ZVvUO0kiVi5OA2/FhLoqZHVZAY9BkNoE4z2Y1adGrAYF9T9Qkwgk5b/paII2V/JgtcQ/MXevVGNgIsSNcEQ4juOCUMzhg+h7cfyn7TL9DKV4rvT+RnzyvTDsi1pQvzRn79FAsf/7kyKiOM1ymqN9DklkZm2L7Jsl9LvHxeHV1kiZNnc098o22JbKPUW4XErNwUg9KH2H4XVRRqP//vl1p+CsN1fdM0yAQzCZNeMQMyUtM4Va53xbq9f9n8THRPw+raO53+s4XkSaLy/07k25TPDYJJrE4ViDez1lMBX6tcnDtCSDPydTMijrOJyZ4U3zqKKYHqnnEYtgDqQL2k5cAm8YQC8IakytBz7VWHBjKUBUe
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+MIME-Version: 1.0
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cada2032-9b7a-40da-5bac-08d76e957b80
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2019 15:14:19.6697
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TrdcvRpS0ulmYRE4xBynt881EcAI/0B1lVJ/BA6z5iecVRwkt6IpADJe0ketf7auA4Q44xX/4pydNA/bwfntpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB3376
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 02:45:32PM +0000, Jorgen Hansen wrote:
-> > From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> > Sent: Tuesday, November 19, 2019 12:01 PM
-> > This series introduces a new transport (vsock_loopback) to handle
-> > local communication.
-> > This could be useful to test vsock core itself and to allow developers
-> > to test their applications without launching a VM.
-> >=20
-> > Before this series, vmci and virtio transports allowed this behavior,
-> > but only in the guest.
-> > We are moving the loopback handling in a new transport, because it
-> > might be useful to provide this feature also in the host or when
-> > no H2G/G2H transports (hyperv, virtio, vmci) are loaded.
-> >=20
-> > The user can use the loopback with the new VMADDR_CID_LOCAL (that
-> > replaces VMADDR_CID_RESERVED) in any condition.
-> > Otherwise, if the G2H transport is loaded, it can also use the guest
-> > local CID as previously supported by vmci and virtio transports.
-> > If G2H transport is not loaded, the user can also use VMADDR_CID_HOST
-> > for local communication.
-> >=20
-> > Patch 1 is a cleanup to build virtio_transport_common without virtio
-> > Patch 2 adds the new VMADDR_CID_LOCAL, replacing
-> > VMADDR_CID_RESERVED
-> > Patch 3 adds a new feature flag to register a loopback transport
-> > Patch 4 adds the new vsock_loopback transport based on the loopback
-> >         implementation of virtio_transport
-> > Patch 5 implements the logic to use the local transport for loopback
-> >         communication
-> > Patch 6 removes the loopback from virtio_transport
-> >=20
-> > @Jorgen: Do you think it might be a problem to replace
-> > VMADDR_CID_RESERVED with VMADDR_CID_LOCAL?
+> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
+> Sent: Thursday, November 21, 2019 10:06 AM
 >=20
-> No, that should be fine. It has never allowed for use with stream sockets=
- in
-> AF_VSOCK. The only potential use would be for datagram sockets, but that
-> side appears to be unaffected by your changes, since loopback is only
-> introduced for SOCK_STREAM.
+> If transport->init() fails, we can't assign the transport to the
+> socket, because it's not initialized correctly, and any future
+> calls to the transport callbacks would have an unexpected behavior.
 >=20
+> Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+> Reported-and-tested-by:
+> syzbot+e2e5c07bf353b2f79daa@syzkaller.appspotmail.com
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  net/vmw_vsock/af_vsock.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> index cc8659838bf2..74db4cd637a7 100644
+> --- a/net/vmw_vsock/af_vsock.c
+> +++ b/net/vmw_vsock/af_vsock.c
+> @@ -412,6 +412,7 @@ int vsock_assign_transport(struct vsock_sock *vsk,
+> struct vsock_sock *psk)
+>  	const struct vsock_transport *new_transport;
+>  	struct sock *sk =3D sk_vsock(vsk);
+>  	unsigned int remote_cid =3D vsk->remote_addr.svm_cid;
+> +	int ret;
+>=20
+>  	switch (sk->sk_type) {
+>  	case SOCK_DGRAM:
+> @@ -443,9 +444,15 @@ int vsock_assign_transport(struct vsock_sock *vsk,
+> struct vsock_sock *psk)
+>  	if (!new_transport || !try_module_get(new_transport->module))
+>  		return -ENODEV;
+>=20
+> +	ret =3D new_transport->init(vsk, psk);
+> +	if (ret) {
+> +		module_put(new_transport->module);
+> +		return ret;
+> +	}
+> +
+>  	vsk->transport =3D new_transport;
+>=20
+> -	return vsk->transport->init(vsk, psk);
+> +	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(vsock_assign_transport);
+>=20
+> --
+> 2.21.0
 
-Yes, datagram sockets are not affected.
-
-Thanks for the clarification,
-Stefano
+Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
 
