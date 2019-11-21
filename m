@@ -2,117 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7C6104E45
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E743E104E30
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:40:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfKUIpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:45:42 -0500
-Received: from mars.blocktrron.ovh ([51.254.112.43]:39826 "EHLO
-        mail.blocktrron.ovh" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726132AbfKUIpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:45:42 -0500
-X-Greylist: delayed 408 seconds by postgrey-1.27 at vger.kernel.org; Thu, 21 Nov 2019 03:45:40 EST
-Received: from [IPv6:2003:e5:3f0b:d900:a9cf:9b4e:2f8a:599f] (p200300E53F0BD900A9CF9B4E2F8A599F.dip0.t-ipconnect.de [IPv6:2003:e5:3f0b:d900:a9cf:9b4e:2f8a:599f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.blocktrron.ovh (Postfix) with ESMTPSA id 653351FA94;
-        Thu, 21 Nov 2019 09:38:50 +0100 (CET)
-Subject: Re: [PATCH net 1/1] mdio_bus: fix mdio_register_device when
- RESET_CONTROLLER is disabled
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <20191118181505.32298-1-marek.behun@nic.cz>
- <20191119102744.GD32742@smile.fi.intel.com>
- <alpine.DEB.2.21.1911201053330.25420@ramsan.of.borg>
- <20191121020822.GD18325@lunn.ch>
-From:   David Bauer <mail@david-bauer.net>
-Autocrypt: addr=mail@david-bauer.net; prefer-encrypt=mutual; keydata=
- mQENBFYkGEcBCADbRMHdOXmszxrmE9G/gWUD4/HXklOfn+hyBpEcOul+GKAet0oFxznkchJe
- hO5MbEFYsnM8TZVxjnEi70c3luF1m4JycjgQ91GJ52+xvLV0dVz+L99JBgVJNRDvvt68rLVq
- A8/LCdkXctZ+GBfrtTYQ6dOeuQf/qWuwlNTvuG92uWVZjncyWOmQX73gv+1MTRsCmIGNYQu1
- ZDVyhr3YsTgJIXTHUCxBHQBDglkb3L5lK9WHPf1puQ2grNbUg9VSmo4a9IzUpRauNtCDUFxi
- 1m1e5VnmU5O5/xZyDzwmpWog9tUfScS7X9pdVNQ+2W3zCRrotFEn6FKdD01mhIsLnczjABEB
- AAG0IkRhdmlkIEJhdWVyIDxtYWlsQGRhdmlkLWJhdWVyLm5ldD6JAVkEEwEIAEMCGwMHCwkI
- BwMCAQYVCAIJCgsEFgIDAQIeAQIXgAIZARYhBNcEMml7fEwnOA/No7qzlxS0pLh4BQJbLRhu
- BQkIy2cnAAoJELqzlxS0pLh4It8IALb1ea/ezwy8v65zmTeIepeuO5umWzWIy7fLaAsxzJbH
- rO6rCTnRN5ZLyzuxNlhYMyvXAJL7kmPuEOOzHk5xh3soV24VZLSryzGeB6TG3g8L6D0guJ72
- JMM/2HGP8g1zu/IfIM94DZJk7WEuRKG5sndZp49s/voKhrMqAvAU4G03knpEN5SbJx5RA/Wf
- i5stipz2vqS87jHgOVTL1m67Wg9jhKuzJbSlt+m8rHZCQ9dCQQLtqbHugnyOrFhKxwfGFEMB
- aV0sKwoBfjtWP/g3kb9L5wOvRj8UnDRLTB/fVnOsMD18ILEiNqc6FCh4hIb4y2QQEc0nb68f
- imjr4Hz7TOe5AQ0EViQYRwEIALqz1V6kWIvCTVN/6QN9fepVSwSw+5IiiVBGtf2rtdqujCRD
- bGi96a2ZLYRQzlSQvCZ51skgoZFmIW2YhPP90qiZssSEQxgY1rf+DEYnjWmFSgi3iHqYXRk2
- cY7OI3ZT8D2tAFu9pIAxZpD5FdQznJmUhljeTJw+lGOoxctf1xjHZcRcU6GUFMpFBc4xaLC0
- hUN24HT5pDpklxskPFH91VncDaOsLesqszGaUHWx3hogRfogdADvycUp/bQB80kZO/XqexWN
- GUNJYS4axWM2ND25bWV1h9aFjPpOwFM7FwAyra0VihnnNn7dTL5vBpFztY0IFPlvqyc1Vw8y
- vgtShA0AEQEAAYkBPAQYAQgAJgIbDBYhBNcEMml7fEwnOA/No7qzlxS0pLh4BQJbLRiFBQkI
- y2c+AAoJELqzlxS0pLh4LIcH/jnL+ytxRSAh8VX3U2xrMOhBFOkJbW9fj6UgE2iFfZUEOBZl
- q6fZTYn1LOTOECrnLC6eNUQsnZ2u+/N93I5Fmof0MIICUbVabEVmbF/jCFkKjrTPFv/DbNZy
- c+X2ugyX7LsJT+CdvtPT9fObTLCS1nQc3G49syEGVEIzPNyIFzJbFLyh1AfRxmnzAwlal6xK
- S82CsKe+n2lwWg2dyyoJYqwM2G6hAg/ZFqRBZ1RH6TsACGMnwvmsfW/871mPt/mOTCDoH1s1
- tcsgxxtD87UnEqA4zL8dqi5uRA82ZznWaq3mzOGKcBkgEcxi8nnQWW+EyTiZWC+wJ9xT4kLh
- z03IzJQ=
-Message-ID: <94309e1b-d8f0-676f-5865-cff94832d830@david-bauer.net>
-Date:   Thu, 21 Nov 2019 09:38:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726939AbfKUIjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:39:53 -0500
+Received: from mail-eopbgr800088.outbound.protection.outlook.com ([40.107.80.88]:12992
+        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726165AbfKUIjx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 03:39:53 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jcpESoneMiMNWbfVUiB8bKrwPqj5aUWafBcdTarF/RNVtFaZ9wdic+CxSoHIszFVD3185oLsnD8mfpI0czBTTdy28+dKCP2HFtmDgL70h4VOH/gD66SCpDPJWr8niQOD0Hjl1SvkaN0JIlFzuih34XXZk0+Fg2k640ZYr8sOJCjUlYXu4RhdgszJNa9SgCLobdpd4GWnKLZ0p/Io8mLwMXI9Xak3cZgyIkjiHLzbmnrZJxoDzMldf3+VqUwImLxIhLZIIbCX/fvlXoNQZgX9UxWsrkMgMzLGx3281/SAhRUfgBM3x4Zq7ooZXYKYaSL2lHj3eJrRDHsgIiZALxL+EA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uO8houtejB5zjNS3R5yQz60B3XHroWij2CxYSLwnUdQ=;
+ b=H1e/LTfOKG7b/jxs/It4bQJDgVhCHma+CnFu9Azug3MbPF45D1JbzZI4JiT6ITRsWV0ZwSrda+bxGsy440d+dw1naO3cpcH4gF/pZ1wOpBhrZlJIbfJKlGaCUT2FIcUb6de6K3SALHJT2EHNvF2Ar866nrsisXuaZT6/OEnxj3Zi9rfKIjw+ONVOA3qiQtYkttpadGwCpiL8TzfiL33CC9UtF2oR6aqFpSrdTNKXlHxzouNZQ1M1KuRsAurLAe+Ra+mGEUy2Mje4O/i0Um4NRRYXFgpwdRzywe11s8mDNgtIOATTu+iGNAfEb7R5tRMWM2SLkEvcOznbeOo+2uN8lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=grandegger.com smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uO8houtejB5zjNS3R5yQz60B3XHroWij2CxYSLwnUdQ=;
+ b=iy4ijtDP5CLQ3zMNAPE+lxoYHqbltETyd/77imek4KGjUGfABnxV1fGbQw3JwZcg0FO+P7zjy1+K0Gh9bF8WoI0+xlHqyZQN5/o+KzIRNqy81KcFStFYN3LyFMdo7lFsHyxjCGd/H2pO+FZ2q5zZ12fABBhClCnMpol9MHB84Tk=
+Received: from BN7PR02CA0026.namprd02.prod.outlook.com (2603:10b6:408:20::39)
+ by DM5PR02MB2857.namprd02.prod.outlook.com (2603:10b6:3:10d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2451.22; Thu, 21 Nov
+ 2019 08:39:50 +0000
+Received: from BL2NAM02FT052.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::200) by BN7PR02CA0026.outlook.office365.com
+ (2603:10b6:408:20::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2474.19 via Frontend
+ Transport; Thu, 21 Nov 2019 08:39:50 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; grandegger.com; dkim=none (message not signed)
+ header.d=none;grandegger.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ BL2NAM02FT052.mail.protection.outlook.com (10.152.77.0) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
+ via Frontend Transport; Thu, 21 Nov 2019 08:39:49 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <appana.durga.rao@xilinx.com>)
+        id 1iXi0D-0004iZ-1M; Thu, 21 Nov 2019 00:39:49 -0800
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <appana.durga.rao@xilinx.com>)
+        id 1iXi07-0005Sw-Ti; Thu, 21 Nov 2019 00:39:43 -0800
+Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <appana.durga.rao@xilinx.com>)
+        id 1iXi00-0005R1-C6; Thu, 21 Nov 2019 00:39:36 -0800
+From:   Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        michal.simek@xilinx.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Subject: [PATCH] MAINTAINERS: Add fragment for xilinx CAN driver
+Date:   Thu, 21 Nov 2019 14:09:24 +0530
+Message-Id: <1574325564-30529-1-git-send-email-appana.durga.rao@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(396003)(346002)(39860400002)(199004)(189003)(426003)(81166006)(336012)(81156014)(50226002)(2616005)(186003)(9786002)(16586007)(8936002)(36756003)(106002)(8676002)(5660300002)(107886003)(50466002)(478600001)(4326008)(36386004)(26005)(316002)(51416003)(4744005)(7696005)(70586007)(48376002)(356004)(6666004)(6636002)(47776003)(70206006)(305945005)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR02MB2857;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
 MIME-Version: 1.0
-In-Reply-To: <20191121020822.GD18325@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ea4641c3-012e-429a-7897-08d76e5e5f1e
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2857:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB28576856C163E368540FA2FDDC4E0@DM5PR02MB2857.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
+X-Forefront-PRVS: 0228DDDDD7
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2JNO0GVHI/gTusEccULJcbyCsnsFOzY2Fch1Bi3brDjJNfQBxsGI9VveMnLZD9lFplJpVlzXi5m8HjrZ61Llfsb1/ah7frU6IYGtyOeBYmyZY5jQCLCqtlmkQE2udTNKb6D4pE7Oshm35hRcBrraZjee6QcJ9MlsxW2JTIdAmuiDcKd+36yH7O+bAQ52MFwl5QJeP46v5eLSzHPB4Rg7jZux2+3TmuORA7aS/Qq1CaPg8NpbNcb7FC4qeNCi4rMlpVgUltfhTPlNoYLAGKnPCzQ6fYX9c8ypvmdofmLMAAKvmv1flAAc8yPqBY6Wkz0za7cb6YRuStEpRt2+ZzzujfUkJUcDtNYp3JCa6d3J82OmcoPnram40XeDGzXVUDqvginxHnk2a0TSbRHw/6bSJkyutzbUfjxM5WolTq/y0lygvNWBOwGdxMnn/1oCnjlY
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2019 08:39:49.6286
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea4641c3-012e-429a-7897-08d76e5e5f1e
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2857
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew,
+Added entry for xilinx CAN driver.
 
-On 11/21/19 3:08 AM, Andrew Lunn wrote:
->> The difference with the non-optional case is that
->> __devm_reset_control_get() registers a cleanup function if there's
->> no error condition, even for NULL (which is futile, will send a patch).
->>
->> However, more importantly, mdiobus_register_reset() calls a devm_*()
->> function on "&mdiodev->dev" ("mdio_bus ee700000.ethernet-ffffffff:01"),
->> which is a different device than the one being probed
->> (("ee700000.ethernet"), see also the callstack below).
->> In fact "&mdiodev->dev" hasn't been probed yet, leading to the WARNING
->> when it is probed later.
->>
->>     [<c0582de8>] (mdiobus_register_device) from [<c05810e0>] (phy_device_register+0xc/0x74)
->>     [<c05810e0>] (phy_device_register) from [<c0675ef4>] (of_mdiobus_register_phy+0x144/0x17c)
->>     [<c0675ef4>] (of_mdiobus_register_phy) from [<c06760f0>] (of_mdiobus_register+0x1c4/0x2d0)
->>     [<c06760f0>] (of_mdiobus_register) from [<c0589f0c>] (sh_eth_drv_probe+0x778/0x8ac)
->>     [<c0589f0c>] (sh_eth_drv_probe) from [<c0516ce8>] (platform_drv_probe+0x48/0x94)
->>
->> Has commit 71dd6c0dff51b5f1 ("net: phy: add support for
->> reset-controller") been tested with an actual reset present?
+Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+---
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-I'm using it on a AR9132 board, however the mdio bus is probed before the
-ethernet driver, hence why i was not experiencing this misbehavior.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3e57fc1d9962..d0f590517eaf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17890,6 +17890,13 @@ M:	Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+ S:	Maintained
+ F:	drivers/net/ethernet/xilinx/xilinx_axienet*
+ 
++XILINX CAN DRIVER
++M:	Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
++R:	Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
++S:	Maintained
++F:	drivers/net/can/xilinx_can.c
++F:	Documentation/devicetree/bindings/net/can/xilinx_can.txt
++
+ XILINX UARTLITE SERIAL DRIVER
+ M:	Peter Korsgaard <jacmet@sunsite.dk>
+ L:	linux-serial@vger.kernel.org
+-- 
+2.7.4
 
->>
->> Are Ethernet drivers not (no longer) allowed to register MDIO busses?
-> 
-> That is not good. The devm_reset_control_get() call need replaces with
-> an unmanaged version, and a call to reset_control_put() added to
-> mdiobus_unregister_device().
-> 
-> David, could you look at this, it was a patch from you that added
-> this.
-
-I will prepare patches to fix this bug.
-
-Best wishes
-David
-
-> 
-> 	Andrew
-> 
