@@ -2,177 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25421104D9C
-	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47AA9104DAD
+	for <lists+netdev@lfdr.de>; Thu, 21 Nov 2019 09:17:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbfKUIOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 03:14:17 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7160 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726536AbfKUIOR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Nov 2019 03:14:17 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 703AAC08955488A0329B;
-        Thu, 21 Nov 2019 16:14:15 +0800 (CST)
-Received: from [127.0.0.1] (10.74.221.148) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Thu, 21 Nov 2019
- 16:14:05 +0800
-Subject: Re: [PATCH v3] lib: optimize cpumask_local_spread()
-To:     Michal Hocko <mhocko@kernel.org>
-References: <1573091048-10595-1-git-send-email-zhangshaokun@hisilicon.com>
- <20191108103102.GF15658@dhcp22.suse.cz>
- <c6f24942-c8d6-e46a-f433-152d29af8c71@hisilicon.com>
- <20191112115630.GD2763@dhcp22.suse.cz>
- <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
- <20191114144317.GJ20866@dhcp22.suse.cz>
- <9af13fea-95a6-30cb-2c0e-770aa649a549@hisilicon.com>
- <20191115133625.GD29990@dhcp22.suse.cz>
-CC:     <linux-kernel@vger.kernel.org>, yuqi jin <jinyuqi@huawei.com>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        "Paul Burton" <paul.burton@mips.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        <netdev@vger.kernel.org>
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-Message-ID: <5011c668-65f4-c571-e166-dbc29a8adc27@hisilicon.com>
-Date:   Thu, 21 Nov 2019 16:14:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.1.1
+        id S1726454AbfKUIRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 03:17:44 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25355 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726170AbfKUIRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 03:17:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574324262;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fME2CUbGpuzKSf98sUwbJKLhY6cHiaVbZgMmbu81k4g=;
+        b=iejSZnoR/wJ5u7Dp4KI48TohZPv5u2kBNaIBC8X9AGePysCFfCw0k7+qc7xf0S7VT9qqEJ
+        xXUynw1d7rT5Ot0b3OHWoqvehqJJclTvKM49vrjkUy0Li+6oDkedLU6d2baM4z2knhHnmF
+        1CEEAMEmlcNvdLb/ykGS96CaNOfMAmY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-340-KpmBr6-hM_mP_HKXoTqyNQ-1; Thu, 21 Nov 2019 03:17:39 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 184C31800D45;
+        Thu, 21 Nov 2019 08:17:38 +0000 (UTC)
+Received: from [10.72.12.204] (ovpn-12-204.pek2.redhat.com [10.72.12.204])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 08A465DAB0;
+        Thu, 21 Nov 2019 08:17:27 +0000 (UTC)
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+To:     Parav Pandit <parav@mellanox.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Tiwei Bie <tiwei.bie@intel.com>
+References: <20191119164632.GA4991@ziepe.ca>
+ <20191119134822-mutt-send-email-mst@kernel.org>
+ <20191119191547.GL4991@ziepe.ca>
+ <20191119163147-mutt-send-email-mst@kernel.org>
+ <20191119231023.GN4991@ziepe.ca>
+ <20191119191053-mutt-send-email-mst@kernel.org>
+ <20191120014653.GR4991@ziepe.ca>
+ <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
+ <20191120133835.GC22515@ziepe.ca> <20191120102856.7e01e2e2@x1.home>
+ <20191120181108.GJ22515@ziepe.ca> <20191120150732.2fffa141@x1.home>
+ <AM0PR05MB48663ADB0A470C78694F6B8DD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e02cf90e-1d4a-bc56-9c71-eea349dc9ff7@redhat.com>
+Date:   Thu, 21 Nov 2019 16:17:26 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191115133625.GD29990@dhcp22.suse.cz>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.221.148]
-X-CFilter-Loop: Reflected
+In-Reply-To: <AM0PR05MB48663ADB0A470C78694F6B8DD14F0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: KpmBr6-hM_mP_HKXoTqyNQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michal,
 
-On 2019/11/15 21:36, Michal Hocko wrote:
-> On Fri 15-11-19 17:09:13, Shaokun Zhang wrote:
-> [...]
->> Oh, my mistake, for the previous instance, I don't list all IRQs and
->> just choose one IRQ from one NUMA node. You can see that the IRQ
->> number is not consistent :-).
->> IRQ from 345 to 368 will be bound to CPU cores which are in NUMA node2
->> and each IRQ is corresponding to one core.
+On 2019/11/21 =E4=B8=8A=E5=8D=886:39, Parav Pandit wrote:
+>> From: Alex Williamson<alex.williamson@redhat.com>
+>> Sent: Wednesday, November 20, 2019 4:08 PM
 >>
-> 
-> This is quite confusing then. I would suggest providing all IRQ used for
+>> On Wed, 20 Nov 2019 14:11:08 -0400
+>> Jason Gunthorpe<jgg@ziepe.ca>  wrote:
+>>
+>>> I feel like mdev is suffering from mission creep. I see people
+>>> proposing to use mdev for many wild things, the Mellanox SF stuff in
+>>> the other thread and this 'virtio subsystem' being the two that have
+>>> come up publicly this month.
+>> Tell me about it...;)
+>>
+> Initial Mellanox sub function proposal was done using dedicated non-mdev =
+subdev bus in [1] because mdev looked very vfio-ish.
+>
+> Along the way mdev proposal was suggested at [2] by mdev maintainers to u=
+se.
+> The bus existed that detached two drivers (mdev and vfio_mdev), there was=
+ some motivation to attach other drivers.
+>
+> After that we continued discussion and mdev extension using alias to have=
+ persistent naming in [3].
+>
+> So far so good, but when we want to have actual use of mdev driver, it do=
+esn't look right.:-)
+>
 
-node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-node 0 size: 63379 MB
-node 0 free: 61899 MB
-node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
-node 1 size: 64509 MB
-node 1 free: 63942 MB
-node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
-node 2 size: 64509 MB
-node 2 free: 63056 MB
-node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
-node 3 size: 63997 MB
-node 3 free: 63420 MB
-node distances:
-node   0   1   2   3
-  0:  10  16  32  33
-  1:  16  10  25  32
-  2:  32  25  10  16
-  3:  33  32  16  10
+Want to implement devlink for mdev then? I think it may help in the case.
 
-Before the patch:
-/* I/O device is located on NUMA node2 */
-Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-2
-Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-48
-Euler:/sys/bus/pci # cat /proc/irq/346/smp_affinity_list
-49
-.
-.
-.
-Euler:/sys/bus/pci # cat /proc/irq/367/smp_affinity_list
-70
-Euler:/sys/bus/pci # cat /proc/irq/368/smp_affinity_list
-71
-
-/* there we expect irq form 24 to 47 binding to node3 */
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-0
-Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-1
-.
-.
-.
-Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-22
-Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-23
-
-Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-24
-Euler:/sys/bus/pci # cat /proc/irq/394/smp_affinity_list
-25
-.
-.
-.
-/* There are total 64 irqs on eth IO device. */
-Euler:/sys/bus/pci # cat /proc/irq/407/smp_affinity_list
-38
-Euler:/sys/bus/pci # cat /proc/irq/408/smp_affinity_list
-39                              	
-Euler:/sys/bus/pci #
-
-After the patch:
-Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-2
-
-Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-48
-Euler:/sys/bus/pci # cat /proc/irq/346/smp_affinity_list
-49
-.
-.
-.
-Euler:/sys/bus/pci # cat /proc/irq/367/smp_affinity_list
-70
-Euler:/sys/bus/pci # cat /proc/irq/368/smp_affinity_list
-71
-
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-72
-Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-73
-.
-.
-.
-Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-94
-Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-95
-/* when the cores of socket were used up, we choose the node which is closer to node 2
-before this patch choose the same node here is a coincident event*/
-Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-24
-Euler:/sys/bus/pci # cat /proc/irq/394/smp_affinity_list
-25
-.
-.
-.
-/* There are total 64 irqs on eth IO device. */
-Euler:/sys/bus/pci # cat /proc/irq/407/smp_affinity_list
-38
-Euler:/sys/bus/pci # cat /proc/irq/408/smp_affinity_list
-39
-Euler:/sys/bus/pci #
-
-Thanks,
-Shaokun
-
-> the device with the specific node affinity to see the difference in the
-> setup.
-> 
+Thanks
 
