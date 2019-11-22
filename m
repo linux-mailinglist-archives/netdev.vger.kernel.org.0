@@ -2,115 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FC85107812
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:38:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 366CC10781D
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:42:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfKVTiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:38:08 -0500
-Received: from mga12.intel.com ([192.55.52.136]:52338 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726698AbfKVTiH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 14:38:07 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 11:38:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
-   d="scan'208";a="210342963"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Nov 2019 11:38:05 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iYEkm-0009aS-JG; Sat, 23 Nov 2019 03:38:04 +0800
-Date:   Sat, 23 Nov 2019 03:37:24 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     sunil.kovvuri@gmail.com
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        davem@davemloft.net, Linu Cherian <lcherian@marvell.com>,
-        Rakesh Babu <rsaladi2@marvell.com>,
-        Vamsi Attunuru <vamsi.attunuru@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH 02/15] octeontx2-af: Add support for importing firmware
- data
-Message-ID: <201911230316.nf7UrK3V%lkp@intel.com>
-References: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1727133AbfKVTmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:42:12 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57654 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726698AbfKVTmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 14:42:04 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAMJWHqR138693;
+        Fri, 22 Nov 2019 14:41:55 -0500
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2wdkdg6jn1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Nov 2019 14:41:54 -0500
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAMJYvuF021243;
+        Fri, 22 Nov 2019 19:41:54 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma04dal.us.ibm.com with ESMTP id 2wa8r7rw4h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Nov 2019 19:41:54 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAMJfqkq61079956
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 22 Nov 2019 19:41:52 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4A7F9C605A;
+        Fri, 22 Nov 2019 19:41:52 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5C955C6059;
+        Fri, 22 Nov 2019 19:41:51 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.85.142.37])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 22 Nov 2019 19:41:51 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@ozlabs.org, dnbanerg@us.ibm.com,
+        brking@linux.vnet.ibm.com, julietk@linux.vnet.ibm.com,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net 0/4] ibmvnic: Harden device commands and queries
+Date:   Fri, 22 Nov 2019 13:41:42 -0600
+Message-Id: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-22_04:2019-11-21,2019-11-22 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=949
+ adultscore=0 clxscore=1015 lowpriorityscore=0 spamscore=0 impostorscore=0
+ suspectscore=1 malwarescore=0 priorityscore=1501 bulkscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
+ definitions=main-1911220162
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch series fixes some shortcomings with the current
+VNIC device command implementation. The first patch fixes
+the initialization of driver completion structures used
+for device commands. Additionally, all waits for device
+commands are bounded with a timeout in the event that the
+device does not respond or becomes inoperable. Finally,
+serialize queries to retain the integrity of device return
+codes.
 
-I love your patch! Perhaps something to improve:
+Thomas Falcon (4):
+  ibmvnic: Fix completion structure initialization
+  ibmvnic: Terminate waiting device threads after loss of service
+  ibmvnic: Bound waits for device queries
+  ibmvnic: Serialize device queries
 
-[auto build test WARNING on net-next/master]
-[also build test WARNING on next-20191122]
-[cannot apply to v5.4-rc8]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+ drivers/net/ethernet/ibm/ibmvnic.c | 194 +++++++++++++++++++++++++++++++------
+ drivers/net/ethernet/ibm/ibmvnic.h |   1 +
+ 2 files changed, 168 insertions(+), 27 deletions(-)
 
-url:    https://github.com/0day-ci/linux/commits/sunil-kovvuri-gmail-com/octeontx2-af-SSO-TIM-HW-blocks-and-other-config-support/20191118-002309
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 19b7e21c55c81713c4011278143006af9f232504
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-32-g233d4e1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+-- 
+2.12.3
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse: sparse: incorrect type in assignment (different address spaces) @@    expected struct rvu_fwdata *fwdata @@    got void struct rvu_fwdata *fwdata @@
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    expected struct rvu_fwdata *fwdata
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    got void [noderef] <asn:2> *
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    expected void volatile [noderef] <asn:2> *addr
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    got struct rvu_fwdata *fwdata
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    expected void volatile [noderef] <asn:2> *addr
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    got struct rvu_fwdata *fwdata
-
-vim +722 drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-
-   712	
-   713	static int rvu_fwdata_init(struct rvu *rvu)
-   714	{
-   715		u64 fwdbase;
-   716		int err;
-   717	
-   718		/* Get firmware data base address */
-   719		err = cgx_get_fwdata_base(&fwdbase);
-   720		if (err)
-   721			goto fail;
- > 722		rvu->fwdata = ioremap_wc(fwdbase, sizeof(struct rvu_fwdata));
-   723		if (!rvu->fwdata)
-   724			goto fail;
-   725		if (!is_rvu_fwdata_valid(rvu)) {
-   726			dev_err(rvu->dev,
-   727				"Mismatch in 'fwdata' struct btw kernel and firmware\n");
- > 728			iounmap(rvu->fwdata);
-   729			rvu->fwdata = NULL;
-   730			return -EINVAL;
-   731		}
-   732		return 0;
-   733	fail:
-   734		dev_info(rvu->dev, "Unable to fetch 'fwdata' from firmware\n");
-   735		return -EIO;
-   736	}
-   737	
-
----
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
