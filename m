@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AD2106553
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:23:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C300C106544
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728934AbfKVGXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:23:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56838 "EHLO mail.kernel.org"
+        id S1728732AbfKVGXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:23:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728213AbfKVFvi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:51:38 -0500
+        id S1726921AbfKVFvr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:51:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 91F2720726;
-        Fri, 22 Nov 2019 05:51:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0A0020840;
+        Fri, 22 Nov 2019 05:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574401898;
-        bh=ihPG//jNFj6mdLcSyAiHByfXaouHt8MxyYWi42hQ/NQ=;
+        s=default; t=1574401907;
+        bh=L7kOZ2DuuxrBOah1HpwY0bLme+c1Dzk3lN0xbxhInE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ck3hL2BXqee42NFIpEabYZaHhrSGQGsmMHtlDaLV2D29zwEYpIATgY7FE8RnHoHeI
-         M+gZt15S3ivo30lal0hzfQZWC1hepGvpN5uYJxFb2p85XyTM3MeSXpt6MBq197u5ex
-         bxjxpti9bDFh34q3cVYoT6VnwkPOqGMskdNeSTFY=
+        b=DvgdHLDlEM56ZKNnAZ29/MmnsMW9I1Vxukv4gan0Y3gqQ6lRyGsVFX79FqnTWyLul
+         yllQGyv39KqpO9zACx257UUrX/T7G+D1yQnafokLg/vuCiP8emScmrYNwufTWiIGrm
+         55PQgtEBtnBk475fMK/rX9ol3jnSFzHswI/HKjqw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+Cc:     Aditya Pakki <pakki001@umn.edu>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 130/219] bpf/cpumap: make sure frame_size for build_skb is aligned if headroom isn't
-Date:   Fri, 22 Nov 2019 00:47:42 -0500
-Message-Id: <20191122054911.1750-123-sashal@kernel.org>
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.19 138/219] net/netlink_compat: Fix a missing check of nla_parse_nested
+Date:   Fri, 22 Nov 2019 00:47:50 -0500
+Message-Id: <20191122054911.1750-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
 References: <20191122054911.1750-1-sashal@kernel.org>
@@ -44,41 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Aditya Pakki <pakki001@umn.edu>
 
-[ Upstream commit 77ea5f4cbe2084db9ab021ba73fb7eadf1610884 ]
+[ Upstream commit 89dfd0083751d00d5d7ead36f6d8b045bf89c5e1 ]
 
-The frame_size passed to build_skb must be aligned, else it is
-possible that the embedded struct skb_shared_info gets unaligned.
+In tipc_nl_compat_sk_dump(), if nla_parse_nested() fails, it could return
+an error. To be consistent with other invocations of the function call,
+on error, the fix passes the return value upstream.
 
-For correctness make sure that xdpf->headroom in included in the
-alignment. No upstream drivers can hit this, as all XDP drivers provide
-an aligned headroom.  This was discovered when playing with implementing
-XDP support for mvneta, which have a 2 bytes DSA header, and this
-Marvell ARM64 platform didn't like doing atomic operations on an
-unaligned skb_shinfo(skb)->dataref addresses.
-
-Fixes: 1c601d829ab0 ("bpf: cpumap xdp_buff to skb conversion and allocation")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/cpumap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/tipc/netlink_compat.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 24aac0d0f4127..8974b3755670e 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -183,7 +183,7 @@ static struct sk_buff *cpu_map_build_skb(struct bpf_cpu_map_entry *rcpu,
- 	 * is not at a fixed memory location, with mixed length
- 	 * packets, which is bad for cache-line hotness.
- 	 */
--	frame_size = SKB_DATA_ALIGN(xdpf->len) + xdpf->headroom +
-+	frame_size = SKB_DATA_ALIGN(xdpf->len + xdpf->headroom) +
- 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index 318c541970ecd..6494d6b5e1b24 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -1030,8 +1030,11 @@ static int tipc_nl_compat_sk_dump(struct tipc_nl_compat_msg *msg,
+ 		u32 node;
+ 		struct nlattr *con[TIPC_NLA_CON_MAX + 1];
  
- 	pkt_data_start = xdpf->data - xdpf->headroom;
+-		nla_parse_nested(con, TIPC_NLA_CON_MAX,
+-				 sock[TIPC_NLA_SOCK_CON], NULL, NULL);
++		err = nla_parse_nested(con, TIPC_NLA_CON_MAX,
++				       sock[TIPC_NLA_SOCK_CON], NULL, NULL);
++
++		if (err)
++			return err;
+ 
+ 		node = nla_get_u32(con[TIPC_NLA_CON_NODE]);
+ 		tipc_tlv_sprintf(msg->rep, "  connected to <%u.%u.%u:%u>",
 -- 
 2.20.1
 
