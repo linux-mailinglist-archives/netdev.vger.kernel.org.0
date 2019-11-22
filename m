@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E3F91064D2
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:20:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 456EA1064D7
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728688AbfKVFws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 00:52:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58638 "EHLO mail.kernel.org"
+        id S1729122AbfKVGUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:20:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58654 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728666AbfKVFwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728678AbfKVFwr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Nov 2019 00:52:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA0CE2068F;
-        Fri, 22 Nov 2019 05:52:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8EFD2071B;
+        Fri, 22 Nov 2019 05:52:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574401965;
-        bh=CQuBCBvKAAsOoZocCAsqj8Qd5e+iFxFP6/c3gZsHpI8=;
+        s=default; t=1574401966;
+        bh=A/Gyt4u7QrLQqefxIrkznJtIypsCEwCYUtwHl31T/So=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u9wRdKFXg0a/NrOLTQLEcbHTwoGj7r7GuCULhLAezsY3vZLjMVpALpi/JItvAeQAk
-         3agdSV0JIdRrENnIThmnpezUT0jsaD7Z5DVW8XpR9UUp/plU3l87FA9g1m+Vhf5HkJ
-         E7dyroRF6lFhpo43gtSuAXP6x+moIlzkrCFnXnQ8=
+        b=WlRB+KchPHi74X42dGiNKcyPAs6SoKC9RT0c2jVkV8jANfqW8cnTgb/O/rWqLi7+b
+         ANCwxP5apRmiAe0UVuB79UC5w/qHyf6h/jMH3oqDtLUBZPkPKOYwimJFM4fNLtwtZx
+         kOwM4A+Z5pBY89l4N3KDrGACQFLF//Wn6IXqZGhI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ursula Braun <ubraun@linux.ibm.com>,
+Cc:     Hoang Le <hoang.h.le@dektech.com.au>,
+        Ying Xue <ying.xue@windriver.com>,
+        Jon Maloy <maloy@donjonn.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 186/219] net/smc: fix byte_order for rx_curs_confirmed
-Date:   Fri, 22 Nov 2019 00:48:38 -0500
-Message-Id: <20191122054911.1750-179-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.19 187/219] tipc: fix skb may be leaky in tipc_link_input
+Date:   Fri, 22 Nov 2019 00:48:39 -0500
+Message-Id: <20191122054911.1750-180-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
 References: <20191122054911.1750-1-sashal@kernel.org>
@@ -44,79 +46,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit ccc8ca9b90acb45a3309f922b2591b07b4e070ec ]
+[ Upstream commit 7384b538d3aed2ed49d3575483d17aeee790fb06 ]
 
-The recent change in the rx_curs_confirmed assignment disregards
-byte order, which causes problems on little endian architectures.
-This patch fixes it.
+When we free skb at tipc_data_input, we return a 'false' boolean.
+Then, skb passed to subcalling tipc_link_input in tipc_link_rcv,
 
-Fixes: b8649efad879 ("net/smc: fix sender_free computation") (net-tree)
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+<snip>
+1303 int tipc_link_rcv:
+...
+1354    if (!tipc_data_input(l, skb, l->inputq))
+1355        rc |= tipc_link_input(l, skb, l->inputq);
+</snip>
+
+Fix it by simple changing to a 'true' boolean when skb is being free-ed.
+Then, tipc_link_rcv will bypassed to subcalling tipc_link_input as above
+condition.
+
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Acked-by: Jon Maloy <maloy@donjonn.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_cdc.c |  4 +---
- net/smc/smc_cdc.h | 19 ++++++++++---------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ net/tipc/link.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-index 8f691b5a44ddf..333e4353498f8 100644
---- a/net/smc/smc_cdc.c
-+++ b/net/smc/smc_cdc.c
-@@ -106,9 +106,7 @@ int smc_cdc_msg_send(struct smc_connection *conn,
- 
- 	conn->tx_cdc_seq++;
- 	conn->local_tx_ctrl.seqno = conn->tx_cdc_seq;
--	smc_host_msg_to_cdc((struct smc_cdc_msg *)wr_buf,
--			    &conn->local_tx_ctrl, conn);
--	smc_curs_copy(&cfed, &((struct smc_host_cdc_msg *)wr_buf)->cons, conn);
-+	smc_host_msg_to_cdc((struct smc_cdc_msg *)wr_buf, conn, &cfed);
- 	rc = smc_wr_tx_send(link, (struct smc_wr_tx_pend_priv *)pend);
- 	if (!rc)
- 		smc_curs_copy(&conn->rx_curs_confirmed, &cfed, conn);
-diff --git a/net/smc/smc_cdc.h b/net/smc/smc_cdc.h
-index 2377a51772d51..34d2e1450320a 100644
---- a/net/smc/smc_cdc.h
-+++ b/net/smc/smc_cdc.h
-@@ -186,26 +186,27 @@ static inline int smc_curs_diff_large(unsigned int size,
- 
- static inline void smc_host_cursor_to_cdc(union smc_cdc_cursor *peer,
- 					  union smc_host_cursor *local,
-+					  union smc_host_cursor *save,
- 					  struct smc_connection *conn)
- {
--	union smc_host_cursor temp;
--
--	smc_curs_copy(&temp, local, conn);
--	peer->count = htonl(temp.count);
--	peer->wrap = htons(temp.wrap);
-+	smc_curs_copy(save, local, conn);
-+	peer->count = htonl(save->count);
-+	peer->wrap = htons(save->wrap);
- 	/* peer->reserved = htons(0); must be ensured by caller */
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 6344aca4487b6..0fbf8ea18ce04 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -1114,7 +1114,7 @@ static bool tipc_data_input(struct tipc_link *l, struct sk_buff *skb,
+ 	default:
+ 		pr_warn("Dropping received illegal msg type\n");
+ 		kfree_skb(skb);
+-		return false;
++		return true;
+ 	};
  }
  
- static inline void smc_host_msg_to_cdc(struct smc_cdc_msg *peer,
--				       struct smc_host_cdc_msg *local,
--				       struct smc_connection *conn)
-+				       struct smc_connection *conn,
-+				       union smc_host_cursor *save)
- {
-+	struct smc_host_cdc_msg *local = &conn->local_tx_ctrl;
-+
- 	peer->common.type = local->common.type;
- 	peer->len = local->len;
- 	peer->seqno = htons(local->seqno);
- 	peer->token = htonl(local->token);
--	smc_host_cursor_to_cdc(&peer->prod, &local->prod, conn);
--	smc_host_cursor_to_cdc(&peer->cons, &local->cons, conn);
-+	smc_host_cursor_to_cdc(&peer->prod, &local->prod, save, conn);
-+	smc_host_cursor_to_cdc(&peer->cons, &local->cons, save, conn);
- 	peer->prod_flags = local->prod_flags;
- 	peer->conn_state_flags = local->conn_state_flags;
- }
 -- 
 2.20.1
 
