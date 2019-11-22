@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8287106297
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E8A10629B
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728221AbfKVGFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:05:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41472 "EHLO mail.kernel.org"
+        id S1729247AbfKVGFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:05:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728903AbfKVGCm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:02:42 -0500
+        id S1728813AbfKVGCn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:02:43 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C73A420659;
-        Fri, 22 Nov 2019 06:02:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E32052068F;
+        Fri, 22 Nov 2019 06:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402561;
-        bh=oqoXrjybaQcbpavSA2Ct70GdEPmxLqSSsipp5kfREaw=;
+        s=default; t=1574402562;
+        bh=SeAsYV7SVBrdZa76EEz+x99Xd94q22fntAQUgeEiTRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Sn/gB1PtsODzNjFHv/aR0brefRinnpV9WDI1iZ4L2/O2iN55dFFQi0UnORvcBk4F
-         JfJIj0kE3ElvCnDre5vKJdd+NEPjuZ0zhcpYzGsEPg9V1I55azflOuP3dvwBDWy1GM
-         L2Lbr/WXiYASMcVcj6dlLvnodPLuLov9lSb2eqpE=
+        b=u+hStftTAnKvuFzZmE2EQqG1+7FkkEragbWtPHbTcHNjLtlXhsamH/Fj0qI9qiWmk
+         o3ACMd9d4dWVCk1gwiSC3q3TS0a8dJoK/rQVetbSsrZ4EX/oma11kU+Ozu7YgcVV53
+         msxz7e3nzPCIzA4U3XU5dbcWNdrfoQRG6J5BC2Xg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kangjie Lu <kjlu@umn.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.9 66/91] tipc: fix a missing check of genlmsg_put
-Date:   Fri, 22 Nov 2019 01:01:04 -0500
-Message-Id: <20191122060129.4239-65-sashal@kernel.org>
+Cc:     Wen Yang <wen.yang99@zte.com.cn>, Peng Hao <peng.hao2@zte.com.cn>,
+        Zhao Qiang <qiang.zhao@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 67/91] net/wan/fsl_ucc_hdlc: Avoid double free in ucc_hdlc_probe()
+Date:   Fri, 22 Nov 2019 01:01:05 -0500
+Message-Id: <20191122060129.4239-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
 References: <20191122060129.4239-1-sashal@kernel.org>
@@ -44,33 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kangjie Lu <kjlu@umn.edu>
+From: Wen Yang <wen.yang99@zte.com.cn>
 
-[ Upstream commit 46273cf7e009231d2b6bc10a926e82b8928a9fb2 ]
+[ Upstream commit 40752b3eae29f8ca2378e978a02bd6dbeeb06d16 ]
 
-genlmsg_put could fail. The fix inserts a check of its return value, and
-if it fails, returns -EMSGSIZE.
+This patch fixes potential double frees if register_hdlc_device() fails.
 
-Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+Signed-off-by: Wen Yang <wen.yang99@zte.com.cn>
+Reviewed-by: Peng Hao <peng.hao2@zte.com.cn>
+CC: Zhao Qiang <qiang.zhao@nxp.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+CC: linuxppc-dev@lists.ozlabs.org
+CC: linux-kernel@vger.kernel.org
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/netlink_compat.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wan/fsl_ucc_hdlc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index 63a913b238735..454ed8ea194c8 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -974,6 +974,8 @@ static int tipc_nl_compat_publ_dump(struct tipc_nl_compat_msg *msg, u32 sock)
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+index 7a62316c570d2..b2c1e872d5ed5 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.c
++++ b/drivers/net/wan/fsl_ucc_hdlc.c
+@@ -1117,7 +1117,6 @@ static int ucc_hdlc_probe(struct platform_device *pdev)
+ 	if (register_hdlc_device(dev)) {
+ 		ret = -ENOBUFS;
+ 		pr_err("ucc_hdlc: unable to register hdlc device\n");
+-		free_netdev(dev);
+ 		goto free_dev;
+ 	}
  
- 	hdr = genlmsg_put(args, 0, 0, &tipc_genl_family, NLM_F_MULTI,
- 			  TIPC_NL_PUBL_GET);
-+	if (!hdr)
-+		return -EMSGSIZE;
- 
- 	nest = nla_nest_start(args, TIPC_NLA_SOCK);
- 	if (!nest) {
 -- 
 2.20.1
 
