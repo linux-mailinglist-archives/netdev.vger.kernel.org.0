@@ -2,84 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9831074C0
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 16:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED1E1074EE
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 16:32:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727139AbfKVPXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 10:23:31 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46918 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726633AbfKVPXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 10:23:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=j9MkqgvY1gQTNBDHU4J3+/xDrmMWJHkSjyVblaPYUUg=; b=iZ/DAvXH23OkMsCtV8Lpyt0brc
-        jdEIS3OY1JcUfBCXCRkec5ZdtBsGLBKuJRES7dsQQhMgHOu+WF7iH14RuO78P6ywDmlIHg3VuwwPV
-        PBX95ka3pCuKgVOGAV7c7PnAVEBdK6tebqpgzmo6xrBYFi0m4Mveml6c/LXH5lAV6dFyhN8EiZVJw
-        sKOCzkPZ1ejoWAonsEGuRPxg7TnMCtJOtgNGLQzjTi+mP7PxNyUVQloYfRRWhYeLyZb+/6cUHWJK5
-        A+dSQTynNd+20q4HUMslxVsxkYFhVSrhi4YTQ2bUEi+p0UKY15G5RhjWye/QJ/wNIJn+SQQ+s8JnH
-        21o9FD0Q==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:36146 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iYAmK-0005vq-2d; Fri, 22 Nov 2019 15:23:24 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iYAmJ-0005gz-Hc; Fri, 22 Nov 2019 15:23:23 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: phy: initialise phydev speed and duplex sanely
+        id S1726967AbfKVPck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 10:32:40 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:46150 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726100AbfKVPcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 10:32:39 -0500
+Received: by mail-qt1-f193.google.com with SMTP id r20so8189614qtp.13;
+        Fri, 22 Nov 2019 07:32:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=3dYqDBTtgP5XtAXKi8VqGBK1T+2eM5ua2xkGVDRu3sU=;
+        b=Wko8uZW+HZHX101h/glfPk2TwQpX8eA3RoRJBlvcPjKO1YFB1gAZNm/aJKbEeWM2mC
+         WoLhmD4VPMBtvS724RLDe7TmnR9C2GjaykNl6ZO1A5l3gqQ/aYDLVCAIzyho/j5jW5tM
+         B1rZjzj+OpHMmHNyz8V25I1+PEwBD/01txRDavVizPaFck1cRiLwIxIbMOwbV8FE13oy
+         HPfw2WK0ktZbufdrr35VjTjsi26eWHz+N4cfFynalx0qoX25B8r7BWjCYanXuYI60lY5
+         /ZveS/yy8OKJQKS4CvmE4p6zvLrqrRcRxOuhDnK09lgIRspFCyM6HKpJGJwgeQYtRHOg
+         OQqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=3dYqDBTtgP5XtAXKi8VqGBK1T+2eM5ua2xkGVDRu3sU=;
+        b=CD7rWBQcn67sgAR4FYU0Wr0MSy0tzKxScSCG342hq8JKMgV4/iIVLCWQDLQebMsbpD
+         JRONRqIVJsj2RhRZGmeHGN9Pj762NmOHkIF1dRFNN+3MwfOgsW9FAVX/fmJwWv1WLSLT
+         2Y7MgF2Z7rpOclCgsFEfT4vRsH+ZRbSiZBIt2IY7uEMwgK3hCxUkER6Pgra2Z0jUEjlX
+         iK07j9sXmOCNcMdPHDT4MBBVZ3bDa1qkrHXfU0LbOaGc8g/A45XI7UaAjqlMq1E+Ldm/
+         77uWed8GJPaeZSFOzLOJV7Gow1DkN7qd1mLkhWbsYXuPWJTW3+2FHxX20VjOd7b+HODc
+         4NDg==
+X-Gm-Message-State: APjAAAVXLz/QA5WhVsxxva5Py1riHeYppLjTiR9QqMryGYjIUXy/qtqx
+        IxLGfJ82GribpNsmMKRVw8w=
+X-Google-Smtp-Source: APXvYqxpWhu362qs5B2IRWYx9RpSlMLPqgpS0sjhL2aS+shabDbMr8Vc1kJtregaLu4VwhXrb0Nxtw==
+X-Received: by 2002:ac8:661a:: with SMTP id c26mr14774515qtp.317.1574436758716;
+        Fri, 22 Nov 2019 07:32:38 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id v189sm3149907qkc.37.2019.11.22.07.32.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Nov 2019 07:32:37 -0800 (PST)
+Date:   Fri, 22 Nov 2019 10:32:36 -0500
+Message-ID: <20191122103236.GB1112895@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Chen Wandun <chenwandun@huawei.com>
+Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, chenwandun@huawei.com
+Subject: Re: [PATCH] net: dsa: ocelot: fix "should it be static?" warnings
+In-Reply-To: <1574425965-97890-1-git-send-email-chenwandun@huawei.com>
+References: <1574425965-97890-1-git-send-email-chenwandun@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iYAmJ-0005gz-Hc@rmk-PC.armlinux.org.uk>
-Date:   Fri, 22 Nov 2019 15:23:23 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a phydev is created, the speed and duplex are set to zero and
--1 respectively, rather than using the predefined SPEED_UNKNOWN and
-DUPLEX_UNKNOWN constants.
+On Fri, 22 Nov 2019 20:32:45 +0800, Chen Wandun <chenwandun@huawei.com> wrote:
+> Fix following sparse warnings:
+> drivers/net/dsa/ocelot/felix.c:351:6: warning: symbol 'felix_txtstamp' was not declared. Should it be static?
+> 
+> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
 
-There is a window at initialisation time where we may report link
-down using the 0/-1 values.  Tidy this up and use the predefined
-constants, so debug doesn't complain with:
-
-"Unsupported (update phy-core.c)/Unsupported (update phy-core.c)"
-
-when the speed and duplex settings are printed.
-
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phy_device.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 232ad33b1159..8186aad4ef90 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -597,8 +597,8 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, int phy_id,
- 	mdiodev->device_free = phy_mdio_device_free;
- 	mdiodev->device_remove = phy_mdio_device_remove;
- 
--	dev->speed = 0;
--	dev->duplex = -1;
-+	dev->speed = SPEED_UNKNOWN;
-+	dev->duplex = DUPLEX_UNKNOWN;
- 	dev->pause = 0;
- 	dev->asym_pause = 0;
- 	dev->link = 0;
--- 
-2.20.1
-
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
