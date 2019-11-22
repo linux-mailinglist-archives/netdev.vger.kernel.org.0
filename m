@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0195105E47
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 02:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8A8105E4D
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 02:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbfKVBe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 20:34:26 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35768 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfKVBe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 20:34:26 -0500
-Received: by mail-qk1-f193.google.com with SMTP id i19so4940280qki.2;
-        Thu, 21 Nov 2019 17:34:25 -0800 (PST)
+        id S1726613AbfKVBgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 20:36:44 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33182 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfKVBgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 20:36:44 -0500
+Received: by mail-qt1-f196.google.com with SMTP id y39so6054143qty.0;
+        Thu, 21 Nov 2019 17:36:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=M2t/bQT6SDEWyA5LFYGQq1a0ZPecdTO0+C4+tNOQp/Q=;
-        b=cKZwN9aI0AhhNU/q3P8pUGyJtmoG7bBlp+Ye24J5Hh4/g/4KC78Kve6FoexiRpN7X9
-         VXuZhSeUsR/i7jfUIbLyDIF726aBAueN3S+UWfn46U6GFQjnW0nOZ3M54ktteKWzMK/X
-         OKy8BkXCVNnC2Z4SjT/U1o4J64aeAKEcdQMVcSpsc9d2oWN71toERVtA488UYLebphSu
-         chsJBHEDszc7X73mGmXvDcnPSocD/IcYMP9upvMEyKu0O58ZwssOxUntsDqonZ1rnR0k
-         dM26+udPe2wM0zNXntKhP81wd2G6qPsdnGi85g77jBRrLjI48ADHDjZ3vz5YJ4KYSWse
-         w/jA==
+        bh=j/rdj823c44COpV5cCERJMmYJupdnu4Z7k72/Pj6nfc=;
+        b=qSCWEAf/Oq25XXc6GCeTD36O8i45C0HfRm0uyrEsaXcsOiov5e0aVxeBkVOixUvM8L
+         HUUQKoqTZMF8wXSwjdueBDo4NjMgycaHrY4DSmsQwwQo/OvJ3bACYTuQaXUBbW79OjXW
+         SNjNMxPDz6BCIgRhFsD/71hKWZg6w6fW8aP2Ee/in667aFydGJG9j/UdJrUOfnNXlABZ
+         iqWBUjPNRdlcN+vkmerEMbBPyLhf+ZUCsNaK7IMJktmcNW/1SxiIEIZWgFEVZf4OTSUL
+         DJYxY/Hes8TV9SmInbbK0rZZN0eeN7T8ISRb/zIiNc22XCdM3Y7Kz9/aNuGEZ1KBtflo
+         FYog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=M2t/bQT6SDEWyA5LFYGQq1a0ZPecdTO0+C4+tNOQp/Q=;
-        b=UJnHO9SRX4xjdgBX1m139q1QiBLy7JV5QXe5pIHm32hoezIpCsiotfMsPzAbFsaJCD
-         hW9dMm9YrKLBnGm3Kf+NnrWR2gw8NvTUFit/O6E32V/dF7EKtcPFZ7juDfhdSsqjbFrG
-         xYtt8RXo2ZJ/QT2cadjHwYL7HT5yUsYAmaSePNh1uk7CDQTZQODBFe8hr4fjjSYj4FsG
-         Gb5fXX0jCVe5m6YcOLKn1BNXBemv2lObGhqbKFJADf1/oWg7OlFI87Ddu/fXJ944BGvo
-         cnZkZ9QT/gIgZrf7HiEJxRE6bTVSHkmghCLZwQgQfS6+TgQW/MBGZWbOrZibI0TV13xY
-         jTIg==
-X-Gm-Message-State: APjAAAUu3gn0akIYdlU4uS+mPrl8lm6IB/9ZKLH3IGb7LMGqGa+S7XDg
-        7uTrSvjfbL7F4ZUF+fTGZGcpa1Gh
-X-Google-Smtp-Source: APXvYqzZ/EJJ3EmUqlzJuVC3CRtXNCTr/UmNFVErkc75WzxXPUGQeuwG6FjYAg7wQbxVrUB7jnAXeQ==
-X-Received: by 2002:a05:620a:984:: with SMTP id x4mr11421581qkx.373.1574386464621;
-        Thu, 21 Nov 2019 17:34:24 -0800 (PST)
+        bh=j/rdj823c44COpV5cCERJMmYJupdnu4Z7k72/Pj6nfc=;
+        b=a2iIWCdZuhCd4nASb//jbPN3ZngAGDW9dSuef42Csp/6EPtiXAu2GfWYJCiSVcLT0Q
+         zvdeKoaoLwuI4yGQZBaIJ8n9h5YIxr/wjGOkuuoySzFimYOOxhIz0nD0/WrgLLa5A10d
+         NsuTAWVrnX+9+KEVHN6v/uQjuRAF5rPWxYF41zTh0DPyvd6O27+jLasJ5hlIHkTe/K35
+         Dd9YHRhIG72gtXK6hPy0s3gE2ACjuzxYVr83ZNOGDnj79DSEm2O9hveF4pKP1KfXK8q/
+         zfVl8WFcoQ0nJhsitsTKJueypL/P1zdjjNqWkmxGQRJsTEhE9cih2eGCOIbH59Py+3in
+         Haqw==
+X-Gm-Message-State: APjAAAVhEeJzIww7/Lab/SGAYP2o1P6gUOOGZoFVIebaf4XhIkcuMrqH
+        2Z2HVdze6JZP3UOF7REX/KtncPs4
+X-Google-Smtp-Source: APXvYqyPKeZrhMbgH8kJUD7OD1ngbGnzaM8S4gillMotJpVwQTjf7ylLCo8pDCds0mDFBg+mBkuY1A==
+X-Received: by 2002:ac8:2441:: with SMTP id d1mr1579575qtd.386.1574386601064;
+        Thu, 21 Nov 2019 17:36:41 -0800 (PST)
 Received: from ubuntu.default ([191.254.197.220])
-        by smtp.gmail.com with ESMTPSA id a70sm2304857qkb.86.2019.11.21.17.34.22
+        by smtp.gmail.com with ESMTPSA id y28sm2485073qtk.65.2019.11.21.17.36.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 17:34:23 -0800 (PST)
+        Thu, 21 Nov 2019 17:36:40 -0800 (PST)
 From:   Julio Faracco <jcfaracco@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     dnmendes76@gmail.com, Jason Wang <jasowang@redhat.com>,
@@ -49,9 +49,9 @@ Cc:     dnmendes76@gmail.com, Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: net: virtio_net: Implement a dev_watchdog handler
-Date:   Thu, 21 Nov 2019 22:34:19 -0300
-Message-Id: <20191122013419.980-1-jcfaracco@gmail.com>
+Subject: [PATCH net-next v2] drivers: net: virtio_net: Implement a dev_watchdog handler
+Date:   Thu, 21 Nov 2019 22:36:36 -0300
+Message-Id: <20191122013636.1041-1-jcfaracco@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -73,6 +73,9 @@ reset all queues.
 Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
 Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
 Cc: Jason Wang <jasowang@redhat.com>
+---
+v1-v2: Tag `net-next` was included to indentify where patch would be
+applied.
 ---
  drivers/net/virtio_net.c | 95 +++++++++++++++++++++++++++++++++++++++-
  1 file changed, 94 insertions(+), 1 deletion(-)
