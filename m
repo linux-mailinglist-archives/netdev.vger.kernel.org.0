@@ -2,148 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A56106687
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A808F106688
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfKVGeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:34:06 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:36995 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726765AbfKVGeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 01:34:05 -0500
-X-Originating-IP: 209.85.222.47
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 455E91C0007
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 06:34:03 +0000 (UTC)
-Received: by mail-ua1-f47.google.com with SMTP id l38so1825053uad.4
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 22:34:03 -0800 (PST)
-X-Gm-Message-State: APjAAAUzot0tGurhX3w0y+1hELmGBmmfMZ4NHGkCqUveO83j3GrmOaE5
-        5aSBrIgKQ6T/Gs3z2k36AlStfkLT5+eC6Gs3MvY=
-X-Google-Smtp-Source: APXvYqxAi4tYafkQQSePlhs5swGRZ2iwPJfvwXsD5DMxxnSaQeCK8QzEm7uEuFsZBq9X4hDcZiUGryy/zXZfiwVsmkg=
-X-Received: by 2002:ab0:694e:: with SMTP id c14mr8931558uas.118.1574404441831;
- Thu, 21 Nov 2019 22:34:01 -0800 (PST)
+        id S1726634AbfKVGh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:37:57 -0500
+Received: from mail-il1-f180.google.com ([209.85.166.180]:45441 "EHLO
+        mail-il1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726391AbfKVGh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 01:37:57 -0500
+Received: by mail-il1-f180.google.com with SMTP id o18so5797680ils.12
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 22:37:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=3H5aDDvJqdmHR/kaZwacv7KD+dnySaNyhkUrdyHR280=;
+        b=pALV13sNcUbP+jgywPaexS4WUKbAgVaDwrsl+k4A3VLD/HSh7LToqu6KecrChSeub0
+         oSfLw29MqyuQlArkMNYOIKbYsyM4XliR63hJjgveWHOuN3gAi6lhf9gP/Z2hTqirxILn
+         Eua23cK9EGQL0JcCMLkox1/N4TSMvJlfj7iyCWEMIiYQLSn+VZhcuxZdQeuzcVv6Z+1I
+         pWoPIg3lXha+MujoacwS8E9gkJ3hZoTfNY/vUQYnTpfm1vpx1obQaHJdxbT6Co76p1NW
+         2amKbZgZF7Ef+z8lU20A2AgaWPZK5CzOmIUcft97FcLN2g0HUPO0jcueSL2q7n12Sm6B
+         qzGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=3H5aDDvJqdmHR/kaZwacv7KD+dnySaNyhkUrdyHR280=;
+        b=b9D+N3gnpjQYA71gtDWqurXMkXRQuOG5tBoiGHpOvuTl/NhvtLAtiBLwTD9o6pFKyZ
+         jgSVLc6PasqYO9oGY8zVBUO/yRHKDv68gSVyupNLgxRcgy6G4A/B3RESNtyZoq3FSEXZ
+         McFrBS6K+M+uHcjo8ett7ec5Vv3+mVVNzI/6WfjuUyFQvXoh/5TQCvOlAWLUziaY1y6p
+         05sRlS6a2SN4xE6F3k4OiaiAv/Fi+N3fJs1l/NdUFPigwnYNO6aCft4+N6NPppo664wZ
+         LxttOX/TCnuGFPclMoaGWaGxWVDF0Tiun9ka96VZdwziJyLGXxHd5yGly1dkLAn99hmc
+         vMeA==
+X-Gm-Message-State: APjAAAWakhKwJjOuTH+XBVndGG7p3CYUWqQeT/J3krDxEiSyBgcI7RRv
+        ZDb9CntM/YIczbtB5TwD+LFBlcro4i/s5o7lQ63YEO8q
+X-Google-Smtp-Source: APXvYqzlJ9KVy3tK5CLu+DcOHpxEgVXKTIA6TL7zJp0BwKtEi23dxM0KrPkYXn+zrrD7/UpJA2A3zCpHdpyvs2gBz7I=
+X-Received: by 2002:a92:6802:: with SMTP id d2mr569249ilc.173.1574404675993;
+ Thu, 21 Nov 2019 22:37:55 -0800 (PST)
 MIME-Version: 1.0
-References: <1574338995-14657-1-git-send-email-martinvarghesenokia@gmail.com>
- <CAOrHB_De_A=jY-fBqJjXDQKemEOOfJtpvqGR_bi3_-x8+od2eg@mail.gmail.com> <20191122051253.GA19664@martin-VirtualBox>
-In-Reply-To: <20191122051253.GA19664@martin-VirtualBox>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Thu, 21 Nov 2019 22:33:49 -0800
-X-Gmail-Original-Message-ID: <CAOrHB_D4tD_1_GGjn2_sMyWXMS+NHJLWT6rTjrUYJECHOkwWkg@mail.gmail.com>
-Message-ID: <CAOrHB_D4tD_1_GGjn2_sMyWXMS+NHJLWT6rTjrUYJECHOkwWkg@mail.gmail.com>
-Subject: Re: [PATCH net-next] Enhanced skb_mpls_pop to update ethertype of the
- packet in all the cases when an ethernet header is present is the packet.
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
+From:   Mohan R <mohan43u@gmail.com>
+Date:   Fri, 22 Nov 2019 12:07:45 +0530
+Message-ID: <CAFYqD2pjwCBd5TxNP0wXxKvwYLnr20cYDjK3S0rHM=Fx6si6-Q@mail.gmail.com>
+Subject: how udp source address gets selected when default gateway is
+ configured with multipath-routing
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 9:13 PM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
->
-> On Thu, Nov 21, 2019 at 06:22:29PM -0800, Pravin Shelar wrote:
-> > On Thu, Nov 21, 2019 at 4:23 AM Martin Varghese
-> > <martinvarghesenokia@gmail.com> wrote:
-> > >
-> > > From: Martin Varghese <martin.varghese@nokia.com>
-> > >
-> > > The skb_mpls_pop was not updating ethertype of an ethernet packet if the
-> > > packet was originally received from a non ARPHRD_ETHER device.
-> > >
-> > > In the below OVS data path flow, since the device corresponding to port 7
-> > > is an l3 device (ARPHRD_NONE) the skb_mpls_pop function does not update
-> > > the ethertype of the packet even though the previous push_eth action had
-> > > added an ethernet header to the packet.
-> > >
-> > > recirc_id(0),in_port(7),eth_type(0x8847),
-> > > mpls(label=12/0xfffff,tc=0/0,ttl=0/0x0,bos=1/1),
-> > > actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-> > > pop_mpls(eth_type=0x800),4
-> > >
-> > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > > ---
-> > >  include/linux/skbuff.h    | 3 ++-
-> > >  net/core/skbuff.c         | 8 +++++---
-> > >  net/openvswitch/actions.c | 2 +-
-> > >  net/sched/act_mpls.c      | 2 +-
-> > >  4 files changed, 9 insertions(+), 6 deletions(-)
-> > >
-> > ...
-> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > index 867e61d..8ac377d 100644
-> > > --- a/net/core/skbuff.c
-> > > +++ b/net/core/skbuff.c
-> > > @@ -5529,12 +5529,14 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-> > >   * @skb: buffer
-> > >   * @next_proto: ethertype of header after popped MPLS header
-> > >   * @mac_len: length of the MAC header
-> > > - *
-> > > + * @ethernet: flag to indicate if ethernet header is present in packet
-> > > + *           ignored for device type ARPHRD_ETHER
-> > >   * Expects skb->data at mac header.
-> > >   *
-> > >   * Returns 0 on success, -errno otherwise.
-> > >   */
-> > > -int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> > > +int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-> > > +                bool ethernet)
-> > >  {
-> > >         int err;
-> > >
-> > > @@ -5553,7 +5555,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> > >         skb_reset_mac_header(skb);
-> > >         skb_set_network_header(skb, mac_len);
-> > >
-> > > -       if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-> > > +       if ((skb->dev && skb->dev->type == ARPHRD_ETHER) || ethernet) {
-> > >                 struct ethhdr *hdr;
-> > Lets move the dev-type check to caller. That would also avoid one more
-> > argument to this function.
->
->
-> To have only the ethernet flag check in the function like below ?
->  If (ethernet) {
->      /*pseudo*/   Update ethertype
->  }
-> And pass the flag to the function considering the device type
-> Fo example in case of tc.
->
-> if (skb_mpls_pop(skb, p->tcfm_proto, mac_len,
->                                  (skb->dev && skb->dev->type == ARPHRD_ETHER))).
->
->
-> But how do we avoid an argument here ? I am missing anything ?
+Hi,
 
-Right, I wanted to say new predicate can be eliminated.
+I have a simple multipath-routing setup,
 
-> >
-> > >
-> > >                 /* use mpls_hdr() to get ethertype to account for VLANs. */
-> > > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> > > index 12936c1..9e5d274 100644
-> > > --- a/net/openvswitch/actions.c
-> > > +++ b/net/openvswitch/actions.c
-> > > @@ -179,7 +179,7 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> > >  {
-> > >         int err;
-> > >
-> > > -       err = skb_mpls_pop(skb, ethertype, skb->mac_len);
-> > > +       err = skb_mpls_pop(skb, ethertype, skb->mac_len, true);
-> > >         if (err)
-> > OVS supports L3 packets, you need to check flow key for type of packet
-> > (ovs_key_mac_proto()) under process.
->
->
-> Yes I missed that.
->         err = skb_mpls_pop(skb, ethertype, skb->mac_len, ovs_key_mac_proto())); ?
->        or
->         err = skb_mpls_pop(skb, ethertype, skb->mac_len, key->mac_proto = MAC_PROTO_ETHERNET)
-I like the second which is more explicit.
+default
+        nexthop via 192.168.15.1 dev enp4s0 weight 1
+        nexthop via 10.0.1.1 dev wlp2s0 weight 1
+10.0.1.0/24 dev wlp2s0 proto kernel scope link src 10.0.1.251
+10.0.3.0/24 dev wlp0s29u1u2 proto kernel scope link src 10.0.3.1
+10.3.1.0/24 dev wg9000 proto kernel scope link src 10.3.1.2
+192.168.0.0/16 dev enp4s0 proto kernel scope link src 192.168.15.251
+
+here enp4s0 (192.168.0.0/16) and wlp2s0 (10.0.1.0/24) are connected to
+two different ISPs.
+
+DNS works fine when I access internet through my internal subnet
+(10.0.3.0/24), but  when I try 'ping google.com' in this machine, the
+DNS request to 1.1.1.1 (which is my nameserver in resolv.conf) to
+resolve 'google.com' is sent through enp4s0 interface but the source
+address in that DNS request contains 10.0.1.251 (wlp2s0's local ip
+address).
+
+If I have single nexthop in default route, everything works fine.
+
+How can I make sure that kernel picks the correct source ip for the dns request?
+
+Thanks,
+Mohan R
