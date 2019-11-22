@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E16EA106482
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5B1106487
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729177AbfKVGNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:13:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50470 "EHLO mail.kernel.org"
+        id S1729515AbfKVGSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:18:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729028AbfKVGNP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:13:15 -0500
+        id S1729176AbfKVGNR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:13:17 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A50D20714;
-        Fri, 22 Nov 2019 06:13:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 86FB620715;
+        Fri, 22 Nov 2019 06:13:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574403195;
-        bh=oCg3KbC/hWeuL7u+qR4VTCyyDgqjLKgx8hXknulRLnw=;
+        s=default; t=1574403196;
+        bh=94Hv4Ms5a+mG/S8NzCllVzvp0s/I1gaMseaY+uS86uI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A9qyfOfXuPSw9TmSXAjuit3DK5H+y8wADZ3qxuFWXrFJXEOfcFOspO6rtEFWCuzx1
-         9aBsdiiwxlDejzV9Fcm8LfNadaobE2V2zUFK5RAvQaBMQYicxUKx5g/RI8Mj1r/Qye
-         3Zixci2Oa7aX0/ExA8Di8UDAFre5BbaiDAFTZAVk=
+        b=gQ+nBFGcmv8og7zPy2GbNp9u8nsZJiCSlo3erRzDzGn1AD+O5PZH2K9mZr0nL98da
+         6Cz+X+52Ms/74cwS36Z1UhSaNM/DXUgCMHURVg+kJrS9v0jwBmoyknBX5IsWHZuPVy
+         ewv8w1oLNR2D44fDJFOF60T9QQbiVm2xjCsSngg8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brian Norris <briannorris@chromium.org>,
+Cc:     Pan Bian <bianpan2016@163.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 12/68] mwifiex: debugfs: correct histogram spacing, formatting
-Date:   Fri, 22 Nov 2019 01:12:05 -0500
-Message-Id: <20191122061301.4947-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 13/68] rtl818x: fix potential use after free
+Date:   Fri, 22 Nov 2019 01:12:06 -0500
+Message-Id: <20191122061301.4947-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122061301.4947-1-sashal@kernel.org>
 References: <20191122061301.4947-1-sashal@kernel.org>
@@ -44,65 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Pan Bian <bianpan2016@163.com>
 
-[ Upstream commit 4cb777c64e030778c569f605398d7604d8aabc0f ]
+[ Upstream commit afbb1947db94eacc5a13302eee88a9772fb78935 ]
 
-Currently, snippets of this file look like:
+entry is released via usb_put_urb just after calling usb_submit_urb.
+However, entry is used if the submission fails, resulting in a use after
+free bug. The patch fixes this.
 
-rx rates (in Mbps): 0=1M   1=2M2=5.5M  3=11M   4=6M   5=9M  6=12M
-7=18M  8=24M  9=36M  10=48M  11=54M12-27=MCS0-15(BW20) 28-43=MCS0-15(BW40)
-44-53=MCS0-9(VHT:BW20)54-63=MCS0-9(VHT:BW40)64-73=MCS0-9(VHT:BW80)
-...
-noise_flr[--96dBm] = 22
-noise_flr[--95dBm] = 149
-noise_flr[--94dBm] = 9
-noise_flr[--93dBm] = 2
-
-We're missing some spaces, and we're adding a minus sign ('-') on values
-that are already negative signed integers.
-
-Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+ACKed-by: Larry Finger <Larry.Finger@lwfinger.net>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mwifiex/debugfs.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mwifiex/debugfs.c b/drivers/net/wireless/mwifiex/debugfs.c
-index 45d97b64ef84b..f72c4f8853111 100644
---- a/drivers/net/wireless/mwifiex/debugfs.c
-+++ b/drivers/net/wireless/mwifiex/debugfs.c
-@@ -295,15 +295,13 @@ mwifiex_histogram_read(struct file *file, char __user *ubuf,
- 		     "total samples = %d\n",
- 		     atomic_read(&phist_data->num_samples));
- 
--	p += sprintf(p, "rx rates (in Mbps): 0=1M   1=2M");
--	p += sprintf(p, "2=5.5M  3=11M   4=6M   5=9M  6=12M\n");
--	p += sprintf(p, "7=18M  8=24M  9=36M  10=48M  11=54M");
--	p += sprintf(p, "12-27=MCS0-15(BW20) 28-43=MCS0-15(BW40)\n");
-+	p += sprintf(p,
-+		     "rx rates (in Mbps): 0=1M   1=2M 2=5.5M  3=11M   4=6M   5=9M  6=12M\n"
-+		     "7=18M  8=24M  9=36M  10=48M  11=54M 12-27=MCS0-15(BW20) 28-43=MCS0-15(BW40)\n");
- 
- 	if (ISSUPP_11ACENABLED(priv->adapter->fw_cap_info)) {
--		p += sprintf(p, "44-53=MCS0-9(VHT:BW20)");
--		p += sprintf(p, "54-63=MCS0-9(VHT:BW40)");
--		p += sprintf(p, "64-73=MCS0-9(VHT:BW80)\n\n");
-+		p += sprintf(p,
-+			     "44-53=MCS0-9(VHT:BW20) 54-63=MCS0-9(VHT:BW40) 64-73=MCS0-9(VHT:BW80)\n\n");
- 	} else {
- 		p += sprintf(p, "\n");
+diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+index b3691712df610..60e77eaa4ce94 100644
+--- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
++++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+@@ -446,12 +446,13 @@ static int rtl8187_init_urbs(struct ieee80211_hw *dev)
+ 		skb_queue_tail(&priv->rx_queue, skb);
+ 		usb_anchor_urb(entry, &priv->anchored);
+ 		ret = usb_submit_urb(entry, GFP_KERNEL);
+-		usb_put_urb(entry);
+ 		if (ret) {
+ 			skb_unlink(skb, &priv->rx_queue);
+ 			usb_unanchor_urb(entry);
++			usb_put_urb(entry);
+ 			goto err;
+ 		}
++		usb_put_urb(entry);
  	}
-@@ -332,7 +330,7 @@ mwifiex_histogram_read(struct file *file, char __user *ubuf,
- 	for (i = 0; i < MWIFIEX_MAX_NOISE_FLR; i++) {
- 		value = atomic_read(&phist_data->noise_flr[i]);
- 		if (value)
--			p += sprintf(p, "noise_flr[-%02ddBm] = %d\n",
-+			p += sprintf(p, "noise_flr[%02ddBm] = %d\n",
- 				(int)(i-128), value);
- 	}
- 	for (i = 0; i < MWIFIEX_MAX_SIG_STRENGTH; i++) {
+ 	return ret;
+ 
 -- 
 2.20.1
 
