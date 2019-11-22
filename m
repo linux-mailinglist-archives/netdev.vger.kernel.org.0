@@ -2,194 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 840B0107A79
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F8A107A81
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:27:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbfKVWTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 17:19:43 -0500
-Received: from mail-eopbgr40076.outbound.protection.outlook.com ([40.107.4.76]:46995
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726526AbfKVWTn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 17:19:43 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eDm6TaxxMdz6L2T6aW8tFqs7MAItAybHpq7l5VAXxJjDALi67WMcw7ofu4QP/H+ece/QmVH4woJ+RNCPzpuMNAZtTvYWvn+xs+EGCHnPtrZaSJR/H0nkAXxYuFUZEen+Nql5wnfs3KCdG1o4rfbVaQ/fKLi1dRUHGnRvxCk04p2yauw8Za0OFJDLw8eUdb3HvGURpJzNMgxQ/PSID1n4WJ+o5PDdtHCXdqLX94cFE+miSamdavkfDPABn/ccMNEbLiJs1Cpvfo4I3NuOFZ5j3er+OejC4WVthqBBxEK18pROJD75kFZn48qmrUScppkPyxYTgnEvJ9Ph68+udhqurw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WipeDJSIsms4D9V2Zw7PNYuj1B3RZtsw8okBZKixVvw=;
- b=H+M5+SMg0VzR+8rEPY2Z7YDr/GQyIbw3YQonPw/yeIReVdAUjjRvLWR1jsNau4h8ScbzKQYY6aFmEUY3hIuHIvPUrJSXEfDYHoU7HnjH1KKpEJO3fGEiAUH+7Qc/Dt3upLPFElfqYGIPtp9IIOVR61wnLfIzv049CegSggLRRWh5RdyDJv/CZlgIwRNq0EO73aHCvkEkmK6hKGczJ7OMgocD2R3AYM5nNLNvYeklvtYLm/SoXO6CgAYLX9CQ61EcDdz64/sqXwVNeJrkBIAFxo2veE97AFvpRAquxnFMId+AsNERGl/RntWAh3XdHU5IKyBCfSYFzVFqxrGJOYK34w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WipeDJSIsms4D9V2Zw7PNYuj1B3RZtsw8okBZKixVvw=;
- b=ogz+Tpb2lJOPNDqKW/ZssZyJOmw81/1VcU7MjawZljs6oJ3kHsz5oNrUDuSeOgbwwYJXvElVpNINWx9MDb9XM68PGvF93QOIJ45/BgTn6C5ln6LmehnRzWXnTPgmlJBub3j6Q4+h3qfFQz4O6xli4NWwTJlFDjrUAAeDO5cT2oI=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3423.eurprd05.prod.outlook.com (10.175.244.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.30; Fri, 22 Nov 2019 22:17:58 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2474.019; Fri, 22 Nov 2019
- 22:17:58 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 3/6] net/mlxfw: Improve FSM err message reporting
- and return codes
-Thread-Topic: [PATCH net-next 3/6] net/mlxfw: Improve FSM err message
- reporting and return codes
-Thread-Index: AQHVoX8N4AspyosR40+G2Du/QSLxVqeXwmKA
-Date:   Fri, 22 Nov 2019 22:17:57 +0000
-Message-ID: <4ceac9cda5bf9de32254f1b9b395ebeaa7de5097.camel@mellanox.com>
-References: <20191122215111.21723-1-saeedm@mellanox.com>
-         <20191122215111.21723-4-saeedm@mellanox.com>
-In-Reply-To: <20191122215111.21723-4-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6ec8ee41-2ac6-4f65-1a2c-08d76f99d474
-x-ms-traffictypediagnostic: VI1PR05MB3423:|VI1PR05MB3423:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3423524B47B30F829D8C554FBE490@VI1PR05MB3423.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-forefront-prvs: 02296943FF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(376002)(366004)(136003)(189003)(199004)(99286004)(66946007)(229853002)(5660300002)(66476007)(64756008)(66446008)(66556008)(76116006)(2501003)(71190400001)(71200400001)(478600001)(6116002)(2351001)(15650500001)(91956017)(3846002)(6512007)(14454004)(4326008)(2906002)(6486002)(6436002)(4001150100001)(5640700003)(36756003)(6506007)(8676002)(446003)(11346002)(316002)(7736002)(102836004)(305945005)(26005)(81166006)(14444005)(54906003)(58126008)(1730700003)(6916009)(8936002)(256004)(81156014)(118296001)(186003)(25786009)(76176011)(2616005)(86362001)(66066001)(6246003)(107886003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3423;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: =?utf-8?B?Szk1dDIzVlJqOGlHY2NDME9xWm5LWnF5UmNZeEFodzhYV21CNnJDTjFaaUxi?=
- =?utf-8?B?SFN3aWsrRDE1ZjlZSVpsZENmZkFObDFEVllyMEZWRE41N2Q2UUgwbCttSTEz?=
- =?utf-8?B?NElmdXYvMUJaRzZpK0JoYWRWRFBDb0UyRStzdUlUcDJXdkpWcG44NkM1cXIz?=
- =?utf-8?B?cUFCMWdYbUN6WHQ2Zi9RTTRkOVpuNVVZY0k2bVdDWG5lODF5TkZLYUVtVnBE?=
- =?utf-8?B?R2s0RE82R0piWTBNbDU2dnhjbVdySURyMUhkZGZuaHEvVGM1TE1vZmM2SWFJ?=
- =?utf-8?B?SkFUbWhPSkxrelB3TVlxQWlKSzNISXlqUlV0UnJOY1JrUXMvUTk5OXFmaEZi?=
- =?utf-8?B?V0dreWdEVXhnYUw0T0FrUUhoMmNPeEVKNjZVZlEzRzBoR0h4TUJFV0tjSDQ3?=
- =?utf-8?B?aWY3U3BPTm1sUmdQcFA0MDVNaVlPUm9NRTNkWG11QmR1Q0w5NHR4UEpZVHVs?=
- =?utf-8?B?ZnRxLzFrZU8wYTBKUzRFQVJTLzZRMjdpZFNiYi9HekpTWGVLK1dPUi9iUUdi?=
- =?utf-8?B?Zk4yYXhiQW9lSW9YUGRGWFN3d3RCOXdSRGxjQTFUQ1NJRlJicUpZYkJIc1Bv?=
- =?utf-8?B?WDRidlpxRjQ4dUkydTdKWElHWXBERW1WWksyL3o1WjhDVGpyV1ZaOGRxaVA0?=
- =?utf-8?B?cmFjNDlxdlUxQkVxZGp2QW83V2hKZHNBQVl0ZE5UYTFycTlOSEZTUCt2S2Jr?=
- =?utf-8?B?djRBYWN1YU9wZ1Z4MmlVWm53dTJjRnJ6QXhBNjRwcndxa2htZFp6a3MvUFd4?=
- =?utf-8?B?Z21TREo1eDRMNGhnT0ZBWG1TOUZoME1ZRmRGb2xFaGFsM24zYkZjeHRQZUpa?=
- =?utf-8?B?clUreXNwVmx6LytLQjhWcmZWYXNFWkt1a29sQytTTnMzYkVhUjRVdlNDZHRr?=
- =?utf-8?B?YTdPZE5QUUhUVC9MZGJEU09tSGordTg0RXU5aDdzY2lUdFpDNkxqbXRxZUo4?=
- =?utf-8?B?S25xbUxXUXp2RUp1bGR2TkxmejZxV2YrV0lObU1IaUthOWV6Y3JFOEVwcDNU?=
- =?utf-8?B?ZUpOVFFGdzJZTWFqcTAzTlVtU0VKOWZnN1FJeDNqcERDUzRkRzhBN3UwVG9M?=
- =?utf-8?B?bGFTNms0QjZDMGRNSTZhUHhSb1dNdTdMc0duWFY4TlJ6QngwN1RqZ0I1UHBT?=
- =?utf-8?B?WHN5WlhPUVFqaFhabmNKdlNxcG1xRmV4ejFLMHRwbm9LVEo3dlR5d09sQzVN?=
- =?utf-8?B?eE5uNE82Q2IxNExPM2p1bzFxQnpBakNWQy9jOHpBK2hWUHYrVjROS3ZuUkkw?=
- =?utf-8?B?WXRGV2JkWjFFd1FhUDFJQTlHZnlNeFo0aGFkV0N6YVI2OEMxZm1Wa0ZuaUVF?=
- =?utf-8?B?UytId1o2YkxLZUt5NUM5bEVER2VQaWs2RDNkTkZvZE0zWEVnMjZ1dndhNWZi?=
- =?utf-8?B?anlNU3JvYjBtUlNsK2F0aEVjZmV3QzhGYVFvUTRUaEZIWHNxYXFKRmVBVklB?=
- =?utf-8?B?NFNZWjcrQy93MkRRKzRIZU90d3lHVVJLN1hmblZFM3FvK1pvZ0MyNThuTzc3?=
- =?utf-8?B?RzdNNzhjYml3c1NZN1UzbE4yemE2K3JSY0tZbS9KelpDZWxZWnVtMzYrK21L?=
- =?utf-8?B?dWZPSXowMjFNZDR6MUplQitjTS9OSVNCcldYTk8rMytMa2hjU1NBRDRMTTh6?=
- =?utf-8?B?dEFDa1BabDV4c1hZNUwwTTJaNGIzK3o0MXQ4SUIrV1FTTmlXMk9kRjU5emNm?=
- =?utf-8?B?cTRwZVoxTElOeHlwUHRpQWhBN0x2LzI4Q3ZFOU4xdFg2N1YyYlYxTjlSaGVZ?=
- =?utf-8?B?dTgyNzFaYTZMa3k4VnFZbCtUUk01cFBjSTExZ0xSMmlrQ3cxcFJNOGZwWk14?=
- =?utf-8?B?S0Zmci9CTUVRSHY3bGJ5dGVBQzhRKzlTL2xZRm1kTG5aRlpOaEl3L08yTmpU?=
- =?utf-8?B?TDBVQkVzVk1MYXl2MEpOc1kydVNTbm9vK3ZkUUM0VVV5aVp4bGViT3g2dnIr?=
- =?utf-8?B?djltUFZGc3B5NEwrUGxhNWI1anJmd0VrVCtLRWhLVFQyeHZMUG9rZ2dTelZr?=
- =?utf-8?B?ako4NTg2REY3eXBjd0FxSGRkVjFrTXdKZ2tETVNNWUJ2MTFkdUZOeFhDSVgx?=
- =?utf-8?B?S0tHWGUxUTBIYzRUb1pta1JKUW42VG1KVFNSMjIvTklySXBkRWhHRWZQcnBG?=
- =?utf-8?B?d1RVaHNaVllNV0g0YUJFd2VGRVlianM0TnQvTnhzQ2xPdWlMQzhWT3hWNU85?=
- =?utf-8?B?a3NmVVl1eTF3R3pwdktocmxpb2c2bElsdmtiblAvdE01TldGRGZvTGZFUWRn?=
- =?utf-8?B?OE0rZmlpQkNXenBIQlNwQlY5NWhuLzdya1FsQUZoVFYyZm9CS0hDZWxxaWNN?=
- =?utf-8?B?SnJnYjBTZ2FWTW1mVFdQdlF5c1RrY0pLb3NSbWhhZ3VlZmM5UUIxVDhua0Uz?=
- =?utf-8?B?OEVvZUZlQUFwV3BqVEM1VVBoNTRXNVFLVENlZDhmOVNkMmxNemhOSU44dVJp?=
- =?utf-8?B?RnBMRnFpVWVCL0MzQmRqSERpOVVuSXRubjhwQ2oyOHBud29hOWRrSlhEbU1W?=
- =?utf-8?B?YzN4c3d6MW9tYU5xZUM2TVhjcHFyVm5HVFczN1h4YjJUc3F6QngyV0dKNmRH?=
- =?utf-8?B?UXNNR0VkSkFCNGlLRGU3Y244Y1JWbnJKbGljRFFVWWVvcVE2UE5hMnRJQXpv?=
- =?utf-8?Q?W9f8aHgo0KFOnf46tzt2/1AwjIjQ=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <449858322FC23A4281CA7FEDEA91FBBB@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726690AbfKVW0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 17:26:55 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:36250 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726089AbfKVW0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 17:26:55 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1iYHNs-0000DW-TO; Fri, 22 Nov 2019 23:26:36 +0100
+Date:   Fri, 22 Nov 2019 23:26:36 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Andreas Steinmetz <ast@domdv.de>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Westphal <fw@strlen.de>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, emamd001@umn.edu
+Subject: Re: [PATCH] macsec: Fix memory leaks in macsec_decrypt()
+Message-ID: <20191122222636.GA21689@breakpoint.cc>
+References: <20191122220242.29359-1-navid.emamdoost@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ec8ee41-2ac6-4f65-1a2c-08d76f99d474
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2019 22:17:57.9303
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: E1PINdnGGV1q6O1NlSi7PleCWxl4P9G+KOkjBYwxcGXJSg3N29cOBXfWwhS499CuASoRfoRQXRhdkQTw4Gm15w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3423
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191122220242.29359-1-navid.emamdoost@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTExLTIyIGF0IDIxOjUxICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
-Cj4gUmVwb3J0IHVuaXF1ZSBhbmQgc3RhbmRhcmQgZXJyb3IgY29kZXMgY29ycmVzcG9uZGluZyB0
-byB0aGUgc3BlY2lmaWMNCj4gRlcgZmxhc2ggZXJyb3IgYW5kIHJlcG9ydCBtb3JlIGRldGFpbGVk
-IGVycm9yIG1lc3NhZ2VzIHRvIG5ldGxpbmsuDQo+IA0KPiBCZWZvcmU6DQo+ICQgZGV2bGluayBk
-ZXYgZmxhc2ggcGNpLzAwMDA6MDU6MDAuMCBmaWxlIC4uLg0KPiBFcnJvcjogbWx4Znc6IEZpcm13
-YXJlIGZsYXNoIGZhaWxlZC4NCj4gZGV2bGluayBhbnN3ZXJzOiBJbnZhbGlkIGFyZ3VtZW50DQo+
-IA0KPiBBZnRlcjoNCj4gJCBkZXZsaW5rIGRldiBmbGFzaCBwY2kvMDAwMDowNTowMC4wIGZpbGUg
-Li4uDQo+IEVycm9yOiBtbHhmdzogRmlybXdhcmUgZmxhc2ggZmFpbGVkOiBwZW5kaW5nIHJlc2V0
-Lg0KPiBkZXZsaW5rIGFuc3dlcnM6IE9wZXJhdGlvbiBhbHJlYWR5IGluIHByb2dyZXNzDQo+IA0K
-PiBTaWduZWQtb2ZmLWJ5OiBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCj4g
-UmV2aWV3ZWQtYnk6IElkbyBTY2hpbW1lbCA8aWRvc2NoQG1lbGxhbm94LmNvbT4NCj4gQWNrZWQt
-Ynk6IEppcmkgUGlya28gPGppcmlAbWVsbGFub3guY29tPg0KPiAtLS0NCj4gIC4uLi9uZXQvZXRo
-ZXJuZXQvbWVsbGFub3gvbWx4ZncvbWx4ZndfZnNtLmMgICB8IDU1DQo+ICsrKysrKysrKysrKysr
-KysrLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA0OSBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygt
-KQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seGZ3
-L21seGZ3X2ZzbS5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4ZncvbWx4
-ZndfZnNtLmMNCj4gaW5kZXggYWZjZGM1Nzk1NzhjLi5iYTFlNWIyNzZjNTQgMTAwNjQ0DQo+IC0t
-LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seGZ3L21seGZ3X2ZzbS5jDQo+ICsr
-KyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seGZ3L21seGZ3X2ZzbS5jDQo+IEBA
-IC0zOSw2ICszOSw1MiBAQCBzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0DQo+IG1seGZ3X2ZzbV9z
-dGF0ZV9lcnJfc3RyW10gPSB7DQo+ICAJCSJ1bmtub3duIGVycm9yIg0KPiAgfTsNCj4gIA0KPiAr
-c3RhdGljIGludCBtbHhmd19mc21fc3RhdGVfZXJyKHN0cnVjdCBuZXRsaW5rX2V4dF9hY2sgKmV4
-dGFjaywNCj4gKwkJCSAgICAgICBlbnVtIG1seGZ3X2ZzbV9zdGF0ZV9lcnIgZnNtX3N0YXRlX2Vy
-cikNCj4gK3sNCj4gKyNkZWZpbmUgTUxYRldfRVJSX1BSRlggIkZpcm13YXJlIGZsYXNoIGZhaWxl
-ZDogIg0KPiArI2RlZmluZSBNTFhGV19GU01fU1RBVEVfRVJSX05MKGV4dGFjaywgbXNnKSBcDQo+
-ICsJTkxfU0VUX0VSUl9NU0dfTU9EKChleHRhY2spLCBNTFhGV19FUlJfUFJGWCBtc2cpDQo+ICsN
-Cj4gKwlmc21fc3RhdGVfZXJyID0gbWluX3QoZW51bSBtbHhmd19mc21fc3RhdGVfZXJyLCBmc21f
-c3RhdGVfZXJyLA0KPiArCQkJICAgICAgTUxYRldfRlNNX1NUQVRFX0VSUl9NQVgpOw0KPiArCXBy
-X2VycihNTFhGV19FUlJfUFJGWCAiJXNcbiIsDQo+IG1seGZ3X2ZzbV9zdGF0ZV9lcnJfc3RyW2Zz
-bV9zdGF0ZV9lcnJdKTsNCj4gKwlzd2l0Y2ggKGZzbV9zdGF0ZV9lcnIpIHsNCj4gKwljYXNlIE1M
-WEZXX0ZTTV9TVEFURV9FUlJfRVJST1I6DQo+ICsJCU1MWEZXX0ZTTV9TVEFURV9FUlJfTkwoZXh0
-YWNrLCAiZ2VuZXJhbCBlcnJvciIpOw0KPiArCQlyZXR1cm4gLUVSRU1PVEVJTzsNCj4gKwljYXNl
-IE1MWEZXX0ZTTV9TVEFURV9FUlJfUkVKRUNURURfRElHRVNUX0VSUjoNCj4gKwkJTUxYRldfRlNN
-X1NUQVRFX0VSUl9OTChleHRhY2ssICJjb21wb25lbnQgaGFzaA0KPiBtaXNtYXRjaCIpOw0KPiAr
-CQlyZXR1cm4gLUVCQURNU0c7DQo+ICsJY2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX1JFSkVDVEVE
-X05PVF9BUFBMSUNBQkxFOg0KPiArCQlNTFhGV19GU01fU1RBVEVfRVJSX05MKGV4dGFjaywgImNv
-bXBvbmVudCBub3QNCj4gYXBwbGljYWJsZSIpOw0KPiArCQlyZXR1cm4gLUVOT0VOVDsNCj4gKwlj
-YXNlIE1MWEZXX0ZTTV9TVEFURV9FUlJfUkVKRUNURURfVU5LTk9XTl9LRVk6DQo+ICsJCU1MWEZX
-X0ZTTV9TVEFURV9FUlJfTkwoZXh0YWNrLCAidW5rbm93biBrZXkiKTsNCj4gKwkJcmV0dXJuIC1F
-Tk9LRVk7DQo+ICsJY2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX1JFSkVDVEVEX0FVVEhfRkFJTEVE
-Og0KPiArCQlNTFhGV19GU01fU1RBVEVfRVJSX05MKGV4dGFjaywgImF1dGhlbnRpY2F0aW9uDQo+
-IGZhaWxlZCIpOw0KPiArCQlyZXR1cm4gLUVBQ0NFUzsNCj4gKwljYXNlIE1MWEZXX0ZTTV9TVEFU
-RV9FUlJfUkVKRUNURURfVU5TSUdORUQ6DQo+ICsJCU1MWEZXX0ZTTV9TVEFURV9FUlJfTkwoZXh0
-YWNrLCAiY29tcG9uZW50IHdhcyBub3QNCj4gc2lnbmVkIik7DQo+ICsJCXJldHVybiAtRUtFWVJF
-Vk9LRUQ7DQo+ICsJY2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX1JFSkVDVEVEX0tFWV9OT1RfQVBQ
-TElDQUJMRToNCj4gKwkJTUxYRldfRlNNX1NUQVRFX0VSUl9OTChleHRhY2ssICJrZXkgbm90IGFw
-cGxpY2FibGUiKTsNCj4gKwkJcmV0dXJuIC1FS0VZUkVKRUNURUQ7DQo+ICsJY2FzZSBNTFhGV19G
-U01fU1RBVEVfRVJSX1JFSkVDVEVEX0JBRF9GT1JNQVQ6DQo+ICsJCU1MWEZXX0ZTTV9TVEFURV9F
-UlJfTkwoZXh0YWNrLCAiYmFkIGZvcm1hdCIpOw0KPiArCQlyZXR1cm4gLUVOT0VYRUM7DQo+ICsJ
-Y2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX0JMT0NLRURfUEVORElOR19SRVNFVDoNCj4gKwkJTUxY
-RldfRlNNX1NUQVRFX0VSUl9OTChleHRhY2ssICJwZW5kaW5nIHJlc2V0Iik7DQo+ICsJCXJldHVy
-biAtRUFMUkVBRFk7DQo+ICsJY2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX09LOiAvKiBzaG91bGQg
-bmV2ZXIgaGFwcGVuICovDQo+ICsJY2FzZSBNTFhGV19GU01fU1RBVEVfRVJSX01BWDoNCj4gKwkJ
-TUxYRldfRlNNX1NUQVRFX0VSUl9OTChleHRhY2ssICJ1bmtub3duIGVycm9yIik7DQo+ICsJCXJl
-dHVybiAtRUlOVkFMOw0KPiArCX0NCg0KQWN0dWFsbHkgd2l0aCB0aGUgaW50cm9kdWN0aW9uIG9m
-IHRoZSBmb3JtYXR0YWJsZSBleHRhY2sgYnVmZmVyIGluDQpmaXJzdCBwYXRjaCB0aGlzIHdob2xl
-IHN3aXRjaCBjYXNlIGNhbiBiZSByZWR1Y2VkIHRvIA0KDQorICAgICAgIE5MX1NFVF9FUlJfTVNH
-X01PRChleHRhY2ssICBNTFhGV19FUlJfUFJGWCAiJXMiLA0KKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgbWx4ZndfZnNtX3N0YXRlX2Vycl9zdHJbZnNtX3N0YXRlX2Vycl0pOw0KDQpJIHdpbGwg
-c2VuZCBWMi4NCg0K
+Navid Emamdoost <navid.emamdoost@gmail.com> wrote:
+> In the implementation of macsec_decrypt(), there are two memory leaks
+> when crypto_aead_decrypt() fails. Release allocated req and skb before
+> return.
+> 
+> Fixes: c3b7d0bd7ac2 ("macsec: fix rx_sa refcounting with decrypt callback")
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+>  drivers/net/macsec.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+> index afd8b2a08245..34c6fb4eb9ef 100644
+> --- a/drivers/net/macsec.c
+> +++ b/drivers/net/macsec.c
+> @@ -986,6 +986,8 @@ static struct sk_buff *macsec_decrypt(struct sk_buff *skb,
+>  	dev_hold(dev);
+>  	ret = crypto_aead_decrypt(req);
+>  	if (ret == -EINPROGRESS) {
+> +		aead_request_free(req);
+> +		kfree_skb(skb);
+
+-EINPROGRESS means decryption is handled asynchronously, no?
+
+>  		return ERR_PTR(ret);
+>  	} else if (ret != 0) {
+>  		/* decryption/authentication failed
+
+This is the error handling/failure path.
