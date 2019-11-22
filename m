@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7861B106422
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F405106417
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfKVGP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:15:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51666 "EHLO mail.kernel.org"
+        id S1728697AbfKVGPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:15:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729638AbfKVGOJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:14:09 -0500
+        id S1729516AbfKVGOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:14:11 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4960820708;
-        Fri, 22 Nov 2019 06:14:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA5BC2068F;
+        Fri, 22 Nov 2019 06:14:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574403249;
-        bh=3pT4tzAQDoCWy1rARRfevvK6RgLlOffebbAAx/Ips6Y=;
+        s=default; t=1574403250;
+        bh=4ViH26CfKQ55nuwcbzbxlFI+t7zG1NSHwlFV6FltphI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D4RNUOgfHqawpS5xdGb9n5njn7Lo/PpG1QFJlNNXDcAK96LX1fwyBG1dPGU/hdPRR
-         Nyt1D+H5bhT0J67B/SbimrulFF+Al2ilPaNtYsJwcoxZeAP9fFQGGkIPddSgcYfJz/
-         l1R44BgrMsOBc49cOQtR2ropl5puT5RrLFbW3vEU=
+        b=LFxfePbFEL3XA11K4zQnk8eo7oi0At68HOV+ZvAfpNp9ijOlTfzVVk3j9JSAaaagM
+         vywaBfQ5A6rjBuL8BRJNmPj0I8CxCRiiuRfR5LNMnW9yAttKeyRQYS3K/HLuqvjbLO
+         HYh/ZDJJL/Tphy70DB+XR6cX5oio1QVqQNCNhFbY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Hoang Le <hoang.h.le@dektech.com.au>,
+        Ying Xue <ying.xue@windriver.com>,
+        Jon Maloy <maloy@donjonn.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 59/68] decnet: fix DN_IFREQ_SIZE
-Date:   Fri, 22 Nov 2019 01:12:52 -0500
-Message-Id: <20191122061301.4947-58-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.4 60/68] tipc: fix skb may be leaky in tipc_link_input
+Date:   Fri, 22 Nov 2019 01:12:53 -0500
+Message-Id: <20191122061301.4947-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122061301.4947-1-sashal@kernel.org>
 References: <20191122061301.4947-1-sashal@kernel.org>
@@ -44,65 +46,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 50c2936634bcb1db78a8ca63249236810c11a80f ]
+[ Upstream commit 7384b538d3aed2ed49d3575483d17aeee790fb06 ]
 
-Digging through the ioctls with Al because of the previous
-patches, we found that on 64-bit decnet's dn_dev_ioctl()
-is wrong, because struct ifreq::ifr_ifru is actually 24
-bytes (not 16 as expected from struct sockaddr) due to the
-ifru_map and ifru_settings members.
+When we free skb at tipc_data_input, we return a 'false' boolean.
+Then, skb passed to subcalling tipc_link_input in tipc_link_rcv,
 
-Clearly, decnet expects the ioctl to be called with a struct
-like
-  struct ifreq_dn {
-    char ifr_name[IFNAMSIZ];
-    struct sockaddr_dn ifr_addr;
-  };
+<snip>
+1303 int tipc_link_rcv:
+...
+1354    if (!tipc_data_input(l, skb, l->inputq))
+1355        rc |= tipc_link_input(l, skb, l->inputq);
+</snip>
 
-since it does
-  struct ifreq *ifr = ...;
-  struct sockaddr_dn *sdn = (struct sockaddr_dn *)&ifr->ifr_addr;
+Fix it by simple changing to a 'true' boolean when skb is being free-ed.
+Then, tipc_link_rcv will bypassed to subcalling tipc_link_input as above
+condition.
 
-This means that DN_IFREQ_SIZE is too big for what it wants on
-64-bit, as it is
-  sizeof(struct ifreq) - sizeof(struct sockaddr) +
-  sizeof(struct sockaddr_dn)
-
-This assumes that sizeof(struct sockaddr) is the size of ifr_ifru
-but that isn't true.
-
-Fix this to use offsetof(struct ifreq, ifr_ifru).
-
-This indeed doesn't really matter much - the result is that we
-copy in/out 8 bytes more than we should on 64-bit platforms. In
-case the "struct ifreq_dn" lands just on the end of a page though
-it might lead to faults.
-
-As far as I can tell, it has been like this forever, so it seems
-very likely that nobody cares.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Acked-by: Jon Maloy <maloy@donjonn.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/decnet/dn_dev.c | 2 +-
+ net/tipc/link.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/decnet/dn_dev.c b/net/decnet/dn_dev.c
-index b2c26b081134a..80554e7e9a0f6 100644
---- a/net/decnet/dn_dev.c
-+++ b/net/decnet/dn_dev.c
-@@ -55,7 +55,7 @@
- #include <net/dn_neigh.h>
- #include <net/dn_fib.h>
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 736fffb28ab6f..0080699b7cd1b 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -883,7 +883,7 @@ static bool tipc_data_input(struct tipc_link *l, struct sk_buff *skb,
+ 	default:
+ 		pr_warn("Dropping received illegal msg type\n");
+ 		kfree_skb(skb);
+-		return false;
++		return true;
+ 	};
+ }
  
--#define DN_IFREQ_SIZE (sizeof(struct ifreq) - sizeof(struct sockaddr) + sizeof(struct sockaddr_dn))
-+#define DN_IFREQ_SIZE (offsetof(struct ifreq, ifr_ifru) + sizeof(struct sockaddr_dn))
- 
- static char dn_rt_all_end_mcast[ETH_ALEN] = {0xAB,0x00,0x00,0x04,0x00,0x00};
- static char dn_rt_all_rt_mcast[ETH_ALEN]  = {0xAB,0x00,0x00,0x03,0x00,0x00};
 -- 
 2.20.1
 
