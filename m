@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE83107A90
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA40107A97
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:29:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbfKVW3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 17:29:10 -0500
-Received: from mga07.intel.com ([134.134.136.100]:7937 "EHLO mga07.intel.com"
+        id S1727059AbfKVW3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 17:29:13 -0500
+Received: from mga07.intel.com ([134.134.136.100]:7936 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727007AbfKVW3J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727008AbfKVW3J (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Nov 2019 17:29:09 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 14:29:09 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
-   d="scan'208";a="409027341"
+   d="scan'208";a="409027344"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Nov 2019 14:29:08 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 22 Nov 2019 14:29:09 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+Cc:     Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 05/15] ice: fix stack leakage
-Date:   Fri, 22 Nov 2019 14:28:55 -0800
-Message-Id: <20191122222905.670858-6-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 06/15] ice: Only disable VF state when freeing each VF resources
+Date:   Fri, 22 Nov 2019 14:28:56 -0800
+Message-Id: <20191122222905.670858-7-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
 References: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
@@ -39,43 +39,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
 
-In the case of an invalid virtchannel request the driver
-would return uninitialized data to the VF from the PF stack
-which is a bug.  Fix by initializing the stack variable
-earlier in the function before any return paths can be taken.
+It is wrong to set PF disable state flag for all VFs when freeing VF
+resources - Instead, we should set VF disable state flag for each VF with
+its resources being returned to the device. Right now, all VF opcodes,
+mailbox communication to clear its resources as well fails - since we
+already indicate that PF is in disable state, with all VFs not active. In
+addition, we don't need to notify VF that PF is intending to reset it, if
+it is already in disabled state.
 
-Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index fd419230a6c0..f8d26674cf5a 100644
+index f8d26674cf5a..869111a45d61 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1886,8 +1886,8 @@ static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
- 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
- 	struct virtchnl_queue_select *vqs =
- 		(struct virtchnl_queue_select *)msg;
-+	struct ice_eth_stats stats = { 0 };
- 	struct ice_pf *pf = vf->pf;
--	struct ice_eth_stats stats;
- 	struct ice_vsi *vsi;
- 
- 	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
-@@ -1906,7 +1906,6 @@ static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
- 		goto error_param;
+@@ -318,8 +318,9 @@ void ice_free_vfs(struct ice_pf *pf)
+ 	pf->num_alloc_vfs = 0;
+ 	for (i = 0; i < tmp; i++) {
+ 		if (test_bit(ICE_VF_STATE_INIT, pf->vf[i].vf_states)) {
+-			/* disable VF qp mappings */
++			/* disable VF qp mappings and set VF disable state */
+ 			ice_dis_vf_mappings(&pf->vf[i]);
++			set_bit(ICE_VF_STATE_DIS, pf->vf[i].vf_states);
+ 			ice_free_vf_res(&pf->vf[i]);
+ 		}
  	}
+@@ -1303,9 +1304,12 @@ static void ice_vc_notify_vf_reset(struct ice_vf *vf)
+ 	if (!vf || vf->vf_id >= vf->pf->num_alloc_vfs)
+ 		return;
  
--	memset(&stats, 0, sizeof(struct ice_eth_stats));
- 	ice_update_eth_stats(vsi);
+-	/* verify if the VF is in either init or active before proceeding */
+-	if (!test_bit(ICE_VF_STATE_INIT, vf->vf_states) &&
+-	    !test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states))
++	/* Bail out if VF is in disabled state, neither initialized, nor active
++	 * state - otherwise proceed with notifications
++	 */
++	if ((!test_bit(ICE_VF_STATE_INIT, vf->vf_states) &&
++	     !test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) ||
++	    test_bit(ICE_VF_STATE_DIS, vf->vf_states))
+ 		return;
  
- 	stats = vsi->eth_stats;
+ 	pfe.event = VIRTCHNL_EVENT_RESET_IMPENDING;
 -- 
 2.23.0
 
