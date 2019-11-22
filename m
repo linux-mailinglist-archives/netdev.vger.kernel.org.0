@@ -2,34 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0FD107401
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 15:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C7D10740D
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 15:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfKVOUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 09:20:55 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47353 "EHLO
+        id S1726698AbfKVO2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 09:28:16 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:56479 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726100AbfKVOUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 09:20:53 -0500
+        with ESMTP id S1726574AbfKVO2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 09:28:16 -0500
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iY9nj-00040s-BA; Fri, 22 Nov 2019 15:20:47 +0100
+        id 1iY9ut-0004mL-H8; Fri, 22 Nov 2019 15:28:11 +0100
 Received: from [IPv6:2a03:f580:87bc:d400:941f:8f59:5279:2337] (unknown [IPv6:2a03:f580:87bc:d400:941f:8f59:5279:2337])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6A48348196E;
-        Fri, 22 Nov 2019 14:20:44 +0000 (UTC)
-Subject: Re: [PATCH] MAINTAINERS: Add fragment for xilinx CAN driver
-To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        wg@grandegger.com, davem@davemloft.net, michal.simek@xilinx.com
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3E69F48197C;
+        Fri, 22 Nov 2019 14:28:09 +0000 (UTC)
+To:     Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
+        davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1574325564-30529-1-git-send-email-appana.durga.rao@xilinx.com>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, nagasure@xilinx.com,
+        Venkatesh Yadav Abbarapu <venkatesh.abbarapu@xilinx.com>,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+References: <1574251865-19592-1-git-send-email-srinivas.neeli@xilinx.com>
+ <1574251865-19592-2-git-send-email-srinivas.neeli@xilinx.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -92,15 +95,16 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Message-ID: <1fb1f9bf-5bf2-dc4b-a277-d8686810658a@pengutronix.de>
-Date:   Fri, 22 Nov 2019 15:20:33 +0100
+Subject: Re: [PATCH 1/2] can: xilinx_can: skip error message on deferred probe
+Message-ID: <9f0f491d-74fe-296a-9636-1c0e14a5f77a@pengutronix.de>
+Date:   Fri, 22 Nov 2019 15:28:04 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <1574325564-30529-1-git-send-email-appana.durga.rao@xilinx.com>
+In-Reply-To: <1574251865-19592-2-git-send-email-srinivas.neeli@xilinx.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="THYRnl6ns8SFuPniAGLk8fDYUr8nrAygp"
+ boundary="g5A6gImkZGJGG7aaAnWYBt0t3a00bGEaR"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -111,36 +115,70 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---THYRnl6ns8SFuPniAGLk8fDYUr8nrAygp
-Content-Type: multipart/mixed; boundary="5USbQxiRglyjWGCjfibSmEuN9eI1mIpDx";
+--g5A6gImkZGJGG7aaAnWYBt0t3a00bGEaR
+Content-Type: multipart/mixed; boundary="zKF5itJBYhuodM9eHR8mpx9mqwFKvS9Ue";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
- wg@grandegger.com, davem@davemloft.net, michal.simek@xilinx.com
+To: Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
+ davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
 Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Message-ID: <1fb1f9bf-5bf2-dc4b-a277-d8686810658a@pengutronix.de>
-Subject: Re: [PATCH] MAINTAINERS: Add fragment for xilinx CAN driver
-References: <1574325564-30529-1-git-send-email-appana.durga.rao@xilinx.com>
-In-Reply-To: <1574325564-30529-1-git-send-email-appana.durga.rao@xilinx.com>
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ git@xilinx.com, nagasure@xilinx.com,
+ Venkatesh Yadav Abbarapu <venkatesh.abbarapu@xilinx.com>,
+ Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Message-ID: <9f0f491d-74fe-296a-9636-1c0e14a5f77a@pengutronix.de>
+Subject: Re: [PATCH 1/2] can: xilinx_can: skip error message on deferred probe
+References: <1574251865-19592-1-git-send-email-srinivas.neeli@xilinx.com>
+ <1574251865-19592-2-git-send-email-srinivas.neeli@xilinx.com>
+In-Reply-To: <1574251865-19592-2-git-send-email-srinivas.neeli@xilinx.com>
 
---5USbQxiRglyjWGCjfibSmEuN9eI1mIpDx
+--zKF5itJBYhuodM9eHR8mpx9mqwFKvS9Ue
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 11/21/19 9:39 AM, Appana Durga Kedareswara rao wrote:
-> Added entry for xilinx CAN driver.
+On 11/20/19 1:11 PM, Srinivas Neeli wrote:
+> From: Venkatesh Yadav Abbarapu <venkatesh.abbarapu@xilinx.com>
 >=20
-> Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.co=
-m>
+> When can clock is provided from the clock wizard, clock wizard driver
+       ^^^
 
-Thanks a lot.
+The code looks like the "bus" clock is probed here, not the "can" clock.
 
-Please have a look at "[PATCH 1/2] can: xilinx_can: skip error message
-on deferred probe" and give me your Reviewed-by if the patch is ok :)
+> may not be available when can driver probes resulting to the error
+> message "bus clock not found error".
+>=20
+> As this error message is not very useful to the end user, skip printing=
 
-regards,
+> in the case of deferred probe.
+>=20
+> Signed-off-by: Venkatesh Yadav Abbarapu <venkatesh.abbarapu@xilinx.com>=
+
+> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+>  drivers/net/can/xilinx_can.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.=
+c
+> index 4a96e2dd7d77..c5f05b994435 100644
+> --- a/drivers/net/can/xilinx_can.c
+> +++ b/drivers/net/can/xilinx_can.c
+> @@ -1772,7 +1772,8 @@ static int xcan_probe(struct platform_device *pde=
+v)
+> =20
+>  	priv->bus_clk =3D devm_clk_get(&pdev->dev, devtype->bus_clk_name);
+              ^^^^^^^
+>  	if (IS_ERR(priv->bus_clk)) {
+> -		dev_err(&pdev->dev, "bus clock not found\n");
+> +		if (PTR_ERR(priv->bus_clk) !=3D -EPROBE_DEFER)
+> +			dev_err(&pdev->dev, "bus clock not found\n");
+>  		ret =3D PTR_ERR(priv->bus_clk);
+>  		goto err_free;
+>  	}
+>=20
+
 Marc
 
 --=20
@@ -150,23 +188,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---5USbQxiRglyjWGCjfibSmEuN9eI1mIpDx--
+--zKF5itJBYhuodM9eHR8mpx9mqwFKvS9Ue--
 
---THYRnl6ns8SFuPniAGLk8fDYUr8nrAygp
+--g5A6gImkZGJGG7aaAnWYBt0t3a00bGEaR
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3X7rMACgkQWsYho5Hk
-nSACzwf/aIXeUlKdz5pmrq6nyQkXc5ah3E0kK4pIoXkVNd07N78tsG7fqCaIZlXn
-xxZ9jamvLcmWcxI5FXNLQPd2lNj/ujfYZ4YQB6MmzMoK69KKE4ip6E0DcaDLvx44
-/SZ8Emo6QfgqqKSKgXL+Sv9eehFIFJyJteSys4o/m/ylFgb8YDvl2hs83UQxkEsM
-jjRCy3rYl/q8CgZk4Z92F32xTlUVWLDLSFAP6Pn6yC84db3ugkeyZ/0+3olm+DzI
-xXY3G7m9u21fDZhDKIbskmUSWoNTR0qfTRtC6nUzXkteSs92C4TXkMdZGgKhbJeK
-21k/N493zj45Zvru6el0RfI4TvhVhQ==
-=reXf
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3X8HUACgkQWsYho5Hk
+nSD4HQgAgR9+bLGXtcs6cw/zcnm2GQ53RpJYiq5L/4IxwiQz5boWpbcceLPs9yfA
+S/0lbOaO9GPUFpPMkll/bUX0RcKqUbmwfjuN4R5URSnx71f2BaLLYrZnIRMF1r9E
+1dDEvGCwOoFW3Uepp2f6mXMSBhLdq6ceCkL2V1uT4Q/n9EckX2Fmzk/HzOX5RGrt
+2o9xvJokfgp1Jw4GVyuLCFjZGdAeRPZeGW2PphIh6ozT/Y5mBWor6aQ3H1Xc/FGf
+pb54OlJ6FhtNwB31VacOeq1B0G3GHtlEGgXx7JaZdkI3YMHAUQB6lMByT4Fw03w7
+2HoMDNNi+ri8NWx7zzXTEGhImyPRMw==
+=EXc+
 -----END PGP SIGNATURE-----
 
---THYRnl6ns8SFuPniAGLk8fDYUr8nrAygp--
+--g5A6gImkZGJGG7aaAnWYBt0t3a00bGEaR--
