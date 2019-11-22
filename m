@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8C2107A9D
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E44F0107A9C
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbfKVW3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 17:29:32 -0500
-Received: from mga07.intel.com ([134.134.136.100]:7937 "EHLO mga07.intel.com"
+        id S1727146AbfKVW3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 17:29:31 -0500
+Received: from mga07.intel.com ([134.134.136.100]:7936 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726729AbfKVW3J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726990AbfKVW3J (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 22 Nov 2019 17:29:09 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,7 +17,7 @@ Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 14:29:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
-   d="scan'208";a="409027334"
+   d="scan'208";a="409027337"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
   by fmsmga006.fm.intel.com with ESMTP; 22 Nov 2019 14:29:08 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -26,9 +26,9 @@ Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 03/15] ice: Disallow VF VLAN opcodes if VLAN offloads disabled
-Date:   Fri, 22 Nov 2019 14:28:53 -0800
-Message-Id: <20191122222905.670858-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 04/15] ice: Don't modify stripping for add/del VLANs on VF
+Date:   Fri, 22 Nov 2019 14:28:54 -0800
+Message-Id: <20191122222905.670858-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
 References: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
@@ -41,93 +41,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Brett Creeley <brett.creeley@intel.com>
 
-Currently if the host disables VLAN offloads on the VF by
-not setting the VIRTCHNL_VF_OFFLOAD_VLAN capability bit
-we will still honor VF VLAN configuration messages over
-VIRTCHNL. These messages (i.e. enable/disable VLAN stripping
-and VLAN filtering) should be blocked when the feature
-is not supported. Fix that by adding a helper function to
-determine if the VF is allowed to do VLAN operations based
-on the host's VF configuration.
+Currently when adding/deleting vlans in ice_vc_process_vlan_msg()
+we are calling ice_vsi_manage_vlan_stripping() to enable/disable
+when adding and deleting a VLAN respectively. This is wrong
+because adding/deleting VLANs has nothing to do with configuring
+VLAN stripping. VLAN stripping is configured through the
+following VIRTCHNL operations:
+	VIRTCHNL_OP_ENABLE_VLAN_STRIPPING
+	VIRTCHNL_OP_DISABLE_VLAN_STRIPPING
 
-Also, mirror the VF communicated capabilities in the host's
-VF configuration.
+Unfortunately we can't just remove this because then stripping
+will never be configured on VF initialization. Fix this by
+adding a new function that initializes (disables/enables) VLAN
+stripping for the VF based on the device supported capabilities.
+This allows us to remove the call to
+ice_vsi_manage_vlan_stripping() in ice_vc_process_vlan_msg().
 
 Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 29 +++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 39 +++++++++++++++----
+ 1 file changed, 31 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 2ac83ad3d1a6..3cb394bdfe51 100644
+index 3cb394bdfe51..fd419230a6c0 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1686,6 +1686,9 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
- 	ether_addr_copy(vfres->vsi_res[0].default_mac_addr,
- 			vf->dflt_lan_addr.addr);
+@@ -2735,14 +2735,6 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
+ 		goto error_param;
+ 	}
  
-+	/* match guest capabilities */
-+	vf->driver_caps = vfres->vf_cap_flags;
-+
- 	set_bit(ICE_VF_STATE_ACTIVE, vf->vf_states);
- 
- err:
-@@ -2653,6 +2656,17 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
- 	return ret;
+-	if (ice_vsi_manage_vlan_stripping(vsi, add_v)) {
+-		dev_err(&pf->pdev->dev,
+-			"%sable VLAN stripping failed for VSI %i\n",
+-			 add_v ? "en" : "dis", vsi->vsi_num);
+-		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+-		goto error_param;
+-	}
+-
+ 	if (test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
+ 	    test_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states))
+ 		vlan_promisc = true;
+@@ -2933,6 +2925,33 @@ static int ice_vc_dis_vlan_stripping(struct ice_vf *vf)
+ 				     v_ret, NULL, 0);
  }
  
 +/**
-+ * ice_vf_vlan_offload_ena - determine if capabilities support VLAN offloads
-+ * @caps: VF driver negotiated capabilities
++ * ice_vf_init_vlan_stripping - enable/disable VLAN stripping on initialization
++ * @vf: VF to enable/disable VLAN stripping for on initialization
 + *
-+ * Return true if VIRTCHNL_VF_OFFLOAD_VLAN capability is set, else return false
++ * If the VIRTCHNL_VF_OFFLOAD_VLAN flag is set enable VLAN stripping, else if
++ * the flag is cleared then we want to disable stripping. For example, the flag
++ * will be cleared when port VLANs are configured by the administrator before
++ * passing the VF to the guest or if the AVF driver doesn't support VLAN
++ * offloads.
 + */
-+static bool ice_vf_vlan_offload_ena(u32 caps)
++static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
 +{
-+	return !!(caps & VIRTCHNL_VF_OFFLOAD_VLAN);
++	struct ice_vsi *vsi = vf->pf->vsi[vf->lan_vsi_idx];
++
++	if (!vsi)
++		return -EINVAL;
++
++	/* don't modify stripping if port VLAN is configured */
++	if (vsi->info.pvid)
++		return 0;
++
++	if (ice_vf_vlan_offload_ena(vf->driver_caps))
++		return ice_vsi_manage_vlan_stripping(vsi, true);
++	else
++		return ice_vsi_manage_vlan_stripping(vsi, false);
 +}
 +
  /**
-  * ice_vc_process_vlan_msg
-  * @vf: pointer to the VF info
-@@ -2679,6 +2693,11 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
- 		goto error_param;
- 	}
- 
-+	if (!ice_vf_vlan_offload_ena(vf->driver_caps)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
-+	}
-+
- 	if (!ice_vc_isvalid_vsi_id(vf, vfl->vsi_id)) {
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 		goto error_param;
-@@ -2864,6 +2883,11 @@ static int ice_vc_ena_vlan_stripping(struct ice_vf *vf)
- 		goto error_param;
- 	}
- 
-+	if (!ice_vf_vlan_offload_ena(vf->driver_caps)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
-+	}
-+
- 	vsi = pf->vsi[vf->lan_vsi_idx];
- 	if (ice_vsi_manage_vlan_stripping(vsi, true))
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-@@ -2890,6 +2914,11 @@ static int ice_vc_dis_vlan_stripping(struct ice_vf *vf)
- 		goto error_param;
- 	}
- 
-+	if (!ice_vf_vlan_offload_ena(vf->driver_caps)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
-+	}
-+
- 	vsi = pf->vsi[vf->lan_vsi_idx];
- 	if (!vsi) {
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+  * ice_vc_process_vf_msg - Process request from VF
+  * @pf: pointer to the PF structure
+@@ -2987,6 +3006,10 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 		break;
+ 	case VIRTCHNL_OP_GET_VF_RESOURCES:
+ 		err = ice_vc_get_vf_res_msg(vf, msg);
++		if (ice_vf_init_vlan_stripping(vf))
++			dev_err(&pf->pdev->dev,
++				"Failed to initialize VLAN stripping for VF %d\n",
++				vf->vf_id);
+ 		ice_vc_notify_vf_link_state(vf);
+ 		break;
+ 	case VIRTCHNL_OP_RESET_VF:
 -- 
 2.23.0
 
