@@ -2,121 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25230107588
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8D5107599
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:17:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727319AbfKVQO4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Nov 2019 11:14:56 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:45539 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfKVQOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:14:55 -0500
-Received: from marcel-macbook.fritz.box (p4FF9F0D1.dip0.t-ipconnect.de [79.249.240.209])
-        by mail.holtmann.org (Postfix) with ESMTPSA id BE461CED23;
-        Fri, 22 Nov 2019 17:24:00 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3601.0.10\))
-Subject: Re: [PATCH v6 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm
- config
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CAL_JsqKso2Us5VW-Qp8mENAkMmoEh7YDT+HfhRMD1BKi7q=qAw@mail.gmail.com>
-Date:   Fri, 22 Nov 2019 17:14:53 +0100
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <FBAB12FA-8EAD-424C-9DF3-770E7D172AFD@holtmann.org>
-References: <20191118192123.82430-1-abhishekpandit@chromium.org>
- <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
- <20191121212923.GA24437@bogus>
- <06AE1B9D-F048-4AF1-9826-E8CAFA44DD58@holtmann.org>
- <CAL_JsqKso2Us5VW-Qp8mENAkMmoEh7YDT+HfhRMD1BKi7q=qAw@mail.gmail.com>
-To:     Rob Herring <robh@kernel.org>
-X-Mailer: Apple Mail (2.3601.0.10)
+        id S1727453AbfKVQRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 11:17:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37590 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727236AbfKVQRC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 11:17:02 -0500
+Received: from localhost (unknown [5.29.147.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 292DB2071C;
+        Fri, 22 Nov 2019 16:17:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574439421;
+        bh=CfHjawKN9UV9xUzsgscR1kzkY01iaAiALZsvPAqbBMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L1kvx0v2vmN4e698N0cKxdtkaRV4YB2sehEdvgfovDd0fdAohSrZO8vSTsoxR/Hw2
+         68tcrhrFOdsPGWJhgEQEDYFJ/Ht13qg/evGfjBx6OOpnEoJ7RnxWcqzpjj/WrnjFnv
+         bZTvAs9bP81/4GmxAB0sye1M7YWV4YhC77v9kRPc=
+Date:   Fri, 22 Nov 2019 18:16:58 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Danit Goldberg <danitg@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next 1/4] net/core: Add support for getting VF GUIDs
+Message-ID: <20191122161658.GD136476@unreal>
+References: <20191114133126.238128-1-leon@kernel.org>
+ <20191114133126.238128-3-leon@kernel.org>
+ <0e99c61b-ee89-a2cb-6f7a-b0ab5d06249c@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0e99c61b-ee89-a2cb-6f7a-b0ab5d06249c@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+On Thu, Nov 21, 2019 at 05:54:30PM -0700, David Ahern wrote:
+> On 11/14/19 6:31 AM, Leon Romanovsky wrote:
+> > From: Danit Goldberg <danitg@mellanox.com>
+> >
+> >
+> > Introduce a new ndo: ndo_get_vf_guid, to get from the net
+> > device the port and node GUID.
+> >
+> > New applications can choose to use this interface to show
+> > GUIDs with iproute2 with commands such as:
+> >
+> > - ip link show ib4
+> > ib4: <BROADCAST,MULTICAST> mtu 4092 qdisc noop state DOWN mode DEFAULT group default qlen 256
+> > link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:9a:03:00:44:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+> > vf 0     link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:9a:03:00:44:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff,
+> > spoof checking off, NODE_GUID 22:44:33:00:33:11:00:33, PORT_GUID 10:21:33:12:00:11:22:10, link-state disable, trust off, query_rss off
+> >
+> > Signed-off-by: Danit Goldberg <danitg@mellanox.com>
+> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> > ---
+> >  include/linux/netdevice.h |  4 ++++
+> >  net/core/rtnetlink.c      | 11 +++++++++++
+> >  2 files changed, 15 insertions(+)
+> >
+>
+>
+> LGTM
+>
+> Acked-by: David Ahern <dsahern@gmail.com>
 
->>>> Add documentation for pcm parameters.
->>>> 
->>>> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
->>>> ---
->>>> 
->>>> Changes in v6: None
->>>> Changes in v5: None
->>>> Changes in v4: None
->>>> Changes in v3: None
->>>> Changes in v2: None
->>> 
->>> Really? I'm staring at v2 that looks a bit different.
->>> 
->>>> .../bindings/net/broadcom-bluetooth.txt       | 16 ++++++++++
->>>> include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
->>>> 2 files changed, 48 insertions(+)
->>>> create mode 100644 include/dt-bindings/bluetooth/brcm.h
->>>> 
->>>> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
->>>> index c749dc297624..8561e4684378 100644
->>>> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
->>>> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
->>>> @@ -29,10 +29,20 @@ Optional properties:
->>>>   - "lpo": external low power 32.768 kHz clock
->>>> - vbat-supply: phandle to regulator supply for VBAT
->>>> - vddio-supply: phandle to regulator supply for VDDIO
->>>> + - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
->>>> + - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
->>>> + - brcm,bt-pcm-frame-type: short, long
->>>> + - brcm,bt-pcm-sync-mode: slave, master
->>>> + - brcm,bt-pcm-clock-mode: slave, master
->>> 
->>> Little of this seems unique to Broadcom. We already have some standard
->>> audio related properties for audio interfaces such as 'format',
->>> 'frame-master' and 'bitclock-master'. Ultimately, this would be tied
->>> into the audio complex of SoCs and need to work with the audio
->>> bindings. We also have HDMI audio bindings.
->>> 
->>> Maybe sco-routing is unique to BT and still needed in some form though
->>> if you describe the connection to the SoC audio complex, then maybe
->>> not? I'd assume every BT chip has some audio routing configuration.
->> 
->> so we tried to generalize this some time before and failed to get a proper consensus.
->> 
->> In general I am with you that we should just expose generic properties from the attached audio codec, but nobody has come up with anything like that. And I think aligning all chip manufacturers will take some time.
->> 
-> 
-> That shouldn't be hard. It's a solved problem for codecs and HDMI. I
-> don't think BT is any more complicated (ignoring phones). I suspect
-> it's not solved simply because no one wants to do the work beyond
-> their 1 BT device they care about ATM.
+Thanks a lot.
 
-we tried, but nobody can agree on these right now. I would be happy if others come forward and tell us how they wired up their hardware, but it hasn’t happened yet.
-
->> Maybe in the interim we just use brcm,bt-pcm-int-params = [00 00 ..] as initially proposed.
-> 
-> What's the device using this? Some chromebook I suppose. I think it
-> would be better to first see how this fits in with the rest of the
-> audio subsystem. Until then, the driver should probably just default
-> to "transport" mode which I assume is audio routed over the UART
-> interface. That should work on any platform at least, but may not be
-> optimal.
-
-SCO over UART doesn’t really work. Long time ago, some car kits might have done it, but in the Chromebook cases this will just not work. We need to configure the PCM settings of the Bluetooth chip.
-
-If we don’t do it via DT, then this gets hardcoded in the driver source and that is not helping either. So until we get anything better, lets use brcm,bt-pcm-int-params = [00 00 ..] and get this supported upstream.
-
-Regards
-
-Marcel
-
+>
+>
