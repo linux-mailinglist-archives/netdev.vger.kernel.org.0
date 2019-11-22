@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E18E107ACC
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AAA1107ADA
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 23:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbfKVWpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 17:45:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50434 "EHLO mail.kernel.org"
+        id S1726705AbfKVWvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 17:51:14 -0500
+Received: from mga01.intel.com ([192.55.52.88]:61839 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726526AbfKVWpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 17:45:05 -0500
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574462704;
-        bh=d8oXppx+2YbgA8Cf5mAhkifdEjS+4TUDqLDsK0lT574=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=1wzvzz4lR+zlu3lEAiGWnzAIZF6WTEZipsM+D0f1oMSBsm6zXIDPTvV95sz/P3FY6
-         +PxmKlhfAwND8HOuaL5behgADLMVAy5UxKDMaGFoEvseXNtj73+UlplNHqyHwprfwx
-         KKkuhdhuouw2C78M5g9+WPl/CWrt8IvNJRDCM6lE=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20191122.101751.1677491851513930094.davem@davemloft.net>
-References: <20191122.101751.1677491851513930094.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191122.101751.1677491851513930094.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: 5b1d9c17a3e0c16e1c9adf9c8a89f2735cb6dff8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 34c36f4564b8a3339db3ce832a5aaf1871185685
-Message-Id: <157446270451.8590.2299555023167506203.pr-tracker-bot@kernel.org>
-Date:   Fri, 22 Nov 2019 22:45:04 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        id S1726526AbfKVWvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 17:51:14 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 14:51:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
+   d="scan'208";a="232805997"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 22 Nov 2019 14:51:12 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iYHlf-0009ih-V7; Sat, 23 Nov 2019 06:51:11 +0800
+Date:   Sat, 23 Nov 2019 06:50:28 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     kbuild-all@lists.01.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [linux-next:master 13276/13503]
+ drivers/net/dsa/ocelot/felix.c:351:6: sparse: sparse: symbol
+ 'felix_txtstamp' was not declared. Should it be static?
+Message-ID: <201911230623.rJBgtgcn%lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Fri, 22 Nov 2019 10:17:51 -0800 (PST):
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   b9d3d01405061bb42358fe53f824e894a1922ced
+commit: c0bcf537667cf88bbcbb377d01d2b79c45265741 [13276/13503] net: dsa: ocelot: add hardware timestamping support for Felix
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-32-g233d4e1-dirty
+        git checkout c0bcf537667cf88bbcbb377d01d2b79c45265741
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/34c36f4564b8a3339db3ce832a5aaf1871185685
 
-Thank you!
+sparse warnings: (new ones prefixed by >>)
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+>> drivers/net/dsa/ocelot/felix.c:351:6: sparse: sparse: symbol 'felix_txtstamp' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
