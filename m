@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99277106145
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:55:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4CE8106134
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbfKVFzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 00:55:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58776 "EHLO mail.kernel.org"
+        id S1728733AbfKVFw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 00:52:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728719AbfKVFwz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:52:55 -0500
+        id S1727521AbfKVFw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:52:56 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B474F2084B;
-        Fri, 22 Nov 2019 05:52:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D42A2071B;
+        Fri, 22 Nov 2019 05:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574401974;
-        bh=MbC18X3Sfxye5skgXLrpnqugMo/Tin2MGO7PyG9qQWs=;
+        s=default; t=1574401975;
+        bh=aEig3xLJ0ayeEDQUT+Zv0DbOuIHBjOVxj1yI+WpZ7DI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gDDuPMGZBFoU/I11kGhClA6V0XDWQ8G/EL9stjJyrsVe3M39uG3yKUFdN0i9nTBFB
-         7pl+wtHwx6A8JO2m0EHyIDmR/yR3beKMB8NnQcHLgxzcwNSDvDXSglzv5ahbEuWCqR
-         Ah2isa8xRb4NAxa0Hv1IN8K2vHajuRc4qrkLPcO8=
+        b=vmsAQMm2y+oZPVsr+Yy5XevbpNZaK7/X7VWtBPD0gb7KzeiU7m3dbAnSvsntG4Trn
+         LdTlyIEjMI31FhrD7hq1ti6O5OUFN4JuHACFXlUirFlz80Lmo6vlHIZGfn0joI8mFD
+         5YSLwM4VngliGfiH4zerBqhQmhDoAwuR1lZw3oEM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maciej Kwiecien <maciej.kwiecien@nokia.com>,
-        Marcin Stojek <marcin.stojek@nokia.com>,
-        Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 194/219] sctp: don't compare hb_timer expire date before starting it
-Date:   Fri, 22 Nov 2019 00:48:46 -0500
-Message-Id: <20191122054911.1750-187-sashal@kernel.org>
+Cc:     Peng Sun <sironhide0null@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 195/219] bpf: decrease usercnt if bpf_map_new_fd() fails in bpf_map_get_fd_by_id()
+Date:   Fri, 22 Nov 2019 00:48:47 -0500
+Message-Id: <20191122054911.1750-188-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
 References: <20191122054911.1750-1-sashal@kernel.org>
@@ -47,57 +45,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Kwiecien <maciej.kwiecien@nokia.com>
+From: Peng Sun <sironhide0null@gmail.com>
 
-[ Upstream commit d1f20c03f48102e52eb98b8651d129b83134cae4 ]
+[ Upstream commit 781e62823cb81b972dc8652c1827205cda2ac9ac ]
 
-hb_timer might not start at all for a particular transport because its
-start is conditional. In a result a node is not sending heartbeats.
+In bpf/syscall.c, bpf_map_get_fd_by_id() use bpf_map_inc_not_zero()
+to increase the refcount, both map->refcnt and map->usercnt. Then, if
+bpf_map_new_fd() fails, should handle map->usercnt too.
 
-Function sctp_transport_reset_hb_timer has two roles:
-    - initial start of hb_timer for a given transport,
-    - update expire date of hb_timer for a given transport.
-The function is optimized to update timer's expire only if it is before
-a new calculated one but this comparison is invalid for a timer which
-has not yet started. Such a timer has expire == 0 and if a new expire
-value is bigger than (MAX_JIFFIES / 2 + 2) then "time_before" macro will
-fail and timer will not start resulting in no heartbeat packets send by
-the node.
-
-This was found when association was initialized within first 5 mins
-after system boot due to jiffies init value which is near to MAX_JIFFIES.
-
-Test kernel version: 4.9.154 (ARCH=arm)
-hb_timer.expire = 0;                //initialized, not started timer
-new_expire = MAX_JIFFIES / 2 + 2;   //or more
-time_before(hb_timer.expire, new_expire) == false
-
-Fixes: ba6f5e33bdbb ("sctp: avoid refreshing heartbeat timer too often")
-Reported-by: Marcin Stojek <marcin.stojek@nokia.com>
-Tested-by: Marcin Stojek <marcin.stojek@nokia.com>
-Signed-off-by: Maciej Kwiecien <maciej.kwiecien@nokia.com>
-Reviewed-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: bd5f5f4ecb78 ("bpf: Add BPF_MAP_GET_FD_BY_ID")
+Signed-off-by: Peng Sun <sironhide0null@gmail.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/transport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-index 033696e6f74fb..ad158d311ffae 100644
---- a/net/sctp/transport.c
-+++ b/net/sctp/transport.c
-@@ -207,7 +207,8 @@ void sctp_transport_reset_hb_timer(struct sctp_transport *transport)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 6e544e364821e..90bb0c05c10e9 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1887,7 +1887,7 @@ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
  
- 	/* When a data chunk is sent, reset the heartbeat interval.  */
- 	expires = jiffies + sctp_transport_timeout(transport);
--	if (time_before(transport->hb_timer.expires, expires) &&
-+	if ((time_before(transport->hb_timer.expires, expires) ||
-+	     !timer_pending(&transport->hb_timer)) &&
- 	    !mod_timer(&transport->hb_timer,
- 		       expires + prandom_u32_max(transport->rto)))
- 		sctp_transport_hold(transport);
+ 	fd = bpf_map_new_fd(map, f_flags);
+ 	if (fd < 0)
+-		bpf_map_put(map);
++		bpf_map_put_with_uref(map);
+ 
+ 	return fd;
+ }
 -- 
 2.20.1
 
