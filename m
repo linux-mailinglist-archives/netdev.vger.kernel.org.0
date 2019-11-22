@@ -2,82 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E8B107800
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:27:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBEE4107806
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbfKVT1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:27:21 -0500
-Received: from foss.arm.com ([217.140.110.172]:51640 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726703AbfKVT1V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 14:27:21 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9E9B7328;
-        Fri, 22 Nov 2019 11:27:20 -0800 (PST)
-Received: from localhost (unknown [10.37.6.21])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1CB0A3F6C4;
-        Fri, 22 Nov 2019 11:27:19 -0800 (PST)
-Date:   Fri, 22 Nov 2019 19:27:18 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     guillaume.tucker@collabora.com, hulkci@huawei.com,
-        tomeu.vizoso@collabora.com, khilman@baylibre.com,
-        mgalka@collabora.com, enric.balletbo@collabora.com,
-        yuehaibing@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Subject: Re: net-next/master bisection: boot on beaglebone-black
-Message-ID: <20191122192718.GH6849@sirena.org.uk>
-References: <5dd7d181.1c69fb81.64fbc.cd8a@mx.google.com>
- <20191122.093657.95680289541075120.davem@davemloft.net>
- <bfe5e987-e0b5-6c89-f193-6666be203532@collabora.com>
- <20191122.101147.1112820693050959325.davem@davemloft.net>
+        id S1726830AbfKVTaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:30:19 -0500
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:37033 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfKVTaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 14:30:18 -0500
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: bxFAU/KywwCcd2H8Wp4lJ8iowKZppKGXPqD1P+0mzpYO6VXrWtfQUCHGKQ1IiO4JA4Jb1MERLh
+ tuuC5mMi0vZWWCnYS+3hEnnYOXxF7ds1LE//FC6/V8DEQ7MQcjRFYmYEYYlzP2e8UV1kMLOxdR
+ uVR3t8I/sxlrnAcZ8Wk1JoOAQC/iYqzg1PXDMvnYZlSf89+wfQatIxs5X68gePNmrr5GBRfdog
+ b/t4WEm3VS5CGEREllSvQphF8Or26wvnMdtlr+38N1eQvAwQ+iUawg78wYDTi5cmfWWwIvECb3
+ dio=
+X-IronPort-AV: E=Sophos;i="5.69,230,1571727600"; 
+   d="scan'208";a="56600415"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2019 12:30:19 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 22 Nov 2019 12:30:17 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 22 Nov 2019 12:30:17 -0700
+Date:   Fri, 22 Nov 2019 20:30:16 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] Convert Ocelot and Felix switches to PHYLINK
+Message-ID: <20191122193015.zooiv6px4e6uf2my@soft-dev3.microsemi.net>
+References: <20191118181030.23921-1-olteanv@gmail.com>
+ <20191118231339.ztotkr536udxuzsl@soft-dev3.microsemi.net>
+ <CA+h21hpKN+7ifvFUt6KMYARf19i=Jfw_dwciuPxPC6ZyHRF2XQ@mail.gmail.com>
+ <20191119204855.vgiwtrzx3426hbrc@soft-dev3.microsemi.net>
+ <20191119214257.GB19542@lunn.ch>
+ <20191120120849.xdizdx4vntor2fvv@soft-dev3.microsemi.net>
+ <CA+h21hpDL=cLsZXyyk3V7=gQnaf-ZdyyuHjcaZ-DY+zRUcnJOw@mail.gmail.com>
+ <20191120232152.p22rfjdngm4wtmak@soft-dev3.microsemi.net>
+ <20191121001855.GC18325@lunn.ch>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="FUaywKC54iCcLzqT"
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20191122.101147.1112820693050959325.davem@davemloft.net>
-X-Cookie: sillema sillema nika su
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191121001855.GC18325@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The 11/21/2019 01:18, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> > Not really, at that point it was OK to have interface
+> > PHY_INTERFACE_MODE_NA. There were few more checks before creating the
+> > network device. Now with your changes you were creating
+> > a network device for each port of the soc even if some ports
+> > were not used on a board.
+> 
+> That does not sound right. If the port is not used, the DSA core will
+> call port_disable() to allow the driver to power off the port. It will
+> not create a network device for it.
+> 
+> Or is this just an issue with the switchdev driver, not the DSA
+> driver?
+In my case I just use the switchdev driver. I don't have the DSA driver.
 
---FUaywKC54iCcLzqT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> 
+>         Andrew
+> > > >                 serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
+> > > > -               if (IS_ERR(serdes)) {
+> > > > -                       err = PTR_ERR(serdes);
+> > > > -                       if (err == -EPROBE_DEFER)
+> > > > -                               dev_dbg(ocelot->dev, "deferring probe\n");
+> > >
+> > > Why did you remove the probe deferral for the serdes phy?
+> > Because not all the ports have the "phys" property.
+> 
+> You probably need to differentiate between ENODEV and EPROBE_DEFER.
+> You definitely do need to return EPROBE_DEFER if you get that.
+Thanks, I will keep it in mind.
 
-On Fri, Nov 22, 2019 at 10:11:47AM -0800, David Miller wrote:
+> Shame you cannot use devm_phy_optional_get().
+> 
+>     Andrew
 
-> If you're not combining the net and the net-next tree, as Stephen
-> Rothwell's tree is doing, then you're going to run into this problem
-> every single day and spam us with these messages.
-
-> What is being done right now doesn't work.  You can't just wait for
-> net integration into net-next, that doesn't cut it.
-
-Is there a writeup somewhere of how your trees are expected to work?
-That might help testing people figure things out, what you're doing is a
-bit unusual and people working on testing infrastructure are likely not
-going to be as engaged with the process for specific trees as developers
-are.  I didn't spot anything in Docmentation/ and the wiki link in
-MAINTAINERS seems broken but I might've been looking in the wrong places.
-
---FUaywKC54iCcLzqT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl3YNpUACgkQJNaLcl1U
-h9AS9wf/Uq4dnT2s2ZT0skeaaHINCsGT8qOFWNH1BYsDcrhqWXCuKS0G7yR1POi0
-JdMYoOFHKY/mh0uBTCI2erNQem8/jSgs3YA0AB9b50BWe41vGcJOXj9ZFngzRQ17
-PS3PGs0Ri7M0/KubZaDO9G2+am3PEKEiyK8YWezhwVhB3D1WE0Elz0e/hybUCDRo
-YC+YSLt9D5+XPwBCnLcOO9OD/6Psv1ZVbfXwlD8p2wKAwjwzj5ainxAEhCumYin4
-/TmR2lT0/KWZhiMVs2+xSLMdylXFzPlXTmgEphmom5+t3uWNz9rZaA2BbRinNpyw
-xNlKZabMIvJCVjiA4hbN/3TVH8VYFw==
-=g+r3
------END PGP SIGNATURE-----
-
---FUaywKC54iCcLzqT--
+-- 
+/Horatiu
