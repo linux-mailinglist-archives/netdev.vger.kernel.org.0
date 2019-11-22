@@ -2,139 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F371107575
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25230107588
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbfKVQJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 11:09:34 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:47476 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726705AbfKVQJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:09:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:Message-ID:Subject:To:From:Date:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
-        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=Bs4ZPwZcobeGLjW3wndnSsxdLL7o7ARhgnyTo8K24X4=; b=MdQ3M5JTERYv
-        SWTEpvWMQkKMc/8B3n6+qrZpXb08J4xlIR2ROvNdOFxUnUPHb/6cJctbc1eiR1PlP5LzrbR2GNiFt
-        glntheq/LkkJkntrVHVl2uCXcwBdofiVWlFDD60QOsyz7z0YzYV86pH53v3kxb7Ps+aXmhcY10Ecl
-        puGT/fs4MFQv9rfBQOFAcbGh7sQzrRYPRNYweRreGsycM8LT8QF7zs3bolNiJlZT3DJ4qJzbOk7RP
-        JYZ9DcXEm8iRZmhxN9HFOC8cGeJ4nhVenAs0WYb49R+RWjsMWbVCwASU8TBNV/W47E9GyaPg7Do9T
-        Mnvq2s92ktTuyDbVv99uzw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59766)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iYBUx-00069C-8M
-        for netdev@vger.kernel.org; Fri, 22 Nov 2019 16:09:31 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iYBUv-0003tH-L8
-        for netdev@vger.kernel.org; Fri, 22 Nov 2019 16:09:29 +0000
-Date:   Fri, 22 Nov 2019 16:09:29 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     netdev@vger.kernel.org
-Subject: Fwd: Re: [PATCH net-next] net: phy: initialise phydev speed and
- duplex sanely
-Message-ID: <20191122160929.GN1344@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1iYAmJ-0005gz-Hc@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727319AbfKVQO4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Nov 2019 11:14:56 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:45539 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbfKVQOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:14:55 -0500
+Received: from marcel-macbook.fritz.box (p4FF9F0D1.dip0.t-ipconnect.de [79.249.240.209])
+        by mail.holtmann.org (Postfix) with ESMTPSA id BE461CED23;
+        Fri, 22 Nov 2019 17:24:00 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3601.0.10\))
+Subject: Re: [PATCH v6 3/4] dt-bindings: net: broadcom-bluetooth: Add pcm
+ config
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CAL_JsqKso2Us5VW-Qp8mENAkMmoEh7YDT+HfhRMD1BKi7q=qAw@mail.gmail.com>
+Date:   Fri, 22 Nov 2019 17:14:53 +0100
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <FBAB12FA-8EAD-424C-9DF3-770E7D172AFD@holtmann.org>
+References: <20191118192123.82430-1-abhishekpandit@chromium.org>
+ <20191118110335.v6.3.I18b06235e381accea1c73aa2f9db358645d9f201@changeid>
+ <20191121212923.GA24437@bogus>
+ <06AE1B9D-F048-4AF1-9826-E8CAFA44DD58@holtmann.org>
+ <CAL_JsqKso2Us5VW-Qp8mENAkMmoEh7YDT+HfhRMD1BKi7q=qAw@mail.gmail.com>
+To:     Rob Herring <robh@kernel.org>
+X-Mailer: Apple Mail (2.3601.0.10)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unfortunately, Andrew dropped the 'g' from the netdev email address,
-and Zach's email address doesn't seem to work.
+Hi Rob,
 
-Forwarding this to netdev (with appropriate threading) for archival
-purposes.
-
------ Forwarded message from Russell King - ARM Linux admin <linux@armlinux.org.uk> -----
-
-Date: Fri, 22 Nov 2019 16:03:23 +0000
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: zach.brown@ni.com, Florian Fainelli <f.fainelli@gmail.com>, Heiner Kallweit
-	<hkallweit1@gmail.com>, "David S. Miller" <davem@davemloft.net>,
-	netdev@vger.kernel.or
-Subject: Re: [PATCH net-next] net: phy: initialise phydev speed and duplex
-	sanely
-
-On Fri, Nov 22, 2019 at 04:02:01PM +0000, Russell King - ARM Linux admin wrote:
-> On Fri, Nov 22, 2019 at 04:51:24PM +0100, Andrew Lunn wrote:
-> > On Fri, Nov 22, 2019 at 03:23:23PM +0000, Russell King wrote:
-> > > When a phydev is created, the speed and duplex are set to zero and
-> > > -1 respectively, rather than using the predefined SPEED_UNKNOWN and
-> > > DUPLEX_UNKNOWN constants.
-> > > 
-> > > There is a window at initialisation time where we may report link
-> > > down using the 0/-1 values.  Tidy this up and use the predefined
-> > > constants, so debug doesn't complain with:
-> > > 
-> > > "Unsupported (update phy-core.c)/Unsupported (update phy-core.c)"
-> > > 
-> > > when the speed and duplex settings are printed.
-> > > 
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >  drivers/net/phy/phy_device.c | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > > index 232ad33b1159..8186aad4ef90 100644
-> > > --- a/drivers/net/phy/phy_device.c
-> > > +++ b/drivers/net/phy/phy_device.c
-> > > @@ -597,8 +597,8 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, int phy_id,
-> > >  	mdiodev->device_free = phy_mdio_device_free;
-> > >  	mdiodev->device_remove = phy_mdio_device_remove;
-> > >  
-> > > -	dev->speed = 0;
-> > > -	dev->duplex = -1;
-> > > +	dev->speed = SPEED_UNKNOWN;
-> > > +	dev->duplex = DUPLEX_UNKNOWN;
-> > >  	dev->pause = 0;
-> > >  	dev->asym_pause = 0;
-> > >  	dev->link = 0;
-> > 
-> > Hi Russell, Zach
-> > 
-> > Does phy_led_trigger_change_speed() need to change? It has
-> > 
-> >         if (phy->speed == 0)
-> >                 return;
+>>>> Add documentation for pcm parameters.
+>>>> 
+>>>> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+>>>> ---
+>>>> 
+>>>> Changes in v6: None
+>>>> Changes in v5: None
+>>>> Changes in v4: None
+>>>> Changes in v3: None
+>>>> Changes in v2: None
+>>> 
+>>> Really? I'm staring at v2 that looks a bit different.
+>>> 
+>>>> .../bindings/net/broadcom-bluetooth.txt       | 16 ++++++++++
+>>>> include/dt-bindings/bluetooth/brcm.h          | 32 +++++++++++++++++++
+>>>> 2 files changed, 48 insertions(+)
+>>>> create mode 100644 include/dt-bindings/bluetooth/brcm.h
+>>>> 
+>>>> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+>>>> index c749dc297624..8561e4684378 100644
+>>>> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+>>>> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+>>>> @@ -29,10 +29,20 @@ Optional properties:
+>>>>   - "lpo": external low power 32.768 kHz clock
+>>>> - vbat-supply: phandle to regulator supply for VBAT
+>>>> - vddio-supply: phandle to regulator supply for VDDIO
+>>>> + - brcm,bt-sco-routing: PCM, Transport, Codec, I2S
+>>>> + - brcm,bt-pcm-interface-rate: 128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps
+>>>> + - brcm,bt-pcm-frame-type: short, long
+>>>> + - brcm,bt-pcm-sync-mode: slave, master
+>>>> + - brcm,bt-pcm-clock-mode: slave, master
+>>> 
+>>> Little of this seems unique to Broadcom. We already have some standard
+>>> audio related properties for audio interfaces such as 'format',
+>>> 'frame-master' and 'bitclock-master'. Ultimately, this would be tied
+>>> into the audio complex of SoCs and need to work with the audio
+>>> bindings. We also have HDMI audio bindings.
+>>> 
+>>> Maybe sco-routing is unique to BT and still needed in some form though
+>>> if you describe the connection to the SoC audio complex, then maybe
+>>> not? I'd assume every BT chip has some audio routing configuration.
+>> 
+>> so we tried to generalize this some time before and failed to get a proper consensus.
+>> 
+>> In general I am with you that we should just expose generic properties from the attached audio codec, but nobody has come up with anything like that. And I think aligning all chip manufacturers will take some time.
+>> 
 > 
-> I'm not sure what that's trying to achieve.
+> That shouldn't be hard. It's a solved problem for codecs and HDMI. I
+> don't think BT is any more complicated (ignoring phones). I suspect
+> it's not solved simply because no one wants to do the work beyond
+> their 1 BT device they care about ATM.
+
+we tried, but nobody can agree on these right now. I would be happy if others come forward and tell us how they wired up their hardware, but it hasn’t happened yet.
+
+>> Maybe in the interim we just use brcm,bt-pcm-int-params = [00 00 ..] as initially proposed.
 > 
-> From what I can see, phy_speed_to_led_trigger() looks up the speed in
-> the table of triggers, which is populated from the PHYs supported
-> speeds, which will never contain zero or SPEED_UNKNOWN.
-> 
-> Note that genphy will return SPEED_UNKNOWN if autoneg_complete is
-> false (see genphy_read_status()).  However, in that case, ->link
-> will be false, just like it is at initialisation time, and hence
-> we won't reach that statement (we'll go off to
-> phy_led_trigger_no_link()).
-> 
-> So I think the test is entirely unnecessary.
+> What's the device using this? Some chromebook I suppose. I think it
+> would be better to first see how this fits in with the rest of the
+> audio subsystem. Until then, the driver should probably just default
+> to "transport" mode which I assume is audio routed over the UART
+> interface. That should work on any platform at least, but may not be
+> optimal.
 
-... unless there's a buggy phylib driver, in which case we shouldn't
-be working around it in this code (as it would affect network drivers
-as well) but should be fixing the broken phylib driver.
+SCO over UART doesn’t really work. Long time ago, some car kits might have done it, but in the Chromebook cases this will just not work. We need to configure the PCM settings of the Bluetooth chip.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+If we don’t do it via DT, then this gets hardcoded in the driver source and that is not helping either. So until we get anything better, lets use brcm,bt-pcm-int-params = [00 00 ..] and get this supported upstream.
 
------ End forwarded message -----
+Regards
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Marcel
+
