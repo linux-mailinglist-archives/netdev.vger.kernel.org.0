@@ -2,302 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E963106A10
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 11:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9881106A89
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 11:35:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727289AbfKVKb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 05:31:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56678 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727263AbfKVKb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 05:31:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574418686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FlOZ5zqkxPswmHPOY4akzRfmqrkgFo/O2Djc8eOm0Q8=;
-        b=Au7OZzg95qfKtqheCwo/zJZNNZ5xyi9mnwRdqFkO1USGwpzsFxWWMa52DopGZPt3bKO89m
-        DKsJ5JaODzEr4HOqgwvy4Q4niJjr7A9BhbRdBJxH8kWnNTbC3kgJ6WBaNnMuJkBgAwExXm
-        Y+WrIVIOzaGallbikuVAxbvSvNUOdcY=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-4-jbauWr4SM4eL09VwA8ukMQ-1; Fri, 22 Nov 2019 05:31:25 -0500
-Received: by mail-qk1-f200.google.com with SMTP id s144so4009954qke.20
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 02:31:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jUNfNcFYrnFo3vyliVS23hPPWffkd+zA0rWCMO8GM2A=;
-        b=sotYGZu0MltR8afX58vbjAtgiq3DB0Ew6kqh7b1nLr/o5RQH8W0Bu/YaRDBxpnJN+v
-         DJ+zL45Ms+dZs5ZbiN2CGdx96A3SMpldfSPm4QU4qQ7FHEei9dNQe0GZXq85MgGNvLz6
-         idon6AhzhvK0L0itNNLcuevnpzSdvbSlHeZAENMfdUipE2d49MEbOwa7BK3870MIKi9Y
-         xCadfBza7DQY2exzFvjmM3BIuRggN4CMX9+zoHoJ6A0gY/Ryl/U9Q+v+sEkTSWomUbNz
-         d/2V5LtH+t2lRTVzLjl/aAYs+ghcovAfDO/wpnI+dGOkgvkPqIrivEBZ701QSVFV3NIC
-         IZWg==
-X-Gm-Message-State: APjAAAXIToHq1lvh6e2C+OHGyNuuw7m6HvnvKySKkEWsP2m87pKn9/oq
-        cu9Hpyz5o+iaIJSkY1alC7QQXK5mkLe/aLKDKb4grGEJ204dYw+Zm7cvRS6R9kEbgQHwl3c4MMw
-        bfEcTOQK66FTSwq1f
-X-Received: by 2002:ac8:ccf:: with SMTP id o15mr13578825qti.380.1574418684933;
-        Fri, 22 Nov 2019 02:31:24 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzqWjQYE0JViMErwUJLyP31KaReAxhSG7SzcnEEeUUZg6KiYptY1y7iF0uI6KQLrQqeTSBM5A==
-X-Received: by 2002:ac8:ccf:: with SMTP id o15mr13578801qti.380.1574418684642;
-        Fri, 22 Nov 2019 02:31:24 -0800 (PST)
-Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
-        by smtp.gmail.com with ESMTPSA id g7sm2775765qkl.20.2019.11.22.02.31.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 02:31:23 -0800 (PST)
-Date:   Fri, 22 Nov 2019 05:31:19 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Julio Faracco <jcfaracco@gmail.com>
-Cc:     netdev@vger.kernel.org, dnmendes76@gmail.com,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] drivers: net: virtio_net: Implement a
- dev_watchdog handler
-Message-ID: <20191122052506-mutt-send-email-mst@kernel.org>
-References: <20191122013636.1041-1-jcfaracco@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <20191122013636.1041-1-jcfaracco@gmail.com>
-X-MC-Unique: jbauWr4SM4eL09VwA8ukMQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        id S1728280AbfKVKfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 05:35:43 -0500
+Received: from smtp.broadcom.com ([192.19.211.62]:38376 "EHLO
+        relay.smtp.broadcom.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1728266AbfKVKfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 05:35:38 -0500
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Fri, 22 Nov 2019 05:35:36 EST
+Received: from dhcp-10-123-153-22.dhcp.broadcom.net (bgccx-dev-host-lnx2.bec.broadcom.net [10.123.153.22])
+        by relay.smtp.broadcom.com (Postfix) with ESMTP id 7EF6B28D189;
+        Fri, 22 Nov 2019 02:28:27 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 relay.smtp.broadcom.com 7EF6B28D189
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1574418507;
+        bh=GHcylQZvoUp6RDeJ08RGL2Df/VrfNllonsxxSxhGYQo=;
+        h=From:To:Subject:Date:From;
+        b=vIcbfCLbV4tda2i12mwspsEKxneJ8UeJTTidSg5PrFLCgDVcAe7+rzDnT3aV8cF6/
+         BEFk6k4M3xkljC6bK2GWcCTqRamWMODrBQtpJDfmqrAFvfbKBBbRM6gSyXeEPKmsQM
+         b5kY88D51p77i1VUd/qLPOO1S1i+nX7mZeo0YhJs=
+From:   Kalesh A P <kalesh-anakkur.purayil@broadcom.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH net-next] be2net: gather more debug info and display on a tx-timeout
+Date:   Fri, 22 Nov 2019 16:09:55 +0530
+Message-Id: <20191122103955.3768-1-kalesh-anakkur.purayil@broadcom.com>
+X-Mailer: git-send-email 2.10.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 10:36:36PM -0300, Julio Faracco wrote:
-> Driver virtio_net is not handling error events for TX provided by
-> dev_watchdog. This event is reached when transmission queue is having
-> problems to transmit packets. This could happen for any reason. To
-> enable it, driver should have .ndo_tx_timeout implemented.
->=20
-> This commit brings back virtnet_reset method to recover TX queues from a
-> error state. That function is called by schedule_work method and it puts
-> the reset function into work queue.
->=20
-> As the error cause is unknown at this moment, it would be better to
-> reset all queues.
->=20
-> Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
-> Signed-off-by: Daiane Mendes <dnmendes76@gmail.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> ---
-> v1-v2: Tag `net-next` was included to indentify where patch would be
-> applied.
-> ---
->  drivers/net/virtio_net.c | 95 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 94 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4d7d5434cc5d..31890d77eaf2 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -75,6 +75,7 @@ struct virtnet_sq_stats {
->  =09u64 xdp_tx;
->  =09u64 xdp_tx_drops;
->  =09u64 kicks;
-> +=09u64 tx_timeouts;
->  };
-> =20
->  struct virtnet_rq_stats {
-> @@ -98,6 +99,7 @@ static const struct virtnet_stat_desc virtnet_sq_stats_=
-desc[] =3D {
->  =09{ "xdp_tx",=09=09VIRTNET_SQ_STAT(xdp_tx) },
->  =09{ "xdp_tx_drops",=09VIRTNET_SQ_STAT(xdp_tx_drops) },
->  =09{ "kicks",=09=09VIRTNET_SQ_STAT(kicks) },
-> +=09{ "tx_timeouts",=09VIRTNET_SQ_STAT(tx_timeouts) },
->  };
-> =20
->  static const struct virtnet_stat_desc virtnet_rq_stats_desc[] =3D {
-> @@ -211,6 +213,9 @@ struct virtnet_info {
->  =09/* Work struct for config space updates */
->  =09struct work_struct config_work;
-> =20
-> +=09/* Work struct for resetting the virtio-net driver. */
-> +=09struct work_struct reset_work;
-> +
->  =09/* Does the affinity hint is set for virtqueues? */
->  =09bool affinity_hint_set;
-> =20
-> @@ -1721,7 +1726,7 @@ static void virtnet_stats(struct net_device *dev,
->  =09int i;
-> =20
->  =09for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> -=09=09u64 tpackets, tbytes, rpackets, rbytes, rdrops;
-> +=09=09u64 tpackets, tbytes, terrors, rpackets, rbytes, rdrops;
->  =09=09struct receive_queue *rq =3D &vi->rq[i];
->  =09=09struct send_queue *sq =3D &vi->sq[i];
-> =20
-> @@ -1729,6 +1734,7 @@ static void virtnet_stats(struct net_device *dev,
->  =09=09=09start =3D u64_stats_fetch_begin_irq(&sq->stats.syncp);
->  =09=09=09tpackets =3D sq->stats.packets;
->  =09=09=09tbytes   =3D sq->stats.bytes;
-> +=09=09=09terrors  =3D sq->stats.tx_timeouts;
->  =09=09} while (u64_stats_fetch_retry_irq(&sq->stats.syncp, start));
-> =20
->  =09=09do {
-> @@ -1743,6 +1749,7 @@ static void virtnet_stats(struct net_device *dev,
->  =09=09tot->rx_bytes   +=3D rbytes;
->  =09=09tot->tx_bytes   +=3D tbytes;
->  =09=09tot->rx_dropped +=3D rdrops;
-> +=09=09tot->tx_errors  +=3D terrors;
->  =09}
-> =20
->  =09tot->tx_dropped =3D dev->stats.tx_dropped;
-> @@ -2578,6 +2585,33 @@ static int virtnet_set_features(struct net_device =
-*dev,
->  =09return 0;
->  }
-> =20
-> +static void virtnet_tx_timeout(struct net_device *dev)
-> +{
-> +=09struct virtnet_info *vi =3D netdev_priv(dev);
-> +=09u32 i;
-> +
-> +=09netdev_warn(dev, "TX timeout stats:\n");
-> +=09/* find the stopped queue the same way dev_watchdog() does */
-> +=09for (i =3D 0; i < vi->curr_queue_pairs; i++) {
-> +=09=09struct send_queue *sq =3D &vi->sq[i];
-> +
-> +=09=09if (!netif_xmit_stopped(netdev_get_tx_queue(dev, i))) {
-> +=09=09=09netdev_warn(dev, " Available send queue: %d, sq: %s, vq: %d, na=
-me: %s\n",
-> +=09=09=09=09    i, sq->name, sq->vq->index, sq->vq->name);
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-What does this mean?
+In order to start recording the last few tx wqes and
+tx completions, user has to set the msg level to non-zero
+value using "ethtool -s ethX msglvl 1"
 
-> +=09=09=09continue;
-> +=09=09}
-> +
-> +=09=09u64_stats_update_begin(&sq->stats.syncp);
-> +=09=09sq->stats.tx_timeouts++;
-> +=09=09u64_stats_update_end(&sq->stats.syncp);
-> +
-> +=09=09netdev_warn(dev, " Unavailable send queue: %d, sq: %s, vq: %d, nam=
-e: %s\n",
-> +=09=09=09    i, sq->name, sq->vq->index, sq->vq->name);
-> +=09}
+This patch does the following things:
+1. record last 200 WQE information
+2. record first 128 bytes of last 200 TX packets
+3. record last 200 TX completion info
+4. On TX timeout, log these information for debugging
 
-Can we make the warning less cryptic?
-I wonder why don't we get the sq from timeout directly?
-Would seem cleaner.
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Reviewed-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+---
+ drivers/net/ethernet/emulex/benet/be.h      |  92 ++++++++++++++--------
+ drivers/net/ethernet/emulex/benet/be_main.c | 116 ++++++++++++++++++++++++++++
+ 2 files changed, 174 insertions(+), 34 deletions(-)
 
-> +
-> +=09schedule_work(&vi->reset_work);
-> +}
-> +
->  static const struct net_device_ops virtnet_netdev =3D {
->  =09.ndo_open            =3D virtnet_open,
->  =09.ndo_stop   =09     =3D virtnet_close,
-> @@ -2593,6 +2627,7 @@ static const struct net_device_ops virtnet_netdev =
-=3D {
->  =09.ndo_features_check=09=3D passthru_features_check,
->  =09.ndo_get_phys_port_name=09=3D virtnet_get_phys_port_name,
->  =09.ndo_set_features=09=3D virtnet_set_features,
-> +=09.ndo_tx_timeout=09=09=3D virtnet_tx_timeout,
->  };
-> =20
->  static void virtnet_config_changed_work(struct work_struct *work)
-> @@ -2982,6 +3017,62 @@ static int virtnet_validate(struct virtio_device *=
-vdev)
->  =09return 0;
->  }
-> =20
-> +static void _remove_vq_common(struct virtnet_info *vi)
-> +{
-> +=09vi->vdev->config->reset(vi->vdev);
-> +
-> +=09/* Free unused buffers in both send and recv, if any. */
-> +=09free_unused_bufs(vi);
-> +
-> +=09_free_receive_bufs(vi);
-> +
-> +=09free_receive_page_frags(vi);
-> +
-> +=09virtnet_del_vqs(vi);
-> +}
-> +
-> +static int _virtnet_reset(struct virtnet_info *vi)
-> +{
-> +=09struct virtio_device *vdev =3D vi->vdev;
-> +=09int ret;
-> +
-> +=09virtio_config_disable(vdev);
-> +=09vdev->failed =3D vdev->config->get_status(vdev) & VIRTIO_CONFIG_S_FAI=
-LED;
-> +
-> +=09virtnet_freeze_down(vdev);
-> +=09_remove_vq_common(vi);
-> +
-> +=09virtio_add_status(vdev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
-> +=09virtio_add_status(vdev, VIRTIO_CONFIG_S_DRIVER);
-> +
-> +=09ret =3D virtio_finalize_features(vdev);
-> +=09if (ret)
-> +=09=09goto err;
-> +
-> +=09ret =3D virtnet_restore_up(vdev);
-> +=09if (ret)
-> +=09=09goto err;
-> +
-> +=09ret =3D _virtnet_set_queues(vi, vi->curr_queue_pairs);
-> +=09if (ret)
-> +=09=09goto err;
-> +
-> +=09virtio_add_status(vdev, VIRTIO_CONFIG_S_DRIVER_OK);
-> +=09virtio_config_enable(vdev);
-
-
-Is this enough? E.g. all RX mode programming has been lost.
-
-
-
-> +=09return 0;
-> +err:
-> +=09virtio_add_status(vdev, VIRTIO_CONFIG_S_FAILED);
-> +=09return ret;
-> +}
-> +
-> +static void virtnet_reset(struct work_struct *work)
-> +{
-> +=09struct virtnet_info *vi =3D
-> +=09=09container_of(work, struct virtnet_info, reset_work);
-> +
-> +=09_virtnet_reset(vi);
-> +}
-> +
->  static int virtnet_probe(struct virtio_device *vdev)
->  {
->  =09int i, err =3D -ENOMEM;
-> @@ -3011,6 +3102,7 @@ static int virtnet_probe(struct virtio_device *vdev=
-)
->  =09dev->netdev_ops =3D &virtnet_netdev;
->  =09dev->features =3D NETIF_F_HIGHDMA;
-> =20
-> +=09dev->watchdog_timeo =3D 5 * HZ;
->  =09dev->ethtool_ops =3D &virtnet_ethtool_ops;
->  =09SET_NETDEV_DEV(dev, &vdev->dev);
->
-
-Is there a way to make this tuneable from ethtool?
- =20
-> @@ -3068,6 +3160,7 @@ static int virtnet_probe(struct virtio_device *vdev=
-)
->  =09vdev->priv =3D vi;
-> =20
->  =09INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> +=09INIT_WORK(&vi->reset_work, virtnet_reset);
-> =20
->  =09/* If we can receive ANY GSO packets, we must allocate large ones. */
->  =09if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> --=20
-> 2.17.1
+diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
+index cf3e6f2..7a05adb 100644
+--- a/drivers/net/ethernet/emulex/benet/be.h
++++ b/drivers/net/ethernet/emulex/benet/be.h
+@@ -227,6 +227,60 @@ struct be_tx_stats {
+ 	struct u64_stats_sync sync_compl;
+ };
+ 
++/* Macros to read/write the 'features' word of be_wrb_params structure.
++ */
++#define	BE_WRB_F_BIT(name)			BE_WRB_F_##name##_BIT
++#define	BE_WRB_F_MASK(name)			BIT_MASK(BE_WRB_F_##name##_BIT)
++
++#define	BE_WRB_F_GET(word, name)	\
++	(((word) & (BE_WRB_F_MASK(name))) >> BE_WRB_F_BIT(name))
++
++#define	BE_WRB_F_SET(word, name, val)	\
++	((word) |= (((val) << BE_WRB_F_BIT(name)) & BE_WRB_F_MASK(name)))
++
++/* Feature/offload bits */
++enum {
++	BE_WRB_F_CRC_BIT,		/* Ethernet CRC */
++	BE_WRB_F_IPCS_BIT,		/* IP csum */
++	BE_WRB_F_TCPCS_BIT,		/* TCP csum */
++	BE_WRB_F_UDPCS_BIT,		/* UDP csum */
++	BE_WRB_F_LSO_BIT,		/* LSO */
++	BE_WRB_F_LSO6_BIT,		/* LSO6 */
++	BE_WRB_F_VLAN_BIT,		/* VLAN */
++	BE_WRB_F_VLAN_SKIP_HW_BIT,	/* Skip VLAN tag (workaround) */
++	BE_WRB_F_OS2BMC_BIT		/* Send packet to the management ring */
++};
++
++/* The structure below provides a HW-agnostic abstraction of WRB params
++ * retrieved from a TX skb. This is in turn passed to chip specific routines
++ * during transmit, to set the corresponding params in the WRB.
++ */
++struct be_wrb_params {
++	u32 features;	/* Feature bits */
++	u16 vlan_tag;	/* VLAN tag */
++	u16 lso_mss;	/* MSS for LSO */
++};
++
++/* Store latest 200 occurrences */
++#define BE_TXQ_INFO_LEN		200
++#define PKT_DUMP_SIZE		128
++
++struct be_tx_pktinfo {
++	u16 head;
++	u16 tail;
++	u16 used;
++	struct be_wrb_params wqe_hdr;
++	u8 skb_data[PKT_DUMP_SIZE];
++	u32 len;
++	u32 skb_len;
++	bool valid;
++};
++
++struct be_tx_dump_cmpl {
++	u32 info[32];
++	bool valid;
++};
++
+ /* Structure to hold some data of interest obtained from a TX CQE */
+ struct be_tx_compl_info {
+ 	u8 status;		/* Completion status */
+@@ -244,6 +298,10 @@ struct be_tx_obj {
+ 	u16 pend_wrb_cnt;	/* Number of WRBs yet to be given to HW */
+ 	u16 last_req_wrb_cnt;	/* wrb cnt of the last req in the Q */
+ 	u16 last_req_hdr;	/* index of the last req's hdr-wrb */
++	struct be_tx_pktinfo tx_pktinfo[BE_TXQ_INFO_LEN];
++	struct be_tx_dump_cmpl cmpl_info[BE_TXQ_INFO_LEN];
++	u32 tx_wqe_offset;
++	u32 tx_cmpl_idx;
+ } ____cacheline_aligned_in_smp;
+ 
+ /* Struct to remember the pages posted for rx frags */
+@@ -444,40 +502,6 @@ struct be_hwmon {
+ 	u8 be_on_die_temp;  /* Unit: millidegree Celsius */
+ };
+ 
+-/* Macros to read/write the 'features' word of be_wrb_params structure.
+- */
+-#define	BE_WRB_F_BIT(name)			BE_WRB_F_##name##_BIT
+-#define	BE_WRB_F_MASK(name)			BIT_MASK(BE_WRB_F_##name##_BIT)
+-
+-#define	BE_WRB_F_GET(word, name)	\
+-	(((word) & (BE_WRB_F_MASK(name))) >> BE_WRB_F_BIT(name))
+-
+-#define	BE_WRB_F_SET(word, name, val)	\
+-	((word) |= (((val) << BE_WRB_F_BIT(name)) & BE_WRB_F_MASK(name)))
+-
+-/* Feature/offload bits */
+-enum {
+-	BE_WRB_F_CRC_BIT,		/* Ethernet CRC */
+-	BE_WRB_F_IPCS_BIT,		/* IP csum */
+-	BE_WRB_F_TCPCS_BIT,		/* TCP csum */
+-	BE_WRB_F_UDPCS_BIT,		/* UDP csum */
+-	BE_WRB_F_LSO_BIT,		/* LSO */
+-	BE_WRB_F_LSO6_BIT,		/* LSO6 */
+-	BE_WRB_F_VLAN_BIT,		/* VLAN */
+-	BE_WRB_F_VLAN_SKIP_HW_BIT,	/* Skip VLAN tag (workaround) */
+-	BE_WRB_F_OS2BMC_BIT		/* Send packet to the management ring */
+-};
+-
+-/* The structure below provides a HW-agnostic abstraction of WRB params
+- * retrieved from a TX skb. This is in turn passed to chip specific routines
+- * during transmit, to set the corresponding params in the WRB.
+- */
+-struct be_wrb_params {
+-	u32 features;	/* Feature bits */
+-	u16 vlan_tag;	/* VLAN tag */
+-	u16 lso_mss;	/* MSS for LSO */
+-};
+-
+ struct be_eth_addr {
+ 	unsigned char mac[ETH_ALEN];
+ };
+diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
+index 39eb7d5..c0e319b 100644
+--- a/drivers/net/ethernet/emulex/benet/be_main.c
++++ b/drivers/net/ethernet/emulex/benet/be_main.c
+@@ -1121,6 +1121,43 @@ static int be_ipv6_tx_stall_chk(struct be_adapter *adapter, struct sk_buff *skb)
+ 	return BE3_chip(adapter) && be_ipv6_exthdr_check(skb);
+ }
+ 
++void be_record_tx_cmpl(struct be_tx_obj *txo,
++		       struct be_eth_tx_compl *cmpl)
++{
++	u32 offset = txo->tx_cmpl_idx;
++	struct be_tx_dump_cmpl *cmpl_dump = &txo->cmpl_info[offset];
++
++	memset(cmpl_dump, 0, sizeof(*cmpl_dump));
++
++	memcpy(&cmpl_dump->info, cmpl, sizeof(cmpl_dump->info));
++	cmpl_dump->valid = 1;
++
++	txo->tx_cmpl_idx = ((txo->tx_cmpl_idx + 1) % BE_TXQ_INFO_LEN);
++}
++
++void be_record_tx_wqes(struct be_tx_obj *txo,
++		       struct be_wrb_params *wrb_params,
++		       struct sk_buff *skb)
++{
++	u32 offset = txo->tx_wqe_offset;
++	struct be_tx_pktinfo *pkt_info = &txo->tx_pktinfo[offset];
++
++	memset(pkt_info, 0, sizeof(*pkt_info));
++
++	pkt_info->tail = txo->q.tail;
++	pkt_info->head = txo->q.head;
++	pkt_info->used = atomic_read(&txo->q.used);
++	pkt_info->valid = 1;
++	pkt_info->skb_len = skb->len;
++	pkt_info->len = min_t(u32, PKT_DUMP_SIZE, skb->len);
++
++	memcpy(&pkt_info->wqe_hdr, wrb_params, sizeof(*wrb_params));
++
++	memcpy(&pkt_info->skb_data, skb->data, pkt_info->len);
++
++	txo->tx_wqe_offset = ((txo->tx_wqe_offset + 1) % BE_TXQ_INFO_LEN);
++}
++
+ static struct sk_buff *be_lancer_xmit_workarounds(struct be_adapter *adapter,
+ 						  struct sk_buff *skb,
+ 						  struct be_wrb_params
+@@ -1399,6 +1436,10 @@ static netdev_tx_t be_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 			skb_get(skb);
+ 	}
+ 
++	/* Dump TX WQEs and SKB data */
++	if (adapter->msg_enable)
++		be_record_tx_wqes(txo, &wrb_params, skb);
++
+ 	if (be_is_txq_full(txo)) {
+ 		netif_stop_subqueue(netdev, q_idx);
+ 		tx_stats(txo)->tx_stops++;
+@@ -1417,6 +1458,75 @@ static netdev_tx_t be_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	return NETDEV_TX_OK;
+ }
+ 
++void
++be_print_tx_wqes(struct be_adapter *adapter, struct be_tx_obj *txo)
++{
++	struct device *dev = &adapter->pdev->dev;
++	struct be_tx_pktinfo *pkt_info;
++	u8 *data;
++	int i, j;
++
++	dev_info(dev, "Dumping WQES of TXQ id %d\n", txo->q.id);
++
++	for (i = 0; i < BE_TXQ_INFO_LEN; i++) {
++		pkt_info = &txo->tx_pktinfo[i];
++		if (!pkt_info->valid)
++			continue;
++
++		dev_info(dev, "TXQ head %d tail %d used %d\n",
++			 pkt_info->head, pkt_info->tail, pkt_info->used);
++
++		dev_info(dev, "WRB params: feature:0x%x vlan_tag:0x%x lso_mss:0x%x\n",
++			 pkt_info->wqe_hdr.features, pkt_info->wqe_hdr.vlan_tag,
++			 pkt_info->wqe_hdr.lso_mss);
++
++		dev_info(dev, "SKB len: %d\n", pkt_info->skb_len);
++		data = pkt_info->skb_data;
++		for (j = 0 ; j < pkt_info->len; j++) {
++			printk("%02x ", data[j]);
++			if (j % 8 == 7)
++				printk(KERN_INFO "\n");
++		}
++	}
++}
++
++void
++be_print_tx_cmpls(struct be_adapter *adapter, struct be_tx_obj *txo)
++{
++	struct device *dev = &adapter->pdev->dev;
++	struct be_tx_dump_cmpl *cmpl_info;
++	int i;
++
++	dev_info(dev, "TX CQ id %d head %d tail %d used %d\n",
++		 txo->cq.id, txo->cq.head, txo->cq.tail,
++		 atomic_read(&txo->cq.used));
++
++	for (i = 0; i < BE_TXQ_INFO_LEN; i++) {
++		cmpl_info = &txo->cmpl_info[i];
++		if (!cmpl_info->valid)
++			continue;
++
++		printk(KERN_INFO "0x%x 0x%x 0x%x 0x%x\n",
++		       cmpl_info->info[0], cmpl_info->info[1],
++		       cmpl_info->info[2], cmpl_info->info[3]);
++	}
++}
++
++/* be_dump_info - Print tx-wqes, tx-cmpls and skb-data */
++void be_dump_info(struct be_adapter *adapter)
++{
++	struct be_tx_obj *txo;
++	int i;
++
++	if (!adapter->msg_enable)
++		return;
++
++	for_all_tx_queues(adapter, txo, i) {
++		be_print_tx_wqes(adapter, txo);
++		be_print_tx_cmpls(adapter, txo);
++	}
++}
++
+ static void be_tx_timeout(struct net_device *netdev)
+ {
+ 	struct be_adapter *adapter = netdev_priv(netdev);
+@@ -1429,6 +1539,8 @@ static void be_tx_timeout(struct net_device *netdev)
+ 	int status;
+ 	int i, j;
+ 
++	be_dump_info(adapter);
++
+ 	for_all_tx_queues(adapter, txo, i) {
+ 		dev_info(dev, "TXQ Dump: %d H: %d T: %d used: %d, qid: 0x%x\n",
+ 			 i, txo->q.head, txo->q.tail,
+@@ -2719,6 +2831,10 @@ static struct be_tx_compl_info *be_tx_compl_get(struct be_adapter *adapter,
+ 	rmb();
+ 	be_dws_le_to_cpu(compl, sizeof(*compl));
+ 
++	/* Dump completion info */
++	if (adapter->msg_enable)
++		be_record_tx_cmpl(txo, compl);
++
+ 	txcp->status = GET_TX_COMPL_BITS(status, compl);
+ 	txcp->end_index = GET_TX_COMPL_BITS(wrb_index, compl);
+ 
+-- 
+2.10.1
 
