@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D001066C3
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 08:01:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A48981066C7
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 08:05:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfKVHBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 02:01:06 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33545 "EHLO
+        id S1726548AbfKVHFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 02:05:03 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41347 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfKVHBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 02:01:06 -0500
+        with ESMTP id S1726018AbfKVHFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 02:05:02 -0500
 Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
         by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <rsc@pengutronix.de>)
-        id 1iY2wA-000777-Mb; Fri, 22 Nov 2019 08:01:02 +0100
+        id 1iY300-0007Zp-9F; Fri, 22 Nov 2019 08:05:00 +0100
 Received: from rsc by ptx.hi.pengutronix.de with local (Exim 4.89)
         (envelope-from <rsc@pengutronix.de>)
-        id 1iY2w8-0003lz-Vj; Fri, 22 Nov 2019 08:01:00 +0100
-Date:   Fri, 22 Nov 2019 08:01:00 +0100
+        id 1iY2zz-0003oQ-8P; Fri, 22 Nov 2019 08:04:59 +0100
+Date:   Fri, 22 Nov 2019 08:04:59 +0100
 From:   Robert Schwebel <r.schwebel@pengutronix.de>
 To:     Jonathan Corbet <corbet@lwn.net>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org
-Subject: Re: [PATCH 4/5] docs: networking: nfc: fix code block syntax
-Message-ID: <20191122070100.yzxuqulobjrhxoa7@pengutronix.de>
+Subject: Re: [PATCH 5/5] docs: networking: nfc: change to rst format
+Message-ID: <20191122070459.j7qdrcft53lvhnir@pengutronix.de>
 References: <20191121155503.52019-1-r.schwebel@pengutronix.de>
- <20191121155503.52019-4-r.schwebel@pengutronix.de>
- <20191121100919.1b483fab@lwn.net>
+ <20191121155503.52019-5-r.schwebel@pengutronix.de>
+ <20191121101027.3c060dbe@lwn.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191121100919.1b483fab@lwn.net>
+In-Reply-To: <20191121101027.3c060dbe@lwn.net>
 X-Sent-From: Pengutronix Hildesheim
 X-URL:  http://www.pengutronix.de/
 X-IRC:  #ptxdist @freenode
 X-Accept-Language: de,en
 X-Accept-Content-Type: text/plain
-X-Uptime: 08:00:27 up 137 days, 13:10, 128 users,  load average: 0,67, 0,26,
- 0,14
+X-Uptime: 08:04:04 up 137 days, 13:14, 128 users,  load average: 0,03, 0,17,
+ 0,13
 User-Agent: NeoMutt/20170113 (1.7.2)
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
 X-SA-Exim-Mail-From: rsc@pengutronix.de
@@ -50,25 +50,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 10:09:19AM -0700, Jonathan Corbet wrote:
-> > +.. code-block:: none
-> > +
-> > +        struct sockaddr_nfc {
-> > +               sa_family_t sa_family;
-> > +               __u32 dev_idx;
-> > +               __u32 target_idx;
-> > +               __u32 nfc_protocol;
-> > +        };
+On Thu, Nov 21, 2019 at 10:10:27AM -0700, Jonathan Corbet wrote:
+> > Now that the sphinx syntax has been fixed, change the document from txt
+> > to rst and add it to the index.
+> >
+> > [...]
+> >
+> > diff --git a/Documentation/networking/nfc.txt b/Documentation/networking/nfc.rst
+> > similarity index 100%
+> > rename from Documentation/networking/nfc.txt
+> > rename to Documentation/networking/nfc.rst
 > 
-> Rather than cluttering the text with ".. code-block::", you can just use
-> the literal-block shortcut:
-> 
-> 	targets. All NFC sockets use AF_NFC::
-> 
-> 	    struct sockaddr_nfc {
-> 
+> It looks like you didn't actually add it to index.rst?
 
-Thanks, will do in v2.
+Whoops, that got lost, will change.
 
 rsc
 -- 
