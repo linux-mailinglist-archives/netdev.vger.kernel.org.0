@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E402106419
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7861B106422
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:16:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729652AbfKVGOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:14:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51648 "EHLO mail.kernel.org"
+        id S1726725AbfKVGP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:15:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51666 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728601AbfKVGOI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:14:08 -0500
+        id S1729638AbfKVGOJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:14:09 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 15F402070E;
-        Fri, 22 Nov 2019 06:14:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4960820708;
+        Fri, 22 Nov 2019 06:14:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574403247;
-        bh=JaxSkdQU9drF9NAFcq84ecGj6j1VMqzal0aXjbJtgIo=;
+        s=default; t=1574403249;
+        bh=3pT4tzAQDoCWy1rARRfevvK6RgLlOffebbAAx/Ips6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zk+xVB3HI8OVAzq+GMCbvajsPdaImNXqgaLBWVRTHluIKSwIrpxubfzHIgr6Ypzm3
-         5OJxYVCeQBkboF1DhV1p4E1QWbbMtM5Hr5Ypo2MvKWjoTIdFa/6Wa/49G2OoPtVaHB
-         LvdXJ/VTO3rXbU5TuWbk4KEJ8zzsPjqMfxn2xe1M=
+        b=D4RNUOgfHqawpS5xdGb9n5njn7Lo/PpG1QFJlNNXDcAK96LX1fwyBG1dPGU/hdPRR
+         Nyt1D+H5bhT0J67B/SbimrulFF+Al2ilPaNtYsJwcoxZeAP9fFQGGkIPddSgcYfJz/
+         l1R44BgrMsOBc49cOQtR2ropl5puT5RrLFbW3vEU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Edward Cree <ecree@solarflare.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 58/68] sfc: suppress duplicate nvmem partition types in efx_ef10_mtd_probe
-Date:   Fri, 22 Nov 2019 01:12:51 -0500
-Message-Id: <20191122061301.4947-57-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 59/68] decnet: fix DN_IFREQ_SIZE
+Date:   Fri, 22 Nov 2019 01:12:52 -0500
+Message-Id: <20191122061301.4947-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122061301.4947-1-sashal@kernel.org>
 References: <20191122061301.4947-1-sashal@kernel.org>
@@ -43,98 +44,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree@solarflare.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 3366463513f544c12c6b88c13da4462ee9e7a1a1 ]
+[ Upstream commit 50c2936634bcb1db78a8ca63249236810c11a80f ]
 
-Use a bitmap to keep track of which partition types we've already seen;
- for duplicates, return -EEXIST from efx_ef10_mtd_probe_partition() and
- thus skip adding that partition.
-Duplicate partitions occur because of the A/B backup scheme used by newer
- sfc NICs.  Prior to this patch they cause sysfs_warn_dup errors because
- they have the same name, causing us not to expose any MTDs at all.
+Digging through the ioctls with Al because of the previous
+patches, we found that on 64-bit decnet's dn_dev_ioctl()
+is wrong, because struct ifreq::ifr_ifru is actually 24
+bytes (not 16 as expected from struct sockaddr) due to the
+ifru_map and ifru_settings members.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
+Clearly, decnet expects the ioctl to be called with a struct
+like
+  struct ifreq_dn {
+    char ifr_name[IFNAMSIZ];
+    struct sockaddr_dn ifr_addr;
+  };
+
+since it does
+  struct ifreq *ifr = ...;
+  struct sockaddr_dn *sdn = (struct sockaddr_dn *)&ifr->ifr_addr;
+
+This means that DN_IFREQ_SIZE is too big for what it wants on
+64-bit, as it is
+  sizeof(struct ifreq) - sizeof(struct sockaddr) +
+  sizeof(struct sockaddr_dn)
+
+This assumes that sizeof(struct sockaddr) is the size of ifr_ifru
+but that isn't true.
+
+Fix this to use offsetof(struct ifreq, ifr_ifru).
+
+This indeed doesn't really matter much - the result is that we
+copy in/out 8 bytes more than we should on 64-bit platforms. In
+case the "struct ifreq_dn" lands just on the end of a page though
+it might lead to faults.
+
+As far as I can tell, it has been like this forever, so it seems
+very likely that nobody cares.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ net/decnet/dn_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 063aca17e698b..79a1031c3ef77 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -4433,22 +4433,25 @@ static const struct efx_ef10_nvram_type_info efx_ef10_nvram_types[] = {
- 	{ NVRAM_PARTITION_TYPE_LICENSE,		   0,    0, "sfc_license" },
- 	{ NVRAM_PARTITION_TYPE_PHY_MIN,		   0xff, 0, "sfc_phy_fw" },
- };
-+#define EF10_NVRAM_PARTITION_COUNT	ARRAY_SIZE(efx_ef10_nvram_types)
+diff --git a/net/decnet/dn_dev.c b/net/decnet/dn_dev.c
+index b2c26b081134a..80554e7e9a0f6 100644
+--- a/net/decnet/dn_dev.c
++++ b/net/decnet/dn_dev.c
+@@ -55,7 +55,7 @@
+ #include <net/dn_neigh.h>
+ #include <net/dn_fib.h>
  
- static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
- 					struct efx_mcdi_mtd_partition *part,
--					unsigned int type)
-+					unsigned int type,
-+					unsigned long *found)
- {
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_NVRAM_METADATA_IN_LEN);
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_NVRAM_METADATA_OUT_LENMAX);
- 	const struct efx_ef10_nvram_type_info *info;
- 	size_t size, erase_size, outlen;
-+	int type_idx = 0;
- 	bool protected;
- 	int rc;
+-#define DN_IFREQ_SIZE (sizeof(struct ifreq) - sizeof(struct sockaddr) + sizeof(struct sockaddr_dn))
++#define DN_IFREQ_SIZE (offsetof(struct ifreq, ifr_ifru) + sizeof(struct sockaddr_dn))
  
--	for (info = efx_ef10_nvram_types; ; info++) {
--		if (info ==
--		    efx_ef10_nvram_types + ARRAY_SIZE(efx_ef10_nvram_types))
-+	for (type_idx = 0; ; type_idx++) {
-+		if (type_idx == EF10_NVRAM_PARTITION_COUNT)
- 			return -ENODEV;
-+		info = efx_ef10_nvram_types + type_idx;
- 		if ((type & ~info->type_mask) == info->type)
- 			break;
- 	}
-@@ -4461,6 +4464,13 @@ static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
- 	if (protected)
- 		return -ENODEV; /* hide it */
- 
-+	/* If we've already exposed a partition of this type, hide this
-+	 * duplicate.  All operations on MTDs are keyed by the type anyway,
-+	 * so we can't act on the duplicate.
-+	 */
-+	if (__test_and_set_bit(type_idx, found))
-+		return -EEXIST;
-+
- 	part->nvram_type = type;
- 
- 	MCDI_SET_DWORD(inbuf, NVRAM_METADATA_IN_TYPE, type);
-@@ -4489,6 +4499,7 @@ static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
- static int efx_ef10_mtd_probe(struct efx_nic *efx)
- {
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_NVRAM_PARTITIONS_OUT_LENMAX);
-+	DECLARE_BITMAP(found, EF10_NVRAM_PARTITION_COUNT);
- 	struct efx_mcdi_mtd_partition *parts;
- 	size_t outlen, n_parts_total, i, n_parts;
- 	unsigned int type;
-@@ -4517,11 +4528,13 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
- 	for (i = 0; i < n_parts_total; i++) {
- 		type = MCDI_ARRAY_DWORD(outbuf, NVRAM_PARTITIONS_OUT_TYPE_ID,
- 					i);
--		rc = efx_ef10_mtd_probe_partition(efx, &parts[n_parts], type);
--		if (rc == 0)
--			n_parts++;
--		else if (rc != -ENODEV)
-+		rc = efx_ef10_mtd_probe_partition(efx, &parts[n_parts], type,
-+						  found);
-+		if (rc == -EEXIST || rc == -ENODEV)
-+			continue;
-+		if (rc)
- 			goto fail;
-+		n_parts++;
- 	}
- 
- 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+ static char dn_rt_all_end_mcast[ETH_ALEN] = {0xAB,0x00,0x00,0x04,0x00,0x00};
+ static char dn_rt_all_rt_mcast[ETH_ALEN]  = {0xAB,0x00,0x00,0x03,0x00,0x00};
 -- 
 2.20.1
 
