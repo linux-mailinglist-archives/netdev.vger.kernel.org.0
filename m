@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB68106263
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:03:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B30410647F
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:18:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbfKVGDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:03:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41992 "EHLO mail.kernel.org"
+        id S1729045AbfKVGNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:13:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50440 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729848AbfKVGDE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:03:04 -0500
+        id S1728847AbfKVGNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:13:14 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B581A20715;
-        Fri, 22 Nov 2019 06:03:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2FD682070E;
+        Fri, 22 Nov 2019 06:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402584;
-        bh=UE13o5NrIZhLN81xQOZBSUABipSuNtXeuxUj/NUsRM8=;
+        s=default; t=1574403193;
+        bh=0SJIu/LLaSM4AgdLArh7J6zCrTkadleCHhZA7yhGIFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wqga1epltyBFq9b2jPmpskZDTmhcPZodQkQD7FA3n9pjnpU2dpIlm4ARGKuK/6AZU
-         xML83VhEL5CnV5BcKvth/omEtA1WVO+EPfYCVNyaDtaHpJEr6oYbvj/6CCBOkCoPnE
-         TaBrpnZwhHsncw6q5/QcAUDyWP7x+iHIwqo2Nrmk=
+        b=yuGDeZMBbqXUryZxZL99a2rBSD5GUff9FOvXWEjyFsc4XTIA6546KBHPKOdhOObtg
+         dGGlijwgef/FU/UulpGfQJLnc7ckgY1FynO+Ni5TRmvXr72xtvQNt4J7Sp1YLsZLnG
+         aqzeoKr6JxRqwwOqalmA1P38zLPvs3sS1HMElLsU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 85/91] net: dev: Use unsigned integer as an argument to left-shift
-Date:   Fri, 22 Nov 2019 01:01:23 -0500
-Message-Id: <20191122060129.4239-84-sashal@kernel.org>
+Cc:     Pan Bian <bianpan2016@163.com>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 11/68] mwifiex: fix potential NULL dereference and use after free
+Date:   Fri, 22 Nov 2019 01:12:04 -0500
+Message-Id: <20191122061301.4947-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
-References: <20191122060129.4239-1-sashal@kernel.org>
+In-Reply-To: <20191122061301.4947-1-sashal@kernel.org>
+References: <20191122061301.4947-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,33 +43,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Pan Bian <bianpan2016@163.com>
 
-[ Upstream commit f4d7b3e23d259c44f1f1c39645450680fcd935d6 ]
+[ Upstream commit 1dcd9429212b98bea87fc6ec92fb50bf5953eb47 ]
 
-1 << 31 is Undefined Behaviour according to the C standard.
-Use U type modifier to avoid theoretical overflow.
+There are two defects: (1) passing a NULL bss to
+mwifiex_save_hidden_ssid_channels will result in NULL dereference,
+(2) using bss after dropping the reference to it via cfg80211_put_bss.
+To fix them, the patch moves the buggy code to the branch that bss is
+not NULL and puts it before cfg80211_put_bss.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mwifiex/scan.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 2ecf0f32444e0..29ed5977ac041 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3565,7 +3565,7 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
- 	if (debug_value == 0)	/* no output */
- 		return 0;
- 	/* set low N bits */
--	return (1 << debug_value) - 1;
-+	return (1U << debug_value) - 1;
- }
+diff --git a/drivers/net/wireless/mwifiex/scan.c b/drivers/net/wireless/mwifiex/scan.c
+index b3fa3e4bed052..39b78dc1bd92b 100644
+--- a/drivers/net/wireless/mwifiex/scan.c
++++ b/drivers/net/wireless/mwifiex/scan.c
+@@ -1873,15 +1873,17 @@ mwifiex_parse_single_response_buf(struct mwifiex_private *priv, u8 **bss_info,
+ 					    ETH_ALEN))
+ 					mwifiex_update_curr_bss_params(priv,
+ 								       bss);
+-				cfg80211_put_bss(priv->wdev.wiphy, bss);
+-			}
  
- static inline void __netif_tx_lock(struct netdev_queue *txq, int cpu)
+-			if ((chan->flags & IEEE80211_CHAN_RADAR) ||
+-			    (chan->flags & IEEE80211_CHAN_NO_IR)) {
+-				mwifiex_dbg(adapter, INFO,
+-					    "radar or passive channel %d\n",
+-					    channel);
+-				mwifiex_save_hidden_ssid_channels(priv, bss);
++				if ((chan->flags & IEEE80211_CHAN_RADAR) ||
++				    (chan->flags & IEEE80211_CHAN_NO_IR)) {
++					mwifiex_dbg(adapter, INFO,
++						    "radar or passive channel %d\n",
++						    channel);
++					mwifiex_save_hidden_ssid_channels(priv,
++									  bss);
++				}
++
++				cfg80211_put_bss(priv->wdev.wiphy, bss);
+ 			}
+ 		}
+ 	} else {
 -- 
 2.20.1
 
