@@ -2,71 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6DF91076EC
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 19:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C881076EE
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 19:06:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbfKVSEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 13:04:40 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38456 "EHLO
+        id S1726704AbfKVSG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 13:06:58 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38484 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfKVSEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 13:04:39 -0500
+        with ESMTP id S1726574AbfKVSG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 13:06:58 -0500
 Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0737315280C4C;
-        Fri, 22 Nov 2019 10:04:38 -0800 (PST)
-Date:   Fri, 22 Nov 2019 10:04:38 -0800 (PST)
-Message-Id: <20191122.100438.416583996458136747.davem@davemloft.net>
-To:     liuhangbin@gmail.com
-Cc:     netdev@vger.kernel.org, ja@ssi.bg, marcelo.leitner@gmail.com,
-        dsahern@gmail.com, edumazet@google.com
-Subject: Re: [PATCH net] ipv6/route: only update neigh confirm time if pmtu
- changed
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EDB1C152828CA;
+        Fri, 22 Nov 2019 10:06:57 -0800 (PST)
+Date:   Fri, 22 Nov 2019 10:06:57 -0800 (PST)
+Message-Id: <20191122.100657.2043691592550032738.davem@davemloft.net>
+To:     zenczykowski@gmail.com
+Cc:     maze@google.com, netdev@vger.kernel.org, edumazet@google.com
+Subject: Re: [PATCH 1/3] net: inet_is_local_reserved_port() should return
+ bool not int
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191122061919.26157-1-liuhangbin@gmail.com>
-References: <20191122061919.26157-1-liuhangbin@gmail.com>
+In-Reply-To: <20191122072102.248636-1-zenczykowski@gmail.com>
+References: <20191122072102.248636-1-zenczykowski@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 22 Nov 2019 10:04:39 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 22 Nov 2019 10:06:58 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
-Date: Fri, 22 Nov 2019 14:19:19 +0800
 
-> The reason is when we ping6 remote via gretap, we will call like
-> 
-> gre_tap_xmit()
->  - ip_tunnel_xmit()
->    - tnl_update_pmtu()
->      - skb_dst_update_pmtu()
->        - ip6_rt_update_pmtu()
->          - __ip6_rt_update_pmtu()
->            - dst_confirm_neigh()
->              - ip6_confirm_neigh()
->                - __ipv6_confirm_neigh()
->                  - n->confirmed = now
+Maciej, please repost this series with a proper introduction "[PATCH 0/3]" posting
+so that I know what this series does at a high level, how it is doing it, and why
+it is doing it that way.
 
-This whole callchain violates the assumptions of the MTU update
-machinery.
+That also gives me a single email to reply to when I apply your series instead of
+having to respond to each and every one, which is more work, and error prone for
+me.
 
-In this case it's just the tunneling code accounting for the
-encapsulation it is creating, and checking the MTU just in case.
-
-But the MTU update code is supposed to be invoked in response to real
-networking events that update the PMTU.
-
-So for this ip_tunnel_xmit() case, _EVEN_ if the MTU is changed, we
-should not be invoking dst_confirm_neigh() as we have no evidence
-of successful two-way communication at this point.
-
-We have to stop papering over the tunneling code's abuse of the PMTU
-update framework and do this properly.
-
-Sorry, I'm not applying this.
+Thanks.
