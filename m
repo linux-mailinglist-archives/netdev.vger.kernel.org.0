@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8491110788B
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:53:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65293107881
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:53:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbfKVTuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:50:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51244 "EHLO mail.kernel.org"
+        id S1727882AbfKVTua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:50:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727835AbfKVTuX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 14:50:23 -0500
+        id S1727862AbfKVTuZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 14:50:25 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 32F52207FA;
-        Fri, 22 Nov 2019 19:50:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 95FF620731;
+        Fri, 22 Nov 2019 19:50:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574452223;
-        bh=VGdfGs9h3cSYxsGKZnzJVCmowXsyRBWswwV9Sd61kNU=;
+        s=default; t=1574452225;
+        bh=otUWK49KyyBOMV/bSn9NkqTZ1N4WCHx+CSRaC3fXr8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wE4691YTOg/vYWtYDRBL5uR7ILr0GdzuUhresnUhnqvkDmlIlOM6HR/LIp/aFBd6X
-         lhbHrEJN/KIihShgMjtXBEk/5u8EtQsNOMqoWn4AjL3IXowk0Xsc1BYL16+EFb/F7t
-         K5LlbWtfpnHBvDE/ciO4nMoMt8npIWTkaY8+qj0g=
+        b=jFbr9mshZRKeiBvxtfB9LXo28LKjMHwNBI/6ttIMJp7xQ7PMm18sDH8riOBsm775+
+         gq6FJi1/fY2xZMdnmZEEq7BY8eYq6jtL89jKdYCCkwffhrapoQJPYTPrVEauVn59fh
+         QUonhwZx+SEuvUcVykoZGbzgWXbufz6aj6iv7ILE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 7/9] slcan: Fix memory leak in error path
-Date:   Fri, 22 Nov 2019 14:50:12 -0500
-Message-Id: <20191122195014.25065-7-sashal@kernel.org>
+Cc:     Chuhong Yuan <hslester96@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 9/9] net: ep93xx_eth: fix mismatch of request_mem_region in remove
+Date:   Fri, 22 Nov 2019 14:50:14 -0500
+Message-Id: <20191122195014.25065-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122195014.25065-1-sashal@kernel.org>
 References: <20191122195014.25065-1-sashal@kernel.org>
@@ -46,54 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jouni Hogander <jouni.hogander@unikie.com>
+From: Chuhong Yuan <hslester96@gmail.com>
 
-[ Upstream commit ed50e1600b4483c049ce76e6bd3b665a6a9300ed ]
+[ Upstream commit 3df70afe8d33f4977d0e0891bdcfb639320b5257 ]
 
-This patch is fixing memory leak reported by Syzkaller:
+The driver calls release_resource in remove to match request_mem_region
+in probe, which is incorrect.
+Fix it by using the right one, release_mem_region.
 
-BUG: memory leak unreferenced object 0xffff888067f65500 (size 4096):
-  comm "syz-executor043", pid 454, jiffies 4294759719 (age 11.930s)
-  hex dump (first 32 bytes):
-    73 6c 63 61 6e 30 00 00 00 00 00 00 00 00 00 00 slcan0..........
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-  backtrace:
-    [<00000000a06eec0d>] __kmalloc+0x18b/0x2c0
-    [<0000000083306e66>] kvmalloc_node+0x3a/0xc0
-    [<000000006ac27f87>] alloc_netdev_mqs+0x17a/0x1080
-    [<0000000061a996c9>] slcan_open+0x3ae/0x9a0
-    [<000000001226f0f9>] tty_ldisc_open.isra.1+0x76/0xc0
-    [<0000000019289631>] tty_set_ldisc+0x28c/0x5f0
-    [<000000004de5a617>] tty_ioctl+0x48d/0x1590
-    [<00000000daef496f>] do_vfs_ioctl+0x1c7/0x1510
-    [<0000000059068dbc>] ksys_ioctl+0x99/0xb0
-    [<000000009a6eb334>] __x64_sys_ioctl+0x78/0xb0
-    [<0000000053d0332e>] do_syscall_64+0x16f/0x580
-    [<0000000021b83b99>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    [<000000008ea75434>] 0xffffffffffffffff
-
-Cc: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/slcan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/cirrus/ep93xx_eth.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 9a3f15cb7ef48..9b9dfa167ffbd 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -613,6 +613,7 @@ static int slcan_open(struct tty_struct *tty)
- 	sl->tty = NULL;
- 	tty->disc_data = NULL;
- 	clear_bit(SLF_INUSE, &sl->flags);
-+	free_netdev(sl->dev);
+diff --git a/drivers/net/ethernet/cirrus/ep93xx_eth.c b/drivers/net/ethernet/cirrus/ep93xx_eth.c
+index de9f7c97d916d..796ee362ad70c 100644
+--- a/drivers/net/ethernet/cirrus/ep93xx_eth.c
++++ b/drivers/net/ethernet/cirrus/ep93xx_eth.c
+@@ -776,6 +776,7 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
+ {
+ 	struct net_device *dev;
+ 	struct ep93xx_priv *ep;
++	struct resource *mem;
  
- err_exit:
- 	rtnl_unlock();
+ 	dev = platform_get_drvdata(pdev);
+ 	if (dev == NULL)
+@@ -791,8 +792,8 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
+ 		iounmap(ep->base_addr);
+ 
+ 	if (ep->res != NULL) {
+-		release_resource(ep->res);
+-		kfree(ep->res);
++		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++		release_mem_region(mem->start, resource_size(mem));
+ 	}
+ 
+ 	free_netdev(dev);
 -- 
 2.20.1
 
