@@ -2,121 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBEE4107806
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FC85107812
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfKVTaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:30:19 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:37033 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726698AbfKVTaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 14:30:18 -0500
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: bxFAU/KywwCcd2H8Wp4lJ8iowKZppKGXPqD1P+0mzpYO6VXrWtfQUCHGKQ1IiO4JA4Jb1MERLh
- tuuC5mMi0vZWWCnYS+3hEnnYOXxF7ds1LE//FC6/V8DEQ7MQcjRFYmYEYYlzP2e8UV1kMLOxdR
- uVR3t8I/sxlrnAcZ8Wk1JoOAQC/iYqzg1PXDMvnYZlSf89+wfQatIxs5X68gePNmrr5GBRfdog
- b/t4WEm3VS5CGEREllSvQphF8Or26wvnMdtlr+38N1eQvAwQ+iUawg78wYDTi5cmfWWwIvECb3
- dio=
-X-IronPort-AV: E=Sophos;i="5.69,230,1571727600"; 
-   d="scan'208";a="56600415"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2019 12:30:19 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 22 Nov 2019 12:30:17 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Fri, 22 Nov 2019 12:30:17 -0700
-Date:   Fri, 22 Nov 2019 20:30:16 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] Convert Ocelot and Felix switches to PHYLINK
-Message-ID: <20191122193015.zooiv6px4e6uf2my@soft-dev3.microsemi.net>
-References: <20191118181030.23921-1-olteanv@gmail.com>
- <20191118231339.ztotkr536udxuzsl@soft-dev3.microsemi.net>
- <CA+h21hpKN+7ifvFUt6KMYARf19i=Jfw_dwciuPxPC6ZyHRF2XQ@mail.gmail.com>
- <20191119204855.vgiwtrzx3426hbrc@soft-dev3.microsemi.net>
- <20191119214257.GB19542@lunn.ch>
- <20191120120849.xdizdx4vntor2fvv@soft-dev3.microsemi.net>
- <CA+h21hpDL=cLsZXyyk3V7=gQnaf-ZdyyuHjcaZ-DY+zRUcnJOw@mail.gmail.com>
- <20191120232152.p22rfjdngm4wtmak@soft-dev3.microsemi.net>
- <20191121001855.GC18325@lunn.ch>
+        id S1726735AbfKVTiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:38:08 -0500
+Received: from mga12.intel.com ([192.55.52.136]:52338 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726698AbfKVTiH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 14:38:07 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 11:38:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
+   d="scan'208";a="210342963"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Nov 2019 11:38:05 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iYEkm-0009aS-JG; Sat, 23 Nov 2019 03:38:04 +0800
+Date:   Sat, 23 Nov 2019 03:37:24 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     sunil.kovvuri@gmail.com
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        davem@davemloft.net, Linu Cherian <lcherian@marvell.com>,
+        Rakesh Babu <rsaladi2@marvell.com>,
+        Vamsi Attunuru <vamsi.attunuru@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH 02/15] octeontx2-af: Add support for importing firmware
+ data
+Message-ID: <201911230316.nf7UrK3V%lkp@intel.com>
+References: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191121001855.GC18325@lunn.ch>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <1574007266-17123-3-git-send-email-sunil.kovvuri@gmail.com>
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 11/21/2019 01:18, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> > Not really, at that point it was OK to have interface
-> > PHY_INTERFACE_MODE_NA. There were few more checks before creating the
-> > network device. Now with your changes you were creating
-> > a network device for each port of the soc even if some ports
-> > were not used on a board.
-> 
-> That does not sound right. If the port is not used, the DSA core will
-> call port_disable() to allow the driver to power off the port. It will
-> not create a network device for it.
-> 
-> Or is this just an issue with the switchdev driver, not the DSA
-> driver?
-In my case I just use the switchdev driver. I don't have the DSA driver.
+Hi,
 
-> 
->         Andrew
-> > > >                 serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
-> > > > -               if (IS_ERR(serdes)) {
-> > > > -                       err = PTR_ERR(serdes);
-> > > > -                       if (err == -EPROBE_DEFER)
-> > > > -                               dev_dbg(ocelot->dev, "deferring probe\n");
-> > >
-> > > Why did you remove the probe deferral for the serdes phy?
-> > Because not all the ports have the "phys" property.
-> 
-> You probably need to differentiate between ENODEV and EPROBE_DEFER.
-> You definitely do need to return EPROBE_DEFER if you get that.
-Thanks, I will keep it in mind.
+I love your patch! Perhaps something to improve:
 
-> Shame you cannot use devm_phy_optional_get().
-> 
->     Andrew
+[auto build test WARNING on net-next/master]
+[also build test WARNING on next-20191122]
+[cannot apply to v5.4-rc8]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
--- 
-/Horatiu
+url:    https://github.com/0day-ci/linux/commits/sunil-kovvuri-gmail-com/octeontx2-af-SSO-TIM-HW-blocks-and-other-config-support/20191118-002309
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 19b7e21c55c81713c4011278143006af9f232504
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-32-g233d4e1-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse: sparse: incorrect type in assignment (different address spaces) @@    expected struct rvu_fwdata *fwdata @@    got void struct rvu_fwdata *fwdata @@
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    expected struct rvu_fwdata *fwdata
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:722:21: sparse:    got void [noderef] <asn:2> *
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    expected void volatile [noderef] <asn:2> *addr
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:728:28: sparse:    got struct rvu_fwdata *fwdata
+   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@    expected void volatile [noderef] <asn:2> *addr @@    got [noderef] <asn:2> *addr @@
+   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    expected void volatile [noderef] <asn:2> *addr
+   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:741:28: sparse:    got struct rvu_fwdata *fwdata
+
+vim +722 drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+
+   712	
+   713	static int rvu_fwdata_init(struct rvu *rvu)
+   714	{
+   715		u64 fwdbase;
+   716		int err;
+   717	
+   718		/* Get firmware data base address */
+   719		err = cgx_get_fwdata_base(&fwdbase);
+   720		if (err)
+   721			goto fail;
+ > 722		rvu->fwdata = ioremap_wc(fwdbase, sizeof(struct rvu_fwdata));
+   723		if (!rvu->fwdata)
+   724			goto fail;
+   725		if (!is_rvu_fwdata_valid(rvu)) {
+   726			dev_err(rvu->dev,
+   727				"Mismatch in 'fwdata' struct btw kernel and firmware\n");
+ > 728			iounmap(rvu->fwdata);
+   729			rvu->fwdata = NULL;
+   730			return -EINVAL;
+   731		}
+   732		return 0;
+   733	fail:
+   734		dev_info(rvu->dev, "Unable to fetch 'fwdata' from firmware\n");
+   735		return -EIO;
+   736	}
+   737	
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
