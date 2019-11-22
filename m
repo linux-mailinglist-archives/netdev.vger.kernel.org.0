@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E75B106374
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:10:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A9C10635F
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728359AbfKVGKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:10:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34542 "EHLO mail.kernel.org"
+        id S1728922AbfKVGKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:10:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729235AbfKVF4o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:56:44 -0500
+        id S1729257AbfKVF4z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:56:55 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C731020717;
-        Fri, 22 Nov 2019 05:56:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDF0920717;
+        Fri, 22 Nov 2019 05:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402203;
-        bh=kqpzJnTxRpyBYOpXv54CkIzJJid5vTn2KtSckSJ5ySM=;
+        s=default; t=1574402214;
+        bh=3QMdufV80+4d+hL2KT7BVZFNM0dt7I/JcvPcovucgcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BfWndtXbE7g4b9bTBIx3U2cVoDNBLmYiPPGFn8mH9fHgCn+uEayVeKgrzFnvK/6IQ
-         YGq8t+nd9/I/R1J1DvplSpodb1NcuK8sPfuww4COsAH9E862NM0hJLjY3djXJNRQMW
-         FdnDH9uHzsZhS/v1A2tajweBO7VhGtY8iX76hUtA=
+        b=ubZjjBjgKP3dlFzSrD2NOL9u3kJPiZpJLDhJ6+fV5tEBlGOSj3WNBJzL61XzUXq0h
+         w+Uqujd8TzOwqDIqrXy/FoAjoJF8h4e+g2mBMI0DxXqwIYbms8qzKlVtZA3SiyMHAY
+         BQBIVotGiDhbS/wpZOIYHEwy7ehbly1vf1ijPVjQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 052/127] vxlan: Fix error path in __vxlan_dev_create()
-Date:   Fri, 22 Nov 2019 00:54:30 -0500
-Message-Id: <20191122055544.3299-51-sashal@kernel.org>
+Cc:     Kyle Roeschley <kyle.roeschley@ni.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 062/127] ath6kl: Only use match sets when firmware supports it
+Date:   Fri, 22 Nov 2019 00:54:40 -0500
+Message-Id: <20191122055544.3299-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122055544.3299-1-sashal@kernel.org>
 References: <20191122055544.3299-1-sashal@kernel.org>
@@ -43,80 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+From: Kyle Roeschley <kyle.roeschley@ni.com>
 
-[ Upstream commit 6db9246871394b3a136cd52001a0763676563840 ]
+[ Upstream commit fb376a495fbdb886f38cfaf5a3805401b9e46f13 ]
 
-When a failure occurs in rtnl_configure_link(), the current code
-calls unregister_netdevice() to roll back the earlier call to
-register_netdevice(), and jumps to errout, which calls
-vxlan_fdb_destroy().
+Commit dd45b7598f1c ("ath6kl: Include match ssid list in scheduled scan")
+merged the probed and matched SSID lists before sending them to the
+firmware. In the process, it assumed match set support is always available
+in ath6kl_set_probed_ssids, which breaks scans for hidden SSIDs. Now, check
+that the firmware supports matching SSIDs in scheduled scans before setting
+MATCH_SSID_FLAG.
 
-However unregister_netdevice() calls transitively ndo_uninit, which is
-vxlan_uninit(), and that already takes care of deleting the default FDB
-entry by calling vxlan_fdb_delete_default(). Since the entry added
-earlier in __vxlan_dev_create() is exactly the default entry, the
-cleanup code in the errout block always leads to double free and thus a
-panic.
-
-Besides, since vxlan_fdb_delete_default() always destroys the FDB entry
-with notification enabled, the deletion of the default entry is notified
-even before the addition was notified.
-
-Instead, move the unregister_netdevice() call after the manual destroy,
-which solves both problems.
-
-Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: dd45b7598f1c ("ath6kl: Include match ssid list in scheduled scan")
+Signed-off-by: Kyle Roeschley <kyle.roeschley@ni.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vxlan.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath6kl/cfg80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 6d26bbd190dd6..153a81ece9fe4 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -3217,6 +3217,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
- 	struct vxlan_dev *vxlan = netdev_priv(dev);
- 	struct vxlan_fdb *f = NULL;
-+	bool unregister = false;
- 	int err;
+diff --git a/drivers/net/wireless/ath/ath6kl/cfg80211.c b/drivers/net/wireless/ath/ath6kl/cfg80211.c
+index 414b5b596efcd..f790d8021fa17 100644
+--- a/drivers/net/wireless/ath/ath6kl/cfg80211.c
++++ b/drivers/net/wireless/ath/ath6kl/cfg80211.c
+@@ -939,7 +939,7 @@ static int ath6kl_set_probed_ssids(struct ath6kl *ar,
+ 		else
+ 			ssid_list[i].flag = ANY_SSID_FLAG;
  
- 	err = vxlan_dev_configure(net, dev, conf, false, extack);
-@@ -3242,12 +3243,11 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 	err = register_netdevice(dev);
- 	if (err)
- 		goto errout;
-+	unregister = true;
- 
- 	err = rtnl_configure_link(dev, NULL);
--	if (err) {
--		unregister_netdevice(dev);
-+	if (err)
- 		goto errout;
--	}
- 
- 	/* notify default fdb entry */
- 	if (f)
-@@ -3255,9 +3255,16 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 
- 	list_add(&vxlan->next, &vn->vxlan_list);
- 	return 0;
-+
- errout:
-+	/* unregister_netdevice() destroys the default FDB entry with deletion
-+	 * notification. But the addition notification was not sent yet, so
-+	 * destroy the entry by hand here.
-+	 */
- 	if (f)
- 		vxlan_fdb_destroy(vxlan, f, false);
-+	if (unregister)
-+		unregister_netdevice(dev);
- 	return err;
- }
+-		if (n_match_ssid == 0)
++		if (ar->wiphy->max_match_sets != 0 && n_match_ssid == 0)
+ 			ssid_list[i].flag |= MATCH_SSID_FLAG;
+ 	}
  
 -- 
 2.20.1
