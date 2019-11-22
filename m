@@ -2,121 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 821201064CC
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5AC9106657
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:31:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729406AbfKVGTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:19:37 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36933 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728971AbfKVGTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 01:19:35 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p24so2983415pfn.4
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 22:19:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SAWYz9Wrob3MYFJdWQnJNXci4p36nTV8hDr1KIREL2g=;
-        b=TrErOBhccbrlzlq8Gd9KISuzngnj7JJ0ZpaNoujHdkFko7MPMSHHtkAZpQhbyFmjmp
-         GzSZ3ZBmzu6C076rPRqLjZZQuB6d+xn/XM/vA/85os/z/fKk7n24puSntGmCW7/aI+4I
-         nH+vibHUZwjI2wZTL2bAaMU5GgdijQeuJhtElrDbS9JmnkZAOOfI6NuAKTFmWPkvDKaG
-         AqyjozudtXgIGZVWhssCGYOq0gIDIfgZw+GF0MnlezW205f9t+/kfeqTD8R5SMJqmAs6
-         NyWb+L1ztKddnwG1J/rsgr+B1s/VpopUA1pXpug4uOiNfoUYXIquOMMavCfLiWzVx6X1
-         Ko3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SAWYz9Wrob3MYFJdWQnJNXci4p36nTV8hDr1KIREL2g=;
-        b=Rmb+EpKG0hduVxy9FBqK5SSe+MBuad+yxicGrO9eYFZNKiHXCE4Vefw9rY99fEXEDX
-         hJotsOTUntbc0yzJTvZmezE5ylSkr/o+gGyXrb0+9bwVOoZpw+ObZVlDwTaTuBtby0d9
-         lZiQZDsjFL20BW+pRaLz7NvDc8MWn3e1bJLM3t7co1kzycvm2mFa1+KTvKO+GbFumq3h
-         LqLiAB0sVNMtjm0nDZNWrLkKuLQyWthW+WxImzKzqKy1PsYrj3Xe5D1EtEXxctus5d4X
-         lskdC5mobK7E0ohzD+9EZDO2fQqh74c36V4yGUW/SEIUHKa7s+n20gWFuVT4go1uR8OG
-         JM4A==
-X-Gm-Message-State: APjAAAUON5m1q0VkOEcaT5cJYLl2ZxJmGMuo2q6RwpkMoVF0NnzapqA0
-        CC70R8XH6LwGC4jy4F3Wj6ZR21TlL8A=
-X-Google-Smtp-Source: APXvYqxSi01uZ4ocq2nxwlbumxnuZUeNzL62MDbU1tfi5B4LIhXNtwGaAbu/SR/C6CD13gPAYi1VPQ==
-X-Received: by 2002:aa7:93a7:: with SMTP id x7mr15528323pff.36.1574403574506;
-        Thu, 21 Nov 2019 22:19:34 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b200sm5914279pfb.86.2019.11.21.22.19.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Nov 2019 22:19:33 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Julian Anastasov <ja@ssi.bg>,
-        "David S . Miller" <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] ipv6/route: only update neigh confirm time if pmtu changed
-Date:   Fri, 22 Nov 2019 14:19:19 +0800
-Message-Id: <20191122061919.26157-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1727420AbfKVFt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 00:49:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54322 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727400AbfKVFt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:49:58 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5AA62068F;
+        Fri, 22 Nov 2019 05:49:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574401797;
+        bh=ag2mKLmjAtSuEZfhNw8ozyv0sgkKC0hv88NtfoEpkIE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=l9Ww3JStq6aaZzXsD5jxN4WpzgXyfq9zC+1aMxGnCWJXymy+X4iZUO8Wv8CpQYFTH
+         NqCEjmlOy7Gx17jhxNRrlLOHUExHhlzBBz05EQXsNi4OMcgnO/tsuubk+Ar/oLo8XL
+         ylKufy6Nx98kD/HnUilHprmcOFfW4tEtyzFz+6go=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pan Bian <bianpan2016@163.com>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 044/219] mwifiex: fix potential NULL dereference and use after free
+Date:   Fri, 22 Nov 2019 00:46:16 -0500
+Message-Id: <20191122054911.1750-37-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
+References: <20191122054911.1750-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we setup a pair of gretap, ping each other and create neighbour cache.
-Then delete and recreate one side. We will never be able to ping6 to the new
-created gretap.
+From: Pan Bian <bianpan2016@163.com>
 
-The reason is when we ping6 remote via gretap, we will call like
+[ Upstream commit 1dcd9429212b98bea87fc6ec92fb50bf5953eb47 ]
 
-gre_tap_xmit()
- - ip_tunnel_xmit()
-   - tnl_update_pmtu()
-     - skb_dst_update_pmtu()
-       - ip6_rt_update_pmtu()
-         - __ip6_rt_update_pmtu()
-           - dst_confirm_neigh()
-             - ip6_confirm_neigh()
-               - __ipv6_confirm_neigh()
-                 - n->confirmed = now
+There are two defects: (1) passing a NULL bss to
+mwifiex_save_hidden_ssid_channels will result in NULL dereference,
+(2) using bss after dropping the reference to it via cfg80211_put_bss.
+To fix them, the patch moves the buggy code to the branch that bss is
+not NULL and puts it before cfg80211_put_bss.
 
-As the confirmed time updated, in neigh_timer_handler() the check for
-NUD_DELAY confirm time will pass and the neigh state will back to
-NUD_REACHABLE. So the old/wrong mac address will be used again.
-
-If we do not update the confirmed time, the neigh state will go to
-neigh->nud_state = NUD_PROBE; then go to NUD_FAILED and re-create the
-neigh later, which is what IPv4 does.
-
-Fix it by reordering the dst_confirm_neigh() and only update it when
-pmtu changed.
-
-Fixes: 0dec879f636f ("net: use dst_confirm_neigh for UDP, RAW, ICMP, L2TP")
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/route.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/scan.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 3f83ea851ebf..6fbef61b8f64 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -2713,11 +2713,12 @@ static void __ip6_rt_update_pmtu(struct dst_entry *dst, const struct sock *sk,
- 		daddr = NULL;
- 		saddr = NULL;
- 	}
--	dst_confirm_neigh(dst, daddr);
- 	mtu = max_t(u32, mtu, IPV6_MIN_MTU);
- 	if (mtu >= dst_mtu(dst))
- 		return;
+diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
+index ed27147efcb37..dd02bbd9544e7 100644
+--- a/drivers/net/wireless/marvell/mwifiex/scan.c
++++ b/drivers/net/wireless/marvell/mwifiex/scan.c
+@@ -1906,15 +1906,17 @@ mwifiex_parse_single_response_buf(struct mwifiex_private *priv, u8 **bss_info,
+ 					    ETH_ALEN))
+ 					mwifiex_update_curr_bss_params(priv,
+ 								       bss);
+-				cfg80211_put_bss(priv->wdev.wiphy, bss);
+-			}
  
-+	dst_confirm_neigh(dst, daddr);
+-			if ((chan->flags & IEEE80211_CHAN_RADAR) ||
+-			    (chan->flags & IEEE80211_CHAN_NO_IR)) {
+-				mwifiex_dbg(adapter, INFO,
+-					    "radar or passive channel %d\n",
+-					    channel);
+-				mwifiex_save_hidden_ssid_channels(priv, bss);
++				if ((chan->flags & IEEE80211_CHAN_RADAR) ||
++				    (chan->flags & IEEE80211_CHAN_NO_IR)) {
++					mwifiex_dbg(adapter, INFO,
++						    "radar or passive channel %d\n",
++						    channel);
++					mwifiex_save_hidden_ssid_channels(priv,
++									  bss);
++				}
 +
- 	if (!rt6_cache_allowed_for_pmtu(rt6)) {
- 		rt6_do_update_pmtu(rt6, mtu);
- 		/* update rt6_ex->stamp for cache */
++				cfg80211_put_bss(priv->wdev.wiphy, bss);
+ 			}
+ 		}
+ 	} else {
 -- 
-2.19.2
+2.20.1
 
