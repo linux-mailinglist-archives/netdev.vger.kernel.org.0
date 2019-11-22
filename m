@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D251105D81
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 01:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D1E105D8A
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 01:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfKVAGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 19:06:39 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35904 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726038AbfKVAGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 19:06:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Nv/qmMMGCEXzQPQIeeSyw0rWDJv8UDAtd8QoxE/GS5o=; b=DPV8qy38SMg2a//+FPHNfqC4s
-        g/zz9/aBZuJQvIzIRRiL9OSC1/hfpxusrQq0+NOm2IbV47xewzT/L1wYI/MadK3J2k3m1+Rh6CjTX
-        /mmIiIO5DZAzMBnEx8T6zsFIYtbZ1s0rGXis8nm3DLxNkx4U+7Ey/d/5fFs2bT3V8J1CjdhiLEL0l
-        0f3OCOakwfRdp6hTyQJwuK8QBMkwwiIy/ag3Ab6dNsHeH1Haa9f0VkTFWyuVCfvagCWVwv2eOpTKG
-        ohS00A0IiNIv+8CB3zNjUfUKwBJy/LXkqcAMIDGv4+EVhGr+RS+E94tgFer9K/w+45Yzaa6N1ReLJ
-        ev0lWM9nw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38730)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iXwT4-0001Vt-AI; Fri, 22 Nov 2019 00:06:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iXwT1-0003Ag-Rx; Fri, 22 Nov 2019 00:06:31 +0000
-Date:   Fri, 22 Nov 2019 00:06:31 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next v4 0/5] dpaa2-eth: add MAC/PHY support through
- phylink
-Message-ID: <20191122000631.GL1344@shell.armlinux.org.uk>
-References: <1572477512-4618-1-git-send-email-ioana.ciornei@nxp.com>
- <20191117164924.GI1344@shell.armlinux.org.uk>
+        id S1726548AbfKVALr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 19:11:47 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:40476 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726038AbfKVALq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 19:11:46 -0500
+Received: by mail-qv1-f65.google.com with SMTP id i3so2198644qvv.7;
+        Thu, 21 Nov 2019 16:11:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Rvf6GdcZqxgDiIyBJHEmvdw8Sb4QOPMzejK6SiW3zro=;
+        b=Ww8mlpopRe/tyjTPSAizu4hUP4ovvMsqCVr74foZV05BdV/yA/9j2QCMm8PJPjztel
+         btkaaL3S9vq4mRTKl1c7mC8p6O2I1k8gAvp5NrvwrpoxckZYsC96PNuNpPajo7qmc5h1
+         HOBh9uO0wcH6wDAtX0Yj1bVUmliv99P3lL0agbDfBMef+LbFKfCyOGh3EKIFsWecchXv
+         KNA8AWYZ7UV4DJMex5SqYdmQ4DNIm0yd0KV6binOPA7niRZQjLbMroQfTzjBJj8pbwUW
+         2oHAoLAo8/iy226ncwMNQOSr0WBG7j1nLuwa5vsMqo+tMLtwkeufu0XGKs/1v9GK1OuI
+         MrBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rvf6GdcZqxgDiIyBJHEmvdw8Sb4QOPMzejK6SiW3zro=;
+        b=RxkuLlhkM9yWZdT0MVFvNYU+YGgUd5OkvnNBvr2GXTzmy/RUSWK29RyWkYWKUsArTb
+         RWEgYrupfMiYTfT0SyFmgdaTg4p6x0y17jGU1PWUZrzLVjco+74smxCgKptWQxSe4HP5
+         j49koDhrvKLJZTaJTIx1AvPlpjbrrYMrw/v+tDpCiT9b36OxEu87lNfcMI6LBhzE5UJo
+         T/P6i4HpNa8ecvusO9nukmnOkiaYd7vtvEdEz899Uayq7ZTlXJBly3CC6nYH2/Q6gCjt
+         VDIk84/kQlbUEjVduwOd77MCQaXUCrYkKQqSaEXL9E6Z4c/y9mb5tVZt/rN7hO1ipr4y
+         xCbQ==
+X-Gm-Message-State: APjAAAW9hqUZD7IFGqdszijsEX1m1HZgHd0nS/sMIoEVQURFdZlXwUJX
+        kdeiZaSYe6l9R6KEIMpLa+mc0HJEZW1PcY5b5iA=
+X-Google-Smtp-Source: APXvYqyTzLR/9Jq5hYtYtAxpNj7pYHvWtIbmL18kn+Qq+zc2HKCbAi2lIcKHPX0/0YmgRiVK6IkXUHSeDtRvIV+ZmHY=
+X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr11147691qvb.224.1574381505270;
+ Thu, 21 Nov 2019 16:11:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191117164924.GI1344@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
+ <20191011002808.28206-12-ivan.khoronzhuk@linaro.org> <20191121214225.GA3145429@mini-arch.hsd1.ca.comcast.net>
+In-Reply-To: <20191121214225.GA3145429@mini-arch.hsd1.ca.comcast.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 21 Nov 2019 16:11:34 -0800
+Message-ID: <CAEf4BzZWPwzC8ZBWcBOfQQmxBkDRjogxw2xHZ+dMWOrrMmU0sg@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 11/15] libbpf: don't use cxx to test_libpf target
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org,
+        sergei.shtylyov@cogentembedded.com,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 17, 2019 at 04:49:24PM +0000, Russell King - ARM Linux admin wrote:
-> On Thu, Oct 31, 2019 at 01:18:27AM +0200, Ioana Ciornei wrote:
-> > The dpaa2-eth driver now has support for connecting to its associated PHY
-> > device found through standard OF bindings. The PHY interraction is handled
-> > by PHYLINK and even though, at the moment, only RGMII_* phy modes are
-> > supported by the driver, this is just the first step into adding the
-> > necessary changes to support the entire spectrum of capabilities.
-> 
-> Hi,
-> 
-> You mention that one of the aims here is to eventually support SFPs.
-> Do you have a plan to solve the current problem with the DPAA2
-> structure, where the physical network interfaces are configured at
-> boot time by RCW for their operating mode?
-> 
-> If you want full SFP support, then you will need to dynamically
-> reconfigure the network interfaces.  For example, 10G NBASE-T SFP+
-> modules will dynamically switch between 10GBASE-R (XFI), 5000BASE-X,
-> 2500BASE-X, and SGMII depending on the copper side link speed.  The
-> PHY may also support UXSGMII but it doesn't power up that way and it
-> is not known whether it is possible or how to change the interface
-> mode to UXSGMII.
-> 
-> Then there's the whole issue of SGMII vs 1000BASE-X SFPs, and fiber
-> channel SFPs that can operate at 2500BASE-X.
+On Thu, Nov 21, 2019 at 1:42 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 10/11, Ivan Khoronzhuk wrote:
+> > No need to use C++ for test_libbpf target when libbpf is on C and it
+> > can be tested with C, after this change the CXXFLAGS in makefiles can
+> > be avoided, at least in bpf samples, when sysroot is used, passing
+> > same C/LDFLAGS as for lib.
+> >
+> > Add "return 0" in test_libbpf to avoid warn, but also remove spaces at
+> > start of the lines to keep same style and avoid warns while apply.
+> Hey, just spotted this patch, not sure how it slipped through.
+> The c++ test was there to make sure libbpf can be included and
+> linked against c++ code (i.e. libbpf headers don't have some c++
+> keywords/etc).
+>
+> Any particular reason you were not happy with it? Can we revert it
+> back to c++ and fix your use-case instead? Alternatively, we can just
+> remove this test if we don't really care about c++.
+>
 
-The last thing to be aware of WRT SFPs is that not all of those which
-use SGMII send the 16-bit configuration word.  There's at least SFP
-out there that I have at the moment where the PHY chip on it is not
-capable of doing so, due to the way the chip vendor designed the
-device - yet it expects to link to a MAC using SGMII at 1G and 100M
-rates by forcing the rates on the MAC side.
+No one seemed to know why we have C++ pieces in pure C library and its
+Makefile, so we decide to "fix" this. :)
+But I do understand your concern. Would it be possible to instead do
+this as a proper selftests test? Do you mind taking a look at that?
+Thanks!
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+(please trim irrelevant parts)
+[...]
