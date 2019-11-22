@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 101CF1075E4
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF1710760E
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727474AbfKVQgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 11:36:53 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:43296 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbfKVQgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:36:53 -0500
-Received: by mail-pj1-f67.google.com with SMTP id a10so3248187pju.10;
-        Fri, 22 Nov 2019 08:36:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=D+UWHveIo6FHihN6iLKYJHZLO5XGbq5iDrl2TrjPdEY=;
-        b=NudE6m8b0+C+lesIyiJH3cHlgQpOtb7ed8r1UbZEKDp1CojGwyAuVqi5+C4HahBwYI
-         XXIjTX+l+hI/0RBqOcx9Lr9UnNyETGfmX1GNzSxWe0TAskD4zPkJQoiYxgg4TpDRNscH
-         oItXkG+61ojThm4Zc6eYDlB8fezXD4IShCECXE70Esfd6Ed+UNTpJjsdWt4CJchHJZzo
-         1PdmYpFmR/T2JnzrKEK/7EZb9AmaorQurRGRNK2BPMTiJel7Qtr4oo+KAlkzBYzwZ93+
-         OGyV3SKNUHfoykoAhgE4Vk3bSTZJe0wbN/sj95nGqORZZ5XrotjM4+ywa0CEJJqwRjMc
-         oThg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=D+UWHveIo6FHihN6iLKYJHZLO5XGbq5iDrl2TrjPdEY=;
-        b=kr2yg4kJv4KNjjll4BR5Qjq7udBcDKHmNc3hjyN/tDppCm7yV4DQZRdVNWjjhdPbuM
-         xESOHvGMxruB5ZrEA2NBcBPf6nry1QoFy6iHRVd+598uc7L2oENEl6PWonEkORolIUa4
-         V4qfAABrXsRrY1hhagXxK5CEuoL4tn7wH1byVboICTOS814fgSF2QooeE42Upx26HhV5
-         univh/2D9BV7hAgjl1xVUOoeczBoWXNX1jhY+ORc67stehZEM/2MU+dZLSYiC5QIf/Ta
-         c4gtVBFRGVXNrJu+Pcd+OoFWh+Yz5TzTQExiIjpGS8VmMEhG8EDh5b2fahi7mkCSlYAA
-         NdpA==
-X-Gm-Message-State: APjAAAV6GGknY3moUNksnTXRSfWK4tU1EDYWvDCNaVw3THRbkSGcRYWH
-        XCH3PUEDTmKlXN7A5TUjrYNdxbyU
-X-Google-Smtp-Source: APXvYqws9YfhwJnhkMkfv47bbUMQRwV6BMlkFaWUN509dm0p7EiIO2UfHYvaXH/eGf7zsaWTMvwbow==
-X-Received: by 2002:a17:90a:25ea:: with SMTP id k97mr19433680pje.110.1574440612634;
-        Fri, 22 Nov 2019 08:36:52 -0800 (PST)
-Received: from localhost (198-0-60-179-static.hfc.comcastbusiness.net. [198.0.60.179])
-        by smtp.gmail.com with ESMTPSA id d11sm6612582pgq.67.2019.11.22.08.36.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 08:36:51 -0800 (PST)
-Date:   Fri, 22 Nov 2019 08:36:50 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Brian Vazquez <brianvv@google.com>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Yonghong Song <yhs@fb.com>, Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Brian Vazquez <brianvv@google.com>
-Message-ID: <5dd80ea2da121_690a2ae784a225c44f@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191119193036.92831-2-brianvv@google.com>
-References: <20191119193036.92831-1-brianvv@google.com>
- <20191119193036.92831-2-brianvv@google.com>
-Subject: RE: [PATCH v2 bpf-next 1/9] bpf: add
- bpf_map_{value_size,update_value,map_copy_value} functions
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1726666AbfKVQ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 11:57:59 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:51395 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726633AbfKVQ57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:57:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574441878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AvsGUy/REFNRPCWSB+iNYRuyQK+ahhfUg1D/UZDO1GU=;
+        b=EZP63nav25bENJ0AlaHp8SrUtoT6jXm+hKfZwGuAuMd4v/nesFOsc8Vwt3C3E+HFhETRWb
+        onnIL1B4OTRCK1h3ZC5g3ATwnpfsBE7LycSMhrHc35p8N1MF5lLmUECo1OTktYDPc1Xrh0
+        rnA7PICup7k9Y5V8EtSyeS7g6auIdsI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-377-MTnsNgBANeS-VTntiIgpBw-1; Fri, 22 Nov 2019 11:57:57 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A5778DD804;
+        Fri, 22 Nov 2019 16:57:56 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 689EB6E71E;
+        Fri, 22 Nov 2019 16:57:51 +0000 (UTC)
+Date:   Fri, 22 Nov 2019 17:57:49 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        brouer@redhat.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: error loading xdp program on virtio nic
+Message-ID: <20191122175749.47728e42@carbon>
+In-Reply-To: <8324a37e-5507-2ae6-53f6-949c842537e0@gmail.com>
+References: <c484126f-c156-2a17-b47d-06d08121c38b@gmail.com>
+        <89f56317-5955-e692-fcf0-ee876aae068b@redhat.com>
+        <3dc7b9d8-bcb2-1a90-630e-681cbf0f1ace@gmail.com>
+        <18659bd0-432e-f317-fa8a-b5670a91c5b9@redhat.com>
+        <f7b8df14-ef7f-be76-a990-b9d71139bcaa@gmail.com>
+        <20191121072625.3573368f@carbon>
+        <4686849f-f3b8-dd1d-0fe4-3c176a37b67a@redhat.com>
+        <df4ae5e7-3f79-fd28-ea2e-43612ff61e6f@gmail.com>
+        <f7b19bae-a9cf-d4bf-7eee-bfe644d87946@redhat.com>
+        <8324a37e-5507-2ae6-53f6-949c842537e0@gmail.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: MTnsNgBANeS-VTntiIgpBw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Brian Vazquez wrote:
-> This commit moves reusable code from map_lookup_elem and map_update_elem
-> to avoid code duplication in kernel/bpf/syscall.c.
+On Fri, 22 Nov 2019 08:43:50 -0700
+David Ahern <dsahern@gmail.com> wrote:
+
+> On 11/21/19 11:09 PM, Jason Wang wrote:
+> >> Doubling the number of queues for each tap device adds overhead to the
+> >> hypervisor if you only want to allow XDP_DROP or XDP_DIRECT. Am I
+> >> understanding that correctly?  
+> > 
+> > 
+> > Yes, but there's almost impossible to know whether or not XDP_TX will be
+> > used by the program. If we don't use per CPU TX queue, it must be
+> > serialized through locks, not sure it's worth try that (not by default,
+> > of course).
+> >   
 > 
-> Signed-off-by: Brian Vazquez <brianvv@google.com>
-> ---
->  kernel/bpf/syscall.c | 271 ++++++++++++++++++++++++-------------------
->  1 file changed, 151 insertions(+), 120 deletions(-)
+> This restriction is going to prevent use of XDP in VMs in general cloud
+> hosting environments. 2x vhost threads for vcpus is a non-starter.
+> 
+> If one XDP feature has high resource needs, then we need to subdivide
+> the capabilities to let some work and others fail. For example, a flag
+> can be added to xdp_buff / xdp_md that indicates supported XDP features.
+> If there are insufficient resources for XDP_TX, do not show support for
+> it. If a program returns XDP_TX anyways, packets will be dropped.
 > 
 
-Nice bit of cleanup.
+This sounds like concrete use-case and solid argument why we need XDP
+feature detection and checks. (Last part of LPC talk[1] were about
+XDP features).
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+An interesting perspective you bring up, is that XDP features are not
+static per device driver.  It actually needs to be dynamic, as your
+XDP_TX feature request depend on the queue resources available.
+
+Implementation wise, I would not add flags to xdp_buff / xdp_md.
+Instead I propose in[1] slide 46, that the verifier should detect the
+XDP features used by a BPF-prog.  If you XDP prog doesn't use e.g.
+XDP_TX, then you should be allowed to run it on a virtio_net device
+with less queue configured, right?
+
+
+[1] http://people.netfilter.org/hawk/presentations/LinuxPlumbers2019/xdp-distro-view.pdf
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
