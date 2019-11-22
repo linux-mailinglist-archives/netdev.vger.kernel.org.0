@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6598A1060E8
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1158F10613D
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:55:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728755AbfKVFxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 00:53:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58928 "EHLO mail.kernel.org"
+        id S1727816AbfKVFy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 00:54:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728732AbfKVFw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:52:59 -0500
+        id S1728736AbfKVFxA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:53:00 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE5EC20721;
-        Fri, 22 Nov 2019 05:52:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CE6E7207FA;
+        Fri, 22 Nov 2019 05:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574401978;
-        bh=moSTdx0b15r8AFXw/a0cj2pHvsjwbdBEGVmg1DcRV+o=;
+        s=default; t=1574401979;
+        bh=5SJfNXeOwIOAk15jkQn2Gv0V++ANh4fNNJIoak3Vnec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XphGks6nOgYzFk/27SZ9DehYhkR/p8SpwqDjvGLZgdFpXkvEyD25cLv63bHGqtGP7
-         2eHot4LIx9kLKp2yLaSKFzTvA1TTv+xnOV1iwLHCDrTfXsgMH5tRu+tRlhoYhPRP6f
-         21wmlVnkxDniNtdoq7x4uBdotICD4Pl3dmPt+qF8=
+        b=ElxX2+VT3BPOopzIDaLl4hUIHaE6XMPqsOFZ1owcCSz3TTMKMhL2cCzAvIPXq1PNu
+         ZB04tKEAZUdzyrU4TfIiW3GxAclWzFyVFOEOEfTcvYkaTvkgn9XJHXXXK0CYXAIyCX
+         +MApf16jET9R16kfvJZwiQRUaOtHrPh0tQplTJBA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 197/219] net: dev: Use unsigned integer as an argument to left-shift
-Date:   Fri, 22 Nov 2019 00:48:49 -0500
-Message-Id: <20191122054911.1750-190-sashal@kernel.org>
+Cc:     Peng Sun <sironhide0null@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 199/219] bpf: drop refcount if bpf_map_new_fd() fails in map_create()
+Date:   Fri, 22 Nov 2019 00:48:50 -0500
+Message-Id: <20191122054911.1750-191-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
 References: <20191122054911.1750-1-sashal@kernel.org>
@@ -43,33 +46,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Peng Sun <sironhide0null@gmail.com>
 
-[ Upstream commit f4d7b3e23d259c44f1f1c39645450680fcd935d6 ]
+[ Upstream commit 352d20d611414715353ee65fc206ee57ab1a6984 ]
 
-1 << 31 is Undefined Behaviour according to the C standard.
-Use U type modifier to avoid theoretical overflow.
+In bpf/syscall.c, map_create() first set map->usercnt to 1, a file
+descriptor is supposed to return to userspace. When bpf_map_new_fd()
+fails, drop the refcount.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: bd5f5f4ecb78 ("bpf: Add BPF_MAP_GET_FD_BY_ID")
+Signed-off-by: Peng Sun <sironhide0null@gmail.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 8c2fec0bcb265..5ada5fd9652dd 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3790,7 +3790,7 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
- 	if (debug_value == 0)	/* no output */
- 		return 0;
- 	/* set low N bits */
--	return (1 << debug_value) - 1;
-+	return (1U << debug_value) - 1;
- }
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 90bb0c05c10e9..596959288eb9e 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -559,12 +559,12 @@ static int map_create(union bpf_attr *attr)
+ 	err = bpf_map_new_fd(map, f_flags);
+ 	if (err < 0) {
+ 		/* failed to allocate fd.
+-		 * bpf_map_put() is needed because the above
++		 * bpf_map_put_with_uref() is needed because the above
+ 		 * bpf_map_alloc_id() has published the map
+ 		 * to the userspace and the userspace may
+ 		 * have refcnt-ed it through BPF_MAP_GET_FD_BY_ID.
+ 		 */
+-		bpf_map_put(map);
++		bpf_map_put_with_uref(map);
+ 		return err;
+ 	}
  
- static inline void __netif_tx_lock(struct netdev_queue *txq, int cpu)
 -- 
 2.20.1
 
