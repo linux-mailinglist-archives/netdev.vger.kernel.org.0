@@ -2,171 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B8A105F65
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C05D106059
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 06:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbfKVFNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 00:13:08 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38273 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfKVFNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 00:13:08 -0500
-Received: by mail-pl1-f196.google.com with SMTP id q18so2615301pls.5
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 21:13:05 -0800 (PST)
+        id S1726603AbfKVFm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 00:42:26 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:45424 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726100AbfKVFm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 00:42:26 -0500
+Received: by mail-pj1-f65.google.com with SMTP id m71so2554610pjb.12;
+        Thu, 21 Nov 2019 21:42:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yX4Tq5Ym6iWctAI7V88V0aDBnuGKothzeuzTQLcKi/w=;
-        b=U6vfXuoE7ElzqlBcEE3ljYNw88qm22NUwoZY2Rw8wnTX3MSRK/4ODtdtdktC5XE1YU
-         ULlysOcX3SvS86+++A4N/nmyAVBW5fNUNGmnAlNXWumraiuOsnk1Voia7R8/z0J3uOxb
-         19tqRtjJC0Y22PCjDcu0mNvRkx2fQMFahlBG17JIHfDB7dBAk5wBKFlnrYb82/FbBZCL
-         +OMOgCIicMNtH0sygqunGvZRsvSiACfBSqRfhr0rsLrGOjaO4lat1IiFwGbTcYg5calV
-         Psl+0kyPX+7NJDLJ8Wc8kqEY5uK3KtChafmlxhSN4WVt0VeqIlWMJ1OjJOK5yVOlrG1I
-         2Lqg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N/xq13vGXiWvpwA7o5ubr/SQv5Qk0ryWNspqTCcKzVM=;
+        b=mk7ReanpUIZYts/l/C999xuOMmVLfqqzs0MpoR1zuoQN4LC7IuYHBNOcQffZo+nuMQ
+         fRs/cK/UpvkfmuoHbuGFfAnNKWuiT+iuA6g7M50zlj0RGROMEm5LYaGI7UrWsfeIX+zz
+         YQ9WC9D724dm4b6uLIGELStgYrnN+0l/SFokEmWU9OrWdVFGfCA9zXm9MDdEbdbBll/X
+         7+Hfo6naCHP0RniKY+2ayyh5FwQFI0xZpO/xSAv4J7JhKa3PE8qcjL3DdWmdpBX5zRXh
+         HFV/Tv8vj6OlvGMU0scc67F/g3qnIMOtk15cT7x2PvYdL58bCt+VZEPiUi6mqWXBDwnM
+         D+qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yX4Tq5Ym6iWctAI7V88V0aDBnuGKothzeuzTQLcKi/w=;
-        b=Io2N1OjM8NX5aVfLeDESllD0b5PIrn1S8txDxXjCxJaSjeEoFz83770NsWc+pzO7T4
-         tN5OL2y8rLiY/+uvb83Rkk1eWkKlCp8a/7vog5WoFc0kVzYzA6EJWrhnGgn5IOs1tS9i
-         5OmGUSAHTs3kI/34LlwGujyClgifXf8v3lztJd3oM7RidH3JBiFE0H1SnkWWNW61l+St
-         7SIdptYh+1qSeqRODicARwhMWITKq1xMlLRzsDXEC6vWuEbcvwwshT/qU5Wj83/6TAeE
-         kfWe83KuucpCVmgOxdozyylmoVm/BaH2zUTTE+GTUOtnvF3CilyKQ5kxhyuYvJR0fTRJ
-         NG6Q==
-X-Gm-Message-State: APjAAAXhMuVwmv+c6zi8L+jVO2iiOFLptqjZhjWXv/OAVBrjrx/Kiiby
-        rAJM9O+LI8n4KEzKaXSaRnU=
-X-Google-Smtp-Source: APXvYqw+P+l73VcOr6faW9LFfrdxRHMNRs2drbo/upviEoyKYMGCmJiL81wkrYC1SJX43wina5Bq2w==
-X-Received: by 2002:a17:90a:ca0e:: with SMTP id x14mr16414595pjt.95.1574399585432;
-        Thu, 21 Nov 2019 21:13:05 -0800 (PST)
-Received: from martin-VirtualBox ([1.39.175.39])
-        by smtp.gmail.com with ESMTPSA id v16sm1264214pje.1.2019.11.21.21.13.04
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 21 Nov 2019 21:13:04 -0800 (PST)
-Date:   Fri, 22 Nov 2019 10:42:53 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N/xq13vGXiWvpwA7o5ubr/SQv5Qk0ryWNspqTCcKzVM=;
+        b=UzpWvSC8a8GfTkJlxcuaa27DmVuY2KEDMAD4cKB90qzOlGcWfUb+YR234l8yC4B6uK
+         SAGr4jiREUZhcuMDPNIPCx2EoiIkZ5ecgm/lM9zWeY6d9nYUe57zteyXEL1xbYRnv2mc
+         O+REBCyGb36XBHmX2/rK/FCSURckKhMsRunNBop9HU/NP1yKlt5bAEL9kwC0bkGQOX7g
+         qSqc7tMDjEOt2CECSM5kg5f3eyRL/sKImJkg9Cnr0O0KQ28oYqmjfQmBv7v4KOh8aljq
+         RB5Yh1qrRGZey/Yc8VbPoNpbkzaZ2vynj2Iu6/2eLsG/f9OGKW1Em9mP0ZJUq/SzKqXO
+         U2lw==
+X-Gm-Message-State: APjAAAWvuPtUny7QFUg86fMOgSvvSJnK0ltZzw5yv9xTKk6sn7kVRfi4
+        U/nKYyN9ntgh6jLhyPyljQ4=
+X-Google-Smtp-Source: APXvYqzstknxYzuGGKrXO06rsnCSJWi/aaRPTCAyTjuLKgzAc1ojp7WXFsQTvtnVoYwtnpeRtGrRRQ==
+X-Received: by 2002:a17:90b:300c:: with SMTP id hg12mr16713316pjb.75.1574401345200;
+        Thu, 21 Nov 2019 21:42:25 -0800 (PST)
+Received: from [172.20.20.103] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id h9sm5010634pgk.84.2019.11.21.21.42.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Nov 2019 21:42:24 -0800 (PST)
+Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Subject: Re: [PATCH net-next] Enhanced skb_mpls_pop to update ethertype of
- the packet in all the cases when an ethernet header is present is the
- packet.
-Message-ID: <20191122051253.GA19664@martin-VirtualBox>
-References: <1574338995-14657-1-git-send-email-martinvarghesenokia@gmail.com>
- <CAOrHB_De_A=jY-fBqJjXDQKemEOOfJtpvqGR_bi3_-x8+od2eg@mail.gmail.com>
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        William Tu <u9012063@gmail.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+ <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
+ <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
+ <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
+ <87h840oese.fsf@toke.dk>
+ <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch>
+ <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com>
+ <87zhhmrz7w.fsf@toke.dk> <b2ecf3e6-a8f1-cfd9-0dd3-e5f4d5360c0b@gmail.com>
+ <87zhhhnmg8.fsf@toke.dk> <640418c3-54ba-cd62-304f-fd9f73f25a42@gmail.com>
+ <87blthox30.fsf@toke.dk> <c1b7ff64-6574-74c7-cd6b-5aa353ec80ce@gmail.com>
+ <87lfsiocj5.fsf@toke.dk> <6e08f714-6284-6d0d-9cbe-711c64bf97aa@gmail.com>
+ <87k17xcwoq.fsf@toke.dk>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <db38dee6-1db9-85f3-7a0c-0bcee13b12ea@gmail.com>
+Date:   Fri, 22 Nov 2019 14:42:18 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOrHB_De_A=jY-fBqJjXDQKemEOOfJtpvqGR_bi3_-x8+od2eg@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <87k17xcwoq.fsf@toke.dk>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 06:22:29PM -0800, Pravin Shelar wrote:
-> On Thu, Nov 21, 2019 at 4:23 AM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> >
-> > The skb_mpls_pop was not updating ethertype of an ethernet packet if the
-> > packet was originally received from a non ARPHRD_ETHER device.
-> >
-> > In the below OVS data path flow, since the device corresponding to port 7
-> > is an l3 device (ARPHRD_NONE) the skb_mpls_pop function does not update
-> > the ethertype of the packet even though the previous push_eth action had
-> > added an ethernet header to the packet.
-> >
-> > recirc_id(0),in_port(7),eth_type(0x8847),
-> > mpls(label=12/0xfffff,tc=0/0,ttl=0/0x0,bos=1/1),
-> > actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-> > pop_mpls(eth_type=0x800),4
-> >
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > ---
-> >  include/linux/skbuff.h    | 3 ++-
-> >  net/core/skbuff.c         | 8 +++++---
-> >  net/openvswitch/actions.c | 2 +-
-> >  net/sched/act_mpls.c      | 2 +-
-> >  4 files changed, 9 insertions(+), 6 deletions(-)
-> >
-> ...
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 867e61d..8ac377d 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -5529,12 +5529,14 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-> >   * @skb: buffer
-> >   * @next_proto: ethertype of header after popped MPLS header
-> >   * @mac_len: length of the MAC header
-> > - *
-> > + * @ethernet: flag to indicate if ethernet header is present in packet
-> > + *           ignored for device type ARPHRD_ETHER
-> >   * Expects skb->data at mac header.
-> >   *
-> >   * Returns 0 on success, -errno otherwise.
-> >   */
-> > -int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> > +int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-> > +                bool ethernet)
-> >  {
-> >         int err;
-> >
-> > @@ -5553,7 +5555,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> >         skb_reset_mac_header(skb);
-> >         skb_set_network_header(skb, mac_len);
-> >
-> > -       if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-> > +       if ((skb->dev && skb->dev->type == ARPHRD_ETHER) || ethernet) {
-> >                 struct ethhdr *hdr;
-> Lets move the dev-type check to caller. That would also avoid one more
-> argument to this function.
-
-
-To have only the ethernet flag check in the function like below ?
- If (ethernet) {
-     /*pseudo*/   Update ethertype
- }
-And pass the flag to the function considering the device type
-Fo example in case of tc.
-
-if (skb_mpls_pop(skb, p->tcfm_proto, mac_len,
-                                 (skb->dev && skb->dev->type == ARPHRD_ETHER))).
-
-
-But how do we avoid an argument here ? I am missing anything ?
+On 2019/11/18 19:20, Toke Høiland-Jørgensen wrote:
+> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
 > 
-> >
-> >                 /* use mpls_hdr() to get ethertype to account for VLANs. */
-> > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> > index 12936c1..9e5d274 100644
-> > --- a/net/openvswitch/actions.c
-> > +++ b/net/openvswitch/actions.c
-> > @@ -179,7 +179,7 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> >  {
-> >         int err;
-> >
-> > -       err = skb_mpls_pop(skb, ethertype, skb->mac_len);
-> > +       err = skb_mpls_pop(skb, ethertype, skb->mac_len, true);
-> >         if (err)
-> OVS supports L3 packets, you need to check flow key for type of packet
-> (ovs_key_mac_proto()) under process.
+> [... trimming the context a bit ...]
+> 
+>>>>> Take your example of TC rules: You were proposing a flow like this:
+>>>>>
+>>>>> Userspace TC rule -> kernel rule table -> eBPF map -> generated XDP
+>>>>> program
+>>>>>
+>>>>> Whereas what I mean is that we could do this instead:
+>>>>>
+>>>>> Userspace TC rule -> kernel rule table
+>>>>>
+>>>>> and separately
+>>>>>
+>>>>> XDP program -> bpf helper -> lookup in kernel rule table
+>>>>
+>>>> Thanks, now I see what you mean.
+>>>> You expect an XDP program like this, right?
+>>>>
+>>>> int xdp_tc(struct xdp_md *ctx)
+>>>> {
+>>>> 	int act = bpf_xdp_tc_filter(ctx);
+>>>> 	return act;
+>>>> }
+>>>
+>>> Yes, basically, except that the XDP program would need to parse the
+>>> packet first, and bpf_xdp_tc_filter() would take a parameter struct with
+>>> the parsed values. See the usage of bpf_fib_lookup() in
+>>> bpf/samples/xdp_fwd_kern.c
+>>>
+>>>> But doesn't this way lose a chance to reduce/minimize the program to
+>>>> only use necessary features for this device?
+>>>
+>>> Not necessarily. Since the BPF program does the packet parsing and fills
+>>> in the TC filter lookup data structure, it can limit what features are
+>>> used that way (e.g., if I only want to do IPv6, I just parse the v6
+>>> header, ignore TCP/UDP, and drop everything that's not IPv6). The lookup
+>>> helper could also have a flag argument to disable some of the lookup
+>>> features.
+>>
+>> It's unclear to me how to configure that.
+>> Use options when attaching the program? Something like
+>> $ xdp_tc attach eth0 --only-with ipv6
+>> But can users always determine their necessary features in advance?
+> 
+> That's what I'm doing with xdp-filter now. But the answer to your second
+> question is likely to be 'probably not', so it would be good to not have
+> to do this :)
+> 
+>> Frequent manual reconfiguration when TC rules frequently changes does
+>> not sound nice. Or, add hook to kernel to listen any TC filter event
+>> on some daemon and automatically reload the attached program?
+> 
+> Doesn't have to be a kernel hook; we could enhance the userspace tooling
+> to do it. Say we integrate it into 'tc':
+> 
+> - Add a new command 'tc xdp_accel enable <iface> --features [ipv6,etc]'
+> - When adding new rules, add the following logic:
+>    - Check if XDP acceleration is enabled
+>    - If it is, check whether the rule being added fits into the current
+>      'feature set' loaded on that interface.
+>      - If the rule needs more features, reload the XDP program to one
+>        with the needed additional features.
+>      - Or, alternatively, just warn the user and let them manually
+>        replace it?
 
+Ok, but there are other userspace tools to configure tc in wild.
+python and golang have their own netlink library project.
+OVS embeds TC netlink handling code in itself. There may be more tools like this.
+I think at least we should have rtnl notification about TC and monitor it
+from daemon, if we want to reload the program from userspace tools.
 
-Yes I missed that.
-        err = skb_mpls_pop(skb, ethertype, skb->mac_len, ovs_key_mac_proto())); ?
-       or 
-	err = skb_mpls_pop(skb, ethertype, skb->mac_len, key->mac_proto = MAC_PROTO_ETHERNET)
-
-I assume both acheives the same 
-
-
-Thanks for reviewing
-
-Martin
+Toshiaki Makita
