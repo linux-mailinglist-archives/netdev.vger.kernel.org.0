@@ -2,174 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB238105DCA
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 01:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D58A105DDD
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 01:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfKVAme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 19:42:34 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:40816 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfKVAmd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 19:42:33 -0500
-Received: by mail-lj1-f194.google.com with SMTP id q2so5328013ljg.7
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 16:42:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YzYTuPfhNF+6hAQ8DRw50vXORP/WZWzxXXw+iGKNMpw=;
-        b=Ek1ZOoMsHvCHSH/GLQWhU47W8IhazdULoSW9K4cQTjFSbZjnS8Cl6Sy7D8qQ0ZQy5G
-         WHpqtk9u63+dG9f5EdRHJA6muPZT/JiVAkkQmsYxfKHWZm5GHt+OHWRfAn40pCUGNplq
-         mpqiSDMQFc4znojygS6YXnVVf+mX6LBpupzaH1Ig8s0xbFxyVtUzxINylWAdXaXFHovz
-         xIqvHTwxmSGuY/5nCGyyBjHJqzFHsZ4kPs/iGjZwaClg8+qqxKOFTgbOv5sq9NherYeU
-         OgKJX3RpekIekRM+C0GpWFtEkYBwaQrjNJsvXSxeKRp61mW8560D8r2Tr5vKv12HBHOC
-         fAVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YzYTuPfhNF+6hAQ8DRw50vXORP/WZWzxXXw+iGKNMpw=;
-        b=s/jd4n33Wx80qwFbaZcH5Vr7wzgu2vV2fE3ht01iE1AqmOzbvn1ZCHaDB6dm2oSLu1
-         qm0mIgJQrXprNPFZ/n0Th83lggCHuZWDye3y6dCUKM5P0mV39kdgDZqV8moXP+5OhOuo
-         o6BqWRj9DWjCIYmuy6CARpVgvaLHETe3GPFGON9Mo9+X2xf8Nw8CWjWNViicNMri0HVK
-         riij0XBq30Z3EpVm7jWExRSZ1+edXFYKV+2Io2s3jq8mjW4XgIL0iCf3Mm/CrXPjN+MH
-         f+putsG0JaVV4E19EIbb1jFjzMiJOYzkNtrGoqr0rNGkoARnJuGxKlOK7fbsX+gViGVE
-         IZvg==
-X-Gm-Message-State: APjAAAWQW/r6PWjkv+T6V+Wca0gtgJDI6WAPVHQYrHd3JB7rDHIAbDFl
-        kaILttwwA+hbb2edecigi4UJZ6V+lpJjPHUAcF6o
-X-Google-Smtp-Source: APXvYqxHINm8pj5hHObN5FfogVwDQsXbF6iabxRdRu8W/YON+dxEFj3FPP1741tdwyk7vPn0EjxORYxieY+pfttr9EM=
-X-Received: by 2002:a2e:970e:: with SMTP id r14mr9681041lji.57.1574383349234;
- Thu, 21 Nov 2019 16:42:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20191120213816.8186-1-jolsa@kernel.org> <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
- <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
- <CAHC9VhQbQoXacbTCNJPGNzFOv30PwLeiWu4ROQFU46=saTeTNQ@mail.gmail.com> <b8a79ac0-a7d3-8d7b-1e31-33f477b30503@iogearbox.net>
-In-Reply-To: <b8a79ac0-a7d3-8d7b-1e31-33f477b30503@iogearbox.net>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 21 Nov 2019 19:42:18 -0500
-Message-ID: <CAHC9VhR7_n9MpoNx8A8QWzNMOZwMG6H6xegdYt5qxAf-xbwXCA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and unload
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726664AbfKVAyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 19:54:24 -0500
+Received: from mail-eopbgr790102.outbound.protection.outlook.com ([40.107.79.102]:11860
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726335AbfKVAyX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Nov 2019 19:54:23 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R5RH0SlYnfkMAfqVQ+ZFqJwsK/137GLvHIhC7ZLcrlqHlyNHutS9wcela8motw28lMO3hpLvFC3GmPSHLL+7MhojvwFdoRbFqbkKQCARr3tPAhE3cdw2skNBLTHjgwqgu4R9uDSlhfqp6wJL02WlDim6tlq9JwFqIHYvJ9LioxIHAAZmJ0ENjhUdfNXLlkQt+NoRYct6vUk02AB8GKeFFCAlcpDCHElqL2td4RIf9b2HVu0mtjDEuIhkeKmpNkMT/hBV+JXOm3mUPVf5jmSRriXDNFfH2zV/hTCdDkRJUP0h38qJE0xIhs7LycuInY8TVn7k0Ex+GbTD/srNRAfjGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G9QHbpvqi5SYp3ilMl8F93BnyjoVJFWt++k3rgTHzMM=;
+ b=neG8gMQTIjdom6J2CHXe/n80li8s1aTxshQ3IEr2+TpJhDbXWAP/VHTtXcT1Dca4nowODwC5jW4GaUXlHgcBRHiTqKf/l3chWdagotX3f84Slw8EoaPK0eK5ZTLY2hQxbpxlQl4Y4pLTR/ZDv3VfYCjit4KvHBjL24JMNtf5CseOPiy+1t1G1t86svOz0WOPl+Zp/C1HEXPjAXjESies0GQUnvTbMNuM3ZKrhKC6nxfaORrSddoWAYHxmrqew2B562uV0+XbNpo43Rrcfom87Z10Y3B/vgGXR5UTJnyQGB7lPJkBORyaBvnGHTXW+8amUQYAaNug0x0W+JDhCxorIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G9QHbpvqi5SYp3ilMl8F93BnyjoVJFWt++k3rgTHzMM=;
+ b=RDuZ2HVxl9CuyBCFcMn4XdfK6sO9dSGfq4tqF2CN6MggueePWPiFnERZGL2zj6GP8gOv/6H5Ls96op2/QbFQv8nfXouJpkJB9LdjCkHwrayZm8FA6BWFF8UQbF3HhOpwSpqXIEjODhKpLYrw4Wnsc6anF1nhNl/ANhjVSO5fYxo=
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
+ MN2PR21MB1472.namprd21.prod.outlook.com (20.180.26.216) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.3; Fri, 22 Nov 2019 00:54:20 +0000
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::ac9c:72ce:8bf5:790]) by MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::ac9c:72ce:8bf5:790%9]) with mapi id 15.20.2495.010; Fri, 22 Nov 2019
+ 00:54:20 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net,v2 1/2] hv_netvsc: Fix offset usage in
+ netvsc_send_table()
+Thread-Topic: [PATCH net,v2 1/2] hv_netvsc: Fix offset usage in
+ netvsc_send_table()
+Thread-Index: AQHVoLN/DO59iE8Ib0GhW4llyhRdpKeWPrqAgAAeLLA=
+Date:   Fri, 22 Nov 2019 00:54:20 +0000
+Message-ID: <MN2PR21MB13750EBD53CFDFCBA36CF1D8CA490@MN2PR21MB1375.namprd21.prod.outlook.com>
+References: <1574372021-29439-1-git-send-email-haiyangz@microsoft.com>
+        <1574372021-29439-2-git-send-email-haiyangz@microsoft.com>
+ <20191121150445.47fc3358@cakuba.netronome.com>
+In-Reply-To: <20191121150445.47fc3358@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-11-22T00:54:18.8139576Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=70dfb9ad-7d68-4c35-b862-7e9ee07c348c;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=haiyangz@microsoft.com; 
+x-originating-ip: [96.61.92.94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 27796e20-6f57-4989-3fef-08d76ee68256
+x-ms-traffictypediagnostic: MN2PR21MB1472:|MN2PR21MB1472:|MN2PR21MB1472:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MN2PR21MB1472C579708A6F57E222E43DCA490@MN2PR21MB1472.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 02296943FF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(39860400002)(346002)(396003)(136003)(376002)(13464003)(54534003)(199004)(189003)(66066001)(5660300002)(55016002)(4326008)(6916009)(76116006)(22452003)(99286004)(71200400001)(71190400001)(76176011)(316002)(7696005)(7736002)(66476007)(66946007)(6436002)(64756008)(66446008)(66556008)(33656002)(6116002)(86362001)(8936002)(8676002)(81156014)(2906002)(446003)(3846002)(11346002)(10090500001)(74316002)(229853002)(10290500003)(6246003)(26005)(478600001)(6506007)(81166006)(8990500004)(256004)(102836004)(25786009)(54906003)(53546011)(9686003)(14454004)(52536014)(305945005)(186003)(142933001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1472;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lBk+E0X08fLNy9vjSvwsroJPP46youD88W/pVr9PN0LkIgtXv9eg/ABzIPKl4tKUpF0Nek3n6a0uzOPrurSQOaureTJs76hgQSuyMbQhJVJ8dB0/6f12kLW5dNLPfMCRu7jQUISpkklxs0qQDzbYFOVKHfq0S+N1b/tW58OuYAdTzMQKfSedcZqcebQIIK84+S3Plj569hgWRDsQUhFvYxAmeu/5VDJjvyZ/5Q1cvqz4xnIru/odLspPkxLI9L/8HPwqxEWVWbW/lbwcqMP7M1lZomBYmmNFASCOw/OT6IdhiO0/mmOi+kg0xQtiKiWaVHR781bHVZVBo/fnH+7Xdq85mHL8fNjI+ueF70oB91aBwyBv3flp8t0lNBmTenb0j0WmlRq5tYjT+GWE32TgQfbYS4eW6zr5RB2hXp21/uqDdfCHzX6CaQ/ocNBjLgN/
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27796e20-6f57-4989-3fef-08d76ee68256
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2019 00:54:20.2119
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7beE9xBvtsQ2f3c25sXzZtNWafI4hsdKfyQoZCdkkHZiijpTDNtZAVsJvXU7CkEowvQ/dw6ByfBOFgCwDTsddA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1472
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 21, 2019 at 7:25 PM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
-> On 11/22/19 12:41 AM, Paul Moore wrote:
-> > On Wed, Nov 20, 2019 at 4:49 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> >> On Wed, Nov 20, 2019 at 1:46 PM Daniel Borkmann <daniel@iogearbox.net>=
- wrote:
-> >>> On 11/20/19 10:38 PM, Jiri Olsa wrote:
-> >>>> From: Daniel Borkmann <daniel@iogearbox.net>
-> >>>>
-> >>>> Allow for audit messages to be emitted upon BPF program load and
-> >>>> unload for having a timeline of events. The load itself is in
-> >>>> syscall context, so additional info about the process initiating
-> >>>> the BPF prog creation can be logged and later directly correlated
-> >>>> to the unload event.
-> >>>>
-> >>>> The only info really needed from BPF side is the globally unique
-> >>>> prog ID where then audit user space tooling can query / dump all
-> >>>> info needed about the specific BPF program right upon load event
-> >>>> and enrich the record, thus these changes needed here can be kept
-> >>>> small and non-intrusive to the core.
-> >>>>
-> >>>> Raw example output:
-> >>>>
-> >>>>     # auditctl -D
-> >>>>     # auditctl -a always,exit -F arch=3Dx86_64 -S bpf
-> >>>>     # ausearch --start recent -m 1334
-> >>>>     [...]
-> >>>>     ----
-> >>>>     time->Wed Nov 20 12:45:51 2019
-> >>>>     type=3DPROCTITLE msg=3Daudit(1574271951.590:8974): proctitle=3D"=
-./test_verifier"
-> >>>>     type=3DSYSCALL msg=3Daudit(1574271951.590:8974): arch=3Dc000003e=
- syscall=3D321 success=3Dyes exit=3D14 a0=3D5 a1=3D7ffe2d923e80 a2=3D78 a3=
-=3D0 items=3D0 ppid=3D742 pid=3D949 auid=3D0 uid=3D0 gid=3D0 euid=3D0 suid=
-=3D0 fsuid=3D0 egid=3D0 sgid=3D0 fsgid=3D0 tty=3Dpts0 ses=3D2 comm=3D"test_=
-verifier" exe=3D"/root/bpf-next/tools/testing/selftests/bpf/test_verifier" =
-subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=3D(null)
-> >>>>     type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8974): auid=3D0 =
-uid=3D0 gid=3D0 ses=3D2 subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0=
-:c0.c1023 pid=3D949 comm=3D"test_verifier" exe=3D"/root/bpf-next/tools/test=
-ing/selftests/bpf/test_verifier" prog-id=3D3260 event=3DLOAD
-> >>>>     ----
-> >>>>     time->Wed Nov 20 12:45:51 2019
-> >>>> type=3DUNKNOWN[1334] msg=3Daudit(1574271951.590:8975): prog-id=3D326=
-0 event=3DUNLOAD
-> >>>>     ----
-> >>>>     [...]
-> >>>>
-> >>>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> >>>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> >>>
-> >>> LGTM, thanks for the rebase!
-> >>
-> >> Applied to bpf-next. Thanks!
+
+
+> -----Original Message-----
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Sent: Thursday, November 21, 2019 6:05 PM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org; netdev@vger.kernel.o=
+rg;
+> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
+> <vkuznets@redhat.com>; davem@davemloft.net; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net,v2 1/2] hv_netvsc: Fix offset usage in
+> netvsc_send_table()
+>=20
+> On Thu, 21 Nov 2019 13:33:40 -0800, Haiyang Zhang wrote:
+> > To reach the data region, the existing code adds offset in struct
+> > nvsp_5_send_indirect_table on the beginning of this struct. But the
+> > offset should be based on the beginning of its container,
+> > struct nvsp_message. This bug causes the first table entry missing,
+> > and adds an extra zero from the zero pad after the data region.
+> > This can put extra burden on the channel 0.
 > >
-> > [NOTE: added linux-audit to the To/CC line]
+> > So, correct the offset usage. Also add a boundary check to ensure
+> > not reading beyond data region.
+>=20
+> Please provide a change log at the end of the commit message when
+> posting new version in the future.
+Sure. Will do that in the future.
+
+>=20
+> > Fixes: 5b54dac856cb ("hyperv: Add support for virtual Receive Side Scal=
+ing
+> (vRSS)")
+> > Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+>=20
 > >
-> > Wait a minute, why was the linux-audit list not CC'd on this?  Why are
-> > you merging a patch into -next that adds to the uapi definition *and*
-> > creates a new audit record while we are at -rc8?
-> >
-> > Aside from that I'm concerned that you are relying on audit userspace
-> > changes that might not be okay; I see the PR below, but I don't see
-> > any comment on it from Steve (it is his audit userspace).  I also
-> > don't see a corresponding test added to the audit-testsuite, which is
-> > a common requirement for new audit functionality (link below).  I'm
-> > also fairly certain we don't want this new BPF record to look like how
-> > you've coded it up in bpf_audit_prog(); duplicating the fields with
-> > audit_log_task() is wrong, you've either already got them via an
-> > associated record (which you get from passing non-NULL as the first
-> > parameter to audit_log_start()), or you don't because there is no
-> > associated syscall/task (which you get from passing NULL as the first
-> > parameter).  Please revert, un-merge, etc. this patch from bpf-next;
-> > it should not go into Linus' tree as written.
->
-> Fair enough, up to you guys. My impression was that this is mainly coming
-> from RHEL use case [0] and given that the original patch was back in Oct
-> 2018 [1] that you've sorted it out by now RH internally and agreed to pro=
-ceed
-> with this patch for BPF given the rebase + resend ... seems not then. :(
+> > -	tab =3D (u32 *)((unsigned long)&nvmsg->msg.v5_msg.send_table +
+> > -		      nvmsg->msg.v5_msg.send_table.offset);
+> > +	if (offset > msglen - count * sizeof(u32)) {
+>=20
+> Can't this underflow now? What if msglen is small?
+msglen came from the vmbus container message. We trust it to be big
+enough for the data region.
 
-For the record, I am not currently employed by RH and thus not part of
-any RH internal discussions.  Although, even when I was, I would still
-bristle at the idea of audit patches going in without CC'ing the audit
-list and getting an ACK from the audit folks.  Internal discussions
-within a company are fine, but the final discussion and debate should
-happen on the public list.
+Thanks,
+- Haiyang
 
-> Given the change is mostly trivial, are there any major objections for Ji=
-ri
-> to follow-up? Otherwise worst case probably easier to revert in net-next.
-
-See my previous response for more info.  However, for starters the use
-of audit_log_task() looks like the wrong thing to do here.  I also
-want to see a test for our test suite so we can catch when someone
-invariably breaks this in future and fix it.
-
->    [0] slide 11, https://linuxplumbersconf.org/event/4/contributions/460/=
-attachments/244/426/xdp-distro-view.pdf
->    [1] https://lore.kernel.org/netdev/20181004135038.2876-1-daniel@iogear=
-box.net/
-
---=20
-paul moore
-www.paul-moore.com
