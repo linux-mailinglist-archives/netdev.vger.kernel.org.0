@@ -2,152 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DC8107952
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 21:15:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C5710798A
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 21:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfKVUPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 15:15:42 -0500
-Received: from mail-eopbgr10054.outbound.protection.outlook.com ([40.107.1.54]:21320
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726187AbfKVUPl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 15:15:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GmOWcr7UFLgGMuz257YJ/3HNxLwioCiyLlhlZq0GnM5B7eRQwayJMEln4HdBqlQ3IDfSrZIKXZFwCK4W//PPT0AF8IJzCn/JyKWRJXKFeRJVOWQjO+5luwqQZsr+zTHvZEzMGtUejojuhgz6KFldx+4Sv+dzM35sXvK4bbinjKWfK5ggVuashHyD6/eIzDVMiQaPAVj3fSfU+hnpo6Mjs61TfmBPWwaqaFfgyUQ+xngNJSVFlFkYTBNP2C9gZec3YDXJD3zxjtYNoLq5jScPvJ15gFQGhuNG1YyEu10zu9aH8y06XhfgckEeJOG4+jFGxzU22UdbkOOAhxxRtr9HEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zGl59mBHxOs9lReCN6F5H5vE0SMDtvSvz4hWg/bpY3Q=;
- b=i/xsC4AQLjOb2cn/SInRamR5oNURZPek5EXuJk+x9nqryxLgbArvsVacTLIK/H3cFY+QwOxAoeoJ8s0XJm34lc4I3+YMgl4dmWLAScSlBlyJ9JPniLlA/UUcolfXDN+If5ykZC+vJk9ljzxGyo2qjokH8M4ytCOtnPgnDXROuTYWB5LnRyTZFyU/P/AfS3S/XkHxklo2ZzT1JL+lrGvoX/mZ2e3VTW4f0dpby/xzbUrhCE6MEHZ7px+NGsCHtG/OMOJKZW7Dm5fvdiiF58fDNnMPuXdAKCkbLRqIDs//Oie3ECnOyDLpeDciF7OKWtEmH1yKeSA/OAXXuj0CGRfMsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zGl59mBHxOs9lReCN6F5H5vE0SMDtvSvz4hWg/bpY3Q=;
- b=RLZgg5Gekoy/9Hc7FEpQXjKW+bAPmw937jhG7hvK7OBOOz4WNYYeMIQPvwA9yCSv+Yd7/VYdh55ZCIeHxpWJAGAcPQdHQ/xSkcr8ULMA6jlDQ03q8erPyxWXvs2EYKzWaCfX62gxex+/chmmhGzRLK8MOwzaFaodnIN+zltoReM=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB5598.eurprd05.prod.outlook.com (20.177.201.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.17; Fri, 22 Nov 2019 20:15:36 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::b179:e8bf:22d4:bf8d]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::b179:e8bf:22d4:bf8d%5]) with mapi id 15.20.2474.021; Fri, 22 Nov 2019
- 20:15:36 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Leon Romanovsky <leonro@mellanox.com>
-CC:     Doug Ledford <dledford@redhat.com>,
+        id S1726721AbfKVUj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 15:39:29 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59876 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726089AbfKVUj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 15:39:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574455167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V/dlCJK+i6cXX9AuNkha8Hfa/aQ9TDGvh5ka3yqobAs=;
+        b=Se850C/Ogt11AV1fMU2ytvwZGYSwBqA15N+fQEHr4Ive0LxPc6HWly5Wcj14BdmoFlfARN
+        7KBRGKsW7BURaR41KXzjqcLteYGyfLSovDtIS2OAp9m08KmaZmRezJc2DHumbnFu+IcCQQ
+        J3gwlqymFyAQ4mqZv6d4vPIby04SNTc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-318-DMVZQvRcOuKSr86Ijn8kOQ-1; Fri, 22 Nov 2019 15:39:24 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4C7DE8038A1;
+        Fri, 22 Nov 2019 20:39:21 +0000 (UTC)
+Received: from dhcp-25.97.bos.redhat.com (unknown [10.18.25.127])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D4B4E6084E;
+        Fri, 22 Nov 2019 20:39:17 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
         "David S . Miller" <davem@davemloft.net>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Danit Goldberg <danitg@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/4] Get IB port and node GUIDs through
- rtnetlink
-Thread-Topic: [PATCH rdma-next 0/4] Get IB port and node GUIDs through
- rtnetlink
-Thread-Index: AQHVmu/VidtZI1C/oEW5L41u4D2OO6eXa9CAgABBfYA=
-Date:   Fri, 22 Nov 2019 20:15:35 +0000
-Message-ID: <20191122201531.GZ7481@mellanox.com>
-References: <20191114133126.238128-1-leon@kernel.org>
- <20191122162104.GE136476@unreal>
-In-Reply-To: <20191122162104.GE136476@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR04CA0008.namprd04.prod.outlook.com
- (2603:10b6:208:d4::21) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [142.162.113.180]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 55f9cb62-72e4-4b90-0392-08d76f88bc04
-x-ms-traffictypediagnostic: VI1PR05MB5598:|VI1PR05MB5598:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5598FC172B66CC7EDA13E549CF490@VI1PR05MB5598.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 02296943FF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(376002)(346002)(366004)(199004)(189003)(54906003)(229853002)(6862004)(6246003)(7736002)(4326008)(305945005)(6512007)(256004)(6116002)(66946007)(6436002)(6486002)(3846002)(25786009)(86362001)(66446008)(66556008)(71200400001)(71190400001)(186003)(102836004)(36756003)(1076003)(8936002)(6636002)(66476007)(478600001)(26005)(81166006)(81156014)(14454004)(2616005)(11346002)(446003)(386003)(316002)(37006003)(76176011)(52116002)(66066001)(5660300002)(8676002)(99286004)(64756008)(33656002)(6506007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5598;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zzMioTLNFWplEuWbdDEU6xl9e1UAYYfbT2ZHkw3DX6ScgwU4DohQSjoBXlK2eEACVgSTzAOgej7ADF0ukLwkXagJb0EpLDYMe9WgrXxg6FnlIlm73xHeZyOYkGse6qiDmZ3RcUoNT+bkOVicfAzTXVY4i6/tZgOwEcr8814WFrb9y/A9s85p1/uwmLVTmSseGuOYT1W5J4F5pHaJ1eWGA40qCkMmpTY9sm1oEIsw8IdXqG8I/lx+lgzeMseJUL7hWL5zlX3TEiA3O4xRvtsexboncaGAyjTW8tRVSK8EjwR8kH2w/7qMDm0mjRRTWTBrwcGReO+iLH/7hCHBPH3Z6CWYNWA0FHlaTXiLKQNjrU6Vp95FHTKDZwG2t240m6Dam1Jee9rWSWQ8fOxnrntNjd+JdJvyLjI6i3EoD9kCHKPAk5cLQiYvtgFkcy9/h2ZG
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5DEB2C5DF4ADEF44AD2400768D2B7D46@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, paulb@mellanox.com,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH net 2/2] act_ct: support asymmetric conntrack
+References: <20191108210714.12426-1-aconole@redhat.com>
+        <20191108210714.12426-2-aconole@redhat.com>
+        <20191114162949.GB3419@localhost.localdomain>
+        <f7to8x8yj6k.fsf@dhcp-25.97.bos.redhat.com>
+        <20191118224054.GB388551@localhost.localdomain>
+Date:   Fri, 22 Nov 2019 15:39:16 -0500
+In-Reply-To: <20191118224054.GB388551@localhost.localdomain> (Marcelo Ricardo
+        Leitner's message of "Mon, 18 Nov 2019 19:40:54 -0300")
+Message-ID: <f7tv9rbmyrv.fsf@dhcp-25.97.bos.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55f9cb62-72e4-4b90-0392-08d76f88bc04
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2019 20:15:35.8328
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AUGiUldH99KYGWoVCSvgDarIqZdP9pHNmbPl93uEarMI3kMZeUwquOTYWvsM/Kp3kak/gq5V2KZ8T4T5iPHjog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5598
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: DMVZQvRcOuKSr86Ijn8kOQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 22, 2019 at 04:21:07PM +0000, Leon Romanovsky wrote:
-> On Thu, Nov 14, 2019 at 03:31:21PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> >
-> > Hi,
-> >
-> > This series from Danit extends RTNETLINK to provide IB port and node
-> > GUIDs, which were configured for Infiniband VFs.
-> >
-> > The functionality to set VF GUIDs already existed for a long time, and =
-here
-> > we are adding the missing "get" so that netlink will be symmetric
-> > and various cloud orchestration tools will be able to manage such
-> > VFs more naturally.
-> >
-> > The iproute2 was extended too to present those GUIDs.
-> >
-> > - ip link show <device>
-> >
-> > For example:
-> > - ip link set ib4 vf 0 node_guid 22:44:33:00:33:11:00:33
-> > - ip link set ib4 vf 0 port_guid 10:21:33:12:00:11:22:10
-> > - ip link show ib4
-> >     ib4: <BROADCAST,MULTICAST> mtu 4092 qdisc noop state DOWN mode DEFA=
-ULT group default qlen 256
-> >     link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:9a:03:00:=
-44:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
-> >     vf 0     link/infiniband 00:00:0a:2d:fe:80:00:00:00:00:00:00:ec:0d:=
-9a:03:00:44:36:8d brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff=
-:ff:ff,
-> >     spoof checking off, NODE_GUID 22:44:33:00:33:11:00:33, PORT_GUID 10=
-:21:33:12:00:11:22:10, link-state disable, trust off, query_rss off
-> >
-> > Due to the fact that this series touches both net and RDMA, we assume
-> > that it needs to be applied to our shared branch (mlx5-next) and pulled
-> > later by Dave and Doug/Jason.
-> >
-> > Thanks
-> >
-> > Danit Goldberg (4):
-> >   net/core: Add support for getting VF GUIDs
-> >   IB/core: Add interfaces to get VF node and port GUIDs
-> >   IB/ipoib: Add ndo operation for getting VFs GUID attributes
-> >   IB/mlx5: Implement callbacks for getting VFs GUID attributes
->=20
-> Applied to mlx5-next,
-> Doug, Jason please pull.
->=20
-> 9c0015ef0928 IB/mlx5: Implement callbacks for getting VFs GUID attributes
-> 2446887ed226 IB/ipoib: Add ndo operation for getting VFs GUID attributes
-> bfcb3c5d1485 IB/core: Add interfaces to get VF node and port GUIDs
-> 30aad41721e0 net/core: Add support for getting VF GUIDs
+Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> writes:
 
-Okay, done.
+> On Mon, Nov 18, 2019 at 04:21:39PM -0500, Aaron Conole wrote:
+>> Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> writes:
+>>=20
+>> > On Fri, Nov 08, 2019 at 04:07:14PM -0500, Aaron Conole wrote:
+>> >> The act_ct TC module shares a common conntrack and NAT infrastructure
+>> >> exposed via netfilter.  It's possible that a packet needs both SNAT a=
+nd
+>> >> DNAT manipulation, due to e.g. tuple collision.  Netfilter can suppor=
+t
+>> >> this because it runs through the NAT table twice - once on ingress an=
+d
+>> >> again after egress.  The act_ct action doesn't have such capability.
+>> >>=20
+>> >> Like netfilter hook infrastructure, we should run through NAT twice t=
+o
+>> >> keep the symmetry.
+>> >>=20
+>> >> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
+>> >>=20
+>> >> Signed-off-by: Aaron Conole <aconole@redhat.com>
+>> >> ---
+>> >>  net/sched/act_ct.c | 13 ++++++++++++-
+>> >>  1 file changed, 12 insertions(+), 1 deletion(-)
+>> >>=20
+>> >> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+>> >> index fcc46025e790..f3232a00970f 100644
+>> >> --- a/net/sched/act_ct.c
+>> >> +++ b/net/sched/act_ct.c
+>> >> @@ -329,6 +329,7 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+>> >>  =09=09=09  bool commit)
+>> >>  {
+>> >>  #if IS_ENABLED(CONFIG_NF_NAT)
+>> >> +=09int err;
+>> >>  =09enum nf_nat_manip_type maniptype;
+>> >> =20
+>> >>  =09if (!(ct_action & TCA_CT_ACT_NAT))
+>> >> @@ -359,7 +360,17 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+>> >>  =09=09return NF_ACCEPT;
+>> >>  =09}
+>> >> =20
+>> >> -=09return ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+>> >> +=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+>> >> +=09if (err =3D=3D NF_ACCEPT &&
+>> >> +=09    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
+>> >> +=09=09if (maniptype =3D=3D NF_NAT_MANIP_SRC)
+>> >> +=09=09=09maniptype =3D NF_NAT_MANIP_DST;
+>> >> +=09=09else
+>> >> +=09=09=09maniptype =3D NF_NAT_MANIP_SRC;
+>> >> +
+>> >> +=09=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+>> >> +=09}
+>> >
+>> > I keep thinking about this and I'm not entirely convinced that this
+>> > shouldn't be simpler. More like:
+>> >
+>> > if (DNAT)
+>> > =09DNAT
+>> > if (SNAT)
+>> > =09SNAT
+>> >
+>> > So it always does DNAT before SNAT, similarly to what iptables would
+>> > do on PRE/POSTROUTING chains.
+>>=20
+>> I can rewrite the whole function, but I wanted to start with the smaller
+>> fix that worked.  I also think it needs more testing then (since it's
+>> something of a rewrite of the function).
+>>=20
+>> I guess it's not too important - do you think it gives any readability
+>> to do it this way?  If so, I can respin the patch changing it like you
+>> describe.
+>
+> I didn't mean a rewrite, but just to never handle SNAT before DNAT. So
+> the fix here would be like:
+>
+> -=09return ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+> +=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+> +=09if (err =3D=3D NF_ACCEPT && maniptype =3D=3D NF_NAT_MANIP_DST &&
+> +=09    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
+> +=09=09maniptype =3D NF_NAT_MANIP_SRC;
+> +=09=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
+> +=09}
+> +=09return err;
 
-Jason
+But the maniptype of the first call could be NAT_MANIP_SRC.  In fact,
+that's what I see if the packet is reply direction && !related.
+
+So, we need the block to invert the manipulation type.  Otherwise, we
+miss the DNAT manipulation.
+
+So I don't think I can use that block.
+
+>> >> +=09return err;
+>> >>  #else
+>> >>  =09return NF_ACCEPT;
+>> >>  #endif
+>> >> --=20
+>> >> 2.21.0
+>> >>=20
+>>=20
+
