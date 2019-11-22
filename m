@@ -2,146 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4CB71076D9
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 18:57:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 876C31076FD
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 19:09:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfKVR5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 12:57:49 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:36280 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726046AbfKVR5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 12:57:49 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 039CB300069;
-        Fri, 22 Nov 2019 17:57:48 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 22 Nov
- 2019 17:57:43 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 4/4] sfc: do ARFS expiry work occasionally even
- without NAPI poll
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <dahern@digitalocean.com>
-References: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
-Message-ID: <65f2d84e-4e1f-9f58-da8e-a66d73265710@solarflare.com>
-Date:   Fri, 22 Nov 2019 17:57:40 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727016AbfKVSI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 13:08:57 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:49088 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726975AbfKVSI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 13:08:56 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1iYD6N-0002B1-Et; Fri, 22 Nov 2019 18:52:15 +0100
+Message-ID: <175edd72f0cd3bc4d2c0dbd42a4570c7fb47b8fd.camel@sipsolutions.net>
+Subject: Re: [PATCH] mac80211_hwsim: set the maximum EIRP output power for
+ 5GHz
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Ramon Fontes <ramonreisfontes@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        kvalo@codeaurora.org, davem@davemloft.net
+Date:   Fri, 22 Nov 2019 18:52:12 +0100
+In-Reply-To: <CAK8U23aL7UDgko4Z2EkQ9r4muBTjNOCq-Erb9h2TFRnxdOmtWg@mail.gmail.com> (sfid-20191122_151928_905345_8C817F08)
+References: <20191108152013.13418-1-ramonreisfontes@gmail.com>
+         <fe198371577479c1e00a80e9cae6f577ab39ce8e.camel@sipsolutions.net>
+         <CAK8U23amVqf-6YoiPoyk5_za3dhVb4FJmBDvmA2xv2sD43DhQA@mail.gmail.com>
+         <7d43bbc0dfeb040d3e0468155858c4cbe50c0de2.camel@sipsolutions.net>
+         <CAK8U23aL7UDgko4Z2EkQ9r4muBTjNOCq-Erb9h2TFRnxdOmtWg@mail.gmail.com>
+         (sfid-20191122_151928_905345_8C817F08)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-In-Reply-To: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25058.003
-X-TM-AS-Result: No-7.038600-8.000000-10
-X-TMASE-MatchedRID: 0ApEILD83VB8m+cg4DIARFD5LQ3Tl9H79OmDAzguGMlRD5heJnxuK2Gf
-        tP5z/8TG8XVI39JCRnSjfNAVYAJRAr+Q0YdVmuyWnFVnNmvv47tLXPA26IG0hN9RlPzeVuQQj78
-        +1uscT5Jt0JJWgZAGgg5Q7W8dBYFUyhs+gnQcjAIkOFAoKA9tAnVkVJ5M7LrRNiymK3UPD2cyp6
-        /v309JXVt1JyrphUxuJnuVIraYm5DplnRmy5tzbBIRh9wkXSlFZ/JREBjQWsbUlVJM/QT13uvt+
-        NYpsLRFgIDkAAVDEfWbqstpiCER9hTBVEIvqWphngIgpj8eDcC063Wh9WVqgtZE3xJMmmXc+gtH
-        j7OwNO31Kzk40dEY9S3oYaXmV8vsfvwWnIFk3UTPYrAHxeTKo9t8ujQKLssz
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.038600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25058.003
-X-MDID: 1574445468-mylzsxjV47ZG
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If there's no traffic on a channel, its ARFS expiry work will never get
- scheduled by efx_poll() as that isn't being run.
-So make efx_filter_rfs_expire() reschedule itself to run after 30 seconds.
+On Fri, 2019-11-22 at 11:19 -0300, Ramon Fontes wrote:
+> > Right, so the commit log should say that it should be incremented to
+> > allow regdb to work, rather than worry about ETSI specifics?
+> > 
+> > Or maybe this limit should just be removed entirely?
+> 
+> Hmm.. not sure. Perhaps we should add only one more information:
+> 
+> ETSI has been set the maximum EIRP output power to 36 dBm (4000 mW)
+> Source: https://www.etsi.org/deliver/etsi_en/302500_302599/302502/01.02.01_60/en_302502v010201p.pdf
+> 
+> + The new maximum EIRP output power also allows regdb to work
+> correctly when txpower is greater than 20 dBm.
+> 
+> Since there is no standard defining greater txpower, in my opinion we
+> should keep the maximum value. What do you think?
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/efx.c        |  8 ++++----
- drivers/net/ethernet/sfc/efx.h        | 10 +++++++---
- drivers/net/ethernet/sfc/net_driver.h |  2 +-
- 3 files changed, 12 insertions(+), 8 deletions(-)
+It just feels to me like if the only restriction in the driver is
+regulatory, we shouldn't have it in the driver. That's what we have the
+regulatory database for.
 
-diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 38d186b949be..992c773620ec 100644
---- a/drivers/net/ethernet/sfc/efx.c
-+++ b/drivers/net/ethernet/sfc/efx.c
-@@ -355,7 +355,7 @@ static int efx_poll(struct napi_struct *napi, int budget)
- 
- #ifdef CONFIG_RFS_ACCEL
- 		/* Perhaps expire some ARFS filters */
--		schedule_work(&channel->filter_work);
-+		mod_delayed_work(system_wq, &channel->filter_work, 0);
- #endif
- 
- 		/* There is no race here; although napi_disable() will
-@@ -487,7 +487,7 @@ efx_alloc_channel(struct efx_nic *efx, int i, struct efx_channel *old_channel)
- 	}
- 
- #ifdef CONFIG_RFS_ACCEL
--	INIT_WORK(&channel->filter_work, efx_filter_rfs_expire);
-+	INIT_DELAYED_WORK(&channel->filter_work, efx_filter_rfs_expire);
- #endif
- 
- 	rx_queue = &channel->rx_queue;
-@@ -533,7 +533,7 @@ efx_copy_channel(const struct efx_channel *old_channel)
- 	memset(&rx_queue->rxd, 0, sizeof(rx_queue->rxd));
- 	timer_setup(&rx_queue->slow_fill, efx_rx_slow_fill, 0);
- #ifdef CONFIG_RFS_ACCEL
--	INIT_WORK(&channel->filter_work, efx_filter_rfs_expire);
-+	INIT_DELAYED_WORK(&channel->filter_work, efx_filter_rfs_expire);
- #endif
- 
- 	return channel;
-@@ -1994,7 +1994,7 @@ static void efx_remove_filters(struct efx_nic *efx)
- 	struct efx_channel *channel;
- 
- 	efx_for_each_channel(channel, efx) {
--		flush_work(&channel->filter_work);
-+		cancel_delayed_work_sync(&channel->filter_work);
- 		kfree(channel->rps_flow_id);
- 	}
- #endif
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
-index e58c2b6d64d9..2dd8d5002315 100644
---- a/drivers/net/ethernet/sfc/efx.h
-+++ b/drivers/net/ethernet/sfc/efx.h
-@@ -169,13 +169,17 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
- bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota);
- static inline void efx_filter_rfs_expire(struct work_struct *data)
- {
--	struct efx_channel *channel = container_of(data, struct efx_channel,
--						   filter_work);
--	unsigned int time = jiffies - channel->rfs_last_expiry, quota;
-+	struct delayed_work *dwork = to_delayed_work(data);
-+	struct efx_channel *channel;
-+	unsigned int time, quota;
- 
-+	channel = container_of(dwork, struct efx_channel, filter_work);
-+	time = jiffies - channel->rfs_last_expiry;
- 	quota = channel->rfs_filter_count * time / (30 * HZ);
- 	if (quota > 20 && __efx_filter_rfs_expire(channel, min(channel->rfs_filter_count, quota)))
- 		channel->rfs_last_expiry += time;
-+	/* Ensure we do more work eventually even if NAPI poll is not happening */
-+	schedule_delayed_work(dwork, 30 * HZ);
- }
- #define efx_filter_rfs_enabled() 1
- #else
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index ccd480e699d3..1f88212be085 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -501,7 +501,7 @@ struct efx_channel {
- 	unsigned int rfs_expire_index;
- 	unsigned int n_rfs_succeeded;
- 	unsigned int n_rfs_failed;
--	struct work_struct filter_work;
-+	struct delayed_work filter_work;
- #define RPS_FLOW_ID_INVALID 0xFFFFFFFF
- 	u32 *rps_flow_id;
- #endif
+If there's some other (physical?) restriction in the driver, sure, maybe
+it should have one there, but for pure regulatory I'm not sure I see it.
+
+That's why the pointer here to ETSI feels so strange to me.
+
+> Do I need to submit a new patch?
+
+I'll need to see if we can remove it, but if we can I'll do that, and
+otherwise I can just commit your patch but with a changed commit
+message.
+
+Note that I just sent my final pull request for the current kernel, so
+this'll probably have to wait some time.
+
+johannes
+
