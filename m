@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1E610629C
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8287106297
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:05:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729402AbfKVGFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:05:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41432 "EHLO mail.kernel.org"
+        id S1728221AbfKVGFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:05:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41472 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727874AbfKVGCk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:02:40 -0500
+        id S1728903AbfKVGCm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:02:42 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB8B620718;
-        Fri, 22 Nov 2019 06:02:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C73A420659;
+        Fri, 22 Nov 2019 06:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402560;
-        bh=zHpT5ox9eP1tHLBjnqlnUf9eoQ/p8QToFJchykBnIfs=;
+        s=default; t=1574402561;
+        bh=oqoXrjybaQcbpavSA2Ct70GdEPmxLqSSsipp5kfREaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rb1z1p9gOXs5NMzk9Oq51WaPAaKDEyBOYPV2oTBGJNFWBuBjrdsMZcTNYB0yxyKvp
-         yjXiJVPF/YQxgZmnCzV/vL6cyzQVmtORvGI42nypGaJ8U7mQ17rxkzVFkdg2UaeYqw
-         emY/0MZlsTVVrJrgafOHYjM4pe6GS5SXKO5YjuGU=
+        b=0Sn/gB1PtsODzNjFHv/aR0brefRinnpV9WDI1iZ4L2/O2iN55dFFQi0UnORvcBk4F
+         JfJIj0kE3ElvCnDre5vKJdd+NEPjuZ0zhcpYzGsEPg9V1I55azflOuP3dvwBDWy1GM
+         L2Lbr/WXiYASMcVcj6dlLvnodPLuLov9lSb2eqpE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Kangjie Lu <kjlu@umn.edu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 65/91] atl1e: checking the status of atl1e_write_phy_reg
-Date:   Fri, 22 Nov 2019 01:01:03 -0500
-Message-Id: <20191122060129.4239-64-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.9 66/91] tipc: fix a missing check of genlmsg_put
+Date:   Fri, 22 Nov 2019 01:01:04 -0500
+Message-Id: <20191122060129.4239-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
 References: <20191122060129.4239-1-sashal@kernel.org>
@@ -45,33 +46,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kangjie Lu <kjlu@umn.edu>
 
-[ Upstream commit ff07d48d7bc0974d4f96a85a4df14564fb09f1ef ]
+[ Upstream commit 46273cf7e009231d2b6bc10a926e82b8928a9fb2 ]
 
-atl1e_write_phy_reg() could fail. The fix issues an error message when
-it fails.
+genlmsg_put could fail. The fix inserts a check of its return value, and
+if it fails, returns -EMSGSIZE.
 
 Signed-off-by: Kangjie Lu <kjlu@umn.edu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/atheros/atl1e/atl1e_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/tipc/netlink_compat.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
-index 974713b19ab64..5e1f03590aaf2 100644
---- a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
-+++ b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
-@@ -478,7 +478,9 @@ static void atl1e_mdio_write(struct net_device *netdev, int phy_id,
- {
- 	struct atl1e_adapter *adapter = netdev_priv(netdev);
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index 63a913b238735..454ed8ea194c8 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -974,6 +974,8 @@ static int tipc_nl_compat_publ_dump(struct tipc_nl_compat_msg *msg, u32 sock)
  
--	atl1e_write_phy_reg(&adapter->hw, reg_num & MDIO_REG_ADDR_MASK, val);
-+	if (atl1e_write_phy_reg(&adapter->hw,
-+				reg_num & MDIO_REG_ADDR_MASK, val))
-+		netdev_err(netdev, "write phy register failed\n");
- }
+ 	hdr = genlmsg_put(args, 0, 0, &tipc_genl_family, NLM_F_MULTI,
+ 			  TIPC_NL_PUBL_GET);
++	if (!hdr)
++		return -EMSGSIZE;
  
- static int atl1e_mii_ioctl(struct net_device *netdev,
+ 	nest = nla_nest_start(args, TIPC_NLA_SOCK);
+ 	if (!nest) {
 -- 
 2.20.1
 
