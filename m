@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E55106273
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:04:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 166EF106267
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727261AbfKVGEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:04:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41938 "EHLO mail.kernel.org"
+        id S1726910AbfKVGDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:03:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41954 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729839AbfKVGDB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:03:01 -0500
+        id S1729846AbfKVGDC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 01:03:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 410D420714;
-        Fri, 22 Nov 2019 06:03:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5195D2068E;
+        Fri, 22 Nov 2019 06:03:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402580;
-        bh=72jCs5LQDH9usiA0Ws34AWzUDZph8U8sPwjFooyCfb8=;
+        s=default; t=1574402582;
+        bh=z1eVLwXiLmA33ZjS/VWvvXhkVIz7u9fA+N+baWptQ2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fQZGv74yuBkDczYawIc7EGQDvw+ZDWawXyLrpuWJOaCR+HXMJgTk4cjKSgvNLRvek
-         DY9c543lsoybJf/MTl2BVme/bWV1p9eq4b90zWs+zu7EmECwh9BGqGkOSwa6vPSqBf
-         OqC3uztLNCbrltlDc4hPZiU0eSPA06CfRbKlkhJ8=
+        b=UPQPqpWr7IrnwskALGo/G/VWtWOsecNNfSvmP6GNv1WNBcrHPXD2qgoBNd2rxjx5i
+         3RbeUeyfZf6o89sVdDoATrIEVelURXb4EsnW3R0sdMidmqhfEJ+X9GSkLWyLRtJBnk
+         JHEsmHB+0cxbDxNwct+/6gAFVfzqs1UqGjAX96Zo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bert Kenward <bkenward@solarflare.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 82/91] sfc: initialise found bitmap in efx_ef10_mtd_probe
-Date:   Fri, 22 Nov 2019 01:01:20 -0500
-Message-Id: <20191122060129.4239-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 83/91] net: fix possible overflow in __sk_mem_raise_allocated()
+Date:   Fri, 22 Nov 2019 01:01:21 -0500
+Message-Id: <20191122060129.4239-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
 References: <20191122060129.4239-1-sashal@kernel.org>
@@ -43,35 +43,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bert Kenward <bkenward@solarflare.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c65285428b6e7797f1bb063f33b0ae7e93397b7b ]
+[ Upstream commit 5bf325a53202b8728cf7013b72688c46071e212e ]
 
-The bitmap of found partitions in efx_ef10_mtd_probe was not
-initialised, causing partitions to be suppressed based off whatever
-value was in the bitmap at the start.
+With many active TCP sockets, fat TCP sockets could fool
+__sk_mem_raise_allocated() thanks to an overflow.
 
-Fixes: 3366463513f5 ("sfc: suppress duplicate nvmem partition types in efx_ef10_mtd_probe")
-Signed-off-by: Bert Kenward <bkenward@solarflare.com>
+They would increase their share of the memory, instead
+of decreasing it.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/sock.h | 2 +-
+ net/core/sock.c    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 34e2256c93f46..22bc3dc44298c 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -5159,7 +5159,7 @@ static int efx_ef10_mtd_probe_partition(struct efx_nic *efx,
- static int efx_ef10_mtd_probe(struct efx_nic *efx)
+diff --git a/include/net/sock.h b/include/net/sock.h
+index d8d14ae8892a7..aed436567d70b 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1201,7 +1201,7 @@ static inline void sk_sockets_allocated_inc(struct sock *sk)
+ 	percpu_counter_inc(sk->sk_prot->sockets_allocated);
+ }
+ 
+-static inline int
++static inline u64
+ sk_sockets_allocated_read_positive(struct sock *sk)
  {
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_NVRAM_PARTITIONS_OUT_LENMAX);
--	DECLARE_BITMAP(found, EF10_NVRAM_PARTITION_COUNT);
-+	DECLARE_BITMAP(found, EF10_NVRAM_PARTITION_COUNT) = { 0 };
- 	struct efx_mcdi_mtd_partition *parts;
- 	size_t outlen, n_parts_total, i, n_parts;
- 	unsigned int type;
+ 	return percpu_counter_read_positive(sk->sk_prot->sockets_allocated);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index d224933514074..41794a698da66 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2156,7 +2156,7 @@ int __sk_mem_schedule(struct sock *sk, int size, int kind)
+ 	}
+ 
+ 	if (sk_has_memory_pressure(sk)) {
+-		int alloc;
++		u64 alloc;
+ 
+ 		if (!sk_under_memory_pressure(sk))
+ 			return 1;
 -- 
 2.20.1
 
