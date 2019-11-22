@@ -2,56 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4BF11066B7
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:57:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D001066C3
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 08:01:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726968AbfKVG5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 01:57:30 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:37356 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbfKVG53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 01:57:29 -0500
-Received: by mail-ot1-f67.google.com with SMTP id d5so5325294otp.4
-        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 22:57:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=EHft1V5Q30xKmkknHnRkevLSRjGjH250hEnqjzNFts0=;
-        b=o28bcSB11cml4arV3dR/16m6YE2kUwJ7h4WYohASJFl+3aYibNK9PGpIKLyW4/pboA
-         i/NpvQ3QBAjR8hatTYNLYrvFCRDL0tbYbNHdkTstvQER904DiXxfHjghoVKBNwKZyL4u
-         x9tVpzAqLcc6yuXGER4yyg3C4Y9n70RGab8PLHrE6PcavnHQl2davne/w9bTCM32kr7e
-         cNM+x+uu2470sjz6/MHLwMKKFcyAv9o3NzcLbku0hRKHXv6Lhca8ZdHICzuOM/ZmNdaQ
-         N8xoiPLzI15+kaMh9RAMHJgN4hVJ0Q6A7hlTu8Y3oVQuNiUB3jxChPmaamKIbv2KXpMP
-         sQnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=EHft1V5Q30xKmkknHnRkevLSRjGjH250hEnqjzNFts0=;
-        b=s6daUPG0GJd89fgJb76J6kywOGF+aFt5qm+qkt80RRBie3myngqCi0M0q8QaicYTjt
-         U9GwubX4TiTIoeJlMHRmcYOYKEeUdb1q+JFG3F0iSUsXfhib7lhnUocd1cgsZcOmVpY+
-         PUS786pBOU8cKnyuRGU4Ie7u/pF1hsJFRNqUaz5qaeCFJxf448NLw9pqeK6lI+Pr+M43
-         UYSzNVVY6KWQvHA0KuXjfv9RcjzjCTa3qwxDZHSfB7zUX1Hm+yFXSK3KPURkNpXSSfAg
-         gwR4FjuzSL2t3iMI2i73vkpVp19ffmv/ccOPok1aD/x0gSY8atofNilphogeQg/Dcc3/
-         phAA==
-X-Gm-Message-State: APjAAAWXIVp0Sv6AlIJN45knHQNs/7/JbQNBV5bxg6rewbnvZVdNy50B
-        pmYP4idfvoVtItF85JozkzZqB+MqOBBCdeYzRQs=
-X-Google-Smtp-Source: APXvYqy/aEAHZA6rR8aauItZz9fszlYzsO9PZt3q0ZB9KKwwfgh+DO1xtjyen57b2h3i23GXbKEXNMsHcWR+I9Bh87g=
-X-Received: by 2002:a05:6830:1482:: with SMTP id s2mr9467034otq.68.1574405849082;
- Thu, 21 Nov 2019 22:57:29 -0800 (PST)
+        id S1726830AbfKVHBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 02:01:06 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:33545 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726018AbfKVHBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 02:01:06 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rsc@pengutronix.de>)
+        id 1iY2wA-000777-Mb; Fri, 22 Nov 2019 08:01:02 +0100
+Received: from rsc by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <rsc@pengutronix.de>)
+        id 1iY2w8-0003lz-Vj; Fri, 22 Nov 2019 08:01:00 +0100
+Date:   Fri, 22 Nov 2019 08:01:00 +0100
+From:   Robert Schwebel <r.schwebel@pengutronix.de>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH 4/5] docs: networking: nfc: fix code block syntax
+Message-ID: <20191122070100.yzxuqulobjrhxoa7@pengutronix.de>
+References: <20191121155503.52019-1-r.schwebel@pengutronix.de>
+ <20191121155503.52019-4-r.schwebel@pengutronix.de>
+ <20191121100919.1b483fab@lwn.net>
 MIME-Version: 1.0
-Received: by 2002:a4a:305b:0:0:0:0:0 with HTTP; Thu, 21 Nov 2019 22:57:28
- -0800 (PST)
-From:   james morise <jamesmorise240@gmail.com>
-Date:   Thu, 21 Nov 2019 22:57:28 -0800
-Message-ID: <CAB6437ZcKHoDwLKayrpnnKZ+t80i7qXyDFuSJZg3XTN=oE8Prg@mail.gmail.com>
-Subject: How is your family?
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191121100919.1b483fab@lwn.net>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:00:27 up 137 days, 13:10, 128 users,  load average: 0,67, 0,26,
+ 0,14
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: rsc@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-How is your family? i hope all is well;
-(1) Can I give you this trust?
-(2) Can you handle this project?
+On Thu, Nov 21, 2019 at 10:09:19AM -0700, Jonathan Corbet wrote:
+> > +.. code-block:: none
+> > +
+> > +        struct sockaddr_nfc {
+> > +               sa_family_t sa_family;
+> > +               __u32 dev_idx;
+> > +               __u32 target_idx;
+> > +               __u32 nfc_protocol;
+> > +        };
+> 
+> Rather than cluttering the text with ".. code-block::", you can just use
+> the literal-block shortcut:
+> 
+> 	targets. All NFC sockets use AF_NFC::
+> 
+> 	    struct sockaddr_nfc {
+> 
+
+Thanks, will do in v2.
+
+rsc
+-- 
+Pengutronix e.K.                           | Dipl.-Ing. Robert Schwebel  |
+Steuerwalder Str. 21                       | https://www.pengutronix.de/ |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
