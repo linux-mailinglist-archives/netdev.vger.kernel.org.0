@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD4910637B
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E75B106374
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 07:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728494AbfKVF4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 00:56:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34324 "EHLO mail.kernel.org"
+        id S1728359AbfKVGKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 01:10:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34542 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728138AbfKVF4b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:56:31 -0500
+        id S1729235AbfKVF4o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:56:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 749532070A;
-        Fri, 22 Nov 2019 05:56:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C731020717;
+        Fri, 22 Nov 2019 05:56:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402191;
-        bh=jF9IsxwYOSuw62P1PeeupxUbte4FfaAr0h/JklSur88=;
+        s=default; t=1574402203;
+        bh=kqpzJnTxRpyBYOpXv54CkIzJJid5vTn2KtSckSJ5ySM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iv9rLq4oMbS6qeaU5RZidd0yZAUPs49zT6RNefz0Ptj+cKG42CDC4ju8ugx3lekTZ
-         6jKiWgJb5XnL6ahCQfmHoGDvJxG1m6SxzKqp2wwukYMiJDMGzJ+st6hsGonEy5dc1R
-         bAaG/Aa12HMyv/6IDIoV1RUTDBP2Kj5QBZzpTe5o=
+        b=BfWndtXbE7g4b9bTBIx3U2cVoDNBLmYiPPGFn8mH9fHgCn+uEayVeKgrzFnvK/6IQ
+         YGq8t+nd9/I/R1J1DvplSpodb1NcuK8sPfuww4COsAH9E862NM0hJLjY3djXJNRQMW
+         FdnDH9uHzsZhS/v1A2tajweBO7VhGtY8iX76hUtA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+Cc:     Petr Machata <petrm@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 041/127] bnxt_en: query force speeds before disabling autoneg mode.
-Date:   Fri, 22 Nov 2019 00:54:19 -0500
-Message-Id: <20191122055544.3299-40-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 052/127] vxlan: Fix error path in __vxlan_dev_create()
+Date:   Fri, 22 Nov 2019 00:54:30 -0500
+Message-Id: <20191122055544.3299-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122055544.3299-1-sashal@kernel.org>
 References: <20191122055544.3299-1-sashal@kernel.org>
@@ -44,66 +43,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From: Petr Machata <petrm@mellanox.com>
 
-[ Upstream commit 56d374624778652d2a999e18c87a25338b127b41 ]
+[ Upstream commit 6db9246871394b3a136cd52001a0763676563840 ]
 
-With autoneg enabled, PHY loopback test fails. To disable autoneg,
-driver needs to send a valid forced speed to FW. FW is not sending
-async event for invalid speeds. To fix this, query forced speeds
-and send the correct speed when disabling autoneg mode.
+When a failure occurs in rtnl_configure_link(), the current code
+calls unregister_netdevice() to roll back the earlier call to
+register_netdevice(), and jumps to errout, which calls
+vxlan_fdb_destroy().
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+However unregister_netdevice() calls transitively ndo_uninit, which is
+vxlan_uninit(), and that already takes care of deleting the default FDB
+entry by calling vxlan_fdb_delete_default(). Since the entry added
+earlier in __vxlan_dev_create() is exactly the default entry, the
+cleanup code in the errout block always leads to double free and thus a
+panic.
+
+Besides, since vxlan_fdb_delete_default() always destroys the FDB entry
+with notification enabled, the deletion of the default entry is notified
+even before the addition was notified.
+
+Instead, move the unregister_netdevice() call after the manual destroy,
+which solves both problems.
+
+Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 22 ++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/net/vxlan.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 4879371ad0c75..fc8e185718a1d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2258,17 +2258,37 @@ static int bnxt_hwrm_mac_loopback(struct bnxt *bp, bool enable)
- 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 6d26bbd190dd6..153a81ece9fe4 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3217,6 +3217,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+ 	struct vxlan_fdb *f = NULL;
++	bool unregister = false;
+ 	int err;
+ 
+ 	err = vxlan_dev_configure(net, dev, conf, false, extack);
+@@ -3242,12 +3243,11 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	err = register_netdevice(dev);
+ 	if (err)
+ 		goto errout;
++	unregister = true;
+ 
+ 	err = rtnl_configure_link(dev, NULL);
+-	if (err) {
+-		unregister_netdevice(dev);
++	if (err)
+ 		goto errout;
+-	}
+ 
+ 	/* notify default fdb entry */
+ 	if (f)
+@@ -3255,9 +3255,16 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 
+ 	list_add(&vxlan->next, &vn->vxlan_list);
+ 	return 0;
++
+ errout:
++	/* unregister_netdevice() destroys the default FDB entry with deletion
++	 * notification. But the addition notification was not sent yet, so
++	 * destroy the entry by hand here.
++	 */
+ 	if (f)
+ 		vxlan_fdb_destroy(vxlan, f, false);
++	if (unregister)
++		unregister_netdevice(dev);
+ 	return err;
  }
  
-+static int bnxt_query_force_speeds(struct bnxt *bp, u16 *force_speeds)
-+{
-+	struct hwrm_port_phy_qcaps_output *resp = bp->hwrm_cmd_resp_addr;
-+	struct hwrm_port_phy_qcaps_input req = {0};
-+	int rc;
-+
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_PHY_QCAPS, -1, -1);
-+	mutex_lock(&bp->hwrm_cmd_lock);
-+	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-+	if (!rc)
-+		*force_speeds = le16_to_cpu(resp->supported_speeds_force_mode);
-+
-+	mutex_unlock(&bp->hwrm_cmd_lock);
-+	return rc;
-+}
-+
- static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
- 				    struct hwrm_port_phy_cfg_input *req)
- {
- 	struct bnxt_link_info *link_info = &bp->link_info;
--	u16 fw_advertising = link_info->advertising;
-+	u16 fw_advertising;
- 	u16 fw_speed;
- 	int rc;
- 
- 	if (!link_info->autoneg)
- 		return 0;
- 
-+	rc = bnxt_query_force_speeds(bp, &fw_advertising);
-+	if (rc)
-+		return rc;
-+
- 	fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
- 	if (netif_carrier_ok(bp->dev))
- 		fw_speed = bp->link_info.link_speed;
 -- 
 2.20.1
 
