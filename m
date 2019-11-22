@@ -2,79 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F461075D0
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E021075D6
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 17:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727495AbfKVQ3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 11:29:16 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55440 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727452AbfKVQ3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:29:14 -0500
-Received: by mail-wm1-f66.google.com with SMTP id b11so8059197wmb.5
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 08:29:13 -0800 (PST)
+        id S1726825AbfKVQcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 11:32:14 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:44013 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726705AbfKVQcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 11:32:14 -0500
+Received: by mail-pj1-f65.google.com with SMTP id a10so3243595pju.10
+        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 08:32:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=vCjthGSWcUzAL79D+rlS/r2aEmSRDFb+k7vT0Z5q+bw=;
-        b=sPaCKNoppg1X1f00LO6A8XDJG3BPOn15YAQ1wOIMYz+TC69tQKeQ2gw0A+XKgVzrfQ
-         bz4MbLlU3Bo+okfkzxL7+KbVKOtDUWFqAKGHU5iy0H1C/OriSE5B8IJoANvMa6iYUjAp
-         nGRXAbT/7oGp3eWuiXt0bF33fCIRCxxkavxPWcO+Kjp6YOGbE2GCeS5T6R9ZGltRSq+t
-         WWsysWQ0ZaCL7PzRpnAEqn734Kdtfa8BEODSzEPaebgq8zcCetSeSt6SPiQfs+fUwPAK
-         WNitLdxSQNti39s8SZWmoO2ug3G0bn+Z+Lk2I8BG9UsHsiytOlNZjjdgMgqtFSy/jYUb
-         fvCQ==
+        bh=Ewg/yv2nDe6mNePO1hVyJcZEM93PzoLaB/4JIOpiCl0=;
+        b=0OgC9EH1ZwAFvHpXL/6pLXTDHSn+8VY2B3rru4xCMEKyLrwwCBjt+0ju713/hBnlLO
+         6JFCR6kXueKU0tFgif0fYrcIetYAMcjOM6Tc6zm5HAHOn+g+CKW8vVEQlj2GYBzgfPVz
+         73mpwToER8ZPuyOA7xbBh4VkDVxmB4Ok5Kjp9cFHCNe/eHo1FbwepyY9lVBXRDn8quFi
+         2dOicxRS8FKkNBKSGYdY6RwUyUfDffnmdQUy2vQPMX4vJEer5UfFs3Z2O14CtNAWie2Y
+         lFukwJ4ya64FBzfdStOa8H6QQAOiW74HpbBxbpiS/ykVVZQyTmyWXU2xff3D7BkTGbIs
+         /O3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vCjthGSWcUzAL79D+rlS/r2aEmSRDFb+k7vT0Z5q+bw=;
-        b=hVzvROkPX59pyWEixD/TICafvvtvkPGuWAroXmkFtLeAGddvE2JJpJl3pps+TkRsJY
-         /LGV6d913D34+v2liLHioewklm3QFbwOQpZ1lRl19kvb2MAGrmpUWSScZy6WVOcGvbCN
-         HvWOaYC4uW3W9t2awXVhDuLIKzOYZUH3VOk3SBjOJM97ZxtuaYexfOYjchF+Poi6m0XQ
-         cLRSlVWmveERtkRsh4WevI4N4Ml+E/s/e10WG6FTqaZWE+F+am4kPFGzqj2364926htJ
-         DAj+5iB+62h1MN7WnJAfqyE9WabrSIgvsg8ugCT799rwlCggGhVIDxq1eloPSaryAnzq
-         R0Eg==
-X-Gm-Message-State: APjAAAV/aoYNiUy/qXyBOVOutfe0RTHs37s9Bey/Vjteu+4MFMmAcE1A
-        Ff3kZlS5j2iN3+xvKjXALUmbJA==
-X-Google-Smtp-Source: APXvYqyh6rueJx/gyOhHn95RLgrHKGiQO/80ylgSv9lDWCj6OzdZhvtunWDKiVKR5Tuw7JMrTzm55g==
-X-Received: by 2002:a05:600c:149:: with SMTP id w9mr3391704wmm.142.1574440152946;
-        Fri, 22 Nov 2019 08:29:12 -0800 (PST)
-Received: from localhost (ip-94-113-116-128.net.upcbroadband.cz. [94.113.116.128])
-        by smtp.gmail.com with ESMTPSA id b196sm4089301wmd.24.2019.11.22.08.29.11
+        bh=Ewg/yv2nDe6mNePO1hVyJcZEM93PzoLaB/4JIOpiCl0=;
+        b=gUAkgIMNf6oEsKFWr4fNC6V7+sQm4IJ6w0t1CoPjTraQ75p5QfcOLDd6+uzT6MxaDy
+         jFTK39E3ytIycvIUCbXLkJK/juTTyJxgkQh0vB7wB2jklToOxSKNttqaTTKRkJLwgvfO
+         4XXtaZCjrfFSqr7rLR+FLeRUBI1aZ9rdQcBeAJEwcmwUeIO3NI79FooTY6Jm7/0a560t
+         P9AExfmToFR/JWCJjgUc/Dz9TgQSa6lZeW516GQT3KaPFmIZh7gNP/2Bt75PyF6vSX6H
+         r+2v1qYbsfu5KJq9DWNK96RzDBMF9+jmJd1DaylLn4gGOdPb1Gm5LzRROvJX5Hb+cqNT
+         dsWQ==
+X-Gm-Message-State: APjAAAVA69YbkU5UTTYg/czIyGKkiussTgp5NJZNaTZ5zkJgaWsZTR9c
+        UWZF7kbFg8+kFLXazlboZLd91g==
+X-Google-Smtp-Source: APXvYqxEIfyniojvma30s6ns/04gYIZpwUSTsRkTCxCzssAF0WQY2T5q6QYAavd9a93yje2qog0eew==
+X-Received: by 2002:a17:902:968f:: with SMTP id n15mr14084646plp.12.1574440333138;
+        Fri, 22 Nov 2019 08:32:13 -0800 (PST)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id m7sm369937pgh.72.2019.11.22.08.32.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 08:29:11 -0800 (PST)
-Date:   Fri, 22 Nov 2019 17:29:11 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [PATCH net-next] net: flow_dissector: Wrap unionized VLAN fields
- in a struct
-Message-ID: <20191122162911.GC2234@nanopsycho>
-References: <c2be1d959f0d710dbbb99392eeb190a81952307a.1574437486.git.petrm@mellanox.com>
+        Fri, 22 Nov 2019 08:32:12 -0800 (PST)
+Date:   Fri, 22 Nov 2019 08:32:11 -0800
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux@googlegroups.com, ilias.apalodimas@linaro.org,
+        sergei.shtylyov@cogentembedded.com,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH v5 bpf-next 11/15] libbpf: don't use cxx to test_libpf
+ target
+Message-ID: <20191122163211.GB3145429@mini-arch.hsd1.ca.comcast.net>
+References: <20191011002808.28206-1-ivan.khoronzhuk@linaro.org>
+ <20191011002808.28206-12-ivan.khoronzhuk@linaro.org>
+ <20191121214225.GA3145429@mini-arch.hsd1.ca.comcast.net>
+ <CAEf4BzZWPwzC8ZBWcBOfQQmxBkDRjogxw2xHZ+dMWOrrMmU0sg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c2be1d959f0d710dbbb99392eeb190a81952307a.1574437486.git.petrm@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CAEf4BzZWPwzC8ZBWcBOfQQmxBkDRjogxw2xHZ+dMWOrrMmU0sg@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 22, 2019 at 04:47:21PM CET, petrm@mellanox.com wrote:
->In commit a82055af5959 ("netfilter: nft_payload: add VLAN offload
->support"), VLAN fields in struct flow_dissector_key_vlan were unionized
->with the intention of introducing another field that covered the whole TCI
->header. However without a wrapping struct the subfields end up sharing the
->same bits. As a result, "tc filter add ... flower vlan_id 14" specifies not
->only vlan_id, but also vlan_priority.
->
->Fix by wrapping the individual VLAN fields in a struct.
->
->Fixes: a82055af5959 ("netfilter: nft_payload: add VLAN offload support")
->Signed-off-by: Petr Machata <petrm@mellanox.com>
+On 11/21, Andrii Nakryiko wrote:
+> On Thu, Nov 21, 2019 at 1:42 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 10/11, Ivan Khoronzhuk wrote:
+> > > No need to use C++ for test_libbpf target when libbpf is on C and it
+> > > can be tested with C, after this change the CXXFLAGS in makefiles can
+> > > be avoided, at least in bpf samples, when sysroot is used, passing
+> > > same C/LDFLAGS as for lib.
+> > > Add "return 0" in test_libbpf to avoid warn, but also remove spaces at
+> > > start of the lines to keep same style and avoid warns while apply.
+> > Hey, just spotted this patch, not sure how it slipped through.
+> > The c++ test was there to make sure libbpf can be included and
+> > linked against c++ code (i.e. libbpf headers don't have some c++
+> > keywords/etc).
+> >
+> > Any particular reason you were not happy with it? Can we revert it
+> > back to c++ and fix your use-case instead? Alternatively, we can just
+> > remove this test if we don't really care about c++.
+> >
+> 
+> No one seemed to know why we have C++ pieces in pure C library and its
+> Makefile, so we decide to "fix" this. :)
+It's surprising, the commit 8c4905b995c6 clearly states the reason
+for adding it. Looks like it deserved a real comment in the Makefile :-)
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> But I do understand your concern. Would it be possible to instead do
+> this as a proper selftests test? Do you mind taking a look at that?
+Ack, will move this test_libbpf.c into selftests and convert back to
+c++.
