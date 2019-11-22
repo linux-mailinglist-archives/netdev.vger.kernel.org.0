@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E60107833
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:49:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D52F1078D6
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:54:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbfKVTtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:49:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48984 "EHLO mail.kernel.org"
+        id S1727843AbfKVTxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:53:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727372AbfKVTtY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 14:49:24 -0500
+        id S1727401AbfKVTtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 14:49:25 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 490F92071F;
-        Fri, 22 Nov 2019 19:49:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F29020748;
+        Fri, 22 Nov 2019 19:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574452164;
-        bh=+P2nX06dAGulJqQcn7qVK/Higgjr+iMrFKm6gdTyc2U=;
+        s=default; t=1574452165;
+        bh=alt0cE64um7geTG1ykx+Ul4Wk8Q7Jv+jdze3bmdFT80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fW3F/oAIK/k+rnelFMg+Huhym2FVE9BvFEk65Nt0H8cuq6fA80+HCH6FvoG9MMLbV
-         akduIBLScwUZNOtVCUqy0Rpp7KcxRoztdAEAHiQO1ibQ7/SFW9DZAI5AfC+7+TRC6O
-         D7rC5qzECMexw70XHBeuoJcPqkEFZbd60Mb4h6F4=
+        b=U4e+WCy8aUB1leB1BZzP4BQDkuBlAbyFS9dPRGIK+1fAGunLTScphA4XfAY0BvOqu
+         Mkl/exktVuNPRtAGN7LCiTqu1v0/aq86J3fAg3cE9mSxuXg+E+zH9805kUu/cl93sc
+         2ZRlEPjVOZCxmfdNYs1Ok8ZCJ97r0oX/OuFQO/uE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com,
+Cc:     Chuhong Yuan <hslester96@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 20/25] ax88172a: fix information leak on short answers
-Date:   Fri, 22 Nov 2019 14:48:53 -0500
-Message-Id: <20191122194859.24508-20-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 21/25] net: ep93xx_eth: fix mismatch of request_mem_region in remove
+Date:   Fri, 22 Nov 2019 14:48:54 -0500
+Message-Id: <20191122194859.24508-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122194859.24508-1-sashal@kernel.org>
 References: <20191122194859.24508-1-sashal@kernel.org>
@@ -45,35 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Chuhong Yuan <hslester96@gmail.com>
 
-[ Upstream commit a9a51bd727d141a67b589f375fe69d0e54c4fe22 ]
+[ Upstream commit 3df70afe8d33f4977d0e0891bdcfb639320b5257 ]
 
-If a malicious device gives a short MAC it can elicit up to
-5 bytes of leaked memory out of the driver. We need to check for
-ETH_ALEN instead.
+The driver calls release_resource in remove to match request_mem_region
+in probe, which is incorrect.
+Fix it by using the right one, release_mem_region.
 
-Reported-by: syzbot+a8d4acdad35e6bbca308@syzkaller.appspotmail.com
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/ax88172a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/cirrus/ep93xx_eth.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/ax88172a.c b/drivers/net/usb/ax88172a.c
-index 501576f538546..914cac55a7ae7 100644
---- a/drivers/net/usb/ax88172a.c
-+++ b/drivers/net/usb/ax88172a.c
-@@ -208,7 +208,7 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
+diff --git a/drivers/net/ethernet/cirrus/ep93xx_eth.c b/drivers/net/ethernet/cirrus/ep93xx_eth.c
+index 13dfdfca49fc7..edc1d19c9c02e 100644
+--- a/drivers/net/ethernet/cirrus/ep93xx_eth.c
++++ b/drivers/net/ethernet/cirrus/ep93xx_eth.c
+@@ -767,6 +767,7 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
+ {
+ 	struct net_device *dev;
+ 	struct ep93xx_priv *ep;
++	struct resource *mem;
  
- 	/* Get the MAC address */
- 	ret = asix_read_cmd(dev, AX_CMD_READ_NODE_ID, 0, 0, ETH_ALEN, buf, 0);
--	if (ret < 0) {
-+	if (ret < ETH_ALEN) {
- 		netdev_err(dev->net, "Failed to read MAC address: %d\n", ret);
- 		goto free;
+ 	dev = platform_get_drvdata(pdev);
+ 	if (dev == NULL)
+@@ -782,8 +783,8 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
+ 		iounmap(ep->base_addr);
+ 
+ 	if (ep->res != NULL) {
+-		release_resource(ep->res);
+-		kfree(ep->res);
++		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++		release_mem_region(mem->start, resource_size(mem));
  	}
+ 
+ 	free_netdev(dev);
 -- 
 2.20.1
 
