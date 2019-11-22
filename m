@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1A1107854
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24ED7107840
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:49:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727545AbfKVTtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:49:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49734 "EHLO mail.kernel.org"
+        id S1727594AbfKVTts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:49:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727532AbfKVTtl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 14:49:41 -0500
+        id S1727575AbfKVTtr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 14:49:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 786EE2072D;
-        Fri, 22 Nov 2019 19:49:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A986720726;
+        Fri, 22 Nov 2019 19:49:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574452181;
-        bh=TWMOXlRlZrMU6/3m5/UFgkiUveFz4hH/ALIBOdPfS4g=;
+        s=default; t=1574452186;
+        bh=F4g/7JM361b4jueC7R7Pu21X1iG8ZDQQgUl8g+L65+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oOTGfjZ7c723+9zLiubTn34rXQcLPvU77krWplo5ZB80PwrKrWS7IuIczWTLxT+f6
-         RfYRoKCGhnCxo/ru+ArR4n162srFFTzAB1Xro8MSAs9KKPjvPhOqU/9zo9pMoXpShm
-         dVBUc88vbQfgxHUISFdYuOjPlrpbstcy1jitCRwM=
+        b=YSy63xyEVU6GYywQSu4Scv93gAgLrRmFSfRvcMmzWA6QN/YU/d7sl6Hfb23z0wC+s
+         e2h1hvL4eEgozgJwmZ5MGSOgXpZmqYs5XyoDbPkBQg0Az3I3bjtk46xAFEYHto+HJv
+         n/MYs5eY/cVS3KJ1+NuANFgO+eWpjOFzPanLSbMQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaodong Xu <stid.smth@gmail.com>, Bo Chen <chenborfc@163.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/21] xfrm: release device reference for invalid state
-Date:   Fri, 22 Nov 2019 14:49:18 -0500
-Message-Id: <20191122194931.24732-8-sashal@kernel.org>
+Cc:     Aleksander Morgado <aleksander@aleksander.es>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/21] net: usb: qmi_wwan: add support for Foxconn T77W968 LTE modules
+Date:   Fri, 22 Nov 2019 14:49:22 -0500
+Message-Id: <20191122194931.24732-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122194931.24732-1-sashal@kernel.org>
 References: <20191122194931.24732-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,60 +46,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaodong Xu <stid.smth@gmail.com>
+From: Aleksander Morgado <aleksander@aleksander.es>
 
-[ Upstream commit 4944a4b1077f74d89073624bd286219d2fcbfce3 ]
+[ Upstream commit 802753cb0b141cf5170ab97fe7e79f5ca10d06b0 ]
 
-An ESP packet could be decrypted in async mode if the input handler for
-this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
-reference in skb is held. Later xfrm_input() will be invoked again to
-resume the processing.
-If the transform state is still valid it would continue to release the
-device reference and there won't be a problem; however if the transform
-state is not valid when async resumption happens, the packet will be
-dropped while the device reference is still being held.
-When the device is deleted for some reason and the reference to this
-device is not properly released, the kernel will keep logging like:
+These are the Foxconn-branded variants of the Dell DW5821e modules,
+same USB layout as those.
 
-unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
+The QMI interface is exposed in USB configuration #1:
 
-The issue is observed when running IPsec traffic over a PPPoE device based
-on a bridge interface. By terminating the PPPoE connection on the server
-end for multiple times, the PPPoE device on the client side will eventually
-get stuck on the above warning message.
+P:  Vendor=0489 ProdID=e0b4 Rev=03.18
+S:  Manufacturer=FII
+S:  Product=T77W968 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-This patch will check the async mode first and continue to release device
-reference in async resumption, before it is dropped due to invalid state.
-
-v2: Do not assign address family from outer_mode in the transform if the
-state is invalid
-
-v3: Release device reference in the error path instead of jumping to resume
-
-Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
-Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
-Reported-by: Bo Chen <chenborfc@163.com>
-Tested-by: Bo Chen <chenborfc@163.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Aleksander Morgado <aleksander@aleksander.es>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_input.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 06dec32503bd6..6abcec0d65b1f 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -245,6 +245,9 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 			else
- 				XFRM_INC_STATS(net,
- 					       LINUX_MIB_XFRMINSTATEINVALID);
-+
-+			if (encap_type == -1)
-+				dev_put(skb->dev);
- 			goto drop;
- 		}
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 8ed538295d090..4a984b76a60ec 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1295,6 +1295,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
+ 	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
+ 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
++	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
++	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
  
+ 	/* 4. Gobi 1000 devices */
+ 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
 -- 
 2.20.1
 
