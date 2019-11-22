@@ -2,282 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6619F10781C
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B668B107824
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 20:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfKVTmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 14:42:07 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:56086 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727051AbfKVTmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 14:42:04 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAMJXLnQ140642;
-        Fri, 22 Nov 2019 14:41:59 -0500
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2wdv0wdshp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Nov 2019 14:41:59 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAMJYtEA023740;
-        Fri, 22 Nov 2019 19:41:58 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04wdc.us.ibm.com with ESMTP id 2wa8r7tafs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Nov 2019 19:41:58 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAMJfuLg44499392
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 22 Nov 2019 19:41:57 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DE5F7C6059;
-        Fri, 22 Nov 2019 19:41:56 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0108FC6055;
-        Fri, 22 Nov 2019 19:41:56 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.85.142.37])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 22 Nov 2019 19:41:55 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@ozlabs.org, dnbanerg@us.ibm.com,
-        brking@linux.vnet.ibm.com, julietk@linux.vnet.ibm.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net 4/4] ibmvnic: Serialize device queries
-Date:   Fri, 22 Nov 2019 13:41:46 -0600
-Message-Id: <1574451706-19058-5-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-22_04:2019-11-21,2019-11-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 clxscore=1015 impostorscore=0 mlxscore=0 phishscore=0
- bulkscore=0 spamscore=0 lowpriorityscore=0 suspectscore=3 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911220162
+        id S1727028AbfKVTpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 14:45:53 -0500
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:59530 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726976AbfKVTpw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 14:45:52 -0500
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: G0FiK70buC96Yn011pnX75JnOQSF8JXydFghtG7W4h/05+Ss7yuMqI6sms20JGGQrJiQS83W2e
+ JH2f8/hJzlhc5IQ1XcWQFU2lO9SVP7KeLMARbI/x5VN0Pln73/MbEW5E6UNdZ32sDu/up5AJw3
+ 2Z+DhbsK7t4KqfFrWUolXSllXGnlBE7ah0DZ2bz+oAnkn3at+nenR7UphG1jhd9XhLMyPVSkW1
+ A4puZtJbqLYsdRJ5UPRAJo/x/PDUwJLr2qtUpQ45uanymqpd7msbcnZoCNQ0dm2xqDdVT962Kf
+ Cj0=
+X-IronPort-AV: E=Sophos;i="5.69,231,1571727600"; 
+   d="scan'208";a="59431833"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Nov 2019 12:45:51 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 22 Nov 2019 12:45:50 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 22 Nov 2019 12:45:50 -0700
+Date:   Fri, 22 Nov 2019 20:45:49 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] Convert Ocelot and Felix switches to PHYLINK
+Message-ID: <20191122194548.mbkpi4edxdmmm7b5@soft-dev3.microsemi.net>
+References: <20191118181030.23921-1-olteanv@gmail.com>
+ <20191118231339.ztotkr536udxuzsl@soft-dev3.microsemi.net>
+ <CA+h21hpKN+7ifvFUt6KMYARf19i=Jfw_dwciuPxPC6ZyHRF2XQ@mail.gmail.com>
+ <20191119204855.vgiwtrzx3426hbrc@soft-dev3.microsemi.net>
+ <20191119214257.GB19542@lunn.ch>
+ <20191120120849.xdizdx4vntor2fvv@soft-dev3.microsemi.net>
+ <CA+h21hpDL=cLsZXyyk3V7=gQnaf-ZdyyuHjcaZ-DY+zRUcnJOw@mail.gmail.com>
+ <20191120232152.p22rfjdngm4wtmak@soft-dev3.microsemi.net>
+ <CA+h21hrDN1daBFniPOvz_H6h=sStvwbad6JbCgmvrsZAmXpHkg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrDN1daBFniPOvz_H6h=sStvwbad6JbCgmvrsZAmXpHkg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide some serialization for device CRQ commands
-and queries to ensure that the shared variable used for
-storing return codes is properly synchronized.
+The 11/21/2019 19:51, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Thu, 21 Nov 2019 at 01:21, Horatiu Vultur
+> <horatiu.vultur@microchip.com> wrote:
+> >
+> > > >  };
+> > > >
+> > > >  &port0 {
+> > > > +       phy-mode = "sgmii";
+> > > >         phy-handle = <&phy0>;
+> > > >  };
+> > > >
+> > > >  &port1 {
+> > > > +       phy-mode = "sgmii";
+> > > >         phy-handle = <&phy1>;
+> > > >  };
+> > > >
+> > > >  &port2 {
+> > > > +       phy-mode = "sgmii";
+> > > >         phy-handle = <&phy2>;
+> > > >  };
+> > > >
+> > > >  &port3 {
+> > > > +       phy-mode = "sgmii";
+> > > >         phy-handle = <&phy3>;
+> > > >  };
+> > > > diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+> > > > index aecaf4ef6ef4..9dad031900b5 100644
+> > > > --- a/drivers/net/ethernet/mscc/ocelot_board.c
+> > > > +++ b/drivers/net/ethernet/mscc/ocelot_board.c
+> > > > @@ -513,6 +513,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+> > > >                 if (IS_ERR(regs))
+> > > >                         continue;
+> > > >
+> > > > +               of_get_phy_mode(portnp, &phy_mode);
+> > > > +               if (phy_mode == PHY_INTERFACE_MODE_NA)
+> > > > +                       continue;
+> > > > +
+> > >
+> > > So this effectively reverts your own patch 4214fa1efffd ("net: mscc:
+> > > ocelot: omit error check from of_get_phy_mode")?
+> >
+> > Not really, at that point it was OK to have interface
+> > PHY_INTERFACE_MODE_NA. There were few more checks before creating the
+> > network device. Now with your changes you were creating
+> > a network device for each port of the soc even if some ports
+> > were not used on a board. Also with your changes you first create the
+> > port and after that you create the phylink but between these two calls it
+> > was the switch which continue for the interface PHY_INTERFACE_MODE_NA,
+> > which is not correct. So these are the 2 reason why I have added the
+> > property phy-mode to the ports and add back the check to see which ports
+> > are used on each board.
+> >
+> > >
+> > > >                 err = ocelot_probe_port(ocelot, port, regs);
+> > > >                 if (err) {
+> > > >                         of_node_put(portnp);
+> > > > @@ -523,11 +527,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+> > > >                 priv = container_of(ocelot_port, struct ocelot_port_private,
+> > > >                                     port);
+> > > >
+> > > > -               of_get_phy_mode(portnp, &phy_mode);
+> > > > -
+> > > >                 switch (phy_mode) {
+> > > > -               case PHY_INTERFACE_MODE_NA:
+> > > > -                       continue;
+> > > >                 case PHY_INTERFACE_MODE_SGMII:
+> > > >                         break;
+> > > >                 case PHY_INTERFACE_MODE_QSGMII:
+> > > > @@ -549,20 +549,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+> > > >                 }
+> > > >
+> > > >                 serdes = devm_of_phy_get(ocelot->dev, portnp, NULL);
+> > > > -               if (IS_ERR(serdes)) {
+> > > > -                       err = PTR_ERR(serdes);
+> > > > -                       if (err == -EPROBE_DEFER)
+> > > > -                               dev_dbg(ocelot->dev, "deferring probe\n");
+> > >
+> > > Why did you remove the probe deferral for the serdes phy?
+> > Because not all the ports have the "phys" property.
+> > >
+> > > > -                       else
+> > > > -                               dev_err(ocelot->dev,
+> > > > -                                       "missing SerDes phys for port%d\n",
+> > > > -                                       port);
+> > > > -
+> > > > -                       of_node_put(portnp);
+> > > > -                       goto out_put_ports;
+> > > > -               }
+> > > > -
+> > > > -               if (serdes) {
+> > > > +               if (!IS_ERR(serdes)) {
+> > > >                         err = phy_set_mode_ext(serdes, PHY_MODE_ETHERNET,
+> > > >                                                phy_mode);
+> > > >                         if (err) {
+> > > > --
+> > > > 2.17.1
+> > > >
+> > > >
+> > > > >
+> > > > >    Andrew
+> > > >
+> > > > --
+> > > > /Horatiu
+> > >
+> > > Thanks,
+> > > -Vladimir
+> >
+> > --
+> > /Horatiu
+> 
+> Horatiu,
+> 
+> Do the 10/100 speeds work over the SGMII ports on your board? (not
+> with this patch, but in general)
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 51 ++++++++++++++++++++++++++++++++++----
- drivers/net/ethernet/ibm/ibmvnic.h |  1 +
- 2 files changed, 47 insertions(+), 5 deletions(-)
+I have done a mistake the interface is not SGMII but GMII for the 4
+internal phys. Sorry for the confusion.
+I can test on Monday to see if it is working with speed 10/100 on SGMII
+ports if are still interested.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 9806eccc5670..5e9b7711cd2e 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -207,11 +207,14 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 	ltb->map_id = adapter->map_id;
- 	adapter->map_id++;
- 
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
- 	rc = send_request_map(adapter, ltb->addr,
- 			      ltb->size, ltb->map_id);
- 	if (rc) {
- 		dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
- 
-@@ -222,6 +225,7 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 			"Long term map request aborted or timed out,rc = %d\n",
- 			rc);
- 		dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
- 
-@@ -229,8 +233,10 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 		dev_err(dev, "Couldn't map long term buffer,rc = %d\n",
- 			adapter->fw_done_rc);
- 		dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
-+		mutex_unlock(&adapter->fw_lock);
- 		return -1;
- 	}
-+	mutex_unlock(&adapter->fw_lock);
- 	return 0;
- }
- 
-@@ -256,16 +262,21 @@ static int reset_long_term_buff(struct ibmvnic_adapter *adapter,
- 
- 	memset(ltb->buff, 0, ltb->size);
- 
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
- 	rc = send_request_map(adapter, ltb->addr, ltb->size, ltb->map_id);
--	if (rc)
-+	if (rc) {
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
-+	}
- 
- 	rc = ibmvnic_wait_for_completion(adapter, &adapter->fw_done,
- 					 msecs_to_jiffies(10000));
- 	if (rc) {
- 		dev_info(dev,
- 			 "Reset failed, long term map request timed out or aborted\n");
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
- 
-@@ -273,8 +284,10 @@ static int reset_long_term_buff(struct ibmvnic_adapter *adapter,
- 		dev_info(dev,
- 			 "Reset failed, attempting to free and reallocate buffer\n");
- 		free_long_term_buff(adapter, ltb);
-+		mutex_unlock(&adapter->fw_lock);
- 		return alloc_long_term_buff(adapter, ltb, ltb->size);
- 	}
-+	mutex_unlock(&adapter->fw_lock);
- 	return 0;
- }
- 
-@@ -991,19 +1004,26 @@ static int ibmvnic_get_vpd(struct ibmvnic_adapter *adapter)
- 	if (adapter->vpd->buff)
- 		len = adapter->vpd->len;
- 
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
-+
- 	crq.get_vpd_size.first = IBMVNIC_CRQ_CMD;
- 	crq.get_vpd_size.cmd = GET_VPD_SIZE;
- 	rc = ibmvnic_send_crq(adapter, &crq);
--	if (rc)
-+	if (rc) {
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
-+	}
- 
- 	rc = ibmvnic_wait_for_completion(adapter, &adapter->fw_done,
- 					 msecs_to_jiffies(10000));
- 	if (rc) {
- 		dev_err(dev, "Could not retrieve VPD size, rc = %d\n", rc);
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
-+	mutex_unlock(&adapter->fw_lock);
- 
- 	if (!adapter->vpd->len)
- 		return -ENODATA;
-@@ -1030,7 +1050,10 @@ static int ibmvnic_get_vpd(struct ibmvnic_adapter *adapter)
- 		return -ENOMEM;
- 	}
- 
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
-+
- 	crq.get_vpd.first = IBMVNIC_CRQ_CMD;
- 	crq.get_vpd.cmd = GET_VPD;
- 	crq.get_vpd.ioba = cpu_to_be32(adapter->vpd->dma_addr);
-@@ -1039,6 +1062,7 @@ static int ibmvnic_get_vpd(struct ibmvnic_adapter *adapter)
- 	if (rc) {
- 		kfree(adapter->vpd->buff);
- 		adapter->vpd->buff = NULL;
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
- 
-@@ -1048,9 +1072,11 @@ static int ibmvnic_get_vpd(struct ibmvnic_adapter *adapter)
- 		dev_err(dev, "Unable to retrieve VPD, rc = %d\n", rc);
- 		kfree(adapter->vpd->buff);
- 		adapter->vpd->buff = NULL;
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
- 	}
- 
-+	mutex_unlock(&adapter->fw_lock);
- 	return 0;
- }
- 
-@@ -1751,10 +1777,14 @@ static int __ibmvnic_set_mac(struct net_device *netdev, u8 *dev_addr)
- 	crq.change_mac_addr.cmd = CHANGE_MAC_ADDR;
- 	ether_addr_copy(&crq.change_mac_addr.mac_addr[0], dev_addr);
- 
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
-+
- 	rc = ibmvnic_send_crq(adapter, &crq);
- 	if (rc) {
- 		rc = -EIO;
-+		mutex_unlock(&adapter->fw_lock);
- 		goto err;
- 	}
- 
-@@ -1763,9 +1793,10 @@ static int __ibmvnic_set_mac(struct net_device *netdev, u8 *dev_addr)
- 	/* netdev->dev_addr is changed in handle_change_mac_rsp function */
- 	if (rc || adapter->fw_done_rc) {
- 		rc = -EIO;
-+		mutex_unlock(&adapter->fw_lock);
- 		goto err;
- 	}
--
-+	mutex_unlock(&adapter->fw_lock);
- 	return 0;
- err:
- 	ether_addr_copy(adapter->mac_addr, netdev->dev_addr);
-@@ -4485,16 +4516,25 @@ static int send_query_phys_parms(struct ibmvnic_adapter *adapter)
- 	memset(&crq, 0, sizeof(crq));
- 	crq.query_phys_parms.first = IBMVNIC_CRQ_CMD;
- 	crq.query_phys_parms.cmd = QUERY_PHYS_PARMS;
-+
-+	mutex_lock(&adapter->fw_lock);
-+	adapter->fw_done_rc = 0;
- 	reinit_completion(&adapter->fw_done);
-+
- 	rc = ibmvnic_send_crq(adapter, &crq);
--	if (rc)
-+	if (rc) {
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
-+	}
- 
- 	rc = ibmvnic_wait_for_completion(adapter, &adapter->fw_done,
- 					 msecs_to_jiffies(10000));
--	if (rc)
-+	if (rc) {
-+		mutex_unlock(&adapter->fw_lock);
- 		return rc;
-+	}
- 
-+	mutex_unlock(&adapter->fw_lock);
- 	return adapter->fw_done_rc ? -EIO : 0;
- }
- 
-@@ -5050,6 +5090,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 			  __ibmvnic_delayed_reset);
- 	INIT_LIST_HEAD(&adapter->rwi_list);
- 	spin_lock_init(&adapter->rwi_lock);
-+	mutex_init(&adapter->fw_lock);
- 	init_completion(&adapter->init_done);
- 	init_completion(&adapter->fw_done);
- 	init_completion(&adapter->reset_done);
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index ebc39248b334..94d58dd22fec 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -1026,6 +1026,7 @@ struct ibmvnic_adapter {
- 	int init_done_rc;
- 
- 	struct completion fw_done;
-+	struct mutex fw_lock;
- 	int fw_done_rc;
- 
- 	struct completion reset_done;
+> 
+> Thanks,
+> -Vladimir
+
 -- 
-2.12.3
-
+/Horatiu
