@@ -2,139 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90229105E10
-	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 02:08:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 068AF105DEF
+	for <lists+netdev@lfdr.de>; Fri, 22 Nov 2019 02:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbfKVBIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Nov 2019 20:08:52 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:16792 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbfKVBIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 20:08:51 -0500
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAM18jhG011887;
-        Thu, 21 Nov 2019 17:08:46 -0800
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: [PATCH net-next v2 3/3] cxgb4: add stats for MQPRIO QoS offload Tx path
-Date:   Fri, 22 Nov 2019 06:30:03 +0530
-Message-Id: <28488132436a491f5fd8fa7da8e84694e70ef9d5.1574383652.git.rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
-In-Reply-To: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
-In-Reply-To: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
+        id S1726836AbfKVBDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Nov 2019 20:03:54 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34091 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726760AbfKVBDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Nov 2019 20:03:48 -0500
+Received: by mail-lj1-f196.google.com with SMTP id 139so5401854ljf.1
+        for <netdev@vger.kernel.org>; Thu, 21 Nov 2019 17:03:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=m913jDXRVfEU7lrY83rHrp6DULNdfWEGAoaZqXDkLTA=;
+        b=pdPSpxfBL1Ad/3JxV2mSmO4/6BOLjdGP/pkx3d6hs6QjMYWgNGmqybdAf8cVPb89MZ
+         7iy9H6Bwou+6jSwmM1TkH0C9Mb3il/QOlSAbnUqSfnXx9R4E3u4GoTFqXkAYmUgbtWG/
+         tldohmrkjSlw5hFcoW0L9cq3GjjCoh3i9UnrYfAl89Haytv6HBQTb73zmL5Nk1fmEdxY
+         H31lfYB9925iXHbcDYjLF1RNJTiR5EYdDBnU0AAQfTpg0fiXE0TuYDdFNdeBB0waW0GY
+         jKh67f3p7oxgyRw2uOMO5swxmrTiGZHbsFXZ73I5CTvbVBFrzxOtnpwyrzVggFornKH6
+         tDFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=m913jDXRVfEU7lrY83rHrp6DULNdfWEGAoaZqXDkLTA=;
+        b=D/mC4MkDcMxEMPpQ+OYqb3gEpxqNvGzPuZs7heNRay17C3LkHR18r0p1+7+b1/7/Yi
+         3l+h9/QGZtx34Zw752bmmX6sH4WubvSIhegSjwqWiJ9aYtLR3kL/88QPolHkzt0BanjM
+         JosCagcdPnR0fNWt7wVb/aaL+sDVcuvZTEdWGYTmMMvKlBPsTtV2YLO4ZlnuqRXEM1rr
+         Xk83xvH+Rs73LZfBqIPZdgpzYRL+v7kwnuIbtqZUOPeuPOXpv8KLRvWccTxuO8xKkRru
+         S0W8HIQ0U9q3sVF3cZapEgSa+2lCxquCs31F4qK501drYbgbS+MDM1F6v+dr65v8/wiT
+         t3gg==
+X-Gm-Message-State: APjAAAXXXYoKFFIf34faBb364VLufUBKbEURVXLRnYSLfgaVrCrU8N+l
+        WZDhjYxsBNT4bL9UNa6KqTB9tA==
+X-Google-Smtp-Source: APXvYqwnfSXY9PpKVzQQhCKshLxwXTVie+X/fnKl31b0ZdToCRb9i101bmYL66lYSpv5fqV8f+CPAQ==
+X-Received: by 2002:a2e:575c:: with SMTP id r28mr9849257ljd.245.1574384626222;
+        Thu, 21 Nov 2019 17:03:46 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s27sm2253515lfc.31.2019.11.21.17.03.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Nov 2019 17:03:45 -0800 (PST)
+Date:   Thu, 21 Nov 2019 17:03:35 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net,v2 1/2] hv_netvsc: Fix offset usage in
+ netvsc_send_table()
+Message-ID: <20191121170335.2f73792d@cakuba.netronome.com>
+In-Reply-To: <MN2PR21MB13750EBD53CFDFCBA36CF1D8CA490@MN2PR21MB1375.namprd21.prod.outlook.com>
+References: <1574372021-29439-1-git-send-email-haiyangz@microsoft.com>
+        <1574372021-29439-2-git-send-email-haiyangz@microsoft.com>
+        <20191121150445.47fc3358@cakuba.netronome.com>
+        <MN2PR21MB13750EBD53CFDFCBA36CF1D8CA490@MN2PR21MB1375.namprd21.prod.outlook.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export necessary stats for traffic flowing through MQPRIO QoS offload
-Tx path.
+On Fri, 22 Nov 2019 00:54:20 +0000, Haiyang Zhang wrote:
+> > >
+> > > -	tab = (u32 *)((unsigned long)&nvmsg->msg.v5_msg.send_table +
+> > > -		      nvmsg->msg.v5_msg.send_table.offset);
+> > > +	if (offset > msglen - count * sizeof(u32)) {  
+> > 
+> > Can't this underflow now? What if msglen is small?  
+> msglen came from the vmbus container message. We trust it to be big
+> enough for the data region.
 
-v2:
-- No change.
+Ok, it looked like it was read from some descriptor which could
+potentially be controlled by "the other side" but I trust your
+judgement :)
 
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h         |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c | 13 ++++++++++++-
- drivers/net/ethernet/chelsio/cxgb4/sge.c           | 14 ++++++++++++++
- 4 files changed, 28 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 04cb8909feeb..a70ac2097892 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -850,6 +850,7 @@ struct sge_eohw_txq {
- 	struct sge_txq q; /* HW Txq */
- 	struct adapter *adap; /* Backpointer to adapter */
- 	unsigned long tso; /* # of TSO requests */
-+	unsigned long uso; /* # of USO requests */
- 	unsigned long tx_cso; /* # of Tx checksum offloads */
- 	unsigned long vlan_ins; /* # of Tx VLAN insertions */
- 	unsigned long mapping_err; /* # of I/O MMU packet mapping errors */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index fa229d0f1016..93868dca186a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -2797,6 +2797,7 @@ do { \
- 		RL("RxAN", stats.an);
- 		RL("RxNoMem", stats.nomem);
- 		TL("TSO:", tso);
-+		TL("USO:", uso);
- 		TL("TxCSO:", tx_cso);
- 		TL("VLANins:", vlan_ins);
- 		TL("TxQFull:", q.stops);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index f57457453561..20ab3b6285a2 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -242,9 +242,10 @@ static void collect_sge_port_stats(const struct adapter *adap,
- 				   const struct port_info *p,
- 				   struct queue_port_stats *s)
- {
--	int i;
- 	const struct sge_eth_txq *tx = &adap->sge.ethtxq[p->first_qset];
- 	const struct sge_eth_rxq *rx = &adap->sge.ethrxq[p->first_qset];
-+	struct sge_eohw_txq *eohw_tx;
-+	unsigned int i;
- 
- 	memset(s, 0, sizeof(*s));
- 	for (i = 0; i < p->nqsets; i++, rx++, tx++) {
-@@ -257,6 +258,16 @@ static void collect_sge_port_stats(const struct adapter *adap,
- 		s->gro_pkts += rx->stats.lro_pkts;
- 		s->gro_merged += rx->stats.lro_merged;
- 	}
-+
-+	if (adap->sge.eohw_txq) {
-+		eohw_tx = &adap->sge.eohw_txq[p->first_qset];
-+		for (i = 0; i < p->nqsets; i++, eohw_tx++) {
-+			s->tso += eohw_tx->tso;
-+			s->uso += eohw_tx->uso;
-+			s->tx_csum += eohw_tx->tx_cso;
-+			s->vlan_ins += eohw_tx->vlan_ins;
-+		}
-+	}
- }
- 
- static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 53f9a821c29f..97cda501e7e8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -2262,6 +2262,19 @@ static void ethofld_hard_xmit(struct net_device *dev,
- 				d->addr);
- 	}
- 
-+	if (skb_shinfo(skb)->gso_size) {
-+		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
-+			eohw_txq->uso++;
-+		else
-+			eohw_txq->tso++;
-+		eohw_txq->tx_cso += skb_shinfo(skb)->gso_segs;
-+	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+		eohw_txq->tx_cso++;
-+	}
-+
-+	if (skb_vlan_tag_present(skb))
-+		eohw_txq->vlan_ins++;
-+
- 	txq_advance(&eohw_txq->q, ndesc);
- 	cxgb4_ring_tx_db(adap, &eohw_txq->q, ndesc);
- 	eosw_txq_advance_index(&eosw_txq->last_pidx, 1, eosw_txq->ndesc);
-@@ -4546,6 +4559,7 @@ int t4_sge_alloc_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq,
- 	spin_lock_init(&txq->lock);
- 	txq->adap = adap;
- 	txq->tso = 0;
-+	txq->uso = 0;
- 	txq->tx_cso = 0;
- 	txq->vlan_ins = 0;
- 	txq->mapping_err = 0;
--- 
-2.24.0
-
+Both patches LGTM, then.
