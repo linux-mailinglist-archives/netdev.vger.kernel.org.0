@@ -2,125 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 581B110802D
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 20:55:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4159F10802F
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 20:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbfKWTtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 14:49:42 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33847 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbfKWTtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 14:49:41 -0500
-Received: by mail-wr1-f65.google.com with SMTP id t2so12697394wrr.1
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 11:49:40 -0800 (PST)
+        id S1726836AbfKWTzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 14:55:13 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:39940 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfKWTzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 14:55:13 -0500
+Received: by mail-pj1-f67.google.com with SMTP id ep1so4639093pjb.7
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 11:55:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Q5Bm4DvgvZer6rntvEmWnyDps+9eYq4tdX1viVTj+ig=;
-        b=ZAafM+B5p4NHttarrcYJVv8r+9N/InfSwywypUyEK8WhpFUxX5Z52vUZS1HN7J67ts
-         pmk0m80KYFUOSU5XZqUWobkbQiIVvb2uLZU76LaCBJQcTByStAucAOmrfgjNsrlK8yxs
-         i34vtE8pYIndNuy4FOA6BgojAGKHy/CKK0I4hfj5o6hLw2cPXAVq+frhcpPK+ZMY84DL
-         YvDsKxpJKmwn2WxDBTLwVvx2dHewIWM/cBoS+5fYEqVd8SBjogB69b7z9b2s4tZN3DnZ
-         paWaz3aGV1vUlo2kE+GCuUZx6rStoCRN4hYZCZGVU+NjWIDufphh8Q501BxWBIuq3txQ
-         s+XQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=hX+Wc6fDdEjkXGsBe+9LZoD/JwGte0nyiDLwxqelzTg=;
+        b=z5ndaq+19Qu9RkB4tKFWovmRfkjIN4FDI7/FA9mSCKm+aolIdcf3RUaT+Y2OiH8lf0
+         4RfDP5NQDxznsRaYsOBhdjV+j5FsF88k9lwoGW0kqC1vnl1gtjgqvrfSSDZqNgSUL63D
+         Dep6eFEXQl6MMs2f2S1noIfX42H/tGvsDnFx45pTSMMgWEMn5cGzJVNi5C2PpuJTWE2F
+         lErD7AClwnvh8fStA06TPGNFxSCygP3uurdlWvf2tq6CpvlJ+ylMTACsH4h0+OOWP2ct
+         Hg7xawxzszV0bJiwIhtmqUXvrCON25pdiXdYGv5CBzBz7wwhceHvKcYGEXSt90zjrtiI
+         YVZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Q5Bm4DvgvZer6rntvEmWnyDps+9eYq4tdX1viVTj+ig=;
-        b=bPFaflDl7pMEH6v5EpugRuHDrofrT0GfR+LzbPIqgcmUKHk/1p5cO8g9yaFxVSdlhX
-         teSScqr/esWc+XyoAaPyAXr1H1WMIwJDoLoMiYgt9ZVj6vwkOdvj3Ki+OKCOlyCcK4te
-         Yjjud26jDj+gfFNrbaGSZq4iDuUVdU5ogXYA45bYTRgw527Iix4GZF4bk9/+2c70cNdK
-         s7o45nllRQ/v91g4GHiV2+w7p60dd1G7OidbtonF76rQEkt8QudeajOU+AoJ+vBLP2zw
-         vp9jNDdFiR2pA7t3flKgRH5L5YO3IKoFJ67bWcAH/pHFW6WxOxt/OvOWBXQ67tFRQ6Rb
-         VdrA==
-X-Gm-Message-State: APjAAAVOCkuTF6BsZhBF056F4wOm2hgmYETXRFL2WrcrPKR0GevV38Le
-        aBhBUq5GoNk99tFKdVNWk6k=
-X-Google-Smtp-Source: APXvYqy5oPm+p1YBl74L0Zs0WuWQwSCCpradRlcjYOrfEkyEvXVYEkZCOThtSSNtiO9Qg7KCO4bPkg==
-X-Received: by 2002:adf:e682:: with SMTP id r2mr24056203wrm.358.1574538579400;
-        Sat, 23 Nov 2019 11:49:39 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id j10sm3300569wrx.30.2019.11.23.11.49.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=hX+Wc6fDdEjkXGsBe+9LZoD/JwGte0nyiDLwxqelzTg=;
+        b=UphQM40JdauWScnjN/3imKCouIbasnABZvBEwbyRn6r5PDRz4HVcERSQuT1P9DKJ7G
+         Zs4E+3n+b4DAB9c9D2KfIb+0z3qAdi21dh+tZRDQb55RUN9kUqMohNV6x+5I0/u/WOgg
+         HeAEKXzJX+NjobQFRfWnW45f419RL8JoJ3gN0/k2MdUCgCAV793RgkbM8mfJK89VJUHg
+         ihyzFH8FXuBIUkf74RFWAeN1iXuJxYKuBC3I1Q4CrCFQEvEipRTT4bLzaAS7dlDANt3T
+         /YNC0j8Rr5ZeQxccYETI+I1EpE2LljxjW4BJPMY4ieANy2hOJtka/QOa1XBjEdWYSACp
+         RZZA==
+X-Gm-Message-State: APjAAAUvqnX3skQf8BNndBRQrgPsg6XeITho1YoRDNaDfuS44k842n9c
+        k6bJD27W0t6UBcDD4gADsQWbVQ==
+X-Google-Smtp-Source: APXvYqz/31BMmxOUtbjIzYkS+O9w92u35rN86XAAA3/ISZUb7bW+LjIcaQvBvtDCP/d3v2DLoPBggA==
+X-Received: by 2002:a17:90a:8a11:: with SMTP id w17mr27424866pjn.136.1574538912474;
+        Sat, 23 Nov 2019 11:55:12 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id v10sm2573988pfg.11.2019.11.23.11.55.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 11:49:38 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 3/3] net: dsa: vsc73xx: Make the MTU configurable
-Date:   Sat, 23 Nov 2019 21:48:44 +0200
-Message-Id: <20191123194844.9508-4-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191123194844.9508-1-olteanv@gmail.com>
-References: <20191123194844.9508-1-olteanv@gmail.com>
+        Sat, 23 Nov 2019 11:55:12 -0800 (PST)
+Date:   Sat, 23 Nov 2019 11:55:06 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net-next 15/15] bnxt_en: Add support for devlink info
+ command
+Message-ID: <20191123115506.2019cd08@cakuba.netronome.com>
+In-Reply-To: <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
+References: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
+        <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of hardcoding the MTU to the maximum value allowed by the
-hardware, obey the value known by the operating system.
+On Sat, 23 Nov 2019 03:26:10 -0500, Michael Chan wrote:
+> From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> 
+> Display the following information via devlink info command:
+>   - Driver name
+>   - Board id
+>   - Broad revision
+>   - Board Serial number
+>   - Board Package version
+>   - FW version
+>   - FW management version
+>   - FW RoCE version
+> 
+>   Standard output example:
+>   $ devlink dev info pci/0000:3b:00.0
+>   pci/0000:3b:00.0:
+>     driver bnxt_en
+>     serial_number B0-26-28-FF-FE-25-84-20
+>     versions:
+>         fixed:
+>           board.id C454
+>           board.rev 1
+>         running:
+>           board.package N/A
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/vitesse-vsc73xx-core.c | 30 +++++++++++++++++---------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+Just don't report it if you don't have it?
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
-index 42c1574d45f2..eed98566e2bf 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-core.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
-@@ -663,16 +663,6 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
- 		      VSC73XX_MAC_CFG_TX_EN |
- 		      VSC73XX_MAC_CFG_RX_EN);
- 
--	/* Max length, we can do up to 9.6 KiB, so allow that.
--	 * According to application not "VSC7398 Jumbo Frames" setting
--	 * up the MTU to 9.6 KB does not affect the performance on standard
--	 * frames, so just enable it. It is clear from the application note
--	 * that "9.6 kilobytes" == 9600 bytes.
--	 */
--	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
--		      port,
--		      VSC73XX_MAXLEN, 9600);
--
- 	/* Flow control for the CPU port:
- 	 * Use a zero delay pause frame when pause condition is left
- 	 * Obey pause control frames
-@@ -1029,6 +1019,24 @@ static void vsc73xx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 	}
- }
- 
-+static int vsc73xx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-+{
-+	struct vsc73xx *vsc = ds->priv;
-+
-+	return vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port,
-+			     VSC73XX_MAXLEN, new_mtu);
-+}
-+
-+/* According to application not "VSC7398 Jumbo Frames" setting
-+ * up the MTU to 9.6 KB does not affect the performance on standard
-+ * frames. It is clear from the application note that
-+ * "9.6 kilobytes" == 9600 bytes.
-+ */
-+static int vsc73xx_get_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return 9600;
-+}
-+
- static const struct dsa_switch_ops vsc73xx_ds_ops = {
- 	.get_tag_protocol = vsc73xx_get_tag_protocol,
- 	.setup = vsc73xx_setup,
-@@ -1040,6 +1048,8 @@ static const struct dsa_switch_ops vsc73xx_ds_ops = {
- 	.get_sset_count = vsc73xx_get_sset_count,
- 	.port_enable = vsc73xx_port_enable,
- 	.port_disable = vsc73xx_port_disable,
-+	.change_mtu = vsc73xx_change_mtu,
-+	.get_max_mtu = vsc73xx_get_max_mtu,
- };
- 
- static int vsc73xx_gpio_get(struct gpio_chip *chip, unsigned int offset)
--- 
-2.17.1
+>           fw.version 216.0.154.32004
+>           fw.mgmt 864.0.0.0
+>           fw.app 216.0.51.0
+> 
+> Cc: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
+> +static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+> +			    struct netlink_ext_ack *extack)
+> +{
+> +	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
+> +	union devlink_param_value nvm_cfg_ver;
+> +	struct hwrm_ver_get_output *ver_resp;
+> +	char mgmt_ver[FW_VER_STR_LEN];
+> +	char roce_ver[FW_VER_STR_LEN];
+> +	char fw_ver[FW_VER_STR_LEN];
+> +	char buf[32];
+> +	int rc;
+> +
+> +	rc = devlink_info_driver_name_put(req, DRV_MODULE_NAME);
+> +	if (rc)
+> +		return rc;
+> +
+> +	sprintf(buf, "%X", bp->chip_num);
+> +	rc = devlink_info_version_fixed_put(req, "board.id", buf);
+
+Are you sure chip_num is the board id and not the asic id?
+Is this the board version or the silicon version?
+
+Also please use the defines: DEVLINK_INFO_VERSION_GENERIC_BOARD_ID.
+
+> +	if (rc)
+> +		return rc;
+> +
+> +	ver_resp = &bp->ver_resp;
+> +	sprintf(buf, "%X", ver_resp->chip_rev);
+> +	rc = devlink_info_version_fixed_put(req, "board.rev", buf);
+> +	if (rc)
+> +		return rc;
+> +
+> +	if (BNXT_PF(bp)) {
+> +		sprintf(buf, "%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
+> +			bp->dsn[7], bp->dsn[6], bp->dsn[5], bp->dsn[4],
+> +			bp->dsn[3], bp->dsn[2], bp->dsn[1], bp->dsn[0]);
+> +		rc = devlink_info_serial_number_put(req, buf);
+> +		if (rc)
+> +			return rc;
+> +	}
+> +
+> +	if (strlen(ver_resp->active_pkg_name)) {
+> +		rc =
+> +		    devlink_info_version_running_put(req, "board.package",
+> +						     ver_resp->active_pkg_name);
+
+What's a board package? What HW people call a "module"? All devlink info
+versions should be documented in devlink-info-versions.rst.
+
+What are the possible values here? Reporting free form strings read
+from FW is going to be a tough sell. Probably worth dropping this one
+if you want the rest merged for 5.5.
+
+> +		if (rc)
+> +			return rc;
+> +	}
+> +
+> +	if (BNXT_PF(bp) && !bnxt_hwrm_get_nvm_cfg_ver(bp, &nvm_cfg_ver)) {
+> +		u32 ver = nvm_cfg_ver.vu32;
+> +
+> +		sprintf(buf, "%X.%X.%X", (ver >> 16) & 0xF, (ver >> 8) & 0xF,
+> +			ver & 0xF);
+> +		rc = devlink_info_version_running_put(req, "board.nvm_cfg_ver",
+
+ditto
+
+> +						      buf);
+> +		if (rc)
+> +			return rc;
+> +	}
+> +
+> +	if (ver_resp->flags & VER_GET_RESP_FLAGS_EXT_VER_AVAIL) {
+> +		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->hwrm_fw_major, ver_resp->hwrm_fw_minor,
+> +			 ver_resp->hwrm_fw_build, ver_resp->hwrm_fw_patch);
+> +
+> +		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->mgmt_fw_major, ver_resp->mgmt_fw_minor,
+> +			 ver_resp->mgmt_fw_build, ver_resp->mgmt_fw_patch);
+> +
+> +		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->roce_fw_major, ver_resp->roce_fw_minor,
+> +			 ver_resp->roce_fw_build, ver_resp->roce_fw_patch);
+> +	} else {
+> +		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->hwrm_fw_maj_8b, ver_resp->hwrm_fw_min_8b,
+> +			 ver_resp->hwrm_fw_bld_8b, ver_resp->hwrm_fw_rsvd_8b);
+> +
+> +		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->mgmt_fw_maj_8b, ver_resp->mgmt_fw_min_8b,
+> +			 ver_resp->mgmt_fw_bld_8b, ver_resp->mgmt_fw_rsvd_8b);
+> +
+> +		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
+> +			 ver_resp->roce_fw_maj_8b, ver_resp->roce_fw_min_8b,
+> +			 ver_resp->roce_fw_bld_8b, ver_resp->roce_fw_rsvd_8b);
+> +	}
+> +	rc = devlink_info_version_running_put(req, "fw.version", fw_ver);
+> +	if (rc)
+> +		return rc;
+> +
+> +	if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
+> +		rc = devlink_info_version_running_put(req, "fw.mgmt", mgmt_ver);
+> +		if (rc)
+> +			return rc;
+> +
+> +		rc = devlink_info_version_running_put(req, "fw.app", roce_ver);
+
+Should this be fw.roce? Is the NIC ROCE centric, IOW the data path is
+all ROCE? 
+
+What's hwrm? perhaps that's the datapath microcode version?
+
+> +		if (rc)
+> +			return rc;
+> +	}
+> +	return 0;
+> +}
+> +
+>  static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
+>  			     int msg_len, union devlink_param_value *val)
+>  {
