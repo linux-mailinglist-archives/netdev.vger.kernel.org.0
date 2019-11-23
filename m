@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01BC1107E21
+	by mail.lfdr.de (Postfix) with ESMTP id 703EC107E22
 	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 12:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfKWLIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 06:08:01 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39788 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfKWLIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 06:08:00 -0500
-Received: by mail-lj1-f195.google.com with SMTP id e10so1135575ljj.6
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 03:07:58 -0800 (PST)
+        id S1726765AbfKWLID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 06:08:03 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:43561 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726690AbfKWLIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 06:08:02 -0500
+Received: by mail-lj1-f193.google.com with SMTP id y23so10239633ljh.10
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 03:08:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/S4Voe4xMw9DysKVRvMiYj0/jWImWXMpbGJqyhXqcPA=;
-        b=IdN9oTlvu0aRzQtzP+WB4pv+jqX9HhG8xldhpZYCcUnXF7okU7rMYjtps69w1wli0b
-         wZHbe6TjDCp9jg66w1aKJaes48ksx7rAo5eX/Z2dvQ6/W8nrjHywgA0XqYl/aduM8tIF
-         9R3XH1Mkga65DRctF3+glJU/CCvGeca0dbN7M=
+        bh=k55NQUdMEwIrYPzB9SzVO0yDWBY1eyw3xIISS0Xx5a0=;
+        b=oGWJOcmvsQJRTxnMUu9BeNzPAy98Z4o9mq5qBfJceWwR7Bbhv72FjtVAjKyaNUnZNd
+         9ZEJ8Hq5rpb0ULBtXruZbcsXvLpkqU7WAt2J8ieKrlPG8pMqTnxVVTlJPrPXz0Rj0PlA
+         dbFMuN/ZYn1qZ5F3FmbWIe8a+kRMZiERUxuXs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/S4Voe4xMw9DysKVRvMiYj0/jWImWXMpbGJqyhXqcPA=;
-        b=P31PbvkWml0fMHg5FLXI8gpiXw8cFe5YTgnZavkjij1XzByFc5Or81BlH/oRbASYhj
-         ylhAluNVhgv3mDXjG8q/iboSiqyEBG/dBbBH7XA1hTUMsy3LFol/Xg0/y4vwKQzLcy46
-         drvvefW2Z1yhAI9VdhxO4ca6YGnY2lxvO2UIY+IVML66ptuK7c/SWFmWJ4tAsViE44TE
-         tALivLZzGXpo7XWPWdquejpGX6vw5o/3dqwaqGtvSl/zWKKxbu+kLXQdDS1W8xtpdAjv
-         yOHN3oa+rjb8mFzlPKBiyy35NENFVxl71bt/PGiIp/J7JF5pRDHfiI3iONtX4qh8QEEP
-         K2Pg==
-X-Gm-Message-State: APjAAAW0fCz0r1g9Mhtp0FPr1jkvi6ZxqwTltEIHDc7bVpCiK5w8ODqk
-        JQiSJ8PWqCCF6vv51A3YzDu8JA==
-X-Google-Smtp-Source: APXvYqxLnIo1klSQNuij7g2YCx86r59CNZPuHysdztPRoMr9u4gc7DjI6rkAbCkNrFhDMsGOtullBQ==
-X-Received: by 2002:a2e:3a12:: with SMTP id h18mr8966702lja.217.1574507277832;
-        Sat, 23 Nov 2019 03:07:57 -0800 (PST)
+        bh=k55NQUdMEwIrYPzB9SzVO0yDWBY1eyw3xIISS0Xx5a0=;
+        b=cDkANtBJnyd8xOgEnHGBYeW4N9bb1sBCvxMOtTdybmfV8c70Ks3je8ZVPK3ihbLKtX
+         AC9V0/SFtoDxQdx5FWghw28P8GVgogbqE7zVr+gQrBU9mKVolFFMntyH/qEV6INGnwjU
+         8GXNQfd1zqkkdEUY1KOrFqOCgLEyPo+++OJ2zLGS/9YVb8QfurV9EX8+vj/KWmGF7649
+         OpNBrsjvSPy7Jcen0I/URUq65x2lnyOWy4Jc8QRlWmcwvNPMShf/wEv/OW6nBiZhXDHA
+         6DA1BM2IQy3BOYrcCNyCuqaRD7LSuZbcUFHvYFoKi0Q8dmTJ3/L88Xqm4ZiNtDJo3uWZ
+         KzkA==
+X-Gm-Message-State: APjAAAU+DIaQEkqGFd2Y3K0qpV3Cqj47KxUjeK+N/fasIg26756MFJWR
+        AQsiflCjX9SwAVhhAdEoFfi6sg==
+X-Google-Smtp-Source: APXvYqyZGEHGkJ325APRbCVeTsl7niNGre8LuzsptgQhn3qKUpkbWgi1Ux58AfHJXD7s4htnU49X0g==
+X-Received: by 2002:a2e:8e27:: with SMTP id r7mr15898684ljk.101.1574507279333;
+        Sat, 23 Nov 2019 03:07:59 -0800 (PST)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id x19sm617059ljh.14.2019.11.23.03.07.56
+        by smtp.gmail.com with ESMTPSA id e7sm610085lja.5.2019.11.23.03.07.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 03:07:57 -0800 (PST)
+        Sat, 23 Nov 2019 03:07:58 -0800 (PST)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH bpf-next 3/8] bpf, sockmap: Allow inserting listening TCP sockets into SOCKMAP
-Date:   Sat, 23 Nov 2019 12:07:46 +0100
-Message-Id: <20191123110751.6729-4-jakub@cloudflare.com>
+Subject: [PATCH bpf-next 4/8] bpf, sockmap: Don't let child socket inherit psock or its ops on copy
+Date:   Sat, 23 Nov 2019 12:07:47 +0100
+Message-Id: <20191123110751.6729-5-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191123110751.6729-1-jakub@cloudflare.com>
 References: <20191123110751.6729-1-jakub@cloudflare.com>
@@ -59,108 +59,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order for SOCKMAP type to become a generic collection for storing TCP
-sockets we need to loosen the checks in update callback.
+Sockets cloned from the listening sockets that belongs to a SOCKMAP must
+not inherit the psock state. Otherwise child sockets unintentionally share
+the SOCKMAP entry with the listening socket, which would lead to
+use-after-free bugs.
 
-Currently SOCKMAP requires the TCP socket to be in established state, which
-prevents us from using it to keep references to listening sockets.
-
-Change the update pre-checks so that it is sufficient for socket to be in a
-hash table, i.e. have a local address/port assigned, to be inserted. Return
--EINVAL if the condition is not met to be consistent with
-REUSEPORT_SOCKARRY map type.
-
-This creates a possibility of pointing one of the BPF redirect helpers that
-splice two SOCKMAP sockets on ingress or egress at a listening socket,
-which doesn't make sense. Introduce appropriate checks in the helpers so
-that only established TCP sockets can be a target for redirects.
+Restore the child socket psock state and its callbacks at the earliest
+possible moment, that is right after the child socket gets created. This
+ensures that neither children that get accept()'ed, nor those that are left
+in accept queue and will get orphaned, don't inadvertently inherit parent's
+psock.
 
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- net/core/sock_map.c                     | 28 ++++++++++++++++++-------
- tools/testing/selftests/bpf/test_maps.c |  6 +-----
- 2 files changed, 21 insertions(+), 13 deletions(-)
+ include/linux/skmsg.h | 17 +++++++++--
+ net/ipv4/tcp_bpf.c    | 66 +++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 78 insertions(+), 5 deletions(-)
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 9f572d56e81a..49744b344137 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -439,11 +439,14 @@ static int sock_map_update_elem(struct bpf_map *map, void *key,
- 		ret = -EINVAL;
- 		goto out;
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 6cb077b646a5..b5ade8dac69d 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -98,6 +98,7 @@ struct sk_psock {
+ 	void (*saved_close)(struct sock *sk, long timeout);
+ 	void (*saved_write_space)(struct sock *sk);
+ 	struct proto			*sk_proto;
++	const struct inet_connection_sock_af_ops *icsk_af_ops;
+ 	struct sk_psock_work_state	work_state;
+ 	struct work_struct		work;
+ 	union {
+@@ -345,23 +346,30 @@ static inline void sk_psock_cork_free(struct sk_psock *psock)
+ 
+ static inline void sk_psock_update_proto(struct sock *sk,
+ 					 struct sk_psock *psock,
+-					 struct proto *ops)
++					 struct proto *ops,
++					 struct inet_connection_sock_af_ops *af_ops)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
+ 	psock->saved_unhash = sk->sk_prot->unhash;
+ 	psock->saved_close = sk->sk_prot->close;
+ 	psock->saved_write_space = sk->sk_write_space;
+ 
+ 	psock->sk_proto = sk->sk_prot;
+ 	sk->sk_prot = ops;
++
++	psock->icsk_af_ops = icsk->icsk_af_ops;
++	icsk->icsk_af_ops = af_ops;
+ }
+ 
+ static inline void sk_psock_restore_proto(struct sock *sk,
+ 					  struct sk_psock *psock)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
+ 	sk->sk_write_space = psock->saved_write_space;
+ 
+ 	if (psock->sk_proto) {
+-		struct inet_connection_sock *icsk = inet_csk(sk);
+ 		bool has_ulp = !!icsk->icsk_ulp_data;
+ 
+ 		if (has_ulp)
+@@ -370,6 +378,11 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+ 			sk->sk_prot = psock->sk_proto;
+ 		psock->sk_proto = NULL;
  	}
--	if (!sock_map_sk_is_suitable(sk) ||
--	    sk->sk_state != TCP_ESTABLISHED) {
-+	if (!sock_map_sk_is_suitable(sk)) {
- 		ret = -EOPNOTSUPP;
- 		goto out;
- 	}
-+	if (!sk_hashed(sk)) {
-+		ret = -EINVAL;
-+		goto out;
++
++	if (psock->icsk_af_ops) {
++		icsk->icsk_af_ops = psock->icsk_af_ops;
++		psock->icsk_af_ops = NULL;
 +	}
- 
- 	sock_map_sk_acquire(sk);
- 	ret = sock_map_update_common(map, idx, sk, flags);
-@@ -480,13 +483,17 @@ BPF_CALL_4(bpf_sk_redirect_map, struct sk_buff *, skb,
- 	   struct bpf_map *, map, u32, key, u64, flags)
- {
- 	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
-+	struct sock *sk;
- 
- 	if (unlikely(flags & ~(BPF_F_INGRESS)))
- 		return SK_DROP;
--	tcb->bpf.flags = flags;
--	tcb->bpf.sk_redir = __sock_map_lookup_elem(map, key);
--	if (!tcb->bpf.sk_redir)
-+
-+	sk = __sock_map_lookup_elem(map, key);
-+	if (!sk || sk->sk_state != TCP_ESTABLISHED)
- 		return SK_DROP;
-+
-+	tcb->bpf.flags = flags;
-+	tcb->bpf.sk_redir = sk;
- 	return SK_PASS;
  }
  
-@@ -503,12 +510,17 @@ const struct bpf_func_proto bpf_sk_redirect_map_proto = {
- BPF_CALL_4(bpf_msg_redirect_map, struct sk_msg *, msg,
- 	   struct bpf_map *, map, u32, key, u64, flags)
+ static inline void sk_psock_set_state(struct sk_psock *psock,
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 8a56e09cfb0e..dc709949c8e5 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -10,6 +10,8 @@
+ #include <net/inet_common.h>
+ #include <net/tls.h>
+ 
++extern const struct inet_connection_sock_af_ops ipv4_specific;
++
+ static bool tcp_bpf_stream_read(const struct sock *sk)
  {
-+	struct sock *sk;
+ 	struct sk_psock *psock;
+@@ -535,6 +537,10 @@ static void tcp_bpf_remove(struct sock *sk, struct sk_psock *psock)
+ {
+ 	struct sk_psock_link *link;
+ 
++	/* Did a child socket inadvertently inherit parent's psock? */
++	if (WARN_ON(sk != psock->sk))
++		return;
 +
- 	if (unlikely(flags & ~(BPF_F_INGRESS)))
- 		return SK_DROP;
--	msg->flags = flags;
--	msg->sk_redir = __sock_map_lookup_elem(map, key);
--	if (!msg->sk_redir)
-+
-+	sk = __sock_map_lookup_elem(map, key);
-+	if (!sk || sk->sk_state != TCP_ESTABLISHED)
- 		return SK_DROP;
-+
-+	msg->flags = flags;
-+	msg->sk_redir = sk;
- 	return SK_PASS;
+ 	while ((link = sk_psock_link_pop(psock))) {
+ 		sk_psock_unlink(sk, link);
+ 		sk_psock_free_link(link);
+@@ -582,6 +588,45 @@ static void tcp_bpf_close(struct sock *sk, long timeout)
+ 	saved_close(sk, timeout);
  }
  
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index 02eae1e864c2..c6766b2cff85 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -756,11 +756,7 @@ static void test_sockmap(unsigned int tasks, void *data)
- 	/* Test update without programs */
- 	for (i = 0; i < 6; i++) {
- 		err = bpf_map_update_elem(fd, &i, &sfd[i], BPF_ANY);
--		if (i < 2 && !err) {
--			printf("Allowed update sockmap '%i:%i' not in ESTABLISHED\n",
--			       i, sfd[i]);
--			goto out_sockmap;
--		} else if (i >= 2 && err) {
-+		if (err) {
- 			printf("Failed noprog update sockmap '%i:%i'\n",
- 			       i, sfd[i]);
- 			goto out_sockmap;
++static struct sock *tcp_bpf_syn_recv_sock(const struct sock *sk,
++					  struct sk_buff *skb,
++					  struct request_sock *req,
++					  struct dst_entry *dst,
++					  struct request_sock *req_unhash,
++					  bool *own_req)
++{
++	const struct inet_connection_sock_af_ops *ops;
++	void (*write_space)(struct sock *sk);
++	struct sk_psock *psock;
++	struct proto *proto;
++	struct sock *child;
++
++	rcu_read_lock();
++	psock = sk_psock(sk);
++	if (likely(psock)) {
++		proto = psock->sk_proto;
++		write_space = psock->saved_write_space;
++		ops = psock->icsk_af_ops;
++	} else {
++		ops = inet_csk(sk)->icsk_af_ops;
++	}
++	rcu_read_unlock();
++
++	child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
++
++	/* Child must not inherit psock or its ops. */
++	if (child && psock) {
++		rcu_assign_sk_user_data(child, NULL);
++		child->sk_prot = proto;
++		child->sk_write_space = write_space;
++
++		/* v4-mapped sockets don't inherit parent ops. Don't restore. */
++		if (inet_csk(child)->icsk_af_ops == inet_csk(sk)->icsk_af_ops)
++			inet_csk(child)->icsk_af_ops = ops;
++	}
++	return child;
++}
++
+ enum {
+ 	TCP_BPF_IPV4,
+ 	TCP_BPF_IPV6,
+@@ -597,6 +642,7 @@ enum {
+ static struct proto *tcpv6_prot_saved __read_mostly;
+ static DEFINE_SPINLOCK(tcpv6_prot_lock);
+ static struct proto tcp_bpf_prots[TCP_BPF_NUM_PROTS][TCP_BPF_NUM_CFGS];
++static struct inet_connection_sock_af_ops tcp_bpf_af_ops[TCP_BPF_NUM_PROTS];
+ 
+ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
+ 				   struct proto *base)
+@@ -612,13 +658,23 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
+ 	prot[TCP_BPF_TX].sendpage		= tcp_bpf_sendpage;
+ }
+ 
+-static void tcp_bpf_check_v6_needs_rebuild(struct sock *sk, struct proto *ops)
++static void tcp_bpf_rebuild_af_ops(struct inet_connection_sock_af_ops *ops,
++				   const struct inet_connection_sock_af_ops *base)
++{
++	*ops = *base;
++	ops->syn_recv_sock = tcp_bpf_syn_recv_sock;
++}
++
++static void tcp_bpf_check_v6_needs_rebuild(struct sock *sk, struct proto *ops,
++					   const struct inet_connection_sock_af_ops *af_ops)
+ {
+ 	if (sk->sk_family == AF_INET6 &&
+ 	    unlikely(ops != smp_load_acquire(&tcpv6_prot_saved))) {
+ 		spin_lock_bh(&tcpv6_prot_lock);
+ 		if (likely(ops != tcpv6_prot_saved)) {
+ 			tcp_bpf_rebuild_protos(tcp_bpf_prots[TCP_BPF_IPV6], ops);
++			tcp_bpf_rebuild_af_ops(&tcp_bpf_af_ops[TCP_BPF_IPV6],
++					       af_ops);
+ 			smp_store_release(&tcpv6_prot_saved, ops);
+ 		}
+ 		spin_unlock_bh(&tcpv6_prot_lock);
+@@ -628,6 +684,8 @@ static void tcp_bpf_check_v6_needs_rebuild(struct sock *sk, struct proto *ops)
+ static int __init tcp_bpf_v4_build_proto(void)
+ {
+ 	tcp_bpf_rebuild_protos(tcp_bpf_prots[TCP_BPF_IPV4], &tcp_prot);
++	tcp_bpf_rebuild_af_ops(&tcp_bpf_af_ops[TCP_BPF_IPV4], &ipv4_specific);
++
+ 	return 0;
+ }
+ core_initcall(tcp_bpf_v4_build_proto);
+@@ -637,7 +695,8 @@ static void tcp_bpf_update_sk_prot(struct sock *sk, struct sk_psock *psock)
+ 	int family = sk->sk_family == AF_INET6 ? TCP_BPF_IPV6 : TCP_BPF_IPV4;
+ 	int config = psock->progs.msg_parser   ? TCP_BPF_TX   : TCP_BPF_BASE;
+ 
+-	sk_psock_update_proto(sk, psock, &tcp_bpf_prots[family][config]);
++	sk_psock_update_proto(sk, psock, &tcp_bpf_prots[family][config],
++			      &tcp_bpf_af_ops[family]);
+ }
+ 
+ static void tcp_bpf_reinit_sk_prot(struct sock *sk, struct sk_psock *psock)
+@@ -677,6 +736,7 @@ void tcp_bpf_reinit(struct sock *sk)
+ 
+ int tcp_bpf_init(struct sock *sk)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct proto *ops = READ_ONCE(sk->sk_prot);
+ 	struct sk_psock *psock;
+ 
+@@ -689,7 +749,7 @@ int tcp_bpf_init(struct sock *sk)
+ 		rcu_read_unlock();
+ 		return -EINVAL;
+ 	}
+-	tcp_bpf_check_v6_needs_rebuild(sk, ops);
++	tcp_bpf_check_v6_needs_rebuild(sk, ops, icsk->icsk_af_ops);
+ 	tcp_bpf_update_sk_prot(sk, psock);
+ 	rcu_read_unlock();
+ 	return 0;
 -- 
 2.20.1
 
