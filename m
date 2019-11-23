@@ -2,115 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3453D10803D
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 709FE108040
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfKWUGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 15:06:32 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:44890 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfKWUGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:06:32 -0500
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xANK6I3f025617;
-        Sat, 23 Nov 2019 12:06:19 -0800
-Date:   Sun, 24 Nov 2019 01:27:57 +0530
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        davem@davemloft.net, herbert@gondor.apana.org.au,
-        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next v2 2/3] cxgb4: add UDP segmentation offload
- support
-Message-ID: <20191123195755.GA30684@chelsio.com>
-References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
- <1638e6bdd3aa9a4536aaeb644418d2a0ff5e5368.1574383652.git.rahul.lakkireddy@chelsio.com>
- <20191122161334.44de6174@cakuba.netronome.com>
+        id S1726740AbfKWUMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:12:00 -0500
+Received: from mail-pj1-f45.google.com ([209.85.216.45]:36433 "EHLO
+        mail-pj1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfKWUMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:12:00 -0500
+Received: by mail-pj1-f45.google.com with SMTP id cq11so4658961pjb.3
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:12:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=2LwGmjdObMGCnA4E6/PwJpJ5df/udZNVgfH7GkGh/oc=;
+        b=Q0EmNISSInoOvhlmikNTjum3LlD9Bq/qK0AvznuuhFB4UyNQA0dPlGO7J86G07pie/
+         sIMJAFma09qhXr0aglmPxsxyg8tC6Ns3BywWGe1E43Vnd4GeSc7KL/RQw8DlpfV/HpeF
+         /od13j4QJtiJrfnvIs07RkcP/LO9h4FoZ52tb4FG7Xhj8QpJCTvIR2aEjniopWT0GS7C
+         Y3g39WvUYAu9w2uA7Gm1P5ILB87vHUAraiv4dQYRLOV+ArhXXrbP4GazOmmAIOaq4Pq7
+         IDXU11X2AbVE2P7cgm7+E9qMIC7hz7A4x566XYb+PHhZQsNCZz29C10rVZ3alFntjFK8
+         McyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=2LwGmjdObMGCnA4E6/PwJpJ5df/udZNVgfH7GkGh/oc=;
+        b=lYrQSUrJI6rYHbDK14T4VqHC/CcqN5Owm0+ucSYYLvNbt7XZk0OYC1AOag7kTFSzTy
+         nfSkgIaZ5PeK2p2ZsBl43oUVQpXFFChCjdSFeCF9zN5iFt4AFmePYBpMVW6bcr8UyKDk
+         mMaYl3Y1crwxnSsntrbSpzvNxLJM6k+YO9gvUDgiLg74TjSLCMwusZnp7YQcFlSC2f2t
+         GcWj0T5+kAJJwAAk3F9nvpQfpcNplgwJH7g43vYsr3j7stra4ZC/C8Y4MpqRZKZv1FBd
+         pKC+xishDqfCNeL7tvdHgeyqXUdkuxdA1ONPBE8KglnQelt1iSkgA9+tsKO63uh6t9k4
+         g8Zg==
+X-Gm-Message-State: APjAAAWFgGqt6dbhbCHVMJD+dxYFBpnhxLEuVyErI7MOLKVRog7wZli4
+        343e+URrWHXMg1hFEaI16cLMn2M+7GQ=
+X-Google-Smtp-Source: APXvYqxQY37u3OyU+rrvyD9DzJNHqrJwrpPwJ556Gw1Wf6vlpWctZBQ9v1e6FPtiVFL6DkvcDlKuow==
+X-Received: by 2002:a17:90a:fc91:: with SMTP id ci17mr27357513pjb.13.1574539919455;
+        Sat, 23 Nov 2019 12:11:59 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id s24sm2795197pgm.79.2019.11.23.12.11.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 12:11:59 -0800 (PST)
+Date:   Sat, 23 Nov 2019 12:11:54 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-next-2019-11-22
+Message-ID: <20191123121154.685d0f1b@cakuba.netronome.com>
+In-Reply-To: <0101016e9468c9df-b9fff56f-0e3f-48d1-bcff-e6586926e7b6-000000@us-west-2.amazonses.com>
+References: <0101016e9468c9df-b9fff56f-0e3f-48d1-bcff-e6586926e7b6-000000@us-west-2.amazonses.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191122161334.44de6174@cakuba.netronome.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, November 11/22/19, 2019 at 16:13:34 -0800, Jakub Kicinski wrote:
-> On Fri, 22 Nov 2019 06:30:02 +0530, Rahul Lakkireddy wrote:
-> > Implement and export UDP segmentation offload (USO) support for both
-> > NIC and MQPRIO QoS offload Tx path. Update appropriate logic in Tx to
-> > parse GSO info in skb and configure FW_ETH_TX_EO_WR request needed to
-> > perform USO.
-> > 
-> > v2:
-> > - Remove inline keyword from write_eo_udp_wr() in sge.c. Let the
-> >   compiler decide.
-> > 
-> > Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+On Fri, 22 Nov 2019 18:38:46 +0000, Kalle Valo wrote:
+> wireless-drivers-next patches for v5.5
 > 
-> > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> > index 76538f4cd595..f57457453561 100644
-> > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> > @@ -91,6 +91,7 @@ static const char stats_strings[][ETH_GSTRING_LEN] = {
-> >  	"rx_bg3_frames_trunc    ",
-> >  
-> >  	"tso                    ",
-> > +	"uso                    ",
+> Last set of patches for v5.5. Major features here 802.11ax support for
+> qtnfmac and airtime fairness support to mt76. And naturally smaller
+> fixes and improvements all over.
 > 
-> Oh wow, the spaces, people's inventiveness when it comes to ethtool free
-> form strings knows no bounds..
+> Major changes:
 > 
-> That's not a review comment, I just wanted to say that :)
+> qtnfmac
 > 
-> >  	"tx_csum_offload        ",
-> >  	"rx_csum_good           ",
-> >  	"vlan_extractions       ",
+> * add 802.11ax support in AP mode
 > 
-> > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> > index e8a1826a1e90..12ff69b3ba91 100644
-> > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-> > @@ -1136,11 +1136,17 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
-> >  
-> >  	if (dev->num_tc) {
-> >  		struct port_info *pi = netdev2pinfo(dev);
-> > +		u8 ver, proto;
-> > +
-> > +		ver = ip_hdr(skb)->version;
-> > +		proto = (ver == 6) ? ipv6_hdr(skb)->nexthdr :
-> > +				     ip_hdr(skb)->protocol;
+> * enable offload bridging support
 > 
-> Checking ip version now looks potentially like a fix?
+> iwlwifi
 > 
+> * support TX/RX antennas reporting
+> 
+> mt76
+> 
+> * mt7615 smart carrier sense support
+> 
+> * aggregation statistics via debugfs
+> 
+> * airtime fairness (ATF) support
+> 
+> * mt76x0 OF mac address support
 
-Yes, the earlier check was not considering IPv6 header when extracting
-the protocol field for comparison, used to decide whether the traffic
-can be sent on the TC-MQPRIO QoS offload Tx path added very recently
-just a couple of weeks ago.
-
-> >  		/* Send unsupported traffic pattern to normal NIC queues. */
-> >  		txq = netdev_pick_tx(dev, skb, sb_dev);
-> >  		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
-> > -		    ip_hdr(skb)->protocol != IPPROTO_TCP)
-> > +		    skb->encapsulation ||
-> 
-> The addition of encapsulation check also looks unrelated? 
-> 
-
-UDP traffic was not supported on the TC-MQPRIO QoS offload Tx path
-before this patch. VxLAN and Geneve UDP tunnel packets need to be
-handled differently and hence the above check to send these packets
-through the normal Tx path for now. The support for them on QoS
-offload path will be enabled by a future patchset.
-
-> > +		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
-> >  			txq = txq % pi->nqsets;
-> >  
-> >  		return txq;
-
-
-Thanks,
-Rahul
+Pulled, thanks!
