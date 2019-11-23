@@ -2,100 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EA06107BF2
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 01:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83E8E107BF8
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 01:20:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbfKWARw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 19:17:52 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43944 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbfKWARw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 19:17:52 -0500
-Received: by mail-qk1-f195.google.com with SMTP id p14so7861822qkm.10
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 16:17:51 -0800 (PST)
+        id S1726752AbfKWAT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 19:19:58 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:33468 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726089AbfKWAT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 19:19:57 -0500
+Received: by mail-lf1-f67.google.com with SMTP id d6so6847470lfc.0
+        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 16:19:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Xaj0ldX8WniR2PG0Vl/wsG58e7OE9OBJmmCooCVkEEg=;
-        b=j9BESahJkzvSP0C2cdZtLFzgmlNjaEBZ+GIEjvbdjD53bF3AtgCVBnlQfKRMNK6M+h
-         zzQq+ng27CJzDXdwXhoWcfp81q2/Dg6Jk81vcWT9LA3jyYkNsbS751qrwYarK2Pc+hPB
-         /37J0M15121sRy94RVlKhfngIPJmQLEQSLDC/8y+UwDtmuvUWn30WBf2DPP/8kBQygEq
-         dZJk4m54xECK0Zu1oLrWLkeITxf6Jck+fdJHpGo3MRIMvIEGG6n7xoLU8ff2T7vrYoz3
-         8FYl8HbbK9vcDn8dDBQQVyyIGHG2vQqaWxKMIjXhkMzs18hgnz38oZkP0VVTtFYesvwg
-         BTsw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=cCKUrCts2+t8rP0ScV3w0/Tj1cDEwboZDIJtSXZbwS8=;
+        b=CQQTqlgmc9AoFm+WbiVEsoL41/6vqIC8qlytBOiVKqcRaJEpqoXoSrUx9732545WRK
+         l0AhBUzKceVPXDCzFVDPLiotmWd6kTR/BfvUmJLcxHpp8pS6bgpuqiTIZ2EzY1NErkR+
+         vI3feiJQbfeNzMR1UGjIY9KdmpD4x0vdBC1qjeEOWeVJKTWdZxsPVSQfn85sGcKwAblA
+         K07cg6F69Z6xS6ePTAJdnCYzHF4QP56BWV6btedeMRMzR8BCQlHC+sNbGct+lur8tMX1
+         YsVNjBMZAuLHvl0XxOlHC/Z0y/BtRegNHiAPnK8KksUMxB2L7BU7fFtXhnumcOlQsh8H
+         ssIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Xaj0ldX8WniR2PG0Vl/wsG58e7OE9OBJmmCooCVkEEg=;
-        b=kH4tmh/ZfdTM4Z/03Qq3SQW9tRKO7GW1xlv6Z7wKzFGKeqLhxCbTAqN0QwwxtZZmyW
-         7Oc57opbzgkMOtHVHMHiYD4G9C+bX9H0PoK0R1vYdEt8sRClvKmG/CIirr3BsmF89FB4
-         JJrDd88Eejq4pxLR9H/EirnLpyQ53jcdDZujcimtzLdc794K+zfgBejVbD8U8a6TaYIb
-         d9Fu/Rxzd08eMeY02D5hostHgKSSXYpVSFXRM4mcMsLERhgIPKdz9bYkYubZUnt9qV+j
-         L3JosaLDhFhzfeoJIn3eeP5cPWDHZah0fYcsEaKczorGT5BOeuGqiG3r5jf8YBIC5w2a
-         dv/w==
-X-Gm-Message-State: APjAAAVBuguRSW/MQcKnH12NT31Z0NkilQG7z+Om0p4OGk+s4U9go6c7
-        Wc/T7mDv3a3g3yj2bhL+2xFimHJA
-X-Google-Smtp-Source: APXvYqzNz0Iic7ADFh+nougNGwPT7s/X4ldyU9vbwiBQck0iqR9+PyMNczgN39h7thrl5Phbh6R8Vg==
-X-Received: by 2002:a05:620a:3cb:: with SMTP id r11mr15608983qkm.320.1574468270469;
-        Fri, 22 Nov 2019 16:17:50 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:b0cf:5043:5811:efe3])
-        by smtp.googlemail.com with ESMTPSA id x21sm3747133qkf.56.2019.11.22.16.17.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Nov 2019 16:17:49 -0800 (PST)
-Subject: Re: VRF and/or cgroups problem on Fedora-30, 5.2.21+ kernel
-To:     Ben Greear <greearb@candelatech.com>,
-        netdev <netdev@vger.kernel.org>
-References: <05276b67-406b-2744-dd7c-9bda845a5bb1@candelatech.com>
- <850a6d4e-3a67-a389-04a0-87032e0683d8@gmail.com>
- <213aa1d3-5df9-0337-c583-34f3de5f1582@candelatech.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8ae551e1-5c2e-6a95-b4d1-3301c5173171@gmail.com>
-Date:   Fri, 22 Nov 2019 17:17:48 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=cCKUrCts2+t8rP0ScV3w0/Tj1cDEwboZDIJtSXZbwS8=;
+        b=iEiZ/CI03lYSi5oWxfesA+aXfWO3r7sH4m6EDJQMSTqtP6e2uqUOw7Z9JQBndfTwjm
+         i111yCC5DoLQawIbGui+E3hIsMfOPOsajKM6caNd9Nv0PTdYR+une3jNqWFiqNKbBt8k
+         UNbJYPRpMn0CiVcPzl3K/NjqC6tXjqQy0v/XngfSI2T9kHoWfHlZ62+pe7EcFM3JIPUr
+         qmg0WCZ8dcLGOgZK8FDWlZRZuqpm0QQn75ZhCGREJuhup4pZV7KGl2HBWB0N2cCHKKmu
+         CKGrKB+xrmp6R8WdmtKAqRRvMICBIwTwU6jbW7BN6tbFV+N22++6j8Su+NwJGK5absOf
+         Fmlg==
+X-Gm-Message-State: APjAAAVbEWTlq4dhh/RbmFQeY8jc6ttSRuDEsNc6PEuCPTrqkzyZ8d4z
+        pp9s/EjkLpPwagVDIVR3kr1qRQ==
+X-Google-Smtp-Source: APXvYqzRk5k+5bZduXWd5nA8ivMtcMNLquVWt86KVzCXYAC7TgtGJYSBoU9t+pXJSWiOgftB2j3rww==
+X-Received: by 2002:a19:756:: with SMTP id 83mr11599176lfh.173.1574468394114;
+        Fri, 22 Nov 2019 16:19:54 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x23sm3825648lfe.8.2019.11.22.16.19.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Nov 2019 16:19:53 -0800 (PST)
+Date:   Fri, 22 Nov 2019 16:19:45 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        davem@davemloft.net, herbert@gondor.apana.org.au,
+        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: Re: [PATCH net-next v2 1/3] cxgb4/chcr: update SGL DMA unmap for
+ USO
+Message-ID: <20191122161945.1086e58c@cakuba.netronome.com>
+In-Reply-To: <20191122160629.3800b5cc@cakuba.netronome.com>
+References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
+        <6cf3a3928ff2ee84cca34bfcb61d3f7fcb4c4cac.1574383652.git.rahul.lakkireddy@chelsio.com>
+        <20191122160629.3800b5cc@cakuba.netronome.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <213aa1d3-5df9-0337-c583-34f3de5f1582@candelatech.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/22/19 5:14 PM, Ben Greear wrote:
-> On 11/22/19 4:06 PM, David Ahern wrote:
->> On 11/22/19 5:03 PM, Ben Greear wrote:
->>> Hello,
->>>
->>> We see a problem on a particular system when trying to run 'ip vrf exec
->>> _vrf1 ping 1.1.1.1'.
->>> This system reproduces the problem all the time, but other systems with
->>> exact same (as far as
->>> we can tell) software may fail occasionally, but then it will work
->>> again.
->>>
->>> Here is an strace output.  I changed to the
->>> "/sys/fs/cgroup/unified/user.slice/user-1000.slice/session-2.scope/vrf/_vrf1"
->>>
->>>
->>> directory as root user, and could view the files in that directory, so
->>> I'm not sure why the strace shows error 5.
->>>
->>> Any idea what could be the problem and/or how to fix it or debug
->>> further?
->>>
->>>
->>> This command was run as root user.
->>
->> check 'ulimit -l'. BPF is used to set the VRF and it requires locked
->> memory.
+On Fri, 22 Nov 2019 16:06:29 -0800, Jakub Kicinski wrote:
+> > -struct tx_sw_desc;
+> > +struct ulptx_sgl;  
 > 
-> It is set to '64'.  What is a good value to use?
-> 
+> From this patch alone the forward declaration of struct ulptx_sgl;
+> appears unnecessary or a left over from some previous version of the
+> code?
 
-This is a pain point in using BPF for this. It's really use case
-dependent. 128kB, 256kB.
+Okay, taking that back, looks like compiler treats use of struct type
+in another struct as a forward declaration. Interesting.
