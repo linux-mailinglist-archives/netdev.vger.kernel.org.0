@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7CCE107FF1
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 19:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D258D108008
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 19:38:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbfKWSa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 13:30:26 -0500
-Received: from smtprelay0158.hostedemail.com ([216.40.44.158]:40553 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726494AbfKWSa0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 13:30:26 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id A7669181D3025;
-        Sat, 23 Nov 2019 18:30:24 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 10,1,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3873:3874:4250:4321:5007:6119:7514:7903:9108:10004:10400:10848:11026:11232:11658:11914:12043:12048:12296:12297:12555:12740:12760:12895:13069:13138:13146:13230:13231:13311:13357:13439:13523:13524:14096:14097:14181:14659:14721:14915:21080:21451:21627:30054:30070:30071:30080:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: color55_77d9b74f7dc5d
-X-Filterd-Recvd-Size: 2351
-Received: from XPS-9350.home (unknown [47.151.135.224])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 23 Nov 2019 18:30:23 +0000 (UTC)
-Message-ID: <491b61d7be054a2200639e4acb6a00f8e39409c4.camel@perches.com>
-Subject: Re: [PATCH] net: ip/tnl: Set iph->id only when don't fragment is
- not set
-From:   Joe Perches <joe@perches.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Oliver Herms <oliver.peter.herms@gmail.com>,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org
-Date:   Sat, 23 Nov 2019 10:29:58 -0800
-In-Reply-To: <fa37491f-3604-bd3b-7518-dab654b641b6@gmail.com>
-References: <20191123145817.GA22321@fuckup>
-         <fa37491f-3604-bd3b-7518-dab654b641b6@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1726705AbfKWSir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 13:38:47 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34852 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbfKWSir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 13:38:47 -0500
+Received: by mail-pg1-f196.google.com with SMTP id k32so5061357pgl.2
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 10:38:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=nDRorgsBSVXUioZFMrZk0EkNmQVKU+AZrP50cmXnyC4=;
+        b=uEsVTv/IY5hG62Wu9vwmfYFRVZtJMQEmvbpSxd8EASyANasSlZHDLbnv19sgBybHPZ
+         sLaFJZ4ptRzpx2pp8bzaDde5oUsHabEPhJbnYrt8i/cBsmVfH40RjfsGk4MNOWiUF9e0
+         p8b0FNKNG2LJhSAXzZGlcy2QGKRkFwep6PbcXeYJxDW2ICh5V5aFtBne8QHoXwSBmeTb
+         VOWx7vsReEMXwyuVr4A7IBBksaZ2w0+u512zQ3uiZgWpiuk+uwyT4RU+vS1D9XA58mGM
+         j527Jxpoegjg53FzKsvTEvOfUlUWr1ykfKHB1GNaYEGCPObTDePqloRawIEjCkgB6ibX
+         NWcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=nDRorgsBSVXUioZFMrZk0EkNmQVKU+AZrP50cmXnyC4=;
+        b=eR17/KW/4PV6a/Urf1NiMyst4b1AnOdmnf0g4fyXAtsYvNAC27OPOZAeYfD+OCueZt
+         FeJjezwGTSWdcKk8qCuzdDG8SPZfT1Qmi82PbeMwcp0AgEggIokadz9BkBBYyJXk4yPP
+         X8adjg26K3dXYp2pNENsn03DkCke5+SUEcuBoqFsp1KvpbeZexfhLCl0MY3IjARfS0WU
+         BQJ2WD28GrJvlj9a3/9Ejz+68aKl6tXlLVSLPmqbEVBJlNOcVAfUtSYTCD81+sVrgcBN
+         8aLxV+xqBQBSgwQarmXRtE2S+yFeuoQdjCCF8rNr3dkOz/+Tg5FMPYy/v2295KPrBd1Y
+         iPrw==
+X-Gm-Message-State: APjAAAXGnIJ7e47y1BCPvYBbmtH/UQ59HODtfuNaNcSI87uQrtRbEHq+
+        1SmCfVq8ai94MYG3CECUtDJu+g==
+X-Google-Smtp-Source: APXvYqz1czMH9OjFLmttmObRqksQ19SQZuwNAxgR+QJ3jRnmZqw4PC8qOzxHsQAhx9c2AwtLrQZJyw==
+X-Received: by 2002:a62:6404:: with SMTP id y4mr24169935pfb.170.1574534326304;
+        Sat, 23 Nov 2019 10:38:46 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id v3sm2350025pfn.129.2019.11.23.10.38.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 10:38:45 -0800 (PST)
+Date:   Sat, 23 Nov 2019 10:38:40 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, andrew@lunn.ch,
+        nbd@openwrt.org, radhey.shyam.pandey@xilinx.com,
+        alexandre.torgue@st.com, netdev@vger.kernel.org,
+        sean.wang@mediatek.com, linux-stm32@st-md-mailman.stormreply.com,
+        vivien.didelot@gmail.com, michal.simek@xilinx.com,
+        joabreu@synopsys.com, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, thomas.petazzoni@bootlin.com,
+        john@phrozen.org, matthias.bgg@gmail.com, peppe.cavallaro@st.com,
+        Mark-MC.Lee@mediatek.com, mcoquelin.stm32@gmail.com,
+        hkallweit1@gmail.com
+Subject: Re: [CFT PATCH net-next v2] net: phylink: rename mac_link_state()
+ op to mac_pcs_get_state()
+Message-ID: <20191123103840.76c5d63f@cakuba.netronome.com>
+In-Reply-To: <20191122092136.GJ25745@shell.armlinux.org.uk>
+References: <E1iXaSM-0004t1-9L@rmk-PC.armlinux.org.uk>
+        <20191121.191417.1339124115325210078.davem@davemloft.net>
+        <0a9e016b-4ee3-1f1c-0222-74180f130e6c@gmail.com>
+        <20191122092136.GJ25745@shell.armlinux.org.uk>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-11-23 at 09:53 -0800, Eric Dumazet wrote:
-> 
-> On 11/23/19 6:58 AM, Oliver Herms wrote:
-> > In IPv4 the identification field ensures that fragments of different datagrams
-> > are not mixed by the receiver. Packets with Don't Fragment (DF) flag set are not
-> > to be fragmented in transit and thus don't need an identification.
-> 
-> Official sources for this assertion please, so that we can double check if you
-> implemented the proper avoidance ?
-> 
-> > Calculating the identification takes significant CPU time.
-> > This patch will increase IP tunneling performance by ~10% unless DF is not set.
-> > However, DF is set by default which is best practice.
+On Fri, 22 Nov 2019 09:21:37 +0000, Russell King - ARM Linux admin
+wrote:
+> On Thu, Nov 21, 2019 at 07:36:44PM -0800, Florian Fainelli wrote:
+> > Russell, which of this patch or: http://patchwork.ozlabs.org/patch/1197425/
 > > 
-> > Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
-> > ---
-> >  net/ipv4/ip_tunnel_core.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-> > index 1452a97914a0..8636c1e0e7b7 100644
-> > --- a/net/ipv4/ip_tunnel_core.c
-> > +++ b/net/ipv4/ip_tunnel_core.c
-> > @@ -73,7 +73,9 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
-> >  	iph->daddr	=	dst;
-> >  	iph->saddr	=	src;
-> >  	iph->ttl	=	ttl;
-> > -	__ip_select_ident(net, iph, skb_shinfo(skb)->gso_segs ?: 1);
-> > +
-> > +	if (unlikely((iph->frag_off & htons(IP_DF)) == false))
+> > would you consider worthy of merging?  
 > 
-> This unlikely() seems wrong to me.
+> Let's go with v2 for now - it gets the rename done with less risk that
+> there'll be a problem.  I can always do the remainder in a separate
+> patch after the merge window as a separate patch.
 
-as does the comparison to false.
-
-
+Florian, I assume you asked because you wanted to do some testing?
+Please let me know if you need more time, otherwise I'll apply this
+later today.
