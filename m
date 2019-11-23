@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F211080DC
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 22:54:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C07C61080E1
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 23:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726833AbfKWVyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 16:54:31 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35739 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726735AbfKWVyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 16:54:31 -0500
-Received: by mail-ed1-f66.google.com with SMTP id r16so9147714edq.2
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 13:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nx+NTZhTCLYxgGLVamdv8eGkC8vIdDFveuRrdSyH/ro=;
-        b=iSsLcMpIzth+XU4BIKj5lKPuDQi2jds1bmuwMblfRurbBQCg1DcGmY5wXbizTK4pbT
-         lcpUG+q1Wu1nsMbL4oXL3LImSBFR4vQbIEmQTE81YlOUkoooBNind8bDo5GbKl35i28r
-         m+DCqCMGCeBWHiCAqrKj2Rdr+S+cUpAPHQKEijHaMsNl3H9h7UV1uAqocH9m69ACoC6P
-         q5d+zymRr4Tc5vBCYr6iVvEmdo8PWcbiWyJA/lmA/ydihNNVbyPVaJFwT9nfY0WTAIrr
-         kxOd491zvpHLhFvhUoVbTC3ZtrgQNyQLckx81WWqp/Vd8aNi+xwfcdzuTRqENlhpxohP
-         XF+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nx+NTZhTCLYxgGLVamdv8eGkC8vIdDFveuRrdSyH/ro=;
-        b=EOqggJX2OM1Ft+wtYJ+6IKKEmhw8Y/0tXn0o3xuLImV0COka2TexMSfFwQPnBQxwpr
-         hCHYatquoEEO6wJsmE5owl5An7H5KJB4EV3+PmB2h39V6e4HAPb8EzXi0WEH14+jVhoH
-         yuXxiW7/xT0kToj/wnY3fj6mLBMZ8rtqfglr+DSF8aG4PROB/tjsbsXvv1xY9m2tOyjt
-         oVjX+DEPI70e0YL3DMUXITxZMI8L4TRJm1ZIWWlrGqixfkA6rG60t/OAtXBwqvzmrXw9
-         0fU9rf/fQDKiKohfPubJcFhZAXDOxF32nmoNGHESXqL5EJKS6rqja1rnBPHIyZExVXOm
-         e9FQ==
-X-Gm-Message-State: APjAAAVdVk91KUvHRHUWQ3QbxcHS/PV1wSWWpTytA6kC/LiIvyHDYV3k
-        Nj/KH4bDEohn9Qf4ZuZg9F6ETbH1PecLy2Tce8o=
-X-Google-Smtp-Source: APXvYqxEyLw9q8U/LHvi+gJz8lTFHBjjEWE7Fcg1fuaIGkNdjwlVkdsO9jpe39JpFy0skkXSNRwf6H/nZ1Y+FTw4Me8=
-X-Received: by 2002:a17:906:4910:: with SMTP id b16mr28801172ejq.133.1574546068075;
- Sat, 23 Nov 2019 13:54:28 -0800 (PST)
+        id S1726820AbfKWWIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 17:08:47 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36872 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726759AbfKWWIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 17:08:47 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xANM8iKZ007526
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 14:08:46 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=Q4HyTg+AVHFsiXHRjg/IF7gdOFQ7BelGBoC4nPOTKMY=;
+ b=jQHDBzc/VuOQL2IaxYAHvQQjxN8c7hKDKz0f4gGRbdmFjka6JeUQ8tAZ/mPs7ic/1WRy
+ mNHVLXL0c9swgL3Hk1Cdj2s0N+by6svDCZcTcglTMZnE6lkmxObsl23mDqj+I4q2Oo3D
+ 4uEFDuG13SWqajQuclmI+G/94KSkXXgZjSo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wf2rm9y93-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 14:08:46 -0800
+Received: from 2401:db00:30:600c:face:0:39:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 23 Nov 2019 14:08:42 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 65E562EC18F0; Sat, 23 Nov 2019 14:08:40 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] mm: implement no-MMU variant of vmalloc_user_node_flags
+Date:   Sat, 23 Nov 2019 14:08:35 -0800
+Message-ID: <20191123220835.1237773-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20191123194844.9508-1-olteanv@gmail.com> <20191123194844.9508-2-olteanv@gmail.com>
- <329f394b-9e6c-d3b0-dc3d-5e3707fa8dd7@gmail.com> <CA+h21hpcvGZavmSZK3KEjfKVDt6ySw2Fv42EVfp5HxbZoesSqg@mail.gmail.com>
- <9f344984-ef0c-fc57-d396-48d4c77e1954@gmail.com> <CA+h21hrjCs1Y4XAWhn3mWTMXy=3TE3E5YjpsB6acnTpA6L902A@mail.gmail.com>
- <fb158342-c2f5-f8d1-6987-1dbd79a11472@gmail.com>
-In-Reply-To: <fb158342-c2f5-f8d1-6987-1dbd79a11472@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sat, 23 Nov 2019 23:54:17 +0200
-Message-ID: <CA+h21ho+UqUBY-T+Q=zzboyG1WbGofJ4pboY4_e-fx+0cb5SAg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: dsa: Configure the MTU for switch ports
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-23_05:2019-11-21,2019-11-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
+ phishscore=0 spamscore=0 lowpriorityscore=0 mlxlogscore=789
+ priorityscore=1501 bulkscore=0 adultscore=0 clxscore=1015 impostorscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911230189
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Nov 2019 at 23:47, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 11/23/2019 1:29 PM, Vladimir Oltean wrote:
-> > On Sat, 23 Nov 2019 at 23:14, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >> On 11/23/2019 12:46 PM, Vladimir Oltean wrote:
+To fix build with !CONFIG_MMU, implement it for no-MMU configurations as well.
 
-[snip]
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ mm/nommu.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-> >>>> Another thing that I had not gotten around testing was making sure that
-> >>>> when a slave_dev gets enslaved as a bridge port member, that bridge MTU
-> >>>> normalization would kick in and make sure that if you have say: port 0
-> >>>> configured with MTU 1500 and port 1 configured with MTU 9000, the bridge
-> >>>> would normalize to MTU 1500 as you would expect.
-> >>>>
-> >>>
-> >>> Nope, that doesn't happen by default, at least in my implementation.
-> >>> Is there code in the bridge core for it?
-> >>
-> >> net/bridge/br_if.c::br_mtu_auto_adjust() takes care of adjusting the
-> >> bridge master device's MTU based on the minimum MTU of all ports within
-> >> the bridge, but what it seems to be missing is ensuring that if bridge
-> >> ports are enslaved, and those bridge ports happen to be part of the same
-> >> switch id (similar decision path to setting skb->fwd_offload_mark), then
-> >> the bridge port's MTU should also be auto adjusted. mlxsw also supports
-> >> changing the MTU, so I am surprised this is not something they fixed
-> >> already.
-> >>
-> >
-> > But then how would you even change a bridged interface's MTU? Delete
-> > bridge, change MTU of all ports to same value, create bridge again?
->
-> I am afraid so, given that the NETDEV_CHANGEMTU even for which
-> br_device_event() listens to and processes with br_mtu_auto_adjust()
-> would lead to selecting the lowest MTU again. Unfortunately, I don't
-> really see a way to solve that other than walk all ports (which could be
-> any network device driver) and ask them if they support the new MTU of
-> that other port, and if so, commit, else rollback. Do you see another way?
-> --
-> Florian
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 99b7ec318824..7de592058ab4 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -155,11 +155,11 @@ void *__vmalloc_node_flags(unsigned long size, int node, gfp_t flags)
+ 	return __vmalloc(size, flags, PAGE_KERNEL);
+ }
+ 
+-void *vmalloc_user(unsigned long size)
++static void *__vmalloc_user_flags(unsigned long size, gfp_t flags)
+ {
+ 	void *ret;
+ 
+-	ret = __vmalloc(size, GFP_KERNEL | __GFP_ZERO, PAGE_KERNEL);
++	ret = __vmalloc(size, flags, PAGE_KERNEL);
+ 	if (ret) {
+ 		struct vm_area_struct *vma;
+ 
+@@ -172,8 +172,19 @@ void *vmalloc_user(unsigned long size)
+ 
+ 	return ret;
+ }
++
++void *vmalloc_user(unsigned long size)
++{
++	return __vmalloc_user_flags(size, GFP_KERNEL | __GFP_ZERO);
++}
+ EXPORT_SYMBOL(vmalloc_user);
+ 
++void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags)
++{
++	return __vmalloc_user_flags(size, flags | __GFP_ZERO);
++}
++EXPORT_SYMBOL(vmalloc_user_node_flags);
++
+ struct page *vmalloc_to_page(const void *addr)
+ {
+ 	return virt_to_page(addr);
+-- 
+2.17.1
 
-Something like that would be preferable. I think it would be
-frustrating for the bridge to restore the old MTU right after you
-change it. I have no idea how hard it would be to prevent the bridge
-from doing this. I'll poke it with a stick and see what happens.
-
--Vladimir
