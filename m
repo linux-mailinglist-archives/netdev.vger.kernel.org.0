@@ -2,118 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E350107C94
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 03:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A091107CA1
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 04:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbfKWCxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 21:53:52 -0500
-Received: from mga02.intel.com ([134.134.136.20]:39446 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726089AbfKWCxw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Nov 2019 21:53:52 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 18:53:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,232,1571727600"; 
-   d="scan'208";a="210596681"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Nov 2019 18:53:50 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iYLYU-000Gx0-1w; Sat, 23 Nov 2019 10:53:50 +0800
-Date:   Sat, 23 Nov 2019 10:53:27 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [ipsec-next:testing 6/6] net/xfrm/espintcp.c:402:13: sparse: sparse:
- incompatible types in comparison expression (different address spaces):
-Message-ID: <201911231026.qn0a6HJ2%lkp@intel.com>
+        id S1726722AbfKWDSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 22:18:32 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43278 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726085AbfKWDSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 22:18:32 -0500
+Received: by mail-pg1-f195.google.com with SMTP id b1so4293705pgq.10;
+        Fri, 22 Nov 2019 19:18:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=EIlvVjEEu8LyfLcUtSvicFXJ3kCPpSv78bK99idq52o=;
+        b=M4cRgRKF/sS6goR26Zy1xfAtNIVa6Tsf3Bc/yj12Rmd48/hZmjHno1e/pm9a2iNd0i
+         /0tMxYms/hW4OFNi7mEbEQTRCxjtfMh03W62VQyQAC5Ng6UzQcwS5IQkb2SYrFytuMlP
+         my4VylxrWYvbNayEpQeBmID9J+KAkKcRfAqD08xDu/d5Xx6G0/HUGg07vgtRdUo9RC68
+         q4alNuLZKcaYDxdE7dXaqA/ujFwlMzjN9aYzIR1WURA9TxgnF6ywvXI5Nd6+az9VARBq
+         qr/OMfWBoA/WXC5k3a1lm+p9zZ35WAq6GP6h7tOOpEq5O9Ju4cIe4tt4fq4hjFSYrZbf
+         I8Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=EIlvVjEEu8LyfLcUtSvicFXJ3kCPpSv78bK99idq52o=;
+        b=Ahjel0gNXsdMo5fRXZNS61pkcu1V1sE7aSXdOZsV2PEElcqngEn2IGA1+Kyf2soUv1
+         72OenHDk9gMn2rBkm75H4g1vxhthh2GHU/BtYcW40NZFDM58OA7FRb49Hp3i4QI2MDSX
+         PgbEtBKGPTmTExwMK6tlx9iSk8/hTvIn/S8TphTynJ+/IMkbNj3LfPOGGB8tKPvW4sRo
+         ynzqasdMxONWjXJ9IMFrgNqJhkNuJDbJzTFha5fiNfaDXoLfEvP6s89J0x8l4YZMK/WN
+         LUca7sTybGx0m0zf6KdLDJDClgducYtZpAdDJZ38hMM2t6gAsK7L0gqsOW+4gc9ct+Bv
+         tK8A==
+X-Gm-Message-State: APjAAAW+N0Qydm47jtMUODNiK1n6m9O0dRiTmZRArY8IbEBZdktEfXlO
+        XR9K/lXUk5B8tLmPox4uKSiW6KZt
+X-Google-Smtp-Source: APXvYqw2i5MPz0Ij7+TXjPWZPxx6iUp0U9DLzi4PVI/ASJwnHAbiI73c91w4RHtyK5eI09iFXim1Vw==
+X-Received: by 2002:aa7:868c:: with SMTP id d12mr21749297pfo.189.1574479111298;
+        Fri, 22 Nov 2019 19:18:31 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::2490])
+        by smtp.gmail.com with ESMTPSA id u9sm8840090pfm.102.2019.11.22.19.18.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Nov 2019 19:18:30 -0800 (PST)
+Date:   Fri, 22 Nov 2019 19:18:28 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Wenbo Zhang <ethercflow@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org.com, daniel@iogearbox.net,
+        yhs@fb.com, andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v10 1/2] bpf: add new helper get_file_path for
+ mapping a file descriptor to a pathname
+Message-ID: <20191123031826.j2dj7mzto57ml6pr@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1574162990.git.ethercflow@gmail.com>
+ <e8b1281b7405eb4b6c1f094169e6efd2c8cc95da.1574162990.git.ethercflow@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <e8b1281b7405eb4b6c1f094169e6efd2c8cc95da.1574162990.git.ethercflow@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git testing
-head:   73994d31bda7074698e8d07b40152eeabccd5780
-commit: 73994d31bda7074698e8d07b40152eeabccd5780 [6/6] xfrm: add espintcp (RFC 8229)
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-36-g9305d48-dirty
-        git checkout 73994d31bda7074698e8d07b40152eeabccd5780
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+On Tue, Nov 19, 2019 at 08:27:37AM -0500, Wenbo Zhang wrote:
+> When people want to identify which file system files are being opened,
+> read, and written to, they can use this helper with file descriptor as
+> input to achieve this goal. Other pseudo filesystems are also supported.
+> 
+> This requirement is mainly discussed here:
+> 
+>   https://github.com/iovisor/bcc/issues/237
+> 
+> v9->v10: addressed Andrii's feedback
+> - send this patch together with the patch selftests as one patch series
+> 
+> v8->v9:
+> - format helper description
+> 
+> v7->v8: addressed Alexei's feedback
+> - use fget_raw instead of fdget_raw, as fdget_raw is only used inside fs/
+> - ensure we're in user context which is safe fot the help to run
+> - filter unmountable pseudo filesystem, because they don't have real path
+> - supplement the description of this helper function
+> 
+> v6->v7:
+> - fix missing signed-off-by line
+> 
+> v5->v6: addressed Andrii's feedback
+> - avoid unnecessary goto end by having two explicit returns
+> 
+> v4->v5: addressed Andrii and Daniel's feedback
+> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
+> helper's names
+> - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
+> - remove fdput from fdget_raw's error path
+> - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
+> into the buffer or an error code if the path was too long
+> - modify the normal path's return value to return copied string length
+> including NUL
+> - update this helper description's Return bits.
+> 
+> v3->v4: addressed Daniel's feedback
+> - fix missing fdput()
+> - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
+> - move fd2path's test code to another patch
+> - add comment to explain why use fdget_raw instead of fdget
+> 
+> v2->v3: addressed Yonghong's feedback
+> - remove unnecessary LOCKDOWN_BPF_READ
+> - refactor error handling section for enhanced readability
+> - provide a test case in tools/testing/selftests/bpf
+> 
+> v1->v2: addressed Daniel's feedback
+> - fix backward compatibility
+> - add this helper description
+> - fix signed-off name
+> 
+> Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
+...
+> +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
+> +{
+> +	struct file *f;
+> +	char *p;
+> +	int ret = -EBADF;
+> +
+> +	/* Ensure we're in user context which is safe for the helper to
+> +	 * run. This helper has no business in a kthread.
+> +	 */
+> +	if (unlikely(in_interrupt() ||
+> +		     current->flags & (PF_KTHREAD | PF_EXITING)))
+> +		return -EPERM;
+> +
+> +	/* Use fget_raw instead of fget to support O_PATH, and it doesn't
+> +	 * have any sleepable code, so it's ok to be here.
+> +	 */
+> +	f = fget_raw(fd);
+> +	if (!f)
+> +		goto error;
+> +
+> +	/* For unmountable pseudo filesystem, it seems to have no meaning
+> +	 * to get their fake paths as they don't have path, and to be no
+> +	 * way to validate this function pointer can be always safe to call
+> +	 * in the current context.
+> +	 */
+> +	if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname)
+> +		return -EINVAL;
+> +
+> +	/* After filter unmountable pseudo filesytem, d_path won't call
+> +	 * dentry->d_op->d_name(), the normally path doesn't have any
+> +	 * sleepable code, and despite it uses the current macro to get
+> +	 * fs_struct (current->fs), we've already ensured we're in user
+> +	 * context, so it's ok to be here.
+> +	 */
+> +	p = d_path(&f->f_path, dst, size);
+> +	if (IS_ERR(p)) {
+> +		ret = PTR_ERR(p);
+> +		fput(f);
+> +		goto error;
+> +	}
+> +
+> +	ret = strlen(p);
+> +	memmove(dst, p, ret);
+> +	dst[ret++] = '\0';
+> +	fput(f);
+> +	return ret;
+> +
+> +error:
+> +	memset(dst, '0', size);
+> +	return ret;
+> +}
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+Al,
 
+could you please review about code whether it's doing enough checks to be
+called safely from preempt_disabled region?
 
-sparse warnings: (new ones prefixed by >>)
+It's been under review for many weeks and looks good from bpf pov. Essentially
+tracing folks need easy way to convert FD to full path name. This feature
+request first came in 2015.
 
->> net/xfrm/espintcp.c:402:13: sparse: sparse: incompatible types in comparison expression (different address spaces):
->> net/xfrm/espintcp.c:402:13: sparse:    void [noderef] <asn:4> *
->> net/xfrm/espintcp.c:402:13: sparse:    void *
+Thanks!
 
-vim +402 net/xfrm/espintcp.c
-
-   390	
-   391	static int espintcp_init_sk(struct sock *sk)
-   392	{
-   393		struct inet_connection_sock *icsk = inet_csk(sk);
-   394		struct strp_callbacks cb = {
-   395			.rcv_msg = espintcp_rcv,
-   396			.parse_msg = espintcp_parse,
-   397		};
-   398		struct espintcp_ctx *ctx;
-   399		int err;
-   400	
-   401		/* sockmap is not compatible with espintcp */
- > 402		if (rcu_access_pointer(sk->sk_user_data))
-   403			return -EBUSY;
-   404	
-   405		ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-   406		if (!ctx)
-   407			return -ENOMEM;
-   408	
-   409		err = strp_init(&ctx->strp, sk, &cb);
-   410		if (err)
-   411			goto free;
-   412	
-   413		__sk_dst_reset(sk);
-   414	
-   415		strp_check_rcv(&ctx->strp);
-   416		skb_queue_head_init(&ctx->ike_queue);
-   417		skb_queue_head_init(&ctx->out_queue);
-   418		sk->sk_prot = &espintcp_prot;
-   419		sk->sk_socket->ops = &espintcp_ops;
-   420		ctx->saved_data_ready = sk->sk_data_ready;
-   421		ctx->saved_write_space = sk->sk_write_space;
-   422		sk->sk_data_ready = espintcp_data_ready;
-   423		sk->sk_write_space = espintcp_write_space;
-   424		sk->sk_destruct = espintcp_destruct;
-   425		rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
-   426		INIT_WORK(&ctx->work, espintcp_tx_work);
-   427	
-   428		/* avoid using task_frag */
-   429		sk->sk_allocation = GFP_ATOMIC;
-   430	
-   431		return 0;
-   432	
-   433	free:
-   434		kfree(ctx);
-   435		return err;
-   436	}
-   437	
-
----
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
