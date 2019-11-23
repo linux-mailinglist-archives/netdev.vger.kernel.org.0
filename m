@@ -2,141 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A5E107D68
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 08:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C2A107DB3
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 09:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726813AbfKWHNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 02:13:21 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45140 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfKWHNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 02:13:21 -0500
-Received: by mail-pl1-f194.google.com with SMTP id w7so4168360plz.12;
-        Fri, 22 Nov 2019 23:13:21 -0800 (PST)
+        id S1726463AbfKWI0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 03:26:25 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:32885 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfKWI0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 03:26:24 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 6so88812pgk.0
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 00:26:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TeFTEDR+Rw8qArbasVWPulVM2RgGFeXAldh6hhUveCE=;
-        b=EjRgKXG8SckShnP73HiB9NURyne+cgWzEEp2LHg+4QvRg2atxcupYd1I1oHVHg3T2d
-         15dBoZCffLtz23ZBdXQzVl5zbtA3VKnXDjGYIQQ7CX6KADqkIz0J3x/rQVSipf1Q+1mv
-         rXl33So48fWAYtUWUjseN+ulsDkK1vvhbilVYYTJO5jTl/KZ42bJxzxx+7qh5JNV0jzB
-         Ruu8SdPmlHpAemCMr5TcLAd9ICNgE7smiRneRFk23ujqOKoGuEbm3p6VtzQ5ItjElUXB
-         Q3p0hVwaq6RmoPJbXSH4GLT1CunPFXKd9n8UrhBCQeZLQhZnTsjGzD6Cc5flsADLKzJj
-         xMWA==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=yzU5G/pHT3IXLFsxKfZmhn/3sjWZxcFuDStLmuYghmY=;
+        b=ZPAVcl48O/PXRbg93CUHsSwKQg4z+sl+/+uoyVdK3NKVguwjGmbU0fMNcoEgC9Q+yv
+         ufmf0eNQ5mVjUyDT2ZJHnyru9rPKRhscTQGSW+JgPkX+hAq3lNBShfePYb7TqY5cnq/L
+         gBHikYD+rFCP0blvqv+AgLoc2upmLYBdDt23M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TeFTEDR+Rw8qArbasVWPulVM2RgGFeXAldh6hhUveCE=;
-        b=cYYt8GmUylVOcbZPTdiZ90IGECWfv/a2xf28T/2rHrW8/XC+WGtBDOIHO/dv7tb2vG
-         IaN+/Z06s2GQHZdgdL+ShrgZgm/z1pVtm+W+vGY8jDcabYH6447ej7GKp1M+JSrzAV5/
-         wRS4wk/PkMlHOZAcyfs+xW5ZLd2kDdMK/sHE7JsOxZm/pa+hEduvEb297vGIu98YcKEO
-         KjpQ1LorvFNWSw82J35NJq27dRP0FKcjhgTFgXirgi1FxwhtK4NYhxuY5VXU1e2P5M/M
-         N9N6//yrVrcJLTVQ+XqtujFvBxFpdD7en0TkmZTDhwozVNX/3SCs0RO94yxsCAMWI3bZ
-         4/qw==
-X-Gm-Message-State: APjAAAVJRcIF/YLNUXUB2vyA/ddj3HkzJwuULb8YUtWMrlxYHT17cHvv
-        KDF4H0jVgInHVXpfgGKUThIlcOWKQDPk9g==
-X-Google-Smtp-Source: APXvYqz1Vkq9eXg4tm6Ey1jdN4eljATz4RNUNcY26JSH3rXuRQbswHxKim6lI8d/6JDcBcy6BkmCiQ==
-X-Received: by 2002:a17:902:7c0e:: with SMTP id x14mr18176407pll.277.1574493200390;
-        Fri, 22 Nov 2019 23:13:20 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id 67sm798960pjz.27.2019.11.22.23.13.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 23:13:19 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        ecree@solarflare.com, thoiland@redhat.com,
-        andrii.nakryiko@gmail.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, maximmi@mellanox.com
-Subject: [PATCH bpf-next v2 6/6] net/mlx5e: Start using xdp_call.h
-Date:   Sat, 23 Nov 2019 08:12:25 +0100
-Message-Id: <20191123071226.6501-7-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191123071226.6501-1-bjorn.topel@gmail.com>
-References: <20191123071226.6501-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yzU5G/pHT3IXLFsxKfZmhn/3sjWZxcFuDStLmuYghmY=;
+        b=KFAdjmjXmxnOn1yPFL/I7/5Zr4+yjFpV/+9NZtTi8YHimqEz6GrzvKnWT4vyw8M5SD
+         NDCmd164OaXvHaTTkmVRBjkKMCmRhOzCpyMk3TU+M2Cb9Lv6vDUPxLNhW9PBVevzzpVv
+         xs4ynrppK4S5Xo4w1X/cj1OxKZW0HbB7PAzTT6OBvXW7/8s2iQ3qIf2eOfKmvzevBluT
+         U/YJgrrVrwGFnjtik3FZg2I8E7i0gJVTzTcmiAuC12xmuLxVyWz1sr+4K8HVkCBG7mo6
+         aSoskfvKcpE7QQ9Ya6IRSdB7OCiRmxWOQ/d+EOkdvui5YmIDETCJ72rzkWvnUpcnqrM5
+         F5XQ==
+X-Gm-Message-State: APjAAAWFBuTkuCPeSTjfVN0lHNVhTnw2LmTJsbTcaJe31x+jcw675cIa
+        +bS1v+YSHeFPXFR18u4E5FpIiYwPsfY=
+X-Google-Smtp-Source: APXvYqxug9Wa1bjTnafTXAtUXnaT8brVrFpAz7Pij4QXy33ujMEetK3wPgwoY65Xd7OgW7RSkd/LzA==
+X-Received: by 2002:a63:e343:: with SMTP id o3mr20938597pgj.131.1574497583768;
+        Sat, 23 Nov 2019 00:26:23 -0800 (PST)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p16sm573236pfn.171.2019.11.23.00.26.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 23 Nov 2019 00:26:22 -0800 (PST)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 00/15] bnxt_en: Updates.
+Date:   Sat, 23 Nov 2019 03:25:55 -0500
+Message-Id: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+This patchset contains these main features:
 
-This commit starts using xdp_call.h and the BPF dispatcher to avoid
-the retpoline overhead.
+1. Add the proper logic to support suspend/resume on the new 57500 chips.  
+2. Allow Phy configurations from user on a Multihost function if supported
+by fw.
+3. devlink NVRAM flashing support.
+4. devlink info support to return some adapter info.
+5. Add a couple of chip IDs, PHY loopback enhancement, and provide more RSS
+contexts to VFs.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c  | 5 ++++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+Michael Chan (8):
+  bnxt_en: Add chip IDs for 57452 and 57454 chips.
+  bnxt_en: Disable/enable Bus master during suspend/resume.
+  bnxt_en: Initialize context memory to the value specified by firmware.
+  bnxt_en: Assign more RSS context resources to the VFs.
+  bnxt_en: Skip disabling autoneg before PHY loopback when appropriate.
+  bnxt_en: Refactor the initialization of the ethtool link settings.
+  bnxt_en: Add async. event logic for PHY configuration changes.
+  bnxt_en: Allow PHY settings on multi-function or NPAR PFs if allowed
+    by FW.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index f049e0ac308a..cc11b0db950e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -32,6 +32,7 @@
- 
- #include <linux/bpf_trace.h>
- #include <net/xdp_sock.h>
-+#include <linux/xdp_call.h>
- #include "en/xdp.h"
- #include "en/params.h"
- 
-@@ -117,6 +118,8 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 	return sq->xmit_xdp_frame(sq, &xdptxd, &xdpi, 0);
- }
- 
-+DECLARE_XDP_CALL(mlx5e_xdp_call);
-+
- /* returns true if packet was consumed by xdp */
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
- 		      void *va, u16 *rx_headroom, u32 *len, bool xsk)
-@@ -138,7 +141,7 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
- 		xdp.handle = di->xsk.handle;
- 	xdp.rxq = &rq->xdp_rxq;
- 
--	act = bpf_prog_run_xdp(prog, &xdp);
-+	act = xdp_call_run(mlx5e_xdp_call, prog, &xdp);
- 	if (xsk) {
- 		u64 off = xdp.data - xdp.data_hard_start;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index e8d799c0dfda..0b26f9d7a968 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -39,6 +39,7 @@
- #include <linux/if_bridge.h>
- #include <net/page_pool.h>
- #include <net/xdp_sock.h>
-+#include <linux/xdp_call.h>
- #include "eswitch.h"
- #include "en.h"
- #include "en/txrx.h"
-@@ -4384,6 +4385,8 @@ static int mlx5e_xdp_update_state(struct mlx5e_priv *priv)
- 	return 0;
- }
- 
-+DEFINE_XDP_CALL(mlx5e_xdp_call);
-+
- static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
-@@ -4428,6 +4431,8 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
- 		old_prog = xchg(&priv->channels.params.xdp_prog, prog);
- 	}
- 
-+	xdp_call_update(mlx5e_xdp_call, old_prog, prog);
-+
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 
+Vasundhara Volam (7):
+  bnxt_en: Do driver unregister cleanup in bnxt_init_one() failure path.
+  bnxt_en: Combine 2 functions calling the same HWRM_DRV_RGTR fw
+    command.
+  bnxt_en: Send FUNC_RESOURCE_QCAPS command in bnxt_resume()
+  bnxt_en: Fix suspend/resume path on 57500 chips
+  bnxt_en: Add support for flashing the device via devlink
+  bnxt_en: Rename switch_id to dsn
+  bnxt_en: Add support for devlink info command
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 218 ++++++++++++++--------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  23 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 152 ++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h |   4 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  15 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |   2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c   |   8 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c     |   4 +-
+ 8 files changed, 328 insertions(+), 98 deletions(-)
+
 -- 
-2.20.1
+2.5.1
 
