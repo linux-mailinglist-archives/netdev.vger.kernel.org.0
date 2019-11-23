@@ -2,114 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B75107FAF
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 18:57:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F00107FBC
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 19:03:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbfKWRxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 12:53:39 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35409 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbfKWRxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 12:53:38 -0500
-Received: by mail-pl1-f193.google.com with SMTP id s10so4613526plp.2
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 09:53:36 -0800 (PST)
+        id S1726676AbfKWSDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 13:03:47 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36702 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbfKWSDr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 13:03:47 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k13so5045415pgh.3
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 10:03:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZI1kclYC3V5oe3ghcpnoAPJ2p8mvDPPDP7Q9LyIs2CY=;
-        b=JmA865UncInS6OCWKKHSZEc8t+P+czd02uictokOkJzeHJ8zR65yofIdFNOOBcYkQN
-         gKmvYeTgJ6JFda4Wd+ZZBWle10soNqCU/gJ1Een24AvL0F6s02GxRn4QevzT4CTlzAvi
-         5MR+hnvX1IZp7qtNDnKbzTCeUmxo7WJMqkPsQCLDVzI72PgST/D0y2g5N0BiJS0E0prk
-         ppPsfx+Cggsdm43nVszozb3hIj2kOW7HAPQjuz2V8It2xIfq7m1zXwEe/tgjylbcceqB
-         a48Tts2UrysO3pmVe6BAtu7cSSvxqJ3yMgLnoqA+FBpRMNU5YTjbmDcNOrgW01TlZuEo
-         fNKA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=b4KazJIdHMahp3tpOcvML7AefY0d0jAOfEKpcKoACHQ=;
+        b=F41GojoIa7pOQto6HzJFmmD6rr98QGLFbcN/2lWa35Ygu5jPT4xDgIHx1M423zBwrZ
+         srrwh0Qczc+AXDXkukpcwOSC4aBcKFYWvjXNWU1kI9C2tq8qkwpho2NUz1yO5Orgajsd
+         FGnWt0rXlz3WM88b+hfl6b7Hr70SLDwz5wtnGq6u/B2hjjdvQuV2hly1s0dTDOZp6gdc
+         NpmCjz9GuzGL4SCf6HsZnY9Lsqn/kLDCFoJs0tdc/clEW2P0xWrwn/xBtCplBm+0hp40
+         gMXFei1jWm1O5mcR2VPmKlH56RCMptO2nmu2GpKXRkuImXAAhKronF/NcfZqR5CD/KAN
+         FUlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZI1kclYC3V5oe3ghcpnoAPJ2p8mvDPPDP7Q9LyIs2CY=;
-        b=RtESRAR3urslkYu5sOZeKtbmdYzLDO1bCh1UySxJXIEZK8+bqA7M/zZG0PxAvxiq+g
-         pOaY/K91piF2ia8IkLQoW1+dDdLWlW4uC1l1seJFH8stl3wReLnKsUm4Gs4NOR1SXXdd
-         EPmb3590XRlTpmV25/XOk8uXHAFq7EAUmUX5K89cecSO8Reh11b5hZLfefI5bUqwep0S
-         gZSqdiQqYp2K5Uo9uGUoGhwDtpUTSZ4R5TJf33KH4ljYCz1wua8cn/3zV/zCXqpIqHJG
-         CJ+TIjiYtyuiHm1g7OxI2ltks1R8vWQ9OsBNJ+evXF31yDwTRLpjZ6yPjtQJny3rQrgh
-         8VJQ==
-X-Gm-Message-State: APjAAAWXr7eLxr4B/TArohBKxit82CiVSYJF4vhjlgmKm6bXvxoEGPC/
-        ctc/ft2HlqZnqjbYFw4Dpjk+tinI
-X-Google-Smtp-Source: APXvYqx6UCDFLf/25M//8Lcfw3Ahssqe+OluMwTaaq+dSZbkzswxRY3CSFllmdewZD69gFeo4b8PAQ==
-X-Received: by 2002:a17:90a:8d0d:: with SMTP id c13mr26712569pjo.68.1574531616127;
-        Sat, 23 Nov 2019 09:53:36 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id h23sm2630843pgg.58.2019.11.23.09.53.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Nov 2019 09:53:35 -0800 (PST)
-Subject: Re: [PATCH] net: ip/tnl: Set iph->id only when don't fragment is not
- set
-To:     Oliver Herms <oliver.peter.herms@gmail.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org
-References: <20191123145817.GA22321@fuckup>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <fa37491f-3604-bd3b-7518-dab654b641b6@gmail.com>
-Date:   Sat, 23 Nov 2019 09:53:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=b4KazJIdHMahp3tpOcvML7AefY0d0jAOfEKpcKoACHQ=;
+        b=HqKwtVIwmvEUT33FYX3VourzOCaphgblztAO3Ay3g3/HDniT4Z77S7STTepllafn5H
+         4cnIYf59gtHVVpeGd5Z1AQ4fzBuWIFHRD68GZ1XtV2gIa1T2bHcCuUT1Mz0LrgHv1g78
+         u+RpN7enUdRxZiHfHqIG4D3t3n1N8dFQZTSPzw9n6kIJNsVp0UgAco+N/Jj8fxvM8t4y
+         rAOFSOAUj0u4G71CWE3k3XYX1Ip7YpXwGP7aLrbgixVWBvGxwBHWdyUvWrZhJ+fofdr3
+         WSCZM20Y8H124Gxwf8mSJSbkNdPEJ26hzQmf/3Qh+qxXnnWc3FGKGVYTqLW7BSMndG79
+         UaFw==
+X-Gm-Message-State: APjAAAW9LnCkHipIVb5EL7/3rlhavJtj1OE+4F1i1jaOiSrdMV8Fnhbl
+        o7iksHqE0pAbg8SbDEHZJccuYQ==
+X-Google-Smtp-Source: APXvYqylczzxoUHlQtIIWwtaPhnuxFWpFB+khkQ+j9Ha3qTgp5tmxdwFACVzBp40ZJK60jhQEGltLA==
+X-Received: by 2002:aa7:9787:: with SMTP id o7mr25130589pfp.120.1574532226636;
+        Sat, 23 Nov 2019 10:03:46 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id i13sm2305773pfo.39.2019.11.23.10.03.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 10:03:46 -0800 (PST)
+Date:   Sat, 23 Nov 2019 10:03:40 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and
+ unload
+Message-ID: <20191123100340.771bfd25@cakuba.netronome.com>
+In-Reply-To: <20191123085719.GA1673@krava>
+References: <20191120213816.8186-1-jolsa@kernel.org>
+        <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
+        <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
+        <CAHC9VhQbQoXacbTCNJPGNzFOv30PwLeiWu4ROQFU46=saTeTNQ@mail.gmail.com>
+        <20191122002257.4hgui6pylpkmpwac@ast-mbp.dhcp.thefacebook.com>
+        <CAHC9VhRihMi_d-p+ieXyuVBcGMs80SkypVxF4gLE_s45GKP0dg@mail.gmail.com>
+        <20191122192353.GA2157@krava>
+        <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
+        <20191123085719.GA1673@krava>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191123145817.GA22321@fuckup>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 23 Nov 2019 09:57:19 +0100, Jiri Olsa wrote:
+> Alexei already asked Dave to revert this in previous email,
+> so that should happen
 
+Reverted in net-next now.
 
-On 11/23/19 6:58 AM, Oliver Herms wrote:
-> In IPv4 the identification field ensures that fragments of different datagrams
-> are not mixed by the receiver. Packets with Don't Fragment (DF) flag set are not
-> to be fragmented in transit and thus don't need an identification.
-
-Official sources for this assertion please, so that we can double check if you
-implemented the proper avoidance ?
-
-> Calculating the identification takes significant CPU time.
-> This patch will increase IP tunneling performance by ~10% unless DF is not set.
-> However, DF is set by default which is best practice.
-> 
-> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
-> ---
->  net/ipv4/ip_tunnel_core.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-> index 1452a97914a0..8636c1e0e7b7 100644
-> --- a/net/ipv4/ip_tunnel_core.c
-> +++ b/net/ipv4/ip_tunnel_core.c
-> @@ -73,7 +73,9 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
->  	iph->daddr	=	dst;
->  	iph->saddr	=	src;
->  	iph->ttl	=	ttl;
-> -	__ip_select_ident(net, iph, skb_shinfo(skb)->gso_segs ?: 1);
-> +
-> +	if (unlikely((iph->frag_off & htons(IP_DF)) == false))
-
-This unlikely() seems wrong to me.
-
-You do not know what are the odds of IP_DF being set or not.
-
-
-
-> +		__ip_select_ident(net, iph, skb_shinfo(skb)->gso_segs ?: 1);
->  
->  	err = ip_local_out(net, sk, skb);
->  
-> 
-
-So we are going to send 2 bytes with garbage if we do not call __ip_select_ident()
-
-This would cause various security threats, since the garbage might reveal a secret.
-
+But this is not really how this should work. You should post a proper
+revert patch to netdev for review, with an explanation in the commit
+message etc.
