@@ -2,166 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C00107CAC
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 04:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 814A0107CD0
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 05:39:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbfKWD47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 22:56:59 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34163 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726085AbfKWD47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 22:56:59 -0500
-Received: by mail-pl1-f194.google.com with SMTP id h13so4020502plr.1;
-        Fri, 22 Nov 2019 19:56:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=1dwZ+VOIOZ7HXQBGs9G4fycdYKwB3iXdgfcYFpT4HxQ=;
-        b=nsSxhehuVonkCTCoq+sQYykjoFwja1lc5aIOOoGdnj7robf8+JvMqkHo6JAKDr3oVq
-         zhA3ig1spGPI5vkLsLN7ntwdQE7s2Eq6e9kWPCNDxYkwsyBAD31HIZqjsxwO+FhFduFZ
-         /Dqq44qKuBacUnpQsTosbBgNewsn/6dM1jjaTr5d024Oli5SvV/SXBAsZ/h6W3RJk9oz
-         GN46WZxXsCL9j9FLc/KhQY/2Oj+n9NE48aL5SSLcDSx9rEErgV6Hq0wFOPuYiWzaWgq3
-         FGib6Xgw+tlsFj9p7mpYyMFUK/IuXpiISuUZgQXCLROWp4iayKULs77bow9YpJFgzTq0
-         uKhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1dwZ+VOIOZ7HXQBGs9G4fycdYKwB3iXdgfcYFpT4HxQ=;
-        b=BF2to8VIJL9h8bu5mOtdSIyo4ARtgHRUrbzzfLvzVbZP8r6vMfGvixBvEpZVlIPtHa
-         DQwQCOkobs5Tp77DC15xhug6h949CyN4QkRJkdQ3T/jEytdyG51A0Ek3wSt+guBwOA88
-         DbQjW4oqCxckSf2kCp9EZf1CjuOG6P5k8IhuKvYv/08UPYZGkt5FueLf6hsd8xUkZeza
-         xvJ+1EixaRg4BteiM6KFm9vMu1igiTHWqoQFBIdc17nHpb7/xgUPds6dpRBFBcyK6kqr
-         XaN/X+h/vlGK85K9LPjy3S+JTwUXUeklEc5s9T34NF9HFn2smMsg+/Tom6dO9UW+yZwd
-         jLBQ==
-X-Gm-Message-State: APjAAAWEvMhx2ViPkKSQx2Zyw1VMY1cr3jNWhd39P9GXbX0Lx6LSW1UP
-        Z4UVatb6mDUUsI0qRHJaI7dIfLQC
-X-Google-Smtp-Source: APXvYqy3nTd+GSQzs1yg3RK3CGo7Y4e9VVvhI6cyagbqKVemcy3zSHFM/fSvwlhfjWl8V+2ZC2iNTQ==
-X-Received: by 2002:a17:902:8bc9:: with SMTP id r9mr16575991plo.319.1574481418055;
-        Fri, 22 Nov 2019 19:56:58 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i123sm9092161pfe.145.2019.11.22.19.56.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Nov 2019 19:56:57 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: [PATCH net] sctp: cache netns in sctp_ep_common
-Date:   Sat, 23 Nov 2019 11:56:49 +0800
-Message-Id: <f7ecea746b9238b1c996b51c41b5306e00a3d403.1574481409.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1726634AbfKWEjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 23:39:21 -0500
+Received: from mga06.intel.com ([134.134.136.31]:35372 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726304AbfKWEjV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 23:39:21 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 20:39:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,232,1571727600"; 
+   d="scan'208";a="205590768"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.74])
+  by fmsmga008.fm.intel.com with ESMTP; 22 Nov 2019 20:39:17 -0800
+Date:   Sat, 23 Nov 2019 12:39:51 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191123043951.GA364267@___>
+References: <134058913.35624136.1574222360435.JavaMail.zimbra@redhat.com>
+ <20191120133835.GC22515@ziepe.ca>
+ <20191120102856.7e01e2e2@x1.home>
+ <20191120181108.GJ22515@ziepe.ca>
+ <20191120150732.2fffa141@x1.home>
+ <20191121030357.GB16914@ziepe.ca>
+ <5dcef4ab-feb5-d116-b2a9-50608784a054@redhat.com>
+ <20191121141732.GB7448@ziepe.ca>
+ <721e49c2-a2e1-853f-298b-9601c32fcf9e@redhat.com>
+ <20191122180214.GD7448@ziepe.ca>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191122180214.GD7448@ziepe.ca>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to fix a data-race reported by syzbot:
+On Fri, Nov 22, 2019 at 02:02:14PM -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 22, 2019 at 04:45:38PM +0800, Jason Wang wrote:
+> > On 2019/11/21 下午10:17, Jason Gunthorpe wrote:
+> > > On Thu, Nov 21, 2019 at 03:21:29PM +0800, Jason Wang wrote:
+> > > > > The role of vfio has traditionally been around secure device
+> > > > > assignment of a HW resource to a VM. I'm not totally clear on what the
+> > > > > role if mdev is seen to be, but all the mdev drivers in the tree seem
+> > > > > to make 'and pass it to KVM' a big part of their description.
+> > > > > 
+> > > > > So, looking at the virtio patches, I see some intended use is to map
+> > > > > some BAR pages into the VM.
+> > > > Nope, at least not for the current stage. It still depends on the
+> > > > virtio-net-pci emulatio in qemu to work. In the future, we will allow such
+> > > > mapping only for dorbell.
+> > > There has been a lot of emails today, but I think this is the main
+> > > point I want to respond to.
+> > > 
+> > > Using vfio when you don't even assign any part of the device BAR to
+> > > the VM is, frankly, a gigantic misuse, IMHO.
+> > 
+> > That's not a compelling point. 
+> 
+> Well, this discussion is going nowhere.
 
-  BUG: KCSAN: data-race in sctp_assoc_migrate / sctp_hash_obj
+You removed JasonW's other reply in above quote. He said it clearly
+that we do want/need to assign parts of device BAR to the VM.
 
-  write to 0xffff8880b67c0020 of 8 bytes by task 18908 on cpu 1:
-    sctp_assoc_migrate+0x1a6/0x290 net/sctp/associola.c:1091
-    sctp_sock_migrate+0x8aa/0x9b0 net/sctp/socket.c:9465
-    sctp_accept+0x3c8/0x470 net/sctp/socket.c:4916
-    inet_accept+0x7f/0x360 net/ipv4/af_inet.c:734
-    __sys_accept4+0x224/0x430 net/socket.c:1754
-    __do_sys_accept net/socket.c:1795 [inline]
-    __se_sys_accept net/socket.c:1792 [inline]
-    __x64_sys_accept+0x4e/0x60 net/socket.c:1792
-    do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
-    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> > > Just needing userspace DMA is not, in any way, a justification to use
+> > > vfio.
+> > > 
+> > > We have extensive library interfaces in the kernel to do userspace DMA
+> > > and subsystems like GPU and RDMA are full of example uses of this kind
+> > > of stuff.
+> > 
+> > I'm not sure which library did you mean here. Is any of those library used
+> > by qemu? If not, what's the reason?
+> 
+> I mean the library functions in the kernel that vfio uses to implement
+> all the user dma stuff. Other subsystems use them too, it is not
+> exclusive to vfio.
 
-  read to 0xffff8880b67c0020 of 8 bytes by task 12003 on cpu 0:
-    sctp_hash_obj+0x4f/0x2d0 net/sctp/input.c:894
-    rht_key_get_hash include/linux/rhashtable.h:133 [inline]
-    rht_key_hashfn include/linux/rhashtable.h:159 [inline]
-    rht_head_hashfn include/linux/rhashtable.h:174 [inline]
-    head_hashfn lib/rhashtable.c:41 [inline]
-    rhashtable_rehash_one lib/rhashtable.c:245 [inline]
-    rhashtable_rehash_chain lib/rhashtable.c:276 [inline]
-    rhashtable_rehash_table lib/rhashtable.c:316 [inline]
-    rht_deferred_worker+0x468/0xab0 lib/rhashtable.c:420
-    process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
-    worker_thread+0xa0/0x800 kernel/workqueue.c:2415
-    kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
-    ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
+IIUC, your point is to suggest us invent new DMA API for userspace to
+use instead of leveraging VFIO's well defined DMA API. Even if we don't
+use VFIO at all, I would imagine it could be very VFIO-like (e.g. caps
+for BAR + container/group for DMA) eventually.
 
-It was caused by rhashtable access asoc->base.sk when sctp_assoc_migrate
-is changing its value. However, what rhashtable wants is netns from asoc
-base.sk, and for an asoc, its netns won't change once set. So we can
-simply fix it by caching netns since created.
+> 
+> > > Further, I do not think it is wise to design the userspace ABI around
+> > > a simplistict implementation that can't do BAR assignment,
+> > 
+> > Again, the vhost-mdev follow the VFIO ABI, no new ABI is invented, and
+> > mmap() was kept their for mapping device regions.
+> 
+> The patches have a new file in include/uapi.
 
-Fixes: d6c0256a60e6 ("sctp: add the rhashtable apis for sctp global transport hashtable")
-Reported-by: syzbot+e3b35fe7918ff0ee474e@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/sctp/structs.h | 3 +++
- net/sctp/associola.c       | 1 +
- net/sctp/endpointola.c     | 1 +
- net/sctp/input.c           | 4 ++--
- 4 files changed, 7 insertions(+), 2 deletions(-)
+I guess you didn't look at the code. Just to clarify, there is no
+new file introduced in include/uapi. Only small vhost extensions to
+the existing vhost uapi are involved in vhost-mdev.
 
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 503fbc3..2b6f3f1 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -1239,6 +1239,9 @@ struct sctp_ep_common {
- 	/* What socket does this endpoint belong to?  */
- 	struct sock *sk;
- 
-+	/* Cache netns and it won't change once set */
-+	struct net *net;
-+
- 	/* This is where we receive inbound chunks.  */
- 	struct sctp_inq	  inqueue;
- 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index d2ffc9a..41839b8 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -64,6 +64,7 @@ static struct sctp_association *sctp_association_init(
- 	/* Discarding const is appropriate here.  */
- 	asoc->ep = (struct sctp_endpoint *)ep;
- 	asoc->base.sk = (struct sock *)sk;
-+	asoc->base.net = sock_net(sk);
- 
- 	sctp_endpoint_hold(asoc->ep);
- 	sock_hold(asoc->base.sk);
-diff --git a/net/sctp/endpointola.c b/net/sctp/endpointola.c
-index ea53049..3067deb 100644
---- a/net/sctp/endpointola.c
-+++ b/net/sctp/endpointola.c
-@@ -110,6 +110,7 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
- 
- 	/* Remember who we are attached to.  */
- 	ep->base.sk = sk;
-+	ep->base.net = sock_net(sk);
- 	sock_hold(ep->base.sk);
- 
- 	return ep;
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 2277981..4d2bcfc 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -882,7 +882,7 @@ static inline int sctp_hash_cmp(struct rhashtable_compare_arg *arg,
- 	if (!sctp_transport_hold(t))
- 		return err;
- 
--	if (!net_eq(sock_net(t->asoc->base.sk), x->net))
-+	if (!net_eq(t->asoc->base.net, x->net))
- 		goto out;
- 	if (x->lport != htons(t->asoc->base.bind_addr.port))
- 		goto out;
-@@ -897,7 +897,7 @@ static inline __u32 sctp_hash_obj(const void *data, u32 len, u32 seed)
- {
- 	const struct sctp_transport *t = data;
- 
--	return sctp_hashfn(sock_net(t->asoc->base.sk),
-+	return sctp_hashfn(t->asoc->base.net,
- 			   htons(t->asoc->base.bind_addr.port),
- 			   &t->ipaddr, seed);
- }
--- 
-2.1.0
-
+> 
