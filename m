@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C09107C6F
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 03:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E350107C94
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 03:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbfKWC25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 21:28:57 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:41486 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfKWC25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 21:28:57 -0500
-Received: by mail-lj1-f195.google.com with SMTP id m4so9474667ljj.8;
-        Fri, 22 Nov 2019 18:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M7KHy6c0WaArjzD5NzA8oaCyhccUeeP7nTZcJLmdY6w=;
-        b=ja8GNQ6nIwOTJa8bS2XiddtmfK4TSHrWDcuClzCC3uQqaUYxfvzanFnXLrIOT44r1N
-         qyG3f0m0Z1lD8055VxQtjdkPnW35fYl756Grh+sss7Q8vM5Lz2SPI17GbMl1vkD5B2TO
-         yx9UCPrBM6Y3bZwMqN57YERoKlCuIh5zM9m5uWufqiro76H0QJCG/hRuejjGdc4BkUi5
-         6MhkqOG5bxlbtp3dAbHKXR4N32xf3fTs9tei5K7TgEw9E29pWaZJFinyNncJwULA4ZY5
-         0XD3W5KKhT150V+va+SexU7vZGGR+O8fnpEE/iIt7JDYZnKuMdAVPrppLEs38NIZyDRP
-         +hMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M7KHy6c0WaArjzD5NzA8oaCyhccUeeP7nTZcJLmdY6w=;
-        b=X00KiMrpRMm+RPRply/S0DbHCd/FVi9ClPD6CXsfKwf48eDO18fHNskePUd85B9Mih
-         eobQS7YMYfsQTS/HbuotNgLZe/0kBhSUFMqbc/3y244uQAIYivVw/Uyj7YTSRsmISon3
-         aPIIiRnNJSyKm83eH/NhCPqsPBFsgBF7ZWAVo3+5S/w/4bK2/xi8Y5kQLEqdTnw7Dkys
-         rwjYzvVsqTqf4gsFix4tTZcU9cyG+26dTyDQsZf8R5nbw6Xb+D4ZL7EEO8eH7AHO9EME
-         nQQO8IY/u+v2q1dn5lzqr16YKMCoNxGQqyT36npB5+vxrNyMGdWH/eakFtSwhuKk8lx/
-         xg0A==
-X-Gm-Message-State: APjAAAWMEhNxkZrrqrZkf04n8qmRgeDl0RUo1Ct/hsTaV5JNbkideOCe
-        bJa2Skjac09Q7sjo6CHDhRE0vUrmJu5PvVw58FCyarQt
-X-Google-Smtp-Source: APXvYqwQn+4tDpZVgBHk7Mq8pLwfOEf6cIgoD52we74YvAZyfxJGja68z1WKi7vnYLMOwWBUmmStgmsPr63V9SQJLE8=
-X-Received: by 2002:a2e:574d:: with SMTP id r13mr14088822ljd.10.1574476133495;
- Fri, 22 Nov 2019 18:28:53 -0800 (PST)
+        id S1726494AbfKWCxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 21:53:52 -0500
+Received: from mga02.intel.com ([134.134.136.20]:39446 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726089AbfKWCxw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Nov 2019 21:53:52 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Nov 2019 18:53:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,232,1571727600"; 
+   d="scan'208";a="210596681"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 22 Nov 2019 18:53:50 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iYLYU-000Gx0-1w; Sat, 23 Nov 2019 10:53:50 +0800
+Date:   Sat, 23 Nov 2019 10:53:27 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [ipsec-next:testing 6/6] net/xfrm/espintcp.c:402:13: sparse: sparse:
+ incompatible types in comparison expression (different address spaces):
+Message-ID: <201911231026.qn0a6HJ2%lkp@intel.com>
 MIME-Version: 1.0
-References: <cover.1574452833.git.daniel@iogearbox.net> <6ada4c1c9d35eeb5f4ecfab94593dafa6b5c4b09.1574452833.git.daniel@iogearbox.net>
- <CAEf4BzaWhYJAdjs+8-nHHjuKfs6yBB7yx5NH-qNv2tcjiVCVhw@mail.gmail.com> <ba52688c-49bf-7897-4ba2-f62f30d501a9@iogearbox.net>
-In-Reply-To: <ba52688c-49bf-7897-4ba2-f62f30d501a9@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 22 Nov 2019 18:28:42 -0800
-Message-ID: <CAADnVQJqYE5TAdJ=o8nHSF1mXoXpsVNXcJtWSPQJDn7wUvxR=Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 7/8] bpf, x86: emit patchable direct jump as
- tail call
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 22, 2019 at 3:25 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> +       case BPF_MOD_CALL_TO_NOP:
-> >> +       case BPF_MOD_JUMP_TO_NOP:
-> >> +               if (old_addr && !new_addr) {
-> >> +                       memcpy(new_insn, nop_insn, X86_PATCH_SIZE);
-> >> +
-> >> +                       prog = old_insn;
-> >> +                       ret = emit_patch_fn(&prog, old_addr, ip);
-> >> +                       if (ret)
-> >> +                               return ret;
-> >> +                       break;
-> >> +               }
-> >> +               return -ENXIO;
-> >> +       default:
-> >
-> > There is this redundancy between BPF_MOD_xxx enums and
-> > old_addr+new_addr (both encode what kind of transition it is), which
-> > leads to this cumbersome logic. Would it be simpler to have
-> > old_addr/new_addr determine whether it's X-to-NOP, NOP-to-Y, or X-to-Y
-> > transition, while separate bool or simple BPF_MOD_CALL/BPF_MOD_JUMP
-> > enum determining whether it's a call or a jump that we want to update.
-> > Seems like that should be a simpler interface overall and cleaner
-> > implementation?
->
-> Right we can probably simplify it further, I kept preserving the original
-> switch from Alexei's code where my assumption was that having the transition
-> explicitly spelled out was preferred in here and then based on that doing
-> the sanity checks to make sure we don't get bad input from any call-site
-> since we're modifying kernel text, e.g. in the bpf_trampoline_update() as
-> one example the BPF_MOD_* is a fixed constant input there.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git testing
+head:   73994d31bda7074698e8d07b40152eeabccd5780
+commit: 73994d31bda7074698e8d07b40152eeabccd5780 [6/6] xfrm: add espintcp (RFC 8229)
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-36-g9305d48-dirty
+        git checkout 73994d31bda7074698e8d07b40152eeabccd5780
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-I guess we can try adding one more argument
-bpf_arch_text_poke(ip, BPF_MOD_NOP, old_addr, BPF_MOD_INTO_CALL, new_addr);
-Not sure whether it's gonna be any cleaner.
-Intuitively doesn't feel so.
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> net/xfrm/espintcp.c:402:13: sparse: sparse: incompatible types in comparison expression (different address spaces):
+>> net/xfrm/espintcp.c:402:13: sparse:    void [noderef] <asn:4> *
+>> net/xfrm/espintcp.c:402:13: sparse:    void *
+
+vim +402 net/xfrm/espintcp.c
+
+   390	
+   391	static int espintcp_init_sk(struct sock *sk)
+   392	{
+   393		struct inet_connection_sock *icsk = inet_csk(sk);
+   394		struct strp_callbacks cb = {
+   395			.rcv_msg = espintcp_rcv,
+   396			.parse_msg = espintcp_parse,
+   397		};
+   398		struct espintcp_ctx *ctx;
+   399		int err;
+   400	
+   401		/* sockmap is not compatible with espintcp */
+ > 402		if (rcu_access_pointer(sk->sk_user_data))
+   403			return -EBUSY;
+   404	
+   405		ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
+   406		if (!ctx)
+   407			return -ENOMEM;
+   408	
+   409		err = strp_init(&ctx->strp, sk, &cb);
+   410		if (err)
+   411			goto free;
+   412	
+   413		__sk_dst_reset(sk);
+   414	
+   415		strp_check_rcv(&ctx->strp);
+   416		skb_queue_head_init(&ctx->ike_queue);
+   417		skb_queue_head_init(&ctx->out_queue);
+   418		sk->sk_prot = &espintcp_prot;
+   419		sk->sk_socket->ops = &espintcp_ops;
+   420		ctx->saved_data_ready = sk->sk_data_ready;
+   421		ctx->saved_write_space = sk->sk_write_space;
+   422		sk->sk_data_ready = espintcp_data_ready;
+   423		sk->sk_write_space = espintcp_write_space;
+   424		sk->sk_destruct = espintcp_destruct;
+   425		rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
+   426		INIT_WORK(&ctx->work, espintcp_tx_work);
+   427	
+   428		/* avoid using task_frag */
+   429		sk->sk_allocation = GFP_ATOMIC;
+   430	
+   431		return 0;
+   432	
+   433	free:
+   434		kfree(ctx);
+   435		return err;
+   436	}
+   437	
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
