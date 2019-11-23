@@ -2,261 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A30A107DC4
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 09:27:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27738107DD7
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 10:00:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfKWI06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 03:26:58 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43668 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726984AbfKWI04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 03:26:56 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b1so4608266pgq.10
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 00:26:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0S5tctSUVEfuozDe/2RMeXxMikYW3YuL9cNLbs4OwUg=;
-        b=WTTcrUXH0F7JbNWL57+aJLVGFxqhhBtrx+Yrx2pd61GBJEiVYsVp89B46GtbEiUKNh
-         YI4dd692OT6P15N/goewmljEdajaxOrJ1vPMd4rkR6/ekvdv9VQMNwyC4+BWezhVZ7GE
-         6dJiKDPTLU+/Nkkybb7YW+vU1mZNNL8oDm0mk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0S5tctSUVEfuozDe/2RMeXxMikYW3YuL9cNLbs4OwUg=;
-        b=mMqM0QE8gGP/jxLhF9S7/NWnMj1A23fRBmP3W+B4/ypJXtKzanlr7xPo6MzdiLQpYo
-         BDXSdsem5Jan48c/F17P/wcftZ1Mt8Qi2f0q50kwAKS1yyjBdc4q4xBccENz7ZtsX2J+
-         ZnYC/r+qcSrLd1GJovLE+aY3G4SCaRJuKXlXq77Ck2Z8yCXnfF4HK7mium3Jt9bVnETh
-         r6+cv6waogLZd5TrlMhjlYFlhMzte9Y+B/Tj+HbBkN1H/MEwanijZxCsgLyrOeU8X9SZ
-         vd20xPP4G99JlQv39Yd8M8txCiK1CMQ4jc3PShxSq/havnkTaL2PmS0b/BfydbmJfYm4
-         xWNA==
-X-Gm-Message-State: APjAAAWMRdrh5H7Cgu5vKCsBCBuqp/GSGGD2S+KI4KUG8jc6JU3rr3vo
-        VOx2ctkvH82GizHfeC9IG+wzH52CsDQ=
-X-Google-Smtp-Source: APXvYqx4743FS01i3meUob7KNfQgb3H+5MZj1P+DjvAOwsaPOBqIJXqRJEBm0+t+7wr4ORMUgT2hCg==
-X-Received: by 2002:a63:d351:: with SMTP id u17mr17154039pgi.84.1574497616157;
-        Sat, 23 Nov 2019 00:26:56 -0800 (PST)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p16sm573236pfn.171.2019.11.23.00.26.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Nov 2019 00:26:55 -0800 (PST)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next 15/15] bnxt_en: Add support for devlink info command
-Date:   Sat, 23 Nov 2019 03:26:10 -0500
-Message-Id: <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
-References: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
+        id S1726487AbfKWI5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 03:57:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23469 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726141AbfKWI5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 03:57:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574499452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ALroEYY/Jkr/wBe0jUw7qlkqhNRApKqNALcmtx/6f8c=;
+        b=ExZF1U+h+GaR80hR4TlY7+tzcnavW6GiCLaAClWCWLt6Nds5Ivzi2h91nnpUV/1A3bwvK+
+        EJfOdOnmBiO3A5Uo4cWBzT3WGLjowOk/vhrTv3MWsOQXlJXySv1ZPWZGQAQxwKo450pUn6
+        VB6wdibdmir8B1vbjKbafdhlgrlHo08=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-345-1FrB7f-7Pya0lfspaeS9cQ-1; Sat, 23 Nov 2019 03:57:29 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E88F9DB20;
+        Sat, 23 Nov 2019 08:57:26 +0000 (UTC)
+Received: from krava (ovpn-204-28.brq.redhat.com [10.40.204.28])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5AA9D5D6A0;
+        Sat, 23 Nov 2019 08:57:19 +0000 (UTC)
+Date:   Sat, 23 Nov 2019 09:57:19 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and
+ unload
+Message-ID: <20191123085719.GA1673@krava>
+References: <20191120213816.8186-1-jolsa@kernel.org>
+ <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
+ <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
+ <CAHC9VhQbQoXacbTCNJPGNzFOv30PwLeiWu4ROQFU46=saTeTNQ@mail.gmail.com>
+ <20191122002257.4hgui6pylpkmpwac@ast-mbp.dhcp.thefacebook.com>
+ <CAHC9VhRihMi_d-p+ieXyuVBcGMs80SkypVxF4gLE_s45GKP0dg@mail.gmail.com>
+ <20191122192353.GA2157@krava>
+ <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: 1FrB7f-7Pya0lfspaeS9cQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+On Fri, Nov 22, 2019 at 04:19:55PM -0500, Paul Moore wrote:
+> On Fri, Nov 22, 2019 at 2:24 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > Paul,
+> > would following output be ok:
+> >
+> >     type=3DSYSCALL msg=3Daudit(1574445211.897:28015): arch=3Dc000003e s=
+yscall=3D321 success=3Dno exit=3D-13 a0=3D5 a1=3D7fff09ac6c60 a2=3D78 a3=3D=
+6 items=3D0 ppid=3D1408 pid=3D9266 auid=3D1001 uid=3D0 gid=3D0 euid=3D0 sui=
+d=3D0 fsuid=3D0 egid=3D0 sgid=3D0 fsgid=3D0 tty=3Dpts0 ses=3D1 comm=3D"test=
+_verifier" exe=3D"/home/jolsa/linux/tools/testing/selftests/bpf/test_verifi=
+er" subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=3D(nul=
+l)ARCH=3Dx86_64 SYSCALL=3Dbpf AUID=3D"jolsa" UID=3D"root" GID=3D"root" EUID=
+=3D"root" SUID=3D"root" FSUID=3D"root" EGID=3D"root" SGID=3D"root" FSGID=3D=
+"root"
+> >     type=3DPROCTITLE msg=3Daudit(1574445211.897:28015): proctitle=3D"./=
+test_verifier"
+> >     type=3DBPF msg=3Daudit(1574445211.897:28016): prog-id=3D8103 event=
+=3DLOAD
+> >
+> >     type=3DSYSCALL msg=3Daudit(1574445211.897:28016): arch=3Dc000003e s=
+yscall=3D321 success=3Dyes exit=3D14 a0=3D5 a1=3D7fff09ac6b80 a2=3D78 a3=3D=
+0 items=3D0 ppid=3D1408 pid=3D9266 auid=3D1001 uid=3D0 gid=3D0 euid=3D0 sui=
+d=3D0 fsuid=3D0 egid=3D0 sgid=3D0 fsgid=3D0 tty=3Dpts0 ses=3D1 comm=3D"test=
+_verifier" exe=3D"/home/jolsa/linux/tools/testing/selftests/bpf/test_verifi=
+er" subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=3D(nul=
+l)ARCH=3Dx86_64 SYSCALL=3Dbpf AUID=3D"jolsa" UID=3D"root" GID=3D"root" EUID=
+=3D"root" SUID=3D"root" FSUID=3D"root" EGID=3D"root" SGID=3D"root" FSGID=3D=
+"root"
+> >     type=3DPROCTITLE msg=3Daudit(1574445211.897:28016): proctitle=3D"./=
+test_verifier"
+> >     type=3DBPF msg=3Daudit(1574445211.897:28017): prog-id=3D8103 event=
+=3DUNLOAD
+>=20
+> There is some precedence in using "op=3D" instead of "event=3D" (an audit
+> "event" is already a thing, using "event=3D" here might get confusing).
+> I suppose if we are getting really nit-picky you might want to
+> lower-case the LOAD/UNLOAD, but generally Steve cares more about these
+> things than I do.
+>=20
+> For reference, we have a searchable database of fields here:
+> * https://github.com/linux-audit/audit-documentation/blob/master/specs/fi=
+elds/field-dictionary.csv
 
-Display the following information via devlink info command:
-  - Driver name
-  - Board id
-  - Broad revision
-  - Board Serial number
-  - Board Package version
-  - FW version
-  - FW management version
-  - FW RoCE version
+I'm fine with "op", Daniel, Alexei?
 
-  Standard output example:
-  $ devlink dev info pci/0000:3b:00.0
-  pci/0000:3b:00.0:
-    driver bnxt_en
-    serial_number B0-26-28-FF-FE-25-84-20
-    versions:
-        fixed:
-          board.id C454
-          board.rev 1
-        running:
-          board.package N/A
-          fw.version 216.0.154.32004
-          fw.mgmt 864.0.0.0
-          fw.app 216.0.51.0
+>=20
+> > I assume for audit-userspace and audit-testsuite the change will
+> > go in as github PR, right? I have the auditd change ready and will
+> > add test shortly.
+>=20
+> You can submit the audit-testsuite either as a GH PR or as a
+> patch(set) to the linux-audit mailing list, both work equally well.  I
+> believe has the same policy for his userspace tools, but I'll let him
+> speak for himself.
 
-Cc: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 128 ++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h |   4 +
- 2 files changed, 132 insertions(+)
+ok
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 1c456fc..531d48f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -239,11 +239,15 @@ void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy)
- 	health->fatal = false;
- }
- 
-+static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-+			    struct netlink_ext_ack *extack);
-+
- static const struct devlink_ops bnxt_dl_ops = {
- #ifdef CONFIG_BNXT_SRIOV
- 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
- 	.eswitch_mode_get = bnxt_dl_eswitch_mode_get,
- #endif /* CONFIG_BNXT_SRIOV */
-+	.info_get	  = bnxt_dl_info_get,
- 	.flash_update	  = bnxt_dl_flash_update,
- };
- 
-@@ -308,6 +312,130 @@ static void bnxt_copy_from_nvm_data(union devlink_param_value *dst,
- 		dst->vu8 = (u8)val32;
- }
- 
-+static int bnxt_hwrm_get_nvm_cfg_ver(struct bnxt *bp,
-+				     union devlink_param_value *nvm_cfg_ver)
-+{
-+	struct hwrm_nvm_get_variable_input req = {0};
-+	union bnxt_nvm_data *data;
-+	dma_addr_t data_dma_addr;
-+	int rc;
-+
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_NVM_GET_VARIABLE, -1, -1);
-+	data = dma_alloc_coherent(&bp->pdev->dev, sizeof(*data),
-+				  &data_dma_addr, GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	req.dest_data_addr = cpu_to_le64(data_dma_addr);
-+	req.data_len = cpu_to_le16(BNXT_NVM_CFG_VER_BITS);
-+	req.option_num = cpu_to_le16(NVM_OFF_NVM_CFG_VER);
-+
-+	rc = hwrm_send_message_silent(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-+	if (!rc)
-+		bnxt_copy_from_nvm_data(nvm_cfg_ver, data,
-+					BNXT_NVM_CFG_VER_BITS,
-+					BNXT_NVM_CFG_VER_BYTES);
-+
-+	dma_free_coherent(&bp->pdev->dev, sizeof(*data), data, data_dma_addr);
-+	return rc;
-+}
-+
-+static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-+			    struct netlink_ext_ack *extack)
-+{
-+	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
-+	union devlink_param_value nvm_cfg_ver;
-+	struct hwrm_ver_get_output *ver_resp;
-+	char mgmt_ver[FW_VER_STR_LEN];
-+	char roce_ver[FW_VER_STR_LEN];
-+	char fw_ver[FW_VER_STR_LEN];
-+	char buf[32];
-+	int rc;
-+
-+	rc = devlink_info_driver_name_put(req, DRV_MODULE_NAME);
-+	if (rc)
-+		return rc;
-+
-+	sprintf(buf, "%X", bp->chip_num);
-+	rc = devlink_info_version_fixed_put(req, "board.id", buf);
-+	if (rc)
-+		return rc;
-+
-+	ver_resp = &bp->ver_resp;
-+	sprintf(buf, "%X", ver_resp->chip_rev);
-+	rc = devlink_info_version_fixed_put(req, "board.rev", buf);
-+	if (rc)
-+		return rc;
-+
-+	if (BNXT_PF(bp)) {
-+		sprintf(buf, "%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
-+			bp->dsn[7], bp->dsn[6], bp->dsn[5], bp->dsn[4],
-+			bp->dsn[3], bp->dsn[2], bp->dsn[1], bp->dsn[0]);
-+		rc = devlink_info_serial_number_put(req, buf);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	if (strlen(ver_resp->active_pkg_name)) {
-+		rc =
-+		    devlink_info_version_running_put(req, "board.package",
-+						     ver_resp->active_pkg_name);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	if (BNXT_PF(bp) && !bnxt_hwrm_get_nvm_cfg_ver(bp, &nvm_cfg_ver)) {
-+		u32 ver = nvm_cfg_ver.vu32;
-+
-+		sprintf(buf, "%X.%X.%X", (ver >> 16) & 0xF, (ver >> 8) & 0xF,
-+			ver & 0xF);
-+		rc = devlink_info_version_running_put(req, "board.nvm_cfg_ver",
-+						      buf);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	if (ver_resp->flags & VER_GET_RESP_FLAGS_EXT_VER_AVAIL) {
-+		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->hwrm_fw_major, ver_resp->hwrm_fw_minor,
-+			 ver_resp->hwrm_fw_build, ver_resp->hwrm_fw_patch);
-+
-+		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->mgmt_fw_major, ver_resp->mgmt_fw_minor,
-+			 ver_resp->mgmt_fw_build, ver_resp->mgmt_fw_patch);
-+
-+		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->roce_fw_major, ver_resp->roce_fw_minor,
-+			 ver_resp->roce_fw_build, ver_resp->roce_fw_patch);
-+	} else {
-+		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->hwrm_fw_maj_8b, ver_resp->hwrm_fw_min_8b,
-+			 ver_resp->hwrm_fw_bld_8b, ver_resp->hwrm_fw_rsvd_8b);
-+
-+		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->mgmt_fw_maj_8b, ver_resp->mgmt_fw_min_8b,
-+			 ver_resp->mgmt_fw_bld_8b, ver_resp->mgmt_fw_rsvd_8b);
-+
-+		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+			 ver_resp->roce_fw_maj_8b, ver_resp->roce_fw_min_8b,
-+			 ver_resp->roce_fw_bld_8b, ver_resp->roce_fw_rsvd_8b);
-+	}
-+	rc = devlink_info_version_running_put(req, "fw.version", fw_ver);
-+	if (rc)
-+		return rc;
-+
-+	if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
-+		rc = devlink_info_version_running_put(req, "fw.mgmt", mgmt_ver);
-+		if (rc)
-+			return rc;
-+
-+		rc = devlink_info_version_running_put(req, "fw.app", roce_ver);
-+		if (rc)
-+			return rc;
-+	}
-+	return 0;
-+}
-+
- static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
- 			     int msg_len, union devlink_param_value *val)
- {
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-index 665d4bd..5b2e796 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-@@ -38,6 +38,10 @@ static inline void bnxt_link_bp_to_dl(struct bnxt *bp, struct devlink *dl)
- #define NVM_OFF_IGNORE_ARI		164
- #define NVM_OFF_DIS_GRE_VER_CHECK	171
- #define NVM_OFF_ENABLE_SRIOV		401
-+#define NVM_OFF_NVM_CFG_VER		602
-+
-+#define BNXT_NVM_CFG_VER_BITS		24
-+#define BNXT_NVM_CFG_VER_BYTES		4
- 
- #define BNXT_MSIX_VEC_MAX	1280
- #define BNXT_MSIX_VEC_MIN_MAX	128
--- 
-2.5.1
+>=20
+> > diff --git a/include/linux/audit.h b/include/linux/audit.h
+> > index 18925d924c73..c69d2776d197 100644
+> > --- a/include/linux/audit.h
+> > +++ b/include/linux/audit.h
+> > @@ -358,8 +358,6 @@ static inline void audit_ptrace(struct task_struct =
+*t)
+> >                 __audit_ptrace(t);
+> >  }
+> >
+> > -extern void audit_log_task(struct audit_buffer *ab);
+> > -
+> >                                 /* Private API (for audit.c only) */
+> >  extern void __audit_ipc_obj(struct kern_ipc_perm *ipcp);
+> >  extern void __audit_ipc_set_perm(unsigned long qbytes, uid_t uid, gid_=
+t gid, umode_t mode);
+> > @@ -648,8 +646,6 @@ static inline void audit_ntp_log(const struct audit=
+_ntp_data *ad)
+> >  static inline void audit_ptrace(struct task_struct *t)
+> >  { }
+> >
+> > -static inline void audit_log_task(struct audit_buffer *ab)
+> > -{ }
+> >  #define audit_n_rules 0
+> >  #define audit_signals 0
+> >  #endif /* CONFIG_AUDITSYSCALL */
+> > diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+> > index 9bf1045fedfa..4effe01ebbe2 100644
+> > --- a/kernel/auditsc.c
+> > +++ b/kernel/auditsc.c
+> > @@ -2545,7 +2545,7 @@ void __audit_ntp_log(const struct audit_ntp_data =
+*ad)
+> >         audit_log_ntp_val(ad, "adjust", AUDIT_NTP_ADJUST);
+> >  }
+> >
+> > -void audit_log_task(struct audit_buffer *ab)
+> > +static void audit_log_task(struct audit_buffer *ab)
+>=20
+> I'm slightly concerned that this is based on top of your other patch
+> which was NACK'ed.  I might not have been clear before, but with the
+> merge window set to open in a few days, and this change affecting the
+> kernel interface (uapi, etc.) and lacking a test, this isn't something
+> that I see as a candidate for the upcoming merge window.  *Please*
+> revert your original patch first; if you think I'm cranky now I can
+> promise I'll be a lot more cranky if I see the original patch in -rc1
+> ;)
+
+no worries, I'm used to cranky ;-)
+Alexei already asked Dave to revert this in previous email,
+so that should happen
+
+thanks,
+jirka
 
