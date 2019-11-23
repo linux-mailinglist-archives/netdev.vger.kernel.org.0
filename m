@@ -2,170 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CB3A1080F0
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 23:46:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84AD31080FD
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 00:10:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbfKWWqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 17:46:45 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34946 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbfKWWqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 17:46:45 -0500
-Received: by mail-wr1-f68.google.com with SMTP id s5so12939961wrw.2;
-        Sat, 23 Nov 2019 14:46:42 -0800 (PST)
+        id S1726940AbfKWXJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 18:09:52 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:43307 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726759AbfKWXJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 18:09:52 -0500
+Received: by mail-qt1-f196.google.com with SMTP id q8so9876960qtr.10
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 15:09:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8q1jw+FZeLpHwl1LTkA7Ls76zjd4mmjdpjehrKhaUQ8=;
-        b=Hjk0dsMg7QlFUDSpGMQfpX7/d2LsD16TbehWBF9L+SRszaC6CP0WREYPw6/NVFh66b
-         OGeDCl6nyh7k9nNFFvXK92nT5Nz2pEXL5UzgHZ2IrHi538e0rceivMpjYerrcuMBidJr
-         eibEtHrsf5vgmklNQwIXld5JRTHGaR4zWCY3NbxYrIV4PHmwUR+ICbougaNXSmQINMjR
-         9HARf3GlpAZeq6Jk9KDNWkCLcdcK7kFKT7jfi1b0RUPETBFGf6M1Yc4tNBRqkOpTzR42
-         hFPAUYjVaDKY7nX9xjnS/+ki/UrDmlLjiKOYhzutU2fMMM6IFCByPgfrpSxhCuhAxl2m
-         vB0w==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=QUKMDS+SD49m7VZLfzH9P44dw/EqmARrwz8HhZZaElQ=;
+        b=cNkJNbyAl16DROUBXLPus9MoFSX2b+v5mrC1huoFuIPbPNqcxLUcBBvcyTWwob1/Oa
+         LhV6FITLF2T0Nf4gK8nckmwZyPpWAwh+uq91xUqTnl5xuA0INYxMGkHNBUqYX1IrlyjM
+         HkwiQANXqPKUiNjEe369Yw/lGc6IvOD1bAucs2uaYJRjo72akB0ww6FFqP6wmGHsezya
+         347O1wj5PzuZWzDZirS300CZzuwgkgM4rSJb6z1Y32BnLf9y8GESxl6iMRFl1OwXFz+g
+         cNsDhqTus9IcxgTe9KMwbO8TXEXMOs/PMRelw1puH0RpOYJYm+pmAQN9tDB8MeQIwENp
+         Tr/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8q1jw+FZeLpHwl1LTkA7Ls76zjd4mmjdpjehrKhaUQ8=;
-        b=VbWj4jUoccqkzboMFgDDRkJSq0QbCf50xtFgSxOLyMUDNl5kMZl26EAPFQT4jhq88A
-         Q5LECZiUDQOie6vgsm0rTABg4FUlfYHbopIYZLYPC6JN6MM0bZsZOr9poWRsXalli8B7
-         wkw5lvd2HAKBCk7Cm4ukJOdWna68Z+4TvwsW9xamVpkAOTfuMKCmnkoGFhEvAwp08Nmy
-         KZRV4M2us6DT0eXFcnttyzPmw6D6VGFV55VtEZII2FyfxzVGg1KHek7ntE49A/r1Emyx
-         QGqfsgYbVOpOL2d0EJwVai+rStNHdMu2jiKfuhKYjpGNm+ToASkDfSaN5e2Fm0YdljbF
-         9OrQ==
-X-Gm-Message-State: APjAAAUuXDUgKWwGKG7X9wuOB5nVs+PAkXWc9G15yKDokqOXBBP0gDDA
-        ovzyxqwMEon75rIh6OveQ7pZw/YL
-X-Google-Smtp-Source: APXvYqz19ZivZCNJhqkAvoqrKEvNZQLF6rTbvN/Qz6S53EUf0wdSKyGptdO5VVMkjaZJyD+BDTU9Lw==
-X-Received: by 2002:a5d:4b86:: with SMTP id b6mr6952999wrt.143.1574549201972;
-        Sat, 23 Nov 2019 14:46:41 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f2d:7d00:1511:b6a7:7175:3b20? (p200300EA8F2D7D001511B6A771753B20.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:1511:b6a7:7175:3b20])
-        by smtp.googlemail.com with ESMTPSA id a17sm3854086wrs.33.2019.11.23.14.46.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Nov 2019 14:46:40 -0800 (PST)
-Subject: Re: [PATCH] [RFC] r8169: check for valid MAC before clobbering
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Chun-Hao Lin <hau@realtek.com>
-References: <20191113005816.37084-1-briannorris@chromium.org>
- <32422b2d-6cab-3ea2-aca3-3e74d68599a3@gmail.com>
- <20191123005054.GA116745@google.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <9d6210ec-fab5-c072-bdf4-ed43a6272a51@gmail.com>
-Date:   Sat, 23 Nov 2019 23:46:31 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=QUKMDS+SD49m7VZLfzH9P44dw/EqmARrwz8HhZZaElQ=;
+        b=Ng2SO0LBjyt8DWNtoQzpMf7pnA83cdhYM+EW5XlQTSMfmBS2LkrcSktoTbiDBIpqtl
+         iw+mkPWNywM64GhX4KTHNcIX5GH1pQhVUSlgIDuaamv4v6Jr0H/qixz32nWIxdf+Bu+L
+         v9GTrxREQIwDnVwxVG+0gBx5ygeMvhl7hUE29SSg53XISBdgHuCjbHoXmwZq3f/bfV+T
+         NOaBvmznWcJPxmpcUgzJvzXjK9tdGHqKEcD3tI1flUsuAbJPsIGiIBM300Dqu8yHJ/jf
+         uIn4uG85tWZSOcQ01FB3Qy274kltOaRxk8HWCNTaVtjey7K1NkMrqK/81SPOButs2gvg
+         CL8w==
+X-Gm-Message-State: APjAAAWc5zFoqG4wnDQmTUvc0QPTJkSZTcKJoHzNzrA7NDff9uojZk6x
+        MHqtdB685GnjDDfnfEPjgCMTOw==
+X-Google-Smtp-Source: APXvYqx99DfDccErQ7Wk72kTbrFwA6HWXUk6CZmWF24dpLPXyC4iSn+fW8B46GNZlFTGLpGj/pF4/Q==
+X-Received: by 2002:ac8:2279:: with SMTP id p54mr3948523qtp.368.1574550590916;
+        Sat, 23 Nov 2019 15:09:50 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id a62sm1020273qkf.81.2019.11.23.15.09.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 23 Nov 2019 15:09:49 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iYeXE-0006hw-V3; Sat, 23 Nov 2019 19:09:48 -0400
+Date:   Sat, 23 Nov 2019 19:09:48 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191123230948.GF7448@ziepe.ca>
+References: <20191120133835.GC22515@ziepe.ca>
+ <20191120102856.7e01e2e2@x1.home>
+ <20191120181108.GJ22515@ziepe.ca>
+ <20191120150732.2fffa141@x1.home>
+ <20191121030357.GB16914@ziepe.ca>
+ <5dcef4ab-feb5-d116-b2a9-50608784a054@redhat.com>
+ <20191121141732.GB7448@ziepe.ca>
+ <721e49c2-a2e1-853f-298b-9601c32fcf9e@redhat.com>
+ <20191122180214.GD7448@ziepe.ca>
+ <20191123043951.GA364267@___>
 MIME-Version: 1.0
-In-Reply-To: <20191123005054.GA116745@google.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191123043951.GA364267@___>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.11.2019 01:51, Brian Norris wrote:
-> Hi Heiner,
+On Sat, Nov 23, 2019 at 12:39:51PM +0800, Tiwei Bie wrote:
+> On Fri, Nov 22, 2019 at 02:02:14PM -0400, Jason Gunthorpe wrote:
+> > On Fri, Nov 22, 2019 at 04:45:38PM +0800, Jason Wang wrote:
+> > > On 2019/11/21 下午10:17, Jason Gunthorpe wrote:
+> > > > On Thu, Nov 21, 2019 at 03:21:29PM +0800, Jason Wang wrote:
+> > > > > > The role of vfio has traditionally been around secure device
+> > > > > > assignment of a HW resource to a VM. I'm not totally clear on what the
+> > > > > > role if mdev is seen to be, but all the mdev drivers in the tree seem
+> > > > > > to make 'and pass it to KVM' a big part of their description.
+> > > > > > 
+> > > > > > So, looking at the virtio patches, I see some intended use is to map
+> > > > > > some BAR pages into the VM.
+> > > > > Nope, at least not for the current stage. It still depends on the
+> > > > > virtio-net-pci emulatio in qemu to work. In the future, we will allow such
+> > > > > mapping only for dorbell.
+> > > > There has been a lot of emails today, but I think this is the main
+> > > > point I want to respond to.
+> > > > 
+> > > > Using vfio when you don't even assign any part of the device BAR to
+> > > > the VM is, frankly, a gigantic misuse, IMHO.
+> > > 
+> > > That's not a compelling point. 
+> > 
+> > Well, this discussion is going nowhere.
 > 
-> Thanks for the response, and sorry for some delay. I've been busy in the
-> last week.
-> 
-> On Wed, Nov 13, 2019 at 09:30:42PM +0100, Heiner Kallweit wrote:
->> On 13.11.2019 01:58, Brian Norris wrote:
->>> I have some old systems with RTL8168g Ethernet, where the BIOS (based on
->>> Coreboot) programs the MAC address into the MAC0 registers (at offset
->>> 0x0 and 0x4). The relevant Coreboot source is publicly available here:
->>>
->>> https://review.coreboot.org/cgit/coreboot.git/tree/src/mainboard/google/jecht/lan.c?h=4.10#n139
->>>
->>> (The BIOS is built off a much older branch, but the code is effectively
->>> the same.)
->>>
->>> Note that this was apparently the recommended solution in an application
->>> note at the time (I have a copy, but it's not marked for redistribution
->>> :( ), with no mention of the method used in rtl_read_mac_address().
->>>
->> The application note refers to RTL8105e which is quite different from
->> RTL8168g.
-> 
-> Understood. But the register mapping for this part does appear to be the
-> same, and I'm really having trouble finding any other documentation, so
-> I can't really blame whoever was writing the Coreboot code in the first
-> place.
-> 
->> For RTL8168g the BIOS has to write the MAC to the respective
->> GigaMAC registers, see rtl_read_mac_address for these registers.
-> 
-> I already see the code, but do you have any reference docs? For example,
-> how am I to determine "has to"? I've totally failed at finding any good
-> documentation.
-> 
-> To the contrary, I did find an alleged RTL8169 document (no clue if it's
-> legit), and it appears to describe the IDR0-5 registers (i.e., offset
-> 0000h) as:
-> 
->   ID Register 0: The ID registers 0-5 are only permitted to write by
->   4-byte access. Read access can be byte, word, or double word access.
->   The initial value is autoloaded from EEPROM EthernetID field. 
-> 
-> If that implies anything, it seems to imply that any EEPROM settings
-> should be automatically applied, and that register 0-5h are the correct
-> source of truth.
-> 
-> Or it doesn't really imply anything, except that some other similar IP
-> doesn't specifically mention this "backup register."
-> 
->> If recompiling the BIOS isn't an option,
-> 
-> It's not 100% impossible, but it seems highly unlikely to happen. To me
-> (and likely the folks responsible for this BIOS), this looks like a
-> kernel regression (this driver worked just fine for me before commit
-> 89cceb2729c7).
-> 
-On an additional note:
-The referenced coreboot driver is part of the Google JECHT baseboard
-support. Most likely the driver is just meant to support the Realtek
-chip version found on this board. I doubt the driver authors intended
-to support each and every Realtek NIC chip version.
+> You removed JasonW's other reply in above quote. He said it clearly
+> that we do want/need to assign parts of device BAR to the VM.
 
->> then easiest should be to
->> change the MAC after boot with "ifconfig" or "ip" command.
-> 
-> No, I think the easiest option is to apply my patch, which I'll probably
-> do if I can't find anything else.
-> 
-> I'm curious: do you see any problem with my patch? In your
-> understanding, what's the purpose of the "backup registers" (as they
-> were called in commit 89cceb2729c7)? To be the primary source of MAC
-> address information? Or to only be a source if the primary registers are
-> empty? If the latter, then my patch should be a fine substitute.
-> 
-> Brian
-> 
->>> The result is that ever since commit 89cceb2729c7 ("r8169:add support
->>> more chips to get mac address from backup mac address register"), my MAC
->>> address changes to use an address I never intended.
->>>
->>> Unfortunately, these commits don't really provide any documentation, and
->>> I'm not sure when the recommendation actually changed. So I'm sending
->>> this as RFC, in case I can get any tips from Realtek on how to avoid
->>> breaking compatibility like this.
->>>
->>> I'll freely admit that the devices in question are currently pinned to
->>> an ancient kernel. We're only recently testing newer kernels on these
->>> devices, which brings me here.
->>>
->>> I'll also admit that I don't have much means to test this widely, and
->>> I'm not sure what implicit behaviors other systems were depending on
->>> along the way.
->>>
->>> Fixes: 89cceb2729c7 ("r8169:add support more chips to get mac address from backup mac address register")
->>> Fixes: 6e1d0b898818 ("r8169:add support for RTL8168H and RTL8107E")
->>> Cc: Chun-Hao Lin <hau@realtek.com>
->>> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> 
+Generally we don't look at patches based on stuff that isn't in them.
 
+> > I mean the library functions in the kernel that vfio uses to implement
+> > all the user dma stuff. Other subsystems use them too, it is not
+> > exclusive to vfio.
+> 
+> IIUC, your point is to suggest us invent new DMA API for userspace to
+> use instead of leveraging VFIO's well defined DMA API. Even if we don't
+> use VFIO at all, I would imagine it could be very VFIO-like (e.g. caps
+> for BAR + container/group for DMA) eventually.
+
+None of the other user dma subsystems seem to have the problems you
+are imagining here. Perhaps you should try it first?
+ 
+> > > > Further, I do not think it is wise to design the userspace ABI around
+> > > > a simplistict implementation that can't do BAR assignment,
+> > > 
+> > > Again, the vhost-mdev follow the VFIO ABI, no new ABI is invented, and
+> > > mmap() was kept their for mapping device regions.
+> > 
+> > The patches have a new file in include/uapi.
+> 
+> I guess you didn't look at the code. Just to clarify, there is no
+> new file introduced in include/uapi. Only small vhost extensions to
+> the existing vhost uapi are involved in vhost-mdev.
+
+You know, I review alot of patches every week, and sometimes I make
+mistakes, but not this time. From the ICF cover letter:
+
+https://lkml.org/lkml/2019/11/7/62
+
+ drivers/vfio/mdev/mdev_core.c    |  21 ++
+ drivers/vhost/Kconfig            |  12 +
+ drivers/vhost/Makefile           |   3 +
+ drivers/vhost/mdev.c             | 556 +++++++++++++++++++++++++++++++
+ include/linux/mdev.h             |   5 +
+ include/uapi/linux/vhost.h       |  21 ++
+ include/uapi/linux/vhost_types.h |   8 +
+      ^^^^^^^^^^^^^^
+
+Perhaps you thought I ment ICF was adding uapi? My remarks cover all
+three of the series involved here.
+
+Jason
