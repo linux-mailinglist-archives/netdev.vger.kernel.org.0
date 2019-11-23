@@ -2,143 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 963EF107E76
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 14:09:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F01107E7C
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 14:19:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbfKWNI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 08:08:27 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:45499 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbfKWNI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 08:08:27 -0500
-Received: by mail-pj1-f66.google.com with SMTP id m71so4382590pjb.12;
-        Sat, 23 Nov 2019 05:08:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=bQPOmB6uOGZ2tirIZp69eeW8KP/lls7xjJX/xrKZza4=;
-        b=iW8BociEN1RTqb+QhcWPt6vA1o/AFzZSE940W1J24I503CaLAZlOJ8DDSJkPiw1tvO
-         XwnB/5vIDvi+h5uImf57H2zcLkMZ5tH/aW3x3wUnIQ46lYJvV1EuHvfYFg0XgLro7TSp
-         +sipK1nv6uBagxi28WFWrhk2/Eog9Ey84Ligc+uUfIvIBtlGiu29DUC0iBkUvvvTX+Bg
-         xOX1o6Ii/wP/ugjYqUUQownyhlRdcG/nojZnstzHN2nLZwR1Q2I9MuX7Nc5D2l9kZuWj
-         8xkxzvav0aBNF7+9oEfXPV0T74q5Hq5BL73twpXt2HGk6M8gClhfyng90WEclPHL7lrE
-         xUUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=bQPOmB6uOGZ2tirIZp69eeW8KP/lls7xjJX/xrKZza4=;
-        b=qpd2d+rkvib5yFviuVPkijLi/ZhxHo5t1OwrdQmwi/hWN/9SJ4V1OYQZ5Nth6mlfO0
-         EB9Wqqlwy7jXzJ8GQ3DH3ZMTqo39XFrIdG0P1Ca7pQdqbck/gx3+jK6pUPY4l52doXF9
-         lgLzhXj4J9j4W32AbXc9gjoR1BSlQ7s57y+HOXboDk3OjnWfQt1jVETnuH/llFtTis9j
-         tcTB+UdImAXdOqbki7xJrzOBDt8J980/9cr7ahHSEMWcZP/3iEaAgUYGpJkE43/HtzQI
-         GG0Q6jclzPh0qur3ptM8wYx+4QjJ/loOnCkGIBdj0llsWthGy29j4NXxtUAev1b2gIfL
-         k88g==
-X-Gm-Message-State: APjAAAX4tZxIGwcoE0ASIIzbXQRLMrJ7mCGmhh9gkSZcHPEr9NbiP3EY
-        0fWQHF5NbVVQtQi4L926hZ0=
-X-Google-Smtp-Source: APXvYqyGXIG1l3cVb9cOrEeVKeV2vpc33vOhvoSWgz0KHC102QopMHaUrhNYkck+L3PZAUlAz58xRQ==
-X-Received: by 2002:a17:902:82c3:: with SMTP id u3mr12804738plz.73.1574514506505;
-        Sat, 23 Nov 2019 05:08:26 -0800 (PST)
-Received: from nishad ([106.51.232.103])
-        by smtp.gmail.com with ESMTPSA id q20sm1646148pff.134.2019.11.23.05.08.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 23 Nov 2019 05:08:26 -0800 (PST)
-Date:   Sat, 23 Nov 2019 18:38:19 +0530
-From:   Nishad Kamdar <nishadkamdar@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: Use the correct style for SPDX License Identifier
-Message-ID: <20191123130815.GA3288@nishad>
+        id S1726705AbfKWNTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 08:19:17 -0500
+Received: from bmailout2.hostsharing.net ([83.223.78.240]:49227 "EHLO
+        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfKWNTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 08:19:16 -0500
+X-Greylist: delayed 486 seconds by postgrey-1.27 at vger.kernel.org; Sat, 23 Nov 2019 08:19:16 EST
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 6FD66280237DB;
+        Sat, 23 Nov 2019 14:11:08 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 2C22070E406; Sat, 23 Nov 2019 14:11:08 +0100 (CET)
+Date:   Sat, 23 Nov 2019 14:11:08 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH nf-next,RFC 0/5] Netfilter egress hook
+Message-ID: <20191123131108.dlnrbutabh5i55ix@wunner.de>
+References: <cover.1572528496.git.lukas@wunner.de>
+ <20191107225149.5t4sg35b5gwuwawa@salvia>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20191107225149.5t4sg35b5gwuwawa@salvia>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch corrects the SPDX License Identifier style in
-header files related to PHY Layer for Ethernet drivers.
-For C header files Documentation/process/license-rules.rst
-mandates C-like comments (opposed to C source files where
-C++ style should be used). This patch also gives an explicit
-block comment to the SPDX License Identifier.
+On Thu, Nov 07, 2019 at 11:51:49PM +0100, Pablo Neira Ayuso wrote:
+> On Thu, Oct 31, 2019 at 02:41:00PM +0100, Lukas Wunner wrote:
+> > Introduce a netfilter egress hook to complement the existing ingress hook.
+> 
+> Would you provide some numbers on the performance impact for this new
+> hook?
 
-Changes made by using a script provided by Joe Perches here:
-https://lkml.org/lkml/2019/2/7/46.
+For some reason the numbers are slightly better with this series.
 
-Suggested-by: Joe Perches <joe@perches.com>
-Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
----
- drivers/net/phy/aquantia.h    | 4 ++--
- drivers/net/phy/bcm-phy-lib.h | 2 +-
- drivers/net/phy/mdio-cavium.h | 2 +-
- drivers/net/phy/mdio-i2c.h    | 2 +-
- drivers/net/phy/mdio-xgene.h  | 2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+Could be caused by the __always_inline in patch 4, I'd have to compare
+the disassembly to confirm this hunch.
 
-diff --git a/drivers/net/phy/aquantia.h b/drivers/net/phy/aquantia.h
-index 5a16caab7b2f..40e0be0f4e1c 100644
---- a/drivers/net/phy/aquantia.h
-+++ b/drivers/net/phy/aquantia.h
-@@ -1,5 +1,5 @@
--/* SPDX-License-Identifier: GPL-2.0
-- * HWMON driver for Aquantia PHY
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*  HWMON driver for Aquantia PHY
-  *
-  * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-  * Author: Andrew Lunn <andrew@lunn.ch>
-diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
-index 5ecacb4e64f0..c86fb9d1240c 100644
---- a/drivers/net/phy/bcm-phy-lib.h
-+++ b/drivers/net/phy/bcm-phy-lib.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (C) 2015 Broadcom Corporation
-  */
-diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
-index b7f89ad27465..e33d3ea9a907 100644
---- a/drivers/net/phy/mdio-cavium.h
-+++ b/drivers/net/phy/mdio-cavium.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (C) 2009-2016 Cavium, Inc.
-  */
-diff --git a/drivers/net/phy/mdio-i2c.h b/drivers/net/phy/mdio-i2c.h
-index 751dab281f57..b1d27f7cd23f 100644
---- a/drivers/net/phy/mdio-i2c.h
-+++ b/drivers/net/phy/mdio-i2c.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * MDIO I2C bridge
-  *
-diff --git a/drivers/net/phy/mdio-xgene.h b/drivers/net/phy/mdio-xgene.h
-index b1f5ccb4ad9c..8af93ada8b64 100644
---- a/drivers/net/phy/mdio-xgene.h
-+++ b/drivers/net/phy/mdio-xgene.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0+
-+/* SPDX-License-Identifier: GPL-2.0+ */
- /* Applied Micro X-Gene SoC MDIO Driver
-  *
-  * Copyright (c) 2016, Applied Micro Circuits Corporation
--- 
-2.17.1
 
+* Without this patch:
+  Result: OK: 34205373(c34202809+d2564) usec, 100000000 (60byte,0frags)
+  2923517pps 1403Mb/sec (1403288160bps) errors: 0
+
+* With this patch:
+  Result: OK: 34106013(c34103172+d2841) usec, 100000000 (60byte,0frags)
+  2932034pps 1407Mb/sec (1407376320bps) errors: 0
+
+
+* Without this patch + tc egress:
+  Result: OK: 37848652(c37846140+d2511) usec, 100000000 (60byte,0frags)
+  2642102pps 1268Mb/sec (1268208960bps) errors: 0
+
+* With this patch + tc egress:
+  Result: OK: 37784817(c37782026+d2791) usec, 100000000 (60byte,0frags)
+  2646565pps 1270Mb/sec (1270351200bps) errors: 0
+
+
+* With this patch + nft egress:
+  Result: OK: 43911936(c43908932+d3003) usec, 100000000 (60byte,0frags)
+  2277285pps 1093Mb/sec (1093096800bps) errors: 0
+
+
+Tested on a bare-metal Core i7-3615QM, each measurement was performed
+twice to verify that the numbers are stable.
+
+Commands to perform a measurement:
+modprobe pktgen
+echo "add_device lo@3" > /proc/net/pktgen/kpktgend_3
+samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh -i 'lo@3' -n 100000000
+
+Commands for testing tc egress:
+tc qdisc add dev lo clsact
+tc filter add dev lo egress protocol ip prio 1 u32 match ip dst 4.3.2.1/32
+
+Commands for testing nft egress:
+nft add table netdev t
+nft add chain netdev t co \{ type filter hook egress device lo priority 0 \; \}
+nft add rule netdev t co ip daddr 4.3.2.1/32 drop
+
+All testing was performed on the loopback interface to avoid distorting
+measurements by the packet handling in the low-level Ethernet driver.
+This required the following small patch:
+
+
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index bb99152..020c825 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -2003,8 +2003,8 @@ static int pktgen_setup_dev(const struct pktgen_net *pn,
+ 		return -ENODEV;
+ 	}
+ 
+-	if (odev->type != ARPHRD_ETHER) {
+-		pr_err("not an ethernet device: \"%s\"\n", ifname);
++	if (odev->type != ARPHRD_ETHER && odev->type != ARPHRD_LOOPBACK) {
++		pr_err("not an ethernet or loopback device: \"%s\"\n", ifname);
+ 		err = -EINVAL;
+ 	} else if (!netif_running(odev)) {
+ 		pr_err("device is down: \"%s\"\n", ifname);
