@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A15A107EC3
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 15:19:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECB4107ED2
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 15:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbfKWOTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 09:19:43 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38374 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbfKWOTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 09:19:43 -0500
-Received: by mail-pg1-f194.google.com with SMTP id t3so4434360pgl.5;
-        Sat, 23 Nov 2019 06:19:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l9I4KqFGS6ff8/IYdfHFE2ABoOk3S9eLWIs9fo62ASc=;
-        b=W4LyYeKtMUMQo5EEoQI6QKHteSm2OGuC2/43baA3jUpoANrMzlBhI6HbFOGl2zR9Xs
-         INH2OSkN7XARs04dGPMpRUs9im8Zh0X7AVbnd/r7kEX26BFFo9z6lVswFybzXqYRJRFg
-         FudSy19r0zx0MBvALSJanDGtD5Q94vYOlPByOOkdyRL30lpYieFlMlbXANiSXnx6hRe7
-         gjCUXF1kyvh7EfEYKQnoJD99NLRpUOA79yVuqlZbdO4Q13rmgIuhCOT88Goxv+BgUfGn
-         YDOdgWElhG/vNXt0e0dmCm8s1yzfyJcLmYQj8mAaiJFWv8QxHT/Mq4GSgZB5Zq/Uf/om
-         bujQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l9I4KqFGS6ff8/IYdfHFE2ABoOk3S9eLWIs9fo62ASc=;
-        b=EN1UEFJ7NUVx0gvnAhjACymjj+6mhCo6lS+io/biqkdIfasdNe7d8VTPuw7L02wTem
-         Mw2ia9p9r5hlpiA8yhCX0oN8Hyal7UQgOKx5BMu3v4Rwt7W/8XZC/3LV2ahn3iWvylEM
-         vvKvRuoVKA8W/4Z0fy7/eTm3JE0hxPk4dzlIoKg5cu24b6QePfkw0S8IgK1OXeWSgiGm
-         72VMjPxiPD3780yvtRJawDaVwZzRm3rRnqXMhkNDRmwaKpKxXGFKNQACeDIj5o4pk0H/
-         9a42i8wdr8OgNGESnxwnJUIpI5PjD1oM9xNu4Wo+JYcfgNKfUbXKMZeMnOnT7q99vy9B
-         VmYg==
-X-Gm-Message-State: APjAAAU7bINwwWlwWtiA9oydpfzRfOyo13ihlqrZ2SgWlhlOirHjc7o0
-        T7/xLfcb96p4UqUe0gxJysE=
-X-Google-Smtp-Source: APXvYqzQqAJJxpRwZ2VWlAvLN7OUti2D6yEkc7VDBUERoJW1Tq9GFB1SpZMSgzTi1s8A+JhPrBlx+w==
-X-Received: by 2002:a63:6b87:: with SMTP id g129mr13033657pgc.438.1574518782307;
-        Sat, 23 Nov 2019 06:19:42 -0800 (PST)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id y17sm1836441pfl.92.2019.11.23.06.19.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 06:19:41 -0800 (PST)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net v3] net: macb: add missed tasklet_kill
-Date:   Sat, 23 Nov 2019 22:19:18 +0800
-Message-Id: <20191123141918.16239-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S1726836AbfKWOXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 09:23:09 -0500
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:43737 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfKWOXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 09:23:09 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id EA1D030022AC1;
+        Sat, 23 Nov 2019 15:23:05 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id C093D70E401; Sat, 23 Nov 2019 15:23:05 +0100 (CET)
+Date:   Sat, 23 Nov 2019 15:23:05 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>
+Subject: Re: [PATCH nf-next,RFC 5/5] netfilter: Introduce egress hook
+Message-ID: <20191123142305.g2kkaudhhyui22fq@wunner.de>
+References: <cover.1572528496.git.lukas@wunner.de>
+ <de461181e53bcec9a75a9630d0d998d555dc8bf5.1572528497.git.lukas@wunner.de>
+ <d5876ef3-bcee-e0b2-273e-e0405fe17b79@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d5876ef3-bcee-e0b2-273e-e0405fe17b79@iogearbox.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver forgets to kill tasklet in remove.
-Add the call to fix it.
+On Thu, Oct 31, 2019 at 11:39:58PM +0100, Daniel Borkmann wrote:
+> On 10/31/19 2:41 PM, Lukas Wunner wrote:
+> > Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
+> > handle_ing() under unique static key") introduced the ability to
+> > classify packets on ingress.
+> > 
+> > Allow the same on egress.
+> > 
+> > The need for this arose because I had to filter egress packets which do
+> > not match a specific ethertype.  The most common solution appears to be
+> > to enslave the interface to a bridge and use ebtables, but that's
+> > cumbersome to configure and comes with a (small) performance penalty.
+> > An alternative approach is tc, but that doesn't afford equivalent
+> > matching options as netfilter.
+> 
+> Hmm, have you tried tc BPF on the egress hook (via sch_cls_act -> cls_bpf)?
 
-Fixes: 032dc41ba6e2 ("net: macb: Handle HRESP error")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
-Changes in v3:
-  - Add fixes tag and target 'net'.
+There's another reason I chose netfilter over tc:  I need to activate the
+filter from a kernel module, hence need an in-kernel (rather than user space)
+API.
 
- drivers/net/ethernet/cadence/macb_main.c | 1 +
- 1 file changed, 1 insertion(+)
+netfilter provides that via nf_register_net_hook(), I couldn't find
+anything similar for tc.  And an egress netfilter hook seemed like
+an obvious missing feature given the presence of an ingress hook.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 1e1b774e1953..2ec416098fa3 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4383,6 +4383,7 @@ static int macb_remove(struct platform_device *pdev)
- 
- 	if (dev) {
- 		bp = netdev_priv(dev);
-+		tasklet_kill(&bp->hresp_err_tasklet);
- 		if (dev->phydev)
- 			phy_disconnect(dev->phydev);
- 		mdiobus_unregister(bp->mii_bus);
--- 
-2.24.0
+The module I need this for is out-of-tree:
+https://github.com/RevolutionPi/piControl/commit/da199ccd2099
 
+In my experience the argument that a feature is needed for an out-of-tree
+module holds zero value upstream.  If there's no in-tree user, the feature
+isn't merged, I've seen this more than enough.  Which is why I didn't mention
+it in the first place.
+
+For our use case I wouldn't even need the nft user space support which I
+posted separately, I just implemented it for completeness and to increase
+acceptability of the present series.
+
+Thanks,
+
+Lukas
