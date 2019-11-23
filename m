@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D52FD10805B
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:28:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7C510805D
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726767AbfKWU2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 15:28:01 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46890 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfKWU2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:28:01 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 193so5306671pfc.13
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:28:00 -0800 (PST)
+        id S1726744AbfKWUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:30:16 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41876 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726676AbfKWUaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:30:16 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 207so5109694pge.8
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:30:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TyIyFydgEOTKMkZQJp8UfydgrlE90NThieqDBtzIVUk=;
-        b=c68pGY32kcbyZCx1dbHiPf15c4m6uqWAUyFlJNnptCT4i0V0eLLVuK/oyxslHipZ/K
-         mBSTNl4HODLf7kaCWgz8MNoh8lxud3ubn/d9VKSr6IRkVqjp0IxLKRxfAbBF/y3Tk77Q
-         owgtKn+WL41lWqi8nFbcPduvsUpI4pF9waSKPwsTkqm4S62blFlOBJ/0qYQuvb12qXgJ
-         2pJzT0nSaAQV4xozDlnuWod9/NAxUNi1a982/2dxCbY/9BlrUXJ4FDv7wM6H9S/Jjp5H
-         pq/YazEAvMt2mdW8ZOiQpwbPLrrol3086g8jHDJsjYZ9peKO+ocuqhfgtdnRSfJd/dX+
-         TjSg==
+        bh=M/v3dNxe8diNyLlSuuoeUTwb7+3tRosmkuLTzYNjR20=;
+        b=r/RcbhKwq9hvVDblq0o9jc6CKSoFyXnfz5DyqmG8v2qodqSksy+kVSx4OyyLqknpkQ
+         HBgaRHcRpLmsChaXndWo/y3UgGRhiN/XQ0O23mxd3mdKP3OJq+Knw6KDvmhceR9uYMWL
+         DG+AtSeZx4eWNxZUokMmzXJj9Z7+ABbDCoVGp5CkSTgA47jkl+lGI6BgUD6B2rRp31mV
+         +nIKdKac1zX9nnZyORcp6KFRxR5ic4SHVxrOBIQdEHOjQuHCFPq0dgOOCCyzIsxSZtOd
+         vzpaWyRHkM5x/ztPw4sHho1NL+PRgqtw2iOSCYdxSjLBIVXyKH3R9Wn+JHiIgdVRfpiK
+         YIaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=TyIyFydgEOTKMkZQJp8UfydgrlE90NThieqDBtzIVUk=;
-        b=j8pnokkARBYxMsFboWE/lgwWqmtT4FdTu9PYyNBAH2ILK715C/yHKdOM3UdcwHspdm
-         TAyUcHW3Vl7wY7YtnT1NG+r3UPTEIP1kPZ854O/YSjb+w7jiv3tnzsvhRTeAbJB8nMiN
-         G/xAoZUs7Itp/ZvKi1AcUJU3EzxLlTsetuz4FXuL+YUgG7DPEwjgiKnrgCUdaoe0XWSl
-         7yKU9BLRvs6NC84WQ8BTkOYODsFxwwFalpAdU4d5vhD6lJf5aY/duGXNQGu22gaOiHML
-         Dx0ot1EnUKnoRDmdItHoOioajciyToV1wLTiCCSaJZLc9nPBdXkH/RTHsmUr68HS5ZFC
-         bL3A==
-X-Gm-Message-State: APjAAAX3+vkPPKOWFzryrptSqHwCG8fMAZk+UKm6o1QhOojN9HKOB0xH
-        FZcrzMLvvQYgw7+Z2YeRu6jzvU06
-X-Google-Smtp-Source: APXvYqwd5vc5pSvj/rm5HSoEkF8Xj2EgmO0gDhci/MPqTpckATb8h+c/gJNINuKP5fVU89FWT/xQvw==
-X-Received: by 2002:a62:7f93:: with SMTP id a141mr25641980pfd.82.1574540879508;
-        Sat, 23 Nov 2019 12:27:59 -0800 (PST)
+        bh=M/v3dNxe8diNyLlSuuoeUTwb7+3tRosmkuLTzYNjR20=;
+        b=EizANGgv2Q5FblStZ7AX+cIceHtnuCngKEyODmsflCkBql7j5EPphzhz08qi3reD4Q
+         K81UC0zKEegJNAuFHgw2so+slxtn2m2U7uL71nszxbHvO6iBWfaG2/+tdPWJvroLtN7U
+         qodXBeeCsPgR5tHvyPmsVof3ucrTA+BQs/5qnE2FQUiU5ZnoZgltr0plJqrscjKFSH6F
+         UWSFaVpHlMya9xutRh9mgYv22Ytk1keCFvKvlARSNsE8fzUowaHXQIkXnelK3IIwh7bf
+         B2BZrvf1ceju4KHudFbWPVoy/G93ArnUY2ddhuxGmUzlD3IihxBKHednH92Pk7LVULoX
+         oKxQ==
+X-Gm-Message-State: APjAAAWY16RUyHg9lticfUA1mmQbVNoxplJv8BTDdKI19/2v+KAGdZ33
+        HcktzcUY4OS4mnAvphD9MksuVjYa
+X-Google-Smtp-Source: APXvYqyBwQ9r1nAXVwHSsr1Oy0HtXxiHxiPkclRccGYbIQsF6PxfR/KilELMAWB6fD4bFS3UdqspRw==
+X-Received: by 2002:a63:591:: with SMTP id 139mr23834957pgf.0.1574541014585;
+        Sat, 23 Nov 2019 12:30:14 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id z10sm2582099pfr.139.2019.11.23.12.27.58
+        by smtp.gmail.com with ESMTPSA id y11sm2739863pfq.1.2019.11.23.12.30.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Nov 2019 12:27:58 -0800 (PST)
-Subject: Re: [PATCH net-next 1/3] net: dsa: Configure the MTU for switch ports
+        Sat, 23 Nov 2019 12:30:13 -0800 (PST)
+Subject: Re: [PATCH net-next 2/3] net: dsa: sja1105: Implement the port MTU
+ callbacks
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com, davem@davemloft.net,
         jakub.kicinski@netronome.com
 Cc:     netdev@vger.kernel.org
 References: <20191123194844.9508-1-olteanv@gmail.com>
- <20191123194844.9508-2-olteanv@gmail.com>
+ <20191123194844.9508-3-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,130 +108,124 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <329f394b-9e6c-d3b0-dc3d-5e3707fa8dd7@gmail.com>
-Date:   Sat, 23 Nov 2019 12:27:58 -0800
+Message-ID: <6bb2b2cb-361f-69bc-0299-26abcb09882f@gmail.com>
+Date:   Sat, 23 Nov 2019 12:30:13 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191123194844.9508-2-olteanv@gmail.com>
+In-Reply-To: <20191123194844.9508-3-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+
 
 On 11/23/2019 11:48 AM, Vladimir Oltean wrote:
-> It is useful be able to configure port policers on a switch to accept
-> frames of various sizes:
+> On this switch, the frame length enforcements are performed by the
+> ingress policers. There are 2 types of those: regular L2 (also called
+> best-effort) and Virtual Link policers (an ARINC664/AFDX concept for
+> defining L2 streams with certain QoS abilities). To avoid future
+> confusion, I prefer to call the reset reason "Best-effort policers",
+> even though the VL policers are not yet supported.
 > 
-> - Increase the MTU for better throughput from the default of 1500 if it
->   is known that there is no 10/100 Mbps device in the network.
-> - Decrease the MTU to limit the latency of high-priority frames under
->   congestion.
+> We also need to change the setup of the initial static config, such that
+> DSA calls to .change_mtu (which are expensive) become no-ops and don't
+> reset the switch 5 times.
 > 
-> For DSA slave ports, this is mostly a pass-through callback, called
-> through the regular ndo ops and at probe time (to ensure consistency
-> across all supported switches).
+> A driver-level decision is to unconditionally allow single VLAN-tagged
+> traffic on all ports. The CPU port must accept an additional VLAN header
+> for the DSA tag, which is again a driver-level decision.
 > 
-> The CPU port is called with an MTU equal to the largest configured MTU
-> of the slave ports. The assumption is that the user might want to
-> sustain a bidirectional conversation with a partner over any switch
-> port.
-> 
-> The DSA master is configured the same as the CPU port, plus the tagger
-> overhead. Since the MTU is by definition L2 payload (sans Ethernet
-> header), it is up to each individual driver to figure out if it needs to
-> do anything special for its frame tags on the CPU port (it shouldn't
-> except in special cases). So the MTU does not contain the tagger
-> overhead on the CPU port.
-> However the MTU of the DSA master, minus the tagger overhead, is used as
-> a proxy for the MTU of the CPU port, which does not have a net device.
-> This is to avoid uselessly calling the .change_mtu function on the CPU
-> port when nothing should change.
-> 
-> So it is safe to assume that the DSA master and the CPU port MTUs are
-> apart by exactly the tagger's overhead in bytes.
+> The policers actually count bytes not only from the SDU, but also from
+> the Ethernet header and FCS, so those need to be accounted for as well.
 > 
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 > ---
+>  drivers/net/dsa/sja1105/sja1105.h      |  1 +
+>  drivers/net/dsa/sja1105/sja1105_main.c | 48 +++++++++++++++++++++++---
+>  2 files changed, 45 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+> index d801fc204d19..3a5c8acb6e2a 100644
+> --- a/drivers/net/dsa/sja1105/sja1105.h
+> +++ b/drivers/net/dsa/sja1105/sja1105.h
+> @@ -122,6 +122,7 @@ enum sja1105_reset_reason {
+>  	SJA1105_RX_HWTSTAMPING,
+>  	SJA1105_AGEING_TIME,
+>  	SJA1105_SCHEDULING,
+> +	SJA1105_BEST_EFFORT_POLICING,
+>  };
+>  
+>  int sja1105_static_config_reload(struct sja1105_private *priv,
+> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> index b60224c55244..3d55dd3c7e83 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> @@ -459,12 +459,12 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
+>  #define SJA1105_RATE_MBPS(speed) (((speed) * 64000) / 1000)
+>  
+>  static void sja1105_setup_policer(struct sja1105_l2_policing_entry *policing,
+> -				  int index)
+> +				  int index, int mtu)
+>  {
+>  	policing[index].sharindx = index;
+>  	policing[index].smax = 65535; /* Burst size in bytes */
+>  	policing[index].rate = SJA1105_RATE_MBPS(1000);
+> -	policing[index].maxlen = ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN;
+> +	policing[index].maxlen = mtu;
+>  	policing[index].partition = 0;
+>  }
+>  
+> @@ -496,12 +496,16 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
+>  	 */
+>  	for (i = 0, k = 0; i < SJA1105_NUM_PORTS; i++) {
+>  		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + i;
+> +		int mtu = VLAN_ETH_FRAME_LEN + ETH_FCS_LEN;
+> +
+> +		if (dsa_is_cpu_port(priv->ds, i))
+> +			mtu += VLAN_HLEN;
 
-[snip]
-> +static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+That really seems like a layering violation it so happens that you use
+DSA_TAG_8021Q which is why you need VLAN_ETH_HLEN, but you should not
+assume that from with your driver, even if this one is special on so
+many counts. How about using use dsa_port(port)->tag_ops->overhead +
+ETH_HLEN here?
+>  
+>  		for (j = 0; j < SJA1105_NUM_TC; j++, k++)
+> -			sja1105_setup_policer(policing, k);
+> +			sja1105_setup_policer(policing, k, mtu);
+>  
+>  		/* Set up this port's policer for broadcast traffic */
+> -		sja1105_setup_policer(policing, bcast);
+> +		sja1105_setup_policer(policing, bcast, mtu);
+>  	}
+>  	return 0;
+>  }
+> @@ -1346,6 +1350,7 @@ static const char * const sja1105_reset_reasons[] = {
+>  	[SJA1105_RX_HWTSTAMPING] = "RX timestamping",
+>  	[SJA1105_AGEING_TIME] = "Ageing time",
+>  	[SJA1105_SCHEDULING] = "Time-aware scheduling",
+> +	[SJA1105_BEST_EFFORT_POLICING] = "Best-effort policing",
+>  };
+>  
+>  /* For situations where we need to change a setting at runtime that is only
+> @@ -1886,6 +1891,39 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
+>  	return sja1105_static_config_reload(priv, SJA1105_AGEING_TIME);
+>  }
+>  
+> +static int sja1105_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
 > +{
-> +	struct net_device *master = dsa_slave_to_master(dev);
-> +	struct dsa_slave_priv *p = netdev_priv(dev);
-> +	struct dsa_switch *ds = p->dp->ds;
-> +	struct dsa_port *cpu_dp;
-> +	int port = p->dp->index;
-> +	int max_mtu = 0;
-> +	int cpu_mtu;
-> +	int err, i;
+> +	int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
+> +	struct sja1105_l2_policing_entry *policing;
+> +	struct sja1105_private *priv = ds->priv;
+> +	int tc;
 > +
-> +	if (!ds->ops->change_mtu)
-> +		return -EOPNOTSUPP;
-> +
-> +	err = ds->ops->change_mtu(ds, port, new_mtu);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	dev->mtu = new_mtu;
-> +
-> +	for (i = 0; i < ds->num_ports; i++) {
-> +		if (!dsa_is_user_port(ds, i))
-> +			continue;
-> +
-> +		/* During probe, this function will be called for each slave
-> +		 * device, while not all of them have been allocated. That's
-> +		 * ok, it doesn't change what the maximum is, so ignore it.
-> +		 */
-> +		if (!dsa_to_port(ds, i)->slave)
-> +			continue;
-> +
-> +		if (max_mtu < dsa_to_port(ds, i)->slave->mtu)
-> +			max_mtu = dsa_to_port(ds, i)->slave->mtu;
-> +	}
-> +
-> +	cpu_dp = dsa_to_port(ds, port)->cpu_dp;
-> +
-> +	max_mtu += cpu_dp->tag_ops->overhead;
-> +	cpu_mtu = master->mtu;
-> +
-> +	if (max_mtu != cpu_mtu) {
-> +		err = ds->ops->change_mtu(ds, dsa_upstream_port(ds, port),
-> +					  max_mtu - cpu_dp->tag_ops->overhead);
-> +		if (err < 0)
-> +			return err;
+> +	new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
 
-Before changing and committing the slave_dev's MTU you should actually
-perform these two operations first to make sure that you can honor the
-user port MTU that is requested. Here, you would possibly leave an user
-port configured for a MTU value that is unsupported by the upstream
-port(s) and/or the CPU port and/or the DSA master device, which could
-possibly break frame forwarding depending on what the switch is willing
-to accept.
-
-I had prepared a patch series with Murali doing nearly the same thing
-and targeting Broadcom switches nearly a year ago but since I never got
-feedback whether this worked properly for the use case he was after, I
-did not submit it since I did not need it personally and found it to be
-a nice can of worms.
-
-Another thing that I had not gotten around testing was making sure that
-when a slave_dev gets enslaved as a bridge port member, that bridge MTU
-normalization would kick in and make sure that if you have say: port 0
-configured with MTU 1500 and port 1 configured with MTU 9000, the bridge
-would normalize to MTU 1500 as you would expect.
-
-https://github.com/ffainelli/linux/commits/dsa-mtu
-
-This should be a DSA switch fabric notifier IMHO because changing the
-MTU on an user port implies changing the MTU on every DSA port in
-between plus the CPU port. Your approach here works for the first
-upstream port, but not for the ones in between, and there can be more,
-as is common with the ZII devel Rev. B and C boards.
+Likewise
 -- 
 Florian
