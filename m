@@ -2,89 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E550B1080B1
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 22:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D551080B2
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 22:04:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbfKWVEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 16:04:40 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35064 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbfKWVEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 16:04:40 -0500
-Received: by mail-lj1-f195.google.com with SMTP id j6so2284405lja.2;
-        Sat, 23 Nov 2019 13:04:38 -0800 (PST)
+        id S1726774AbfKWVEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 16:04:52 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53182 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726759AbfKWVEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 16:04:52 -0500
+Received: by mail-wm1-f65.google.com with SMTP id l1so11187360wme.2;
+        Sat, 23 Nov 2019 13:04:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=n+bqr098826ITu9D+AvY5CnxPGDTup0kvus7bNbcpsY=;
-        b=S6X8Nd9NwDbGHm1vBUzQjDeM6++hy+lALX/aAkMZPQIhwOlZW47InHIG+Yrd+9SarW
-         7l3P4vzCSIDTlLdqGtBj/bTezmxm2PabVQ7JghsSwJHfcSfM5qiYDxRfALElnSnQandO
-         l5lSFGQdGb3yHnY1QmVAnO/EDQrVLPJlwovpqQ3qBx3kx3JLnI3Ok135DHyeW2rS5wtr
-         x2cR7+1Ner6wMcDmAOm9kECT16ZLfswBis9WGw2EhBMA5zw2QLw3SZiYr+Eb4PkyxoDo
-         pi3sofVaOl9bi1H+PGKLJ60asbn6UugIbtnOC+jqnNVVi91B3KQBgUXnc114FCUGknDs
-         5XLA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=B4L4Pfo4rpcpOUx/OybOJ8g0Fxx8N1fe9jCWdz/sqNQ=;
+        b=EDJYYI6p7ncCS6VGIedn7jyw+dN5o9jTjoV8O/BheFltaoPhtvPBhNCqKEPJ3M45Bk
+         3Xey+QtfJaYDBv1U1Gx4u28JKCDgBuE84mdvjAvjW/cywtm26cZT+4l/JK6Rcpm7Guse
+         3gOPKJSUIzaDCjj/kvchNp4+lcaRxhcBsaFz19X8fyxWqk6lc/hxeolOf4nKq9qAzNIs
+         QgicN4d+Q0S6u44qYEmMCpzdzFy9JWD5YhKtsp6HzKNE0nvBNp5+tGpiCa1hcX8pwvv9
+         ul4NquULZWtVom5ATTY+VJs9j7t7ZlxTzcSvzg1ZFnBuTKRWvbXAXUkMZG5LT+m2g/RA
+         0tgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=n+bqr098826ITu9D+AvY5CnxPGDTup0kvus7bNbcpsY=;
-        b=PCC/cGafJJu93ARMjxaMJg104Gkweh8V+XgVy7lIyKhGtkUPgp2MgSINsXjFuSeW6i
-         Snwkat7umhfYQTdNfz6m+KJSFahC+EQu4/EN5lV4zZHHEXDOXjAfc+Q6cLUqurW5l3LZ
-         9HU1PRDTRF2bqCIefJY6/WpZjDp8S5pW2a1t4azpblqFhjpOr9lYd7GCI0ez4lL2XFY8
-         N5Zs4yzFrT76lRBzc0lQscxzMv6rJAHllXHsrkKuCfYBWOXibR5EHKxDX+ga1kK6CABQ
-         0PPT7PL0/6d4rda2u3W+TGV5wKDEGSQauHMep3/P3riJbAkMFTZiSaPhpGbX02bfB/qm
-         JK7Q==
-X-Gm-Message-State: APjAAAUafRfQkWXvtsz1xS8Sc2Sb3gsMXcrnztta7k2Uht8cGgzwgXZp
-        SpD89IUxog/IcmPsj1ErgdqMnUsaZoshbUmKilY=
-X-Google-Smtp-Source: APXvYqy0r9yf0N41MXogyG4QJYPW4J4tdMBNV1ER68BJ3+sLAkPWMjifiD0dG9Zvk1rGqrBKWgSvPJqrB4JIqAZD2A4=
-X-Received: by 2002:a2e:970a:: with SMTP id r10mr17167212lji.142.1574543077686;
- Sat, 23 Nov 2019 13:04:37 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=B4L4Pfo4rpcpOUx/OybOJ8g0Fxx8N1fe9jCWdz/sqNQ=;
+        b=beAWEmIVXwSqGQJGnUbPwIu0DKqBQwYrLLrRri1KPs/q4ByVnHfnVk5JqFL3y6s8p0
+         NpQiSEREbC3+NiFzMFtSSRSqXBIv3ugUHHbWbzcsKBRcMLxQVJqOczJwHLgXH5w+bi4o
+         j/vRzUH52/hEZrAF8deebGxtzSwWbgai8wzPdMiHJFizGOAZocOCru8yDhBC0gBqyanO
+         hUWheb3U6xw8XUyV6B+d/JdFgK1Xfqw6s8pjMjv2tLrkVLzHvJxJGcR06JD0hc39q4Di
+         koiJ7LvOBCCIJa/LHZEWUBD2RpbaCXIIp6lq8rqNA5Kcl0CT2fCKuaONORIMD1x63Lgu
+         XgDQ==
+X-Gm-Message-State: APjAAAXrLRFHDhiSn9bnfMqXWk9RTJsaaUVpohsen2huOUShPUFk9f8O
+        NV3U276++KNqbaFBnU0RciqkCEcg
+X-Google-Smtp-Source: APXvYqyIHNH4JcdrJW0SRV1lTtP8ss9twLDiJmqih5JP8tIQs1OJ4xvZJfgq119jTKRewrNKK5ExYg==
+X-Received: by 2002:a1c:f612:: with SMTP id w18mr23521335wmc.28.1574543089690;
+        Sat, 23 Nov 2019 13:04:49 -0800 (PST)
+Received: from spectre (dslb-088-065-249-135.088.065.pools.vodafone-ip.de. [88.65.249.135])
+        by smtp.gmail.com with ESMTPSA id o189sm3170400wmo.23.2019.11.23.13.04.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 13:04:49 -0800 (PST)
+Date:   Sat, 23 Nov 2019 22:04:47 +0100
+From:   "Andreas K. Besslein" <besslein.andreas@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-usb@vger.kernel.org, oneukum@suse.com, davem@davemloft.net
+Subject: [PATCH net] ax88179_178a: add ethtool_op_get_ts_info()
+Message-ID: <20191123210447.GA8933@spectre>
 MIME-Version: 1.0
-References: <40baf8f3507cac4851a310578edfb98ce73b5605.1574541375.git.daniel@iogearbox.net>
-In-Reply-To: <40baf8f3507cac4851a310578edfb98ce73b5605.1574541375.git.daniel@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 23 Nov 2019 13:04:26 -0800
-Message-ID: <CAADnVQLkMH6NY8phOemtQSF3Y-D4s6k-f34wz6Edq2NjdY+bWg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: add bpf_jit_blinding_enabled for !CONFIG_BPF_JIT
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 23, 2019 at 12:37 PM Daniel Borkmann <daniel@iogearbox.net> wro=
-te:
->
-> Add a definition of bpf_jit_blinding_enabled() when CONFIG_BPF_JIT is not=
- set
-> in order to fix a recent build regression:
->
->   [...]
->   CC      kernel/bpf/verifier.o
->   CC      kernel/bpf/inode.o
-> kernel/bpf/verifier.c: In function =E2=80=98fixup_bpf_calls=E2=80=99:
-> kernel/bpf/verifier.c:9132:25: error: implicit declaration of function =
-=E2=80=98bpf_jit_blinding_enabled=E2=80=99; did you mean =E2=80=98bpf_jit_k=
-allsyms_enabled=E2=80=99? [-Werror=3Dimplicit-function-declaration]
->  9132 |  bool expect_blinding =3D bpf_jit_blinding_enabled(prog);
->       |                         ^~~~~~~~~~~~~~~~~~~~~~~~
->       |                         bpf_jit_kallsyms_enabled
->   CC      kernel/bpf/helpers.o
->   CC      kernel/bpf/hashtab.o
->   [...]
->
-> Fixes: bad63c9ea554 ("bpf: Constant map key tracking for prog array pokes=
-")
-> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Reported-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+This enables the use of SW timestamping.
 
-Applied. Thanks
+ax88179_178a uses the usbnet transmit function usbnet_start_xmit() which
+implements software timestamping. ax88179_178a overrides ethtool_ops but
+missed to set .get_ts_info. This caused SOF_TIMESTAMPING_TX_SOFTWARE
+capapility to be not available.
+
+Signed-off-by: Andreas K. Besslein <besslein.andreas@gmail.com>
+---
+ drivers/net/usb/ax88179_178a.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index daa54486ab09..8bc44c3f7c45 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -827,6 +827,7 @@ static const struct ethtool_ops ax88179_ethtool_ops = {
+ 	.nway_reset		= usbnet_nway_reset,
+ 	.get_link_ksettings	= ax88179_get_link_ksettings,
+ 	.set_link_ksettings	= ax88179_set_link_ksettings,
++	.get_ts_info		= ethtool_op_get_ts_info,
+ };
+ 
+ static void ax88179_set_multicast(struct net_device *net)
+-- 
+2.20.1
+
