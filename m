@@ -2,609 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A054108057
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:25:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D52FD10805B
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:28:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbfKWUZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 15:25:13 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14234 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726620AbfKWUZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:25:12 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xANKNYYM012663
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:25:09 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=1iLNjHqXVcjyTX2eeNsJdBrwnNrZcZeK3oQWC8g9GP4=;
- b=gjwhJUsX+n1XSyBHke8tAcph7p2Po+gmrQYb1jJQbFmBhYrhZAuayXleXwSJTqhdD18g
- RniHZVpzwJDwul73U2Ha7OP8nZHi79cNYb6FB/tDwa7JKAv9xKW7ZqFEbnde41qmDBi7
- WUYFkeOcU2io7voNV2xJJui7QGBVq7huyuw= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wf4xw9cwu-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:25:09 -0800
-Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Sat, 23 Nov 2019 12:25:08 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id DF35B2941B3F; Sat, 23 Nov 2019 12:25:04 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpf: Introduce BPF_TRACE_x helper for the tracing tests
-Date:   Sat, 23 Nov 2019 12:25:04 -0800
-Message-ID: <20191123202504.1502696-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726767AbfKWU2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:28:01 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:46890 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfKWU2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:28:01 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 193so5306671pfc.13
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TyIyFydgEOTKMkZQJp8UfydgrlE90NThieqDBtzIVUk=;
+        b=c68pGY32kcbyZCx1dbHiPf15c4m6uqWAUyFlJNnptCT4i0V0eLLVuK/oyxslHipZ/K
+         mBSTNl4HODLf7kaCWgz8MNoh8lxud3ubn/d9VKSr6IRkVqjp0IxLKRxfAbBF/y3Tk77Q
+         owgtKn+WL41lWqi8nFbcPduvsUpI4pF9waSKPwsTkqm4S62blFlOBJ/0qYQuvb12qXgJ
+         2pJzT0nSaAQV4xozDlnuWod9/NAxUNi1a982/2dxCbY/9BlrUXJ4FDv7wM6H9S/Jjp5H
+         pq/YazEAvMt2mdW8ZOiQpwbPLrrol3086g8jHDJsjYZ9peKO+ocuqhfgtdnRSfJd/dX+
+         TjSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=TyIyFydgEOTKMkZQJp8UfydgrlE90NThieqDBtzIVUk=;
+        b=j8pnokkARBYxMsFboWE/lgwWqmtT4FdTu9PYyNBAH2ILK715C/yHKdOM3UdcwHspdm
+         TAyUcHW3Vl7wY7YtnT1NG+r3UPTEIP1kPZ854O/YSjb+w7jiv3tnzsvhRTeAbJB8nMiN
+         G/xAoZUs7Itp/ZvKi1AcUJU3EzxLlTsetuz4FXuL+YUgG7DPEwjgiKnrgCUdaoe0XWSl
+         7yKU9BLRvs6NC84WQ8BTkOYODsFxwwFalpAdU4d5vhD6lJf5aY/duGXNQGu22gaOiHML
+         Dx0ot1EnUKnoRDmdItHoOioajciyToV1wLTiCCSaJZLc9nPBdXkH/RTHsmUr68HS5ZFC
+         bL3A==
+X-Gm-Message-State: APjAAAX3+vkPPKOWFzryrptSqHwCG8fMAZk+UKm6o1QhOojN9HKOB0xH
+        FZcrzMLvvQYgw7+Z2YeRu6jzvU06
+X-Google-Smtp-Source: APXvYqwd5vc5pSvj/rm5HSoEkF8Xj2EgmO0gDhci/MPqTpckATb8h+c/gJNINuKP5fVU89FWT/xQvw==
+X-Received: by 2002:a62:7f93:: with SMTP id a141mr25641980pfd.82.1574540879508;
+        Sat, 23 Nov 2019 12:27:59 -0800 (PST)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id z10sm2582099pfr.139.2019.11.23.12.27.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Nov 2019 12:27:58 -0800 (PST)
+Subject: Re: [PATCH net-next 1/3] net: dsa: Configure the MTU for switch ports
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com
+Cc:     netdev@vger.kernel.org
+References: <20191123194844.9508-1-olteanv@gmail.com>
+ <20191123194844.9508-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <329f394b-9e6c-d3b0-dc3d-5e3707fa8dd7@gmail.com>
+Date:   Sat, 23 Nov 2019 12:27:58 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-23_05:2019-11-21,2019-11-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=13
- lowpriorityscore=0 mlxlogscore=810 adultscore=0 phishscore=0
- priorityscore=1501 spamscore=0 malwarescore=0 impostorscore=0 bulkscore=0
- clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911230173
-X-FB-Internal: deliver
+In-Reply-To: <20191123194844.9508-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For BPF_PROG_TYPE_TRACING, the bpf_prog's ctx is an array of u64.
-This patch borrows the idea from BPF_CALL_x in filter.h to
-convert a u64 to the arg type of the traced function.
+Hi Vladimir,
 
-The new BPF_TRACE_x has an arg to specify the return type of a bpf_prog.
-It will be used in the future TCP-ops bpf_prog that may return "void".
+On 11/23/2019 11:48 AM, Vladimir Oltean wrote:
+> It is useful be able to configure port policers on a switch to accept
+> frames of various sizes:
+> 
+> - Increase the MTU for better throughput from the default of 1500 if it
+>   is known that there is no 10/100 Mbps device in the network.
+> - Decrease the MTU to limit the latency of high-priority frames under
+>   congestion.
+> 
+> For DSA slave ports, this is mostly a pass-through callback, called
+> through the regular ndo ops and at probe time (to ensure consistency
+> across all supported switches).
+> 
+> The CPU port is called with an MTU equal to the largest configured MTU
+> of the slave ports. The assumption is that the user might want to
+> sustain a bidirectional conversation with a partner over any switch
+> port.
+> 
+> The DSA master is configured the same as the CPU port, plus the tagger
+> overhead. Since the MTU is by definition L2 payload (sans Ethernet
+> header), it is up to each individual driver to figure out if it needs to
+> do anything special for its frame tags on the CPU port (it shouldn't
+> except in special cases). So the MTU does not contain the tagger
+> overhead on the CPU port.
+> However the MTU of the DSA master, minus the tagger overhead, is used as
+> a proxy for the MTU of the CPU port, which does not have a net device.
+> This is to avoid uselessly calling the .change_mtu function on the CPU
+> port when nothing should change.
+> 
+> So it is safe to assume that the DSA master and the CPU port MTUs are
+> apart by exactly the tagger's overhead in bytes.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
 
-The new macros are defined in the new header file "bpf_trace_helpers.h".
-It is under selftests/bpf/ for now.  It could be moved to libbpf later
-after seeing more upcoming non-tracing use cases.
+[snip]
+> +static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+> +{
+> +	struct net_device *master = dsa_slave_to_master(dev);
+> +	struct dsa_slave_priv *p = netdev_priv(dev);
+> +	struct dsa_switch *ds = p->dp->ds;
+> +	struct dsa_port *cpu_dp;
+> +	int port = p->dp->index;
+> +	int max_mtu = 0;
+> +	int cpu_mtu;
+> +	int err, i;
+> +
+> +	if (!ds->ops->change_mtu)
+> +		return -EOPNOTSUPP;
+> +
+> +	err = ds->ops->change_mtu(ds, port, new_mtu);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	dev->mtu = new_mtu;
+> +
+> +	for (i = 0; i < ds->num_ports; i++) {
+> +		if (!dsa_is_user_port(ds, i))
+> +			continue;
+> +
+> +		/* During probe, this function will be called for each slave
+> +		 * device, while not all of them have been allocated. That's
+> +		 * ok, it doesn't change what the maximum is, so ignore it.
+> +		 */
+> +		if (!dsa_to_port(ds, i)->slave)
+> +			continue;
+> +
+> +		if (max_mtu < dsa_to_port(ds, i)->slave->mtu)
+> +			max_mtu = dsa_to_port(ds, i)->slave->mtu;
+> +	}
+> +
+> +	cpu_dp = dsa_to_port(ds, port)->cpu_dp;
+> +
+> +	max_mtu += cpu_dp->tag_ops->overhead;
+> +	cpu_mtu = master->mtu;
+> +
+> +	if (max_mtu != cpu_mtu) {
+> +		err = ds->ops->change_mtu(ds, dsa_upstream_port(ds, port),
+> +					  max_mtu - cpu_dp->tag_ops->overhead);
+> +		if (err < 0)
+> +			return err;
 
-The tests are changed to use these new macros also.  Hence,
-the k[s]u8/16/32/64 are no longer needed and they are removed
-from the bpf_helpers.h.
+Before changing and committing the slave_dev's MTU you should actually
+perform these two operations first to make sure that you can honor the
+user port MTU that is requested. Here, you would possibly leave an user
+port configured for a MTU value that is unsupported by the upstream
+port(s) and/or the CPU port and/or the DSA master device, which could
+possibly break frame forwarding depending on what the switch is willing
+to accept.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/lib/bpf/bpf_helpers.h                   | 13 ---
- .../testing/selftests/bpf/bpf_trace_helpers.h | 58 +++++++++++++
- .../testing/selftests/bpf/progs/fentry_test.c | 72 ++++------------
- .../selftests/bpf/progs/fexit_bpf2bpf.c       | 27 ++----
- .../testing/selftests/bpf/progs/fexit_test.c  | 83 +++++--------------
- tools/testing/selftests/bpf/progs/kfree_skb.c | 43 +++-------
- .../selftests/bpf/progs/test_overhead.c       | 16 ++--
- 7 files changed, 125 insertions(+), 187 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/bpf_trace_helpers.h
+I had prepared a patch series with Murali doing nearly the same thing
+and targeting Broadcom switches nearly a year ago but since I never got
+feedback whether this worked properly for the use case he was after, I
+did not submit it since I did not need it personally and found it to be
+a nice can of worms.
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index c63ab1add126..0c7d28292898 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -44,17 +44,4 @@ enum libbpf_pin_type {
- 	LIBBPF_PIN_BY_NAME,
- };
- 
--/* The following types should be used by BPF_PROG_TYPE_TRACING program to
-- * access kernel function arguments. BPF trampoline and raw tracepoints
-- * typecast arguments to 'unsigned long long'.
-- */
--typedef int __attribute__((aligned(8))) ks32;
--typedef char __attribute__((aligned(8))) ks8;
--typedef short __attribute__((aligned(8))) ks16;
--typedef long long __attribute__((aligned(8))) ks64;
--typedef unsigned int __attribute__((aligned(8))) ku32;
--typedef unsigned char __attribute__((aligned(8))) ku8;
--typedef unsigned short __attribute__((aligned(8))) ku16;
--typedef unsigned long long __attribute__((aligned(8))) ku64;
--
- #endif
-diff --git a/tools/testing/selftests/bpf/bpf_trace_helpers.h b/tools/testing/selftests/bpf/bpf_trace_helpers.h
-new file mode 100644
-index 000000000000..c76a214a53b0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/bpf_trace_helpers.h
-@@ -0,0 +1,58 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __BPF_TRACE_HELPERS_H
-+#define __BPF_TRACE_HELPERS_H
-+
-+#include "bpf_helpers.h"
-+
-+#define __BPF_MAP_0(i, m, v, ...) v
-+#define __BPF_MAP_1(i, m, v, t, a, ...) m(t, a, ctx[i])
-+#define __BPF_MAP_2(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_1(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_3(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_2(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_4(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_3(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_5(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_4(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_6(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_5(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_7(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_6(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_8(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_7(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_9(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_8(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_10(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_9(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_11(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_10(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP_12(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_11(i+1, m, v, __VA_ARGS__)
-+#define __BPF_MAP(n, ...) __BPF_MAP_##n(0, __VA_ARGS__)
-+
-+/* BPF sizeof(void *) is always 8, so no need to cast to long first
-+ * for ptr to avoid compiler warning.
-+ */
-+#define __BPF_CAST(t, a, ctx) (t) ctx
-+#define __BPF_V void
-+#define __BPF_N
-+
-+#define __BPF_DECL_ARGS(t, a, ctx) t a
-+
-+#define BPF_TRACE_x(x, sec_name, fname, ret_type, ...)			\
-+static __always_inline ret_type						\
-+____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__));	\
-+									\
-+SEC(sec_name)								\
-+ret_type fname(__u64 *ctx)						\
-+{									\
-+	return ____##fname(__BPF_MAP(x, __BPF_CAST, __BPF_N, __VA_ARGS__));\
-+}									\
-+									\
-+static __always_inline							\
-+ret_type ____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__))
-+
-+#define BPF_TRACE_0(sec, fname, ...)  BPF_TRACE_x(0, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_1(sec, fname, ...)  BPF_TRACE_x(1, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_2(sec, fname, ...)  BPF_TRACE_x(2, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_3(sec, fname, ...)  BPF_TRACE_x(3, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_4(sec, fname, ...)  BPF_TRACE_x(4, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_5(sec, fname, ...)  BPF_TRACE_x(5, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_6(sec, fname, ...)  BPF_TRACE_x(6, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_7(sec, fname, ...)  BPF_TRACE_x(7, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_8(sec, fname, ...)  BPF_TRACE_x(8, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_9(sec, fname, ...)  BPF_TRACE_x(9, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_10(sec, fname, ...)  BPF_TRACE_x(10, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_11(sec, fname, ...)  BPF_TRACE_x(11, sec, fname, int, __VA_ARGS__)
-+#define BPF_TRACE_12(sec, fname, ...)  BPF_TRACE_x(12, sec, fname, int, __VA_ARGS__)
-+
-+#endif
-diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
-index 545788bf8d50..d2af9f039df5 100644
---- a/tools/testing/selftests/bpf/progs/fentry_test.c
-+++ b/tools/testing/selftests/bpf/progs/fentry_test.c
-@@ -2,89 +2,53 @@
- /* Copyright (c) 2019 Facebook */
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
-+#include "bpf_trace_helpers.h"
- 
- char _license[] SEC("license") = "GPL";
- 
--struct test1 {
--	ks32 a;
--};
- static volatile __u64 test1_result;
--SEC("fentry/bpf_fentry_test1")
--int test1(struct test1 *ctx)
-+BPF_TRACE_1("fentry/bpf_fentry_test1", test1, int, a)
- {
--	test1_result = ctx->a == 1;
-+	test1_result = a == 1;
- 	return 0;
- }
- 
--struct test2 {
--	ks32 a;
--	ku64 b;
--};
- static volatile __u64 test2_result;
--SEC("fentry/bpf_fentry_test2")
--int test2(struct test2 *ctx)
-+BPF_TRACE_2("fentry/bpf_fentry_test2", test2, int, a, __u64, b)
- {
--	test2_result = ctx->a == 2 && ctx->b == 3;
-+	test2_result = a == 2 && b == 3;
- 	return 0;
- }
- 
--struct test3 {
--	ks8 a;
--	ks32 b;
--	ku64 c;
--};
- static volatile __u64 test3_result;
--SEC("fentry/bpf_fentry_test3")
--int test3(struct test3 *ctx)
-+BPF_TRACE_3("fentry/bpf_fentry_test3", test3, char, a, int, b, __u64, c)
- {
--	test3_result = ctx->a == 4 && ctx->b == 5 && ctx->c == 6;
-+	test3_result = a == 4 && b == 5 && c == 6;
- 	return 0;
- }
- 
--struct test4 {
--	void *a;
--	ks8 b;
--	ks32 c;
--	ku64 d;
--};
- static volatile __u64 test4_result;
--SEC("fentry/bpf_fentry_test4")
--int test4(struct test4 *ctx)
-+BPF_TRACE_4("fentry/bpf_fentry_test4", test4,
-+	    void *, a, char, b, int, c, __u64, d)
- {
--	test4_result = ctx->a == (void *)7 && ctx->b == 8 && ctx->c == 9 &&
--		ctx->d == 10;
-+	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10;
- 	return 0;
- }
- 
--struct test5 {
--	ku64 a;
--	void *b;
--	ks16 c;
--	ks32 d;
--	ku64 e;
--};
- static volatile __u64 test5_result;
--SEC("fentry/bpf_fentry_test5")
--int test5(struct test5 *ctx)
-+BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
-+	    __u64, a, void *, b, short, c, int, d, __u64, e)
- {
--	test5_result = ctx->a == 11 && ctx->b == (void *)12 && ctx->c == 13 &&
--		ctx->d == 14 && ctx->e == 15;
-+	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
-+		e == 15;
- 	return 0;
- }
- 
--struct test6 {
--	ku64 a;
--	void *b;
--	ks16 c;
--	ks32 d;
--	void *e;
--	ks64 f;
--};
- static volatile __u64 test6_result;
--SEC("fentry/bpf_fentry_test6")
--int test6(struct test6 *ctx)
-+BPF_TRACE_6("fentry/bpf_fentry_test6", test6,
-+	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f)
- {
--	test6_result = ctx->a == 16 && ctx->b == (void *)17 && ctx->c == 18 &&
--		ctx->d == 19 && ctx->e == (void *)20 && ctx->f == 21;
-+	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
-+		e == (void *)20 && f == 21;
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-index 981f0474da5a..525d47d7b589 100644
---- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-@@ -2,46 +2,37 @@
- /* Copyright (c) 2019 Facebook */
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
-+#include "bpf_trace_helpers.h"
- 
- struct sk_buff {
- 	unsigned int len;
- };
- 
--struct args {
--	struct sk_buff *skb;
--	ks32 ret;
--};
- static volatile __u64 test_result;
--SEC("fexit/test_pkt_access")
--int test_main(struct args *ctx)
-+BPF_TRACE_2("fexit/test_pkt_access", test_main,
-+	    struct sk_buff *, skb, int, ret)
- {
--	struct sk_buff *skb = ctx->skb;
- 	int len;
- 
- 	__builtin_preserve_access_index(({
- 		len = skb->len;
- 	}));
--	if (len != 74 || ctx->ret != 0)
-+	if (len != 74 || ret != 0)
- 		return 0;
- 	test_result = 1;
- 	return 0;
- }
- 
--struct args_subprog1 {
--	struct sk_buff *skb;
--	ks32 ret;
--};
- static volatile __u64 test_result_subprog1;
--SEC("fexit/test_pkt_access_subprog1")
--int test_subprog1(struct args_subprog1 *ctx)
-+BPF_TRACE_2("fexit/test_pkt_access_subprog1", test_subprog1,
-+	    struct sk_buff *, skb, int, ret)
- {
--	struct sk_buff *skb = ctx->skb;
- 	int len;
- 
- 	__builtin_preserve_access_index(({
- 		len = skb->len;
- 	}));
--	if (len != 74 || ctx->ret != 148)
-+	if (len != 74 || ret != 148)
- 		return 0;
- 	test_result_subprog1 = 1;
- 	return 0;
-@@ -62,8 +53,8 @@ int test_subprog1(struct args_subprog1 *ctx)
-  * instead of accurate types.
-  */
- struct args_subprog2 {
--	ku64 args[5];
--	ku64 ret;
-+	__u64 args[5];
-+	__u64 ret;
- };
- static volatile __u64 test_result_subprog2;
- SEC("fexit/test_pkt_access_subprog2")
-diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
-index 8b98b1a51784..2487e98edb34 100644
---- a/tools/testing/selftests/bpf/progs/fexit_test.c
-+++ b/tools/testing/selftests/bpf/progs/fexit_test.c
-@@ -2,97 +2,56 @@
- /* Copyright (c) 2019 Facebook */
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
-+#include "bpf_trace_helpers.h"
- 
- char _license[] SEC("license") = "GPL";
- 
--struct test1 {
--	ks32 a;
--	ks32 ret;
--};
- static volatile __u64 test1_result;
--SEC("fexit/bpf_fentry_test1")
--int test1(struct test1 *ctx)
-+BPF_TRACE_2("fexit/bpf_fentry_test1", test1, int, a, int, ret)
- {
--	test1_result = ctx->a == 1 && ctx->ret == 2;
-+	test1_result = a == 1 && ret == 2;
- 	return 0;
- }
- 
--struct test2 {
--	ks32 a;
--	ku64 b;
--	ks32 ret;
--};
- static volatile __u64 test2_result;
--SEC("fexit/bpf_fentry_test2")
--int test2(struct test2 *ctx)
-+BPF_TRACE_3("fexit/bpf_fentry_test2", test2, int, a, __u64, b, int, ret)
- {
--	test2_result = ctx->a == 2 && ctx->b == 3 && ctx->ret == 5;
-+	test2_result = a == 2 && b == 3 && ret == 5;
- 	return 0;
- }
- 
--struct test3 {
--	ks8 a;
--	ks32 b;
--	ku64 c;
--	ks32 ret;
--};
- static volatile __u64 test3_result;
--SEC("fexit/bpf_fentry_test3")
--int test3(struct test3 *ctx)
-+BPF_TRACE_4("fexit/bpf_fentry_test3", test3, char, a, int, b, __u64, c, int, ret)
- {
--	test3_result = ctx->a == 4 && ctx->b == 5 && ctx->c == 6 &&
--		ctx->ret == 15;
-+	test3_result = a == 4 && b == 5 && c == 6 && ret == 15;
- 	return 0;
- }
- 
--struct test4 {
--	void *a;
--	ks8 b;
--	ks32 c;
--	ku64 d;
--	ks32 ret;
--};
- static volatile __u64 test4_result;
--SEC("fexit/bpf_fentry_test4")
--int test4(struct test4 *ctx)
-+BPF_TRACE_5("fexit/bpf_fentry_test4", test4,
-+	    void *, a, char, b, int, c, __u64, d, int, ret)
- {
--	test4_result = ctx->a == (void *)7 && ctx->b == 8 && ctx->c == 9 &&
--		ctx->d == 10 && ctx->ret == 34;
-+
-+	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10 &&
-+		ret == 34;
- 	return 0;
- }
- 
--struct test5 {
--	ku64 a;
--	void *b;
--	ks16 c;
--	ks32 d;
--	ku64 e;
--	ks32 ret;
--};
- static volatile __u64 test5_result;
--SEC("fexit/bpf_fentry_test5")
--int test5(struct test5 *ctx)
-+BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
-+	    __u64, a, void *, b, short, c, int, d, __u64, e, int, ret)
- {
--	test5_result = ctx->a == 11 && ctx->b == (void *)12 && ctx->c == 13 &&
--		ctx->d == 14 && ctx->e == 15 && ctx->ret == 65;
-+	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
-+		e == 15 && ret == 65;
- 	return 0;
- }
- 
--struct test6 {
--	ku64 a;
--	void *b;
--	ks16 c;
--	ks32 d;
--	void *e;
--	ks64 f;
--	ks32 ret;
--};
- static volatile __u64 test6_result;
--SEC("fexit/bpf_fentry_test6")
--int test6(struct test6 *ctx)
-+BPF_TRACE_7("fexit/bpf_fentry_test6", test6,
-+	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f,
-+	    int, ret)
- {
--	test6_result = ctx->a == 16 && ctx->b == (void *)17 && ctx->c == 18 &&
--		ctx->d == 19 && ctx->e == (void *)20 && ctx->f == 21 &&
--		ctx->ret == 111;
-+	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
-+		e == (void *)20 && f == 21 && ret == 111;
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
-index dcc9feac8338..974d6f3bb319 100644
---- a/tools/testing/selftests/bpf/progs/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
-@@ -4,6 +4,7 @@
- #include <stdbool.h>
- #include "bpf_helpers.h"
- #include "bpf_endian.h"
-+#include "bpf_trace_helpers.h"
- 
- char _license[] SEC("license") = "GPL";
- struct {
-@@ -47,28 +48,18 @@ struct sk_buff {
- 	char cb[48];
- };
- 
--/* copy arguments from
-- * include/trace/events/skb.h:
-- * TRACE_EVENT(kfree_skb,
-- *         TP_PROTO(struct sk_buff *skb, void *location),
-- *
-- * into struct below:
-- */
--struct trace_kfree_skb {
--	struct sk_buff *skb;
--	void *location;
--};
--
- struct meta {
- 	int ifindex;
- 	__u32 cb32_0;
- 	__u8 cb8_0;
- };
- 
--SEC("tp_btf/kfree_skb")
--int trace_kfree_skb(struct trace_kfree_skb *ctx)
-+/* TRACE_EVENT(kfree_skb,
-+ *         TP_PROTO(struct sk_buff *skb, void *location),
-+ */
-+BPF_TRACE_2("tp_btf/kfree_skb", trace_kfree_skb,
-+	    struct sk_buff *, skb, void *, location)
- {
--	struct sk_buff *skb = ctx->skb;
- 	struct net_device *dev;
- 	struct callback_head *ptr;
- 	void *func;
-@@ -123,17 +114,10 @@ static volatile struct {
- 	bool fexit_test_ok;
- } result;
- 
--struct eth_type_trans_args {
--	struct sk_buff *skb;
--	struct net_device *dev;
--	unsigned short protocol; /* return value available to fexit progs */
--};
--
--SEC("fentry/eth_type_trans")
--int fentry_eth_type_trans(struct eth_type_trans_args *ctx)
-+BPF_TRACE_3("fentry/eth_type_trans", fentry_eth_type_trans,
-+	    struct sk_buff *, skb, struct net_device *, dev,
-+	    unsigned short, protocol)
- {
--	struct sk_buff *skb = ctx->skb;
--	struct net_device *dev = ctx->dev;
- 	int len, ifindex;
- 
- 	__builtin_preserve_access_index(({
-@@ -148,11 +132,10 @@ int fentry_eth_type_trans(struct eth_type_trans_args *ctx)
- 	return 0;
- }
- 
--SEC("fexit/eth_type_trans")
--int fexit_eth_type_trans(struct eth_type_trans_args *ctx)
-+BPF_TRACE_3("fexit/eth_type_trans", fexit_eth_type_trans,
-+	    struct sk_buff *, skb, struct net_device *, dev,
-+	    unsigned short, protocol)
- {
--	struct sk_buff *skb = ctx->skb;
--	struct net_device *dev = ctx->dev;
- 	int len, ifindex;
- 
- 	__builtin_preserve_access_index(({
-@@ -163,7 +146,7 @@ int fexit_eth_type_trans(struct eth_type_trans_args *ctx)
- 	/* fexit sees packet without L2 header that eth_type_trans should have
- 	 * consumed.
- 	 */
--	if (len != 60 || ctx->protocol != bpf_htons(0x86dd) || ifindex != 1)
-+	if (len != 60 || protocol != bpf_htons(0x86dd) || ifindex != 1)
- 		return 0;
- 	result.fexit_test_ok = true;
- 	return 0;
-diff --git a/tools/testing/selftests/bpf/progs/test_overhead.c b/tools/testing/selftests/bpf/progs/test_overhead.c
-index ef06b2693f96..96c0124a04ba 100644
---- a/tools/testing/selftests/bpf/progs/test_overhead.c
-+++ b/tools/testing/selftests/bpf/progs/test_overhead.c
-@@ -3,6 +3,7 @@
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
- #include "bpf_tracing.h"
-+#include "bpf_trace_helpers.h"
- 
- SEC("kprobe/__set_task_comm")
- int prog1(struct pt_regs *ctx)
-@@ -22,20 +23,15 @@ int prog3(struct bpf_raw_tracepoint_args *ctx)
- 	return 0;
- }
- 
--struct __set_task_comm_args {
--	struct task_struct *tsk;
--	const char *buf;
--	ku8 exec;
--};
--
--SEC("fentry/__set_task_comm")
--int prog4(struct __set_task_comm_args *ctx)
-+struct task_struct;
-+BPF_TRACE_3("fentry/__set_task_comm", prog4,
-+	    struct task_struct *, tsk, const char *, buf, __u8, exec)
- {
- 	return 0;
- }
- 
--SEC("fexit/__set_task_comm")
--int prog5(struct __set_task_comm_args *ctx)
-+BPF_TRACE_3("fexit/__set_task_comm", prog5,
-+	    struct task_struct *, tsk, const char *, buf, __u8, exec)
- {
- 	return 0;
- }
+Another thing that I had not gotten around testing was making sure that
+when a slave_dev gets enslaved as a bridge port member, that bridge MTU
+normalization would kick in and make sure that if you have say: port 0
+configured with MTU 1500 and port 1 configured with MTU 9000, the bridge
+would normalize to MTU 1500 as you would expect.
+
+https://github.com/ffainelli/linux/commits/dsa-mtu
+
+This should be a DSA switch fabric notifier IMHO because changing the
+MTU on an user port implies changing the MTU on every DSA port in
+between plus the CPU port. Your approach here works for the first
+upstream port, but not for the ones in between, and there can be more,
+as is common with the ZII devel Rev. B and C boards.
 -- 
-2.17.1
-
+Florian
