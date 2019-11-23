@@ -2,223 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4159F10802F
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 20:55:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3453D10803D
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbfKWTzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 14:55:13 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:39940 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfKWTzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 14:55:13 -0500
-Received: by mail-pj1-f67.google.com with SMTP id ep1so4639093pjb.7
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 11:55:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=hX+Wc6fDdEjkXGsBe+9LZoD/JwGte0nyiDLwxqelzTg=;
-        b=z5ndaq+19Qu9RkB4tKFWovmRfkjIN4FDI7/FA9mSCKm+aolIdcf3RUaT+Y2OiH8lf0
-         4RfDP5NQDxznsRaYsOBhdjV+j5FsF88k9lwoGW0kqC1vnl1gtjgqvrfSSDZqNgSUL63D
-         Dep6eFEXQl6MMs2f2S1noIfX42H/tGvsDnFx45pTSMMgWEMn5cGzJVNi5C2PpuJTWE2F
-         lErD7AClwnvh8fStA06TPGNFxSCygP3uurdlWvf2tq6CpvlJ+ylMTACsH4h0+OOWP2ct
-         Hg7xawxzszV0bJiwIhtmqUXvrCON25pdiXdYGv5CBzBz7wwhceHvKcYGEXSt90zjrtiI
-         YVZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=hX+Wc6fDdEjkXGsBe+9LZoD/JwGte0nyiDLwxqelzTg=;
-        b=UphQM40JdauWScnjN/3imKCouIbasnABZvBEwbyRn6r5PDRz4HVcERSQuT1P9DKJ7G
-         Zs4E+3n+b4DAB9c9D2KfIb+0z3qAdi21dh+tZRDQb55RUN9kUqMohNV6x+5I0/u/WOgg
-         HeAEKXzJX+NjobQFRfWnW45f419RL8JoJ3gN0/k2MdUCgCAV793RgkbM8mfJK89VJUHg
-         ihyzFH8FXuBIUkf74RFWAeN1iXuJxYKuBC3I1Q4CrCFQEvEipRTT4bLzaAS7dlDANt3T
-         /YNC0j8Rr5ZeQxccYETI+I1EpE2LljxjW4BJPMY4ieANy2hOJtka/QOa1XBjEdWYSACp
-         RZZA==
-X-Gm-Message-State: APjAAAUvqnX3skQf8BNndBRQrgPsg6XeITho1YoRDNaDfuS44k842n9c
-        k6bJD27W0t6UBcDD4gADsQWbVQ==
-X-Google-Smtp-Source: APXvYqz/31BMmxOUtbjIzYkS+O9w92u35rN86XAAA3/ISZUb7bW+LjIcaQvBvtDCP/d3v2DLoPBggA==
-X-Received: by 2002:a17:90a:8a11:: with SMTP id w17mr27424866pjn.136.1574538912474;
-        Sat, 23 Nov 2019 11:55:12 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id v10sm2573988pfg.11.2019.11.23.11.55.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 11:55:12 -0800 (PST)
-Date:   Sat, 23 Nov 2019 11:55:06 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next 15/15] bnxt_en: Add support for devlink info
- command
-Message-ID: <20191123115506.2019cd08@cakuba.netronome.com>
-In-Reply-To: <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
-References: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
-        <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
-Organization: Netronome Systems, Ltd.
+        id S1726744AbfKWUGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:06:32 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:44890 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfKWUGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:06:32 -0500
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xANK6I3f025617;
+        Sat, 23 Nov 2019 12:06:19 -0800
+Date:   Sun, 24 Nov 2019 01:27:57 +0530
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        davem@davemloft.net, herbert@gondor.apana.org.au,
+        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: Re: [PATCH net-next v2 2/3] cxgb4: add UDP segmentation offload
+ support
+Message-ID: <20191123195755.GA30684@chelsio.com>
+References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
+ <1638e6bdd3aa9a4536aaeb644418d2a0ff5e5368.1574383652.git.rahul.lakkireddy@chelsio.com>
+ <20191122161334.44de6174@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191122161334.44de6174@cakuba.netronome.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Nov 2019 03:26:10 -0500, Michael Chan wrote:
-> From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+On Friday, November 11/22/19, 2019 at 16:13:34 -0800, Jakub Kicinski wrote:
+> On Fri, 22 Nov 2019 06:30:02 +0530, Rahul Lakkireddy wrote:
+> > Implement and export UDP segmentation offload (USO) support for both
+> > NIC and MQPRIO QoS offload Tx path. Update appropriate logic in Tx to
+> > parse GSO info in skb and configure FW_ETH_TX_EO_WR request needed to
+> > perform USO.
+> > 
+> > v2:
+> > - Remove inline keyword from write_eo_udp_wr() in sge.c. Let the
+> >   compiler decide.
+> > 
+> > Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 > 
-> Display the following information via devlink info command:
->   - Driver name
->   - Board id
->   - Broad revision
->   - Board Serial number
->   - Board Package version
->   - FW version
->   - FW management version
->   - FW RoCE version
+> > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+> > index 76538f4cd595..f57457453561 100644
+> > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+> > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+> > @@ -91,6 +91,7 @@ static const char stats_strings[][ETH_GSTRING_LEN] = {
+> >  	"rx_bg3_frames_trunc    ",
+> >  
+> >  	"tso                    ",
+> > +	"uso                    ",
 > 
->   Standard output example:
->   $ devlink dev info pci/0000:3b:00.0
->   pci/0000:3b:00.0:
->     driver bnxt_en
->     serial_number B0-26-28-FF-FE-25-84-20
->     versions:
->         fixed:
->           board.id C454
->           board.rev 1
->         running:
->           board.package N/A
-
-Just don't report it if you don't have it?
-
->           fw.version 216.0.154.32004
->           fw.mgmt 864.0.0.0
->           fw.app 216.0.51.0
+> Oh wow, the spaces, people's inventiveness when it comes to ethtool free
+> form strings knows no bounds..
 > 
-> Cc: Jiri Pirko <jiri@mellanox.com>
-> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+> That's not a review comment, I just wanted to say that :)
+> 
+> >  	"tx_csum_offload        ",
+> >  	"rx_csum_good           ",
+> >  	"vlan_extractions       ",
+> 
+> > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > index e8a1826a1e90..12ff69b3ba91 100644
+> > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > @@ -1136,11 +1136,17 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
+> >  
+> >  	if (dev->num_tc) {
+> >  		struct port_info *pi = netdev2pinfo(dev);
+> > +		u8 ver, proto;
+> > +
+> > +		ver = ip_hdr(skb)->version;
+> > +		proto = (ver == 6) ? ipv6_hdr(skb)->nexthdr :
+> > +				     ip_hdr(skb)->protocol;
+> 
+> Checking ip version now looks potentially like a fix?
+> 
 
-> +static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-> +			    struct netlink_ext_ack *extack)
-> +{
-> +	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
-> +	union devlink_param_value nvm_cfg_ver;
-> +	struct hwrm_ver_get_output *ver_resp;
-> +	char mgmt_ver[FW_VER_STR_LEN];
-> +	char roce_ver[FW_VER_STR_LEN];
-> +	char fw_ver[FW_VER_STR_LEN];
-> +	char buf[32];
-> +	int rc;
-> +
-> +	rc = devlink_info_driver_name_put(req, DRV_MODULE_NAME);
-> +	if (rc)
-> +		return rc;
-> +
-> +	sprintf(buf, "%X", bp->chip_num);
-> +	rc = devlink_info_version_fixed_put(req, "board.id", buf);
+Yes, the earlier check was not considering IPv6 header when extracting
+the protocol field for comparison, used to decide whether the traffic
+can be sent on the TC-MQPRIO QoS offload Tx path added very recently
+just a couple of weeks ago.
 
-Are you sure chip_num is the board id and not the asic id?
-Is this the board version or the silicon version?
+> >  		/* Send unsupported traffic pattern to normal NIC queues. */
+> >  		txq = netdev_pick_tx(dev, skb, sb_dev);
+> >  		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
+> > -		    ip_hdr(skb)->protocol != IPPROTO_TCP)
+> > +		    skb->encapsulation ||
+> 
+> The addition of encapsulation check also looks unrelated? 
+> 
 
-Also please use the defines: DEVLINK_INFO_VERSION_GENERIC_BOARD_ID.
+UDP traffic was not supported on the TC-MQPRIO QoS offload Tx path
+before this patch. VxLAN and Geneve UDP tunnel packets need to be
+handled differently and hence the above check to send these packets
+through the normal Tx path for now. The support for them on QoS
+offload path will be enabled by a future patchset.
 
-> +	if (rc)
-> +		return rc;
-> +
-> +	ver_resp = &bp->ver_resp;
-> +	sprintf(buf, "%X", ver_resp->chip_rev);
-> +	rc = devlink_info_version_fixed_put(req, "board.rev", buf);
-> +	if (rc)
-> +		return rc;
-> +
-> +	if (BNXT_PF(bp)) {
-> +		sprintf(buf, "%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
-> +			bp->dsn[7], bp->dsn[6], bp->dsn[5], bp->dsn[4],
-> +			bp->dsn[3], bp->dsn[2], bp->dsn[1], bp->dsn[0]);
-> +		rc = devlink_info_serial_number_put(req, buf);
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	if (strlen(ver_resp->active_pkg_name)) {
-> +		rc =
-> +		    devlink_info_version_running_put(req, "board.package",
-> +						     ver_resp->active_pkg_name);
+> > +		    (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
+> >  			txq = txq % pi->nqsets;
+> >  
+> >  		return txq;
 
-What's a board package? What HW people call a "module"? All devlink info
-versions should be documented in devlink-info-versions.rst.
 
-What are the possible values here? Reporting free form strings read
-from FW is going to be a tough sell. Probably worth dropping this one
-if you want the rest merged for 5.5.
-
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	if (BNXT_PF(bp) && !bnxt_hwrm_get_nvm_cfg_ver(bp, &nvm_cfg_ver)) {
-> +		u32 ver = nvm_cfg_ver.vu32;
-> +
-> +		sprintf(buf, "%X.%X.%X", (ver >> 16) & 0xF, (ver >> 8) & 0xF,
-> +			ver & 0xF);
-> +		rc = devlink_info_version_running_put(req, "board.nvm_cfg_ver",
-
-ditto
-
-> +						      buf);
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	if (ver_resp->flags & VER_GET_RESP_FLAGS_EXT_VER_AVAIL) {
-> +		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->hwrm_fw_major, ver_resp->hwrm_fw_minor,
-> +			 ver_resp->hwrm_fw_build, ver_resp->hwrm_fw_patch);
-> +
-> +		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->mgmt_fw_major, ver_resp->mgmt_fw_minor,
-> +			 ver_resp->mgmt_fw_build, ver_resp->mgmt_fw_patch);
-> +
-> +		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->roce_fw_major, ver_resp->roce_fw_minor,
-> +			 ver_resp->roce_fw_build, ver_resp->roce_fw_patch);
-> +	} else {
-> +		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->hwrm_fw_maj_8b, ver_resp->hwrm_fw_min_8b,
-> +			 ver_resp->hwrm_fw_bld_8b, ver_resp->hwrm_fw_rsvd_8b);
-> +
-> +		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->mgmt_fw_maj_8b, ver_resp->mgmt_fw_min_8b,
-> +			 ver_resp->mgmt_fw_bld_8b, ver_resp->mgmt_fw_rsvd_8b);
-> +
-> +		snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-> +			 ver_resp->roce_fw_maj_8b, ver_resp->roce_fw_min_8b,
-> +			 ver_resp->roce_fw_bld_8b, ver_resp->roce_fw_rsvd_8b);
-> +	}
-> +	rc = devlink_info_version_running_put(req, "fw.version", fw_ver);
-> +	if (rc)
-> +		return rc;
-> +
-> +	if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
-> +		rc = devlink_info_version_running_put(req, "fw.mgmt", mgmt_ver);
-> +		if (rc)
-> +			return rc;
-> +
-> +		rc = devlink_info_version_running_put(req, "fw.app", roce_ver);
-
-Should this be fw.roce? Is the NIC ROCE centric, IOW the data path is
-all ROCE? 
-
-What's hwrm? perhaps that's the datapath microcode version?
-
-> +		if (rc)
-> +			return rc;
-> +	}
-> +	return 0;
-> +}
-> +
->  static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
->  			     int msg_len, union devlink_param_value *val)
->  {
+Thanks,
+Rahul
