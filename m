@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D62A107C59
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 02:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02CBB107C67
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 03:23:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfKWB4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 20:56:23 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41357 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfKWB4X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 20:56:23 -0500
-Received: by mail-pg1-f193.google.com with SMTP id 207so4216615pge.8
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 17:56:22 -0800 (PST)
+        id S1726401AbfKWCXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 21:23:13 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:35570 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfKWCXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 21:23:12 -0500
+Received: by mail-lj1-f196.google.com with SMTP id j6so467367lja.2;
+        Fri, 22 Nov 2019 18:23:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2m8mazKsK1iIQMkib+fQevuXM9vS81kOHQ7iWl6rJf0=;
-        b=PxiZnSisGz7WtLCyb5Zo84owxbi8yWE4zQzN+IsECHGL5IktBaZh1CBF/BmJZ9xyUQ
-         5BIavVHXiESHEwvEKzjyQ8zan/Yeq8fGaudpM+W1YDyxMMQ2L2yEUG9d7S6QXQbiiHnP
-         7FqmXOzvpsGRbyWkAMLdFjry7fbArAb4M1i46QRUa4uhpvlZe+dUhAiOXtSr3YyFXR0k
-         Z3C5g0jI6RK9ENUqJxLWb55SYZw0SevoJBjT0n6VTisECbCL3uJ57recnVQ/jPbCp2Ql
-         4EVEOa3YwAScqA5QnwUY1fxDau435eFL2Nns1npvH9j7D5vjwyBEEOs7hqI1g2Jeptn1
-         X+HA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N8wfLLi8Yq1inNOq8ExQvkkMGn+5sy1LvT8Zr8TWcwQ=;
+        b=pMqNg6x+3ERoZs5Kmi6jKB1J1X5NX+XlNGQ7nB82WjZhnw1vIO38426uQHBIndVLuG
+         Pfm1YvfiTu5DVR7r8EC6vrWG9dUVn977KsK2Tolrq2hiIHe1n85zCfu3b5qLrPkKnX18
+         7q4q5IFOl03C5GkZJ2Zozxv8MevGoXR8U11mIFjtAXGd++IVZP+X18ZTMwGlWySaC1cx
+         bWAyVQGxJtDitL6tB+apwFYnKOon3N3FYIbPLeLgSoal8npEgeE4tiRTUOKML4wUFgrU
+         y4j0WhEONt3wCGmpj+CbDBH3zI480X8DoQj+UjpHCAxjSC1erPqkLcQTqilDiHkwgD2v
+         gvGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2m8mazKsK1iIQMkib+fQevuXM9vS81kOHQ7iWl6rJf0=;
-        b=jwkee3eJWj4WNXEqXLJiFzwCy6g0+beFGGaaZWN6oSeeVRKEDXzPSnTMytuFMMxxeK
-         wW+mEC/gO5Jpr9j8x2j6Z+v4+Wvc4QmoH9Nr2A25wm3oOFBhRMQ2i6dYJIl9TAuYhCnd
-         aLYCIXtcVeQo+r5C0qYYnVRoYt4UGXvRvCYV/yWnarXFaSmz377mrz8EPKVu63QPlfqV
-         G9eQLbXT4U93bVvd92KqzrpeMsqwvLmCIvkCWUsKjwlRlSu5TnIR3JXEQbpYR5DrraRO
-         rFZd+QGOxjKQzEqbqUq3GkFUcDCcEQVjwQSIxOHImK1bhaCV1ipkQGbQdbAbsxls1tvl
-         DgWQ==
-X-Gm-Message-State: APjAAAWKNOHvNTSqdONmna/Uig1j6EAKf8BTRqthfmpq5T1ueMqvywAj
-        2gsbRN5l87Se7uhS+ssZeB4DIw==
-X-Google-Smtp-Source: APXvYqzy3a/db3fqcVrzvoaG7d1opGAEhfDA0PBgLBXFoHFnQBV+oO/Z9oxNAal9M36HM+6HgRdyVg==
-X-Received: by 2002:a63:4a01:: with SMTP id x1mr19137247pga.312.1574474182325;
-        Fri, 22 Nov 2019 17:56:22 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id 83sm408571pgh.12.2019.11.22.17.56.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 17:56:22 -0800 (PST)
-Date:   Fri, 22 Nov 2019 17:56:17 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH net-next 0/4] sfc: ARFS expiry improvements
-Message-ID: <20191122175617.0adb37f1@cakuba.netronome.com>
-In-Reply-To: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
-References: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N8wfLLi8Yq1inNOq8ExQvkkMGn+5sy1LvT8Zr8TWcwQ=;
+        b=KOBh/cCiIqRVUDPxDgeJ5KwLc37yELNxqy3mj5oQTdbwq4yvki2u0ohi2Na1lV9ltl
+         naZ1J/D5EK7qTccy3I1rPy9smGgb2PTfC297dIpXptv9CMqA1PUQkQdZkFAdBCtrd9Dg
+         RCMDU/cOhYJP/ovpLlnDJlbl2EiX00RH5pgG7Pe0xud9K2VjO7at5jTi5TyMHkiHOusI
+         VS0v45jEi6Ll8CKk8+MMIkp4niGIK1VMFre2w66VquWPdwK6JofpSaVhuQGlmH66TkzM
+         qrpSSZyeZu/IHwFGrEruLAfOSDj5rXHpJ06ndVYi/GNIacC6i6bUxSbAVQfGfEtwgk9L
+         npbg==
+X-Gm-Message-State: APjAAAXwQDUUnqI9ybRBV8f3hh7tB1aw1G7HoZtS45jeRriZBR7AXT6C
+        1KDLJeoZPkoKN1pk0KV2fPJJ46j92XstaKlPcv0=
+X-Google-Smtp-Source: APXvYqzJXMRUemp+UZy/oaU7kQ2BG1lfYnCbMvAvpZ1M6YsoV2IBIufCQVsSU41HkOmehfo5zN1c83FhAQqbSYxIXZA=
+X-Received: by 2002:a2e:8508:: with SMTP id j8mr14082016lji.136.1574475790279;
+ Fri, 22 Nov 2019 18:23:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1574452833.git.daniel@iogearbox.net>
+In-Reply-To: <cover.1574452833.git.daniel@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 22 Nov 2019 18:22:58 -0800
+Message-ID: <CAADnVQKpJDD-bG1GnhGwMKfk6rdshGmRY6UrfXtfkqD0V5Sb9A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/8] Optimize BPF tail calls for direct jumps
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 17:54:27 +0000, Edward Cree wrote:
-> A series of changes to how we check filters for expiry, manage how much
->  of that work to do & when, etc.
-> Prompted by some pathological behaviour under heavy load, which was
-> Reported-By: David Ahern <dahern@digitalocean.com>
+On Fri, Nov 22, 2019 at 12:08 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> This gets rid of indirect jumps for BPF tail calls whenever possible.
+> The series adds emission for *direct* jumps for tail call maps in order
+> to avoid the retpoline overhead from a493a87f38cf ("bpf, x64: implement
+> retpoline for tail call") for situations that allow for it, meaning,
+> for known constant keys at verification time which are used as index
+> into the tail call map. See patch 7/8 for more general details.
+>
+> Thanks!
+>
+> v1  -> v2:
+>   - added more test cases
+>   - u8 ip_stable -> bool (Andrii)
+>   - removed bpf_map_poke_{un,}lock and simplified the code (Andrii)
+>   - added break into prog_array_map_poke_untrack since there's just
+>     one prog (Andrii)
+>   - fixed typo: for for in commit msg (Andrii)
+>   - reworked __bpf_arch_text_poke (Andrii)
+>   - added subtests, and comment on tests themselves, NULL-NULL
+>     transistion (Andrii)
+>   - in constant map key tracking I've moved the map_poke_track callback
+>     to once we've finished creating the poke tab as otherwise concurrent
+>     access from tail call map would blow up (since we realloc the table)
+> rfc -> v1:
+>   - Applied Alexei's and Andrii's feeback from
+>     https://lore.kernel.org/bpf/cover.1573779287.git.daniel@iogearbox.net/T/#t
 
-I guess that counts as a reported tag? Lemme make the By lower case,
-then ;)
-
-I'm not 100% happy on board with the abuse of statistics to show the
-current count, now that we have devlink APIs to dump tables and capture
-their occupancy.
-
-Applied, thank you!
+Applied. Thanks!
