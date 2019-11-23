@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD32107C41
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 02:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D62A107C59
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 02:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfKWBIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 20:08:48 -0500
-Received: from mail-lf1-f42.google.com ([209.85.167.42]:36432 "EHLO
-        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbfKWBIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 20:08:48 -0500
-Received: by mail-lf1-f42.google.com with SMTP id f16so6887277lfm.3
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 17:08:46 -0800 (PST)
+        id S1726735AbfKWB4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 20:56:23 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41357 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfKWB4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 20:56:23 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 207so4216615pge.8
+        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 17:56:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=KnqtVtQVM44cZh5T+azTshf3dVbQnTWZePHpkyy5QVs=;
-        b=PMtsWt8twjFMPOF0XDe97tds30oM0pSidA7kZzq5MCWPtoenEjddrpqdCth17oW2Dw
-         g+lPsk8YOXytVUeectSxgmuYI18+p2J9nM3bZg8XUgJqgws4YpG3gHxWX5Amhb+a2ipP
-         +jX4GEgTfTTswcb7WHVesoXA7c2p+dFBdEzoqPhyrfkTwSxXAjrBYD6bh+FDA/XuJkuY
-         tf65XnOR46GfAPwbHZXWnL7qKafZCn7if1mL/CI/9L6NhtEQN7fngLb0upxCWa1tegHO
-         G8ReMd8rmt/bMVcOINviFTm6QzQ2LG2ddPzw6YFZpAg5fX9d+tzRD7Mnxbf765ezXATN
-         JnwA==
+        bh=2m8mazKsK1iIQMkib+fQevuXM9vS81kOHQ7iWl6rJf0=;
+        b=PxiZnSisGz7WtLCyb5Zo84owxbi8yWE4zQzN+IsECHGL5IktBaZh1CBF/BmJZ9xyUQ
+         5BIavVHXiESHEwvEKzjyQ8zan/Yeq8fGaudpM+W1YDyxMMQ2L2yEUG9d7S6QXQbiiHnP
+         7FqmXOzvpsGRbyWkAMLdFjry7fbArAb4M1i46QRUa4uhpvlZe+dUhAiOXtSr3YyFXR0k
+         Z3C5g0jI6RK9ENUqJxLWb55SYZw0SevoJBjT0n6VTisECbCL3uJ57recnVQ/jPbCp2Ql
+         4EVEOa3YwAScqA5QnwUY1fxDau435eFL2Nns1npvH9j7D5vjwyBEEOs7hqI1g2Jeptn1
+         X+HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=KnqtVtQVM44cZh5T+azTshf3dVbQnTWZePHpkyy5QVs=;
-        b=PcM57wLaTqUpbhl3EVVSanECRsIlNhT7HsqfOXKAY9nSngdhNpTKUeg3nmQH1pnROl
-         Y4ph9FZnyhglOUgocpi41XxEZbA9PSmFildX43lRfd+uC1wF/CN1bR7afGdNnGQhQJbL
-         v2NKT9UObONsl0A1s9QiZTed8+QEUY9A4GCmZM5TM3ouZTScJ13YEIvqdSxtr+L7w7yw
-         vT6o1kuKHUq7ue3syXbFWNhp4c08gtxXVXtlqEDaingQywjTQ40oXwYbJYVNS5Rwt95V
-         SBD9f+O0U24WUhwfKp4RJA1x/W0wWCj3ypfpnfo+ez2T4HYzCWRKA3LUM0oiz/0L/pAE
-         hV0Q==
-X-Gm-Message-State: APjAAAUFW3S4FpSZoftdW9hPoUWdOaka0fCIOPpqzjPKNFcb7a/pe3Bs
-        6AIa+dsoABdISo/lKArXfnReHZceipk=
-X-Google-Smtp-Source: APXvYqwI+4UPycFXNMENO5GWnf+wjhO+ReTwWX9806OqTbfJI6EiZwl7ht+aa2oqUH0m9QQN3gAaXQ==
-X-Received: by 2002:ac2:4257:: with SMTP id m23mr4491364lfl.88.1574471326127;
-        Fri, 22 Nov 2019 17:08:46 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id w6sm3624563ljo.50.2019.11.22.17.08.44
+        bh=2m8mazKsK1iIQMkib+fQevuXM9vS81kOHQ7iWl6rJf0=;
+        b=jwkee3eJWj4WNXEqXLJiFzwCy6g0+beFGGaaZWN6oSeeVRKEDXzPSnTMytuFMMxxeK
+         wW+mEC/gO5Jpr9j8x2j6Z+v4+Wvc4QmoH9Nr2A25wm3oOFBhRMQ2i6dYJIl9TAuYhCnd
+         aLYCIXtcVeQo+r5C0qYYnVRoYt4UGXvRvCYV/yWnarXFaSmz377mrz8EPKVu63QPlfqV
+         G9eQLbXT4U93bVvd92KqzrpeMsqwvLmCIvkCWUsKjwlRlSu5TnIR3JXEQbpYR5DrraRO
+         rFZd+QGOxjKQzEqbqUq3GkFUcDCcEQVjwQSIxOHImK1bhaCV1ipkQGbQdbAbsxls1tvl
+         DgWQ==
+X-Gm-Message-State: APjAAAWKNOHvNTSqdONmna/Uig1j6EAKf8BTRqthfmpq5T1ueMqvywAj
+        2gsbRN5l87Se7uhS+ssZeB4DIw==
+X-Google-Smtp-Source: APXvYqzy3a/db3fqcVrzvoaG7d1opGAEhfDA0PBgLBXFoHFnQBV+oO/Z9oxNAal9M36HM+6HgRdyVg==
+X-Received: by 2002:a63:4a01:: with SMTP id x1mr19137247pga.312.1574474182325;
+        Fri, 22 Nov 2019 17:56:22 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id 83sm408571pgh.12.2019.11.22.17.56.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 17:08:45 -0800 (PST)
-Date:   Fri, 22 Nov 2019 17:08:38 -0800
+        Fri, 22 Nov 2019 17:56:22 -0800 (PST)
+Date:   Fri, 22 Nov 2019 17:56:17 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net-next v2 00/15][pull request] 100GbE Intel Wired LAN Driver
- Updates 2019-11-22
-Message-ID: <20191122170838.39fce2b7@cakuba.netronome.com>
-In-Reply-To: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
-References: <20191122222905.670858-1-jeffrey.t.kirsher@intel.com>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH net-next 0/4] sfc: ARFS expiry improvements
+Message-ID: <20191122175617.0adb37f1@cakuba.netronome.com>
+In-Reply-To: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
+References: <a41f9c29-db34-a2e4-1abd-bfe1a33b442e@solarflare.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,11 +62,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 14:28:50 -0800, Jeff Kirsher wrote:
-> This series contains updates to the ice driver only.
+On Fri, 22 Nov 2019 17:54:27 +0000, Edward Cree wrote:
+> A series of changes to how we check filters for expiry, manage how much
+>  of that work to do & when, etc.
+> Prompted by some pathological behaviour under heavy load, which was
+> Reported-By: David Ahern <dahern@digitalocean.com>
 
-Applied, thank you.
+I guess that counts as a reported tag? Lemme make the By lower case,
+then ;)
 
-I'll try to queue the stack leak fix for 4.20+. That would had been
-easier if the patch was against net, but I guess merge window will 
-open soon..
+I'm not 100% happy on board with the abuse of statistics to show the
+current count, now that we have devlink APIs to dump tables and capture
+their occupancy.
+
+Applied, thank you!
