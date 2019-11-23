@@ -2,57 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7C510805D
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:30:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B935C10805F
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfKWUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 15:30:16 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41876 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfKWUaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:30:16 -0500
-Received: by mail-pg1-f193.google.com with SMTP id 207so5109694pge.8
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:30:15 -0800 (PST)
+        id S1726759AbfKWUal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:30:41 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:36473 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfKWUak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:30:40 -0500
+Received: by mail-pj1-f66.google.com with SMTP id cq11so4668488pjb.3
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:30:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=M/v3dNxe8diNyLlSuuoeUTwb7+3tRosmkuLTzYNjR20=;
-        b=r/RcbhKwq9hvVDblq0o9jc6CKSoFyXnfz5DyqmG8v2qodqSksy+kVSx4OyyLqknpkQ
-         HBgaRHcRpLmsChaXndWo/y3UgGRhiN/XQ0O23mxd3mdKP3OJq+Knw6KDvmhceR9uYMWL
-         DG+AtSeZx4eWNxZUokMmzXJj9Z7+ABbDCoVGp5CkSTgA47jkl+lGI6BgUD6B2rRp31mV
-         +nIKdKac1zX9nnZyORcp6KFRxR5ic4SHVxrOBIQdEHOjQuHCFPq0dgOOCCyzIsxSZtOd
-         vzpaWyRHkM5x/ztPw4sHho1NL+PRgqtw2iOSCYdxSjLBIVXyKH3R9Wn+JHiIgdVRfpiK
-         YIaA==
+        bh=KMUdav/WxXuIZJfDjnpOFL7WwVez6r5UDppsJy3Zqj0=;
+        b=M7fo6ORnbpwEsXgr94YLWYgS1dt7n/4L4ZCywj5Wz7Z9dyO9SPVtp5pBmGnjnyptSR
+         K06MRAwGouKPLPwJlueLjLEJ0cy3Mbw5G4mHEPKYrolw4G+G9HPiGyJ8GeleMmO8rzZa
+         Ai6mdXSWT+TdxyupywvWVDsF8p6df0iI2huwYqECelq5m2IiajvnB+LRwkKiMz8YfpCG
+         QnDC1naRh6bIOQSmz/KQVNu6ByRPvMvSj9dFdYOMQH8w2oAHy9gRTdKiXsoZYUR+WIje
+         zDaU5//MXd5JR3CBTP9F2wUonkAzYYMwZzsNrTNqKREArHdlyP9R4cBGbFX4s/G9du+c
+         HThw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=M/v3dNxe8diNyLlSuuoeUTwb7+3tRosmkuLTzYNjR20=;
-        b=EizANGgv2Q5FblStZ7AX+cIceHtnuCngKEyODmsflCkBql7j5EPphzhz08qi3reD4Q
-         K81UC0zKEegJNAuFHgw2so+slxtn2m2U7uL71nszxbHvO6iBWfaG2/+tdPWJvroLtN7U
-         qodXBeeCsPgR5tHvyPmsVof3ucrTA+BQs/5qnE2FQUiU5ZnoZgltr0plJqrscjKFSH6F
-         UWSFaVpHlMya9xutRh9mgYv22Ytk1keCFvKvlARSNsE8fzUowaHXQIkXnelK3IIwh7bf
-         B2BZrvf1ceju4KHudFbWPVoy/G93ArnUY2ddhuxGmUzlD3IihxBKHednH92Pk7LVULoX
-         oKxQ==
-X-Gm-Message-State: APjAAAWY16RUyHg9lticfUA1mmQbVNoxplJv8BTDdKI19/2v+KAGdZ33
-        HcktzcUY4OS4mnAvphD9MksuVjYa
-X-Google-Smtp-Source: APXvYqyBwQ9r1nAXVwHSsr1Oy0HtXxiHxiPkclRccGYbIQsF6PxfR/KilELMAWB6fD4bFS3UdqspRw==
-X-Received: by 2002:a63:591:: with SMTP id 139mr23834957pgf.0.1574541014585;
-        Sat, 23 Nov 2019 12:30:14 -0800 (PST)
+        bh=KMUdav/WxXuIZJfDjnpOFL7WwVez6r5UDppsJy3Zqj0=;
+        b=RsCcHQvOBmsum9zya3aduHX+k6d79h8M71VVnA3cBm74XDNvCaAF1XoPt1Fpe0Vnk3
+         6037lhsdIBUldwRJ3BS1uVgn5OiE6we9Qt7AQVpkBbCxa2oK1NJxIVli7l4lt3QB7f2b
+         rUfHba2a5UXxcMejlZErbb2cZJtyp7n4oP32QaZzPlLt+bPVT45LKybKSJruuRPOatvx
+         y1gCadwrnYRERbwFlRmYzC2n3uhaPqOez08/lmc/OU7sKcUm1lwC+/b9qakzU7/m9rBO
+         /i+ouRZrzD0mQHacY16liPE6kmzeBWcNDQ4MHKLpV8rdnJw+XhUSoY7MHnzCtJev1M7o
+         v7dA==
+X-Gm-Message-State: APjAAAXXWNPe1dsVYFrTAsYKbGR11msFrswiEKmIt7oNvBpr6yhYLcap
+        mTMNWGvZAHWZNLcHF0/bYQg=
+X-Google-Smtp-Source: APXvYqz0lyDJGpXzt0mJ0QZe//CVSkfojLTQPmcnAlh+ld04Zw45/t7op7oLWZ4YpZeX29ckDJ7W9Q==
+X-Received: by 2002:a17:90a:a58b:: with SMTP id b11mr28007873pjq.46.1574541038256;
+        Sat, 23 Nov 2019 12:30:38 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y11sm2739863pfq.1.2019.11.23.12.30.13
+        by smtp.gmail.com with ESMTPSA id r28sm2657133pgk.75.2019.11.23.12.30.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Nov 2019 12:30:13 -0800 (PST)
-Subject: Re: [PATCH net-next 2/3] net: dsa: sja1105: Implement the port MTU
- callbacks
-To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, davem@davemloft.net,
-        jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org
-References: <20191123194844.9508-1-olteanv@gmail.com>
- <20191123194844.9508-3-olteanv@gmail.com>
+        Sat, 23 Nov 2019 12:30:37 -0800 (PST)
+Subject: Re: [CFT PATCH net-next v2] net: phylink: rename mac_link_state() op
+ to mac_pcs_get_state()
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     David Miller <davem@davemloft.net>, andrew@lunn.ch,
+        nbd@openwrt.org, radhey.shyam.pandey@xilinx.com,
+        alexandre.torgue@st.com, netdev@vger.kernel.org,
+        sean.wang@mediatek.com, linux-stm32@st-md-mailman.stormreply.com,
+        vivien.didelot@gmail.com, michal.simek@xilinx.com,
+        joabreu@synopsys.com, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, thomas.petazzoni@bootlin.com,
+        john@phrozen.org, matthias.bgg@gmail.com, peppe.cavallaro@st.com,
+        Mark-MC.Lee@mediatek.com, mcoquelin.stm32@gmail.com,
+        hkallweit1@gmail.com
+References: <E1iXaSM-0004t1-9L@rmk-PC.armlinux.org.uk>
+ <20191121.191417.1339124115325210078.davem@davemloft.net>
+ <0a9e016b-4ee3-1f1c-0222-74180f130e6c@gmail.com>
+ <20191122092136.GJ25745@shell.armlinux.org.uk>
+ <20191123103840.76c5d63f@cakuba.netronome.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +119,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <6bb2b2cb-361f-69bc-0299-26abcb09882f@gmail.com>
-Date:   Sat, 23 Nov 2019 12:30:13 -0800
+Message-ID: <d4d4837e-bea0-4303-0f66-6433e21c4be8@gmail.com>
+Date:   Sat, 23 Nov 2019 12:30:36 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191123194844.9508-3-olteanv@gmail.com>
+In-Reply-To: <20191123103840.76c5d63f@cakuba.netronome.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,108 +135,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/23/2019 11:48 AM, Vladimir Oltean wrote:
-> On this switch, the frame length enforcements are performed by the
-> ingress policers. There are 2 types of those: regular L2 (also called
-> best-effort) and Virtual Link policers (an ARINC664/AFDX concept for
-> defining L2 streams with certain QoS abilities). To avoid future
-> confusion, I prefer to call the reset reason "Best-effort policers",
-> even though the VL policers are not yet supported.
+On 11/23/2019 10:38 AM, Jakub Kicinski wrote:
+> On Fri, 22 Nov 2019 09:21:37 +0000, Russell King - ARM Linux admin
+> wrote:
+>> On Thu, Nov 21, 2019 at 07:36:44PM -0800, Florian Fainelli wrote:
+>>> Russell, which of this patch or: http://patchwork.ozlabs.org/patch/1197425/
+>>>
+>>> would you consider worthy of merging?  
+>>
+>> Let's go with v2 for now - it gets the rename done with less risk that
+>> there'll be a problem.  I can always do the remainder in a separate
+>> patch after the merge window as a separate patch.
 > 
-> We also need to change the setup of the initial static config, such that
-> DSA calls to .change_mtu (which are expensive) become no-ops and don't
-> reset the switch 5 times.
-> 
-> A driver-level decision is to unconditionally allow single VLAN-tagged
-> traffic on all ports. The CPU port must accept an additional VLAN header
-> for the DSA tag, which is again a driver-level decision.
-> 
-> The policers actually count bytes not only from the SDU, but also from
-> the Ethernet header and FCS, so those need to be accounted for as well.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  drivers/net/dsa/sja1105/sja1105.h      |  1 +
->  drivers/net/dsa/sja1105/sja1105_main.c | 48 +++++++++++++++++++++++---
->  2 files changed, 45 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-> index d801fc204d19..3a5c8acb6e2a 100644
-> --- a/drivers/net/dsa/sja1105/sja1105.h
-> +++ b/drivers/net/dsa/sja1105/sja1105.h
-> @@ -122,6 +122,7 @@ enum sja1105_reset_reason {
->  	SJA1105_RX_HWTSTAMPING,
->  	SJA1105_AGEING_TIME,
->  	SJA1105_SCHEDULING,
-> +	SJA1105_BEST_EFFORT_POLICING,
->  };
->  
->  int sja1105_static_config_reload(struct sja1105_private *priv,
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index b60224c55244..3d55dd3c7e83 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -459,12 +459,12 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
->  #define SJA1105_RATE_MBPS(speed) (((speed) * 64000) / 1000)
->  
->  static void sja1105_setup_policer(struct sja1105_l2_policing_entry *policing,
-> -				  int index)
-> +				  int index, int mtu)
->  {
->  	policing[index].sharindx = index;
->  	policing[index].smax = 65535; /* Burst size in bytes */
->  	policing[index].rate = SJA1105_RATE_MBPS(1000);
-> -	policing[index].maxlen = ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN;
-> +	policing[index].maxlen = mtu;
->  	policing[index].partition = 0;
->  }
->  
-> @@ -496,12 +496,16 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
->  	 */
->  	for (i = 0, k = 0; i < SJA1105_NUM_PORTS; i++) {
->  		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + i;
-> +		int mtu = VLAN_ETH_FRAME_LEN + ETH_FCS_LEN;
-> +
-> +		if (dsa_is_cpu_port(priv->ds, i))
-> +			mtu += VLAN_HLEN;
+> Florian, I assume you asked because you wanted to do some testing?
+> Please let me know if you need more time, otherwise I'll apply this
+> later today.
 
-That really seems like a layering violation it so happens that you use
-DSA_TAG_8021Q which is why you need VLAN_ETH_HLEN, but you should not
-assume that from with your driver, even if this one is special on so
-many counts. How about using use dsa_port(port)->tag_ops->overhead +
-ETH_HLEN here?
->  
->  		for (j = 0; j < SJA1105_NUM_TC; j++, k++)
-> -			sja1105_setup_policer(policing, k);
-> +			sja1105_setup_policer(policing, k, mtu);
->  
->  		/* Set up this port's policer for broadcast traffic */
-> -		sja1105_setup_policer(policing, bcast);
-> +		sja1105_setup_policer(policing, bcast, mtu);
->  	}
->  	return 0;
->  }
-> @@ -1346,6 +1350,7 @@ static const char * const sja1105_reset_reasons[] = {
->  	[SJA1105_RX_HWTSTAMPING] = "RX timestamping",
->  	[SJA1105_AGEING_TIME] = "Ageing time",
->  	[SJA1105_SCHEDULING] = "Time-aware scheduling",
-> +	[SJA1105_BEST_EFFORT_POLICING] = "Best-effort policing",
->  };
->  
->  /* For situations where we need to change a setting at runtime that is only
-> @@ -1886,6 +1891,39 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
->  	return sja1105_static_config_reload(priv, SJA1105_AGEING_TIME);
->  }
->  
-> +static int sja1105_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-> +{
-> +	int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
-> +	struct sja1105_l2_policing_entry *policing;
-> +	struct sja1105_private *priv = ds->priv;
-> +	int tc;
-> +
-> +	new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
-
-Likewise
+Please go ahead, if there are issues we can always follow-up. Thanks.
 -- 
 Florian
