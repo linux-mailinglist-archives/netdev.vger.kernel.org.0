@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DB7107BDD
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 01:06:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F4F107BDF
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 01:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfKWAGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Nov 2019 19:06:39 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:44079 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbfKWAGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 19:06:39 -0500
-Received: by mail-lj1-f196.google.com with SMTP id g3so9231265ljl.11
-        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 16:06:38 -0800 (PST)
+        id S1726762AbfKWAHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Nov 2019 19:07:02 -0500
+Received: from mail-qk1-f169.google.com ([209.85.222.169]:44961 "EHLO
+        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726089AbfKWAHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Nov 2019 19:07:02 -0500
+Received: by mail-qk1-f169.google.com with SMTP id m16so7842091qki.11
+        for <netdev@vger.kernel.org>; Fri, 22 Nov 2019 16:07:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=6hoEjv4GknJUsmfdRkobSNofLY3cRG/hpdfy08jf1HU=;
-        b=tpnX4/RLnpYJYu8YH9VDntEatdYoVhfPSGUkNFajOx0QQ+dDDlgtQOzzzeabuXbjUg
-         rQhWV4mKV1gRt1wpQyZwiiDDY4au7RSGxwRMy9Rg5xTBqSv78dwcl8sARPAGBEjPUY3T
-         HrbXaND7KJxEKl7R4EH/ngLZYM4PtatHtPh3AEmoSKdeiz0n8wCx38l4yPfRIOctKdd+
-         vYCv2k2XzdgGxDAQqhaJn4zQaZBelfPQprkI1TduY2noOFX0jKuy5ovd3urNFZW3Ti6x
-         84+GoYP8IEmOAyNVnFkm7MNE/Adfqp0np3bPJmN7SPqoqUCpUpT5t2svjeCjVJoRq+xs
-         CtJg==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=d0LEO3XeV6MFLda7YyDVyLuj8GwvIrV9Odh70xeazyY=;
+        b=g9PMDW1pjaAWh3X7h72hw5x58cwa3v96jp6pilsrgVwS+zE/CWKc4RfsXHNiabXB5G
+         pr9vS9CNn6umzMcWHv08W6ZvnJCTGkefjh1TUAh4THlFpevJfpfq2uNpvvQVbS+uA8Am
+         cUOQRP2C+wNdwWRVf4CmwiaB4uE59o/S8cTbPuZuJAYpT52KdZDClnFMnR8y9f8MyWqC
+         ZO9H668ZeZbD9XxQsIDxCEhVqUD1OLxrkM83bOkHMb/fI/o1L43pCEct/NMrJNir2vfK
+         p5pFNZgTlC+OFfXCSgOQXNf0IvElLPppr9fYi5d8rxvzdNdVj3hFmqKpxe07ZFqOPITN
+         mxEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=6hoEjv4GknJUsmfdRkobSNofLY3cRG/hpdfy08jf1HU=;
-        b=qtInk0bPnRmzRaxsQN7eTOnWOHxNN/j75b/IfPVo18Nhx1YTkNR7hxPggGqSkyQwgM
-         Xt9dBHCV/7ABT+cSX+a8UweNjKZAABchpXSXXpVWfr7LBc/FoG7kbVhUNYj/2wFL+Ko8
-         tVu7vmqvpetv92QabO0hi/9Al+vPSSuifPMpXWf9T9JFkwq6/iFc0R5xCfRPZkfUXkxf
-         PHuWmJPiWKtGQPl4Ro98wh8ybgOQmt7LAftlFd5RcYrrxPcZ8yT9zR3/7jcGRMGJaSoz
-         ilJG4owPi57sM6RERhCal6mqUdM7vliytHp5tuz/E6FdPnz4wNOp1rkLp0m76bBWZpjP
-         Ee0g==
-X-Gm-Message-State: APjAAAVglWvGXkoe+KxEtE1hGKUzm1K59rqiEtkmcCTG0YbDMGKYK1Gx
-        Bl7boutPmKOHAX94dlcWLvwGgQ==
-X-Google-Smtp-Source: APXvYqyoBZC+ZZk15cm8tra2bjACzr6lq2864hEkgra03uU9yFvR1FOXZh6bT1JRp263KcVzVGqHRA==
-X-Received: by 2002:a2e:9886:: with SMTP id b6mr879314ljj.47.1574467597306;
-        Fri, 22 Nov 2019 16:06:37 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z23sm585596ljh.35.2019.11.22.16.06.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 16:06:37 -0800 (PST)
-Date:   Fri, 22 Nov 2019 16:06:29 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        davem@davemloft.net, herbert@gondor.apana.org.au,
-        nirranjan@chelsio.com, atul.gupta@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next v2 1/3] cxgb4/chcr: update SGL DMA unmap for
- USO
-Message-ID: <20191122160629.3800b5cc@cakuba.netronome.com>
-In-Reply-To: <6cf3a3928ff2ee84cca34bfcb61d3f7fcb4c4cac.1574383652.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1574383652.git.rahul.lakkireddy@chelsio.com>
-        <6cf3a3928ff2ee84cca34bfcb61d3f7fcb4c4cac.1574383652.git.rahul.lakkireddy@chelsio.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d0LEO3XeV6MFLda7YyDVyLuj8GwvIrV9Odh70xeazyY=;
+        b=TZLflJ5+nfnbOa8xDaJYmhLJ2YgXu0amRfi8FJviiQfbgSTWSFcP1DTE/Dishr1T8A
+         1aKkh7sXUtIME4/0p8uIiNcj7hD/HAIkwj2NM4AWMtsz/IeOyqcr3oHCS1nDk32xp3r9
+         ow4a+TctDH8ksqjHnIHiQ0TniOBsq6b1pNyANrp574NwjS6hOyndB+yju6J2TgUWY8F2
+         kln8L/J0QOx/x8CUt7LNF4ziK6HigOxc7KkEjZy6N1DR9EQBLTrnt0pbMD2iF5Go2Sse
+         VFVKFQ40tyzrsWblFQggdNXT0If8hCJATAXLAPGVrAeYZGjst9peU20NCpUCHir0Sry4
+         SyCA==
+X-Gm-Message-State: APjAAAWBFfkg1uqqL98GNODm0zOqnhKBkenXIaSQRpKiK4zv7oWbeNty
+        4o8G+tweN0d006V8stUS1VptrUKd
+X-Google-Smtp-Source: APXvYqxAaCWvmEDlPAYGfYoHzbxLsZI2Q6TdyEf31R6fF7LVBI42762gmyuA59abvGUnDbpovG58Aw==
+X-Received: by 2002:a05:620a:1223:: with SMTP id v3mr4541044qkj.302.1574467620798;
+        Fri, 22 Nov 2019 16:07:00 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:b0cf:5043:5811:efe3])
+        by smtp.googlemail.com with ESMTPSA id l5sm4143436qth.23.2019.11.22.16.06.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Nov 2019 16:07:00 -0800 (PST)
+Subject: Re: VRF and/or cgroups problem on Fedora-30, 5.2.21+ kernel
+To:     Ben Greear <greearb@candelatech.com>,
+        netdev <netdev@vger.kernel.org>
+References: <05276b67-406b-2744-dd7c-9bda845a5bb1@candelatech.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <850a6d4e-3a67-a389-04a0-87032e0683d8@gmail.com>
+Date:   Fri, 22 Nov 2019 17:06:59 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <05276b67-406b-2744-dd7c-9bda845a5bb1@candelatech.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 06:30:01 +0530, Rahul Lakkireddy wrote:
-> The FW_ETH_TX_EO_WR used for sending UDP Segmentation Offload (USO)
-> requests expects the headers to be part of the descriptor and the
-> payload to be part of the SGL containing the DMA mapped addresses.
-> Hence, the DMA address in the first entry of the SGL can start after
-> the packet headers. Currently, unmap_sgl() tries to unmap from this
-> wrong offset, instead of the originally mapped DMA address.
->=20
-> So, use existing unmap_skb() instead, which takes originally saved DMA
-> addresses as input. Update all necessary Tx paths to save the original
-> DMA addresses, so that unmap_skb() can unmap them properly.
->=20
-> v2:
-> - No change.
->=20
-> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+On 11/22/19 5:03 PM, Ben Greear wrote:
+> Hello,
+> 
+> We see a problem on a particular system when trying to run 'ip vrf exec
+> _vrf1 ping 1.1.1.1'.
+> This system reproduces the problem all the time, but other systems with
+> exact same (as far as
+> we can tell) software may fail occasionally, but then it will work again.
+> 
+> Here is an strace output.  I changed to the
+> "/sys/fs/cgroup/unified/user.slice/user-1000.slice/session-2.scope/vrf/_vrf1"
+> 
+> directory as root user, and could view the files in that directory, so
+> I'm not sure why the strace shows error 5.
+> 
+> Any idea what could be the problem and/or how to fix it or debug further?
+> 
+> 
+> This command was run as root user.
 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/eth=
-ernet/chelsio/cxgb4/cxgb4.h
-> index 3121ed83d8e2..61a2cf62f694 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-> @@ -735,7 +735,12 @@ struct tx_desc {
->  	__be64 flit[8];
->  };
-> =20
-> -struct tx_sw_desc;
-> +struct ulptx_sgl;
-
-=46rom this patch alone the forward declaration of struct ulptx_sgl;
-appears unnecessary or a left over from some previous version of the
-code?
-
-> +struct tx_sw_desc {
-> +	struct sk_buff *skb; /* SKB to free after getting completion */
-> +	dma_addr_t addr[MAX_SKB_FRAGS + 1]; /* DMA mapped addresses */
-> +};
-> =20
->  struct sge_txq {
->  	unsigned int  in_use;       /* # of in-use Tx descriptors */
+check 'ulimit -l'. BPF is used to set the VRF and it requires locked memory.
