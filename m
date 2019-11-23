@@ -2,69 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C83C107EB4
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 15:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A15A107EC3
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 15:19:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726686AbfKWODf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 09:03:35 -0500
-Received: from mga01.intel.com ([192.55.52.88]:25125 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726524AbfKWODe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Nov 2019 09:03:34 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Nov 2019 06:03:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,233,1571727600"; 
-   d="scan'208";a="216583206"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Nov 2019 06:03:32 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iYW0Z-000DXc-St; Sat, 23 Nov 2019 22:03:31 +0800
-Date:   Sat, 23 Nov 2019 22:03:22 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        ecree@solarflare.com, thoiland@redhat.com,
-        andrii.nakryiko@gmail.com
-Subject: [RFC PATCH] bpf: bpf_dispatcher_lookup() can be static
-Message-ID: <20191123140322.kohmqp3rjcbxozqk@4978f4969bb8>
-References: <20191119160757.27714-2-bjorn.topel@gmail.com>
+        id S1726762AbfKWOTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 09:19:43 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38374 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfKWOTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 09:19:43 -0500
+Received: by mail-pg1-f194.google.com with SMTP id t3so4434360pgl.5;
+        Sat, 23 Nov 2019 06:19:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l9I4KqFGS6ff8/IYdfHFE2ABoOk3S9eLWIs9fo62ASc=;
+        b=W4LyYeKtMUMQo5EEoQI6QKHteSm2OGuC2/43baA3jUpoANrMzlBhI6HbFOGl2zR9Xs
+         INH2OSkN7XARs04dGPMpRUs9im8Zh0X7AVbnd/r7kEX26BFFo9z6lVswFybzXqYRJRFg
+         FudSy19r0zx0MBvALSJanDGtD5Q94vYOlPByOOkdyRL30lpYieFlMlbXANiSXnx6hRe7
+         gjCUXF1kyvh7EfEYKQnoJD99NLRpUOA79yVuqlZbdO4Q13rmgIuhCOT88Goxv+BgUfGn
+         YDOdgWElhG/vNXt0e0dmCm8s1yzfyJcLmYQj8mAaiJFWv8QxHT/Mq4GSgZB5Zq/Uf/om
+         bujQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l9I4KqFGS6ff8/IYdfHFE2ABoOk3S9eLWIs9fo62ASc=;
+        b=EN1UEFJ7NUVx0gvnAhjACymjj+6mhCo6lS+io/biqkdIfasdNe7d8VTPuw7L02wTem
+         Mw2ia9p9r5hlpiA8yhCX0oN8Hyal7UQgOKx5BMu3v4Rwt7W/8XZC/3LV2ahn3iWvylEM
+         vvKvRuoVKA8W/4Z0fy7/eTm3JE0hxPk4dzlIoKg5cu24b6QePfkw0S8IgK1OXeWSgiGm
+         72VMjPxiPD3780yvtRJawDaVwZzRm3rRnqXMhkNDRmwaKpKxXGFKNQACeDIj5o4pk0H/
+         9a42i8wdr8OgNGESnxwnJUIpI5PjD1oM9xNu4Wo+JYcfgNKfUbXKMZeMnOnT7q99vy9B
+         VmYg==
+X-Gm-Message-State: APjAAAU7bINwwWlwWtiA9oydpfzRfOyo13ihlqrZ2SgWlhlOirHjc7o0
+        T7/xLfcb96p4UqUe0gxJysE=
+X-Google-Smtp-Source: APXvYqzQqAJJxpRwZ2VWlAvLN7OUti2D6yEkc7VDBUERoJW1Tq9GFB1SpZMSgzTi1s8A+JhPrBlx+w==
+X-Received: by 2002:a63:6b87:: with SMTP id g129mr13033657pgc.438.1574518782307;
+        Sat, 23 Nov 2019 06:19:42 -0800 (PST)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id y17sm1836441pfl.92.2019.11.23.06.19.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 06:19:41 -0800 (PST)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH net v3] net: macb: add missed tasklet_kill
+Date:   Sat, 23 Nov 2019 22:19:18 +0800
+Message-Id: <20191123141918.16239-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191119160757.27714-2-bjorn.topel@gmail.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This driver forgets to kill tasklet in remove.
+Add the call to fix it.
 
-Fixes: 316d60dee82c ("bpf: introduce BPF dispatcher")
-Signed-off-by: kbuild test robot <lkp@intel.com>
+Fixes: 032dc41ba6e2 ("net: macb: Handle HRESP error")
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- dispatcher.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v3:
+  - Add fixes tag and target 'net'.
 
-diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-index 59a565107fd1d..30c964f94a173 100644
---- a/kernel/bpf/dispatcher.c
-+++ b/kernel/bpf/dispatcher.c
-@@ -45,7 +45,7 @@ struct bpf_dispatcher {
+ drivers/net/ethernet/cadence/macb_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 1e1b774e1953..2ec416098fa3 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4383,6 +4383,7 @@ static int macb_remove(struct platform_device *pdev)
  
- static DEFINE_MUTEX(dispatcher_mutex);
- 
--struct bpf_dispatcher *bpf_dispatcher_lookup(void *func)
-+static struct bpf_dispatcher *bpf_dispatcher_lookup(void *func)
- {
- 	struct bpf_dispatcher *d;
- 	struct hlist_head *head;
+ 	if (dev) {
+ 		bp = netdev_priv(dev);
++		tasklet_kill(&bp->hresp_err_tasklet);
+ 		if (dev->phydev)
+ 			phy_disconnect(dev->phydev);
+ 		mdiobus_unregister(bp->mii_bus);
+-- 
+2.24.0
+
