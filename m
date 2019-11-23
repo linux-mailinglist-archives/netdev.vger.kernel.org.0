@@ -2,92 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 709FE108040
-	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2AFE108050
+	for <lists+netdev@lfdr.de>; Sat, 23 Nov 2019 21:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbfKWUMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 15:12:00 -0500
-Received: from mail-pj1-f45.google.com ([209.85.216.45]:36433 "EHLO
-        mail-pj1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbfKWUMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:12:00 -0500
-Received: by mail-pj1-f45.google.com with SMTP id cq11so4658961pjb.3
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:12:00 -0800 (PST)
+        id S1726735AbfKWUPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 15:15:51 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:44248 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfKWUPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 15:15:51 -0500
+Received: by mail-ot1-f65.google.com with SMTP id c19so9195922otr.11
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 12:15:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2LwGmjdObMGCnA4E6/PwJpJ5df/udZNVgfH7GkGh/oc=;
-        b=Q0EmNISSInoOvhlmikNTjum3LlD9Bq/qK0AvznuuhFB4UyNQA0dPlGO7J86G07pie/
-         sIMJAFma09qhXr0aglmPxsxyg8tC6Ns3BywWGe1E43Vnd4GeSc7KL/RQw8DlpfV/HpeF
-         /od13j4QJtiJrfnvIs07RkcP/LO9h4FoZ52tb4FG7Xhj8QpJCTvIR2aEjniopWT0GS7C
-         Y3g39WvUYAu9w2uA7Gm1P5ILB87vHUAraiv4dQYRLOV+ArhXXrbP4GazOmmAIOaq4Pq7
-         IDXU11X2AbVE2P7cgm7+E9qMIC7hz7A4x566XYb+PHhZQsNCZz29C10rVZ3alFntjFK8
-         McyA==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p77pe64Y0IrNMjwbh8fu9x8hpkTMf7kI+K4bv+/xRuo=;
+        b=F0V9hRN5YCZJSTeXjLSivKkv3LhnITq05AYEUEMZ+WwOrj3l9AE3ak+SLi+0po4nrW
+         bxWE3zCnlPVGx/Bqm7Ktsww4yP4Ll6RdehhIlFv4YDcX2u+vnMUFuYoFv0v9eJzyqjCO
+         1m27MF1mwnAADIPJ9x1FTvxc2JoGw/MVNlQ1A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2LwGmjdObMGCnA4E6/PwJpJ5df/udZNVgfH7GkGh/oc=;
-        b=lYrQSUrJI6rYHbDK14T4VqHC/CcqN5Owm0+ucSYYLvNbt7XZk0OYC1AOag7kTFSzTy
-         nfSkgIaZ5PeK2p2ZsBl43oUVQpXFFChCjdSFeCF9zN5iFt4AFmePYBpMVW6bcr8UyKDk
-         mMaYl3Y1crwxnSsntrbSpzvNxLJM6k+YO9gvUDgiLg74TjSLCMwusZnp7YQcFlSC2f2t
-         GcWj0T5+kAJJwAAk3F9nvpQfpcNplgwJH7g43vYsr3j7stra4ZC/C8Y4MpqRZKZv1FBd
-         pKC+xishDqfCNeL7tvdHgeyqXUdkuxdA1ONPBE8KglnQelt1iSkgA9+tsKO63uh6t9k4
-         g8Zg==
-X-Gm-Message-State: APjAAAWFgGqt6dbhbCHVMJD+dxYFBpnhxLEuVyErI7MOLKVRog7wZli4
-        343e+URrWHXMg1hFEaI16cLMn2M+7GQ=
-X-Google-Smtp-Source: APXvYqxQY37u3OyU+rrvyD9DzJNHqrJwrpPwJ556Gw1Wf6vlpWctZBQ9v1e6FPtiVFL6DkvcDlKuow==
-X-Received: by 2002:a17:90a:fc91:: with SMTP id ci17mr27357513pjb.13.1574539919455;
-        Sat, 23 Nov 2019 12:11:59 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id s24sm2795197pgm.79.2019.11.23.12.11.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 12:11:59 -0800 (PST)
-Date:   Sat, 23 Nov 2019 12:11:54 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-next-2019-11-22
-Message-ID: <20191123121154.685d0f1b@cakuba.netronome.com>
-In-Reply-To: <0101016e9468c9df-b9fff56f-0e3f-48d1-bcff-e6586926e7b6-000000@us-west-2.amazonses.com>
-References: <0101016e9468c9df-b9fff56f-0e3f-48d1-bcff-e6586926e7b6-000000@us-west-2.amazonses.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p77pe64Y0IrNMjwbh8fu9x8hpkTMf7kI+K4bv+/xRuo=;
+        b=R4SDFB87TdY4s1+p+Xr62PnwCMssBrgpSRVzJy2MTeCtmvi+XSzM08b93oQqPTVkJw
+         jR3f9eaP8VD85OyycKESrNOb2wJNKnc5jKJtiW7+s/ZldLkiS6lZsXCIY5w8lGp3NK4A
+         QNTjNf/TXMEMlBr91MAa68WA09z/Om+aHJRAfAiybwyenE3X2ybyuDC+UIQAciooqsp/
+         mGbRDfD68/FPR/j+UCBYTawkEKLH0YXZ78dohhIJ/79SZXv4wXqYmIRyI7DPwOUOkyAq
+         V1fG+juk7EsUHnFhASwom1UPR+OWg7fNYRemUqPVTdjNJxNyAVglc2sBbK3bhI7xupiQ
+         SD3g==
+X-Gm-Message-State: APjAAAUacxKYE2r/KqDQOjfqOkDqx1DMr2cAXLcEGWlDPrdSgmHbL2z5
+        m5a9AKyptya8w+XTr/e/sGqXmeUJ/aBawV1y6qqYYg==
+X-Google-Smtp-Source: APXvYqzrohmDpzkTeWSZRBCa2H6/eeEuhZplO8OZI6UdGoIMnTu4i4ZBcZnLd+jQxfFvYLnGHOURluffZXjnQA/1CXE=
+X-Received: by 2002:a05:6830:1313:: with SMTP id p19mr8184192otq.246.1574540150303;
+ Sat, 23 Nov 2019 12:15:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
+ <1574497570-22102-16-git-send-email-michael.chan@broadcom.com> <20191123115506.2019cd08@cakuba.netronome.com>
+In-Reply-To: <20191123115506.2019cd08@cakuba.netronome.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Sat, 23 Nov 2019 12:15:39 -0800
+Message-ID: <CACKFLinKFLT5WJ__nNhwqOfOFO9jH9fOKmi9S_GSucecbmX0eA@mail.gmail.com>
+Subject: Re: [PATCH net-next 15/15] bnxt_en: Add support for devlink info command
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 18:38:46 +0000, Kalle Valo wrote:
-> wireless-drivers-next patches for v5.5
-> 
-> Last set of patches for v5.5. Major features here 802.11ax support for
-> qtnfmac and airtime fairness support to mt76. And naturally smaller
-> fixes and improvements all over.
-> 
-> Major changes:
-> 
-> qtnfmac
-> 
-> * add 802.11ax support in AP mode
-> 
-> * enable offload bridging support
-> 
-> iwlwifi
-> 
-> * support TX/RX antennas reporting
-> 
-> mt76
-> 
-> * mt7615 smart carrier sense support
-> 
-> * aggregation statistics via debugfs
-> 
-> * airtime fairness (ATF) support
-> 
-> * mt76x0 OF mac address support
+On Sat, Nov 23, 2019 at 11:55 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
 
-Pulled, thanks!
+> What's a board package? What HW people call a "module"? All devlink info
+> versions should be documented in devlink-info-versions.rst.
+>
+> What are the possible values here? Reporting free form strings read
+> from FW is going to be a tough sell. Probably worth dropping this one
+> if you want the rest merged for 5.5.
+>
+
+Sure, we can drop this one for now.  Do you want me to resend, or can
+you apply just the 1st 14 patches?
