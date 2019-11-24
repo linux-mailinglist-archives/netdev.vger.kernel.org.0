@@ -2,159 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 366CF1082FA
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 11:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5151082FC
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 11:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfKXKsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 05:48:25 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.169]:34320 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbfKXKsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 05:48:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1574592501;
-        s=strato-dkim-0002; d=goldelico.com;
-        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=GGJ2DpglOTfvtp343vHN8wM7zSn3rwwNmq6U3UpQtmg=;
-        b=ZRKz02jWOM2MrmUOZ91m2e8TjMiDqqr+Y+TouMkRpDwyXMhw71xjrQ1efjyEVnONbN
-        0wXAs1AWRui+VK/SrMh+3di0JAGBBaFym6OEoWfyhgvj72v+WLtUTn5VO6Ora7IzQE62
-        6bGMRxoYkZpG/eltyAjwkHHyUk1LqGkAWCqzRrKNR93xYLWr7l4cOTgZcJxguF/p8PsT
-        zPfXT1WQrnkQVRHB17vdUBTRzc1h/CZPd4JpigXn2bfaOvsrFO5IngNPd9gpx+YSDs/k
-        QeHKEnirTFPY/k3wBX88MPly2L040hZR3WZ7j9fScpnYUjW/XNX6BfIpy69b3qstxkcp
-        cv4Q==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Qpw97WFDlSfXA4NgJM="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-        by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
-        with ESMTPSA id L09db3vAOAlxwA0
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Sun, 24 Nov 2019 11:47:59 +0100 (CET)
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH 2/2] net: wireless: ti: wl1251: sdio: remove ti,power-gpio
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
-Date:   Sun, 24 Nov 2019 11:47:59 +0100
-Cc:     linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Nikolaus Schaller <hns@goldelico.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Mark Rutland <mark.rutland@arm.com>
+        id S1726775AbfKXKwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 05:52:13 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25389 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725980AbfKXKwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 05:52:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574592731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mgrqyGrI4wz4JE0efwdw2KoDDevv1GGFzKxHMz7NT+E=;
+        b=Dhk6rS05tH/5Kf+g8wNADtjIWmvzRVp/11LTQ4TFy74q+aB/ay6okc1ofy8R4EL9YTHj2J
+        paEdnsWpYA8ACY6ly1nkuZY4jU7TI/cepqawAAKWMr7ksqZ6sOTNXJsJRSejcAqb0kd1jk
+        vDd/jquK4kUpZ24JXWRUxEz3r3lpM0E=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-66-EZ8iaZvOMTyaADA0WQgEMw-1; Sun, 24 Nov 2019 05:52:09 -0500
+Received: by mail-qt1-f197.google.com with SMTP id x8so6417018qtq.14
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 02:52:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aYTE+708WYU/v6e61/u6H0iTp+/IB5KOl36q0rPST20=;
+        b=nDXVgMzA7ZjIic6hI8nahe2AdBMufD54Yj0HJ0jvpxRTPJtGJmVTGX5FfuXUrsqk6K
+         yDGI4tMvBzTbscSqlqhSOTTVS/l4qTUlUbFDNKFuKVHzjD2FM4w+0Jo0vm/yVv/fq1R/
+         Gn5zujtBu1TdcevzD+DPOuDe2LaRrrPO7Eghe60G5Qwv2FLHVexRBVT9/C6wcvOw/NXt
+         0HI8LZIVdRHG+Kv22Ai+AFqS5KaJiXfQNmxzipGhIQm2n7S+17iUnhki/gb7x8SmSTHm
+         NJXg9llA6ZGJioF4OnleORGzPl/VzGX6V3ZS4Ecc8Lx+/CM3ONOZWTYNJIMpZCNGcFxB
+         OYyw==
+X-Gm-Message-State: APjAAAUSDmi64ld+Di2WAGivtH42TVBj7Pb8OxghdHWNMQH+vqU57Woq
+        bQpQj3BnAMAy8rcCoVe1X5BiHqdaJZL8zW6crho5p0SzZU9XBwziNz5qVF6EEBJSydgPrVkdPb6
+        6doXLIfWVOkCK7Bjo
+X-Received: by 2002:a0c:fa05:: with SMTP id q5mr12215641qvn.182.1574592729397;
+        Sun, 24 Nov 2019 02:52:09 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwZ7wVd3gE/UE/n6wQWaImHjk1yL624O9bg+Y7VbNSDbwNBANSGUiP3UWpATNi251yCQNG6IQ==
+X-Received: by 2002:a0c:fa05:: with SMTP id q5mr12215627qvn.182.1574592729167;
+        Sun, 24 Nov 2019 02:52:09 -0800 (PST)
+Received: from redhat.com (bzq-79-176-6-42.red.bezeqint.net. [79.176.6.42])
+        by smtp.gmail.com with ESMTPSA id x8sm1983132qtp.75.2019.11.24.02.52.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Nov 2019 02:52:08 -0800 (PST)
+Date:   Sun, 24 Nov 2019 05:52:02 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Julio Faracco <jcfaracco@gmail.com>
+Cc:     netdev@vger.kernel.org, Daiane Mendes <dnmendes76@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] drivers: net: virtio_net: Implement a
+ dev_watchdog handler
+Message-ID: <20191124054916-mutt-send-email-mst@kernel.org>
+References: <20191122013636.1041-1-jcfaracco@gmail.com>
+ <20191122052506-mutt-send-email-mst@kernel.org>
+ <CAENf94KX1XR4_KXz9KLZQ09Ngeaq2qzYY5OE68xJMXMu13SuEg@mail.gmail.com>
+ <20191122080233-mutt-send-email-mst@kernel.org>
+ <CAENf94L7zU6JoM+19F+__b6W4mpe5Na=ayd+eYe4aZ+EBABmiA@mail.gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <CAENf94L7zU6JoM+19F+__b6W4mpe5Na=ayd+eYe4aZ+EBABmiA@mail.gmail.com>
+X-MC-Unique: EZ8iaZvOMTyaADA0WQgEMw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <56A8FB98-51B6-4CAC-9743-0A86DFE09CA8@goldelico.com>
-References: <cover.1574591746.git.hns@goldelico.com> <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-X-Mailer: Apple Mail (2.3124)
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Nov 23, 2019 at 08:33:40PM -0200, Julio Faracco wrote:
+> >
+> > netdev: pass the stuck queue to the timeout handler
+> >
+> > This allows incrementing the correct timeout statistic without any mess=
+.
+> > Down the road, devices can learn to reset just the specific queue.
+> >
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> > Warning: untested.
+> >
+>=20
+> Question...
+> Wouldn't be better to create a module parameter instead change the
+> function scope?
 
-> Am 24.11.2019 um 11:35 schrieb H. Nikolaus Schaller =
-<hns@goldelico.com>:
->=20
-> Remove handling of this property from code.
-> Note that wl->power_gpio is still needed in
-> the header file for SPI mode (N900).
->=20
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
-> drivers/net/wireless/ti/wl1251/sdio.c | 30 ---------------------------
-> 1 file changed, 30 deletions(-)
->=20
-> diff --git a/drivers/net/wireless/ti/wl1251/sdio.c =
-b/drivers/net/wireless/ti/wl1251/sdio.c
-> index df0c20a555e3..82446196f9a8 100644
-> --- a/drivers/net/wireless/ti/wl1251/sdio.c
-> +++ b/drivers/net/wireless/ti/wl1251/sdio.c
-> @@ -15,9 +15,7 @@
-> #include <linux/wl12xx.h>
-> #include <linux/irq.h>
-> #include <linux/pm_runtime.h>
-> -#include <linux/gpio.h>
-> #include <linux/of.h>
-> -#include <linux/of_gpio.h>
-> #include <linux/of_irq.h>
->=20
-> #include "wl1251.h"
-> @@ -162,15 +160,6 @@ static int wl1251_sdio_set_power(struct wl1251 =
-*wl, bool enable)
-> printk("%s %d\n", __func__, enable);
->=20
-> 	if (enable) {
-> -		/*
-> -		 * Power is controlled by runtime PM, but we still call =
-board
-> -		 * callback in case it wants to do any additional setup,
-> -		 * for example enabling clock buffer for the module.
-> -		 */
-> -		if (gpio_is_valid(wl->power_gpio))
-> -			gpio_set_value(wl->power_gpio, true);
-> -
-> -
-> 		ret =3D pm_runtime_get_sync(&func->dev);
-> 		if (ret < 0) {
-> 			pm_runtime_put_sync(&func->dev);
-> @@ -188,9 +177,6 @@ printk("%s %d\n", __func__, enable);
-> 		ret =3D pm_runtime_put_sync(&func->dev);
-> 		if (ret < 0)
-> 			goto out;
-> -
-> -		if (gpio_is_valid(wl->power_gpio))
-> -			gpio_set_value(wl->power_gpio, false);
-> 	}
->=20
-> out:
-> @@ -245,27 +231,11 @@ printk("%s: of=3D%pOFcC\n", __func__, np);
->=20
-> 	wl1251_board_data =3D wl1251_get_platform_data();
-> 	if (!IS_ERR(wl1251_board_data)) {
-> -		wl->power_gpio =3D wl1251_board_data->power_gpio;
-> 		wl->irq =3D wl1251_board_data->irq;
-> 		wl->use_eeprom =3D wl1251_board_data->use_eeprom;
-> 	} else if (np) {
-> 		wl->use_eeprom =3Dof_property_read_bool(np, =
-"ti,wl1251-has-eeprom");
-> -		wl->power_gpio =3D of_get_named_gpio(np, =
-"ti,power-gpio", 0);
-> 		wl->irq =3D of_irq_get(np, 0);
-> -
-> -		if (wl->power_gpio =3D=3D -EPROBE_DEFER || wl->irq =3D=3D =
--EPROBE_DEFER) {
+Passing the value in a global variable? That fails to be reentrant ...
 
-^^^ spotted a bug myself... wl->irq check must not be removed.
+> I'm asking it because how many modules would effectively take advantage o=
+f it?
 
-Noted for v2.
+The cost is effectively 0 though.
 
-
-> -			ret =3D -EPROBE_DEFER;
-> -			goto disable;
-> -		}
-> -	}
-> -
-> -	if (gpio_is_valid(wl->power_gpio)) {
-> -		ret =3D devm_gpio_request(&func->dev, wl->power_gpio,
-> -								"wl1251 =
-power");
-> -		if (ret) {
-> -			wl1251_error("Failed to request gpio: %d\n", =
-ret);
-> -			goto disable;
-> -		}
-> 	}
->=20
-> 	if (wl->irq) {
-> --=20
-> 2.23.0
->=20
+--=20
+MST
 
