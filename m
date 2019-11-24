@@ -2,79 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA830108159
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 02:24:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B0D510815E
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 02:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbfKXBYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 20:24:47 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34682 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfKXBYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 20:24:47 -0500
-Received: by mail-lj1-f194.google.com with SMTP id m6so4266502ljc.1;
-        Sat, 23 Nov 2019 17:24:45 -0800 (PST)
+        id S1726765AbfKXBrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 20:47:01 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39357 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726705AbfKXBrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 20:47:01 -0500
+Received: by mail-pg1-f196.google.com with SMTP id b137so2997789pga.6
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 17:46:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hd3coW9C+3sh8klk/Rw3EaJsQ0yjraDdfwBO9Z6KvV8=;
-        b=qxyHwA2XX1zE93uv3H1C8aaqPTEiOSxghf9wrV90gF8Q4/CgWSnwwrRt/yFYMCBiHz
-         ZZEDKnf8ZUTF1bI10rA6PUS3RN16BfwFG6EiruM3mlbgvzJq+q7Z09RVwbxvCEJygJ8q
-         xuPDAPIZXNHBLopkssyDzw4PJUlu73XnluJCP6JxO5QityiUHDLusaqkCszLwjguSo3p
-         zgL+GCOMkpQJZtC1VbrJCm4rks/ox8+7qB/RDNd9x3c/cBaHyureu5Ftq4g74yUg8dvR
-         R3xDGqed4xUFF2vbgG+/ocJBNFRM0ji6gsaCRJNc6BGd/PQgW1lhi1+zHmgdvAAUGIlx
-         u/Gw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=yMmdkZWPRNJJFij2NhsWbh6pUoNvkfx10Q4+z88ErM0=;
+        b=UBeOhOVQGRUkz7+Ha9DMWP6dQXEuwXHgZnurqd+/0MrwsSGQWsqAJ0Cd0VOEzd8VQE
+         zRlywA6Fc+Q3pJDm2ui0qc11p4S+uqx9+rJ4ttJBEnJl1aEfktMil0M+Msyhe/fJ5S9i
+         nyIlVLjvk040Tpv6Nla7pRFQkSjBKQG7fC59zfrY8X2LUrnQcrb0BNrvJ1uf/S2rCMEq
+         9SQ3iDhpMSMrF1wRmcuY1LYwh5D+wNZ5y4gGD8VhReAlzriVkKxPH27IIzHRiQuZjWV5
+         PeSz52jdtL2LzlW6UGKUmLovrSjSuLLQgpdBgyubpMyt5GAN+hIAcD2Pp3YFYK0C1lAL
+         Z8hQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hd3coW9C+3sh8klk/Rw3EaJsQ0yjraDdfwBO9Z6KvV8=;
-        b=gpqJMJyKflMdLG8EBQUhHe3ZLxMaFN6NqUOUyRyOwjSICYs5FGk4SXiFOMt+xnf8aP
-         vu+qYEKoZH342/Ubuv+lAbAGZMF5hwYpmSEoJdvL60x08fr3GsziJ1h5iDd5ONocDfvL
-         RDI99NiUTtjoGM+FLeWyBNHlqc9gQsmfMpJKyl6zKS72E+doxGEk/38ezFyJyfeVX16k
-         4va5+oFrN9QmgWlqGuQlTtU7jjCLXeeuUDS0LpDg9G18AZkWWtyLGrwJ+gMoYvOw09/5
-         UCpmlc/paYKbgEjuyKl4SuQBd/XOjjP6EpZWBoB1lWR374p4yBdQXY6TRuMym72HiiL/
-         yOGQ==
-X-Gm-Message-State: APjAAAWPEr/00D709icgd3pY3hzPxTFgoEazP2SJ4ORuv4isiwtn5Qgj
-        bnr29PQRORPedbvNTgj9ptTzvWS90+N2iSOcjVA=
-X-Google-Smtp-Source: APXvYqwJnF6eBHVguMMFSxhGLsWhcxFJMtOuu4LMQULLCxlyRq548AQb1a6ZT+hbT0MWFf7g/vDuQzHQUxy45iavmYE=
-X-Received: by 2002:a2e:85d5:: with SMTP id h21mr17175073ljj.243.1574558685015;
- Sat, 23 Nov 2019 17:24:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=yMmdkZWPRNJJFij2NhsWbh6pUoNvkfx10Q4+z88ErM0=;
+        b=ODdQm5O6PwTFBSMn3m1r4VTmWy9x79D+U+PN/MJqSAnf2F7lLAeO8gY0bYqNpUwHPn
+         JrQ7W/NLLrD9Zlvhf5b9GQHtiwtFtPyrfbGZaV2viSvxuDXuLMsxXjEbgywuRfO0IUTI
+         b3lR/SMV/wCwCRzUOmSIWU4EPWt2szwB6rnaEL6lwUIgSSGP7odSbrX7FDEQFEEvjAbR
+         4mvkc69q07MZbgKqS1qvv5ulMlRdgEhSF6Bwfgn3K/ETsAIAbvgb8qAjfHL9F90Xo3VJ
+         iJrPtZpZI80ijkFmfPsQUxnTFBa0cVWsKgl9waYQAR2dH6w61pLnOAY9RfC9/BF8GNVX
+         DwtA==
+X-Gm-Message-State: APjAAAUzCaHOyw1pcrAe1Hbb2Tifj4kDqNoJbG6boi7XEtCZzW2Er7Nt
+        T9ComKxCW61g+c80FD5hiotghQ==
+X-Google-Smtp-Source: APXvYqxnDB6Vj5Fe6vlAlXy44XNkKayLVR9vUlTsn1u0ajlJlGnUZHsww4zNV01AT214QrfKB50gEQ==
+X-Received: by 2002:a63:df09:: with SMTP id u9mr24303463pgg.20.1574560018915;
+        Sat, 23 Nov 2019 17:46:58 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id i5sm2920463pfo.52.2019.11.23.17.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Nov 2019 17:46:58 -0800 (PST)
+Date:   Sat, 23 Nov 2019 17:46:53 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
+        dnbanerg@us.ibm.com, brking@linux.vnet.ibm.com,
+        julietk@linux.vnet.ibm.com
+Subject: Re: [PATCH net 3/4] ibmvnic: Bound waits for device queries
+Message-ID: <20191123174653.19e37c30@cakuba.netronome.com>
+In-Reply-To: <1574451706-19058-4-git-send-email-tlfalcon@linux.ibm.com>
+References: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
+        <1574451706-19058-4-git-send-email-tlfalcon@linux.ibm.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <fcb00a2b0b288d6c73de4ef58116a821c8fe8f2f.1574555798.git.daniel@iogearbox.net>
-In-Reply-To: <fcb00a2b0b288d6c73de4ef58116a821c8fe8f2f.1574555798.git.daniel@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 23 Nov 2019 17:24:32 -0800
-Message-ID: <CAADnVQ+oH6MsP=TKU2kStj0SPqeXf1D=+MpMqrnuqGWdMPS70Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: simplify __bpf_arch_text_poke poke type handling
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 23, 2019 at 4:39 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Given that we have BPF_MOD_NOP_TO_{CALL,JUMP}, BPF_MOD_{CALL,JUMP}_TO_NOP
-> and BPF_MOD_{CALL,JUMP}_TO_{CALL,JUMP} poke types and that we also pass in
-> old_addr as well as new_addr, it's a bit redundant and unnecessarily
-> complicates __bpf_arch_text_poke() itself since we can derive the same from
-> the *_addr that were passed in. Hence simplify and use BPF_MOD_{CALL,JUMP}
-> as types which also allows to clean up call-sites.
->
-> In addition to that, __bpf_arch_text_poke() currently verifies that text
-> matches expected old_insn before we invoke text_poke_bp(). Also add a check
-> on new_insn and skip rewrite if it already matches. Reason why this is rather
-> useful is that it avoids making any special casing in prog_array_map_poke_run()
-> when old and new prog were NULL and has the benefit that also for this case
-> we perform a check on text whether it really matches our expectations.
->
-> Suggested-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+On Fri, 22 Nov 2019 13:41:45 -0600, Thomas Falcon wrote:
+> +static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
+> +				       struct completion *comp_done,
+> +				       unsigned long timeout)
+> +{
+> +	struct net_device *netdev = adapter->netdev;
+> +	u8 retry = 5;
+> +
+> +restart_timer:
+> +	if (!adapter->crq.active) {
+> +		netdev_err(netdev, "Device down!\n");
+> +		return -ENODEV;
+> +	}
+> +	/* periodically check that the device is up while waiting for
+> +	 * a response
+> +	 */
+> +	if (!wait_for_completion_timeout(comp_done, timeout / retry)) {
+> +		if (!adapter->crq.active) {
+> +			netdev_err(netdev, "Device down!\n");
+> +			return -ENODEV;
+> +		} else {
+> +			retry--;
+> +			if (retry)
+> +				goto restart_timer;
+> +			netdev_err(netdev, "Operation timing out...\n");
+> +			return -ETIMEDOUT;
 
-Applied. Thanks
+Hm. This is not great. I don't see the need to open code a loop with
+a goto:
+
+while (true) {
+	if (down())
+		return E;
+
+	if (retry--)
+		break;
+
+	if (wait())
+		return 0
+}
+
+print(time out);
+return E;
+
+The wait_for_completion_timeout() will not be very precise, but I think
+with 5 sleeps it shouldn't drift off too far from the desired 10sec.
+
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
