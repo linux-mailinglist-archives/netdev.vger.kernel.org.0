@@ -2,79 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAB3D108557
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8707810855E
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfKXWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 17:39:28 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:46960 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbfKXWj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 17:39:27 -0500
-Received: by mail-pj1-f66.google.com with SMTP id a16so5531789pjs.13
-        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 14:39:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mJ03a7hesWJNvR2m6hfpaM5qF0D6avZONNtvx1zsFJc=;
-        b=Gj7RiQOKmCUl7rlYZQVUi2mKCnOg5I0nw9OU8vIyXYd/0QJI7iGZFzb8A/gjk4E+JS
-         xOJdNEEuiSMhWnxlWAyzY3TDGJab6QkRA5Q+e9FeTPuhzQ/AEYUFZFzloPjD3PGACWym
-         SEtEro4s2JPqte8X2Pf+p3nxA+N3yyFlbPqGMcKI8aDGrB0AgcK8nlBEFgq8bE004dIh
-         ycirnv1uJfo4XBMc96OLuvYRyUlFwaYIcnglL6w3TuhledodxCYZZRFQooR3B5aUumvb
-         hEGV7k4M4T8W6jyExL6fLt9Cdlr+RPuD8Cuar7Te9Tl2EzW4Kqj/FvMFbWqiEPCIjWrv
-         +rWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mJ03a7hesWJNvR2m6hfpaM5qF0D6avZONNtvx1zsFJc=;
-        b=qMAdkk8XZ0D3zJjkP0dn7vsU+fN+5nPbeIa8W2mVCTfw2oiO3KpxbmJRecMma5XOGs
-         8gt6KK0OJuy162mPMAH6smBqhuxhH4CwlaimvbcVoLCrQ3DUCuAtPzeisStgE4Q7fhPK
-         8Pv1WQOYUZ1vq2L7ak+dQBTJ+k85KsCr7WNRrO/+vfq9i56jEAWnrP/ehtuCk0CZ99W1
-         BSaL2PwIBdmXsM0K2c3ePo2a8sJ99o6gIx3mvVcTdV4N3O/tz+n42H1OKn18AcVFdd+o
-         S6Vnr77ocECezBdtCin3H+Ertld6cSXpl3FII3qC+vCuqkk8Zae7hRXc5JR+IlsFrJRK
-         LrfQ==
-X-Gm-Message-State: APjAAAWKpjtr4QZmPjoTBtqLCx4ADfQV/LNo4ibGGTKs3vKrFLYiXus7
-        c2DqXmDFWsEv9tPt8VGP3+BznA==
-X-Google-Smtp-Source: APXvYqx50D+Wd5N5bU/VCxdp0oBYsPZSpIdT6ez+EmZyigA36yD5gxhbXBGUlO6FDAZGYYvd6plU4Q==
-X-Received: by 2002:a17:902:409:: with SMTP id 9mr26724818ple.25.1574635166883;
-        Sun, 24 Nov 2019 14:39:26 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id y12sm5619986pjy.0.2019.11.24.14.39.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 14:39:26 -0800 (PST)
-Date:   Sun, 24 Nov 2019 14:39:19 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Phong Tran <tranmanphong@gmail.com>
-Cc:     davem@davemloft.net, keescook@chromium.org, kvalo@codeaurora.org,
-        saeedm@mellanox.com, jeffrey.t.kirsher@intel.com,
-        luciano.coelho@intel.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] Fix -Wcast-function-type net drivers
-Message-ID: <20191124143919.63711421@cakuba.netronome.com>
-In-Reply-To: <20191124094306.21297-1-tranmanphong@gmail.com>
-References: <20191124094306.21297-1-tranmanphong@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726962AbfKXWn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 17:43:29 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54512 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726855AbfKXWn3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Nov 2019 17:43:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=A8kwyHEGiVOkYsRdP6Ypx4eZ4P3YO4AbBmVTN2SauVA=; b=WzcNPQr9kvOxudKKBwoTFS59cf
+        SLwUe0Rr+84mghQM1JzgF/XxcgrOMlarxLpzlKMV7cH6Fj1n+LZwYiNidyQopL+jJX6NREf11VOLZ
+        kvkR0uIEM9l69Gy9LFsmRyt2iRdlE4HuerEpwkc2Frrfx5OmbHEZaEhsEnIM51/KJaR4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iZ0bB-0005DR-CI; Sun, 24 Nov 2019 23:43:21 +0100
+Date:   Sun, 24 Nov 2019 23:43:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] net: dsa: Configure the MTU for switch ports
+Message-ID: <20191124224321.GC6009@lunn.ch>
+References: <20191123194844.9508-1-olteanv@gmail.com>
+ <20191123194844.9508-2-olteanv@gmail.com>
+ <329f394b-9e6c-d3b0-dc3d-5e3707fa8dd7@gmail.com>
+ <CA+h21hpcvGZavmSZK3KEjfKVDt6ySw2Fv42EVfp5HxbZoesSqg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hpcvGZavmSZK3KEjfKVDt6ySw2Fv42EVfp5HxbZoesSqg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Nov 2019 16:43:01 +0700, Phong Tran wrote:
-> This series is for fixing the compiler warning while enable
-> -Wcast-function-type.
-> 
-> Almost is incompatible callback prototype in using tasklet.
-> The void (*func)(unsigned long) instead of void (*func)(struct foo*).
-> 
-> Reported by: https://github.com/KSPP/linux/issues/20
+> Correct. I was actually held back a bit while looking at Andrew's
+> patch dc0fe7d47f9f ("net: dsa: Set the master device's MTU to account
+> for DSA overheads") where he basically discarded errors, so that's the
+> approach I took too (thinking that some DSA masters would not have ops
+> for changing or reporting the MTU).
 
-Hi Tran, thanks for the patches. Could you split the series into two -
-the wireless changes and the USB changes?
+Ignoring errors is deliberate because some master interfaces just
+worked without having to set the MTU. I was worried that some that
+just worked did not implement MTU changes, so i could not error out.
 
-Those usually go via slightly different trees.
+And my experience when things did not work was mostly the MTU did not
+matter, but MRU did. The MAC would send frames with a header, but not
+receive them with the header. Setting the MTU actually seems to set
+the MRU on most MACs.
+
+But when you are thinking about jumbo frames, i would not ignore the
+error. We do need to be sure the master interface can support jumbo,
+and big enough jumbo to support the header.
+
+    Andrew
