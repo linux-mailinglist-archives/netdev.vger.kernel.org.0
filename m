@@ -2,63 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8FF0108130
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 01:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BB4108134
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 01:16:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfKXAKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 19:10:01 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:33317 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726759AbfKXAKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 19:10:00 -0500
-Received: by mail-pl1-f194.google.com with SMTP id ay6so4828737plb.0
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 16:10:00 -0800 (PST)
+        id S1726820AbfKXAPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 19:15:45 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39583 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726759AbfKXAPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 19:15:45 -0500
+Received: by mail-pg1-f195.google.com with SMTP id b137so2945067pga.6
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 16:15:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=zCUnnZBOzb+U++eq90Ao/Y5fsVWb7S2HxKSyj5/jEoA=;
-        b=aovH1C3UDxQMdEZVbFMDRQ+rUflh6XBPdcvQPFPjXeZFSAmpx6BeLpm3cIHaJFieTq
-         fMwEWkmYnE9ACEwUu8CzABXeNSIhnNGWRbL0QwgrrNClfGF2YpEzejd6B1RI9vtnMdM4
-         X4OP1UBS524jC96yRG9qoo3INFpM9hchmfHJxLrKSSJ/rfcNzcnckWdECXqUkE6rSqid
-         JCK0FvhKSPPxAUJkRHhKhMQaVF8nKevtPkqSffIDFlmc2dCwG8HRfwUT/5neRWbnyxwP
-         rRIjzUA6QKyx5/3goFDy3Tv6F0lA/s8GKgkiR3OzAPL1UI5r9jL5bP8kDc8xQmW8eb3Q
-         NS8w==
+        bh=MlWS2/07rbosC/qFv8QznfdONMvmj2+tW0igi1RVjQw=;
+        b=ez1B5uRp4nlPeh7zDZUaqIVVmrQ4cZEVBD5bsp25+yTSzwX0wZswNSbOeXN8t70oOV
+         FhG3p9KcCqjRhUWAOhf9cIb4WzBxbNKgGGFTdVHV7T7k9O0I4DmQNzsXLxBV/RYAfKAX
+         gK/yPAbsjh2G5dH8n+2uSvTFKA62eoxD3IDcRAAqRD2Jyv6oss8RUpg1qf4z7CulEAma
+         kOse1mK1qWQWI+p75R/WmpEQPeJAapr7LevBTLdqssAYGzqAkEZr18I/1jO1vXtTw9yR
+         7DZisviaEICwTsNIeLinkfoWU6qMGJi4KwhUeUuXlvVe2D9lF0JNatKeHjQQjdS/U0kC
+         tHgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=zCUnnZBOzb+U++eq90Ao/Y5fsVWb7S2HxKSyj5/jEoA=;
-        b=BJpjLbI+JPWjaV988IZ9z9zK/Irnkqi6QK6/NpCzMg5gRdFcb/dFjoGgwnOJg6VCo9
-         KulDvskiKiIEjTYINvSNNtc0wjVkyVkChhD2uWqcqBOE1ed/nR8yi7fMT6tfRBfBT1yb
-         Bf9doREoTWjR9rX0pHLGW1yfvXMLafVv/ejn8/9lLI4dVJ5tiAFvfRwxRMBgi1K3Tx0M
-         5NamodcD+DFBFdYzukx1Eg8qO4aAFmtVM1yBdp7JXRhoCkJXzg+zuBVQRqv3s7pySUBc
-         f4kRXc06STZBgQqSLN9cuIPFdz0n2+G/iKoDxNGQYpgB4NocKODzFzUzo+514N8kWx2k
-         2L8Q==
-X-Gm-Message-State: APjAAAWQ2gQMIswOkr3WYA5mR+xsALoP/GCtAmOvtzxBYPxvjKYiPi7P
-        3s/TiJMpuLWtS5nSGLx2m0aD/Q==
-X-Google-Smtp-Source: APXvYqxaDS2l1bodRaHkR+O3awfnjKsDfi+r178dG+l6XyiaLSqUHjFKoJ70Qjq3zfaZnMSYcsl5gg==
-X-Received: by 2002:a17:90a:bb82:: with SMTP id v2mr28774989pjr.90.1574554199943;
-        Sat, 23 Nov 2019 16:09:59 -0800 (PST)
+        bh=MlWS2/07rbosC/qFv8QznfdONMvmj2+tW0igi1RVjQw=;
+        b=Qw7tyCuad7nvHBQD+sRTNeQSFCnlF8vkj24+59l8t7b9OOlLG0ehSsRVATMrH1A8jt
+         yvw5mxiK+OmJrZePPj77UiceDQssDTB7/ssra5o4ghcMjlify3ieK3Dt2ddi6RfKaeJ/
+         HA3DjeGXppcFHU6dPvSxZopi3dPXYHzrX/ijAIIQ1eBG/OP9baRQmSdH5IKpqq4ALWL8
+         f/R89FL9bPaAFg47n1HS40gTndebNM7us2FcUOrGLZCp+63Om2IiNKnnXMTbmd+oSYk4
+         AGvMwf4+lNo3y7noB/OArC2qr5aZSH6ZnVxDOrslyLHToGEJiLm8NqWpAI3dSrCXbL9q
+         5CtA==
+X-Gm-Message-State: APjAAAUIwgqUlZoOGN8sIbG3jyD08wg/OFjrfXuCMYwjJeJE4mZlqQ5D
+        5yFqURvmO77iY7Du+0oP+d84NA==
+X-Google-Smtp-Source: APXvYqw7Fx4pGQM8XweJFPGKswwjFyRrs7WCWKH+T4ZIjjDmS8RS/eqxt3iliLVPz19POH3ZRMTHyA==
+X-Received: by 2002:aa7:954a:: with SMTP id w10mr3614854pfq.187.1574554544026;
+        Sat, 23 Nov 2019 16:15:44 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id y1sm2843048pfq.138.2019.11.23.16.09.58
+        by smtp.gmail.com with ESMTPSA id i13sm2782483pfo.39.2019.11.23.16.15.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 16:09:59 -0800 (PST)
-Date:   Sat, 23 Nov 2019 16:09:53 -0800
+        Sat, 23 Nov 2019 16:15:43 -0800 (PST)
+Date:   Sat, 23 Nov 2019 16:15:38 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next 15/15] bnxt_en: Add support for devlink info
- command
-Message-ID: <20191123160953.46630542@cakuba.netronome.com>
-In-Reply-To: <CACKFLinKFLT5WJ__nNhwqOfOFO9jH9fOKmi9S_GSucecbmX0eA@mail.gmail.com>
-References: <1574497570-22102-1-git-send-email-michael.chan@broadcom.com>
-        <1574497570-22102-16-git-send-email-michael.chan@broadcom.com>
-        <20191123115506.2019cd08@cakuba.netronome.com>
-        <CACKFLinKFLT5WJ__nNhwqOfOFO9jH9fOKmi9S_GSucecbmX0eA@mail.gmail.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [CFT PATCH net-next v2] net: phylink: rename mac_link_state()
+ op to mac_pcs_get_state()
+Message-ID: <20191123161538.482313ef@cakuba.netronome.com>
+In-Reply-To: <E1iXaSM-0004t1-9L@rmk-PC.armlinux.org.uk>
+References: <E1iXaSM-0004t1-9L@rmk-PC.armlinux.org.uk>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,16 +82,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Nov 2019 12:15:39 -0800, Michael Chan wrote:
-> On Sat, Nov 23, 2019 at 11:55 AM Jakub Kicinski wrote:
-> > What's a board package? What HW people call a "module"? All devlink info
-> > versions should be documented in devlink-info-versions.rst.
-> >
-> > What are the possible values here? Reporting free form strings read
-> > from FW is going to be a tough sell. Probably worth dropping this one
-> > if you want the rest merged for 5.5.
+On Thu, 21 Nov 2019 00:36:22 +0000, Russell King wrote:
+> Rename the mac_link_state() method to mac_pcs_get_state() to make it
+> clear that it should be returning the MACs PCS current state, which
+> is used for inband negotiation rather than just reading back what the
+> MAC has been configured for. Update the documentation to explicitly
+> mention that this is for inband.
 > 
-> Sure, we can drop this one for now.  Do you want me to resend, or can
-> you apply just the 1st 14 patches?
+> We drop the return value as well; most of phylink doesn't check the
+> return value and it is not clear what it should do on error - instead
+> arrange for state->link to be false.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-A resend would be better, the cover letter also needs updating.
+Applied to net-next now, thank you!
