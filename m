@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3557C108206
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 06:32:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0329B108208
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 06:36:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726705AbfKXFcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 00:32:42 -0500
-Received: from mail-il1-f175.google.com ([209.85.166.175]:43510 "EHLO
-        mail-il1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbfKXFcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 00:32:42 -0500
-Received: by mail-il1-f175.google.com with SMTP id r9so11124193ilq.10;
-        Sat, 23 Nov 2019 21:32:40 -0800 (PST)
+        id S1725989AbfKXFgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 00:36:09 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:40573 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725616AbfKXFgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 00:36:09 -0500
+Received: by mail-io1-f66.google.com with SMTP id b26so10635062ion.7;
+        Sat, 23 Nov 2019 21:36:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=BWpF7eTNZZUDhfMcmymaRHjNDWReQsXmHHPwFlsJAB8=;
-        b=eYfVQvNOIGJqIwgWlez1DhLLHIgDjxGcVu1Ml7Jz1gG8sg0wz2JW+NSnr7lh9vAoI7
-         udOTq8NxoSS0yv4F7xQVLTqY23r1UGixW7VNNJMxyHHJHrRxDGh7W2gaffzRV16zKnSV
-         pLTnN64ObbG9y4WI1WsXUmkyCh/9QgA9W5UtsXjrbr6ExSzJ23O+NYfo5aVwATR5pZtw
-         +F3W3oo7m3xYA2TuLT2AE1O0omTuFY/oXaDo3K8wy9LYVIaw9P55skpEAAtwdNzHJZai
-         PCMZMaIVjoycK9IMG0hd9OOlxq2b0iDjVXX2ft4hv3B7uBhvnWXc/Zn7gR2N/Imuc6GF
-         i0fA==
+        bh=whOqFcaRa6hxNMBi94fnr+BqbvhJmTcK9gp80L3iRiQ=;
+        b=OjzIh3vQlTwS8d9fx8WMHKr8s5/FYktvIXnidSSvPTuK7qCKucd5v/BDUevMWWjn5A
+         5jGzMaBU4bEXF2XLasXl7fMW5jxy5ayVj5IDW97XGM08a5uBCAHapS/hOvckUksOXp4R
+         sDeF8xBM0yQr0iMXmmkHSxr4RFjrVKfJpwKC5pOGeWGmU1TtdrTrsx/gkIQ97Nkj35Vx
+         0YNJBBK8fr47GJPMWyGqT+Jfjg5xi3d0q+64xTkVncKDVVEmKh6KwJ3kVTWCdzjHHgMf
+         kLBDPwa8taCJs0on8NQBb4yBKAUCGCL37hT5ydCI0CzV+izNOxymhMcTxTXjkh7SJUaY
+         dmJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=BWpF7eTNZZUDhfMcmymaRHjNDWReQsXmHHPwFlsJAB8=;
-        b=hmtfxxFdi4G2Hdy7sR7Lm6HBrXopgZjSJLMsFgU4b2gXU0GsE1D5ctGcW6/iExIV0z
-         Fj1dVCih3QJJgO/A3D6SmUMrawI5vWHZBDLY3yZpG0uXaylDyTOAxXcrYt7hy4UAefS3
-         V09O6pjCpNMfw2wk5wvFd26B8Sf22dHNmZdG8eThoAI4Ksug+zl4CqO3HoI5Bh8g2Pnn
-         qTUdlr4bzNs/n/UIAtR8TLSazsoogt3gkSF7U5HGobo14rW38ND2W8cXIAiOCBcSvToz
-         9fW7eOlZzUSXBeqo85GBSkfPCx2oJhy44buUsjSs7SLDg0YQUv2Jm2tVjABxDW295fHL
-         gkmQ==
-X-Gm-Message-State: APjAAAU8yGDsbetvTGiKjD6T8yxqDPnCIBYjVoQuycUWiJ/TbZnfYfI2
-        sXApLRPKeHlJx3QNjff9VHc=
-X-Google-Smtp-Source: APXvYqwI9ZUw3+dyOS+bqMEyCjD5vI76ODMC6UCVewwoGzlodKXDXdOV0hlk3uKPRvUBFGCVohRAsA==
-X-Received: by 2002:a92:868f:: with SMTP id l15mr26945963ilh.199.1574573559928;
-        Sat, 23 Nov 2019 21:32:39 -0800 (PST)
+        bh=whOqFcaRa6hxNMBi94fnr+BqbvhJmTcK9gp80L3iRiQ=;
+        b=IOTfC8lfDixhvODnkt6qjO/R5UKQtexcD7v8lhVI+RxU8+aMIe0S/6IvraZrlUSnD3
+         GEmNzUiOOWc0RFqeLOly+8hXdEe7Vnah0DHkGMktOO2+Irxkioq0hlHDD5hheiKja8DQ
+         mZ9IhHxyTe5XjCWFnrWmXR4t8/zaDxv2X+7tVlmG0JnB9GzGtVTjoOzGZcrsdDi8aiGO
+         KS44bQkEMeweokoLxnvDTU7Sw8QHEE3aGyl+OM0kKx6EA9e0Wl6b/6T8XKf2psIv6L0W
+         94xz/ke1gI/e6EB96FjT1JUO2hDSMN5cTWhoD8gWvaSrfvh5vDUrP6zUEden7409+Io6
+         Es7g==
+X-Gm-Message-State: APjAAAWu6dnlcbowVi1WYe6bJ0V4ywtaB4w3/F3kIxy8pFD3R5mBaFwE
+        /x6x0DjIQFMKc2yBiTTuZv8=
+X-Google-Smtp-Source: APXvYqycr2ivUJUt0CpAonxBdZBv4VH+CNgLGMyN0MhO993VTvuHtlRF7V+pmVg5mU/ojgEgtMgRZA==
+X-Received: by 2002:a5d:8b45:: with SMTP id c5mr4601855iot.187.1574573766953;
+        Sat, 23 Nov 2019 21:36:06 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id h14sm926875ilc.87.2019.11.23.21.32.36
+        by smtp.gmail.com with ESMTPSA id l19sm803580ion.14.2019.11.23.21.36.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 21:32:39 -0800 (PST)
-Date:   Sat, 23 Nov 2019 21:32:30 -0800
+        Sat, 23 Nov 2019 21:36:06 -0800 (PST)
+Date:   Sat, 23 Nov 2019 21:35:58 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>
-Message-ID: <5dda15eeb5e1_62c72ad877f985c4c9@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191123110751.6729-2-jakub@cloudflare.com>
+Message-ID: <5dda16be755ff_62c72ad877f985c4c7@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191123110751.6729-3-jakub@cloudflare.com>
 References: <20191123110751.6729-1-jakub@cloudflare.com>
- <20191123110751.6729-2-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf-next 1/8] bpf, sockmap: Return socket cookie on lookup
- from syscall
+ <20191123110751.6729-3-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next 2/8] bpf, sockmap: Let all kernel-land lookup
+ values in SOCKMAP
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -66,16 +66,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Jakub Sitnicki wrote:
-> Tooling that populates the SOCKMAP with sockets from user-space needs a way
-> to inspect its contents. Returning the struct sock * that SOCKMAP holds to
-> user-space is neither safe nor useful. An approach established by
-> REUSEPORT_SOCKARRAY is to return a socket cookie (a unique identifier)
-> instead.
+> Don't require the kernel code, like BPF helpers, that needs access to
+> SOCKMAP map contents to live in the sock_map module. Expose the SOCKMAP
+> lookup operation to all kernel-land.
 > 
-> Since socket cookies are u64 values SOCKMAP needs to support such a value
-> size for lookup to be possible. This requires special handling on update,
-> though. Attempts to do a lookup on SOCKMAP holding u32 values will be met
-> with ENOSPC error.
+> Lookup from BPF context is not whitelisted yet. While syscalls have a
+> dedicated lookup handler.
 > 
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
