@@ -2,108 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDBF108182
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:02:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38968108189
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:25:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbfKXDCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 22:02:16 -0500
-Received: from mail-pf1-f173.google.com ([209.85.210.173]:42410 "EHLO
-        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfKXDCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 22:02:16 -0500
-Received: by mail-pf1-f173.google.com with SMTP id s5so5549263pfh.9
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 19:02:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=cs410pk2WGGskzmW00wQGEQsVx1UHdJx4TCUeQnvyi8=;
-        b=FypTV9hr1yrpcpZXQxme+38rUMvHaHHI2CgVqm/AnBtCIY2CsCFTkpWxBrTrYDPGKO
-         gYcySGIXSJ0mpfN0y3AxnnrcfIlukFZnocwoTdSmlFk3n52pC9C8In8jFCyu3vjtBSpD
-         ej2KXS46Iu1qn+oOqBGWP+/OfQXUver9IEIyWdU0GVrIpDIMXNDfGOQaJMtH4004iOBq
-         nkYy+c1mnAUtPL86Tx6pKZRrnG6hAfU6Lm0lnBYmkWdTsAghZr/xl8RhqpHUrJQAXQO0
-         Qs816VBxDblr8xtZM5aU8C4NkCS6wGNfnVFen/HYc5ksJkYEs9PfDxVUrPt1WiJCvhFF
-         AX5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=cs410pk2WGGskzmW00wQGEQsVx1UHdJx4TCUeQnvyi8=;
-        b=TPXtNzUHx2wtZN1NP6MGOcOPP8DiHO2p90xLMAr5ms7GOdWnGkvAGweYs1z5nO7iF3
-         0CyT5gzb5ofzfDx7QfEY0mG/TVOaGcZhDKmnobkmaDa/g0QRn+fP5OZ8yKUZ/PfCVuh3
-         V2wKUWVNjbjaLkC50dE9K+MXpQcHTZCHbPLMp7SJsP3t+dIZNMSNtLSMroD34KczATx7
-         4hufN1KrL3P3EfRs3j5QZvdqlyAG8NB7Zgu8610WIVOcGQrmlKPabjuwG60B9Bsmt8+T
-         mTKr+OdyzRqscKi+UR0wEzomLte4WoO4yOrkUa6fjeMsEXJwyweEckHglOuGX5htHSgA
-         7nag==
-X-Gm-Message-State: APjAAAUCMUOBB0GVbgJVHcp5rW0eaU7P/wnH6x3Orb/tmWOZPhFWMKwl
-        +rn3BlRBvsXaYD9Puup/kIZO6Q==
-X-Google-Smtp-Source: APXvYqxVCh1R4UCxh2jpfBCuVx7MilWEZVy8nP29FUiR2f0oa4d5b+AhH8fW8ZiNhYOVxpWk8q06Xg==
-X-Received: by 2002:a62:501:: with SMTP id 1mr27669598pff.69.1574564535099;
-        Sat, 23 Nov 2019 19:02:15 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id z10sm3287704pgc.5.2019.11.23.19.02.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 19:02:14 -0800 (PST)
-Date:   Sat, 23 Nov 2019 19:02:09 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Po Liu <po.liu@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Subject: Re: [net-next] enetc: add support Credit Based Shaper(CBS) for
- hardware offload
-Message-ID: <20191123190209.5ad772fc@cakuba.netronome.com>
-In-Reply-To: <20191122070321.20915-1-Po.Liu@nxp.com>
-References: <20191122070321.20915-1-Po.Liu@nxp.com>
-Organization: Netronome Systems, Ltd.
+        id S1726869AbfKXDZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 22:25:23 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:55737 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726676AbfKXDZX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 Nov 2019 22:25:23 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47LFsp0N58z9sPW;
+        Sun, 24 Nov 2019 14:25:18 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1574565919;
+        bh=ubSCmS66KKKESIxFDLf0lj/eHA89i005gCLItb6k47c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BlrN/MwjAMFE9hQcqp+8JkTyqU9OFemRs41MyR6YELs1DTVYtILBwh2IJmnc6fKQN
+         h5weWSWIZ8RjZGv81n1rfDYw5T4GXkVVrdxJ3ACv0fW+xDsxXO9K2OKIQhJcklLW8G
+         pVcYnIG/hJGL3yUEPyfMllX6tz9hd83EDK9REP0LU5vAeIM5RzrqVuD0pufFjSjlr7
+         TaAjpcQmrvU4R0r+X5EjbSWd1S1ABIBO98Q6Fc5RHxnXQxbauFUhsFJMcLjaSXBVg+
+         jOeKRnqpVIa1IjlY26+doUwSkXwxYIaJHBjYCsoPn45Oj9GNM+agOOv9O/QPR2QFni
+         nkk0+80lVQYsw==
+Date:   Sun, 24 Nov 2019 14:25:11 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Dave Miller <davem@davemloft.net>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <edumazet@google.com>,
+        <linuxppc-dev@ozlabs.org>
+Subject: Re: [PATCH v2] powerpc: Add const qual to local_read() parameter
+Message-ID: <20191124142511.529543bf@canb.auug.org.au>
+In-Reply-To: <20191120011451.28168-1-mpe@ellerman.id.au>
+References: <20191120011451.28168-1-mpe@ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/HD_8++.mXadlTKPd0aZXGLH";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 07:17:18 +0000, Po Liu wrote:
-> +	if (tc == prio_top) {
-> +		max_interference_size = port_frame_max_size * 8;
-> +	} else {
-> +		u32 m0, ma, r0, ra;
-> +
-> +		m0 = port_frame_max_size * 8;
-> +		ma = enetc_port_rd(&si->hw, ENETC_PTCMSDUR(prio_top)) * 8;
-> +		ra = enetc_get_cbs_bw(&si->hw, prio_top) *
-> +			port_transmit_rate * 10000ULL;
-> +		r0 = port_transmit_rate * 1000000ULL;
-> +		max_interference_size = m0 + ma + (u64)ra * m0 / (r0 - ra);
-> +	}
-> +
-> +	/* hiCredit bits calculate by:
-> +	 *
-> +	 * maxSizedFrame * (idleSlope/portTxRate)
-> +	 */
-> +	hi_credit_bit = max_interference_size * bw / 100;
-> +
-> +	/* hiCredit bits to hiCredit register need to calculated as:
-> +	 *
-> +	 * (enetClockFrequency / portTransmitRate) * 100
-> +	 */
-> +	hi_credit_reg = (ENETC_CLK * 100ULL) * hi_credit_bit
-> +			/ (port_transmit_rate * 1000000ULL);
+--Sig_/HD_8++.mXadlTKPd0aZXGLH
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi! The patch looks good to me, but I'm concerned about those 64bit
-divisions here. Don't these need to be div_u64() & co.? Otherwise
-we may see one of the:
+Hi Dave,
 
-ERROR: "__udivdi3" [drivers/net/ethernet/freescale/enetc/fsl-enetc.ko] undefined!
+On Wed, 20 Nov 2019 12:14:51 +1100 Michael Ellerman <mpe@ellerman.id.au> wr=
+ote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>=20
+> A patch in net-next triggered a compile error on powerpc:
+>=20
+>   include/linux/u64_stats_sync.h: In function 'u64_stats_read':
+>   include/asm-generic/local64.h:30:37: warning: passing argument 1 of 'lo=
+cal_read' discards 'const' qualifier from pointer target type
+>=20
+> This seems reasonable to relax powerpc local_read() requirements.
+>=20
+> Fixes: 316580b69d0a ("u64_stats: provide u64_stats_t type")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+> ---
+>  arch/powerpc/include/asm/local.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> v2: mpe: Update change log with compiler warning, resend to netdev so it =
+appears
+> in the netdev patchwork.
+>=20
+> Dave can you take this in the net tree so the window of the breakage is a=
+s small
+> as possible please?
 
-messages from the build bot..
+I see that you marked this as "Not Applicable" in patchwork.
 
-I could be wrong, I haven't actually tested..
+Michael meant the net-next tree which contains commit
+
+  316580b69d0a ("u64_stats: provide u64_stats_t type")
+
+Please consider applying this patch.
+
+> diff --git a/arch/powerpc/include/asm/local.h b/arch/powerpc/include/asm/=
+local.h
+> index fdd00939270b..bc4bd19b7fc2 100644
+> --- a/arch/powerpc/include/asm/local.h
+> +++ b/arch/powerpc/include/asm/local.h
+> @@ -17,7 +17,7 @@ typedef struct
+> =20
+>  #define LOCAL_INIT(i)	{ (i) }
+> =20
+> -static __inline__ long local_read(local_t *l)
+> +static __inline__ long local_read(const local_t *l)
+>  {
+>  	return READ_ONCE(l->v);
+>  }
+> --=20
+> 2.21.0
+>=20
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/HD_8++.mXadlTKPd0aZXGLH
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3Z+BcACgkQAVBC80lX
+0GzVvggAidrUoqlfyGMzIYgPyz7jnI4y/46XiGjrX8L+IvWQDPBcspWAAmEvZ/Bx
+lnicYPiVhBq7eMs4hdJMZQ2OW3S/6td1uMLqujGrbl0N79KH1cSbIkymz50PZxP6
+IiGA7D5VgeFLYidH4RMKruYvm0AqKA+N8GxK3lAgoxludsbcCUzbhlR4hAfyAsfB
+LbtxHdLu1sWTqBNXdBCxlUC7wfpGcvYHaKBMm70SUTgL/LaVmvX0WtF+7vOdF19x
+H1f7fNCa7bJlF+u0Osb3O4k5OWKg/JUviXqdstK/4HSKo09onYrrYb0m8Fdka+Lr
+iuX+vJKwH5yUukRNsLeV0IZjtlX3hQ==
+=6WC4
+-----END PGP SIGNATURE-----
+
+--Sig_/HD_8++.mXadlTKPd0aZXGLH--
