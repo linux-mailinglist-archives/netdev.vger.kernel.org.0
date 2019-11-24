@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9EB6108554
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB3D108557
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbfKXWin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 17:38:43 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27003 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726855AbfKXWin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 17:38:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574635122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/G9Wi4bZIYtsLMYWyzhkBqJDx6M9Zopv+NNCrBqV6+0=;
-        b=FdK68jZGiLe/estV9mizwJbCFqvWXu6XOHLXR7D5hgnEupQA/WYlZveev4FKr8rX5Y1FJ/
-        wNzpnkJDNDvImPzGvi3on6My41ErzhceEcUHp64fIP3HryHwJvbCMieMNY7BiFtXwAiNkn
-        8v3Z7GoRaH67TZsAiU5F1R/FsfnFQLI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-50-kUO5aoyyOeCAi-UKsva4bQ-1; Sun, 24 Nov 2019 17:38:36 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CCF9A1007269;
-        Sun, 24 Nov 2019 22:38:34 +0000 (UTC)
-Received: from krava (ovpn-204-42.brq.redhat.com [10.40.204.42])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 542E25C1D4;
-        Sun, 24 Nov 2019 22:38:28 +0000 (UTC)
-Date:   Sun, 24 Nov 2019 23:38:27 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and
- unload
-Message-ID: <20191124223742.GA20575@krava>
-References: <20191120213816.8186-1-jolsa@kernel.org>
- <8c928ec4-9e43-3e2a-7005-21f40fcca061@iogearbox.net>
- <CAADnVQKu-ZgFTaSMH=Q-jMOYYvE32TF2b2hq1=dmDV8wAf18pg@mail.gmail.com>
- <CAHC9VhQbQoXacbTCNJPGNzFOv30PwLeiWu4ROQFU46=saTeTNQ@mail.gmail.com>
- <20191122002257.4hgui6pylpkmpwac@ast-mbp.dhcp.thefacebook.com>
- <CAHC9VhRihMi_d-p+ieXyuVBcGMs80SkypVxF4gLE_s45GKP0dg@mail.gmail.com>
- <20191122192353.GA2157@krava>
- <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
- <20191123085719.GA1673@krava>
- <20191123100340.771bfd25@cakuba.netronome.com>
+        id S1727072AbfKXWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 17:39:28 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:46960 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfKXWj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 17:39:27 -0500
+Received: by mail-pj1-f66.google.com with SMTP id a16so5531789pjs.13
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 14:39:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=mJ03a7hesWJNvR2m6hfpaM5qF0D6avZONNtvx1zsFJc=;
+        b=Gj7RiQOKmCUl7rlYZQVUi2mKCnOg5I0nw9OU8vIyXYd/0QJI7iGZFzb8A/gjk4E+JS
+         xOJdNEEuiSMhWnxlWAyzY3TDGJab6QkRA5Q+e9FeTPuhzQ/AEYUFZFzloPjD3PGACWym
+         SEtEro4s2JPqte8X2Pf+p3nxA+N3yyFlbPqGMcKI8aDGrB0AgcK8nlBEFgq8bE004dIh
+         ycirnv1uJfo4XBMc96OLuvYRyUlFwaYIcnglL6w3TuhledodxCYZZRFQooR3B5aUumvb
+         hEGV7k4M4T8W6jyExL6fLt9Cdlr+RPuD8Cuar7Te9Tl2EzW4Kqj/FvMFbWqiEPCIjWrv
+         +rWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=mJ03a7hesWJNvR2m6hfpaM5qF0D6avZONNtvx1zsFJc=;
+        b=qMAdkk8XZ0D3zJjkP0dn7vsU+fN+5nPbeIa8W2mVCTfw2oiO3KpxbmJRecMma5XOGs
+         8gt6KK0OJuy162mPMAH6smBqhuxhH4CwlaimvbcVoLCrQ3DUCuAtPzeisStgE4Q7fhPK
+         8Pv1WQOYUZ1vq2L7ak+dQBTJ+k85KsCr7WNRrO/+vfq9i56jEAWnrP/ehtuCk0CZ99W1
+         BSaL2PwIBdmXsM0K2c3ePo2a8sJ99o6gIx3mvVcTdV4N3O/tz+n42H1OKn18AcVFdd+o
+         S6Vnr77ocECezBdtCin3H+Ertld6cSXpl3FII3qC+vCuqkk8Zae7hRXc5JR+IlsFrJRK
+         LrfQ==
+X-Gm-Message-State: APjAAAWKpjtr4QZmPjoTBtqLCx4ADfQV/LNo4ibGGTKs3vKrFLYiXus7
+        c2DqXmDFWsEv9tPt8VGP3+BznA==
+X-Google-Smtp-Source: APXvYqx50D+Wd5N5bU/VCxdp0oBYsPZSpIdT6ez+EmZyigA36yD5gxhbXBGUlO6FDAZGYYvd6plU4Q==
+X-Received: by 2002:a17:902:409:: with SMTP id 9mr26724818ple.25.1574635166883;
+        Sun, 24 Nov 2019 14:39:26 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id y12sm5619986pjy.0.2019.11.24.14.39.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Nov 2019 14:39:26 -0800 (PST)
+Date:   Sun, 24 Nov 2019 14:39:19 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Phong Tran <tranmanphong@gmail.com>
+Cc:     davem@davemloft.net, keescook@chromium.org, kvalo@codeaurora.org,
+        saeedm@mellanox.com, jeffrey.t.kirsher@intel.com,
+        luciano.coelho@intel.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] Fix -Wcast-function-type net drivers
+Message-ID: <20191124143919.63711421@cakuba.netronome.com>
+In-Reply-To: <20191124094306.21297-1-tranmanphong@gmail.com>
+References: <20191124094306.21297-1-tranmanphong@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191123100340.771bfd25@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: kUO5aoyyOeCAi-UKsva4bQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 23, 2019 at 10:03:40AM -0800, Jakub Kicinski wrote:
-> On Sat, 23 Nov 2019 09:57:19 +0100, Jiri Olsa wrote:
-> > Alexei already asked Dave to revert this in previous email,
-> > so that should happen
->=20
-> Reverted in net-next now.
->=20
-> But this is not really how this should work. You should post a proper
-> revert patch to netdev for review, with an explanation in the commit
-> message etc.
+On Sun, 24 Nov 2019 16:43:01 +0700, Phong Tran wrote:
+> This series is for fixing the compiler warning while enable
+> -Wcast-function-type.
+> 
+> Almost is incompatible callback prototype in using tasklet.
+> The void (*func)(unsigned long) instead of void (*func)(struct foo*).
+> 
+> Reported by: https://github.com/KSPP/linux/issues/20
 
-I had no idea I need to post the revert, sorry
-will do next time
+Hi Tran, thanks for the patches. Could you split the series into two -
+the wireless changes and the USB changes?
 
-thanks,
-jirka
-
+Those usually go via slightly different trees.
