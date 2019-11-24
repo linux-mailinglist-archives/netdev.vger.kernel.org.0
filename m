@@ -2,133 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A761082F5
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 11:47:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 366CF1082FA
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 11:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbfKXKri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 05:47:38 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:42336 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbfKXKri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 05:47:38 -0500
-Received: by mail-pj1-f66.google.com with SMTP id y21so5135440pjn.9
-        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 02:47:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q3BQ66sbK5Gpfnrdg3eGDKlvFsiR1x021f4knTjkTjQ=;
-        b=cDsveOPEvv+q+ii3OMnZiVNGEDOwTXjwHiSYZqUEq/VBI/9cuB9LiL3R8ajNpzq/TF
-         t+U/0/NXQRZubHMIkIZqPLQHotntERLI5JLbrIfZoHn7IR074eVYVCK2zcBrszDjnPCE
-         pIDkvdqSAJExAPgD0fA4t8oriHTeZCucQgokCDxaTq9laO8xADlA85yr9Xa1g3PZbOkW
-         sE2sn2GMou0T3LLCYo7SOq8R1CAyVmYtH7ljIizxW2Su09RLAEXkEYIwWKXvRWfAOVIq
-         jYO5swfqTTKDR1TvVm3wImglxgBEvb2m0iix6acfuXEhuMWNLKOuTHAqGmtp73crYmiI
-         v1pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q3BQ66sbK5Gpfnrdg3eGDKlvFsiR1x021f4knTjkTjQ=;
-        b=EhM72txPt4jtxYgKpBTsrGLjqpIEd6AEIOUO35yZPpzd7M61doFvIptx4SQtXP6LSS
-         yailvCCcQfhRK9s3vARyNgyrREgUwE4CEKToSQYnwmN7VToD4P9Mb4fBGeTWj3Nuw6le
-         tE6pOkILjJkwJOp/EZBNv6fkiJoGne1XUSyhb7SoeZT3Ah+b4Mi9lqVg7/WWguTn5ToJ
-         7Xl3syLTZ5ltgcc0VrovwmtIK9nZc4Wt64gY6ODj3MnoLtpMls+Lm9totCSfgPNz1Xe7
-         NifqRIQ1ojDn4AKOvNvM6Md1xtlqpG7Myaptvo/iVi/PWB11fO0GO5jkDgmtFQ9NizRc
-         z6iw==
-X-Gm-Message-State: APjAAAU/ZNFvPxHXM8vaMeVV2iluXsy6Cd2EnahRkE+P0ZkUWVzmnRxr
-        A+N0MBvDi/4M2V2QKKDm1uWqwhTO
-X-Google-Smtp-Source: APXvYqyqmeZcFw4rFRkCfU81RzSau1AG9h9vn8CSvw7gt19e0C9dd4WmYwIG4RhR9xeZDH05uYoxRg==
-X-Received: by 2002:a17:90a:650c:: with SMTP id i12mr32335948pjj.28.1574592457453;
-        Sun, 24 Nov 2019 02:47:37 -0800 (PST)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id i13sm4188537pfo.39.2019.11.24.02.47.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 02:47:36 -0800 (PST)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] net-sctp: replace some sock_net(sk) with just 'net'
-Date:   Sun, 24 Nov 2019 02:47:27 -0800
-Message-Id: <20191124104727.8273-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726825AbfKXKsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 05:48:25 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.169]:34320 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbfKXKsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 05:48:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1574592501;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=GGJ2DpglOTfvtp343vHN8wM7zSn3rwwNmq6U3UpQtmg=;
+        b=ZRKz02jWOM2MrmUOZ91m2e8TjMiDqqr+Y+TouMkRpDwyXMhw71xjrQ1efjyEVnONbN
+        0wXAs1AWRui+VK/SrMh+3di0JAGBBaFym6OEoWfyhgvj72v+WLtUTn5VO6Ora7IzQE62
+        6bGMRxoYkZpG/eltyAjwkHHyUk1LqGkAWCqzRrKNR93xYLWr7l4cOTgZcJxguF/p8PsT
+        zPfXT1WQrnkQVRHB17vdUBTRzc1h/CZPd4JpigXn2bfaOvsrFO5IngNPd9gpx+YSDs/k
+        QeHKEnirTFPY/k3wBX88MPly2L040hZR3WZ7j9fScpnYUjW/XNX6BfIpy69b3qstxkcp
+        cv4Q==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Qpw97WFDlSfXA4NgJM="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
+        with ESMTPSA id L09db3vAOAlxwA0
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Sun, 24 Nov 2019 11:47:59 +0100 (CET)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH 2/2] net: wireless: ti: wl1251: sdio: remove ti,power-gpio
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
+Date:   Sun, 24 Nov 2019 11:47:59 +0100
+Cc:     linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Nikolaus Schaller <hns@goldelico.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <56A8FB98-51B6-4CAC-9743-0A86DFE09CA8@goldelico.com>
+References: <cover.1574591746.git.hns@goldelico.com> <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+X-Mailer: Apple Mail (2.3124)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
 
-It already existed in part of the function, but move it
-to a higher level and use it consistently throughout.
+> Am 24.11.2019 um 11:35 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
+>=20
+> Remove handling of this property from code.
+> Note that wl->power_gpio is still needed in
+> the header file for SPI mode (N900).
+>=20
+> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+> drivers/net/wireless/ti/wl1251/sdio.c | 30 ---------------------------
+> 1 file changed, 30 deletions(-)
+>=20
+> diff --git a/drivers/net/wireless/ti/wl1251/sdio.c =
+b/drivers/net/wireless/ti/wl1251/sdio.c
+> index df0c20a555e3..82446196f9a8 100644
+> --- a/drivers/net/wireless/ti/wl1251/sdio.c
+> +++ b/drivers/net/wireless/ti/wl1251/sdio.c
+> @@ -15,9 +15,7 @@
+> #include <linux/wl12xx.h>
+> #include <linux/irq.h>
+> #include <linux/pm_runtime.h>
+> -#include <linux/gpio.h>
+> #include <linux/of.h>
+> -#include <linux/of_gpio.h>
+> #include <linux/of_irq.h>
+>=20
+> #include "wl1251.h"
+> @@ -162,15 +160,6 @@ static int wl1251_sdio_set_power(struct wl1251 =
+*wl, bool enable)
+> printk("%s %d\n", __func__, enable);
+>=20
+> 	if (enable) {
+> -		/*
+> -		 * Power is controlled by runtime PM, but we still call =
+board
+> -		 * callback in case it wants to do any additional setup,
+> -		 * for example enabling clock buffer for the module.
+> -		 */
+> -		if (gpio_is_valid(wl->power_gpio))
+> -			gpio_set_value(wl->power_gpio, true);
+> -
+> -
+> 		ret =3D pm_runtime_get_sync(&func->dev);
+> 		if (ret < 0) {
+> 			pm_runtime_put_sync(&func->dev);
+> @@ -188,9 +177,6 @@ printk("%s %d\n", __func__, enable);
+> 		ret =3D pm_runtime_put_sync(&func->dev);
+> 		if (ret < 0)
+> 			goto out;
+> -
+> -		if (gpio_is_valid(wl->power_gpio))
+> -			gpio_set_value(wl->power_gpio, false);
+> 	}
+>=20
+> out:
+> @@ -245,27 +231,11 @@ printk("%s: of=3D%pOFcC\n", __func__, np);
+>=20
+> 	wl1251_board_data =3D wl1251_get_platform_data();
+> 	if (!IS_ERR(wl1251_board_data)) {
+> -		wl->power_gpio =3D wl1251_board_data->power_gpio;
+> 		wl->irq =3D wl1251_board_data->irq;
+> 		wl->use_eeprom =3D wl1251_board_data->use_eeprom;
+> 	} else if (np) {
+> 		wl->use_eeprom =3Dof_property_read_bool(np, =
+"ti,wl1251-has-eeprom");
+> -		wl->power_gpio =3D of_get_named_gpio(np, =
+"ti,power-gpio", 0);
+> 		wl->irq =3D of_irq_get(np, 0);
+> -
+> -		if (wl->power_gpio =3D=3D -EPROBE_DEFER || wl->irq =3D=3D =
+-EPROBE_DEFER) {
 
-Safe since sk is never written to.
+^^^ spotted a bug myself... wl->irq check must not be removed.
 
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/sctp/socket.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Noted for v2.
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 83e4ca1fabda..f57a83d54583 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -8264,6 +8264,7 @@ static struct sctp_bind_bucket *sctp_bucket_create(
- 
- static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- {
-+	struct net *net = sock_net(sk);
- 	struct sctp_sock *sp = sctp_sk(sk);
- 	bool reuse = (sk->sk_reuse || sp->reuse);
- 	struct sctp_bind_hashbucket *head; /* hash list */
-@@ -8282,7 +8283,6 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		/* Search for an available port. */
- 		int low, high, remaining, index;
- 		unsigned int rover;
--		struct net *net = sock_net(sk);
- 
- 		inet_get_local_port_range(net, &low, &high);
- 		remaining = (high - low) + 1;
-@@ -8294,12 +8294,12 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 				rover = low;
- 			if (inet_is_local_reserved_port(net, rover))
- 				continue;
--			index = sctp_phashfn(sock_net(sk), rover);
-+			index = sctp_phashfn(net, rover);
- 			head = &sctp_port_hashtable[index];
- 			spin_lock(&head->lock);
- 			sctp_for_each_hentry(pp, &head->chain)
- 				if ((pp->port == rover) &&
--				    net_eq(sock_net(sk), pp->net))
-+				    net_eq(net, pp->net))
- 					goto next;
- 			break;
- 		next:
-@@ -8323,10 +8323,10 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		 * to the port number (snum) - we detect that with the
- 		 * port iterator, pp being NULL.
- 		 */
--		head = &sctp_port_hashtable[sctp_phashfn(sock_net(sk), snum)];
-+		head = &sctp_port_hashtable[sctp_phashfn(net, snum)];
- 		spin_lock(&head->lock);
- 		sctp_for_each_hentry(pp, &head->chain) {
--			if ((pp->port == snum) && net_eq(pp->net, sock_net(sk)))
-+			if ((pp->port == snum) && net_eq(pp->net, net))
- 				goto pp_found;
- 		}
- 	}
-@@ -8382,7 +8382,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- pp_not_found:
- 	/* If there was a hash table miss, create a new port.  */
- 	ret = 1;
--	if (!pp && !(pp = sctp_bucket_create(head, sock_net(sk), snum)))
-+	if (!pp && !(pp = sctp_bucket_create(head, net, snum)))
- 		goto fail_unlock;
- 
- 	/* In either case (hit or miss), make sure fastreuse is 1 only
--- 
-2.24.0.432.g9d3f5f5b63-goog
+
+> -			ret =3D -EPROBE_DEFER;
+> -			goto disable;
+> -		}
+> -	}
+> -
+> -	if (gpio_is_valid(wl->power_gpio)) {
+> -		ret =3D devm_gpio_request(&func->dev, wl->power_gpio,
+> -								"wl1251 =
+power");
+> -		if (ret) {
+> -			wl1251_error("Failed to request gpio: %d\n", =
+ret);
+> -			goto disable;
+> -		}
+> 	}
+>=20
+> 	if (wl->irq) {
+> --=20
+> 2.23.0
+>=20
 
