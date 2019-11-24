@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0640C108597
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 00:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3F410859C
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 00:37:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfKXXfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 18:35:06 -0500
-Received: from mail-pf1-f171.google.com ([209.85.210.171]:32844 "EHLO
-        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbfKXXfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 18:35:05 -0500
-Received: by mail-pf1-f171.google.com with SMTP id c184so6338270pfb.0
-        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 15:35:05 -0800 (PST)
+        id S1727072AbfKXXhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 18:37:24 -0500
+Received: from mail-pj1-f47.google.com ([209.85.216.47]:34645 "EHLO
+        mail-pj1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727029AbfKXXhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 18:37:24 -0500
+Received: by mail-pj1-f47.google.com with SMTP id bo14so5584950pjb.1
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 15:37:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=IAX5OsvQRFhKUVQf9ZlgdiZ0hiTtv7ussL8NqCM89xg=;
-        b=CQBjZJADEWDMnh/O55ZZyyKuHM3lHl/Cs7sj8JVwoM8X3SLQs/jhmNaCCoFxpgFC4g
-         opzBTt8OmQvgOLfvkwLJvBfEH0hjyy0FtECa2itRyCOE061wAAncoCKldnlKW6fMD+b2
-         2XF3SSMWTYhxj4tWkOhjp5PwS5KGUU2ZCpVG2seV0UTJsPUoZBctrqVYxtV1kKnO92tW
-         V1viAVqpSX1oypYw0Q9ZCpgZws35eVJxTyFwle1YxsA9N0oRnpSg+1Nzk1APXKtT/QUw
-         B2EueQVIFlEq6ncV0is9dMR3HEJYuutOP3ApyK1VPuKJhLmIa8zGbZ8GkDat4+NbdveS
-         Ohew==
+        bh=6we/MzgfhyrkDi1CPOUTtTgeIKvvzsxgig47t8jJM8Y=;
+        b=OEtVeEEsQDSTgHMJqp7VqvE8uzd0KsJDG/6U5B9xDGR+tD3BkP+zbNLwz1ZiWmA00Q
+         yy4vDEjHrvDB4haPaWtrGoYi2e2c2JY4hbX4tS3m5zNc5les6QcVrWZNGuRs6PoNU1cQ
+         1gZnTLtuN7c1lxQPrhM6iBLYPZ/Ka2ZkPmQY1fU7n1vpXsny1fTXFEd8ApPNT+HjGOu4
+         jAdWLxV5D+rtihHjDK7irsel13mbrNwxnCF2N00XBgKXfpJPqSPhbWWLmlCxKPVxpBeK
+         65sXZHduK21B32XKwpPGhgTLjiZAHHCrllwOzZ2Bp46wTa5IwugxdToCN4W6+kcZ2z4f
+         d7Kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=IAX5OsvQRFhKUVQf9ZlgdiZ0hiTtv7ussL8NqCM89xg=;
-        b=qKMrhrB69Aqbhn0CTtH7rpdidhop4BuLvaPw/bKDZon3iM6ONxq2f2pJW7aFsgMc1U
-         6ygMExv7S/RfJBoEfn3iZB+tZTkrl/6LTC0FY/Khcg0Nr+cpbWWdODL0ebjEqErn++Uh
-         dZn1+yn+zTcBhUz2w+vJT2khY/jb2dNJmR2YsWB6hVk1Rop4vO/B0Y1EoyXBuV+/e95O
-         DX/rHYvoyFK82b765IZNBNdTuUZHqR5ysBnxF8sd25+gXLMEsq7h8tHGaJI9hpzKiW7x
-         rlGfe9MVXjjWY5dEsb9LTx4go8dRE1mamka5pLQQyHexm3ab0lDx9eokPWoIUkxFhyNq
-         hf1A==
-X-Gm-Message-State: APjAAAUUPvVzpuD72YVSk1tI6gb3HTEUMmZDfWOP4HZpb4bHORfTkC3P
-        rCIx6ds3ZMZlUJnmDASTWruWRHSj9Nc=
-X-Google-Smtp-Source: APXvYqxNAS091SYTF7LWUbmNijXLey/JwiGkEGlAES3q+1uVZ0F13uA6K8LvjVSUWygYD+NFsaX9uw==
-X-Received: by 2002:a62:ac06:: with SMTP id v6mr30674323pfe.210.1574638505235;
-        Sun, 24 Nov 2019 15:35:05 -0800 (PST)
+        bh=6we/MzgfhyrkDi1CPOUTtTgeIKvvzsxgig47t8jJM8Y=;
+        b=dJfgwB6qpqwY1UfbHSdL7mKjW2+qkvKkx0V8ze/BPzRdyTZknDgLgRKWyVVVtmOswe
+         z+SsW4ElJX5xDiGfHyurkEySdqeUu0CD9TG4D8Cf4ryDAP0houJJjBWtv8eQ0oB1nTqa
+         CY1LEe7Alks5X4tQufEAtp/IOZoPz6cxQeqL5Y6UH+SjxCO+T8/oDa+YNEzAukDa7jUb
+         W711PwvP6Yw2e2AIyE+Ug2hVbSBF50+muLlhqsm6bAumN21EcqE6iSvAY5z9dLSEpsWT
+         PJS2BiqPC2OpQNdCQcM4HKog+ey0SsiRzKqrMPtM2+d55scm1VIZ4V9PYSfJ9chplSnc
+         9Uiw==
+X-Gm-Message-State: APjAAAXWc2TXv9kjCQ3YLiEY5GpMsDOt1pv472nKse9P1CkB++ZWYuFn
+        6mMlKztCvKupmS828v214yEkeQ==
+X-Google-Smtp-Source: APXvYqwrsOTKn/ZZp7dWj0yzsZ5TxKqoMOSF7LaZ9WDKFYyqpdHlEzTYHdnWDOaTFkZWffSFTohBdw==
+X-Received: by 2002:a17:90a:a612:: with SMTP id c18mr35029024pjq.49.1574638643235;
+        Sun, 24 Nov 2019 15:37:23 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id z1sm5717299pfk.61.2019.11.24.15.35.04
+        by smtp.gmail.com with ESMTPSA id e7sm5525228pfi.29.2019.11.24.15.37.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 15:35:05 -0800 (PST)
-Date:   Sun, 24 Nov 2019 15:34:58 -0800
+        Sun, 24 Nov 2019 15:37:23 -0800 (PST)
+Date:   Sun, 24 Nov 2019 15:37:17 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Po Liu <po.liu@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Subject: Re: [net-next] enetc: add support Credit Based Shaper(CBS) for
- hardware offload
-Message-ID: <20191124153458.14015cb2@cakuba.netronome.com>
-In-Reply-To: <20191123190209.5ad772fc@cakuba.netronome.com>
-References: <20191122070321.20915-1-Po.Liu@nxp.com>
-        <20191123190209.5ad772fc@cakuba.netronome.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Julio Faracco <jcfaracco@gmail.com>, netdev@vger.kernel.org,
+        Daiane Mendes <dnmendes76@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] drivers: net: virtio_net: Implement a
+ dev_watchdog handler
+Message-ID: <20191124153717.6edefa85@cakuba.netronome.com>
+In-Reply-To: <20191124182426-mutt-send-email-mst@kernel.org>
+References: <20191122013636.1041-1-jcfaracco@gmail.com>
+        <20191122052506-mutt-send-email-mst@kernel.org>
+        <CAENf94KX1XR4_KXz9KLZQ09Ngeaq2qzYY5OE68xJMXMu13SuEg@mail.gmail.com>
+        <20191124100157-mutt-send-email-mst@kernel.org>
+        <20191124164411-mutt-send-email-mst@kernel.org>
+        <20191124150352.5cab3209@cakuba.netronome.com>
+        <20191124182426-mutt-send-email-mst@kernel.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -72,53 +73,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Nov 2019 19:02:09 -0800, Jakub Kicinski wrote:
-> On Fri, 22 Nov 2019 07:17:18 +0000, Po Liu wrote:
-> > +	if (tc == prio_top) {
-> > +		max_interference_size = port_frame_max_size * 8;
-> > +	} else {
-> > +		u32 m0, ma, r0, ra;
-> > +
-> > +		m0 = port_frame_max_size * 8;
-> > +		ma = enetc_port_rd(&si->hw, ENETC_PTCMSDUR(prio_top)) * 8;
-> > +		ra = enetc_get_cbs_bw(&si->hw, prio_top) *
-> > +			port_transmit_rate * 10000ULL;
-> > +		r0 = port_transmit_rate * 1000000ULL;
-> > +		max_interference_size = m0 + ma + (u64)ra * m0 / (r0 - ra);
-> > +	}
-> > +
-> > +	/* hiCredit bits calculate by:
-> > +	 *
-> > +	 * maxSizedFrame * (idleSlope/portTxRate)
-> > +	 */
-> > +	hi_credit_bit = max_interference_size * bw / 100;
-> > +
-> > +	/* hiCredit bits to hiCredit register need to calculated as:
-> > +	 *
-> > +	 * (enetClockFrequency / portTransmitRate) * 100
-> > +	 */
-> > +	hi_credit_reg = (ENETC_CLK * 100ULL) * hi_credit_bit
-> > +			/ (port_transmit_rate * 1000000ULL);  
+On Sun, 24 Nov 2019 18:29:49 -0500, Michael S. Tsirkin wrote:
+> netdev: pass the stuck queue to the timeout handler
 > 
-> Hi! The patch looks good to me, but I'm concerned about those 64bit
-> divisions here. Don't these need to be div_u64() & co.? Otherwise
-> we may see one of the:
-> 
-> ERROR: "__udivdi3" [drivers/net/ethernet/freescale/enetc/fsl-enetc.ko] undefined!
-> 
-> messages from the build bot..
-> 
-> I could be wrong, I haven't actually tested..
+> This allows incrementing the correct timeout statistic without any mess.
+> Down the road, devices can learn to reset just the specific queue.
 
-Yup:
+FWIW
 
-drivers/net/ethernet/freescale/enetc/enetc_qos.o: In function `enetc_setup_tc_cbs':
-enetc_qos.c:(.text+0x5b4): undefined reference to `__udivdi3'
-enetc_qos.c:(.text+0x608): undefined reference to `__udivdi3'
-/home/jkicinski/devel/linux/Makefile:1077: recipe for target 'vmlinux' failed
-make[1]: *** [vmlinux] Error 1
-make[1]: Leaving directory '/home/jkicinski/devel/linux/build_tmp2'
-Makefile:179: recipe for target 'sub-make' failed
-make: *** [sub-make] Error 2
-
-Please fix and repost.
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
