@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8707810855E
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:43:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8350108562
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbfKXWn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 17:43:29 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54512 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726855AbfKXWn3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 24 Nov 2019 17:43:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=A8kwyHEGiVOkYsRdP6Ypx4eZ4P3YO4AbBmVTN2SauVA=; b=WzcNPQr9kvOxudKKBwoTFS59cf
-        SLwUe0Rr+84mghQM1JzgF/XxcgrOMlarxLpzlKMV7cH6Fj1n+LZwYiNidyQopL+jJX6NREf11VOLZ
-        kvkR0uIEM9l69Gy9LFsmRyt2iRdlE4HuerEpwkc2Frrfx5OmbHEZaEhsEnIM51/KJaR4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iZ0bB-0005DR-CI; Sun, 24 Nov 2019 23:43:21 +0100
-Date:   Sun, 24 Nov 2019 23:43:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: dsa: Configure the MTU for switch ports
-Message-ID: <20191124224321.GC6009@lunn.ch>
-References: <20191123194844.9508-1-olteanv@gmail.com>
- <20191123194844.9508-2-olteanv@gmail.com>
- <329f394b-9e6c-d3b0-dc3d-5e3707fa8dd7@gmail.com>
- <CA+h21hpcvGZavmSZK3KEjfKVDt6ySw2Fv42EVfp5HxbZoesSqg@mail.gmail.com>
+        id S1727020AbfKXWp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 17:45:57 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39380 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfKXWp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 17:45:56 -0500
+Received: by mail-pf1-f193.google.com with SMTP id x28so6286946pfo.6
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 14:45:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=zmLK0rFFfYiHSW3DsZBQW692cSHm7fyRWmpu+4t626A=;
+        b=bdRie+N5N4oS6/8CLqHV1EVLmoOJJz4A/838TvK7y8t3cbN7n0f5IGuZN9ZQLaI0vg
+         q7V03R6oXKcT5L47vH5KugCiMAVX6yIjDnOJ4ShyZVBfd33qi/mg2Rx+uWy4s4xS0+0i
+         ykd+55VOeNhlu34+LSOJmlpydMUyCqZ1ESaLCdaDL9LO6WUpUstPusiDjHlL9ltGkhT8
+         tACMDNVIIFBYUZdfV1IQLEH5gFCvw3vMahlVKsxCJamFK12cRa2vsM6M+yGYThB1yYQO
+         w5X9ZrH7Y46/bNA9An4j0FJO5x56n2eOZnXmgwnhIIWnm0nTP/p2iQ45TPxzxPSBNGuK
+         TrqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=zmLK0rFFfYiHSW3DsZBQW692cSHm7fyRWmpu+4t626A=;
+        b=boCvmQYJf/QHslNYPJ53jagRKRBgmbxSYHHi6MEYligiqnOlGYTByV4fG0R/kt21MN
+         ri2LL1pvoI6HaGgNMWuPRkpBNcIZXrKaIu25rNanOfBK0rWkaQ7a1hm1brnXAI8j5+9I
+         CSGzZArSucV+6J0xQJx/GomKNx5bO0vrSwZIiEBtB16i5hJXe+6PfRGRJnt52BmyqjIk
+         2BoOsrizG9gKNA7gAhex/o6uTvgJQpTUhpA8lH3rbHaFyQIcmkqzBe8Vue+tByySfKxb
+         ucuBrqM0K8o0h3Kp0cD4et1PVOU2acktCQq2SDBbF06GHKA3o2nMAkzTQDPxixTULmtr
+         7a0A==
+X-Gm-Message-State: APjAAAWkREA8+G/FkHsVlhyN5XW5//EVeKtCjd6w2TOPOoggqbLQMNlL
+        zcPKde6g/A1f0Jcxp3LNPQkvFw==
+X-Google-Smtp-Source: APXvYqwMKvvcq8Qowo5DIhfsHqq5K0cKTVwVrPRJAqMNTUUWS+CN9AxRkncpvJWtCTLKwLltDCbogA==
+X-Received: by 2002:a63:5a1b:: with SMTP id o27mr29351909pgb.251.1574635554565;
+        Sun, 24 Nov 2019 14:45:54 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id a6sm5768981pja.30.2019.11.24.14.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Nov 2019 14:45:54 -0800 (PST)
+Date:   Sun, 24 Nov 2019 14:45:47 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     ecree@solarflare.com, dahern@digitalocean.com,
+        netdev@vger.kernel.org, kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next] sfc: fix build without CONFIG_RFS_ACCEL
+Message-ID: <20191124144547.748ca04e@cakuba.netronome.com>
+In-Reply-To: <20191123174542.5650-1-jakub.kicinski@netronome.com>
+References: <964dd1b3-b26a-e5ee-7ac2-b4643206cb5f@solarflare.com>
+        <20191123174542.5650-1-jakub.kicinski@netronome.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpcvGZavmSZK3KEjfKVDt6ySw2Fv42EVfp5HxbZoesSqg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Correct. I was actually held back a bit while looking at Andrew's
-> patch dc0fe7d47f9f ("net: dsa: Set the master device's MTU to account
-> for DSA overheads") where he basically discarded errors, so that's the
-> approach I took too (thinking that some DSA masters would not have ops
-> for changing or reporting the MTU).
+On Sat, 23 Nov 2019 09:45:42 -0800, Jakub Kicinski wrote:
+> The rfs members of struct efx_channel are under CONFIG_RFS_ACCEL.
+> Ethtool stats which access those need to be as well.
+> 
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Fixes: ca70bd423f10 ("sfc: add statistics for ARFS")
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Ignoring errors is deliberate because some master interfaces just
-worked without having to set the MTU. I was worried that some that
-just worked did not implement MTU changes, so i could not error out.
-
-And my experience when things did not work was mostly the MTU did not
-matter, but MRU did. The MAC would send frames with a header, but not
-receive them with the header. Setting the MTU actually seems to set
-the MRU on most MACs.
-
-But when you are thinking about jumbo frames, i would not ignore the
-error. We do need to be sure the master interface can support jumbo,
-and big enough jumbo to support the header.
-
-    Andrew
+Applied.
