@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF972108264
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 07:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC365108266
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 07:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbfKXGzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 01:55:22 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:38189 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbfKXGzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 01:55:22 -0500
-Received: by mail-qk1-f194.google.com with SMTP id e2so10008727qkn.5;
-        Sat, 23 Nov 2019 22:55:20 -0800 (PST)
+        id S1726797AbfKXG5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 01:57:03 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40072 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725813AbfKXG5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 01:57:03 -0500
+Received: by mail-qt1-f193.google.com with SMTP id o49so13304426qta.7;
+        Sat, 23 Nov 2019 22:57:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=pg/2zvDecEDrbGcuE8bZ7gVLYNmiahgMqCGafpaf9a0=;
-        b=Moqqs33SSY1ZnBgmzaP/fNGoqpKiOmvpDxlozVXFih2R0NuSa95KbuucVb19uBMKb/
-         ESwNgWPW2bVDqPmWoGh4s8z3uRZVARlpGKQIH1kSYLrkLoojAz1wyCawwC29t8nzs020
-         0UQak9/29pAAgHf6iqUuL/SQ/quENX79l/gJRE4SW4LzIVrLvZ9+OERSFkT/y58xVWOs
-         1he56fSB7GP4iUsHvHePDvbh+iz8hzDjpHKl1tYeregIBv6gGGiuH/cFi9CIETI7EQ2w
-         rQ8fGWeUZXKmwiIN9iBUMnKg2yXr+n1W1tXQd+XtKrf9mp6L8wl0gGoxRzHwwKMZjFxC
-         hO+g==
+        bh=m0ZMIuqsDxvWocBmmDPoQioMNJyQZ4OBEUXhBq5TD8o=;
+        b=mz8iDvzSf/SUyzfT2jKaRFQwPu02KcGh13WD18Z2t3PrbXegq53KHpBFkPozEs3xVl
+         31O48HdacOMXlCKjviktc0YfaSYIuOd987tKh6Yq8NiUxyFKBFp4p1yEYAqztSHNIDK5
+         Mu7DLIoEgLEkqq7awEM+hszacANg4ePsKQVCtsQnuBqaN3VhCEdf57J2qc1bp7e9VydO
+         uOPdGnX3E/8BomAkndDCNvIU0XT+mK4BjEwBfCRz6wAm1oc+9EuWmCMn5dX5vhN3BgRw
+         zye6PA9X26rLZOsfHsWNNio/PxfYxNmgA1U9U2rdj1DHTIjPxO/lIb+rWKSKfHDDnfhu
+         aeAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pg/2zvDecEDrbGcuE8bZ7gVLYNmiahgMqCGafpaf9a0=;
-        b=VQR6bbT2qqeRul+7onwWAoLVw+JuJ7Aj1D/bSpTBrYE0ebdS4zWT6r+BylAopq1BKC
-         MUKElkepO1GOsgYORbzO5BhAucHNkbkPuuwkBdv8NzP04yYp4zGKyAO0R94KJa0KHRJr
-         CKY9Qt25rswa33yWpZVQKMQKvn5zFJDyrfxQlK4OcbWtGZxB8875AdKxh+N2mRf0Ad5e
-         DQFqLlVZ4jV8FmqxyIXqfVa73FboZeLTntLFNdvrJ1ljKraVv2RsCSnhpamg6naCxevT
-         jL+x3RAimJQvla2zUUNO6kxaNCW3UNEbDufT5v7/XwoFivnZqzCUE63TQl7PkOxK+1Ho
-         MTzQ==
-X-Gm-Message-State: APjAAAV5PkjHtukFVh77ekkJGSOk2IviuLz49CmphJj23vwyPWg2paAr
-        vMBRxUuJZWHTjMTTGyfItBguFRRPDmBBt6KSXiA=
-X-Google-Smtp-Source: APXvYqxUb88/yMstPztyy+bjom+7M/lNmRuVQwHGcULRAckCtXzZnH9UjvscYcZqteqT9MhNqC9K8IncXdheb86VCQg=
-X-Received: by 2002:a37:aa45:: with SMTP id t66mr3933432qke.218.1574578519243;
- Sat, 23 Nov 2019 22:55:19 -0800 (PST)
+        bh=m0ZMIuqsDxvWocBmmDPoQioMNJyQZ4OBEUXhBq5TD8o=;
+        b=P/mjhmO8UJBVPVo2vSqGAYu4KPTAApD9wwDy1V7ac5cUB6ggkAhiBOkEwAXATFfmQI
+         ZDkqdIGf9ZNYvOaWAe4q/V0Vtmvq9ggtpnKYnmT0IEz8fDbMAZmmnjr7Pgp1S1TyZFCN
+         1Fgqpgf0ycnbf1VreuFOOAEe8kmOYeIAiQV6xWIZZJMekbh3rg/MCAYSlf8buHez2lO4
+         UjLku1F8bmcbM96kd0vz2Hl4PlO5AXdc3Ilv/sIJgMDfqujZprEzQvJiDbEaO/samVA2
+         Ezr3dRvFiGEs8rCkoOou+BOrae3YC+iiYdMaC75p/hd1yq56I84EbdW223zZsWUrZ1bH
+         L+Ew==
+X-Gm-Message-State: APjAAAUfsh5TmVhXgjENJrmGEGCmfOppEGhohyfrR1qmjANSHmoGp+uZ
+        053MseCVs3HeIviv0NamQoWRmP/eHoxLsc6Mt3s=
+X-Google-Smtp-Source: APXvYqyZ8d88+o9broKjsgOLO1tKAiyebzF3PdSd0ysiHAL2B3mpqaunzltZ/NY8GODEVLZjgN9g3hklTHGzwsfLZWg=
+X-Received: by 2002:ac8:1bed:: with SMTP id m42mr6365074qtk.359.1574578620470;
+ Sat, 23 Nov 2019 22:57:00 -0800 (PST)
 MIME-Version: 1.0
-References: <20191123071226.6501-1-bjorn.topel@gmail.com> <20191123071226.6501-2-bjorn.topel@gmail.com>
- <20191124015504.yypqw4gx52e5e6og@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191124015504.yypqw4gx52e5e6og@ast-mbp.dhcp.thefacebook.com>
+References: <20191123071226.6501-1-bjorn.topel@gmail.com> <20191123071226.6501-3-bjorn.topel@gmail.com>
+ <20191124015907.fdqr2v2jymewjesd@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191124015907.fdqr2v2jymewjesd@ast-mbp.dhcp.thefacebook.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Sun, 24 Nov 2019 07:55:07 +0100
-Message-ID: <CAJ+HfNhtgvRyvnNT7_iSs9RD3rV_y8++pLddWy+i+Eya5_BJVw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/6] bpf: introduce BPF dispatcher
+Date:   Sun, 24 Nov 2019 07:56:49 +0100
+Message-ID: <CAJ+HfNjQpzdubbZL+4Yty6oQ+or9rHK_BAuc=CFMD-j3taEznQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/6] xdp: introduce xdp_call
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -70,164 +70,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Nov 2019 at 02:55, Alexei Starovoitov
+On Sun, 24 Nov 2019 at 02:59, Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> On Sat, Nov 23, 2019 at 08:12:20AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
-> > +
-> > +             err =3D emit_jump(&prog,                  /* jmp thunk */
-> > +                             __x86_indirect_thunk_rdx, prog);
->
-> could you please add a comment that this is gcc specific and gate it
-> by build_bug_on ?
-> I think even if compiler stays the change of flags:
-> RETPOLINE_CFLAGS_GCC :=3D -mindirect-branch=3Dthunk-extern -mindirect-bra=
-nch-register
-> may change the name of this helper?
-> I wonder whether it's possible to make it compiler independent.
->
-> > diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
+> On Sat, Nov 23, 2019 at 08:12:21AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > The xdp_call.h header wraps a more user-friendly API around the BPF
+> > dispatcher. A user adds a trampoline/XDP caller using the
+> > DEFINE_XDP_CALL macro, and updates the BPF dispatcher via
+> > xdp_call_update(). The actual dispatch is done via xdp_call().
+> >
+> > Note that xdp_call() is only supported for builtin drivers. Module
+> > builds will fallback to bpf_prog_run_xdp().
+> >
+> > The next patch will show-case how the i40e driver uses xdp_call.
+> >
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > ---
+> >  include/linux/xdp_call.h | 66 ++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 66 insertions(+)
+> >  create mode 100644 include/linux/xdp_call.h
+> >
+> > diff --git a/include/linux/xdp_call.h b/include/linux/xdp_call.h
 > > new file mode 100644
-> > index 000000000000..385dd76ab6d2
+> > index 000000000000..69b2d325a787
 > > --- /dev/null
-> > +++ b/kernel/bpf/dispatcher.c
-> > @@ -0,0 +1,208 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +++ b/include/linux/xdp_call.h
+> > @@ -0,0 +1,66 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
 > > +/* Copyright(c) 2019 Intel Corporation. */
+> > +#ifndef _LINUX_XDP_CALL_H
+> > +#define _LINUX_XDP_CALL_H
 > > +
-> > +#ifdef CONFIG_RETPOLINE
->
-> I'm worried that such strong gating will make the code rot. Especially it=
-'s not
-> covered by selftests.
-> Could you please add xdp_call_run() to generic xdp and add a selftest ?
-> Also could you please benchmark it without retpoline?
-> iirc direct call is often faster than indirect, so I suspect this optimiz=
-ation
-> may benefit non-mitigated kernels.
->
-> > +#define DISPATCHER_HASH_BITS 10
-> > +#define DISPATCHER_TABLE_SIZE (1 << DISPATCHER_HASH_BITS)
+> > +#include <linux/filter.h>
 > > +
-> > +static struct hlist_head dispatcher_table[DISPATCHER_TABLE_SIZE];
->
-> there is one DEFINE_XDP_CALL per driver, so total number of such
-> dispatch routines is pretty small. 1<<10 hash table is overkill.
-> The hash table itself is overkill :)
->
-> How about adding below:
->
-> > +#define BPF_DISPATCHER_MAX 16
-> > +
-> > +struct bpf_dispatcher {
-> > +     struct hlist_node hlist;
-> > +     void *func;
-> > +     struct bpf_prog *progs[BPF_DISPATCHER_MAX];
-> > +     int num_progs;
-> > +     void *image;
-> > +     u64 selector;
-> > +};
->
-> without hlist and without func to DEFINE_XDP_CALL() macro?
-> Then bpf_dispatcher_lookup() will become bpf_dispatcher_init()
-> and the rest will become a bit simpler?
->
-> > +
-> > +     set_vm_flush_reset_perms(image);
-> > +     set_memory_x((long)image, 1);
-> > +     d->image =3D image;
->
-> Can you add a common helper for this bit to share between
-> bpf dispatch and bpf trampoline?
->
-> > +static void bpf_dispatcher_update(struct bpf_dispatcher *d)
-> > +{
-> > +     void *old_image =3D d->image + ((d->selector + 1) & 1) * PAGE_SIZ=
-E / 2;
-> > +     void *new_image =3D d->image + (d->selector & 1) * PAGE_SIZE / 2;
-> > +     s64 ips[BPF_DISPATCHER_MAX] =3D {}, *ipsp =3D &ips[0];
-> > +     int i, err;
-> > +
-> > +     if (!d->num_progs) {
-> > +             bpf_arch_text_poke(d->func, BPF_MOD_JUMP_TO_NOP,
-> > +                                old_image, NULL);
-> > +             return;
->
-> how does it work? Without doing d->selector =3D 0; the next addition
-> will try to do JUMP_TO_JUMP and will fail...
->
-> > +     }
-> > +
-> > +     for (i =3D 0; i < BPF_DISPATCHER_MAX; i++) {
-> > +             if (d->progs[i])
-> > +                     *ipsp++ =3D (s64)(uintptr_t)d->progs[i]->bpf_func=
-;
-> > +     }
-> > +     err =3D arch_prepare_bpf_dispatcher(new_image, &ips[0], d->num_pr=
-ogs);
-> > +     if (err)
-> > +             return;
-> > +
-> > +     if (d->selector) {
-> > +             /* progs already running at this address */
-> > +             err =3D bpf_arch_text_poke(d->func, BPF_MOD_JUMP_TO_JUMP,
-> > +                                      old_image, new_image);
-> > +     } else {
-> > +             /* first time registering */
-> > +             err =3D bpf_arch_text_poke(d->func, BPF_MOD_NOP_TO_JUMP,
-> > +                                      NULL, new_image);
-> > +     }
-> > +     if (err)
-> > +             return;
-> > +     d->selector++;
-> > +}
->
-> Not sure how to share selector logic between dispatch and trampoline.
-> But above selector=3D0; weirdness is a sign that sharing is probably nece=
-ssary?
->
+> > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_RETPOLINE) && !defined(M=
+ODULE)
 > > +
 > > +void bpf_dispatcher_change_prog(void *func, struct bpf_prog *from,
-> > +                             struct bpf_prog *to)
-> > +{
-> > +     struct bpf_dispatcher *d;
-> > +     bool changed =3D false;
+> > +                             struct bpf_prog *to);
 > > +
-> > +     if (from =3D=3D to)
-> > +             return;
+> > +#define XDP_CALL_TRAMP(name) ____xdp_call_##name##_tramp
 > > +
-> > +     mutex_lock(&dispatcher_mutex);
-> > +     d =3D bpf_dispatcher_lookup(func);
-> > +     if (!d)
-> > +             goto out;
+> > +#define DEFINE_XDP_CALL(name)                                         =
+       \
+> > +     unsigned int XDP_CALL_TRAMP(name)(                              \
+> > +             const void *xdp_ctx,                                    \
+> > +             const struct bpf_insn *insnsi,                          \
+> > +             unsigned int (*bpf_func)(const void *,                  \
+> > +                                      const struct bpf_insn *))      \
+> > +     {                                                               \
+> > +             return bpf_func(xdp_ctx, insnsi);                       \
+> > +     }
 > > +
-> > +     changed |=3D bpf_dispatcher_remove_prog(d, from);
-> > +     changed |=3D bpf_dispatcher_add_prog(d, to);
+> > +#define DECLARE_XDP_CALL(name)                                        =
+       \
+> > +     unsigned int XDP_CALL_TRAMP(name)(                              \
+> > +             const void *xdp_ctx,                                    \
+> > +             const struct bpf_insn *insnsi,                          \
+> > +             unsigned int (*bpf_func)(const void *,                  \
+> > +                                      const struct bpf_insn *))
 > > +
-> > +     if (!changed)
-> > +             goto out;
-> > +
-> > +     bpf_dispatcher_update(d);
-> > +     if (!d->num_progs)
-> > +             bpf_dispatcher_free(d);
+> > +#define xdp_call_run(name, prog, ctx) ({                             \
+> > +     u32 ret;                                                        \
+> > +     cant_sleep();                                                   \
+> > +     if (static_branch_unlikely(&bpf_stats_enabled_key)) {           \
+> > +             struct bpf_prog_stats *stats;                           \
+> > +             u64 start =3D sched_clock();                             =
+ \
+> > +             ret =3D XDP_CALL_TRAMP(name)(ctx,                        =
+ \
+> > +                                        (prog)->insnsi,              \
+> > +                                        (prog)->bpf_func);           \
+> > +             stats =3D this_cpu_ptr((prog)->aux->stats);              =
+ \
+> > +             u64_stats_update_begin(&stats->syncp);                  \
+> > +             stats->cnt++;                                           \
+> > +             stats->nsecs +=3D sched_clock() - start;                 =
+ \
+> > +             u64_stats_update_end(&stats->syncp);                    \
+> > +     } else {                                                        \
+> > +             ret =3D XDP_CALL_TRAMP(name)(ctx,                        =
+ \
+> > +                                        (prog)->insnsi,              \
+> > +                                        (prog)->bpf_func);           \
+> > +     }                                                               \
+> > +     ret; })
 >
-> I think I got it why it works.
-> Every time the prog cnt goes to zero you free the trampoline right away
-> and next time it will be allocated again and kzalloc() will zero selector=
-.
-> That's hard to spot.
-> Also if user space does for(;;) attach/detach;
-> it will keep stressing bpf_jit_alloc_exec.
-> In case of bpf trampoline attach/detach won't be stressing it.
-> Only load/unload which are much slower due to verification.
-> I guess such difference is ok.
+> I cannot help but wonder whether it's possible to avoid copy-paste from
+> BPF_PROG_RUN().
+> At least could you place this new macro right next to BPF_PROG_RUN?
+> If it's in a different file eventually they may diverge.
 >
 
-Alexei, thanks for all feedback (on the weekend)! I agree with all of
-above, and especially missing selftests and too much code duplication.
-
-I'll do a respin, but that'll be in the next window, given that Linus
-will (probably) tag the release today.
+Yeah, I'll take a stab at that!
 
 
+Thanks,
 Bj=C3=B6rn
