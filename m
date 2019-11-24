@@ -2,56 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D56E710856B
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 23:55:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1F73108573
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 00:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbfKXWzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 17:55:45 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:34411 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbfKXWzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 17:55:45 -0500
-Received: by mail-pj1-f67.google.com with SMTP id bo14so5557051pjb.1
-        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 14:55:45 -0800 (PST)
+        id S1727051AbfKXXD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 18:03:59 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40893 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726990AbfKXXD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 18:03:59 -0500
+Received: by mail-pl1-f193.google.com with SMTP id f9so5566550plr.7
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 15:03:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=jk+fNxzDV6BmEThNpWomFGAXnnxI+LCrDfltw2gh2wU=;
-        b=1ymce5OR3Eaceq3z3gT6DfUlNhkLiIN67Eui1QwhgQI8xJXyv+jN1tYB4ppNoE0t8+
-         DRnVfinqzYWUDiN49qqwrNL9wAyt94CciNRIQC55hjmBdr7hKkYg3JkZSTab9LEh16Op
-         uo4F09O+gMCiypuIojsvpOqlSXCSG0jLw32pvlyPFyObsJubrn1R4+jkJzrBSfgbzGya
-         XpXUnLl8KbcVV5/6aWLyKm4bc0iHgJNaF1aqx0tJUqWHSJiYok0SAXBKtJ6UwLcQo17l
-         ILXn4cV5uUfnQQOHDo3w4PiimwngW6y6T2Mqd9eB9hKopyp1GD03SXvWriEYOUHwlml8
-         G+VQ==
+        bh=i1qHwy+G9a0VSULNRaoms0tDekf8iU/51Ya/Xfrai40=;
+        b=pfLTvoq6UuaicbxCNV7Fjs+l8+Gyt2W+YkaRQIm3yX8ESfgyWToe9ebcfObxRas8jp
+         NhIYT1Mj52QiopTTftiyHo3iaeIEkST10vx4fV53IsisneDl8Yye6C2cChYpf+p/8Spt
+         M1ukwMsODKTHcdh6Qd5jZnaop4Hp2kvTB+XWdJxdBwUimM66alr9aJ4n397ciEvjThKY
+         roLEvdBQhUnIevVbfcboUXwuqIXU1ylt6p7tAVydBm0LuUSmw55aut/WC5ceDED4F5nf
+         1OPXsmWUT/89mveM3Idz+o7AuCN/FCGpFESBFFnStjZwFqrgQBelB2aLOVPmgjPmmHBl
+         JzIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=jk+fNxzDV6BmEThNpWomFGAXnnxI+LCrDfltw2gh2wU=;
-        b=T+MJhCZa4Icni5db1nmtfXEIQ5WqJs/qxflEMKwEFc5Zq18+xOJQ/VTzCCqmrCDpaf
-         bGLxZDj/ZaQHboZZ9qYCQ3ffGMLuoiDB/wzCcLx7mnAQ0Iu5Bt2Z7sWtPC6ZKgdgoUvg
-         c2UG/JvFESQuGZ2NMH+8LTvVZHkv9S5NCR8av8GHRjuofuilt7EYvLqPS8BSTKZECObj
-         TXr61MxakjXNPpQdWa2Mjesj4WXubUGja4ZGjlbFkiNJ0+3R1wqrkRJGbS/SvChhX5E9
-         KeYEry5gWS7aU9XpvzuxaI2EJsKvUhIGTTH9SIhqjiSEFtuOh9LsYtLckETnED0OkLNY
-         Glqg==
-X-Gm-Message-State: APjAAAWn5c1G05vw/061nqHZe19/BLLwSf5gkyb7uSj5k7+xj22shPsE
-        DgcH6YkEPulgxOIalgxE/hXngJWukQ4=
-X-Google-Smtp-Source: APXvYqyPUWoWWKSdH0/kKWf5zYkwpIOUMgTQGUnyMzYBcaU4GxClcjKettpinMxOr1qgmPZ/tejEug==
-X-Received: by 2002:a17:902:8a83:: with SMTP id p3mr25810862plo.79.1574636144037;
-        Sun, 24 Nov 2019 14:55:44 -0800 (PST)
+        bh=i1qHwy+G9a0VSULNRaoms0tDekf8iU/51Ya/Xfrai40=;
+        b=kHaYjVQ+QSmnCtcB+yf1R98rIV5i/wCeMOonH1nc77NlwMous2w+L4KvKZ+6Cyq5lF
+         LAM8MUxlh3XTMGHdBf8avO7s4+AkDvzAGySGDOidKZ0tdE5az2i/ng/Ywn23gpQ0/l9+
+         srIMXkJBxPM0yVbHziX2Oq5gk0h44YnNo7yy/RRRsLkAp8/OaYeJxQTSqLs8tmImzKk4
+         eX66n96X/a7D9HSXKNpH6vwfqMxT1XJb959CNz9z7n3HWeWO3PvT0XrGTIOrFSrA3RFW
+         C06kb+GVJD+VisZhxYw7mie9b6Xn6TUMwSXgNMTvlJJOmREPYj+XBFM9IYGa09wJRukU
+         fh7Q==
+X-Gm-Message-State: APjAAAXykieYOYm5r6ajKZrqdXlZJrHgL29pzlXyP+PdA1MpoF5y3vIt
+        JAhmd2I3+c8YY+QuEAiuh6IEGw==
+X-Google-Smtp-Source: APXvYqxoORlmu7NvER9bWBQjpyIr5840UQFPogBmNb1dxXAhZ9CFlH832yGT792uTtGLND5sd3A32Q==
+X-Received: by 2002:a17:90a:970a:: with SMTP id x10mr22772544pjo.39.1574636638757;
+        Sun, 24 Nov 2019 15:03:58 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id a3sm5473425pjh.31.2019.11.24.14.55.43
+        by smtp.gmail.com with ESMTPSA id w19sm5543817pga.83.2019.11.24.15.03.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 14:55:43 -0800 (PST)
-Date:   Sun, 24 Nov 2019 14:55:38 -0800
+        Sun, 24 Nov 2019 15:03:58 -0800 (PST)
+Date:   Sun, 24 Nov 2019 15:03:52 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 00/13] bnxt_en: Updates.
-Message-ID: <20191124145538.7c5075ac@cakuba.netronome.com>
-In-Reply-To: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
-References: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Julio Faracco <jcfaracco@gmail.com>, netdev@vger.kernel.org,
+        Daiane Mendes <dnmendes76@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] drivers: net: virtio_net: Implement a
+ dev_watchdog handler
+Message-ID: <20191124150352.5cab3209@cakuba.netronome.com>
+In-Reply-To: <20191124164411-mutt-send-email-mst@kernel.org>
+References: <20191122013636.1041-1-jcfaracco@gmail.com>
+        <20191122052506-mutt-send-email-mst@kernel.org>
+        <CAENf94KX1XR4_KXz9KLZQ09Ngeaq2qzYY5OE68xJMXMu13SuEg@mail.gmail.com>
+        <20191124100157-mutt-send-email-mst@kernel.org>
+        <20191124164411-mutt-send-email-mst@kernel.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,17 +71,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Nov 2019 22:30:37 -0500, Michael Chan wrote:
-> v2: Dropped the devlink info patches to address some feedback and resubmit for
-> the 5.6 kernel.
-> 
-> This patchset contains these main features:
-> 
-> 1. Add the proper logic to support suspend/resume on the new 57500 chips.  
-> 2. Allow Phy configurations from user on a Multihost function if supported
-> by fw.
-> 3. devlink NVRAM flashing support.
-> 4. Add a couple of chip IDs, PHY loopback enhancement, and provide more RSS
-> contexts to VFs.
+On Sun, 24 Nov 2019 16:48:35 -0500, Michael S. Tsirkin wrote:
+> diff --git a/arch/m68k/emu/nfeth.c b/arch/m68k/emu/nfeth.c
+> index a4ebd2445eda..8e06e7407854 100644
+> --- a/arch/m68k/emu/nfeth.c
+> +++ b/arch/m68k/emu/nfeth.c
+> @@ -167,7 +167,7 @@ static int nfeth_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	return 0;
+>  }
+>  
+> -static void nfeth_tx_timeout(struct net_device *dev)
+> +static void nfeth_tx_timeout(struct net_device *dev, int txqueue)
 
-Applied, thank you!
+Given the recent vf ndo problems, I wonder if it's worth making the
+queue id unsigned from the start? Since it's coming from the stack
+there should be no range checking required, but also signed doesn't
+help anything so why not?
+
+>  {
+>  	dev->stats.tx_errors++;
+>  	netif_wake_queue(dev);
+
