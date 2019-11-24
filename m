@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C66A1108199
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF2410819A
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfKXDbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 22:31:40 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40286 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727071AbfKXDbi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 22:31:38 -0500
-Received: by mail-pf1-f195.google.com with SMTP id i187so1405379pfc.7
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 19:31:37 -0800 (PST)
+        id S1727125AbfKXDbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 22:31:41 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36710 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727116AbfKXDbk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 22:31:40 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k13so5387418pgh.3
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 19:31:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sTd9J0Mofpzl+oG2X+SW83MLoZuiRSEhZEHOgw7I/3I=;
-        b=ST57TBsz9pw04T9VbKf5QHG8K1aCns7OBHOvjARrJKjxwAHrXUTGMvXAiH5UpGdqOe
-         cd5uUJdoctY6tWk1GFdmtViuAe1md8Qq4kwYSkIvXY/4WW8VDainKHUaiRtJr5i6GTUn
-         n/boeKOnFlk+BdNpPNANmyDq3gAOqRdoERhtM=
+        bh=kVwJ8Erld/x5paBdF1eVtbl2KjLpFlw6CO4wo/CzaPs=;
+        b=YDJ3JIa5fNKkYuwGFuSGsfEx2GQzqmhChLqyyfQ2RXxpJkgNpsPZAjpxdbi0l8ftLf
+         KRF/0UHabk3fiudEbVVT/+3FwUBYJJjjc7ymeLr2jK7G0vtLUxONAKo97ZJJUpW902xg
+         bSygDK9fmfVT7OEqzGFB1mLf5+zWzjGp36DWo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=sTd9J0Mofpzl+oG2X+SW83MLoZuiRSEhZEHOgw7I/3I=;
-        b=g5HcuN1JWHfkGwk89sUCJZs8rGni133JCpt+UQRkIeYmOo7+3h1Q3xx/kdf8LkVWWc
-         B0sngL+MX9t+rdQAgRLSMmtyc0zt17Fy7SzMZSY9BgOWEfqPgCsoSFUNPEcQdTAMOY3a
-         bIib89lsDOTa0ibCjD3aBmD84ttbwbX5Mcyy3idOISCUxr7S0Q53YjIdABOKNiV0Evl7
-         JUUSW4RZL9VzPqQ3VPCXl4/DcWoCDPrag/kPzs5jAiy9EUZEtjLRUv2wZKNuMP4qQGgT
-         H5qXwhvgfkMD0eK9phMGTZLT8w76GdgNEy7cW1dIvYyGFTWiJWb4X8XKnmkTZU7EJcru
-         fRUg==
-X-Gm-Message-State: APjAAAWiG+9/Q4y/QqikfMKsycrzjekG1wVJdW5hmepJTeDAteOWQjNO
-        CjJzQi5J8FU3wJAIj/Yzy4WfiQ==
-X-Google-Smtp-Source: APXvYqzOlil3WYLlagwENz+VffhsSMmIRs0OLGulXO240AkSJGdOV0EvSg9Bcxp3UHcpGIJZyU2Frg==
-X-Received: by 2002:aa7:90d0:: with SMTP id k16mr27419181pfk.131.1574566297528;
-        Sat, 23 Nov 2019 19:31:37 -0800 (PST)
+        bh=kVwJ8Erld/x5paBdF1eVtbl2KjLpFlw6CO4wo/CzaPs=;
+        b=VVQ4ESC3i0kA3khVKmhZJmh3HV+NY/YqHteYjWRqTtoz8yabM+UF/l6jLt4J8cRK4C
+         fksQoTg4exG/bVmHN0768O0Jult44GD2rDbzHDQXplFbKi1xtpE0AI7P1H932lTmLXDG
+         9Llb7fc17+2BRIGYWi6uKTYnpklNTjk39QOd8Sv6+0QoOuYCwynYLvFUZjVz5/aoU5UT
+         6bHHDNqGhN+lyA2hFfK8gbLn/8n8M/Obo/2iE1kmuGswXTNdAOw4qtgv68t1Cot4arh1
+         lO3i9NE94JjDUeLG0bURU7OxAXIWw/Ihirr/SmN3P2ugikXVEuWhIr0YkppIxxAGUYRy
+         BPkQ==
+X-Gm-Message-State: APjAAAW1k+psgQGq9YYSGf+9fRTTAWWZPmVdsxyAXTGfXmZUumdSUmN0
+        NRuFWYEsojyViwh4ZAaIBHAIuQ==
+X-Google-Smtp-Source: APXvYqykHDG3aEwnwSULyF7yFQkHOBD8tvCDi25bVBt7FtUNvzuC0bqefJXDI77INmjjg6rKYy0nEA==
+X-Received: by 2002:aa7:9432:: with SMTP id y18mr26206816pfo.250.1574566300183;
+        Sat, 23 Nov 2019 19:31:40 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v63sm3111901pfb.181.2019.11.23.19.31.35
+        by smtp.gmail.com with ESMTPSA id v63sm3111901pfb.181.2019.11.23.19.31.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Nov 2019 19:31:37 -0800 (PST)
+        Sat, 23 Nov 2019 19:31:39 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next v2 12/13] bnxt_en: Allow PHY settings on multi-function or NPAR PFs if allowed by FW.
-Date:   Sat, 23 Nov 2019 22:30:49 -0500
-Message-Id: <1574566250-7546-13-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [PATCH net-next v2 13/13] bnxt_en: Add support for flashing the device via devlink
+Date:   Sat, 23 Nov 2019 22:30:50 -0500
+Message-Id: <1574566250-7546-14-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
 References: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
@@ -54,104 +56,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the driver does not allow PHY settings on a multi-function or
-NPAR NIC whose port is shared by more than one function.  Newer
-firmware now allows PHY settings on some of these NICs.  Check for
-this new firmware setting and allow the user to set the PHY settings
-accordingly.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
+Use the same bnxt_flash_package_from_file() function to support
+devlink flash operation.
+
+Cc: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 6 +++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 3 +++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 8 ++++----
- 3 files changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 20 ++++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  2 ++
+ 3 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 4b0303a..85983f0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8456,6 +8456,10 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 		if (bp->test_info)
- 			bp->test_info->flags |= BNXT_TEST_FL_AN_PHY_LPBK;
- 	}
-+	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_SHARED_PHY_CFG_SUPPORTED) {
-+		if (BNXT_PF(bp))
-+			bp->fw_cap |= BNXT_FW_CAP_SHARED_PORT_CFG;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 7078271..acb2dd6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -14,6 +14,25 @@
+ #include "bnxt.h"
+ #include "bnxt_vfr.h"
+ #include "bnxt_devlink.h"
++#include "bnxt_ethtool.h"
++
++static int
++bnxt_dl_flash_update(struct devlink *dl, const char *filename,
++		     const char *region, struct netlink_ext_ack *extack)
++{
++	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
++
++	if (region)
++		return -EOPNOTSUPP;
++
++	if (!BNXT_PF(bp)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "flash update not supported from a VF");
++		return -EPERM;
 +	}
- 	if (resp->supported_speeds_auto_mode)
- 		link_info->support_auto_speeds =
- 			le16_to_cpu(resp->supported_speeds_auto_mode);
-@@ -8570,7 +8574,7 @@ static int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	}
- 	mutex_unlock(&bp->hwrm_cmd_lock);
++
++	return bnxt_flash_package_from_file(bp->dev, filename, 0);
++}
  
--	if (!BNXT_SINGLE_PF(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return 0;
+ static int bnxt_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
+ 				     struct devlink_fmsg *fmsg,
+@@ -225,6 +244,7 @@ static const struct devlink_ops bnxt_dl_ops = {
+ 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
+ 	.eswitch_mode_get = bnxt_dl_eswitch_mode_get,
+ #endif /* CONFIG_BNXT_SRIOV */
++	.flash_update	  = bnxt_dl_flash_update,
+ };
  
- 	diff = link_info->support_auto_speeds ^ link_info->advertising;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index cab1703..505af5c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1548,6 +1548,8 @@ struct bnxt {
- #define BNXT_NPAR(bp)		((bp)->port_partition_type)
- #define BNXT_MH(bp)		((bp)->flags & BNXT_FLAG_MULTI_HOST)
- #define BNXT_SINGLE_PF(bp)	(BNXT_PF(bp) && !BNXT_NPAR(bp) && !BNXT_MH(bp))
-+#define BNXT_PHY_CFG_ABLE(bp)	(BNXT_SINGLE_PF(bp) ||			\
-+				 ((bp)->fw_cap & BNXT_FW_CAP_SHARED_PORT_CFG))
- #define BNXT_CHIP_TYPE_NITRO_A0(bp) ((bp)->flags & BNXT_FLAG_CHIP_NITRO_A0)
- #define BNXT_RX_PAGE_MODE(bp)	((bp)->flags & BNXT_FLAG_RX_PAGE_MODE)
- #define BNXT_SUPPORTS_TPA(bp)	(!BNXT_CHIP_TYPE_NITRO_A0(bp) &&	\
-@@ -1682,6 +1684,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_EXT_STATS_SUPPORTED		0x00040000
- 	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
- 	#define BNXT_FW_CAP_HOT_RESET			0x00200000
-+	#define BNXT_FW_CAP_SHARED_PORT_CFG		0x00400000
- 
- #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
- 	u32			hwrm_spec_code;
+ enum bnxt_dl_param_id {
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 62ef847..e455aaa 100644
+index e455aaa..2ccf79c 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1590,7 +1590,7 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
- 	u32 speed;
- 	int rc = 0;
+@@ -2000,8 +2000,8 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+ 	return rc;
+ }
  
--	if (!BNXT_SINGLE_PF(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return -EOPNOTSUPP;
- 
- 	mutex_lock(&bp->link_lock);
-@@ -1662,7 +1662,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+-static int bnxt_flash_package_from_file(struct net_device *dev,
+-					char *filename, u32 install_type)
++int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
++				 u32 install_type)
+ {
  	struct bnxt *bp = netdev_priv(dev);
- 	struct bnxt_link_info *link_info = &bp->link_info;
+ 	struct hwrm_nvm_install_update_output *resp = bp->hwrm_cmd_resp_addr;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index 01de7e7..4428d0a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -81,6 +81,8 @@ extern const struct ethtool_ops bnxt_ethtool_ops;
+ u32 _bnxt_fw_to_ethtool_adv_spds(u16, u8);
+ u32 bnxt_fw_to_ethtool_speed(u16);
+ u16 bnxt_get_fw_auto_link_speeds(u32);
++int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
++				 u32 install_type);
+ void bnxt_ethtool_init(struct bnxt *bp);
+ void bnxt_ethtool_free(struct bnxt *bp);
  
--	if (!BNXT_SINGLE_PF(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return -EOPNOTSUPP;
- 
- 	if (epause->autoneg) {
-@@ -2399,7 +2399,7 @@ static int bnxt_set_eee(struct net_device *dev, struct ethtool_eee *edata)
- 		 _bnxt_fw_to_ethtool_adv_spds(link_info->advertising, 0);
- 	int rc = 0;
- 
--	if (!BNXT_SINGLE_PF(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return -EOPNOTSUPP;
- 
- 	if (!(bp->flags & BNXT_FLAG_EEE_CAP))
-@@ -2586,7 +2586,7 @@ static int bnxt_nway_reset(struct net_device *dev)
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 
--	if (!BNXT_SINGLE_PF(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return -EOPNOTSUPP;
- 
- 	if (!(link_info->autoneg & BNXT_AUTONEG_SPEED))
 -- 
 2.5.1
 
