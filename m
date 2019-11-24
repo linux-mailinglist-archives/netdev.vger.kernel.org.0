@@ -2,256 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFB310813C
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 01:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 060AF108141
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 01:39:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbfKXA2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 19:28:45 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:39026 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726784AbfKXA2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 19:28:44 -0500
-Received: by mail-pj1-f68.google.com with SMTP id v93so1518460pjb.6
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 16:28:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=E9LgB+cbP3yiKvoDqnvc9VhE2eLE3V415vmR/C02fGI=;
-        b=QzZsZCqGlfEFFpYNxQh0y02ZEDTjl7FGXXMLgRqbrVSa3ycBCKz6ABF75crhD+JrGp
-         ve9X2kideA0myXqxeOF3sJNeqRToYb1elFJ2phDiefwCvxk/zaQBvd8w4fZQjH2oua8w
-         h/oxI+1QXIanIzcZIcm+5CeTHXvPt5r4fwzPOV2+NoobiEnohPnkSzijdToSCHn50EAm
-         1OLJ9I5e6+aKM1gerLHZzYT4Y5pEJ9WoC8L2l43Tq9KNlWQrAWGJDcVyPuUhu/2w/ztY
-         t0mPRR0INY8Q+k7iJDSMmAPfLlUtMR99rksTaTtd6SVU3Hmt3i4o6UK6d+pfBtmPlWd7
-         PDgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=E9LgB+cbP3yiKvoDqnvc9VhE2eLE3V415vmR/C02fGI=;
-        b=XdEBX7dLIu8Sj9pKC0pVwNZQ24Zi0s5q4sLroB+E0FBXKFwvtDSJUxgb7BJWuaym7Q
-         Mq82HVeYmfDN/SBPi3bbgBzKaypadg9K+1Cf3D+4ji+RYVHPEmSRLEaArYK7MScW5gRt
-         +HTr/EOMo06fRskF1Tw4BZCJsnIZHgDea/qIK8OA56kr8OR+mqqkB+PQkOQS3CfEurL6
-         /Bh6Y2ygl3q95K/5H9G71kbHCVc4YAqHf9jSOk93xvoUOuqRAQLBzc3nK2pWc70nyH7k
-         6NFqOt/Uefj4Dh93JsMW/QKKkYWGmEM6JBE6ivDgdfAzOHfH6UMSh4BHV+epLn74UTri
-         Fuew==
-X-Gm-Message-State: APjAAAXD7cJ5DNxUo4YSOQfPZeg3nWhJgs9tpFFw6/elnkEPWNHCGL98
-        R1fv3OpWqXvIKJlquVz9ar1ggqO7/ds=
-X-Google-Smtp-Source: APXvYqz1+BHl5MazeKxRuyImMXZhVqpDUwUXlUJEGEZvg4Un97OLCuYbUeXyG7vUu+LWKuC6qp+PSA==
-X-Received: by 2002:a17:90a:1a8a:: with SMTP id p10mr6764829pjp.6.1574555323151;
-        Sat, 23 Nov 2019 16:28:43 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id w69sm2838928pfc.164.2019.11.23.16.28.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 16:28:42 -0800 (PST)
-Date:   Sat, 23 Nov 2019 16:28:38 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Kalesh A P <kalesh-anakkur.purayil@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] be2net: gather more debug info and display on
- a tx-timeout
-Message-ID: <20191123162838.372e49db@cakuba.netronome.com>
-In-Reply-To: <20191122104719.3943-1-kalesh-anakkur.purayil@broadcom.com>
-References: <20191122104719.3943-1-kalesh-anakkur.purayil@broadcom.com>
-Organization: Netronome Systems, Ltd.
+        id S1726967AbfKXAjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 19:39:55 -0500
+Received: from www62.your-server.de ([213.133.104.62]:43814 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726784AbfKXAjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 19:39:55 -0500
+Received: from 11.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.11] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iYfwN-00041I-2g; Sun, 24 Nov 2019 01:39:51 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf-next] bpf: simplify __bpf_arch_text_poke poke type handling
+Date:   Sun, 24 Nov 2019 01:39:42 +0100
+Message-Id: <fcb00a2b0b288d6c73de4ef58116a821c8fe8f2f.1574555798.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25642/Sat Nov 23 10:55:42 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Nov 2019 16:17:19 +0530, Kalesh A P wrote:
-> From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
-> 
-> In order to start recording the last few tx wqes and
-> tx completions, user has to set the msg level to non-zero
-> value using "ethtool -s ethX msglvl 1"
-> 
-> This patch does the following things:
-> 1. record last 200 WQE information
-> 2. record first 128 bytes of last 200 TX packets
-> 3. record last 200 TX completion info
-> 4. On TX timeout, log these information for debugging
-> 
-> Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
-> Reviewed-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+Given that we have BPF_MOD_NOP_TO_{CALL,JUMP}, BPF_MOD_{CALL,JUMP}_TO_NOP
+and BPF_MOD_{CALL,JUMP}_TO_{CALL,JUMP} poke types and that we also pass in
+old_addr as well as new_addr, it's a bit redundant and unnecessarily
+complicates __bpf_arch_text_poke() itself since we can derive the same from
+the *_addr that were passed in. Hence simplify and use BPF_MOD_{CALL,JUMP}
+as types which also allows to clean up call-sites.
 
-Please consider more modern infrastructure for these sort of dumps,
-like devlink health API.
+In addition to that, __bpf_arch_text_poke() currently verifies that text
+matches expected old_insn before we invoke text_poke_bp(). Also add a check
+on new_insn and skip rewrite if it already matches. Reason why this is rather
+useful is that it avoids making any special casing in prog_array_map_poke_run()
+when old and new prog were NULL and has the benefit that also for this case
+we perform a check on text whether it really matches our expectations.
 
-> +/* Store latest 200 occurrences */
-> +#define BE_TXQ_INFO_LEN		200
-> +#define PKT_DUMP_SIZE		128
-> +
-> +struct be_tx_pktinfo {
-> +	u16 head;
-> +	u16 tail;
-> +	u16 used;
-> +	struct be_wrb_params wqe_hdr;
-> +	u8 skb_data[PKT_DUMP_SIZE];
-> +	u32 len;
-> +	u32 skb_len;
-> +	bool valid;
+Suggested-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ arch/x86/net/bpf_jit_comp.c | 85 +++++++++++--------------------------
+ include/linux/bpf.h         | 10 +----
+ kernel/bpf/arraymap.c       | 12 +-----
+ kernel/bpf/trampoline.c     |  8 ++--
+ 4 files changed, 32 insertions(+), 83 deletions(-)
 
-nit: you could save 4B per entry if the 'valid' was after 'used'
-
-> +};
-> +
-> +struct be_tx_dump_cmpl {
-> +	u32 info[32];
-> +	bool valid;
-> +};
-> +
->  /* Structure to hold some data of interest obtained from a TX CQE */
->  struct be_tx_compl_info {
->  	u8 status;		/* Completion status */
-
-> +void be_record_tx_cmpl(struct be_tx_obj *txo,
-> +		       struct be_eth_tx_compl *cmpl)
-> +{
-> +	u32 offset = txo->tx_cmpl_idx;
-> +	struct be_tx_dump_cmpl *cmpl_dump = &txo->cmpl_info[offset];
-
-nit: reverse xmas tree variable is generally prefered in the networking
-code, meaning the cmpl_dump should be declared first, and inited in the
-code rather than in place
-
-> +	memset(cmpl_dump, 0, sizeof(*cmpl_dump));
-> +
-> +	memcpy(&cmpl_dump->info, cmpl, sizeof(cmpl_dump->info));
-> +	cmpl_dump->valid = 1;
-> +
-> +	txo->tx_cmpl_idx = ((txo->tx_cmpl_idx + 1) % BE_TXQ_INFO_LEN);
-
-outer parens unnecesary
-
-> +}
-> +
-> +void be_record_tx_wqes(struct be_tx_obj *txo,
-> +		       struct be_wrb_params *wrb_params,
-> +		       struct sk_buff *skb)
-> +{
-> +	u32 offset = txo->tx_wqe_offset;
-> +	struct be_tx_pktinfo *pkt_info = &txo->tx_pktinfo[offset];
-> +
-> +	memset(pkt_info, 0, sizeof(*pkt_info));
-> +
-> +	pkt_info->tail = txo->q.tail;
-> +	pkt_info->head = txo->q.head;
-> +	pkt_info->used = atomic_read(&txo->q.used);
-> +	pkt_info->valid = 1;
-
-> @@ -1417,6 +1458,75 @@ static netdev_tx_t be_xmit(struct sk_buff *skb, struct net_device *netdev)
->  	return NETDEV_TX_OK;
->  }
->  
-> +void
-> +be_print_tx_wqes(struct be_adapter *adapter, struct be_tx_obj *txo)
-> +{
-> +	struct device *dev = &adapter->pdev->dev;
-> +	struct be_tx_pktinfo *pkt_info;
-> +	u8 *data;
-> +	int i, j;
-> +
-> +	dev_info(dev, "Dumping WQES of TXQ id %d\n", txo->q.id);
-> +
-> +	for (i = 0; i < BE_TXQ_INFO_LEN; i++) {
-> +		pkt_info = &txo->tx_pktinfo[i];
-> +		if (!pkt_info->valid)
-> +			continue;
-> +
-> +		dev_info(dev, "TXQ head %d tail %d used %d\n",
-> +			 pkt_info->head, pkt_info->tail, pkt_info->used);
-> +
-> +		dev_info(dev, "WRB params: feature:0x%x vlan_tag:0x%x lso_mss:0x%x\n",
-> +			 pkt_info->wqe_hdr.features, pkt_info->wqe_hdr.vlan_tag,
-> +			 pkt_info->wqe_hdr.lso_mss);
-> +
-> +		dev_info(dev, "SKB len: %d\n", pkt_info->skb_len);
-> +		data = pkt_info->skb_data;
-> +		for (j = 0 ; j < pkt_info->len; j++) {
-> +			printk("%02x ", data[j]);
-
-Please use something like print_hex_dump().
-
-> +			if (j % 8 == 7)
-> +				printk(KERN_INFO "\n");
-> +		}
-> +	}
-> +}
-> +
-> +void
-> +be_print_tx_cmpls(struct be_adapter *adapter, struct be_tx_obj *txo)
-> +{
-> +	struct device *dev = &adapter->pdev->dev;
-> +	struct be_tx_dump_cmpl *cmpl_info;
-> +	int i;
-> +
-> +	dev_info(dev, "TX CQ id %d head %d tail %d used %d\n",
-> +		 txo->cq.id, txo->cq.head, txo->cq.tail,
-> +		 atomic_read(&txo->cq.used));
-> +
-> +	for (i = 0; i < BE_TXQ_INFO_LEN; i++) {
-> +		cmpl_info = &txo->cmpl_info[i];
-> +		if (!cmpl_info->valid)
-> +			continue;
-> +
-> +		printk(KERN_INFO "0x%x 0x%x 0x%x 0x%x\n",
-> +		       cmpl_info->info[0], cmpl_info->info[1],
-> +		       cmpl_info->info[2], cmpl_info->info[3]);
-
-Some functions use printk() some dev_info(), can is there a well
-thought out reason for this?
-
-> +	}
-> +}
-> +
-> +/* be_dump_info - Print tx-wqes, tx-cmpls and skb-data */
-> +void be_dump_info(struct be_adapter *adapter)
-
-Most if not all functions you add need to be static. Please make sure
-your code builds cleanly with W=1 C=1.
-
-> +{
-> +	struct be_tx_obj *txo;
-> +	int i;
-> +
-> +	if (!adapter->msg_enable)
-> +		return;
-
-nit: you're a little inconsistent with whether the caller or the callee
-checks the msg_enable.
-
-> +	for_all_tx_queues(adapter, txo, i) {
-> +		be_print_tx_wqes(adapter, txo);
-> +		be_print_tx_cmpls(adapter, txo);
-> +	}
-> +}
-> +
->  static void be_tx_timeout(struct net_device *netdev)
->  {
->  	struct be_adapter *adapter = netdev_priv(netdev);
-> @@ -1429,6 +1539,8 @@ static void be_tx_timeout(struct net_device *netdev)
->  	int status;
->  	int i, j;
->  
-> +	be_dump_info(adapter);
-> +
->  	for_all_tx_queues(adapter, txo, i) {
->  		dev_info(dev, "TXQ Dump: %d H: %d T: %d used: %d, qid: 0x%x\n",
->  			 i, txo->q.head, txo->q.tail,
-> @@ -2719,6 +2831,10 @@ static struct be_tx_compl_info *be_tx_compl_get(struct be_adapter *adapter,
->  	rmb();
->  	be_dws_le_to_cpu(compl, sizeof(*compl));
->  
-> +	/* Dump completion info */
-> +	if (adapter->msg_enable)
-> +		be_record_tx_cmpl(txo, compl);
-> +
->  	txcp->status = GET_TX_COMPL_BITS(status, compl);
->  	txcp->end_index = GET_TX_COMPL_BITS(wrb_index, compl);
->  
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 15615c94804f..b8be18427277 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -269,76 +269,42 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ 				void *old_addr, void *new_addr,
+ 				const bool text_live)
+ {
+-	int (*emit_patch_fn)(u8 **pprog, void *func, void *ip);
+ 	const u8 *nop_insn = ideal_nops[NOP_ATOMIC5];
+-	u8 old_insn[X86_PATCH_SIZE] = {};
+-	u8 new_insn[X86_PATCH_SIZE] = {};
++	u8 old_insn[X86_PATCH_SIZE];
++	u8 new_insn[X86_PATCH_SIZE];
+ 	u8 *prog;
+ 	int ret;
+ 
+-	switch (t) {
+-	case BPF_MOD_NOP_TO_CALL ... BPF_MOD_CALL_TO_NOP:
+-		emit_patch_fn = emit_call;
+-		break;
+-	case BPF_MOD_NOP_TO_JUMP ... BPF_MOD_JUMP_TO_NOP:
+-		emit_patch_fn = emit_jump;
+-		break;
+-	default:
+-		return -ENOTSUPP;
++	memcpy(old_insn, nop_insn, X86_PATCH_SIZE);
++	if (old_addr) {
++		prog = old_insn;
++		ret = t == BPF_MOD_CALL ?
++		      emit_call(&prog, old_addr, ip) :
++		      emit_jump(&prog, old_addr, ip);
++		if (ret)
++			return ret;
+ 	}
+ 
+-	switch (t) {
+-	case BPF_MOD_NOP_TO_CALL:
+-	case BPF_MOD_NOP_TO_JUMP:
+-		if (!old_addr && new_addr) {
+-			memcpy(old_insn, nop_insn, X86_PATCH_SIZE);
+-
+-			prog = new_insn;
+-			ret = emit_patch_fn(&prog, new_addr, ip);
+-			if (ret)
+-				return ret;
+-			break;
+-		}
+-		return -ENXIO;
+-	case BPF_MOD_CALL_TO_CALL:
+-	case BPF_MOD_JUMP_TO_JUMP:
+-		if (old_addr && new_addr) {
+-			prog = old_insn;
+-			ret = emit_patch_fn(&prog, old_addr, ip);
+-			if (ret)
+-				return ret;
+-
+-			prog = new_insn;
+-			ret = emit_patch_fn(&prog, new_addr, ip);
+-			if (ret)
+-				return ret;
+-			break;
+-		}
+-		return -ENXIO;
+-	case BPF_MOD_CALL_TO_NOP:
+-	case BPF_MOD_JUMP_TO_NOP:
+-		if (old_addr && !new_addr) {
+-			memcpy(new_insn, nop_insn, X86_PATCH_SIZE);
+-
+-			prog = old_insn;
+-			ret = emit_patch_fn(&prog, old_addr, ip);
+-			if (ret)
+-				return ret;
+-			break;
+-		}
+-		return -ENXIO;
+-	default:
+-		return -ENOTSUPP;
++	memcpy(new_insn, nop_insn, X86_PATCH_SIZE);
++	if (new_addr) {
++		prog = new_insn;
++		ret = t == BPF_MOD_CALL ?
++		      emit_call(&prog, new_addr, ip) :
++		      emit_jump(&prog, new_addr, ip);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	ret = -EBUSY;
+ 	mutex_lock(&text_mutex);
+ 	if (memcmp(ip, old_insn, X86_PATCH_SIZE))
+ 		goto out;
+-	if (text_live)
+-		text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
+-	else
+-		memcpy(ip, new_insn, X86_PATCH_SIZE);
++	if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
++		if (text_live)
++			text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
++		else
++			memcpy(ip, new_insn, X86_PATCH_SIZE);
++	}
+ 	ret = 0;
+ out:
+ 	mutex_unlock(&text_mutex);
+@@ -465,7 +431,6 @@ static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
+ 
+ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
+ {
+-	static const enum bpf_text_poke_type type = BPF_MOD_NOP_TO_JUMP;
+ 	struct bpf_jit_poke_descriptor *poke;
+ 	struct bpf_array *array;
+ 	struct bpf_prog *target;
+@@ -490,7 +455,7 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
+ 			 * read-only. Both modifications on the given image
+ 			 * are under text_mutex to avoid interference.
+ 			 */
+-			ret = __bpf_arch_text_poke(poke->ip, type, NULL,
++			ret = __bpf_arch_text_poke(poke->ip, BPF_MOD_JUMP, NULL,
+ 						   (u8 *)target->bpf_func +
+ 						   poke->adj_off, false);
+ 			BUG_ON(ret < 0);
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index c2f07fd410c1..35903f148be5 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1324,14 +1324,8 @@ static inline u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
+ #endif /* CONFIG_INET */
+ 
+ enum bpf_text_poke_type {
+-	/* All call-related pokes. */
+-	BPF_MOD_NOP_TO_CALL,
+-	BPF_MOD_CALL_TO_CALL,
+-	BPF_MOD_CALL_TO_NOP,
+-	/* All jump-related pokes. */
+-	BPF_MOD_NOP_TO_JUMP,
+-	BPF_MOD_JUMP_TO_JUMP,
+-	BPF_MOD_JUMP_TO_NOP,
++	BPF_MOD_CALL,
++	BPF_MOD_JUMP,
+ };
+ 
+ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index 58bdf5fd24cc..f0d19bbb9211 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -746,19 +746,9 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+ 				    struct bpf_prog *old,
+ 				    struct bpf_prog *new)
+ {
+-	enum bpf_text_poke_type type;
+ 	struct prog_poke_elem *elem;
+ 	struct bpf_array_aux *aux;
+ 
+-	if (!old && new)
+-		type = BPF_MOD_NOP_TO_JUMP;
+-	else if (old && !new)
+-		type = BPF_MOD_JUMP_TO_NOP;
+-	else if (old && new)
+-		type = BPF_MOD_JUMP_TO_JUMP;
+-	else
+-		return;
+-
+ 	aux = container_of(map, struct bpf_array, map)->aux;
+ 	WARN_ON_ONCE(!mutex_is_locked(&aux->poke_mutex));
+ 
+@@ -806,7 +796,7 @@ static void prog_array_map_poke_run(struct bpf_map *map, u32 key,
+ 			    poke->tail_call.key != key)
+ 				continue;
+ 
+-			ret = bpf_arch_text_poke(poke->ip, type,
++			ret = bpf_arch_text_poke(poke->ip, BPF_MOD_JUMP,
+ 						 old ? (u8 *)old->bpf_func +
+ 						 poke->adj_off : NULL,
+ 						 new ? (u8 *)new->bpf_func +
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 10ae59d65f13..7e89f1f49d77 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -77,7 +77,7 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	int err;
+ 
+ 	if (fentry_cnt + fexit_cnt == 0) {
+-		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_CALL_TO_NOP,
++		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_CALL,
+ 					 old_image, NULL);
+ 		tr->selector = 0;
+ 		goto out;
+@@ -105,12 +105,12 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 
+ 	if (tr->selector)
+ 		/* progs already running at this address */
+-		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_CALL_TO_CALL,
++		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_CALL,
+ 					 old_image, new_image);
+ 	else
+ 		/* first time registering */
+-		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_NOP_TO_CALL,
+-					 NULL, new_image);
++		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_CALL, NULL,
++					 new_image);
+ 	if (err)
+ 		goto out;
+ 	tr->selector++;
+-- 
+2.21.0
 
