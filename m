@@ -2,146 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F09FA108361
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 14:26:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 566971083D8
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 15:50:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbfKXN0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 08:26:51 -0500
-Received: from mail-pf1-f182.google.com ([209.85.210.182]:45652 "EHLO
-        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726920AbfKXN0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 08:26:50 -0500
-Received: by mail-pf1-f182.google.com with SMTP id z4so5936444pfn.12;
-        Sun, 24 Nov 2019 05:26:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition:user-agent;
-        bh=m0jvqBQyNbjSNN57AfewGyO2Va35MQB0Hla+myhYpfc=;
-        b=UeGCzkzr9EnaHFQobcJMFTcGFvt1SJj3PQJeCUDddOTXtsmCIWOS8f8GUqS+G55HhO
-         Fb5/h9JwAR6UXukXMiPhASFtN9VSsj9uO/ANQddKM6J/MwNbD+06AGbVG0D4svcfvzDl
-         fzgzbNetG6D99C8NQh9360ftRksWGsbKFvN2UL5EbMSyUcXFgKOSqGs/x1zUwAqMvLbH
-         ze8gyk0ED5w7xxaG/M7P0jZJkQqxZVQ485/nP2VN/ibghatmvsZJbgjrC5gD2XajW9nh
-         DBUwx8xcvV5ACm/sHGYMjx5M08CA/OPGqCMUE+xHkwXepJYMsjf6ICR3jBzJ/5JBCCPN
-         K54Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:mime-version:content-disposition:user-agent;
-        bh=m0jvqBQyNbjSNN57AfewGyO2Va35MQB0Hla+myhYpfc=;
-        b=ZCXCu/l0ZxY8hhU53PD8qvG6FqQC+S0fpxXibTqAjfX2wODR+jeKtmFa7iq/SlNpLu
-         LiQS3P2rSQOkWQJbV4dHBQI9zCARGGEIdmCOl5aRxtwY4ecLTrHDP8sQb9wlRCGOa5/F
-         Y5sTxPrrPY4h7OL9BhekCWmQD88hYdG8TrHvlSmcYUyy/peGAHEIUQkMfqj0R9Uo9Kea
-         T8k4JpV4AXCunweb27bbwE7VemmCBQNmOBD/wWDe8wc73johqIJ8vx8Kz4el/iMCCmSy
-         DDuL4S8cHdkTOP0m0M34SXu4LCJjwySznyyUSYgj+v+j0Z29m9WTC22db6FZXg4CuQ9v
-         f9Mg==
-X-Gm-Message-State: APjAAAXuFgNJZ3oLh7MLwgEhQEBIeCDyD/ph9Oxb2jVQfDE7mqjYxTVQ
-        G1s89K/IZesZYVcusJApdJN4qHJPMUbdIw==
-X-Google-Smtp-Source: APXvYqwSmprUJshibAr5vugf8DmyGQjq91dkRNhgtXTcrAe9ERZRJO1HVeRll5Wh2DbIYpdENGYJ2w==
-X-Received: by 2002:a65:654e:: with SMTP id a14mr26208044pgw.170.1574602009638;
-        Sun, 24 Nov 2019 05:26:49 -0800 (PST)
-Received: from localhost ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id g4sm4572041pfh.172.2019.11.24.05.26.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 05:26:48 -0800 (PST)
-Date:   Sun, 24 Nov 2019 15:26:45 +0200
-From:   Johan Hedberg <johan.hedberg@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull request: bluetooth-next 2019-11-24
-Message-ID: <20191124132645.GA43125@pehoward-mobl1.ger.corp.intel.com>
-Mail-Followup-To: davem@davemloft.net, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
+        id S1726945AbfKXOuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 09:50:54 -0500
+Received: from mga06.intel.com ([134.134.136.31]:52500 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726798AbfKXOuy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 24 Nov 2019 09:50:54 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Nov 2019 06:50:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,238,1571727600"; 
+   d="scan'208";a="291114049"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.74])
+  by orsmga001.jf.intel.com with ESMTP; 24 Nov 2019 06:50:51 -0800
+Date:   Sun, 24 Nov 2019 22:51:24 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191124145124.GA374942@___>
+References: <20191120102856.7e01e2e2@x1.home>
+ <20191120181108.GJ22515@ziepe.ca>
+ <20191120150732.2fffa141@x1.home>
+ <20191121030357.GB16914@ziepe.ca>
+ <5dcef4ab-feb5-d116-b2a9-50608784a054@redhat.com>
+ <20191121141732.GB7448@ziepe.ca>
+ <721e49c2-a2e1-853f-298b-9601c32fcf9e@redhat.com>
+ <20191122180214.GD7448@ziepe.ca>
+ <20191123043951.GA364267@___>
+ <20191123230948.GF7448@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191123230948.GF7448@ziepe.ca>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Nov 23, 2019 at 07:09:48PM -0400, Jason Gunthorpe wrote:
+> On Sat, Nov 23, 2019 at 12:39:51PM +0800, Tiwei Bie wrote:
+> > On Fri, Nov 22, 2019 at 02:02:14PM -0400, Jason Gunthorpe wrote:
+> > > On Fri, Nov 22, 2019 at 04:45:38PM +0800, Jason Wang wrote:
+> > > > On 2019/11/21 下午10:17, Jason Gunthorpe wrote:
+> > > > > On Thu, Nov 21, 2019 at 03:21:29PM +0800, Jason Wang wrote:
+> > > > > > > The role of vfio has traditionally been around secure device
+> > > > > > > assignment of a HW resource to a VM. I'm not totally clear on what the
+> > > > > > > role if mdev is seen to be, but all the mdev drivers in the tree seem
+> > > > > > > to make 'and pass it to KVM' a big part of their description.
+> > > > > > > 
+> > > > > > > So, looking at the virtio patches, I see some intended use is to map
+> > > > > > > some BAR pages into the VM.
+> > > > > > Nope, at least not for the current stage. It still depends on the
+> > > > > > virtio-net-pci emulatio in qemu to work. In the future, we will allow such
+> > > > > > mapping only for dorbell.
+> > > > > There has been a lot of emails today, but I think this is the main
+> > > > > point I want to respond to.
+> > > > > 
+> > > > > Using vfio when you don't even assign any part of the device BAR to
+> > > > > the VM is, frankly, a gigantic misuse, IMHO.
+> > > > 
+> > > > That's not a compelling point. 
+> > > 
+> > > Well, this discussion is going nowhere.
+> > 
+> > You removed JasonW's other reply in above quote. He said it clearly
+> > that we do want/need to assign parts of device BAR to the VM.
+> 
+> Generally we don't look at patches based on stuff that isn't in them.
 
---Kj7319i9nmIyA2yE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The hardware is ready, and it's something really necessary (for
+the performance). It was planned to be added immediately after
+current series. If you want, it certainly can be included right now.
 
-Hi Dave,
+> 
+> > > I mean the library functions in the kernel that vfio uses to implement
+> > > all the user dma stuff. Other subsystems use them too, it is not
+> > > exclusive to vfio.
+> > 
+> > IIUC, your point is to suggest us invent new DMA API for userspace to
+> > use instead of leveraging VFIO's well defined DMA API. Even if we don't
+> > use VFIO at all, I would imagine it could be very VFIO-like (e.g. caps
+> > for BAR + container/group for DMA) eventually.
+> 
+> None of the other user dma subsystems seem to have the problems you
+> are imagining here. Perhaps you should try it first?
 
-Here's one last bluetooth-next pull request for the 5.5 kernel:
+Actually VFIO DMA API wasn't used at the beginning of vhost-mdev. But
+after the discussion in upstream during the RFC stage since the last
+year, the conclusion is that leveraging VFIO's existing DMA API would
+be the better choice and then vhost-mdev switched to that direction.
 
- - Fix BDADDR_PROPERTY & INVALID_BDADDR quirk handling
- - Added support for BCM4334B0 and BCM4335A0 controllers
- - A few other smaller fixes related to locking and memory leaks
+>  
+> > > > > Further, I do not think it is wise to design the userspace ABI around
+> > > > > a simplistict implementation that can't do BAR assignment,
+> > > > 
+> > > > Again, the vhost-mdev follow the VFIO ABI, no new ABI is invented, and
+> > > > mmap() was kept their for mapping device regions.
+> > > 
+> > > The patches have a new file in include/uapi.
+> > 
+> > I guess you didn't look at the code. Just to clarify, there is no
+> > new file introduced in include/uapi. Only small vhost extensions to
+> > the existing vhost uapi are involved in vhost-mdev.
+> 
+> You know, I review alot of patches every week, and sometimes I make
+> mistakes, but not this time. From the ICF cover letter:
+> 
+> https://lkml.org/lkml/2019/11/7/62
+> 
+>  drivers/vfio/mdev/mdev_core.c    |  21 ++
+>  drivers/vhost/Kconfig            |  12 +
+>  drivers/vhost/Makefile           |   3 +
+>  drivers/vhost/mdev.c             | 556 +++++++++++++++++++++++++++++++
+>  include/linux/mdev.h             |   5 +
+>  include/uapi/linux/vhost.h       |  21 ++
+>  include/uapi/linux/vhost_types.h |   8 +
+>       ^^^^^^^^^^^^^^
+> 
+> Perhaps you thought I ment ICF was adding uapi? My remarks cover all
+> three of the series involved here.
 
-Please let me know if there are any issues pulling. Thanks.
+No, I meant the same thing. Michael helped me explain that.
+https://patchwork.ozlabs.org/patch/1195895/#2311180
 
-Johan
-
----
-The following changes since commit 90bc72b13c08eedf73b7c0bd94ef23c467800c4a:
-
-  Merge branch 'ARM-Enable-GENET-support-for-RPi-4' (2019-11-12 20:08:00 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git for-upstream
-
-for you to fetch changes up to a4f95f31a9f38d9bb1fd313fcc2d0c0d48116ee3:
-
-  Bluetooth: btbcm: Use the BDADDR_PROPERTY quirk (2019-11-22 13:35:20 +0100)
-
-----------------------------------------------------------------
-Andre Heider (1):
-      Bluetooth: btbcm: Use the BDADDR_PROPERTY quirk
-
-Dan Carpenter (1):
-      Bluetooth: delete a stray unlock
-
-Marcel Holtmann (1):
-      Bluetooth: Allow combination of BDADDR_PROPERTY and INVALID_BDADDR quirks
-
-Mohammad Rasim (2):
-      dt-bindings: net: Add compatible for BCM4335A0 bluetooth
-      Bluetooth: btbcm: Add entry for BCM4335A0 UART bluetooth
-
-Navid Emamdoost (1):
-      Bluetooth: Fix memory leak in hci_connect_le_scan
-
-Oliver Neukum (1):
-      Bluetooth: btusb: fix PM leak in error case of setup
-
-Stephan Gerhold (1):
-      Bluetooth: btbcm: Add entry for BCM4334B0 UART Bluetooth
-
- .../devicetree/bindings/net/broadcom-bluetooth.txt |  1 +
- drivers/bluetooth/btbcm.c                          | 10 +++++++++
- drivers/bluetooth/btusb.c                          |  3 ++-
- drivers/bluetooth/hci_bcm.c                        |  1 +
- net/bluetooth/hci_conn.c                           |  4 +++-
- net/bluetooth/hci_core.c                           | 26 ++++++++++++++++++++--
- net/bluetooth/l2cap_core.c                         |  4 +---
- 7 files changed, 42 insertions(+), 7 deletions(-)
-
---Kj7319i9nmIyA2yE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEyxvsVXjY3jV7sQ0/JCP2+/mo1BIFAl3ahRMACgkQJCP2+/mo
-1BLzpg//ZpVdq8MVctZlf9I0Z9t2mhm8/jI3BEdT6S6MP7lgOKKvNFpbSPH3FIij
-TV2EB3vQlNW/gernUeSPia2KCLIZAxBiSnsLdwPbE5Klz7g/uHe4mTyHdFsvXhsM
-Ru8BItoRWp0DPLsEbuZSvirtsNg+Nf6IPbuCYoPwU1hAdsqmdnyRq8jCI6PgmBWQ
-nproGKZe/Be9QPbWin4BiHdzqWkJwdlOxp4ot3vZtVPK3sjdbF0tArd9jTEz0wdd
-wY2wdIj7O6FVkN0nAu4NRvjKnZmrYqb0zcHXyX1S8KpXs/nvxeBOrbGgjBuoX4ha
-RM8pR5Xhygr8NcGRy9ofH9/+gBl/zRIAR0bZy+Om+JcjSW8KmJ4YjzKSKsKDUgnK
-qNczZ52+n2u5BenxX86UuoUHxui4aZvMwtVNvZ7HXQoG4OJia0mehWbED9IuWypp
-QUmfsFZqzf1IBuciulsgUvlEs47V1Urxh2u0oD8Cii6ijiMuWkTHUthDe40Cpndq
-/hOJRPE9g9L1p4FOAuBP3wuXIzfCBckAiJo7EkIqUikeTvpvvVJ4EbqE3nCL96uh
-Jv8ke1vYJEeY8Q8bc/uKjLgVh8fjEZ2YBrV9tS8GdB4VLvjHgFduvTC9AFC/NlZ9
-ykFqXfMQ9N3o3UyS8prWTnA6jYA/VWo8g+ZdjVAFsjxs7M/pwlc=
-=P9ps
------END PGP SIGNATURE-----
-
---Kj7319i9nmIyA2yE--
+> 
+> Jason
