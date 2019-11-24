@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3223108192
-	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C838108193
+	for <lists+netdev@lfdr.de>; Sun, 24 Nov 2019 04:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbfKXDbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Nov 2019 22:31:22 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37230 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726719AbfKXDbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 22:31:22 -0500
-Received: by mail-pf1-f195.google.com with SMTP id p24so5579963pfn.4
-        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 19:31:21 -0800 (PST)
+        id S1727031AbfKXDbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Nov 2019 22:31:25 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43318 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726719AbfKXDbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Nov 2019 22:31:24 -0500
+Received: by mail-pg1-f196.google.com with SMTP id b1so5356381pgq.10
+        for <netdev@vger.kernel.org>; Sat, 23 Nov 2019 19:31:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=D8xEbQZ+IOLV2uefkd0EqzXQTKGdY3oW8wEMZbOscGI=;
-        b=OrdMMgc/11jI4rP7gtRzMeEsgDZQJce4YV04cyQIkSzVk8MYzl7A3J4Ml3uIhO20kt
-         5N4WxjYsSNO63ESzFjpLqqp6Oik/3TH0gi0/gH4AZ6dj5n/Qw+U0MYeCiPoGQffZ73CT
-         22URoMW0NfZbAc0LCgpnIi0JgXK3qvrRcMtUo=
+        bh=CEEKHwN0X2Vjw7eHGh5ig2JX1Z6w8+yMLtvgY6iCPNw=;
+        b=MLPM4Qcjjjn2CUIkA7S9UmkpuNX/CSaNWjTBxRp6/egf2d+wqLtEuWyHRk7F5Ou2mC
+         En3L1BNOgbYwBFgFt900mXa0y+bdHs8EmPAJAznmn6hwNcRlzW5IHkWBCLM3h6TKQfS6
+         sA3/UEV9M4qr+WTyfbVAfrjyCQEbu8wWTqnnU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=D8xEbQZ+IOLV2uefkd0EqzXQTKGdY3oW8wEMZbOscGI=;
-        b=DeQ2sRztmqF2K4bMQPRmRj6BPN5D2s0Gyb8ExF84tI0PUsU9gw7pZvGLE/W1h6rKGo
-         CZPND9XWWF9UofBqJMRfO/mQJeHe2mLBFF7mYOKCWNG5JuV+Xf5+qFkEcUf4uX0DD4OY
-         D9ihaojRublcZClsN/jDCmSvThX+AQYC263O0D3ehDA31IH4wIw3CtV5cF+c0kiqxApP
-         jy7CrkYZsNlBbROuykb6VDEV/SrzJxGNuimD+Vu/3sc90E6zPaK5ap5EgUdaGKbxFZ7n
-         o27DREXMFJ+aaAVDx3KDhnnNG1n8NE0b7yCvdjD+yVDm5gu41I1E3+/VDfR8jaCopulR
-         VZag==
-X-Gm-Message-State: APjAAAWC2/W/9BArAjusIkuMwhHA37jmZNfQB4wJHstrnYl8VOLLdAjd
-        K8lxgkwducQKff07wmJbmhoqpA==
-X-Google-Smtp-Source: APXvYqyHhB+lUZSobzoC1SvOK2qapV8R4YaV9L8dn+q2ZN1lv5UY3ft8FZYOD5ynjHddYnDwfBtmOw==
-X-Received: by 2002:a62:31c1:: with SMTP id x184mr27456828pfx.255.1574566281569;
-        Sat, 23 Nov 2019 19:31:21 -0800 (PST)
+        bh=CEEKHwN0X2Vjw7eHGh5ig2JX1Z6w8+yMLtvgY6iCPNw=;
+        b=VwVPRm3d7b3yz6okPJsgl+YBl/BSb/CdMme6/X7Uk4pR/mi2JTfPDQJckdNmfes/Ia
+         XQxhpj6lUiUXmieHjk0vtIWPNehyBaJFYXEDujOw9YWYB4RdNrVfK5H6ICx/usoUWiJC
+         sYh0WLYKhZGTyjJquPtSdK5n6EHY7sNIq1ZV0NjVV20mw3HGOaTG0+1//ZCFd861L4XL
+         3/sq1D4bpdfxNspmDIKkNUeAZOJTGCbzJAk01DnNXWagPrB8+a7LhGbN7hQswcrImxtE
+         rfTXQGAryiVlk70Nc+63i3m0mA18art2YwPXOAAsh7BCLXlF2tPbBnQ119wv8FB9dc6l
+         zi6g==
+X-Gm-Message-State: APjAAAUKwXFxL7Nq0pMi30Jk1+icIHf54YyWBDk9vxZISVkXQU1G6gWZ
+        FpByI1VKQzf3nRUmeuLOuZ9mVA==
+X-Google-Smtp-Source: APXvYqzXMnkgU3G4Ls7JGYdhvYb3fIp0dH+9+MxoqT0SCUlMg+H/B9vh/fWmjuVww1iSh9f0ZtKyJg==
+X-Received: by 2002:aa7:9592:: with SMTP id z18mr27205300pfj.176.1574566283991;
+        Sat, 23 Nov 2019 19:31:23 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v63sm3111901pfb.181.2019.11.23.19.31.19
+        by smtp.gmail.com with ESMTPSA id v63sm3111901pfb.181.2019.11.23.19.31.21
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Nov 2019 19:31:21 -0800 (PST)
+        Sat, 23 Nov 2019 19:31:23 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     netdev@vger.kernel.org,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next v2 05/13] bnxt_en: Send FUNC_RESOURCE_QCAPS command in bnxt_resume()
-Date:   Sat, 23 Nov 2019 22:30:42 -0500
-Message-Id: <1574566250-7546-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 06/13] bnxt_en: Fix suspend/resume path on 57500 chips
+Date:   Sat, 23 Nov 2019 22:30:43 -0500
+Message-Id: <1574566250-7546-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
 References: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
@@ -57,51 +57,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-After driver unregister, firmware is erasing the information that
-driver supports new resource management. Send FUNC_RESOURCE_QCAPS
-command to inform the firmware that driver supports new resource
-management while resuming from hibernation.  Otherwise, we fallback
-to the older resource allocation scheme.
+Driver calls HWRM_FUNC_RESET firmware call while resuming the device
+which clears the context memory backing store. Because of which
+allocating firmware resources would eventually fail. Fix it by freeing
+all context memory during suspend and reallocate the memory during resume.
 
-Also, move driver register after sending FUNC_RESOURCE_QCAPS command
-to be consistent with the normal initialization sequence.
+Call bnxt_hwrm_queue_qportcfg() in resume path.  This firmware call
+is needed on the 57500 chips so that firmware will set up the proper
+queue mapping in relation to the context memory.
 
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f627741..69d7ab1 100644
+index 69d7ab1..6a12ab5 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11934,8 +11934,7 @@ static int bnxt_resume(struct device *device)
+@@ -11916,6 +11916,9 @@ static int bnxt_suspend(struct device *device)
+ 	}
+ 	bnxt_hwrm_func_drv_unrgtr(bp);
+ 	pci_disable_device(bp->pdev);
++	bnxt_free_ctx_mem(bp);
++	kfree(bp->ctx);
++	bp->ctx = NULL;
+ 	rtnl_unlock();
+ 	return rc;
+ }
+@@ -11944,6 +11947,17 @@ static int bnxt_resume(struct device *device)
  		goto resume_exit;
  	}
- 	pci_set_master(bp->pdev);
--	if (bnxt_hwrm_ver_get(bp) ||
--	    bnxt_hwrm_func_drv_rgtr(bp, NULL, 0, false)) {
-+	if (bnxt_hwrm_ver_get(bp)) {
- 		rc = -ENODEV;
- 		goto resume_exit;
- 	}
-@@ -11944,6 +11943,15 @@ static int bnxt_resume(struct device *device)
- 		rc = -EBUSY;
- 		goto resume_exit;
- 	}
-+
-+	if (BNXT_NEW_RM(bp))
-+		bnxt_hwrm_func_resc_qcaps(bp, false);
-+
-+	if (bnxt_hwrm_func_drv_rgtr(bp, NULL, 0, false)) {
+ 
++	if (bnxt_hwrm_queue_qportcfg(bp)) {
 +		rc = -ENODEV;
 +		goto resume_exit;
 +	}
 +
- 	bnxt_get_wol_settings(bp);
- 	if (netif_running(dev)) {
- 		rc = bnxt_open(dev);
++	if (bp->hwrm_spec_code >= 0x10803) {
++		if (bnxt_alloc_ctx_mem(bp)) {
++			rc = -ENODEV;
++			goto resume_exit;
++		}
++	}
+ 	if (BNXT_NEW_RM(bp))
+ 		bnxt_hwrm_func_resc_qcaps(bp, false);
+ 
 -- 
 2.5.1
 
