@@ -2,159 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C49FB1094CD
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 21:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE8B1094D7
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 21:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbfKYUrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 15:47:06 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:3447 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfKYUrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 15:47:05 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ddc3dc40000>; Mon, 25 Nov 2019 12:47:00 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 25 Nov 2019 12:46:58 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 25 Nov 2019 12:46:58 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
- 2019 20:46:57 +0000
-Subject: Re: [PATCH 17/19] powerpc: book3s64: convert to pin_user_pages() and
- put_user_page()
-To:     Jan Kara <jack@suse.cz>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191125042011.3002372-1-jhubbard@nvidia.com>
- <20191125042011.3002372-18-jhubbard@nvidia.com>
- <20191125085915.GB1797@quack2.suse.cz>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <9abfd0bf-ffb9-9fad-848c-caff4a490773@nvidia.com>
-Date:   Mon, 25 Nov 2019 12:46:56 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191125085915.GB1797@quack2.suse.cz>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        id S1725946AbfKYUuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 15:50:55 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34884 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbfKYUuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 15:50:55 -0500
+Received: by mail-pg1-f196.google.com with SMTP id k32so7786172pgl.2;
+        Mon, 25 Nov 2019 12:50:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=SFnG9c+0zslFmKghCOPwHgsw9dWwUFMfJUamxWevy1M=;
+        b=JFp1xnuHZCjLNk1Mxd3+mE+m0l1IpMsZCgyWM7ZSRwAP7C5Dw/dGo13azO695xJkye
+         ji+1qvYDdN7H85VZ3Xu42Di9wyAn+UtOOWh8mLNIVbnTEoMFOXK2im9t5gkjb+37pQJi
+         Mkz01hLL7qFTK7Yj0KIfdjGRUnIXUjJd+HLAx6jblzaxloZq06t3dKw7P6hcYMBJQI5S
+         c8sJkMTF6Ce70l++SkWYTY13Dz8k23LmmsbGLBdT/HtaG9aS0aBLPKBAZdueS+nCPjRx
+         02GZG09Q5sXih+rdl12mXQJrx91WeY60lRLMBQFMNrqmHLBQ+TyDl+vLAQihyOFCEwv/
+         VSAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=SFnG9c+0zslFmKghCOPwHgsw9dWwUFMfJUamxWevy1M=;
+        b=HzQ/0oNDXbcvztDajQuA64LSF/yTTyKul/JF4rO6vbsMUL9H6TEEkRUIcAS6hbQ1F0
+         CW6TW27TqAr8RDLo/OawP7GQ/+X/C7MbmPRDBz1HfBPXN6jdF//6EurUINruCWtOepJW
+         qPJzJBJPCbWSYYEjXj4YrWsTaY4KvPfDOb0w/MjO/4D24yf1/bivYLomtjEjYz7TDMIM
+         9B+i6nllMRyXyghl9ffm3IjRr5mJOwuPxldzIJcY92hXrNcFsva5eNQFg6s0w4aBfMZ1
+         o57DreYnf0/C29jYu6tG7VPq/kZaVe6UXXd4rT2bVVfYkpmMk4P+AIpGjcKEzksxbkCr
+         ps9A==
+X-Gm-Message-State: APjAAAXFoNgJnbguLFignAeNsyEj8ovQ7FC+WjplwS0HHXUyBCGZ7p+m
+        4JZvhNad6eEHNSyMgxGI11k=
+X-Google-Smtp-Source: APXvYqzf3UUdFC/QFurmNV7QmBdHXoriwKiEo0wDrb1+32qv73cHFfVor1BwXMs7MqbmdBlWQxMtFA==
+X-Received: by 2002:a62:fb0e:: with SMTP id x14mr37374342pfm.194.1574715054782;
+        Mon, 25 Nov 2019 12:50:54 -0800 (PST)
+Received: from localhost (74-95-46-65-Oregon.hfc.comcastbusiness.net. [74.95.46.65])
+        by smtp.gmail.com with ESMTPSA id x2sm9336109pgc.67.2019.11.25.12.50.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 12:50:54 -0800 (PST)
+Date:   Mon, 25 Nov 2019 12:50:53 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Message-ID: <5ddc3eada4ad1_78092ad33cdb65c0b0@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAEf4Bzbii9W=Frc3aPLrLsCWq1fFJXADhhQ4w7_d15ucqBuWHg@mail.gmail.com>
+References: <20191123220835.1237773-1-andriin@fb.com>
+ <5ddc3b355840f_2b082aba75a825b46@john-XPS-13-9370.notmuch>
+ <CAEf4Bzbii9W=Frc3aPLrLsCWq1fFJXADhhQ4w7_d15ucqBuWHg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] mm: implement no-MMU variant of
+ vmalloc_user_node_flags
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574714820; bh=7Gmrre2tneNEWRU9G5+DIn5rrxtRLBtJ55Uj7bfaWRw=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=Vc2WP6DAAbNZStXBl+ln2+kB/EuUuvRZHzMpZNW80Fm3ZctGnvM4O+tZRCgS3669B
-         /qldmeczkVi9pQJMXYF/4i2XGVt4Gm+gOJ/tFv/RnDb4dopV+tz5b0cyQc9YOTVtBS
-         P/yYNUzd4pjDhuvvDyZmybC/J7abTjT/ntYJJMbyGr8NCKnGXhEtDqS5T7TKRE2hwU
-         dbPgyN9eu9VXPtG/lD5Uk37zf69kjzXTl/JkUlunTht14kOdHqRRRORI90fFcZ/kGC
-         NFhCuK40TfQ4yRLkmLaKp7qlIx6xeGOy5CzKXKx/3W33foWMDjA/xuDpoO/15JsFQy
-         0FiT0Aycu6K+g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/19 12:59 AM, Jan Kara wrote:
-> On Sun 24-11-19 20:20:09, John Hubbard wrote:
->> 1. Convert from get_user_pages() to pin_user_pages().
->>
->> 2. As required by pin_user_pages(), release these pages via
->> put_user_page(). In this case, do so via put_user_pages_dirty_lock().
->>
->> That has the side effect of calling set_page_dirty_lock(), instead
->> of set_page_dirty(). This is probably more accurate.
->>
->> As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
->> dealing with a file backed page where we have reference on the inode it
->> hangs off." [1]
->>
->> 3. Release each page in mem->hpages[] (instead of mem->hpas[]), because
->> that is the array that pin_longterm_pages() filled in. This is more
->> accurate and should be a little safer from a maintenance point of
->> view.
+Andrii Nakryiko wrote:
+> On Mon, Nov 25, 2019 at 12:36 PM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> >
+> > Andrii Nakryiko wrote:
+> > > To fix build with !CONFIG_MMU, implement it for no-MMU configurations as well.
+> > >
+> > > Cc: Johannes Weiner <hannes@cmpxchg.org>
+> > > Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
+> > > Reported-by: kbuild test robot <lkp@intel.com>
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  mm/nommu.c | 15 +++++++++++++--
+> > >  1 file changed, 13 insertions(+), 2 deletions(-)
+> > >
+
+[...]
+
+> > Hi Andrii, my first reaction was that it seemed not ideal to just ignore
+> > the node value like this but everything I came up with was uglier. I
+> > guess only user is BPF at the moment so it should be fine.
 > 
-> Except that this breaks the code. hpages is unioned with hpas...
+> Yeah, but that's what other node-aware vmalloc() variants do in
+> nommu.c, so at least it's consistent with other cases. Thanks for
+> review!
+
+Great, at least folks (not me) who are used to working with no-mmu APIs
+will expect this then.
+
 > 
+> >
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-OK. 
-
->> @@ -212,10 +211,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->>  		if (!page)
->>  			continue;
->>  
->> -		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
->> -			SetPageDirty(page);
->> +		put_user_pages_dirty_lock(&mem->hpages[i], 1,
->> +					  MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
-> 
-> And the dirtying condition is wrong here as well. Currently it is always
-> true.
-> 
-> 								Honza
-> 
-
-Yes. Fixed up locally. The function now looks like this (for this patch, not for
-the entire series, which renames "put" to "unpin"):
-
-
-static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
-{
-	long i;
-	struct page *page = NULL;
-
-	if (!mem->hpas)
-		return;
-
-	for (i = 0; i < mem->entries; ++i) {
-		if (!mem->hpas[i])
-			continue;
-
-		page = pfn_to_page(mem->hpas[i] >> PAGE_SHIFT);
-		if (!page)
-			continue;
-
-		put_user_pages_dirty_lock(&page, 1,
-				mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
-
-		mem->hpas[i] = 0;
-	}
-}
-
-thanks,
--- 
-John Hubbard
-NVIDIA
 
