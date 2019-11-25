@@ -2,60 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98600108651
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 02:29:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05FAF10867F
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 03:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727154AbfKYB3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 20:29:35 -0500
-Received: from mail-lj1-f170.google.com ([209.85.208.170]:37933 "EHLO
-        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727072AbfKYB3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 20:29:35 -0500
-Received: by mail-lj1-f170.google.com with SMTP id k8so3255602ljh.5;
-        Sun, 24 Nov 2019 17:29:33 -0800 (PST)
+        id S1726926AbfKYCVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 21:21:35 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46920 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726861AbfKYCVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 21:21:35 -0500
+Received: by mail-pg1-f195.google.com with SMTP id r18so6377068pgu.13
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 18:21:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=EnpVr9gg7gkumYCQnOKkv4m/WBcUuib8Eyj+epJNIWk=;
-        b=guqFZ7AwBudO+N1SZbsvh/8zWVlenHmUFGppmhoM7s533Vo8nxdFh7qfnXxeQ1UqpL
-         SvullyxUAU/wtmtrQj0Snpe3i8jPPUZHSqqI6P6jHJuY+nwr8f9g0cEp/cWEoNQNxiGg
-         QS1N6ZD4Op73RWEVEVBcvS0JM80xlTmcK4f/P6sBU6XuCVXb6c3EO7joqEUrvDi6gF6N
-         sNw7HbkoyOL4A+RzDiXdCTAc3UxOfg+CgESkTuiDQefOh0YHhJG3tN4XrHpO3kYvN54B
-         Z2AekSw1Ha2Y/I5z1xqvywBOqM4GjZipKU8WCGyq1BotSvOs5Nw7C4oQ7+b0UHA8VHRW
-         zaPA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=0Slbk7FHKESeFqcEuY8H04LKnF7/drC0hQa4BJ/FDvg=;
+        b=gH4v+ctBIPNMcQL86nKHecbkeJwpsrU/V3M2WbEfwawz+TRk/u6ND6wuIqXpt6t8t9
+         5a5Y8zWBllvB5EANzgYSeR2+KsJsQpZHsYDqW6ELNTnyBqgwqfYnJV81PgeJHndccNjb
+         igkz2bEdeFgZfOcnb6h1x+XIoXWn6FI84lA6bN1lHNmcLKElj1bRzDzmn2PTws27jfdL
+         BOiw0PZjJ/8lC5NygqkGOJUbJujon5jBOxkEwQiI166JObmhx3FlUyiMuhAgBVrF0BLl
+         WwsjasT/v0ktfcRkUltnpCnu/xXr4ShmWiNVv8KMI2qPFPar2t1eB/8WW9JAV8PxD6R1
+         QsFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=EnpVr9gg7gkumYCQnOKkv4m/WBcUuib8Eyj+epJNIWk=;
-        b=cpshynZ36KzgDiXuf2tbu1KzSTu5Bn81I7ze4NHjaKgtV4qS1HbtPn4EAZE6hAq6wF
-         SEYwUAtfWa757r0a+KvZvtDvfYURuQoIg63ocwGkY/3DQ7t1C8UIqyikjEaOrmoHSKWP
-         ym/XCXEKXUOTBxARxdiI9AgrtvhMr8HHCeZgZwvWhDc6TdbPeoJKvj0T9RTntvrCEZFG
-         j/yfF84Mbij332lQTxv7VkO62bh443Nq8dFQTaqsoqBro0brDtuogUhJz+WaT/HUZdKf
-         nNLhKElA1iPOJmwT6qDcPDXub1z8y08FEbz5PD4/6l4F5/CZpFOhdhSxRJcKPJjq5Avv
-         T+4g==
-X-Gm-Message-State: APjAAAXoardc/JQRTolS23hhdoBLTun3LPgYWXoxT7WdKLTv3lf5BZ+1
-        6PhQyIUg+tj+Jtzxj2N/C2cx12/duQeyHV8XeV0Jeg==
-X-Google-Smtp-Source: APXvYqyFtc3IssHJW8DUkrujTV9CR8MoJf1IockvaPaP5fQIvGnrbrjG/uxzcKNEOyZNZ6oJtR4eWICZZ5HE6Fvwo/c=
-X-Received: by 2002:a2e:8508:: with SMTP id j8mr19937200lji.136.1574645373016;
- Sun, 24 Nov 2019 17:29:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=0Slbk7FHKESeFqcEuY8H04LKnF7/drC0hQa4BJ/FDvg=;
+        b=ada7SRWGm2m1zA/0w1Tea6OXpv9HQCg/3MdrejxeKpiKJM/W4mlnEHtCZkaQYqJ/S3
+         DgDmISAtkOVMXdiqCmpYmedWEbFOdUyQwEK6w3QDI8a0i0t79n83Z9u/un4b9LMXZtOV
+         AjxxlDpeYxhFYOI4HyYs1VsMPg3fPvclbecTAIV2MVsow0vCRzxHHrfBsGRE5Fr8MgoF
+         r/NBOSKqarjjYmzICyEk9xazOF9rSqp6EE/XEgIdsuH7PMZJO7Luuq55tKoa2Esj1nvz
+         ZeKlezKaWpLHYhzQbkrKjwwyJTwH0aDUCm4wvntHRObovy2wRqc/IpNEhGzpUXZnVlq6
+         NWSQ==
+X-Gm-Message-State: APjAAAVmCL/PUttHdi6Jm9LLyxLK6zvRhcVkX735vkNy6R2qn18vvrnW
+        fpkm2aUipoh9B8Ozho3mqaiSKQ==
+X-Google-Smtp-Source: APXvYqy2NXWAYVFU4lF8cJY4DfT9esmtA2nl94dpzBrdQ+ER0JKUb0rxNsKuqL7Yn5+iqaTu/PgtcQ==
+X-Received: by 2002:a63:6705:: with SMTP id b5mr30162797pgc.23.1574648494395;
+        Sun, 24 Nov 2019 18:21:34 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id x2sm5822449pgc.67.2019.11.24.18.21.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Nov 2019 18:21:34 -0800 (PST)
+Date:   Sun, 24 Nov 2019 18:21:28 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] net: macb: add missed tasklet_kill
+Message-ID: <20191124182113.481f984b@cakuba.netronome.com>
+In-Reply-To: <20191123141918.16239-1-hslester96@gmail.com>
+References: <20191123141918.16239-1-hslester96@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <7e44b633-4a3a-e4f0-3437-f2d8e5452cf9@iogearbox.net>
-In-Reply-To: <7e44b633-4a3a-e4f0-3437-f2d8e5452cf9@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 24 Nov 2019 17:29:21 -0800
-Message-ID: <CAADnVQJM2+tRs5h7Z=sLXZeuw6y+aUNG78BnMo_winuBpip5Sg@mail.gmail.com>
-Subject: bpf-next is CLOSED
-To:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The merge window is open. Please send bug fixes only.
-bpf tree is completely frozen for the next 2 weeks.
-Please target your fixes to bpf-next tree.
-Thanks!
+On Sat, 23 Nov 2019 22:19:18 +0800, Chuhong Yuan wrote:
+> This driver forgets to kill tasklet in remove.
+> Add the call to fix it.
+> 
+> Fixes: 032dc41ba6e2 ("net: macb: Handle HRESP error")
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+
+I think this leaves a race condition, as far as I can tell
+tasklet_kill() just kills the currently scheduled tasklet,
+but doesn't prevent it from being scheduled again. If the 
+interrupt fires just after the tasklet_kill() call the tasklet
+will be scheduled back in. I think you'd need to mask the interrupt 
+(through the IDR register?) or just put the tasklet_kill() call after
+unregister_netdev(), because AFAICT closing the netdev disables all
+irqs.
+
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 1e1b774e1953..2ec416098fa3 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4383,6 +4383,7 @@ static int macb_remove(struct platform_device *pdev)
+>  
+>  	if (dev) {
+>  		bp = netdev_priv(dev);
+> +		tasklet_kill(&bp->hresp_err_tasklet);
+>  		if (dev->phydev)
+>  			phy_disconnect(dev->phydev);
+>  		mdiobus_unregister(bp->mii_bus);
+
