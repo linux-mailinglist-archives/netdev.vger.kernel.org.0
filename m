@@ -2,108 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6C11092E4
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 18:35:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425321092F3
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 18:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbfKYRfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 12:35:05 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:59628 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbfKYRfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 12:35:05 -0500
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id AB8B513C359;
-        Mon, 25 Nov 2019 09:35:04 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com AB8B513C359
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1574703304;
-        bh=OAhdWTOkQdFWKZ9SkSAFdccapJhLBZmFAKS7gpZ50M8=;
-        h=Subject:To:References:From:Date:In-Reply-To:From;
-        b=ZDEba6lcctP0IgU34phg1NBJW1WNk5KiyA/Nw/ZD/QGP98dU2cGpEc7Xh2QFnLL/j
-         X1+lm/6x9ZqInDBioybuoSmYqMSJlhxtrNAFx1YeWrspgn71D9NPIp+EJeiEEMem5J
-         tO+H+hOmd/gnxsg+lH/D1fok9Hmbmes1aVYvUYyY=
-Subject: Re: VRF and/or cgroups problem on Fedora-30, 5.2.21+ kernel
-To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
-References: <05276b67-406b-2744-dd7c-9bda845a5bb1@candelatech.com>
- <850a6d4e-3a67-a389-04a0-87032e0683d8@gmail.com>
- <213aa1d3-5df9-0337-c583-34f3de5f1582@candelatech.com>
- <8ae551e1-5c2e-6a95-b4d1-3301c5173171@gmail.com>
- <ffbeb74f-09d5-e854-190e-5362cc703a10@candelatech.com>
- <fb74534d-f5e8-7b9b-b8c0-b6d6e718a275@gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <3daeee00-317a-1f82-648e-80ec14cfed22@candelatech.com>
-Date:   Mon, 25 Nov 2019 09:35:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1729172AbfKYRkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 12:40:05 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36893 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbfKYRkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 12:40:04 -0500
+Received: by mail-pf1-f193.google.com with SMTP id p24so7716496pfn.4
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 09:40:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=PU2OcTJib2FEZCO1+EC6n/q7O1nFdX7GUda6zHMnWpk=;
+        b=EzZ2Px6Zht5jTSbcT4wZXq7XoUzg3ELf9KnSjVfwZY6qPCXdLAs0Bud5oD73CKNWcw
+         IogNuIZthU6pcXD47kbxJJcGlr3Z/x6kj7WsJzhaA91cHaEN9fugwnjFAm4j21cRPSoW
+         xCYEqwIRZ3lNSZjaMV3U1PG0Gltb+Bws0aJPqmfPNgLunyrClUgttyvj/D+VCy0Ap3ME
+         WGfc2FSr5LxwkXYhTO62ef3CVexOp18hgj4ilr9/0MgWT4oRk/I01c1yK9AXr8Z2OrzK
+         TzueyAFcOa4PlaKzIm0SZ8iqf/wW/uiUlhiOZjKPAI50KoqSW223yXw9oDa5nKDO65Db
+         21Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=PU2OcTJib2FEZCO1+EC6n/q7O1nFdX7GUda6zHMnWpk=;
+        b=Yu9UKzfg7O4k0hD1M4LlPbapTgvcBttmW7VBOO/h6UBASgAUQXLiFYn3VKxiyXRga7
+         uZnKhu2CPxaBpRk+zjNQAPZBLqpJ/ut/rnCqNRMoN7JmS3PtYc3mNvd/QJEMa/2ykxu9
+         lke9HJ6X2kt40Ct5fI1sOnmSE3lSeg93Nns/h1HS9AzxpfP+LyazQ0/5S452QSNbEziM
+         KOvr0GQRW8JUQGZtv7QRi0huWpAVUgfg+guGSQktjpE2C4XxTw/iwr3N3BrTvZVS4nA3
+         oF/a3bvRWBoOy4cibaSVA3lbCb6jD3UD3idMWcEYQ/hdlg0Hnk6/99LKSjJE02EpWRHX
+         p8Ww==
+X-Gm-Message-State: APjAAAWTJRK8SgwJkPVKENGLy5hAKK/Z/v9BVrSDHEEZcVqeK+RWpNyw
+        1JdZy5ZwwzcsBup+MXv6hwmhLA==
+X-Google-Smtp-Source: APXvYqxtGVIhqBr/k4qZbkvbGJ/4yO/5Bkpqb+skwsxuP3qDbEWgyC1v/SGycn6AZG8kDPEo1sUP2w==
+X-Received: by 2002:a63:a449:: with SMTP id c9mr33513974pgp.53.1574703604127;
+        Mon, 25 Nov 2019 09:40:04 -0800 (PST)
+Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id m6sm8935278pgl.42.2019.11.25.09.40.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 09:40:03 -0800 (PST)
+Date:   Mon, 25 Nov 2019 09:39:56 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     syzbot <syzbot+13e1ee9caeab5a9abc62@syzkaller.appspotmail.com>
+Cc:     aviadye@mellanox.com, borisp@mellanox.com, davejwatson@fb.com,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        ilyal@mellanox.com, kstewart@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pombredanne@nexb.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Subject: Re: WARNING in sk_stream_kill_queues (3)
+Message-ID: <20191125093956.58133ee8@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <00000000000093bc3b05982dd771@google.com>
+References: <000000000000013b0d056e997fec@google.com>
+        <00000000000093bc3b05982dd771@google.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <fb74534d-f5e8-7b9b-b8c0-b6d6e718a275@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/23/19 10:10 AM, David Ahern wrote:
-> On 11/22/19 5:23 PM, Ben Greear wrote:
->>>
->>
->> Setting:  ulimit -l 1024
->>
->> 'fixed' the problem.
->>
->> I'd rather waste a bit of memory and not have any of my users hit such
->> an esoteric
->> bug, so I'll set it to at least 1024 going forward.
+On Mon, 25 Nov 2019 07:59:01 -0800, syzbot wrote:
+> syzbot has bisected this bug to:
 > 
-> agreed.
+> commit 3c4d7559159bfe1e3b94df3a657b2cda3a34e218
+> Author: Dave Watson <davejwatson@fb.com>
+> Date:   Wed Jun 14 18:37:39 2017 +0000
 > 
->>
->> Would large numbers of vrf and/or network devices mean you need more
->> locked memory?
+>      tls: kernel TLS support
 > 
-> I have seen this problem way too much, but not taken the time to track
-> down all of the locked memory use. A rough estimate is that each 'ip vrf
-> exec' uses 1 page (4kB) of locked memory until the command exits. If you
-> use that as a rule you would be on the high end. Commands in the same
-> cgroup hierarchy should all be using the same program.
-
-I am not sure if it is a coincidence or not, but we saw the problem when
-connected with rdesktop more often than we connected with VNC.
-
->> And surely 'ip' could output a better error than just 'permission
->> denied' for
->> this error case?  Or even something that would show up in dmesg to give
->> a clue?
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=127a8f22e00000
+> start commit:   be779f03 Merge tag 'kbuild-v4.18-2' of git://git.kernel.or..
+> git tree:       upstream
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=117a8f22e00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=167a8f22e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=855fb54e1e019da2
+> dashboard link: https://syzkaller.appspot.com/bug?extid=13e1ee9caeab5a9abc62
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165a0c1f800000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114591af800000
 > 
-> That error comes from the bpf syscall:
+> Reported-by: syzbot+13e1ee9caeab5a9abc62@syzkaller.appspotmail.com
+> Fixes: 3c4d7559159b ("tls: kernel TLS support")
 > 
-> bpf(BPF_PROG_LOAD, {prog_type=BPF_PROG_TYPE_CGROUP_SOCK, insn_cnt=6,
-> insns=0x7ffc8e5d1e00, license="GPL", log_level=1, log_size=262144,
-> log_buf="", kern_version=KERNEL_VERSION(0, 0, 0), prog_flags=0,
-> prog_name="", prog_ifindex=0,
-> expected_attach_type=BPF_CGROUP_INET_INGRESS, prog_btf_fd=0,
-> func_info_rec_size=0, func_info=NULL, func_info_cnt=0,
-> line_info_rec_size=0, line_info=NULL, line_info_cnt=0}, 112) = -1 EPERM
-> (Operation not permitted)
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-So, we can change iproute/lib/bpf.c to print a suggestion to increase locked memory
-if this returns EPERM?
+Looking at the repro timeline I'm fairly confident that
+commit 9354544cbccf ("net/tls: fix page double free on TX cleanup")
+stopped this. Even though it must had been appearing earlier due to a
+different bug, because what the mentioned commit fixed was more recent
+than the report.
 
-Thanks,
-Ben
-
-> 
-> Yes it is odd and unhelpful for a memory limit to cause the failure and
-> then return EPERM.
-> 
-
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
-
+#syz fix: net/tls: fix page double free on TX cleanup
