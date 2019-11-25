@@ -2,149 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E771108F8E
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:06:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52146108FB7
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:17:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727937AbfKYOGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 09:06:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35310 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727666AbfKYOGx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 09:06:53 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7082520748;
-        Mon, 25 Nov 2019 14:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574690812;
-        bh=BzJVgwBAwb4fHGnSImlrlJjuXvyWjGJYoST3KN7QX9w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=z862imtl/relCWKoHlsc4QFiNhnxcLP5NhqfeYNWAUk8xjWW30M1VqkJ6VYJMXrSB
-         HjkopeqGLOz0pa6coQJcGrf68iQmAOmX68RIQIcs3jLNUzSi0N13e8nb0ealzXLFw1
-         2LbhyFX5pkc3JSly90U3IdUEq8hWGnosckklFZD4=
-Date:   Mon, 25 Nov 2019 09:06:51 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Ilya Dryomov <idryomov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH AUTOSEL 4.19 100/237] libceph: don't consume a ref on
- pagelist in ceph_msg_data_add_pagelist()
-Message-ID: <20191125140651.GE5861@sasha-vm>
-References: <20191116154113.7417-1-sashal@kernel.org>
- <20191116154113.7417-100-sashal@kernel.org>
- <CAOi1vP8ZTyaGsn-hXtnr+AnCrEQfSB6sTLYwkkZ8P1oY9EgPXg@mail.gmail.com>
+        id S1727983AbfKYORr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 09:17:47 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:40456 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727770AbfKYORq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 09:17:46 -0500
+Received: by mail-pg1-f193.google.com with SMTP id e17so7258110pgd.7
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 06:17:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=Su93/mhPGdzrDgDBBGKjYRa/sT7igd+L4ic00PPW5kw=;
+        b=PcfCqoxiwz2oTDz5cbDwNXF2z9JK92PD8y/rK/OhVRXrvdIZVEqrwu+H50gLgp3hAx
+         H8ljiP0fejasrPHmi9NNKQReVSUpdWdTbuG6YMnGhPM2rrrCBguEq06SokWZA/NUS7vu
+         aYv7fSCoXxzL03geoaCAbXbAv/0JvrX4joWHs0pKCIG1QwQvHbiJIJsaJWNIiHjPA3yi
+         MhO2WHDKVYGu8mVZ01UG3XpUw9SnVhOqx2fwOAITvQ733bfz3uVlTflUo9OlB4G9GmYH
+         VufMkWZOLT/D2m20QbEsPw3wKvXbQ8YewnkWegm6cyzXVr0wLwtNHfG7Twn8SOFPRRYZ
+         JRnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=Su93/mhPGdzrDgDBBGKjYRa/sT7igd+L4ic00PPW5kw=;
+        b=NmgItVJ5NcdSKZMa9FdmThxYUspDgPHz4Sgtfkw4Gcoqb4u1dD74C7HlyJnBjOejy4
+         a9Kt98q0M+N7C7ssgaSz/kgCSoBGN9IG/k5PTGtVveZF/kUgmrVrh3tlkbKU1klgxLLx
+         QZu2f+ZX951dOs8wJnnTlC3g2RS5CvIN0/28ZcQYdtOYWVfre0MNUfRvbPh2oMp3QRTL
+         OawY+RJkMZi5K+RRlLL/mDDpK5Ji2YG6zYMeDgab9Z31XVWih7QVI2ozlClUkscZ77bR
+         +Q3FCW00Y6HWOXPAUTmT4ci2Lbvz8DREvyJkC+jOO6GIYpiSqTtlWgqO2Pvj179e5BM7
+         l56w==
+X-Gm-Message-State: APjAAAXHcdFzYlTVLxSuLqNW8Av1JJ0E0WIuRbhdO2NyXcRbwE9MhjBb
+        7bcq8alXdlX5+YqwB31LqCgOiGvXasPTYIGAVYw=
+X-Google-Smtp-Source: APXvYqzOTh8OwsCdlU26/StgGKupajY0qmmCEGtBHDfQqa1pv/kRPIA9ZVUtakrzSsXGuFBCOJi82ArcHa1F0o5hUqc=
+X-Received: by 2002:a63:e343:: with SMTP id o3mr33154726pgj.131.1574691466228;
+ Mon, 25 Nov 2019 06:17:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAOi1vP8ZTyaGsn-hXtnr+AnCrEQfSB6sTLYwkkZ8P1oY9EgPXg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a17:90b:4016:0:0:0:0 with HTTP; Mon, 25 Nov 2019 06:17:45
+ -0800 (PST)
+Reply-To: inforbigfox@zohomail.com
+From:   Richard rich <richardrichoku444@gmail.com>
+Date:   Mon, 25 Nov 2019 06:17:45 -0800
+Message-ID: <CADro+OEc5=NgUXySxcfid+qfRhi5YmT83ikcBu43F0iwo-Q_cw@mail.gmail.com>
+Subject: I need your urgent respond
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 16, 2019 at 05:23:28PM +0100, Ilya Dryomov wrote:
->On Sat, Nov 16, 2019 at 4:43 PM Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Ilya Dryomov <idryomov@gmail.com>
->>
->> [ Upstream commit 894868330a1e038ea4a65dbb81741eef70ad71b1 ]
->>
->> Because send_mds_reconnect() wants to send a message with a pagelist
->> and pass the ownership to the messenger, ceph_msg_data_add_pagelist()
->> consumes a ref which is then put in ceph_msg_data_destroy().  This
->> makes managing pagelists in the OSD client (where they are wrapped in
->> ceph_osd_data) unnecessarily hard because the handoff only happens in
->> ceph_osdc_start_request() instead of when the pagelist is passed to
->> ceph_osd_data_pagelist_init().  I counted several memory leaks on
->> various error paths.
->>
->> Fix up ceph_msg_data_add_pagelist() and carry a pagelist ref in
->> ceph_osd_data.
->>
->> Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  fs/ceph/mds_client.c  | 2 +-
->>  net/ceph/messenger.c  | 1 +
->>  net/ceph/osd_client.c | 8 ++++++++
->>  3 files changed, 10 insertions(+), 1 deletion(-)
->>
->> diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
->> index 09db6d08614d2..94494d05a94cb 100644
->> --- a/fs/ceph/mds_client.c
->> +++ b/fs/ceph/mds_client.c
->> @@ -2184,7 +2184,6 @@ static struct ceph_msg *create_request_message(struct ceph_mds_client *mdsc,
->>
->>         if (req->r_pagelist) {
->>                 struct ceph_pagelist *pagelist = req->r_pagelist;
->> -               refcount_inc(&pagelist->refcnt);
->>                 ceph_msg_data_add_pagelist(msg, pagelist);
->>                 msg->hdr.data_len = cpu_to_le32(pagelist->length);
->>         } else {
->> @@ -3289,6 +3288,7 @@ static void send_mds_reconnect(struct ceph_mds_client *mdsc,
->>         mutex_unlock(&mdsc->mutex);
->>
->>         up_read(&mdsc->snap_rwsem);
->> +       ceph_pagelist_release(pagelist);
->>         return;
->>
->>  fail:
->> diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
->> index f7d7f32ac673c..2c8cd339d59ea 100644
->> --- a/net/ceph/messenger.c
->> +++ b/net/ceph/messenger.c
->> @@ -3323,6 +3323,7 @@ void ceph_msg_data_add_pagelist(struct ceph_msg *msg,
->>
->>         data = ceph_msg_data_create(CEPH_MSG_DATA_PAGELIST);
->>         BUG_ON(!data);
->> +       refcount_inc(&pagelist->refcnt);
->>         data->pagelist = pagelist;
->>
->>         list_add_tail(&data->links, &msg->data);
->> diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
->> index 76c41a84550e7..c3494c1fb3a9a 100644
->> --- a/net/ceph/osd_client.c
->> +++ b/net/ceph/osd_client.c
->> @@ -126,6 +126,9 @@ static void ceph_osd_data_init(struct ceph_osd_data *osd_data)
->>         osd_data->type = CEPH_OSD_DATA_TYPE_NONE;
->>  }
->>
->> +/*
->> + * Consumes @pages if @own_pages is true.
->> + */
->>  static void ceph_osd_data_pages_init(struct ceph_osd_data *osd_data,
->>                         struct page **pages, u64 length, u32 alignment,
->>                         bool pages_from_pool, bool own_pages)
->> @@ -138,6 +141,9 @@ static void ceph_osd_data_pages_init(struct ceph_osd_data *osd_data,
->>         osd_data->own_pages = own_pages;
->>  }
->>
->> +/*
->> + * Consumes a ref on @pagelist.
->> + */
->>  static void ceph_osd_data_pagelist_init(struct ceph_osd_data *osd_data,
->>                         struct ceph_pagelist *pagelist)
->>  {
->> @@ -362,6 +368,8 @@ static void ceph_osd_data_release(struct ceph_osd_data *osd_data)
->>                 num_pages = calc_pages_for((u64)osd_data->alignment,
->>                                                 (u64)osd_data->length);
->>                 ceph_release_page_vector(osd_data->pages, num_pages);
->> +       } else if (osd_data->type == CEPH_OSD_DATA_TYPE_PAGELIST) {
->> +               ceph_pagelist_release(osd_data->pagelist);
->>         }
->>         ceph_osd_data_init(osd_data);
->>  }
->
->Hi Sasha,
->
->This commit was part of a larger series and shouldn't be backported on
->its own.  Please drop it.
+Dear Friend,
 
-Dropped, thanks!
+I know this way of communication is not the most secured channel to
+pass a message of this importance but right now, it is the quickest
+means available to me, please bear with me.
 
--- 
-Thanks,
-Sasha
+My name is Richard Richoku, an Attorney at Law. This involves a  foreign
+client of mine, who here in after shall be referred to as my client,
+who died as a result of heart-related condition on November, 2012.
+
+I have contacted you to assist in transferring the money left behind
+by my  client before it is confiscated or declared unserviceable by
+the Bank where  this deposit valued at 6.7million dollars is lodged.
+This Bank has issued me  a notice to contact the next of kin, or the
+account will be confiscated.
+
+My proposition to you is to seek your consent to present you as the
+next-  of-kin and beneficiary of my late client, so that the proceeds
+of this account can be paid to you. Then we can share  the amount on a
+mutually agreed-upon percentage. All legal documents to back up your
+claim as my client's next-of-kin will be provided. All I require is
+your honest cooperation to enable us see this transaction through.
+
+Please contact me at once to indicate your interest. Do understand
+that this transaction does require utmost confidence and you should
+keep this mail to yourself not withstanding if you are rejecting the
+transaction or accepting it.
+
+Note that I reserve the right to reject your acceptance of this
+proposal if I have reasons to believe that you may not be honest or
+discrete as it  concerns this proposal.
+
+Further details will be given as soon as your interest is indicated.
+
+Best Regards,
+Richard Richoku
