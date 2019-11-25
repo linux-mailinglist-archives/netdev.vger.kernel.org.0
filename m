@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2980010874E
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 05:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B14A108780
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 05:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727577AbfKYEVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 23:21:25 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:19411 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727285AbfKYEUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 23:20:22 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ddb56820003>; Sun, 24 Nov 2019 20:20:18 -0800
+        id S1727732AbfKYEWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 23:22:03 -0500
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:9229 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727266AbfKYEUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 23:20:21 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5ddb56790002>; Sun, 24 Nov 2019 20:20:10 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
+  by hqpgpgate101.nvidia.com (PGP Universal service);
   Sun, 24 Nov 2019 20:20:15 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Sun, 24 Nov 2019 20:20:15 -0800
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
+        by hqpgpgate101.nvidia.com on Sun, 24 Nov 2019 20:20:15 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
  2019 04:20:14 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
  Transport; Mon, 25 Nov 2019 04:20:14 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5ddb567e0008>; Sun, 24 Nov 2019 20:20:14 -0800
+        id <B5ddb567e0009>; Sun, 24 Nov 2019 20:20:14 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -57,9 +57,9 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
         John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH 16/19] vfio, mm: pin_user_pages (FOLL_PIN) and put_user_page() conversion
-Date:   Sun, 24 Nov 2019 20:20:08 -0800
-Message-ID: <20191125042011.3002372-17-jhubbard@nvidia.com>
+Subject: [PATCH 17/19] powerpc: book3s64: convert to pin_user_pages() and put_user_page()
+Date:   Sun, 24 Nov 2019 20:20:09 -0800
+Message-ID: <20191125042011.3002372-18-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191125042011.3002372-1-jhubbard@nvidia.com>
 References: <20191125042011.3002372-1-jhubbard@nvidia.com>
@@ -68,73 +68,87 @@ X-NVConfidentiality: public
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574655618; bh=wk2NwG+UPRzhGeGA4o6oMgrCb1pvQrHxv3rBUNt8i3I=;
+        t=1574655610; bh=IJJb9r+CEPs17zzIv7S9Yy1snV6WhIVmX2ftMMVKd1c=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
          Content-Transfer-Encoding:Content-Type;
-        b=WXhDDif3bJufyQnuphtBlQozFVfqIyJ9Mript97a3mRTdP8UDUcemEgxJ+NtYddUQ
-         BhLBDgCdhYE8hzpTD1GmrsOabQhZ3Lqe6aGu5utR1LGcgxzoN76Onh2Qa8YD796daT
-         OXPjeIjwyBsGFMYhCTsHZOZqjhwoU5hvefqTWHww0jPi61jH9K0NY2acSt/6GRYjQ2
-         sp9H/MQLa1Usm1KqZ3+L7MKMYnT2coxKfaEdc0Z2fssGD7hnvTi5BSw1SYLuthCo8Z
-         wCEFuf2pCKdbveqNLCYda8dhPNQZtFe8Jh9Iq3L/YjIurcWPYPa2u1CcyZ8foBQJKu
-         3qWww3z/VOyyw==
+        b=gNTBO2iB4EBi3rbOQgTZAr8HuUuxejicGMXpfQWBvr+E1GHmXHRYN1eOEszl2gv+m
+         gR3lV2gCwOi9NaE81WhakqlTipHB7/mvKCI3w6DvY34MAGIm8WU4vRo8RhFv1UYtZD
+         INWOtS24SMMW0tLnBt5oZYzOjj0KiG7S3j+hYwsYiifL5dSlPEPJs+rJIjM22Fpw/q
+         wYUm5pZaJxU9jcScUxED86Rx+QTEjoRIN+iB2tSFqS6y6PUdeaU5NtphIlgGWR3Ld2
+         2g7Wax85rKNNiRFmPcPZYRpe9l4zZ9pSX+1HAUJyJaQEAt3w7Ch3zovn0myUcpFUoe
+         mzOla/x/79qtA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Change vfio from get_user_pages_remote(), to
-pin_user_pages_remote().
+1. Convert from get_user_pages() to pin_user_pages().
 
-2. Because all FOLL_PIN-acquired pages must be released via
-put_user_page(), also convert the put_page() call over to
-put_user_pages_dirty_lock().
+2. As required by pin_user_pages(), release these pages via
+put_user_page(). In this case, do so via put_user_pages_dirty_lock().
 
-Note that this effectively changes the code's behavior in
-vfio_iommu_type1.c: put_pfn(): it now ultimately calls
-set_page_dirty_lock(), instead of set_page_dirty(). This is
-probably more accurate.
+That has the side effect of calling set_page_dirty_lock(), instead
+of set_page_dirty(). This is probably more accurate.
 
 As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
 dealing with a file backed page where we have reference on the inode it
 hangs off." [1]
 
+3. Release each page in mem->hpages[] (instead of mem->hpas[]), because
+that is the array that pin_longterm_pages() filled in. This is more
+accurate and should be a little safer from a maintenance point of
+view.
+
 [1] https://lore.kernel.org/r/20190723153640.GB720@lst.de
 
-Tested-by: Alex Williamson <alex.williamson@redhat.com>
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ arch/powerpc/mm/book3s64/iommu_api.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type=
-1.c
-index b800fc9a0251..18bfc2fc8e6d 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -309,9 +309,8 @@ static int put_pfn(unsigned long pfn, int prot)
- {
- 	if (!is_invalid_reserved_pfn(pfn)) {
- 		struct page *page =3D pfn_to_page(pfn);
--		if (prot & IOMMU_WRITE)
--			SetPageDirty(page);
--		put_page(page);
-+
-+		put_user_pages_dirty_lock(&page, 1, prot & IOMMU_WRITE);
- 		return 1;
- 	}
- 	return 0;
-@@ -329,7 +328,7 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned=
- long vaddr,
- 		flags |=3D FOLL_WRITE;
+diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s6=
+4/iommu_api.c
+index 56cc84520577..196383e8e5a9 100644
+--- a/arch/powerpc/mm/book3s64/iommu_api.c
++++ b/arch/powerpc/mm/book3s64/iommu_api.c
+@@ -103,7 +103,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, uns=
+igned long ua,
+ 	for (entry =3D 0; entry < entries; entry +=3D chunk) {
+ 		unsigned long n =3D min(entries - entry, chunk);
 =20
- 	down_read(&mm->mmap_sem);
--	ret =3D get_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTERM,
-+	ret =3D pin_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTERM,
- 				    page, NULL, NULL);
- 	if (ret =3D=3D 1) {
- 		*pfn =3D page_to_pfn(page[0]);
+-		ret =3D get_user_pages(ua + (entry << PAGE_SHIFT), n,
++		ret =3D pin_user_pages(ua + (entry << PAGE_SHIFT), n,
+ 				FOLL_WRITE | FOLL_LONGTERM,
+ 				mem->hpages + entry, NULL);
+ 		if (ret =3D=3D n) {
+@@ -167,9 +167,8 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, uns=
+igned long ua,
+ 	return 0;
+=20
+ free_exit:
+-	/* free the reference taken */
+-	for (i =3D 0; i < pinned; i++)
+-		put_page(mem->hpages[i]);
++	/* free the references taken */
++	put_user_pages(mem->hpages, pinned);
+=20
+ 	vfree(mem->hpas);
+ 	kfree(mem);
+@@ -212,10 +211,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group=
+_mem_t *mem)
+ 		if (!page)
+ 			continue;
+=20
+-		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
+-			SetPageDirty(page);
++		put_user_pages_dirty_lock(&mem->hpages[i], 1,
++					  MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
+=20
+-		put_page(page);
+ 		mem->hpas[i] =3D 0;
+ 	}
+ }
 --=20
 2.24.0
 
