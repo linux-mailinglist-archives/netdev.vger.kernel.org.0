@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 425321092F3
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 18:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D17C10932A
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 18:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729172AbfKYRkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 12:40:05 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36893 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbfKYRkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 12:40:04 -0500
-Received: by mail-pf1-f193.google.com with SMTP id p24so7716496pfn.4
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 09:40:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=PU2OcTJib2FEZCO1+EC6n/q7O1nFdX7GUda6zHMnWpk=;
-        b=EzZ2Px6Zht5jTSbcT4wZXq7XoUzg3ELf9KnSjVfwZY6qPCXdLAs0Bud5oD73CKNWcw
-         IogNuIZthU6pcXD47kbxJJcGlr3Z/x6kj7WsJzhaA91cHaEN9fugwnjFAm4j21cRPSoW
-         xCYEqwIRZ3lNSZjaMV3U1PG0Gltb+Bws0aJPqmfPNgLunyrClUgttyvj/D+VCy0Ap3ME
-         WGfc2FSr5LxwkXYhTO62ef3CVexOp18hgj4ilr9/0MgWT4oRk/I01c1yK9AXr8Z2OrzK
-         TzueyAFcOa4PlaKzIm0SZ8iqf/wW/uiUlhiOZjKPAI50KoqSW223yXw9oDa5nKDO65Db
-         21Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=PU2OcTJib2FEZCO1+EC6n/q7O1nFdX7GUda6zHMnWpk=;
-        b=Yu9UKzfg7O4k0hD1M4LlPbapTgvcBttmW7VBOO/h6UBASgAUQXLiFYn3VKxiyXRga7
-         uZnKhu2CPxaBpRk+zjNQAPZBLqpJ/ut/rnCqNRMoN7JmS3PtYc3mNvd/QJEMa/2ykxu9
-         lke9HJ6X2kt40Ct5fI1sOnmSE3lSeg93Nns/h1HS9AzxpfP+LyazQ0/5S452QSNbEziM
-         KOvr0GQRW8JUQGZtv7QRi0huWpAVUgfg+guGSQktjpE2C4XxTw/iwr3N3BrTvZVS4nA3
-         oF/a3bvRWBoOy4cibaSVA3lbCb6jD3UD3idMWcEYQ/hdlg0Hnk6/99LKSjJE02EpWRHX
-         p8Ww==
-X-Gm-Message-State: APjAAAWTJRK8SgwJkPVKENGLy5hAKK/Z/v9BVrSDHEEZcVqeK+RWpNyw
-        1JdZy5ZwwzcsBup+MXv6hwmhLA==
-X-Google-Smtp-Source: APXvYqxtGVIhqBr/k4qZbkvbGJ/4yO/5Bkpqb+skwsxuP3qDbEWgyC1v/SGycn6AZG8kDPEo1sUP2w==
-X-Received: by 2002:a63:a449:: with SMTP id c9mr33513974pgp.53.1574703604127;
-        Mon, 25 Nov 2019 09:40:04 -0800 (PST)
-Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id m6sm8935278pgl.42.2019.11.25.09.40.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2019 09:40:03 -0800 (PST)
-Date:   Mon, 25 Nov 2019 09:39:56 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     syzbot <syzbot+13e1ee9caeab5a9abc62@syzkaller.appspotmail.com>
-Cc:     aviadye@mellanox.com, borisp@mellanox.com, davejwatson@fb.com,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        ilyal@mellanox.com, kstewart@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pombredanne@nexb.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de
-Subject: Re: WARNING in sk_stream_kill_queues (3)
-Message-ID: <20191125093956.58133ee8@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <00000000000093bc3b05982dd771@google.com>
-References: <000000000000013b0d056e997fec@google.com>
-        <00000000000093bc3b05982dd771@google.com>
-Organization: Netronome Systems, Ltd.
+        id S1729242AbfKYR4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 12:56:04 -0500
+Received: from a27-11.smtp-out.us-west-2.amazonses.com ([54.240.27.11]:53792
+        "EHLO a27-11.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725823AbfKYR4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 12:56:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574704563;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
+        bh=IrTYOqMqEOxm64GeOhR8U6dXnIpA0jutoDa4mZ0DD3k=;
+        b=Rw8lPNsipmCaUViAQtvN0xjhd9Tica/Ps+4FAvItNFhKPy1+T60FDFKkDny+Cin5
+        BwdRDWH3NphC+KI96IBiBcNNra3R5EJo31mOtlJyDq4F8TgyDgZDMBppoK5cmOtVFr4
+        73QbtYLZ+YF5NYmIH3omYUjMoZMZMjRwSGVfiG/0=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574704563;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
+        bh=IrTYOqMqEOxm64GeOhR8U6dXnIpA0jutoDa4mZ0DD3k=;
+        b=R1A2l2zQbt8Yay4Sc1/PrD+T1iWZc74BW6q8s4B91JS/8Pe6fQQEwaOMOd12Ay5k
+        F83QwYvYWOXblkjis5lXTX0CT0J5/ZnrfCiGkZvpvJDIghpd6Pc+XrQ6usvN6mtmxSx
+        TXEyhdZzLl6S9xZzXoVOYLt+AZm3HQ2ATf62yGvQ=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 33D0FC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     Phong Tran <tranmanphong@gmail.com>, jakub.kicinski@netronome.com,
+        davem@davemloft.net, luciano.coelho@intel.com,
+        shahar.s.matityahu@intel.com, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com, sara.sharon@intel.com,
+        yhchuang@realtek.com, yuehaibing@huawei.com, pkshih@realtek.com,
+        arend.vanspriel@broadcom.com, rafal@milecki.pl,
+        franky.lin@broadcom.com, pieter-paul.giesberts@broadcom.com,
+        p.figiel@camlintechnologies.com, Wright.Feng@cypress.com,
+        keescook@chromium.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] drivers: net: intel: Fix -Wcast-function-type
+References: <20191125150215.29263-1-tranmanphong@gmail.com>
+        <20191125150215.29263-2-tranmanphong@gmail.com>
+        <61fa4ef5-e4fc-c20c-9e20-158bcdf61cbb@lwfinger.net>
+Date:   Mon, 25 Nov 2019 17:56:03 +0000
+In-Reply-To: <61fa4ef5-e4fc-c20c-9e20-158bcdf61cbb@lwfinger.net> (Larry
+        Finger's message of "Mon, 25 Nov 2019 11:30:47 -0600")
+Message-ID: <0101016ea3b4c45e-39ce3a65-7fba-4bf6-a788-ba579c1ea122-000000@us-west-2.amazonses.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-SES-Outgoing: 2019.11.25-54.240.27.11
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Nov 2019 07:59:01 -0800, syzbot wrote:
-> syzbot has bisected this bug to:
-> 
-> commit 3c4d7559159bfe1e3b94df3a657b2cda3a34e218
-> Author: Dave Watson <davejwatson@fb.com>
-> Date:   Wed Jun 14 18:37:39 2017 +0000
-> 
->      tls: kernel TLS support
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=127a8f22e00000
-> start commit:   be779f03 Merge tag 'kbuild-v4.18-2' of git://git.kernel.or..
-> git tree:       upstream
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=117a8f22e00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=167a8f22e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=855fb54e1e019da2
-> dashboard link: https://syzkaller.appspot.com/bug?extid=13e1ee9caeab5a9abc62
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165a0c1f800000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114591af800000
-> 
-> Reported-by: syzbot+13e1ee9caeab5a9abc62@syzkaller.appspotmail.com
-> Fixes: 3c4d7559159b ("tls: kernel TLS support")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Larry Finger <Larry.Finger@lwfinger.net> writes:
 
-Looking at the repro timeline I'm fairly confident that
-commit 9354544cbccf ("net/tls: fix page double free on TX cleanup")
-stopped this. Even though it must had been appearing earlier due to a
-different bug, because what the mentioned commit fixed was more recent
-than the report.
+> On 11/25/19 9:02 AM, Phong Tran wrote:
+>> correct usage prototype of callback in tasklet_init().
+>> Report by https://github.com/KSPP/linux/issues/20
+>>
+>> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+>> ---
+>>   drivers/net/wireless/intel/ipw2x00/ipw2100.c   | 7 ++++---
+>>   drivers/net/wireless/intel/ipw2x00/ipw2200.c   | 5 +++--
+>>   drivers/net/wireless/intel/iwlegacy/3945-mac.c | 5 +++--
+>>   drivers/net/wireless/intel/iwlegacy/4965-mac.c | 5 +++--
+>>   4 files changed, 13 insertions(+), 9 deletions(-)
+>
+> This patch is "fixing" three different drivers and should be split
+> into at least two parts. To be consistent with previous practices, the
+> subject for the two should be "intel: ipw2100: ...." and "intel:
+> iwlegacy: ...."
 
-#syz fix: net/tls: fix page double free on TX cleanup
+Actually, please drop even "intel:". So "ipw2x00: " and "iwlegacy: " is
+enough.
+
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
