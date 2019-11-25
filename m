@@ -2,59 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8621090AA
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:05:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 100FE1090B0
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728435AbfKYPFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 10:05:39 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55284 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727758AbfKYPFi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 10:05:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=kL/NxAwTIHrp6OepzLGhc/+r09raDM7wPdlEVc2W7qw=; b=LcY0QYdP6iIONr8NFw56no/jE3
-        SxFUuWvqkDqCP5kczwp7c4V/jw/H47xamFxnnTegJlvD6XiC6MvmqydIMYzj26X/LGiobdQZpL6qm
-        LQ+GFwYQWia4TUfv95yjQEIFvIHbIHoi2W9BwxfRxoro5ynk5I5oJdMhG6DV+DOUDseY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iZFvg-0007to-Tv; Mon, 25 Nov 2019 16:05:32 +0100
-Date:   Mon, 25 Nov 2019 16:05:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        david@protonic.nl
-Subject: Re: [PATCH v1 1/2] net: dsa: sja1105: print info about probet chip
- only after every thing was done.
-Message-ID: <20191125150532.GI6602@lunn.ch>
-References: <20191125100259.5147-1-o.rempel@pengutronix.de>
+        id S1728493AbfKYPG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 10:06:59 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37287 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727758AbfKYPG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 10:06:59 -0500
+Received: by mail-pl1-f195.google.com with SMTP id bb5so6631069plb.4;
+        Mon, 25 Nov 2019 07:06:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=cc:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=glGDXbGDgHhWZX3MtlLpw45TRQKQ7EMUGSl8ozQC3S0=;
+        b=QidhwSitTMeoAuQ8tc0oRXaqJzucf8O9TgmzRhD3qpSzmtxZgUsmZ1MmXbcZFHo1EQ
+         hm9/lBPu6swSRXbTkorN2JhNllQ7r+LJ8MmzQqjdVDW/R1gQepDKNvSQ1d3dZ4vsxESH
+         OSWoZmN/UsRHdbyDWcW2l2Wl8D5Rp+QNXCU1dvgou8eMXBgHrcLWawghMOTj5CvhbiQi
+         ZLhovfuOkg14fTXOpd/KPim3UBMmzWafl9aNhePeVbQWmY2LmsmBPWNPK6y50WcvqNke
+         aSMG3+6xGondb7vb/CNnIaXF9vSAbcQJnSS3esC4liV4vFlnjtjv8EecdBpnNHVYO8Xg
+         E4ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:cc:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=glGDXbGDgHhWZX3MtlLpw45TRQKQ7EMUGSl8ozQC3S0=;
+        b=ByWGtNK90u3Me6GH2uPqzheZf/X3IjhLUHnyfxZ5mKIMbdAPZHpcEooM9ZQYzunk9H
+         HDlVEBPflWN6TZowyNFKfeUdQo4NDjDA/w/TmtreIJsWUWkMogChtfDdNKWa2FbMRVBt
+         KmHceKgsw8JSUp5Xr/6rPbLxGHttG/3uDPf3GEiFuPTftfv3rsnRjE46xxwjy1bgA2wA
+         f52N2vN7ehSOoeaLhWB3JHmh2ZniEBIsIuRTaKSX6NqTUdP1fX96AP1KKyzHfrGZaJeB
+         fveb6OuTtQb4yWYdUcnnUioBzif5RHxhqYEFhqTB7WrEexScYQb2AEsQrdLBdq6XPljM
+         EeMQ==
+X-Gm-Message-State: APjAAAWFjCrb0M9jGyrQ+e3jRin70a0CcjqMpq0Clgo7MxMJw1dcMJw6
+        QDyJtvsORficA9u26TCDI2iOS5tOGhU=
+X-Google-Smtp-Source: APXvYqx5jR4poQirNWpRJvpZfL50FjIGfDVsw/0N/24MfivZzYxS0Xl4PrvMfdSoN0jb6nQa81ADCw==
+X-Received: by 2002:a17:90a:eb0f:: with SMTP id j15mr39985938pjz.97.1574694417718;
+        Mon, 25 Nov 2019 07:06:57 -0800 (PST)
+Received: from ?IPv6:2405:4800:58f7:550c:6dad:1b5f:afc6:7758? ([2405:4800:58f7:550c:6dad:1b5f:afc6:7758])
+        by smtp.gmail.com with ESMTPSA id x192sm9114889pfd.96.2019.11.25.07.06.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Nov 2019 07:06:56 -0800 (PST)
+Cc:     tranmanphong@gmail.com, davem@davemloft.net, keescook@chromium.org,
+        kvalo@codeaurora.org, saeedm@mellanox.com,
+        jeffrey.t.kirsher@intel.com, luciano.coelho@intel.com,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] Fix -Wcast-function-type net drivers
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+References: <20191124094306.21297-1-tranmanphong@gmail.com>
+ <20191124143919.63711421@cakuba.netronome.com>
+From:   Phong Tran <tranmanphong@gmail.com>
+Message-ID: <252466a8-2cad-7e4a-2a87-ade95365fa75@gmail.com>
+Date:   Mon, 25 Nov 2019 22:06:49 +0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191125100259.5147-1-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191124143919.63711421@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 25, 2019 at 11:02:58AM +0100, Oleksij Rempel wrote:
-> Currently we will get "Probed switch chip" notification multiple times
-> if first probe filed by some reason. To avoid this confusing notifications move
-> dev_info to the end of probe.
+
+
+On 11/25/19 5:39 AM, Jakub Kicinski wrote:
+> On Sun, 24 Nov 2019 16:43:01 +0700, Phong Tran wrote:
+>> This series is for fixing the compiler warning while enable
+>> -Wcast-function-type.
+>>
+>> Almost is incompatible callback prototype in using tasklet.
+>> The void (*func)(unsigned long) instead of void (*func)(struct foo*).
+>>
+>> Reported by: https://github.com/KSPP/linux/issues/20
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Hi Tran, thanks for the patches. Could you split the series into two -
+> the wireless changes and the USB changes?
+> 
+> Those usually go via slightly different trees.
+> 
 
-For net-next, this is O.K.
+Sent in different series:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[wireless]
+https://lore.kernel.org/lkml/20191125150215.29263-1-tranmanphong@gmail.com/
 
-    Andrew
+[USB]
+https://lore.kernel.org/linux-usb/20191125145443.29052-1-tranmanphong@gmail.com/
+
+Regards,
+Phong.
