@@ -2,78 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D57E10891C
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 08:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED411108925
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 08:27:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbfKYHZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 02:25:05 -0500
-Received: from mga03.intel.com ([134.134.136.65]:8498 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725747AbfKYHZE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 02:25:04 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Nov 2019 23:25:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,240,1571727600"; 
-   d="scan'208";a="206031621"
-Received: from slehanex-mobl1.ger.corp.intel.com ([10.252.10.177])
-  by fmsmga008.fm.intel.com with ESMTP; 24 Nov 2019 23:24:59 -0800
-Message-ID: <ea75c55485c0d893b15a67462728b45b775921b0.camel@intel.com>
-Subject: Re: iwlwifi: Checking a kmemdup() call in iwl_req_fw_callback()
-From:   Luciano Coelho <luciano.coelho@intel.com>
-To:     Markus Elfring <Markus.Elfring@web.de>,
-        linux-wireless@vger.kernel.org, linuxwifi@intel.com,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, Aditya Pakki <pakki001@umn.edu>,
-        Kangjie Lu <kjlu@umn.edu>, Navid Emamdoost <emamd001@umn.edu>,
-        Stephen McCamant <smccaman@umn.edu>
-Date:   Mon, 25 Nov 2019 09:24:58 +0200
-In-Reply-To: <71774617-79f9-1365-4267-a15a47422d10@web.de>
-References: <71774617-79f9-1365-4267-a15a47422d10@web.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.1-2+b1 
+        id S1725912AbfKYH1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 02:27:30 -0500
+Received: from www62.your-server.de ([213.133.104.62]:51818 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbfKYH1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 02:27:30 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iZ8mH-0003rb-BA; Mon, 25 Nov 2019 08:27:21 +0100
+Received: from [178.197.248.11] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iZ8mG-000Xpm-Uq; Mon, 25 Nov 2019 08:27:20 +0100
+Subject: Re: [PATCH bpf-next] bpf: add bpf_jit_blinding_enabled for
+ !CONFIG_BPF_JIT
+To:     kbuild test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, ast@kernel.org, jakub@cloudflare.com,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        philip.li@intel.com, fengguang.wu@intel.com
+References: <40baf8f3507cac4851a310578edfb98ce73b5605.1574541375.git.daniel@iogearbox.net>
+ <201911250641.xKeDIKoX%lkp@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <4447a335-6311-3470-7546-dff06672a200@iogearbox.net>
+Date:   Mon, 25 Nov 2019 08:27:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <201911250641.xKeDIKoX%lkp@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25643/Sun Nov 24 10:57:45 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-10-12 at 19:26 +0200, Markus Elfring wrote:
-> Hello,
+[ +Philip, +Fengguang ]
+
+On 11/24/19 11:54 PM, kbuild test robot wrote:
+> Hi Daniel,
 > 
-> I tried another script for the semantic patch language out.
-> This source code analysis approach points out that the implementation
-> of the function “iwl_req_fw_callback” contains still an unchecked call
-> of the function “kmemdup”.
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/wireless/intel/iwlwifi/iwl-drv.c?id=1c0cc5f1ae5ee5a6913704c0d75a6e99604ee30a#n1454
-> https://elixir.bootlin.com/linux/v5.4-rc2/source/drivers/net/wireless/intel/iwlwifi/iwl-drv.c#L1454
+> I love your patch! Yet something to improve:
 > 
-> Can it be that just an other data structure member should be used
-> for the desired null pointer check at this place?
+> [auto build test ERROR on bpf-next/master]
+> [cannot apply to v5.4-rc8 next-20191122]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Daniel-Borkmann/bpf-add-bpf_jit_blinding_enabled-for-CONFIG_BPF_JIT/20191125-042008
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+> config: i386-tinyconfig (attached as .config)
+> compiler: gcc-7 (Debian 7.4.0-14) 7.4.0
+> reproduce:
+>          # save the attached .config to linux build tree
+>          make ARCH=i386
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>     In file included from include/net/sock.h:59:0,
+>                      from include/linux/tcp.h:19,
+>                      from include/linux/ipv6.h:87,
+>                      from include/net/ipv6.h:12,
+>                      from include/linux/sunrpc/clnt.h:28,
+>                      from include/linux/nfs_fs.h:32,
+>                      from init/do_mounts.c:23:
+>>> include/linux/filter.h:1061:20: error: redefinition of 'bpf_jit_blinding_enabled'
+>      static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
+>                         ^~~~~~~~~~~~~~~~~~~~~~~~
+>     include/linux/filter.h:1056:20: note: previous definition of 'bpf_jit_blinding_enabled' was here
+>      static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
+>                         ^~~~~~~~~~~~~~~~~~~~~~~~
 
-Hi Markus,
+Hmm, can't reproduce with above .config for `make ARCH=i386`. The .config doesn't have
+CONFIG_BPF_JIT, and given there's only exactly *one* definition of bpf_jit_blinding_enabled()
+for CONFIG_BPF_JIT and *one* for !CONFIG_BPF_JIT this build bot warning feels invalid to me
+(unless I'm completely blind and missing something obvious, but the succeeded kernel build
+seems to agree with me).
 
-Sorry for the delay in replying to this.
+Thanks,
+Daniel
 
-I've checked this now and you are right.  We are checking the element
-in the array that contains the length of the allocation we requested
-instead of checking the pointer returned by kmemdup().  This was
-probably a typo.
-
-I have fixed this in our internal tree and it will reach the mainline
-following our normal upstreaming process.
-
-Thanks for reporting!
-
---
-Cheers,
-Luca.
+> vim +/bpf_jit_blinding_enabled +1061 include/linux/filter.h
+> 
+>    1060	
+>> 1061	static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
+>    1062	{
+>    1063		return false;
+>    1064	}
+>    1065	
+> 
+> ---
+> 0-DAY kernel test infrastructure                 Open Source Technology Center
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+> 
 
