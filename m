@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DE3108B42
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 10:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8CE108B4D
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727385AbfKYJ7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 04:59:32 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:48064 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727215AbfKYJ7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 04:59:32 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 01F32300069;
-        Mon, 25 Nov 2019 09:59:30 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 25 Nov
- 2019 09:59:25 +0000
-Subject: Re: [PATCH net-next] sfc: fix build without CONFIG_RFS_ACCEL
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        <davem@davemloft.net>
-CC:     <dahern@digitalocean.com>, <netdev@vger.kernel.org>,
-        kbuild test robot <lkp@intel.com>
-References: <964dd1b3-b26a-e5ee-7ac2-b4643206cb5f@solarflare.com>
- <20191123174542.5650-1-jakub.kicinski@netronome.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <6945d93e-89bc-0cb3-bfd0-65fca9905ec7@solarflare.com>
-Date:   Mon, 25 Nov 2019 09:59:21 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727360AbfKYKDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:03:05 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54387 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727133AbfKYKDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:03:05 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iZBCw-0004HV-Ku; Mon, 25 Nov 2019 11:03:02 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1iZBCu-0001QT-NZ; Mon, 25 Nov 2019 11:03:00 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     mkl@pengutronix.de, Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        david@protonic.nl
+Subject: [PATCH v1 1/2] net: dsa: sja1105: print info about probet chip only after every thing was done.
+Date:   Mon, 25 Nov 2019 11:02:58 +0100
+Message-Id: <20191125100259.5147-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-In-Reply-To: <20191123174542.5650-1-jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25064.003
-X-TM-AS-Result: No-3.947500-8.000000-10
-X-TMASE-MatchedRID: 7ySqCuYCpfjmLzc6AOD8DfHkpkyUphL9CqIE7aqEIgYy/xh6GqNHVU90
-        OIlVmkoPjjj7xmhW6vgaiEdwliVk/JGlJ5QKyUiCboe6sMfg+k/VbBJAvE6+VRzF5oA48R2iQ/C
-        ANf7/lHV9LQinZ4QefL6qvLNjDYTwIq95DjCZh0zLOq+UXtqwWAtuKBGekqUpOlxBO2IcOBbXb3
-        sKYNULH3n7gVbItTfslSqJEwf2BnnBGB2FgLbEyOjC57kXwdTyh8xkx6AsMh4ZTSkqdqz5FucIl
-        +0VmRmLNglg0VTTR7tgO21BQaodlQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.947500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25064.003
-X-MDID: 1574675971-WhHviUZLciRQ
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/11/2019 17:45, Jakub Kicinski wrote:
-> The rfs members of struct efx_channel are under CONFIG_RFS_ACCEL.
-> Ethtool stats which access those need to be as well.
->
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Fixes: ca70bd423f10 ("sfc: add statistics for ARFS")
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Thanks for catching this, mea culpa for not testing that case.
--Ed
+Currently we will get "Probed switch chip" notification multiple times
+if first probe filed by some reason. To avoid this confusing notifications move
+dev_info to the end of probe.
+
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 7687ddcae159..1238fd68b2cd 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -2191,8 +2191,6 @@ static int sja1105_probe(struct spi_device *spi)
+ 		return rc;
+ 	}
+ 
+-	dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
+-
+ 	ds = dsa_switch_alloc(dev, SJA1105_NUM_PORTS);
+ 	if (!ds)
+ 		return -ENOMEM;
+@@ -2218,7 +2216,13 @@ static int sja1105_probe(struct spi_device *spi)
+ 
+ 	sja1105_tas_setup(ds);
+ 
+-	return dsa_register_switch(priv->ds);
++	rc = dsa_register_switch(priv->ds);
++	if (rc)
++		return rc;
++
++	dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
++
++	return 0;
+ }
+ 
+ static int sja1105_remove(struct spi_device *spi)
+-- 
+2.24.0
+
