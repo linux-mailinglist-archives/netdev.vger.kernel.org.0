@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4DEF1093C5
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:53:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F0751093C8
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbfKYSxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 13:53:33 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52876 "EHLO
+        id S1727080AbfKYSzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 13:55:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52892 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbfKYSxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:53:33 -0500
+        with ESMTP id S1725851AbfKYSzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:55:03 -0500
 Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2019615009F94;
-        Mon, 25 Nov 2019 10:53:32 -0800 (PST)
-Date:   Mon, 25 Nov 2019 10:53:31 -0800 (PST)
-Message-Id: <20191125.105331.639161854641719732.davem@davemloft.net>
-To:     po.liu@nxp.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vinicius.gomes@intel.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com,
-        xiaoliang.yang_1@nxp.com, roy.zang@nxp.com, mingkai.hu@nxp.com,
-        jerry.huang@nxp.com, leoyang.li@nxp.com
-Subject: Re: [v2,net-next] enetc: add support Credit Based Shaper(CBS) for
- hardware offload
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D282E15009F9D;
+        Mon, 25 Nov 2019 10:55:01 -0800 (PST)
+Date:   Mon, 25 Nov 2019 10:55:01 -0800 (PST)
+Message-Id: <20191125.105501.735127676571709693.davem@davemloft.net>
+To:     dong.menglong@zte.com.cn
+Cc:     petrm@mellanox.com, jiri@mellanox.com, gustavo@embeddedor.com,
+        liuhangbin@gmail.com, ap420073@gmail.com, jwi@linux.ibm.com,
+        mcroce@redhat.com, tglx@linutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.yi59@zte.com.cn, jiang.xuexin@zte.com.cn
+Subject: Re: [PATCH v2] macvlan: schedule bc_work even if error
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191125054300.31346-1-Po.Liu@nxp.com>
-References: <20191122070321.20915-1-Po.Liu@nxp.com>
-        <20191125054300.31346-1-Po.Liu@nxp.com>
+In-Reply-To: <1574672289-26255-1-git-send-email-dong.menglong@zte.com.cn>
+References: <1574672289-26255-1-git-send-email-dong.menglong@zte.com.cn>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 25 Nov 2019 10:53:32 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 25 Nov 2019 10:55:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po Liu <po.liu@nxp.com>
-Date: Mon, 25 Nov 2019 05:56:56 +0000
+From: Menglong Dong <dong.menglong@zte.com.cn>
+Date: Mon, 25 Nov 2019 16:58:09 +0800
 
-> The ENETC hardware support the Credit Based Shaper(CBS) which part
-> of the IEEE-802.1Qav. The CBS driver was loaded by the sch_cbs
-> interface when set in the QOS in the kernel.
+> While enqueueing a broadcast skb to port->bc_queue, schedule_work()
+> is called to add port->bc_work, which processes the skbs in
+> bc_queue, to "events" work queue. If port->bc_queue is full, the
+> skb will be discarded and schedule_work(&port->bc_work) won't be
+> called. However, if port->bc_queue is full and port->bc_work is not
+> running or pending, port->bc_queue will keep full and schedule_work()
+> won't be called any more, and all broadcast skbs to macvlan will be
+> discarded. This case can happen:
 > 
-> Here is an example command to set 20Mbits bandwidth in 1Gbits port
-> for taffic class 7:
+> macvlan_process_broadcast() is the pending function of port->bc_work,
+> it moves all the skbs in port->bc_queue to the queue "list", and
+> processes the skbs in "list". During this, new skbs will keep being
+> added to port->bc_queue in macvlan_broadcast_enqueue(), and
+> port->bc_queue may already full when macvlan_process_broadcast()
+> return. This may happen, especially when there are a lot of real-time
+> threads and the process is preempted.
 > 
-> tc qdisc add dev eth0 root handle 1: mqprio \
-> 	   num_tc 8 map 0 1 2 3 4 5 6 7 hw 1
+> Fix this by calling schedule_work(&port->bc_work) even if
+> port->bc_work is full in macvlan_broadcast_enqueue().
 > 
-> tc qdisc replace dev eth0 parent 1:8 cbs \
-> 	   locredit -1470 hicredit 30 \
-> 	   sendslope -980000 idleslope 20000 offload 1
-> 
-> Signed-off-by: Po Liu <Po.Liu@nxp.com>
-> Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Fixes: 412ca1550cbe ("macvlan: Move broadcasts into a work queue")
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 
-Applied, thanks.
+Applied and queued up for -stable, thanks.
