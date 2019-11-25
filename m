@@ -2,231 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6F21085B7
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 01:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D43FD1085D8
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 01:07:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727128AbfKYAFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 19:05:21 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:10959 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbfKYAFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 19:05:20 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ddb1ac10000>; Sun, 24 Nov 2019 16:05:21 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Sun, 24 Nov 2019 16:05:18 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Sun, 24 Nov 2019 16:05:18 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
- 2019 00:05:17 +0000
-Subject: Re: [PATCH v7 07/24] IB/umem: use get_user_pages_fast() to pin DMA
- pages
-To:     Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-CC:     Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        id S1727052AbfKYAHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 19:07:24 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46201 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727403AbfKYAHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 19:07:23 -0500
+Received: by mail-qk1-f193.google.com with SMTP id h15so11150112qka.13
+        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 16:07:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3rsb5F1lHDE0CtRm2IxSUtJl5mFdVSKdIea1SqS+ca4=;
+        b=OEcqqqrYJWOW+bzPRo++X/WVd6nNBEPqgOZ9kqgUsizO0SfZ493yMpQ/TjxV08a1mz
+         IyoC3UJaMSyis/AjASzFxl7rvShDvSSlxLhteVxWci5UEW8FliAUaT+jQ1wQxYrv/kZB
+         3nqYGjYqkka0PTw9kzX+sl7YGHzFITVxGfv+WMhPvSIyYjqWQVKy89looWAA3m71kwCs
+         t0qDCN3MM0EaHOkIsCk1TvD2R1ich61hUEiyJRyZ1t3yVJa0WuQ10gRni5YwMjpBjqwK
+         hzUFcRBX88wmLHIpcUKIK15KIXmPm6DCOs10YbmbFRD3SpgjVUXKkLaxlbFtw7WYbYgS
+         2q3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3rsb5F1lHDE0CtRm2IxSUtJl5mFdVSKdIea1SqS+ca4=;
+        b=F+7hqNmxo8tVBYIvZjCFAwr0TNOpFTtL8K8aADj8GHEhb/xJ17rX1oALIbjwInHPM7
+         ZKAG3bQznQwriS7ipYS/l/0ztTBY0/OGpDUTQotnX1OUZ79y07kZOUma7dD5OPAaIWP8
+         WoTQdb15r9DVkvjmX6Rvy9YE5Jn9Y4UYrVpSZesZFuoex/1vP08H87/CGvkcleOVE74X
+         sro0rBzhEZ3HDgafT6C9VoTe66tR3KdL4rOMV+c4IwBg2DzlRnYrhtDZ8Og7Trd+91un
+         XL8JaUMT23a9ztwIeYoKXp3J80ONHmSGx64UipgFQr89uqA4D05x+1MD5FrLZgTICGiF
+         OguQ==
+X-Gm-Message-State: APjAAAW9RNnKe7UdLj48P7rjXH7vqVkP0CvSdqsVHYhNczxODu8GIDx1
+        1Cfhy2o706EprJTKDC9e8bPv0Q==
+X-Google-Smtp-Source: APXvYqzEpOwLyu/rW0agYok2J8h7WtbxM68b/aqFwCJe1aRLrj6X3mdGRpEyyuOBh+GCEqHb5ne5kA==
+X-Received: by 2002:a37:9a13:: with SMTP id c19mr6967608qke.365.1574640442354;
+        Sun, 24 Nov 2019 16:07:22 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id i68sm2481824qkb.106.2019.11.24.16.07.21
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 24 Nov 2019 16:07:21 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iZ1uS-0001dp-Un; Sun, 24 Nov 2019 20:07:20 -0400
+Date:   Sun, 24 Nov 2019 20:07:20 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Tiwei Bie <tiwei.bie@intel.com>, Jason Wang <jasowang@redhat.com>,
         Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191121071354.456618-1-jhubbard@nvidia.com>
- <20191121071354.456618-8-jhubbard@nvidia.com>
- <20191121080746.GC30991@infradead.org> <20191121143643.GC7448@ziepe.ca>
- <20191124100724.GH136476@unreal>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <e8319590-a3f0-5ba4-af4c-65213358a742@nvidia.com>
-Date:   Sun, 24 Nov 2019 16:05:16 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Parav Pandit <parav@mellanox.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next v2 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191125000720.GA5634@ziepe.ca>
+References: <20191120181108.GJ22515@ziepe.ca>
+ <20191120150732.2fffa141@x1.home>
+ <20191121030357.GB16914@ziepe.ca>
+ <5dcef4ab-feb5-d116-b2a9-50608784a054@redhat.com>
+ <20191121141732.GB7448@ziepe.ca>
+ <721e49c2-a2e1-853f-298b-9601c32fcf9e@redhat.com>
+ <20191122180214.GD7448@ziepe.ca>
+ <20191123043951.GA364267@___>
+ <20191123230948.GF7448@ziepe.ca>
+ <20191124055343-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20191124100724.GH136476@unreal>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574640321; bh=LD2/8CChGaLRqwmCQwChsDcrQNaYP+P0SNIyxfam1DE=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=m1Cur0PIy3/gI1zO5nV/8By6N43vWGtuN3DH4UA+V5btajIgmajkoqysSp76dAM7w
-         IjD++zms/7U0GGOl8H1gvnNrWhHWhVeKks5+FnTeGfmeFzSgL9stvUxQHdGHcRSpYo
-         R3DhHzHen8GFnhgTTJui8NWTHWe8ATpW8fDVP5C1LALRj6SKkngA39wPoPH2DIIK+J
-         +UKod6U+vX3PK6ephcVmHTxq0zUWIVkMBfEaq7/xc7P3ltk2DNSjaGhY5cT49gyP2u
-         jH1s4PE7IC41UINf5rjHYQtI6U45lVsEN7ZT+BkTbP2xn4k8PFfNWniDCzwNggU9zg
-         iu5V3RFGAA2WA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191124055343-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/24/19 2:07 AM, Leon Romanovsky wrote:
-> On Thu, Nov 21, 2019 at 10:36:43AM -0400, Jason Gunthorpe wrote:
->> On Thu, Nov 21, 2019 at 12:07:46AM -0800, Christoph Hellwig wrote:
->>> On Wed, Nov 20, 2019 at 11:13:37PM -0800, John Hubbard wrote:
->>>> And get rid of the mmap_sem calls, as part of that. Note
->>>> that get_user_pages_fast() will, if necessary, fall back to
->>>> __gup_longterm_unlocked(), which takes the mmap_sem as needed.
->>>>
->>>> Reviewed-by: Jan Kara <jack@suse.cz>
->>>> Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
->>>> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
->>>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
->>>
->>> Looks fine,
->>>
->>> Reviewed-by: Christoph Hellwig <hch@lst.de>
->>>
->>> Jason, can you queue this up for 5.5 to reduce this patch stack a bit?
->>
->> Yes, I said I'd do this in an earlier revision. Now that it is clear this
->> won't go through Andrew's tree, applied to rdma for-next
+On Sun, Nov 24, 2019 at 06:00:23AM -0500, Michael S. Tsirkin wrote:
+> On Sat, Nov 23, 2019 at 07:09:48PM -0400, Jason Gunthorpe wrote:
+> > > > > > Further, I do not think it is wise to design the userspace ABI around
+> > > > > > a simplistict implementation that can't do BAR assignment,
+> > > > > 
+> > > > > Again, the vhost-mdev follow the VFIO ABI, no new ABI is invented, and
+> > > > > mmap() was kept their for mapping device regions.
+> > > > 
+> > > > The patches have a new file in include/uapi.
+> > > 
+> > > I guess you didn't look at the code. Just to clarify, there is no
+> > > new file introduced in include/uapi. Only small vhost extensions to
+> > > the existing vhost uapi are involved in vhost-mdev.
+> > 
+> > You know, I review alot of patches every week, and sometimes I make
+> > mistakes, but not this time. From the ICF cover letter:
+> > 
+> > https://lkml.org/lkml/2019/11/7/62
+> > 
+> >  drivers/vfio/mdev/mdev_core.c    |  21 ++
+> >  drivers/vhost/Kconfig            |  12 +
+> >  drivers/vhost/Makefile           |   3 +
+> >  drivers/vhost/mdev.c             | 556 +++++++++++++++++++++++++++++++
+> >  include/linux/mdev.h             |   5 +
+> >  include/uapi/linux/vhost.h       |  21 ++
+> >  include/uapi/linux/vhost_types.h |   8 +
+> >       ^^^^^^^^^^^^^^
+> > 
+> > Perhaps you thought I ment ICF was adding uapi? My remarks cover all
+> > three of the series involved here.
 > 
-> Jason,
-> 
-> This patch broke RDMA completely.
-> Change from get_user_pages() to get_user_pages_fast() causes to endless
-> amount of splats due to combination of the following code:
-> 
-> 189 struct ib_umem *ib_umem_get(struct ib_udata *udata, unsigned long addr,
-> 190                             size_t size, int access)
-> ...
-> 263         if (!umem->writable)
-> 264                 gup_flags |= FOLL_FORCE;
-> 265
-> 
-> and
-> 
-> 2398 int get_user_pages_fast(unsigned long start, int nr_pages,
-> 2399                         unsigned int gup_flags, struct page **pages)
-> 2400 {
-> 2401         unsigned long addr, len, end;
-> 2402         int nr = 0, ret = 0;
-> 2403
-> 2404         if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
-> 2405                 return -EINVAL;
-> 
+> Tiwei seems to be right - include/uapi/linux/vhost.h and
+> include/uapi/linux/vhost_types.h are both existing files.  vhost uapi
+> extensions included here are very modest. They
+> just add virtio spec things that vhost was missing.
 
-Hi Leon,
+Sigh, fine whatever, I mispoke and called the 7 new ioctls a 'new
+file' instead of 'new ioctls' when responding to someone who denied
+they even existed. 
 
-I looked into this, and I believe that the problem is in gup.c. There appears to
-have been an oversight, in commit 817be129e6f2 ("mm: validate get_user_pages_fast
-flags"), in filtering out FOLL_FORCE. There is nothing in the _fast() implementation
-that requires that we avoid writing to the pages.
+Anyhow why do both of you keep saying "small vhost extensions to the
+existing vhost uapi" when these 7 new ioctls appear to be connected to
+vfio_device_ops, and /dev/vfio ?
 
-So I intend, to post a two-patch series that includes this fix, first, but maybe this
-means that it should go in via -mm. I'm not sure what's the best tree.
+Oh, gross, this is running some existing ioctl interface over
+/dev/vfio - the new uABI here is really putting all 10 new ioctls on
+/dev/vfio that didn't exist there before.
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 8f236a335ae9..745b4036cdfd 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -2401,7 +2401,8 @@ int get_user_pages_fast(unsigned long start, int nr_pages,
- 	unsigned long addr, len, end;
- 	int nr = 0, ret = 0;
- 
--	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
-+	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM |
-+				       FOLL_FORCE)))
- 		return -EINVAL;
- 
- 	start = untagged_addr(start) & PAGE_MASK;
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
-
-
-> 
-> [   72.623266] ------------[ cut here ]------------
-> [   72.624143] WARNING: CPU: 1 PID: 2557 at mm/gup.c:2404 get_user_pages_fast+0x115/0x180
-> [   72.625426] Modules linked in: xt_MASQUERADE iptable_nat nf_nat
->    br_netfilter overlay ib_srp scsi_transport_srp rpcrdma rdma_ucm
->    ib_iser libiscsi scsi_transport_iscsi rdma_cm ib_umad iw_cm ib_ipoib
->    ib_cm mlx5_ib ib_uverbs ib_core mlx5_core mlxfw ptp pps_core
-> [   72.629024] CPU: 1 PID: 2557 Comm: python3 Not tainted 5.4.0-rc5-J6120-Geeb831ec5b80 #1
-> [   72.630435] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-> [   72.631973] RIP: 0010:get_user_pages_fast+0x115/0x180
-> [   72.632873] Code: 8d 0c 10 85 c0 89 d0 0f 49 c1 eb 97 fa 4c 8d
->        44 24 0c 4c 89 e9 44 89 e2 48 89 df e8 25 dd ff ff fb 8b 44 24 0c
->        e9 75 ff ff ff <0f> 0b b8 ea ff ff ff e9 6d ff ff ff 65 4c 8b 2c
->        25 00 5d 01 00 49
-> [   72.635967] RSP: 0018:ffffc90000edf930 EFLAGS: 00010202
-> [   72.636896] RAX: 0000000000000000 RBX: 00007f931c392000 RCX: ffff8883f4909000
-> [   72.638117] RDX: 0000000000010011 RSI: 0000000000000001 RDI: 00007f931c392000
-> [   72.639353] RBP: 00007f931c392000 R08: 0000000000000020 R09: ffff8883f4909000
-> [   72.640602] R10: 0000000000000000 R11: ffff8884068d6760 R12: ffff888409e45ba0
-> [   72.641858] R13: ffff8884068d6760 R14: 0000160000000000 R15: ffff8883f4909000
-> [   72.643115] FS:  00007f9323754700(0000) GS:ffff88842fa80000(0000) knlGS:0000000000000000
-> [   72.644586] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   72.645628] CR2: 00007f931c3ca000 CR3: 00000003f83d6006 CR4: 00000000007606a0
-> [   72.646875] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   72.648120] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   72.649374] PKRU: 55555554
-> [   72.649935] Call Trace:
-> [   72.650477]  ib_umem_get+0x298/0x550 [ib_uverbs]
-> [   72.651347]  mlx5_ib_db_map_user+0xad/0x130 [mlx5_ib]
-> [   72.652279]  mlx5_ib_create_cq+0x1e8/0xaa0 [mlx5_ib]
-> [   72.653207]  create_cq+0x1c8/0x2d0 [ib_uverbs]
-> [   72.654050]  ib_uverbs_create_cq+0x70/0xa0 [ib_uverbs]
-> [   72.654988]  ib_uverbs_handler_UVERBS_METHOD_INVOKE_WRITE+0xc2/0xf0 [ib_uverbs]
-> [   72.656331]  ib_uverbs_cmd_verbs.isra.6+0x5be/0xbe0 [ib_uverbs]
-> [   72.657398]  ? uverbs_disassociate_api+0xd0/0xd0 [ib_uverbs]
-> [   72.658423]  ? kvm_clock_get_cycles+0xd/0x10
-> [   72.659229]  ? kmem_cache_alloc+0x176/0x1c0
-> [   72.660025]  ? filemap_map_pages+0x18c/0x350
-> [   72.660838]  ib_uverbs_ioctl+0xc0/0x120 [ib_uverbs]
-> [   72.661756]  do_vfs_ioctl+0xa1/0x610
-> [   72.662458]  ksys_ioctl+0x70/0x80
-> [   72.663119]	__x64_sys_ioctl+0x16/0x20
-> [   72.663850]  do_syscall_64+0x42/0x110
-> [   72.664562]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> [   72.665492] RIP: 0033:0x7f9332958267
-> [   72.666185] Code: b3 66 90 48
-> 	8b 05 19 3c 2c 00 64 c7 00 26 00
-> 	00 00 48 c7 c0 ff ff ff ff c3 66
-> 	2e 0f 1f 84 00 00 00 00 00 b8 10
-> 	00 00 00 0f 05 <48> 3d 01 f0 ff
-> 	ff 73 01 c3 48 8b 0d e9 3b 2c 00
-> 	f7 d8 64 89 01 48
-> [   72.669347] RSP: 002b:00007f9323751928 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [   72.670706] RAX: ffffffffffffffda RBX: 00007f93237519b8 RCX:	00007f9332958267
-> [   72.671937] RDX: 00007f93237519a0 RSI: 00000000c0181b01 RDI: 0000000000000008
-> [   72.673176] RBP: 00007f9323751980 R08: 0000000000000005 R09: 00007f931c3ffef0
-> [   72.674415] R10: 0000000000001000 R11: 0000000000000246 R12: 00007f931c400030
-> [   72.675653] R13: 00007f9323751980 R14: 00007f9323751ea8 R15: 00000000000000ff
-> [   72.676885] ---[ end trace 033465440517865c ]---
-> 
->>
->> Thanks,
->> Jason
->>
+Jason
