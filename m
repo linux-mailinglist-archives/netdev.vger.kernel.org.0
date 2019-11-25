@@ -2,135 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F221095EE
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 00:10:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DFA51096B0
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 00:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726029AbfKYXJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 18:09:48 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41242 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbfKYXJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 18:09:47 -0500
-Received: by mail-pg1-f194.google.com with SMTP id 207so7946654pge.8
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 15:09:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G0cPyC006hnvLt+vhRMpzYR5TfT6GaLflCtS07u8efA=;
-        b=h6fbGlyIkP8nO/BoM5xdZ9hsIq3bUfYcrqcGtgRCzgigiEmhtmP2AuKqkbX8jbrNaq
-         VcG2d7eIi5d8D9tQzdh6/chck/bjuNw0NCZsGQ56fwQoXqxYaMmpmO1bmwdvrKoaJovR
-         7eJs/4g5BLZpDomF/1mSHH8zJ3PtE7e0UCSEyNlKnYCVtFgRncHIJa/Ckb3ZK1vMPE8F
-         COCMp/SlQIhUOeKzmrWV33Tpd0MLBIVMybW0/dyydmz2E9u1AMsKLG9AlDdYT9xzj4di
-         K/AIf/6+9daStqahJfUtEct7XJKQqeQQjtvUYLhNcwCepLC5a35Sbi9iNxVI6m9evqY/
-         pMGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G0cPyC006hnvLt+vhRMpzYR5TfT6GaLflCtS07u8efA=;
-        b=h/mLEIi8dhKRlapGlgsezrS8DUfzVjUtNY46ZMrfvFj3L5l5qzvEmZXVngvFnY2nlF
-         StQLUr0ychm8iU7mbSsiedO0or1IOgKyLs6NM4MvGd7FczIWWqDWfZYELs/T5n00jE4V
-         AjB/kXCZlQ3aq+nh0LLmz4lXPGAuRvXWNx8qbMGQe5Gd9KK78sEJkbsEQ40THm+LcT+y
-         iPYm08bnj/AwkgwCGBzwLp1O27SIrgR8bL/hmjRLTMJMlRo6tM0tECpucLx7EB9NmPcj
-         0COezIZEFVs9sFdU4Qg4Sh1Q/H292p0L+DthMaoItMFEN7fJREuPkdjep5kLDwY40Qml
-         NWMw==
-X-Gm-Message-State: APjAAAUsEZ6FV++BKmHToGuhqT3SOHFbuTEpjShN96ytAr9YIu1NUqJ9
-        KxWlc/eFZUDKcsw199OKz9AhRZUi
-X-Google-Smtp-Source: APXvYqyh1seExqhD9fcWMcf0P6sodLKgpMnxHByFEz4yG55PRmq0a2r2iLtaNgw1vD3FBkd8lqENXA==
-X-Received: by 2002:a65:6906:: with SMTP id s6mr18719779pgq.26.1574723386786;
-        Mon, 25 Nov 2019 15:09:46 -0800 (PST)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id u20sm9716324pgo.50.2019.11.25.15.09.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2019 15:09:45 -0800 (PST)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2] net-sctp: replace some sock_net(sk) with just 'net'
-Date:   Mon, 25 Nov 2019 15:09:37 -0800
-Message-Id: <20191125230937.172098-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-In-Reply-To: <20191125.105022.2027962925589066709.davem@davemloft.net>
-References: <20191125.105022.2027962925589066709.davem@davemloft.net>
+        id S1727266AbfKYXKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 18:10:50 -0500
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:11207 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfKYXKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 18:10:48 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5ddc5f710000>; Mon, 25 Nov 2019 15:10:41 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 25 Nov 2019 15:10:39 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 25 Nov 2019 15:10:39 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
+ 2019 23:10:39 +0000
+Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Mon, 25 Nov 2019 23:10:38 +0000
+Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
+        id <B5ddc5f6c0003>; Mon, 25 Nov 2019 15:10:37 -0800
+From:   John Hubbard <jhubbard@nvidia.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v2 00/19] pin_user_pages(): reduced-risk series for Linux 5.5
+Date:   Mon, 25 Nov 2019 15:10:16 -0800
+Message-ID: <20191125231035.1539120-1-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-NVConfidentiality: public
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1574723442; bh=+fKR9i8A1AVbpAkGEFz1AM9ETJRVeSf0J2MygF32l5w=;
+        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+         MIME-Version:X-NVConfidentiality:Content-Type:
+         Content-Transfer-Encoding;
+        b=ndO1kyYw+Aj7PJ1b4CON5Q8+SrIcwXlb45V4tj+JVPm5a7tM/5raJmkf+oA8o+7Gn
+         q+DZKnhL8HDAd4gc+VTmeQE/lO9R3WtF6DClR/Ox8lkKenA2hi3RkIsDbZBRb7/N9I
+         u7vqu7OPX0uJIMsnOGPaXiQsQ3livkjU+Uydd8H70Bkagfvsff/O1UWDvtASk/ZD/5
+         j3u+3hA9MXsiO5zM+Fvjg+mWEqNbbdrTimvMMM1CyULJLiNKjbxsllY9FZaTQHKnou
+         7YD0HiYvc6l3EAutS7qMBed3ruw+5cxaPaf8mdXNhpDMt5CU2G9r209+vuG622feZ3
+         9j/62y8q4ASVw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Hi,
 
-It already existed in part of the function, but move it
-to a higher level and use it consistently throughout.
+Changes since v1:
 
-Safe since sk is never written to.
+* Fixed up ppc in response to Jan Kara's review comments (thanks for
+  those!).
 
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/sctp/socket.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+* Fixed a kbuilt robot-detected build failure: added a stub function for
+  the !CONFIG_MMU case.
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 83e4ca1fabda..e4c398db07a0 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -8267,6 +8267,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 	struct sctp_sock *sp = sctp_sk(sk);
- 	bool reuse = (sk->sk_reuse || sp->reuse);
- 	struct sctp_bind_hashbucket *head; /* hash list */
-+	struct net *net = sock_net(sk);
- 	kuid_t uid = sock_i_uid(sk);
- 	struct sctp_bind_bucket *pp;
- 	unsigned short snum;
-@@ -8282,7 +8283,6 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		/* Search for an available port. */
- 		int low, high, remaining, index;
- 		unsigned int rover;
--		struct net *net = sock_net(sk);
- 
- 		inet_get_local_port_range(net, &low, &high);
- 		remaining = (high - low) + 1;
-@@ -8294,12 +8294,12 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 				rover = low;
- 			if (inet_is_local_reserved_port(net, rover))
- 				continue;
--			index = sctp_phashfn(sock_net(sk), rover);
-+			index = sctp_phashfn(net, rover);
- 			head = &sctp_port_hashtable[index];
- 			spin_lock(&head->lock);
- 			sctp_for_each_hentry(pp, &head->chain)
- 				if ((pp->port == rover) &&
--				    net_eq(sock_net(sk), pp->net))
-+				    net_eq(net, pp->net))
- 					goto next;
- 			break;
- 		next:
-@@ -8323,10 +8323,10 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		 * to the port number (snum) - we detect that with the
- 		 * port iterator, pp being NULL.
- 		 */
--		head = &sctp_port_hashtable[sctp_phashfn(sock_net(sk), snum)];
-+		head = &sctp_port_hashtable[sctp_phashfn(net, snum)];
- 		spin_lock(&head->lock);
- 		sctp_for_each_hentry(pp, &head->chain) {
--			if ((pp->port == snum) && net_eq(pp->net, sock_net(sk)))
-+			if ((pp->port == snum) && net_eq(pp->net, net))
- 				goto pp_found;
- 		}
- 	}
-@@ -8382,7 +8382,7 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- pp_not_found:
- 	/* If there was a hash table miss, create a new port.  */
- 	ret = 1;
--	if (!pp && !(pp = sctp_bucket_create(head, sock_net(sk), snum)))
-+	if (!pp && !(pp = sctp_bucket_create(head, net, snum)))
- 		goto fail_unlock;
- 
- 	/* In either case (hit or miss), make sure fastreuse is 1 only
--- 
-2.24.0.432.g9d3f5f5b63-goog
+* Cover letter: now refers to "unpin_user_page()", reflecting the name
+  change in the last patch (instead of put_user_page() ).
+
+* Rebased onto today's linux-next: c165016bac27 ("Add linux-next
+  specific files for 20191125")
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Here is a set of well-reviewed (expect for one patch), lower-risk  items
+that can go into Linux 5.5. (Update: the powerpc conversion patch has
+had some initial review now, since v1 was posted.)
+
+This is essentially a cut-down v8 of "mm/gup: track dma-pinned pages:
+FOLL_PIN" [1], and with one of the VFIO patches split into two patches.
+The idea here is to get this long list of "noise" checked into 5.5, so
+that the actual, higher-risk "track FOLL_PIN pages" (which is deferred:
+not part of this series) will be a much shorter patchset to review.
+
+For the v4l2-core changes, I've left those here (instead of sending
+them separately to the -media tree), in order to get the name change
+done now (put_user_page --> unpin_user_page). However, I've added a Cc
+stable, as recommended during the last round of reviews.
+
+Here are the relevant notes from the original cover letter, edited to
+match the current situation:
+
+This is a prerequisite to tracking dma-pinned pages. That in turn is a
+prerequisite to solving the larger problem of proper interactions
+between file-backed pages, and [R]DMA activities, as discussed in [1],
+[2], [3], and in a remarkable number of email threads since about
+2017. :)
+
+A new internal gup flag, FOLL_PIN is introduced, and thoroughly
+documented in the last patch's Documentation/vm/pin_user_pages.rst.
+
+I believe that this will provide a good starting point for doing the
+layout lease work that Ira Weiny has been working on. That's because
+these new wrapper functions provide a clean, constrained, systematically
+named set of functionality that, again, is required in order to even
+know if a page is "dma-pinned".
+
+In contrast to earlier approaches, the page tracking can be
+incrementally applied to the kernel call sites that, until now, have
+been simply calling get_user_pages() ("gup"). In other words, opt-in by
+changing from this:
+
+    get_user_pages() (sets FOLL_GET)
+    put_page()
+
+to this:
+    pin_user_pages() (sets FOLL_PIN)
+    unpin_user_page()
+
+Because there are interdependencies with FOLL_LONGTERM, a similar
+conversion as for FOLL_PIN, was applied. The change was from this:
+
+    get_user_pages(FOLL_LONGTERM) (also sets FOLL_GET)
+    put_page()
+
+to this:
+    pin_longterm_pages() (sets FOLL_PIN | FOLL_LONGTERM)
+    unpin_user_page()
+
+[1] https://lore.kernel.org/r/20191121071354.456618-1-jhubbard@nvidia.com
+
+thanks,
+John Hubbard
+NVIDIA
+
+
+Dan Williams (1):
+  mm: Cleanup __put_devmap_managed_page() vs ->page_free()
+
+John Hubbard (18):
+  mm/gup: factor out duplicate code from four routines
+  mm/gup: move try_get_compound_head() to top, fix minor issues
+  goldish_pipe: rename local pin_user_pages() routine
+  mm: fix get_user_pages_remote()'s handling of FOLL_LONGTERM
+  vfio: fix FOLL_LONGTERM use, simplify get_user_pages_remote() call
+  mm/gup: introduce pin_user_pages*() and FOLL_PIN
+  goldish_pipe: convert to pin_user_pages() and put_user_page()
+  IB/{core,hw,umem}: set FOLL_PIN via pin_user_pages*(), fix up ODP
+  mm/process_vm_access: set FOLL_PIN via pin_user_pages_remote()
+  drm/via: set FOLL_PIN via pin_user_pages_fast()
+  fs/io_uring: set FOLL_PIN via pin_user_pages()
+  net/xdp: set FOLL_PIN via pin_user_pages()
+  media/v4l2-core: set pages dirty upon releasing DMA buffers
+  media/v4l2-core: pin_user_pages (FOLL_PIN) and put_user_page()
+    conversion
+  vfio, mm: pin_user_pages (FOLL_PIN) and put_user_page() conversion
+  powerpc: book3s64: convert to pin_user_pages() and put_user_page()
+  mm/gup_benchmark: use proper FOLL_WRITE flags instead of hard-coding
+    "1"
+  mm, tree-wide: rename put_user_page*() to unpin_user_page*()
+
+ Documentation/core-api/index.rst            |   1 +
+ Documentation/core-api/pin_user_pages.rst   | 233 ++++++++++++++
+ arch/powerpc/mm/book3s64/iommu_api.c        |  12 +-
+ drivers/gpu/drm/via/via_dmablit.c           |   6 +-
+ drivers/infiniband/core/umem.c              |   4 +-
+ drivers/infiniband/core/umem_odp.c          |  13 +-
+ drivers/infiniband/hw/hfi1/user_pages.c     |   4 +-
+ drivers/infiniband/hw/mthca/mthca_memfree.c |   8 +-
+ drivers/infiniband/hw/qib/qib_user_pages.c  |   4 +-
+ drivers/infiniband/hw/qib/qib_user_sdma.c   |   8 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c    |   4 +-
+ drivers/infiniband/sw/siw/siw_mem.c         |   4 +-
+ drivers/media/v4l2-core/videobuf-dma-sg.c   |   8 +-
+ drivers/nvdimm/pmem.c                       |   6 -
+ drivers/platform/goldfish/goldfish_pipe.c   |  35 +-
+ drivers/vfio/vfio_iommu_type1.c             |  35 +-
+ fs/io_uring.c                               |   6 +-
+ include/linux/mm.h                          |  77 +++--
+ mm/gup.c                                    | 340 +++++++++++++-------
+ mm/gup_benchmark.c                          |   9 +-
+ mm/memremap.c                               |  80 ++---
+ mm/process_vm_access.c                      |  28 +-
+ net/xdp/xdp_umem.c                          |   4 +-
+ tools/testing/selftests/vm/gup_benchmark.c  |   6 +-
+ 24 files changed, 650 insertions(+), 285 deletions(-)
+ create mode 100644 Documentation/core-api/pin_user_pages.rst
+
+--=20
+2.24.0
 
