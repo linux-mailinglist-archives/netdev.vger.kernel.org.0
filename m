@@ -2,104 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96013108B69
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:10:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CB8108B81
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727401AbfKYKKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 05:10:54 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39635 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727133AbfKYKKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:10:54 -0500
-Received: by mail-ed1-f65.google.com with SMTP id n26so12130299edw.6;
-        Mon, 25 Nov 2019 02:10:52 -0800 (PST)
+        id S1727385AbfKYKSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:18:32 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45853 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbfKYKSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:18:32 -0500
+Received: by mail-pg1-f195.google.com with SMTP id k1so6939869pgg.12;
+        Mon, 25 Nov 2019 02:18:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oxKNKG1r2qoKR1r12kWtBNNrwYTsx7eD0jpk3TN58Vg=;
-        b=t/gW2W2pl8F2J4GIToK/aB45qdt1mEruk+hrDlMhhx/9dhIkbQILkwrJDfus9h0KOE
-         G9O9YJkyBK8QLnOPPg9P7u4YhwexmI97wS1eevD8pdVMmyGl5Z60excDINaYYCLy5wMq
-         RBoz2sX6ZEdqkkYiiJUnNtXpW/mMDe9QPznvkZ4TsTH7vAcjmVgpRj0ZBbaaInIen6Xm
-         +yVtHOK/396D31GG7jIDWB1T2yzoMB715zgjGw6R42r6MGSFPCc+i9LG3MiaA2UxCdij
-         EEU8jxdjlM/h3EE5XJ4oP735i13Na8IRIR7lDqbqneoDU/6I+3FZUg6J5qnIhoshBi/g
-         ILkg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nRIosOG12bGzXNueMgN5wIJLE/V6v/BzKDFM9Qy6aPw=;
+        b=LNe4F3+QQjXmh05TCrl2M3VVXxbYZUoANnjgRKDpAFCfFsI+wUwvSEYU/JGGPHTPUp
+         o7A8jkPey9J2h7tk7moM3iXWlFxMARk3je5FOxcbrHjxOY6nQaL/VIcrqA4Z+gCV1X4h
+         x6tvorkxEOXOWZJWKIBE3drPXispJJO6FZChSWIm7aHM4O9KHJmshkGoZm6Im5BtfbKV
+         2kzMUoneQjtgwVGtzPX42hKhtMl46GcomdlV8Q8eTqrAuLej/ZD2QfdyIwUY0oxykLtK
+         cvd3zLd+mph1AiDVWPR+6c6ebHuU9pJYAVsOrRQJghdm+oM8//S0evT8acsOGr4SXpZM
+         ctRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oxKNKG1r2qoKR1r12kWtBNNrwYTsx7eD0jpk3TN58Vg=;
-        b=Cg4WIVy/MOnHSPf76saPBye2dqoH19Ki0HCmphVnMYs5PdZMkmO2TpAbl4H0ANTMB1
-         p+u00bD3gbRobeGFbZl7UV5TlkiwtPxLSNOVZ7DsTKvXVKsc8DOU8eNBnTUqE/hLIXeB
-         udSuvVSgKmJlXIfi/OOi0ZBy8Ub8dNzxRnFhFrND28vo36bub7yLH3zYY6v53xbBmzOw
-         dGGl5A1TxHCSh2kVn/MC8X96w9SsTbfsF3MWGoPllxHgzKH6Q8W89yTeyfFi++Sxon9Z
-         ZxC3az5by1nsuXUGWeuUtXQzKlI7RAxuyPLkepCJnha0lduf+9gwGI+FaX48Bqtb7ghb
-         yImw==
-X-Gm-Message-State: APjAAAVgPG40FGhZ+B+KK13w6zrLphyS2CqVtWUmf8F5md1QodcV9MfE
-        f79EYbq6dYrdG+VW0Ck1maFZz3hkJxmv7Y9JAKc=
-X-Google-Smtp-Source: APXvYqziLSNnlLW7L3YCugINAMcp/CEsi8ZBH+ttX5R5vkCmALA5iK52k+HPvE4SmWxC1/cpqLSXdldS9kNmdu0pE24=
-X-Received: by 2002:a17:906:4910:: with SMTP id b16mr35918507ejq.133.1574676652140;
- Mon, 25 Nov 2019 02:10:52 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nRIosOG12bGzXNueMgN5wIJLE/V6v/BzKDFM9Qy6aPw=;
+        b=FGDlBVMxOGc5TTEaIq8VfETypBAShAGD86+D2iYYpVgs7Hiy7bBHVF8Ujqkt7yibJS
+         6/IhIZZ+8UNhGNm+xX8EgZ5++YmF5emuoL3YbNs6r8XGTTIukE0IWz/w4VuGmpgPb1/v
+         IY8UFFchc8GroINQiON2rIX5cqHxKz1f4/1ihn3zIL7aq9FuO06ONYb/ACN0BfiWrvhn
+         W6F0E0BrPPyzx8t3YtVnSbRXCV3um1dQxESMpo0UgfvlOwkPfN+esrrvO05wkuQFhaUq
+         o7/JqZ8CGeGAVOE3w5ImVnEyAJ1vitiHRs063sIwLMvKxQGfOmjafhHWzB0fbizqwyjy
+         8ioA==
+X-Gm-Message-State: APjAAAVnYVpBikRoooVPqOLf7AZ7yTFYcb7kk3sNKZvMp4+5H499p0Cr
+        wHfHjEVjBOsvQfB0S8h0meY=
+X-Google-Smtp-Source: APXvYqwhSoFQYZMcUZEHgP8BAs0QWnrEMJYXHNAMUmFxFa29ZlJgZaNoov2ZNC/d33QEuwV2a3liQw==
+X-Received: by 2002:a63:ca05:: with SMTP id n5mr30978722pgi.187.1574677111140;
+        Mon, 25 Nov 2019 02:18:31 -0800 (PST)
+Received: from [172.20.20.103] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id 82sm7718012pfa.115.2019.11.25.02.18.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Nov 2019 02:18:29 -0800 (PST)
+Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        William Tu <u9012063@gmail.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+ <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
+ <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
+ <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
+ <87h840oese.fsf@toke.dk>
+ <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch>
+ <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com>
+ <87zhhmrz7w.fsf@toke.dk> <b2ecf3e6-a8f1-cfd9-0dd3-e5f4d5360c0b@gmail.com>
+ <87zhhhnmg8.fsf@toke.dk> <640418c3-54ba-cd62-304f-fd9f73f25a42@gmail.com>
+ <87blthox30.fsf@toke.dk> <c1b7ff64-6574-74c7-cd6b-5aa353ec80ce@gmail.com>
+ <87lfsiocj5.fsf@toke.dk> <6e08f714-6284-6d0d-9cbe-711c64bf97aa@gmail.com>
+ <87k17xcwoq.fsf@toke.dk> <db38dee6-1db9-85f3-7a0c-0bcee13b12ea@gmail.com>
+ <8736eg5do2.fsf@toke.dk>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <c96d99ce-5fdd-dfa5-f013-ce11c6c8cfda@gmail.com>
+Date:   Mon, 25 Nov 2019 19:18:23 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20191125100259.5147-1-o.rempel@pengutronix.de> <20191125100259.5147-2-o.rempel@pengutronix.de>
-In-Reply-To: <20191125100259.5147-2-o.rempel@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 25 Nov 2019 12:10:41 +0200
-Message-ID: <CA+h21hoCaT3DpTGgN8Og98P98tUvPS8-zMKWtVxpyObCe30NvQ@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] net: dsa: sja1105: fix sja1105_parse_rgmii_delays()
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <8736eg5do2.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Nov 2019 at 12:03, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->
-> This function was using configuration of port 0 in devicetree for all ports.
-> In case CPU port was not 0, the delay settings was ignored. This resulted not
-> working communication between CPU and the switch.
->
-> Fixes: f5b8631c293b ("net: dsa: sja1105: Error out if RGMII delays are requested in DT")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+On 2019/11/22 20:54, Toke Høiland-Jørgensen wrote:
+> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+> 
+>> On 2019/11/18 19:20, Toke Høiland-Jørgensen wrote:
+>>> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+>>>
+>>> [... trimming the context a bit ...]
+>>>
+>>>>>>> Take your example of TC rules: You were proposing a flow like this:
+>>>>>>>
+>>>>>>> Userspace TC rule -> kernel rule table -> eBPF map -> generated XDP
+>>>>>>> program
+>>>>>>>
+>>>>>>> Whereas what I mean is that we could do this instead:
+>>>>>>>
+>>>>>>> Userspace TC rule -> kernel rule table
+>>>>>>>
+>>>>>>> and separately
+>>>>>>>
+>>>>>>> XDP program -> bpf helper -> lookup in kernel rule table
+>>>>>>
+>>>>>> Thanks, now I see what you mean.
+>>>>>> You expect an XDP program like this, right?
+>>>>>>
+>>>>>> int xdp_tc(struct xdp_md *ctx)
+>>>>>> {
+>>>>>> 	int act = bpf_xdp_tc_filter(ctx);
+>>>>>> 	return act;
+>>>>>> }
+>>>>>
+>>>>> Yes, basically, except that the XDP program would need to parse the
+>>>>> packet first, and bpf_xdp_tc_filter() would take a parameter struct with
+>>>>> the parsed values. See the usage of bpf_fib_lookup() in
+>>>>> bpf/samples/xdp_fwd_kern.c
+>>>>>
+>>>>>> But doesn't this way lose a chance to reduce/minimize the program to
+>>>>>> only use necessary features for this device?
+>>>>>
+>>>>> Not necessarily. Since the BPF program does the packet parsing and fills
+>>>>> in the TC filter lookup data structure, it can limit what features are
+>>>>> used that way (e.g., if I only want to do IPv6, I just parse the v6
+>>>>> header, ignore TCP/UDP, and drop everything that's not IPv6). The lookup
+>>>>> helper could also have a flag argument to disable some of the lookup
+>>>>> features.
+>>>>
+>>>> It's unclear to me how to configure that.
+>>>> Use options when attaching the program? Something like
+>>>> $ xdp_tc attach eth0 --only-with ipv6
+>>>> But can users always determine their necessary features in advance?
+>>>
+>>> That's what I'm doing with xdp-filter now. But the answer to your second
+>>> question is likely to be 'probably not', so it would be good to not have
+>>> to do this :)
+>>>
+>>>> Frequent manual reconfiguration when TC rules frequently changes does
+>>>> not sound nice. Or, add hook to kernel to listen any TC filter event
+>>>> on some daemon and automatically reload the attached program?
+>>>
+>>> Doesn't have to be a kernel hook; we could enhance the userspace tooling
+>>> to do it. Say we integrate it into 'tc':
+>>>
+>>> - Add a new command 'tc xdp_accel enable <iface> --features [ipv6,etc]'
+>>> - When adding new rules, add the following logic:
+>>>     - Check if XDP acceleration is enabled
+>>>     - If it is, check whether the rule being added fits into the current
+>>>       'feature set' loaded on that interface.
+>>>       - If the rule needs more features, reload the XDP program to one
+>>>         with the needed additional features.
+>>>       - Or, alternatively, just warn the user and let them manually
+>>>         replace it?
+>>
+>> Ok, but there are other userspace tools to configure tc in wild.
+>> python and golang have their own netlink library project.
+>> OVS embeds TC netlink handling code in itself. There may be more tools like this.
+>> I think at least we should have rtnl notification about TC and monitor it
+>> from daemon, if we want to reload the program from userspace tools.
+> 
+> A daemon would be one way to do this in cases where it needs to be
+> completely dynamic. My guess is that there are lots of environments
+> where that is not required, and where a user/administrator could
+> realistically specify ahead of time which feature set they want to
+> enable XDP acceleration for. So in my mind the way to go about this is
+> to implement the latter first, then add dynamic reconfiguration of it on
+> top when (or if) it turns out to be necessary...
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Hmm, but I think there is big difference between a daemon and a cli tool.
+Shouldn't we determine the design considering future usage?
 
->  drivers/net/dsa/sja1105/sja1105_main.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index 1238fd68b2cd..34544b1c30dc 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -594,15 +594,15 @@ static int sja1105_parse_rgmii_delays(struct sja1105_private *priv,
->         int i;
->
->         for (i = 0; i < SJA1105_NUM_PORTS; i++) {
-> -               if (ports->role == XMII_MAC)
-> +               if (ports[i].role == XMII_MAC)
->                         continue;
->
-> -               if (ports->phy_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
-> -                   ports->phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
-> +               if (ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
-> +                   ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
->                         priv->rgmii_rx_delay[i] = true;
->
-> -               if (ports->phy_mode == PHY_INTERFACE_MODE_RGMII_TXID ||
-> -                   ports->phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
-> +               if (ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_TXID ||
-> +                   ports[i].phy_mode == PHY_INTERFACE_MODE_RGMII_ID)
->                         priv->rgmii_tx_delay[i] = true;
->
->                 if ((priv->rgmii_rx_delay[i] || priv->rgmii_tx_delay[i]) &&
-> --
-> 2.24.0
->
+Toshiaki Makita
