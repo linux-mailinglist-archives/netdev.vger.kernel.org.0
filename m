@@ -2,77 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CCA9108C26
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:46:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35809108C55
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbfKYKqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 05:46:20 -0500
-Received: from foss.arm.com ([217.140.110.172]:48228 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727767AbfKYKqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 05:46:17 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13B8B328;
-        Mon, 25 Nov 2019 02:46:17 -0800 (PST)
-Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DCB133F52E;
-        Mon, 25 Nov 2019 02:46:11 -0800 (PST)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        jianyong.wu@arm.com, nd@arm.com
-Subject: [RFC PATCH v8 8/8] kvm: arm64: Add capability check extension for ptp_kvm
-Date:   Mon, 25 Nov 2019 18:45:06 +0800
-Message-Id: <20191125104506.36850-9-jianyong.wu@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191125104506.36850-1-jianyong.wu@arm.com>
-References: <20191125104506.36850-1-jianyong.wu@arm.com>
+        id S1727568AbfKYKyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:54:46 -0500
+Received: from www62.your-server.de ([213.133.104.62]:37656 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727278AbfKYKyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:54:46 -0500
+Received: from 11.248.197.178.dynamic.dsl-lte-bonding.zhbmb00p-msn.res.cust.swisscom.ch ([178.197.248.11] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iZBzu-0006fh-Ae; Mon, 25 Nov 2019 11:54:36 +0100
+Date:   Mon, 25 Nov 2019 11:53:37 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        ecree@solarflare.com, thoiland@redhat.com,
+        andrii.nakryiko@gmail.com, tariqt@mellanox.com,
+        saeedm@mellanox.com, maximmi@mellanox.com
+Subject: Re: [PATCH bpf-next v2 1/6] bpf: introduce BPF dispatcher
+Message-ID: <20191125105337.GA14828@pc-9.home>
+References: <20191123071226.6501-1-bjorn.topel@gmail.com>
+ <20191123071226.6501-2-bjorn.topel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191123071226.6501-2-bjorn.topel@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25644/Mon Nov 25 10:54:22 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let userspace check if there is kvm ptp service in host.
-before VMs migrate to a another host, VMM may check if this
-cap is available to determine the migration behaviour.
+On Sat, Nov 23, 2019 at 08:12:20AM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> The BPF dispatcher is a multiway branch code generator, mainly
+> targeted for XDP programs. When an XDP program is executed via the
+> bpf_prog_run_xdp(), it is invoked via an indirect call. With
+> retpolines enabled, the indirect call has a substantial performance
+> impact. The dispatcher is a mechanism that transform multiple indirect
+> calls to direct calls, and therefore avoids the retpoline. The
+> dispatcher is generated using the BPF JIT, and relies on text poking
+> provided by bpf_arch_text_poke().
+> 
+> The dispatcher hijacks a trampoline function it via the __fentry__ nop
+> of the trampoline. One dispatcher instance currently supports up to 16
+> dispatch points. This can be extended in the future.
+> 
+> An example: A module/driver allocates a dispatcher. The dispatcher is
+> shared for all netdevs. Each unique XDP program has a slot in the
+> dispatcher, registered by a netdev. The netdev then uses the
+> dispatcher to call the correct program with a direct call.
+> 
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+[...]
+> +static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
+> +{
+> +	u8 *jg_reloc, *jg_target, *prog = *pprog;
+> +	int pivot, err, jg_bytes = 1, cnt = 0;
+> +	s64 jg_offset;
+> +
+> +	if (a == b) {
+> +		/* Leaf node of recursion, i.e. not a range of indices
+> +		 * anymore.
+> +		 */
+> +		EMIT1(add_1mod(0x48, BPF_REG_3));	/* cmp rdx,func */
+> +		if (!is_simm32(progs[a]))
+> +			return -1;
+> +		EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3),
+> +			    progs[a]);
+> +		err = emit_cond_near_jump(&prog,	/* je func */
+> +					  (void *)progs[a], prog,
+> +					  X86_JE);
+> +		if (err)
+> +			return err;
+> +
+> +		err = emit_jump(&prog,			/* jmp thunk */
+> +				__x86_indirect_thunk_rdx, prog);
+> +		if (err)
+> +			return err;
+> +
+> +		*pprog = prog;
+> +		return 0;
+> +	}
+> +
+> +	/* Not a leaf node, so we pivot, and recursively descend into
+> +	 * the lower and upper ranges.
+> +	 */
+> +	pivot = (b - a) / 2;
+> +	EMIT1(add_1mod(0x48, BPF_REG_3));		/* cmp rdx,func */
+> +	if (!is_simm32(progs[a + pivot]))
+> +		return -1;
+> +	EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3), progs[a + pivot]);
+> +
+> +	if (pivot > 2) {				/* jg upper_part */
+> +		/* Require near jump. */
+> +		jg_bytes = 4;
+> +		EMIT2_off32(0x0F, X86_JG + 0x10, 0);
+> +	} else {
+> +		EMIT2(X86_JG, 0);
+> +	}
+> +	jg_reloc = prog;
+> +
+> +	err = emit_bpf_dispatcher(&prog, a, a + pivot,	/* emit lower_part */
+> +				  progs);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Intel 64 and IA-32 ArchitecturesOptimization Reference
+> +	 * Manual, 3.4.1.5 Code Alignment Assembly/Compiler Coding
+> +	 * Rule 12. (M impact, H generality) All branch targets should
+> +	 * be 16-byte aligned.
 
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Suggested-by: Marc Zyngier <maz@kernel.org>
----
- include/uapi/linux/kvm.h | 1 +
- virt/kvm/arm/arm.c       | 1 +
- 2 files changed, 2 insertions(+)
+Isn't this section 3.4.1.4, rule 11 or are you reading a newer manual
+than on the website [0]? :) Just wondering, in your IXIA tests, did you
+see any noticeable slowdowns if you don't do the 16-byte alignments as
+in the rest of the kernel [1,2]?
 
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 2fe12b40d503..a0bff6002bd9 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -993,6 +993,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_ARM_SVE 170
- #define KVM_CAP_ARM_PTRAUTH_ADDRESS 171
- #define KVM_CAP_ARM_PTRAUTH_GENERIC 172
-+#define KVM_CAP_ARM_KVM_PTP 173
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
-index bd5c55916d0d..80999985160b 100644
---- a/virt/kvm/arm/arm.c
-+++ b/virt/kvm/arm/arm.c
-@@ -201,6 +201,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_MP_STATE:
- 	case KVM_CAP_IMMEDIATE_EXIT:
- 	case KVM_CAP_VCPU_EVENTS:
-+	case KVM_CAP_ARM_KVM_PTP:
- 		r = 1;
- 		break;
- 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
--- 
-2.17.1
+  [0] https://software.intel.com/sites/default/files/managed/9e/bc/64-ia-32-architectures-optimization-manual.pdf
+  [1] be6cb02779ca ("x86: Align jump targets to 1-byte boundaries")
+  [2] https://lore.kernel.org/patchwork/patch/560050/
 
+> +	 */
+> +	jg_target = PTR_ALIGN(prog, 16);
+> +	if (jg_target != prog)
+> +		emit_nops(&prog, jg_target - prog);
+> +	jg_offset = prog - jg_reloc;
+> +	emit_code(jg_reloc - jg_bytes, jg_offset, jg_bytes);
+> +
+> +	err = emit_bpf_dispatcher(&prog, a + pivot + 1,	/* emit upper_part */
+> +				  b, progs);
+> +	if (err)
+> +		return err;
+> +
+> +	*pprog = prog;
+> +	return 0;
+> +}
