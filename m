@@ -2,81 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20BAB10901E
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:35:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43382109029
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:39:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728173AbfKYOfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 09:35:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52016 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728072AbfKYOfU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 09:35:20 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D085120740;
-        Mon, 25 Nov 2019 14:35:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574692520;
-        bh=5ls0Y5M93Vgvnl4gV57OFRw4tiAJA6Xp1o4BD351SpA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2vV7cAaRHNJk4XbDjn3VexHXvThLpmaayWqZ9C4dvwmf2Pf7FUu/WUAEL6q6zNL23
-         /b278eNHja7j9nmOZo4z6aJDEIkfQfrxwavl6npVd18fdhLzUliBRN5KVQBoF9g1i5
-         PJAAshqw6GqRcfLO1Yx1eV8c/l697GJllEO2jU8I=
-Date:   Mon, 25 Nov 2019 09:35:18 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mike Manning <mmanning@vyatta.att-mail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.9 89/99] vrf: mark skb for multicast or
- link-local as enslaved to VRF
-Message-ID: <20191125143518.GF5861@sasha-vm>
-References: <20191116155103.10971-1-sashal@kernel.org>
- <20191116155103.10971-89-sashal@kernel.org>
- <a6c038cb-4b95-beb0-abf3-8938825d379e@gmail.com>
+        id S1728196AbfKYOjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 09:39:25 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46722 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728071AbfKYOjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 09:39:25 -0500
+Received: by mail-pf1-f196.google.com with SMTP id 193so7457471pfc.13;
+        Mon, 25 Nov 2019 06:39:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DTFCnl5gh1u+TR9T7mZcMZHn+JFU1MgZVavln5ZZFag=;
+        b=MbGZAPdEGQpokB1vplVcMY1xo9Kfk48iqryyYjtGAlS7hyRFB5zH8YY6aR7mO8Xdis
+         xmo6B2th0X8k5Yb6eoHYHLpaEfeuin0naZZlCoi2AQf4JC+60ccTheRE+eXAaK2kb8Jg
+         Xs16MNWWj6B8pTSOtM0Xfqd/hbGzcZ1rmE7NErdTnSBKbvkVKXQYFAbWiafIyKQSIQt3
+         Z0q1rFAjrt6IlVC2tyEG8fPwKcsqHYmTnIOHTOdRxmKWHdWVa6cz5A/OFo0z+jAy8y5y
+         oy86jgUwg0V18FZ8WeqbGj3D1qxMr216FcQBkggMzHi6UNmuHArME6eZhf4HK9o6psQA
+         zphA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DTFCnl5gh1u+TR9T7mZcMZHn+JFU1MgZVavln5ZZFag=;
+        b=f6H0K6GoMcoMCoe4EiPIeFm7I8hTphiS+Oitw9lzNDrSiiTZDpvGoZeplzhHohVEcJ
+         EsvxoFGGWCJfxEgOA7pIxvqBezq9hAEr0WhXc2ne3IOc4wamzhL7jaGXQ2CE6OtwIVC0
+         5GMIMYY4BR8GBvyepQICctDaAYtjeETmqv6sQdcqSNary06UHLXAdvJmqYCT4eSk6eQ4
+         5Ev62ME4ldq7aTVkacCDYEtc5z5Nc3l7cn6/pCxQle4cM+wxQDI05POKQOqrF4ZxZjG9
+         M3uSCUpTc6wGOdpfawC4FtQxTrCCfIWk+FyhZrRD16DZtCiZN9VyLxvxIBZofqF3S66j
+         4s8w==
+X-Gm-Message-State: APjAAAW+yfr1sGzotPC3EhCUdf7+lAswKft8EU8JigjsuFwkCznRy07v
+        OOb0euwqjcG+6dnRQAK8Qro=
+X-Google-Smtp-Source: APXvYqy8f/sNdB9zlR2x/uQai4PddUprffiZxMQivT0emqtkfFV7dardd/K56g6HAct66PyfFGHZWA==
+X-Received: by 2002:a63:d750:: with SMTP id w16mr32248403pgi.156.1574692760406;
+        Mon, 25 Nov 2019 06:39:20 -0800 (PST)
+Received: from nishad ([106.51.232.103])
+        by smtp.gmail.com with ESMTPSA id u7sm8564035pfh.84.2019.11.25.06.39.15
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 25 Nov 2019 06:39:19 -0800 (PST)
+Date:   Mon, 25 Nov 2019 20:09:10 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20191125143900.GA2572@nishad>
+References: <20191123130815.GA3288@nishad>
+ <20191123183455.6266e9a8@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a6c038cb-4b95-beb0-abf3-8938825d379e@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191123183455.6266e9a8@cakuba.netronome.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 17, 2019 at 09:44:38AM -0700, David Ahern wrote:
->On 11/16/19 8:50 AM, Sasha Levin wrote:
->> From: Mike Manning <mmanning@vyatta.att-mail.com>
->>
->> [ Upstream commit 6f12fa775530195a501fb090d092c637f32d0cc5 ]
->>
->> The skb for packets that are multicast or to a link-local address are
->> not marked as being enslaved to a VRF, if they are received on a socket
->> bound to the VRF. This is needed for ND and it is preferable for the
->> kernel not to have to deal with the additional use-cases if ll or mcast
->> packets are handled as enslaved. However, this does not allow service
->> instances listening on unbound and bound to VRF sockets to distinguish
->> the VRF used, if packets are sent as multicast or to a link-local
->> address. The fix is for the VRF driver to also mark these skb as being
->> enslaved to the VRF.
->>
->> Signed-off-by: Mike Manning <mmanning@vyatta.att-mail.com>
->> Reviewed-by: David Ahern <dsahern@gmail.com>
->> Tested-by: David Ahern <dsahern@gmail.com>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  drivers/net/vrf.c | 19 +++++++++----------
->>  1 file changed, 9 insertions(+), 10 deletions(-)
->>
->
->backporting this patch and it's bug fix, "ipv6: Fix handling of LLA with
->VRF and sockets bound to VRF" to 4.14 is a bit questionable. They
->definitely do not need to come back to 4.9.
+On Sat, Nov 23, 2019 at 06:34:55PM -0800, Jakub Kicinski wrote:
+> On Sat, 23 Nov 2019 18:38:19 +0530, Nishad Kamdar wrote:
+> > diff --git a/drivers/net/phy/aquantia.h b/drivers/net/phy/aquantia.h
+> > index 5a16caab7b2f..40e0be0f4e1c 100644
+> > --- a/drivers/net/phy/aquantia.h
+> > +++ b/drivers/net/phy/aquantia.h
+> > @@ -1,5 +1,5 @@
+> > -/* SPDX-License-Identifier: GPL-2.0
+> > - * HWMON driver for Aquantia PHY
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*  HWMON driver for Aquantia PHY
+> 
+> You're adding an extra space here. Is this intentional?
 
-I'll drop it, thanks.
+No, It shouldn't be there.
 
--- 
-Thanks,
-Sasha
+Thanks you for pointing it out.
+I'll update and resend the patch.
+
+Thanks for the review.
+
+Regards,
+Nishad
+
+> 
+> >   *
+> >   * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+> >   * Author: Andrew Lunn <andrew@lunn.ch>
