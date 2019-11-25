@@ -2,70 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D066109549
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:53:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA0810955F
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 23:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbfKYVx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 16:53:28 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:32943 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfKYVx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:53:28 -0500
-Received: by mail-lj1-f196.google.com with SMTP id t5so17747356ljk.0;
-        Mon, 25 Nov 2019 13:53:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1m7PwchglaL7gwC7F2/hFZk5GC3zqJv6XKyWdmpmig0=;
-        b=Z88jP1L3UQbQwCYbcFuF6ra1J7XUd8jV2yB65SV7J37hInngSHbuXvjg+3cDU6V6X4
-         7AvYxJNE1js4tWO+Z5hgUZJTbaZ+jqFmA0w5OnrFVaYsG9N+VR3fqW26gke5JXhIWH7i
-         x358Lz6Lv9xGYkIO2Dr2c5x/qD9ad01ousFi4H3uFbZ/6qTH6ZI1TI1jxJjzMPdU2Mnx
-         eoPYVXif8unimoYn0gPyJR7IB45epP16oemj9ZH8/H6CGCtSKLQ0xzx/SKu7Yvu3soid
-         f/74/dXC6o2nFSLn6BoiP07CS64eSH3+oXtNu1rOkOmcIkuOFUBWJQTMVZLP0AL7cjOy
-         4AJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1m7PwchglaL7gwC7F2/hFZk5GC3zqJv6XKyWdmpmig0=;
-        b=g9Vziu11LYI/Qn/bRQTq67Umrn9zeOuxuFccD9+qgrZL6Vpwq9NpbnDqPD3+XjMKq8
-         e2brscwbzH7/rzmo/M9HAP7Dp6QJ0oPVw9GlEoaoHBcHCi7+z+G0hIckwGrnbHb1ynbQ
-         QPz249UB8CrC9z+SxvT7PziYCKemaEtmBnmGvWSdsJKwtGBvTy4R8//O2MGZTZKz3v60
-         w6JVb8BAaSLW+AdeyQiYcgaqlXIGJoOFtG+LwgSTG8k8KuOguVEK+S+7onV+9Vhhr0zH
-         8kcrFSp/BpzlZcezrdhtxxKbplP19m9ecaMqI2RvJ9v92DMwywy1mRH9njcRtDFb+mgn
-         NCwA==
-X-Gm-Message-State: APjAAAXPw1SJwYSnOEW03OMjXwfh+SrbOzVXhmeJnlSX8pNRnYmWsUuY
-        9jl9dmBlxTSjoevfxabTlLu+ygX+mbmeIXaKPN0=
-X-Google-Smtp-Source: APXvYqy2+7ipDaEazs6p5YBh/tlKTRNCj1SJ2osGyFa6B1KbRPIno2KswQfFhSzYIYiMZFPGxXgCxsdR7tC7w2fswjk=
-X-Received: by 2002:a2e:2e10:: with SMTP id u16mr24581795lju.51.1574718805768;
- Mon, 25 Nov 2019 13:53:25 -0800 (PST)
+        id S1726118AbfKYWFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 17:05:00 -0500
+Received: from www262.sakura.ne.jp ([202.181.97.72]:52627 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbfKYWFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 17:05:00 -0500
+Received: from fsav401.sakura.ne.jp (fsav401.sakura.ne.jp [133.242.250.100])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id xAPM40dL086354;
+        Tue, 26 Nov 2019 07:04:01 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav401.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp);
+ Tue, 26 Nov 2019 07:04:00 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp)
+Received: from [192.168.1.9] (softbank126040052248.bbtec.net [126.40.52.248])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id xAPM3qjm086324
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
+        Tue, 26 Nov 2019 07:04:00 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Subject: Re: general protection fault in selinux_socket_sendmsg (2)
+To:     syzbot <syzbot+314db21f0d5c1f53856c@syzkaller.appspotmail.com>,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000006c9f4e059830c33c@google.com>
+Cc:     andriin@fb.com, anton@enomsg.org, ast@kernel.org,
+        bpf@vger.kernel.org, ccross@android.com, daniel@iogearbox.net,
+        eparis@parisplace.org, kafai@fb.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com,
+        sds@tycho.nsa.gov, selinux@vger.kernel.org, songliubraving@fb.com,
+        tony.luck@intel.com, yhs@fb.com
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Message-ID: <2340a1a3-37cf-5f55-1f9a-9052a557f579@I-love.SAKURA.ne.jp>
+Date:   Tue, 26 Nov 2019 07:03:51 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-References: <20191125212948.1163343-1-andriin@fb.com>
-In-Reply-To: <20191125212948.1163343-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 25 Nov 2019 13:53:14 -0800
-Message-ID: <CAADnVQJ1NKx2u0qHe+79DKcKs0=6XXjm-hOjJ6DvU753EodWMw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix usage of u32 in userspace code
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0000000000006c9f4e059830c33c@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 25, 2019 at 1:30 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> u32 is not defined for libbpf when compiled outside of kernel sources (e.g.,
-> in Github projection). Use __u32 instead.
->
-> Fixes: b8c54ea455dc ("libbpf: Add support to attach to fentry/fexit tracing progs")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On 2019/11/26 4:28, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    6b8a7946 Merge tag 'for_linus' of git://git.kernel.org/pub..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1680ab8ce00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=4737c15fc47048f2
+> dashboard link: https://syzkaller.appspot.com/bug?extid=314db21f0d5c1f53856c
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
 
-Applied. Thanks
+Original bug has syz reproducer.
+
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+314db21f0d5c1f53856c@syzkaller.appspotmail.com
+> 
+
+net/rxrpc/output.c:655
+
+#syz dup: KMSAN: use-after-free in rxrpc_send_keepalive
