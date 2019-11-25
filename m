@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1E9109546
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D066109549
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725945AbfKYVxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 16:53:08 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:45556 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfKYVxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:53:08 -0500
-Received: by mail-lf1-f67.google.com with SMTP id 203so12253024lfa.12;
-        Mon, 25 Nov 2019 13:53:06 -0800 (PST)
+        id S1726333AbfKYVx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 16:53:28 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:32943 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbfKYVx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:53:28 -0500
+Received: by mail-lj1-f196.google.com with SMTP id t5so17747356ljk.0;
+        Mon, 25 Nov 2019 13:53:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XkRgDrEt7xzx/syrzYXXT4cApNXjq2/kEFLNeHp9+qg=;
-        b=ERlzkI8Zekt2L5iGgIbMhY5/BsfR4+K2EbCpyJDVKHVBLBCvB3x5169UQJ4TLgHwB6
-         rHmktjxeZhGtat6lMimIMkLgX0KaJWsltQQKXuPVM+jQZYRC5pNu8GzCvbnO3b65bo31
-         aw8CaSP6TNP1szyb3iqsxvepNADwWywAeWjEJDmZuSAQZvi/7BG8cfkKhVVTvEKSxZmF
-         VwdZyYs2t8etGdoZ874SJ8g6TrcbN/+a9GUJAeEgKHHy/8sIwrH16ouZto/v1flU39nI
-         PMpNl1q/RkbL+nhvL05k6uWIZYwnQ2WoEztniiYPtdBxrz6q5mDijOKUNOXk43Mq+Q7Y
-         pv+Q==
+        bh=1m7PwchglaL7gwC7F2/hFZk5GC3zqJv6XKyWdmpmig0=;
+        b=Z88jP1L3UQbQwCYbcFuF6ra1J7XUd8jV2yB65SV7J37hInngSHbuXvjg+3cDU6V6X4
+         7AvYxJNE1js4tWO+Z5hgUZJTbaZ+jqFmA0w5OnrFVaYsG9N+VR3fqW26gke5JXhIWH7i
+         x358Lz6Lv9xGYkIO2Dr2c5x/qD9ad01ousFi4H3uFbZ/6qTH6ZI1TI1jxJjzMPdU2Mnx
+         eoPYVXif8unimoYn0gPyJR7IB45epP16oemj9ZH8/H6CGCtSKLQ0xzx/SKu7Yvu3soid
+         f/74/dXC6o2nFSLn6BoiP07CS64eSH3+oXtNu1rOkOmcIkuOFUBWJQTMVZLP0AL7cjOy
+         4AJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XkRgDrEt7xzx/syrzYXXT4cApNXjq2/kEFLNeHp9+qg=;
-        b=L/Os6Yq86fvWkiZxY2bwId1URpzt/RYkhKmg7rOOb6qQbIoNEBI+T+hsK2XPxCRTRh
-         Xurz8mJjnc3gBDyIdNMq3Z86RZoW9LMm12FNGQcl3p2sNPTxqWVfPljGKUuqMW44oKjB
-         Cm6essaylJkOEKRrvTn6A1sK4bz+88kyI2z0T7MXqWiAIkRTQFBTvmW4fyT69Zdw9210
-         bWtd8OfkIbyjbssFPwrR+KcbZCQA62RuLzpkQwoD1hHWog1UB6DIUs0tUxK8Cr6eh6Ym
-         HuDVPPPRWesXKIq3a5YQIhbdYcyxtlfBAjTfmwe7AfN+s9tV+h77DMtcUduzHKi6PhNL
-         tKXQ==
-X-Gm-Message-State: APjAAAW0tkWaeLndVU7C37Elf2Fii9XufPnmjugx+CUA6V1jwJbvMVEx
-        A40aipTCf0UX1Qpu/V/5Zz2IvIk3S6F4yRfniIU=
-X-Google-Smtp-Source: APXvYqzVMDpVPS/0yse9kP0C7QQ3+VjbW0gDDpHDoWlX4vV5llfTQVR2wXkWuYJLH+7WuJNeMengUvGbuZwOpeLHBNc=
-X-Received: by 2002:ac2:47ec:: with SMTP id b12mr16855821lfp.162.1574718785832;
- Mon, 25 Nov 2019 13:53:05 -0800 (PST)
+        bh=1m7PwchglaL7gwC7F2/hFZk5GC3zqJv6XKyWdmpmig0=;
+        b=g9Vziu11LYI/Qn/bRQTq67Umrn9zeOuxuFccD9+qgrZL6Vpwq9NpbnDqPD3+XjMKq8
+         e2brscwbzH7/rzmo/M9HAP7Dp6QJ0oPVw9GlEoaoHBcHCi7+z+G0hIckwGrnbHb1ynbQ
+         QPz249UB8CrC9z+SxvT7PziYCKemaEtmBnmGvWSdsJKwtGBvTy4R8//O2MGZTZKz3v60
+         w6JVb8BAaSLW+AdeyQiYcgaqlXIGJoOFtG+LwgSTG8k8KuOguVEK+S+7onV+9Vhhr0zH
+         8kcrFSp/BpzlZcezrdhtxxKbplP19m9ecaMqI2RvJ9v92DMwywy1mRH9njcRtDFb+mgn
+         NCwA==
+X-Gm-Message-State: APjAAAXPw1SJwYSnOEW03OMjXwfh+SrbOzVXhmeJnlSX8pNRnYmWsUuY
+        9jl9dmBlxTSjoevfxabTlLu+ygX+mbmeIXaKPN0=
+X-Google-Smtp-Source: APXvYqy2+7ipDaEazs6p5YBh/tlKTRNCj1SJ2osGyFa6B1KbRPIno2KswQfFhSzYIYiMZFPGxXgCxsdR7tC7w2fswjk=
+X-Received: by 2002:a2e:2e10:: with SMTP id u16mr24581795lju.51.1574718805768;
+ Mon, 25 Nov 2019 13:53:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20191123220835.1237773-1-andriin@fb.com> <5ddc3b355840f_2b082aba75a825b46@john-XPS-13-9370.notmuch>
- <CAEf4Bzbii9W=Frc3aPLrLsCWq1fFJXADhhQ4w7_d15ucqBuWHg@mail.gmail.com> <5ddc3eada4ad1_78092ad33cdb65c0b0@john-XPS-13-9370.notmuch>
-In-Reply-To: <5ddc3eada4ad1_78092ad33cdb65c0b0@john-XPS-13-9370.notmuch>
+References: <20191125212948.1163343-1-andriin@fb.com>
+In-Reply-To: <20191125212948.1163343-1-andriin@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 25 Nov 2019 13:52:54 -0800
-Message-ID: <CAADnVQKa-ThGGnO5vYEAPfNZUYd76AD1MqqAExNyf+PQMpSqOw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] mm: implement no-MMU variant of vmalloc_user_node_flags
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+Date:   Mon, 25 Nov 2019 13:53:14 -0800
+Message-ID: <CAADnVQJ1NKx2u0qHe+79DKcKs0=6XXjm-hOjJ6DvU753EodWMw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix usage of u32 in userspace code
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 25, 2019 at 12:51 PM John Fastabend
-<john.fastabend@gmail.com> wrote:
+On Mon, Nov 25, 2019 at 1:30 PM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> Andrii Nakryiko wrote:
-> > On Mon, Nov 25, 2019 at 12:36 PM John Fastabend
-> > <john.fastabend@gmail.com> wrote:
-> > >
-> > > Andrii Nakryiko wrote:
-> > > > To fix build with !CONFIG_MMU, implement it for no-MMU configurations as well.
-> > > >
-> > > > Cc: Johannes Weiner <hannes@cmpxchg.org>
-> > > > Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
-> > > > Reported-by: kbuild test robot <lkp@intel.com>
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> u32 is not defined for libbpf when compiled outside of kernel sources (e.g.,
+> in Github projection). Use __u32 instead.
+>
+> Fixes: b8c54ea455dc ("libbpf: Add support to attach to fentry/fexit tracing progs")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
 Applied. Thanks
