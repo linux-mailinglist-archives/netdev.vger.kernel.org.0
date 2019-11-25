@@ -2,103 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16844108BE9
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63DCF108BEE
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727572AbfKYKj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 05:39:58 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:32892 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727545AbfKYKj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:39:57 -0500
-Received: by mail-ed1-f68.google.com with SMTP id a24so12237167edt.0;
-        Mon, 25 Nov 2019 02:39:56 -0800 (PST)
+        id S1727592AbfKYKkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:40:45 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34725 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727474AbfKYKkp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:40:45 -0500
+Received: by mail-lf1-f65.google.com with SMTP id l28so10638526lfj.1
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 02:40:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1ViDyXNSpHaaH3OFubVRo3F6v5gJ1fGy0QZqshSl5CQ=;
-        b=MYWBLphnvYufVWnC/3FBql5ADo2y+o1lvjxPAR4CEu32RqPiwS7qbvjMmDQfC7YHg6
-         VvX1fjUibqYhd5B9WjXuraaLF2QOvOc+gQsddkD9XE1kiBWxqX19RL0wJMYlLb11kA7U
-         t7EoK/xRRycLKMoTraotgCq5mVxE3e2JG9eenl6PGvV3Q4KP8dqjVdXQGyIwyDBgR+s7
-         VWB9xCnzkCS9jzcvLFlmRrtGoFDt4iP11eAlKQrOtZH0y729yPoSM1S+v/kTOtipm5zm
-         ITlCi0FlsDc1gV+SiAUW21AS8N0ynffblujM/oHUi7j4OHlinr0gOf2q4vfHo0QLctWU
-         XDlw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=ZlLLkT47FyuFfN9fxxKmEsBMtvvHr273+tzCjCjwgk8=;
+        b=f3s99WwTGEwa9gVBoAirIBHgkesQUtftFxGLnkkzsZ4QS9JCAOqc6QEETD6F1fij/1
+         CaMeAWH8l0z0RhUJNKTHo0e8kblkfhxsu2HDlwIlZ7OnDNHohlza30/8G5/XoBIuDSlP
+         ojxjx0TsKeK8Ousu93yP2t00T3+14LvRN3hDw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1ViDyXNSpHaaH3OFubVRo3F6v5gJ1fGy0QZqshSl5CQ=;
-        b=NU5gVQdIIe+jVitNAv/fDAjvBLJjXEM0Innl+pzKaMPIm4o4grYsPqPmcK8gEBa+yD
-         kcORa+8ORZySpTGO8RgJme2CBiHgZH1lv13+QdXmUDgBcQeEgVCvlNF0u59nA2DBK37T
-         tL8DsYzZAkP/N91dSoTDcbU7tEpALO0SfyZnzZJ3kjyvdeShZ2ObfVDq/IfFyVhBfwLq
-         +GcMqY5n20qKghzPqdV9O7omFPqfaSAI5Jb1gGhp0GAmDpLscQvrx4sPA/Y1P2czWCdo
-         HzDeH4scPSjwiJxvPRAra3dLUODqYz5mkHhfLiM4OZNME1vdOaxa44zryaBAf5CRIzSs
-         qdxA==
-X-Gm-Message-State: APjAAAXiALOufQicF4Rek/c7VCFjvSKvzao5Tggb+4ujF75EVEfsAJup
-        RTi7gIcvQkLTZAsD5m9OeWBnDzwylq/84VEHtUc=
-X-Google-Smtp-Source: APXvYqz1CR0mxqDb3+qFk6F6u3U+5Rt32RCF09Q5JzaDRy2yIySTZJrmUJaTiwIO/PS5WHgr2zy4mLyY7MrR0DeZV04=
-X-Received: by 2002:a05:6402:2299:: with SMTP id cw25mr11723620edb.36.1574678395405;
- Mon, 25 Nov 2019 02:39:55 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=ZlLLkT47FyuFfN9fxxKmEsBMtvvHr273+tzCjCjwgk8=;
+        b=o3bDocLgyl5b6AvuBzluaHVfP1d/krYiClbQ6NZ7+Nj4wNNhYQjgM0sLbt682Y54qE
+         JESE5Ap8bfpLrAnpz0VwXfjNTqma4LSKSRJpVLPj+1wmn1ziPR5cqhHgXMlruyflDChX
+         9D2Gnj1HjSiHTTwx3tTkSz8a12/sez6RTXDQcq1acBerRwfshi8HlQaHH1WwfRezSOae
+         6L0z0CYwC4U0CHDfA3qiAQMwZIe44CoBA/ixkLfhQjLlZeSw4mJliuQ8AcmY7CCMcc3v
+         q+TeGLG8zGCT0fyR4BYmv8uHG1VB8sBhJUIVOYQ38Sx66+UqaNwIbsRtZIMY/0iIFTUF
+         R4aA==
+X-Gm-Message-State: APjAAAX3lISYv16pFwt1zJec2MLA+UnKhPTL4Cl3q2PtLzjp9LS4vclG
+        5RYCJACiCjN3/abUPLx4IRhlbg==
+X-Google-Smtp-Source: APXvYqybnqU2QFtI5OevLSB2FWw3P1omguHOdK5asTKGbbLhopHa0EKu9SH3JrodF7Yxh/YSufBZqA==
+X-Received: by 2002:a19:c3ca:: with SMTP id t193mr7054719lff.40.1574678442688;
+        Mon, 25 Nov 2019 02:40:42 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id g23sm4133151ljn.63.2019.11.25.02.40.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 02:40:42 -0800 (PST)
+References: <20191123110751.6729-1-jakub@cloudflare.com> <20191123110751.6729-6-jakub@cloudflare.com> <20191125012440.crbufwpokttx67du@ast-mbp.dhcp.thefacebook.com> <5ddb55c87d06c_79e12b0ab99325bc69@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next 5/8] bpf: Allow selecting reuseport socket from a SOCKMAP
+In-reply-to: <5ddb55c87d06c_79e12b0ab99325bc69@john-XPS-13-9370.notmuch>
+Date:   Mon, 25 Nov 2019 11:40:41 +0100
+Message-ID: <87o8x0nsra.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20191125100259.5147-1-o.rempel@pengutronix.de>
- <CA+h21hrwK-8TWcAowcLC5MOaqE+XYXdogmAE7TYVG5B3dG57cA@mail.gmail.com> <caab9bcc-a4a6-db88-aa23-859ffcf6ff85@pengutronix.de>
-In-Reply-To: <caab9bcc-a4a6-db88-aa23-859ffcf6ff85@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 25 Nov 2019 12:39:44 +0200
-Message-ID: <CA+h21ho9bJsaq8e-gRhRpM+kXARNJ6tyL10vKVf2+7YOtaJGXw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] net: dsa: sja1105: print info about probet chip
- only after every thing was done.
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Nov 2019 at 12:32, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> On 25.11.19 11:22, Vladimir Oltean wrote:
-> > On Mon, 25 Nov 2019 at 12:03, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> >>
-> >> Currently we will get "Probed switch chip" notification multiple times
-> >> if first probe filed by some reason. To avoid this confusing notifications move
-> >> dev_info to the end of probe.
-> >>
-> >> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> >> ---
-> >
-> > Also there are some typos which should be corrected:
-> > probet -> probed
-> > every thing -> everything
-> > filed -> failed
-> >
-> > "failed for some reason" -> "was deferred"
+On Mon, Nov 25, 2019 at 05:17 AM CET, John Fastabend wrote:
+> Alexei Starovoitov wrote:
+>> On Sat, Nov 23, 2019 at 12:07:48PM +0100, Jakub Sitnicki wrote:
+>> > SOCKMAP now supports storing references to listening sockets. Nothing keeps
+>> > us from using it as an array of sockets to select from in SK_REUSEPORT
+>> > programs.
+>> >
+>> > Whitelist the map type with the BPF helper for selecting socket. However,
+>> > impose a restriction that the selected socket needs to be a listening TCP
+>> > socket or a bound UDP socket (connected or not).
+>> >
+>> > The only other map type that works with the BPF reuseport helper,
+>> > REUSEPORT_SOCKARRAY, has a corresponding check in its update operation
+>> > handler.
+>> >
+>> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> > ---
 >
-> Ok, thx.
+> [...]
 >
-> should i resend both patches separately or only this one with spell fixes?
+>> > diff --git a/net/core/filter.c b/net/core/filter.c
+>> > index 49ded4a7588a..e3fb77353248 100644
+>> > --- a/net/core/filter.c
+>> > +++ b/net/core/filter.c
+>> > @@ -8723,6 +8723,8 @@ BPF_CALL_4(sk_select_reuseport, struct sk_reuseport_kern *, reuse_kern,
+>> >  	selected_sk = map->ops->map_lookup_elem(map, key);
+>> >  	if (!selected_sk)
+>> >  		return -ENOENT;
+>> > +	if (!sock_flag(selected_sk, SOCK_RCU_FREE))
+>> > +		return -EINVAL;
+>>
+>> hmm. I wonder whether this breaks existing users...
 >
+> There is already this check in reuseport_array_update_check()
+>
+> 	/*
+> 	 * sk must be hashed (i.e. listening in the TCP case or binded
+> 	 * in the UDP case) and
+> 	 * it must also be a SO_REUSEPORT sk (i.e. reuse cannot be NULL).
+> 	 *
+> 	 * Also, sk will be used in bpf helper that is protected by
+> 	 * rcu_read_lock().
+> 	 */
+> 	if (!sock_flag(nsk, SOCK_RCU_FREE) || !sk_hashed(nsk) || !nsk_reuse)
+> 		return -EINVAL;
+>
+> So I believe it should not cause any problems with existing users. Perhaps
+> we could consolidate the checks a bit or move it into the update paths if we
+> wanted. I assume Jakub was just ensuring we don't get here with SOCK_RCU_FREE
+> set from any of the new paths now. I'll let him answer though.
 
-I don't know if David/Jakub like applying partial series (just 2/2). I
-would send a v2 to each patch specifying the tree clearly.
-Also I think I would just move the "Probed...." message somewhere at
-the beginning of sja1105_setup, where no probe deferral can happen.
+That was exactly my thinking here.
+
+REUSEPORT_SOCKARRAY can't be populated with sockets that don't have
+SOCK_RCU_FREE set. This makes the flag check in sk_select_reuseport BPF
+helper redundant for this map type.
+
+SOCKMAP, OTOH, allows storing established TCP sockets, which don't have
+SOCK_RCU_FREE flag and shouldn't be used as reuseport targets. The newly
+added check protects us against it.
+
+I have a couple tests in the last patch for it -
+test_sockmap_reuseport_select_{listening,connected}. Admittedly, UDP is
+not covered.
+
+Not sure how we could go about moving the checks to the update path for
+SOCKMAP. At update time we don't know if the map will be used with a
+reuseport or a sk_{skb,msg} program.
+
+-Jakub
 
 >
-> Kind regards,
-> Oleksij Rempel
+>> Martin,
+>> what do you think?
 >
-> --
-> Pengutronix e.K.                           |                             |
-> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-> Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
-Thanks,
--Vladimir
+> More eyes the better.
+>
+>> Could you also take a look at other patches too?
+>> In particular patch 7?
+>>
+>
+> Agreed would be good to give 7/8 a look I'm not too familiar with the
+> selftests there.
