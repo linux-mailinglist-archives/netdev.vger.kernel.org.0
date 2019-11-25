@@ -2,112 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4F1109386
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD05109398
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:38:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729350AbfKYSbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 13:31:02 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:46447 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727893AbfKYSbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:31:01 -0500
-Received: by mail-ot1-f66.google.com with SMTP id n23so13469740otr.13;
-        Mon, 25 Nov 2019 10:31:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BCZ9ElPD8Y4mMVCJfLlg/SGue6w7FXoSD8+x6lVDs1s=;
-        b=eZGAgP/idKZThrSPvrPiCfLyzW5jhcikm8RwTOJBovl2QwxTySqDFf3TdSkwQODWZf
-         Z58I2e/pAks8TePJ51X31q/EBjLxiXkAoSoZObXJrcdCU6bw6c6bx/ASq4AraEi+GyhA
-         LXvDEkPOSco4x6Nnl24VLv0Mu9wRCXoH6hhLtkivS8jncZ8Mfph2Kp++lmdJrTULv2Nv
-         wBl5OFc2zce81jDsDgNbFoqfCJ5TS+Xuc6CwXfvwOVawGl5ougOnvt5+oXShugSKTJEN
-         f6LT4tgp1tzhILnN1/8aw+2+6VE+MtUpWtn8gUrg6FDDS32GrMmj4PfLUKLRTERS4Ryo
-         pT6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BCZ9ElPD8Y4mMVCJfLlg/SGue6w7FXoSD8+x6lVDs1s=;
-        b=eYV3CV0CVTOX6/yEmMQnigtnMR7O79x3FTHY/PvtqhD6yKbc8iVphYd5LZQkP1IZRo
-         4w23QQgHNsg/bO9oBVYI4R577cZdI9dcdHNoJDeZ4If2ae9icIkDV8+sokR51rH8Bdap
-         7Zh3YNF3lizGzZ2qg9jfcqN4OUFE3qG8XLd9HeJKhLk2lKPquCcTvlNcepz3GptMaFz1
-         49gUzgiM5NSKerJEdLzQATcnIuB71HOiybXuV5JxqSDf4hG6kDk4bt77VRLYrCKJ/z+X
-         hdNr43R+c+FffHK2czznYfFsIJXYbF4eQqxVSglGv/tPTu2qZxvMgQyipb1Z6MdCJ+Xj
-         KLwQ==
-X-Gm-Message-State: APjAAAU+60lf2dTqn0GFhI4KinZiJHp+c//InH5wo66B0tjD3E3NiUgF
-        kc67nJzSA7LfAF11jy9xmvVV17Vz
-X-Google-Smtp-Source: APXvYqzwUc7mU5ZKhRAJscRFaWCmTKKzSUWU3snVxFfwS2r440ohfnEsqHgRCDfXTj/JgGh/mY431Q==
-X-Received: by 2002:a05:6830:1e7b:: with SMTP id m27mr21520339otr.8.1574706660772;
-        Mon, 25 Nov 2019 10:31:00 -0800 (PST)
-Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id p3sm2667663oti.22.2019.11.25.10.30.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Nov 2019 10:31:00 -0800 (PST)
-Subject: Re: [PATCH 3/5] drivers: net: b43legacy: Fix -Wcast-function-type
-To:     Phong Tran <tranmanphong@gmail.com>, davem@davemloft.net,
-        keescook@chromium.org
-Cc:     kvalo@codeaurora.org, saeedm@mellanox.com,
-        jeffrey.t.kirsher@intel.com, luciano.coelho@intel.com,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20191124094306.21297-1-tranmanphong@gmail.com>
- <20191124094306.21297-4-tranmanphong@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <8eb8d6fd-de20-2d04-8210-ad8304d7da9e@lwfinger.net>
-Date:   Mon, 25 Nov 2019 12:30:59 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727071AbfKYSiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 13:38:50 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:53738 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727031AbfKYSit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:38:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574707128;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=R3RH8N0QS/qQQisGjQZQUD6VSu8VqJqcaqGnlmglgPQ=;
+        b=SCzDA6QYUV1K6G0ZZyQ+AZbpsYWGXmq9D6Px1HvPw6YwjU9ldptLy9R5ACrQlrwYmXkQ/k
+        PEjLcu+O8V3SbD6nUJpooJ9HjdM4d9OW/b/+innzNcNKug2/jpj0HM4XheUOgRpFRefpKi
+        np2ZkcDzE4s/tnrxa85vn7Dl/yPTyJQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-398-MnlgQCqFMayi0SM-rPToZA-1; Mon, 25 Nov 2019 13:38:44 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1905A18557C0;
+        Mon, 25 Nov 2019 18:38:43 +0000 (UTC)
+Received: from x2.localnet (ovpn-116-255.phx2.redhat.com [10.3.116.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EF9755D6A0;
+        Mon, 25 Nov 2019 18:38:38 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and unload
+Date:   Mon, 25 Nov 2019 13:38:38 -0500
+Message-ID: <1862228.bWCyuaZ6x9@x2>
+Organization: Red Hat
+In-Reply-To: <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
+References: <20191120213816.8186-1-jolsa@kernel.org> <20191122192353.GA2157@krava> <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191124094306.21297-4-tranmanphong@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: MnlgQCqFMayi0SM-rPToZA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/24/19 3:43 AM, Phong Tran wrote:
-> correct usage prototype of callback in tasklet_init().
-> Report by https://github.com/KSPP/linux/issues/20
+Hello,
+
+On Friday, November 22, 2019 4:19:55 PM EST Paul Moore wrote:
+> On Fri, Nov 22, 2019 at 2:24 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > Paul,
+> > would following output be ok:
+> > 
+> > type=SYSCALL msg=audit(1574445211.897:28015): arch=c000003e syscall=321
+> > success=no exit=-13 a0=5 a1=7fff09ac6c60 a2=78 a3=6 items=0 ppid=1408
+> > pid=9266 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0
+> > fsgid=0 tty=pts0 ses=1 comm="test_verifier"
+> > exe="/home/jolsa/linux/tools/testing/selftests/bpf/test_verifier"
+> > subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+> > key=(null)ARCH=x86_64 SYSCALL=bpf AUID="jolsa" UID="root" GID="root"
+> > EUID="root" SUID="root" FSUID="root" EGID="root" SGID="root"
+> > FSGID="root" type=PROCTITLE msg=audit(1574445211.897:28015):
+> > proctitle="./test_verifier" type=BPF msg=audit(1574445211.897:28016):
+> > prog-id=8103 event=LOAD
+> > 
+> > type=SYSCALL msg=audit(1574445211.897:28016): arch=c000003e syscall=321
+> > success=yes exit=14 a0=5 a1=7fff09ac6b80 a2=78 a3=0 items=0 ppid=1408
+> > pid=9266 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0
+> > fsgid=0 tty=pts0 ses=1 comm="test_verifier"
+> > exe="/home/jolsa/linux/tools/testing/selftests/bpf/test_verifier"
+> > subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+> > key=(null)ARCH=x86_64 SYSCALL=bpf AUID="jolsa" UID="root" GID="root"
+> > EUID="root" SUID="root" FSUID="root" EGID="root" SGID="root"
+> > FSGID="root" type=PROCTITLE msg=audit(1574445211.897:28016):
+> > proctitle="./test_verifier" type=BPF msg=audit(1574445211.897:28017):
+> > prog-id=8103 event=UNLOAD
+>
+> There is some precedence in using "op=" instead of "event=" (an audit
+> "event" is already a thing, using "event=" here might get confusing).
+> I suppose if we are getting really nit-picky you might want to
+> lower-case the LOAD/UNLOAD, but generally Steve cares more about these
+> things than I do.
 > 
-> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-> ---
->   drivers/net/wireless/broadcom/b43legacy/main.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
+> For reference, we have a searchable database of fields here:
+> *
+> https://github.com/linux-audit/audit-documentation/blob/master/specs/field
+> s/field-dictionary.csv
 
-The subject should be "b43legacy: .....". Otherwise it is OK.
+Paul's comments are correct. We generally use op for what operation is being 
+performed. This approach looks better. This is fitting in with the audit way 
+of doing things. I don't think there would be any user space issues adding 
+support for the BPF record.
 
-Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+-Steve
 
-Larry
-
-> 
-> diff --git a/drivers/net/wireless/broadcom/b43legacy/main.c b/drivers/net/wireless/broadcom/b43legacy/main.c
-> index 4325e91736eb..8b6b657c4b85 100644
-> --- a/drivers/net/wireless/broadcom/b43legacy/main.c
-> +++ b/drivers/net/wireless/broadcom/b43legacy/main.c
-> @@ -1275,8 +1275,9 @@ static void handle_irq_ucode_debug(struct b43legacy_wldev *dev)
->   }
->   
->   /* Interrupt handler bottom-half */
-> -static void b43legacy_interrupt_tasklet(struct b43legacy_wldev *dev)
-> +static void b43legacy_interrupt_tasklet(unsigned long data)
->   {
-> +	struct b43legacy_wldev *dev = (struct b43legacy_wldev *)data;
->   	u32 reason;
->   	u32 dma_reason[ARRAY_SIZE(dev->dma_reason)];
->   	u32 merged_dma_reason = 0;
-> @@ -3741,7 +3742,7 @@ static int b43legacy_one_core_attach(struct ssb_device *dev,
->   	b43legacy_set_status(wldev, B43legacy_STAT_UNINIT);
->   	wldev->bad_frames_preempt = modparam_bad_frames_preempt;
->   	tasklet_init(&wldev->isr_tasklet,
-> -		     (void (*)(unsigned long))b43legacy_interrupt_tasklet,
-> +		     b43legacy_interrupt_tasklet,
->   		     (unsigned long)wldev);
->   	if (modparam_pio)
->   		wldev->__using_pio = true;
-> 
 
