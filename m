@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 942E0108D93
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 13:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F57C108D9A
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 13:11:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727209AbfKYMLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 07:11:12 -0500
-Received: from a27-185.smtp-out.us-west-2.amazonses.com ([54.240.27.185]:55104
-        "EHLO a27-185.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725828AbfKYMLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 07:11:12 -0500
+        id S1727309AbfKYMLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 07:11:22 -0500
+Received: from a27-21.smtp-out.us-west-2.amazonses.com ([54.240.27.21]:52064
+        "EHLO a27-21.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725828AbfKYMLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 07:11:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574683870;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
-        bh=WA8L41etKerEMPhjYhfgg3Lt6XxJcn9BfYkWy5icFe8=;
-        b=mLjUl6GxoW/wRN3ZqrC367pGr9y4jV9HigYWQU2sW625FJKw1J04bx38dNjo6q6N
-        BtbL/k4zi3ig+003k7BwJKgWDqiMRrxyxNvFV+XVK8hl8ITF0TEwQYMfhJJagtcXl2T
-        58NcuxSYtw5o/f1iXPlFSHtpJFPPrJvYqx+f98jA=
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574683880;
+        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date;
+        bh=dZsCIhysheSA6zhrVti9PRmRDfktYhj5NEIj4Sd9LIY=;
+        b=es9llh8fC7Y8D0ISBR7qEK0u7P4lfHdlaza4Z+EJdm9ZQHfh3IiXP4M/q7jqGIpR
+        qLc6H57ITuSe3+wuhs7dirjbLupnCSmtWXVMFP91Xvtr8kU2RUaBP3a2ST4p9E3P16l
+        F9qk0DHJ17mrKMskc+sV0lXB+a9sMm4K/ZUZLoYs=
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574683870;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
-        bh=WA8L41etKerEMPhjYhfgg3Lt6XxJcn9BfYkWy5icFe8=;
-        b=EElOjMlBWBaXPq9Do5BLtt7WQftCI8aw9rjLMpDv/SQIOf/9CVqKPTH6jCUBhrfe
-        cn6O+afjP7F597M4F3a5amFKnlhOYvq5JMhe06b232uhb3e40Q0N26+Q1ZR6/5yGy0X
-        sYEX2/JekMlolXHqhhN9ACz0zk2GSZmYR4/uA/Qw=
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574683880;
+        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date:Feedback-ID;
+        bh=dZsCIhysheSA6zhrVti9PRmRDfktYhj5NEIj4Sd9LIY=;
+        b=M1g5Sb/rA3VojiI75WPCHYvfDUrOsSn/WjFegV2bBqepgce+Mjf37+drstQhar/V
+        fGk9jOm9ZgPmhS1RfrKOKho/xoZa2YXThAk8hzd8U4TZb2h3L9lN4C4DRToxxIfg/mk
+        HqqW4mfpYuou8J0SEEb+0dAXfbrkesS+MODQFazM=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0ECF5C433CB
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C1961C447B4
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Edward Cree <ecree@solarflare.com>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
-        David Miller <davem@davemloft.net>, jiri@mellanox.com,
-        edumazet@google.com, idosch@mellanox.com, petrm@mellanox.com,
-        sd@queasysnail.net, f.fainelli@gmail.com,
-        jaswinder.singh@linaro.org, ilias.apalodimas@linaro.org,
-        linux-kernel@vger.kernel.org, emmanuel.grumbach@intel.com,
-        luciano.coelho@intel.com, linuxwifi@intel.com,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL in napi_gro_receive()
-References: <20191014080033.12407-1-alobakin@dlink.ru>
-        <20191015.181649.949805234862708186.davem@davemloft.net>
-        <7e68da00d7c129a8ce290229743beb3d@dlink.ru>
-        <PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
-        <c762f5eee08a8f2d0d6cb927d7fa3848@dlink.ru>
-        <746f768684f266e5a5db1faf8314cd77@dlink.ru>
-        <PSXP216MB0438267E8191486435445DA6804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
-        <cc08834c-ccb3-263a-2967-f72a9d72535a@solarflare.com>
-        <3147bff57d58fce651fe2d3ca53983be@dlink.ru>
-        <414288fcac2ba4fcee48a63bdbf28f7b9a5037c6.camel@sipsolutions.net>
-        <b4b92c4d066007d9cb77e1645e667715c17834fb.camel@redhat.com>
-Date:   Mon, 25 Nov 2019 12:11:10 +0000
-In-Reply-To: <b4b92c4d066007d9cb77e1645e667715c17834fb.camel@redhat.com>
-        (Paolo Abeni's message of "Mon, 25 Nov 2019 12:42:44 +0100")
-Message-ID: <0101016ea2790643-5f91d22f-e322-497e-8c58-34f5942bd2af-000000@us-west-2.amazonses.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-SES-Outgoing: 2019.11.25-54.240.27.185
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] ath10k: Handle "invalid" BDFs for msm8998 devices
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191113154646.43048-1-jeffrey.l.hugo@gmail.com>
+References: <20191113154646.43048-1-jeffrey.l.hugo@gmail.com>
+To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Cc:     davem@davemloft.net, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-ID: <0101016ea2792bf8-85cec4e9-f426-43ba-89a1-242f2308e25e-000000@us-west-2.amazonses.com>
+Date:   Mon, 25 Nov 2019 12:11:20 +0000
+X-SES-Outgoing: 2019.11.25-54.240.27.21
 Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo Abeni <pabeni@redhat.com> writes:
+Jeffrey Hugo <jeffrey.l.hugo@gmail.com> wrote:
 
-> On Mon, 2019-11-25 at 12:05 +0100, Johannes Berg wrote:
->> On Mon, 2019-11-25 at 13:58 +0300, Alexander Lobakin wrote:
->>
->> > Agree. I mean, we _can_ handle this particular problem from networking
->> > core side, but from my point of view only rethinking driver's logic is
->> > the correct way to solve this and other issues that may potentionally
->> > appear in future.
->> 
->> Do tell what you think it should be doing :)
->> 
->> One additional wrinkle is that we have firmware notifications, command
->> completions and actual RX interleaved, so I think we do want to have
->> interrupts for the notifications and command completions?
->
-> I think it would be nice moving the iwlwifi driver to full/plain NAPI
-> mode. The interrupt handler could keep processing extra work as it does
-> now and queue real pkts on some internal queue, and than schedule the
-> relevant napi, which in turn could process such queue in the napi poll
-> method. Likely I missed tons of details and/or oversimplified it...
+> When the BDF download QMI message has the end field set to 1, it signals
+> the end of the transfer, and triggers the firmware to do a CRC check.  The
+> BDFs for msm8998 devices fail this check, yet the firmware is happy to
+> still use the BDF.  It appears that this error is not caught by the
+> downstream drive by concidence, therefore there are production devices
+> in the field where this issue needs to be handled otherwise we cannot
+> support wifi on them.  So, attempt to detect this scenario as best we can
+> and treat it as non-fatal.
+> 
+> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Sorry for hijacking the thread, but I have a patch pending for ath10k
-(another wireless driver) which adds NAPI support to SDIO devices:
+Patch applied to ath-next branch of ath.git, thanks.
 
-https://patchwork.kernel.org/patch/11188393/
-
-I think it does just what you suggested, but I'm no NAPI expert and
-would appreciate if someone more knowledgeable could take a look :)
+319c2b71041f ath10k: Handle "invalid" BDFs for msm8998 devices
 
 -- 
+https://patchwork.kernel.org/patch/11242143/
+
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
