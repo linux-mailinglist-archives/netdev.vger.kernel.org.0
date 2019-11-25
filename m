@@ -2,127 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E142108B86
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FD5F108B84
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:20:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727426AbfKYKUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 05:20:06 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38627 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727266AbfKYKUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:20:04 -0500
-Received: by mail-ed1-f66.google.com with SMTP id s10so12161124edi.5;
-        Mon, 25 Nov 2019 02:20:02 -0800 (PST)
+        id S1727397AbfKYKUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:20:03 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36628 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727266AbfKYKUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:20:02 -0500
+Received: by mail-wm1-f65.google.com with SMTP id n188so13293131wme.1
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 02:20:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s00peLUfoWinM2SfHWjbV7HKo9HO7vaFN9uRGqLoplI=;
-        b=L/oZrUep+QpQeWsilYHaY3WFk8O/BvCHFYw79CHFPxO8m1V7gp2NR0E5pL7z81kPpB
-         jXW0p1YKJykMxwweaku5N5A3yOBcgQL4gr3fMX+CUY4gLQvN0LllxlY7Eh4AVVgOHxdN
-         AY+hvttlqf1HRL6cxVqaPlSttxIKy8u1SjEs+D1meBh8wgZDFttHPWUjxb+NAlG65G8+
-         ter3ccmtcVavXkFK2iTPVMYOLcbRMtAE1O3dyQuEeLrPS6laToIC9taqS2z3FUVnS66Z
-         p3qLByC+Kt2MPSIa+U+aINPVj6Ih/Dr5yRDLKHDn1dvwEFBmp031VUIezqgHSzet3jfk
-         nvzQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Us3qZpPW+o5WzN8X1EHn/ef9hjXmJ0M2q3EFvfHEjsQ=;
+        b=R9t2XQ9fjv8G9AYQYgHpPAojOUzpa6jr+InQnFAXzsuN919gYUXObizp9/EAlfdHtb
+         LIt0tIDZ3uGAKNgPAQoLPvW+8MSfGRcN+KeuPHRCzbXFYDMQcC2qtE4VemGA5mEQoglt
+         ZT6grpVnZpGoczn27McO7NMPb/nUiIGMN2j5AenRMW9rsPhVfeQzQ9jzdz3YvXplZgUd
+         mdwwl5iB+J2zRwKz57JIyboXQg11udnLsGvC4xtgu45J0zB9L8qVl80QuKgY30Pr6LR/
+         3z/HX/25LgdKi0wOD0STdgsSFz8oe0mco0zp7A7j1N5BU98isPaMfxJWW9bf73exMYAP
+         emsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s00peLUfoWinM2SfHWjbV7HKo9HO7vaFN9uRGqLoplI=;
-        b=lQUSiIXtajRzmtFk0T/3DjnocRDmvwvuxTki7NHNqmOgyykNgxOQydaRHfx9XKXFKv
-         fy+nRbfSZSreEuv3BndnMf/+zQHL9iu6K/eGZGukIpQU9SMvqOqkLpA77kGD40eDq+DJ
-         +DplEtcIu1zHhIJaoECIQ4WwALgDO/YC0ozBWkOTQHKnmuWw9gFvxdvczYF14j0URZkC
-         vmHfmmtc+/FWXJvZlGcSA4FXbblSx2YBHhhWakmkY0WL9Ua6FtpAiZAi4wmAW6fTI/0i
-         MYwqQQtzH4sRW6NwbL6ex8zxkc7p2rzVzc8jvvmuf5OGwRBNlgVQo2V1XVVTLGkzcutI
-         l2Lg==
-X-Gm-Message-State: APjAAAU6T3c+KtYZbQ9DHnyp4z/2FJNgrDv2xBvP+1CQHSZ+PonxkznB
-        QsEPPIS6zLaerEz36qbJfNU8NwwuRTQARAIFigo=
-X-Google-Smtp-Source: APXvYqy0BsUCpD6s3pntKidc8OTKecnUvGQDaid6kEAAFpRt+BWseGNpF3yFueq2wMxleXEIJMZNMGg1sVWJmuk3i7s=
-X-Received: by 2002:a05:6402:51:: with SMTP id f17mr17586667edu.123.1574677201422;
- Mon, 25 Nov 2019 02:20:01 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Us3qZpPW+o5WzN8X1EHn/ef9hjXmJ0M2q3EFvfHEjsQ=;
+        b=jg3aDV3RcpNpFYE8ADF1VXIVXoDm/DnJePevzs+GRfV/IfsHaCrXWHGX09nvoUNZBl
+         YMl4lEib0e3jXwnjxXlahWn6TVe7mkLfM6TE1boHbL+Yu6JesaiS81pcb4UQXMMVHHmI
+         aFKWdm0HCixCrDh88/VOc9mPWqBZ+bYpd5BPUx/7IkYVOuOcMGb2m9W43asDcbvyzahx
+         YRNU3AObmyFHedaeuUmrsQllPnuWj9ck8dvGfvJbbZG8z5gqKKNWsS1ypii76tbEoV9D
+         XOEkArb4Dryf4aL1QwZA1J+1tqLTPTFzm7dD2KAMAG/vO+dMsVJrHCqyCLZgb4VN9H7m
+         x9/g==
+X-Gm-Message-State: APjAAAWQpk/OyS7PaanN/iKaCLUKWjwD62fwLx9YZLxuKinvARMba4rD
+        211TCn3azSisUt+3f3wOTT1uLzA0INY=
+X-Google-Smtp-Source: APXvYqxZL1SE3tzeBlGLk4hUWDY5C1oAcGygwvJZqd2gWCMQa8/fPPob5rpgIN2+o+m8onkm6yr4hQ==
+X-Received: by 2002:a05:600c:2254:: with SMTP id a20mr9060630wmm.97.1574677200783;
+        Mon, 25 Nov 2019 02:20:00 -0800 (PST)
+Received: from localhost (ip-94-113-116-128.net.upcbroadband.cz. [94.113.116.128])
+        by smtp.gmail.com with ESMTPSA id u16sm9840714wrr.65.2019.11.25.02.19.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 02:19:59 -0800 (PST)
+Date:   Mon, 25 Nov 2019 11:19:59 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net-next v2 13/13] bnxt_en: Add support for flashing the
+ device via devlink
+Message-ID: <20191125101959.GA5526@nanopsycho>
+References: <1574566250-7546-1-git-send-email-michael.chan@broadcom.com>
+ <1574566250-7546-14-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
-References: <20191125100259.5147-1-o.rempel@pengutronix.de>
-In-Reply-To: <20191125100259.5147-1-o.rempel@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 25 Nov 2019 12:19:50 +0200
-Message-ID: <CA+h21hrOO6AFhvXQL47LwqCKU9vpRZ47feWB6fkn=WfrdZr6tA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] net: dsa: sja1105: print info about probet chip
- only after every thing was done.
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1574566250-7546-14-git-send-email-michael.chan@broadcom.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+Sun, Nov 24, 2019 at 04:30:50AM CET, michael.chan@broadcom.com wrote:
+>From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>
+>Use the same bnxt_flash_package_from_file() function to support
+>devlink flash operation.
+>
+>Cc: Jiri Pirko <jiri@mellanox.com>
+>Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+>---
+> drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 20 ++++++++++++++++++++
+> drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 ++--
+> drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  2 ++
+> 3 files changed, 24 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>index 7078271..acb2dd6 100644
+>--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+>@@ -14,6 +14,25 @@
+> #include "bnxt.h"
+> #include "bnxt_vfr.h"
+> #include "bnxt_devlink.h"
+>+#include "bnxt_ethtool.h"
+>+
+>+static int
+>+bnxt_dl_flash_update(struct devlink *dl, const char *filename,
+>+		     const char *region, struct netlink_ext_ack *extack)
+>+{
+>+	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
+>+
+>+	if (region)
+>+		return -EOPNOTSUPP;
+>+
+>+	if (!BNXT_PF(bp)) {
+>+		NL_SET_ERR_MSG_MOD(extack,
+>+				   "flash update not supported from a VF");
+>+		return -EPERM;
+>+	}
+>+
+>+	return bnxt_flash_package_from_file(bp->dev, filename, 0);
+>+}
+> 
+> static int bnxt_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
+> 				     struct devlink_fmsg *fmsg,
+>@@ -225,6 +244,7 @@ static const struct devlink_ops bnxt_dl_ops = {
+> 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
+> 	.eswitch_mode_get = bnxt_dl_eswitch_mode_get,
+> #endif /* CONFIG_BNXT_SRIOV */
+>+	.flash_update	  = bnxt_dl_flash_update,
 
-On Mon, 25 Nov 2019 at 12:03, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->
-> Currently we will get "Probed switch chip" notification multiple times
-> if first probe filed by some reason. To avoid this confusing notifications move
-> dev_info to the end of probe.
->
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/dsa/sja1105/sja1105_main.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index 7687ddcae159..1238fd68b2cd 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -2191,8 +2191,6 @@ static int sja1105_probe(struct spi_device *spi)
->                 return rc;
->         }
->
-> -       dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
-> -
->         ds = dsa_switch_alloc(dev, SJA1105_NUM_PORTS);
->         if (!ds)
->                 return -ENOMEM;
-> @@ -2218,7 +2216,13 @@ static int sja1105_probe(struct spi_device *spi)
->
->         sja1105_tas_setup(ds);
->
-> -       return dsa_register_switch(priv->ds);
-> +       rc = dsa_register_switch(priv->ds);
-> +       if (rc)
-> +               return rc;
-> +
-> +       dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
-> +
-> +       return 0;
->  }
->
->  static int sja1105_remove(struct spi_device *spi)
-> --
-> 2.24.0
->
+Could you please consider implementing flash status notifications?
+See:
+devlink_flash_update_begin_notify()
+devlink_flash_update_end_notify()
+devlink_flash_update_status_notify()
 
-I don't think cosmetic patches should be send against the "net" tree.
-At the very least I would not keep the RGMII delays fix and this one
-in the same series, since they aren't related and they can be applied
-independently.
 
-If you want to actually fix something, there is also a memory leak
-related to this. It is present in most DSA drivers. When
-dsa_register_switch returns -EPROBE_DEFER, anything allocated with
-devm_kzalloc will be overwritten and the old memory will leak. It's a
-bit tricky to solve though, and especially tricky to figure out a
-proper Fixes: tag, since that devm_kzalloc was also hidden in
-dsa_switch_alloc for most of the time (which in net-next was
-eliminated by Vivien, thus making it more obvious).
+Thanks!
 
-So I think some better mechanism should be thought of, that as little
-as possible is done in the period of time where -EPROBE_DEFER can be
-returned.
 
-Thanks,
--Vladimir
+> };
+> 
+> enum bnxt_dl_param_id {
+>diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+>index e455aaa..2ccf79c 100644
+>--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+>+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+>@@ -2000,8 +2000,8 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+> 	return rc;
+> }
+> 
+>-static int bnxt_flash_package_from_file(struct net_device *dev,
+>-					char *filename, u32 install_type)
+>+int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
+>+				 u32 install_type)
+> {
+> 	struct bnxt *bp = netdev_priv(dev);
+> 	struct hwrm_nvm_install_update_output *resp = bp->hwrm_cmd_resp_addr;
+>diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+>index 01de7e7..4428d0a 100644
+>--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+>+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+>@@ -81,6 +81,8 @@ extern const struct ethtool_ops bnxt_ethtool_ops;
+> u32 _bnxt_fw_to_ethtool_adv_spds(u16, u8);
+> u32 bnxt_fw_to_ethtool_speed(u16);
+> u16 bnxt_get_fw_auto_link_speeds(u32);
+>+int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
+>+				 u32 install_type);
+> void bnxt_ethtool_init(struct bnxt *bp);
+> void bnxt_ethtool_free(struct bnxt *bp);
+> 
+>-- 
+>2.5.1
+>
