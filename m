@@ -2,108 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E30A21090F7
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:24:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88FA610911E
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728422AbfKYPYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 10:24:37 -0500
-Received: from mail-eopbgr40068.outbound.protection.outlook.com ([40.107.4.68]:59104
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727785AbfKYPYh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Nov 2019 10:24:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cwtiurkU3S5P2pXegSa+A+CFpgqzfB4hHVDW2fPMuWUwNASPL2PlogLIoUt8nlyJ9GvO07ubefHN5Z5PcF+rO5SKEe08N3lHSyv2M3mwMsOOQHo1+FEAcEyxDUW6IeQCTXtoz26e5CISfNwhI2g00POmqxa06Zyip8EV1S2s+x7smxfIN3wkNpbVoVQO9KwPMBbheYly0qNTl2H7ryrJU0cdvKfz9HuLB/yurIfAwA8XrtcQaoAqha9M7+HXeg1RH9cWrRNAFrjk38JQ+YEBh56wS4qgAZxYZbcscVz1pOYBJxNtlVYR1JCvfcwMcbLs9zELX96+SEAtjcCVZPdUVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xv2Mlk8YSw5ui3eDrQoiGF/m2/XdLLAxIDQXA/LiMH0=;
- b=ILor8lCif1taf06wMuk14d/dNEQcwCyafCfbeDvc4iyyhVakL1A0vDE9e4BwPD6A9r50MXWP4clK6ZYseiz/x8n1JZcW5wr5fQBWW6GAQGCJkq8WQYOlEhVBnCApBnsSLQcyXYtxRj7PlDbBVf1W3VNIcr58BVMmv8ZTZHI6b0lDQnaqebiLDfP4SS8nuXU9jv3ilVy1EoKcZcr3yqixWSKhJWFS+UcN9qjXSEGXDXXyeVmjN39unwfS/lNnm3VYgmaJRv5aapIy+6DqSJNixF12G6w0o9uBHwMoZekavxs2SZxlPD7ValjYDQWrMcAqTwDNVGjogZsrpBeMIN9how==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xv2Mlk8YSw5ui3eDrQoiGF/m2/XdLLAxIDQXA/LiMH0=;
- b=ChKnLC3Qj9S3P/D8saLydQtjr/llSHcIdzWOMiy8YWGdXF67jyxxaHzmxriK5YK3gBrKQw4Lbnmmwin3SzuyHYECaYZJ/micecPSBfqpWF+Mq5sl9G2cb/yD8KW+gQoGxf4WIkgRczWv691/p+oAKWdolqQODS48fXWqL706Ipw=
-Received: from AM0PR05MB5875.eurprd05.prod.outlook.com (20.178.119.159) by
- AM0PR05MB6609.eurprd05.prod.outlook.com (20.178.117.74) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.22; Mon, 25 Nov 2019 15:24:34 +0000
-Received: from AM0PR05MB5875.eurprd05.prod.outlook.com
- ([fe80::dca5:7e63:8242:685e]) by AM0PR05MB5875.eurprd05.prod.outlook.com
- ([fe80::dca5:7e63:8242:685e%7]) with mapi id 15.20.2474.023; Mon, 25 Nov 2019
- 15:24:34 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>,
-        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net 1/2] i40e: need_wakeup flag might not be set for Tx
-Thread-Topic: [PATCH net 1/2] i40e: need_wakeup flag might not be set for Tx
-Thread-Index: AQHVlm7i7p+2W9+KN0WXqHs0vfAePqecHAEA
-Date:   Mon, 25 Nov 2019 15:24:33 +0000
-Message-ID: <adee745d-6522-309d-a944-7a54869ac945@mellanox.com>
-References: <1573243090-2721-1-git-send-email-magnus.karlsson@intel.com>
-In-Reply-To: <1573243090-2721-1-git-send-email-magnus.karlsson@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR10CA0058.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::38) To AM0PR05MB5875.eurprd05.prod.outlook.com
- (2603:10a6:208:12d::31)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [77.75.144.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 23f5fb51-2fbe-476e-3a5f-08d771bb931c
-x-ms-traffictypediagnostic: AM0PR05MB6609:|AM0PR05MB6609:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6609F6ACB2129B3DC0D25E0BD14A0@AM0PR05MB6609.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0232B30BBC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(376002)(396003)(39860400002)(22813001)(199004)(189003)(54906003)(2501003)(26005)(102836004)(107886003)(76176011)(8936002)(2616005)(66066001)(11346002)(52116002)(6246003)(5660300002)(386003)(6506007)(53546011)(256004)(31686004)(4744005)(446003)(4326008)(14444005)(81166006)(36756003)(81156014)(8676002)(6512007)(2906002)(305945005)(71190400001)(14454004)(6436002)(99286004)(66556008)(66946007)(66476007)(64756008)(66446008)(71200400001)(186003)(229853002)(6116002)(86362001)(478600001)(110136005)(316002)(7736002)(31696002)(2201001)(3846002)(25786009)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6609;H:AM0PR05MB5875.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: U20YpN+rC1DqcM/QC+vswItJgrH2dL0mZGEsWJrecSE7ecwH+YL1FUsAPYAkobQ2q7kLmwQ1US/ltJEBAuOB/YU6l0RVFVgNYlZcxErehmmByKIqX2rl93GSMcHmfxKXxv0EbJFqxPcfueyOdNtsXUPBorOx2W6UcXCH+tXgvuOdYTXDMrQx6gugY3cP/Eq5Ysbbu6nzpx5+VE/ga6IsUdiWNjxrJ2GvXOVQM6uwXZxgmUQJVpKrhaRifBTmVPSuOeBqrRDt/KYdZPYOiHaQvqEktwfMadZjfuFK+VYsy3rCd65Pas8DsrmYuauKVPWVQtgbCZ++tIOhBde5f2DQAhBm7Erwx0Y4xwat+6+T9q18PyF37wyVxKWchE6lcWVmDunaJYH9udQ2OdMUOcG5Gl727Z/4yXt80u85bepdlU3mH2b3e2Ka5xAViLo2NAUWX7NX0Z8Jtss51T2Ao+5sdg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <01DD5B46563A43458FFDCCC73BBFDC17@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728601AbfKYPjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 10:39:04 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40698 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728539AbfKYPjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 10:39:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574696343;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dneEZm6PaWRTyfChWz3XoPps5h37w7jv4igTylbUPX0=;
+        b=eWGt2oNT4vGAOSIthrtnNifYzMnwNn6hTBCVWXLnyPNyNR9M07JAtmMqOJq4Z3kucXFFYT
+        7rwecUoCZkRZbLA/RgTPykYhpg4p1kk445QdXyFjBjyFHJWUB42fKdY5Wem6ba2vPGOdnj
+        V5MyGtIER8EN+tfbJyArQnOzgYC0giU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-377-820Ckze9PraQlY4AioAdBA-1; Mon, 25 Nov 2019 10:39:00 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BB1AC1010B29;
+        Mon, 25 Nov 2019 15:38:58 +0000 (UTC)
+Received: from dhcp-25.97.bos.redhat.com (unknown [10.18.25.127])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0D23F60C81;
+        Mon, 25 Nov 2019 15:38:56 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, ovs dev <dev@openvswitch.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/2] openvswitch: support asymmetric conntrack
+References: <20191108210714.12426-1-aconole@redhat.com>
+        <CAOrHB_B1ueESwUQSkb7BuFGCCyKKqognoWbukTHo2jTajNca6w@mail.gmail.com>
+        <f7twobwyl53.fsf@dhcp-25.97.bos.redhat.com>
+Date:   Mon, 25 Nov 2019 10:38:56 -0500
+In-Reply-To: <f7twobwyl53.fsf@dhcp-25.97.bos.redhat.com> (Aaron Conole's
+        message of "Mon, 18 Nov 2019 15:39:20 -0500")
+Message-ID: <f7t7e3o9d9r.fsf@dhcp-25.97.bos.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23f5fb51-2fbe-476e-3a5f-08d771bb931c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2019 15:24:33.9027
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ba1ir/zC3jhPpw7s5MYu7QLRYAoAPooaiRLGwhMQRrE0ucKraVZRTM5JbCvjWvzVbRf8eT8t8A1Wpv3aN3ncnQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6609
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: 820Ckze9PraQlY4AioAdBA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFnbnVzLA0KDQpPbiAyMDE5LTExLTA4IDIxOjU4LCBNYWdudXMgS2FybHNzb24gd3JvdGU6
-DQo+IFRoaXMgaGFwcGVucyBpZiB0aGVyZSBpcyBhdCBsZWFzdCBvbmUNCj4gb3V0c3RhbmRpbmcg
-cGFja2V0IHRoYXQgaGFzIG5vdCBiZWVuIGNvbXBsZXRlZCBieSB0aGUgaGFyZHdhcmUgYW5kIHdl
-DQo+IGdldCB0aGF0IGNvcnJlc3BvbmRpbmcgY29tcGxldGlvbiAod2hpY2ggd2lsbCBub3QgZ2Vu
-ZXJhdGUgYW4NCj4gaW50ZXJydXB0IHNpbmNlIGludGVycnVwdHMgYXJlIGRpc2FibGVkIGluIHRo
-ZSBuYXBpIHBvbGwgbG9vcCkgYmV0d2Vlbg0KPiB0aGUgdGltZSB3ZSBzdG9wcGVkIHByb2Nlc3Np
-bmcgdGhlIFR4IGNvbXBsZXRpb25zIGFuZCBpbnRlcnJ1cHRzIGFyZQ0KPiBlbmFibGVkIGFnYWlu
-Lg0KDQo+IEJ1dCBpZiB0aGlzIGNvbXBsZXRpb24gaW50ZXJydXB0IG9jY3VycyBiZWZvcmUgaW50
-ZXJydXB0cw0KPiBhcmUgZW5hYmxlLCB3ZSBsb3NlIGl0DQpXaHkgY2FuJ3QgaXQgaGFwcGVuIGZv
-ciByZWd1bGFyIHRyYWZmaWM/IEZyb20geW91ciBkZXNjcmlwdGlvbiBpdCBsb29rcyANCnRvIG1l
-IGFzIGlmIHlvdSBjYW4gbWlzcyBhIGNvbXBsZXRpb24gZm9yIG5vbi1BRl9YRFAgdHJhZmZpYywg
-dG9vLiBJcyANCnRoZXJlIGFueSBkZXRhaWwgdGhhdCBtYWtlcyB0aGlzIGlzc3VlIEFGX1hEUC1z
-cGVjaWZpYz8NCg0KVGhhbmtzLA0KTWF4DQo=
+Aaron Conole <aconole@redhat.com> writes:
+
+> Pravin Shelar <pshelar@ovn.org> writes:
+>
+>> On Fri, Nov 8, 2019 at 1:07 PM Aaron Conole <aconole@redhat.com> wrote:
+>>>
+>>> The openvswitch module shares a common conntrack and NAT infrastructure
+>>> exposed via netfilter.  It's possible that a packet needs both SNAT and
+>>> DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
+>>> this because it runs through the NAT table twice - once on ingress and
+>>> again after egress.  The openvswitch module doesn't have such capabilit=
+y.
+>>>
+>>> Like netfilter hook infrastructure, we should run through NAT twice to
+>>> keep the symmetry.
+>>>
+>>> Fixes: 05752523e565 ("openvswitch: Interface with NAT.")
+>>> Signed-off-by: Aaron Conole <aconole@redhat.com>
+>>
+>> The patch looks ok. But I am not able apply it. can you fix the encoding=
+.
+>
+> Hrrm.  I didn't make any special changes (just used git send-email).  I
+> will look at spinning a second patch.
+
+Pravin,
+
+I tried the following:
+
+  10:36:59 aconole@dhcp-25 {(312434617cb1...)} ~/git/linux$ curl http://pat=
+chwork.ozlabs.org/patch/1192219/mbox/ > test.patch
+    % Total    % Received % Xferd  Average Speed   Time    Time     Time  C=
+urrent
+                                   Dload  Upload   Total   Spent    Left  S=
+peed
+  100  4827  100  4827    0     0   8824      0 --:--:-- --:--:-- --:--:-- =
+ 8808
+  10:37:21 aconole@dhcp-25 {(312434617cb1...)} ~/git/linux$ git am test.pat=
+ch
+  Applying: openvswitch: support asymmetric conntrack
+  10:37:24 aconole@dhcp-25 {(f759cc2b7323...)} ~/git/linux$=20
+
+
+Can you check your mailer settings?  The patchwork mbox worked fine, and
+I was able to apply from my own mbox as well.
+
+-Aaron
+
