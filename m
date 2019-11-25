@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3C59108B8B
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:22:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45CB1108BB7
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 11:31:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727440AbfKYKWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 05:22:15 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41673 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727133AbfKYKWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:22:14 -0500
-Received: by mail-ed1-f68.google.com with SMTP id a21so12137634edj.8;
-        Mon, 25 Nov 2019 02:22:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pVANvWs2+jC3SmocbkUjd8tCAfu3FchChqY44ysSev0=;
-        b=PqFvj7PdBChAuLSe4+klvLSJQ5+OWJVblfpPWf0WNQBJLh2VRKP5d0SXenVeYJ7gOS
-         4y7y3Lxa9VCQ0tBodBhVLANhxXN7LR4Det8zxbzCX6A1p05vbd4h+6ZBkCQXbVhniU3h
-         gfAy6S6SD0TU8tS5TOOhzMkAYdFwbKWNDO+n7O8aFbb9bZ94PSJ9EnM7I4y+tvmFqnEV
-         Tpuws73CpKi6NhQyJ0xRtaHwwLKl7IGN6FdJ5khYwilIyXmmGHMur3DH/WRmooUpz3Sc
-         W1MYtGithNo6SmjJ08HOuYwf0v8Axzirwud2uxy1XoSesxC9Nw341ZiUSgpKE5E8/pcx
-         vyIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pVANvWs2+jC3SmocbkUjd8tCAfu3FchChqY44ysSev0=;
-        b=pVPZqq6Vg0XcGynz66gccghrfBHtuL3fol11+terZV3kSbO8K8q/4qdsqeXpP+XFG7
-         sd/WMwWonHZtjmf3fnJ9Eke733u8h8Y+XWyMUZ5CZN/F9GWdS0TmLVhBClj8ku8aQ2QP
-         DOF1TQpbFzQVkMis+Ab74vQicMv5wAlcaE241J/r/xGdgUTQkrQGttWtn6Tep9tWgsUn
-         2vtHlrPl301530RMxgHgjLmPfy8DhpnP9zCkUR8pkW7Bhp4NXa8qqOYNxPIMt9nxCYFP
-         +1bnVcpQ1oPWO/Gi5vTIxHOeTrlEagXdlcIhotv/C8ltqfh1VDYwzq1vSpuouwIkFsGc
-         93og==
-X-Gm-Message-State: APjAAAWruPPCteIwKcL8/YiVH9xeLYzCNx2KvUaS56AfZT0FrKIcAmHz
-        YBY3k2dF3qyiFXLWDGQX6pGQ1t0xZSq6TwpUnjavdw==
-X-Google-Smtp-Source: APXvYqyPw47PjESWkbKFLFJ8LPOgO5BV+2lhg8QlMqo5plNbR4Ns89Gnwc1AeJBnw3K3Nv22jigJ80DMKF8fIfqnmyY=
-X-Received: by 2002:a05:6402:51:: with SMTP id f17mr17594952edu.123.1574677332782;
- Mon, 25 Nov 2019 02:22:12 -0800 (PST)
+        id S1727486AbfKYKb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 05:31:29 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:42192 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727316AbfKYKb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 05:31:29 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 17D9AB8005A;
+        Mon, 25 Nov 2019 10:31:27 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 25 Nov
+ 2019 10:31:16 +0000
+Subject: Re: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL in
+ napi_gro_receive()
+To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
+        "Alexander Lobakin" <alobakin@dlink.ru>
+CC:     David Miller <davem@davemloft.net>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "petrm@mellanox.com" <petrm@mellanox.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "jaswinder.singh@linaro.org" <jaswinder.singh@linaro.org>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "johannes.berg@intel.com" <johannes.berg@intel.com>,
+        "emmanuel.grumbach@intel.com" <emmanuel.grumbach@intel.com>,
+        "luciano.coelho@intel.com" <luciano.coelho@intel.com>,
+        "linuxwifi@intel.com" <linuxwifi@intel.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+References: <20191014080033.12407-1-alobakin@dlink.ru>
+ <20191015.181649.949805234862708186.davem@davemloft.net>
+ <7e68da00d7c129a8ce290229743beb3d@dlink.ru>
+ <PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+ <c762f5eee08a8f2d0d6cb927d7fa3848@dlink.ru>
+ <746f768684f266e5a5db1faf8314cd77@dlink.ru>
+ <PSXP216MB0438267E8191486435445DA6804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <cc08834c-ccb3-263a-2967-f72a9d72535a@solarflare.com>
+Date:   Mon, 25 Nov 2019 10:31:12 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20191125100259.5147-1-o.rempel@pengutronix.de>
-In-Reply-To: <20191125100259.5147-1-o.rempel@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 25 Nov 2019 12:22:01 +0200
-Message-ID: <CA+h21hrwK-8TWcAowcLC5MOaqE+XYXdogmAE7TYVG5B3dG57cA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] net: dsa: sja1105: print info about probet chip
- only after every thing was done.
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, david@protonic.nl
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <PSXP216MB0438267E8191486435445DA6804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25064.003
+X-TM-AS-Result: No-1.151000-8.000000-10
+X-TMASE-MatchedRID: UuaOI1zLN1j4ECMHJTM/ufZvT2zYoYOwC/ExpXrHizy8YDH/UBNnm3z4
+        lkFFZozya26WJASrL3w0+NJuUFRWY2j8oZRXwTGoxcDvxm0Uv+AGchEhVwJY35KK7cYRdL7/Vsm
+        drKQylyhpaitsZvBsZIHdbZCx6yrRdsj49V16pSkNwUVhIF6pVkqAhuLHn5fEjiLABC6i+1idW2
+        C/Ex2sg7Ooz1ouKUE5VNP1aViTJ070aUnP7vi4bKiUivh0j2PvFfK1en1S7ASk+oW3oLzmHhrlf
+        Onvg2DrfeTxrBFoEvNRw+drvbtM+VI3mP8aC0PBA9lly13c/gH4qCLIu0mtIGOMyb1Ixq8VOI1Z
+        1dPBhuC1qON8SzJ0P5soi2XrUn/JIq95DjCZh0wfRoCwBzgRYsK21zBg2KlfStBGwEBjie75G5W
+        ryQ6GyOk4Bm1wCfA4CvSKnd9MgcyDtEH2wvxTnhjdkxo5gR4SnVm6UUeKDSIBwP3ZU9+WVuv1VZ
+        5IK4cftLvi6hXUM9JR029mOM6P0LrcE8xytxC5d5hZXZFoB8PxWx93BSYyye53VB1DJl7uftwZ3
+        X11IV0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-1.151000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25064.003
+X-MDID: 1574677888-6w8_0MOmzWTL
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Nov 2019 at 12:03, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On 25/11/2019 09:09, Nicholas Johnson wrote:
+> The default value of /proc/sys/net/core/gro_normal_batch was 8.
+> Setting it to 1 allowed it to connect to Wi-Fi network.
 >
-> Currently we will get "Probed switch chip" notification multiple times
-> if first probe filed by some reason. To avoid this confusing notifications move
-> dev_info to the end of probe.
+> Setting it back to 8 did not kill the connection.
 >
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+> But when I disconnected and tried to reconnect, it did not re-connect.
+>
+> Hence, it appears that the problem only affects the initial handshake 
+> when associating with a network, and not normal packet flow.
+That sounds like the GRO batch isn't getting flushed at the endof the
+ NAPI — maybe the driver isn't calling napi_complete_done() at the
+ appropriate time?
+Indeed, from digging through the layers of iwlwifi I eventually get to
+ iwl_pcie_rx_handle() which doesn't really have a NAPI poll (the
+ napi->poll function is iwl_pcie_dummy_napi_poll() { WARN_ON(1);
+ return 0; }) and instead calls napi_gro_flush() at the end of its RX
+ handling.  Unfortunately, napi_gro_flush() is no longer enough,
+ because it doesn't call gro_normal_list() so the packets on the
+ GRO_NORMAL list just sit there indefinitely.
 
-Also there are some typos which should be corrected:
-probet -> probed
-every thing -> everything
-filed -> failed
+It was seeing drivers calling napi_gro_flush() directly that had me
+ worried in the first place about whether listifying napi_gro_receive()
+ was safe and where the gro_normal_list() should go.
+I wondered if other drivers that show up in [1] needed fixing with a
+ gro_normal_list() next to their napi_gro_flush() call.  From a cursory
+ check:
+brocade/bna: has a real poller, calls napi_complete_done() so is OK.
+cortina/gemini: calls napi_complete_done() straight after
+ napi_gro_flush(), so is OK.
+hisilicon/hns3: calls napi_complete(), so is _probably_ OK.
+But it's far from clear to me why *any* of those drivers are calling
+ napi_gro_flush() themselves...
 
-"failed for some reason" -> "was deferred"
+-Ed
 
->  drivers/net/dsa/sja1105/sja1105_main.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index 7687ddcae159..1238fd68b2cd 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -2191,8 +2191,6 @@ static int sja1105_probe(struct spi_device *spi)
->                 return rc;
->         }
->
-> -       dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
-> -
->         ds = dsa_switch_alloc(dev, SJA1105_NUM_PORTS);
->         if (!ds)
->                 return -ENOMEM;
-> @@ -2218,7 +2216,13 @@ static int sja1105_probe(struct spi_device *spi)
->
->         sja1105_tas_setup(ds);
->
-> -       return dsa_register_switch(priv->ds);
-> +       rc = dsa_register_switch(priv->ds);
-> +       if (rc)
-> +               return rc;
-> +
-> +       dev_info(dev, "Probed switch chip: %s\n", priv->info->name);
-> +
-> +       return 0;
->  }
->
->  static int sja1105_remove(struct spi_device *spi)
-> --
-> 2.24.0
->
-
-Thanks,
--Vladimir
+[1]: https://elixir.bootlin.com/linux/latest/ident/napi_gro_flush
