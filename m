@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD05109398
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C43FF1093A2
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:40:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbfKYSiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 13:38:50 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:53738 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727031AbfKYSit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:38:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574707128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R3RH8N0QS/qQQisGjQZQUD6VSu8VqJqcaqGnlmglgPQ=;
-        b=SCzDA6QYUV1K6G0ZZyQ+AZbpsYWGXmq9D6Px1HvPw6YwjU9ldptLy9R5ACrQlrwYmXkQ/k
-        PEjLcu+O8V3SbD6nUJpooJ9HjdM4d9OW/b/+innzNcNKug2/jpj0HM4XheUOgRpFRefpKi
-        np2ZkcDzE4s/tnrxa85vn7Dl/yPTyJQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-398-MnlgQCqFMayi0SM-rPToZA-1; Mon, 25 Nov 2019 13:38:44 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1905A18557C0;
-        Mon, 25 Nov 2019 18:38:43 +0000 (UTC)
-Received: from x2.localnet (ovpn-116-255.phx2.redhat.com [10.3.116.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EF9755D6A0;
-        Mon, 25 Nov 2019 18:38:38 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        linux-audit@redhat.com, Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Subject: Re: [PATCH] bpf: emit audit messages upon successful prog load and unload
-Date:   Mon, 25 Nov 2019 13:38:38 -0500
-Message-ID: <1862228.bWCyuaZ6x9@x2>
-Organization: Red Hat
-In-Reply-To: <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
-References: <20191120213816.8186-1-jolsa@kernel.org> <20191122192353.GA2157@krava> <CAHC9VhRi0JtKgHyAOdAJ=_--vL1VbK7BDq1FnRQ_GwW9P4J_zA@mail.gmail.com>
+        id S1727123AbfKYSkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 13:40:51 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47726 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727029AbfKYSku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:40:50 -0500
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAPIc9La015520;
+        Mon, 25 Nov 2019 13:40:45 -0500
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2wfk3nybx7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Nov 2019 13:40:44 -0500
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAPIeJOH018102;
+        Mon, 25 Nov 2019 18:40:44 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02wdc.us.ibm.com with ESMTP id 2wevd6ccq1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Nov 2019 18:40:44 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAPIehYB52625900
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Nov 2019 18:40:43 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9C157112063;
+        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3F8B7112061;
+        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.80.224.141])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
+Subject: Re: [PATCH net 0/4] ibmvnic: Harden device commands and queries
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
+        dnbanerg@us.ibm.com, brking@linux.vnet.ibm.com,
+        julietk@linux.vnet.ibm.com
+References: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
+ <20191123174925.30b73917@cakuba.netronome.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <52660c98-efd6-16e7-e66d-3528e5b32d3d@linux.ibm.com>
+Date:   Mon, 25 Nov 2019 12:40:42 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: MnlgQCqFMayi0SM-rPToZA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+In-Reply-To: <20191123174925.30b73917@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-25_04:2019-11-21,2019-11-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999
+ malwarescore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011
+ impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1911250151
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-On Friday, November 22, 2019 4:19:55 PM EST Paul Moore wrote:
-> On Fri, Nov 22, 2019 at 2:24 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> > Paul,
-> > would following output be ok:
-> > 
-> > type=SYSCALL msg=audit(1574445211.897:28015): arch=c000003e syscall=321
-> > success=no exit=-13 a0=5 a1=7fff09ac6c60 a2=78 a3=6 items=0 ppid=1408
-> > pid=9266 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0
-> > fsgid=0 tty=pts0 ses=1 comm="test_verifier"
-> > exe="/home/jolsa/linux/tools/testing/selftests/bpf/test_verifier"
-> > subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> > key=(null)ARCH=x86_64 SYSCALL=bpf AUID="jolsa" UID="root" GID="root"
-> > EUID="root" SUID="root" FSUID="root" EGID="root" SGID="root"
-> > FSGID="root" type=PROCTITLE msg=audit(1574445211.897:28015):
-> > proctitle="./test_verifier" type=BPF msg=audit(1574445211.897:28016):
-> > prog-id=8103 event=LOAD
-> > 
-> > type=SYSCALL msg=audit(1574445211.897:28016): arch=c000003e syscall=321
-> > success=yes exit=14 a0=5 a1=7fff09ac6b80 a2=78 a3=0 items=0 ppid=1408
-> > pid=9266 auid=1001 uid=0 gid=0 euid=0 suid=0 fsuid=0 egid=0 sgid=0
-> > fsgid=0 tty=pts0 ses=1 comm="test_verifier"
-> > exe="/home/jolsa/linux/tools/testing/selftests/bpf/test_verifier"
-> > subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> > key=(null)ARCH=x86_64 SYSCALL=bpf AUID="jolsa" UID="root" GID="root"
-> > EUID="root" SUID="root" FSUID="root" EGID="root" SGID="root"
-> > FSGID="root" type=PROCTITLE msg=audit(1574445211.897:28016):
-> > proctitle="./test_verifier" type=BPF msg=audit(1574445211.897:28017):
-> > prog-id=8103 event=UNLOAD
+On 11/23/19 7:49 PM, Jakub Kicinski wrote:
+> On Fri, 22 Nov 2019 13:41:42 -0600, Thomas Falcon wrote:
+>> This patch series fixes some shortcomings with the current
+>> VNIC device command implementation. The first patch fixes
+>> the initialization of driver completion structures used
+>> for device commands. Additionally, all waits for device
+>> commands are bounded with a timeout in the event that the
+>> device does not respond or becomes inoperable. Finally,
+>> serialize queries to retain the integrity of device return
+>> codes.
+> I have minor comments on two patches, but also I think it's
+> a little late in the release cycle for putting this in net.
 >
-> There is some precedence in using "op=" instead of "event=" (an audit
-> "event" is already a thing, using "event=" here might get confusing).
-> I suppose if we are getting really nit-picky you might want to
-> lower-case the LOAD/UNLOAD, but generally Steve cares more about these
-> things than I do.
-> 
-> For reference, we have a searchable database of fields here:
-> *
-> https://github.com/linux-audit/audit-documentation/blob/master/specs/field
-> s/field-dictionary.csv
+> Could you target net-next and repost ASAP so it still makes
+> it into 5.5?
+>
+> Thanks.
 
-Paul's comments are correct. We generally use op for what operation is being 
-performed. This approach looks better. This is fitting in with the audit way 
-of doing things. I don't think there would be any user space issues adding 
-support for the BPF record.
+Thank you, sorry for the late response.  I will make the requested 
+changes ASAP, but I've missed the net-next window.  What should I target 
+for v2?
 
--Steve
+Thanks again,
 
+Tom
 
