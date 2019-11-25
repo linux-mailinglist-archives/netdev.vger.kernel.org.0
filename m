@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B67B110870A
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 05:20:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A551087A3
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 05:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727398AbfKYEU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 23:20:27 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:9271 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727340AbfKYEUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 23:20:24 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ddb567b0000>; Sun, 24 Nov 2019 20:20:11 -0800
+        id S1727227AbfKYEUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Nov 2019 23:20:18 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:19322 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726998AbfKYEUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 23:20:16 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5ddb56810002>; Sun, 24 Nov 2019 20:20:18 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Sun, 24 Nov 2019 20:20:16 -0800
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Sun, 24 Nov 2019 20:20:14 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Sun, 24 Nov 2019 20:20:16 -0800
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
- 2019 04:20:13 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Mon, 25 Nov 2019 04:20:13 +0000
+        by hqpgpgate102.nvidia.com on Sun, 24 Nov 2019 20:20:14 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
+ 2019 04:20:14 +0000
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Mon, 25 Nov 2019 04:20:14 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5ddb567d000b>; Sun, 24 Nov 2019 20:20:13 -0800
+        id <B5ddb567d000c>; Sun, 24 Nov 2019 20:20:13 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -43,11 +43,12 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         Jonathan Corbet <corbet@lwn.net>,
         =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Michal Hocko <mhocko@suse.com>,
         Mike Kravetz <mike.kravetz@oracle.com>,
-        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
         Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
         <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
         <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
@@ -55,216 +56,118 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Jason Gunthorpe" <jgg@mellanox.com>
-Subject: [PATCH 09/19] IB/{core,hw,umem}: set FOLL_PIN via pin_user_pages*(), fix up ODP
-Date:   Sun, 24 Nov 2019 20:20:01 -0800
-Message-ID: <20191125042011.3002372-10-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH 10/19] mm/process_vm_access: set FOLL_PIN via pin_user_pages_remote()
+Date:   Sun, 24 Nov 2019 20:20:02 -0800
+Message-ID: <20191125042011.3002372-11-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191125042011.3002372-1-jhubbard@nvidia.com>
 References: <20191125042011.3002372-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574655611; bh=F5LoLh4kW0VgIVuupouosvzq/0ORLXJ24SyIGBNyaiY=;
+        t=1574655618; bh=P8nVR+kV72iD6sM0eEn6ntwngrRbmURGxrL6qNBlbv8=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Transfer-Encoding:Content-Type;
-        b=pKXQBq2xFNosSHMxDGBCax7XdfIYB/U7NFfgYUWqEQriuv4x/Ruvetfkp4QHGiDA1
-         vbeUKUbk6kOYGLHm0gCZ3qJ9H1EVY93WYcedgBCVfw5M3EFBLyq/2JXwKKTV71UzHF
-         rqlcaebwmLkTX2Vp6HOGYigxVEcULGtlda+dD/xouAIldGc3F/+2ZTuOT8guh6mwq7
-         41CilFdOkcbx0WqJUzg6kg8HHtrRZFawSX1Hdl/moSERPg73t4Ka+ntBOYY26elngm
-         mJkt9jzcnkowOi3JANxBUksjvp0PbCTJpSgJq4ha4hIPzyssqUbjUbIJLPlth2Efyy
-         KPGtXay/D+g0A==
+         Content-Type:Content-Transfer-Encoding;
+        b=lKesB6ym+xsmH3pzlYoMztJ+yYpmeBfaDdlKbcm+Ov0Oe9me0lSNHUFJ4QprbikOC
+         lfrZrl11HiUBrtbdZMs+LKoi+Rx6l3Ck7oeV8/as0OZFC3m99bu9b6dNykGoGNGYdH
+         g4CW1lvSCC9uYS7u3PjTzS/yu2y3kxiLjI50XfLbt9DiCyC2CPswdMokUj2ZxY1UXS
+         QCkk5wE9DgyI5qHC4UXN52r62eB0umS0CHTNvfAHst68PfMoHzvOWB85QVb6eq5vuU
+         X5qPZJWlwz9ha0xRtwngy4U/T/xLVCOs0dYU5iaDPW30LK6aqCDr2YcR23ic6SgZgg
+         COChY61dWiJQQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert infiniband to use the new pin_user_pages*() calls.
+Convert process_vm_access to use the new pin_user_pages_remote()
+call, which sets FOLL_PIN. Setting FOLL_PIN is now required for
+code that requires tracking of pinned pages.
 
-Also, revert earlier changes to Infiniband ODP that had it using
-put_user_page(). ODP is "Case 3" in
-Documentation/core-api/pin_user_pages.rst, which is to say, normal
-get_user_pages() and put_page() is the API to use there.
+Also, release the pages via put_user_page*().
 
-The new pin_user_pages*() calls replace corresponding get_user_pages*()
-calls, and set the FOLL_PIN flag. The FOLL_PIN flag requires that the
-caller must return the pages via put_user_page*() calls, but infiniband
-was already doing that as part of an earlier commit.
+Also, rename "pages" to "pinned_pages", as this makes for
+easier reading of process_vm_rw_single_vec().
 
-Reviewed-by: Jason Gunthorpe <jgg@mellanox.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/infiniband/core/umem.c              |  2 +-
- drivers/infiniband/core/umem_odp.c          | 13 ++++++-------
- drivers/infiniband/hw/hfi1/user_pages.c     |  2 +-
- drivers/infiniband/hw/mthca/mthca_memfree.c |  2 +-
- drivers/infiniband/hw/qib/qib_user_pages.c  |  2 +-
- drivers/infiniband/hw/qib/qib_user_sdma.c   |  2 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c    |  2 +-
- drivers/infiniband/sw/siw/siw_mem.c         |  2 +-
- 8 files changed, 13 insertions(+), 14 deletions(-)
+ mm/process_vm_access.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.=
-c
-index 7a3b99597ead..39a1542e6707 100644
---- a/drivers/infiniband/core/umem.c
-+++ b/drivers/infiniband/core/umem.c
-@@ -267,7 +267,7 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, uns=
-igned long addr,
+diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
+index 357aa7bef6c0..fd20ab675b85 100644
+--- a/mm/process_vm_access.c
++++ b/mm/process_vm_access.c
+@@ -42,12 +42,11 @@ static int process_vm_rw_pages(struct page **pages,
+ 		if (copy > len)
+ 			copy =3D len;
 =20
- 	while (npages) {
+-		if (vm_write) {
++		if (vm_write)
+ 			copied =3D copy_page_from_iter(page, offset, copy, iter);
+-			set_page_dirty_lock(page);
+-		} else {
++		else
+ 			copied =3D copy_page_to_iter(page, offset, copy, iter);
+-		}
++
+ 		len -=3D copied;
+ 		if (copied < copy && iov_iter_count(iter))
+ 			return -EFAULT;
+@@ -96,7 +95,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
+ 		flags |=3D FOLL_WRITE;
+=20
+ 	while (!rc && nr_pages && iov_iter_count(iter)) {
+-		int pages =3D min(nr_pages, max_pages_per_loop);
++		int pinned_pages =3D min(nr_pages, max_pages_per_loop);
+ 		int locked =3D 1;
+ 		size_t bytes;
+=20
+@@ -106,14 +105,15 @@ static int process_vm_rw_single_vec(unsigned long add=
+r,
+ 		 * current/current->mm
+ 		 */
  		down_read(&mm->mmap_sem);
--		ret =3D get_user_pages(cur_base,
-+		ret =3D pin_user_pages(cur_base,
- 				     min_t(unsigned long, npages,
- 					   PAGE_SIZE / sizeof (struct page *)),
- 				     gup_flags | FOLL_LONGTERM,
-diff --git a/drivers/infiniband/core/umem_odp.c b/drivers/infiniband/core/u=
-mem_odp.c
-index e42d44e501fd..abc3bb6578cc 100644
---- a/drivers/infiniband/core/umem_odp.c
-+++ b/drivers/infiniband/core/umem_odp.c
-@@ -308,9 +308,8 @@ EXPORT_SYMBOL(ib_umem_odp_release);
-  * The function returns -EFAULT if the DMA mapping operation fails. It ret=
-urns
-  * -EAGAIN if a concurrent invalidation prevents us from updating the page=
-.
-  *
-- * The page is released via put_user_page even if the operation failed. Fo=
-r
-- * on-demand pinning, the page is released whenever it isn't stored in the
-- * umem.
-+ * The page is released via put_page even if the operation failed. For on-=
-demand
-+ * pinning, the page is released whenever it isn't stored in the umem.
-  */
- static int ib_umem_odp_map_dma_single_page(
- 		struct ib_umem_odp *umem_odp,
-@@ -363,7 +362,7 @@ static int ib_umem_odp_map_dma_single_page(
+-		pages =3D get_user_pages_remote(task, mm, pa, pages, flags,
+-					      process_pages, NULL, &locked);
++		pinned_pages =3D pin_user_pages_remote(task, mm, pa, pinned_pages,
++						     flags, process_pages,
++						     NULL, &locked);
+ 		if (locked)
+ 			up_read(&mm->mmap_sem);
+-		if (pages <=3D 0)
++		if (pinned_pages <=3D 0)
+ 			return -EFAULT;
+=20
+-		bytes =3D pages * PAGE_SIZE - start_offset;
++		bytes =3D pinned_pages * PAGE_SIZE - start_offset;
+ 		if (bytes > len)
+ 			bytes =3D len;
+=20
+@@ -122,10 +122,12 @@ static int process_vm_rw_single_vec(unsigned long add=
+r,
+ 					 vm_write);
+ 		len -=3D bytes;
+ 		start_offset =3D 0;
+-		nr_pages -=3D pages;
+-		pa +=3D pages * PAGE_SIZE;
+-		while (pages)
+-			put_page(process_pages[--pages]);
++		nr_pages -=3D pinned_pages;
++		pa +=3D pinned_pages * PAGE_SIZE;
++
++		/* If vm_write is set, the pages need to be made dirty: */
++		put_user_pages_dirty_lock(process_pages, pinned_pages,
++					  vm_write);
  	}
 =20
- out:
--	put_user_page(page);
-+	put_page(page);
- 	return ret;
- }
-=20
-@@ -473,7 +472,7 @@ int ib_umem_odp_map_dma_pages(struct ib_umem_odp *umem_=
-odp, u64 user_virt,
- 					ret =3D -EFAULT;
- 					break;
- 				}
--				put_user_page(local_page_list[j]);
-+				put_page(local_page_list[j]);
- 				continue;
- 			}
-=20
-@@ -500,8 +499,8 @@ int ib_umem_odp_map_dma_pages(struct ib_umem_odp *umem_=
-odp, u64 user_virt,
- 			 * ib_umem_odp_map_dma_single_page().
- 			 */
- 			if (npages - (j + 1) > 0)
--				put_user_pages(&local_page_list[j+1],
--					       npages - (j + 1));
-+				release_pages(&local_page_list[j+1],
-+					      npages - (j + 1));
- 			break;
- 		}
- 	}
-diff --git a/drivers/infiniband/hw/hfi1/user_pages.c b/drivers/infiniband/h=
-w/hfi1/user_pages.c
-index 469acb961fbd..9a94761765c0 100644
---- a/drivers/infiniband/hw/hfi1/user_pages.c
-+++ b/drivers/infiniband/hw/hfi1/user_pages.c
-@@ -106,7 +106,7 @@ int hfi1_acquire_user_pages(struct mm_struct *mm, unsig=
-ned long vaddr, size_t np
- 	int ret;
- 	unsigned int gup_flags =3D FOLL_LONGTERM | (writable ? FOLL_WRITE : 0);
-=20
--	ret =3D get_user_pages_fast(vaddr, npages, gup_flags, pages);
-+	ret =3D pin_user_pages_fast(vaddr, npages, gup_flags, pages);
- 	if (ret < 0)
- 		return ret;
-=20
-diff --git a/drivers/infiniband/hw/mthca/mthca_memfree.c b/drivers/infiniba=
-nd/hw/mthca/mthca_memfree.c
-index edccfd6e178f..8269ab040c21 100644
---- a/drivers/infiniband/hw/mthca/mthca_memfree.c
-+++ b/drivers/infiniband/hw/mthca/mthca_memfree.c
-@@ -472,7 +472,7 @@ int mthca_map_user_db(struct mthca_dev *dev, struct mth=
-ca_uar *uar,
- 		goto out;
- 	}
-=20
--	ret =3D get_user_pages_fast(uaddr & PAGE_MASK, 1,
-+	ret =3D pin_user_pages_fast(uaddr & PAGE_MASK, 1,
- 				  FOLL_WRITE | FOLL_LONGTERM, pages);
- 	if (ret < 0)
- 		goto out;
-diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniban=
-d/hw/qib/qib_user_pages.c
-index 6bf764e41891..7fc4b5f81fcd 100644
---- a/drivers/infiniband/hw/qib/qib_user_pages.c
-+++ b/drivers/infiniband/hw/qib/qib_user_pages.c
-@@ -108,7 +108,7 @@ int qib_get_user_pages(unsigned long start_page, size_t=
- num_pages,
-=20
- 	down_read(&current->mm->mmap_sem);
- 	for (got =3D 0; got < num_pages; got +=3D ret) {
--		ret =3D get_user_pages(start_page + got * PAGE_SIZE,
-+		ret =3D pin_user_pages(start_page + got * PAGE_SIZE,
- 				     num_pages - got,
- 				     FOLL_LONGTERM | FOLL_WRITE | FOLL_FORCE,
- 				     p + got, NULL);
-diff --git a/drivers/infiniband/hw/qib/qib_user_sdma.c b/drivers/infiniband=
-/hw/qib/qib_user_sdma.c
-index 05190edc2611..1a3cc2957e3a 100644
---- a/drivers/infiniband/hw/qib/qib_user_sdma.c
-+++ b/drivers/infiniband/hw/qib/qib_user_sdma.c
-@@ -670,7 +670,7 @@ static int qib_user_sdma_pin_pages(const struct qib_dev=
-data *dd,
- 		else
- 			j =3D npages;
-=20
--		ret =3D get_user_pages_fast(addr, j, FOLL_LONGTERM, pages);
-+		ret =3D pin_user_pages_fast(addr, j, FOLL_LONGTERM, pages);
- 		if (ret !=3D j) {
- 			i =3D 0;
- 			j =3D ret;
-diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/=
-hw/usnic/usnic_uiom.c
-index 62e6ffa9ad78..600896727d34 100644
---- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-+++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-@@ -141,7 +141,7 @@ static int usnic_uiom_get_pages(unsigned long addr, siz=
-e_t size, int writable,
- 	ret =3D 0;
-=20
- 	while (npages) {
--		ret =3D get_user_pages(cur_base,
-+		ret =3D pin_user_pages(cur_base,
- 				     min_t(unsigned long, npages,
- 				     PAGE_SIZE / sizeof(struct page *)),
- 				     gup_flags | FOLL_LONGTERM,
-diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/si=
-w/siw_mem.c
-index e99983f07663..e53b07dcfed5 100644
---- a/drivers/infiniband/sw/siw/siw_mem.c
-+++ b/drivers/infiniband/sw/siw/siw_mem.c
-@@ -426,7 +426,7 @@ struct siw_umem *siw_umem_get(u64 start, u64 len, bool =
-writable)
- 		while (nents) {
- 			struct page **plist =3D &umem->page_chunk[i].plist[got];
-=20
--			rv =3D get_user_pages(first_page_va, nents,
-+			rv =3D pin_user_pages(first_page_va, nents,
- 					    foll_flags | FOLL_LONGTERM,
- 					    plist, NULL);
- 			if (rv < 0)
+ 	return rc;
 --=20
 2.24.0
 
