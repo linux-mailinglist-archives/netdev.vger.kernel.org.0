@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C43FF1093A2
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:40:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 498331093AB
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfKYSkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 13:40:51 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:47726 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727029AbfKYSku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:40:50 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAPIc9La015520;
-        Mon, 25 Nov 2019 13:40:45 -0500
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2wfk3nybx7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Nov 2019 13:40:44 -0500
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAPIeJOH018102;
-        Mon, 25 Nov 2019 18:40:44 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma02wdc.us.ibm.com with ESMTP id 2wevd6ccq1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Nov 2019 18:40:44 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAPIehYB52625900
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Nov 2019 18:40:43 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9C157112063;
-        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3F8B7112061;
-        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.224.141])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Nov 2019 18:40:43 +0000 (GMT)
-Subject: Re: [PATCH net 0/4] ibmvnic: Harden device commands and queries
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
-        dnbanerg@us.ibm.com, brking@linux.vnet.ibm.com,
-        julietk@linux.vnet.ibm.com
-References: <1574451706-19058-1-git-send-email-tlfalcon@linux.ibm.com>
- <20191123174925.30b73917@cakuba.netronome.com>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <52660c98-efd6-16e7-e66d-3528e5b32d3d@linux.ibm.com>
-Date:   Mon, 25 Nov 2019 12:40:42 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
-MIME-Version: 1.0
-In-Reply-To: <20191123174925.30b73917@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-25_04:2019-11-21,2019-11-25 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999
- malwarescore=0 lowpriorityscore=0 bulkscore=0 clxscore=1011
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1911250151
+        id S1727182AbfKYSm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 13:42:57 -0500
+Received: from mail-pj1-f50.google.com ([209.85.216.50]:37236 "EHLO
+        mail-pj1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727107AbfKYSm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:42:57 -0500
+Received: by mail-pj1-f50.google.com with SMTP id bb19so3444074pjb.4;
+        Mon, 25 Nov 2019 10:42:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=CzeLZZiVw9wDh6E2trLN9cc3AjbOc+kLmhayMA9tIkg=;
+        b=P1oBV7rnuS2YLJiMId+q7QgD7ss3YinhQGS2G7sQFe/KZtSCcvg+JKAsqGn4TUYOJ0
+         hyHBbi84eBVZfMM0lm79Jzfbsc4nO/CltofJ38suuXyHjuzaLSPyvW5HNVHcl09MKtAW
+         jnzvDFa+2hK6HITiE4SfDtBRTk5fS3ePAhWmwDZVNjeACi20nX1sQcPGT/aIH/JyCUwB
+         DEZBZDbHWxWDoITRwHv491clR5kPCGfyymBaPoxlKqY8fT5LC+UJyqlHCoYoUXU2S2Hy
+         ddNyVPzGoI4PsixBseHvM9wf9gKY0wUrgErJZKQycUhNYci8VYpOO0xXSWdOHy/14f0T
+         +nqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=CzeLZZiVw9wDh6E2trLN9cc3AjbOc+kLmhayMA9tIkg=;
+        b=QQvF8zt4nAKL7JIyTpcC8s6KBRRW6IuhxXcoU1pUztN+p4z18BGK/2JAs18FZ/wKaq
+         ylh9+9Aa3gNCyn52z0qCEMT19bHPEWar2LE0as/nmwawoS7gWoVPnZF8J+pEhmryzeKK
+         nivFZoJQajcTriiYz8F7hPJCvnYSIkQlqqVqz8h/n5Rrt82LU5FX3TZpQmOgUk2SLXL+
+         yJgyAUPMoLccJMYrNtDoarfSRVNA64dVEFtPeUBmOiJNQ6LEa69qTQfobN6kY9fsOtDv
+         PrA6BuaSu2fl32lht9f2DdOqrmrPT8NKqE9V5vdWB5KwU3fIwkjkApF7rzjT7wxxvCSb
+         12qQ==
+X-Gm-Message-State: APjAAAX/3mw725o+T7/vdH9thCDaE386PvbHPMeblE8aXHv9K/RBVEvu
+        FJ9L371T5dgB9Dh4ufZM7dU=
+X-Google-Smtp-Source: APXvYqxxJxdZuGY2fsCgmx7nlvE0uuTkIG6EcmVe73k+OdQ6rPXUKtBByKDsC3WL6QibN1+wnYpShA==
+X-Received: by 2002:a17:902:b612:: with SMTP id b18mr17760892pls.210.1574707376707;
+        Mon, 25 Nov 2019 10:42:56 -0800 (PST)
+Received: from localhost ([2600:100f:b115:c6e6:d9b0:4a90:59b9:2ea7])
+        by smtp.gmail.com with ESMTPSA id z11sm9815012pfg.117.2019.11.25.10.42.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 10:42:56 -0800 (PST)
+Date:   Mon, 25 Nov 2019 10:42:54 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <5ddc20aedc82d_2b082aba75a825b4f4@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191123055151.9990-1-danieltimlee@gmail.com>
+References: <20191123055151.9990-1-danieltimlee@gmail.com>
+Subject: RE: [PATCH,bpf-next 0/2] Fix broken samples due to symbol mismatch
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Daniel T. Lee wrote:
+> Currently, there are broken samples due to symbol mismatch (missing or
+> unused symbols). For example, the function open() calls the syscall 
+> 'sys_openat' instead of 'sys_open'. And there are no exact symbols such
+> as 'sys_read' or 'sys_write' under kallsyms, instead the symbols have
+> prefixes. And these error leads to broke of samples.
+> 
+> This Patchset fixes the problem by changing the symbol match.
+> 
+> Daniel T. Lee (2):
+>   samples: bpf: replace symbol compare of trace_event
+>   samples: bpf: fix syscall_tp due to unused syscall
+> 
+>  samples/bpf/syscall_tp_kern.c  | 14 ++++++++++++++
+>  samples/bpf/trace_event_user.c |  4 ++--
+>  2 files changed, 16 insertions(+), 2 deletions(-)
+> 
+> -- 
+> 2.24.0
+> 
 
-On 11/23/19 7:49 PM, Jakub Kicinski wrote:
-> On Fri, 22 Nov 2019 13:41:42 -0600, Thomas Falcon wrote:
->> This patch series fixes some shortcomings with the current
->> VNIC device command implementation. The first patch fixes
->> the initialization of driver completion structures used
->> for device commands. Additionally, all waits for device
->> commands are bounded with a timeout in the event that the
->> device does not respond or becomes inoperable. Finally,
->> serialize queries to retain the integrity of device return
->> codes.
-> I have minor comments on two patches, but also I think it's
-> a little late in the release cycle for putting this in net.
->
-> Could you target net-next and repost ASAP so it still makes
-> it into 5.5?
->
-> Thanks.
+Patches look good, please reply to each with a "Fixes" tag
+though so its easier to keep track of these things.
 
-Thank you, sorry for the late response.  I will make the requested 
-changes ASAP, but I've missed the net-next window.  What should I target 
-for v2?
-
-Thanks again,
-
-Tom
-
+Thanks,
+John
