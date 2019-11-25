@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 614B710869F
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 03:59:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B78021086A5
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 04:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfKYC6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Nov 2019 21:58:48 -0500
-Received: from mail-pf1-f179.google.com ([209.85.210.179]:46576 "EHLO
-        mail-pf1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726907AbfKYC6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 21:58:47 -0500
-Received: by mail-pf1-f179.google.com with SMTP id 193so6617753pfc.13
-        for <netdev@vger.kernel.org>; Sun, 24 Nov 2019 18:58:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=pqb+GA+AV2mbJaXpnj74CQaLRYZl6peQCIBZfhCemGo=;
-        b=mLmnZ3WiWCtynypAoIPkluXf7tpYAXDipRfi9QMgzPS5loYdLlgR80ogXxRBI4sdZp
-         QdFug1yOS5C3WCORNvCY1PSD/oZf4Vacx+LVa+mPzAHgpGJCpfO0gshsH45I8C527/0Q
-         VGNsErGzEetYAVbAjmZK2/cg4OHB19CSyMuE2MlCjStqIkzV2zV0OhCScIukwXiRuBA8
-         PaEVfWinovQcGgHHXKrX6a61sCmDu841PfDGXeMKkzEfJD4Ou5aNJYeoGgH0S8ebdjYe
-         cIIp9TID4w5m+il6G8dh1S5lTh+qIHEZpujjofDxaKBfXaYD8hEvdn0ysnLxwUbjagF/
-         wwfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pqb+GA+AV2mbJaXpnj74CQaLRYZl6peQCIBZfhCemGo=;
-        b=nT1BycRRMxZU9CIGDZ7P3CFKKhxvZvMM4yQ4PDw1r/egDBcLorctqS40CJarhWRJz9
-         cH+1UiH/BrtaEFMo8/kk1saNrsKyeVxdtB/uJqvJdyn33EQCeERMA7bMR+Fw7AswakK4
-         3lDB2jbt2+oVvPIKWC8mQKMyhpdLcc5jW0SuQQkuz3Xb0it9JIDHCIKv/3HXgMjU7Z2L
-         +3Pwp6C/8eNz3UNtJY7KLhzlXOun/nXeXy/rdoMzk7xFGhwYB6EqvFlA1mTCxA9YxkJw
-         gQHTXSP2OHtBOxrCdog+85+SjVYZDINrTrC1eEuwhkjbDQf6ijcFh6DL0N/z/GNFZ/RR
-         6EJQ==
-X-Gm-Message-State: APjAAAWUr5v0cztqm6ETZI8jKYaQYTJGPyPteg4n1PRmmEqByBX+5guE
-        VbsuWvjXEqHVqbJBhr+w/slxKg==
-X-Google-Smtp-Source: APXvYqx7pyfcYNt7vKGiYVY/GTidY/pCIxrh1LflI+Aicjzc6KavANnCBrhTuogtg6qKR2TqcqPgsg==
-X-Received: by 2002:a63:e44b:: with SMTP id i11mr29580973pgk.437.1574650727145;
-        Sun, 24 Nov 2019 18:58:47 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id m13sm5835849pga.70.2019.11.24.18.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Nov 2019 18:58:47 -0800 (PST)
-Date:   Sun, 24 Nov 2019 18:58:40 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
-Subject: Re: pull request: bluetooth-next 2019-11-24
-Message-ID: <20191124185840.4edc495e@cakuba.netronome.com>
-In-Reply-To: <20191124132645.GA43125@pehoward-mobl1.ger.corp.intel.com>
-References: <20191124132645.GA43125@pehoward-mobl1.ger.corp.intel.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726945AbfKYDCx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 24 Nov 2019 22:02:53 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42310 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726910AbfKYDCx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Nov 2019 22:02:53 -0500
+Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3F67A14BE91A5;
+        Sun, 24 Nov 2019 19:02:52 -0800 (PST)
+Date:   Sun, 24 Nov 2019 19:02:49 -0800 (PST)
+Message-Id: <20191124.190249.1262907259702322148.davem@davemloft.net>
+To:     steffen.klassert@secunet.com
+Cc:     nicolas.dichtel@6wind.com, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
+Subject: Re: xfrmi: request for stable trees
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191124100746.GD14361@gauss3.secunet.de>
+References: <3a94c153-c8f1-45d1-9f0d-68ca5b83b44c@6wind.com>
+        <65447cc6-0dd4-1dbd-3616-ca6e88ca5fc0@6wind.com>
+        <20191124100746.GD14361@gauss3.secunet.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 24 Nov 2019 19:02:52 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Nov 2019 15:26:45 +0200, Johan Hedberg wrote:
-> Hi Dave,
-> 
-> Here's one last bluetooth-next pull request for the 5.5 kernel:
-> 
->  - Fix BDADDR_PROPERTY & INVALID_BDADDR quirk handling
->  - Added support for BCM4334B0 and BCM4335A0 controllers
->  - A few other smaller fixes related to locking and memory leaks
-> 
-> Please let me know if there are any issues pulling. Thanks.
+From: Steffen Klassert <steffen.klassert@secunet.com>
+Date: Sun, 24 Nov 2019 11:07:46 +0100
 
-Pulled, thank you!
+> On Mon, Nov 18, 2019 at 04:31:14PM +0100, Nicolas Dichtel wrote:
+>> Le 14/10/2019 à 11:31, Nicolas Dichtel a écrit :
+>> > Le 05/09/2019 à 12:21, Steffen Klassert a écrit :
+>> >> 1) Several xfrm interface fixes from Nicolas Dichtel:
+>> >>    - Avoid an interface ID corruption on changelink.
+>> >>    - Fix wrong intterface names in the logs.
+>> >>    - Fix a list corruption when changing network namespaces.
+>> >>    - Fix unregistation of the underying phydev.
+>> > Is it possible to queue those patches for the stable trees?
+>> 
+>> Is there a chance to get them in the 4.19 stable tree?
+>> 
+>> Here are the sha1:
+>> e9e7e85d75f3 ("xfrm interface: avoid corruption on changelink")
+>> e0aaa332e6a9 ("xfrm interface: ifname may be wrong in logs")
+>> c5d1030f2300 ("xfrm interface: fix list corruption for x-netns")
+>> 22d6552f827e ("xfrm interface: fix management of phydev")
+> 
+> I'm ok with this. David does the stable submitting for
+> networking patches usually. So I guess he will pick them
+> into his stable queue after the patches are mainline some
+> time.
+
+Steffen you can submit things directly to -stable for IPSEC if you
+wish, and it would help me in this case.
+
+Thanks!
