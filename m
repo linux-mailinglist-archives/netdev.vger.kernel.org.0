@@ -2,89 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D17C10932A
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 18:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47827109366
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 19:20:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfKYR4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 12:56:04 -0500
-Received: from a27-11.smtp-out.us-west-2.amazonses.com ([54.240.27.11]:53792
-        "EHLO a27-11.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725823AbfKYR4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 12:56:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574704563;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
-        bh=IrTYOqMqEOxm64GeOhR8U6dXnIpA0jutoDa4mZ0DD3k=;
-        b=Rw8lPNsipmCaUViAQtvN0xjhd9Tica/Ps+4FAvItNFhKPy1+T60FDFKkDny+Cin5
-        BwdRDWH3NphC+KI96IBiBcNNra3R5EJo31mOtlJyDq4F8TgyDgZDMBppoK5cmOtVFr4
-        73QbtYLZ+YF5NYmIH3omYUjMoZMZMjRwSGVfiG/0=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574704563;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
-        bh=IrTYOqMqEOxm64GeOhR8U6dXnIpA0jutoDa4mZ0DD3k=;
-        b=R1A2l2zQbt8Yay4Sc1/PrD+T1iWZc74BW6q8s4B91JS/8Pe6fQQEwaOMOd12Ay5k
-        F83QwYvYWOXblkjis5lXTX0CT0J5/ZnrfCiGkZvpvJDIghpd6Pc+XrQ6usvN6mtmxSx
-        TXEyhdZzLl6S9xZzXoVOYLt+AZm3HQ2ATf62yGvQ=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 33D0FC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Phong Tran <tranmanphong@gmail.com>, jakub.kicinski@netronome.com,
-        davem@davemloft.net, luciano.coelho@intel.com,
-        shahar.s.matityahu@intel.com, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, sara.sharon@intel.com,
-        yhchuang@realtek.com, yuehaibing@huawei.com, pkshih@realtek.com,
-        arend.vanspriel@broadcom.com, rafal@milecki.pl,
-        franky.lin@broadcom.com, pieter-paul.giesberts@broadcom.com,
-        p.figiel@camlintechnologies.com, Wright.Feng@cypress.com,
-        keescook@chromium.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] drivers: net: intel: Fix -Wcast-function-type
-References: <20191125150215.29263-1-tranmanphong@gmail.com>
-        <20191125150215.29263-2-tranmanphong@gmail.com>
-        <61fa4ef5-e4fc-c20c-9e20-158bcdf61cbb@lwfinger.net>
-Date:   Mon, 25 Nov 2019 17:56:03 +0000
-In-Reply-To: <61fa4ef5-e4fc-c20c-9e20-158bcdf61cbb@lwfinger.net> (Larry
-        Finger's message of "Mon, 25 Nov 2019 11:30:47 -0600")
-Message-ID: <0101016ea3b4c45e-39ce3a65-7fba-4bf6-a788-ba579c1ea122-000000@us-west-2.amazonses.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727339AbfKYSUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 13:20:13 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39924 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727079AbfKYSUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 13:20:12 -0500
+Received: by mail-qk1-f196.google.com with SMTP id z65so8857574qka.6
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 10:20:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W09lgIqIKvECTOE849gv8T7YDNLO2Wc4fhvJ0YJldxk=;
+        b=ERy+HFLCmw98rZ+6jHEb6CK3h+hzq2Xd1fFuuD5w5bfjxs7aw6AgNsqMmhI3QlbWoC
+         y0EfJHErAyaz5xlU7Jv89vsAFHpCFp5adnNr6SmEtm7k5JicUESHRlKQftaWhofNPGO/
+         2k6Bym+4k9FYiNEA40m6ydBprmxzen/r0nvrM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W09lgIqIKvECTOE849gv8T7YDNLO2Wc4fhvJ0YJldxk=;
+        b=qJlmi8HOZFXc2DlCmNztSqykY6IXqgz2m3Us84UlnDuIzvEKsz7R9yiD6fCP05V7Qe
+         F1KqgpCSWBfdJxBpNmmzsnFN6FISehPxFDI5KDMDNE1PNWn4sfzdLmH9CMv37WC/ugrO
+         Ax1wNWGhSIBpOrfHEGz4R7VPT+v91b+PJEwYrO7A0TTGhFovpD57tAXYGadL5RDCcmce
+         0pIzk3KmKUJ+tjhV74riEKWlOhZiYQP5XonKiYY/2HEcTlpYFBjlExQACb0g4Gr0SSlh
+         D1CLu71hnaI9Ggh9EeJpKwSIRVDs8V2cw46+L2l6TLTe6MrXIRH+4OJPk+TBkcMAyjk+
+         g9zQ==
+X-Gm-Message-State: APjAAAWLLhC8cVydoJ+Pzw21dfRR30tv8WxmeJCWD3Z/TjZ3wGlv/U/p
+        Zi60ir16mzyg85U5KS6av8tzuQMfWxVV2WI6//6Zjw==
+X-Google-Smtp-Source: APXvYqyViSiFgUBvDzO1mVVyfrDrv1aJlHc6bYxT/J8Hw5dcdeuarzA4nQsAObckQJK0CIoKANHAPwHuY9MKcyA5yUo=
+X-Received: by 2002:a37:5b02:: with SMTP id p2mr27051982qkb.419.1574706011770;
+ Mon, 25 Nov 2019 10:20:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-SES-Outgoing: 2019.11.25-54.240.27.11
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+References: <20191118192123.82430-1-abhishekpandit@chromium.org> <1CEDCBDC-221C-4E5F-90E9-898B02304562@holtmann.org>
+In-Reply-To: <1CEDCBDC-221C-4E5F-90E9-898B02304562@holtmann.org>
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Date:   Mon, 25 Nov 2019 10:20:00 -0800
+Message-ID: <CANFp7mXNPsmfC_dDcxP1N9weiEFdogOvgSjuBLJSd+4-ONsoOQ@mail.gmail.com>
+Subject: Re: [PATCH v6 0/4] Bluetooth: hci_bcm: Additional changes for BCM4354 support
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Larry Finger <Larry.Finger@lwfinger.net> writes:
+Hey,
 
-> On 11/25/19 9:02 AM, Phong Tran wrote:
->> correct usage prototype of callback in tasklet_init().
->> Report by https://github.com/KSPP/linux/issues/20
->>
->> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
->> ---
->>   drivers/net/wireless/intel/ipw2x00/ipw2100.c   | 7 ++++---
->>   drivers/net/wireless/intel/ipw2x00/ipw2200.c   | 5 +++--
->>   drivers/net/wireless/intel/iwlegacy/3945-mac.c | 5 +++--
->>   drivers/net/wireless/intel/iwlegacy/4965-mac.c | 5 +++--
->>   4 files changed, 13 insertions(+), 9 deletions(-)
+It looks about the same as one of my earlier patch series. Outside a
+few nitpicks, I'm ok with merging this.
+
+Thanks
+Abhishek
+
+On Sat, Nov 23, 2019 at 2:04 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
 >
-> This patch is "fixing" three different drivers and should be split
-> into at least two parts. To be consistent with previous practices, the
-> subject for the two should be "intel: ipw2100: ...." and "intel:
-> iwlegacy: ...."
-
-Actually, please drop even "intel:". So "ipw2x00: " and "iwlegacy: " is
-enough.
-
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Hi Abhishek,
+>
+> > While adding support for the BCM4354, I discovered a few more things
+> > that weren't working as they should have.
+> >
+> > First, we disallow serdev from setting the baudrate on BCM4354. Serdev
+> > sets the oper_speed first before calling hu->setup() in
+> > hci_uart_setup(). On the BCM4354, this results in bcm_setup() failing
+> > when the hci reset times out.
+> >
+> > Next, we add support for setting the PCM parameters, which consists of
+> > a pair of vendor specific opcodes to set the pcm parameters. The
+> > documentation for these params are available in the brcm_patchram_plus
+> > package (i.e. https://github.com/balena-os/brcm_patchram_plus). This is
+> > necessary for PCM to work properly.
+> >
+> > All changes were tested with rk3288-veyron-minnie.dts.
+>
+> so I have re-factored your patch set now to apply to latest bluetooth-nex=
+t tree and posted it to the mailing list. Please have a look at it if this =
+works for you. If it does, then we might just apply it this way and focus o=
+n getting detailed PCM codec configuration for all vendors in once we have =
+a second vendor to unify it.
+>
+> Regards
+>
+> Marcel
+>
