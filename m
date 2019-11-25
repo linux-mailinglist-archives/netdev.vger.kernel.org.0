@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 355D410954B
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D7B10954D
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:56:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726033AbfKYV4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 16:56:02 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34153 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfKYV4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:56:02 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n13so8060067pff.1
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 13:56:01 -0800 (PST)
+        id S1726962AbfKYV4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 16:56:04 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:35858 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbfKYV4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:56:03 -0500
+Received: by mail-pf1-f195.google.com with SMTP id b19so8059176pfd.3
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 13:56:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nXWy+CNs2BYT5YZ0fLgkzFUSLD7ZdPj61CxlqOKpTC4=;
-        b=fxFuCzXIp9lR6KUgL44shS7S77HPT307jwJsaTY2hsDuHzgZ8Hes5RHH5NJYnMWESa
-         pv2ANI4RokOEXXyfs9w+9wsWtl2u397kxYsNEuvOpNQBtFu67cCjBBljtd6Jbimf4VaA
-         0FKJ2e0E3WMjia95CPwrBgdey2tdqE1YIAzzT5HVNb3JCcDHROs67h9tHMfta2OrMNzu
-         FeyczQgYt5DF71+n1n1LW9NZ4uSiAdLbydrEz1MPBiksTQzmhqWXAFlxh+bEjO3LUqAB
-         pM+b23sHYdD6oGC73DXAgHimV20MlAcTslEEVz1SMVLyZwMSq4CKCYiq4meZHahk7hjx
-         uC8g==
+        bh=UVFdGew1SLJI7BdhWB15Fof6WIoKaA4tyIpNIgu8Sfk=;
+        b=dZAdH8aTGqi4VJ93dKd7J1J0hN6oH6VJOv2XELxjMzu38PO3fdAMk5ST4W5IqqA71E
+         qzl8/up2FJ0ATNh4JFrQ9p2udKDIMY+muh/aCAOVfBvZsEm1YhjOjJPFaWmsGacorUnw
+         IkqoMI9Io+PeGtiKoa3waolgnMsJ/cxMa8Qcn24U3vwkiJtxbkgW3IWhT/lFYhL1WDcM
+         mR/YNVikVP8K9/I695yLNmV9wAEqVD/n9AwvlrWe0oMwnh1bZZzYbI2KSMSyf92uA+ZJ
+         T3S1tntIcfKz6ugxCHeX0+4qF6hAIJyssUdQ77GPNCAlemcUE+1nm3Txn9yEOzK94l36
+         xfJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nXWy+CNs2BYT5YZ0fLgkzFUSLD7ZdPj61CxlqOKpTC4=;
-        b=Cpvqtz/qGxKBPANSHU3a5+eZsN64ZjQfe99tVW3fZ/F4mgtSYKowL+u8hsOI6Spmc2
-         GlEH2ShWgy147JgD0tUirLV0Yi1OtEbGGcOe2m9NBLWykcZ2kmdSF18uvrQJFwnfg4Ac
-         UVq2KTetKYlriHnV8xqUWk9ANqPMyzaCM0B+xQ+jSRUg1zQ3mKXVZqp7pQ/AkBJOhXix
-         l9hxwhyuPgvwyH8DPafYppBun38uqR7F5CvqHbLu95bhCileNVmHQGJz8XB5KRC85VUM
-         dACfjMu7iDagvNbnCQ7jPk2pBLJaiP8LGhoCle1Q0KB0T68hYm1DHjnSHyzvi/1gMQgz
-         yoJQ==
-X-Gm-Message-State: APjAAAW7sR7GyFfJHMsJwRBVK1IKBonPe7U7EV50EjOY4HfLJUiHF7dh
-        PTps8oNWcNjCgLUKytwO6+k=
-X-Google-Smtp-Source: APXvYqyXmHQp3vP5AYesI3ERzTxcWo4i1u7vDNoQBMNC6pxDuEhpRmDX0UNTrj7HI8BWI7aAjHepIg==
-X-Received: by 2002:a63:c0a:: with SMTP id b10mr35830370pgl.168.1574718961187;
-        Mon, 25 Nov 2019 13:56:01 -0800 (PST)
+        bh=UVFdGew1SLJI7BdhWB15Fof6WIoKaA4tyIpNIgu8Sfk=;
+        b=ORO8cuayQyjazHaHlBNbIVfpUCn1XSM5h3rsQgQW+1ywZDSZ9gYjQCZbOOkbO6pb5W
+         imAiP1lxw3Zgy8VxSWOXBeFF1NNnbz/imQbH+OZl14C0PVW4z1moKlhhx6VPk7WCzoRw
+         K9/+LgHanNrSaxPHc7R2OVgbQ1NfPh+70uor9q8dFz+2SO7Bwbt9LCtKrjdf36Ye+JAU
+         MZgy/10FxTAS8UjBVI3oic1c6CIg1qfHlO0KRZ/NmydT0I7Ft02jZQ8oL5MvNokMjj5u
+         aOtDzKWC4KhAb7Cs2Knf8Ztk6ZjppdbQUvhILWNe1yxaLf6WaarAadCxMzOPueZG6Cqd
+         d3ug==
+X-Gm-Message-State: APjAAAVWjVU2TQKDbnl0u7fLWYdQh/s687vtFcoXDdaFzMzEYMeg82LC
+        qKGTtnjYubV6kfzjdSdvXo4=
+X-Google-Smtp-Source: APXvYqzzriJ1dFL77CI5y/1NUK/ag1YlvqXFVi0HGpjg6f3gPjLnmq3zchVcNy+Wclj00uG6D3fNyA==
+X-Received: by 2002:aa7:9f0e:: with SMTP id g14mr38358334pfr.202.1574718962299;
+        Mon, 25 Nov 2019 13:56:02 -0800 (PST)
 Received: from ajayg.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id y12sm366567pjy.0.2019.11.25.13.56.00
+        by smtp.gmail.com with ESMTPSA id y12sm366567pjy.0.2019.11.25.13.56.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2019 13:56:00 -0800 (PST)
+        Mon, 25 Nov 2019 13:56:01 -0800 (PST)
 From:   Ajay Gupta <ajaykuee@gmail.com>
 X-Google-Original-From: Ajay Gupta <ajayg@nvidia.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, treding@nvidia.com,
         Ajay Gupta <ajayg@nvidia.com>
-Subject: [PATCH 1/2] net: stmmac: dwc-qos: use generic device api
-Date:   Mon, 25 Nov 2019 13:51:14 -0800
-Message-Id: <20191125215115.12981-2-ajayg@nvidia.com>
+Subject: [PATCH 2/2] net: stmmac: dwc-qos: avoid clk and reset for acpi device
+Date:   Mon, 25 Nov 2019 13:51:15 -0800
+Message-Id: <20191125215115.12981-3-ajayg@nvidia.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191125215115.12981-1-ajayg@nvidia.com>
 References: <20191125215115.12981-1-ajayg@nvidia.com>
@@ -61,79 +61,173 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ajay Gupta <ajayg@nvidia.com>
 
-Use generic device api so that driver can work both with DT
-or ACPI based devices.
+There are no clocks or resets referenced by Tegra ACPI device
+so don't access clocks or resets interface with ACPI device.
+
+Clocks and resets for ACPI devices will be handled via ACPI
+interface.
 
 Signed-off-by: Ajay Gupta <ajayg@nvidia.com>
 ---
- .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 122 ++++++++++--------
+ 1 file changed, 67 insertions(+), 55 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-index dd9967aeda22..f87306b3cdae 100644
+index f87306b3cdae..70e8c41f7761 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-@@ -40,7 +40,7 @@ struct tegra_eqos {
- static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
- 				   struct plat_stmmacenet_data *plat_dat)
+@@ -272,6 +272,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
+ 			      struct stmmac_resources *res)
  {
--	struct device_node *np = pdev->dev.of_node;
+ 	struct tegra_eqos *eqos;
 +	struct device *dev = &pdev->dev;
- 	u32 burst_map = 0;
- 	u32 bit_index = 0;
- 	u32 a_index = 0;
-@@ -52,9 +52,10 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
- 			return -ENOMEM;
- 	}
- 
--	plat_dat->axi->axi_lpi_en = of_property_read_bool(np, "snps,en-lpi");
--	if (of_property_read_u32(np, "snps,write-requests",
--				 &plat_dat->axi->axi_wr_osr_lmt)) {
-+	plat_dat->axi->axi_lpi_en = device_property_read_bool(dev,
-+							      "snps,en-lpi");
-+	if (device_property_read_u32(dev, "snps,write-requests",
-+				     &plat_dat->axi->axi_wr_osr_lmt)) {
- 		/**
- 		 * Since the register has a reset value of 1, if property
- 		 * is missing, default to 1.
-@@ -68,8 +69,8 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
- 		plat_dat->axi->axi_wr_osr_lmt--;
- 	}
- 
--	if (of_property_read_u32(np, "snps,read-requests",
--				 &plat_dat->axi->axi_rd_osr_lmt)) {
-+	if (device_property_read_u32(dev, "snps,read-requests",
-+				     &plat_dat->axi->axi_rd_osr_lmt)) {
- 		/**
- 		 * Since the register has a reset value of 1, if property
- 		 * is missing, default to 1.
-@@ -82,7 +83,7 @@ static int dwc_eth_dwmac_config_dt(struct platform_device *pdev,
- 		 */
- 		plat_dat->axi->axi_rd_osr_lmt--;
- 	}
--	of_property_read_u32(np, "snps,burst-map", &burst_map);
-+	device_property_read_u32(dev, "snps,burst-map", &burst_map);
- 
- 	/* converts burst-map bitmask to burst array */
- 	for (bit_index = 0; bit_index < 7; bit_index++) {
-@@ -421,7 +422,7 @@ static int dwc_eth_dwmac_probe(struct platform_device *pdev)
- 	void *priv;
- 	int ret;
- 
--	data = of_device_get_match_data(&pdev->dev);
-+	data = device_get_match_data(&pdev->dev);
- 
- 	memset(&stmmac_res, 0, sizeof(struct stmmac_resources));
- 
-@@ -478,7 +479,7 @@ static int dwc_eth_dwmac_remove(struct platform_device *pdev)
- 	const struct dwc_eth_dwmac_data *data;
  	int err;
  
--	data = of_device_get_match_data(&pdev->dev);
-+	data = device_get_match_data(&pdev->dev);
+ 	eqos = devm_kzalloc(&pdev->dev, sizeof(*eqos), GFP_KERNEL);
+@@ -283,77 +284,88 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
+ 	eqos->dev = &pdev->dev;
+ 	eqos->regs = res->addr;
  
- 	err = stmmac_dvr_remove(&pdev->dev);
- 	if (err < 0)
+-	eqos->clk_master = devm_clk_get(&pdev->dev, "master_bus");
+-	if (IS_ERR(eqos->clk_master)) {
+-		err = PTR_ERR(eqos->clk_master);
+-		goto error;
+-	}
++	if (is_of_node(dev->fwnode)) {
++		eqos->clk_master = devm_clk_get(&pdev->dev, "master_bus");
++		if (IS_ERR(eqos->clk_master)) {
++			err = PTR_ERR(eqos->clk_master);
++			goto error;
++		}
+ 
+-	err = clk_prepare_enable(eqos->clk_master);
+-	if (err < 0)
+-		goto error;
++		err = clk_prepare_enable(eqos->clk_master);
++		if (err < 0)
++			goto error;
+ 
+-	eqos->clk_slave = devm_clk_get(&pdev->dev, "slave_bus");
+-	if (IS_ERR(eqos->clk_slave)) {
+-		err = PTR_ERR(eqos->clk_slave);
+-		goto disable_master;
+-	}
++		eqos->clk_slave = devm_clk_get(&pdev->dev, "slave_bus");
++		if (IS_ERR(eqos->clk_slave)) {
++			err = PTR_ERR(eqos->clk_slave);
++			goto disable_master;
++		}
+ 
+-	data->stmmac_clk = eqos->clk_slave;
++		data->stmmac_clk = eqos->clk_slave;
+ 
+-	err = clk_prepare_enable(eqos->clk_slave);
+-	if (err < 0)
+-		goto disable_master;
++		err = clk_prepare_enable(eqos->clk_slave);
++		if (err < 0)
++			goto disable_master;
+ 
+-	eqos->clk_rx = devm_clk_get(&pdev->dev, "rx");
+-	if (IS_ERR(eqos->clk_rx)) {
+-		err = PTR_ERR(eqos->clk_rx);
+-		goto disable_slave;
+-	}
++		eqos->clk_rx = devm_clk_get(&pdev->dev, "rx");
++		if (IS_ERR(eqos->clk_rx)) {
++			err = PTR_ERR(eqos->clk_rx);
++			goto disable_slave;
++		}
+ 
+-	err = clk_prepare_enable(eqos->clk_rx);
+-	if (err < 0)
+-		goto disable_slave;
++		err = clk_prepare_enable(eqos->clk_rx);
++		if (err < 0)
++			goto disable_slave;
+ 
+-	eqos->clk_tx = devm_clk_get(&pdev->dev, "tx");
+-	if (IS_ERR(eqos->clk_tx)) {
+-		err = PTR_ERR(eqos->clk_tx);
+-		goto disable_rx;
+-	}
++		eqos->clk_tx = devm_clk_get(&pdev->dev, "tx");
++		if (IS_ERR(eqos->clk_tx)) {
++			err = PTR_ERR(eqos->clk_tx);
++			goto disable_rx;
++		}
+ 
+-	err = clk_prepare_enable(eqos->clk_tx);
+-	if (err < 0)
+-		goto disable_rx;
++		err = clk_prepare_enable(eqos->clk_tx);
++		if (err < 0)
++			goto disable_rx;
+ 
+-	eqos->reset = devm_gpiod_get(&pdev->dev, "phy-reset", GPIOD_OUT_HIGH);
+-	if (IS_ERR(eqos->reset)) {
+-		err = PTR_ERR(eqos->reset);
+-		goto disable_tx;
+-	}
++		eqos->reset = devm_gpiod_get(&pdev->dev, "phy-reset",
++					     GPIOD_OUT_HIGH);
++		if (IS_ERR(eqos->reset)) {
++			err = PTR_ERR(eqos->reset);
++			goto disable_tx;
++		}
+ 
+-	usleep_range(2000, 4000);
+-	gpiod_set_value(eqos->reset, 0);
++		usleep_range(2000, 4000);
++		gpiod_set_value(eqos->reset, 0);
+ 
+-	/* MDIO bus was already reset just above */
+-	data->mdio_bus_data->needs_reset = false;
++		/* MDIO bus was already reset just above */
++		data->mdio_bus_data->needs_reset = false;
+ 
+-	eqos->rst = devm_reset_control_get(&pdev->dev, "eqos");
+-	if (IS_ERR(eqos->rst)) {
+-		err = PTR_ERR(eqos->rst);
+-		goto reset_phy;
+-	}
++		eqos->rst = devm_reset_control_get(&pdev->dev, "eqos");
++		if (IS_ERR(eqos->rst)) {
++			err = PTR_ERR(eqos->rst);
++			goto reset_phy;
++		}
+ 
+-	err = reset_control_assert(eqos->rst);
+-	if (err < 0)
+-		goto reset_phy;
++		err = reset_control_assert(eqos->rst);
++		if (err < 0)
++			goto reset_phy;
+ 
+-	usleep_range(2000, 4000);
++		usleep_range(2000, 4000);
+ 
+-	err = reset_control_deassert(eqos->rst);
+-	if (err < 0)
+-		goto reset_phy;
++		err = reset_control_deassert(eqos->rst);
++		if (err < 0)
++			goto reset_phy;
+ 
+-	usleep_range(2000, 4000);
++		usleep_range(2000, 4000);
++	} else {
++		/* set clk and reset handle to NULL for non DT device */
++		eqos->clk_master = NULL;
++		eqos->clk_slave = NULL;
++		data->stmmac_clk = NULL;
++		eqos->clk_rx = NULL;
++		eqos->clk_tx = NULL;
++		eqos->reset = NULL;
++	}
+ 
+ 	data->fix_mac_speed = tegra_eqos_fix_speed;
+ 	data->init = tegra_eqos_init;
 -- 
 2.17.1
 
