@@ -2,128 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD515109490
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 21:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 933E81094AE
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 21:36:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbfKYUN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 15:13:58 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:10773 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbfKYUN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 15:13:57 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ddc36070000>; Mon, 25 Nov 2019 12:14:00 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 25 Nov 2019 12:13:56 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 25 Nov 2019 12:13:56 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Nov
- 2019 20:13:55 +0000
-Subject: Re: [PATCH 07/19] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-To:     kbuild test robot <lkp@intel.com>
-CC:     <kbuild-all@lists.01.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Jan Kara <jack@suse.cz>,
-        <kvm@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Dave Chinner <david@fromorbit.com>,
-        <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Paul Mackerras <paulus@samba.org>,
-        <linux-kselftest@vger.kernel.org>, Ira Weiny <ira.weiny@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-rdma@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        <linux-media@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        <linux-block@vger.kernel.org>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jens Axboe <axboe@kernel.dk>, <netdev@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        <linux-fsdevel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-References: <20191125042011.3002372-8-jhubbard@nvidia.com>
- <201911251639.UWS3hE3Y%lkp@intel.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <3989f406-c333-59f8-027a-e3506af59028@nvidia.com>
-Date:   Mon, 25 Nov 2019 12:13:55 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <201911251639.UWS3hE3Y%lkp@intel.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
+        id S1725938AbfKYUgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 15:36:08 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36051 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbfKYUgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 15:36:07 -0500
+Received: by mail-pl1-f196.google.com with SMTP id d7so7016100pls.3;
+        Mon, 25 Nov 2019 12:36:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=XSnSIY6xjxSfde1RnO3cmDWd4Me9KNe3WCylyeEuEU0=;
+        b=FSd5qao4ODfMH1QPmKyaauCTmV2Vxi5JJ7VkoFfa2+uM3EXjhJgMrE8EZzsrMUGxfV
+         oAEa6/W1wFMub8WkFu14vnSI3K05kOiU9Kj+pygXDj/Idb/8teEuS8f8634CIem8EDpv
+         2v8JucM7IiMkIFV5uwQi3g5Mh2CYeXrs87d89xXG93vgc/6A8klpcw5BdLjC9Z2FP+yB
+         CX7xNGPL5SKQIpMrYgM5vXpqQpQ4BQIrKoKer5DMq+2C2EiU2rIYHYtBU5vFEE4Nae4R
+         dQu1fRDAgk7X1WKD8W9+EvyIBKWu+4l9BD2ZtVZxyW9ByktJoxJHLs6P2fZXoRPaN23G
+         +9GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=XSnSIY6xjxSfde1RnO3cmDWd4Me9KNe3WCylyeEuEU0=;
+        b=LtBOp5F7FrkrSj3wL0RuQ78UB4vhy36phqyI26xUPecRtIajhkD8nFLk8njlfcVD5h
+         gKkl3cxp5wQPenZw1Ygz/C8BAiPC+vtXvdJqco0OgaLKKuKY127Z3oIjTyLhyi8UdBzW
+         Wg5Mry4Uwkrb8PSyiL3YLaNj8Aew0ODpIjnpWRPJqZjGZEtTXWfOR8B/Elw0vwS55W2r
+         z9YB338zcHOfqywiGvARhLdhQ9SRnd2dBq2T/lJ+JJ3vNSB8nBHxtTk40JqMoi7Qb6tG
+         DG5/0JRktQ7ddG1DtXzMVlIsbNNuF3HCUkbjWD8WXB5FZ0BloN+zZs/LPRZx7AWIsuUF
+         q/BA==
+X-Gm-Message-State: APjAAAXp9HzDsxmT7+ABYlG8YIPkeiQTVjfajzVhrES7OhohxIDY6lRI
+        VoyZgp9oDCKPgfjIfADVDx0=
+X-Google-Smtp-Source: APXvYqzySfYf+NEsSvCzYMGL06x+R+Ugqe5tv7Wpk9/7nRrPfypB0d5+LGDo5SqE8ZQkLWW/En0lhA==
+X-Received: by 2002:a17:902:868f:: with SMTP id g15mr29898735plo.294.1574714167105;
+        Mon, 25 Nov 2019 12:36:07 -0800 (PST)
+Received: from localhost (74-95-46-65-Oregon.hfc.comcastbusiness.net. [74.95.46.65])
+        by smtp.gmail.com with ESMTPSA id i3sm9353820pfd.154.2019.11.25.12.36.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 12:36:06 -0800 (PST)
+Date:   Mon, 25 Nov 2019 12:36:05 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Message-ID: <5ddc3b355840f_2b082aba75a825b46@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191123220835.1237773-1-andriin@fb.com>
+References: <20191123220835.1237773-1-andriin@fb.com>
+Subject: RE: [PATCH bpf-next] mm: implement no-MMU variant of
+ vmalloc_user_node_flags
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1574712840; bh=xIrvhzi9FQlGBM90SU8S2M4hsd9JLL89vrPzYePQebc=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=nLQ5e77gFGxdvd47gRiRGHQbc1wVG8bwNbuGbyST1Q+jBowT4WflUsZ9otzD54lLB
-         J2wcW1AWxZ1vtAVadAvnnzHYEB9/RMQVx2Q02xRhkx6jKeVYJqp1Vzd24M3MZT/KvC
-         2r/IXfhmoHhQNFs1s+Ijlm3sbCcfcCTqQLXfh/u6EJodBjYv13WjZ+5uA/qpRqF5KJ
-         cgfhkSAYwIIVs+guU8WDjo4g7p8fk0VqKWKusesTvojs5xnlpb4TJcK/V2onbK8LWW
-         ksqnqfXGTA8sAX8XklRUC+OhMkFBYvdHQY7BxmxtkVVkFbYIpBRqVJEp1i5QjV+FwU
-         IkbF7UmcnHQ6g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/19 12:44 AM, kbuild test robot wrote:
-> Hi John,
+Andrii Nakryiko wrote:
+> To fix build with !CONFIG_MMU, implement it for no-MMU configurations as well.
 > 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on rdma/for-next]
-> [cannot apply to v5.4 next-20191122]
-> [if your patch is applied to the wrong git tree, please drop us a note to help
-> improve the system. BTW, we also suggest to use '--base' option to specify the
-> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-> 
-> url:    https://github.com/0day-ci/linux/commits/John-Hubbard/pin_user_pages-reduced-risk-series-for-Linux-5-5/20191125-125637
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-next
-> config: arm-randconfig-a001-20191125 (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 7.4.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         GCC_VERSION=7.4.0 make.cross ARCH=arm 
-> 
-> If you fix the issue, kindly add following tag
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
 > Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  mm/nommu.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
 > 
-> All errors (new ones prefixed by >>):
-> 
->    mm/gup.o: In function `pin_user_pages_remote':
->>> mm/gup.c:2528: undefined reference to `get_user_pages_remote'
-> 
-> vim +2528 mm/gup.c
+> diff --git a/mm/nommu.c b/mm/nommu.c
+> index 99b7ec318824..7de592058ab4 100644
+> --- a/mm/nommu.c
+> +++ b/mm/nommu.c
+> @@ -155,11 +155,11 @@ void *__vmalloc_node_flags(unsigned long size, int node, gfp_t flags)
+>  	return __vmalloc(size, flags, PAGE_KERNEL);
+>  }
+>  
+> -void *vmalloc_user(unsigned long size)
+> +static void *__vmalloc_user_flags(unsigned long size, gfp_t flags)
+>  {
+>  	void *ret;
+>  
+> -	ret = __vmalloc(size, GFP_KERNEL | __GFP_ZERO, PAGE_KERNEL);
+> +	ret = __vmalloc(size, flags, PAGE_KERNEL);
+>  	if (ret) {
+>  		struct vm_area_struct *vma;
+>  
+> @@ -172,8 +172,19 @@ void *vmalloc_user(unsigned long size)
+>  
+>  	return ret;
+>  }
+> +
+> +void *vmalloc_user(unsigned long size)
+> +{
+> +	return __vmalloc_user_flags(size, GFP_KERNEL | __GFP_ZERO);
+> +}
+>  EXPORT_SYMBOL(vmalloc_user);
+>  
+> +void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags)
+> +{
+> +	return __vmalloc_user_flags(size, flags | __GFP_ZERO);
+> +}
+> +EXPORT_SYMBOL(vmalloc_user_node_flags);
+> +
 
+Hi Andrii, my first reaction was that it seemed not ideal to just ignore
+the node value like this but everything I came up with was uglier. I
+guess only user is BPF at the moment so it should be fine.
 
-This, and the other (sh) report, is due to !CONFIG_MMU lacking a get_user_pages_remote(), 
-but pin_user_pages_remote() needs it for a (temporary) implementation. I'll post the fix, 
-in v2.
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Acked-by: John Fastabend <john.fastabend@gmail.com>
