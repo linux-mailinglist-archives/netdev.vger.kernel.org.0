@@ -2,199 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB95108E61
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 14:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEEC108E72
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 14:07:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727609AbfKYNDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 08:03:20 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40128 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727298AbfKYNDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 08:03:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574686999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EKh0kRl1xUZgQvrIbrNg+jQHWEueimCxZj+p1K9U7N0=;
-        b=QANKq4rI8UhFptiRrQ6naGGnjAe/w0z79viDOOfPD9y7H/jB9Jo7nJAqq4baLGZoPTSQ+g
-        92b0RFE2eYs0TU9Q2eTCJh/DreNL0tZNvJL6+4GHnRIWDhCDXIsSuOxJ7rBsN5mjQnNYnl
-        /UFTEDEgB2/pfzWFLJokP8osl+yUdK4=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-411-YzdHlCzUMhqEk9QQL5236A-1; Mon, 25 Nov 2019 08:03:18 -0500
-Received: by mail-lf1-f71.google.com with SMTP id d16so3123242lfm.14
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 05:03:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=20gNfbLGU6iaInGTNeDvk9czbFUxUSG9YN7fSeSG9N8=;
-        b=rFUw/JPT35nQPaL+rCg2F7vDrsSuUGL8E2VCMFPY+NFafNzJSQ1e1QLX7xYPQjGCPk
-         5dcflm3+z6M5nuaoEiu/andsC4BVAXqWsZ+ZonXH/tA94GVkbsB8xrpZ4I0k/ft8ouT4
-         Q7xad4gzgmxW482Zw0WJ2s+z70H2MA4TtFCoZH1u9MWlQMSqoPNcHMrk1UhPdluGZjYC
-         AaJwzn8ssD2zIvkYQxE+LhWoQfIf9lvW9/cf5jWZ6ZsUISk5fEwvrtT6PdMgFBUG3dZP
-         V269Esdk409xHhC95DiVqXF+k2H2o9r4v4sLyzenWvAjsIwVfnDzzyp2a6UCvvOyPW00
-         l5OQ==
-X-Gm-Message-State: APjAAAWgpn9+Yd25QCx18sQsD4S8+HXD7Byud+0WAxzrDivm1PkoyLG8
-        7JiZUhWUxB+nUkyKiwh5yhyzf5T3nT0+vr9Bca44lrQSQ5t+aHTRxyK6QCFovq74pF4UPD5SmZi
-        2dGFjqdGLnjNm9Bd2
-X-Received: by 2002:a05:651c:1025:: with SMTP id w5mr22503821ljm.68.1574686996744;
-        Mon, 25 Nov 2019 05:03:16 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzIZ3glIOH8nbgqJTaeY2EQ3/a80pf7N5WOJxQ/cBsRzT23Y2i53Epi3ktj6g8NqK/WtKGZtg==
-X-Received: by 2002:a05:651c:1025:: with SMTP id w5mr22503789ljm.68.1574686996442;
-        Mon, 25 Nov 2019 05:03:16 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g5sm3595027lfc.11.2019.11.25.05.03.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2019 05:03:15 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AEAD21818BF; Mon, 25 Nov 2019 14:03:14 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-In-Reply-To: <c96d99ce-5fdd-dfa5-f013-ce11c6c8cfda@gmail.com>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com> <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch> <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch> <87h840oese.fsf@toke.dk> <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch> <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com> <87zhhmrz7w.fsf@toke.dk> <b2ecf3e6-a8f1-cfd9-0dd3-e5f4d5360c0b@gmail.com> <87zhhhnmg8.fsf@toke.dk> <640418c3-54ba-cd62-304f-fd9f73f25a42@gmail.com> <87blthox30.fsf@toke.dk> <c1b7ff64-6574-74c7-cd6b-5aa353ec80ce@gmail.com> <87lfsiocj5.fsf@toke.dk> <6e08f714-6284-6d0d-9cbe-711c64bf97aa@gmail.com> <87k17xcwoq.fsf@toke.dk> <db38dee6-1db9-85f3-7a0c-0bcee13b12ea@gmail.com> <8736eg5do2.fsf@toke.dk> <c96d99ce-5fdd-dfa5-f013-ce11c6c8cfda@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 25 Nov 2019 14:03:14 +0100
-Message-ID: <87zhgk152l.fsf@toke.dk>
+        id S1727658AbfKYNHK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 25 Nov 2019 08:07:10 -0500
+Received: from mail-oln040092254094.outbound.protection.outlook.com ([40.92.254.94]:21612
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725823AbfKYNHK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Nov 2019 08:07:10 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PgAXBNhc/dr9IaXB3oiE7UsJeiQeCQ6Vhx9llbIbKroamkAp+dY40+MKiwylRTGiJ3z9HAfDEf/stDIOKglp+NsZ0wVC1TMqWIX7/noMXWkdg6yCiS9n7tgy92X0hdHWUO2BIq3STkumZk1dnRoaoFt+H2ZVuaCS9eF+kKsqYD5d89tcocTdDNv46vbPjSnRgw4BfGhL5n8MnBCr60Q4v1fribRFIh42LU+SYk3VGB39NsG+m+hdpN88deovSd9ZqDKkGyABRCAsslptGonZtT1cXgte4t3G54hBio8w7VlvCryVUMmixqLVSyWSohD24FyPCyYMBp4C2M5mDRQWVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ussIT6WMhlCX3m2iUJPrui4UIHnA30pYfJ7pNOLiO7c=;
+ b=YMzJrrh0hoCSmwovFexobgC1i8pBhUATkGjec9tkJmqZKDePXwoIRDsksv9ne40VnqWsLoCWUvTvZ/BFdjn88g1p0wSrcFzgXb17VolR0XX4pVpN8Y+RDBVWpjVavWm4KBzD+/y2vN4uFUyJj9+XlyptlMLK2rgmqHVpDpYlB67eAA4AlbPLZ9tmOeeKma6WcY1RNaN48lZsz4qKFf23y9xcCAHgA1VzkYYK7ZKSECjquDzZD1ryB7j99dt9HYE4D7EabtZaTqZAsvvWpncxU5CHMGHQ55lGWeqoI7Cbh1mafZ1rwHdDa5tRXvzifPBvnjtIk8SzYKiRBXlrOXJXSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from HK2APC01FT032.eop-APC01.prod.protection.outlook.com
+ (10.152.248.59) by HK2APC01HT181.eop-APC01.prod.protection.outlook.com
+ (10.152.249.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2474.17; Mon, 25 Nov
+ 2019 13:07:01 +0000
+Received: from PSXP216MB0438.KORP216.PROD.OUTLOOK.COM (10.152.248.56) by
+ HK2APC01FT032.mail.protection.outlook.com (10.152.248.188) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2474.17 via Frontend Transport; Mon, 25 Nov 2019 13:07:01 +0000
+Received: from PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+ ([fe80::b880:961e:dd88:8b5d]) by PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+ ([fe80::b880:961e:dd88:8b5d%12]) with mapi id 15.20.2474.023; Mon, 25 Nov
+ 2019 13:07:01 +0000
+From:   Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+To:     Paolo Abeni <pabeni@redhat.com>
+CC:     Johannes Berg <johannes@sipsolutions.net>,
+        Alexander Lobakin <alobakin@dlink.ru>,
+        Edward Cree <ecree@solarflare.com>,
+        David Miller <davem@davemloft.net>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "petrm@mellanox.com" <petrm@mellanox.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "jaswinder.singh@linaro.org" <jaswinder.singh@linaro.org>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "emmanuel.grumbach@intel.com" <emmanuel.grumbach@intel.com>,
+        "luciano.coelho@intel.com" <luciano.coelho@intel.com>,
+        "linuxwifi@intel.com" <linuxwifi@intel.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL in
+ napi_gro_receive()
+Thread-Topic: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL
+ in napi_gro_receive()
+Thread-Index: AQHVo2IFW7miydWzwUGig6GEl/Vj46ebhG8AgAAIsACAAAw6AIAAFs0AgAAHqgCAAAH+vIAAClQAgAAXfQA=
+Date:   Mon, 25 Nov 2019 13:07:01 +0000
+Message-ID: <PSXP216MB04382C21FF000C9A516324D4804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+References: <20191015.181649.949805234862708186.davem@davemloft.net>
+ <7e68da00d7c129a8ce290229743beb3d@dlink.ru>
+ <PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+ <c762f5eee08a8f2d0d6cb927d7fa3848@dlink.ru>
+ <746f768684f266e5a5db1faf8314cd77@dlink.ru>
+ <PSXP216MB0438267E8191486435445DA6804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
+ <cc08834c-ccb3-263a-2967-f72a9d72535a@solarflare.com>
+ <3147bff57d58fce651fe2d3ca53983be@dlink.ru>
+ <414288fcac2ba4fcee48a63bdbf28f7b9a5037c6.camel@sipsolutions.net>
+ <b4b92c4d066007d9cb77e1645e667715c17834fb.camel@redhat.com>
+In-Reply-To: <b4b92c4d066007d9cb77e1645e667715c17834fb.camel@redhat.com>
+Accept-Language: en-AU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: SY2PR01CA0046.ausprd01.prod.outlook.com
+ (2603:10c6:1:15::34) To PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:300:d::20)
+x-incomingtopheadermarker: OriginalChecksum:E7F442EC7319ADFC37A5714FE8A944776DCFE236F325233D06C5FC731D2A1CED;UpperCasedChecksum:812488E1055A9E8D70C60692D43AE09A8E1C06FA9DC7E6FD848F32B4E4A13AAB;SizeAsReceived:8964;Count:49
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [Gv9cvn6EIHH4e+XHnq34GNzcdmw3KM8NXs6fHRJW+MHN8raa/XXXjtovXqTqEIVhtk4F98Is5iQ=]
+x-microsoft-original-message-id: <20191125130643.GA2616@nicholas-usb>
+x-ms-publictraffictype: Email
+x-incomingheadercount: 49
+x-eopattributedmessage: 0
+x-ms-office365-filtering-correlation-id: 9ad09a14-937e-45bf-ea2f-08d771a85c14
+x-ms-traffictypediagnostic: HK2APC01HT181:
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zwpRn3lD7F/tKlvVKelXCbwPpdqtDmtucoyT1EwLluxregYFEHjajBlqk98e2YDECgqz9CqobQXG3IFt6AVciz5ng9LiL3xw9zlvjoJfMqeBhpahiHcI4x+sIpJUm0l7uTMa4RKFNtl9cM4UFaGmNehjVklypN+8T/k/u9pb9AlMfazTo7ejHXv35ROXRYdA
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1AB422FB0C9ED94F8B792DCE12FE05D1@KORP216.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-MC-Unique: YzdHlCzUMhqEk9QQL5236A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ad09a14-937e-45bf-ea2f-08d771a85c14
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2019 13:07:01.3521
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Internet
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK2APC01HT181
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+On Mon, Nov 25, 2019 at 12:42:44PM +0100, Paolo Abeni wrote:
+> I think it would be nice moving the iwlwifi driver to full/plain NAPI
+> mode. The interrupt handler could keep processing extra work as it does
+> now and queue real pkts on some internal queue, and than schedule the
+> relevant napi, which in turn could process such queue in the napi poll
+> method. Likely I missed tons of details and/or oversimplified it...
 
-> On 2019/11/22 20:54, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
->>=20
->>> On 2019/11/18 19:20, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>>> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
->>>>
->>>> [... trimming the context a bit ...]
->>>>
->>>>>>>> Take your example of TC rules: You were proposing a flow like this=
-:
->>>>>>>>
->>>>>>>> Userspace TC rule -> kernel rule table -> eBPF map -> generated XD=
-P
->>>>>>>> program
->>>>>>>>
->>>>>>>> Whereas what I mean is that we could do this instead:
->>>>>>>>
->>>>>>>> Userspace TC rule -> kernel rule table
->>>>>>>>
->>>>>>>> and separately
->>>>>>>>
->>>>>>>> XDP program -> bpf helper -> lookup in kernel rule table
->>>>>>>
->>>>>>> Thanks, now I see what you mean.
->>>>>>> You expect an XDP program like this, right?
->>>>>>>
->>>>>>> int xdp_tc(struct xdp_md *ctx)
->>>>>>> {
->>>>>>> =09int act =3D bpf_xdp_tc_filter(ctx);
->>>>>>> =09return act;
->>>>>>> }
->>>>>>
->>>>>> Yes, basically, except that the XDP program would need to parse the
->>>>>> packet first, and bpf_xdp_tc_filter() would take a parameter struct =
-with
->>>>>> the parsed values. See the usage of bpf_fib_lookup() in
->>>>>> bpf/samples/xdp_fwd_kern.c
->>>>>>
->>>>>>> But doesn't this way lose a chance to reduce/minimize the program t=
-o
->>>>>>> only use necessary features for this device?
->>>>>>
->>>>>> Not necessarily. Since the BPF program does the packet parsing and f=
-ills
->>>>>> in the TC filter lookup data structure, it can limit what features a=
-re
->>>>>> used that way (e.g., if I only want to do IPv6, I just parse the v6
->>>>>> header, ignore TCP/UDP, and drop everything that's not IPv6). The lo=
-okup
->>>>>> helper could also have a flag argument to disable some of the lookup
->>>>>> features.
->>>>>
->>>>> It's unclear to me how to configure that.
->>>>> Use options when attaching the program? Something like
->>>>> $ xdp_tc attach eth0 --only-with ipv6
->>>>> But can users always determine their necessary features in advance?
->>>>
->>>> That's what I'm doing with xdp-filter now. But the answer to your seco=
-nd
->>>> question is likely to be 'probably not', so it would be good to not ha=
-ve
->>>> to do this :)
->>>>
->>>>> Frequent manual reconfiguration when TC rules frequently changes does
->>>>> not sound nice. Or, add hook to kernel to listen any TC filter event
->>>>> on some daemon and automatically reload the attached program?
->>>>
->>>> Doesn't have to be a kernel hook; we could enhance the userspace tooli=
-ng
->>>> to do it. Say we integrate it into 'tc':
->>>>
->>>> - Add a new command 'tc xdp_accel enable <iface> --features [ipv6,etc]=
-'
->>>> - When adding new rules, add the following logic:
->>>>     - Check if XDP acceleration is enabled
->>>>     - If it is, check whether the rule being added fits into the curre=
-nt
->>>>       'feature set' loaded on that interface.
->>>>       - If the rule needs more features, reload the XDP program to one
->>>>         with the needed additional features.
->>>>       - Or, alternatively, just warn the user and let them manually
->>>>         replace it?
->>>
->>> Ok, but there are other userspace tools to configure tc in wild.
->>> python and golang have their own netlink library project.
->>> OVS embeds TC netlink handling code in itself. There may be more tools =
-like this.
->>> I think at least we should have rtnl notification about TC and monitor =
-it
->>> from daemon, if we want to reload the program from userspace tools.
->>=20
->> A daemon would be one way to do this in cases where it needs to be
->> completely dynamic. My guess is that there are lots of environments
->> where that is not required, and where a user/administrator could
->> realistically specify ahead of time which feature set they want to
->> enable XDP acceleration for. So in my mind the way to go about this is
->> to implement the latter first, then add dynamic reconfiguration of it on
->> top when (or if) it turns out to be necessary...
->
-> Hmm, but I think there is big difference between a daemon and a cli tool.
-> Shouldn't we determine the design considering future usage?
+It must have something to do with iwlwifi (as if we needed more 
+evidence). I just booted a different variant of the Dell XPS 9370 which 
+has Qualcomm Wi-Fi [168c:003e] (ath10k_pci.ko), instead of Intel Wi-Fi, 
+from the same USB SSD as before, and it has no issues whatsoever.
 
-Sure, we should make sure the design doesn't exclude either option. But
-we also shouldn't end up in a "the perfect is the enemy of the good"
-type of situation. And the kernel-side changes are likely to be somewhat
-independent of what the userspace management ends up looking like...
+My regression report quickly blown up to be way over my head in terms of 
+understanding, but I will keep monitoring the discussions and try to 
+learn from it. Everybody, please keep me CC'd into any further 
+communications with driver teams, as I am genuinely interested in the 
+journey and the outcome.
 
--Toke
-
+> Cheers,
+> 
+> Paolo
+> 
+> 
+Cheers,
+Nicholas
