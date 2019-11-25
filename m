@@ -2,101 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43382109029
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:39:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD34E109073
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 15:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728196AbfKYOjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 09:39:25 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46722 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728071AbfKYOjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 09:39:25 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 193so7457471pfc.13;
-        Mon, 25 Nov 2019 06:39:24 -0800 (PST)
+        id S1728310AbfKYOy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 09:54:58 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:44701 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728196AbfKYOy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 09:54:58 -0500
+Received: by mail-pj1-f67.google.com with SMTP id w8so6703744pjh.11;
+        Mon, 25 Nov 2019 06:54:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DTFCnl5gh1u+TR9T7mZcMZHn+JFU1MgZVavln5ZZFag=;
-        b=MbGZAPdEGQpokB1vplVcMY1xo9Kfk48iqryyYjtGAlS7hyRFB5zH8YY6aR7mO8Xdis
-         xmo6B2th0X8k5Yb6eoHYHLpaEfeuin0naZZlCoi2AQf4JC+60ccTheRE+eXAaK2kb8Jg
-         Xs16MNWWj6B8pTSOtM0Xfqd/hbGzcZ1rmE7NErdTnSBKbvkVKXQYFAbWiafIyKQSIQt3
-         Z0q1rFAjrt6IlVC2tyEG8fPwKcsqHYmTnIOHTOdRxmKWHdWVa6cz5A/OFo0z+jAy8y5y
-         oy86jgUwg0V18FZ8WeqbGj3D1qxMr216FcQBkggMzHi6UNmuHArME6eZhf4HK9o6psQA
-         zphA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VbURqT/hIwISYpnd7Ewfv41kiT2pdXc627ZF5Jq5I3E=;
+        b=Jdw2j/a/FE7gm5TNDBAcYPcU6FC63DMfZkzIU2VewEVpDhpApGP68i6gMhmkchbj+e
+         l9S/ObcbNdRRWkz9zjXvcjpumCg6Q+s3ovDV3hdAD5ukAQxUKFE+DBqMouqqmV7//JRS
+         u70bH5VOM6X/FhPHXVK2DsOfN846AeJlhlwzqTeQZqnqg+P6MuUbZwfXf6E8R60XlV1k
+         jaWMBGsRfvyi9WXECVjImiUV49x/EQJDfz9AYf173Dhl3+k5aWRW4hNsoR2GMOEWWZ8T
+         urn0QqrPGKG56T2cNiQT8AM2lGT/Gm+UU0LG8csbNgsuXMFrtC5MMEO75bNyoGbtFqRj
+         qq+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DTFCnl5gh1u+TR9T7mZcMZHn+JFU1MgZVavln5ZZFag=;
-        b=f6H0K6GoMcoMCoe4EiPIeFm7I8hTphiS+Oitw9lzNDrSiiTZDpvGoZeplzhHohVEcJ
-         EsvxoFGGWCJfxEgOA7pIxvqBezq9hAEr0WhXc2ne3IOc4wamzhL7jaGXQ2CE6OtwIVC0
-         5GMIMYY4BR8GBvyepQICctDaAYtjeETmqv6sQdcqSNary06UHLXAdvJmqYCT4eSk6eQ4
-         5Ev62ME4ldq7aTVkacCDYEtc5z5Nc3l7cn6/pCxQle4cM+wxQDI05POKQOqrF4ZxZjG9
-         M3uSCUpTc6wGOdpfawC4FtQxTrCCfIWk+FyhZrRD16DZtCiZN9VyLxvxIBZofqF3S66j
-         4s8w==
-X-Gm-Message-State: APjAAAW+yfr1sGzotPC3EhCUdf7+lAswKft8EU8JigjsuFwkCznRy07v
-        OOb0euwqjcG+6dnRQAK8Qro=
-X-Google-Smtp-Source: APXvYqy8f/sNdB9zlR2x/uQai4PddUprffiZxMQivT0emqtkfFV7dardd/K56g6HAct66PyfFGHZWA==
-X-Received: by 2002:a63:d750:: with SMTP id w16mr32248403pgi.156.1574692760406;
-        Mon, 25 Nov 2019 06:39:20 -0800 (PST)
-Received: from nishad ([106.51.232.103])
-        by smtp.gmail.com with ESMTPSA id u7sm8564035pfh.84.2019.11.25.06.39.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 25 Nov 2019 06:39:19 -0800 (PST)
-Date:   Mon, 25 Nov 2019 20:09:10 +0530
-From:   Nishad Kamdar <nishadkamdar@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: Use the correct style for SPDX License
- Identifier
-Message-ID: <20191125143900.GA2572@nishad>
-References: <20191123130815.GA3288@nishad>
- <20191123183455.6266e9a8@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VbURqT/hIwISYpnd7Ewfv41kiT2pdXc627ZF5Jq5I3E=;
+        b=b2nT1OAdwBRDrkcyh8nV2g5U7D0uEL1/KWU+cFL8aOT1Vc4UmOxj7jWDFubEOs07eH
+         P2lS+tkb39ZwoiPryjDe2uHkWIgNAHQU2TpmRc5Pdc5Y3BesrOBd/tPy6Wq5bjutik+4
+         GfiaUdghqRF+cgmK3D2xgTKgDyprn0OuYpPoP1gvdrOB7KFt1kvcyACK2pGs2SvgvaBk
+         5PsHv4w1e6L/9hpcEamCdUti6BlTzAUjUIm9bO+zYOB1xcZWnCw3JSnq/XDgVgtMBwyu
+         ztzTcaoUsZFmVVDMTgviqeHSz11b2PMm0F1NjueTGILbWDZdcpZEG+fjSR6/KjpdgUti
+         rdlA==
+X-Gm-Message-State: APjAAAUG3nMKGXbg4qI1xh7ZN+7td6VpVLlMRzK4WvuzFe0FXE9jX2Yd
+        ns7DKQ2AmNfZn17G7ShaI5k=
+X-Google-Smtp-Source: APXvYqyvHsHilf9t9KOojG+Pmwy271uQOp5mfMAs/WTxSrCm8y4S1x9ROHjYVuUHeXAar9XL5xb1wQ==
+X-Received: by 2002:a17:90a:d155:: with SMTP id t21mr38128482pjw.84.1574693697671;
+        Mon, 25 Nov 2019 06:54:57 -0800 (PST)
+Received: from debian.net.fpt ([2405:4800:58f7:550c:6dad:1b5f:afc6:7758])
+        by smtp.gmail.com with ESMTPSA id j4sm8623602pgt.57.2019.11.25.06.54.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 06:54:56 -0800 (PST)
+From:   Phong Tran <tranmanphong@gmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org, oneukum@suse.com
+Cc:     alexios.zavras@intel.com, johan@kernel.org, allison@lohutok.net,
+        tglx@linutronix.de, benquike@gmail.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Phong Tran <tranmanphong@gmail.com>
+Subject: [PATCH 1/2] drivers: net: hso: Fix -Wcast-function-type
+Date:   Mon, 25 Nov 2019 21:54:42 +0700
+Message-Id: <20191125145443.29052-1-tranmanphong@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191123183455.6266e9a8@cakuba.netronome.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 23, 2019 at 06:34:55PM -0800, Jakub Kicinski wrote:
-> On Sat, 23 Nov 2019 18:38:19 +0530, Nishad Kamdar wrote:
-> > diff --git a/drivers/net/phy/aquantia.h b/drivers/net/phy/aquantia.h
-> > index 5a16caab7b2f..40e0be0f4e1c 100644
-> > --- a/drivers/net/phy/aquantia.h
-> > +++ b/drivers/net/phy/aquantia.h
-> > @@ -1,5 +1,5 @@
-> > -/* SPDX-License-Identifier: GPL-2.0
-> > - * HWMON driver for Aquantia PHY
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*  HWMON driver for Aquantia PHY
-> 
-> You're adding an extra space here. Is this intentional?
+correct usage prototype of callback in tasklet_init().
+Report by https://github.com/KSPP/linux/issues/20
 
-No, It shouldn't be there.
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+---
+ drivers/net/usb/hso.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Thanks you for pointing it out.
-I'll update and resend the patch.
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 74849da031fa..ca827802f291 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -1214,8 +1214,9 @@ static void hso_std_serial_read_bulk_callback(struct urb *urb)
+  * This needs to be a tasklet otherwise we will
+  * end up recursively calling this function.
+  */
+-static void hso_unthrottle_tasklet(struct hso_serial *serial)
++static void hso_unthrottle_tasklet(unsigned long data)
+ {
++	struct hso_serial *serial = (struct hso_serial *)data;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&serial->serial_lock, flags);
+@@ -1265,7 +1266,7 @@ static int hso_serial_open(struct tty_struct *tty, struct file *filp)
+ 		/* Force default termio settings */
+ 		_hso_serial_set_termios(tty, NULL);
+ 		tasklet_init(&serial->unthrottle_tasklet,
+-			     (void (*)(unsigned long))hso_unthrottle_tasklet,
++			     hso_unthrottle_tasklet,
+ 			     (unsigned long)serial);
+ 		result = hso_start_serial_device(serial->parent, GFP_KERNEL);
+ 		if (result) {
+-- 
+2.20.1
 
-Thanks for the review.
-
-Regards,
-Nishad
-
-> 
-> >   *
-> >   * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-> >   * Author: Andrew Lunn <andrew@lunn.ch>
