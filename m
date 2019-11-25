@@ -2,132 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E2D1094DC
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 21:53:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 544E8109525
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 22:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726016AbfKYUxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 15:53:33 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40736 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbfKYUxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 15:53:32 -0500
-Received: by mail-qk1-f194.google.com with SMTP id a137so12305441qkc.7
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 12:53:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=JI4R2Exiz2zUPjmAEcLAdnWuq7egECrOmXRPWhAIU2w=;
-        b=BpvqRwg9XBca1hNN7pDbp27pL81dMK9xtBOcXm/vPGxqD6njAqZ8aiIqFin3XNKzVh
-         CijhJ6n03b70X3wC9oeNjz4wmXwMju23h3yzVFwMQq3JKL1+X2HkVqEc056x3Zp8Qp3v
-         GHHgkwgkSt9JDlIZNP2nbM2F48fbUL9qufTl6PPV7aevpB++GSZLOq647pIXqLGioFPs
-         owfjVByvX1riDXNu2jwDBVIhg4o+1SvTZxGFd0rSmmtnot+qpq/6rwLfiWESnW32zts/
-         57NcbkWZo5zncPCiafiLVbRoZ1pqo6W9i25DsO0m8E0lOGC5KuQ2gANsP2WWVCKQV1lP
-         CNQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JI4R2Exiz2zUPjmAEcLAdnWuq7egECrOmXRPWhAIU2w=;
-        b=bwr9AvFQobvWyUMilaO51JpkFXmhlaupxGkxXJMMjYd+41sb9BQkoTwniki5GN7Z9d
-         y44l5/gV86Su9Jy6QXB6I34ZsWvbwnvCoiCd1unPn4Qdm90x9GTE3Qhu7xq/vaPw2fSr
-         qoC5A7w8cjOciTOqCgHqNoUg7Jnj3/7CKNl9OLkMBPn7RaQbFBm9WLeAGrcVogCQDG36
-         iO11Yd613zKXLG9XJbdbr/ZzMVHFr/Wmk3RUGkxZiqmD7pYKRnZBRDb70DKVpJpIeYL7
-         m555lBpF1Nfq3A+8sGq70gLMErZfIHAktr4QCmIrcLcfaTTfGZYnN/HBUN2K48l0AWPk
-         NYWw==
-X-Gm-Message-State: APjAAAU8WKW4SGusXQAsAe33OVTjhhfLzhGQ00TM/PLRhpu8ID4WnlL1
-        0HqSj5oD1GX6dupftCQK1ON1MCb6
-X-Google-Smtp-Source: APXvYqwZyeoZQeVPSAsUlkDSxOvouim0AgZl15ofGjezZO5e37K02EG0KT4r2EDrl90TQcmjeMwRjw==
-X-Received: by 2002:a05:620a:1319:: with SMTP id o25mr19387574qkj.83.1574715211462;
-        Mon, 25 Nov 2019 12:53:31 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:c06f:8df5:46f1:d3e5])
-        by smtp.googlemail.com with ESMTPSA id k7sm3975236qkf.40.2019.11.25.12.53.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Nov 2019 12:53:30 -0800 (PST)
-Subject: Re: VRF and/or cgroups problem on Fedora-30, 5.2.21+ kernel
-To:     Ben Greear <greearb@candelatech.com>,
-        netdev <netdev@vger.kernel.org>
-References: <05276b67-406b-2744-dd7c-9bda845a5bb1@candelatech.com>
- <850a6d4e-3a67-a389-04a0-87032e0683d8@gmail.com>
- <213aa1d3-5df9-0337-c583-34f3de5f1582@candelatech.com>
- <8ae551e1-5c2e-6a95-b4d1-3301c5173171@gmail.com>
- <ffbeb74f-09d5-e854-190e-5362cc703a10@candelatech.com>
- <fb74534d-f5e8-7b9b-b8c0-b6d6e718a275@gmail.com>
- <3daeee00-317a-1f82-648e-80ec14cfed22@candelatech.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b64cb1b5-f9be-27ab-76e8-4fe84b947114@gmail.com>
-Date:   Mon, 25 Nov 2019 13:53:28 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
+        id S1726873AbfKYV3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 16:29:53 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23160 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725930AbfKYV3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 16:29:53 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAPLS3XZ016242
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 13:29:52 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=yushD8z+ebHuwYYdAk8+lPwfKALS1XVbLw9s3XZz/Gc=;
+ b=buObwRLneU4oRgCaNp6YFAXY02cePSayZ14xMsXDxf3HSY/DwgxfmOY2MvbYcnbBxsW/
+ j6Mvmft7qV/gHs9XpvW0smbW6H4Q7Pt5fe8SJ/nfpct20XixxVZNZ34lU4rLkrFf60ls
+ wd9st3o9Ym1TN8yIYtPnecIPe6+5LR+xPsg= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wfny683fq-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 13:29:52 -0800
+Received: from 2401:db00:12:9028:face:0:29:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Mon, 25 Nov 2019 13:29:51 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 9AB332EC1958; Mon, 25 Nov 2019 13:29:50 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: fix usage of u32 in userspace code
+Date:   Mon, 25 Nov 2019 13:29:48 -0800
+Message-ID: <20191125212948.1163343-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <3daeee00-317a-1f82-648e-80ec14cfed22@candelatech.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-25_05:2019-11-21,2019-11-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=608
+ suspectscore=8 priorityscore=1501 phishscore=0 bulkscore=0
+ lowpriorityscore=0 clxscore=1015 mlxscore=0 adultscore=0 impostorscore=0
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911250172
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/19 10:35 AM, Ben Greear wrote:
->>> And surely 'ip' could output a better error than just 'permission
->>> denied' for
->>> this error case?  Or even something that would show up in dmesg to give
->>> a clue?
->>
->> That error comes from the bpf syscall:
->>
->> bpf(BPF_PROG_LOAD, {prog_type=BPF_PROG_TYPE_CGROUP_SOCK, insn_cnt=6,
->> insns=0x7ffc8e5d1e00, license="GPL", log_level=1, log_size=262144,
->> log_buf="", kern_version=KERNEL_VERSION(0, 0, 0), prog_flags=0,
->> prog_name="", prog_ifindex=0,
->> expected_attach_type=BPF_CGROUP_INET_INGRESS, prog_btf_fd=0,
->> func_info_rec_size=0, func_info=NULL, func_info_cnt=0,
->> line_info_rec_size=0, line_info=NULL, line_info_cnt=0}, 112) = -1 EPERM
->> (Operation not permitted)
-> 
-> So, we can change iproute/lib/bpf.c to print a suggestion to increase
-> locked memory
-> if this returns EPERM?
-> 
+u32 is not defined for libbpf when compiled outside of kernel sources (e.g.,
+in Github projection). Use __u32 instead.
 
-looks like SYS_ADMIN and locked memory are the -EPERM failures.
+Fixes: b8c54ea455dc ("libbpf: Add support to attach to fentry/fexit tracing progs")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I do not see any API that returns user->locked_vm, only per-task
-locked_vm. Knowing that number would help a lot in understanding proper
-system settings.
-
-Running 'perf record' while trying to do 'ip vrf exec' is an easy way to
-hit the locked memory exceeded error. We could add a hint to iproute2.
-Something like:
-
-diff --git a/ip/ipvrf.c b/ip/ipvrf.c
-index b9a43675cbd6..15637924f31a 100644
---- a/ip/ipvrf.c
-+++ b/ip/ipvrf.c
-@@ -281,9 +281,16 @@ static int vrf_configure_cgroup(const char *path,
-int ifindex)
-                fprintf(stderr, "Failed to load BPF prog: '%s'\n",
-                        strerror(errno));
-
--               if (errno != EPERM) {
-+               if (errno == EPERM) {
-+                       if (geteuid() != 0)
-+                               fprintf(stderr,
-+                                       "Hint: Must run as root to set
-VRF.\n");
-+                       else
-+                               fprintf(stderr,
-+                                       "Hint: Most likely locked memory
-threshold exceeded. Increase 'ulimit -l'\n");
-+               } else {
-                        fprintf(stderr,
--                               "Kernel compiled with CGROUP_BPF
-enabled?\n");
-+                               "Hint: Kernel compiled with CGROUP_BPF
-enabled?\n");
-                }
-                goto out;
-        }
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index e1698461c6b3..b20f82e58989 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5128,7 +5128,7 @@ int libbpf_find_vmlinux_btf_id(const char *name,
+ 	char *dst = raw_tp_btf + sizeof(BTF_PREFIX) - 1;
+ 	const char *btf_name;
+ 	int err = -EINVAL;
+-	u32 kind;
++	__u32 kind;
+ 
+ 	if (IS_ERR(btf)) {
+ 		pr_warn("vmlinux BTF is not found\n");
+-- 
+2.17.1
 
