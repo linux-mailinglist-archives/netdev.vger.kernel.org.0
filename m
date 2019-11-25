@@ -2,198 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB20109142
-	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B59109166
+	for <lists+netdev@lfdr.de>; Mon, 25 Nov 2019 16:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728640AbfKYPuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 10:50:04 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44676 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728604AbfKYPuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 10:50:03 -0500
-Received: by mail-pf1-f194.google.com with SMTP id d199so2919090pfd.11
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 07:50:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0ckFKBIumj1sJDi2Zyfxfwyz2kYB6ebsq3r778mZurs=;
-        b=koqAF3N/gXQXbYqU9E8a4Bk8AbokpYBl2OShtT1Puiug4BBChlUFU3oE7hJpW/Fj3s
-         9+SgzAmM7mJIScfTikCRJi6wDus9kznh8659ejhdlYJwjY9EwGYzcUQWsAZ/PZI0Am6I
-         /w3w7uGuAM0VdusEjBmvj3aUYjaAA3ykjneGcW9LZI7jqGzNQAlLU0E075eQSoGnLMVM
-         PsDxOJCoV/Ya8vQjRBwwjtM3rZpoS8po4rrCwPk2Yr/bAJGZEwWTr+0c2zzPEvbxElg8
-         cPegzS+o1Jxkr3NhEFiGkI/gM72mtPhQqOp/psz82ow7Vwt8D/EK2GELe+eM5LjT2Rcm
-         AVtA==
+        id S1728641AbfKYP46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 10:56:58 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37673 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728565AbfKYP46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 10:56:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574697416;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k6vjFioBBY91NKmkSnyHowHjVwDMiWIgvvSsxMIvQQ0=;
+        b=MMZoicXlB7qai5oVZ09gO0kdZro+xsKN5fwSXL7j1X/SvjcOfhyc2R2pIyThfhgbajDxJ9
+        yaiqqPe/vqh5uWk1NHac43YPUc2vBGcteCzRxp3DwP3OYE62w2ZKo3RF+HUGgR4sMZAqPx
+        MT4PgvMdItxFxRj6hRsRUbMn4VieJaw=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-100-vPx2ZT4TOKi0BJErfLmuow-1; Mon, 25 Nov 2019 10:56:55 -0500
+Received: by mail-lf1-f69.google.com with SMTP id d16so3178868lfm.14
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 07:56:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0ckFKBIumj1sJDi2Zyfxfwyz2kYB6ebsq3r778mZurs=;
-        b=cHuDFF8F/qWqmCAL7CoUwb+dkaNenhxjAUfHo4FY/+brFkGP3Ir0b/HNslpfuXyLjl
-         lEyg4Q2CrHTbEq55MRPUYnbQ2pymByhlVbF2oQeyHzLRFQKCmITXr2fn6DvitjjKM2/R
-         zA1LYAszmwxJAvNUVhqegwpz/ptvJReNQYrmssLBUQosG0mg3GQKMhTc/fGSvkuRKWpC
-         Zv6FHeh3sBP420K6B78kr6Z+lIfxxIGVbWSHLX3gXQOU55FFE96p2K0aEGm7DlqeAL1f
-         sX3yjRFEzb1jjF52tcVnNM3e7b071IQce8XcvI0KeMP+IB1xHuseJ37Z4Q712SN+MRnn
-         Mvsw==
-X-Gm-Message-State: APjAAAUGBFBkwtAJ7pLj94jn6MwKbgNWWHnyhjmSklZE/CVkcNYzb7jt
-        xWNrdcBv2uhpRnAw4kbEcf/Y19kY
-X-Google-Smtp-Source: APXvYqxBcWkZriRZaO33oL+lRvh/WD3xl28KZuu9ZNHP1Gqw3dCy4Lg5i6dq2Cpju2GE2aFGGRrSdw==
-X-Received: by 2002:a63:f716:: with SMTP id x22mr33299529pgh.351.1574697002991;
-        Mon, 25 Nov 2019 07:50:02 -0800 (PST)
-Received: from martin-VirtualBox ([42.109.141.58])
-        by smtp.gmail.com with ESMTPSA id p16sm9054685pgm.8.2019.11.25.07.50.01
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 25 Nov 2019 07:50:02 -0800 (PST)
-Date:   Mon, 25 Nov 2019 21:19:51 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Subject: Re: [PATCH v2 net-next] Enhanced skb_mpls_pop to update ethertype of
- the packet in all the cases when an ethernet header is present is the
- packet.
-Message-ID: <20191125154951.GA5135@martin-VirtualBox>
-References: <1574505299-23909-1-git-send-email-martinvarghesenokia@gmail.com>
- <CAOrHB_AeJFYsvTLigMDB=j4XDsDsHR0sKADK33P5Qf7BiMVrug@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=k6vjFioBBY91NKmkSnyHowHjVwDMiWIgvvSsxMIvQQ0=;
+        b=rW9MX2NG+NJrZxzK8/nWLv73MQQ1vnOmgky/jwWSEyg58iEndhdBzGLAgG/Hu8tgkI
+         NuAi0WhoBLnFaAV8i+FeNDucZHH1rnk624Zaah+xFXNzQocmgpQLm6oWZ4RcOGgVMjZ9
+         gZidIWkMzZzDRabDghj9Ufj1SSfvLAiv1gREvTZq1PpChnJOOpdS2FAktCWiJtoaEPls
+         tNTkV78RT5rD8k459Do8USK6CrCm/pukROjIZQHL8jnMblMLZLMYSjORELQJ/6ZizKmz
+         8vdGhmpS4Z8gqVT9ofdzV2gOMUk6Np/pg7kyQEB+Kit+IMMmIjNbHUnd0JHUr0gwEpt5
+         /99w==
+X-Gm-Message-State: APjAAAU5d9Xpw6i83OHqvS6jMv/KnlyUdHWJO7Z6qwMhRQCoOtTLLU1R
+        CoEBU1VpuuNAWU5iEdv8PPCPzQTCjr0usDwKcHfDXyIy9qDOJAgSXUk752hI8OWuwlWeQzizvFC
+        byJQNtRm2/DoBm0ym
+X-Received: by 2002:a2e:2419:: with SMTP id k25mr22936144ljk.59.1574697414159;
+        Mon, 25 Nov 2019 07:56:54 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz/9tRwtySinodJJAoAACUPPhh9jwmcEOD8VZ0y/GgcrSRNg+0Zrh8SQlpQGUJLbXmS/m8OXQ==
+X-Received: by 2002:a2e:2419:: with SMTP id k25mr22936136ljk.59.1574697414019;
+        Mon, 25 Nov 2019 07:56:54 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id p193sm4380361lfa.18.2019.11.25.07.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Nov 2019 07:56:53 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A6F241818BF; Mon, 25 Nov 2019 16:56:52 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: Re: [PATCH bpf-next v2 2/6] xdp: introduce xdp_call
+In-Reply-To: <CAJ+HfNhFERV+xE7EUup-tu_nBTTqG=7L8bWm+W8h_Lzth4zuKQ@mail.gmail.com>
+References: <20191123071226.6501-1-bjorn.topel@gmail.com> <20191123071226.6501-3-bjorn.topel@gmail.com> <875zj82ohw.fsf@toke.dk> <CAJ+HfNhFERV+xE7EUup-tu_nBTTqG=7L8bWm+W8h_Lzth4zuKQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 25 Nov 2019 16:56:52 +0100
+Message-ID: <87d0dg0x17.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOrHB_AeJFYsvTLigMDB=j4XDsDsHR0sKADK33P5Qf7BiMVrug@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-MC-Unique: vPx2ZT4TOKi0BJErfLmuow-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 24, 2019 at 09:32:21PM -0800, Pravin Shelar wrote:
-> On Sat, Nov 23, 2019 at 2:35 AM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> >
-> > The skb_mpls_pop was not updating ethertype of an ethernet packet if the
-> > packet was originally received from a non ARPHRD_ETHER device.
-> >
-> > In the below OVS data path flow, since the device corresponding to port 7
-> > is an l3 device (ARPHRD_NONE) the skb_mpls_pop function does not update
-> > the ethertype of the packet even though the previous push_eth action had
-> > added an ethernet header to the packet.
-> >
-> > recirc_id(0),in_port(7),eth_type(0x8847),
-> > mpls(label=12/0xfffff,tc=0/0,ttl=0/0x0,bos=1/1),
-> > actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-> > pop_mpls(eth_type=0x800),4
-> >
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > ---
-> > Changes in v2:
-> >     - check for dev type removed while updating ethertype
-> >       in function skb_mpls_pop.
-> >     - key->mac_proto is checked in function pop_mpls to pass
-> >       ethernt flag to skb_mpls_pop.
-> >     - dev type is checked in function tcf_mpls_act to pass
-> >       ethernet flag to skb_mpls_pop.
-> >
-> >  include/linux/skbuff.h    | 3 ++-
-> >  net/core/skbuff.c         | 7 ++++---
-> >  net/openvswitch/actions.c | 4 +++-
-> >  net/sched/act_mpls.c      | 4 +++-
-> >  4 files changed, 12 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index dfe02b6..70204b9 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -3530,7 +3530,8 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
-> >  int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
-> >  int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-> >                   int mac_len);
-> > -int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len);
-> > +int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-> > +                bool ethernet);
-> >  int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
-> >  int skb_mpls_dec_ttl(struct sk_buff *skb);
-> >  struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 867e61d..988eefb 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -5529,12 +5529,13 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-> >   * @skb: buffer
-> >   * @next_proto: ethertype of header after popped MPLS header
-> >   * @mac_len: length of the MAC header
-> > - *
-> > + * @ethernet: flag to indicate if ethernet header is present in packet
-> >   * Expects skb->data at mac header.
-> >   *
-> >   * Returns 0 on success, -errno otherwise.
-> >   */
-> > -int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> > +int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-> > +                bool ethernet)
-> >  {
-> >         int err;
-> >
-> > @@ -5553,7 +5554,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-> >         skb_reset_mac_header(skb);
-> >         skb_set_network_header(skb, mac_len);
-> >
-> > -       if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-> > +       if (ethernet) {
-> >                 struct ethhdr *hdr;
-> >
-> >                 /* use mpls_hdr() to get ethertype to account for VLANs. */
-> > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> > index 12936c1..264c3c0 100644
-> > --- a/net/openvswitch/actions.c
-> > +++ b/net/openvswitch/actions.c
-> > @@ -179,7 +179,9 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> >  {
-> >         int err;
-> >
-> > -       err = skb_mpls_pop(skb, ethertype, skb->mac_len);
-> > +       err = skb_mpls_pop(skb, ethertype, skb->mac_len,
-> > +                          (key->mac_proto & ~SW_FLOW_KEY_INVALID)
-> > +                           == MAC_PROTO_ETHERNET);
-> >         if (err)
-> >                 return err;
-> >
-> Why you are not using ovs_key_mac_proto() here?
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+
+> On Mon, 25 Nov 2019 at 12:18, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>>
+>> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>>
+>> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>> >
+>> > The xdp_call.h header wraps a more user-friendly API around the BPF
+>> > dispatcher. A user adds a trampoline/XDP caller using the
+>> > DEFINE_XDP_CALL macro, and updates the BPF dispatcher via
+>> > xdp_call_update(). The actual dispatch is done via xdp_call().
+>> >
+>> > Note that xdp_call() is only supported for builtin drivers. Module
+>> > builds will fallback to bpf_prog_run_xdp().
+>>
+>> I don't like this restriction. Distro kernels are not likely to start
+>> shipping all the network drivers builtin, so they won't benefit from the
+>> performance benefits from this dispatcher.
+>>
+>> What is the reason these dispatcher blocks have to reside in the driver?
+>> Couldn't we just allocate one system-wide, and then simply change
+>> bpf_prog_run_xdp() to make use of it transparently (from the driver
+>> PoV)? That would also remove the need to modify every driver...
+>>
 >
+> Good idea! I'll try that out. Thanks for the suggestion!
 
-you meant 
-err = skb_mpls_pop(skb, ethertype, skb->mac_len,
-                   ovs_key_mac_proto() == MAC_PROTO_ETHERNET); 
+Awesome! I guess the table may need to be a bit bigger if it's
+system-wide? But since you've already gone to all that trouble with the
+binary search, I guess that shouldn't have too much of a performance
+impact? Maybe the size could even be a config option so users/distros
+can make their own size tradeoff?
 
-Yes we could use it.
+-Toke
 
-
-> > diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-> > index 4d8c822..f919f95 100644
-> > --- a/net/sched/act_mpls.c
-> > +++ b/net/sched/act_mpls.c
-> > @@ -13,6 +13,7 @@
-> >  #include <net/pkt_sched.h>
-> >  #include <net/pkt_cls.h>
-> >  #include <net/tc_act/tc_mpls.h>
-> > +#include <linux/if_arp.h>
-> >
-> >  static unsigned int mpls_net_id;
-> >  static struct tc_action_ops act_mpls_ops;
-> > @@ -76,7 +77,8 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
-> >
-> >         switch (p->tcfm_action) {
-> >         case TCA_MPLS_ACT_POP:
-> > -               if (skb_mpls_pop(skb, p->tcfm_proto, mac_len))
-> > +               if (skb_mpls_pop(skb, p->tcfm_proto, mac_len,
-> > +                                (skb->dev && skb->dev->type == ARPHRD_ETHER)))
-> >                         goto drop;
-> >                 break;
-> >         case TCA_MPLS_ACT_PUSH:
-> > --
-> > 1.8.3.1
-> >
