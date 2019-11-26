@@ -2,117 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57E5B10A520
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 21:13:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 736F310A586
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 21:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbfKZUNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 15:13:04 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:44485 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbfKZUNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 15:13:04 -0500
-Received: by mail-oi1-f195.google.com with SMTP id s71so17836908oih.11;
-        Tue, 26 Nov 2019 12:13:03 -0800 (PST)
+        id S1726504AbfKZUfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 15:35:34 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45481 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbfKZUfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 15:35:34 -0500
+Received: by mail-lj1-f193.google.com with SMTP id n21so21765397ljg.12
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 12:35:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nWXvBe8iHv2e1HrWC91gojWLhn523EghSo2ykxPHbqU=;
-        b=pLKc4Sgt83cCty7y3uDo50AVWsudPf7KjkxbiFHhdSHn3c2hRoSBDM2JLYBUxV1tSP
-         SLjy0cv/dPXBO8Vs8FKEIDZnVBIoHAEtnVBgLry7mAN/WID2pmhomxJBagLj3D/VaWLe
-         V8EuElcIdHPotR99lG1+4W8PNp+U0cLUrvdQ+zSHq+OUZbu0Yir3HR1jHnu1NZaUQg6J
-         MjxXW/8lZ9B429oBOYF2wEwI4Qrr7wYFuLAab+t/KtrPBCCptxD2zD3r7sFWo3mpun3d
-         hSbpTmnkFt2Kd87raS0SmtOz2I3jZtEODnjulXNoBvTmbwOzV0nkU8h7tYq+PUPSR57Z
-         1qDA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=K4Bc+8eHqvfcdZUohVg+/Nb9ohh1S05Ow4H5opvoqhk=;
+        b=hP8MBek+jIyGLD+HG0jW2xvdPV0teuBv/6k2y1ZOfuFlO/HjwikQPbJcxccaCkY4ca
+         gjaTQdQJuJuuDe7KXGd7CHEz647Qh6NX9XAIW3c4Z8FK6pZpjhGsPKjwmxaJVD5IlM/X
+         Z5/WxylRjt2WqI7WJW+aZcE6o+zYKjTFcMG7c0n8bOuwNbF7ICmk+Fxg7pHQ7dwDF31l
+         NmFxlfLTZZuYjXH9EvJKULzXQ8K11aH69Hhg25nRJk/+Jd3ZLFE+87+CG7Iv/YLiH0r1
+         8nEtemUANXF+RxlU+k7p/LnGQqcmKLtW90x47b0ZBqnVjm14VykY0TyefIzMoDaXqk0J
+         rZ7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nWXvBe8iHv2e1HrWC91gojWLhn523EghSo2ykxPHbqU=;
-        b=AVodZ39JcWjvxEntNYvXQSazb4V83j8Hbi6n9QKGzju+upwrmD1JPc/pNiztz8p3gJ
-         0jgmgGXLsS4TxcaehyaDTr69hbvAt8I51/RQtaDjicffErUMUvMGjhn4tEFpHd9bfDV7
-         I6hHAnk8O6yf7ZEuglK/d1FHrkxvOS5FMwFe+hx0P/LPltkvCH8abBdKc9hTysveVIng
-         F/JsX38fC+nyUll2zo4ofnoN4lF7txPjFqGtWFCa158dxK8NhY5nbQWBnvL+4Qj3qTKs
-         codFw972H8PTJnLfo3dEn+1So9FpuDc+xHw93gQwdYV4vaxNViFhoSgQhE0vG/hJI6Di
-         Usjg==
-X-Gm-Message-State: APjAAAU9EkgA9BNc+OjEgeVR/IvOWpX1N9InhvZBPtK0nwyAdG47vYKQ
-        0BNto77ZnUwQPfyYTVcjjNXXU5+r
-X-Google-Smtp-Source: APXvYqz0+3tinyCTs/QonbBWOqSQwEdVYtN5Yuzp6nAaQo4LzvHIgPVdiRQM9CHSHWbw68sfN07ywA==
-X-Received: by 2002:aca:b708:: with SMTP id h8mr787878oif.126.1574799182939;
-        Tue, 26 Nov 2019 12:13:02 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::7])
-        by smtp.gmail.com with ESMTPSA id e186sm4033064oia.47.2019.11.26.12.13.02
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=K4Bc+8eHqvfcdZUohVg+/Nb9ohh1S05Ow4H5opvoqhk=;
+        b=dqkOkOHOTH2EH/XVlRWbo7tVIkPOev9U298/XY1Eosmbp9j7Zq1PIpFpZYW1viD/l7
+         573Qje1Wfb1girjUI4FqON0+hi/qneuw6p703Qtx1q3+Y3faQm0euTlay6kMdARtanbV
+         LYjjRMKwgIEauIANXD2OnqvVSG0xrveRPgqgKjb8UQvpd3CsH27Yn+aYEDFubFW58d5g
+         Y0WJKclX1y8Bt7kWPgpH3WAnnTZpdy3sGC+WAcKjci4bZP1OMSITjT84RsVm+yfSRmQn
+         +q5aBG6Nddm6zXzqfCNNB7qBn8agYgU5KLTOpCE11eA01saCnrpMhhK36MnIeo3YKTIM
+         CmSw==
+X-Gm-Message-State: APjAAAV2mpf2UkNF4uC3RoYpOXOcbvZhgTSZ+SwvbBAb8v4h3O7UAeKx
+        wh8TgpVGX22H16s4SJXclCAvGw==
+X-Google-Smtp-Source: APXvYqx9IqBt3lkqgKwa8lRqh+EMXV4Z5INEt5vZARRFzhNGU5/ykWOAvkTYwnAGobZix7373gRwCQ==
+X-Received: by 2002:a2e:8885:: with SMTP id k5mr11915374lji.98.1574800532208;
+        Tue, 26 Nov 2019 12:35:32 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z127sm5839668lfa.19.2019.11.26.12.35.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 12:13:02 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] netfilter: nf_flow_table_offload: Don't use offset uninitialized in flow_offload_port_{d,s}nat
-Date:   Tue, 26 Nov 2019 13:12:26 -0700
-Message-Id: <20191126201226.51857-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        Tue, 26 Nov 2019 12:35:31 -0800 (PST)
+Date:   Tue, 26 Nov 2019 12:35:14 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        qemu-devel@nongnu.org, kvm@vger.kernel.org
+Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
+Message-ID: <20191126123514.3bdf6d6f@cakuba.netronome.com>
+In-Reply-To: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns (trimmed the second warning for brevity):
+On Tue, 26 Nov 2019 19:07:26 +0900, Prashant Bhole wrote:
+> Note: This RFC has been sent to netdev as well as qemu-devel lists
+> 
+> This series introduces XDP offloading from virtio_net. It is based on
+> the following work by Jason Wang:
+> https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
+> 
+> Current XDP performance in virtio-net is far from what we can achieve
+> on host. Several major factors cause the difference:
+> - Cost of virtualization
+> - Cost of virtio (populating virtqueue and context switching)
+> - Cost of vhost, it needs more optimization
+> - Cost of data copy
+> Because of above reasons there is a need of offloading XDP program to
+> host. This set is an attempt to implement XDP offload from the guest.
 
-../net/netfilter/nf_flow_table_offload.c:342:2: warning: variable
-'offset' is used uninitialized whenever switch default is taken
-[-Wsometimes-uninitialized]
-        default:
-        ^~~~~~~
-../net/netfilter/nf_flow_table_offload.c:346:57: note: uninitialized use
-occurs here
-        flow_offload_mangle(entry, flow_offload_l4proto(flow), offset,
-                                                               ^~~~~~
-../net/netfilter/nf_flow_table_offload.c:331:12: note: initialize the
-variable 'offset' to silence this warning
-        u32 offset;
-                  ^
-                   = 0
+This turns the guest kernel into a uAPI proxy.
 
-Match what was done in the flow_offload_ipv{4,6}_{d,s}nat functions and
-just return in the default case, since port would also be uninitialized.
+BPF uAPI calls related to the "offloaded" BPF objects are forwarded 
+to the hypervisor, they pop up in QEMU which makes the requested call
+to the hypervisor kernel. Today it's the Linux kernel tomorrow it may 
+be someone's proprietary "SmartNIC" implementation.
 
-Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-Link: https://github.com/ClangBuiltLinux/linux/issues/780
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- net/netfilter/nf_flow_table_offload.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Why can't those calls be forwarded at the higher layer? Why do they
+have to go through the guest kernel?
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index c54c9a6cc981..a77a6e1cfd64 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -340,7 +340,7 @@ static void flow_offload_port_snat(struct net *net,
- 		offset = 0; /* offsetof(struct tcphdr, dest); */
- 		break;
- 	default:
--		break;
-+		return;
- 	}
- 
- 	flow_offload_mangle(entry, flow_offload_l4proto(flow), offset,
-@@ -367,7 +367,7 @@ static void flow_offload_port_dnat(struct net *net,
- 		offset = 0; /* offsetof(struct tcphdr, dest); */
- 		break;
- 	default:
--		break;
-+		return;
- 	}
- 
- 	flow_offload_mangle(entry, flow_offload_l4proto(flow), offset,
--- 
-2.24.0
+If kernel performs no significant work (or "adds value", pardon the
+expression), and problem can easily be solved otherwise we shouldn't 
+do the work of maintaining the mechanism.
 
+The approach of kernel generating actual machine code which is then
+loaded into a sandbox on the hypervisor/SmartNIC is another story.
+
+I'd appreciate if others could chime in.
