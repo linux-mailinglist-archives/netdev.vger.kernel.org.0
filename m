@@ -2,126 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D1B1099A9
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 08:43:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B53E41099F0
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 09:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfKZHnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 02:43:43 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35258 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbfKZHnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 02:43:43 -0500
-Received: by mail-qt1-f195.google.com with SMTP id n4so20434702qte.2;
-        Mon, 25 Nov 2019 23:43:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UHfKop594uevxqQ70kj1Se7dd51KQ27qul6vNyc+H8E=;
-        b=CxmbG0zJ+WHtXeODvOJPuY01bOlEZCOkw+emQeJLJAdBiReutpEAkSiU9EHDWBr9vQ
-         ptcsMmnuvz5oosD4Hn0v8QcuKUSX5be+0Xc/wCHdTbPfLnQCFK2FtOiFRaF+DTp0OS6M
-         oiGZyRSRxqoJ0Cr13aK+i2x0ZLiEX9d8Q1tu+28/9tcgD38fBSUEXEddKiO89oZaZUMK
-         AT0rLlHO1NlkNLyOOniGLtVWQN/jO8iCjv2hXOIWFNVYceMv+SPPnsvvR3bmhDdmbvyh
-         LTTQGniZI7KyW8KGTXYVtyj5gbeGrKDK4UJtPRtl5OJE+ydmX2w9VwPEPj41paM3nLtq
-         /fLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UHfKop594uevxqQ70kj1Se7dd51KQ27qul6vNyc+H8E=;
-        b=pckRbcUh1Gck6LFg4AGffBPK1FANaKqDnbgPGDzGbMtGO0Cp+XMIJdYt+brTutmoAd
-         yUL8wJzkq5fXuMoGWRfWx/D2E1VoMLm8fj25VZ/V7h95q+boq86mLLQBFprT1CU05S0K
-         /rErZHVai06X6RqpdRU5bShEu7SQIvKF0dUtEL89qirmMtpqxI1FAQ1QjKcI4PAxlprJ
-         vzfO+lH4k6Ag9vGUvmMyJY9qKwLLCxBoR0TrhgGChoyA0i+zAmF13L4O69sn8DELJyMK
-         2uObrFLfTgAiAAy3Pum3+qXZIXtZW6ZWv/645Ciu/9vFRFXdpIhMQCnOb6g8+iCMMeHb
-         /xSg==
-X-Gm-Message-State: APjAAAVoSfhoVtbUvw5Ml44kZafWn3WB+cNnX0uyEeskiukqSmpjCuiX
-        FgO1C+vz2RfWsdOn6BbCFa42EhAXcrLljmkfn2w=
-X-Google-Smtp-Source: APXvYqyWItExhZaEXo74oRYlONO4SnlAkHRuCXsuDv2sj+K5KFfwdVU1WmoWv1fJxIlpLLRFxs9b+5fTwF5VX7Wbs1c=
-X-Received: by 2002:ac8:6f57:: with SMTP id n23mr32760938qtv.46.1574754222222;
- Mon, 25 Nov 2019 23:43:42 -0800 (PST)
+        id S1727217AbfKZIMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 03:12:23 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:56296 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725933AbfKZIMW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Nov 2019 03:12:22 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id E119A2051C;
+        Tue, 26 Nov 2019 09:12:21 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id b7-L8WErnxmu; Tue, 26 Nov 2019 09:12:21 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 6E6C92008D;
+        Tue, 26 Nov 2019 09:12:21 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 26 Nov 2019
+ 09:12:21 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 1F0713180357;
+ Tue, 26 Nov 2019 09:12:21 +0100 (CET)
+Date:   Tue, 26 Nov 2019 09:12:21 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <nicolas.dichtel@6wind.com>, <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>
+Subject: Re: xfrmi: request for stable trees
+Message-ID: <20191126081221.GA13225@gauss3.secunet.de>
+References: <3a94c153-c8f1-45d1-9f0d-68ca5b83b44c@6wind.com>
+ <65447cc6-0dd4-1dbd-3616-ca6e88ca5fc0@6wind.com>
+ <20191124100746.GD14361@gauss3.secunet.de>
+ <20191124.190249.1262907259702322148.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20191123071226.6501-1-bjorn.topel@gmail.com> <20191123071226.6501-3-bjorn.topel@gmail.com>
- <875zj82ohw.fsf@toke.dk> <CAJ+HfNhFERV+xE7EUup-tu_nBTTqG=7L8bWm+W8h_Lzth4zuKQ@mail.gmail.com>
- <87d0dg0x17.fsf@toke.dk>
-In-Reply-To: <87d0dg0x17.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 26 Nov 2019 08:43:31 +0100
-Message-ID: <CAJ+HfNhSba7B=SFK0-zjYqFMfwjiq-AVY2Ar7E0P5Pw6gNqTJA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/6] xdp: introduce xdp_call
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191124.190249.1262907259702322148.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Nov 2019 at 16:56, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->
-> > On Mon, 25 Nov 2019 at 12:18, Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
-> >>
-> >> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
-> >>
-> >> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >> >
-> >> > The xdp_call.h header wraps a more user-friendly API around the BPF
-> >> > dispatcher. A user adds a trampoline/XDP caller using the
-> >> > DEFINE_XDP_CALL macro, and updates the BPF dispatcher via
-> >> > xdp_call_update(). The actual dispatch is done via xdp_call().
-> >> >
-> >> > Note that xdp_call() is only supported for builtin drivers. Module
-> >> > builds will fallback to bpf_prog_run_xdp().
-> >>
-> >> I don't like this restriction. Distro kernels are not likely to start
-> >> shipping all the network drivers builtin, so they won't benefit from t=
-he
-> >> performance benefits from this dispatcher.
-> >>
-> >> What is the reason these dispatcher blocks have to reside in the drive=
-r?
-> >> Couldn't we just allocate one system-wide, and then simply change
-> >> bpf_prog_run_xdp() to make use of it transparently (from the driver
-> >> PoV)? That would also remove the need to modify every driver...
-> >>
-> >
-> > Good idea! I'll try that out. Thanks for the suggestion!
->
-> Awesome! I guess the table may need to be a bit bigger if it's
-> system-wide? But since you've already gone to all that trouble with the
-> binary search, I guess that shouldn't have too much of a performance
-> impact? Maybe the size could even be a config option so users/distros
-> can make their own size tradeoff?
->
+On Sun, Nov 24, 2019 at 07:02:49PM -0800, David Miller wrote:
+> From: Steffen Klassert <steffen.klassert@secunet.com>
+> Date: Sun, 24 Nov 2019 11:07:46 +0100
+> 
+> > On Mon, Nov 18, 2019 at 04:31:14PM +0100, Nicolas Dichtel wrote:
+> >> Le 14/10/2019 à 11:31, Nicolas Dichtel a écrit :
+> >> > Le 05/09/2019 à 12:21, Steffen Klassert a écrit :
+> >> >> 1) Several xfrm interface fixes from Nicolas Dichtel:
+> >> >>    - Avoid an interface ID corruption on changelink.
+> >> >>    - Fix wrong intterface names in the logs.
+> >> >>    - Fix a list corruption when changing network namespaces.
+> >> >>    - Fix unregistation of the underying phydev.
+> >> > Is it possible to queue those patches for the stable trees?
+> >> 
+> >> Is there a chance to get them in the 4.19 stable tree?
+> >> 
+> >> Here are the sha1:
+> >> e9e7e85d75f3 ("xfrm interface: avoid corruption on changelink")
+> >> e0aaa332e6a9 ("xfrm interface: ifname may be wrong in logs")
+> >> c5d1030f2300 ("xfrm interface: fix list corruption for x-netns")
+> >> 22d6552f827e ("xfrm interface: fix management of phydev")
+> > 
+> > I'm ok with this. David does the stable submitting for
+> > networking patches usually. So I guess he will pick them
+> > into his stable queue after the patches are mainline some
+> > time.
+> 
+> Steffen you can submit things directly to -stable for IPSEC if you
+> wish, and it would help me in this case.
 
-My bigger concern is not the dispatcher size, but that any XDP update
-will be a system wide text-poke. OTOH, this is still the case even if
-there are multiple dispatchers. No more "quickly swap XDP program in
-one packet latency".
-
-Still, definitely worth a try. And configurable dispatcher size might
-be a good idea as well! Thanks!
-
-
-Cheers,
-Bj=C3=B6rn
-
-> -Toke
->
+Ok, can do that, no problem.
+I'll submit these and do all the future IPSEC -stable submits directly.
