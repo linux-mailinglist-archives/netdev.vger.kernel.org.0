@@ -2,18 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBECD10A009
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 15:14:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71D110A00B
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 15:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbfKZOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728190AbfKZOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 26 Nov 2019 09:14:20 -0500
-Received: from mail.stusta.mhn.de ([141.84.69.5]:50850 "EHLO
+Received: from mail.stusta.mhn.de ([141.84.69.5]:50846 "EHLO
         mail.stusta.mhn.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbfKZOOU (ORCPT
+        with ESMTP id S1726200AbfKZOOU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 09:14:20 -0500
+X-Greylist: delayed 591 seconds by postgrey-1.27 at vger.kernel.org; Tue, 26 Nov 2019 09:14:19 EST
 Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.stusta.mhn.de (Postfix) with ESMTPSA id 47MlyK1jz3z23;
-        Tue, 26 Nov 2019 15:04:25 +0100 (CET)
+        by mail.stusta.mhn.de (Postfix) with ESMTPSA id 47MlyQ46bLz4Y;
+        Tue, 26 Nov 2019 15:04:30 +0100 (CET)
 From:   Adrian Bunk <bunk@kernel.org>
 To:     stable@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Max Uvarov <muvarov@gmail.com>,
@@ -22,10 +23,12 @@ Cc:     Max Uvarov <muvarov@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Adrian Bunk <bunk@kernel.org>
-Subject: [4.14/4.19 patch 1/2] net: phy: dp83867: fix speed 10 in sgmii mode
-Date:   Tue, 26 Nov 2019 16:04:05 +0200
-Message-Id: <20191126140406.6451-1-bunk@kernel.org>
+Subject: [4.14/4.19 patch 2/2] net: phy: dp83867: increase SGMII autoneg timer duration
+Date:   Tue, 26 Nov 2019 16:04:06 +0200
+Message-Id: <20191126140406.6451-2-bunk@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191126140406.6451-1-bunk@kernel.org>
+References: <20191126140406.6451-1-bunk@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,11 +38,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Max Uvarov <muvarov@gmail.com>
 
-Commit 333061b924539c0de081339643f45514f5f1c1e6 upstream.
+Commit 1a97a477e666cbdededab93bd3754e508f0c09d7 upstream.
 
-For supporting 10Mps speed in SGMII mode DP83867_10M_SGMII_RATE_ADAPT bit
-of DP83867_10M_SGMII_CFG register has to be cleared by software.
-That does not affect speeds 100 and 1000 so can be done on init.
+After reset SGMII Autoneg timer is set to 2us (bits 6 and 5 are 01).
+That is not enough to finalize autonegatiation on some devices.
+Increase this timer duration to maximum supported 16ms.
 
 Signed-off-by: Max Uvarov <muvarov@gmail.com>
 Cc: Heiner Kallweit <hkallweit1@gmail.com>
@@ -53,46 +56,45 @@ Signed-off-by: Adrian Bunk <bunk@kernel.org>
 - applies and builds against 4.14 and 4.19
 - tested with 4.14
 ---
- drivers/net/phy/dp83867.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/net/phy/dp83867.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 12b09e6e03ba..81106314e6da 100644
+index 81106314e6da..e03e91d5f1b1 100644
 --- a/drivers/net/phy/dp83867.c
 +++ b/drivers/net/phy/dp83867.c
-@@ -37,6 +37,8 @@
+@@ -33,6 +33,12 @@
+ 
+ /* Extended Registers */
+ #define DP83867_CFG4            0x0031
++#define DP83867_CFG4_SGMII_ANEG_MASK (BIT(5) | BIT(6))
++#define DP83867_CFG4_SGMII_ANEG_TIMER_11MS   (3 << 5)
++#define DP83867_CFG4_SGMII_ANEG_TIMER_800US  (2 << 5)
++#define DP83867_CFG4_SGMII_ANEG_TIMER_2US    (1 << 5)
++#define DP83867_CFG4_SGMII_ANEG_TIMER_16MS   (0 << 5)
++
+ #define DP83867_RGMIICTL	0x0032
  #define DP83867_STRAP_STS1	0x006E
  #define DP83867_RGMIIDCTL	0x0086
- #define DP83867_IO_MUX_CFG	0x0170
-+#define DP83867_10M_SGMII_CFG   0x016F
-+#define DP83867_10M_SGMII_RATE_ADAPT_MASK BIT(7)
+@@ -300,6 +306,18 @@ static int dp83867_config_init(struct phy_device *phydev)
  
- #define DP83867_SW_RESET	BIT(15)
- #define DP83867_SW_RESTART	BIT(14)
-@@ -283,6 +285,23 @@ static int dp83867_config_init(struct phy_device *phydev)
- 		}
- 	}
- 
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		/* For support SPEED_10 in SGMII mode
-+		 * DP83867_10M_SGMII_RATE_ADAPT bit
-+		 * has to be cleared by software. That
-+		 * does not affect SPEED_100 and
-+		 * SPEED_1000.
+ 		if (ret)
+ 			return ret;
++
++		/* After reset SGMII Autoneg timer is set to 2us (bits 6 and 5
++		 * are 01). That is not enough to finalize autoneg on some
++		 * devices. Increase this timer duration to maximum 16ms.
 +		 */
-+		val = phy_read_mmd(phydev, DP83867_DEVADDR,
-+				   DP83867_10M_SGMII_CFG);
-+		val &= ~DP83867_10M_SGMII_RATE_ADAPT_MASK;
-+		ret = phy_write_mmd(phydev, DP83867_DEVADDR,
-+				    DP83867_10M_SGMII_CFG, val);
++		val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4);
++		val &= ~DP83867_CFG4_SGMII_ANEG_MASK;
++		val |= DP83867_CFG4_SGMII_ANEG_TIMER_16MS;
++		ret = phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4, val);
 +
 +		if (ret)
 +			return ret;
-+	}
-+
+ 	}
+ 
  	/* Enable Interrupt output INT_OE in CFG3 register */
- 	if (phy_interrupt_is_valid(phydev)) {
- 		val = phy_read(phydev, DP83867_CFG3);
 -- 
 2.20.1
 
