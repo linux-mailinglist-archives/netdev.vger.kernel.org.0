@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 505CC10A3A3
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 18:55:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B085A10A3A4
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 18:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbfKZRzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 12:55:53 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38002 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbfKZRzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 12:55:52 -0500
-Received: by mail-pg1-f194.google.com with SMTP id t3so8925013pgl.5;
-        Tue, 26 Nov 2019 09:55:50 -0800 (PST)
+        id S1727197AbfKZRz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 12:55:57 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:44855 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbfKZRz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 12:55:56 -0500
+Received: by mail-pj1-f66.google.com with SMTP id w8so8619363pjh.11;
+        Tue, 26 Nov 2019 09:55:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TvvdTSqyYu1UERC53GMtsiAam2mDxhTlJf/JArDCSrQ=;
-        b=OWHmv0rwNliBmYsjj8smIocF1JTsvaq9ItSMbiJn6nyDPUqSmrmj/rnuEL29GILHg/
-         5c2AQ/giRF9hTOccWsp96yMWBot8xnUJKhxJIbs1hpknA+oJPABUjrPrvlf3XekzVB/q
-         HHx3oOD8EzhFuRgGmWqQNa5jlkWi3tlz0ZCzizLTnaxSf/WL2zi9eJ9ixGLncAHmrGa6
-         PCWoqGGTC2YK4TgVADQbwO3BfKKDzvNDZqUZubw+3oOlIEMjSR8pXjm3yHch0dB6yMsl
-         YLYI4byIxjzAHH0IRgFWRaQYwVlfenObZpd16jdE15X3gHc0IjQSc2IkqRJSfw1bpkUu
-         6u+A==
+        bh=psR0lc9V3Wlfquc+Ru02h/4BIxYapesjG8uBLemW7hI=;
+        b=sN8rMBdFIP6ykaiXexQPhfCmYQ/9qTmtAD0VRlwvbxiR9+ISfJB2y2m3KHsDyRcf0a
+         v7ZSbymfjpsXpyUfbKs5Y6UTicbUi59Yx7JLWLQ+L3cbvLqZDUnrCt+YLsi8MKnARYRP
+         af6osaeEiVghatzOx/ISWnohIoknKNOQXyUvncBuEVpZavn6OSwMQVoQZzqHCYGHnxEU
+         nOB0o0b/J5mMUK22msy5yjj8bYe5Yfhmj8alowlAjuMfUv3dYQXqZb+3kaRdUn8yD2aa
+         k0dIKkQS6kyFzd2o/qylEk4cyqa+KggJ5DfpFOndJqT8DIQJoWGNiFDp73aJZS6zvbMR
+         TSog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TvvdTSqyYu1UERC53GMtsiAam2mDxhTlJf/JArDCSrQ=;
-        b=sH31WfQkpFTLgqda8eyBruqgE3eXik5DlZq6zGeeCAIPa7GT62vtRhFUOyz1C2a4AQ
-         ZVYECAGQ/ua4JUkh5s6vHSWVMxIR2J0pNP+czyboQhEJSnbxYUIsbW6aQ430ftl4uLFE
-         qdnjOyVt8bL2l4ZrKb1XGpuUKjS1t2MQ93GLD2VlvTd09YPKyqL4/DJ2Uk4o7mu7zpyI
-         r2XhGIF1FmrCZPpLGh3oZRL6dRoWukELDmY3mYFIj84+xjwHrghYRCBaNJnlaEMwpIAL
-         lLjGK9O8q9DtsmtHSKm3S8u9iSp5tBYd0MZlz6xTy/H5C3b7/rsvy0oONlKZd7WN/H0y
-         1AvA==
-X-Gm-Message-State: APjAAAWKM9lvHWAf/vS1t+M3j/5bXISiY9WO6ZADM+TLEUx55MlUfG7/
-        AXVPLB9IyJAXjJvM6+qDu/c=
-X-Google-Smtp-Source: APXvYqyOpcmH+LQLNqKMpeT7iy2nxBR7WsUOcR0vrbLmbLTb3Hw+LcDWtk0d4hjF2hFpb5IMctFCHg==
-X-Received: by 2002:a63:5851:: with SMTP id i17mr39852959pgm.181.1574790950285;
-        Tue, 26 Nov 2019 09:55:50 -0800 (PST)
+        bh=psR0lc9V3Wlfquc+Ru02h/4BIxYapesjG8uBLemW7hI=;
+        b=RumvShnB9kzadkZs8AvzfWEe0qbUmnH+DGPw/jAsZREtyMBJ3zrrSsbI22FWY9yQ1W
+         4bVZ3iM0yA+j/mXrJMSZDQLXYI+cMXluFDhLJs+ut91XNRS6H58J7GWdLaVaScWR47aH
+         SFhcarc4//NR4GxWNGtFVG9jwHhJKTWgrl394pv1mzYX2Y2ILhc/KlLpZoIND7GGLTLL
+         tJLXqYWhzG34kzwN4fl+RktSLog5pHFF2dfBYNb770Ku/KriPuSeKsNcndSEs4F1qvRU
+         WGuZL7nl2M1Qg+RZcYaYaUTJiRfvOiIE/ZvQBxYuDdPXngGjhHsbL6P0gcfkIrtpstLU
+         gY9g==
+X-Gm-Message-State: APjAAAWYD/2w8x8HsKsERYFq5de8HEbtFJ/sTBEbyl14SzOLeMkx4CS7
+        6BeWRIWd/bVS19HO/P5br5Q=
+X-Google-Smtp-Source: APXvYqzQNjolfc10t1hCAEzbsyosHT+jb6I2ufIehxJMfZz1bV1PZlexX3MQ4+Zdhu8Z3of/UcS5WA==
+X-Received: by 2002:a17:902:b60d:: with SMTP id b13mr36433120pls.145.1574790955800;
+        Tue, 26 Nov 2019 09:55:55 -0800 (PST)
 Received: from debian.net.fpt ([2405:4800:58f7:2f79:ce3b:4b9:a68f:959f])
-        by smtp.gmail.com with ESMTPSA id q6sm781577pfl.140.2019.11.26.09.55.44
+        by smtp.gmail.com with ESMTPSA id q6sm781577pfl.140.2019.11.26.09.55.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 09:55:49 -0800 (PST)
+        Tue, 26 Nov 2019 09:55:55 -0800 (PST)
 From:   Phong Tran <tranmanphong@gmail.com>
 To:     Larry.Finger@lwfinger.net, jakub.kicinski@netronome.com,
         kvalo@codeaurora.org
@@ -58,12 +58,13 @@ Cc:     tranmanphong@gmail.com, Wright.Feng@cypress.com,
         rafal@milecki.pl, sara.sharon@intel.com,
         shahar.s.matityahu@intel.com, yhchuang@realtek.com,
         yuehaibing@huawei.com
-Subject: [Patch v2 0/4] wireless: Fix -Wcast-function-type 
-Date:   Wed, 27 Nov 2019 00:55:25 +0700
-Message-Id: <20191126175529.10909-1-tranmanphong@gmail.com>
+Subject: [Patch v2 1/4] b43legacy: Fix -Wcast-function-type
+Date:   Wed, 27 Nov 2019 00:55:26 +0700
+Message-Id: <20191126175529.10909-2-tranmanphong@gmail.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191125150215.29263-1-tranmanphong@gmail.com>
+In-Reply-To: <20191126175529.10909-1-tranmanphong@gmail.com>
 References: <20191125150215.29263-1-tranmanphong@gmail.com>
+ <20191126175529.10909-1-tranmanphong@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,27 +72,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change with v1:
- - align commit subject prefix with review comments.
- - split patch "drivers: net: intel: Fix -Wcast-function-type"
-   into "ipw2x00" and "iwlegacy"
- - update tested by as
-https://lore.kernel.org/linux-wireless/8eb8d6fd-de20-2d04-8210-ad8304d7da9e@lwfinger.net/
+correct usage prototype of callback in tasklet_init().
+Report by https://github.com/KSPP/linux/issues/20
 
-Phong Tran (4):
-  b43legacy: Fix -Wcast-function-type
-  ipw2x00: Fix -Wcast-function-type
-  iwlegacy: Fix -Wcast-function-type
-  rtlwifi: rtl_pci: Fix -Wcast-function-type
+Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+---
+ drivers/net/wireless/broadcom/b43legacy/main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/net/wireless/broadcom/b43legacy/main.c |  5 +++--
- drivers/net/wireless/intel/ipw2x00/ipw2100.c   |  7 ++++---
- drivers/net/wireless/intel/ipw2x00/ipw2200.c   |  5 +++--
- drivers/net/wireless/intel/iwlegacy/3945-mac.c |  5 +++--
- drivers/net/wireless/intel/iwlegacy/4965-mac.c |  5 +++--
- drivers/net/wireless/realtek/rtlwifi/pci.c     | 10 ++++++----
- 6 files changed, 22 insertions(+), 15 deletions(-)
-
+diff --git a/drivers/net/wireless/broadcom/b43legacy/main.c b/drivers/net/wireless/broadcom/b43legacy/main.c
+index 4325e91736eb..8b6b657c4b85 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/main.c
++++ b/drivers/net/wireless/broadcom/b43legacy/main.c
+@@ -1275,8 +1275,9 @@ static void handle_irq_ucode_debug(struct b43legacy_wldev *dev)
+ }
+ 
+ /* Interrupt handler bottom-half */
+-static void b43legacy_interrupt_tasklet(struct b43legacy_wldev *dev)
++static void b43legacy_interrupt_tasklet(unsigned long data)
+ {
++	struct b43legacy_wldev *dev = (struct b43legacy_wldev *)data;
+ 	u32 reason;
+ 	u32 dma_reason[ARRAY_SIZE(dev->dma_reason)];
+ 	u32 merged_dma_reason = 0;
+@@ -3741,7 +3742,7 @@ static int b43legacy_one_core_attach(struct ssb_device *dev,
+ 	b43legacy_set_status(wldev, B43legacy_STAT_UNINIT);
+ 	wldev->bad_frames_preempt = modparam_bad_frames_preempt;
+ 	tasklet_init(&wldev->isr_tasklet,
+-		     (void (*)(unsigned long))b43legacy_interrupt_tasklet,
++		     b43legacy_interrupt_tasklet,
+ 		     (unsigned long)wldev);
+ 	if (modparam_pio)
+ 		wldev->__using_pio = true;
 -- 
 2.20.1
 
