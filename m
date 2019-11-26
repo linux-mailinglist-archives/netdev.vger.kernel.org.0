@@ -2,106 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40A5510A458
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 20:11:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A1010A473
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 20:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbfKZTLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 14:11:15 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38836 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbfKZTLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 14:11:15 -0500
-Received: by mail-wm1-f65.google.com with SMTP id z19so4645435wmk.3
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 11:11:13 -0800 (PST)
+        id S1726148AbfKZT0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 14:26:43 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:36042 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726033AbfKZT0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 14:26:43 -0500
+Received: by mail-qv1-f66.google.com with SMTP id cv8so7797817qvb.3;
+        Tue, 26 Nov 2019 11:26:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XVGfgf6gtnz72gmf5Fo0WW0GPR3nVq6bXn0NkBB6p60=;
-        b=DX9ZDi2afGhn0OfCR7c1VnV41jpGXRaFTz0zEpFA6kCZMFZs3rDi1AOHELnGlpi0Lb
-         i0WD4kY4ySIDfnxDwh/59DPvI7ziCTshakazg7tG9CQKG2wGSqN3c3wpJaQB0kHQWAzf
-         s91fp6NVYxEZFttfwxC6/rIqnU+7JqyrXpS8StDoEjwX1DAW0c77tNoL0obTNxeNAs4z
-         HNCj6NAe0ieMlNGeqn8sDKnNUuFXaFkcmH+c5jvaDpsskfWswcOQam9v+assT20W2860
-         UiOGHTgF7AbZofwlPHxDStGaCZFNMH/PWOl2gf6NeSpV6yLB3NcM2G7lfqkBR1nuKo9/
-         FLNA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sy4O0jIBu7sikzaZw9xPpxh7Hoq+uKc8+wAUrCduRmI=;
+        b=IaKSoBya95ZVS21LtECbNBD2W/zUXL1u2xXRgoUR/j/aEKqZ167dEPDfmKpZMC1AeW
+         Xg//KufTNFz3cwLpcfkF48sEPUG7RvUdkZuTMwF5Wxk/rYwK9cr5m1n/xs1s47OQF1LX
+         wIRTiWM4+W00fXHH25WXQ/9zQKzgE3fc1oM4VbFX+/gKDLXX+fxoEqio9n5k46feajTB
+         PDDJ3l3ur19BBHo9NY5H3O+d342szEJXEKsR8TzQ+lqtUmqrmM8Kk2oOWRq6DxVUc2UM
+         YyANOG3hESvbrutjKZiy6cPzqU2kqfEGT4fwvIaRX42BMaTEC2iVfOVp5ohyx7sUrC0U
+         W2/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XVGfgf6gtnz72gmf5Fo0WW0GPR3nVq6bXn0NkBB6p60=;
-        b=ONwRtUV0RIM9a8951N3qanR4C6K5PrK+I7s2Q7BDTCePSfmYm9JQpBEKzfmvB8vO95
-         djq/fpmiTMQs59sh9ijlISV0DRLGCeDBtpeUS6tN8HpVBWXRc52hn07LRWpLdHFcBj/6
-         Bn+uxTZluvitCsxkVsYMwT6jkUBR22CSRbaPVBc7EbiGVloe2HsdkW+ZOmDIhpONo/oR
-         i/isDJXBvbi+fed0drXTwgWOTjbImt5KA7DEUjubdbD6shLJmSmnStw3qbNs0brnA/Ic
-         CGcxyH8xeCDXi4nx7yFSUS/MFUp2NOyiz2EUnWJajldsFkT6AuWxWp07D/S+0jvJXPjs
-         A/5w==
-X-Gm-Message-State: APjAAAV4LiwKzEHFaCGTrwDKsb8MOv7LzrsjS4JuvpB8DIoGbn3tQHEE
-        jttW8ypUVKZ4VKvtJCwTpJsfMiYd7oRBGw==
-X-Google-Smtp-Source: APXvYqznlaBX8elqTtLN0mTZn9rdWGZyXj9RCkx+KhrchOQQ9zLohzeo3gBhw/cML6W6qptzvDG84A==
-X-Received: by 2002:a05:600c:2254:: with SMTP id a20mr568307wmm.97.1574795472687;
-        Tue, 26 Nov 2019 11:11:12 -0800 (PST)
-Received: from ?IPv6:2001:1620:2777:11:cde9:57f6:17e:8aa5? ([2001:1620:2777:11:cde9:57f6:17e:8aa5])
-        by smtp.gmail.com with ESMTPSA id i9sm14982176wrb.2.2019.11.26.11.11.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 26 Nov 2019 11:11:12 -0800 (PST)
-From:   Oliver Herms <oliver.peter.herms@gmail.com>
-Subject: Re: [PATCH v2] net: ip/tnl: Set iph->id only when don't fragment is
- not set
-To:     David Miller <davem@davemloft.net>
-Cc:     yoshfuji@linux-ipv6.org, kuznet@ms2.inr.ac.ru,
-        netdev@vger.kernel.org
-References: <20191124132418.GA13864@fuckup>
- <20191125.144139.1331751213975518867.davem@davemloft.net>
-Message-ID: <4e964168-2c83-24bb-8e44-f5f47555e589@gmail.com>
-Date:   Tue, 26 Nov 2019 20:10:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sy4O0jIBu7sikzaZw9xPpxh7Hoq+uKc8+wAUrCduRmI=;
+        b=oaa7FA1t9XHsxO5gB+jUr2safdBB11suM6VAbqUao8PM97DC/AO7VffP6j2Qdmmn2y
+         yl96GZkp2roM8G3DKMljzrLLV3NslFaqsPoYNXIvTU/B6Zhl9J14UZMk3+5MuKecV4Cr
+         OANR9wMq0O+NVgbEeWUkGD6QoANbLtanbierjDr6bL3cED8JUG48r5kohqVHPX5nbGzO
+         uOndUsyo/fk4QRjuwXDxoOb5f/44vxWEqFqclq/MJ3MAYmo3mYvq3tGyayZaBTVg/EIO
+         BqPargLuLeKUsBfriObXqYbOif5jKoFEC1Etgd1xy+EMNaI5LwxoY0Kfmwr3y7Joojf0
+         Z+Zw==
+X-Gm-Message-State: APjAAAW5sq3Qcz2OWwtFyydC+d15c7T3SpCCxqTtSsny/FqaTJbghY6G
+        PHv8pZ/Pgf3xgY6NaQs3LQe+Ym9U4XbLIdUkT5o=
+X-Google-Smtp-Source: APXvYqygvCYs5HhYtbjMCao7/k5cvnH8pQnn8YY1qYrJ7tGzS5X0OYUmkkOGCXnR18LGDROl0WI//k/FJmi5NDK3YQc=
+X-Received: by 2002:a05:6214:707:: with SMTP id b7mr297023qvz.97.1574796402191;
+ Tue, 26 Nov 2019 11:26:42 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191125.144139.1331751213975518867.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <mhng-0a2f9574-9b23-4f26-ae76-18ed7f2c8533@palmer-si-x1c4>
+ <87d0yoizv9.fsf@xps13.shealevy.com> <87zi19gjof.fsf@xps13.shealevy.com>
+ <CAJ+HfNhoJnGon-L9OwSfrMbmUt1ZPBB_=A8ZFrg1CgEq3ua-Sg@mail.gmail.com>
+ <87o8wyojlq.fsf@xps13.shealevy.com> <CAJ+HfNiq9LWA1Zmf_F9j23__K2_NqcfQqRA5evGVP5wGzi881w@mail.gmail.com>
+In-Reply-To: <CAJ+HfNiq9LWA1Zmf_F9j23__K2_NqcfQqRA5evGVP5wGzi881w@mail.gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 26 Nov 2019 20:26:30 +0100
+Message-ID: <CAJ+HfNgsrFv0zgLy-CORXs-gOtiW2a3Sf=RQ6yDP5akDT+_-kg@mail.gmail.com>
+Subject: Re: [PATCH] RISC-V: Load modules within relative jump range of the
+ kernel text.
+To:     Shea Levy <shea@shealevy.com>
+Cc:     linux-riscv@lists.infradead.org, albert@sifive.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+On Tue, 26 Nov 2019 at 17:43, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>=
+ wrote:
+>
+> On Tue, 26 Nov 2019 at 14:25, Shea Levy <shea@shealevy.com> wrote:
+> >
+> > Hi Bj=C3=B6rn,
+> >
+> > Unfortunately I'm not sure what more is needed to get this in, and I'm
+> > in the middle of a move and won't have easy access to my RISC-V setup
+> > for testing. I don't think you can count on me for this one.
+> >
+>
+> Thanks for getting back quickly! No worries, I'll pick it up!
+>
 
-On 25.11.19 23:41, David Miller wrote:
-> From: Oliver Herms <oliver.peter.herms@gmail.com>
-> Date: Sun, 24 Nov 2019 14:24:18 +0100
-> 
->> From RFC 6864 "Updated Specification of the IPv4 ID Field" section 4.1:
-> 
-> Just reading the abstract of this RFC I cannot take it seriously:
-> 
-> 	This document updates the specification of the IPv4 ID field
-> 	in RFCs 791, 1122, and 2003 to more closely reflect current
-> 	practice...
-> 
-> "more closely reflect current practice" ?!?!
-> 
-> That statement is a joke right?
-> 
-> Linux generates the bulk of the traffic on the internet and we've had
-> the current behavior of the ID field for decades.
-> 
-> Therefore, I don't think even the premise of this document is valid.
-> 
-> These are all red flags to me, and I think we should keep the current
-> behavior.
-> 
-> I'm not applying your patch, sorry.
-> 
-I totally understand your argument.
+I just pulled in your patch in my series [1] (it's not done for
+submission yet, but passes all tests); Just to get the idea. Reading
+up on the thread, it looks like we can share some more between the
+archs (mips).
 
-What do you think about making this configurable via sysctl and make the current
-behavior the default? I would also like to make this configurable for other 
-payload types like TCP and UDP. IMHO there the ID is unnecessary, too, when DF is set.
 
-Would you be willing to merge a patch that offers this?
+Thanks,
+Bj=C3=B6rn
 
-Thanks
-Oliver
+[1] https://github.com/bjoto/linux/tree/rv64-bpf-jit-bcc
+>
+> Cheers,
+> Bj=C3=B6rn
