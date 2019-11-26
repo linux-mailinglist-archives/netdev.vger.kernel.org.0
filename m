@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2958D10977A
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 02:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF1910978E
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 02:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727197AbfKZBN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 20:13:28 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:39608 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726947AbfKZBN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 20:13:27 -0500
-Received: by mail-qk1-f194.google.com with SMTP id z65so9897941qka.6
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 17:13:26 -0800 (PST)
+        id S1727186AbfKZBXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 20:23:45 -0500
+Received: from mail-qt1-f179.google.com ([209.85.160.179]:44716 "EHLO
+        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfKZBXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 20:23:44 -0500
+Received: by mail-qt1-f179.google.com with SMTP id g24so12735806qtq.11
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 17:23:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2rfPK0DW11RQCCEDcxZu9s9ehCYd8wL3gZp5EtT3+S4=;
-        b=J+HyXtxJxQ9cmxUOaTi3edrKTi1um9hQ0jl5kLojxkLncTYNx/1VSM946bOpff6x+v
-         np/hS25qgsQFaFoccVLTunSDJKdxc7MZdXwz8syC/1rwbtklaNSw80VoXG2uOu6ERbH5
-         ltEuDVFv8LHpEBXTslHVbOuOXXBM3bP/y8IHw=
+        bh=FsDRk4EAML9Y4QvMYiS6ndyIoyHisqLZs8klfxC7Kas=;
+        b=UOZ61pA+asCGex6uSWl3urkfZd9i0Q8+XGw4W2qdom7jSVsEQzUNTSu8Z1RMwHChs1
+         PCaLOzYuIZHseBv2x4Hz0cjO6qShOiWPNSCJ92/BGCCEdZ95xlithNLjOG/WZCnxkX5A
+         WHTrH50+23kjz0ckchWblfzz5qC76xnwgLOQg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2rfPK0DW11RQCCEDcxZu9s9ehCYd8wL3gZp5EtT3+S4=;
-        b=AW4JOFuGE+CFQuqo05VKRoR4Nd4tsOLmFr1xgIt23KNC1DA4YJXm6Ll5aPQgQ+Lh+Z
-         zBFA4mhDMN3cYLP+ihmgv7X956E7bReTiX9xZflETSfRxb6OrsbvTDlm4YJsN7yXqqfW
-         pcmpdBsjgkn+a0ksC+sthjnGYfxfQa7EuQ9HwZFxWJWQbz9bdZn6sqYYGAoCoMO1ivEi
-         BJvff8+a4Q1SlzYR7ef6IygZaf5tyOXZ57CWDcEoRv5EMqojBpkA4/5J4tK+w5XD5KLh
-         Xrx5LVGupdpEK4Fvvc+VaOTG4Yawog+95GNNMXlQ7pUVxIHW3/8eBxQ/k7JB96FVGrmb
-         saJQ==
-X-Gm-Message-State: APjAAAV4gPxmxybZRuZ6bYSnBla70+szW70N8tFoQ9dbgdrMnRhCxaen
-        sOZhbcCEBNLQkClmG2AWUXh8QUl6/bU=
-X-Google-Smtp-Source: APXvYqzUoqUuBvfEdygmdjQoXtfkTQKx3K0IPzoLmrctZYSJgc3WyXf1o8P/cJV0ldUSmTc4QsKdXg==
-X-Received: by 2002:a37:67c5:: with SMTP id b188mr28704859qkc.199.1574730805618;
-        Mon, 25 Nov 2019 17:13:25 -0800 (PST)
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com. [209.85.222.177])
-        by smtp.gmail.com with ESMTPSA id y21sm4396777qka.49.2019.11.25.17.13.23
+        bh=FsDRk4EAML9Y4QvMYiS6ndyIoyHisqLZs8klfxC7Kas=;
+        b=e92fjZhlUqg01lLsLRR1xDCn6GLMA6mWUNfFijYS5lW4xpUVTj1eaJN0iRNdkQf7JK
+         /y/4wIEoGqtwh0XCrTaHuZTgmL6WvkKWB3xGwWYRJkTjEAd37/PEvlSCt/xPQZoRa9Ws
+         4m8pjHKKQr8UfXOHXz4Y9SRqbuUIY66vnhjxLb4IzQXbqdRMtPByJpvQHK46PgWQSvsu
+         B66OEi45UanrCuCIT5JIsK0frFVBweFfzEO2Uh/nu0xhh47NDBlL+L7h6HtYX0KIdyLf
+         x19xRsqU7Nmth1SjBh9FrG+pweOw6/KG+XesP9hcxqx4oA0r1SP8bD2OeC0hkCDWk9rf
+         p79g==
+X-Gm-Message-State: APjAAAWXOSaMSP8TlSNTcRniR7/jKptPDyuWhhrBA1DKws/+paza/l7U
+        Dj2QLd/jd1Nk/TUDTnryky2nKS3vXog=
+X-Google-Smtp-Source: APXvYqzxVKU/yUXUXjhH7Gic+K86mTFHPg4QQBzSn7oYjZBOYwJHZZSgcT7auLyTLZD0CXX6MLnW7Q==
+X-Received: by 2002:ac8:7186:: with SMTP id w6mr32813001qto.220.1574731423267;
+        Mon, 25 Nov 2019 17:23:43 -0800 (PST)
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com. [209.85.160.180])
+        by smtp.gmail.com with ESMTPSA id z17sm4850122qtq.69.2019.11.25.17.23.41
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Nov 2019 17:13:24 -0800 (PST)
-Received: by mail-qk1-f177.google.com with SMTP id q70so14651652qke.12
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 17:13:23 -0800 (PST)
-X-Received: by 2002:a37:8285:: with SMTP id e127mr13935443qkd.62.1574730803238;
- Mon, 25 Nov 2019 17:13:23 -0800 (PST)
+        Mon, 25 Nov 2019 17:23:42 -0800 (PST)
+Received: by mail-qt1-f180.google.com with SMTP id 59so14050817qtg.8
+        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 17:23:41 -0800 (PST)
+X-Received: by 2002:ac8:53c4:: with SMTP id c4mr18110935qtq.305.1574731421193;
+ Mon, 25 Nov 2019 17:23:41 -0800 (PST)
 MIME-Version: 1.0
 References: <20191113005816.37084-1-briannorris@chromium.org>
  <32422b2d-6cab-3ea2-aca3-3e74d68599a3@gmail.com> <20191123005054.GA116745@google.com>
- <9d6210ec-fab5-c072-bdf4-ed43a6272a51@gmail.com>
-In-Reply-To: <9d6210ec-fab5-c072-bdf4-ed43a6272a51@gmail.com>
+ <115a9e13-c7ae-a919-b61b-0ea05ed162d7@gmail.com>
+In-Reply-To: <115a9e13-c7ae-a919-b61b-0ea05ed162d7@gmail.com>
 From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 25 Nov 2019 17:13:11 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXMN-=jXQieqsCN+18H7wMnYLw_M1WijAYcb_2AaCwK5cg@mail.gmail.com>
-Message-ID: <CA+ASDXMN-=jXQieqsCN+18H7wMnYLw_M1WijAYcb_2AaCwK5cg@mail.gmail.com>
+Date:   Mon, 25 Nov 2019 17:23:29 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXO_-ZZ5iwDMGgaT9Ah3L8P63O2kwYO9Dv8erwQmYXKEGg@mail.gmail.com>
+Message-ID: <CA+ASDXO_-ZZ5iwDMGgaT9Ah3L8P63O2kwYO9Dv8erwQmYXKEGg@mail.gmail.com>
 Subject: Re: [PATCH] [RFC] r8169: check for valid MAC before clobbering
 To:     Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
@@ -67,31 +67,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 23, 2019 at 2:46 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> On 23.11.2019 01:51, Brian Norris wrote:
-> > On Wed, Nov 13, 2019 at 09:30:42PM +0100, Heiner Kallweit wrote:
-> >> If recompiling the BIOS isn't an option,
-> >
-> > It's not 100% impossible, but it seems highly unlikely to happen. To me
-> > (and likely the folks responsible for this BIOS), this looks like a
-> > kernel regression (this driver worked just fine for me before commit
-> > 89cceb2729c7).
-> >
-> On an additional note:
-> The referenced coreboot driver is part of the Google JECHT baseboard
-> support. Most likely the driver is just meant to support the Realtek
-> chip version found on this board. I doubt the driver authors intended
-> to support each and every Realtek NIC chip version.
+On Sat, Nov 23, 2019 at 1:59 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> Realtek doesn't provide any public datasheets, only very few leaked
+> old datasheets are available. Only public source of information is
+> the vendor drivers: r8168/r8101/r8125.
+> Check the vendor drivers for where they read the MAC from.
 
-I understand that -- I'm specifically seeing problems on the Jecht
-family of devices (Jecht was the reference board), which is why I
-pointed you there :) All devices in that family use a Realtek chipset
-that appears to be RTL8168G, and they all only program the registers I
-pointed at in the first place.
+Thanks, I looked it up, and IIUC the chips I'm using would fall under
+the vendor driver's 'CFG_METHOD_21', which does indeed check the GMAC
+registers as a priority. (It's also even worse than the upstream
+driver here: although it reads out the active MAC register first, it
+doesn't end up using the value and instead just clobbers it, even if
+the GMAC value is empty/garbage.)
 
-One side note: I'm not quite sure how (again, no documentation...) but
-some devices appear to have a different valid MAC address in the
-GigaMAC register, which is why I see this problem. If they all just
-left it 0x00, then I'd be in OK shape.
+So I guess the vendor driver "always" failed me in the same way, and
+it's just the Coreboot authors who were misinformed. :(
 
+Thanks for the pointers,
 Brian
