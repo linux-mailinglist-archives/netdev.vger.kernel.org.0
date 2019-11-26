@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B81610A677
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 23:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB2310A678
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 23:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfKZWUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 17:20:38 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:43032 "EHLO
+        id S1727016AbfKZWUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 17:20:44 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:43035 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726050AbfKZWUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 17:20:37 -0500
+        with ESMTP id S1726050AbfKZWUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 17:20:44 -0500
 Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
         by Galois.linutronix.de with esmtp (Exim 4.80)
         (envelope-from <bigeasy@linutronix.de>)
-        id 1iZjCF-0008Na-FC; Tue, 26 Nov 2019 23:20:35 +0100
+        id 1iZjCL-0008Na-9s; Tue, 26 Nov 2019 23:20:41 +0100
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCH net 1/2] amd-xgbe: Use __napi_schedule() in BH context
-Date:   Tue, 26 Nov 2019 23:20:12 +0100
-Message-Id: <20191126222013.1904785-2-bigeasy@linutronix.de>
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net 2/2] net: gro: Let the timeout timer expire in softirq context with `threadirqs'
+Date:   Tue, 26 Nov 2019 23:20:13 +0100
+Message-Id: <20191126222013.1904785-3-bigeasy@linutronix.de>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191126222013.1904785-1-bigeasy@linutronix.de>
 References: <20191126222013.1904785-1-bigeasy@linutronix.de>
@@ -34,36 +34,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses __napi_schedule_irqoff() which is fine as long as it is
-invoked with disabled interrupts by everybody. Since the commit
-mentioned below the driver may invoke xgbe_isr_task() in tasklet/softirq
-context. This may lead to list corruption if another driver uses
-__napi_schedule_irqoff() in IRQ context.
+The timer callback (napi_watchdog()) invokes __napi_schedule_irqoff()
+with disabled interrupts. With the `threadirqs' commandline option all
+interrupt handler are threaded and using __napi_schedule_irqoff() is not
+an issue because everyone is using it in threaded context which is
+synchronised with local_bh_disable().
+The napi_watchdog() timer is still expiring in hardirq context and may
+interrupt a threaded handler which is in the middle of
+__napi_schedule_irqoff() leading to list corruption.
 
-Use __napi_schedule() which safe to use from IRQ and softirq context.
+Let the napi_watchdog() expire in softirq context if `threadirqs' is
+used.
 
-Fixes: 85b85c853401d ("amd-xgbe: Re-issue interrupt if interrupt status not=
- cleared")
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Fixes: 3b47d30396bae ("net: gro: add a per device gro flush timer")
+Cc: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/dev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/etherne=
-t/amd/xgbe/xgbe-drv.c
-index 98f8f20331544..3bd20f7651207 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -514,7 +514,7 @@ static void xgbe_isr_task(unsigned long data)
- 				xgbe_disable_rx_tx_ints(pdata);
-=20
- 				/* Turn on polling */
--				__napi_schedule_irqoff(&pdata->napi);
-+				__napi_schedule(&pdata->napi);
- 			}
- 		} else {
- 			/* Don't clear Rx/Tx status if doing per channel DMA
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 99ac84ff398f4..ec533d20931bc 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5994,6 +5994,8 @@ bool napi_complete_done(struct napi_struct *n, int wo=
+rk_done)
+ 		napi_gro_flush(n, !!timeout);
+ 		if (timeout)
+ 			hrtimer_start(&n->timer, ns_to_ktime(timeout),
++				      force_irqthreads ?
++				      HRTIMER_MODE_REL_PINNED_SOFT :
+ 				      HRTIMER_MODE_REL_PINNED);
+ 	}
+ 	if (unlikely(!list_empty(&n->poll_list))) {
+@@ -6225,7 +6227,9 @@ void netif_napi_add(struct net_device *dev, struct na=
+pi_struct *napi,
+ 		    int (*poll)(struct napi_struct *, int), int weight)
+ {
+ 	INIT_LIST_HEAD(&napi->poll_list);
+-	hrtimer_init(&napi->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
++	hrtimer_init(&napi->timer, CLOCK_MONOTONIC,
++		     force_irqthreads ?
++		     HRTIMER_MODE_REL_PINNED_SOFT : HRTIMER_MODE_REL_PINNED);
+ 	napi->timer.function =3D napi_watchdog;
+ 	init_gro_hash(napi);
+ 	napi->skb =3D NULL;
 --=20
 2.24.0
 
