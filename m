@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7051C109BC1
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 11:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA6E109BC4
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 11:08:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727802AbfKZKIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 05:08:47 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:41684 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727482AbfKZKIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 05:08:46 -0500
-Received: by mail-pl1-f193.google.com with SMTP id t8so7862979plr.8;
-        Tue, 26 Nov 2019 02:08:46 -0800 (PST)
+        id S1727811AbfKZKIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 05:08:51 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:34853 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727804AbfKZKIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 05:08:50 -0500
+Received: by mail-pj1-f65.google.com with SMTP id s8so8070834pji.2;
+        Tue, 26 Nov 2019 02:08:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1Sl43iVtC4+YcjLflynrQtIj0zEs25bg62I/x2OEQu0=;
-        b=rA6x08okN9S24McUdG2LHlghnPmhIHd24jmymmQaGlT2PAs6RXcIrFN4KgQ3vtEJQH
-         ienFzUlPPNlyI9b9KsozGHG9jQpVMUrYON+jnaQvRyei7uhWiVfPBjDJK/c0EY88qnZp
-         ZDkq7a+rI2J1MXnLhIb+/EQ22pDhhmb3BAM7x8wEHqFYQ02bE0rYvl/KjEMarmxBop+q
-         p94+hXB+SsDfHHCvbR+iONGBx5fsJeIFS9XDNF/UJ7uD0+X9HjxSjqCZa8oiIpnB76Hg
-         UUUoXmIcImh1gfbohC0t5i//haGFawSR5oYyXeA/IjzMZkOh/+g99F3i75HTqeit7+cx
-         TveQ==
+        bh=TORKveKiyyu6m2oHodE9IBcjkbwEar3Vt5jDpzgDylY=;
+        b=olv12Gp3grnekpbckL4cgsuKfI3uibM/xyKgxKaXAgysBCG0gD1zfwzI4bdTig2QPa
+         bYj2KhBwBQCyeYdYx2+f9ANR6ntDY1QlasYD6qxyDMTFGZj2uvm7ko8kE58GZXl1Gx83
+         yxZQsAPqwNrJ0vcBYS7ybC0BFUlHVtzRy09jDp4McRhur9+hRM3WTEt+lbKHstbWmP9z
+         At4RGyUZXvbnGh/bg5mBCIRT9jJzXZ/XyUpQTxrGKC9T6fcorgnyhMn8Hm9GLjMjBr2J
+         pd/ik9nqYGr+vwPtpw0IYIaT05AfrD53fQBnlXT6YI9axZ6zErZc8n6ZW5g2ZslzHp5l
+         2UEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1Sl43iVtC4+YcjLflynrQtIj0zEs25bg62I/x2OEQu0=;
-        b=lUXdYO1z8ShuHf00pGQ3lfGv76p2GfSL0c171Kgr4bhMpbfML5s4IlrqtgkGiK8kf0
-         znp/A5cd6LGhCTEqpAw3U3RFedFSeAp/A/V76nMEF7W1qq6LsdKJMd3zZYcK2Mk7G1d8
-         EBh/O2Fc4s5e8K3QlT44wfZGJMlIfac6KhsF9pKyhiSzcROIV7g+zpp5mWauqcLH0VTF
-         oGAUAJzFcZUBBBYeK0QBacNeeJ1IVVkfJQMv2UGkEtDngTIXWtbTkm1jGYO9UDvriiAi
-         NswRWo3THH/oEeEVV8GsDNcFf29j9Np4vN7UiKhdFMjiJcVHj5205XcPzRD1yhf4dMJQ
-         2MUQ==
-X-Gm-Message-State: APjAAAUT1eZcJA1LzvTGPo0+e6lvrqCOKbGpMvkdRgyGo6mJLwUgH/Ap
-        It6Wr0q0VfOrNDRu5n2uwgQ=
-X-Google-Smtp-Source: APXvYqxA6tuNs0G2K7BYOi/UgwxlWXR+3qbxnD5Hrpm6hj4529qhKxDgIXplkY5qr6yeBIl6U2CJIw==
-X-Received: by 2002:a17:90a:5aa3:: with SMTP id n32mr5651673pji.97.1574762926051;
-        Tue, 26 Nov 2019 02:08:46 -0800 (PST)
+        bh=TORKveKiyyu6m2oHodE9IBcjkbwEar3Vt5jDpzgDylY=;
+        b=kURwev+ls/Jl6vD5eylZT2zdr/K0tnG0/15KNy/uaeiBX8J2BEDF8L5ybWo7T/cgDk
+         8zEDWZFsbkpOR1DFgVVcPcb0O3ccCShYgCo57NeQCWqndp+sUbAsu/Qq8zdX/CmpbRWl
+         7V3lDYlC0ugdDVZFRUZ2MPYPk6XNryrE7qdOzDoa9tAy2wTciZaapTGvO8bwNENis1vZ
+         hn+5Th79MIoaVH7giT6asMI1mO8dZp/D3+KQgEDwXyeQggwOH1zYjOcc6V15VB1q2de0
+         Ygrm1NA0P1kdZk0Lon4aPCfJ//i2kAdfmso8FA96FAWAHzPE8Y7QluYCfu7oawzmT4sf
+         TeTw==
+X-Gm-Message-State: APjAAAViS04I2IeK7zoccrYq9N72p/18Qtqiiz9yynvxUMYpqmBdqYi0
+        YcstfjJyOwiV1LJnkwI/a10=
+X-Google-Smtp-Source: APXvYqy7uBDP8l0aXZ/j5b2P/uoXgigesp5vSEQ3UrSFY/YqyNb+UCqonnG8Y2jEb1rpt6g0c9YHbg==
+X-Received: by 2002:a17:90a:c789:: with SMTP id gn9mr5574668pjb.99.1574762929845;
+        Tue, 26 Nov 2019 02:08:49 -0800 (PST)
 Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id s24sm11848485pfh.108.2019.11.26.02.08.42
+        by smtp.gmail.com with ESMTPSA id s24sm11848485pfh.108.2019.11.26.02.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 02:08:45 -0800 (PST)
+        Tue, 26 Nov 2019 02:08:49 -0800 (PST)
 From:   Prashant Bhole <prashantbhole.linux@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         "Michael S . Tsirkin" <mst@redhat.com>
@@ -58,9 +58,9 @@ Cc:     Jason Wang <jasowang@redhat.com>,
         Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
         qemu-devel@nongnu.org, kvm@vger.kernel.org,
         Prashant Bhole <prashantbhole.linux@gmail.com>
-Subject: [RFC net-next 01/18] bpf: introduce bpf_prog_offload_verifier_setup()
-Date:   Tue, 26 Nov 2019 19:07:27 +0900
-Message-Id: <20191126100744.5083-2-prashantbhole.linux@gmail.com>
+Subject: [RFC net-next 02/18] net: core: rename netif_receive_generic_xdp() to do_generic_xdp_core()
+Date:   Tue, 26 Nov 2019 19:07:28 +0900
+Message-Id: <20191126100744.5083-3-prashantbhole.linux@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
 References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
@@ -73,100 +73,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jason Wang <jasowang@redhat.com>
 
-Background:
-This change was initiated from virtio_net XDP offload work. As per
-the implementation plan, a copy of original program with map fds from
-guest replaced with map fds from host needs to be offloaded to the
-host. To implement this fd replacement, insn_hook() must provide an
-insn with map fd intact. bpf_map and driver specific map data can be
-derived from map_fd.
+In skb generic path, we need a way to run XDP program on skb but
+to have customized handling of XDP actions. netif_receive_generic_xdp
+will be more helpful in such cases than do_xdp_generic.
 
-Since verifier calls all the offload callbacks after replacing map
-fds, it was difficult to implement virtio_net XDP offload feature.
-If virtio_net gets only one callback with original bpf program, it
-will get a chance to perform the fd replacement in its own copy of the
-program.
-
-Solution:
-Let's introduce a setup() callback in bpf_prog_offload_ops. It will be
-non mandetory. The verifier will call it just before replacing the map
-fds.
+This patch prepares netif_receive_generic_xdp() to be used as general
+purpose function by renaming it.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- include/linux/bpf.h          |  1 +
- include/linux/bpf_verifier.h |  1 +
- kernel/bpf/offload.c         | 14 ++++++++++++++
- kernel/bpf/verifier.c        |  6 ++++++
- 4 files changed, 22 insertions(+)
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 35903f148be5..1cdba120357c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -361,6 +361,7 @@ struct bpf_prog_offload_ops {
- 			    struct bpf_insn *insn);
- 	int (*remove_insns)(struct bpf_verifier_env *env, u32 off, u32 cnt);
- 	/* program management callbacks */
-+	int (*setup)(struct bpf_prog *prog);
- 	int (*prepare)(struct bpf_prog *prog);
- 	int (*translate)(struct bpf_prog *prog);
- 	void (*destroy)(struct bpf_prog *prog);
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 26e40de9ef55..de7028e17c0d 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -418,6 +418,7 @@ static inline struct bpf_reg_state *cur_regs(struct bpf_verifier_env *env)
- 	return cur_func(env)->regs;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c7fc902ccbdc..5ae647b9914f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4461,9 +4461,9 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
+ 	return rxqueue;
  }
  
-+int bpf_prog_offload_verifier_setup(struct bpf_prog *prog);
- int bpf_prog_offload_verifier_prep(struct bpf_prog *prog);
- int bpf_prog_offload_verify_insn(struct bpf_verifier_env *env,
- 				 int insn_idx, int prev_insn_idx);
-diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-index 5b9da0954a27..04ca7a31d947 100644
---- a/kernel/bpf/offload.c
-+++ b/kernel/bpf/offload.c
-@@ -124,6 +124,20 @@ int bpf_prog_offload_init(struct bpf_prog *prog, union bpf_attr *attr)
- 	return err;
- }
- 
-+int bpf_prog_offload_verifier_setup(struct bpf_prog *prog)
-+{
-+	struct bpf_prog_offload *offload;
-+	int ret = 0;
-+
-+	down_read(&bpf_devs_lock);
-+	offload = prog->aux->offload;
-+	if (offload && offload->offdev->ops->setup)
-+		ret = offload->offdev->ops->setup(prog);
-+	up_read(&bpf_devs_lock);
-+
-+	return ret;
-+}
-+
- int bpf_prog_offload_verifier_prep(struct bpf_prog *prog)
+-static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+-				     struct xdp_buff *xdp,
+-				     struct bpf_prog *xdp_prog)
++static u32 do_xdp_generic_core(struct sk_buff *skb,
++			       struct xdp_buff *xdp,
++			       struct bpf_prog *xdp_prog)
  {
- 	struct bpf_prog_offload *offload;
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index a0482e1c4a77..94b43542439e 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -9737,6 +9737,12 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+ 	struct netdev_rx_queue *rxqueue;
+ 	void *orig_data, *orig_data_end;
+@@ -4610,7 +4610,7 @@ int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
+ 		u32 act;
+ 		int err;
  
- 	env->allow_ptr_leaks = is_priv;
- 
-+	if (bpf_prog_is_dev_bound(env->prog->aux)) {
-+		ret = bpf_prog_offload_verifier_setup(env->prog);
-+		if (ret)
-+			goto skip_full_check;
-+	}
-+
- 	if (is_priv)
- 		env->test_state_freq = attr->prog_flags & BPF_F_TEST_STATE_FREQ;
- 
+-		act = netif_receive_generic_xdp(skb, &xdp, xdp_prog);
++		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
+ 		if (act != XDP_PASS) {
+ 			switch (act) {
+ 			case XDP_REDIRECT:
 -- 
 2.20.1
 
