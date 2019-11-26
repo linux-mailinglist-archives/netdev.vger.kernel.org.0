@@ -2,80 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A014510A18B
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 16:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E1410A191
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 16:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbfKZPxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 10:53:15 -0500
-Received: from a27-11.smtp-out.us-west-2.amazonses.com ([54.240.27.11]:44568
-        "EHLO a27-11.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727191AbfKZPxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 10:53:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574783594;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
-        bh=YoDxwdiX+/IIitr2cA1dXXofO95RcDisor5LI9W5Y+I=;
-        b=cEWGVoADnqlpmg65ZkFRYgxQ1oWSY6SNIlCzYCwQaHt4ITwuKENDlpea+romVKzg
-        ELrLRviKjNmHlLwi505+wgipnANfqmcfmB07MeewGBmba4jIg2a12G+FSPV/HadO60i
-        KXq8iBJ+KQ/2GXpmOxx4pEcpfBnYIUVBuQPOHPkY=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574783594;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
-        bh=YoDxwdiX+/IIitr2cA1dXXofO95RcDisor5LI9W5Y+I=;
-        b=Hsi/pdz5ePMVRy8dNn0FxMQNzxFIO5zqZChpu+abtXLgg26rOPRjxDQMct2SE5Xe
-        Mw8rJfQq2iK/AJ9t83G4v5B4EzyRjYJM778o7ydJxSA7lewhrqolexoDsnok5ob91tq
-        cskWkjTkcp3Ps5IPqanOxZxYcQWGnmTF34WUYFwg=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: *
-X-Spam-Status: No, score=1.3 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        TVD_SUBJ_WIPE_DEBT,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 365B2C433A2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH 2/2] net: wireless: ti: wl1251: sdio: remove ti,power-gpio
-References: <cover.1574591746.git.hns@goldelico.com>
-        <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
-Date:   Tue, 26 Nov 2019 15:53:14 +0000
-In-Reply-To: <e1f18e0f1401a0d8b07ccb176732a2e3f3a5732a.1574591746.git.hns@goldelico.com>
-        (H. Nikolaus Schaller's message of "Sun, 24 Nov 2019 11:35:46 +0100")
-Message-ID: <0101016ea86aafc7-7f36235e-f486-4e71-bf28-87bffe60a179-000000@us-west-2.amazonses.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728203AbfKZPyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 10:54:39 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:37032 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727191AbfKZPyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 10:54:38 -0500
+Received: by mail-lj1-f195.google.com with SMTP id d5so20840610ljl.4
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 07:54:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=mFwfXWuGO5JOurpx5SkPd+KNxxhTjX3Z1Z8V3BB+pts=;
+        b=HeXPzxSoFR2LsBmJtbhmxuXXJyaincCrhAliBzNAEN4+y3gntDWnoPNPS72VVOo+OI
+         wn5mSOleLOF/enxkyrJdQxpEVOxuaMa9iBQn0SAM12pLG2FpeUHvXBTwuo5Fhx37W7F5
+         VzoJ8xc0Z7+riX+ToctBScyFdTFS1UruwGejk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=mFwfXWuGO5JOurpx5SkPd+KNxxhTjX3Z1Z8V3BB+pts=;
+        b=qJPm08dDRJXCYY9ZIhLWClhtT2hojuXgH73oYGeikKgVDfNQvXgpdjrUgK/6MhCcrT
+         qgkvpRGHyg4upGQwEhbk1+0+3ePGk5KXy+sxnHlOw97cfNG3hHm/7FaV0XmqC0zz940Q
+         /qVFrk6NsXrX6bWxCd2krC4n6Yv8etWWZA+Xv/0JKSySjodnU/cK7ZLnAc5H7QUtBzy0
+         +WyZycB+VWNhT2zYMK8/lKof5i171rvn/UVNMI4FEfxqFbEgR11GIpuY/v6IVCVWSpTy
+         DtrDkHi6HKT38XLrnjt6VkvZotCMXpKLRHMo9yVoOQtHeQkV8003lOTVks822+62JfPl
+         BzXA==
+X-Gm-Message-State: APjAAAUSfLdbjqB7XKPBgHA6mN1vncsIvtoRfhZ5/NFU/v5HlbzLp94I
+        WG+HpdcwUdAt/zhFll5GAVB2iQ==
+X-Google-Smtp-Source: APXvYqxJvnCDrbxdgGKMynD+7yJmRV236MQG1514vjQ1bHWW5awLQj2bNOd3+y5E2f/+IVCeFSkSTw==
+X-Received: by 2002:a2e:9606:: with SMTP id v6mr15757955ljh.223.1574783675315;
+        Tue, 26 Nov 2019 07:54:35 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id 30sm5841826ljw.29.2019.11.26.07.54.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Nov 2019 07:54:34 -0800 (PST)
+References: <20191123110751.6729-1-jakub@cloudflare.com> <20191123110751.6729-5-jakub@cloudflare.com> <20191125223845.6t6xoqcwcqxuqbdf@kafai-mbp>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH bpf-next 4/8] bpf, sockmap: Don't let child socket inherit psock or its ops on copy
+In-reply-to: <20191125223845.6t6xoqcwcqxuqbdf@kafai-mbp>
+Date:   Tue, 26 Nov 2019 16:54:33 +0100
+Message-ID: <87ftiaocp2.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-SES-Outgoing: 2019.11.26-54.240.27.11
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"H. Nikolaus Schaller" <hns@goldelico.com> writes:
-
-> Remove handling of this property from code.
-> Note that wl->power_gpio is still needed in
-> the header file for SPI mode (N900).
+On Mon, Nov 25, 2019 at 11:38 PM CET, Martin Lau wrote:
+> On Sat, Nov 23, 2019 at 12:07:47PM +0100, Jakub Sitnicki wrote:
+> [ ... ]
 >
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/net/wireless/ti/wl1251/sdio.c | 30 ---------------------------
->  1 file changed, 30 deletions(-)
+>> @@ -370,6 +378,11 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+>>  			sk->sk_prot = psock->sk_proto;
+>>  		psock->sk_proto = NULL;
+>>  	}
+>> +
+>> +	if (psock->icsk_af_ops) {
+>> +		icsk->icsk_af_ops = psock->icsk_af_ops;
+>> +		psock->icsk_af_ops = NULL;
+>> +	}
+>>  }
+>
+> [ ... ]
+>
+>> +static struct sock *tcp_bpf_syn_recv_sock(const struct sock *sk,
+>> +					  struct sk_buff *skb,
+>> +					  struct request_sock *req,
+>> +					  struct dst_entry *dst,
+>> +					  struct request_sock *req_unhash,
+>> +					  bool *own_req)
+>> +{
+>> +	const struct inet_connection_sock_af_ops *ops;
+>> +	void (*write_space)(struct sock *sk);
+>> +	struct sk_psock *psock;
+>> +	struct proto *proto;
+>> +	struct sock *child;
+>> +
+>> +	rcu_read_lock();
+>> +	psock = sk_psock(sk);
+>> +	if (likely(psock)) {
+>> +		proto = psock->sk_proto;
+>> +		write_space = psock->saved_write_space;
+>> +		ops = psock->icsk_af_ops;
+> It is not immediately clear to me what ensure
+> ops is not NULL here.
+>
+> It is likely I missed something.  A short comment would
+> be very useful here.
 
-Please use "wl1251: " as title prefix, no need to have the full
-directory structure there.
+I can see the readability problem. Looking at it now, perhaps it should
+be rewritten, to the same effect, as:
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+static struct sock *tcp_bpf_syn_recv_sock(...)
+{
+	const struct inet_connection_sock_af_ops *ops = NULL;
+        ...
+
+        rcu_read_lock();
+	psock = sk_psock(sk);
+	if (likely(psock)) {
+		proto = psock->sk_proto;
+		write_space = psock->saved_write_space;
+		ops = psock->icsk_af_ops;
+	}
+	rcu_read_unlock();
+
+        if (!ops)
+		ops = inet_csk(sk)->icsk_af_ops;
+        child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
+
+If psock->icsk_af_ops were NULL, it would mean we haven't initialized it
+properly. To double check what happens here:
+
+In sock_map_link we do a setup dance where we first create the psock and
+later initialize the socket callbacks (tcp_bpf_init).
+
+static int sock_map_link(struct bpf_map *map, struct sk_psock_progs *progs,
+			 struct sock *sk)
+{
+        ...
+	if (psock) {
+                ...
+	} else {
+		psock = sk_psock_init(sk, map->numa_node);
+		if (!psock) {
+			ret = -ENOMEM;
+			goto out_progs;
+		}
+		sk_psock_is_new = true;
+	}
+        ...
+        if (sk_psock_is_new) {
+		ret = tcp_bpf_init(sk);
+		if (ret < 0)
+			goto out_drop;
+	} else {
+		tcp_bpf_reinit(sk);
+	}
+
+The "if (sk_psock_new)" branch triggers the call chain that leads to
+saving & overriding socket callbacks.
+
+tcp_bpf_init -> tcp_bpf_update_sk_prot -> sk_psock_update_proto
+
+Among them, icsk_af_ops.
+
+static inline void sk_psock_update_proto(...)
+{
+        ...
+	psock->icsk_af_ops = icsk->icsk_af_ops;
+	icsk->icsk_af_ops = af_ops;
+}
+
+Goes without saying that a comment is needed.
+
+Thanks for the feedback,
+Jakub
