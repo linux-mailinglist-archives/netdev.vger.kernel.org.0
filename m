@@ -2,123 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77B9410982A
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 04:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A778109837
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 05:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727374AbfKZDzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Nov 2019 22:55:15 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:36303 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727350AbfKZDzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 22:55:15 -0500
-Received: by mail-lj1-f194.google.com with SMTP id k15so18469865lja.3
-        for <netdev@vger.kernel.org>; Mon, 25 Nov 2019 19:55:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=jpmKSRiJVeUJXgN2GyGxen55p/yccWN0FKHO19CAFVE=;
-        b=JwQ9vdguWg5+4q7zWM3b3iwlCGcQyETozpN0qTWBy1n+SIvu6IuTh4PzsmCTjlJ+0/
-         vgvWl87TrHHTQa6vC8mNoRlpPChfMs+6p22CdKCnzJhz7OXNvyk06CUt+sgaa5wmwDN/
-         HZAeuxcl4TDfonIGK2AbNGOcy8LhR7W+rHHO+yejgVi4Ae9TREnR4RefDWdX5+Fit38e
-         7pd1Ncqyf7+PeHOCsNufeDQ97KClKn7IbYIhGAEPmf044FcyAPBHip0l7jo3ntZYbHFg
-         QEq+JvMRubVcAPsrcd/C18LevU4Vc/HV5jciRxtzQLleSIWwM2cxRR4PnkIt6z7YJQiG
-         dHkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=jpmKSRiJVeUJXgN2GyGxen55p/yccWN0FKHO19CAFVE=;
-        b=fwK1iDBpV6Lxk11XL/KB8od3EQEAgbtTV8y/YD1eYtG2VGG/eHQHpTtPI9rY/Lv+tE
-         gELiS9NXZyPGM1BiZ7m/FOEQYQm67UoYbSWpMHordKScKWsOaklTpSm8hqgauvF32+Ab
-         f43jSIWA9kCcWeF84f0J45MMZsUawpKkyC9NHronkJvs0O3me7JaCr5aM5gBzZTg7P2j
-         ogl0JykJWWTjk/yX6cdE/lZOZq0zCHSD9G+uZyraOIKnoRkyUJGBgm7I/czPQ+XPh76j
-         EvJWFFKjSJXmFwoxwIMcBM2SpyzzKS0wx5dI7xx2UPZb5ty+OS7Uad4VNlh4rRxcLsk6
-         NefA==
-X-Gm-Message-State: APjAAAU3FD3odAZI2f8eOQSJtHqjYEScJ03z+q6AzZj7c+/au4jMCGZk
-        e4U+5gQOINwmf8qPwcmC5namHB3zaXF28UE63ViRgMgp0d4=
-X-Google-Smtp-Source: APXvYqwih9V2svwM3xs4eurIBFbf6d9bvsSgmgrySI1N9FoXlgeJnNmdzyuRtdiRGPGmNmD52iZje5jLyLG8MxDGmO8=
-X-Received: by 2002:a2e:a410:: with SMTP id p16mr24801147ljn.46.1574740511113;
- Mon, 25 Nov 2019 19:55:11 -0800 (PST)
+        id S1727300AbfKZEHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Nov 2019 23:07:40 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:44195 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726947AbfKZEHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Nov 2019 23:07:40 -0500
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 04D18200004;
+        Tue, 26 Nov 2019 04:07:37 +0000 (UTC)
+Received: by mail-vk1-f178.google.com with SMTP id r4so4074934vkf.9;
+        Mon, 25 Nov 2019 20:07:37 -0800 (PST)
+X-Gm-Message-State: APjAAAVB2KBWMbt/LPzTJMPimJ/RdWEbkYxHm7rbCBc3BqnUM0Q5cYxu
+        LzkLw7UtiLuUH55YY0R4CQsVT2HRp1O4T0yEy4Y=
+X-Google-Smtp-Source: APXvYqzuS+vDFQHOO8Q1FRBhRtJDY/6XqplwokxvnEnzOX7PtBBwwhPUCj3DsKZJp38Tr5/S9Ad7jwEATHBUVs4GNtc=
+X-Received: by 2002:ac5:c2c3:: with SMTP id i3mr19830904vkk.17.1574741256480;
+ Mon, 25 Nov 2019 20:07:36 -0800 (PST)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 26 Nov 2019 09:25:00 +0530
-Message-ID: <CA+G9fYtgEfa=bq5C8yZeF6P563Gw3Fbs+-h_oy1e4G_1G0jrgw@mail.gmail.com>
-Subject: selftests:netfilter: nft_nat.sh: internal00-0 Error Could not open
- file \"-\" No such file or directory
-To:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Cc:     Shuah Khan <shuah@kernel.org>, pablo@netfilter.org, fw@strlen.de,
-        jeffrin@rajagiritech.edu.in, horms@verge.net.au,
-        yanhaishuang@cmss.chinamobile.com, lkft-triage@lists.linaro.org
+References: <20191108210714.12426-1-aconole@redhat.com> <CAOrHB_B1ueESwUQSkb7BuFGCCyKKqognoWbukTHo2jTajNca6w@mail.gmail.com>
+ <f7twobwyl53.fsf@dhcp-25.97.bos.redhat.com> <f7t7e3o9d9r.fsf@dhcp-25.97.bos.redhat.com>
+In-Reply-To: <f7t7e3o9d9r.fsf@dhcp-25.97.bos.redhat.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Mon, 25 Nov 2019 20:07:25 -0800
+X-Gmail-Original-Message-ID: <CAOrHB_BHKASZ9i5LA678Cqh3F8QtDy4Wv6_8eTSCXaJTx4HaVw@mail.gmail.com>
+Message-ID: <CAOrHB_BHKASZ9i5LA678Cqh3F8QtDy4Wv6_8eTSCXaJTx4HaVw@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] openvswitch: support asymmetric conntrack
+To:     Aaron Conole <aconole@redhat.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, ovs dev <dev@openvswitch.org>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do you see the following error while running selftests netfilter
-nft_nat.sh test ?
-Are we missing any kernel config fragments ? We are merging configs
-from the directory.
+Downloading from patchwork is working for me. Its strange other
+patches in my mailbox does not has this issue.
 
-# selftests netfilter nft_nat.sh
-netfilter: nft_nat.sh_ #
-# Cannot create namespace file \"/var/run/netns/ns1\" File exists
-create: namespace_file #
-# internal00-0 Error Could not open file \"-\" No such file or directory
-Error: Could_not #
-#
-: _ #
-#
-: _ #
-# internal00-0 Error Could not open file \"-\" No such file or directory
-Error: Could_not #
-#
-: _ #
-#
-: _ #
-# internal00-0 Error Could not open file \"-\" No such file or directory
-Error: Could_not #
-#
-: _ #
-#
-: _ #
-# <cmdline>16-12 Error syntax error, unexpected counter
-Error: syntax_error, #
-# list counter inet filter ns0in
-counter: inet_filter #
-#      ^^^^^^^
-: _ #
-# ERROR ns0in counter in ns1 has unexpected value (expected packets 1 bytes 84)
-ns0in: counter_in #
-# <cmdline>16-12 Error syntax error, unexpected counter
-Error: syntax_error, #
-# list counter inet filter ns0in
-counter: inet_filter #
-#      ^^^^^^^
-: _ #
-# <cmdline>16-12 Error syntax error, unexpected counter
+Thanks.
 
-
-Full test log:
-https://lkft.validation.linaro.org/scheduler/job/1021542#L14602
-https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20191125/testrun/1021542/log
-
-Dashboard link,
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/netfilter_nft_nat.sh
-https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/netfilter_nft_nat.sh
-
-metadata:
-  git branch: master
-  git repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-  git commit: c165016bac2719e05794c216f9b6da730d68d1e3
-  git describe: next-20191125
-  make_kernelversion: 5.4.0-rc8
-  kernel-config:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/hikey/lkft/linux-next/653/config
-  build-location:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/hikey/lkft/linux-next/653
-
-Best regards
-Naresh Kamboju
+On Mon, Nov 25, 2019 at 7:39 AM Aaron Conole <aconole@redhat.com> wrote:
+>
+> Aaron Conole <aconole@redhat.com> writes:
+>
+> > Pravin Shelar <pshelar@ovn.org> writes:
+> >
+> >> On Fri, Nov 8, 2019 at 1:07 PM Aaron Conole <aconole@redhat.com> wrote:
+> >>>
+> >>> The openvswitch module shares a common conntrack and NAT infrastructure
+> >>> exposed via netfilter.  It's possible that a packet needs both SNAT and
+> >>> DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
+> >>> this because it runs through the NAT table twice - once on ingress and
+> >>> again after egress.  The openvswitch module doesn't have such capability.
+> >>>
+> >>> Like netfilter hook infrastructure, we should run through NAT twice to
+> >>> keep the symmetry.
+> >>>
+> >>> Fixes: 05752523e565 ("openvswitch: Interface with NAT.")
+> >>> Signed-off-by: Aaron Conole <aconole@redhat.com>
+> >>
+> >> The patch looks ok. But I am not able apply it. can you fix the encoding.
+> >
+> > Hrrm.  I didn't make any special changes (just used git send-email).  I
+> > will look at spinning a second patch.
+>
+> Pravin,
+>
+> I tried the following:
+>
+>   10:36:59 aconole@dhcp-25 {(312434617cb1...)} ~/git/linux$ curl http://patchwork.ozlabs.org/patch/1192219/mbox/ > test.patch
+>     % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+>                                    Dload  Upload   Total   Spent    Left  Speed
+>   100  4827  100  4827    0     0   8824      0 --:--:-- --:--:-- --:--:--  8808
+>   10:37:21 aconole@dhcp-25 {(312434617cb1...)} ~/git/linux$ git am test.patch
+>   Applying: openvswitch: support asymmetric conntrack
+>   10:37:24 aconole@dhcp-25 {(f759cc2b7323...)} ~/git/linux$
+>
+>
+> Can you check your mailer settings?  The patchwork mbox worked fine, and
+> I was able to apply from my own mbox as well.
+>
+> -Aaron
+>
