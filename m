@@ -2,217 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4A610A424
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 19:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA35710A430
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 19:50:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfKZSoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 13:44:01 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:37164 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfKZSoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 13:44:00 -0500
-Received: by mail-il1-f193.google.com with SMTP id s5so18601881iln.4;
-        Tue, 26 Nov 2019 10:44:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=UO4J4J64zNFe8Ht0JHIJ/fcPkubJqXaSN9IflwgpGQk=;
-        b=sr+zngb8iFL2MxuD+LT+62ACPfAMJkX9EdRr/sPUZeFusTHBzWuwv0RGqta1t6Tynr
-         /p04jyeLnBgRKfA3lzJW9h5iOySxP+Omoelbug18blMKUKM8NxvDAjGNcuBloCoM5EZJ
-         RxGGlYE4HAOYKiZz+pSOy/zAGt/Is8f8fEbkX2TVSvEUQ8RSo/oO+IWiioyGzf9merXS
-         6XO6A3/zBxd8uvT3G9jlB5waiaCKkAMjvuqPfJPk/xIVF2tdKAiIiDkHBNA+JOT6sahy
-         2Wz80+m2RZGW9uzBqbrAWL6BN1rWBkWgSldAXiia5fCCZbr6bLz0ZyFw7VDMbC2j6eIT
-         fGFw==
+        id S1727006AbfKZSuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 13:50:50 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26529 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726192AbfKZSuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 13:50:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574794248;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0r4KWfIOtxgISfApasmXgGWya0QXrhQe0FmvwJZ3LCk=;
+        b=DbQjbtZ6dLNlWnrB7grb///Q7m7FnK0AuzaDMFidDT1GA0lGtTp+pq/aQ24OdYRs3vG859
+        lczNQ/pj0g79+6fkvKIcMGS6Ctk3SAox9h3bzYn3ps0usg/jgv7VyicTL8/9wwomJDsYFu
+        y0WvKrZy8dIm6ydDfjLSISfb5u5Ejgg=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-1hOK4FovOUO0k469yKaZZA-1; Tue, 26 Nov 2019 13:50:48 -0500
+Received: by mail-lf1-f71.google.com with SMTP id m2so4109919lfo.20
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 10:50:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=UO4J4J64zNFe8Ht0JHIJ/fcPkubJqXaSN9IflwgpGQk=;
-        b=VyYrcGGUMBU3M04xglZ5q8s5ljSOyA8hS+RXJ9prUKzR84FHn4J2sz6XF6dbyGSon7
-         wQPvT9Wdsv1/H7hEY5HxPU8Y+XKY1o/nJN/fkBWHJHv+u04aAaz78b34wCVf/wrEiH0q
-         c0jC3e3Iq9Sq4tl/N6IAWHepKSD0dl7WA/SBfnKtPDthFHcit1TJ8yqSTBRr2ulxTwyp
-         zhcpX8bjJfLXVFIz2Ek5QAB4nieBBX2sW1oqdpXW3n6KXGroPJnlyPFh1rnXS6+C5ZzN
-         H1jDUiCpUJRkwI32dz/tg5ESlHVWH9a8VgekZ11NBn/2J2L5bMC0vTrQUO8T3H46u+rg
-         TADw==
-X-Gm-Message-State: APjAAAVRjSrxSN2Xm0kXYn2GjObLRSujSHY3rX/zypHCPkskZRND0mhQ
-        bpWQldzE+tPbVVVvYoM0RaU=
-X-Google-Smtp-Source: APXvYqz/ygr2hgH9hhkxSTZDegBz2uUxkNkGkNng+aYTUvcJiFnkKEz2isOO499cJeRgq8GCM1KRgQ==
-X-Received: by 2002:a92:ca8d:: with SMTP id t13mr37980442ilo.58.1574793839650;
-        Tue, 26 Nov 2019 10:43:59 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id v27sm575033ill.17.2019.11.26.10.43.57
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=oJf7PTKEEbEjo8GcSBfvuP8BlJ48R6NcwJ+kR4IpGyQ=;
+        b=oVKPnWf12gyggMFO1EVEWSvtqVU4+S36LyRI/dHBoLgITbUUX8qxDXWRbNOUGXQ6C4
+         keMyOrltQu7ocACbsUFjhW9lDVstPp2R4bVQthmdQc9T8UwE/IIkjJDWkfte1eTy/6i8
+         IGGFIzLcc5BkMT7nO7S24aONJ5hocnDXOjAdLoLLo1iu3iLsxod4GTJLONxgC5Xb56KF
+         0e/SkFLGP8CdX3KBb811+ocQer+W2cEh5KlKFefKRqYi5nVYL65p75GJkVqOv80O46VS
+         BY/h6TdGi+Lly+Bpqm3ZPTPNXf5qc1/4LKatMze0F22dAb78g4+10yZJi5mUYeUPNNzU
+         XrRQ==
+X-Gm-Message-State: APjAAAVCX9uXuWOstdo1vPICeBqs+22IOD1vVHfh01xQyWH3i+QwKkvr
+        WhEZBb94PaHT3BhorkdrpLRHK9heJkXVIGnC8C2z4hLIshG0KASyBxjJYxTaR2N/46q8tk2aDiU
+        uqW13x3UM2ceMFSJC
+X-Received: by 2002:a2e:a0ce:: with SMTP id f14mr28710584ljm.241.1574794246177;
+        Tue, 26 Nov 2019 10:50:46 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzHUc+oquSTaDm4CLKd9afrY/tGbnKn6DtP9DUe78i1wuycX8Rquk69fvv3hGcR7RNE9dzAcw==
+X-Received: by 2002:a2e:a0ce:: with SMTP id f14mr28710563ljm.241.1574794245996;
+        Tue, 26 Nov 2019 10:50:45 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id d24sm5904329ljg.73.2019.11.26.10.50.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 10:43:59 -0800 (PST)
-Date:   Tue, 26 Nov 2019 10:43:50 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Martin Lau <kafai@fb.com>, Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Message-ID: <5ddd7266c36aa_671a2b0b882605c04a@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191126171607.pzrg5qhbavh7enwh@kafai-mbp.dhcp.thefacebook.com>
-References: <20191123110751.6729-1-jakub@cloudflare.com>
- <20191123110751.6729-5-jakub@cloudflare.com>
- <20191125223845.6t6xoqcwcqxuqbdf@kafai-mbp>
- <87ftiaocp2.fsf@cloudflare.com>
- <20191126171607.pzrg5qhbavh7enwh@kafai-mbp.dhcp.thefacebook.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf, sockmap: Don't let child socket inherit
- psock or its ops on copy
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Tue, 26 Nov 2019 10:50:45 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2B69C1818C0; Tue, 26 Nov 2019 19:50:44 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] libbpf: Fix up generation of bpf_helper_defs.h
+In-Reply-To: <20191126183451.GC29071@kernel.org>
+References: <20191126151045.GB19483@kernel.org> <20191126154836.GC19483@kernel.org> <87imn6y4n9.fsf@toke.dk> <20191126183451.GC29071@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 26 Nov 2019 19:50:44 +0100
+Message-ID: <87d0dexyij.fsf@toke.dk>
+MIME-Version: 1.0
+X-MC-Unique: 1hOK4FovOUO0k469yKaZZA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Lau wrote:
-> On Tue, Nov 26, 2019 at 04:54:33PM +0100, Jakub Sitnicki wrote:
-> > On Mon, Nov 25, 2019 at 11:38 PM CET, Martin Lau wrote:
-> > > On Sat, Nov 23, 2019 at 12:07:47PM +0100, Jakub Sitnicki wrote:
-> > > [ ... ]
-> > >
-> > >> @@ -370,6 +378,11 @@ static inline void sk_psock_restore_proto(struct sock *sk,
-> > >>  			sk->sk_prot = psock->sk_proto;
-> > >>  		psock->sk_proto = NULL;
-> > >>  	}
-> > >> +
-> > >> +	if (psock->icsk_af_ops) {
-> > >> +		icsk->icsk_af_ops = psock->icsk_af_ops;
-> > >> +		psock->icsk_af_ops = NULL;
-> > >> +	}
-> > >>  }
-> > >
-> > > [ ... ]
-> > >
-> > >> +static struct sock *tcp_bpf_syn_recv_sock(const struct sock *sk,
-> > >> +					  struct sk_buff *skb,
-> > >> +					  struct request_sock *req,
-> > >> +					  struct dst_entry *dst,
-> > >> +					  struct request_sock *req_unhash,
-> > >> +					  bool *own_req)
-> > >> +{
-> > >> +	const struct inet_connection_sock_af_ops *ops;
-> > >> +	void (*write_space)(struct sock *sk);
-> > >> +	struct sk_psock *psock;
-> > >> +	struct proto *proto;
-> > >> +	struct sock *child;
-> > >> +
-> > >> +	rcu_read_lock();
-> > >> +	psock = sk_psock(sk);
-> > >> +	if (likely(psock)) {
-> > >> +		proto = psock->sk_proto;
-> > >> +		write_space = psock->saved_write_space;
-> > >> +		ops = psock->icsk_af_ops;
-> > > It is not immediately clear to me what ensure
-> > > ops is not NULL here.
-> > >
-> > > It is likely I missed something.  A short comment would
-> > > be very useful here.
-> > 
-> > I can see the readability problem. Looking at it now, perhaps it should
-> > be rewritten, to the same effect, as:
-> > 
-> > static struct sock *tcp_bpf_syn_recv_sock(...)
-> > {
-> > 	const struct inet_connection_sock_af_ops *ops = NULL;
-> >         ...
-> > 
-> >     rcu_read_lock();
-> > 	psock = sk_psock(sk);
-> > 	if (likely(psock)) {
-> > 		proto = psock->sk_proto;
-> > 		write_space = psock->saved_write_space;
-> > 		ops = psock->icsk_af_ops;
-> > 	}
-> > 	rcu_read_unlock();
-> > 
-> >         if (!ops)
-> > 		ops = inet_csk(sk)->icsk_af_ops;
-> >         child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
-> > 
-> > If psock->icsk_af_ops were NULL, it would mean we haven't initialized it
-> > properly. To double check what happens here:
-> I did not mean the init path.  The init path is fine since it init
-> eveything on psock before publishing the sk to the sock_map.
-> 
-> I was thinking the delete path (e.g. sock_map_delete_elem).  It is not clear
-> to me what prevent the earlier pasted sk_psock_restore_proto() which sets
-> psock->icsk_af_ops to NULL from running in parallel with
-> tcp_bpf_syn_recv_sock()?  An explanation would be useful.
-> 
+Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> writes:
 
-I'll answer. Updates are protected via sk_callback_lock so we don't have
-parrallel updates in-flight causing write_space and sk_proto to be out
-of sync. However access should be OK because its a pointer write we
-never update the pointer in place, e.g.
+> Em Tue, Nov 26, 2019 at 05:38:18PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n escreveu:
+>> Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> writes:
+>>=20
+>> > Em Tue, Nov 26, 2019 at 12:10:45PM -0300, Arnaldo Carvalho de Melo esc=
+reveu:
+>> >> Hi guys,
+>> >>=20
+>> >>    While merging perf/core with mainline I found the problem below fo=
+r
+>> >> which I'm adding this patch to my perf/core branch, that soon will go
+>> >> Ingo's way, etc. Please let me know if you think this should be handl=
+ed
+>> >> some other way,
+>> >
+>> > This is still not enough, fails building in a container where all we
+>> > have is the tarball contents, will try to fix later.
+>>=20
+>> Wouldn't the right thing to do not be to just run the script, and then
+>> put the generated bpf_helper_defs.h into the tarball?
+>
+> I would rather continue just running tar and have the build process
+> in-tree or outside be the same.
 
-static inline void sk_psock_restore_proto(struct sock *sk,
-					  struct sk_psock *psock)
-{
-+       struct inet_connection_sock *icsk = inet_csk(sk);
-+
-	sk->sk_write_space = psock->saved_write_space;
+Hmm, right. Well that Python script basically just parses
+include/uapi/linux/bpf.h; and it can be given the path of that file with
+the --filename argument. So as long as that file is present, it should
+be possible to make it work, I guess?
 
-	if (psock->sk_proto) {
-		struct inet_connection_sock *icsk = inet_csk(sk);
-		bool has_ulp = !!icsk->icsk_ulp_data;
+However, isn't the point of the tarball to make a "stand-alone" source
+distribution? I'd argue that it makes more sense to just include the
+generated header, then: The point of the Python script is specifically
+to extract the latest version of the helper definitions from the kernel
+source tree. And if you're "freezing" a version into a tarball, doesn't
+it make more sense to also freeze the list of BPF helpers?
 
-		if (has_ulp)
-			tcp_update_ulp(sk, psock->sk_proto);
-		else
-			sk->sk_prot = psock->sk_proto;
-		psock->sk_proto = NULL;
-	}
+-Toke
 
-+
-+       if (psock->icsk_af_ops) {
-+               icsk->icsk_af_ops = psock->icsk_af_ops;
-+               psock->icsk_af_ops = NULL;
-+       }
-}
-
-In restore case either psock->icsk_af_ops is null or not. If its
-null below code catches it. If its not null (from init path) then
-we have a valid pointer.
-
-        rcu_read_lock();
-	psock = sk_psock(sk);
- 	if (likely(psock)) {
- 		proto = psock->sk_proto;
- 		write_space = psock->saved_write_space;
- 		ops = psock->icsk_af_ops;
- 	}
- 	rcu_read_unlock();
- 
-        if (!ops)
-		ops = inet_csk(sk)->icsk_af_ops;
-        child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
-
-
-We should do this with proper READ_ONCE/WRITE_ONCE to make it clear
-what is going on and to stop compiler from breaking these assumptions. I
-was going to generate that patch after this series but can do it before
-as well. I didn't mention it here because it seems a bit out of scope
-for this series because its mostly a fix to older code.
-
-Also I started to think that write_space might be out of sync with ops but
-it seems we never actually remove psock_write_space until after
-rcu grace period so that should be OK as well and always point to the
-previous write_space.
-
-Finally I wondered if we could remove the ops and then add it back
-quickly which seems at least in theory possible, but that would get
-hit with a grace period because we can't have conflicting psock
-definitions on the same sock. So expanding the rcu block to include
-the ops = inet_csk(sk)->icsk_af_ops would fix that case.
-
-So in summary I think we should expand the rcu lock here to include the
-ops = inet_csk(sk)->icsk_af_ops to ensure we dont race with tear
-down and create. I'll push the necessary update with WRITE_ONCE and
-READ_ONCE to fix that up. Seeing we have to wait until the merge
-window opens most likely anyways I'll send those out sooner rather
-then later and this series can add the proper annotations as well.
