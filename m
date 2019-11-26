@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB4B109BEE
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 11:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 017C8109BF5
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 11:10:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727983AbfKZKJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 05:09:55 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:41234 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727957AbfKZKJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 05:09:52 -0500
-Received: by mail-pj1-f67.google.com with SMTP id gc1so8062977pjb.8;
-        Tue, 26 Nov 2019 02:09:52 -0800 (PST)
+        id S1728030AbfKZKKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 05:10:15 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:45733 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727975AbfKZKKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 05:10:10 -0500
+Received: by mail-pf1-f194.google.com with SMTP id z4so8932293pfn.12;
+        Tue, 26 Nov 2019 02:10:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vjhBcNZlvW0lMvmwhzAhIEHJGNVVbcL/eLdp//zF+fg=;
-        b=hfC8Y0GlPj/uXQPu3A2bgAU/XKe+wQFyKu/9eLipQh61lukaue4hfFzl2ix7VClJjZ
-         eqSqR/bDgLg7pVcqACj11DMCuCv0gwXL7+xHhsNh5NwgCfARRwd9PlFnobWiTzP9n90N
-         Cad2Cf8SKecEWov8eZLUH408k+NDKtsw7byKo/MzSxyDe560t1bn8KA8Nw44LvCzF9vm
-         USGyVrg3TbYALODisuOSe3Ve8xKDQg/MXtM9pDiIBi8Zs54oRtnKLNOLXzCEtbzwdMLf
-         iPJ/eSOXkY0IEK3bI3VUv0V9mmMlT1OQKz3zMG/tabHlx5zqAMJowhWzs1hYAg70KyV9
-         hpug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jdQDv4S8OWRFK8BJ5NYf9HpYfCnOIJYUleYQ7gA4ef8=;
+        b=YtApj9X/cp+10E3jJdzMh0RcIPpc4CopknMK247+K9YhmjX7IaHFWp+tcwyfTXgE1K
+         gearHC/Oqv3chiy+cx5zxAlKbAL4kS39s+2seSdFMdf1o/FAw+xtkgN6rgtw7LvxFk0x
+         dk2nfC7QJRhmLMf8fDIBhaLSjx4piMarDrUDqnoiEKNP03RJxZ5M2xdlytCoR0FUDVM2
+         aVW8Sq5kbWBuxjoE05KD0QmF2fcj8PI1zAkB44AVQblaOYQQLK/tT1NFDl65Z6YQgt0D
+         GjVP38TtY8UMwsYUVBKZvbhp08TZ25UDZtPXpeY4aupwLgMabEkMR4pwI3m2xdpvx7zE
+         merw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vjhBcNZlvW0lMvmwhzAhIEHJGNVVbcL/eLdp//zF+fg=;
-        b=ANvlYWuBw57gqMne1aUVRRkDCxOm0XizLVOJAU2A/G+bqEN+lNP60fMKUFrZCUbCAZ
-         /BgBYOHO6q59zyQA2Az0Q/ZN2MNWGi3/+afX7U+k1V5ZjJewFWFyxFiQ5uBwtBmI8MO1
-         +MYkdqZVrsIYml3vA8YRtv47XGKD4BldMIeTEVjUlKzcEB+oDa46ABBHF4McNI5NGlZL
-         +4Wx0UMqqxhOOZJTl/5+SAqSIlnwHKdYsYh5skM74cTNFckgADFMX/OHf/49DyMuigC6
-         pk45g5fx4q0pnEN82Ri1C768JIKjRjmoaY0I1aIenmLEcUunKPsi8bSVbm863ZO+9Q9E
-         W/7w==
-X-Gm-Message-State: APjAAAXKO9bccptlr4DhPUNkDyCciRwtvlb7eAG8c+wGLLC0+/ckIPC0
-        03e3U9o1KGtTX10oXQLUQkM=
-X-Google-Smtp-Source: APXvYqzqJGhF3OWpPSeJBTojUttgXbH4VXymhLmS8Ad3+dmUNyuhjPT2iweDPV8n33fEjuC8F6+rjQ==
-X-Received: by 2002:a17:90a:a612:: with SMTP id c18mr5725937pjq.49.1574762991777;
-        Tue, 26 Nov 2019 02:09:51 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jdQDv4S8OWRFK8BJ5NYf9HpYfCnOIJYUleYQ7gA4ef8=;
+        b=t5/BlHBEmdjb453m8yWGBQOeCb5SiB6rGrpBZIpfD3pTM0zF3l962aW05Etxfvdf2A
+         UrpSLdHos+sB69QSVwT19GoyYTIS85DLjziIVnqh8HP/fH804DgvyyXyZKdrNhP5Z34D
+         sxcDosVXVBCsFfYCmlci4upjdqkyemDQyGRehvukb0mQk0BervI7KtCv08vN7bmZVfbP
+         wPL/JWpzEPYSdeQ7WvW5sZh5VtclR4zWhNloFXBxHjhJNz9wu2OkcHljsNAg1A8RkrSf
+         ni/58GKk4PxbK6kEWY9tLImlTtF9hRMusmiGRlhT8HrdMXpJT4HQiA49h9rhjLTw6BnN
+         y0Pg==
+X-Gm-Message-State: APjAAAUCIEABvVrB6jSbfGIMKAVlLffGLrIkMBGnvfEhGkzp50FenqOb
+        Ayq9iuI0sLb4LrNgRHDm2S0=
+X-Google-Smtp-Source: APXvYqyG5wYFvtz/3LCmlX/xi0PtGiVDiGiK1KoXwfOJBmKbLfebzWsYO5JtfxZWx6PW1f5qA8Ftsw==
+X-Received: by 2002:a65:4346:: with SMTP id k6mr33984016pgq.349.1574763009508;
+        Tue, 26 Nov 2019 02:10:09 -0800 (PST)
 Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id s24sm11848485pfh.108.2019.11.26.02.09.48
+        by smtp.gmail.com with ESMTPSA id h9sm12059065pgk.84.2019.11.26.02.10.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 02:09:51 -0800 (PST)
+        Tue, 26 Nov 2019 02:10:08 -0800 (PST)
 From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>
+To:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, qemu-devel@nongnu.org
 Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -57,13 +57,11 @@ Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        qemu-devel@nongnu.org, kvm@vger.kernel.org
-Subject: [RFC net-next 18/18] virtio_net: restrict bpf helper calls from offloaded program
-Date:   Tue, 26 Nov 2019 19:07:44 +0900
-Message-Id: <20191126100744.5083-19-prashantbhole.linux@gmail.com>
+        kvm@vger.kernel.org
+Subject: [RFC 0/3] Qemu: virtio-net XDP offload
+Date:   Tue, 26 Nov 2019 19:09:11 +0900
+Message-Id: <20191126100914.5150-1-prashantbhole.linux@gmail.com>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
-References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,72 +69,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we are offloading this program to the host, some of the helper
-calls will not make sense. For example get_numa_node_id. Some helpers
-can not be used because we don't handle them yet.
+Note: This RFC has been sent to netdev as well as qemu-devel lists
 
-So let's allow a small set of helper calls for now.
+This patchset implements XDP offload feature in qemu. The successful
+operation of this feature depends on availability of XDP offload
+feature in guest, qemu and host. When this feature isn't available in
+qemu or host, the request from guest to offload an XDP program should
+fail.
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
----
- drivers/net/virtio_net.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Patch 1/3 adds support for libbpf in configure script.
+Patch 2/2 enables offloading of ebpf program.
+Patch 3/3 enabled offloading of ebpf map.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 91a94b787c64..ab5be6b95bbd 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2549,6 +2549,25 @@ static struct virtnet_bpf_map *virtnet_get_bpf_map(struct virtnet_info *vi,
- 	return NULL;
- }
- 
-+static int virtnet_bpf_check_helper_call(struct bpf_insn *insn)
-+{
-+	switch (insn->imm) {
-+	case BPF_FUNC_map_lookup_elem:
-+	case BPF_FUNC_map_update_elem:
-+	case BPF_FUNC_map_delete_elem:
-+	case BPF_FUNC_ktime_get_ns:
-+	case BPF_FUNC_get_prandom_u32:
-+	case BPF_FUNC_csum_update:
-+	case BPF_FUNC_xdp_adjust_head:
-+	case BPF_FUNC_xdp_adjust_meta:
-+	case BPF_FUNC_xdp_adjust_tail:
-+	case BPF_FUNC_strtol:
-+	case BPF_FUNC_strtoul:
-+		return 0;
-+	}
-+	return -EOPNOTSUPP;
-+}
-+
- static int virtnet_bpf_verify_insn(struct bpf_verifier_env *env, int insn_idx,
- 				   int prev_insn)
- {
-@@ -2830,6 +2849,7 @@ static int virtnet_bpf_verifier_setup(struct bpf_prog *prog)
- 	struct virtnet_bpf_bound_prog *state;
- 	struct virtnet_bpf_map *virtnet_map;
- 	struct bpf_map *map;
-+	u8 opcode, class;
- 	struct fd mapfd;
- 	int i, err = 0;
- 
-@@ -2846,6 +2866,16 @@ static int virtnet_bpf_verifier_setup(struct bpf_prog *prog)
- 	for (i = 0; i < state->len; i++) {
- 		struct bpf_insn *insn = &state->insnsi[i];
- 
-+		opcode = BPF_OP(insn->code);
-+		class = BPF_CLASS(insn->code);
-+
-+		if ((class == BPF_JMP || class == BPF_JMP32) &&
-+		    opcode == BPF_CALL && insn->src_reg != BPF_PSEUDO_CALL) {
-+			if (virtnet_bpf_check_helper_call(insn))
-+				return -EOPNOTSUPP;
-+			continue;
-+		}
-+
- 		if (insn->code != (BPF_LD | BPF_IMM | BPF_DW))
- 			continue;
- 
+Points for improvement (TODO):
+- In future virtio can have feature bit for offloading capability
+
+- TUNGETFEATURES should have a flag to notify about offloading
+  capability
+
+- Submit virtio spec patch to describe XDP offloading feature
+
+- DoS: Offloaded map uses host's memory which is other than what has
+  been allocated for the guest. Offloading many maps of large size can
+  be one of the DoS strategy. Hence qemu should have parameter to
+  limit how many maps guest can offload or how much memory offloaded
+  maps use.
+
+Note:
+This set directly modifies virtio_net.h header instead of
+importing it from existing kernel headers because relevant changes
+aren't present in kernel repository yet. Hence changes to virtio_net.h
+are for RFC purpose only.
+
+
+Jason Wang (2):
+  virtio-net: add support for offloading XDP program
+  virtio-net: add support for offloading an ebpf map
+
+Prashant Bhole (1):
+  configure: add libbpf support
+
+ configure                                   |  23 +++
+ hw/net/Makefile.objs                        |   2 +
+ hw/net/virtio-net.c                         | 157 ++++++++++++++++++++
+ include/net/tap.h                           |   2 +
+ include/standard-headers/linux/virtio_net.h |  50 +++++++
+ net/Makefile.objs                           |   1 +
+ net/tap-bsd.c                               |   5 +
+ net/tap-linux.c                             |  48 ++++++
+ net/tap-linux.h                             |   1 +
+ net/tap-solaris.c                           |   5 +
+ net/tap-stub.c                              |   5 +
+ net/tap.c                                   |   7 +
+ net/tap_int.h                               |   1 +
+ 13 files changed, 307 insertions(+)
+
 -- 
 2.20.1
 
