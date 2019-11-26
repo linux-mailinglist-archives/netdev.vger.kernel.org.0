@@ -2,145 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0B6109C78
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 11:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9295D109CC3
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 12:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727845AbfKZKo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 05:44:28 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:42962 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727603AbfKZKo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Nov 2019 05:44:28 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5BC2E2002CC;
-        Tue, 26 Nov 2019 11:44:25 +0100 (CET)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9385620013E;
-        Tue, 26 Nov 2019 11:44:22 +0100 (CET)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 11B18402EE;
-        Tue, 26 Nov 2019 18:44:18 +0800 (SGT)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>
-Subject: [PATCH] net: mscc: ocelot: fix potential issues accessing skbs list
-Date:   Tue, 26 Nov 2019 18:44:03 +0800
-Message-Id: <20191126104403.46717-1-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727915AbfKZLGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 06:06:16 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:41697 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbfKZLGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 06:06:16 -0500
+Received: by mail-ot1-f66.google.com with SMTP id r27so944822otc.8;
+        Tue, 26 Nov 2019 03:06:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sDv2IDGJv0mFar0t3+yMbplV7bT/52S6zXtfv3V8JGI=;
+        b=rKTSQa/ZFmaONGOW2cPBQUgmf6sjOD5r1OzNGS96qRHsTsUuDNtT34Q9voflpE/3Py
+         LZuy/huLNopriEyucAtN+gcwtasCC17bPBlu/r5XRsZ7cbXTXFcGiF4Ix0YNLeGRozBK
+         Ikrz569DQQqpH6oQfH9ENPQgzaPjrY5iw5JxU8vGJee2huDmWYp8EzF979tApYk/5xnq
+         XN29rKrkDNxSzdzj+Pw+RpI3OQs/wdLv9L9XbICmfd/neIg3i49814YSG0t28JyQUdCG
+         wtNAuVQevB1G21Vu5h+V8x8bJnGSIVZKg91y7q2ozkGg+J5OzKLprUMOinAxo9jmli67
+         5ATw==
+X-Gm-Message-State: APjAAAWEDKz0XaHiTrrJY5iYoTmQA0+5EXAgbt5DPXiVNCtsTiOPCXit
+        WhAG9jSkGzn2uGnm1kcXJ20aEX1MJZibmrBxpZQ=
+X-Google-Smtp-Source: APXvYqzVwTZwufgkEpLOPkgZBChJ+oyz3T07Gt9Es1AGLSJgdDI2N6gJx2zkS7FsJn1inn0vK0U1K9OsI9cugtJsiTQ=
+X-Received: by 2002:a05:6830:2363:: with SMTP id r3mr1979742oth.39.1574766374983;
+ Tue, 26 Nov 2019 03:06:14 -0800 (PST)
+MIME-Version: 1.0
+References: <20191121183404.6e183d06@canb.auug.org.au>
+In-Reply-To: <20191121183404.6e183d06@canb.auug.org.au>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 26 Nov 2019 12:06:03 +0100
+Message-ID: <CAMuHMdX8QyGkpPXfwS0EJhC6hR+gpYfvdpGWqdb=bSwJGmF7Ew@mail.gmail.com>
+Subject: nf_flow on big-endian (was: Re: linux-next: build warning after merge
+ of the net-next tree)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix two prtential issues accessing skbs list.
-- Protect skbs list in case of competing for accessing.
-- Break the matching loop when find the matching skb to
-  avoid consuming more skbs incorrectly. The ID is only
-  from 0 to 3, but the FIFO supports 128 timestamps at most.
+On Thu, Nov 21, 2019 at 8:36 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> After merging the net-next tree, today's linux-next build (powerpc
+> allyesconfig) produced this warning:
+>
+> net/netfilter/nf_flow_table_offload.c: In function 'nf_flow_rule_match':
+> net/netfilter/nf_flow_table_offload.c:80:21: warning: unsigned conversion from 'int' to '__be16' {aka 'short unsigned int'} changes value from '327680' to '0' [-Woverflow]
+>    80 |   mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
+>       |                     ^~~~~~~~~~~~
+>
+> Introduced by commit
+>
+>   c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
 
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot.c | 11 +++++++++++
- include/soc/mscc/ocelot.h          |  2 ++
- 2 files changed, 13 insertions(+)
+This is now upstream, and must be completely broken on big-endian
+platforms.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 0e96ffa..5d842d8 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -580,6 +580,7 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
- {
- 	struct skb_shared_info *shinfo = skb_shinfo(skb);
- 	struct ocelot *ocelot = ocelot_port->ocelot;
-+	unsigned long flags;
- 
- 	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP &&
- 	    ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
-@@ -594,7 +595,9 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
- 		oskb->skb = skb;
- 		oskb->id = ocelot_port->ts_id % 4;
- 
-+		spin_lock_irqsave(&ocelot_port->skbs_lock, flags);
- 		list_add_tail(&oskb->head, &ocelot_port->skbs);
-+		spin_unlock_irqrestore(&ocelot_port->skbs_lock, flags);
- 		return 0;
- 	}
- 	return -ENODATA;
-@@ -702,6 +705,7 @@ static void ocelot_get_hwtimestamp(struct ocelot *ocelot,
- void ocelot_get_txtstamp(struct ocelot *ocelot)
- {
- 	int budget = OCELOT_PTP_QUEUE_SZ;
-+	unsigned long flags;
- 
- 	while (budget--) {
- 		struct skb_shared_hwtstamps shhwtstamps;
-@@ -727,6 +731,7 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
- 		/* Retrieve its associated skb */
- 		port = ocelot->ports[txport];
- 
-+		spin_lock_irqsave(&port->skbs_lock, flags);
- 		list_for_each_safe(pos, tmp, &port->skbs) {
- 			entry = list_entry(pos, struct ocelot_skb, head);
- 			if (entry->id != id)
-@@ -736,7 +741,9 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
- 
- 			list_del(pos);
- 			kfree(entry);
-+			break;
- 		}
-+		spin_unlock_irqrestore(&port->skbs_lock, flags);
- 
- 		/* Next ts */
- 		ocelot_write(ocelot, SYS_PTP_NXT_PTP_NXT, SYS_PTP_NXT);
-@@ -2205,6 +2212,7 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 
-+	spin_lock_init(&ocelot_port->skbs_lock);
- 	INIT_LIST_HEAD(&ocelot_port->skbs);
- 
- 	/* Basic L2 initialization */
-@@ -2493,6 +2501,7 @@ void ocelot_deinit(struct ocelot *ocelot)
- 	struct list_head *pos, *tmp;
- 	struct ocelot_port *port;
- 	struct ocelot_skb *entry;
-+	unsigned long flags;
- 	int i;
- 
- 	cancel_delayed_work(&ocelot->stats_work);
-@@ -2503,6 +2512,7 @@ void ocelot_deinit(struct ocelot *ocelot)
- 	for (i = 0; i < ocelot->num_phys_ports; i++) {
- 		port = ocelot->ports[i];
- 
-+		spin_lock_irqsave(&port->skbs_lock, flags);
- 		list_for_each_safe(pos, tmp, &port->skbs) {
- 			entry = list_entry(pos, struct ocelot_skb, head);
- 
-@@ -2510,6 +2520,7 @@ void ocelot_deinit(struct ocelot *ocelot)
- 			dev_kfree_skb_any(entry->skb);
- 			kfree(entry);
- 		}
-+		spin_unlock_irqrestore(&port->skbs_lock, flags);
- 	}
- }
- EXPORT_SYMBOL(ocelot_deinit);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index e1108a5..7973458 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -426,6 +426,8 @@ struct ocelot_port {
- 
- 	u8				ptp_cmd;
- 	struct list_head		skbs;
-+	/* Protects the skbs list */
-+	spinlock_t			skbs_lock;
- 	u8				ts_id;
- };
- 
+The other user of the flags field looks buggy, too
+(net/core/flow_dissector.c:__skb_flow_dissect_tcp()[*]):
+
+     key_tcp->flags = (*(__be16 *) &tcp_flag_word(th) & htons(0x0FFF));
+
+Disclaimer: I'm not familiar with the code or protocol, so below are just
+my gut feelings.
+
+     struct flow_dissector_key_tcp {
+            __be16 flags;
+    };
+
+Does this have to be __be16, i.e. does it go over the wire?
+If not, this should probably be __u16, and set using
+"be32_to_cpu(flags) >> 16"?
+If yes, "cpu_to_be16(be32_to_cpu(flags) >> 16)"?
+(Ugh, needs convenience macros)
+
+[*] ac4bb5de27010e41 ("net: flow_dissector: add support for dissection
+of tcp flags")
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.7.4
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
