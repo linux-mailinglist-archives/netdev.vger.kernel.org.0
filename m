@@ -2,62 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9BF6109FA4
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 14:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBECD10A009
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 15:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbfKZNyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 08:54:37 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:44035 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727374AbfKZNyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 08:54:36 -0500
-Received: by mail-pj1-f65.google.com with SMTP id w8so8322509pjh.11;
-        Tue, 26 Nov 2019 05:54:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7z4jzenWhd0UApMYWS0PPwEvZ4lV+LKdoL7sPLRETfg=;
-        b=rwa38Tt5sE2SwqbB2LxzonQx7Dr4BlBhg2zTHHQ9R2novDl3ns4Kr5O5ZiSxl7IHw+
-         JxW/1unXoSU0s+ecxGRYNBDAR7zo9FPsKFiu3iRoteOtKtpkm48TitALEbta97EvzHYX
-         rTLKBc/AmAk84u6/J+MswbfozOY01grnkbgJCXwnS54Qmk5JWcwOAyx6yg9RMJzh1n/N
-         vNOxGYmeCNbPY6C/D2VVGKbNH7syGSY5nGGRmkbhWV2pcLIgSg+dNN/fWcRXRKzPvqjY
-         HXPLtpJqkXZ0/n5AbhfYHxJaRmnFPOM/YnPkwpmEBKzatmmnmxmsWPigv5I74ApjMeD1
-         z6vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7z4jzenWhd0UApMYWS0PPwEvZ4lV+LKdoL7sPLRETfg=;
-        b=uH+wre1Hj8QrH7O8HOvmgwNKpRUYYVzE5wbfg6KidsFf6Oex6pGoNayIcUKK6sUDXC
-         ZzoV4TFRi0sFiO1Xs3EuiJByRt+v5SzxIe1dCwwGNgkTGHJDTJV3q0A07VGVQplzOaqd
-         uBHQ+ua2l7JcOvsCAev0+H7J92N2ZfaPrJSA+dZ0usipyJo80CWCU0m1UlbXt+QrHQY8
-         YLAhuWvpAbFPMnv7FSaRG1qPX/kzvszqahcP6ejTJRpCID1dq3dZwtw8WKu9wppPJTRW
-         7kIz5KfULV9XgJqK08nm+xHnapi3YtTnUvU5C5Rxr2fjtCopebnfIiIOxC/oIIHg7f7C
-         fe4A==
-X-Gm-Message-State: APjAAAUtUC8t0PFUq3w2MK5trtyPvaV6uKCwWzrXb/pWNUeAQ2MuSfVW
-        J76MooNwgXUDkLgYUjVtP4E=
-X-Google-Smtp-Source: APXvYqz3dLRYqY9DA8JuhOo9VI1HldHEbKnZGcH7/gkoUYh514c7/QqpY2S0OSRx/zKKAUrHUSEcLg==
-X-Received: by 2002:a17:90a:a616:: with SMTP id c22mr7240491pjq.46.1574776474943;
-        Tue, 26 Nov 2019 05:54:34 -0800 (PST)
-Received: from debian.net.fpt ([2405:4800:58f7:2f79:ce3b:4b9:a68f:959f])
-        by smtp.gmail.com with ESMTPSA id v3sm13018499pfi.26.2019.11.26.05.54.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 05:54:34 -0800 (PST)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     davem@davemloft.net
-Cc:     alexios.zavras@intel.com, allison@lohutok.net, benquike@gmail.com,
-        gregkh@linuxfoundation.org, johan@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, oneukum@suse.com, tglx@linutronix.de,
-        tranmanphong@gmail.com
-Subject: [Patch v2 2/2] net: usbnet: Fix -Wcast-function-type
-Date:   Tue, 26 Nov 2019 20:54:13 +0700
-Message-Id: <20191126135413.19929-3-tranmanphong@gmail.com>
+        id S1728255AbfKZOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 09:14:20 -0500
+Received: from mail.stusta.mhn.de ([141.84.69.5]:50850 "EHLO
+        mail.stusta.mhn.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbfKZOOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 09:14:20 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.stusta.mhn.de (Postfix) with ESMTPSA id 47MlyK1jz3z23;
+        Tue, 26 Nov 2019 15:04:25 +0100 (CET)
+From:   Adrian Bunk <bunk@kernel.org>
+To:     stable@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Max Uvarov <muvarov@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Adrian Bunk <bunk@kernel.org>
+Subject: [4.14/4.19 patch 1/2] net: phy: dp83867: fix speed 10 in sgmii mode
+Date:   Tue, 26 Nov 2019 16:04:05 +0200
+Message-Id: <20191126140406.6451-1-bunk@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191126135413.19929-1-tranmanphong@gmail.com>
-References: <20191125.110708.76766634808358006.davem@davemloft.net>
- <20191126135413.19929-1-tranmanphong@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,41 +33,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-correct usage prototype of callback in tasklet_init().
-Report by https://github.com/KSPP/linux/issues/20
+From: Max Uvarov <muvarov@gmail.com>
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+Commit 333061b924539c0de081339643f45514f5f1c1e6 upstream.
+
+For supporting 10Mps speed in SGMII mode DP83867_10M_SGMII_RATE_ADAPT bit
+of DP83867_10M_SGMII_CFG register has to be cleared by software.
+That does not affect speeds 100 and 1000 so can be done on init.
+
+Signed-off-by: Max Uvarov <muvarov@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ adapted for kernels without phy_modify_mmd ]
+Signed-off-by: Adrian Bunk <bunk@kernel.org>
 ---
- drivers/net/usb/usbnet.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+- already in 5.3
+- applies and builds against 4.14 and 4.19
+- tested with 4.14
+---
+ drivers/net/phy/dp83867.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index dde05e2fdc3e..30e511c2c8d0 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1573,6 +1573,13 @@ static void usbnet_bh (struct timer_list *t)
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 12b09e6e03ba..81106314e6da 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -37,6 +37,8 @@
+ #define DP83867_STRAP_STS1	0x006E
+ #define DP83867_RGMIIDCTL	0x0086
+ #define DP83867_IO_MUX_CFG	0x0170
++#define DP83867_10M_SGMII_CFG   0x016F
++#define DP83867_10M_SGMII_RATE_ADAPT_MASK BIT(7)
+ 
+ #define DP83867_SW_RESET	BIT(15)
+ #define DP83867_SW_RESTART	BIT(14)
+@@ -283,6 +285,23 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 		}
  	}
- }
  
-+static void usbnet_bh_tasklet(unsigned long data)
-+{
-+	struct timer_list *t = (struct timer_list *)data;
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
++		/* For support SPEED_10 in SGMII mode
++		 * DP83867_10M_SGMII_RATE_ADAPT bit
++		 * has to be cleared by software. That
++		 * does not affect SPEED_100 and
++		 * SPEED_1000.
++		 */
++		val = phy_read_mmd(phydev, DP83867_DEVADDR,
++				   DP83867_10M_SGMII_CFG);
++		val &= ~DP83867_10M_SGMII_RATE_ADAPT_MASK;
++		ret = phy_write_mmd(phydev, DP83867_DEVADDR,
++				    DP83867_10M_SGMII_CFG, val);
 +
-+	usbnet_bh(t);
-+}
++		if (ret)
++			return ret;
++	}
 +
- 
- /*-------------------------------------------------------------------------
-  *
-@@ -1700,7 +1707,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
- 	skb_queue_head_init (&dev->txq);
- 	skb_queue_head_init (&dev->done);
- 	skb_queue_head_init(&dev->rxq_pause);
--	dev->bh.func = (void (*)(unsigned long))usbnet_bh;
-+	dev->bh.func = usbnet_bh_tasklet;
- 	dev->bh.data = (unsigned long)&dev->delay;
- 	INIT_WORK (&dev->kevent, usbnet_deferred_kevent);
- 	init_usb_anchor(&dev->deferred);
+ 	/* Enable Interrupt output INT_OE in CFG3 register */
+ 	if (phy_interrupt_is_valid(phydev)) {
+ 		val = phy_read(phydev, DP83867_CFG3);
 -- 
 2.20.1
 
