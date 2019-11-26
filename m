@@ -2,98 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9204010A6C8
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 23:47:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C428310A6DB
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 00:01:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfKZWru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 17:47:50 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39775 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbfKZWrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 17:47:49 -0500
-Received: by mail-pl1-f194.google.com with SMTP id o9so8814899plk.6
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 14:47:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8VYg+Moa5/S7aXoSBMb5a8ScpDGfedx2ND3qqxTeHcQ=;
-        b=QXcvzrw5rMnyWkZ9LtkhFHoXBa4pJ4grUpzrExbq7RE0X7gw2Xdm3aoNO93TnBw1OR
-         h+j0Yf3RjZ9xfRKiZIGImkUCSoLLz5CRjE3yspjszIqTPnBmWSdlsGaGEY7nXIr8RKTx
-         Mj0M3O3QMpcdEVMw+GWYKT6oZ+2ZccVaoRoCq5Sh/arCCy5Ndf9u0N5USwzP/06Jw+dd
-         QKNMblCFEKBAlOEZi3SukaJBTvOsiI7MT8vln644774c1FHkNc1VDtNSZgKw7Cz7wDiR
-         BTVCdmJ4caVenUJVLduLwJybOkirBH2744u4phq2MvqrajSK1j0YlrbY8aWcP/mcKFQ+
-         99Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8VYg+Moa5/S7aXoSBMb5a8ScpDGfedx2ND3qqxTeHcQ=;
-        b=OQCyow2Wmy/LA3Xyo3cwXc4hraomboRB+kJ2ODLh3U+JIsE1xMnGOLygi/WaprYNuE
-         LOLFQTAwtpHnMSqLkA8lywCT8YaCZyNZMhEgevXEuR1OUOsxYCsjJxc8t9YXmbIlA5sv
-         w8oTTXNhWvw7R/XmWmlaSpVPfbZ+4wSPkY21Llsf7j7Z49ty/F5fNcrFdVmsYJ4pB56P
-         KgPbMazl5HDZMIfej0+zqXnGJylNwi5r9o9zJvi3o0/k1jt6dv0GzuKWE+luOZId4SLJ
-         qM7RTARLJWK/868XSBNUbjgVijDeOpUeqNdTQ+mm8W08rMVAG/v6ABTB/cLijsEQGh7A
-         PjIw==
-X-Gm-Message-State: APjAAAWLtgGFpoj1ip2pTiDIqsIJWXVc0Fi4Q4kjipdmNO3qiE/OD9ED
-        TUtc8mLoMUbjQDOqUpFxEPTsaA==
-X-Google-Smtp-Source: APXvYqypxxhXXe6Zk41fVUyMQ2BhbQEqI/D6QEvsRv/hEu5RP4Mk5aWzrJeagSJhbZNw5ZX3mkyt5g==
-X-Received: by 2002:a17:902:b487:: with SMTP id y7mr721308plr.274.1574808468882;
-        Tue, 26 Nov 2019 14:47:48 -0800 (PST)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id u9sm13728875pfm.102.2019.11.26.14.47.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 14:47:48 -0800 (PST)
-Date:   Tue, 26 Nov 2019 14:47:47 -0800
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net
-Subject: Re: [PATCH bpf] bpf: support pre-2.25-binutils objcopy for vmlinux
- BTF
-Message-ID: <20191126224747.GD3145429@mini-arch.hsd1.ca.comcast.net>
-References: <20191126174221.200522-1-sdf@google.com>
- <5ddda9354c976_9832aef3a62e5b8ab@john-XPS-13-9370.notmuch>
+        id S1726970AbfKZXBL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 26 Nov 2019 18:01:11 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41326 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726445AbfKZXBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 18:01:11 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAQMwNi2028932
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 15:01:10 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2whcy3g4vy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 15:01:10 -0800
+Received: from 2401:db00:2120:80d4:face:0:39:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 26 Nov 2019 15:01:09 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 9AD40760E50; Tue, 26 Nov 2019 15:01:06 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <dan.carpenter@oracle.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] bpf: fix static checker warning
+Date:   Tue, 26 Nov 2019 15:01:06 -0800
+Message-ID: <20191126230106.237179-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5ddda9354c976_9832aef3a62e5b8ab@john-XPS-13-9370.notmuch>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-26_07:2019-11-26,2019-11-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
+ adultscore=0 spamscore=0 mlxlogscore=943 priorityscore=1501 malwarescore=0
+ phishscore=0 mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=1
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911260195
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/26, John Fastabend wrote:
-> Stanislav Fomichev wrote:
-> > If vmlinux BTF generation fails, but CONFIG_DEBUG_INFO_BTF is set,
-> > .BTF section of vmlinux is empty and kernel will prohibit
-> > BPF loading and return "in-kernel BTF is malformed".
-> > 
-> > --dump-section argument to binutils' objcopy was added in version 2.25.
-> > When using pre-2.25 binutils, BTF generation silently fails. Convert
-> > to --only-section which is present on pre-2.25 binutils.
-> 
-> hmm I think we should fail hard if a feature explicitly asked for
-> in the .config is not able to be built due to tooling. Otherwise
-> users may later try to use a feature that can only be supported by
-> BTF and that will have to fail at runtime. The runtime failure
-> seems more likely to surprise users compared to the inconvience
-> of having a compile time error. I view this similar to how having
-> old ssl libs fails the build with the various signing options are
-> set.
-I agree. This is what actually happened to me. At some point
-all my selftests started to fail.
+kernel/bpf/btf.c:4023 btf_distill_func_proto()
+        error: potentially dereferencing uninitialized 't'.
 
-> Can we print a useful help message instead so users can disable
-> CONFIG_DEBUG_INFO_BTF or update binutils?
-I'm not sure objcopy returns with error if it fails to execute the command.
-I guess we can query the size of .BTF section in vmlinux and print
-an error if it's empty.
+kernel/bpf/btf.c
+  4012          nargs = btf_type_vlen(func);
+  4013          if (nargs >= MAX_BPF_FUNC_ARGS) {
+  4014                  bpf_log(log,
+  4015                          "The function %s has %d arguments. Too many.\n",
+  4016                          tname, nargs);
+  4017                  return -EINVAL;
+  4018          }
+  4019          ret = __get_type_size(btf, func->type, &t);
+                                                       ^^
+t isn't initialized for the first -EINVAL return
 
-Another thing we can do is to add a special 'data_size == 0' to
-btf_parse_vmlinux. That way, at least, kernel can fall-back to
-pre-BTF world instead of assuming that BTF is malformed (it's not
-malformed, it's just not there). But that's, again, a surprise
-at runtime. Checking at build time seems like a better option.
+This is unlikely path, since BTF should have been validated at this point.
+Fix it by returning 'void' BTF.
+
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/btf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 40efde5eedcb..bd5e11881ba3 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3976,8 +3976,10 @@ static int __get_type_size(struct btf *btf, u32 btf_id,
+ 	t = btf_type_by_id(btf, btf_id);
+ 	while (t && btf_type_is_modifier(t))
+ 		t = btf_type_by_id(btf, t->type);
+-	if (!t)
++	if (!t) {
++		*bad_type = btf->types[0];
+ 		return -EINVAL;
++	}
+ 	if (btf_type_is_ptr(t))
+ 		/* kernel size of pointer. Not BPF's size of pointer*/
+ 		return sizeof(void *);
+-- 
+2.23.0
+
