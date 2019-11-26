@@ -2,151 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C8A10A671
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 23:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB5F10A673
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 23:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbfKZWRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 17:17:08 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:36927 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbfKZWRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 17:17:08 -0500
-Received: by mail-lj1-f196.google.com with SMTP id d5so22092881ljl.4
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 14:17:06 -0800 (PST)
+        id S1726983AbfKZWRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 17:17:40 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40353 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbfKZWRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 17:17:40 -0500
+Received: by mail-qk1-f194.google.com with SMTP id a137so15851536qkc.7;
+        Tue, 26 Nov 2019 14:17:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1gYfJxzHeKUFkOBnsrM3CpBYMK26XYf3ZQFQu/ULt6Y=;
-        b=M5pvAzE+38bkJ8G9Hx9PdGbE3KPm6os2k7o9rSkWt2ySQzpbdSMpIncahhJSTR/MXU
-         fCQnncExAcvoMUvtWq5bqFs7cJWKEAcYthHytuocPmmkbXsjFRlUqapAM0x6iA02VJgw
-         BpLAJQIEmmj+Ivaxfnj4Wp3A3KHoswCsIDUsU=
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=f2Hd5WjuiqvQta5/vQm1F0KJvxXJh/55GVYUerwghhA=;
+        b=BFCSVBGxPSAXY1PzblBrY0hRc5cUv1K4LLgzlFF8QCrnOpKydk05DBguKoBV/ZMbWA
+         veGpy/TT5IwMgXJmLyn4GBUL61P2cLwA8BMmIeUfP5bLe34bW1hXkDkLTZ9SCI9yjovC
+         N3IUJRCetOVp/rcmThFTk3/C+AikbOyGsFNeoAQHH6Q35QCgnJvnQH2moUccnfsNirB+
+         W8qS2G7YeE0ovp8c6mSo881u17FdegIceCoMITHiSOOlsQzQGpWxmJDsA6UKR/p/TD6X
+         xZu7VxHFEBRHW2J/s4oRyHqIMOnVBQot6+tcpTPIsD4JcbVKcxqD2+wPhcmsEeJod9hM
+         yYcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1gYfJxzHeKUFkOBnsrM3CpBYMK26XYf3ZQFQu/ULt6Y=;
-        b=OIOrRUa7eAHoZ7JBMUT2q+r/COcbDmzWs7YA0nlBoWvCxKA2L5ToWmN3IH3OXbEYFD
-         /FM5ZJqmOrEwQ58i8CJzkvQSU7T7sb09PTfRKtcRua1MrEyhgJhjnVmCrRE5SMgjz0xR
-         6bj9AYYCuFxA29Ssfe+egnA1YDGDrM1M9W5RM36bkaBLpxolcECnVf2rHmUboll7EDUu
-         JxjYd9scMPaAUTRdDdQtOFOpEL8UHBgTM9EN0ayusY947Ca9o9IsEZNnTpoQ+dy+iXru
-         6J40DqbfeS7mk1wNOhG3O/Ib70XXElxKxuJO6QwYrg+Le0z25pzrfr1hzcS/WXzlusF7
-         Ec8A==
-X-Gm-Message-State: APjAAAXoeKMRz+rN2gY7/xQy63aQ7w3iq6NnPAc5bQFLLoQA2cr78BYl
-        SIdQPPc4Eia/OEXd/AvLrEugRoVOCyE=
-X-Google-Smtp-Source: APXvYqypMr9MeXptFia7vdK7W0p1q/rIn9dDCoFK27BPdp9PTdc4iaYGMhOSxgPyxQdljUExlexVmA==
-X-Received: by 2002:a2e:818e:: with SMTP id e14mr13928389ljg.245.1574806625355;
-        Tue, 26 Nov 2019 14:17:05 -0800 (PST)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x12sm5859181lfq.52.2019.11.26.14.17.03
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=f2Hd5WjuiqvQta5/vQm1F0KJvxXJh/55GVYUerwghhA=;
+        b=Fio5MvFbLrLO8o83gD3osq7MP0APbVNQXjREnEUqr0s5xdJfH22igIcYzb0ZAckMfg
+         Fd/YF3cO7pYkjAiyQvpjMrPF1acEDEbEUTMvF3W8fP/zU0cVlH6jA0W8moZevSZ2fMY4
+         5cGrUs5iZuF73SJOUs11axNf10pEG6ytMXQWuRKwjM+utFFMwdU10rjbQJnGfuXcQY5q
+         BIE+z8bAqGrbgyX5gr6oRO9CExvgaIOhK2/sZg6hMIrzTpAZeZCebj7BH5YFgXopZVqP
+         Z2LlcUSmwKFUQFjFMl5aFG5al9D0O5+jXWR2StLh1ma6GNRTs5ZpipVFGu8ekGE3zHLE
+         p4eg==
+X-Gm-Message-State: APjAAAU5qKN9SoPSEZsEX+gnY9yYJpmRqgr5zhKqrTjGmNGZhngw7EWK
+        iywb3WWa5F2tUUN59K+Ij8A=
+X-Google-Smtp-Source: APXvYqz/dH81SKnb/fSKY73zqbv+py8tqrQNnYWeHvfNmpY3Sfg7fynXtMdCo8qK9CCanoHIdo826Q==
+X-Received: by 2002:a37:bc81:: with SMTP id m123mr866276qkf.358.1574806657302;
+        Tue, 26 Nov 2019 14:17:37 -0800 (PST)
+Received: from quaco.ghostprotocols.net ([179.97.35.50])
+        by smtp.gmail.com with ESMTPSA id d6sm6596208qtn.16.2019.11.26.14.17.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Nov 2019 14:17:04 -0800 (PST)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Yotam Gigi <yotamg@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: [PATCH net] net: psample: fix skb_over_panic
-Date:   Wed, 27 Nov 2019 00:16:44 +0200
-Message-Id: <20191126221644.23281-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.21.0
+        Tue, 26 Nov 2019 14:17:36 -0800 (PST)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id D2F2840D3E; Tue, 26 Nov 2019 19:17:33 -0300 (-03)
+Date:   Tue, 26 Nov 2019 19:17:33 -0300
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] libbpf: Fix up generation of bpf_helper_defs.h
+Message-ID: <20191126221733.GB22719@kernel.org>
+References: <20191126151045.GB19483@kernel.org>
+ <20191126154836.GC19483@kernel.org>
+ <87imn6y4n9.fsf@toke.dk>
+ <20191126183451.GC29071@kernel.org>
+ <87d0dexyij.fsf@toke.dk>
+ <20191126190450.GD29071@kernel.org>
+ <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
+ <20191126221018.GA22719@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191126221018.GA22719@kernel.org>
+X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need to calculate the skb size correctly otherwise we risk triggering
-skb_over_panic[1]. The issue is that data_len is added to the skb in a
-nl attribute, but we don't account for its header size (nlattr 4 bytes)
-and alignment. We account for it when calculating the total size in
-the > PSAMPLE_MAX_PACKET_SIZE comparison correctly, but not when
-allocating after that. The fix is simple - use nla_total_size() for
-data_len when allocating.
+Em Tue, Nov 26, 2019 at 07:10:18PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Tue, Nov 26, 2019 at 02:05:41PM -0800, Andrii Nakryiko escreveu:
+> > On Tue, Nov 26, 2019 at 11:12 AM Arnaldo Carvalho de Melo
+> > <arnaldo.melo@gmail.com> wrote:
+> > >
+> > > Em Tue, Nov 26, 2019 at 07:50:44PM +0100, Toke Høiland-Jørgensen escreveu:
+> > > > Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> writes:
+> > > >
+> > > > > Em Tue, Nov 26, 2019 at 05:38:18PM +0100, Toke Høiland-Jørgensen escreveu:
+> > > > >> Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com> writes:
+> > > > >>
+> > > > >> > Em Tue, Nov 26, 2019 at 12:10:45PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > > > >> >> Hi guys,
+> > > > >> >>
+> > > > >> >>    While merging perf/core with mainline I found the problem below for
+> > > > >> >> which I'm adding this patch to my perf/core branch, that soon will go
+> > > > >> >> Ingo's way, etc. Please let me know if you think this should be handled
+> > > > >> >> some other way,
+> > > > >> >
+> > > > >> > This is still not enough, fails building in a container where all we
+> > > > >> > have is the tarball contents, will try to fix later.
+> > > > >>
+> > > > >> Wouldn't the right thing to do not be to just run the script, and then
+> > > > >> put the generated bpf_helper_defs.h into the tarball?
+> > >
+> > > > > I would rather continue just running tar and have the build process
+> > > > > in-tree or outside be the same.
+> > > >
+> > > > Hmm, right. Well that Python script basically just parses
+> > > > include/uapi/linux/bpf.h; and it can be given the path of that file with
+> > > > the --filename argument. So as long as that file is present, it should
+> > > > be possible to make it work, I guess?
+> > >
+> > > > However, isn't the point of the tarball to make a "stand-alone" source
+> > > > distribution?
+> > >
+> > > Yes, it is, and as far as possible without any prep, just include the
+> > > in-source tree files needed to build it.
+> > >
+> > > > I'd argue that it makes more sense to just include the
+> > > > generated header, then: The point of the Python script is specifically
+> > > > to extract the latest version of the helper definitions from the kernel
+> > > > source tree. And if you're "freezing" a version into a tarball, doesn't
+> > > > it make more sense to also freeze the list of BPF helpers?
+> > >
+> > > Your suggestion may well even be the only solution, as older systems
+> > > don't have python3, and that script requires it :-\
+> > >
+> > > Some containers were showing this:
+> > >
+> > > /bin/sh: 1: /git/linux/scripts/bpf_helpers_doc.py: not found
+> > > Makefile:184: recipe for target 'bpf_helper_defs.h' failed
+> > > make[3]: *** [bpf_helper_defs.h] Error 127
+> > > make[3]: *** Deleting file 'bpf_helper_defs.h'
+> > > Makefile.perf:778: recipe for target '/tmp/build/perf/libbpf.a' failed
+> > >
+> > > That "not found" doesn't mean what it looks from staring at the above,
+> > > its just that:
+> > >
+> > > nobody@1fb841e33ba3:/tmp/perf-5.4.0$ head -1 /tmp/perf-5.4.0/scripts/bpf_helpers_doc.py
+> > > #!/usr/bin/python3
+> > > nobody@1fb841e33ba3:/tmp/perf-5.4.0$ ls -la /usr/bin/python3
+> > > ls: cannot access /usr/bin/python3: No such file or directory
+> > > nobody@1fb841e33ba3:/tmp/perf-5.4.0$
+> > >
+> > > So, for now, I'll keep my fix and start modifying the containers where
+> > > this fails and disable testing libbpf/perf integration with BPF on those
+> > > containers :-\
+> > 
+> > I don't think there is anything Python3-specific in that script. I
+> > changed first line to
+> > 
+> > #!/usr/bin/env python
+> > 
+> > and it worked just fine. Do you mind adding this fix and make those
+> > older containers happy(-ier?).
+> 
+> I'll try it, was trying the other way around, i.e. adding python3 to
+> those containers and they got happier, but fatter, so I'll remove that
+> and try your way, thanks!
+> 
+> I didn't try it that way due to what comes right after the interpreter
+> line:
+> 
+> #!/usr/bin/python3
+> # SPDX-License-Identifier: GPL-2.0-only
+> #
+> # Copyright (C) 2018-2019 Netronome Systems, Inc.
+> 
+> # In case user attempts to run with Python 2.
+> from __future__ import print_function
 
-To reproduce:
- $ tc qdisc add dev eth1 clsact
- $ tc filter add dev eth1 egress matchall action sample rate 1 group 1 trunc 129
- $ mausezahn eth1 -b bcast -a rand -c 1 -p 129
- < skb_over_panic BUG(), tail is 4 bytes past skb->end >
+And that is why I think you got it working, that script uses things
+like:
 
-[1] Trace:
- [   50.459526][ T3480] skbuff: skb_over_panic: text:(____ptrval____) len:196 put:136 head:(____ptrval____) data:(____ptrval____) tail:0xc4 end:0xc0 dev:<NULL>
- [   50.474339][ T3480] ------------[ cut here ]------------
- [   50.481132][ T3480] kernel BUG at net/core/skbuff.c:108!
- [   50.486059][ T3480] invalid opcode: 0000 [#1] PREEMPT SMP
- [   50.489463][ T3480] CPU: 3 PID: 3480 Comm: mausezahn Not tainted 5.4.0-rc7 #108
- [   50.492844][ T3480] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-2.fc30 04/01/2014
- [   50.496551][ T3480] RIP: 0010:skb_panic+0x79/0x7b
- [   50.498261][ T3480] Code: bc 00 00 00 41 57 4c 89 e6 48 c7 c7 90 29 9a 83 4c 8b 8b c0 00 00 00 50 8b 83 b8 00 00 00 50 ff b3 c8 00 00 00 e8 ae ef c0 fe <0f> 0b e8 2f df c8 fe 48 8b 55 08 44 89 f6 4c 89 e7 48 c7 c1 a0 22
- [   50.504111][ T3480] RSP: 0018:ffffc90000447a10 EFLAGS: 00010282
- [   50.505835][ T3480] RAX: 0000000000000087 RBX: ffff888039317d00 RCX: 0000000000000000
- [   50.507900][ T3480] RDX: 0000000000000000 RSI: ffffffff812716e1 RDI: 00000000ffffffff
- [   50.509820][ T3480] RBP: ffffc90000447a60 R08: 0000000000000001 R09: 0000000000000000
- [   50.511735][ T3480] R10: ffffffff81d4f940 R11: 0000000000000000 R12: ffffffff834a22b0
- [   50.513494][ T3480] R13: ffffffff82c10433 R14: 0000000000000088 R15: ffffffff838a8084
- [   50.515222][ T3480] FS:  00007f3536462700(0000) GS:ffff88803eac0000(0000) knlGS:0000000000000000
- [   50.517135][ T3480] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- [   50.518583][ T3480] CR2: 0000000000442008 CR3: 000000003b222000 CR4: 00000000000006e0
- [   50.520723][ T3480] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- [   50.522709][ T3480] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- [   50.524450][ T3480] Call Trace:
- [   50.525214][ T3480]  skb_put.cold+0x1b/0x1b
- [   50.526171][ T3480]  psample_sample_packet+0x1d3/0x340
- [   50.527307][ T3480]  tcf_sample_act+0x178/0x250
- [   50.528339][ T3480]  tcf_action_exec+0xb1/0x190
- [   50.529354][ T3480]  mall_classify+0x67/0x90
- [   50.530332][ T3480]  tcf_classify+0x72/0x160
- [   50.531286][ T3480]  __dev_queue_xmit+0x3db/0xd50
- [   50.532327][ T3480]  dev_queue_xmit+0x18/0x20
- [   50.533299][ T3480]  packet_sendmsg+0xee7/0x2090
- [   50.534331][ T3480]  sock_sendmsg+0x54/0x70
- [   50.535271][ T3480]  __sys_sendto+0x148/0x1f0
- [   50.536252][ T3480]  ? tomoyo_file_ioctl+0x23/0x30
- [   50.537334][ T3480]  ? ksys_ioctl+0x5e/0xb0
- [   50.540068][ T3480]  __x64_sys_sendto+0x2a/0x30
- [   50.542810][ T3480]  do_syscall_64+0x73/0x1f0
- [   50.545383][ T3480]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
- [   50.548477][ T3480] RIP: 0033:0x7f35357d6fb3
- [   50.551020][ T3480] Code: 48 8b 0d 18 90 20 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d f9 d3 20 00 00 75 13 49 89 ca b8 2c 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 34 c3 48 83 ec 08 e8 eb f6 ff ff 48 89 04 24
- [   50.558547][ T3480] RSP: 002b:00007ffe0c7212c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
- [   50.561870][ T3480] RAX: ffffffffffffffda RBX: 0000000001dac010 RCX: 00007f35357d6fb3
- [   50.565142][ T3480] RDX: 0000000000000082 RSI: 0000000001dac2a2 RDI: 0000000000000003
- [   50.568469][ T3480] RBP: 00007ffe0c7212f0 R08: 00007ffe0c7212d0 R09: 0000000000000014
- [   50.571731][ T3480] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000082
- [   50.574961][ T3480] R13: 0000000001dac2a2 R14: 0000000000000001 R15: 0000000000000003
- [   50.578170][ T3480] Modules linked in: sch_ingress virtio_net
- [   50.580976][ T3480] ---[ end trace 61a515626a595af6 ]---
+        print('Parsed description of %d helper function(s)' % len(self.helpers),
+              file=sys.stderr)
 
-CC: Yotam Gigi <yotamg@mellanox.com>
-CC: Jiri Pirko <jiri@mellanox.com>
-CC: Jamal Hadi Salim <jhs@mojatatu.com>
-CC: Simon Horman <simon.horman@netronome.com>
-CC: Roopa Prabhu <roopa@cumulusnetworks.com>
-Fixes: 6ae0a6286171 ("net: Introduce psample, a new genetlink channel for packet sampling")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/psample/psample.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That python2 thinks its science fiction, what tuple is that? Can't
+understand, print isn't a function back then.
 
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index a6ceb0533b5b..6f2fbc6b9eb2 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -229,7 +229,7 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
- 		data_len = PSAMPLE_MAX_PACKET_SIZE - meta_len - NLA_HDRLEN
- 			    - NLA_ALIGNTO;
- 
--	nl_skb = genlmsg_new(meta_len + data_len, GFP_ATOMIC);
-+	nl_skb = genlmsg_new(meta_len + nla_total_size(data_len), GFP_ATOMIC);
- 	if (unlikely(!nl_skb))
- 		return;
- 
--- 
-2.21.0
+https://sebastianraschka.com/Articles/2014_python_2_3_key_diff.html#the-print-function
 
+I've been adding python3  to where it is available and not yet in the
+container images, most are working after that, some don't need because
+they need other packages for BPF to work and those are not available, so
+nevermind, lets have just the fix I provided, I'll add python3 and life
+goes on.
+
+- Arnaldo
