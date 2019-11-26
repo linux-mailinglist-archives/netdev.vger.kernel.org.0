@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E862C10A5E3
-	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 22:19:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE5B610A5E5
+	for <lists+netdev@lfdr.de>; Tue, 26 Nov 2019 22:21:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726299AbfKZVTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 16:19:46 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42446 "EHLO
+        id S1726987AbfKZVU6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 26 Nov 2019 16:20:58 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42460 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbfKZVTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 16:19:46 -0500
+        with ESMTP id S1726033AbfKZVU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 16:20:58 -0500
 Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D9EF914CED4B3;
-        Tue, 26 Nov 2019 13:19:45 -0800 (PST)
-Date:   Tue, 26 Nov 2019 13:19:45 -0800 (PST)
-Message-Id: <20191126.131945.1705488455872187863.davem@davemloft.net>
-To:     tlfalcon@linux.ibm.com
-Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
-        linuxppc-dev@ozlabs.org, dnbanerg@us.ibm.com,
-        brking@linux.vnet.ibm.com, julietk@linux.vnet.ibm.com
-Subject: Re: [PATCH net v2 0/4] ibmvnic: Harden device commands and queries
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 848CE14CEE321;
+        Tue, 26 Nov 2019 13:20:57 -0800 (PST)
+Date:   Tue, 26 Nov 2019 13:20:57 -0800 (PST)
+Message-Id: <20191126.132057.498166931431808469.davem@davemloft.net>
+To:     zenczykowski@gmail.com
+Cc:     maze@google.com, netdev@vger.kernel.org, edumazet@google.com
+Subject: Re: [PATCH v2] net: port < inet_prot_sock(net) -->
+ inet_port_requires_bind_service(net, port)
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1574723576-27553-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <20191125112359.7a468352@cakuba.hsd1.ca.comcast.net>
-        <1574723576-27553-1-git-send-email-tlfalcon@linux.ibm.com>
+In-Reply-To: <20191125233704.186202-1-zenczykowski@gmail.com>
+References: <CAHo-OoxYDpcpT+nZgYw7hkUY2wi+iRdtqR97xL_ALeC6h+aiKQ@mail.gmail.com>
+        <20191125233704.186202-1-zenczykowski@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 26 Nov 2019 13:19:46 -0800 (PST)
+Content-Type: Text/Plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 26 Nov 2019 13:20:57 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
-Date: Mon, 25 Nov 2019 17:12:52 -0600
+From: Maciej ¯enczykowski <zenczykowski@gmail.com>
+Date: Mon, 25 Nov 2019 15:37:04 -0800
 
-> This patch series fixes some shortcomings with the current
-> VNIC device command implementation. The first patch fixes
-> the initialization of driver completion structures used
-> for device commands. Additionally, all waits for device
-> commands are bounded with a timeout in the event that the
-> device does not respond or becomes inoperable. Finally,
-> serialize queries to retain the integrity of device return
-> codes.
+> From: Maciej ¯enczykowski <maze@google.com>
 > 
-> Changes in v2:
+> Note that the sysctl write accessor functions guarantee that:
+>   net->ipv4.sysctl_ip_prot_sock <= net->ipv4.ip_local_ports.range[0]
+> invariant is maintained, and as such the max() in selinux hooks is actually spurious.
 > 
->  - included header comment for ibmvnic_wait_for_completion
->  - removed open-coded loop in patch 3/4, suggested by Jakub
->  - ibmvnic_wait_for_completion accepts timeout value in milliseconds
->    instead of jiffies
->  - timeout calculations cleaned up and completed before wait loop
->  - included missing mutex_destroy calls, suggested by Jakub
->  - included comment before mutex declaration
+> ie. even though
+>   if (snum < max(inet_prot_sock(sock_net(sk)), low) || snum > high) {
+> per logic is the same as
+>   if ((snum < inet_prot_sock(sock_net(sk)) && snum < low) || snum > high) {
+> it is actually functionally equivalent to:
+>   if (snum < low || snum > high) {
+> which is equivalent to:
+>   if (snum < inet_prot_sock(sock_net(sk)) || snum < low || snum > high) {
+> even though the first clause is spurious.
+> 
+> But we want to hold on to it in case we ever want to change what what
+> inet_port_requires_bind_service() means (for example by changing
+> it from a, by default, [0..1024) range to some sort of set).
+> 
+> Test: builds, git 'grep inet_prot_sock' finds no other references
+> Cc: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Maciej ¯enczykowski <maze@google.com>
 
-Series applied, thanks.
+Applied, thanks.
