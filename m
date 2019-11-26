@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 552C410A71F
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 00:33:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1419B10A726
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 00:36:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfKZXdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 18:33:17 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40028 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfKZXdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 18:33:17 -0500
-Received: by mail-wm1-f67.google.com with SMTP id y5so5338258wmi.5
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 15:33:15 -0800 (PST)
+        id S1726983AbfKZXgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Nov 2019 18:36:36 -0500
+Received: from mail-yw1-f74.google.com ([209.85.161.74]:43878 "EHLO
+        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726593AbfKZXgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 18:36:36 -0500
+Received: by mail-yw1-f74.google.com with SMTP id u83so10008374ywa.10
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 15:36:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Tiwj4UiwaPcuuH8COeSuJeqnUeyz7Jn2pw/GZPc6fL4=;
-        b=vWXHJloVmk7tQPZFwd6jrmdM2Ed4T99C5truYI5thaUBfORgLouTv02or4gzYrECc8
-         Nue/zFtLXxT6onxDK9zYn7JFxiYIq726fWixOlPzXugVSjgEGI9d9dEgqGGvwEh02RIu
-         sPDKtWEyDZ14eKwqvDSm9/2Csq5pZbefFZewrG7vMXM1X8XQi2wclDK6UoVp514pZCKJ
-         /fsaDxlxJHrcVSE3a5UcVVGH3xFXqhVShGMk0zqsPHvGQg+09DbqRpuuDG1xxvs6D3tS
-         85zVYyLTocgaK2WmG6heWsCxcJGp2G/yG1je2ceOP2G7jyFFaLIV/SX0GQhI6gfKCQ0X
-         x/vg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Zm9/jmWxyezRzr+0cjPMmBrtXsDQkZdqZAqanFNVBxQ=;
+        b=g60NPDEmG7PO/E7ly7ls+MouEUigmY/9BRE+t4pYSYimBEzoq26jLMFgaUfWIEpw7e
+         qLYigJ4cdlBx//QE5QlAEVuUWvJWOFmgVprbpSuKlJSNILen2ltX1B8mms5qFyNpPDuG
+         4qGL45Coave6IOWPRCRjq7jrwWT7tIelo5RWEvOPwK9EGr9ymn6fjeycjgQdfWggBOw6
+         bJ5XzrRTdaebevKzrv9RbXWeT0YqS3d0ucwVT/LYnPzJsiADVnzLJUGxSnLkrEQu+uxl
+         pBdpJCmsRDwAYxEK0n59MXVrvOY9KdxlM0DgJd1Rc2KcbsUbV8h+fIQvrHtENFAgA9iq
+         gLrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Tiwj4UiwaPcuuH8COeSuJeqnUeyz7Jn2pw/GZPc6fL4=;
-        b=m1pXZk1WqfNaDutmmlhJCpzK56wfQJ2AoSdrKZm1U+et7B0Z/UjY8g5urGRgr6n6Qz
-         H5xrQr7f1irsFHlQtudOiiW6muxFoqsNXsQmxGWaEbxrsFGqsQY2BWON0/dHBrerPzei
-         WLlmUKO1EEP7NQ4HtmVgaH1JwpLR5uuQUy29giz5fYmdar5pqhPLOlBgioCu/apCHKW7
-         /kAJrgtcNePUuLFJi5fW0AJyB1zb2Z5ii9ODnMCZj0k+n07OSgItmIJrCI1Oh73tAXuX
-         psX74zJt6gxIABCp6r4KE96SdzyCOtFCnJQt+ILfnlLBun+I+05Ezg+zOE4dIvTGMpRY
-         Kr/Q==
-X-Gm-Message-State: APjAAAXdjgSJK1FSX28pLwAmVxFdwf+ZtXiGPJvZi2iVv1Q1cKQ80BRZ
-        6E+NDS15WDt89OrmHYKhejxXX50F8weFrPpb
-X-Google-Smtp-Source: APXvYqxth5t4bxB+UOHOViPbPSMb4lLs6d6v1krRhyrgNz7cs9gaNUEWqld0s6p6AvMml1+pM8D/yw==
-X-Received: by 2002:a1c:3c86:: with SMTP id j128mr1306812wma.137.1574811194139;
-        Tue, 26 Nov 2019 15:33:14 -0800 (PST)
-Received: from [10.10.9.42] ([195.65.134.34])
-        by smtp.gmail.com with ESMTPSA id d18sm17833106wrm.85.2019.11.26.15.33.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 26 Nov 2019 15:33:13 -0800 (PST)
-Subject: Re: [PATCH v2] net: ip/tnl: Set iph->id only when don't fragment is
- not set
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     yoshfuji@linux-ipv6.org, kuznet@ms2.inr.ac.ru,
-        netdev@vger.kernel.org
-References: <20191124132418.GA13864@fuckup>
- <20191125.144139.1331751213975518867.davem@davemloft.net>
- <4e964168-2c83-24bb-8e44-f5f47555e589@gmail.com>
- <10e81a17-6b38-3cfa-8bd2-04ff43a30541@gmail.com>
-From:   Oliver Herms <oliver.peter.herms@gmail.com>
-Message-ID: <a78cf0a6-3170-bb5f-4626-11c22f438646@gmail.com>
-Date:   Wed, 27 Nov 2019 00:32:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <10e81a17-6b38-3cfa-8bd2-04ff43a30541@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Zm9/jmWxyezRzr+0cjPMmBrtXsDQkZdqZAqanFNVBxQ=;
+        b=kBz57R/lr3DHtNxjBBfPSfx9mYmlWEFh244zpdvhVifq632vIM6GFkn64yRWZ5bJr7
+         bQITwmgzr+n1qsEYGctOTffi8DizZvs3ashIFoap+4el6zwAImhlqVybDMqTmRKtcPBM
+         CIyNQaZi0RoKYqyDr3T4mcLK0LERtANjuBkJ/V0hOx3GkNHk++2dUC3vwYDMPoCbUy2+
+         oTHKHgO3ps3/82hwrI92DFhKqh+Ucpr5rDGidozBFHdUvB99pBfqTSYDD4Pfaa1YAASM
+         8bhiVIiSt+EUXmsAf+D2OGmSSO1c7hVHQJ+V0/NljpuDg42TF7Hsdy9Ph526fqNpeR+K
+         77Tw==
+X-Gm-Message-State: APjAAAXEBd5oqOQjW6BEjAr5ATTWeReKTiBKRxiq4F3742iU+rRWcG6j
+        zuOob7PWFxHnzVrc7XsfLRhE8+bjnIwrqA1Qofrz9xgchT31ZCBwX/Ah9UaCI6atnoGZeo9V7FW
+        sz8ajt0OKU5A65Okml149tmhD7/3N2VqVnOeCJS3tgY0QX4iPEvNuWbDdGuem0hk4N5A=
+X-Google-Smtp-Source: APXvYqzuSBFLPa8x7WaNi+D7lGqdyXPkpIFV0MXY29mYNtA/KotvbaSetdUWr5PkfBowOYnH2jNR+3EJXmTBvw==
+X-Received: by 2002:a0d:cb90:: with SMTP id n138mr939038ywd.245.1574811394927;
+ Tue, 26 Nov 2019 15:36:34 -0800 (PST)
+Date:   Tue, 26 Nov 2019 15:36:19 -0800
+Message-Id: <20191126233619.235892-1-jeroendb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH net] gve: Fix the queue page list allocated pages count
+From:   Jeroen de Borst <jeroendb@google.com>
+To:     netdev@vger.kernel.org
+Cc:     Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+In gve_alloc_queue_page_list(), when a page allocation fails,
+qpl->num_entries will be wrong.  In this case priv->num_registered_pages
+can underflow in gve_free_queue_page_list(), causing subsequent calls
+to gve_alloc_queue_page_list() to fail.
 
-On 26.11.19 23:45, Eric Dumazet wrote:
-> 
-> 
-> On 11/26/19 11:10 AM, Oliver Herms wrote:
->>
->> What do you think about making this configurable via sysctl and make the current
->> behavior the default? I would also like to make this configurable for other 
->> payload types like TCP and UDP. IMHO there the ID is unnecessary, too, when DF is set.
->>
-> 
-> Certainly not.
-> 
-> I advise you to look at GRO layer (at various stages, depending on linux version)
-> 
-> You can not 'optimize [1]' the sender and break receivers ( including old ones )
-> 
-> [1] Look at ip_select_ident_segs() : the per-socket id generator makes
-> ID generation quite low cost, there is no real issue here.
-> 
+Fixes: f5cedc84a30d ("gve: Add transmit and receive support")
+Signed-off-by: Jeroen de Borst <jeroendb@google.com>
+Reviewed-by: Catherine Sullivan <csully@google.com>
+---
+ drivers/net/ethernet/google/gve/gve_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-ip_select_ident_segs() is not the issue. The issue is with __ip_select_ident
-that calls ip_idents_reserve. That consumes significant amount of CPU time here
-while not adding any value (for my use case of company internal IPIP tunneling 
-in a well defined environment to be fair).
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index aca95f64bde8..9b7a8db9860f 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -544,7 +544,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
+ 	}
+ 
+ 	qpl->id = id;
+-	qpl->num_entries = pages;
++	qpl->num_entries = 0;
+ 	qpl->pages = kvzalloc(pages * sizeof(*qpl->pages), GFP_KERNEL);
+ 	/* caller handles clean up */
+ 	if (!qpl->pages)
+@@ -562,6 +562,7 @@ static int gve_alloc_queue_page_list(struct gve_priv *priv, u32 id,
+ 		/* caller handles clean up */
+ 		if (err)
+ 			return -ENOMEM;
++		qpl->num_entries++;
+ 	}
+ 	priv->num_registered_pages += pages;
+ 
+-- 
+2.24.0.432.g9d3f5f5b63-goog
 
-Here is a flame graph: https://tinyurl.com/s9qv9fx
-I'm curious for ideas on how to make this more efficient.
-Using a simple incrementation here, as with sockets, would solve my problem well enough.
-
-Thoughts?
-
-Thanks
-Oliver
