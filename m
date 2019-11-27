@@ -2,147 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F2510B437
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FD810B452
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:22:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727139AbfK0RPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 12:15:34 -0500
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:42345 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726510AbfK0RPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 12:15:34 -0500
-Received: by mail-qk1-f171.google.com with SMTP id i3so20159858qkk.9
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 09:15:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=f4ldvuOmO63uCRz3a1twSBGoWeqGzd9rk6Fux24jGxc=;
-        b=mGrCyX8HZwO2xVG+z524Lw1l5msHDYREM1POwD020U8F8Dm3BIJ/1uHFVKbF7mK87+
-         nPCnmMYPpNdLPs+1K8gM4On5VTvizON+qWD45g9+y6hJxP1392BXGBll77wMuzlYDhL2
-         GyNafbzc3h+kDBbgk6Xeh0fY3XkmSOTG6tazU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=f4ldvuOmO63uCRz3a1twSBGoWeqGzd9rk6Fux24jGxc=;
-        b=Tw+PywR5WEO1ilCSI+oUlQ2qAogO30+94XQkdKZ8+xkbVEzcrXfBrW+vaBelXq63o8
-         6uX2dSi70ZE2IIuGgwfj4SL2ewWzT8GcZHNhnMXtN1IWe0MdjoKL/Dd47kM1jBsM7479
-         UKgLqd72AZp0AlM5nFwAeZtAG9ttT04yiOTWajIlBCsiyrFWuY4h8tWhsLE6b5fQdx55
-         X9iwR2BUDfqlSWnGe1nWEuV9atFJV8lV1QUPmf2VEN1urXqmsZKz2TIrJpF+LS3+NpF5
-         E3YCpznyHX2LZyd/QdqNRdO9RdnddoBQnp8fVlpr8Dw41+YVJY0Uts/J5etUaw+1QHAG
-         IocQ==
-X-Gm-Message-State: APjAAAU9lFuv4lAELBdrTwZKP4mTYN5fZ1x1KIR9W30uBcqCDKSBDY4t
-        PIdxJCrGS82PB/2kOxVcNAOnouD4RuKnvcPUeSEvVg==
-X-Google-Smtp-Source: APXvYqxlRZGyFKrx1+sRlxNu/un8jTcmX3nkXdTlj/ZeO/yLhvb34vQRcD7EhWDGOhIHWKgvDXpHxO3u6OGc7fc+CC0=
-X-Received: by 2002:a37:ae05:: with SMTP id x5mr5384026qke.243.1574874932684;
- Wed, 27 Nov 2019 09:15:32 -0800 (PST)
+        id S1727142AbfK0RWW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 12:22:22 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:45039 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727107AbfK0RWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 12:22:22 -0500
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1ia113-0002Tf-7w; Wed, 27 Nov 2019 18:22:13 +0100
+Date:   Wed, 27 Nov 2019 18:22:13 +0100
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH net 2/2] net: gro: Let the timeout timer expire in
+ softirq context with `threadirqs'
+Message-ID: <20191127172213.unwma3k7z2xicnkg@linutronix.de>
+References: <20191126222013.1904785-1-bigeasy@linutronix.de>
+ <20191126222013.1904785-3-bigeasy@linutronix.de>
+ <CANn89iJtCwB=RdYnAYXU-uZvv=gHJgYD=dcfhohuLi_Qjfv6Ag@mail.gmail.com>
+ <20191127093521.6achiubslhv7u46c@linutronix.de>
+ <CANn89iL=q2wwjdSj1=veBE0hDATm_K=akKhz3Dyddnk28DRJhg@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAJPywTJzpZAXGdgZLJ+y7G2JoQMyd_JG+G8kgG+xruVVmZD-OA@mail.gmail.com>
- <CANP3RGfAT199GyqWC7Wbr2983jO1vaJ1YJBSSXtFJmGJaY+wiQ@mail.gmail.com> <CANP3RGfLkxodi=SB3KuS+Vhv==Akb0Ep16qNkXd+h4x23PaG=Q@mail.gmail.com>
-In-Reply-To: <CANP3RGfLkxodi=SB3KuS+Vhv==Akb0Ep16qNkXd+h4x23PaG=Q@mail.gmail.com>
-From:   Marek Majkowski <marek@cloudflare.com>
-Date:   Wed, 27 Nov 2019 18:15:21 +0100
-Message-ID: <CAJPywTJv=pFK2dFcHRsZPR89DQVbQX8J6OAcSkZk5MkOP43kvQ@mail.gmail.com>
-Subject: Re: Delayed source port allocation for connected UDP sockets
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        network dev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <CANn89iL=q2wwjdSj1=veBE0hDATm_K=akKhz3Dyddnk28DRJhg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There may be a valid socket underneath. Consider socket() followed by bind(=
-):
-
-udp UNCONN *:* 0.0.0.0:1703  -> master
-udp UNCONN *:* 192.0.2.1:1703 -> worker
-
-Them after connect() is done, the socket will move to ESTAB:
-
-udp UNCONN *:* 0.0.0.0:1703  -> master
-udp ESTAB 198.18.0.1:58910 192.0.2.1:1703 -> worker
-
-I want to avoid this race. For this brief moment now I have two UNCONN
-sockets. I don't want that. I want other sources to be routed to the
-wildcard address. I', thinking that IP_BIND_ADDRESS_NO_PORT should be
-basically a request for delayed binding. For me it makes sense to
-delay the actual binding to the connect().
-
-Marek
-
-On Wed, Nov 27, 2019 at 5:19 PM Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
->
-> On Wed, Nov 27, 2019 at 8:09 AM Maciej =C5=BBenczykowski <maze@google.com=
-> wrote:
+On 2019-11-27 08:15:52 [-0800], Eric Dumazet wrote:
+> > One CPU, 2 NICs:
 > >
-> > On Wed, Nov 27, 2019 at 6:08 AM Marek Majkowski <marek@cloudflare.com> =
-wrote:
-> > >
-> > > Morning,
-> > >
-> > > In my applications I need something like a connectx()[1] syscall. On
-> > > Linux I can get quite far with using bind-before-connect and
-> > > IP_BIND_ADDRESS_NO_PORT. One corner case is missing though.
-> > >
-> > > For various UDP applications I'm establishing connected sockets from
-> > > specific 2-tuple. This is working fine with bind-before-connect, but
-> > > in UDP it creates a slight race condition. It's possible the socket
-> > > will receive packet from arbitrary source after bind():
-> > >
-> > > s =3D socket(SOCK_DGRAM)
-> > > s.bind((192.0.2.1, 1703))
-> > > # here be dragons
-> > > s.connect((198.18.0.1, 58910))
-> > >
-> > > For the short amount of time after bind() and before connect(), the
-> > > socket may receive packets from any peer. For situations when I don't
-> > > need to specify source port, IP_BIND_ADDRESS_NO_PORT flag solves the
-> > > issue. This code is fine:
-> > >
-> > > s =3D socket(SOCK_DGRAM)
-> > > s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
-> > > s.bind((192.0.2.1, 0))
-> > > s.connect((198.18.0.1, 58910))
-> > >
-> > > But the IP_BIND_ADDRESS_NO_PORT doesn't work when the source port is
-> > > selected. It seems natural to expand the scope of
-> > > IP_BIND_ADDRESS_NO_PORT flag. Perhaps this could be made to work:
-> > >
-> > > s =3D socket(SOCK_DGRAM)
-> > > s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
-> > > s.bind((192.0.2.1, 1703))
-> > > s.connect((198.18.0.1, 58910))
-> > >
-> > > I would like such code to delay the binding to port 1703 up until the
-> > > connect(). IP_BIND_ADDRESS_NO_PORT only makes sense for connected
-> > > sockets anyway. This raises a couple of questions though:
-> > >
-> > >  - IP_BIND_ADDRESS_NO_PORT name is confusing - we specify the port
-> > > number in the bind!
-> > >
-> > >  - Where to store the source port in __inet_bind. Neither
-> > > inet->inet_sport nor inet->inet_num seem like correct places to store
-> > > the user-passed source port hint. The alternative is to introduce
-> > > yet-another field onto inet_sock struct, but that is wasteful.
-> > >
-> > > Suggestions?
-> > >
-> > > Marek
-> > >
-> > > [1] https://www.unix.com/man-page/mojave/2/connectx/
+> >     threaded_IRQ of NIC1                     hard-irq context, hrtimer
+> >        local_bh_disable()
+> >          nic_irq_handler()
+> >           if (napi_schedule_prep())
+> >             __napi_schedule_irqoff()
 > >
-> > attack BPF socket filter drop all, then bind, then connect, then replac=
-e it.
->
-> Although I guess perhaps you'd consider dropping the packets to be bad...=
-?
-> Then I think you might be able to do the same trick with
-> SO_BINDTODEVICE("dummy0") instead of bpf and then SO_BINDTODEVICE("")
-> That unfortunately requires privs though.
+> 
+> And _which_ driver would call this variant without being sure hard irq are
+> disabled ?
+
+->
+|$ git grep __napi_schedule_irqoff drivers/net/
+
+returns for instance drivers/net/ethernet/rdc/r6040.c. It invokes
+r6040_interrupt() from the hardirq handler. Everything is correct.
+
+> Hard irq handlers are supposed to run with hard irq being disabled.
+
+This is the case except for…
+
+> Who decided that this was no longer the case ?
+
+the system was bootet with the `threadirqs' on command line.
+
+> This conflicts with hrtimer being delivered from hard irq context, this is
+> the root cause of the problem.
+
+correct. That is why moved them softirq context if the system is booted
+with `threadirqs'.
+
+> You are telling us napi_schedule_irqoff() should never be used, because we
+> do not know if hard irqs are masked or not.
+
+If interrupts are forced-threaded, correct. From kernel/irq/manage.c,
+irq_forced_thread_fn() is used as the "handler" in this case:
+| /*
+|  * Interrupts which are not explicitly requested as threaded
+|  * interrupts rely on the implicit bh/preempt disable of the hard irq
+|  * context. So we need to disable bh here to avoid deadlocks and other
+|  * side effects.
+|  */
+| static irqreturn_t
+| irq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)
+| {
+|         irqreturn_t ret;
+| 
+|         local_bh_disable();
+|         ret = action->thread_fn(action->irq, action->dev_id);
+|         if (ret == IRQ_HANDLED)
+|                 atomic_inc(&desc->threads_handled);
+| 
+|         irq_finalize_oneshot(desc, action);
+|         local_bh_enable();
+|         return ret;
+| }
+
+> Honestly this is a nightmare, we can not trust anymore stuff that has been
+> settled 20 years ago.
+
+This changes only if the `threadirqs' command line switch has been used.
+We didn't have threaded interrupts 20 years ago.
+Also, if the hrtimer was already expired at the time of programming then
+the hrtimer used to fire in softirq context until commit
+    c6eb3f70d4482 ("hrtimer: Get rid of hrtimer softirq")
+
+This could happen if you program the timer to 50ns instead of 50us in
+case you missed a few zeros in your echo to the sysfs file.
+
+> If you want to get rid of hard irq completely, make all handlers being run
+> from threaded_IRQ,
+> not only a subset of them ?
+
+`threadirqs' threads only IRQ handlers. All of them. The hrtimers
+infrastructure is not affected by this change. Also smp_function call
+and irqwork continue to fire in hardirq context. Also the direct
+interrupts vectors as used by the HyperV driver is not affected by this
+switch but I think it should. 
+
+> > I'm not aware of an other problems of this kind.
+> > Most drivers do spin_lock_irqsave() and in that case in does not matter
+> > if the interrupt is threaded or not vs the hrtimer callback. Which means
+> > they do not assume that the IRQ handler runs with interrupts disabled.
+> >
+> 
+> Most NIC drivers simply raises a softirq.
+
+Yes. For those it does not matter because they use __napi_schedule()
+which disables interrupts.
+
+> > The timeout timers are usually timer_list timer which run in softirq
+> > context and since the force-IRQ-thread runs also with disabled softirq
+> > it is fine using just spin_lock().
+> >
+> > If you don't want this here maybe tglx can add some hrtimer annotation.
+> >
+> 
+> I only want to understand how many other points in the stack we have to
+> audit and ' fix' ...
+Okay. Looking now over all hrtimer in net/ look good, most of them
+expire in softirq context. Looking at drivers/net they also look fine.
+They acquire spin_lock_irqsave() within the driver, schedule a tasklet
+or wake a net queue.
+
+Sebastian
