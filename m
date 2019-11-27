@@ -2,120 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E588D10B763
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 21:24:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1AF10B76C
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 21:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727227AbfK0UYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 15:24:32 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:33253 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbfK0UYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 15:24:31 -0500
-Received: by mail-qk1-f193.google.com with SMTP id c124so16321692qkg.0;
-        Wed, 27 Nov 2019 12:24:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SgUjfcTX/7GXiJyA43XWcDT1cnpp+UReYglDGXWdON0=;
-        b=ry4rBZW57I0rDcZPHlpUxh07oaqemIldRXSpEpydrz1a8HsqWcYY3RDBzAfxHIE0li
-         tcjDwokDv7Hkc+QS8z/+oFDxLi+xJOySIZCDAKNnvJUtwg4jO5TM7+Ryv02mpVtdcU9m
-         cI4h+TQ7kZrSClQ+sFeMZ4iLyPDnoddczRTeWVKHAUNOIirnVO65605Fc9g91jLqrdgZ
-         ewlII6VuCVDJbelP/tmPSC8Cn5L7Y/u+JiA6+9h1g9KYsZ8j1NoW2xxG9309BNMgVQjp
-         YK9wWhGms9yLP0FOEVVlkGikR2tzyf+u94ZQEYmx6W26aaPpZEWgYfvwFL8EzfC5k5JV
-         oV6A==
+        id S1727113AbfK0Uca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 15:32:30 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22446 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726716AbfK0Uca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 15:32:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1574886749;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zH/T5jU4tH/8Gb+1qmuFB+rSdeHGBSoJ0BA6rM2mcnc=;
+        b=S1ekSSoONW6WJ38wUMM7o0k/VTEavatvgWPE/oNWWSnrxmz+I8CqgKLZP24neXT74HScJG
+        UrrAddVG7awCIO+vxSQB82T1uFxagtnd7Y4Kr743RqkaS24UxO+uNdCUQb8WLcwu2HzD2k
+        28BTKeztYyKCBEU0aqbVYBX5tUN4A7g=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-317-kz4BgrnIOPyu8xS1apbq_w-1; Wed, 27 Nov 2019 15:32:25 -0500
+Received: by mail-qt1-f198.google.com with SMTP id f14so15576389qto.2
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 12:32:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SgUjfcTX/7GXiJyA43XWcDT1cnpp+UReYglDGXWdON0=;
-        b=ISna9d7ygYhX69i1+DK5WMRNV5h9iTYfIUjaeaVSnxF+/3woYnPpICenk4cFIv5TBS
-         1fq+Lb43W1WEQJ/p+W0l6S7syivtYNVoD1tekRaK47whP6wSG2eN7HtnCym7n/zj1Gh6
-         mFDqKfBUsDuZg4A4b1iW/fz/ThjiXvc+bvTd7hfOG3/bMxkk2Xh1XLrno+L3x1JzKSfL
-         HqjDGcwGZphJ7IXj3Et31QpBxgqXVQkGcXLii6Zx+NVItewLnbFoUF1Xo3rvjF5Yiipe
-         zp+h4cqFhdrC0b3aVoLIiNILvx5jgZ2N00VXVg6Y40mcTRfB0joeyQIfmHYrgJGMZ6N+
-         6k+g==
-X-Gm-Message-State: APjAAAURE0wcGeyDN7eG0oszG8ifuTZ0ehUzCRdsCDkqDiVcsqpNkHgA
-        Dxjw+G0oz4XudYQse4ZGNQ7E/foKtpqPUXEoGZA=
-X-Google-Smtp-Source: APXvYqzQ3j5bso0l8WXxfmVDikzFct/L8BmxkhKEItQRWdWLvVEkAIp77SzQbhi7jl/QGFbYaLlAkssUVwfkaIlONCc=
-X-Received: by 2002:a05:620a:12b2:: with SMTP id x18mr6519127qki.437.1574886270399;
- Wed, 27 Nov 2019 12:24:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20191127094837.4045-1-jolsa@kernel.org> <CAADnVQLp2VTi9JhtfkLOR9Y1ipNFObOGH9DQe5zbKxz77juhqA@mail.gmail.com>
-In-Reply-To: <CAADnVQLp2VTi9JhtfkLOR9Y1ipNFObOGH9DQe5zbKxz77juhqA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Nov 2019 12:24:19 -0800
-Message-ID: <CAEf4BzaDxnF0Ppfo5r5ma3ht033bWjQ78oiBzB=F40_Np=AKhw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] perf/bpftool: Allow to link libbpf dynamically
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7MY+sx+Nuv189evu6jc/7Ff6+j+qSUxD3qsuDjudl3E=;
+        b=o07Ku7ylapJvWVzQyTsvDVgFRcNdPba57iwnoJWEOPbcc9GzvniQEhyVaTQjM/yPyo
+         gJp5vot22kM9Hfjenrhaj6VvYED5vPkYmTniaMWahOHVqZPzdlRumlaAZKoZGrGIT9tf
+         OyFg13VPpe0PVMP/Nntn1DVQrO6GlpkqvIUr794fiXJ8u4ApUGs58WHqyQxxBVGU/qpf
+         +F5820KLenmnaaQG+4WUQLJE9zUVRC2WbKXAz/fOrHEjODIdVmwAmEGVjaAVmBlxsEDl
+         k/xmg0LeQTw/74nTnz5K79Ok2zueMGVCaihtu3BUkECJbgqV2+a34kfTS7o0vWL+lkjU
+         PUtg==
+X-Gm-Message-State: APjAAAXctSv5Zn+15N2ZmoZ89HHw/S5tdy1M6vOFYrzxa7lTMj87CycO
+        SeH1EGE2WqFpS1fRZ5Q5lyAHbjZUdDvm/Yz/NSQatBIgIfVWxiae8vDMQsEd/OllG9Vis6UWAD1
+        0U9nIF8kBqu0AyugG
+X-Received: by 2002:ad4:55e8:: with SMTP id bu8mr3198574qvb.61.1574886745490;
+        Wed, 27 Nov 2019 12:32:25 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzOaXOFxvrAACGTJt/FeYHy85AqcOBKnTlQND1DqS/Jm+RE0uTl1tA+4+iDEbGw4t6w2fwm7A==
+X-Received: by 2002:ad4:55e8:: with SMTP id bu8mr3198538qvb.61.1574886745141;
+        Wed, 27 Nov 2019 12:32:25 -0800 (PST)
+Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
+        by smtp.gmail.com with ESMTPSA id o70sm7418083qke.47.2019.11.27.12.32.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 12:32:24 -0800 (PST)
+Date:   Wed, 27 Nov 2019 15:32:17 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        qemu-devel@nongnu.org, kvm@vger.kernel.org
+Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
+Message-ID: <20191127152653-mutt-send-email-mst@kernel.org>
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+ <20191126123514.3bdf6d6f@cakuba.netronome.com>
+MIME-Version: 1.0
+In-Reply-To: <20191126123514.3bdf6d6f@cakuba.netronome.com>
+X-MC-Unique: kz4BgrnIOPyu8xS1apbq_w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 8:38 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Nov 27, 2019 at 1:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > hi,
-> > adding support to link bpftool with libbpf dynamically,
-> > and config change for perf.
-> >
-> > It's now possible to use:
-> >   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1
-> >
-> > which will detect libbpf devel package with needed version,
-> > and if found, link it with bpftool.
-> >
-> > It's possible to use arbitrary installed libbpf:
-> >   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/libbpf/
-> >
-> > I based this change on top of Arnaldo's perf/core, because
-> > it contains libbpf feature detection code as dependency.
-> > It's now also synced with latest bpf-next, so Toke's change
-> > applies correctly.
->
-> I don't like it.
-> Especially Toke's patch to expose netlink as public and stable libbpf api.
-> bpftools needs to stay tightly coupled with libbpf (and statically
-> linked for that reason).
-> Otherwise libbpf will grow a ton of public api that would have to be stable
-> and will quickly become a burden.
+On Tue, Nov 26, 2019 at 12:35:14PM -0800, Jakub Kicinski wrote:
+> On Tue, 26 Nov 2019 19:07:26 +0900, Prashant Bhole wrote:
+> > Note: This RFC has been sent to netdev as well as qemu-devel lists
+> >=20
+> > This series introduces XDP offloading from virtio_net. It is based on
+> > the following work by Jason Wang:
+> > https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
+> >=20
+> > Current XDP performance in virtio-net is far from what we can achieve
+> > on host. Several major factors cause the difference:
+> > - Cost of virtualization
+> > - Cost of virtio (populating virtqueue and context switching)
+> > - Cost of vhost, it needs more optimization
+> > - Cost of data copy
+> > Because of above reasons there is a need of offloading XDP program to
+> > host. This set is an attempt to implement XDP offload from the guest.
+>=20
+> This turns the guest kernel into a uAPI proxy.
+>=20
+> BPF uAPI calls related to the "offloaded" BPF objects are forwarded=20
+> to the hypervisor, they pop up in QEMU which makes the requested call
+> to the hypervisor kernel. Today it's the Linux kernel tomorrow it may=20
+> be someone's proprietary "SmartNIC" implementation.
+>=20
+> Why can't those calls be forwarded at the higher layer? Why do they
+> have to go through the guest kernel?
 
-I second that. I'm currently working on adding few more APIs that I'd
-like to keep unstable for a while, until we have enough real-world
-usage (and feedback) accumulated, before we stabilize them. With
-LIBBPF_API and a promise of stable API, we are going to over-stress
-and over-design APIs, potentially making them either too generic and
-bloated, or too limited (and thus become deprecated almost at
-inception time). I'd like to take that pressure off for a super-new
-and in flux APIs and not hamper the progress.
+Well everyone is writing these programs and attaching them to NICs.
 
-I'm thinking of splitting off those non-stable, sort-of-internal APIs
-into separate libbpf-experimental.h (or whatever name makes sense),
-and let those be used only by tools like bpftool, which are only ever
-statically link against libbpf and are ok with occasional changes to
-those APIs (which we'll obviously fix in bpftool as well). Pahole
-seems like another candidate that fits this bill and we might expose
-some stuff early on to it, if it provides tangible benefits (e.g., BTF
-dedup speeds ups, etc).
+For better or worse that's how userspace is written.
 
-Then as APIs mature, we might decide to move them into libbpf.h with
-LIBBPF_API slapped onto them. Any objections?
+Yes, in the simple case where everything is passed through, it could
+instead be passed through some other channel just as well, but then
+userspace would need significant changes just to make it work with
+virtio.
+
+
+
+> If kernel performs no significant work (or "adds value", pardon the
+> expression), and problem can easily be solved otherwise we shouldn't=20
+> do the work of maintaining the mechanism.
+>=20
+> The approach of kernel generating actual machine code which is then
+> loaded into a sandbox on the hypervisor/SmartNIC is another story.
+
+But that's transparent to guest userspace. Making userspace care whether
+it's a SmartNIC or a software device breaks part of virtualization's
+appeal, which is that it looks like a hardware box to the guest.
+
+> I'd appreciate if others could chime in.
+
