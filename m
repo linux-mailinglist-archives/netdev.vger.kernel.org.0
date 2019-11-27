@@ -2,18 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B38510AF6D
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7E410AF72
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbfK0MQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 07:16:51 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:8778 "EHLO
+        id S1726947AbfK0MRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 07:17:25 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:9244 "EHLO
         m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbfK0MQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:16:51 -0500
+        with ESMTP id S1726383AbfK0MRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:17:25 -0500
 Received: from [192.168.1.7] (unknown [180.157.109.16])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 9592C418FA;
-        Wed, 27 Nov 2019 20:16:41 +0800 (CST)
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 1B89441E8D;
+        Wed, 27 Nov 2019 20:16:59 +0800 (CST)
+From:   wenxu <wenxu@ucloud.cn>
 Subject: Re: Question about flow table offload in mlx5e
 To:     Paul Blakey <paulb@mellanox.com>
 Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
@@ -31,21 +32,20 @@ References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
  <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
  <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
  <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <d55c7e4d-ac4b-f9cf-0c08-8b22c1af9155@ucloud.cn>
-Date:   Wed, 27 Nov 2019 20:16:20 +0800
+Message-ID: <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
+Date:   Wed, 27 Nov 2019 20:16:38 +0800
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.1
 MIME-Version: 1.0
 In-Reply-To: <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk1VQ0JJS0tLTUxOSUtKT0lZV1koWU
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk5VQk5KS0tLTUJLT01LSUpZV1koWU
         FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MC46Eio*Ezg9EwwDQgpNFjVD
-        UUNPCkpVSlVKTkxPQ05MS0tJSU9KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSktCVUpNWVdZCAFZQUlOSE1CNwY+
-X-HM-Tid: 0a6eaccacb0c2086kuqy9592c418fa
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MzY6Txw4UTg1DwxMQgtMFikQ
+        CE4wCjZVSlVKTkxPQ05MS0pCTkhKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktCVUpNWVdZCAFZQUlOSE1DNwY+
+X-HM-Tid: 0a6eaccb0f6d2086kuqy1b89441e8d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -81,7 +81,7 @@ iperf -c 10.0.1.241  -i 2  -B 10.0.0.75:5002  -t 10
 
 The script above can offload the syn packets, The packet can't be captured on mlx_pf0vf0.
 
-I think the rule is ok.  The problem is that if I add another rule in device tun1 as following.
+I think the rule is ok.  The problem is that if I add another rule in device tun1 as following
 It will lead the syn packet can't be offloaded
 
 tc filter add dev tun1 pref 2 ingress  protocol ip flower ip_proto tcp src_ip
