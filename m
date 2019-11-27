@@ -2,85 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC81610B076
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB26F10B08B
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726655AbfK0NmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 08:42:10 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46646 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfK0NmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:42:09 -0500
-Received: by mail-wr1-f67.google.com with SMTP id z7so23300177wrl.13
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 05:42:08 -0800 (PST)
+        id S1727051AbfK0NqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 08:46:00 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39853 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbfK0NqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:46:00 -0500
+Received: by mail-pg1-f193.google.com with SMTP id b137so8542688pga.6;
+        Wed, 27 Nov 2019 05:45:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=W7yIQV6V/bf7sevm1SN3yW0+czPNbmjKsDOahvQWvVM=;
-        b=Dj65gfvoHl7ClGX7UV3NEqc1b+dX5ch0KKZMWpF4li3ZIjQIx49GLUHMhwyborQGPe
-         Fs+Ug/x8/pwg1Wct5wvdTMjWD5Ds8DR3I1bXxMjjDG2bMarzidzEeXluj7hVEzzH1cCb
-         fB+oGse7Qk6AHmnQh0wv8xPHuY1xSs5nV7gKnyEp1bqL9u7EKuTT/fvdQXZIAf7yWpOi
-         ZqQ4dCVo/NLVzdPy9DEFDJvyikzLm/mDoBeOucD1sgxRFL8s2eupijgJHLNEWUXo1UjZ
-         S2PQfwvSinK+yRgPHX4OrrRdk1emQxju579fGF27+eBkRawilnfHdXdwEqO5UvXBnaf/
-         hf4Q==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=vERrabrkgnxjnqX37A97qe7ZrBqlXA28PjfJM9OLHEs=;
+        b=vhDKKtQVYa3uip6zJLAtdyym54VzS7Sz3TDkyaSZUFFl5hi9nWz6QzzYE8u6jkR32Y
+         myj890qYqUsJX79AIl3LKV4oLNaP477NtxC7V+dNWLL1uuCBzGEqMtaof+giXgg9Tavg
+         NrdfO6FnRRgL2W6OTd66GktIBvTYvl3mCrqKVKy0YWXejGLmoPjsFmEatgYTfr+xL1gr
+         MoRbC8y4/P29OUsENhxLXESjLWjLvEnnZjD+Rla9QVO68H/dLZcM4rBwMFFK0yJRgwf3
+         9Psm/nytw4EM1Re/JT/6N+lBrAx/CxZaVc5T8L5D4O7suSxJGHdW8d7yM5ZMz+sG8G0M
+         xXeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=W7yIQV6V/bf7sevm1SN3yW0+czPNbmjKsDOahvQWvVM=;
-        b=RXAu8hbvvpvWQOeUi1jAF4n1xhZeav/5WiJygi8t3rg5YG17GVOIZ5kmmNd9kOvdzQ
-         sSeI2m9oeuYBDu+My6r+IMXT+Rl7bp+AS9DbWWyuO3BCyfScGJJ5SaBkaZpaWAd3SvVR
-         /Y2/Do2KEDK7sgbOmT4VVRRLGRcDd01rmZdB7pH/XMAuvxuSO1zMMlfktc/BOkZfe/iN
-         /twauqgqxFRroQGyaBF043GJfo3VsT6i8wgezNIaQnr0jE/p58xagVWIfo3OS5aLU6Sx
-         7YAZODLyLQ7dx/LSS4hdPWuhKB/SZJh8hV+X1bkNk2F1M4xwyfJtl9tH6xj/4HMXoQVB
-         52/w==
-X-Gm-Message-State: APjAAAVeKUqSFtgoTOsLUxlSjdBNqSzykFQ7QDG4wkkgci7887cYofkc
-        2YfjcxkVy5XQ9Fmn6BDuTf4ujkEiEss=
-X-Google-Smtp-Source: APXvYqwtS3mo6gGIDL4ibCbiPyfFDjdeGMXvoa4pTYx6YUYjZ3vTZYolWhy19tRyi+OINwDRsgIwvA==
-X-Received: by 2002:adf:ab4c:: with SMTP id r12mr41816087wrc.3.1574862127846;
-        Wed, 27 Nov 2019 05:42:07 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id w10sm6602596wmd.26.2019.11.27.05.42.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 05:42:07 -0800 (PST)
-Date:   Wed, 27 Nov 2019 14:42:05 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Koukal Petr <p.koukal@radiokomunikace.cz>
-Cc:     netdev@vger.kernel.org
-Subject: Re: compat/devlink/mode is not present after installing
- linux-generic-hwe-18.04-edge
-Message-ID: <20191127134205.GA2137@nanopsycho>
-References: <10ad0e50-5753-cd42-e26d-d635a263084e@radiokomunikace.cz>
- <f9619b66-da85-a1e3-941d-dadde39718fc@radiokomunikace.cz>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=vERrabrkgnxjnqX37A97qe7ZrBqlXA28PjfJM9OLHEs=;
+        b=Rl8UOdSflk3lqz6s0MrGzxOElRQw1EOeWlw14XnwqVFb2TX18129IFB6RSDXYm+aFG
+         5iQXpUTsJYv8bZwgQm4nF5r0EFFNUrxsgxirZMIJ3dHH+OMwciph0rrvfBUo78kg1QP5
+         NVNkHFbFTtLHmlrsjW6NS0ZHoT9uWrzl9yuNHrvUIMXDpdKYzza8drUZcAJkcErY5Cyo
+         xTtMGZw7BI+N6yl24U26E2WmYl7YgfEmp/SLV7uDeJ3ira2untY2kdc96Un1iso9oaGs
+         UMdKtNOXjdOpU5DKaZxJQygHtlFocX3oO62GlpvmSdJ3ByZ8mlvRO/RBV8ZHw6hQlaqV
+         HDqA==
+X-Gm-Message-State: APjAAAWxKHR6XinzaaAyBOm4KWW2sKnyuGNeFmtKPV8xKcnN2UjzV7VQ
+        GCgTS3spvlLp0CVyYLlIpyk=
+X-Google-Smtp-Source: APXvYqxW18iovg6dNYrWZseSM/kB1zPWk7S6zPWhKn7TTU+vLpJWFXlK/ZNf5Wz7oAxx/5gxXb9iXg==
+X-Received: by 2002:a05:6a00:10:: with SMTP id h16mr49317604pfk.27.1574862359419;
+        Wed, 27 Nov 2019 05:45:59 -0800 (PST)
+Received: from nishad ([106.51.232.103])
+        by smtp.gmail.com with ESMTPSA id p5sm16813534pgj.63.2019.11.27.05.45.56
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 27 Nov 2019 05:45:58 -0800 (PST)
+Date:   Wed, 27 Nov 2019 19:15:52 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: aqc111: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20191127134548.GA29603@nishad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f9619b66-da85-a1e3-941d-dadde39718fc@radiokomunikace.cz>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 27, 2019 at 01:29:20PM CET, p.koukal@radiokomunikace.cz wrote:
->Hi,
->
->compat/devlink/mode is not present after installing
->linux-generic-hwe-18.04-edge
->
->After installing linux-generic-hwe-18.04-edge
->cannot set "switchdev" for vif interface when configuring asap2 SRIOV
->networking.
->
->Previously, /sys/class/net/{device}/compat/devlink/mode was available.
+This patch corrects the SPDX License Identifier style in
+header files related to drivers for USB Network devices.
+This patch gives an explicit block comment to the
+SPDX License Identifier.
 
-Hmm, this smells terribly like some out-of-tree thing. Are you sure you
-didn't send this to a wrong mailing list?
+Changes made by using a script provided by Joe Perches here:
+https://lkml.org/lkml/2019/2/7/46.
 
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+ drivers/net/usb/aqc111.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->
->
->Thank you very much for your help.
->Petr
->
+diff --git a/drivers/net/usb/aqc111.h b/drivers/net/usb/aqc111.h
+index 4d68b3a6067c..b562db4da337 100644
+--- a/drivers/net/usb/aqc111.h
++++ b/drivers/net/usb/aqc111.h
+@@ -1,5 +1,5 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later
+- * Aquantia Corp. Aquantia AQtion USB to 5GbE Controller
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* Aquantia Corp. Aquantia AQtion USB to 5GbE Controller
+  * Copyright (C) 2003-2005 David Hollis <dhollis@davehollis.com>
+  * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
+  * Copyright (C) 2002-2003 TiVo Inc.
+-- 
+2.17.1
+
