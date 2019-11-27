@@ -2,126 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF40910AD0A
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:59:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 456E810AD03
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfK0J7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 04:59:06 -0500
-Received: from first.geanix.com ([116.203.34.67]:40484 "EHLO first.geanix.com"
+        id S1726603AbfK0J6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:58:41 -0500
+Received: from mga18.intel.com ([134.134.136.126]:44617 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726227AbfK0J7G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 04:59:06 -0500
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 77787932E2;
-        Wed, 27 Nov 2019 09:55:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1574848519; bh=550yh0WqHSwAJsBZEPoNt0ZuxTL9MA4Pwlz0992BOXE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=WTsZlUP2lWiAV9RUJtjShma22mtGWV3DYx/De4zeZx+w0dSOxt7ewoQIGv4rb5e7Z
-         cONYh2wSlTKjTn28AaoLSp0kCtqCAIuurl12UFoN8OtOrIsWF7FvfEMlo77O+yU0lK
-         tVfiZjeMizR5jSSAp7Ch+wLbx5Cowv0jQzTKPccESrHF9YstlrX5jqWOHHU4Fp3XIn
-         x4evgqnEYmZjjJ5dZ6Heus+Clh0aU2nJeMsnjERLdwxJ+amb27y10nee0M9yooDau7
-         7fQSD4D0LUSG80Q9wElQDZYcPk3Ls+Cx5osQXqLRIguIMyDrMiZS7e7ciGri/7oyOY
-         5QZXJ1D7DnHng==
-Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
- stage
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-3-qiangqing.zhang@nxp.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <5fe4918e-2ec1-0b88-1f02-3c2d39c99e07@geanix.com>
-Date:   Wed, 27 Nov 2019 10:58:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726227AbfK0J6k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 04:58:40 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Nov 2019 01:58:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,249,1571727600"; 
+   d="scan'208";a="206849762"
+Received: from slehanex-mobl1.ger.corp.intel.com ([10.252.10.177])
+  by fmsmga007.fm.intel.com with ESMTP; 27 Nov 2019 01:58:34 -0800
+Message-ID: <7a9332bf645fbb8c9fff634a3640c092fb9b4b79.camel@intel.com>
+Subject: Re: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL
+ packet stalling
+From:   Luciano Coelho <luciano.coelho@intel.com>
+To:     Alexander Lobakin <alobakin@dlink.ru>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
+        "Kenneth R. Crudup" <kenny@panix.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 27 Nov 2019 11:58:33 +0200
+In-Reply-To: <20191127094123.18161-1-alobakin@dlink.ru>
+References: <20191127094123.18161-1-alobakin@dlink.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1-2+b1 
 MIME-Version: 1.0
-In-Reply-To: <20191127055334.1476-3-qiangqing.zhang@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on b0d531b295e6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 27/11/2019 06.56, Joakim Zhang wrote:
-> CAN controller could be stucked in stop mode once it enters stop mode
-> when suspend, and then it fails to exit stop mode when resume. Only code
-> reset can get CAN out of stop mode, so add stop mode remove request
-> during probe stage for other methods(soft reset from chip level,
-> unbind/bind driver, etc) to let CAN active again. MCR[LPMACK] will be
-> checked when enable CAN in register_flexcandev().
+On Wed, 2019-11-27 at 12:41 +0300, Alexander Lobakin wrote:
+> Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
+> napi_gro_receive()") has applied batched GRO_NORMAL packets processing
+> to all napi_gro_receive() users, including mac80211-based drivers.
 > 
-> Suggested-by: Sean Nyekjaer <sean@geanix.com>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
-> ------
-> ChangeLog:
-> 	V1->V2: new add.
+> However, this change has led to a regression in iwlwifi driver [1][2] as
+> it is required for NAPI users to call napi_complete_done() or
+> napi_complete() and the end of every polling iteration, whilst iwlwifi
+> doesn't use NAPI scheduling at all and just calls napi_gro_flush().
+> In that particular case, packets which have not been already flushed
+> from napi->rx_list stall in it until at least next Rx cycle.
+> 
+> Fix this by adding a manual flushing of the list to iwlwifi driver right
+> before napi_gro_flush() call to mimic napi_complete() logics.
+> 
+> I prefer to open-code gro_normal_list() rather than exporting it for 2
+> reasons:
+> * to prevent from using it and napi_gro_flush() in any new drivers,
+>   as it is the *really* bad way to use NAPI that should be avoided;
+> * to keep gro_normal_list() static and don't lose any CC optimizations.
+> 
+> I also don't add the "Fixes:" tag as the mentioned commit was only a
+> trigger that only exposed an improper usage of NAPI in this particular
+> driver.
+> 
+> [1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+> [2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
+> 
+> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 > ---
->   drivers/net/can/flexcan.c | 28 ++++++++++++++++++++++------
->   1 file changed, 22 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 2297663cacb2..5d5ed28d3005 100644
-> --- a/drivers/net/can/flexcan.c
-> +++ b/drivers/net/can/flexcan.c
-> @@ -449,6 +449,13 @@ static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
->   	return 0;
->   }
->   
-> +static void flexcan_try_exit_stop_mode(struct flexcan_priv *priv)
-> +{
-> +	/* remove stop request */
-> +	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> +			   1 << priv->stm.req_bit, 0);
-> +}
-> +
->   static inline void flexcan_error_irq_enable(const struct flexcan_priv *priv)
->   {
->   	struct flexcan_regs __iomem *regs = priv->regs;
-> @@ -1649,6 +1656,21 @@ static int flexcan_probe(struct platform_device *pdev)
->   	priv->devtype_data = devtype_data;
->   	priv->reg_xceiver = reg_xceiver;
->   
-> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
-> +		err = flexcan_setup_stop_mode(pdev);
-> +		if (err)
-> +			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
-> +
-> +		/* CAN controller could be stucked in stop mode once it enters
-> +		 * stop mode when suspend, and then it fails to exit stop
-> +		 * mode when resume. Only code reset can get CAN out of stop
-> +		 * mode, so add stop mode remove request here for other methods
-> +		 * (soft reset, bind, etc) to let CAN active again. MCR[LPMACK]
-> +		 * will be checked when enable CAN in register_flexcandev().
-> +		 */
-> +		flexcan_try_exit_stop_mode(priv);
-> +	}
-> +
->   	pm_runtime_get_noresume(&pdev->dev);
->   	pm_runtime_set_active(&pdev->dev);
->   	pm_runtime_enable(&pdev->dev);
-> @@ -1661,12 +1683,6 @@ static int flexcan_probe(struct platform_device *pdev)
->   
->   	devm_can_led_init(dev);
->   
-> -	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
-> -		err = flexcan_setup_stop_mode(pdev);
-> -		if (err)
-> -			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
-> -	}
-> -
->   	return 0;
->   
->    failed_register:
-> 
+
+We don't usually use "net: wireless: intel:" in the commit message, we
+would use "iwlwifi: pcie:", but I don't care much.
+
+Otherwise:
+
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
+
+Thanks a lot for the fix!
+
+Dave, I'm assuming you'll take this directly into your tree, right?
+
+--
+Cheers,
+Luca.
+
