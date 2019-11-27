@@ -2,227 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C9610C01F
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 23:18:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D88210C022
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 23:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727405AbfK0WSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 17:18:48 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:46359 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727033AbfK0WSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 17:18:48 -0500
-Received: by mail-lj1-f194.google.com with SMTP id e9so26173403ljp.13
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 14:18:46 -0800 (PST)
+        id S1727280AbfK0WVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 17:21:49 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:46422 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727033AbfK0WVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 17:21:49 -0500
+Received: by mail-qt1-f193.google.com with SMTP id r20so26951621qtp.13;
+        Wed, 27 Nov 2019 14:21:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=N9i7/kwHmsdrnsrzzGmT/NdLJq4ITCoOrsN4artmsBY=;
-        b=Bt/1HKc6XEWiIz7FBmNJDCcEnGwSXYEJ9am4LLxnV2p7SK/x/wSvJ/aqBY++jpyWf3
-         Oy0HtUYpY7L8yfS5MDmw6bRueTp5yT6Li9mUj0V/ezfOsaQsA5DqeVCyWaPKjhC2rvbp
-         rHuXthQWuBrEiRzUALXkEBHhDje5lOtdt49X4=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=otxiMd0l6riNdSE7OSItmdvrSBc8N+W+v/4nkIlyazQ=;
+        b=RQP5pXqwzoUtskHrYAlwr97uAnCC7oisEf/vhz6/+mD8Anotr29Jmbcp1OsIe69Tuw
+         0A07pM9BToSi1HQ9CxaWvtHPrghDyMPuemOfZhM2321xX9KmeiVxgiSnjUQIBsLeRS4o
+         R9zvEDph33VWXPQAgQ4LGvSjFr4epgCXz2F2PJuCxiJnRYBb10J8fD2mPSzpKza4punW
+         KbLTS5b3XmLY2fhyyoBCxBSo0g3mhVqKolxzp1FUvnnCSMNNR99KoyiIv14Y9OINZM7S
+         89OBRM3zJh807xtlqHssY5KwD+AZu1k/hOks+ORgzTRPddjl7piKvJVo9wVFBsy2e3FC
+         pKHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=N9i7/kwHmsdrnsrzzGmT/NdLJq4ITCoOrsN4artmsBY=;
-        b=h9Ub7GqcGYAaveqeXr9hWl6l6hjnxnZVUXCYIwPT90xvdahfOSV1bCQk8t7n2ugpdL
-         pj9tX+IaPl8llNBsQSHToyoxAvNFqCWTL4aoJ3StoPxQHZeYEMYo3FupI2L2wnxPUnax
-         c6TSteWGN3CU82ljxXLVJN2PBKucaJ5MUwNeMOpSC8tAy1ai6sNkfnAi4QZSdKvFElwp
-         7vKl0rKjvdKUTAoQWrHAiPT6FeblsPiBteJcWd4xb6r9YGtyLQqMRD4lk4kwo0gSREBQ
-         Q9uKik8Z6sUq0UdCXkeQ/4/5nZulYpDZbLdkknuEKZHkvlv3sO/36X6z1OwZyqWd7Y/9
-         40MQ==
-X-Gm-Message-State: APjAAAUjSdQ17HOp5Mr0ekPrMfY3bYyjp4e4ewtsbLKIwjIlHf1p6CLl
-        YghXVyqR7z/PzqGMo3lOR0MICA==
-X-Google-Smtp-Source: APXvYqyW4l1cfzSiRkZcX/xmBe/xfLz6fj346OmuRkwEaBF7jXnfLOe99jcJQkGiGtv777yDnhD9iw==
-X-Received: by 2002:a2e:8518:: with SMTP id j24mr29755410lji.13.1574893125662;
-        Wed, 27 Nov 2019 14:18:45 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id d4sm7455587lfi.32.2019.11.27.14.18.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 14:18:45 -0800 (PST)
-References: <20191123110751.6729-1-jakub@cloudflare.com> <20191123110751.6729-5-jakub@cloudflare.com> <20191125223845.6t6xoqcwcqxuqbdf@kafai-mbp> <87ftiaocp2.fsf@cloudflare.com> <20191126171607.pzrg5qhbavh7enwh@kafai-mbp.dhcp.thefacebook.com> <5ddd7266c36aa_671a2b0b882605c04a@john-XPS-13-9370.notmuch>
-User-agent: mu4e 1.1.0; emacs 26.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Martin Lau <kafai@fb.com>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf, sockmap: Don't let child socket inherit psock or its ops on copy
-In-reply-to: <5ddd7266c36aa_671a2b0b882605c04a@john-XPS-13-9370.notmuch>
-Date:   Wed, 27 Nov 2019 23:18:44 +0100
-Message-ID: <87a78hnet7.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=otxiMd0l6riNdSE7OSItmdvrSBc8N+W+v/4nkIlyazQ=;
+        b=VjQ/9UrivBSw+tUuaHjexuzNHGhWbAip6WKw5wuh7Q6hSLpFvoyIdPj7yOq1xbz9A7
+         bD+C/WdoxTD8hV2WmSeX+mlkc/HPQrSow9dgKnHmpFvOxu8MnNcL8JdY4bjPP2eI5sZD
+         srmXDsJ1DWAF2FEKqLwsFm3tatjf9mscsRO+RhW1ZHfoPzFYPT0GFt3V2HwP5OXQ4vKE
+         99g/6BhrvD+V6uSnANS86dSIjvcCFggM0ZP6jCsWTH9oLZVIkDFQXut0QIVwaKOE8WUz
+         FP0vT7GF9xDgJD0/UJZCVZ/Rb085AsX7tCxi+NH4/dpzmQVrLW1rJz40GZ3EKKB7M0MT
+         GjeQ==
+X-Gm-Message-State: APjAAAUrcWZdQhIgRkOLK1z6qDuc2wNVSetAo2fB9LfZ6wsvMeriP+wo
+        +OrYGY4AoJc/hxPuvbIAedNaZC39o0YOCXEHKsk=
+X-Google-Smtp-Source: APXvYqy0F9gnB7YBK+zsp8V0IkP9CmjbBRcRUX0suieWlH88wWb+/2l2kHHjCnezybi9Y5JCjvlUe8cugNRtcIy1mP0=
+X-Received: by 2002:ac8:2b86:: with SMTP id m6mr10619893qtm.190.1574893307208;
+ Wed, 27 Nov 2019 14:21:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20191127054358.GA59549@LGEARND20B15> <46dfe877-4f32-b763-429f-7af3a83828f0@cogentembedded.com>
+ <CADLLry4jOr1S7YhdN5saRCXSnjTt_J=TB+sm=CjbcW9NJ4V7Pg@mail.gmail.com> <0101016ead12c253-18d4624e-98eb-4252-ba3a-fabf74d831f2-000000@us-west-2.amazonses.com>
+In-Reply-To: <0101016ead12c253-18d4624e-98eb-4252-ba3a-fabf74d831f2-000000@us-west-2.amazonses.com>
+From:   Austin Kim <austindh.kim@gmail.com>
+Date:   Thu, 28 Nov 2019 07:21:40 +0900
+Message-ID: <CADLLry7Dcdz9bcfK2BQY3UcYVEL7z+cYqMjab916B8fkfDqHFA@mail.gmail.com>
+Subject: Re: [PATCH] brcmsmac: Remove always false 'channel < 0' statement
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
+        wright.feng@cypress.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 26, 2019 at 07:43 PM CET, John Fastabend wrote:
-> Martin Lau wrote:
->> On Tue, Nov 26, 2019 at 04:54:33PM +0100, Jakub Sitnicki wrote:
->> > On Mon, Nov 25, 2019 at 11:38 PM CET, Martin Lau wrote:
->> > > On Sat, Nov 23, 2019 at 12:07:47PM +0100, Jakub Sitnicki wrote:
->> > > [ ... ]
->> > >
->> > >> @@ -370,6 +378,11 @@ static inline void sk_psock_restore_proto(struct sock *sk,
->> > >>  			sk->sk_prot = psock->sk_proto;
->> > >>  		psock->sk_proto = NULL;
->> > >>  	}
->> > >> +
->> > >> +	if (psock->icsk_af_ops) {
->> > >> +		icsk->icsk_af_ops = psock->icsk_af_ops;
->> > >> +		psock->icsk_af_ops = NULL;
->> > >> +	}
->> > >>  }
->> > >
->> > > [ ... ]
->> > >
->> > >> +static struct sock *tcp_bpf_syn_recv_sock(const struct sock *sk,
->> > >> +					  struct sk_buff *skb,
->> > >> +					  struct request_sock *req,
->> > >> +					  struct dst_entry *dst,
->> > >> +					  struct request_sock *req_unhash,
->> > >> +					  bool *own_req)
->> > >> +{
->> > >> +	const struct inet_connection_sock_af_ops *ops;
->> > >> +	void (*write_space)(struct sock *sk);
->> > >> +	struct sk_psock *psock;
->> > >> +	struct proto *proto;
->> > >> +	struct sock *child;
->> > >> +
->> > >> +	rcu_read_lock();
->> > >> +	psock = sk_psock(sk);
->> > >> +	if (likely(psock)) {
->> > >> +		proto = psock->sk_proto;
->> > >> +		write_space = psock->saved_write_space;
->> > >> +		ops = psock->icsk_af_ops;
->> > > It is not immediately clear to me what ensure
->> > > ops is not NULL here.
->> > >
->> > > It is likely I missed something.  A short comment would
->> > > be very useful here.
->> >
->> > I can see the readability problem. Looking at it now, perhaps it should
->> > be rewritten, to the same effect, as:
->> >
->> > static struct sock *tcp_bpf_syn_recv_sock(...)
->> > {
->> > 	const struct inet_connection_sock_af_ops *ops = NULL;
->> >         ...
->> >
->> >     rcu_read_lock();
->> > 	psock = sk_psock(sk);
->> > 	if (likely(psock)) {
->> > 		proto = psock->sk_proto;
->> > 		write_space = psock->saved_write_space;
->> > 		ops = psock->icsk_af_ops;
->> > 	}
->> > 	rcu_read_unlock();
->> >
->> >         if (!ops)
->> > 		ops = inet_csk(sk)->icsk_af_ops;
->> >         child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
->> >
->> > If psock->icsk_af_ops were NULL, it would mean we haven't initialized it
->> > properly. To double check what happens here:
->> I did not mean the init path.  The init path is fine since it init
->> eveything on psock before publishing the sk to the sock_map.
->>
->> I was thinking the delete path (e.g. sock_map_delete_elem).  It is not clear
->> to me what prevent the earlier pasted sk_psock_restore_proto() which sets
->> psock->icsk_af_ops to NULL from running in parallel with
->> tcp_bpf_syn_recv_sock()?  An explanation would be useful.
->>
+2019=EB=85=84 11=EC=9B=94 27=EC=9D=BC (=EC=88=98) =EC=98=A4=ED=9B=84 10:35,=
+ Kalle Valo <kvalo@codeaurora.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
 >
-> I'll answer. Updates are protected via sk_callback_lock so we don't have
-> parrallel updates in-flight causing write_space and sk_proto to be out
-> of sync. However access should be OK because its a pointer write we
-> never update the pointer in place, e.g.
+> Austin Kim <austindh.kim@gmail.com> writes:
 >
-> static inline void sk_psock_restore_proto(struct sock *sk,
-> 					  struct sk_psock *psock)
-> {
-> +       struct inet_connection_sock *icsk = inet_csk(sk);
-> +
-> 	sk->sk_write_space = psock->saved_write_space;
+> > 2019=EB=85=84 11=EC=9B=94 27=EC=9D=BC (=EC=88=98) =EC=98=A4=ED=9B=84 7:=
+48, Sergei Shtylyov
+> > <sergei.shtylyov@cogentembedded.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=
+=B1:
+> >>
+> >> On 27.11.2019 8:43, Austin Kim wrote:
+> >>
+> >> > As 'channel' is declared as u16, the following statement is always f=
+alse.
+> >> >     channel < 0
+> >> >
+> >> > So we can remove unnecessary 'always false' statement.
+> >>
+> >>     It's an expression, not a statement.
+> >>
+> >
+> > According to below link, it is okay to use 'statement' in above case.
+> > https://en.wikipedia.org/wiki/Statement_(computer_science)
 >
-> 	if (psock->sk_proto) {
-> 		struct inet_connection_sock *icsk = inet_csk(sk);
-> 		bool has_ulp = !!icsk->icsk_ulp_data;
->
-> 		if (has_ulp)
-> 			tcp_update_ulp(sk, psock->sk_proto);
-> 		else
-> 			sk->sk_prot = psock->sk_proto;
-> 		psock->sk_proto = NULL;
-> 	}
->
-> +
-> +       if (psock->icsk_af_ops) {
-> +               icsk->icsk_af_ops = psock->icsk_af_ops;
-> +               psock->icsk_af_ops = NULL;
-> +       }
-> }
->
-> In restore case either psock->icsk_af_ops is null or not. If its
-> null below code catches it. If its not null (from init path) then
-> we have a valid pointer.
->
->         rcu_read_lock();
-> 	psock = sk_psock(sk);
->  	if (likely(psock)) {
->  		proto = psock->sk_proto;
->  		write_space = psock->saved_write_space;
->  		ops = psock->icsk_af_ops;
->  	}
->  	rcu_read_unlock();
->
->         if (!ops)
-> 		ops = inet_csk(sk)->icsk_af_ops;
->         child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
->
->
-> We should do this with proper READ_ONCE/WRITE_ONCE to make it clear
-> what is going on and to stop compiler from breaking these assumptions. I
-> was going to generate that patch after this series but can do it before
-> as well. I didn't mention it here because it seems a bit out of scope
-> for this series because its mostly a fix to older code.
+> I don't have time to start arguing about this, and I'm no C language
+> lawyer either, but all I say is that I agree with Sergei here.
 
-+1, looking forward to your patch. Also, as I've recently learned, that
-should enable KTSAN to reason about the psock code [0].
+Thanks for your opinion.
+I will use 'expression' rather than 'statement' when I upstream
+similar patch later.
 
-> Also I started to think that write_space might be out of sync with ops but
-> it seems we never actually remove psock_write_space until after
-> rcu grace period so that should be OK as well and always point to the
-> previous write_space.
 >
-> Finally I wondered if we could remove the ops and then add it back
-> quickly which seems at least in theory possible, but that would get
-> hit with a grace period because we can't have conflicting psock
-> definitions on the same sock. So expanding the rcu block to include
-> the ops = inet_csk(sk)->icsk_af_ops would fix that case.
+> > Why don't you show your opition about patch rather than commit message?
+>
+> But this comment is not ok. Patch review (including commit logs) is the
+> core principle of upstream development so you need to have an open mind
+> for all comments, even the ones you don't like.
 
-I see, ops = inet_csk(sk)->icsk_af_ops might read out a re-overwritten
-ops after sock_map_unlink, followed by sock_map_link. Ouch.
-
-> So in summary I think we should expand the rcu lock here to include the
-> ops = inet_csk(sk)->icsk_af_ops to ensure we dont race with tear
-> down and create. I'll push the necessary update with WRITE_ONCE and
-> READ_ONCE to fix that up. Seeing we have to wait until the merge
-> window opens most likely anyways I'll send those out sooner rather
-> then later and this series can add the proper annotations as well.
-
-Or I could leave psock->icsk_af_ops set in restore_proto, like we do for
-write_space as you noted. Restoring it twice doesn't seem harmful, it
-has no side-effects. Less state changes to think about?
-
-I'll still have to apply what you suggest for saving psock->sk_proto,
-though.
+Oh! I Agreed.
+If I were you, I would leave similar comment.
 
 Thanks,
-Jakub
+Austin Kim
 
-[0] https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE
+>
+> --
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches
