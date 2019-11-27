@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41DB810AD54
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:12:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6496610AD9F
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfK0KMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 05:12:52 -0500
-Received: from fd.dlink.ru ([178.170.168.18]:50230 "EHLO fd.dlink.ru"
+        id S1727060AbfK0K3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 05:29:18 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:53404 "EHLO fd.dlink.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726194AbfK0KMw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 05:12:52 -0500
+        id S1726149AbfK0K3R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 05:29:17 -0500
 Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 1E90F1B20138; Wed, 27 Nov 2019 13:12:49 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 1E90F1B20138
+        id BB5C21B2120E; Wed, 27 Nov 2019 13:29:13 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru BB5C21B2120E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1574849569; bh=lE5ZjRG9JmDTb+3gD8rd1avjZlPCQcl4MjmyxAXK12o=;
+        t=1574850553; bh=EsvGsnpDTlUlkRudAZRaGscbrq1rpDXrPl2b4VXesCU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=QB9oNjfyB6ZyhhLnx62KtkficOqyPSHP8yIDJwE2LObLbVmXPhskf5KpTlacf5Bs+
-         9v2Tfn0DQvgfZcyr9ZiUUMgsvOlW4VISs7qr+g3lAIfeMasSZb/MzGIaBrW/gPdddk
-         E5HAgR6xE5vgKT+xP05CAUgFN0NmchUGIL6Z6KtQ=
+        b=C8h4I5Jw3GU/gGodtmFJfokOxM+MnPrYiEZvOPpR71NzZllqQbJk9oc8NGhbVJr8Z
+         lcMdvh7BDkng/94rgxrdml69FW+P1g5E3QMiZ3SReLzFvfvGG3Gshrdkqps/s+IFNF
+         V0BcM5VO7ddfkkJ8v8opMOcHx1yMNStorUpx65nw=
 X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
 X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.2
 Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 98EEC1B20153;
-        Wed, 27 Nov 2019 13:12:34 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 98EEC1B20153
+        by fd.dlink.ru (Postfix) with ESMTP id EE0721B2089D;
+        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru EE0721B2089D
 Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 420D21B22678;
-        Wed, 27 Nov 2019 13:12:34 +0300 (MSK)
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 9206C1B22678;
+        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
 Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
         by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Wed, 27 Nov 2019 13:12:34 +0300 (MSK)
+        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8;
  format=flowed
 Content-Transfer-Encoding: 8bit
-Date:   Wed, 27 Nov 2019 13:12:34 +0300
+Date:   Wed, 27 Nov 2019 13:29:03 +0300
 From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Luciano Coelho <luciano.coelho@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+Cc:     Luciano Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Edward Cree <ecree@solarflare.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -57,77 +58,45 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
         Intel Linux Wireless <linuxwifi@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
         "Kenneth R. Crudup" <kenny@panix.com>, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet
  stalling
-In-Reply-To: <7a9332bf645fbb8c9fff634a3640c092fb9b4b79.camel@intel.com>
+In-Reply-To: <PSXP216MB0438B2F163C635F8B8B4AD8AA4440@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
 References: <20191127094123.18161-1-alobakin@dlink.ru>
- <7a9332bf645fbb8c9fff634a3640c092fb9b4b79.camel@intel.com>
+ <7a9332bf645fbb8c9fff634a3640c092fb9b4b79.camel@intel.com>,<c571a88c15c4a70a61cde6ca270af033@dlink.ru>
+ <PSXP216MB0438B2F163C635F8B8B4AD8AA4440@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
 User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <c571a88c15c4a70a61cde6ca270af033@dlink.ru>
+Message-ID: <a638ab877999dbc4ded87bfaebe784f5@dlink.ru>
 X-Sender: alobakin@dlink.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luciano Coelho wrote 27.11.2019 12:58:
-> On Wed, 2019-11-27 at 12:41 +0300, Alexander Lobakin wrote:
->> Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
->> napi_gro_receive()") has applied batched GRO_NORMAL packets processing
->> to all napi_gro_receive() users, including mac80211-based drivers.
->> 
->> However, this change has led to a regression in iwlwifi driver [1][2] 
->> as
->> it is required for NAPI users to call napi_complete_done() or
->> napi_complete() and the end of every polling iteration, whilst iwlwifi
->> doesn't use NAPI scheduling at all and just calls napi_gro_flush().
->> In that particular case, packets which have not been already flushed
->> from napi->rx_list stall in it until at least next Rx cycle.
->> 
->> Fix this by adding a manual flushing of the list to iwlwifi driver 
->> right
->> before napi_gro_flush() call to mimic napi_complete() logics.
->> 
->> I prefer to open-code gro_normal_list() rather than exporting it for 2
->> reasons:
->> * to prevent from using it and napi_gro_flush() in any new drivers,
->>   as it is the *really* bad way to use NAPI that should be avoided;
->> * to keep gro_normal_list() static and don't lose any CC 
->> optimizations.
->> 
->> I also don't add the "Fixes:" tag as the mentioned commit was only a
->> trigger that only exposed an improper usage of NAPI in this particular
->> driver.
->> 
->> [1] 
->> https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
->> [2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
->> 
->> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
->> ---
-> 
-> We don't usually use "net: wireless: intel:" in the commit message, we
-> would use "iwlwifi: pcie:", but I don't care much.
-> 
-> Otherwise:
-> 
-> Acked-by: Luca Coelho <luciano.coelho@intel.com>
+Nicholas Johnson wrote 27.11.2019 13:23:
+> Hi,
 
-Thank you!
+Hi Nicholas,
 
-> Thanks a lot for the fix!
+>  Sorry for top down reply, stuck with my phone. If it replies HTML
+> then I am so done with Outlook client.
 > 
-> Dave, I'm assuming you'll take this directly into your tree, right?
+>  Does my Reported-by tag apply here?
+> 
+>  As the reporter, should I check to see that it indeed solves the
+> issue on the original hardware setup? I can do this within two hours
+> and give Tested-by then.
 
-Also please let me know if I should send v2 with Ack and fixed commit
-subject!
+Oops, I'm sorry I forgot to mention you in the commit message. Let's
+see what Dave will say, I have no problems with waiting for your test
+results and publishing v2.
 
-> --
-> Cheers,
-> Luca.
+>  Thanks
+> 
+>  Regards,
+> 
+>  Nicholas
 
 Regards,
 ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
