@@ -2,120 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0549310B69A
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:20:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2464210B6A0
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727139AbfK0TUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 14:20:07 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34018 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727050AbfK0TUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:20:07 -0500
-Received: by mail-lj1-f193.google.com with SMTP id m6so18342202ljc.1
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 11:20:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SwGlaflyfMYsLmwlIQulRra4gO7xoKJhMixLlAT06bw=;
-        b=AZAWZiB8dXMRGg0cFsUASjG5lSbsTKtRIdf/0fMgaVbiCSwgi01PBTF5/E61UOaLVr
-         p4rG8lUfsLFtLOHVYLySO8tmt+ljDl0Rg6m+k0YSUtpKAnaJv9/UU/poQEYTM4xYlo1s
-         8L2bRuJqICdzJ2QiLVm4ZyQSWhuLkEzvkQdYLfbi1nWh5sCjZxdENgNj1PTwkNFlvopE
-         yuBead4CYQ/dvIPXTEQEMP0scdIu76FpDTSIiWkMMKv2tse3pQU5ISoPbM59pOr86BV2
-         sJg7OM9Honvjigua3I9HfxAgUsfez4l/z4PNexypZactOD/lZQUfQQZNVgh82yJbtx77
-         Gosw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SwGlaflyfMYsLmwlIQulRra4gO7xoKJhMixLlAT06bw=;
-        b=L+l4IsRkIW6pObA8c5UyA+bnJyG1KiEwQcaevhuKKG3KtFe57D9+69xRXs4wWBBBkl
-         7NnXYtG/3ghQ2q+iHnDv+WOA60nvX0yVpx3OIc0pL/G9+RPJlBusa4Iqnr2tfxipcogj
-         IiU87VqQB19z76oqWEpuWio/tOarBJWjfyNTXeIJuduGxAB2UE/Q4TW0SHVgz4W3E1wy
-         gF2JB+YeujsNtUO1Yd3dgUMtswGYBUwi2qPYL+ncHjdDXzblTFBxdwTLsn8xowZ8HBsi
-         D4/1jdr38tN+KvYxRFOMSA5EqsfrDiyCSv9Eg7MWamCMVHoNHxfuyKo7yW3oshcFgR9u
-         N5vg==
-X-Gm-Message-State: APjAAAVMj0uXUcVpjhk3gPjDO7AKpXDwbkt/m3F7MdIR8b5JHcEJVYd8
-        PlWxJ4gEr5q+hjzkCHvRjdwa13DK6tw5Tbyv1QN7VQ==
-X-Google-Smtp-Source: APXvYqzUn71qSDD4hCx3MNN0CeiY/vj0Ix0Iqx1K5PoXiCjYfgoV9VPAcd8hv7FDKyXseTPrU25vj01s2BdnCORJQYI=
-X-Received: by 2002:a05:651c:299:: with SMTP id b25mr32191751ljo.195.1574882405011;
- Wed, 27 Nov 2019 11:20:05 -0800 (PST)
-MIME-Version: 1.0
-References: <CA+G9fYtgEfa=bq5C8yZeF6P563Gw3Fbs+-h_oy1e4G_1G0jrgw@mail.gmail.com>
- <20191126155632.GF795@breakpoint.cc>
-In-Reply-To: <20191126155632.GF795@breakpoint.cc>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 28 Nov 2019 00:49:54 +0530
-Message-ID: <CA+G9fYur6RHnz2nzy9RwZ64yUDv0bRs4eP9odLud0mDP9SAA-w@mail.gmail.com>
-Subject: Re: selftests:netfilter: nft_nat.sh: internal00-0 Error Could not
- open file \"-\" No such file or directory
-To:     Florian Westphal <fw@strlen.de>
-Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        pablo@netfilter.org, jeffrin@rajagiritech.edu.in,
-        horms@verge.net.au, yanhaishuang@cmss.chinamobile.com,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1727051AbfK0TXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 14:23:12 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56658 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726593AbfK0TXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:23:12 -0500
+Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E3B8A14A6F7E4;
+        Wed, 27 Nov 2019 11:23:10 -0800 (PST)
+Date:   Wed, 27 Nov 2019 11:23:10 -0800 (PST)
+Message-Id: <20191127.112310.1018809619618803508.davem@davemloft.net>
+To:     alobakin@dlink.ru
+Cc:     ecree@solarflare.com, jiri@mellanox.com, edumazet@google.com,
+        idosch@mellanox.com, pabeni@redhat.com, petrm@mellanox.com,
+        sd@queasysnail.net, f.fainelli@gmail.com,
+        jaswinder.singh@linaro.org, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
+        linuxwifi@intel.com, kvalo@codeaurora.org,
+        nicholas.johnson-opensource@outlook.com.au, kenny@panix.com,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL
+ packet stalling
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191127094123.18161-1-alobakin@dlink.ru>
+References: <20191127094123.18161-1-alobakin@dlink.ru>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 27 Nov 2019 11:23:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Nov 2019 at 21:26, Florian Westphal <fw@strlen.de> wrote:
->
-> Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> > Do you see the following error while running selftests netfilter
-> > nft_nat.sh test ?
-> > Are we missing any kernel config fragments ? We are merging configs
-> > from the directory.
-> >
-> > # selftests netfilter nft_nat.sh
-> > netfilter: nft_nat.sh_ #
-> > # Cannot create namespace file \"/var/run/netns/ns1\" File exists
->
-> 'ns1' is not a good name.
-> What is the output of nft --version?
+From: Alexander Lobakin <alobakin@dlink.ru>
+Date: Wed, 27 Nov 2019 12:41:23 +0300
 
-nftables v0.7 (Scrooge McDuck)
+> Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
+> napi_gro_receive()") has applied batched GRO_NORMAL packets processing
+> to all napi_gro_receive() users, including mac80211-based drivers.
+> 
+> However, this change has led to a regression in iwlwifi driver [1][2] as
+> it is required for NAPI users to call napi_complete_done() or
+> napi_complete() and the end of every polling iteration, whilst iwlwifi
+> doesn't use NAPI scheduling at all and just calls napi_gro_flush().
+> In that particular case, packets which have not been already flushed
+> from napi->rx_list stall in it until at least next Rx cycle.
+> 
+> Fix this by adding a manual flushing of the list to iwlwifi driver right
+> before napi_gro_flush() call to mimic napi_complete() logics.
+> 
+> I prefer to open-code gro_normal_list() rather than exporting it for 2
+> reasons:
+> * to prevent from using it and napi_gro_flush() in any new drivers,
+>   as it is the *really* bad way to use NAPI that should be avoided;
+> * to keep gro_normal_list() static and don't lose any CC optimizations.
+> 
+> I also don't add the "Fixes:" tag as the mentioned commit was only a
+> trigger that only exposed an improper usage of NAPI in this particular
+> driver.
+> 
+> [1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+> [2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
+> 
+> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 
->
-> Does this patch help?  Even if it doesn't, its probably a good idea
-> to add it.
-
-I tested on arm64 Hikey and did not help.
-However, I will validate on x86_64 and other devices and let you know.
-
->
-> Subject: [PATCH] selftests: netfilter: use randomized netns names
->
-> Using ns0, ns1, etc. isn't a good idea, they might already exist.
-> Add a random suffix to avoid interering with other, unrelated net namespaces.
->
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  tools/testing/selftests/netfilter/nft_nat.sh | 332 ++++++++++---------
->  1 file changed, 176 insertions(+), 156 deletions(-)
-
-+ ./nft_nat.sh
-[   29.100929] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[   29.191505] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
-internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-[   29.985551] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-<cmdline>:1:6-12: Error: syntax error, unexpected counter
-list counter inet filter ns0in
-     ^^^^^^^
-ERROR: ns0in counter in ns1-Tj5FGVgK has unexpected value (expected
-packets 1 bytes 84) at check_counters 1
-<cmdline>:1:6-12: Error: syntax error, unexpected counter
-list counter inet filter ns0in
-     ^^^^^^^
-<cmdline>:1:6-12: Error: syntax error, unexpected counter
-list counter inet filter ns0out
-     ^^^^^^^
-
-ref:
-https://lkft.validation.linaro.org/scheduler/job/1025331#L1508
+Applied, thanks for the quick turnaround.
