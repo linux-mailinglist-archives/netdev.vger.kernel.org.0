@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4AF310AF8B
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D4710AFA7
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:40:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbfK0M3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 07:29:23 -0500
-Received: from mail.cra.cz ([82.99.169.135]:32321 "EHLO mail.cra.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726383AbfK0M3X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 07:29:23 -0500
-Received: from STSVMEXCH01.INT.CRA.CZ (192.168.130.210) by
- STSVMEXCH03.INT.CRA.CZ (192.168.130.211) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 27 Nov 2019 13:29:20 +0100
-Received: from localhost.localdomain (192.168.44.2) by STSVMEXCH01.INT.CRA.CZ
- (192.168.130.210) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Wed, 27 Nov 2019 13:29:20 +0100
-Subject: compat/devlink/mode is not present after installing
- linux-generic-hwe-18.04-edge
-References: <10ad0e50-5753-cd42-e26d-d635a263084e@radiokomunikace.cz>
-To:     <netdev@vger.kernel.org>
-From:   Koukal Petr <p.koukal@radiokomunikace.cz>
-X-Forwarded-Message-Id: <10ad0e50-5753-cd42-e26d-d635a263084e@radiokomunikace.cz>
-Message-ID: <f9619b66-da85-a1e3-941d-dadde39718fc@radiokomunikace.cz>
-Date:   Wed, 27 Nov 2019 13:29:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        id S1727050AbfK0MkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 07:40:06 -0500
+Received: from faui03.informatik.uni-erlangen.de ([131.188.30.103]:50428 "EHLO
+        faui03.informatik.uni-erlangen.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726558AbfK0MkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:40:04 -0500
+Received: from faui04s.informatik.uni-erlangen.de (faui04s.informatik.uni-erlangen.de [131.188.30.149])
+        by faui03.informatik.uni-erlangen.de (Postfix) with ESMTP id 74A252416A6;
+        Wed, 27 Nov 2019 13:31:02 +0100 (CET)
+Received: by faui04s.informatik.uni-erlangen.de (Postfix, from userid 66121)
+        id 5873F15E0A86; Wed, 27 Nov 2019 13:31:02 +0100 (CET)
+From:   Dorothea Ehrl <dorothea.ehrl@fau.de>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Cc:     linux-kernel@i4.cs.fau.de, Dorothea Ehrl <dorothea.ehrl@fau.de>,
+        Vanessa Hack <vanessa.hack@fau.de>
+Subject: [PATCH 1/5] staging/qlge: remove initialising of static local variable
+Date:   Wed, 27 Nov 2019 13:30:48 +0100
+Message-Id: <20191127123052.16424-1-dorothea.ehrl@fau.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <10ad0e50-5753-cd42-e26d-d635a263084e@radiokomunikace.cz>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch fixes "ERROR: do not initialise statics to 0" by checkpatch.pl.
 
-compat/devlink/mode is not present after installing 
-linux-generic-hwe-18.04-edge
+Signed-off-by: Dorothea Ehrl <dorothea.ehrl@fau.de>
+Co-developed-by: Vanessa Hack <vanessa.hack@fau.de>
+Signed-off-by: Vanessa Hack <vanessa.hack@fau.de>
+---
+ drivers/staging/qlge/qlge_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-After installing linux-generic-hwe-18.04-edge
-cannot set "switchdev" for vif interface when configuring asap2 SRIOV 
-networking.
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 6ad4515311f7..587102aa7fbf 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4578,7 +4578,7 @@ static int qlge_probe(struct pci_dev *pdev,
+ {
+ 	struct net_device *ndev = NULL;
+ 	struct ql_adapter *qdev = NULL;
+-	static int cards_found = 0;
++	static int cards_found;
+ 	int err = 0;
 
-Previously, /sys/class/net/{device}/compat/devlink/mode was available.
-
-
-Thank you very much for your help.
-Petr
+ 	ndev = alloc_etherdev_mq(sizeof(struct ql_adapter),
+--
+2.20.1
 
