@@ -2,146 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FD810B452
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:22:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9935410B460
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:25:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbfK0RWW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 12:22:22 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:45039 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbfK0RWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 12:22:22 -0500
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1ia113-0002Tf-7w; Wed, 27 Nov 2019 18:22:13 +0100
-Date:   Wed, 27 Nov 2019 18:22:13 +0100
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net 2/2] net: gro: Let the timeout timer expire in
- softirq context with `threadirqs'
-Message-ID: <20191127172213.unwma3k7z2xicnkg@linutronix.de>
-References: <20191126222013.1904785-1-bigeasy@linutronix.de>
- <20191126222013.1904785-3-bigeasy@linutronix.de>
- <CANn89iJtCwB=RdYnAYXU-uZvv=gHJgYD=dcfhohuLi_Qjfv6Ag@mail.gmail.com>
- <20191127093521.6achiubslhv7u46c@linutronix.de>
- <CANn89iL=q2wwjdSj1=veBE0hDATm_K=akKhz3Dyddnk28DRJhg@mail.gmail.com>
+        id S1727079AbfK0RZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 12:25:50 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:40105 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727050AbfK0RZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 12:25:50 -0500
+Received: by mail-qk1-f195.google.com with SMTP id a137so18391846qkc.7
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 09:25:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SyLTci+74nRZSDUku0dXTAAk3nRjI4NMyLYHOUy9iSw=;
+        b=FKB+SRN7f5uu10rogzWGvTOhlLIYfQ/Y8d558EUQxpvznsOl4zlOodjodErrJcvyCR
+         MvhH4os/sL4NL5d38vTDE+x3T7NYUkxPBd/UAVZR6STgQr5l2EgXBP1C/ueMsFI2/QeN
+         9QsGPAAbF9TaTxLPfHk5k3eaZy9eBJXGTbiSyTdf1JMRR47b4yVd+CJMVrLTaapMybAa
+         TMUMrAidk1NEJvrsBRXbD1aVKL1t8ne7kBbmfoAV0itok4RefXITJhuLVqUzqfiHxlT+
+         O0vmYHYJuvdX08pjUMumwTxnNGyK5Lf9BD4FkuyfWZDgG8nCXbkKcZ1t2U5uY5gwTwwk
+         N86Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SyLTci+74nRZSDUku0dXTAAk3nRjI4NMyLYHOUy9iSw=;
+        b=V3tGHBmSeISyJXmt7fSl0Bi6nw+oQV06pr1er3/67oCqMlwLtTKMLQaN0Py1Tpzyuv
+         +IyqVs42huKbzFqE8nCmxXkho47eZ+s/LdVh6aaT5gpCnJnsn2qK+eFbYER8PyVG/FaM
+         0+f5BwNCZMaAeKDL91RltgXejtjFAQB8FMky55NyJ3HoI2lAJdMT5GtKKzgP0K/sW2b6
+         GkMKCcV/bZnjayOTR+FJ/zTCi0acdoeSdIecsBYkGkrw/5T3kiE2f9RN9ucLRFT6Ew6S
+         SBKnFbdmQ6+IHyLS+cBuabOqAltdxWyFvQvYi93TKmhykBiThj8Dq6G/VZ5p5jcFggvK
+         PH1w==
+X-Gm-Message-State: APjAAAXeg0n7B2jXzBwIuHTVwI3+7PxLGHeXnCp1ad2CXkvYOh7z6dvI
+        J3i7Govrp4nD3JeW9Q7Tz0Y0TL+YuOlwEsi/FpfyfA==
+X-Google-Smtp-Source: APXvYqySq1fLKpo1mLqFnH5TItrk1NRYj4qQ3IrR6ckKUIrvKy7hmmKzQSrm9p1f81OS7EM04oJQykfDCuP34DmZKg4=
+X-Received: by 2002:a37:a3c1:: with SMTP id m184mr5398890qke.49.1574875549140;
+ Wed, 27 Nov 2019 09:25:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <CANn89iL=q2wwjdSj1=veBE0hDATm_K=akKhz3Dyddnk28DRJhg@mail.gmail.com>
+References: <20191127052059.162120-1-brianvv@google.com> <20191127082655.2e914675@hermes.lan>
+ <CANP3RGctgy98FsyeHq+aVk2S=N8ndY0Y+qMkZUhTB=26H_Y3Rg@mail.gmail.com>
+In-Reply-To: <CANP3RGctgy98FsyeHq+aVk2S=N8ndY0Y+qMkZUhTB=26H_Y3Rg@mail.gmail.com>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Wed, 27 Nov 2019 09:25:37 -0800
+Message-ID: <CAMzD94R4AqjgtqxgpnZ67H6GvQzin1idxj8OjMmOfmruEc9_CQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2] tc: fix warning in q_pie.c
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Brian Vazquez <brianvv.kernel@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Leslie Monis <lesliemonis@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-11-27 08:15:52 [-0800], Eric Dumazet wrote:
-> > One CPU, 2 NICs:
-> >
-> >     threaded_IRQ of NIC1                     hard-irq context, hrtimer
-> >        local_bh_disable()
-> >          nic_irq_handler()
-> >           if (napi_schedule_prep())
-> >             __napi_schedule_irqoff()
-> >
-> 
-> And _which_ driver would call this variant without being sure hard irq are
-> disabled ?
+On Wed, Nov 27, 2019 at 8:44 AM Maciej =C5=BBenczykowski <maze@google.com> =
+wrote:
+>
+> > What compiler is this?
+> > The type seems correct already.  The type of double / unsigned long is =
+double.
+> > And the conversion may give different answer.
 
-->
-|$ git grep __napi_schedule_irqoff drivers/net/
+I don't think this conversion will give a different answer, the
+compiler already change the value from UINT64_MAX to 'UINT64_MAX + 1'
+which is pow of 2 and can be represented precisely in a double.  This
+change is just making that conversion explicit to avoid the warning.
 
-returns for instance drivers/net/ethernet/rdc/r6040.c. It invokes
-r6040_interrupt() from the hardirq handler. Everything is correct.
+>
+> Probably some recent version of clang with -Wall.
 
-> Hard irq handlers are supposed to run with hard irq being disabled.
+It's clang 10
 
-This is the case except for…
-
-> Who decided that this was no longer the case ?
-
-the system was bootet with the `threadirqs' on command line.
-
-> This conflicts with hrtimer being delivered from hard irq context, this is
-> the root cause of the problem.
-
-correct. That is why moved them softirq context if the system is booted
-with `threadirqs'.
-
-> You are telling us napi_schedule_irqoff() should never be used, because we
-> do not know if hard irqs are masked or not.
-
-If interrupts are forced-threaded, correct. From kernel/irq/manage.c,
-irq_forced_thread_fn() is used as the "handler" in this case:
-| /*
-|  * Interrupts which are not explicitly requested as threaded
-|  * interrupts rely on the implicit bh/preempt disable of the hard irq
-|  * context. So we need to disable bh here to avoid deadlocks and other
-|  * side effects.
-|  */
-| static irqreturn_t
-| irq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)
-| {
-|         irqreturn_t ret;
-| 
-|         local_bh_disable();
-|         ret = action->thread_fn(action->irq, action->dev_id);
-|         if (ret == IRQ_HANDLED)
-|                 atomic_inc(&desc->threads_handled);
-| 
-|         irq_finalize_oneshot(desc, action);
-|         local_bh_enable();
-|         return ret;
-| }
-
-> Honestly this is a nightmare, we can not trust anymore stuff that has been
-> settled 20 years ago.
-
-This changes only if the `threadirqs' command line switch has been used.
-We didn't have threaded interrupts 20 years ago.
-Also, if the hrtimer was already expired at the time of programming then
-the hrtimer used to fire in softirq context until commit
-    c6eb3f70d4482 ("hrtimer: Get rid of hrtimer softirq")
-
-This could happen if you program the timer to 50ns instead of 50us in
-case you missed a few zeros in your echo to the sysfs file.
-
-> If you want to get rid of hard irq completely, make all handlers being run
-> from threaded_IRQ,
-> not only a subset of them ?
-
-`threadirqs' threads only IRQ handlers. All of them. The hrtimers
-infrastructure is not affected by this change. Also smp_function call
-and irqwork continue to fire in hardirq context. Also the direct
-interrupts vectors as used by the HyperV driver is not affected by this
-switch but I think it should. 
-
-> > I'm not aware of an other problems of this kind.
-> > Most drivers do spin_lock_irqsave() and in that case in does not matter
-> > if the interrupt is threaded or not vs the hrtimer callback. Which means
-> > they do not assume that the IRQ handler runs with interrupts disabled.
-> >
-> 
-> Most NIC drivers simply raises a softirq.
-
-Yes. For those it does not matter because they use __napi_schedule()
-which disables interrupts.
-
-> > The timeout timers are usually timer_list timer which run in softirq
-> > context and since the force-IRQ-thread runs also with disabled softirq
-> > it is fine using just spin_lock().
-> >
-> > If you don't want this here maybe tglx can add some hrtimer annotation.
-> >
-> 
-> I only want to understand how many other points in the stack we have to
-> audit and ' fix' ...
-Okay. Looking now over all hrtimer in net/ look good, most of them
-expire in softirq context. Looking at drivers/net they also look fine.
-They acquire spin_lock_irqsave() within the driver, schedule a tasklet
-or wake a net queue.
-
-Sebastian
+>
+> That said, I think the warning/error is correct.
+> UINT64 doesn't fit in double (which is also 64 bits, but includes sign
+> and exponent) - you lose ~13 bits of precision.
+> I'm not aware of a way to (natively) divide a double by a uint64
+> without the loss (not that it really matters since the double doesn't
+> have the requisite precision in the first place).
+>
+> Why do you think the conversion will give a different answer?
+> Isn't this exactly what the compiler will do anyway?
+> It's not like we have long double anymore...
