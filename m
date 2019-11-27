@@ -2,146 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D000310B15C
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 15:31:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A946A10B1BA
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 15:59:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfK0Obg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 09:31:36 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35457 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbfK0Obg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 09:31:36 -0500
-Received: by mail-wr1-f65.google.com with SMTP id s5so26921985wrw.2
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 06:31:34 -0800 (PST)
+        id S1726947AbfK0O71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 09:59:27 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:33463 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726537AbfK0O71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 09:59:27 -0500
+Received: by mail-lj1-f196.google.com with SMTP id t5so24859459ljk.0
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 06:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=qlAkHZOA6eXoiGp7sT9AQUtpqqqurE9XZGWxcrGi//M=;
-        b=A5YVd+acZGDhd+1hH+jbmPL/SwGWX3TrjcWs7IsrSDw2YmrcGa4QLRa/f+B3Zizbrp
-         N2bbtsSbdkIJxEiBaUy4XZAEBGyHM88S1qYd8e/xteMXKjy5vtn95UXQ3cW13YKlxcYH
-         /zMDGiXAiCjsaFkTp0SrVxsMFjmUBK9Fn4bpCR63vQdbvZDp4fLOAC8rvFsyQWkqx/aa
-         VUqO/p1qxOz0tMW5OCt7dRno+Bk+T/PiBrxRxAru8NrEdFYmFG3df0tGKpe0mOmoD1VG
-         Bd1W4vKKU8AubmIwwwydB7KeT+WapOGUM21DpPPzbOjW5X1HYNitXuVqM1Y2m8BwWLSn
-         +8KA==
+        bh=pT2pwBS6TaV/kAGM8m1oxYlYdML0zX5pk34HjusQnqk=;
+        b=fpnXqj3Epn3v9bd4OMCSMYDj3Ty7vq86U9S87tzhKDEJJiwFJcMEVv6BDRtSp6TfLV
+         KNBXt+3oiimeOga8XRM/YKQLfMyK7G+sczE3z/TJ/cFpBlBO+BmOalmjS+x984vmlKaA
+         aTO3kfygvWhn1G2WlkUPcr/dSKN0asYZjNyTY6hDmpFb85lDajA8A6shQtey3m9ePX0g
+         J4vTDJJoCUxOLdCyLG4h9IpPWpxhZvA6Jtp6rwEnwzQ8rDmGdm61fKVqsunlR3bc7W2k
+         Y7znUT3Ozwn1dvAcGygupJwWgQ55ojCUTu2QNjKtVPdT/z3cTK5edmitgLH/AEqdB7YT
+         A+uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=qlAkHZOA6eXoiGp7sT9AQUtpqqqurE9XZGWxcrGi//M=;
-        b=XtPvgarO3hTNvu6IFIxdicVn0d8S/KPHgpx3NhmXOaktMZgW3bp2oN0AlM+HDTDXmj
-         gwYZfmgJ8LEofDQKLWZA7ogKZ2i6TzMPWN/ASoMNa0sTM4z7gPHbrC69d+sPNt5j+0dG
-         UZgc0P5xsbuDXrSr1NjYFOj9D31wOe2mgsy+JuD6dEbvnL9PwfAqYWfK77vDp+OgLNNl
-         rvYG8fxKvyPP00MLAuEl0xKlgs+MoD3XrFbdtnz8qQdHIuDb1zb1IvVliouiAszWqGMc
-         TOPOEVFzANKHPU/b6opjQTdQXxatFbPi22DhnhIEM0MMilxGTtlB6YM3WsXegEm2KF+Z
-         f+Kg==
-X-Gm-Message-State: APjAAAUS2TdxTeR/ft2afM7WrmOiMzhc4NYXU2s+Df5ubPJX3L0hMuXX
-        +0I6iko86Gvo1KddXDdADtD0ng==
-X-Google-Smtp-Source: APXvYqzQftFz1wipVzan1q9hzzjSrPto9OLFbPUa1nTEwkWP8BIPbcKJprDpo1HEAwR24iXufwOCXg==
-X-Received: by 2002:a5d:50c3:: with SMTP id f3mr41563628wrt.14.1574865093420;
-        Wed, 27 Nov 2019 06:31:33 -0800 (PST)
-Received: from [172.20.1.104] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id 189sm7016379wmc.7.2019.11.27.06.31.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 27 Nov 2019 06:31:32 -0800 (PST)
-Subject: Re: [PATCH 3/3] bpftool: Allow to link libbpf dynamically
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-References: <20191127094837.4045-1-jolsa@kernel.org>
- <20191127094837.4045-4-jolsa@kernel.org>
- <fd22660f-2f70-4ffa-b45f-bb417d006d0a@netronome.com>
- <20191127141520.GJ32367@krava> <20191127142449.GD22719@kernel.org>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Message-ID: <d9bc04a6-0f72-9408-7c2e-2fb30e6a8f74@netronome.com>
-Date:   Wed, 27 Nov 2019 14:31:31 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=pT2pwBS6TaV/kAGM8m1oxYlYdML0zX5pk34HjusQnqk=;
+        b=FJLIHiVDsE3zxMIUlcPSyDVBcznB5NXJLvE7GnApH550Q+D8jgraaSkwzO+MHG4Pus
+         xk4Ozn1CTOGKeXMxdEY714niJ2NuFNlEsdGYUXaoWYNQiE3yYqSE2UVyS3BAqJ0PyKjy
+         FU8ygU5UwRJUZOBfAp6IHVqCiy2hImnaqQx5ogVbdj8oN6euo1KMj5dLTyg+hPFkJPk7
+         /jUKTRazSIspTp5uB8ejNnvo2Ph3GG+vJ+Nxnzc8vELtj27bduwF1Avvv7AvnQFbdtJm
+         gSUAwSd8zKgPZB34LX1RYKc7ZazJFcZuppkUrpFuRCKr+3ukVG1Pxm90CS6eHe1ZsYo6
+         SDdQ==
+X-Gm-Message-State: APjAAAVIsaAIrHywYwEB6ZPAdGCO3vW3Ek49fmyhRC/r3lZbK4/4+yMf
+        qEs6XvGqq1uHgiaXWskgb3uTOhIKgrzTMoXWjA==
+X-Google-Smtp-Source: APXvYqxvOd5Unp7yDXojhHd2N700d4G0LU4i/TjBWBKsj0KPNMX2rLkpau/3sbZVEgbSmtqhLbJfGG2jWdemzxxqkWA=
+X-Received: by 2002:a2e:8608:: with SMTP id a8mr31594643lji.172.1574866765357;
+ Wed, 27 Nov 2019 06:59:25 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191127142449.GD22719@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a19:6f07:0:0:0:0:0 with HTTP; Wed, 27 Nov 2019 06:59:25
+ -0800 (PST)
+Reply-To: misslindarail@gmail.com
+From:   Mr Linda <samdi.orph.org@gmail.com>
+Date:   Wed, 27 Nov 2019 06:59:25 -0800
+Message-ID: <CAEE-92hvTP6VMUy40Ots_VkgksCib3d5eFHNyaudBWM5QxbvnQ@mail.gmail.com>
+Subject: I am expecting your urgent respond, Mrs.Linda Rail written from Hospital.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-11-27 11:24 UTC-0300 ~ Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com>
-> Em Wed, Nov 27, 2019 at 03:15:20PM +0100, Jiri Olsa escreveu:
->> On Wed, Nov 27, 2019 at 01:38:55PM +0000, Quentin Monnet wrote:
->>> 2019-11-27 10:48 UTC+0100 ~ Jiri Olsa <jolsa@kernel.org>
->>> On the plus side, all build attempts from
->>> tools/testing/selftests/bpf/test_bpftool_build.sh pass successfully on
->>> my setup with dynamic linking from your branch.
->>
->> cool, had no idea there was such test ;-)
-> 
-> Should be the the equivalent to 'make -C tools/perf build-test' :-)
-> 
-> Perhaps we should make tools/testing/selftests/perf/ link to that?
+Hello My Dear.
 
-It is already run as part of the bpf selftests, so probably no need.
+Please do not feel disturbed for contacting  you, based on the
+critical condition I find mine self, though, it's not financial
+problem, but my health, you might have know that cancer is not what to
+talk home about, I am married to Mr. Abaulkarim Rail who worked with
+Tunisia embassy in GHANA for nine years before he died in the year
+2012.We were married for eleven years without a child. He died after a
+brief illness that lasted for five days.
 
-Thanks,
-Quentin
+
+Since his death I decided not to remarry, When my late husband was
+alive he deposited the sum of US$ 10.5m (Ten million Five hundred
+thousand dollars) in a bank in Ghana, Presently this money is still in
+bank. And My Doctor told me that I don't have much time to live
+because of the cancer problem, Having known my condition I decided to
+hand you over this fund to take care of the less-privileged people,
+you will utilize this money the way I am going to instruct herein. I
+want you to take 30 Percent of the total money for your personal use
+While 70% of the money will go to charity" people and helping the
+orphanage and the poor.
+
+i will really do appreciate  if l can put  my trust on you to help me
+claim my fund for the mission  of the Lord in donating it to the
+Motherless Baby Home (ORPHANAGE). I want you to know that am right
+here lying on the sick bed at the hospital waiting for the Lord's call
+but i really want this mission to be well accomplished by the God sent
+Angel who will be doing this on my behalf which is you, So there are
+some information=E2=80=99s you need to forward to the bank, because when th=
+e
+fund was deposited by my late husband the bank gave him this secret
+information should in case he want to withdraw it for security purpose
+for them to identify his consignment which is the fund.
+
+
+I don't want my husband's efforts to be used by the Government. I grew
+up as an Orphan and I don't have anybody as my family member,
+
+I am expecting your urgent respond.
+Here is my private email address ( misslindarail@gmail.com )
+
+Regards,
+Mrs.Linda Rail
+written from Hospital.
