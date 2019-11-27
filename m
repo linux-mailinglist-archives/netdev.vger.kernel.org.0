@@ -2,103 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFD2B10B5FC
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 19:45:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8201010B61A
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 19:51:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbfK0Spb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 13:45:31 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:37580 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727361AbfK0Spa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 13:45:30 -0500
-Received: by mail-qv1-f66.google.com with SMTP id s18so9338198qvr.4;
-        Wed, 27 Nov 2019 10:45:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Su3f/KAzMyPTWNIDhXsgBVojnqo7amrhCXux/PYTe5s=;
-        b=bfHq2w59fjt5G2fX+ANvpBMsqPsgC0Sn8zUNGTKM/JjXHgHA5zMox1qMEkEsQuhSHQ
-         CS7zF2ym1ywVUZRlvJ1qWMnSUBxvGSE1Uaa+tV3tjB1xUIq8gnAqZ2nnExGtF9oObjyE
-         IVo+0yKxbuoNpi0Ey6INkhvd0FrIqFXbn54CW6vq4hOs8wfT8SCdd2k/jQWY/T+UAxwE
-         rlPT/TPxKsRyYfoqo8Uhjf5Wxc2N07i66N5eOgG9iSkY/eMgGpLU51OS+rP4hY8kzAmq
-         DKy7/j6wPxCBN76wMbs9e9mwQsGAyTq3C5eAOJv3o3xxkLU4OSYkU0T2X8rfxKM6OTLv
-         u8iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Su3f/KAzMyPTWNIDhXsgBVojnqo7amrhCXux/PYTe5s=;
-        b=uXwtXzow0G2WRLTYZXttWpWiVcOvT/cOEuWiNavt57230FJCPdtzuAiwuAK+M4+HOn
-         +tVvWI/Yq6kDEtUuEjd0G9/D4hXBuDaED4SxwfVKhsWkAAv89pmYeA+ukjTpK6Ql11ow
-         /+ZyZFAseAZ0HM4Zl4wSi3oN9ec4v670WsmG/Q1V4fzP0znNRbbOI+rCx4gVRyaMjDJ7
-         uZrmQqCfxvpqgYgBI2Gh4/mDMTgTIXC1v6oN9j2O28+AyFLgQ34d3si9qp/reUs14t0V
-         tWsXfhkv7s4mHoyuxrgwqUdKKpIv3REfcJLQRTauN76fWjwctq2MuKNuxJ10rlJgTZ5a
-         q8oA==
-X-Gm-Message-State: APjAAAWmWV/i2J9jCoZNRep+vdju8+7uPgwkpVcHCYV0pJyiJ7PMJMi4
-        UzA/qM6LxW+v9H787gs+jPA=
-X-Google-Smtp-Source: APXvYqxaHMdz+bQyDMLSBySLTuBfXMIZjfYqHeUzgvltJKd2auOU1lv54lzRz+8gWbfp3PifszK0Tw==
-X-Received: by 2002:ad4:4e26:: with SMTP id dm6mr6786961qvb.200.1574880329554;
-        Wed, 27 Nov 2019 10:45:29 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([190.15.121.82])
-        by smtp.gmail.com with ESMTPSA id l34sm792566qtd.71.2019.11.27.10.45.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 10:45:28 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 4629C40D3E; Wed, 27 Nov 2019 15:45:26 -0300 (-03)
-Date:   Wed, 27 Nov 2019 15:45:26 -0300
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCH] libbpf: Use PRIu64 for sym->st_value to fix build on
- 32-bit arches
-Message-ID: <20191127184526.GB4063@kernel.org>
-References: <20191126190450.GD29071@kernel.org>
- <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
- <20191126221018.GA22719@kernel.org>
- <20191126221733.GB22719@kernel.org>
- <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com>
- <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net>
- <20191126155228.0e6ed54c@cakuba.netronome.com>
- <20191127013901.GE29071@kernel.org>
- <20191127134553.GC22719@kernel.org>
- <CAADnVQKkEqhdTOxytVbcm1QnBcf4MQ+q4KYaHzsuqkq3r=X-VA@mail.gmail.com>
+        id S1727451AbfK0Svj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 13:51:39 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58478 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727111AbfK0Svj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 13:51:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=XSKKVUPKZ3rsp1iAxeHXZOxHiZxYRg6StJOPPccU3D8=; b=W7VStLqvxdVf/jbuoXVgb5b2sK
+        r5i2VA//OJpMVGmQ+CMFbFkwpPvT2xDgBcjCV61Yn5ZzVmuFppVW4//gM6F45bV0lg48kRtzMiqhi
+        jAi5QSp+EVFiB7e8cQG6EHPpgExnf1mUVftHFAq8FiZtLddIdDLVnSiXXlDTftH0dHuM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ia2PR-0000Mv-4k; Wed, 27 Nov 2019 19:51:29 +0100
+Date:   Wed, 27 Nov 2019 19:51:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Nicolas.Ferre@microchip.com
+Cc:     mparab@cadence.com, antoine.tenart@bootlin.com,
+        davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux-kernel@vger.kernel.org,
+        dkangude@cadence.com, pthombar@cadence.com,
+        rmk+kernel@arm.linux.org.uk
+Subject: Re: [PATCH 2/3] net: macb: add support for C45 MDIO read/write
+Message-ID: <20191127185129.GU6602@lunn.ch>
+References: <1574759354-102696-1-git-send-email-mparab@cadence.com>
+ <1574759389-103118-1-git-send-email-mparab@cadence.com>
+ <20191126143717.GP6602@lunn.ch>
+ <19694e5a-17df-608f-5db7-5da288e5e7cd@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQKkEqhdTOxytVbcm1QnBcf4MQ+q4KYaHzsuqkq3r=X-VA@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <19694e5a-17df-608f-5db7-5da288e5e7cd@microchip.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, Nov 27, 2019 at 08:39:28AM -0800, Alexei Starovoitov escreveu:
-> On Wed, Nov 27, 2019 at 5:45 AM Arnaldo Carvalho de Melo
-> <acme@kernel.org> wrote:
-> >
-> > Another fix I'm carrying in my perf/core branch,
- 
-> Why in perf/core?
-> I very much prefer all libbpf patches to go via normal route via bpf/net trees.
-> We had enough conflicts in this merge window. Let's avoid them.
+On Wed, Nov 27, 2019 at 06:31:54PM +0000, Nicolas.Ferre@microchip.com wrote:
+> On 26/11/2019 at 15:37, Andrew Lunn wrote:
+> > On Tue, Nov 26, 2019 at 09:09:49AM +0000, Milind Parab wrote:
+> >> This patch modify MDIO read/write functions to support
+> >> communication with C45 PHY.
+> > 
+> > I think i've asked this before, at least once, but you have not added
+> > it to the commit messages. Do all generations of the macb support C45?
+> 
+> For what I can tell from the different IP revisions that we implemented 
+> throughout the years in Atmel then Microchip products (back to 
+> at91rm9200 and at91sam9263), it seems yes.
+> 
+> The "PHY Maintenance Register" "MACB_MAN_*" was always present with the 
+> same bits 32-28 layout (with somehow different names).
+> 
+> But definitively we would need to hear that from Cadence itself which 
+> would be far better.
 
-Humm, if we both carry the same patch the merge process can do its magic
-and nobody gets hurt? Besides these are really minor things, no?
+Hi Nicolas
 
-- Arnaldo
+Thanks, that is useful.
+
+I'm just trying to avoid backward compatibility issues, somebody
+issues a C45 request on old silicon and it all goes horribly wrong.
+
+       Andrew
