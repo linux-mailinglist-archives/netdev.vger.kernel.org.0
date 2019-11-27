@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E4B10A9E5
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:20:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AAA910A9E6
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbfK0FUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 00:20:01 -0500
-Received: from mail-yw1-f73.google.com ([209.85.161.73]:36380 "EHLO
-        mail-yw1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbfK0FUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 00:20:00 -0500
-Received: by mail-yw1-f73.google.com with SMTP id z73so10819051ywd.3
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 21:19:58 -0800 (PST)
+        id S1726135AbfK0FVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 00:21:10 -0500
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:44927 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbfK0FVJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 00:21:09 -0500
+Received: by mail-pl1-f202.google.com with SMTP id h8so8690706plr.11
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 21:21:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:message-id:mime-version:subject:from:to:cc;
-        bh=KP09QWIUHs0r8XGA1sW0Y1i5euBm0SkJkbuzlsUp1Fc=;
-        b=kvasFKfP1tCg0YqtxDEOCIgMFUK1rRJL38I0QmeXt7e/75BUuUaM9blJwA+idP3aGG
-         K+bH2dqEGmeoUVSLW1DNPTuowqC1e3Y09+SkTrWrKrdZNSgxXaOShkhEy8GjKE0KVoeM
-         ecqTzupqt1/jWGJbjOzYW369XB/HjZXOSZLQMoOg4Edl/g9aW0Cl4O3r/qTF9CpeiZ9M
-         E0HtHBH4X0xQQwkbQW0/piojjIyUXWs0ZizIHRuU+84hbhB8rHswbCCX6lIrGffb9HnT
-         tL63SEWDcgf/KCZhQcleefa6HhJHaPyDCx4r3WnBTyJfTdnxxiJ/Y3i6k4DMLRRQ7+9f
-         H3AQ==
+        bh=C/TVoo93MPM5c2I3qKzanVOFsx7+ScBM7yNe3k9aIsc=;
+        b=MieML6aLpgouiJYECyVX6hV+c5LVq0OConpwjvsUo7hcAdbglhON6zkgc+whPtnXXS
+         xGgjOXXE5mZ90sJWd3ythxQqftDGyTzFf0x8KWAAZe6nSxmKOv5k4/LwVdOcSuqalwq4
+         pAeDQevZ9KdUQbiZbZSovK1A8UEGwGqFjGLXYqSvzoVkuTdXD7FXqFfHFiRaIaj3Dbgf
+         W8u9id0F3aiNkB4kv9cm4zXzGaXMkztoD94iDRHLOZpHukk3mNGT0SMbHgZzc9yAcgc7
+         MF8PfOSIt9VZ5JmAL9YKKaSDcSidr/ZdJ0aUe/h8XOkll+w364C2ZHMnBg7sEDcebuDA
+         l/TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=KP09QWIUHs0r8XGA1sW0Y1i5euBm0SkJkbuzlsUp1Fc=;
-        b=oK9Sp0du23E8/dREHpVpQmQBGTKUZed0tjzdkN9+q3iQOQIMt57UlB/2+A1eUYiUkQ
-         lDv1NWL6lKQAGr8gV825iRe3SZGPob3ysYbhYZESG2ncNOf3Ityrnu8O4h4hiy9u5vSK
-         WA66Zv6PQBzbJrr7kqb484P+/L+WLqE+kzZGs1ZDI3e8V92wD6o80Il58h8xIcAHq5nv
-         zbs2575dIGwpjKHjnxvo3JXqSx867iuFisWMiHA7kcy8s7oMNAjV80/s4tkeXQPKTzcj
-         XX80bpm+NqT3N36eNVMHGxRoKdvgp4aGRKtfXwsVszZQ0JXraJc7BS4a6JEdSNmclOGK
-         /z5Q==
-X-Gm-Message-State: APjAAAVocvJtHc7Jws7JehQ8bTEuNrNERLSY0UYJM8TYdRcM4ZpfRZ/R
-        1tjsV1ppYIBWsg6GVI/0pE2PtcP3U3sE
-X-Google-Smtp-Source: APXvYqw/6/DKKbdRY++BAgdZv3GLNQe4DJaqBl8af6zo6H3y9XBdJgKxaoMCPAzHMyTQyoiDWlCXmg9xMhht
-X-Received: by 2002:a0d:d307:: with SMTP id v7mr1587671ywd.300.1574831998298;
- Tue, 26 Nov 2019 21:19:58 -0800 (PST)
-Date:   Tue, 26 Nov 2019 21:19:34 -0800
-Message-Id: <20191127051934.158900-1-brianvv@google.com>
+        bh=C/TVoo93MPM5c2I3qKzanVOFsx7+ScBM7yNe3k9aIsc=;
+        b=AJ6MHl8/J0uxSBp6QbRntDYgMElIFGYrGb2NzNvT4sSFUzMpKRsB3zvA0JTgz7TKI5
+         pjxETReeieJIWqWcgpoRpliGAIQrp6VZ0IyOq7DVbEwFjFAV3g6NrfgfGRx8whBkSOvB
+         /hnzdyyvalBgbd0p0YnHUSAnu5Nm+qk/aGjZHwmJWoyvEMN9I8tF9/8YxUDmphUTLRdX
+         ymOkG2vRnS4CHNGgPtfehEYVFj9LkoBCqJ4uthJq0VYZfrG9fcIUtyBjfiG1voNoE7KY
+         iMZvxEqvCdu4/k2JFRlewayOVKXxUk7mwsxW5+89reKlS6Ed2uFeO1hzbdRllpT91o/Z
+         9iJQ==
+X-Gm-Message-State: APjAAAVCIzgSNfhVfS9RKFOFFS4+a1D7rHLDbCvi53H1RMZPFx+FB6UK
+        Zs3pwzhe4DR+jU+fZ9UnvUVWGqJHxpzw
+X-Google-Smtp-Source: APXvYqwiLERqNHSj9UzaziY6JNGoWRFSrXraahUVEh1rc+uRL+jT452Kqq9gXwE/cXTTRmyQs7b6avugzGYp
+X-Received: by 2002:a63:4c14:: with SMTP id z20mr2729467pga.10.1574832067572;
+ Tue, 26 Nov 2019 21:21:07 -0800 (PST)
+Date:   Tue, 26 Nov 2019 21:20:59 -0800
+Message-Id: <20191127052059.162120-1-brianvv@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH iproute2] tc: fix warning in tc/m_ct.c
+Subject: [PATCH iproute2] tc: fix warning in q_pie.c
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         David Ahern <dsahern@gmail.com>,
@@ -50,7 +50,7 @@ To:     Brian Vazquez <brianvv.kernel@gmail.com>,
 Cc:     Mahesh Bandewar <maheshb@google.com>,
         Maciej Zenczykowski <maze@google.com>, netdev@vger.kernel.org,
         Brian Vazquez <brianvv@google.com>,
-        Paul Blakey <paulb@mellanox.com>
+        Leslie Monis <lesliemonis@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -58,29 +58,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Warning was:
-m_ct.c:370:13: warning: variable 'nat' is used uninitialized whenever
-'if' condition is false
+q_pie.c:202:22: error: implicit conversion from 'unsigned long' to
+'double'
 
-Cc: Paul Blakey <paulb@mellanox.com>
-Fixes: c8a494314c40 ("tc: Introduce tc ct action")
+Fixes: 492ec9558b30 ("tc: pie: change maximum integer value of tc_pie_xstats->prob")
+Cc: Leslie Monis <lesliemonis@gmail.com>
 Signed-off-by: Brian Vazquez <brianvv@google.com>
 ---
- tc/m_ct.c | 2 +-
+ tc/q_pie.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tc/m_ct.c b/tc/m_ct.c
-index 8df2f610..45fa4a8c 100644
---- a/tc/m_ct.c
-+++ b/tc/m_ct.c
-@@ -359,7 +359,7 @@ static void ct_print_nat(int ct_action, struct rtattr **tb)
- {
- 	size_t done = 0;
- 	char out[256] = "";
--	bool nat;
-+	bool nat = false;
- 
- 	if (!(ct_action & TCA_CT_ACT_NAT))
- 		return;
+diff --git a/tc/q_pie.c b/tc/q_pie.c
+index 40982f96..52ba7256 100644
+--- a/tc/q_pie.c
++++ b/tc/q_pie.c
+@@ -199,7 +199,7 @@ static int pie_print_xstats(struct qdisc_util *qu, FILE *f,
+ 	st = RTA_DATA(xstats);
+ 	/*prob is returned as a fracion of maximum integer value */
+ 	fprintf(f, "prob %f delay %uus avg_dq_rate %u\n",
+-		(double)st->prob / UINT64_MAX, st->delay,
++		(double)st->prob / (double)UINT64_MAX, st->delay,
+ 		st->avg_dq_rate);
+ 	fprintf(f, "pkts_in %u overlimit %u dropped %u maxq %u ecn_mark %u\n",
+ 		st->packets_in, st->overlimit, st->dropped, st->maxq,
 -- 
 2.24.0.432.g9d3f5f5b63-goog
 
