@@ -2,246 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E117810AD1F
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D815010AD27
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:04:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726540AbfK0KCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 05:02:09 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:35078 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfK0KCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 05:02:08 -0500
-Received: by mail-lf1-f67.google.com with SMTP id r15so13706374lff.2
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 02:02:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=EY4H80pYKzfm6qV5UPHRTU6m7PSm9enhWlVJXB84wb0=;
-        b=vc9glajPpy6mgZ0yHifMD7DYC8Kd/LxZnjhzsKohQMPXjC8JLB2poLT+4eojc65qo6
-         zFcP8luSrvIiJBhkVoPq1CfCGXH2qiaCD0gljPUWa7s0a61pz3TNzDpJvCEf3h9WIYok
-         mPa+y3DvBIq2HQM2phgpWclDId8qxiBnUl4uqN7RqwXiyeSfdxlTTVNFvxhIBqtIn75v
-         w0DoYWF0CnX+LZWnf7H1plq583MEIVqEIDEQoQ7gGJvYWrFr3W0zxOSReVumlLIh3k8C
-         +Vbs51zZ1R9Bf43yxrXatmcudquBQoV7mIvjliF9Nv+g/Hr50Ndgm49yn4SVYSh6ddFE
-         0BPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=EY4H80pYKzfm6qV5UPHRTU6m7PSm9enhWlVJXB84wb0=;
-        b=ZEXDrC68ZFuxDughgY/CSsyknYpLiBQFm0c6TSaeDpqEDCjch4X6meZuR1wYclHz22
-         KxP4o9B1j99LGibeAnPCu20xERU4xc3DvqFH/Ph2/r7AsFrQLbk1MgbhTwMCFeAN2kKZ
-         PMq5+73tzP9/PB3mr97aFJT/LZJSiB86dfD+GYHKJNy0TsY5MXoXTjEm3h9V8eXwcUCE
-         u1TP7YkwdiMNPfXbSy+JATyQsoeLEZVNInb0O2sIP0v8oMifVoMPGHfOwZYRV1Fyo+1v
-         6w1G9PQOKZtm9E68mD26XJ70umslhtbRF1Y5u701GZRk3mQJMpm9A5GJlyefxD6Wf20e
-         EujA==
-X-Gm-Message-State: APjAAAVrmfIJvxcIulKZc+BnGv/bV8rqdDUJpjApr3B3VJIjMofmvQzk
-        J7qZ35Uea2ahtlDJ7PvoMXvyvuUwzVkCgms5SAguYNIt2JQ=
-X-Google-Smtp-Source: APXvYqzllpI/nj+sdxunC5MqF9gCtlPe+vBQi4t9tGvv3YdmTcnl19BUY36EzMozzs8Hu4upWJFyVzfuGyngH0fH600=
-X-Received: by 2002:a19:f811:: with SMTP id a17mr27529288lff.132.1574848925236;
- Wed, 27 Nov 2019 02:02:05 -0800 (PST)
+        id S1726296AbfK0KET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 05:04:19 -0500
+Received: from mail-eopbgr00044.outbound.protection.outlook.com ([40.107.0.44]:31840
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726143AbfK0KES (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 05:04:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZehIN4enJr3qmVJdI2+H7KpCqxK/reuqOAdPypc9qozddci/zFX/e8fHoIkZCTBpwUjjUYGCoPX5zBzWqY0R0rRZQ+vw9KT1RNoOvKDKF6ZWvvAfdM7gQ+Amk6AeD8GQVbaYPu69yhSfwozBOZYR3/0Elc8ufhIu9Q4naggGsQnpfAxJxiuvBao/cOI9zUzB3smVKGPtVED7X9b6o7uM6std710e5cMUJ+YRzlo15+obEq21epqPpUbeV97ifa46hlSn0L6hOJtrUmI6wD527DvBA2X55DeIUxEdvnV7ApDQjVM3PMLeokv1FNIOcg6P7QFw2MB263Ya8A+y3FkaPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iLfQWUrO9YUOhf+ghAwO9zfdyA3/vm7BckmlMGlRvAg=;
+ b=n+zGzENB77fFYoxcu1gtAV+tWME3F8aA8emT6W/jQrtCRC2KXad5jgWYYNL/4dCs+Tn+rZOTgAgYN5ESThl6QtL+wALyHToUlM/LFn8U4AEthYGKHVPYZBudfFMZYHhQHi6i5zus3KXX5ZB6mIo9D6VpNgJ6I5d4SCwkfvDXJC/cWpwfHDUgLB3PZq5iM3HllJaXTGCViDfiUwSKpDXMkMnSC8kEiXLMdtSSDrNjNJq89/HvfKJdG23y5CWG3BhsGEI/A+BGiU5s3hkeU9iIyY8l3X7wAlpZsSBL/EMfKjuQjHt5+FDSeysOjx1DFK0/p0xZ0qPgyLNT7jGqiDNUIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iLfQWUrO9YUOhf+ghAwO9zfdyA3/vm7BckmlMGlRvAg=;
+ b=Au8a/apDLSN/41RBFBZsRrxqRYQ5vvecanjWIHwa2mb/3s48BVYEPg0H4rreV/DTeVsGaP4YzRO912RIy1bQBJ6iDwJ0r69UMuB/iD6cH8t9KyuPwpG+TZb56601M7jpngywaiMQjewhJJ56MgdOgQnSCKJ+1MavYGyG2HSQQ54=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4857.eurprd04.prod.outlook.com (20.176.233.81) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2474.21; Wed, 27 Nov 2019 10:04:15 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2474.023; Wed, 27 Nov 2019
+ 10:04:15 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Sean Nyekjaer <sean@geanix.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH V2 0/4] can: flexcan: fixes for stop mode
+Thread-Topic: [PATCH V2 0/4] can: flexcan: fixes for stop mode
+Thread-Index: AQHVpOdxXAI9W9cZiUqxHtJbOFpoG6eeiWMAgAAhqwCAABa5QIAAAZ0wgAADdACAAADr0IAAAUMAgAAAVDA=
+Date:   Wed, 27 Nov 2019 10:04:15 +0000
+Message-ID: <DB7PR04MB4618737A1B5689E5B5474D74E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <e936b9b1-d602-ac38-213c-7272df529bef@geanix.com>
+ <4a9c2e4a-c62d-6e88-bd9e-01778dab503b@geanix.com>
+ <DB7PR04MB46186472F0437A825548CE11E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <DB7PR04MB4618C541894AD851BED5B0B7E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <1c71c2ef-39a4-6f38-98c0-4ee43767a725@geanix.com>
+ <DB7PR04MB46180EE59D373F9634DD936AE6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <6fa94966-c21b-ad2b-653d-aa3589b32df8@geanix.com>
+In-Reply-To: <6fa94966-c21b-ad2b-653d-aa3589b32df8@geanix.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 24671b12-febc-46bb-1379-08d773212902
+x-ms-traffictypediagnostic: DB7PR04MB4857:|DB7PR04MB4857:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB48573DD6C15C22F4254167ADE6440@DB7PR04MB4857.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 023495660C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(39860400002)(376002)(366004)(396003)(13464003)(189003)(199004)(6436002)(8676002)(81156014)(8936002)(76116006)(66446008)(4326008)(229853002)(81166006)(86362001)(74316002)(14454004)(478600001)(7736002)(52536014)(66066001)(55016002)(5660300002)(9686003)(2501003)(316002)(2906002)(76176011)(6506007)(99286004)(110136005)(102836004)(7696005)(305945005)(11346002)(6116002)(186003)(26005)(53546011)(33656002)(64756008)(66946007)(25786009)(66476007)(4744005)(3846002)(54906003)(2201001)(66556008)(6246003)(71190400001)(446003)(71200400001)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4857;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SZJxAw55cjU3PBggll2oQZ1T8nMMcKGXDjjkwGiEtzRrp7gCsfONbAoPL1xDKNWJKGtGUsx2XV6J86Yzzzab2Wa3WhtzbtUJouEaWlc3SNP2f6WjOQ1/b14xiFn2Qybj7GgDR/jHh0byW6JwK3WkBMoLWNFXPgLOY38cc+iVcZ4rbXfxv3C4Uk7D9AZWZBb7sqeR7NRbuwYBWpqo8RHLWyMToy4VxoYpBCtGlnhqmPI0XhXLGL0q9IeD8VufDDYYXgJcqleLxOcV5MfGXx51asM0KdGX5zFy/YxyY1CiUaMXqoXpvLvcd1hnMGHY2sRsc0o6Qxr2gmQveqk+Syts7dBwAFk3U1sRCnoGA/9+H2P+9FRIbXpr9ZHRS0aDklvlilOyS9XgrkgiVbTgRSLJJ1P+f25Zljwfs3Icf+o+ANYqf/99tqaai5FxBi2kxxFX
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 27 Nov 2019 15:31:53 +0530
-Message-ID: <CA+G9fYvom-=jCpGTNck+hSQm8xZgOt6EegWrJifvrbrx=rpGvg@mail.gmail.com>
-Subject: mainline-5.4.0: regressions detected in project mainline
-To:     Netdev <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        andriin@fb.com, lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24671b12-febc-46bb-1379-08d773212902
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 10:04:15.3892
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xUTHyeDapmh9aIN3oIKRVFbPkt1eFZvaEYlfkIWFNCb7b4o2XQMfAvTlIgebXR99tSaikWBkHun4x0gMJ6BgDw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4857
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Results from Linaro=E2=80=99s test farm.
-Regressions on arm64, arm, x86_64, and i386.
-The listed bpf tests failed. please find complete details below.
-
-Summary
-------------------------------------------------------------------------
-
-kernel: 5.4.0
-git repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t
-git branch: master
-git commit: 386403a115f95997c2715691226e11a7b5cffcfd
-git describe: v5.4-3419-g386403a115f9
-Test details: https://qa-reports.linaro.org/lkft/linux-mainline-oe/build/v5=
-.4-3419-g386403a115f9
-config: http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/intel-corei=
-7-64/lkft/linux-mainline/2270/config
-
-Regressions (compared to build v5.4)
-------------------------------------------------------------------------
-  kselftest:
-    * bpf_test_dev_cgroup
-    * bpf_test_skb_cgroup_id.sh
-    * bpf_test_sysctl
-    * bpf_test_xdp_meta.sh
-    * bpf_test_xdp_redirect.sh
-    * bpf_test_xdp_vlan_mode_generic.sh
-    * bpf_test_xdp_vlan_mode_native.sh
-
-Test output log:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-# selftests bpf test_dev_cgroup
-bpf: test_dev_cgroup_ #
-# libbpf failed to open ./dev_cgroup.o No such file or directory
-failed: to_open #
-# Failed to load DEV_CGROUP program
-to: load_DEV_CGROUP #
-[   75.524368] IPv6: ADDRCONF(NETDEV_CHANGE): test_sock_addr1: link
-becomes ready
-[FAIL] 9 selftests bpf test_dev_cgroup # exit=3D1
-selftests: bpf_test_dev_cgroup [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_skb_cgroup_id.sh
-bpf: test_skb_cgroup_id.sh_ #
-# Wait for testing link-local IP to become available ... OK
-for: testing_link-local #
-# Error opening object ./test_skb_cgroup_id_kern.o No such file or director=
-y
-opening: object_./test_skb_cgroup_id_kern.o #
-# Cannot initialize ELF context!
-initialize: ELF_context! #
-# Unable to load program
-to: load_program #
-[FAIL] 33 selftests bpf test_skb_cgroup_id.sh # exit=3D1
-selftests: bpf_test_skb_cgroup_id.sh [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_sysctl
-bpf: test_sysctl_ #
-# libbpf failed to open ./test_sysctl_prog.o No such file or directory
-failed: to_open #
-# (test_sysctl.c1490 errno No such file or directory) >>> Loading
-program (./test_sysctl_prog.o) error.
-errno: No_suc[   78.078283] ip (1336) used greatest stack depth: 11144
-bytes left
-h #
-#
-: _ #
-# libbpf failed to open ./test_sysctl_prog.o No such file or directory
-failed: to_open #
-# (test_sysctl.c1490 errno No such file or directory) >>> Loading
-program (./test_sysctl_prog.o) error.
-errno: No_such #
-#
-: _ #
-# libbpf failed to open ./test_sysctl_prog.o No such file or directory
-failed: to_open #
-# (test_sysctl.c1490 errno No such file or directory) >>> Loading
-program (./test_sysctl_prog.o) error.
-errno: No_such #
-
-...
-37: PASSED,_3 #
-[FAIL] 20 selftests bpf test_sysctl # exit=3D255
-selftests: bpf_test_sysctl [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_xdp_meta.sh
-bpf: test_xdp_meta.sh_ #
-# Error opening object test_xdp_meta.o No such file or directory
-opening: object_test_xdp_meta.o #
-# Cannot initialize ELF context!
-initialize: ELF_context! #
-# Unable to load program
-to: load_program #
-# selftests test_xdp_meta [FAILED]
-test_xdp_meta: [FAILED]_ #
-[FAIL] 26 selftests bpf test_xdp_meta.sh # exit=3D1
-selftests: bpf_test_xdp_meta.sh [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_xdp_redirect.sh
-bpf: test_xdp_redirect.sh_ #
-# Error opening object test_xdp_redirect.o No such file or directory
-opening: object_test_xdp_redirect.o #
-# Cannot initialize ELF context!
-initialize: ELF_context! #
-# selftests test_xdp_redirect [FAILED]
-test_xdp_redirect: [FAILED]_ #
-[FAIL] 25 selftests bpf test_xdp_redirect.sh # exit=3D255
-selftests: bpf_test_xdp_redirect.sh [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_xdp_vlan_mode_generic.sh
-bpf: test_xdp_vlan_mode_generic.sh_ #
-# PING 100.64.41.1 (100.64.41.1) 56(84) bytes of data.
-100.64.41.1: (100.64.41.1)_56(84) #
-#
-: _ #
-# --- 100.64.41.1 ping statistics ---
-100.64.41.1: ping_statistics #
-# 1 packets transmitted, 0 received, 100% packet loss, time 0ms
-packets: transmitted,_0 #
-#
-: _ #
-# Success First ping must fail
-First: ping_must #
-# Error opening object test_xdp_vlan.o No such file or directory
-opening: object_test_xdp_vlan.o #
-# Cannot initialize ELF context!
-initialize: ELF_context! #
-# selftests xdp_vlan_mode_generic [FAILED]
-xdp_vlan_mode_generic: [FAILED]_ #
-[FAIL] 35 selftests bpf test_xdp_vlan_mode_generic.sh # exit=3D255
-selftests: bpf_test_xdp_vlan_mode_generic.sh [FAIL]
-
-=3D=3D=3D
-# selftests bpf test_xdp_vlan_mode_native.sh
-bpf: test_xdp_vlan_mode_native.sh_ #
-# PING 100.64.41.1 (100.64.41.1) 56(84) bytes of data.
-100.64.41.1: (100.64.41.1)_56(84) #
-#
-: _ #
-# --- 100.64.41.1 ping statistics ---
-100.64.41.1: ping_statistics #
-# 1 packets transmitted, 0 received, 100% packet loss, time 0ms
-packets: transmitted,_0 #
-#
-: _ #
-# Success First ping must fail
-First: ping_must #
-# Error opening object test_xdp_vlan.o No such file or directory
-opening: object_test_xdp_vlan.o #
-# Cannot initialize ELF context!
-initialize: ELF_context! #
-# selftests xdp_vlan_mode_native [FAILED]
-xdp_vlan_mode_native: [FAILED]_ #
-[FAIL] 36 selftests bpf test_xdp_vlan_mode_native.sh # exit=3D255
-selftests: bpf_test_xdp_vlan_mode_native.sh [FAIL]
-
-Ref links:
-https://lkft.validation.linaro.org/scheduler/job/1024055
-
-Dashboard link,
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_dev_cgroup
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_skb_cgroup_id.sh
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_sysctl
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_xdp_meta.sh
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_xdp_redirect.sh
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_xdp_vlan_mode_generic.sh
-https://qa-reports.linaro.org/lkft/linux-mainline-oe/tests/kselftest/bpf_te=
-st_xdp_vlan_mode_native.sh
-
---
-Linaro LKFT
-https://lkft.linaro.org
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IGxpbnV4LWNhbi1vd25lckB2
+Z2VyLmtlcm5lbC5vcmcgPGxpbnV4LWNhbi1vd25lckB2Z2VyLmtlcm5lbC5vcmc+DQo+IE9uIEJl
+aGFsZiBPZiBTZWFuIE55ZWtqYWVyDQo+IFNlbnQ6IDIwMTnlubQxMeaciDI35pelIDE4OjAwDQo+
+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsgbWtsQHBlbmd1dHJv
+bml4LmRlOw0KPiBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXgg
+PGxpbnV4LWlteEBueHAuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBS
+ZTogW1BBVENIIFYyIDAvNF0gY2FuOiBmbGV4Y2FuOiBmaXhlcyBmb3Igc3RvcCBtb2RlDQo+IA0K
+PiANCj4gDQo+IE9uIDI3LzExLzIwMTkgMTAuNTgsIEpvYWtpbSBaaGFuZyB3cm90ZToNCj4gPiBD
+b3VsZCB5b3UgZ2l2ZSB5b3VyIFRlc3QtYnkgdGFnIGZvciB0aGlzIHBhdGNoIHNldD8gQW5kIHRo
+ZW4gTWFyYyBjb3VsZA0KPiByZXZpZXcgdGhpcyBwYXRjaCBzZXQuDQo+IA0KPiBEb25lIDopDQoN
+ClRoYW5rcyBhIGxvdPCfmIoNCg0KPiBDYW4ndCB0ZXN0IHBhdGNoIDQvNC4uLg0KPiBIb3BlIE1h
+cmMgY2FuIGdpdmUgaGlzIGNvbW1lbnRzIGFuZCBwaWNrIHRoZXNlLg0KDQpNdWNoIGhvcGUsIEkg
+d291bGQgaW1wcm92ZSBpdCB3aXRoIE1hcmMncyBjb21tZW50cy4NCg0KQmVzdCBSZWdhcmRzLA0K
+Sm9ha2ltIFpoYW5nDQo+IC9TZWFuDQo=
