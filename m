@@ -2,106 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 827C110B2EA
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:05:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188BB10B2F6
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:09:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbfK0QFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 11:05:36 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:55650 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726603AbfK0QFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:05:36 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id DC4ED140091;
-        Wed, 27 Nov 2019 16:05:33 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 27 Nov
- 2019 16:05:22 +0000
-Subject: Re: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet
- stalling
-To:     Alexander Lobakin <alobakin@dlink.ru>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Jiri Pirko <jiri@mellanox.com>, Eric Dumazet <edumazet@google.com>,
-        "Ido Schimmel" <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        "Manish Chopra" <manishc@marvell.com>,
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
-        "Kenneth R. Crudup" <kenny@panix.com>, <netdev@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20191127094123.18161-1-alobakin@dlink.ru>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <20a018a6-827a-de47-a0e4-45ff8c02087b@solarflare.com>
-Date:   Wed, 27 Nov 2019 16:05:18 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727004AbfK0QJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 11:09:01 -0500
+Received: from mail-pf1-f171.google.com ([209.85.210.171]:33397 "EHLO
+        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726593AbfK0QJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:09:01 -0500
+Received: by mail-pf1-f171.google.com with SMTP id y206so2619570pfb.0
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 08:08:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PSazCWrzWwutXjlILzEqtU6aL1uS/GzVDtw5TFilKHA=;
+        b=fMqkqJTrldxWb9xVLjP2WaKGloj0rCWfweNiT1RNvcxp40gbSOd+TIWLxp8jRMQkDI
+         n+X4HR9ECm4+FyPJcZdTrjcHiyTlACM3D90YiJcdjaNJ4ctMnALW8YJZYwwTUfUfJJib
+         nM19Duc42d86jhlB3F6TeKjYQv0GonwaJZrCrnnjg4HfN2N8tjZ9grERgwAlIkUYGPTL
+         NboggmlaNLT345dG/7ZZ7t+Q0bsZczykjyYe17dEy8sXvxUDzIwmpVbn5fCvXiw5u2XM
+         omjbNwIunh/hQoGlOQdCwWhN9ZwjOeHBSL+SxKqzQzk1HqA00V1fYlxVtvQ9zIQd1avc
+         dI/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PSazCWrzWwutXjlILzEqtU6aL1uS/GzVDtw5TFilKHA=;
+        b=alM3ezJdkRLF++TfaaN/GN39K7AShd6IGmzzUwl2ZEcfnM5hDJlZ1+uN9zzmd0d6yH
+         olA9FX84lPnQJooz78Qk8QT3Is908iIuitgreQIA8gS5J/PiclRzKxXh/XPBUw9jPqBG
+         kiZ562h2UbvQEGTqJ1G25lUhq2eTyrSv+tT1sF4QBz0z4Tf2MLu81w4Xhm1hA5mlPt3I
+         vvU06bfZa0jYAfRoMY9bnYiqjcRGTBaReweY+bbzuSuF2sJEHDJN/EMTii13Zsm+5Ybm
+         luLhW13diKeMo7l1XhWRrOo5hPuiNy19UqABC14kBf494UWdRHOLSl1003iKRBMf1cyg
+         Z3mw==
+X-Gm-Message-State: APjAAAWBUIkYpoWfui06fpebl3+QYZgAE+hKbuoDSzgp/cKNy/81k2a9
+        BfYizfL3zcu033Be2Wg30Nb+m8uB3OXdMQ==
+X-Google-Smtp-Source: APXvYqxBXkT4U4184gshT8EL4vRhfkNW7ZHyPH6NqVbSrh7oTOb/Bu1FPuo9jZTGWTXhBM1hSc7LMQ==
+X-Received: by 2002:a62:1488:: with SMTP id 130mr182778pfu.238.1574870938407;
+        Wed, 27 Nov 2019 08:08:58 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id k10sm7138619pjs.31.2019.11.27.08.08.57
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 08:08:58 -0800 (PST)
+Date:   Wed, 27 Nov 2019 08:08:50 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 205681] New: recvmg is overwriting the buffer passed in
+ msg_name by exceeding msg_namelen
+Message-ID: <20191127080850.2707eef0@hermes.lan>
 MIME-Version: 1.0
-In-Reply-To: <20191127094123.18161-1-alobakin@dlink.ru>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25068.003
-X-TM-AS-Result: No-2.916000-8.000000-10
-X-TMASE-MatchedRID: 1GZI+iG+MtfmLzc6AOD8DfHkpkyUphL9B7lMZ4YsZk/RLEyE6G4DRFDT
-        Kayi2ZF6QOaAfcvrs35HBaYvF0hxKFQcsas26nLQLyz9QvAyHjo0AJe3B5qfBgQsw9A3PIlLfeR
-        HqXTAYgbUqkiO26feqA2FRXLSS+vrmKa4M58UVVYBnSWdyp4eoXFa/hQHt1A1wubD3SFbWzv3h2
-        jybQkTkqdL8KI7XN648dZ5VcPdHTpyPzMTUSO1JP5/gVn+bUDMNV9S7O+u3KYZwGrh4y4izH1a0
-        2rGxHiJ31rPPTNFvISK2jE700vQHbp4BGlNqtR8LbjXqdzdtCXrixWWWJYrH01+zyfzlN7ygxsf
-        zkNRlfKx5amWK2anSPoLR4+zsDTt+GYUedkXNWqMK5Qm/U0G90/h8PPR9Wyqvd+6IqaLHYtW8qO
-        kPe265is7C65Y7GDJDGmw3Q+A1RzSS97R9sl6CenrP6nUgUSzU7PqY3kOZ2mHzGTHoCwyHhlNKS
-        p2rPkW5wiX7RWZGYs2CWDRVNNHuzflzkGcoK72
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.916000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25068.003
-X-MDID: 1574870734-9g_yLSIuo-Lh
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/11/2019 09:41, Alexander Lobakin wrote:
-> Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-> napi_gro_receive()") has applied batched GRO_NORMAL packets processing
-> to all napi_gro_receive() users, including mac80211-based drivers.
->
-> However, this change has led to a regression in iwlwifi driver [1][2] as
-> it is required for NAPI users to call napi_complete_done() or
-> napi_complete() and the end of every polling iteration, whilst iwlwifi
-> doesn't use NAPI scheduling at all and just calls napi_gro_flush().
-> In that particular case, packets which have not been already flushed
-> from napi->rx_list stall in it until at least next Rx cycle.
->
-> Fix this by adding a manual flushing of the list to iwlwifi driver right
-> before napi_gro_flush() call to mimic napi_complete() logics.
->
-> I prefer to open-code gro_normal_list() rather than exporting it for 2
-> reasons:
-> * to prevent from using it and napi_gro_flush() in any new drivers,
->   as it is the *really* bad way to use NAPI that should be avoided;
-> * to keep gro_normal_list() static and don't lose any CC optimizations.
->
-> I also don't add the "Fixes:" tag as the mentioned commit was only a
-> trigger that only exposed an improper usage of NAPI in this particular
-> driver.
->
-> [1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
-> [2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
->
-> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-Reviewed-by: Edward Cree <ecree@solarflare.com>
+
+
+Begin forwarded message:
+
+Date: Wed, 27 Nov 2019 06:36:50 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 205681] New: recvmg is overwriting the buffer passed in msg_name by exceeding msg_namelen
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=205681
+
+            Bug ID: 205681
+           Summary: recvmg is overwriting the buffer passed in msg_name by
+                    exceeding msg_namelen
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4,4.0,3.0,2.6
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: high
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: sudheendrasp@gmail.com
+        Regression: No
+
+if (msg->msg_name) {
+        struct sockaddr_rxrpc *srx = msg->msg_name;
+        size_t len = sizeof(call->peer->srx);
+
+        memcpy(msg->msg_name, &call->peer->srx, len);
+        srx->srx_service = call->service_id;
+        msg->msg_namelen = len;
+    }
+
+
+As seen, recvmsg is doing memcpy of len which can be greater than msg_namelen
+passed.
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
