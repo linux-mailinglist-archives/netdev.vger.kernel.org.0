@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07DFD10B74E
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 21:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 427C410B74F
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 21:18:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727127AbfK0UR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 15:17:59 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39901 "EHLO
+        id S1727154AbfK0USC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 15:18:02 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45784 "EHLO
         mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726703AbfK0UR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 15:17:59 -0500
-Received: by mail-lj1-f193.google.com with SMTP id e10so16708648ljj.6
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 12:17:57 -0800 (PST)
+        with ESMTP id S1726703AbfK0USC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 15:18:02 -0500
+Received: by mail-lj1-f193.google.com with SMTP id n21so25849794ljg.12
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 12:18:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZbWpNKA4JOWw6FrvYdqB6BZTvtmb1o6ort0yRv/Qq4Q=;
-        b=UnA0gXVfyTcKYFwxJwqKsTV3qScX0ucvkMHrjK3D+EL7GjuWy81nhihnVn4SZ1L1f/
-         FDtIsCTrsZPm+WcflGRNPc+55zsB3pFQuvfLlC6Ct3rSGOPGlz1gbw5+MMql30r7liXg
-         xZIL4HLrNpa8JYTKpoZEv5JwBXs/yB9B8BTUx0MJYGqToHT3xwz5xMTaknR04nXpA9kK
-         28mVOgnuj+XpZ7Mpv3cjA8oX/1845wgtcqQMRlIe3pBD0LdA7hIGDLq18ZA97BO8wnPV
-         DBSFpR0N6S+QQ5vpvjDAP4cRn+4PhMXTfDNt9F8WqQy0Z5q1/e6tk6v/WvgDQ/+v2WRJ
-         9NMA==
+        bh=w5gQgA8v/HX14VDHHSlOUpz5qEAJHrEInj+L4mAu6kU=;
+        b=wnCh/D/5s2kkqDt+MzgOvBzXGLGLQ7bC0JEEhb8xL23azT+TyPRHxvUhjImrVjeCv3
+         Snbv3eVRVgg5C5upmplDCVRjpB5/ds3Yd5MxU0i3bOHdfdUCtKWdGU7c7CO3k8z3pzlt
+         7shyoomJh2s+VYbgJSGXn0Dp6KQfdzg54bvHx7P5RFJL+J4+JAPif5CSUmfyS7y0XtO7
+         SFtwxjip2vroqROBnnoQj1AxKf76g5EUDsf2l1ZQAh8yxFLPX1DF7sivruScqrbaz+ut
+         B7tRM5YkY2KhKHScbwLgTnRLb0ALqeWYXnBoA+SZmP1/0tNSKvLKkDu3D/HDYkhAF9rG
+         cUNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZbWpNKA4JOWw6FrvYdqB6BZTvtmb1o6ort0yRv/Qq4Q=;
-        b=A+Ji5HNG8CPXIjWDB5twkV7Z/xxgb2JatX3HhDEP6sfNp5N4RqRiStmlU2V/qaiauE
-         nCNUJYN0EGyYt35KLPEeQ1v5mlrFGWZhWQTGwduT9ySoJ0ITmqeiwSMXq+UFVK7JpHRI
-         7Ty2AB6RCB8Fh5OIc5ux3SLt/qrnBA5/ysA0JZ1b/zUx9iaVsGPjrzznu8ue7QSfAEW5
-         Ibs8EVD9j5uIKtd86yTw9yc+AAX/CS1qXOBDPcYiUyzcR+aTwaR+IHW+4POBkfDkzNii
-         GB+Ckk9Mf0vGWXhWTXrz0wL/3ArVOxWd1qkYbPi9capvHGqYFqRNp26hqTQGVbJ2b3nO
-         zaDA==
-X-Gm-Message-State: APjAAAVmY5/th8m/FJQ5vNolAN2t5NhPi9nAHPTPsUw1FIkuiFSIuVzi
-        ZpoA2kPwLteGem3ba7voSUtjQQ==
-X-Google-Smtp-Source: APXvYqz78/35Mrl0a888RrdK4S97M2/D9O9RwIXYz4ZLMfeimur3GqkKO9UZP855FGvy0sOh1f4QsA==
-X-Received: by 2002:a2e:9886:: with SMTP id b6mr18930607ljj.47.1574885876760;
-        Wed, 27 Nov 2019 12:17:56 -0800 (PST)
+        bh=w5gQgA8v/HX14VDHHSlOUpz5qEAJHrEInj+L4mAu6kU=;
+        b=YTUkjHeFGs5iv+Q2cwo2HdGDwWFdDs3pmwHCjXsMjCwV1bGOfaLfG8+2cY9rLTJBTl
+         VoqHKiAegO1CzONRD0RBRvXG4tcdVnzrd8+domafKvQhSURikc3PSucESFWe8Xnn/XU7
+         O7RdymnpnvMoCmN1fT/jW06jI9Ru9+PUYwsJZvA9uziezDqZrMXh7eCL8ZzZxTwjTqph
+         HzW76Di6b8YPj3Qpzy0u5r44Ugdftz4DbZdDFGXD9kHS0bZEJKwmL8hfttNKeTj9zH/N
+         L3OPHt328AQIyz51F0m/LFPVQgVea/FvoGaMIDwPAbAQwiukoKZwSObhi8bmBUqmsktE
+         SUyQ==
+X-Gm-Message-State: APjAAAXIKUeQ2yUSKp3irkGvSooYY26gh3E8pviXxZeR1bWIwUgXL4zm
+        sda3LZzGOnODsgGuKMxQa3ZasA==
+X-Google-Smtp-Source: APXvYqxkS1ZKTxIiO68eMriRpO65+39Nfwzvzt+U2AIcDTJlA532080E2PQZpfg42HhltaQKBRoq9g==
+X-Received: by 2002:a2e:3009:: with SMTP id w9mr33242841ljw.74.1574885880044;
+        Wed, 27 Nov 2019 12:18:00 -0800 (PST)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id r22sm7759739lji.71.2019.11.27.12.17.53
+        by smtp.gmail.com with ESMTPSA id r22sm7759739lji.71.2019.11.27.12.17.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 27 Nov 2019 12:17:56 -0800 (PST)
+        Wed, 27 Nov 2019 12:17:59 -0800 (PST)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net, john.fastabend@gmail.com
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         borisp@mellanox.com, aviadye@mellanox.com, daniel@iogearbox.net,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
+        syzbot+df0d4ec12332661dd1f9@syzkaller.appspotmail.com,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net 1/8] net/tls: take into account that bpf_exec_tx_verdict() may free the record
-Date:   Wed, 27 Nov 2019 12:16:39 -0800
-Message-Id: <20191127201646.25455-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net 2/8] net/tls: free the record on encryption error
+Date:   Wed, 27 Nov 2019 12:16:40 -0800
+Message-Id: <20191127201646.25455-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191127201646.25455-1-jakub.kicinski@netronome.com>
 References: <20191127201646.25455-1-jakub.kicinski@netronome.com>
@@ -63,61 +64,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_exec_tx_verdict() may free the record if tls_push_record()
-fails, or if the entire record got consumed by BPF. Re-check
-ctx->open_rec before touching the data.
+When tls_do_encryption() fails the SG lists are left with the
+SG_END and SG_CHAIN marks in place. One could hope that once
+encryption fails we will never see the record again, but that
+is in fact not true. Commit d3b18ad31f93 ("tls: add bpf support
+to sk_msg handling") added special handling to ENOMEM and ENOSPC
+errors which mean we may see the same record re-submitted.
 
+As suggested by John free the record, the BPF code is already
+doing just that.
+
+Reported-by: syzbot+df0d4ec12332661dd1f9@syzkaller.appspotmail.com
 Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 ---
- net/tls/tls_sw.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ net/tls/tls_sw.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index da9f9ce51e7b..70e3c0c1af50 100644
+index 70e3c0c1af50..dbba51b69d21 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -984,7 +984,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 					num_async++;
- 				else if (ret == -ENOMEM)
- 					goto wait_for_memory;
--				else if (ret == -ENOSPC)
-+				else if (ctx->open_rec && ret == -ENOSPC)
- 					goto rollback_iter;
- 				else if (ret != -EAGAIN)
- 					goto send_end;
-@@ -1053,11 +1053,12 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 		ret = sk_stream_wait_memory(sk, &timeo);
- 		if (ret) {
- trim_sgl:
--			tls_trim_both_msgs(sk, orig_size);
-+			if (ctx->open_rec)
-+				tls_trim_both_msgs(sk, orig_size);
- 			goto send_end;
- 		}
+@@ -771,8 +771,14 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
  
--		if (msg_en->sg.size < required_size)
-+		if (ctx->open_rec && msg_en->sg.size < required_size)
- 			goto alloc_encrypted;
- 	}
- 
-@@ -1190,11 +1191,13 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- wait_for_memory:
- 		ret = sk_stream_wait_memory(sk, &timeo);
- 		if (ret) {
--			tls_trim_both_msgs(sk, msg_pl->sg.size);
-+			if (ctx->open_rec)
-+				tls_trim_both_msgs(sk, msg_pl->sg.size);
- 			goto sendpage_end;
- 		}
- 
--		goto alloc_payload;
-+		if (ctx->open_rec)
-+			goto alloc_payload;
- 	}
- 
- 	if (num_async) {
+ 	policy = !(flags & MSG_SENDPAGE_NOPOLICY);
+ 	psock = sk_psock_get(sk);
+-	if (!psock || !policy)
+-		return tls_push_record(sk, flags, record_type);
++	if (!psock || !policy) {
++		err = tls_push_record(sk, flags, record_type);
++		if (err) {
++			*copied -= sk_msg_free(sk, msg);
++			tls_free_open_rec(sk);
++		}
++		return err;
++	}
+ more_data:
+ 	enospc = sk_msg_full(msg);
+ 	if (psock->eval == __SK_NONE) {
 -- 
 2.23.0
 
