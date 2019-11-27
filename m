@@ -2,121 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA6D10A989
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 05:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A41EE10A9C0
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbfK0E6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Nov 2019 23:58:07 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:36832 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726576AbfK0E6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Nov 2019 23:58:07 -0500
-Received: by mail-il1-f195.google.com with SMTP id s75so19883591ilc.3
-        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 20:58:05 -0800 (PST)
+        id S1726112AbfK0FFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 00:05:42 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:33632 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbfK0FFm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 00:05:42 -0500
+Received: by mail-pj1-f68.google.com with SMTP id r67so1597954pjb.0
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 21:05:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=hbTa4dDpVRcmH+86jgilAN4FABFPjPKgE94nTjec2xg=;
-        b=JARBdIE9TCAJ/YybKemAthSrzfcTH0QwQsESRbFIdAcu4R+8wYZ1AOu9+SdTMSmhBf
-         SkJ03Wd78qRVre4Zl0CuuEPzKfXaZLV6b57qTuR4mvq4lxHV4quEiSDjaFDLibgGByHp
-         jXsBEtBJQ5DDFp12BCynz1ZRQ1zAaJOyYOM+01twoyM5gUBMKftI0xtQQC06SVIRAjSq
-         S11cJUNDaPRFO2nGvkTKxkP+eRp6cmfzQ1RRuvUadO/+RSmHPqcpHoof+e8hGGMyCdLM
-         zJcYp2IY/s9FxoYM9xk4WINp5Qa00B/8VKViu8yWvK3u6g+GuAouoXrh0f4TBdk7DMNe
-         sBpw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xZ4O83bgDIw/8dIBhV4hXPyaX+XZAbVnynBzLd9+iLI=;
+        b=JLaTbp8IWD3cAfVShRjwwPtl0yRZr6oE7Ksf4+lSwE3sJZ6lsicMVJulQ6G1kM9Dus
+         OXHEYfdMsxCiR3NLCf+GjSURk4lk+VsPw08Zn8+s3EUJSvdinEWQWNBxF9btYJQPqnTC
+         4zqtp3YYKPt274JrfE7hL+cLC8Ebd0hEeP7+o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=hbTa4dDpVRcmH+86jgilAN4FABFPjPKgE94nTjec2xg=;
-        b=iGLkPXU2o0TITIPZaE9bANcXRbZBVxQm8V/KNbml5jcqGNqc742YaPjXRQD8I9A+BH
-         1jF7f3ob7W4xJuP7YNOL00/gjm5w1K95Rs/p67Pr3Ep80PdHNP23TlBwup3Ho03aAAUI
-         M5K0sIkhUqixIu24LA5kzbRlyTz2ODRIdVLb5R9Kb/GXrqMCydqZ0atJ5u3vy9qa4RR7
-         neg5SffJ8lpxpKd3TDSVQirgP5IouW7xLMUtaMZnf9Qdp40BoJ4HmGda5xzGzq8AUVB2
-         UwVEOkVSD9KPF4xpD81UupBcFsVvHtG2b6jK6gwsl62Eb/mL+tiLNm5FHSpcamcaHZ5s
-         p5qw==
-X-Gm-Message-State: APjAAAXMJ6NUVjbFx8Yt6qZDcyjW2oxYilXSL+/3CZGef9h7Np1VjIGf
-        PLK7FS56PaG4Mb96CAvxGX70f9yRE4bDcL7vYP2DGA==
-X-Google-Smtp-Source: APXvYqydvyq5QeffWSYDr842HeZr1MNLkHAujL9FXfE5q1LHdlU927Z9NWSjSxfmRZoUQw/pTaZD1d2MicepEYsL0CY=
-X-Received: by 2002:a92:8b4e:: with SMTP id i75mr40452296ild.5.1574830684728;
- Tue, 26 Nov 2019 20:58:04 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xZ4O83bgDIw/8dIBhV4hXPyaX+XZAbVnynBzLd9+iLI=;
+        b=T/A5i6c3B/gVSbYHtwyidUe6XedfVDm6bHkqJtxOjm8g4L4edLSgKaKHrpQw3+vDjz
+         VGcIHX7HoNZxMD0EzOam3MzM2wZ1NvGx7KKmJX4ZynLLmlti3lIPyILk7LpiPPrUST/W
+         0Gfn3H3g3fezTpSQoXpXnIuQPVdFTC4gdYhBd4qy84YbImOqZhy83gGuK1yMfXp/bDfP
+         J28aU9AIpYT6ey9u3bXjxo+7kVyTla3RVtmPuc3Zue0dvjTQcb5n5GBhu3Pp3HGwKsSE
+         KeJuUvg6BfNZctF3yuOwgzk85vUM2lWAUZqPfLRmMXTNnhQ2ilPHT4auT2sLoDw+TNjh
+         vkcQ==
+X-Gm-Message-State: APjAAAWo9fSbLzJECmwOTFuPfr0jMhp03mHcMnffJskm+C9668YetePU
+        Pt5HPjmgdoHx1rR1PWavRYt6Og==
+X-Google-Smtp-Source: APXvYqzsYFZ3auba035H26fOpwRDetbWUh/33lew+U6cqe7LVIiXhT1QT5AwJLEUhwHRXSE9BpoINw==
+X-Received: by 2002:a17:90a:d353:: with SMTP id i19mr3658245pjx.43.1574831141772;
+        Tue, 26 Nov 2019 21:05:41 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id f10sm14155169pfd.28.2019.11.26.21.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Nov 2019 21:05:40 -0800 (PST)
+Date:   Tue, 26 Nov 2019 21:05:39 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Phong Tran <tranmanphong@gmail.com>
+Cc:     Larry.Finger@lwfinger.net, jakub.kicinski@netronome.com,
+        kvalo@codeaurora.org, Wright.Feng@cypress.com,
+        arend.vanspriel@broadcom.com, davem@davemloft.net,
+        emmanuel.grumbach@intel.com, franky.lin@broadcom.com,
+        johannes.berg@intel.com, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, luciano.coelho@intel.com,
+        netdev@vger.kernel.org, p.figiel@camlintechnologies.com,
+        pieter-paul.giesberts@broadcom.com, pkshih@realtek.com,
+        rafal@milecki.pl, sara.sharon@intel.com,
+        shahar.s.matityahu@intel.com, yhchuang@realtek.com,
+        yuehaibing@huawei.com
+Subject: Re: [Patch v2 1/4] b43legacy: Fix -Wcast-function-type
+Message-ID: <201911262105.83DCA06@keescook>
+References: <20191125150215.29263-1-tranmanphong@gmail.com>
+ <20191126175529.10909-1-tranmanphong@gmail.com>
+ <20191126175529.10909-2-tranmanphong@gmail.com>
 MIME-Version: 1.0
-References: <20191001171028.23356-1-pc@cjr.nz>
-In-Reply-To: <20191001171028.23356-1-pc@cjr.nz>
-From:   Steve French <smfrench@gmail.com>
-Date:   Tue, 26 Nov 2019 22:57:53 -0600
-Message-ID: <CAH2r5mua0TiqAUVPu-h6hAnDnUYp90jfAC3QFFAT1aEku8AP3A@mail.gmail.com>
-Subject: Fwd: [PATCH net-next 0/2] Experimental SMB rootfs support
-To:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191126175529.10909-2-tranmanphong@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The coreq patches (network filesystem, cifs.ko) for this were merged
-in 5.4.  Are the net part of the patches (two small patches sent last
-a few months ago) queued for 5.5?
+On Wed, Nov 27, 2019 at 12:55:26AM +0700, Phong Tran wrote:
+> correct usage prototype of callback in tasklet_init().
+> Report by https://github.com/KSPP/linux/issues/20
+> 
+> Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 
----------- Forwarded message ---------
-From: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Date: Tue, Oct 1, 2019 at 12:10 PM
-Subject: [PATCH net-next 0/2] Experimental SMB rootfs support
-To: <netdev@vger.kernel.org>, <linux-cifs@vger.kernel.org>,
-<samba-technical@lists.samba.org>, <davem@davemloft.net>,
-<smfrench@gmail.com>
-Cc: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Thanks for sending these!
 
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Hi,
+-Kees
 
-This patch series enables Linux to mount root file systems over the
-network by utilizing SMB protocol.
-
-Upstream commit 8eecd1c2e5bc ("cifs: Add support for root file
-systems") introduced a new CONFIG_CIFS_ROOT option, a virtual device
-(Root_CIFS) and a kernel cmdline parameter "cifsroot=" which tells the
-kernel to actually mount the root filesystem over a SMB share.
-
-The feature relies on ipconfig to set up the network prior to mounting
-the rootfs, so when it is set along with "cifsroot=" parameter:
-
-    (1) cifs_root_setup() parses all necessary data out of "cifsroot="
-    parameter for the init process know how to mount the SMB rootfs
-    (e.g. SMB server address, mount options).
-
-    (2) If DHCP failed for some reason in ipconfig, we keep retrying
-    forever as we have nowhere to go for NFS or SMB root
-    filesystems (see PATCH 2/2). Otherwise go to (3).
-
-    (3) mount_cifs_root() is then called by mount_root() (ROOT_DEV ==
-    Root_CIFS), retrieves early parsed data from (1), then attempt to
-    mount SMB rootfs by CIFSROOT_RETRY_MAX times at most (see PATCH
-    1/2).
-
-    (4) If all attempts failed, fall back to floppy drive, otherwise
-    continue the boot process with rootfs mounted over a SMB share.
-
-My idea was to keep the same behavior of nfsroot - as it seems to work
-for most users so far.
-
-For more information on how this feature works, see
-Documentation/filesystems/cifs/cifsroot.txt.
-
-Paulo Alcantara (SUSE) (2):
-  init: Support mounting root file systems over SMB
-  ipconfig: Handle CONFIG_CIFS_ROOT option
-
- init/do_mounts.c    | 49 +++++++++++++++++++++++++++++++++++++++++++++
- net/ipv4/ipconfig.c | 10 +++++++--
- 2 files changed, 57 insertions(+), 2 deletions(-)
-
---
-2.23.0
-
-
+> ---
+>  drivers/net/wireless/broadcom/b43legacy/main.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/b43legacy/main.c b/drivers/net/wireless/broadcom/b43legacy/main.c
+> index 4325e91736eb..8b6b657c4b85 100644
+> --- a/drivers/net/wireless/broadcom/b43legacy/main.c
+> +++ b/drivers/net/wireless/broadcom/b43legacy/main.c
+> @@ -1275,8 +1275,9 @@ static void handle_irq_ucode_debug(struct b43legacy_wldev *dev)
+>  }
+>  
+>  /* Interrupt handler bottom-half */
+> -static void b43legacy_interrupt_tasklet(struct b43legacy_wldev *dev)
+> +static void b43legacy_interrupt_tasklet(unsigned long data)
+>  {
+> +	struct b43legacy_wldev *dev = (struct b43legacy_wldev *)data;
+>  	u32 reason;
+>  	u32 dma_reason[ARRAY_SIZE(dev->dma_reason)];
+>  	u32 merged_dma_reason = 0;
+> @@ -3741,7 +3742,7 @@ static int b43legacy_one_core_attach(struct ssb_device *dev,
+>  	b43legacy_set_status(wldev, B43legacy_STAT_UNINIT);
+>  	wldev->bad_frames_preempt = modparam_bad_frames_preempt;
+>  	tasklet_init(&wldev->isr_tasklet,
+> -		     (void (*)(unsigned long))b43legacy_interrupt_tasklet,
+> +		     b43legacy_interrupt_tasklet,
+>  		     (unsigned long)wldev);
+>  	if (modparam_pio)
+>  		wldev->__using_pio = true;
+> -- 
+> 2.20.1
+> 
 
 -- 
-Thanks,
-
-Steve
+Kees Cook
