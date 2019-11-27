@@ -2,97 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D236810AFAB
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:40:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D70EC10AFBF
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:46:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfK0MkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 07:40:05 -0500
-Received: from faui03.informatik.uni-erlangen.de ([131.188.30.103]:50422 "EHLO
-        faui03.informatik.uni-erlangen.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726520AbfK0MkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:40:04 -0500
-X-Greylist: delayed 537 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 Nov 2019 07:40:03 EST
-Received: from faui04s.informatik.uni-erlangen.de (faui04s.informatik.uni-erlangen.de [131.188.30.149])
-        by faui03.informatik.uni-erlangen.de (Postfix) with ESMTP id D13B1241838;
-        Wed, 27 Nov 2019 13:31:02 +0100 (CET)
-Received: by faui04s.informatik.uni-erlangen.de (Postfix, from userid 66121)
-        id AE1FE15E15AC; Wed, 27 Nov 2019 13:31:02 +0100 (CET)
-From:   Dorothea Ehrl <dorothea.ehrl@fau.de>
-To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Cc:     linux-kernel@i4.cs.fau.de, Dorothea Ehrl <dorothea.ehrl@fau.de>,
-        Vanessa Hack <vanessa.hack@fau.de>
-Subject: [PATCH 5/5] staging/qlge: fix block comment coding style
-Date:   Wed, 27 Nov 2019 13:30:52 +0100
-Message-Id: <20191127123052.16424-5-dorothea.ehrl@fau.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191127123052.16424-1-dorothea.ehrl@fau.de>
-References: <20191127123052.16424-1-dorothea.ehrl@fau.de>
+        id S1726655AbfK0MqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 07:46:12 -0500
+Received: from mail-qv1-f54.google.com ([209.85.219.54]:44356 "EHLO
+        mail-qv1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726520AbfK0MqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:46:11 -0500
+Received: by mail-qv1-f54.google.com with SMTP id d3so8785453qvs.11
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 04:46:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rajagiritech-edu-in.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zh/vBERm/TbGM+yKl5SoCFkCcaIxa+50MOn7rbgBP8Q=;
+        b=gkyvth1/Mbl64/TJUNIuUxJnbtlh5omWv1qlqK95S5J7cYBXdi05gUzZBljO3jOOcb
+         HqEHMrZG/RmkV85nz7Yx4rZl1Jt53AtzzPaneyjPwSRKTJU2syvy170bWmvbWkzdQVWa
+         DYiB77Gxhziqu90y/UTPGDggPTj7u5l6r1SZCSDOJSLMWldtA1LMX2yCGoFzxPvFGpGL
+         Iu6kTOYu347m34fMmuuKuQ6KFlXEgX1LSHGIa72Ko70Ewh0IcOplDsh2WzzpLwL392gd
+         oO7rEwZ6sun1jv2g5Qh1UzzGd+OFJydJmNRGMk+8O3HFB1dzUg2MRi34BWcKZiM1dNId
+         YYAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zh/vBERm/TbGM+yKl5SoCFkCcaIxa+50MOn7rbgBP8Q=;
+        b=MOx11TvzympMvCAk2yiMOu8rHuImDQtQZsFrKLKKPzM8/rljR4ER0UdaFr4gpK/6IK
+         faCZVM7hgeWJBwYRMpQP7XeyMHY+VnleKLpWsygJssqXX2fN8luQuFhFk5sUGSOP1NWx
+         qxTsktR8cxqG5CqUNdIJMuSVLR1sTazhGY+VV4pHZ35PWEw6wBeic/ey0AlFn/kqYLt0
+         3GNfbZFmgpz+ClOyeMvkV75w3eRYRYix2YLXDeygMqYH3YOGdYG5xP8MFwm8OngCX+jx
+         0UOvry+v8Ct6gub1unAg3x9/V0uxrlZ+h7djo8QlpskaPDo8P0PmWNTa8oK/1bitvTSa
+         BrRw==
+X-Gm-Message-State: APjAAAUZEwUBu7P118y2a83NwzKgejTWZ+b7P76zsJTeZQCgJkQcQYCB
+        xk6XfeDtnfPS/zsnnHSF88rIrRClJJpJDLhabGPing==
+X-Google-Smtp-Source: APXvYqzYfa89PkENwWgrr+lbnyQptNxwjQ2eMJwZTVJ9xXPkWzFPnmQzwgOahRvkhhc1AO6G3I1PdkrXLAcRysHEqrU=
+X-Received: by 2002:a0c:9bd1:: with SMTP id g17mr4504471qvf.59.1574858770657;
+ Wed, 27 Nov 2019 04:46:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+G9fYtgEfa=bq5C8yZeF6P563Gw3Fbs+-h_oy1e4G_1G0jrgw@mail.gmail.com>
+ <20191126155632.GF795@breakpoint.cc> <20191127001931.GA3717@debian>
+In-Reply-To: <20191127001931.GA3717@debian>
+From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
+Date:   Wed, 27 Nov 2019 18:15:34 +0530
+Message-ID: <CAG=yYwnm4vRLRpjT2VOj5fynPhBfhvpVjfbSOvPrs-bwv09mTA@mail.gmail.com>
+Subject: Re: selftests:netfilter: nft_nat.sh: internal00-0 Error Could not
+ open file \"-\" No such file or directory
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>, horms@verge.net.au,
+        yanhaishuang@cmss.chinamobile.com, lkft-triage@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes:
-"WARNING: block comment use * on subsequent lines"
-"WARNING: block comments should align the * on each line"
-"WARNING: block comments use a trailing */ on a separate line"
-by checkpatch.pl.
+On Wed, Nov 27, 2019 at 5:49 AM Jeffrin Jose
+<jeffrin@rajagiritech.edu.in> wrote:
+> Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+> Signed-off-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+i do
 
-Signed-off-by: Dorothea Ehrl <dorothea.ehrl@fau.de>
-Co-developed-by: Vanessa Hack <vanessa.hack@fau.de>
-Signed-off-by: Vanessa Hack <vanessa.hack@fau.de>
----
- drivers/staging/qlge/qlge_main.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index d19709bcdc20..29861f01ca26 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -402,8 +402,8 @@ static int ql_set_mac_addr_reg(struct ql_adapter *qdev, u8 *addr, u32 type,
- 				   (index << MAC_ADDR_IDX_SHIFT) |	/* index */
- 				   type);	/* type */
- 			/* This field should also include the queue id
--			   and possibly the function id.  Right now we hardcode
--			   the route field to NIC core.
-+			 * and possibly the function id.  Right now we hardcode
-+			 * the route field to NIC core.
- 			 */
- 			cam_output = (CAM_OUT_ROUTE_NIC |
- 				      (qdev->
-@@ -683,7 +683,7 @@ static int ql_read_flash_word(struct ql_adapter *qdev, int offset, __le32 *data)
- 			FLASH_ADDR, FLASH_ADDR_RDY, FLASH_ADDR_ERR);
- 	if (status)
- 		goto exit;
--	 /* This data is stored on flash as an array of
-+	/* This data is stored on flash as an array of
- 	 * __le32.  Since ql_read32() returns cpu endian
- 	 * we need to swap it back.
- 	 */
-@@ -2223,7 +2223,8 @@ static int ql_napi_poll_msix(struct napi_struct *napi, int budget)
- 		     "Enter, NAPI POLL cq_id = %d.\n", rx_ring->cq_id);
-
- 	/* Service the TX rings first.  They start
--	 * right after the RSS rings. */
-+	 * right after the RSS rings.
-+	 */
- 	for (i = qdev->rss_ring_count; i < qdev->rx_ring_count; i++) {
- 		trx_ring = &qdev->rx_ring[i];
- 		/* If this TX completion ring belongs to this vector and
-@@ -2888,7 +2889,8 @@ static void ql_free_rx_resources(struct ql_adapter *qdev,
- }
-
- /* Allocate queues and buffers for this completions queue based
-- * on the values in the parameter structure. */
-+ * on the values in the parameter structure.
-+ */
- static int ql_alloc_rx_resources(struct ql_adapter *qdev,
- 				 struct rx_ring *rx_ring)
- {
---
-2.20.1
-
+-- 
+software engineer
+rajagiri school of engineering and technology
