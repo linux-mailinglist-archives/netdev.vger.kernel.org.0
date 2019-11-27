@@ -2,105 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 188BB10B2F6
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:09:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0AB10B2F9
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbfK0QJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 11:09:01 -0500
-Received: from mail-pf1-f171.google.com ([209.85.210.171]:33397 "EHLO
-        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726593AbfK0QJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:09:01 -0500
-Received: by mail-pf1-f171.google.com with SMTP id y206so2619570pfb.0
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 08:08:59 -0800 (PST)
+        id S1727047AbfK0QJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 11:09:58 -0500
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:45080 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbfK0QJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:09:58 -0500
+Received: by mail-vs1-f65.google.com with SMTP id n9so15490667vsa.12
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 08:09:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PSazCWrzWwutXjlILzEqtU6aL1uS/GzVDtw5TFilKHA=;
-        b=fMqkqJTrldxWb9xVLjP2WaKGloj0rCWfweNiT1RNvcxp40gbSOd+TIWLxp8jRMQkDI
-         n+X4HR9ECm4+FyPJcZdTrjcHiyTlACM3D90YiJcdjaNJ4ctMnALW8YJZYwwTUfUfJJib
-         nM19Duc42d86jhlB3F6TeKjYQv0GonwaJZrCrnnjg4HfN2N8tjZ9grERgwAlIkUYGPTL
-         NboggmlaNLT345dG/7ZZ7t+Q0bsZczykjyYe17dEy8sXvxUDzIwmpVbn5fCvXiw5u2XM
-         omjbNwIunh/hQoGlOQdCwWhN9ZwjOeHBSL+SxKqzQzk1HqA00V1fYlxVtvQ9zIQd1avc
-         dI/w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jdd3GeiYktZKjSBlhokiKmUt1NBtO9atXLjizQILczs=;
+        b=AdAkcufOxPLmmoNS3FqUKUrEE/86QWp/cDyb78rMLLRnmL7OJC/cpCtuRNT5ZVhxIE
+         fyEQR1NtdFdH5nLguNSxtLWL14KBWRf17u6tFsJDEUA9AAlsuhdsUzcCFVjY+qO22gxD
+         0Mu0aMLmI32UG5hqHLO7rglE4ddMZZTNSDJSBa3XmmBr/c6IJtxYfQwJSPjGvyHmVwkz
+         SyXjUrCsR7icSNyBXEEEl4Y8ATMyEDGeejPX2xGYrbV2j7lELE6/1xlYAcMpxCvXgo3M
+         11Sg+ybYnvhAePGeIXzwO+zISKGos5Xqi//q76dw+1wRRoUJMov1VScJNj+fmx/yCvN2
+         B2lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PSazCWrzWwutXjlILzEqtU6aL1uS/GzVDtw5TFilKHA=;
-        b=alM3ezJdkRLF++TfaaN/GN39K7AShd6IGmzzUwl2ZEcfnM5hDJlZ1+uN9zzmd0d6yH
-         olA9FX84lPnQJooz78Qk8QT3Is908iIuitgreQIA8gS5J/PiclRzKxXh/XPBUw9jPqBG
-         kiZ562h2UbvQEGTqJ1G25lUhq2eTyrSv+tT1sF4QBz0z4Tf2MLu81w4Xhm1hA5mlPt3I
-         vvU06bfZa0jYAfRoMY9bnYiqjcRGTBaReweY+bbzuSuF2sJEHDJN/EMTii13Zsm+5Ybm
-         luLhW13diKeMo7l1XhWRrOo5hPuiNy19UqABC14kBf494UWdRHOLSl1003iKRBMf1cyg
-         Z3mw==
-X-Gm-Message-State: APjAAAWBUIkYpoWfui06fpebl3+QYZgAE+hKbuoDSzgp/cKNy/81k2a9
-        BfYizfL3zcu033Be2Wg30Nb+m8uB3OXdMQ==
-X-Google-Smtp-Source: APXvYqxBXkT4U4184gshT8EL4vRhfkNW7ZHyPH6NqVbSrh7oTOb/Bu1FPuo9jZTGWTXhBM1hSc7LMQ==
-X-Received: by 2002:a62:1488:: with SMTP id 130mr182778pfu.238.1574870938407;
-        Wed, 27 Nov 2019 08:08:58 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id k10sm7138619pjs.31.2019.11.27.08.08.57
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 08:08:58 -0800 (PST)
-Date:   Wed, 27 Nov 2019 08:08:50 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 205681] New: recvmg is overwriting the buffer passed in
- msg_name by exceeding msg_namelen
-Message-ID: <20191127080850.2707eef0@hermes.lan>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jdd3GeiYktZKjSBlhokiKmUt1NBtO9atXLjizQILczs=;
+        b=Tb2Mza5wnYMujt96OwAreWZliGF+LMoiphGhvHnDLYvx7S+WXRvZjm02J4kQIUpa7/
+         7flE5ZngEl7Aba4TQkGvNXM5qKtVhX3h7IdqQKWfMuJnBuYhzwIen5/y0X93jstfhpuk
+         BrWhbAhPh8tOJLLRJjdVTS5GphIfzoXZzO6K+lYNu6KVGqmdbZZRYuhExMEEUQaVffZu
+         9g1T1C89flkbK06eo8H1BJC5b+aBEgCW39MFU7U89jukgWZfbd7CIs92aQnX5DTyiTPP
+         DUn5AmxyiugzVkLqTiWByzDCnJLhpthuJBcGw2n30yU2AmyLJeSP2nUAPU2cG6LHxgMe
+         rerQ==
+X-Gm-Message-State: APjAAAW8Q6SpcWyy1OLuHZ8QVfngvT8j53da6QWNFSJZcphdzArPB6y0
+        lSCUcU0rKfsnYvHcTe3l5rjE2XPLjqHVvN23TqRlUw==
+X-Google-Smtp-Source: APXvYqw/snJjGohie9oeCh2cZj1D2XljJyh0xijOo/tpMm8NYn50tNYyrDpgyjhEub29M2oYRrsqRayHGPseU0IMVw8=
+X-Received: by 2002:a67:ec82:: with SMTP id h2mr2355717vsp.96.1574870995658;
+ Wed, 27 Nov 2019 08:09:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAJPywTJzpZAXGdgZLJ+y7G2JoQMyd_JG+G8kgG+xruVVmZD-OA@mail.gmail.com>
+In-Reply-To: <CAJPywTJzpZAXGdgZLJ+y7G2JoQMyd_JG+G8kgG+xruVVmZD-OA@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Wed, 27 Nov 2019 08:09:44 -0800
+Message-ID: <CANP3RGfAT199GyqWC7Wbr2983jO1vaJ1YJBSSXtFJmGJaY+wiQ@mail.gmail.com>
+Subject: Re: Delayed source port allocation for connected UDP sockets
+To:     Marek Majkowski <marek@cloudflare.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 27, 2019 at 6:08 AM Marek Majkowski <marek@cloudflare.com> wrote:
+>
+> Morning,
+>
+> In my applications I need something like a connectx()[1] syscall. On
+> Linux I can get quite far with using bind-before-connect and
+> IP_BIND_ADDRESS_NO_PORT. One corner case is missing though.
+>
+> For various UDP applications I'm establishing connected sockets from
+> specific 2-tuple. This is working fine with bind-before-connect, but
+> in UDP it creates a slight race condition. It's possible the socket
+> will receive packet from arbitrary source after bind():
+>
+> s = socket(SOCK_DGRAM)
+> s.bind((192.0.2.1, 1703))
+> # here be dragons
+> s.connect((198.18.0.1, 58910))
+>
+> For the short amount of time after bind() and before connect(), the
+> socket may receive packets from any peer. For situations when I don't
+> need to specify source port, IP_BIND_ADDRESS_NO_PORT flag solves the
+> issue. This code is fine:
+>
+> s = socket(SOCK_DGRAM)
+> s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+> s.bind((192.0.2.1, 0))
+> s.connect((198.18.0.1, 58910))
+>
+> But the IP_BIND_ADDRESS_NO_PORT doesn't work when the source port is
+> selected. It seems natural to expand the scope of
+> IP_BIND_ADDRESS_NO_PORT flag. Perhaps this could be made to work:
+>
+> s = socket(SOCK_DGRAM)
+> s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+> s.bind((192.0.2.1, 1703))
+> s.connect((198.18.0.1, 58910))
+>
+> I would like such code to delay the binding to port 1703 up until the
+> connect(). IP_BIND_ADDRESS_NO_PORT only makes sense for connected
+> sockets anyway. This raises a couple of questions though:
+>
+>  - IP_BIND_ADDRESS_NO_PORT name is confusing - we specify the port
+> number in the bind!
+>
+>  - Where to store the source port in __inet_bind. Neither
+> inet->inet_sport nor inet->inet_num seem like correct places to store
+> the user-passed source port hint. The alternative is to introduce
+> yet-another field onto inet_sock struct, but that is wasteful.
+>
+> Suggestions?
+>
+> Marek
+>
+> [1] https://www.unix.com/man-page/mojave/2/connectx/
 
-
-Begin forwarded message:
-
-Date: Wed, 27 Nov 2019 06:36:50 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 205681] New: recvmg is overwriting the buffer passed in msg_name by exceeding msg_namelen
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=205681
-
-            Bug ID: 205681
-           Summary: recvmg is overwriting the buffer passed in msg_name by
-                    exceeding msg_namelen
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.4,4.0,3.0,2.6
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: high
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: sudheendrasp@gmail.com
-        Regression: No
-
-if (msg->msg_name) {
-        struct sockaddr_rxrpc *srx = msg->msg_name;
-        size_t len = sizeof(call->peer->srx);
-
-        memcpy(msg->msg_name, &call->peer->srx, len);
-        srx->srx_service = call->service_id;
-        msg->msg_namelen = len;
-    }
-
-
-As seen, recvmsg is doing memcpy of len which can be greater than msg_namelen
-passed.
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
+attack BPF socket filter drop all, then bind, then connect, then replace it.
