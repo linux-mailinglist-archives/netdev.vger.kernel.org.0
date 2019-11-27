@@ -2,122 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9377010B08E
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA4F10B114
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 15:23:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfK0Nq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 08:46:26 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:19744 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfK0Nq0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:46:26 -0500
-Received: from [192.168.1.7] (unknown [180.157.109.16])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id CA2A041B4E;
-        Wed, 27 Nov 2019 21:46:20 +0800 (CST)
-Subject: Re: Question about flow table offload in mlx5e
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Bloch <markb@mellanox.com>
-References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
- <20191119.163923.660983355933809356.davem@davemloft.net>
- <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
- <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
- <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
- <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
- <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
- <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
- <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
- <057b0ab1-5ce3-61f0-a59e-1c316e414c84@mellanox.com>
- <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <5ce27064-97ee-a36d-8f20-10a0afe739cf@ucloud.cn>
-Date:   Wed, 27 Nov 2019 21:45:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1727097AbfK0OXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 09:23:12 -0500
+Received: from lan.nucleusys.com ([92.247.61.126]:45012 "EHLO
+        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726634AbfK0OXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 09:23:11 -0500
+X-Greylist: delayed 1729 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 Nov 2019 09:23:11 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:
+        From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xXUEy5RjR0d6ad7vv4cQTn7Eal/AhJZwP7ZGEUNr3Lo=; b=mGrnGONOKUqGDPCmlQtiAxHvR/
+        BLCTWyqt+faFgoJu+gbTWlHyp87X5KyQwLOG8wnmjkjFgcZaYlXmWln1O/WVFNJYyXFXKIQJfeQ9K
+        6nDVQyfi5Qqig6uF5dfo6/xeZoC9QQn5Y1nfcsLRUPYbk6rMzk7m6pvbitJ8NKes/1Wo=;
+Received: from 78-83-66-117.spectrumnet.bg ([78.83.66.117] helo=p310)
+        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1iZxlr-0003EE-Rw; Wed, 27 Nov 2019 15:54:20 +0200
+Date:   Wed, 27 Nov 2019 15:54:19 +0200
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     Thor Thayer <thor.thayer@linux.intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Altera TSE driver not working in 100mbps mode
+Message-ID: <20191127135419.7r53qw6vtp747x62@p310>
 MIME-Version: 1.0
-In-Reply-To: <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVQkpNS0tLS0tDTkNIS0xZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MEk6Sww6TDg9EwMLDDEvIwo5
-        DwkwChdVSlVKTkxPQ01JSENKSkhMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSktCVUpNWVdZCAFZQU9MTkw3Bg++
-X-HM-Tid: 0a6ead1cdff12086kuqyca2a041b4e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
+X-Spam-Score: -1.0 (-)
+X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  Hi Thor, In my effort to move Altera TSE driver from PHYLIB
+    to PHYLINK i ran into a problem. The driver would not work properly on 100Mbit/s
+    links. This is true for the original driver in linux-5.4.y as well a [...]
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+  0.0 TVD_RCVD_IP            Message was received from an IP address
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+	Hi Thor,
 
-在 2019/11/27 21:20, Paul Blakey 写道:
-> On 11/27/2019 3:11 PM, Paul Blakey wrote:
->> On 11/27/2019 2:16 PM, wenxu wrote:
->>
->>> Sorry maybe something mess you,  Ignore with my patches.
->>>
->>>
->>> I also did the test like you with route tc rules to ft callback.
->>>
->>>
->>> please also did the following test:  mlx_p0 is the pf and mlx_pf0vf0 
->>> is the vf .
->>>
->> Are you  in switchdev mode (via devlink) or default legacy mode?
->>
->>
-> mlx_pf0vf0  is representor device created after entring switchdev mode? and eth0 in vm is the binded mlx5 VF?
+In my effort to move Altera TSE driver from PHYLIB to PHYLINK i ran into a 
+problem.  The driver would not work properly on 100Mbit/s links.  This is true 
+for the original driver in linux-5.4.y as well as for my PHYLINK/SFP enabled 
+version.
 
-Yes, mlx_pf0vf0 is the representor and eth0 in vm is VF. It also in the switchdev mode.
+This is a DT fragment of what i've been trying with 5.4.y kernels and the 
+stock driver:
+
+                tse_sub_2: ethernet@0xc0300000 {
+                        status = "disabled";
+
+                        compatible = "altr,tse-msgdma-1.0";
+                        reg =   <0xc0300000 0x00000400>,
+                                <0xc0301000 0x00000020>,
+                                <0xc0302000 0x00000020>,
+                                <0xc0303000 0x00000008>,
+                                <0xc0304000 0x00000020>,
+                                <0xc0305000 0x00000020>;
+                        reg-names = "control_port", "rx_csr", "rx_desc", "rx_resp", "tx_csr", "tx_desc";
+                        interrupt-parent =< &intc >;
+                        interrupts = <0 54 4>, <0 55 4>;
+                        interrupt-names = "rx_irq", "tx_irq";
+                        rx-fifo-depth = <2048>;
+                        tx-fifo-depth = <2048>;
+                        address-bits = <48>;
+                        max-frame-size = <1500>;
+                        local-mac-address = [ 00 0C ED 00 00 06 ];
+                        altr,has-supplementary-unicast;
+                        altr,has-hash-multicast-filter;
+                        phy-handle = <0>;
+                        fixed-link {
+                                speed = <1000>;
+                                full-duplex;
+                        };
+                };
+
+Trying "speed = <100>;" above also doesn't change much, except that the link is 
+reported (as expected) as 100Mbps.
+
+With the PHYLINK code the above fragment is pretty much the same except for:
+
+                        sfp = <&sfp0>;
+                        phy-mode = "sgmii";
+                        managed = "in-band-status";
+
+Both (old and new) drivers are working fine on 1Gbps links with optics and 
+copper SFPs.  With PHYLINK code (and in auto-negotiation mode) the link speed 
+and duplex is properly detected as 100Mbps.  MAC and PCS also look correctly set 
+up, but the device is still unable to receive or transmit packages.
 
 
-sudo grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
-/sys/class/net/mlx_p0/phys_port_name:p0
-/sys/class/net/mlx_p0/phys_switch_id:34ebc100034b6b50
-/sys/class/net/mlx_pf0vf0/phys_port_name:pf0vf0
-/sys/class/net/mlx_pf0vf0/phys_switch_id:34ebc100034b6b50
-/sys/class/net/mlx_pf0vf1/phys_port_name:pf0vf1
-/sys/class/net/mlx_pf0vf1/phys_switch_id:34ebc100034b6b50
+Please let me know should you need more details.
 
-The problem is when the last filter add in the tun1 will lead the outgoing syn packets can't be real offloaded
 
->
-> Can you run this command:
->
-> sudo grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
->
-> example:
-> /sys/class/net/ens1f0_0/phys_port_name:pf0vf0
-> /sys/class/net/ens1f0_0/phys_switch_id:b828a50003078a24
-> /sys/class/net/ens1f0_1/phys_port_name:pf0vf1
-> /sys/class/net/ens1f0_1/phys_switch_id:b828a50003078a24
-> /sys/class/net/ens1f0/phys_port_name:p0
-> /sys/class/net/ens1f0/phys_switch_id:b828a50003078a24
->
-> and
-> sudo ls /sys/class/net/*/device/virtfn*/net
->
-> example:
-> /sys/class/net/ens1f0/device/virtfn0/net:
-> ens1f2
->
-> /sys/class/net/ens1f0/device/virtfn1/net:
-> ens1f3
->
-> and even
->
-> lspci | grep -i mellanox ; ls -l /sys/class/net
->
->
->
->
->
->
-> Thansk.
->
->
+thanks,
+Petko
