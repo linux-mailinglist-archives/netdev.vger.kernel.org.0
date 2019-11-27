@@ -2,101 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6496610AD9F
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E50710ADB9
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 11:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbfK0K3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 05:29:18 -0500
-Received: from fd.dlink.ru ([178.170.168.18]:53404 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726149AbfK0K3R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 05:29:17 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id BB5C21B2120E; Wed, 27 Nov 2019 13:29:13 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru BB5C21B2120E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1574850553; bh=EsvGsnpDTlUlkRudAZRaGscbrq1rpDXrPl2b4VXesCU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=C8h4I5Jw3GU/gGodtmFJfokOxM+MnPrYiEZvOPpR71NzZllqQbJk9oc8NGhbVJr8Z
-         lcMdvh7BDkng/94rgxrdml69FW+P1g5E3QMiZ3SReLzFvfvGG3Gshrdkqps/s+IFNF
-         V0BcM5VO7ddfkkJ8v8opMOcHx1yMNStorUpx65nw=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id EE0721B2089D;
-        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru EE0721B2089D
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 9206C1B22678;
-        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Wed, 27 Nov 2019 13:29:03 +0300 (MSK)
+        id S1726515AbfK0KaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 05:30:19 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37361 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbfK0KaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 05:30:18 -0500
+Received: by mail-qt1-f194.google.com with SMTP id w47so20703614qtk.4
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 02:30:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=4Ny9bCRzlSL5kowE78lFJFmlCaKa69/ARy6t4b8d2kE=;
+        b=XsjcBsVdGE70c7GiZDyTA5zEs14DI6vvCVucen59YaKbegR3TMEJlpk9VU6fBOJ7sj
+         SIB6Ur4ZqHzSBHhn1xfsE0JMno5o28/xTlca/0EOwr9JaxmSBCyTVH5Yu1Vt76VDorgI
+         f1Uebq1/cbEaSw40k/4AZO70+XWys5djBgAVDLkbU243cvcziBsZU3ofofAwAC/CQJXi
+         NW/g47FbeUSw3Ecu1CsHxhyczPG2clTWf9wXAP0MR4q+6rA7qztdUzJI7RIG0wOILawB
+         aKSPcA5yal7jOrsMMai1qugPns7FfFTKR/Ft4j9CIPRl5Hc3d3PdENNmeq9Lb71aO4V2
+         LRVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=4Ny9bCRzlSL5kowE78lFJFmlCaKa69/ARy6t4b8d2kE=;
+        b=RgYQ3bTIq3XIt1A14nrcAyLuaNV5EJNtLdJpiKlvRkFxz2RtdegNJJYAZ9qrbGZVug
+         HjyT78xmzuhBvhZfG+TmIYJC/R3eDsFspBGXBHUbg7jswRM4DSwosdPmSdQsc0IgFeX7
+         4SeWx20sOGaN3USSew2yA6WCveo9HN/SiWWpvYj04MzhimeHNSX8iqRmhnCShG7WL0vz
+         67+LE1zFYAGsot8jdrzJh0xFK9ziGeR7dcI1sAAGdzb6OMOAnQB/bf3WttJ/jqTgwIKg
+         9R4szL+yw8a7TwqNvEYe73OppS8Ix+boqzVStKJw0PheMIv/rkyExon/3kWUBbh9a+uH
+         et1Q==
+X-Gm-Message-State: APjAAAXtWFRKKcoUHcjdRiPsZjS2Uanhys0cpQPzapVbIL9NnibANQBX
+        lBTIAnN/iYTnClBRQeBHQJ7R7gAUxq8rd2MXe0I=
+X-Google-Smtp-Source: APXvYqzxWnOkxPT67rj6NBdc6uqART/O6XZWBD841MA9xkD3Wwdv80m8wLymCmkWirykFUwcUTZOnEGV8rjmpItLDrk=
+X-Received: by 2002:ac8:e4a:: with SMTP id j10mr24098337qti.340.1574850617631;
+ Wed, 27 Nov 2019 02:30:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Wed, 27 Nov 2019 13:29:03 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
-Cc:     Luciano Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Edward Cree <ecree@solarflare.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "Kenneth R. Crudup" <kenny@panix.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet
- stalling
-In-Reply-To: <PSXP216MB0438B2F163C635F8B8B4AD8AA4440@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
-References: <20191127094123.18161-1-alobakin@dlink.ru>
- <7a9332bf645fbb8c9fff634a3640c092fb9b4b79.camel@intel.com>,<c571a88c15c4a70a61cde6ca270af033@dlink.ru>
- <PSXP216MB0438B2F163C635F8B8B4AD8AA4440@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <a638ab877999dbc4ded87bfaebe784f5@dlink.ru>
-X-Sender: alobakin@dlink.ru
+Received: by 2002:a0c:e88b:0:0:0:0:0 with HTTP; Wed, 27 Nov 2019 02:30:17
+ -0800 (PST)
+Reply-To: mariamabdul002@gmail.com
+From:   Mariam Abdul <victorjames147700@gmail.com>
+Date:   Wed, 27 Nov 2019 18:30:17 +0800
+Message-ID: <CAAX-fs7m97OHE5k=ZTO8WFt0+Xe5AW0S-nsmbvHnZEaxe1jcug@mail.gmail.com>
+Subject: =?UTF-8?B?6Kaq5oSb44Gq44KL5Y+L5Lq644G444Gu5oyo5ou244CB?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nicholas Johnson wrote 27.11.2019 13:23:
-> Hi,
-
-Hi Nicholas,
-
->  Sorry for top down reply, stuck with my phone. If it replies HTML
-> then I am so done with Outlook client.
-> 
->  Does my Reported-by tag apply here?
-> 
->  As the reporter, should I check to see that it indeed solves the
-> issue on the original hardware setup? I can do this within two hours
-> and give Tested-by then.
-
-Oops, I'm sorry I forgot to mention you in the commit message. Let's
-see what Dave will say, I have no problems with waiting for your test
-results and publishing v2.
-
->  Thanks
-> 
->  Regards,
-> 
->  Nicholas
-
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+6Kaq5oSb44Gq44KL5Y+L5Lq644G444Gu5oyo5ou244CBDQoNCuengeOBruWQjeWJjeOBr+ODnuOD
+quOCouODoOODu+OCouODluODieOCpeODq+OBp+OBmeOAgua2meOCkua1geOBl+OBquOBjOOCieOB
+k+OBruODoeODg+OCu+ODvOOCuOOCkuabuOOBhOOBpuOBhOOBvuOBmeOAguengeOBruWbveOCt+OD
+quOCouOBp+mAsuihjOS4reOBruWGheaIpuOBr+engeOBruS6uueUn+OBq+Wkp+OBjeOBquW9semf
+v+OCkuS4juOBiOOBvuOBl+OBn+OAguWOu+W5tOWutuaXj+OCkuWkseOBhOOBvuOBl+OBn+OAguen
+geOBrueItuOBr+atu+OBrOWJjeOBr+mHkeaMgeOBoeOBp+OAgeefs+ayueOBqOOCrOOCueOBruOD
+k+OCuOODjeOCueOCkuOBl+OBpuOBhOOBpuOAgemHkeOBruODk+OCuOODjeOCueOCguOBl+OBpuOB
+hOOBvuOBl+OBn+OAguW9vOOBr+Wkp+mHkeOCkueovOOBhOOBoO+8iDI1MDDkuIczMDAw44OJ44Or
+77yJ44K344Oq44Ki44Gn44Gu5oim5LqJ44Go5q665a6z44CCDQoNCuengeOBjOeXheawl+OBi+OC
+ieWbnuW+qeOBl+OAgeOBguOBquOBn+OBq+S8muOBhOOBq+adpeOCi+OBvuOBp+OAgeengeOBr+OB
+guOBquOBn+OBjOengeOBjOOBiumHkeOCkuWPl+OBkeWPluOCi+OBruOCkuaJi+S8neOBhuW/heim
+geOBjOOBguOCiuOBvuOBmeOAgg0KDQrnp4Hjga/kuqHjgY3niLbjga7jg5Pjgrjjg43jgrnjg5Hj
+g7zjg4jjg4rjg7zjgajjgZfjgabjgYLjgarjgZ/jgpLku7vlkb3jgZfjgZ/jgYTjgajmgJ3jgYTj
+gb7jgZnjgILjg4njg5DjgqTjga7nrKzkuIDmub7lsrjpioDooYzjga/jgYLjgarjgZ/jgavjgYrp
+h5HjgpLpgIHph5HjgZfjgb7jgZnjgILjgYrph5HjgpLpoJDjgZHjgovjgZ/jgoHjga7mm7jpoZ7j
+gajmg4XloLHjgpLjgZnjgbnjgabjgYrpgIHjgorjgZfjgb7jgZnjgIINCg0K44GC44Gq44Gf44GM
+56eB44Gu44Gf44KB44Gr44GT44KM44KS6KGM44GG44GT44Go44GM44Gn44GN44KL44GL44Gp44GG
+44GL56eB44Gr55+l44KJ44Gb44Gm44GP44Gg44GV44GE44CB44GT44KM44Gv56eB44Gu5pys5b2T
+44Gu6Kmx44Gn44GZ44CB56eB44Gv44GC44Gq44Gf44Gu5Yqp44GR44GM5b+F6KaB44Gn44GZ44CC
+DQoNCuengeOBruODoeODvOODq++8iG1pc21hcmlhbWFiZHVsQGdtYWlsLmNvbe+8ieOBp+engeOB
+q+mAo+e1oeOBp+OBjeOBvuOBmQ0KDQrmlazlhbfjgIENCg0KTWFyaWFtIEFiZHVsDQo=
