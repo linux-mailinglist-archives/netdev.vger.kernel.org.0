@@ -2,106 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6D610C079
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 23:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F2310C07E
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 00:00:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfK0W6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 17:58:05 -0500
-Received: from mail-qv1-f73.google.com ([209.85.219.73]:55109 "EHLO
-        mail-qv1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727227AbfK0W6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 17:58:04 -0500
-Received: by mail-qv1-f73.google.com with SMTP id q20so3285280qvl.21
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 14:58:02 -0800 (PST)
+        id S1727355AbfK0XAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 18:00:06 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:36454 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727126AbfK0XAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 18:00:06 -0500
+Received: by mail-qk1-f196.google.com with SMTP id v19so1444818qkv.3;
+        Wed, 27 Nov 2019 15:00:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=mo5o+Ecd/yLI7tHcwQjCfzTu2XUere/oZo1lhAcUfOo=;
-        b=PLqUksAJNKMrDkQktb55ZRr5VGYVQe5v+6KLWNXAPiQtZXRgMJQaHYUAXVG4i4n6J/
-         XTJx8vOFoR+xki8GZ4sHnd9YSBRDHN5RSe+wRsm9qXlpht39a8vxo7oJ0ySWtsboMwEY
-         JN4yot1nZvxM1ybgdIk4JenF4E4qemb/TrwwxiQAtuQpH0spHZQBKgzX8lmdAQtG7P5R
-         01u8KoyRs6cLORQtT1R3DWKYbm3a9+/78w99JFhx2igCJvrJKmN1Usa+OUQ74UNl+/6k
-         WpmTOhYJF56CthrgEk86v5hhb5XeXG+V96L9ICHsWM4UHhYhkXz3nNEJ73dWoT+e0sBj
-         jSkg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=XpdT4iBZBeJ0hRqBa8Cg+54FM/3TrXa8XetmtaTWXfg=;
+        b=iJIDyU2uu3EUS1+Q4EFqZeRgBTOgt+oDPuvARuIiPFiIKUcnEe8kygilSWnJWk+6tB
+         rQRO3BADj5vs8wisC1udDAZF/Kv2qzJTLFX9Kg0o7FbcQ2Nu8FPlYk7xB6Ck7QcHFeM3
+         dO+xUHhmC68YpLyC5eaWcqxmVqVatnQFEWr2W4+R+6S2uI995fH4iTn9uHqBZ78hiseq
+         FjbClLXuQN4UJqf/OYae/2dGIzK7YCfrSxn38GlYsQ3y57m2mqp25s60IdxdBRdBWUO+
+         vaueypzd8wf2014nWduydPt8lkE3UesqZUDd0YOQ9tb560+juINOt6hlaIfyjVsk38KE
+         lsvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=mo5o+Ecd/yLI7tHcwQjCfzTu2XUere/oZo1lhAcUfOo=;
-        b=Slq3zfmW/XbiuvhW+a//yaVccO2ExiHI0PJNVySEPWdgzR/l2BrVOFbOEcT6oV2a6y
-         GEQ5BAZCK/mXeXqNwZkgU7v64+ZmqCgyk/5jnZknMflpo4YJArpPPFQiTLkBnJm4F2WU
-         uoqVYJ0ZOKN5umINhDzDkpCfOzkMhj78NpoZEjWjY3BkuJDuvEsASpwRi0VvFfqKo25F
-         46wAvIUK63eAqaS3Wu5xYLUippJEWHYyhGQv4pI7llFmSTj5HMIL1tDWf5ZRbxmoZvU4
-         q25hdpJMk9DzqbcpfrCy+bKiIvfpgdERssANyB3Kh690rTNY+FBf/nCfSYWWY8LMrcOi
-         Cklg==
-X-Gm-Message-State: APjAAAUYHVs4qmFkQU4abI6dhkKfs+auyeM5McuxstiuHUuwBZ9bibEt
-        q365xRUsvhwY9Uqa7OHvJbrzH5DWg2FEC8jSBdChO72rntBGG1eVaKvVq9ebClrAeINqIGX+pF2
-        UdCdB9k9KaUfxsJ2NfBbiyJ51R473MLh0R+DFzeaOFiMSptdu33sJaw==
-X-Google-Smtp-Source: APXvYqxqRrQck2Qg1SazChf5GGQyDSK+xKWIcVcoD5+klqd5qbdi9axf0rFQG4/RD2nh+N9PdFj0dJI=
-X-Received: by 2002:a05:620a:134f:: with SMTP id c15mr7037653qkl.115.1574895481604;
- Wed, 27 Nov 2019 14:58:01 -0800 (PST)
-Date:   Wed, 27 Nov 2019 14:57:59 -0800
-Message-Id: <20191127225759.39923-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH bpf] bpf: force .BTF section start to zero when dumping from vmlinux
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=XpdT4iBZBeJ0hRqBa8Cg+54FM/3TrXa8XetmtaTWXfg=;
+        b=LoIAASVALdwLiDZcCYsWWj+Nl0EvCEqso868pH0+FacDodNYNbmYHIZGnA2Wlv+ubm
+         cIEjyzLsEtPr+/hON0mISDGva/ryJunu3wV8kL8aa2ZUcYKMLD0YAb2MmA+hThUjvItb
+         RK3cGRbTKEKt/uIoyhC77oduowc7sfnpb74D6ppeY0N+H7Ii7MhyVU5TGPckdf9vXLF3
+         O9ZyeexYLF+39AWyETgBetelBAYb02Eou8lLRD6fWm2pgrdEJ8/ATci4HG0cvjGqowFk
+         7+7QkLENVy93RQjW6Zj0w2OosRPjuHdiYh8/9GnWz+VIIBZxyaWVe3I/WL8+C3n49DKH
+         KLfw==
+X-Gm-Message-State: APjAAAVejRvkFDbA3LHdn9RghPu38HBuVV2Y8nkB3SyTHKVWGjEBaKPr
+        KYAbJkX8M7dwcjsxco5rxdQ=
+X-Google-Smtp-Source: APXvYqzekrJWBAHtZShKMHfQIojSr/cql5Qymeq7nJTEiCUDuXYsCg3DhwohjgLWZnDoNz+GBm938g==
+X-Received: by 2002:a37:5942:: with SMTP id n63mr7075567qkb.432.1574895605146;
+        Wed, 27 Nov 2019 15:00:05 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f013:3bac:6dc2:4a4b:b6a6:4365])
+        by smtp.gmail.com with ESMTPSA id y91sm8644219qtd.28.2019.11.27.15.00.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 15:00:04 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id A2418C08F5; Wed, 27 Nov 2019 20:00:01 -0300 (-03)
+Date:   Wed, 27 Nov 2019 20:00:01 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>
+Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
+Message-ID: <20191127230001.GO388551@localhost.localdomain>
+References: <20191127001313.183170-1-zenczykowski@gmail.com>
+ <20191127131407.GA377783@localhost.localdomain>
+ <CANP3RGePJ+z1t8oq-QS1tcwEYWanPHPargKpHkZZGiT4jMa6xw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGePJ+z1t8oq-QS1tcwEYWanPHPargKpHkZZGiT4jMa6xw@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While trying to figure out why fentry_fexit selftest doesn't pass for me
-(old pahole, broken BTF), I found out that my latest patch can break vmlinux
-.BTF generation. objcopy preserves section start when doing --only-section,
-so there is a chance (depending on where pahole inserts .BTF section) to
-have leading empty zeroes. Let's explicitly force section offset to zero.
+On Wed, Nov 27, 2019 at 12:50:39PM -0800, Maciej Żenczykowski wrote:
+> On Wed, Nov 27, 2019 at 5:14 AM Marcelo Ricardo Leitner
+> <marcelo.leitner@gmail.com> wrote:
+> >
+> > On Tue, Nov 26, 2019 at 04:13:13PM -0800, Maciej Żenczykowski wrote:
+> > > From: Maciej Żenczykowski <maze@google.com>
+> > >
+> > > and associated inet_is_local_unbindable_port() helper function:
+> > > use it to make explicitly binding to an unbindable port return
+> > > -EPERM 'Operation not permitted'.
+> > >
+> > > Autobind doesn't honour this new sysctl since:
+> > >   (a) you can simply set both if that's the behaviour you desire
+> > >   (b) there could be a use for preventing explicit while allowing auto
+> > >   (c) it's faster in the relatively critical path of doing port selection
+> > >       during connect() to only check one bitmap instead of both
+> > ...
+> > > If we *know* that certain ports are simply unusable, then it's better
+> > > nothing even gets the opportunity to try to use them.  This way we at
+> > > least get a quick failure, instead of some sort of timeout (or possibly
+> > > even corruption of the data stream of the non-kernel based use case).
+> >
+> > This is doable with SELinux today, no?
+> 
+> Perhaps, but SELinux isn't used by many distros, including the servers
+> where I have nics that steal some ports.  It's also much much
+> more difficult, requiring a policy, compilers, etc... and it gets even
+> more complex if you need to dynamically modify the set of ports,
+> which requires extra tools and runtime permissions.
 
-Before:
-$ objcopy --set-section-flags .BTF=alloc -O binary \
-	--only-section=.BTF vmlinux .btf.vmlinux.bin
-$ xxd .btf.vmlinux.bin | head -n1
-00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+I'm no SELinux expert, but my /etc/ssh/sshd_config has this nice handy
+comment:
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
 
-After:
-$ objcopy --change-section-address .BTF=0 \
-	--set-section-flags .BTF=alloc -O binary \
-	--only-section=.BTF vmlinux .btf.vmlinux.bin
-$ xxd .btf.vmlinux.bin | head -n1
-00000000: 9feb 0100 1800 0000 0000 0000 80e1 1c00  ................
-          ^BTF magic
+The kernel has no specific knowledge of 'ssh_port_t' and all I need to
+do to allow such port, is run the command above. No compiler, etc.
+The distribution would have to have a policy, say,
+'unbindable_ports_t', and it could work similarly, I suppose, but I
+have no knowledge on this part.
 
-As part of this change, I'm also dropping '2>/dev/null' from objcopy
-invocation to be able to catch possible other issues (objcopy doesn't
-produce any warnings for me anymore, it did before with --dump-section).
+As a reference only,
+# semanage port -l
+gives a great list of ports that daemons are supposed to be using, and
+it supports ranges and so, like:
+amqp_port_t                    tcp      15672, 5671-5672
+gluster_port_t                 tcp      38465-38469, 24007-24027
 
-Cc: Andrii Nakryiko <andriin@fb.com>
-Fixes: da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for vmlinux BTF")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- scripts/link-vmlinux.sh | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 2998ddb323e3..436379940356 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -127,8 +127,9 @@ gen_btf()
- 		cut -d, -f1 | cut -d' ' -f2)
- 	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
- 		awk '{print $4}')
--	${OBJCOPY} --set-section-flags .BTF=alloc -O binary \
--		--only-section=.BTF ${1} .btf.vmlinux.bin 2>/dev/null
-+	${OBJCOPY} --change-section-address .BTF=0 \
-+		--set-section-flags .BTF=alloc -O binary \
-+		--only-section=.BTF ${1} .btf.vmlinux.bin
- 	${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
- 		--rename-section .data=.BTF .btf.vmlinux.bin ${2}
- }
--- 
-2.24.0.432.g9d3f5f5b63-goog
-
+On not having SELinux enabled, you got me there. I not really willing
+to enter a "to do SELinux or not" discussion. :-)
