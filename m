@@ -2,650 +2,654 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CEE10AF4E
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B38510AF6D
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbfK0MJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 07:09:39 -0500
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:54185 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbfK0MJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:09:39 -0500
-Received: from 2606-a000-111b-43ee-0000-0000-0000-115f.inf6.spectrum.com ([2606:a000:111b:43ee::115f] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1iZw8B-0000la-NF; Wed, 27 Nov 2019 07:09:31 -0500
-Date:   Wed, 27 Nov 2019 07:09:13 -0500
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: Re: [PATCH net] sctp: get netns from asoc and ep base
-Message-ID: <20191127120913.GA28618@hmswarspite.think-freely.org>
-References: <836cbb3768d75ddcf2eabe5f2682a5486a5afe7e.1574654390.git.lucien.xin@gmail.com>
- <20191125132440.GA14928@hmswarspite.think-freely.org>
- <CADvbK_e6qDC7OobXROnxyzjXAC1ZpfiVZ5LK+93paORYcdNj=A@mail.gmail.com>
- <20191126140859.GA21200@hmswarspite.think-freely.org>
- <CADvbK_dcB69yCwhBNm4TZQ-izAU-JFO+1hNgtFp-xLkFge74-Q@mail.gmail.com>
+        id S1726537AbfK0MQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 07:16:51 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:8778 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726383AbfK0MQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:16:51 -0500
+Received: from [192.168.1.7] (unknown [180.157.109.16])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 9592C418FA;
+        Wed, 27 Nov 2019 20:16:41 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
+ <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
+ <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <d55c7e4d-ac4b-f9cf-0c08-8b22c1af9155@ucloud.cn>
+Date:   Wed, 27 Nov 2019 20:16:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADvbK_dcB69yCwhBNm4TZQ-izAU-JFO+1hNgtFp-xLkFge74-Q@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVk1VQ0JJS0tLTUxOSUtKT0lZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MC46Eio*Ezg9EwwDQgpNFjVD
+        UUNPCkpVSlVKTkxPQ05MS0tJSU9KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktCVUpNWVdZCAFZQUlOSE1CNwY+
+X-HM-Tid: 0a6eaccacb0c2086kuqy9592c418fa
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 11:48:04AM +0800, Xin Long wrote:
-> On Tue, Nov 26, 2019 at 10:09 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> >
-> > On Tue, Nov 26, 2019 at 04:27:20PM +0800, Xin Long wrote:
-> > > On Mon, Nov 25, 2019 at 9:24 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > >
-> > > > On Mon, Nov 25, 2019 at 11:59:50AM +0800, Xin Long wrote:
-> > > > > Commit 312434617cb1 ("sctp: cache netns in sctp_ep_common") set netns
-> > > > > in asoc and ep base since they're created, and it will never change.
-> > > > > It's a better way to get netns from asoc and ep base, comparing to
-> > > > > calling sock_net().
-> > > > >
-> > > > > This patch is to replace them.
-> > > > >
-> > > > I don't see anything expressly wrong with this, but I'm not sure I see it as
-> > > > better either.  It makes things more consistent with commit 312434617cb1, sure,
-> > > > but both sock_net, and its called read_pnet are both static inline functions, so
-> > > > it should reduce to the same thing.
-> > > >
-> > > > In fact, I think it may be better to ammend the fix from 312434617cb1, to,
-> > > > instead of caching the net structure in the ep_common struct, instead, update
-> > > > sctp_assoc_migrate so that the new value base.sk is atomically exchanged before
-> > > > any calls to sock_put/sock_hold are made, so that the rhashtable lookup is
-> > > > consistent.  That would allow us to consistently use sock_net the way other
-> > > > protocols do
-> > > why is "before any calls to sock_put/sock_hold are made"?
-> > >
-> > It was my understanding that the problem in commit 312434617cb1 was that the
-> > rhashtable lookup that ended in sctp_hash_obj was running in parallel with
-> > sctp_assoc_migrate, and the result was that the socket pointer in the hash table
-> > was getting freed on a sock_put while it was being accessed by the
-> > rehash_operation
-> >
-> > But as I look closer, thats not actually whats happening (I don't think), it
-> > appears that KCSAN is just reporting that a read and write operation is
-> > happening in parallel between the two, which could potentially lead to a
-> > corruption.
-> I think so, that's why we need memory barriers to eliminate this warning.
-> 
-> >
-> >
-> > > I was thinking to use rcu_assign_pointer() and rcu_dereference() for base.sk,
-> > > but looks troublesome to replace all places.
-> > > do you think it would work for atomic exchange? or you have some better idea?
-> > >
-> > I'm not sure.  I get that rcu is going to be cumbersome here, since
-> > sctp_assoc_migrate is the only location we seem to be writing the value of
-> > base.sk while its present in the hash table, and we don't want to annotate all
-> > the other read sites with rcu tags.  However, we don't really want to use
-> > cmpxchg either, since we just want to read it on one side and write it in the
-> > other.
-> right.
-> 
-> >
-> > It seems, like given the rhashtable api, the expectation is that, for a given
-> > element in the hashtable, if that element changes, we would want to replace the
-> > element with a new copy using rhashtable_replace_fast, which follows all the
-> > internal locking protocols of the hashtable and allows for a quick update
-> > safely, but we don't really want to do that, we just want to replace a field in
-> > a structure thats pointed to by the transport structs which are whats really in
-> > the hash table.
-> Exactly, we don't even really need transport->asoc.base.sk, as you know,
-> what we care is transport->asoc.base.net, which would never change once
-> created.
-> 
-> >
-> > I wonder if there isn't a need here for an addition to the rhashtable api.
-> > Something like rhashtable_lock(struct rhashtable *ht) and
-> > rhashtable_unlock(struct rhashtable *ht), which respectively would just lock and
-> > unlock the ht->mutex.  Since the rht_deferred_worker isn't exposed in any way
-> > via the api, it seems like there is no way to really know when its safe to
-> > update those pointers, because we never know if the rhashtable workers are
-> > running in parallel with us.  If we had api access to the ht->mutex, we could
-> > block the forward progress of any async workers in the hash table, which would
-> > allow us to safely update any member pointers.  And then we wouldn't need to
-> > cache the net struct.
-> That would work, but:
-> 
-> 1. ht->mutex is used to protect hashtable itself, and acquired only when
->    hashtable size is changing, NOT even when inserting elements. It does
->    not sound good to protect t->asoc->base.sk changing.
-> 
-> 2. As the node in rhashtbable, transport's keys should be kept invariable
->    after created, including t->asoc->base.bind_addr.port, t->ipaddr, and
->    t->asoc->base.sk->net.  t->asoc->base.sk is not invariable, but netns
->    is, all we should do it to have a proper way to get netns, like:
->    t->asoc->base.net.
-> 
-> 3. caching netns looks clearer and easier than using ht->mutex in sctp.
-> 
-I agree, it doesn't have to be a lock on the hashtable, but I don't agree that
-caching is the better solution here.  The only reason that netns doesn't change
-is because we don't currently migrate sockets between namespaces, but theres no
-reason we won't.  Its also just a bit ugly to me, since we're caching not for
-any performance gain, but to avoid sharing data.
+Sorry maybe something mess you,  Ignore with my patches.
 
-I'm ok with this for now, but I'd really like to get rid of the extra copy of
-the namespace pointer if we can.  I wonder if READ_ONCE_NOCHECK might help here,
-the documentation seems to suggest it can be used to quiet the sanitizer
-warnings.
 
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+I also did the test like you with route tc rules to ft callback.
 
-> >
-> > What do you think?
-> >
-> > Neil
-> >
-> > >
-> > > >
-> > > > Neil
-> > > >
-> > > > > Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > > > ---
-> > > > >  net/sctp/associola.c         | 10 +++++-----
-> > > > >  net/sctp/chunk.c             |  2 +-
-> > > > >  net/sctp/endpointola.c       |  6 +++---
-> > > > >  net/sctp/input.c             |  5 ++---
-> > > > >  net/sctp/output.c            |  2 +-
-> > > > >  net/sctp/outqueue.c          |  6 +++---
-> > > > >  net/sctp/sm_make_chunk.c     |  7 +++----
-> > > > >  net/sctp/sm_sideeffect.c     | 16 ++++++----------
-> > > > >  net/sctp/sm_statefuns.c      |  2 +-
-> > > > >  net/sctp/socket.c            | 12 +++++-------
-> > > > >  net/sctp/stream.c            |  3 +--
-> > > > >  net/sctp/stream_interleave.c | 23 ++++++++++-------------
-> > > > >  net/sctp/transport.c         |  2 +-
-> > > > >  net/sctp/ulpqueue.c          | 15 +++++++--------
-> > > > >  14 files changed, 49 insertions(+), 62 deletions(-)
-> > > > >
-> > > > > diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> > > > > index 41839b8..a725f53 100644
-> > > > > --- a/net/sctp/associola.c
-> > > > > +++ b/net/sctp/associola.c
-> > > > > @@ -579,7 +579,6 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
-> > > > >                                          const gfp_t gfp,
-> > > > >                                          const int peer_state)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > >       struct sctp_transport *peer;
-> > > > >       struct sctp_sock *sp;
-> > > > >       unsigned short port;
-> > > > > @@ -609,7 +608,7 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
-> > > > >               return peer;
-> > > > >       }
-> > > > >
-> > > > > -     peer = sctp_transport_new(net, addr, gfp);
-> > > > > +     peer = sctp_transport_new(asoc->base.net, addr, gfp);
-> > > > >       if (!peer)
-> > > > >               return NULL;
-> > > > >
-> > > > > @@ -978,7 +977,7 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
-> > > > >       struct sctp_association *asoc =
-> > > > >               container_of(work, struct sctp_association,
-> > > > >                            base.inqueue.immediate);
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > > +     struct net *net = asoc->base.net;
-> > > > >       union sctp_subtype subtype;
-> > > > >       struct sctp_endpoint *ep;
-> > > > >       struct sctp_chunk *chunk;
-> > > > > @@ -1446,7 +1445,8 @@ void sctp_assoc_sync_pmtu(struct sctp_association *asoc)
-> > > > >  /* Should we send a SACK to update our peer? */
-> > > > >  static inline bool sctp_peer_needs_update(struct sctp_association *asoc)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > > +     struct net *net = asoc->base.net;
-> > > > > +
-> > > > >       switch (asoc->state) {
-> > > > >       case SCTP_STATE_ESTABLISHED:
-> > > > >       case SCTP_STATE_SHUTDOWN_PENDING:
-> > > > > @@ -1580,7 +1580,7 @@ int sctp_assoc_set_bind_addr_from_ep(struct sctp_association *asoc,
-> > > > >       if (asoc->peer.ipv6_address)
-> > > > >               flags |= SCTP_ADDR6_PEERSUPP;
-> > > > >
-> > > > > -     return sctp_bind_addr_copy(sock_net(asoc->base.sk),
-> > > > > +     return sctp_bind_addr_copy(asoc->base.net,
-> > > > >                                  &asoc->base.bind_addr,
-> > > > >                                  &asoc->ep->base.bind_addr,
-> > > > >                                  scope, gfp, flags);
-> > > > > diff --git a/net/sctp/chunk.c b/net/sctp/chunk.c
-> > > > > index cc0405c..064675b 100644
-> > > > > --- a/net/sctp/chunk.c
-> > > > > +++ b/net/sctp/chunk.c
-> > > > > @@ -227,7 +227,7 @@ struct sctp_datamsg *sctp_datamsg_from_user(struct sctp_association *asoc,
-> > > > >       if (msg_len >= first_len) {
-> > > > >               msg->can_delay = 0;
-> > > > >               if (msg_len > first_len)
-> > > > > -                     SCTP_INC_STATS(sock_net(asoc->base.sk),
-> > > > > +                     SCTP_INC_STATS(asoc->base.net,
-> > > > >                                      SCTP_MIB_FRAGUSRMSGS);
-> > > > >       } else {
-> > > > >               /* Which may be the only one... */
-> > > > > diff --git a/net/sctp/endpointola.c b/net/sctp/endpointola.c
-> > > > > index 3067deb..6e7e0d3 100644
-> > > > > --- a/net/sctp/endpointola.c
-> > > > > +++ b/net/sctp/endpointola.c
-> > > > > @@ -244,7 +244,7 @@ struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
-> > > > >       struct sctp_endpoint *retval = NULL;
-> > > > >
-> > > > >       if ((htons(ep->base.bind_addr.port) == laddr->v4.sin_port) &&
-> > > > > -         net_eq(sock_net(ep->base.sk), net)) {
-> > > > > +         net_eq(ep->base.net, net)) {
-> > > > >               if (sctp_bind_addr_match(&ep->base.bind_addr, laddr,
-> > > > >                                        sctp_sk(ep->base.sk)))
-> > > > >                       retval = ep;
-> > > > > @@ -292,8 +292,8 @@ bool sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
-> > > > >                                const union sctp_addr *paddr)
-> > > > >  {
-> > > > >       struct sctp_sockaddr_entry *addr;
-> > > > > +     struct net *net = ep->base.net;
-> > > > >       struct sctp_bind_addr *bp;
-> > > > > -     struct net *net = sock_net(ep->base.sk);
-> > > > >
-> > > > >       bp = &ep->base.bind_addr;
-> > > > >       /* This function is called with the socket lock held,
-> > > > > @@ -384,7 +384,7 @@ static void sctp_endpoint_bh_rcv(struct work_struct *work)
-> > > > >               if (asoc && sctp_chunk_is_data(chunk))
-> > > > >                       asoc->peer.last_data_from = chunk->transport;
-> > > > >               else {
-> > > > > -                     SCTP_INC_STATS(sock_net(ep->base.sk), SCTP_MIB_INCTRLCHUNKS);
-> > > > > +                     SCTP_INC_STATS(ep->base.net, SCTP_MIB_INCTRLCHUNKS);
-> > > > >                       if (asoc)
-> > > > >                               asoc->stats.ictrlchunks++;
-> > > > >               }
-> > > > > diff --git a/net/sctp/input.c b/net/sctp/input.c
-> > > > > index 4d2bcfc..efaaefc 100644
-> > > > > --- a/net/sctp/input.c
-> > > > > +++ b/net/sctp/input.c
-> > > > > @@ -937,7 +937,7 @@ int sctp_hash_transport(struct sctp_transport *t)
-> > > > >       if (t->asoc->temp)
-> > > > >               return 0;
-> > > > >
-> > > > > -     arg.net   = sock_net(t->asoc->base.sk);
-> > > > > +     arg.net   = t->asoc->base.net;
-> > > > >       arg.paddr = &t->ipaddr;
-> > > > >       arg.lport = htons(t->asoc->base.bind_addr.port);
-> > > > >
-> > > > > @@ -1004,12 +1004,11 @@ struct sctp_transport *sctp_epaddr_lookup_transport(
-> > > > >                               const struct sctp_endpoint *ep,
-> > > > >                               const union sctp_addr *paddr)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(ep->base.sk);
-> > > > >       struct rhlist_head *tmp, *list;
-> > > > >       struct sctp_transport *t;
-> > > > >       struct sctp_hash_cmp_arg arg = {
-> > > > >               .paddr = paddr,
-> > > > > -             .net   = net,
-> > > > > +             .net   = ep->base.net,
-> > > > >               .lport = htons(ep->base.bind_addr.port),
-> > > > >       };
-> > > > >
-> > > > > diff --git a/net/sctp/output.c b/net/sctp/output.c
-> > > > > index dbda7e7..1441eaf 100644
-> > > > > --- a/net/sctp/output.c
-> > > > > +++ b/net/sctp/output.c
-> > > > > @@ -282,7 +282,7 @@ static enum sctp_xmit sctp_packet_bundle_sack(struct sctp_packet *pkt,
-> > > > >                                       sctp_chunk_free(sack);
-> > > > >                                       goto out;
-> > > > >                               }
-> > > > > -                             SCTP_INC_STATS(sock_net(asoc->base.sk),
-> > > > > +                             SCTP_INC_STATS(asoc->base.net,
-> > > > >                                              SCTP_MIB_OUTCTRLCHUNKS);
-> > > > >                               asoc->stats.octrlchunks++;
-> > > > >                               asoc->peer.sack_needed = 0;
-> > > > > diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-> > > > > index 0dab62b..a031d11 100644
-> > > > > --- a/net/sctp/outqueue.c
-> > > > > +++ b/net/sctp/outqueue.c
-> > > > > @@ -279,7 +279,7 @@ void sctp_outq_free(struct sctp_outq *q)
-> > > > >  /* Put a new chunk in an sctp_outq.  */
-> > > > >  void sctp_outq_tail(struct sctp_outq *q, struct sctp_chunk *chunk, gfp_t gfp)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(q->asoc->base.sk);
-> > > > > +     struct net *net = q->asoc->base.net;
-> > > > >
-> > > > >       pr_debug("%s: outq:%p, chunk:%p[%s]\n", __func__, q, chunk,
-> > > > >                chunk && chunk->chunk_hdr ?
-> > > > > @@ -533,7 +533,7 @@ void sctp_retransmit_mark(struct sctp_outq *q,
-> > > > >  void sctp_retransmit(struct sctp_outq *q, struct sctp_transport *transport,
-> > > > >                    enum sctp_retransmit_reason reason)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(q->asoc->base.sk);
-> > > > > +     struct net *net = q->asoc->base.net;
-> > > > >
-> > > > >       switch (reason) {
-> > > > >       case SCTP_RTXR_T3_RTX:
-> > > > > @@ -1884,6 +1884,6 @@ void sctp_generate_fwdtsn(struct sctp_outq *q, __u32 ctsn)
-> > > > >
-> > > > >       if (ftsn_chunk) {
-> > > > >               list_add_tail(&ftsn_chunk->list, &q->control_chunk_list);
-> > > > > -             SCTP_INC_STATS(sock_net(asoc->base.sk), SCTP_MIB_OUTCTRLCHUNKS);
-> > > > > +             SCTP_INC_STATS(asoc->base.net, SCTP_MIB_OUTCTRLCHUNKS);
-> > > > >       }
-> > > > >  }
-> > > > > diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> > > > > index 48d6395..09050c1 100644
-> > > > > --- a/net/sctp/sm_make_chunk.c
-> > > > > +++ b/net/sctp/sm_make_chunk.c
-> > > > > @@ -2307,7 +2307,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
-> > > > >                     const union sctp_addr *peer_addr,
-> > > > >                     struct sctp_init_chunk *peer_init, gfp_t gfp)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > >       struct sctp_transport *transport;
-> > > > >       struct list_head *pos, *temp;
-> > > > >       union sctp_params param;
-> > > > > @@ -2363,8 +2362,8 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
-> > > > >        * also give us an option to silently ignore the packet, which
-> > > > >        * is what we'll do here.
-> > > > >        */
-> > > > > -     if (!net->sctp.addip_noauth &&
-> > > > > -          (asoc->peer.asconf_capable && !asoc->peer.auth_capable)) {
-> > > > > +     if (!asoc->base.net->sctp.addip_noauth &&
-> > > > > +         (asoc->peer.asconf_capable && !asoc->peer.auth_capable)) {
-> > > > >               asoc->peer.addip_disabled_mask |= (SCTP_PARAM_ADD_IP |
-> > > > >                                                 SCTP_PARAM_DEL_IP |
-> > > > >                                                 SCTP_PARAM_SET_PRIMARY);
-> > > > > @@ -2491,9 +2490,9 @@ static int sctp_process_param(struct sctp_association *asoc,
-> > > > >                             const union sctp_addr *peer_addr,
-> > > > >                             gfp_t gfp)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > >       struct sctp_endpoint *ep = asoc->ep;
-> > > > >       union sctp_addr_param *addr_param;
-> > > > > +     struct net *net = asoc->base.net;
-> > > > >       struct sctp_transport *t;
-> > > > >       enum sctp_scope scope;
-> > > > >       union sctp_addr addr;
-> > > > > diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-> > > > > index e52b212..20b0281 100644
-> > > > > --- a/net/sctp/sm_sideeffect.c
-> > > > > +++ b/net/sctp/sm_sideeffect.c
-> > > > > @@ -516,8 +516,6 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
-> > > > >                                        struct sctp_transport *transport,
-> > > > >                                        int is_hb)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > > -
-> > > > >       /* The check for association's overall error counter exceeding the
-> > > > >        * threshold is done in the state function.
-> > > > >        */
-> > > > > @@ -544,10 +542,10 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
-> > > > >        * is SCTP_ACTIVE, then mark this transport as Partially Failed,
-> > > > >        * see SCTP Quick Failover Draft, section 5.1
-> > > > >        */
-> > > > > -     if (net->sctp.pf_enable &&
-> > > > > -        (transport->state == SCTP_ACTIVE) &&
-> > > > > -        (transport->error_count < transport->pathmaxrxt) &&
-> > > > > -        (transport->error_count > transport->pf_retrans)) {
-> > > > > +     if (asoc->base.net->sctp.pf_enable &&
-> > > > > +         transport->state == SCTP_ACTIVE &&
-> > > > > +         transport->error_count < transport->pathmaxrxt &&
-> > > > > +         transport->error_count > transport->pf_retrans) {
-> > > > >
-> > > > >               sctp_assoc_control_transport(asoc, transport,
-> > > > >                                            SCTP_TRANSPORT_PF,
-> > > > > @@ -793,10 +791,8 @@ static int sctp_cmd_process_sack(struct sctp_cmd_seq *cmds,
-> > > > >       int err = 0;
-> > > > >
-> > > > >       if (sctp_outq_sack(&asoc->outqueue, chunk)) {
-> > > > > -             struct net *net = sock_net(asoc->base.sk);
-> > > > > -
-> > > > >               /* There are no more TSNs awaiting SACK.  */
-> > > > > -             err = sctp_do_sm(net, SCTP_EVENT_T_OTHER,
-> > > > > +             err = sctp_do_sm(asoc->base.net, SCTP_EVENT_T_OTHER,
-> > > > >                                SCTP_ST_OTHER(SCTP_EVENT_NO_PENDING_TSN),
-> > > > >                                asoc->state, asoc->ep, asoc, NULL,
-> > > > >                                GFP_ATOMIC);
-> > > > > @@ -829,7 +825,7 @@ static void sctp_cmd_assoc_update(struct sctp_cmd_seq *cmds,
-> > > > >                                 struct sctp_association *asoc,
-> > > > >                                 struct sctp_association *new)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > > +     struct net *net = asoc->base.net;
-> > > > >       struct sctp_chunk *abort;
-> > > > >
-> > > > >       if (!sctp_assoc_update(asoc, new))
-> > > > > diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> > > > > index 4ab8208..42558fa 100644
-> > > > > --- a/net/sctp/sm_statefuns.c
-> > > > > +++ b/net/sctp/sm_statefuns.c
-> > > > > @@ -1320,7 +1320,7 @@ static int sctp_sf_check_restart_addrs(const struct sctp_association *new_asoc,
-> > > > >                                      struct sctp_chunk *init,
-> > > > >                                      struct sctp_cmd_seq *commands)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(new_asoc->base.sk);
-> > > > > +     struct net *net = new_asoc->base.net;
-> > > > >       struct sctp_transport *new_addr;
-> > > > >       int ret = 1;
-> > > > >
-> > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > > > index ffd3262..5e0efbc 100644
-> > > > > --- a/net/sctp/socket.c
-> > > > > +++ b/net/sctp/socket.c
-> > > > > @@ -436,8 +436,7 @@ static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
-> > > > >  static int sctp_send_asconf(struct sctp_association *asoc,
-> > > > >                           struct sctp_chunk *chunk)
-> > > > >  {
-> > > > > -     struct net      *net = sock_net(asoc->base.sk);
-> > > > > -     int             retval = 0;
-> > > > > +     int retval = 0;
-> > > > >
-> > > > >       /* If there is an outstanding ASCONF chunk, queue it for later
-> > > > >        * transmission.
-> > > > > @@ -449,7 +448,7 @@ static int sctp_send_asconf(struct sctp_association *asoc,
-> > > > >
-> > > > >       /* Hold the chunk until an ASCONF_ACK is received. */
-> > > > >       sctp_chunk_hold(chunk);
-> > > > > -     retval = sctp_primitive_ASCONF(net, asoc, chunk);
-> > > > > +     retval = sctp_primitive_ASCONF(asoc->base.net, asoc, chunk);
-> > > > >       if (retval)
-> > > > >               sctp_chunk_free(chunk);
-> > > > >       else
-> > > > > @@ -2428,9 +2427,8 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
-> > > > >       int error;
-> > > > >
-> > > > >       if (params->spp_flags & SPP_HB_DEMAND && trans) {
-> > > > > -             struct net *net = sock_net(trans->asoc->base.sk);
-> > > > > -
-> > > > > -             error = sctp_primitive_REQUESTHEARTBEAT(net, trans->asoc, trans);
-> > > > > +             error = sctp_primitive_REQUESTHEARTBEAT(trans->asoc->base.net,
-> > > > > +                                                     trans->asoc, trans);
-> > > > >               if (error)
-> > > > >                       return error;
-> > > > >       }
-> > > > > @@ -5308,7 +5306,7 @@ struct sctp_transport *sctp_transport_get_next(struct net *net,
-> > > > >               if (!sctp_transport_hold(t))
-> > > > >                       continue;
-> > > > >
-> > > > > -             if (net_eq(sock_net(t->asoc->base.sk), net) &&
-> > > > > +             if (net_eq(t->asoc->base.net, net) &&
-> > > > >                   t->asoc->peer.primary_path == t)
-> > > > >                       break;
-> > > > >
-> > > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > > > > index e83cdaa..df60b5e 100644
-> > > > > --- a/net/sctp/stream.c
-> > > > > +++ b/net/sctp/stream.c
-> > > > > @@ -218,10 +218,9 @@ void sctp_stream_update(struct sctp_stream *stream, struct sctp_stream *new)
-> > > > >  static int sctp_send_reconf(struct sctp_association *asoc,
-> > > > >                           struct sctp_chunk *chunk)
-> > > > >  {
-> > > > > -     struct net *net = sock_net(asoc->base.sk);
-> > > > >       int retval = 0;
-> > > > >
-> > > > > -     retval = sctp_primitive_RECONF(net, asoc, chunk);
-> > > > > +     retval = sctp_primitive_RECONF(asoc->base.net, asoc, chunk);
-> > > > >       if (retval)
-> > > > >               sctp_chunk_free(chunk);
-> > > > >
-> > > > > diff --git a/net/sctp/stream_interleave.c b/net/sctp/stream_interleave.c
-> > > > > index 40c40be..6b13f73 100644
-> > > > > --- a/net/sctp/stream_interleave.c
-> > > > > +++ b/net/sctp/stream_interleave.c
-> > > > > @@ -241,9 +241,8 @@ static struct sctp_ulpevent *sctp_intl_retrieve_partial(
-> > > > >       if (!first_frag)
-> > > > >               return NULL;
-> > > > >
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > -                                          &ulpq->reasm, first_frag,
-> > > > > -                                          last_frag);
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
-> > > > > +                                          first_frag, last_frag);
-> > > > >       if (retval) {
-> > > > >               sin->fsn = next_fsn;
-> > > > >               if (is_last) {
-> > > > > @@ -326,7 +325,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled(
-> > > > >
-> > > > >       pd_point = sctp_sk(asoc->base.sk)->pd_point;
-> > > > >       if (pd_point && pd_point <= pd_len) {
-> > > > > -             retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
-> > > > > +             retval = sctp_make_reassembled_event(asoc->base.net,
-> > > > >                                                    &ulpq->reasm,
-> > > > >                                                    pd_first, pd_last);
-> > > > >               if (retval) {
-> > > > > @@ -337,8 +336,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled(
-> > > > >       goto out;
-> > > > >
-> > > > >  found:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
-> > > > > -                                          &ulpq->reasm,
-> > > > > +     retval = sctp_make_reassembled_event(asoc->base.net, &ulpq->reasm,
-> > > > >                                            first_frag, pos);
-> > > > >       if (retval)
-> > > > >               retval->msg_flags |= MSG_EOR;
-> > > > > @@ -630,7 +628,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_partial_uo(
-> > > > >       if (!first_frag)
-> > > > >               return NULL;
-> > > > >
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
-> > > > >                                            &ulpq->reasm_uo, first_frag,
-> > > > >                                            last_frag);
-> > > > >       if (retval) {
-> > > > > @@ -716,7 +714,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled_uo(
-> > > > >
-> > > > >       pd_point = sctp_sk(asoc->base.sk)->pd_point;
-> > > > >       if (pd_point && pd_point <= pd_len) {
-> > > > > -             retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
-> > > > > +             retval = sctp_make_reassembled_event(asoc->base.net,
-> > > > >                                                    &ulpq->reasm_uo,
-> > > > >                                                    pd_first, pd_last);
-> > > > >               if (retval) {
-> > > > > @@ -727,8 +725,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled_uo(
-> > > > >       goto out;
-> > > > >
-> > > > >  found:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
-> > > > > -                                          &ulpq->reasm_uo,
-> > > > > +     retval = sctp_make_reassembled_event(asoc->base.net, &ulpq->reasm_uo,
-> > > > >                                            first_frag, pos);
-> > > > >       if (retval)
-> > > > >               retval->msg_flags |= MSG_EOR;
-> > > > > @@ -814,7 +811,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_first_uo(struct sctp_ulpq *ulpq)
-> > > > >               return NULL;
-> > > > >
-> > > > >  out:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
-> > > > >                                            &ulpq->reasm_uo, first_frag,
-> > > > >                                            last_frag);
-> > > > >       if (retval) {
-> > > > > @@ -921,7 +918,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_first(struct sctp_ulpq *ulpq)
-> > > > >               return NULL;
-> > > > >
-> > > > >  out:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
-> > > > >                                            &ulpq->reasm, first_frag,
-> > > > >                                            last_frag);
-> > > > >       if (retval) {
-> > > > > @@ -1159,7 +1156,7 @@ static void sctp_generate_iftsn(struct sctp_outq *q, __u32 ctsn)
-> > > > >
-> > > > >       if (ftsn_chunk) {
-> > > > >               list_add_tail(&ftsn_chunk->list, &q->control_chunk_list);
-> > > > > -             SCTP_INC_STATS(sock_net(asoc->base.sk), SCTP_MIB_OUTCTRLCHUNKS);
-> > > > > +             SCTP_INC_STATS(asoc->base.net, SCTP_MIB_OUTCTRLCHUNKS);
-> > > > >       }
-> > > > >  }
-> > > > >
-> > > > > diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-> > > > > index 7235a60..f4de064 100644
-> > > > > --- a/net/sctp/transport.c
-> > > > > +++ b/net/sctp/transport.c
-> > > > > @@ -334,7 +334,7 @@ void sctp_transport_update_rto(struct sctp_transport *tp, __u32 rtt)
-> > > > >               pr_debug("%s: rto_pending not set on transport %p!\n", __func__, tp);
-> > > > >
-> > > > >       if (tp->rttvar || tp->srtt) {
-> > > > > -             struct net *net = sock_net(tp->asoc->base.sk);
-> > > > > +             struct net *net = tp->asoc->base.net;
-> > > > >               /* 6.3.1 C3) When a new RTT measurement R' is made, set
-> > > > >                * RTTVAR <- (1 - RTO.Beta) * RTTVAR + RTO.Beta * |SRTT - R'|
-> > > > >                * SRTT <- (1 - RTO.Alpha) * SRTT + RTO.Alpha * R'
-> > > > > diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
-> > > > > index b6536b7..1c6c640 100644
-> > > > > --- a/net/sctp/ulpqueue.c
-> > > > > +++ b/net/sctp/ulpqueue.c
-> > > > > @@ -486,10 +486,9 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
-> > > > >               cevent = sctp_skb2event(pd_first);
-> > > > >               pd_point = sctp_sk(asoc->base.sk)->pd_point;
-> > > > >               if (pd_point && pd_point <= pd_len) {
-> > > > > -                     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
-> > > > > +                     retval = sctp_make_reassembled_event(asoc->base.net,
-> > > > >                                                            &ulpq->reasm,
-> > > > > -                                                          pd_first,
-> > > > > -                                                          pd_last);
-> > > > > +                                                          pd_first, pd_last);
-> > > > >                       if (retval)
-> > > > >                               sctp_ulpq_set_pd(ulpq);
-> > > > >               }
-> > > > > @@ -497,7 +496,7 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
-> > > > >  done:
-> > > > >       return retval;
-> > > > >  found:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
-> > > > >                                            &ulpq->reasm, first_frag, pos);
-> > > > >       if (retval)
-> > > > >               retval->msg_flags |= MSG_EOR;
-> > > > > @@ -563,8 +562,8 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_partial(struct sctp_ulpq *ulpq)
-> > > > >        * further.
-> > > > >        */
-> > > > >  done:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > -                                     &ulpq->reasm, first_frag, last_frag);
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
-> > > > > +                                          first_frag, last_frag);
-> > > > >       if (retval && is_last)
-> > > > >               retval->msg_flags |= MSG_EOR;
-> > > > >
-> > > > > @@ -664,8 +663,8 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
-> > > > >        * further.
-> > > > >        */
-> > > > >  done:
-> > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
-> > > > > -                                     &ulpq->reasm, first_frag, last_frag);
-> > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
-> > > > > +                                          first_frag, last_frag);
-> > > > >       return retval;
-> > > > >  }
-> > > > >
-> > > > > --
-> > > > > 2.1.0
-> > > > >
-> > > > >
-> > >
-> 
+
+please also did the following test:  mlx_p0 is the pf and mlx_pf0vf0 is the vf .
+
+ifconfig mlx_p0 172.168.152.75/24 up
+ip n replace 172.168.152.241 dev mlx_p0 lladdr aa:bb:cc:dd:ee:ff
+
+ip l add dev tun1 type gretap external
+tc qdisc add dev tun1 ingress
+tc qdisc add dev mlx_pf0vf0 ingress
+
+tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower skip_sw
+ip_proto tcp dst_ip 10.0.1.241 src_ip 10.0.0.75 src_port 5002 dst_port 5001
+tcp_flags 0/0x5  action tunnel_key set dst_ip 172.168.152.241 src_ip 0 id 1000
+nocsum pipe action mirred egress redirect dev tun1
+
+In the virtual machine:
+ifconfig eth0 10.0.0.75/24
+ip r a default via 10.0.0.1
+ip n replace 10.0.0.1 dev eth0 lladdr aa:bb:cc:dd:ee:01
+
+iperf -c 10.0.1.241  -i 2  -B 10.0.0.75:5002  -t 10
+
+
+The script above can offload the syn packets, The packet can't be captured on mlx_pf0vf0.
+
+I think the rule is ok.  The problem is that if I add another rule in device tun1 as following.
+It will lead the syn packet can't be offloaded
+
+tc filter add dev tun1 pref 2 ingress  protocol ip flower ip_proto tcp src_ip
+10.0.1.241 dst_ip 10.0.0.75 src_port 5001 dst_port 5002 tcp_flags 0/0x5
+enc_key_id 1000 enc_src_ip 172.168.152.241 action tunnel_key unset pipe
+action mirred egress redirect dev mlx_pf0vf0
+
+
+
+
+
+
+在 2019/11/27 19:51, Paul Blakey 写道:
+> Sorry I didn't have time apply your patches.
+>
+> I did test it again with route tc rules to ft callback, here's the diff:
+>
+> @@ -1291,7 +1304,7 @@ static int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
+>         case TC_SETUP_BLOCK:
+>                 return flow_block_cb_setup_simple(type_data,
+>                                                   &mlx5e_rep_block_tc_cb_list,
+> -                                                 mlx5e_rep_setup_tc_cb,
+> +                                                 mlx5e_rep_setup_ft_cb,
+>                                                   priv, priv, true);
+>         case TC_SETUP_FT:
+>                 return flow_block_cb_setup_simple(type_data,
+>
+>
+> I ran this script after creating a VF (ens1f2) and entering switchdev mode (creating represntor ens1f0_0):
+>
+> ip l add dev tun1 type gretap external
+> tc qdisc add dev tun1 ingress
+> ifconfig tun1 up
+>
+> ifconfig ens1f0_0 0 up
+> tc qdisc add dev ens1f0_0 ingress
+>
+> ifconfig ens1f0 172.168.152.75/24 up
+> ip n replace 172.168.162.241 dev ens1f0 lladdr aa:bb:cc:dd:ee:01
+>
+> tc filter del dev ens1f0_0 ingress
+>
+> tc filter add dev ens1f0_0 pref 2 ingress proto ip flower \
+>      skip_sw \
+>      ip_proto tcp dst_ip 5.5.5.6 src_ip 5.5.5.5 tcp_flags 0/0x5 \
+>      action tunnel_key set dst_ip 172.168.152.241 src_ip 0 id 1000 nocsum pipe \
+>      action mirred egress redirect dev tun1
+>
+> tc filter add dev ens1f0_0 pref 1 ingress proto ip flower \
+>      skip_hw \
+>      action drop
+>
+> ifconfig ens1f2 5.5.5.5/24 up
+> ip n replace 5.5.5.6 dev ens1f2 lladdr aa:bb:cc:dd:ee:ff
+>
+> timeout 3 iperf -c 5.5.5.6
+>
+> tc -s filter show dev ens1f0_0 ingress
+>
+>
+>
+> Notice I run iperf client without Iperf server, so I get only syn packets.
+>
+> Here is the tcpdump on the VF (ens1f2):
+>
+> Executing: sudo tcpdump -nnep  -i ens1f2
+>
+> Executing: sudo tcpdump -nnep  -i ens1f2
+> tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+> listening on ens1f2, link-type EN10MB (Ethernet), capture size 262144 bytes
+> 13:49:10.610376 24:8a:07:a5:28:01 > aa:bb:cc:dd:ee:ff, ethertype IPv4 (0x0800), length 74: 5.5.5.5.49846 > 5.5.5.6.5001: Flags [S], seq 1395738427, win 64240, options [mss 1460,sackOK,TS val 2249857484 ecr 0,nop,wscale 7], length 0
+> 13:49:11.616262 24:8a:07:a5:28:01 > aa:bb:cc:dd:ee:ff, ethertype IPv4 (0x0800), length 74: 5.5.5.5.49846 > 5.5.5.6.5001: Flags [S], seq 1395738427, win 64240, options [mss 1460,sackOK,TS val 2249858489 ecr 0,nop,wscale 7], length 0
+> 13:49:13.664261 24:8a:07:a5:28:01 > aa:bb:cc:dd:ee:ff, ethertype IPv4 (0x0800), length 74: 5.5.5.5.49846 > 5.5.5.6.5001: Flags [S], seq 1395738427, win 64240, options [mss 1460,sackOK,TS val 2249860537 ecr 0,nop,wscale 7], length 0
+> 13:49:17.696261 24:8a:07:a5:28:01 > aa:bb:cc:dd:e
+>
+> I get:
+>
+> filter protocol ip pref 1 flower chain 0
+> filter protocol ip pref 1 flower chain 0 handle 0x1
+>   eth_type ipv4
+>   skip_hw
+>   not_in_hw
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 1 ref 1 bind 1 installed 3 sec used 3 sec
+>         Action statistics:
+>         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0
+>
+> filter protocol ip pref 2 flower chain 0
+> filter protocol ip pref 2 flower chain 0 handle 0x1
+>   eth_type ipv4
+>   ip_proto tcp
+>   dst_ip 5.5.5.6
+>   src_ip 5.5.5.5
+>   tcp_flags 0/5
+>   skip_sw
+>   in_hw
+>         action order 1: tunnel_key set
+>         src_ip 0.0.0.0
+>         dst_ip 172.168.152.241
+>         key_id 1000
+>         nocsum pipe
+>         index 1 ref 1 bind 1 installed 3 sec used 3 sec
+>         Action statistics:
+>         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0
+>
+>         action order 2: mirred (Egress Redirect to device tun1) stolen
+>         index 1 ref 1 bind 1 installed 3 sec used 1 sec
+>         Action statistics:
+>         Sent 232 bytes 2 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0
+>
+>
+> And it counts the 2 syn packets in hardware, the packets are leaving the VF (ens1f2) and not arriving at the mlx5 representor device (ens1f0_0),
+>
+> which means hardware got them. It's also couned in the above encap rule. And the software only (skip_hw, prio 1) rule didn't catch any packets.
+>
+>
+> Thanks,
+>
+> Paul.
+>
+>
+>
+> On 11/26/2019 10:18 AM, wenxu wrote:
+>
+> Hi Paul,
+>
+> Did your test for this case? There are some problem that I reported?
+>
+>
+> BR
+>
+> wenxu
+>
+> On 11/24/2019 4:46 PM, Paul Blakey wrote:
+>
+>
+> Hi,
+>
+> The syn packet might not be actually offloaded because there isn't a neighbor to resolve the destination mac for the tunnel destination ip (next hop mac).
+> Try setting the neighbor via "ip neigh replace dev mlx5_p0 172.168.152.241 lladdr <next hop mac>"
+> Or running ping to 172.168.152.241 before adding (or in background) the rule to resolve the mac and make available.
+> I'll test it on my end.
+>
+>
+> Thanks,
+> Paul.
+>
+>
+>
+>
+> -----Original Message-----
+> From: wenxu <wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+> Sent: Friday, November 22, 2019 8:26 AM
+> To: Paul Blakey <paulb@mellanox.com><mailto:paulb@mellanox.com>
+> Cc: pablo@netfilter.org<mailto:pablo@netfilter.org>; netdev@vger.kernel.org<mailto:netdev@vger.kernel.org>; Mark Bloch
+> <markb@mellanox.com><mailto:markb@mellanox.com>
+> Subject: Re: Question about flow table offload in mlx5e
+>
+> Hi Paul,
+>
+>
+> There are some update. I also test it through replacing mlx5e_rep_setup_tc
+> _cb with mlx5e_rep_setup_ft_cb
+>
+>
+> ifconfig mlx_p0 172.168.152.75/24 up
+>
+> ip l add dev tun1 type gretap external
+> tc qdisc add dev tun1 ingress
+> tc qdisc add dev mlx_pf0vf0 ingress
+>
+> tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower skip_sw
+> ip_proto tcp dst_ip 10.0.1.241 src_ip 10.0.0.75 src_port 5002 dst_port 5001
+> tcp_flags 0/0x5  action tunnel_key set dst_ip 172.168.152.241 src_ip 0 id 1000
+> nocsum pipe action mirred egress redirect dev tun1
+>
+> tc filter add dev tun1 pref 2 ingress  protocol ip flower ip_proto tcp src_ip
+> 10.0.1.241 dst_ip 10.0.0.75 src_port 5001 dst_port 5002 tcp_flags 0/0x5
+> enc_key_id 1000 enc_src_ip 172.168.152.241 action tunnel_key unset pipe
+> action mirred egress redirect dev mlx_pf0vf0
+>
+>
+> If you run this script on the host，  and in the virtual machine  run "iperf -c
+> 10.0.1.241  -i 2  -B 10.0.0.75:5002  -t 1000"
+>
+> The tcp syn packet will not be offloaded
+>
+>
+> But if you  only run the script  without the last filter as following , The tcp syn
+> packet will be offloaded.
+>
+> ifconfig mlx_p0 172.168.152.75/24 up
+>
+> ip l add dev tun1 type gretap external
+> tc qdisc add dev tun1 ingress
+> tc qdisc add dev mlx_pf0vf0 ingress
+>
+> tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower skip_sw
+> ip_proto tcp dst_ip 10.0.1.241 src_ip 10.0.0.75 src_port 5002 dst_port 5001
+> tcp_flags 0/0x5  action tunnel_key set dst_ip 172.168.152.241 src_ip 0 id 1000
+> nocsum pipe action mirred egress redirect dev tun1.
+>
+> I think there are some problem in mlx5e_rep_setup_ft_cb.
+>
+> On 11/21/2019 9:05 PM, Paul Blakey wrote:
+>
+>
+>         I see, I will test that, and how about normal FWD rules?
+>
+>         Paul.
+>
+>
+>
+>                 -----Original Message-----
+>                 From: wenxu <wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+> <mailto:wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+>                 Sent: Thursday, November 21, 2019 2:35 PM
+>                 To: Paul Blakey <paulb@mellanox.com><mailto:paulb@mellanox.com>
+> <mailto:paulb@mellanox.com><mailto:paulb@mellanox.com>
+>                 Cc: pablo@netfilter.org<mailto:pablo@netfilter.org> <mailto:pablo@netfilter.org><mailto:pablo@netfilter.org> ;
+> netdev@vger.kernel.org<mailto:netdev@vger.kernel.org> <mailto:netdev@vger.kernel.org><mailto:netdev@vger.kernel.org> ; Mark Bloch
+>                 <markb@mellanox.com><mailto:markb@mellanox.com> <mailto:markb@mellanox.com><mailto:markb@mellanox.com>
+>                 Subject: Re: Question about flow table offload in mlx5e
+>
+>
+>                 在 2019/11/21 19:39, Paul Blakey 写道:
+>
+>                         They are good fixes, exactly what we had when we
+> tested this, thanks.
+>
+>                         Regarding encap, I don't know what changes you did,
+> how does the encap
+>
+>                 rule look? Is it a FWD to vxlan device? If not it should be, as
+> our driver
+>                 expects that.
+>                 It is fwd to a gretap devices
+>
+>
+>                         I tried it on my setup via tc, by changing the callback
+> of tc
+>
+>                 (mlx5e_rep_setup_tc_cb) to that of ft
+> (mlx5e_rep_setup_ft_cb),
+>
+>                         and testing a vxlan encap rule:
+>                         sudo tc qdisc add dev ens1f0_0 ingress
+>                         sudo ifconfig ens1f0 7.7.7.7/24 up
+>                         sudo ip link add name vxlan0 type vxlan dev ens1f0
+> remote 7.7.7.8 dstport
+>
+>                 4789 external
+>
+>                         sudo ifconfig vxlan0 up
+>                         sudo tc filter add dev ens1f0_0 ingress prio 1 chain 0
+> protocol ip flower
+>
+>                 dst_mac aa:bb:cc:dd:ee:ff ip_proto udp skip_sw  action
+> tunnel_key set
+>                 src_ip 0.0.0.0 dst_ip 7.7.7.8 id 1234 dst_port 4789 pipe action
+> mirred egress
+>                 redirect dev vxlan
+>
+>
+>                         then tc show:
+>                         filter protocol ip pref 1 flower chain 0 handle 0x1
+> dst_mac aa:bb:cc:dd:ee:ff
+>
+>                 ip_proto udp skip_sw in_hw in_hw_count 1
+>
+>                                 tunnel_key set src_ip 0.0.0.0 dst_ip 7.7.7.8 key_id
+> 1234 dst_port 4789
+>
+>                 csum pipe
+>
+>                                 Stats: used 119 sec      0 pkt
+>                                 mirred (Egress Redirect to device vxlan0)
+>                                 Stats: used 119 sec      0 pkt
+>
+>
+>                 Can you send packet that match this offloaded flow to check
+> it is real
+>                 offloaded?
+>
+>                 In the flowtable offload with my patches both
+> TC_SETUP_BLOCK and
+>                 TC_SETUP_FT can offload the rule success
+>
+>                 But in the TC_SETUP_FT case the packet is not real offloaded.
+>
+>
+>                 I  will test like u did.
+>
+>
+>
+>
+>
+>
+>                                 -----Original Message-----
+>                                 From: wenxu <wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+> <mailto:wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+>                                 Sent: Thursday, November 21, 2019 10:29 AM
+>                                 To: Paul Blakey <paulb@mellanox.com><mailto:paulb@mellanox.com>
+> <mailto:paulb@mellanox.com><mailto:paulb@mellanox.com>
+>                                 Cc: pablo@netfilter.org<mailto:pablo@netfilter.org>
+> <mailto:pablo@netfilter.org><mailto:pablo@netfilter.org> ; netdev@vger.kernel.org<mailto:netdev@vger.kernel.org>
+> <mailto:netdev@vger.kernel.org><mailto:netdev@vger.kernel.org> ; Mark Bloch
+>                                 <markb@mellanox.com><mailto:markb@mellanox.com>
+> <mailto:markb@mellanox.com><mailto:markb@mellanox.com>
+>                                 Subject: Re: Question about flow table
+> offload in mlx5e
+>
+>
+>                                 On 11/21/2019 3:42 PM, Paul Blakey wrote:
+>
+>                                         Hi,
+>
+>                                         The original design was the block
+> setup to use TC_SETUP_FT type, and
+>
+>                 the
+>
+>                                 tc event type to be case
+> TC_SETUP_CLSFLOWER.
+>
+>                                         We will post a patch to change that. I
+> would advise to wait till we fix that
+>
+>                                 😊
+>
+>                                         I'm not sure how you get to this
+> function mlx5e_rep_setup_ft_cb() if it
+>
+>                 the
+>
+>                                 nf_flow_table_offload ndo_setup_tc event
+> was TC_SETUP_BLOCK, and
+>
+>                 not
+>
+>                                 TC_SETUP_FT.
+>
+>
+>                                 Yes I change the TC_SETUP_BLOCK to
+> TC_SETUP_FT in the
+>                                 nf_flow_table_offload_setup.
+>
+>                                 Two fixes patch provide:
+>
+>                                 http://patchwork.ozlabs.org/patch/1197818/
+>
+>                                 http://patchwork.ozlabs.org/patch/1197876/
+>
+>                                 So this change made by me is not correct
+> currently?
+>
+>
+>                                         In our driver en_rep.c we have:
+>
+>                                         -------switch (type) {
+>                                         -------case TC_SETUP_BLOCK:
+>                                         ------->-------return
+> flow_block_cb_setup_simple(type_data,
+>                                         ------->------->------->------->------->---
+> ----
+>
+>                 &mlx5e_rep_block_tc_cb_list,
+>
+>                                         ------->------->------->------->------->---
+> ----  mlx5e_rep_setup_tc_cb,
+>                                         ------->------->------->------->------->---
+> ----  priv, priv, true);
+>                                         -------case TC_SETUP_FT:
+>                                         ------->-------return
+> flow_block_cb_setup_simple(type_data,
+>                                         ------->------->------->------->------->---
+> ----
+>
+>                 &mlx5e_rep_block_ft_cb_list,
+>
+>                                         ------->------->------->------->------->---
+> ----  mlx5e_rep_setup_ft_cb,
+>                                         ------->------->------->------->------->---
+> ----  priv, priv, true);
+>                                         -------default:
+>                                         ------->-------return -EOPNOTSUPP;
+>                                         -------}
+>
+>                                         In nf_flow_table_offload.c:
+>
+>                                         -------bo.binder_type>-=
+>
+>                 FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
+>
+>                                         -------bo.extack>------= &extack;
+>                                         -------INIT_LIST_HEAD(&bo.cb_list);
+>                                         -------err = dev->netdev_ops-
+>
+>
+> ndo_setup_tc(dev, TC_SETUP_BLOCK,
+>
+>
+>                                 &bo);
+>
+>                                         -------if (err < 0)
+>                                         ------->-------return err;
+>                                         -------return
+> nf_flow_table_block_setup(flowtable, &bo, cmd);
+>
+>                                         }
+>
+>         EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
+>
+>
+>                                         So unless you changed that as well,
+> you should have gotten to
+>
+>                                 mlx5e_rep_setup_tc_cb and not
+> mlx5e_rep_setup_tc_ft.
+>
+>                                         Regarding the encap action, there
+> should be no difference on which
+>
+>                 chain
+>
+>                                 the rule is on.
+>
+>
+>                                 But for the same encap rule can be real
+> offloaded when setup through
+>                                 through TC_SETUP_BLOCK. But TC_SETUP_FT
+> can't.
+>
+>                                 So it is the problem of TC_SETUP_FT in
+> mlx5e_rep_setup_ft_cb ?
+>
+>
+>
+>
+>                                         -----Original Message-----
+>                                         From: wenxu <wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+> <mailto:wenxu@ucloud.cn><mailto:wenxu@ucloud.cn>
+>                                         Sent: Thursday, November 21, 2019
+> 9:30 AM
+>                                         To: Paul Blakey
+> <paulb@mellanox.com><mailto:paulb@mellanox.com> <mailto:paulb@mellanox.com><mailto:paulb@mellanox.com>
+>                                         Cc: pablo@netfilter.org<mailto:pablo@netfilter.org>
+> <mailto:pablo@netfilter.org><mailto:pablo@netfilter.org> ; netdev@vger.kernel.org<mailto:netdev@vger.kernel.org>
+> <mailto:netdev@vger.kernel.org><mailto:netdev@vger.kernel.org> ; Mark Bloch
+>                                         <markb@mellanox.com><mailto:markb@mellanox.com>
+> <mailto:markb@mellanox.com><mailto:markb@mellanox.com>
+>                                         Subject: Question about flow table
+> offload in mlx5e
+>
+>                                         Hi  paul,
+>
+>                                         The flow table offload in the mlx5e is
+> based on TC_SETUP_FT.
+>
+>
+>                                         It is almost the same as
+> TC_SETUP_BLOCK.
+>
+>                                         It just set
+> MLX5_TC_FLAG(FT_OFFLOAD) flags and change
+>                                         cls_flower.common.chain_index =
+> FDB_FT_CHAIN;
+>
+>                                         In following codes line 1380 and 1392
+>
+>                                         1368 static int
+> mlx5e_rep_setup_ft_cb(enum tc_setup_type type, void
+>                                         *type_data,
+>                                         1369                                  void *cb_priv)
+>                                         1370 {
+>                                         1371         struct flow_cls_offload *f =
+> type_data;
+>                                         1372         struct flow_cls_offload
+> cls_flower;
+>                                         1373         struct mlx5e_priv *priv =
+> cb_priv;
+>                                         1374         struct mlx5_eswitch *esw;
+>                                         1375         unsigned long flags;
+>                                         1376         int err;
+>                                         1377
+>                                         1378         flags =
+> MLX5_TC_FLAG(INGRESS) |
+>                                         1379
+> MLX5_TC_FLAG(ESW_OFFLOAD) |
+>                                         1380
+> MLX5_TC_FLAG(FT_OFFLOAD);
+>                                         1381         esw = priv->mdev-
+>
+>
+> priv.eswitch;
+>
+>
+>                                         1382
+>                                         1383         switch (type) {
+>                                         1384         case
+> TC_SETUP_CLSFLOWER:
+>                                         1385                 if
+> (!mlx5_eswitch_prios_supported(esw) || f-
+>
+>                                         common.chain_index)
+>
+>                                         1386                         return -
+> EOPNOTSUPP;
+>                                         1387
+>                                         1388                 /* Re-use tc offload
+> path by moving the ft flow to the
+>                                         1389                  * reserved ft chain.
+>                                         1390                  */
+>                                         1391                 memcpy(&cls_flower, f,
+> sizeof(*f));
+>                                         1392
+> cls_flower.common.chain_index = FDB_FT_CHAIN;
+>                                         1393                 err =
+> mlx5e_rep_setup_tc_cls_flower(priv, &cls_flower,
+>
+>                                 flags);
+>
+>                                         1394                 memcpy(&f->stats,
+> &cls_flower.stats, sizeof(f->stats));
+>
+>
+>                                         I want to add tunnel offload support
+> in the flow table, I  add some
+>
+>                 patches
+>
+>                                 in
+>
+>                                         nf_flow_table_offload.
+>
+>                                         Also add the indr setup support in the
+> mlx driver. And Now I can  flow
+>
+>                                 table
+>
+>                                         offload with decap.
+>
+>
+>                                         But I meet a problem with the encap.
+> The encap rule can be added in
+>                                         hardware  successfully But it can't be
+> offloaded.
+>
+>                                         But I think the rule I added is correct.
+> If I mask the line 1392. The rule
+>
+>                 also
+>
+>                                 can
+>
+>                                         be add success and can be offloaded.
+>
+>                                         So there are some limit for encap
+> operation for FT_OFFLOAD in
+>                                         FDB_FT_CHAIN?
+>
+>
+>                                         BR
+>
+>                                         wenxu
+>
+>
