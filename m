@@ -2,160 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27AC510B702
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:48:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8491E10B709
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbfK0Tsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 14:48:54 -0500
-Received: from mail-yw1-f47.google.com ([209.85.161.47]:33215 "EHLO
-        mail-yw1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727126AbfK0Tsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:48:53 -0500
-Received: by mail-yw1-f47.google.com with SMTP id 192so731775ywy.0
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 11:48:52 -0800 (PST)
+        id S1727262AbfK0Ttf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 14:49:35 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:35105 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727234AbfK0Ttf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:49:35 -0500
+Received: by mail-lf1-f65.google.com with SMTP id r15so15202455lff.2
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 11:49:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C7mf6B1IgGIf5vyQN7hY5uSctDozwwpAw15AYVyo+Vc=;
-        b=V1rGNnwtITLqT0beOJAg/q2vrY+logPoEpD8UKr85lNI6qZqxfA9cOmBAjaJbano7D
-         QP93VYHUxbGz/2cGus6in9tCpm7ZcxQ8TS3yrZK6vOfq0EYUo1ln9NXgVqImkySVYgVm
-         zILb+5zLvRn2pRYAUsubFAmldk1ROFRQKcCtUiESMkX2Pd/biZFvJUgx5pLDm6cOPOTX
-         p2qwHiCMhIUZIo8L4qVjBYqUu/zBIuHd4naMJoR0pZcAhtbscyXOybYGnzFoeJj+Emb7
-         QuaYcynZRc409NKG+W1dp8CpXhTxyoChcW93U1tu3wIju9Aoa33RdtPdsOfZAEqfth3y
-         RjFg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=tpa6qsgsffF6MZ2hAroMhBII3NVwR7/Y88cSdiliNf0=;
+        b=HyzdQVmo2vsOZyvKTv/HixleVW+fE/oq7v6M/t9xSKYG/a1OT34vVXcp5W3hNJy1zP
+         mB75uz9wyD1j/1SGSqhE57PHS5G23SWJpr2Uj8ojzcXEQj4dG4HZYvtr/XAQY7QYe1+M
+         9p1r2GJ8BRVNhwtH8IsnohsSkt7IdYgL+GgwzqZ15Af1HRQWQJRlbrlJ54p/MElxPUw3
+         q4jG/caVgnm2ZOko1agVFfd9raXvqkuNsBCBB1v35QlfzkZp7mVGVY+qZiCf+5XyTciZ
+         W3yfw0segLv00PbeIPWCzrQKnilNCrs28T2ucr53EdN6MBs+nzbnoUf4Gikmcpnq1f+m
+         mCmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C7mf6B1IgGIf5vyQN7hY5uSctDozwwpAw15AYVyo+Vc=;
-        b=VWsy81WG7Ip1xlmP0W5ydjG/vHcSjhzm0H6Pg9pQQKS4YNRfbwUsI3BOI3VY68e/gZ
-         zbb+3FE1LDWbcjq+eCt9/ANesdmpi0mPmHYYbwkPRC2DZw5Mvg4KZd0FXPJ4Z11EaXhs
-         m7V4ZO5chmY6ajouwFAg0tSNM5OoL16+XtPa5BufRItlLXweXAf5AafhK+4Ke/BPcshq
-         kDnyfLX9G/jH2ZAMSz6d97T9EPMO2p6roedrmv0i8aL8YFGllFYK+P+q7U/aA1A/IxRg
-         iT0i6GwNgAvhBjEgyG1+/UMSlK5ni6y9Kv5kK3+Awy5mmwlaz7a/UBl9pOzVH1Sk3UC2
-         lfCQ==
-X-Gm-Message-State: APjAAAUovRoWCHxmpDRja+7uebyOZKs43aHxlFny6QWj158ritM7HV1t
-        U9NL69CSoCP6OxL2Ur24bXbxjap5
-X-Google-Smtp-Source: APXvYqyDZ8XtqpjORvAkHdhLcnFKyQsSihSWK7XxCgzUBXaui47NPVu7BpzyQ+2++M89dJYYQcpLPg==
-X-Received: by 2002:a81:f00f:: with SMTP id p15mr4039605ywm.353.1574884130824;
-        Wed, 27 Nov 2019 11:48:50 -0800 (PST)
-Received: from mail-yw1-f48.google.com (mail-yw1-f48.google.com. [209.85.161.48])
-        by smtp.gmail.com with ESMTPSA id f144sm7643704ywb.85.2019.11.27.11.48.49
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Nov 2019 11:48:49 -0800 (PST)
-Received: by mail-yw1-f48.google.com with SMTP id d80so8831088ywa.6
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 11:48:49 -0800 (PST)
-X-Received: by 2002:a0d:d911:: with SMTP id b17mr4339680ywe.269.1574884128590;
- Wed, 27 Nov 2019 11:48:48 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=tpa6qsgsffF6MZ2hAroMhBII3NVwR7/Y88cSdiliNf0=;
+        b=UOzeVqGsA+B20+2WylziPhYceD+Fa5TgZ9G32o1hylvofVysKAApk6/1d3F5DCNOhz
+         PVVDLLoVgWK3IIm7XthhBy/xZpOiM70ZwfckvlGnryCCfaWLtSlUL83zkGRKfsM/hJ8f
+         F+JQZ1HjqT2kO957rUXUNSq85CeWj1tkSeU3Kxt0pbnx1YNbm1e/0KOP5lq7kkjn+e+E
+         R0Lx1QHNBTJY88D+Q+5mx4tp9SGxCx4j/OnBY97IEgiksDHR91BpPl6XYkUzJzz8To/s
+         S5Egeql+bmQvzn2HqYhI2WcPGriTB/6BuvJuAl/XRwOa+g3zI1gtLVI7Ipl5gQJQooVf
+         Xhnw==
+X-Gm-Message-State: APjAAAUkl0ek588SLC+ZlkYRwlSgnUkYEadz60Njr80g5LRsAkgMk1vn
+        5ssnv76NDhDEitqtnp1l/sh+cQ==
+X-Google-Smtp-Source: APXvYqybDtB2Ovw/ENr4nkvummmpv5ttVbYMaxRqCU1q3wmSBePOoBmSZRFDwa9J2xUg1ekUya/ruA==
+X-Received: by 2002:a19:8104:: with SMTP id c4mr24228921lfd.191.1574884172084;
+        Wed, 27 Nov 2019 11:49:32 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o15sm7741773ljc.28.2019.11.27.11.49.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 11:49:31 -0800 (PST)
+Date:   Wed, 27 Nov 2019 11:49:13 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Song Liu <songliubraving@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>, qemu-devel@nongnu.org,
+        netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, kvm@vger.kernel.org,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
+Message-ID: <20191127114913.0363a0e8@cakuba.netronome.com>
+In-Reply-To: <48cec928-871f-3f50-e99f-c6a6d124cf4c@redhat.com>
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+        <20191126123514.3bdf6d6f@cakuba.netronome.com>
+        <48cec928-871f-3f50-e99f-c6a6d124cf4c@redhat.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
- <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
- <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com> <20191127164821.1c41deff@carbon>
- <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
-In-Reply-To: <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Nov 2019 14:48:12 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSe8vfEME7EO6xru=i1++OWCNRJGePLNCzta+BVv_TY3Zw@mail.gmail.com>
-Message-ID: <CA+FuTSe8vfEME7EO6xru=i1++OWCNRJGePLNCzta+BVv_TY3Zw@mail.gmail.com>
-Subject: Re: epoll_wait() performance
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 11:04 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Jesper Dangaard Brouer
-> > Sent: 27 November 2019 15:48
-> > On Wed, 27 Nov 2019 10:39:44 +0000 David Laight <David.Laight@ACULAB.COM> wrote:
+On Wed, 27 Nov 2019 10:59:37 +0800, Jason Wang wrote:
+> On 2019/11/27 =E4=B8=8A=E5=8D=884:35, Jakub Kicinski wrote:
+> > On Tue, 26 Nov 2019 19:07:26 +0900, Prashant Bhole wrote: =20
+> >> Note: This RFC has been sent to netdev as well as qemu-devel lists
+> >>
+> >> This series introduces XDP offloading from virtio_net. It is based on
+> >> the following work by Jason Wang:
+> >> https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
+> >>
+> >> Current XDP performance in virtio-net is far from what we can achieve
+> >> on host. Several major factors cause the difference:
+> >> - Cost of virtualization
+> >> - Cost of virtio (populating virtqueue and context switching)
+> >> - Cost of vhost, it needs more optimization
+> >> - Cost of data copy
+> >> Because of above reasons there is a need of offloading XDP program to
+> >> host. This set is an attempt to implement XDP offload from the guest. =
+=20
+> > This turns the guest kernel into a uAPI proxy.
 > >
-> > > ...
-> > > > > While using recvmmsg() to read multiple messages might seem a good idea, it is much
-> > > > > slower than recv() when there is only one message (even recvmsg() is a lot slower).
-> > > > > (I'm not sure why the code paths are so slow, I suspect it is all the copy_from_user()
-> > > > > and faffing with the user iov[].)
-> > > > >
-> > > > > So using poll() we repoll the fd after calling recv() to find is there is a second message.
-> > > > > However the second poll has a significant performance cost (but less than using recvmmsg()).
-> > > >
-> > > > That sounds wrong. Single recvmmsg(), even when receiving only a
-> > > > single message, should be faster than two syscalls - recv() and
-> > > > poll().
-> > >
-> > > My suspicion is the extra two copy_from_user() needed for each recvmsg are a
-> > > significant overhead, most likely due to the crappy code that tries to stop
-> > > the kernel buffer being overrun.
-> > >
-> > > I need to run the tests on a system with a 'home built' kernel to see how much
-> > > difference this make (by seeing how much slower duplicating the copy makes it).
-> > >
-> > > The system call cost of poll() gets factored over a reasonable number of sockets.
-> > > So doing poll() on a socket with no data is a lot faster that the setup for recvmsg
-> > > even allowing for looking up the fd.
-> > >
-> > > This could be fixed by an extra flag to recvmmsg() to indicate that you only really
-> > > expect one message and to call the poll() function before each subsequent receive.
-> > >
-> > > There is also the 'reschedule' that Eric added to the loop in recvmmsg.
-> > > I don't know how much that actually costs.
-> > > In this case the process is likely to be running at a RT priority and pinned to a cpu.
-> > > In some cases the cpu is also reserved (at boot time) so that 'random' other code can't use it.
-> > >
-> > > We really do want to receive all these UDP packets in a timely manner.
-> > > Although very low latency isn't itself an issue.
-> > > The data is telephony audio with (typically) one packet every 20ms.
-> > > The code only looks for packets every 10ms - that helps no end since, in principle,
-> > > only a single poll()/epoll_wait() call (on all the sockets) is needed every 10ms.
+> > BPF uAPI calls related to the "offloaded" BPF objects are forwarded
+> > to the hypervisor, they pop up in QEMU which makes the requested call
+> > to the hypervisor kernel. Today it's the Linux kernel tomorrow it may
+> > be someone's proprietary "SmartNIC" implementation.
 > >
-> > I have a simple udp_sink tool[1] that cycle through the different
-> > receive socket system calls.  I gave it a quick spin on a F31 kernel
-> > 5.3.12-300.fc31.x86_64 on a mlx5 100G interface, and I'm very surprised
-> > to see a significant regression/slowdown for recvMmsg.
-> >
-> > $ sudo ./udp_sink --port 9 --repeat 1 --count $((10**7))
-> >               run      count          ns/pkt  pps             cycles  payload
-> > recvMmsg/32   run:  0 10000000        1461.41 684270.96       5261    18       demux:1
-> > recvmsg       run:  0 10000000        889.82  1123824.84      3203    18       demux:1
-> > read          run:  0 10000000        974.81  1025841.68      3509    18       demux:1
-> > recvfrom      run:  0 10000000        1056.51 946513.44       3803    18       demux:1
-> >
-> > Normal recvmsg almost have double performance that recvmmsg.
-> >  recvMmsg/32 = 684,270 pps
-> >  recvmsg     = 1,123,824 pps
->
-> Can you test recv() as well?
-> I think it might be faster than read().
->
-> ...
-> > Found some old results (approx v4.10-rc1):
-> >
-> > [brouer@skylake src]$ sudo taskset -c 2 ./udp_sink --count $((10**7)) --port 9 --connect
-> >  recvMmsg/32    run: 0 10000000 537.89  1859106.74      2155    21559353816
-> >  recvmsg        run: 0 10000000 552.69  1809344.44      2215    22152468673
-> >  read           run: 0 10000000 476.65  2097970.76      1910    19104864199
-> >  recvfrom       run: 0 10000000 450.76  2218492.60      1806    18066972794
->
-> That is probably nearer what I am seeing on a 4.15 Ubuntu 18.04 kernel.
-> recvmmsg() and recvmsg() are similar - but both a lot slower then recv().
+> > Why can't those calls be forwarded at the higher layer? Why do they
+> > have to go through the guest kernel? =20
+>=20
+>=20
+> I think doing forwarding at higher layer have the following issues:
+>=20
+> - Need a dedicated library (probably libbpf) but application may choose=20
+>   to do eBPF syscall directly
+> - Depends on guest agent to work
 
-Indeed, surprising that recv(from) would be less efficient than recvmsg.
+This can be said about any user space functionality.
 
-Are the latest numbers with CONFIG_HARDENED_USERCOPY?
+> - Can't work for virtio-net hardware, since it still requires a hardware=
+=20
+> interface for carrying=C2=A0 offloading information
 
-I assume that the poll() after recv() is non-blocking. If using
-recvmsg, that extra syscall could be avoided by implementing a cmsg
-inq hint for udp sockets analogous to TCP_CM_INQ/tcp_inq_hint.
+The HW virtio-net presumably still has a PF and hopefully reprs for
+VFs, so why can't it attach the program there?
 
-More outlandish would be to abuse the mmsghdr->msg_len field to pass
-file descriptors and amortize the kernel page-table isolation cost
-across sockets. Blocking semantics would be weird, for starters.
+> - Implement at the level of kernel may help for future extension like=20
+>   BPF object pinning and eBPF helper etc.
+
+No idea what you mean by this.
+
+> Basically, this series is trying to have an implementation of=20
+> transporting eBPF through virtio, so it's not necessarily a guest to=20
+> host but driver and device. For device, it could be either a virtual one=
+=20
+> (as done in qemu) or a real hardware.
+
+SmartNIC with a multi-core 64bit ARM CPUs is as much of a host as=20
+is the x86 hypervisor side. This set turns the kernel into a uAPI
+forwarder.
+
+3 years ago my answer to this proposal would have been very different.
+Today after all the CPU bugs it seems like the SmartNICs (which are=20
+just another CPU running proprietary code) may just take off..
+
+> > If kernel performs no significant work (or "adds value", pardon the
+> > expression), and problem can easily be solved otherwise we shouldn't
+> > do the work of maintaining the mechanism. =20
+>=20
+> My understanding is that it should not be much difference compared to=20
+> other offloading technology.
+
+I presume you mean TC offloads? In virtualization there is inherently a
+hypervisor which will receive the request, be it an IO hub/SmartNIC or
+the traditional hypervisor on the same CPU.
+
+The ACL/routing offloads differ significantly, because it's either the=20
+driver that does all the HW register poking directly or the complexity
+of programming a rule into a HW table is quite low.
+
+Same is true for the NFP BPF offload, BTW, the driver does all the
+heavy lifting and compiles the final machine code image.
+
+You can't say verifying and JITing BPF code into machine code entirely
+in the hypervisor is similarly simple.
+
+So no, there is a huge difference.
+
+> > The approach of kernel generating actual machine code which is then
+> > loaded into a sandbox on the hypervisor/SmartNIC is another story. =20
+>=20
+> We've considered such way, but actual machine code is not as portable as=
+=20
+> eBPF bytecode consider we may want:
+>=20
+> - Support migration
+> - Further offload the program to smart NIC (e.g through macvtap=20
+>   passthrough mode etc).
+
+You can re-JIT or JIT for SmartNIC..? Having the BPF bytecode does not
+guarantee migration either, if the environment is expected to be
+running different version of HW and SW. But yes, JITing in the guest
+kernel when you don't know what to JIT for may be hard, I was just
+saying that I don't mean to discourage people from implementing
+sandboxes which run JITed code on SmartNICs. My criticism is (as
+always?) against turning the kernel into a one-to-one uAPI forwarder
+into unknown platform code.
+
+For cloud use cases I believe the higher layer should solve this.
