@@ -2,73 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC9A10AFC5
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 13:48:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 837D510AFDF
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:03:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfK0Msk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 07:48:40 -0500
-Received: from mail-qt1-f173.google.com ([209.85.160.173]:45342 "EHLO
-        mail-qt1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbfK0Msk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 07:48:40 -0500
-Received: by mail-qt1-f173.google.com with SMTP id 30so25161764qtz.12
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 04:48:39 -0800 (PST)
+        id S1726694AbfK0NDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 08:03:01 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39576 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726520AbfK0NDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:03:00 -0500
+Received: by mail-qt1-f193.google.com with SMTP id g1so15869301qtj.6;
+        Wed, 27 Nov 2019 05:02:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tGwyIKoVSTSDVQc5rcJNfdSD4C5j9jIXNWmLacJmp+s=;
-        b=kvW9Z1cila5wlFeElHAI+CETLkXmJ7VqeVmmhGn2iVJPDivEWSRn6vyYDmf3wdvPO6
-         jmWKNfeH8zDab2MYkCEuxCD3fJM3ir3uq+enaGlTmNsa2AaX6KHNnF9tqVCDmDqFJMWz
-         C08/CtlCupR83nBD1jn8KjFnVK4B9Gwz9wiqDc9TEoF+Es0K2afYeYD74EPnvEc+0RCK
-         tX85HhzEK+r240MSMCF+fH+l0yrizmjC7p+vlXZwnXpcCMnGycDzhkATLofgGqh1MSBL
-         ufgDndRGl1aKkOyzuoJGs5yb6Ix8fppHJuhcUcTiUaMwH8nFf+6w98Epa7zNFWtYhpOv
-         p3qQ==
+         :cc:content-transfer-encoding;
+        bh=1984T7r6pANtFAuP4BoKNpZAvUp4hUdF7V9m7It1Qd8=;
+        b=tWDwn0Xmuoj1nThJAJWbNrdNuSfB63SihYvpYH2nLaGeoKTeLoXKjQp9x9odtZ4biM
+         /PQTZ2yhQpUth5SN2YhmmQEhZ/XYy/TLtozMtimbijQFecmVnhoYZGK1D5YNXnhZP/Qu
+         GM1Og2kJAgnNPMSY+lkb4DrQ3v5up3UIue2qjOZMAzyezcIv6OnJGJdxBld9XfSne8p+
+         ZL6MV/iBATOjajqHNM2RpRA/T6ZAWyWRU2kOidk7gfvC6Q9JPaFSq2xJ6ud0IT92A5FE
+         u+XUmNBQbAzDyVTPpbdOBozmKU4Di+H1ddUirJO66RXJsyhI0KrrKgv6fYUIf/VqH/bm
+         g1Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tGwyIKoVSTSDVQc5rcJNfdSD4C5j9jIXNWmLacJmp+s=;
-        b=E2dXKxzVuhnc3nLRi/STHEPrTkH0MqntV3RmTpdMNzIYKKzq6iG5Tf7H/ypO0Dgj4K
-         Svr37D5iXQL6hzMCoi2cO71OtzqYRvIpKe1OnkQjYaUfjtqXy/6z1cpBRI74GlLJdkMD
-         iLQzPNQin4BFJC+2QO6uNgHYn220dl806gOoVgUqFN5rxT2wN9WCry/IExjW/p6iRkbw
-         1+WSell48e7LQox7AwFNslObhYg6JdKaRs78OCAv1BY69mXDZrACCD7wGtjNdWj+eguW
-         eVfeq78qJKBl3iM4gpTm+4hVmUnv7LeF6L//RiRcF50aTaNKFuLHQcnwBxFfoBt8JR6R
-         9M8Q==
-X-Gm-Message-State: APjAAAVEkHhUTtlCWQST7qkHxNNp5952sI+X7R2QjxgdpWhiHPKkjARJ
-        0GJ+huwW8SAF8d/81k6u5kL+Sh0eNcmY6ov/LE9yew==
-X-Google-Smtp-Source: APXvYqyQW5p1T+6tDo7Vd44ox6ytIZkKwYCSMkVhX3YfVzriqzbA4J3IQbGjaBsQr9PXiQodkruQ2t85s/zfmyyaSJE=
-X-Received: by 2002:ac8:66d7:: with SMTP id m23mr30807597qtp.53.1574858919038;
- Wed, 27 Nov 2019 04:48:39 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1984T7r6pANtFAuP4BoKNpZAvUp4hUdF7V9m7It1Qd8=;
+        b=UuzbeoaTFRSCOmOg3oAQm5wo+ZLq+p6CpiUD+ISgRb/smTW7Q17CZYUZ/HIQwqi6hR
+         SB3QbG6dBsVuBhThWYsq5K4Eo2I/07D9hSdcSY90C5UIOc9qeoekAV9NUDkm4BrmnkLq
+         vdiLFJdQvNgZnyVbqi8GHDpRoNBrdbGS9CUYEbRFY3Spj9l1tqx/V8lgZGzWtSZV0HB7
+         8B3sbP3zzLXbTHMvpjXocyRQEnhybB2LSgjOhSD+QYalHhirsAyeTe7ZUJIjD3+FhdD0
+         aSZkofIgOXydprp+UlB8wt7TWISChAAWy6q7Vz2NkVadEvy71Z3UAENzNV1VIHLYc9aE
+         d9sw==
+X-Gm-Message-State: APjAAAWbWIRFPbjBa7Ebt31xkAcxzfH0x2VfGWYnw1XIEBGCoGMjzPFZ
+        1M2XBysaAvMUob1HGrEEBaA8P7/eaKF5KTCdK/o=
+X-Google-Smtp-Source: APXvYqwQvuvKMWrK5N5Jn+YzXQ/5ZnAZRptOXQTosdAgRrCmLaMtjetuntgaTqUCtzQXvWy8ulKRp5jZIs6k8Zajin0=
+X-Received: by 2002:ac8:2b86:: with SMTP id m6mr7890232qtm.190.1574859778014;
+ Wed, 27 Nov 2019 05:02:58 -0800 (PST)
 MIME-Version: 1.0
-References: <CA+G9fYtgEfa=bq5C8yZeF6P563Gw3Fbs+-h_oy1e4G_1G0jrgw@mail.gmail.com>
- <20191126155632.GF795@breakpoint.cc> <20191127001931.GA3717@debian> <CAG=yYwnm4vRLRpjT2VOj5fynPhBfhvpVjfbSOvPrs-bwv09mTA@mail.gmail.com>
-In-Reply-To: <CAG=yYwnm4vRLRpjT2VOj5fynPhBfhvpVjfbSOvPrs-bwv09mTA@mail.gmail.com>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Wed, 27 Nov 2019 18:18:03 +0530
-Message-ID: <CAG=yYwnx9y3ph74ARdSocca1rqoDVz5vt7WBL=5Qhw1fVEnPNA@mail.gmail.com>
-Subject: Re: selftests:netfilter: nft_nat.sh: internal00-0 Error Could not
- open file \"-\" No such file or directory
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, horms@verge.net.au,
-        yanhaishuang@cmss.chinamobile.com, lkft-triage@lists.linaro.org
+References: <20191127054358.GA59549@LGEARND20B15> <46dfe877-4f32-b763-429f-7af3a83828f0@cogentembedded.com>
+In-Reply-To: <46dfe877-4f32-b763-429f-7af3a83828f0@cogentembedded.com>
+From:   Austin Kim <austindh.kim@gmail.com>
+Date:   Wed, 27 Nov 2019 22:02:49 +0900
+Message-ID: <CADLLry4jOr1S7YhdN5saRCXSnjTt_J=TB+sm=CjbcW9NJ4V7Pg@mail.gmail.com>
+Subject: Re: [PATCH] brcmsmac: Remove always false 'channel < 0' statement
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
+        wright.feng@cypress.com, Kalle Valo <kvalo@codeaurora.org>,
+        davem@davemloft.net, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-> > Signed-off-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+2019=EB=85=84 11=EC=9B=94 27=EC=9D=BC (=EC=88=98) =EC=98=A4=ED=9B=84 7:48, =
+Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+>
+> On 27.11.2019 8:43, Austin Kim wrote:
+>
+> > As 'channel' is declared as u16, the following statement is always fals=
+e.
+> >     channel < 0
+> >
+> > So we can remove unnecessary 'always false' statement.
+>
+>     It's an expression, not a statement.
+>
 
-"i do not know if i deserve Signed-off-by "
+According to below link, it is okay to use 'statement' in above case.
+https://en.wikipedia.org/wiki/Statement_(computer_science)
 
+Why don't you show your opition about patch rather than commit message?
 
--- 
-software engineer
-rajagiri school of engineering and technology
+Thanks,
+Austin Kim
+
+> > Signed-off-by: Austin Kim <austindh.kim@gmail.com>
+> > ---
+> >   drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c b/=
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
+> > index 3f09d89..7f2c15c 100644
+> > --- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
+> > +++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
+> > @@ -5408,7 +5408,7 @@ int brcms_c_set_channel(struct brcms_c_info *wlc,=
+ u16 channel)
+> >   {
+> >       u16 chspec =3D ch20mhz_chspec(channel);
+> >
+> > -     if (channel < 0 || channel > MAXCHANNEL)
+> > +     if (channel > MAXCHANNEL)
+> >               return -EINVAL;
+> >
+> >       if (!brcms_c_valid_chanspec_db(wlc->cmi, chspec))
+>
+> MBR, Sergei
+>
