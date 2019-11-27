@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAF210AA73
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572FB10AA76
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:57:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbfK0F4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 00:56:55 -0500
-Received: from mail-eopbgr00087.outbound.protection.outlook.com ([40.107.0.87]:58850
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S1726556AbfK0F46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 00:56:58 -0500
+Received: from mail-eopbgr150050.outbound.protection.outlook.com ([40.107.15.50]:3753
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726092AbfK0F4y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 00:56:54 -0500
+        id S1726078AbfK0F45 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 00:56:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eLA4qH/RxlBFsR4P4BPwJjfFQtqqqqg96K+KxYBgHpC8JorYUpMsUJE0EQyAYPND7gYOMDMsHjJxvJX7Ez/RlEgce5bJcvKPRnpu6Qy35vaGlYuIOcnb8f6j59bTh8MFxwNvnIl2hM8wuICg6wO6iLhRj+GoBcu6MWX6fR8CCn2koO6xjdFOgEUiIIzebrcjni2GA/+uEQrw1zg4qrpA4CYbufZqSyIDpxufoZXlStUzmqce7CaVU+CpTlRUeIkMfc0OD7Ipg77P6buWdgy0jjIJ+g3AK1rNVo7CpXdjgDkGqg/nP+lCgRW7CPT23/MgTN5YbMbZmzxQdmfogBk0CA==
+ b=TCXUVJvf63uoRLGLZ1bbeJH0b1MpzxZWTiNUGTmcOidkjjeNCyuDHal5w4Iv8X4v/SwxqTnkZSaplsUXmMXXWpjg6Nt1isdLLbPJnt9rV4n+IGrpJFJMAOyuOVaMnYYI6XCkXDd1RjTM396mI69v0MusorsBgCsQYQiJRt8/yZH5IV8fbgdK7dimNUmhOFjz1rQ/FtVPdrcBYIfmUEkuUkecdpPc3EGXcM34tK9fCHUfZuWiNypJeResc4SLF9jz8uINg1VJYHQJu2B9HKA6BaMh+xux5802ITt80jB8P+5yQNXtTf7tb/AcUqJbIH5y3GkL49rBaKOpIMatRZHuJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XRlPwnzKqWrpFULnGMLeRW9rtTxzVtqv21c0zoJ7GwY=;
- b=liS4gBQkaGGaLxnPr4+Ich4jKKWWqwp2/qdGqYskAJd6PWH04/23irnL1HK97/PoV00wsTUSc1MP4b06Ms+BnjRMoO3W9ciO1tG3XTymOKrz8b5czhf+Tr9SNI7V/c2+L9+fXQha9cPGBqFUaUENJ6O7CK9rkmDprUPLTgURQgFrksiRYtUCtwXO1cBBUN8uIgGbAAAhDOZqLeOVbkMebM6kdHVrdHbCo2Rnv9h44V4R2YvfzOE+yHuszqU+1uf3oFk2y14YsweMaQPomhLFEIdtHpZa9HEkG8oD6+KklQ1wH6C9DHvtgpFL0ITOGM4JxFZZ505A547Id1Jrmo5u6Q==
+ bh=5f84Cx8UmrPuYKl/6j6fd8H4BYxh9f/5OStr+GrMOBY=;
+ b=fXd/J+M4AcXlpnk51TU7xiqUAsMyi+ZToogd7/eyYhi1EMudY6wkQqVLyoXtit6JKLRzZPImWwGoU1g29r7gOED0YvSaTDW61gBxVgaCuTGjGWHV0ROXDadlasm8hDlbJ/uDUGdCa85l11738fD8gW9pazJ2kR6t7+xib0Oit7bwMY9rGzxhjJRsBXiWfxi7PXRnmD7+IUHoTkApzeG1rIYGaC6jjai/2NBHsJ6+kFE+YKQtfLdm5Y8WZUtsQMMtIa+W50dX/f1NCnunlATXloOuR6lv/1r+8MnzVF2nEjwGzPY7j6tCqGvy/gCZ9osmZCP5U5ULTK11E7d8QGMgOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XRlPwnzKqWrpFULnGMLeRW9rtTxzVtqv21c0zoJ7GwY=;
- b=O3YBbGX9ZOWfOVyuo+oK3V5/r/T+5ITaXSBnzcISiaqBhdU/JlZv/94Nyu0WzruV1yxuHpoxc4kl27PDu4U74NbaKOPLZXefMC2EVrcuEmGFQZh24EKPvgcWw0d9mtiON0XZzgwGbeCwjIL+iuKdoGfOoekNPOdZQoCEeVxObkc=
+ bh=5f84Cx8UmrPuYKl/6j6fd8H4BYxh9f/5OStr+GrMOBY=;
+ b=pzAJUzwaAbS5H0TwP3HiYjqMTf139/TNjqYnTNIaObI+RcPG8l2dH07F9bN+r9BzQ6GJ9uw9/OK8Zdl/AzZtf/W5rIWAdHRW/L4HewRxf3HOaBdbWl4cMUWdKSFPTgaXjk1+WixHxSXQHSil5LgaSHdnmU9CC8ucJ3oclWuBu9E=
 Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4409.eurprd04.prod.outlook.com (52.135.137.147) with Microsoft SMTP
+ DB7PR04MB4092.eurprd04.prod.outlook.com (52.135.131.11) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.17; Wed, 27 Nov 2019 05:56:50 +0000
+ 15.20.2474.19; Wed, 27 Nov 2019 05:56:52 +0000
 Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
  ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
  ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2474.023; Wed, 27 Nov 2019
- 05:56:50 +0000
+ 05:56:52 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
         "sean@geanix.com" <sean@geanix.com>,
@@ -41,13 +41,11 @@ To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
 CC:     dl-linux-imx <linux-imx@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH V2 3/4] can: flexcan: change the way of stop mode
- acknowledgment
-Thread-Topic: [PATCH V2 3/4] can: flexcan: change the way of stop mode
- acknowledgment
-Thread-Index: AQHVpOd2DKhlfII7e0yJDtRHRUlwXw==
-Date:   Wed, 27 Nov 2019 05:56:50 +0000
-Message-ID: <20191127055334.1476-4-qiangqing.zhang@nxp.com>
+Subject: [PATCH V2 4/4] can: flexcan: add LPSR mode support
+Thread-Topic: [PATCH V2 4/4] can: flexcan: add LPSR mode support
+Thread-Index: AQHVpOd3D9txXS3dtUSMzmH9fMhQMQ==
+Date:   Wed, 27 Nov 2019 05:56:52 +0000
+Message-ID: <20191127055334.1476-5-qiangqing.zhang@nxp.com>
 References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
 In-Reply-To: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
 Accept-Language: en-US
@@ -64,184 +62,133 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [119.31.174.71]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 332c5cc6-80c9-4a21-f168-08d772fe9866
-x-ms-traffictypediagnostic: DB7PR04MB4409:|DB7PR04MB4409:
+x-ms-office365-filtering-correlation-id: 0968cb74-fd81-4155-088b-08d772fe99dd
+x-ms-traffictypediagnostic: DB7PR04MB4092:|DB7PR04MB4092:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB4409F579B34F25CB9CE018EEE6440@DB7PR04MB4409.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-microsoft-antispam-prvs: <DB7PR04MB409256F82E1C3BDBF23D4E4CE6440@DB7PR04MB4092.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2276;
 x-forefront-prvs: 023495660C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(54534003)(199004)(189003)(26005)(36756003)(110136005)(316002)(386003)(2906002)(66066001)(25786009)(446003)(50226002)(8676002)(2616005)(81156014)(8936002)(11346002)(2501003)(66476007)(64756008)(66556008)(66446008)(99286004)(14454004)(256004)(14444005)(7736002)(52116002)(76176011)(1076003)(4326008)(66946007)(102836004)(2201001)(3846002)(478600001)(86362001)(5660300002)(81166006)(305945005)(6436002)(6116002)(71200400001)(71190400001)(186003)(54906003)(6506007)(6486002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4409;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(189003)(199004)(54534003)(81156014)(316002)(6486002)(6436002)(6512007)(76176011)(102836004)(11346002)(2501003)(6506007)(386003)(186003)(8676002)(86362001)(5660300002)(66946007)(64756008)(66556008)(66446008)(66476007)(446003)(2201001)(50226002)(26005)(1076003)(25786009)(305945005)(6116002)(7736002)(2616005)(81166006)(3846002)(2906002)(4326008)(8936002)(14454004)(52116002)(36756003)(66066001)(478600001)(71200400001)(110136005)(14444005)(99286004)(256004)(54906003)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4092;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: z5E/NUlusvyTghBA1rNcVVPyl+6Fe6TNIfU4Mj2+I6EZTMCGS2zYqnZqsekBHJdv5BWp+vNV+NRqxraqtdmJOZrEJQB3D8vNcyWoceZ5v3aLVWVwrqG6eK0zFkMRWWTRKM8shhrpKrO5opV7hQndx75cwSSuNXuaAV761xU9Mudxr+y76Yp6uFZth2eKtiI3Yin3/UJS+4xKD1nG+3q5ZYcAKLu8VAiTmz8MGBpBGdtxdthPDPDSt6toThrDu82TYGG8iBY6x9dr5gutllEuHEI+SiitOODqQEUCBnpQ3ESjfv0ASwCcKRFnySo3t1Vs+86QqmCsY4OG+5ZxC9pQLA1RL7fijfd88cCnEgx2qW+GEGyeTfhZ+meBpY1dawLIkXaCThewkRXlPlUczvxfoFAHzLNUh2SbwuAT5a7GH2oxQySk7LKZIcZ9wECgieDk
+x-microsoft-antispam-message-info: hKOrYiFgepA9eBQRibQ6HVtVYP7a4upPzAPvy17QtBdp1fhG9XKtrTYSTR421Hjp5AQLCU+IFouki9Eeki+yMUdhGpIkedrxb3n4NF0FfPqYD87vyXSXSFMBhSCHZn8ecG606TbiKOxHLJf+rKpzS70PiaWg5NK5mV7Gtd9x6AvD8Y5joOF98toP4zvsPq8cO75KjrfUIMR+90G+rlsoBvOCTyeIVKA5q7shETY/LTOsbe0Q4W8cBOgOc394w65TQipQazGmtQA1u1crANCLH7Ah7XLXvj3LQ79z1dDMDWCWaDSPXnv6DqfO/1+Z//3hAOIk7NqqJv/u7MWLNAbhR31HKMFDdWh6JvpLQD9vSlC36vWlqvCSY3vsnclEtzSqGSCbH/dHl4rno+2kcPj7ChvxiF9oZ8OD/CuxQySsGk5Vs4Wmr3Hve/PbWzVTOiEG
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 332c5cc6-80c9-4a21-f168-08d772fe9866
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 05:56:50.2296
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0968cb74-fd81-4155-088b-08d772fe99dd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 05:56:52.6862
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: afxbLIsCrYJBbct9pTcoKAl0X3jWlzTwVn9S8GSsAzgEE+p9CDiieSE/IjHorq942RwvOeOSz+ThXD2kuyV6CA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4409
+X-MS-Exchange-CrossTenant-userprincipalname: guDkdhyvDrIIekBHxwY4RvEvH9FaxOrZYxruVYxkG2d6K4SDuo8F0v7d+k/mibAb1qgnJi68mnpcu4PdJWs0OQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4092
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stop mode is entered when Stop mode is requested at chip level and
-MCR[LPM_ACK] is asserted by the FlexCAN.
+For i.MX7D LPSR mode, the controller will lost power and got the
+configuration state lost after system resume back. (coming i.MX8QM/QXP
+will also completely power off the domain, the controller state will be
+lost and needs restore).
+So we need to set pinctrl state again and re-start chip to do
+re-configuration after resume.
 
-Double check with IP owner, should poll MCR[LPM_ACK] for stop mode
-acknowledgment, not the acknowledgment from chip level which is used
-for glitch filter.
+For wakeup case, it should not set pinctrl to sleep state by
+pinctrl_pm_select_sleep_state.
+For interface is not up before suspend case, we don't need
+re-configure as it will be configured by user later by interface up.
 
-Fixes: 5f186c257fa4(can: flexcan: fix stop mode acknowledgment)
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ------
 ChangeLog:
 	V1->V2: no change.
 ---
- drivers/net/can/flexcan.c | 64 ++++++++++++++++++++-------------------
- 1 file changed, 33 insertions(+), 31 deletions(-)
+ drivers/net/can/flexcan.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 5d5ed28d3005..d178146b3da5 100644
+index d178146b3da5..d1509cffdd24 100644
 --- a/drivers/net/can/flexcan.c
 +++ b/drivers/net/can/flexcan.c
-@@ -388,6 +388,34 @@ static struct flexcan_mb __iomem *flexcan_get_mb(const=
- struct flexcan_priv *priv
- 		(&priv->regs->mb[bank][priv->mb_size * mb_index]);
- }
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/regmap.h>
 =20
-+static int flexcan_enter_low_power_ack(struct flexcan_priv *priv)
-+{
-+	struct flexcan_regs __iomem *regs =3D priv->regs;
-+	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
+ #define DRV_NAME			"flexcan"
+@@ -1707,7 +1708,7 @@ static int __maybe_unused flexcan_suspend(struct devi=
+ce *device)
+ {
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+-	int err =3D 0;
++	int err;
+=20
+ 	if (netif_running(dev)) {
+ 		/* if wakeup is enabled, enter stop mode
+@@ -1719,25 +1720,27 @@ static int __maybe_unused flexcan_suspend(struct de=
+vice *device)
+ 			if (err)
+ 				return err;
+ 		} else {
+-			err =3D flexcan_chip_disable(priv);
++			flexcan_chip_stop(dev);
 +
-+	while (timeout-- && !(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+		udelay(10);
-+
-+	if (!(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+		return -ETIMEDOUT;
-+
++			err =3D pm_runtime_force_suspend(device);
+ 			if (err)
+ 				return err;
+=20
+-			err =3D pm_runtime_force_suspend(device);
++			pinctrl_pm_select_sleep_state(device);
+ 		}
+ 		netif_stop_queue(dev);
+ 		netif_device_detach(dev);
+ 	}
+ 	priv->can.state =3D CAN_STATE_SLEEPING;
+=20
+-	return err;
 +	return 0;
-+}
+ }
+=20
+ static int __maybe_unused flexcan_resume(struct device *device)
+ {
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
+-	int err =3D 0;
++	int err;
+=20
+ 	priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
+ 	if (netif_running(dev)) {
+@@ -1749,15 +1752,19 @@ static int __maybe_unused flexcan_resume(struct dev=
+ice *device)
+ 			if (err)
+ 				return err;
+ 		} else {
++			pinctrl_pm_select_default_state(device);
 +
-+static int flexcan_exit_low_power_ack(struct flexcan_priv *priv)
-+{
-+	struct flexcan_regs __iomem *regs =3D priv->regs;
-+	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
-+
-+	while (timeout-- && (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
-+		udelay(10);
-+
-+	if (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
-+		return -ETIMEDOUT;
-+
+ 			err =3D pm_runtime_force_resume(device);
+ 			if (err)
+ 				return err;
+=20
+-			err =3D flexcan_chip_enable(priv);
++			err =3D flexcan_chip_start(dev);
++			if (err)
++				return err;
+ 		}
+ 	}
+=20
+-	return err;
 +	return 0;
-+}
-+
- static void flexcan_enable_wakeup_irq(struct flexcan_priv *priv, bool enab=
-le)
- {
- 	struct flexcan_regs __iomem *regs =3D priv->regs;
-@@ -406,7 +434,6 @@ static void flexcan_enable_wakeup_irq(struct flexcan_pr=
-iv *priv, bool enable)
- static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
- {
- 	struct flexcan_regs __iomem *regs =3D priv->regs;
--	unsigned int ackval;
- 	u32 reg_mcr;
-=20
- 	reg_mcr =3D priv->read(&regs->mcr);
-@@ -418,35 +445,24 @@ static inline int flexcan_enter_stop_mode(struct flex=
-can_priv *priv)
- 			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
-=20
- 	/* get stop acknowledgment */
--	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
--				     ackval, ackval & (1 << priv->stm.ack_bit),
--				     0, FLEXCAN_TIMEOUT_US))
--		return -ETIMEDOUT;
--
--	return 0;
-+	return flexcan_enter_low_power_ack(priv);
  }
 =20
- static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
- {
- 	struct flexcan_regs __iomem *regs =3D priv->regs;
--	unsigned int ackval;
- 	u32 reg_mcr;
-=20
- 	/* remove stop request */
- 	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
- 			   1 << priv->stm.req_bit, 0);
-=20
--	/* get stop acknowledgment */
--	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
--				     ackval, !(ackval & (1 << priv->stm.ack_bit)),
--				     0, FLEXCAN_TIMEOUT_US))
--		return -ETIMEDOUT;
--
- 	reg_mcr =3D priv->read(&regs->mcr);
- 	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
- 	priv->write(reg_mcr, &regs->mcr);
-=20
--	return 0;
-+	/* get stop acknowledgment */
-+	return flexcan_exit_low_power_ack(priv);
- }
-=20
- static void flexcan_try_exit_stop_mode(struct flexcan_priv *priv)
-@@ -512,39 +528,25 @@ static inline int flexcan_transceiver_disable(const s=
-truct flexcan_priv *priv)
- static int flexcan_chip_enable(struct flexcan_priv *priv)
- {
- 	struct flexcan_regs __iomem *regs =3D priv->regs;
--	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
- 	u32 reg;
-=20
- 	reg =3D priv->read(&regs->mcr);
- 	reg &=3D ~FLEXCAN_MCR_MDIS;
- 	priv->write(reg, &regs->mcr);
-=20
--	while (timeout-- && (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
--		udelay(10);
--
--	if (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
--		return -ETIMEDOUT;
--
--	return 0;
-+	return flexcan_exit_low_power_ack(priv);
- }
-=20
- static int flexcan_chip_disable(struct flexcan_priv *priv)
- {
- 	struct flexcan_regs __iomem *regs =3D priv->regs;
--	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
- 	u32 reg;
-=20
- 	reg =3D priv->read(&regs->mcr);
- 	reg |=3D FLEXCAN_MCR_MDIS;
- 	priv->write(reg, &regs->mcr);
-=20
--	while (timeout-- && !(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
--		udelay(10);
--
--	if (!(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
--		return -ETIMEDOUT;
--
--	return 0;
-+	return flexcan_enter_low_power_ack(priv);
- }
-=20
- static int flexcan_chip_freeze(struct flexcan_priv *priv)
+ static int __maybe_unused flexcan_runtime_suspend(struct device *device)
 --=20
 2.17.1
 
