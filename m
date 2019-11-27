@@ -2,92 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9935410B460
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9E710B46B
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 18:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbfK0RZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 12:25:50 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40105 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727050AbfK0RZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 12:25:50 -0500
-Received: by mail-qk1-f195.google.com with SMTP id a137so18391846qkc.7
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 09:25:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SyLTci+74nRZSDUku0dXTAAk3nRjI4NMyLYHOUy9iSw=;
-        b=FKB+SRN7f5uu10rogzWGvTOhlLIYfQ/Y8d558EUQxpvznsOl4zlOodjodErrJcvyCR
-         MvhH4os/sL4NL5d38vTDE+x3T7NYUkxPBd/UAVZR6STgQr5l2EgXBP1C/ueMsFI2/QeN
-         9QsGPAAbF9TaTxLPfHk5k3eaZy9eBJXGTbiSyTdf1JMRR47b4yVd+CJMVrLTaapMybAa
-         TMUMrAidk1NEJvrsBRXbD1aVKL1t8ne7kBbmfoAV0itok4RefXITJhuLVqUzqfiHxlT+
-         O0vmYHYJuvdX08pjUMumwTxnNGyK5Lf9BD4FkuyfWZDgG8nCXbkKcZ1t2U5uY5gwTwwk
-         N86Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SyLTci+74nRZSDUku0dXTAAk3nRjI4NMyLYHOUy9iSw=;
-        b=V3tGHBmSeISyJXmt7fSl0Bi6nw+oQV06pr1er3/67oCqMlwLtTKMLQaN0Py1Tpzyuv
-         +IyqVs42huKbzFqE8nCmxXkho47eZ+s/LdVh6aaT5gpCnJnsn2qK+eFbYER8PyVG/FaM
-         0+f5BwNCZMaAeKDL91RltgXejtjFAQB8FMky55NyJ3HoI2lAJdMT5GtKKzgP0K/sW2b6
-         GkMKCcV/bZnjayOTR+FJ/zTCi0acdoeSdIecsBYkGkrw/5T3kiE2f9RN9ucLRFT6Ew6S
-         SBKnFbdmQ6+IHyLS+cBuabOqAltdxWyFvQvYi93TKmhykBiThj8Dq6G/VZ5p5jcFggvK
-         PH1w==
-X-Gm-Message-State: APjAAAXeg0n7B2jXzBwIuHTVwI3+7PxLGHeXnCp1ad2CXkvYOh7z6dvI
-        J3i7Govrp4nD3JeW9Q7Tz0Y0TL+YuOlwEsi/FpfyfA==
-X-Google-Smtp-Source: APXvYqySq1fLKpo1mLqFnH5TItrk1NRYj4qQ3IrR6ckKUIrvKy7hmmKzQSrm9p1f81OS7EM04oJQykfDCuP34DmZKg4=
-X-Received: by 2002:a37:a3c1:: with SMTP id m184mr5398890qke.49.1574875549140;
- Wed, 27 Nov 2019 09:25:49 -0800 (PST)
+        id S1727139AbfK0R2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 12:28:42 -0500
+Received: from mx2.suse.de ([195.135.220.15]:49878 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726292AbfK0R2l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 12:28:41 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 25895AF22;
+        Wed, 27 Nov 2019 17:28:39 +0000 (UTC)
+Message-ID: <eccd6a23d8dbc577058c538fa4ef79ba376cd04a.camel@suse.de>
+Subject: Re: [PATCH v3 0/7] Raspberry Pi 4 PCIe support
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     andrew.murray@arm.com, maz@kernel.org,
+        linux-kernel@vger.kernel.org, james.quinlan@broadcom.com,
+        mbrugger@suse.com, f.fainelli@gmail.com, phil@raspberrypi.org,
+        wahrenst@gmx.net, jeremy.linton@arm.com, linux-pci@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        Robin Murphy <robin.murphy@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        iommu@lists.linux-foundation.org
+Date:   Wed, 27 Nov 2019 18:28:35 +0100
+In-Reply-To: <20191126215020.GA191414@google.com>
+References: <20191126215020.GA191414@google.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-LD8Ga7xd6xkOxp2WErAx"
+User-Agent: Evolution 3.34.1 
 MIME-Version: 1.0
-References: <20191127052059.162120-1-brianvv@google.com> <20191127082655.2e914675@hermes.lan>
- <CANP3RGctgy98FsyeHq+aVk2S=N8ndY0Y+qMkZUhTB=26H_Y3Rg@mail.gmail.com>
-In-Reply-To: <CANP3RGctgy98FsyeHq+aVk2S=N8ndY0Y+qMkZUhTB=26H_Y3Rg@mail.gmail.com>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Wed, 27 Nov 2019 09:25:37 -0800
-Message-ID: <CAMzD94R4AqjgtqxgpnZ67H6GvQzin1idxj8OjMmOfmruEc9_CQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2] tc: fix warning in q_pie.c
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Leslie Monis <lesliemonis@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 8:44 AM Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
->
-> > What compiler is this?
-> > The type seems correct already.  The type of double / unsigned long is =
-double.
-> > And the conversion may give different answer.
 
-I don't think this conversion will give a different answer, the
-compiler already change the value from UINT64_MAX to 'UINT64_MAX + 1'
-which is pow of 2 and can be represented precisely in a double.  This
-change is just making that conversion explicit to avoid the warning.
+--=-LD8Ga7xd6xkOxp2WErAx
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
->
-> Probably some recent version of clang with -Wall.
+Hi Bjorn,
 
-It's clang 10
+On Tue, 2019-11-26 at 15:50 -0600, Bjorn Helgaas wrote:
+> On Tue, Nov 26, 2019 at 10:19:38AM +0100, Nicolas Saenz Julienne wrote:
+> > This series aims at providing support for Raspberry Pi 4's PCIe
+> > controller, which is also shared with the Broadcom STB family of
+> > devices.
+> > Jim Quinlan (3):
+> >   dt-bindings: PCI: Add bindings for brcmstb's PCIe device
+> >   PCI: brcmstb: add Broadcom STB PCIe host controller driver
+> >   PCI: brcmstb: add MSI capability
+>=20
+> Please update these subjects to match the others, i.e., capitalize
+> "Add".  Also, I think "Add MSI capability" really means "Add support
+> for MSI ..."; in PCIe terms the "MSI Capability" is a structure in
+> config space and it's there whether the OS supports it or not.
+>=20
+> No need to repost just for this.
 
->
-> That said, I think the warning/error is correct.
-> UINT64 doesn't fit in double (which is also 64 bits, but includes sign
-> and exponent) - you lose ~13 bits of precision.
-> I'm not aware of a way to (natively) divide a double by a uint64
-> without the loss (not that it really matters since the double doesn't
-> have the requisite precision in the first place).
->
-> Why do you think the conversion will give a different answer?
-> Isn't this exactly what the compiler will do anyway?
-> It's not like we have long double anymore...
+Noted, I'll update them.
+
+Regards,
+Nicolas
+
+
+--=-LD8Ga7xd6xkOxp2WErAx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3eskMACgkQlfZmHno8
+x/60Swf/Rwz7o3DibuLSdZZBrCQ9sK0AToOIKPKSSquZNgW7MKr1ByJjnNAS9/4r
+9N3namc6tZJcCE7C+QKKVcikyMR0ENUSovq0hrCA6WCiUipefFyD22H/WEtsWvHf
+1QcGifBBN6mjLDS1DSnBTPiDAVqWm5w1celUlauXFZAZc5YQftSwRQRVkZui2q9H
+aljeQuVsPZ+CfdOFgqo1xlwJvk+BbfDIxgQ+cg4du/tS3enlrrMspevtkEw/awv9
+aZl62mLNRTUPlsHW07akov+GIKROrknLnBTqiCKLg0Ei7J3dTo3Su/wzSyZQw7H4
+hOq7QZ/9Qezc3LUiCtuauS3v8a6ang==
+=dKU6
+-----END PGP SIGNATURE-----
+
+--=-LD8Ga7xd6xkOxp2WErAx--
+
