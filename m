@@ -2,186 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7A510ACDF
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2366410ACE7
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:51:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfK0JtF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 04:49:05 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:52881 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727031AbfK0JtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 04:49:04 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-160-N8QNudZsNuOKTM7DqNQzcw-1; Wed, 27 Nov 2019 04:49:00 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB3FB107ACE3;
-        Wed, 27 Nov 2019 09:48:57 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A52305D6C8;
-        Wed, 27 Nov 2019 09:48:54 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH 3/3] bpftool: Allow to link libbpf dynamically
-Date:   Wed, 27 Nov 2019 10:48:37 +0100
-Message-Id: <20191127094837.4045-4-jolsa@kernel.org>
-In-Reply-To: <20191127094837.4045-1-jolsa@kernel.org>
-References: <20191127094837.4045-1-jolsa@kernel.org>
+        id S1726227AbfK0JvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:51:08 -0500
+Received: from mail-qv1-f42.google.com ([209.85.219.42]:42843 "EHLO
+        mail-qv1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726181AbfK0JvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 04:51:08 -0500
+Received: by mail-qv1-f42.google.com with SMTP id n4so8594463qvq.9
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 01:51:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H07T8BHh5BcmV80j3lg7IXdBX7ZDvpzBwkD+L/6zGBM=;
+        b=pBBLnQ1NyzQyxoM6zl5akl2JKAydiUwno7tA2mwZK83clwOH4PJruUqiaKydGo/wWG
+         /C43rPvDuaU9hTqVAPyEsrb+5KQ9cZDEvfHJ364w6GgXKA7KIY7tn6n5LCjd0ZhdTX2H
+         pJ1agAMuLszk50LMYYrlc4R61sRY3FnqgMs5M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H07T8BHh5BcmV80j3lg7IXdBX7ZDvpzBwkD+L/6zGBM=;
+        b=sFyPKP8sDHlhvc2IcWPriz3YZFPa2Zk9rvIbs3u21GoSaqyc25mvZhKWnGBZ779kR/
+         Wr9yV8X31eO6zZZC8L+o2/onw/4n88etsONIctXo03Y3xQKpNHlwkuq+TLcf/YOsEtFy
+         Cf3+YP56t/mH2pCNJ2+/eGgUugvLjRyEdNWIddkFm7flZ++IRKTeo5BazSZdGqOydAug
+         6f+NEb/jaNUbiE8NHl6UCgQ9qIohKSlS4mKUcmOvohcynZfWlxDc0teEFGuULCqgH5rh
+         thTXEWdM+qcOhb1V2tpbD8qeMpw9zUwdRIuV8W5xPY8yHnT4XYCmraiU1nIdLnU6KH70
+         keFw==
+X-Gm-Message-State: APjAAAWUKvGU6EK2B5tbpHzlO9rnM2Au59cQvxFttwKa+8+A8B4NPKtd
+        RUePB9i/CWN9vWcZRUowlzE5iBXwwf+zEG4yF8n20Q==
+X-Google-Smtp-Source: APXvYqzrjvqELTFnUI8Qt8Rmz+NjyPBSdnjdLu3/0P8bQDHlGIKWguE1Ib8kXyYI9epQ0tHjqpx5HfhmtQBnRRqK26A=
+X-Received: by 2002:a0c:8e87:: with SMTP id x7mr3797948qvb.112.1574848267041;
+ Wed, 27 Nov 2019 01:51:07 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: N8QNudZsNuOKTM7DqNQzcw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+In-Reply-To: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 27 Nov 2019 10:50:55 +0100
+Message-ID: <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+Subject: Re: epoll_wait() performance
+To:     David Laight <David.Laight@aculab.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we support only static linking with kernel's libbpf
-(tools/lib/bpf). This patch adds LIBBPF_DYNAMIC compile variable
-that triggers libbpf detection and bpf dynamic linking:
+On Fri, Nov 22, 2019 at 12:18 PM David Laight <David.Laight@aculab.com> wrote:
+> I'm trying to optimise some code that reads UDP messages (RTP and RTCP) from a lot of sockets.
+> The 'normal' data pattern is that there is no data on half the sockets (RTCP) and
+> one message every 20ms on the others (RTP).
+> However there can be more than one message on each socket, and they all need to be read.
+> Since the code processing the data runs every 10ms, the message receiving code
+> also runs every 10ms (a massive gain when using poll()).
 
-  $ make -C tools/bpf/bpftool make LIBBPF_DYNAMIC=1
+How many sockets we are talking about? More like 500 or 500k? We had very
+bad experience with UDP connected sockets, so if you are using UDP connected
+sockets, the RX path is super slow, mostly consumed by udp_lib_lookup()
+https://elixir.bootlin.com/linux/v5.4/source/net/ipv4/udp.c#L445
 
-If libbpf is not installed, build (with LIBBPF_DYNAMIC=1) stops with:
+Then we might argue that doing thousands of udp unconnected sockets  - like
+192.0.2.1:1234, 192.0.2.2:1234, etc - creates little value. I guess the only
+reasonable case for large number of UDP sockets is when you need
+large number of source ports.
 
-  $ make -C tools/bpf/bpftool LIBBPF_DYNAMIC=1
-    Auto-detecting system features:
-    ...                        libbfd: [ on  ]
-    ...        disassembler-four-args: [ on  ]
-    ...                          zlib: [ on  ]
-    ...                        libbpf: [ OFF ]
+In such case we experimented with abusing TPROXY:
+https://web.archive.org/web/20191115081000/https://blog.cloudflare.com/how-we-built-spectrum/
 
-  Makefile:102: *** Error: libbpf-devel is missing, please install it.  Stop.
+> While using recvmmsg() to read multiple messages might seem a good idea, it is much
+> slower than recv() when there is only one message (even recvmsg() is a lot slower).
+> (I'm not sure why the code paths are so slow, I suspect it is all the copy_from_user()
+> and faffing with the user iov[].)
+>
+> So using poll() we repoll the fd after calling recv() to find is there is a second message.
+> However the second poll has a significant performance cost (but less than using recvmmsg()).
 
-Adding specific bpftool's libbpf check for libbpf_netlink_open (LIBBPF_0.0.6)
-which is the latest we need for bpftool at the moment.
+That sounds wrong. Single recvmmsg(), even when receiving only a
+single message, should be faster than two syscalls - recv() and
+poll().
 
-Adding LIBBPF_DIR compile variable to allow linking with
-libbpf installed into specific directory:
+> If we use epoll() in level triggered mode a second epoll_wait() call (after the recv()) will
+> indicate that there is more data.
+>
+> For poll() it doesn't make much difference how many fd are supplied to each system call.
+> The overall performance is much the same for 32, 64 or 500 (all the sockets).
+>
+> For epoll_wait() that isn't true.
+> Supplying a buffer that is shorter than the list of 'ready' fds gives a massive penalty.
+> With a buffer long enough for all the events epoll() is somewhat faster than poll().
+> But with a 64 entry buffer it is much slower.
+> I've looked at the code and can't see why splicing the unread events back is expensive.
 
-  $ make -C tools/lib/bpf/ prefix=/tmp/libbpf/ install_lib install_headers
-  $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/libbpf/
+Again, this is surprising.
 
-It might be needed to clean build tree first because features
-framework does not detect the change properly:
+> I'd like to be able to change the code so that multiple threads are reading from the epoll fd.
+> This would mean I'd have to run it in edge mode and each thread reading a smallish
+> block of events.
+> Any suggestions on how to efficiently read the 'unusual' additional messages from
+> the sockets?
 
-  $ make -C tools/build/feature clean
-  $ make -C tools/bpf/bpftool/ clean
+Random ideas:
+1. Perhaps reducing the number of sockets could help - with iptables or TPROXY.
+TPROXY has some performance impact though, so be careful.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/bpf/bpftool/Makefile        | 40 ++++++++++++++++++++++++++++++-
- tools/build/feature/test-libbpf.c |  9 +++++++
- 2 files changed, 48 insertions(+), 1 deletion(-)
+2. I played with io_submit for syscall batching, but in my experiments I wasn't
+able to show performance boost:
+https://blog.cloudflare.com/io_submit-the-epoll-alternative-youve-never-heard-about/
+Perhaps the newer io_uring with networking support could help:
+https://twitter.com/axboe/status/1195047335182524416
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index 39bc6f0f4f0b..2b6ed08cb31e 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -1,6 +1,15 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+# LIBBPF_DYNAMIC to enable libbpf dynamic linking.
-+
- include ../../scripts/Makefile.include
- include ../../scripts/utilities.mak
-+include ../../scripts/Makefile.arch
-+
-+ifeq ($(LP64), 1)
-+  libdir_relative = lib64
-+else
-+  libdir_relative = lib
-+endif
- 
- ifeq ($(srctree),)
- srctree := $(patsubst %/,%,$(dir $(CURDIR)))
-@@ -55,7 +64,7 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS += $(EXTRA_LDFLAGS)
- endif
- 
--LIBS = $(LIBBPF) -lelf -lz
-+LIBS = -lelf -lz
- 
- INSTALL ?= install
- RM ?= rm -f
-@@ -64,6 +73,23 @@ FEATURE_USER = .bpftool
- FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib
- FEATURE_DISPLAY = libbfd disassembler-four-args zlib
- 
-+ifdef LIBBPF_DYNAMIC
-+  # Add libbpf check with the flags to ensure bpftool
-+  # specific version is detected.
-+  FEATURE_CHECK_CFLAGS-libbpf := -DBPFTOOL
-+  FEATURE_TESTS   += libbpf
-+  FEATURE_DISPLAY += libbpf
-+
-+  # for linking with debug library run:
-+  # make LIBBPF_DYNAMIC=1 LIBBPF_DIR=/opt/libbpf
-+  ifdef LIBBPF_DIR
-+    LIBBPF_CFLAGS  := -I$(LIBBPF_DIR)/include
-+    LIBBPF_LDFLAGS := -L$(LIBBPF_DIR)/$(libdir_relative)
-+    FEATURE_CHECK_CFLAGS-libbpf  := $(LIBBPF_CFLAGS)
-+    FEATURE_CHECK_LDFLAGS-libbpf := $(LIBBPF_LDFLAGS)
-+  endif
-+endif
-+
- check_feat := 1
- NON_CHECK_FEAT_TARGETS := clean uninstall doc doc-clean doc-install doc-uninstall
- ifdef MAKECMDGOALS
-@@ -88,6 +114,18 @@ ifeq ($(feature-reallocarray), 0)
- CFLAGS += -DCOMPAT_NEED_REALLOCARRAY
- endif
- 
-+ifdef LIBBPF_DYNAMIC
-+  ifeq ($(feature-libbpf), 1)
-+    LIBS    += -lbpf
-+    CFLAGS  += $(LIBBPF_CFLAGS)
-+    LDFLAGS += $(LIBBPF_LDFLAGS)
-+  else
-+    dummy := $(error Error: No libbpf devel library found, please install libbpf-devel)
-+  endif
-+else
-+  LIBS += $(LIBBPF)
-+endif
-+
- include $(wildcard $(OUTPUT)*.d)
- 
- all: $(OUTPUT)bpftool
-diff --git a/tools/build/feature/test-libbpf.c b/tools/build/feature/test-libbpf.c
-index a508756cf4cc..93566d105a64 100644
---- a/tools/build/feature/test-libbpf.c
-+++ b/tools/build/feature/test-libbpf.c
-@@ -3,5 +3,14 @@
- 
- int main(void)
- {
-+#ifdef BPFTOOL
-+	/*
-+	 * libbpf_netlink_open (LIBBPF_0.0.6) is the latest
-+	 * we need for bpftool at the moment
-+	 */
-+	libbpf_netlink_open(NULL);
-+	return 0;
-+#else
- 	return bpf_object__open("test") ? 0 : -1;
-+#endif
- }
--- 
-2.21.0
+3. SO_BUSYPOLL drastically reduces latency, but I've only used it with
+a single socket..
 
+4. If you want to get number of outstanding packets, there is SIOCINQ
+and SO_MEMINFO.
+
+My older writeups:
+https://blog.cloudflare.com/how-to-receive-a-million-packets/
+https://blog.cloudflare.com/how-to-achieve-low-latency/
+
+Cheers,
+   Marek
+
+> FWIW the fastest way to read 1 RTP message every 20ms is to do non-blocking recv() every 10ms.
+> The failing recv() is actually faster than either epoll() or two poll() actions.
+> (Although something is needed to pick up the occasional second message.)
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+>
