@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 560A410AD06
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF40910AD0A
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:59:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbfK0J6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 04:58:48 -0500
-Received: from first.geanix.com ([116.203.34.67]:40472 "EHLO first.geanix.com"
+        id S1726975AbfK0J7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:59:06 -0500
+Received: from first.geanix.com ([116.203.34.67]:40484 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726227AbfK0J6r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 04:58:47 -0500
+        id S1726227AbfK0J7G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 04:59:06 -0500
 Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 8BE22932E2;
-        Wed, 27 Nov 2019 09:55:01 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 77787932E2;
+        Wed, 27 Nov 2019 09:55:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1574848501; bh=EqbvLJUqmlNqOu2BfsSKko8WT0L0d1pwMozqcVEo61M=;
+        t=1574848519; bh=550yh0WqHSwAJsBZEPoNt0ZuxTL9MA4Pwlz0992BOXE=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=DrajxCbK2NpLi73k4FJUd4/Vv/yFXep5Hd90PsqfbeziX26wVfE0K+5/gJnoVOyfE
-         VWkev2iZCRsjM7HSnfzQPxgqcz/eXZtty5E8NWZXcXwWcBymm3UETNKJKIeR5KmhB8
-         MTWlWlK87bX3XfJXPRe/iAs+1/GPL1uusA1AR1ML/LCH/vcVwOJIw+XzqZOjp61V/u
-         mTGWnyJMTPqDqR8kj7EC1IOMjOzNlqF03TvOYf3pvL/Y1ROLSeWTxq/D1t/JhWUoBm
-         a9++Cpowi4A4u6H/VZJa5+owlh7GpYoJpM1zFaztoG2fPX36eC2jteXJ+vUfn07zxG
-         /OyRTe6YHmEng==
-Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+        b=WTsZlUP2lWiAV9RUJtjShma22mtGWV3DYx/De4zeZx+w0dSOxt7ewoQIGv4rb5e7Z
+         cONYh2wSlTKjTn28AaoLSp0kCtqCAIuurl12UFoN8OtOrIsWF7FvfEMlo77O+yU0lK
+         tVfiZjeMizR5jSSAp7Ch+wLbx5Cowv0jQzTKPccESrHF9YstlrX5jqWOHHU4Fp3XIn
+         x4evgqnEYmZjjJ5dZ6Heus+Clh0aU2nJeMsnjERLdwxJ+amb27y10nee0M9yooDau7
+         7fQSD4D0LUSG80Q9wElQDZYcPk3Ls+Cx5osQXqLRIguIMyDrMiZS7e7ciGri/7oyOY
+         5QZXJ1D7DnHng==
+Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
         "mkl@pengutronix.de" <mkl@pengutronix.de>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
 Cc:     dl-linux-imx <linux-imx@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-3-qiangqing.zhang@nxp.com>
 From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <199aa895-833c-f6b0-105b-1450600fc21e@geanix.com>
-Date:   Wed, 27 Nov 2019 10:58:06 +0100
+Message-ID: <5fe4918e-2ec1-0b88-1f02-3c2d39c99e07@geanix.com>
+Date:   Wed, 27 Nov 2019 10:58:24 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <20191127055334.1476-3-qiangqing.zhang@nxp.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US-large
 Content-Transfer-Encoding: 7bit
@@ -53,96 +54,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 27/11/2019 06.56, Joakim Zhang wrote:
-> From: Sean Nyekjaer <sean@geanix.com>
+> CAN controller could be stucked in stop mode once it enters stop mode
+> when suspend, and then it fails to exit stop mode when resume. Only code
+> reset can get CAN out of stop mode, so add stop mode remove request
+> during probe stage for other methods(soft reset from chip level,
+> unbind/bind driver, etc) to let CAN active again. MCR[LPMACK] will be
+> checked when enable CAN in register_flexcandev().
 > 
-> When suspending, when there is still can traffic on the interfaces the
-> flexcan immediately wakes the platform again. As it should :-). But it
-> throws this error msg:
-> [ 3169.378661] PM: noirq suspend of devices failed
-> 
-> On the way down to suspend the interface that throws the error message does
-> call flexcan_suspend but fails to call flexcan_noirq_suspend. That means the
-> flexcan_enter_stop_mode is called, but on the way out of suspend the driver
-> only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't call
-> flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
-> current driver it can't recover from this even with a soft reboot, it requires
-> a hard reboot.
-> 
-> This patch can fix deadlock when using self wakeup, it happenes to be
-> able to fix another issue that frames out-of-order in first IRQ handler
-> run after wakeup.
-> 
-> In wakeup case, after system resume, frames received out-of-order in
-> first IRQ handler, the problem is wakeup latency from frame reception to
-> IRQ handler is much bigger than the counter overflow. This means it's
-> impossible to sort the CAN frames by timestamp. The reason is that controller
-> exits stop mode during noirq resume, then it can receive the frame immediately.
-> If noirq reusme stage consumes much time, it will extend interrupt response
-> time. So exit stop mode during resume stage instead of noirq resume can
-> fix this issue.
-> 
-> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
-> Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+> Suggested-by: Sean Nyekjaer <sean@geanix.com>
 > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 Tested-by: Sean Nyekjaer <sean@geanix.com>
 > ------
 > ChangeLog:
-> 	V1->V2: no change.
+> 	V1->V2: new add.
 > ---
->   drivers/net/can/flexcan.c | 19 +++++++++++--------
->   1 file changed, 11 insertions(+), 8 deletions(-)
+>   drivers/net/can/flexcan.c | 28 ++++++++++++++++++++++------
+>   1 file changed, 22 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 2efa06119f68..2297663cacb2 100644
+> index 2297663cacb2..5d5ed28d3005 100644
 > --- a/drivers/net/can/flexcan.c
 > +++ b/drivers/net/can/flexcan.c
-> @@ -134,8 +134,7 @@
->   	(FLEXCAN_ESR_ERR_BUS | FLEXCAN_ESR_ERR_STATE)
->   #define FLEXCAN_ESR_ALL_INT \
->   	(FLEXCAN_ESR_TWRN_INT | FLEXCAN_ESR_RWRN_INT | \
-> -	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT | \
-> -	 FLEXCAN_ESR_WAK_INT)
-> +	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT)
->   
->   /* FLEXCAN interrupt flag register (IFLAG) bits */
->   /* Errata ERR005829 step7: Reserve first valid MB */
-> @@ -960,6 +959,12 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
->   
->   	reg_esr = priv->read(&regs->esr);
->   
-> +	/* ACK wakeup interrupt */
-> +	if (reg_esr & FLEXCAN_ESR_WAK_INT) {
-> +		handled = IRQ_HANDLED;
-> +		priv->write(reg_esr & FLEXCAN_ESR_WAK_INT, &regs->esr);
-> +	}
-> +
->   	/* ACK all bus error and state change IRQ sources */
->   	if (reg_esr & FLEXCAN_ESR_ALL_INT) {
->   		handled = IRQ_HANDLED;
-> @@ -1722,6 +1727,9 @@ static int __maybe_unused flexcan_resume(struct device *device)
->   		netif_start_queue(dev);
->   		if (device_may_wakeup(device)) {
->   			disable_irq_wake(dev->irq);
-> +			err = flexcan_exit_stop_mode(priv);
-> +			if (err)
-> +				return err;
->   		} else {
->   			err = pm_runtime_force_resume(device);
->   			if (err)
-> @@ -1767,14 +1775,9 @@ static int __maybe_unused flexcan_noirq_resume(struct device *device)
->   {
->   	struct net_device *dev = dev_get_drvdata(device);
->   	struct flexcan_priv *priv = netdev_priv(dev);
-> -	int err;
->   
-> -	if (netif_running(dev) && device_may_wakeup(device)) {
-> +	if (netif_running(dev) && device_may_wakeup(device))
->   		flexcan_enable_wakeup_irq(priv, false);
-> -		err = flexcan_exit_stop_mode(priv);
-> -		if (err)
-> -			return err;
-> -	}
->   
+> @@ -449,6 +449,13 @@ static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
 >   	return 0;
 >   }
+>   
+> +static void flexcan_try_exit_stop_mode(struct flexcan_priv *priv)
+> +{
+> +	/* remove stop request */
+> +	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+> +			   1 << priv->stm.req_bit, 0);
+> +}
+> +
+>   static inline void flexcan_error_irq_enable(const struct flexcan_priv *priv)
+>   {
+>   	struct flexcan_regs __iomem *regs = priv->regs;
+> @@ -1649,6 +1656,21 @@ static int flexcan_probe(struct platform_device *pdev)
+>   	priv->devtype_data = devtype_data;
+>   	priv->reg_xceiver = reg_xceiver;
+>   
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
+> +		err = flexcan_setup_stop_mode(pdev);
+> +		if (err)
+> +			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
+> +
+> +		/* CAN controller could be stucked in stop mode once it enters
+> +		 * stop mode when suspend, and then it fails to exit stop
+> +		 * mode when resume. Only code reset can get CAN out of stop
+> +		 * mode, so add stop mode remove request here for other methods
+> +		 * (soft reset, bind, etc) to let CAN active again. MCR[LPMACK]
+> +		 * will be checked when enable CAN in register_flexcandev().
+> +		 */
+> +		flexcan_try_exit_stop_mode(priv);
+> +	}
+> +
+>   	pm_runtime_get_noresume(&pdev->dev);
+>   	pm_runtime_set_active(&pdev->dev);
+>   	pm_runtime_enable(&pdev->dev);
+> @@ -1661,12 +1683,6 @@ static int flexcan_probe(struct platform_device *pdev)
+>   
+>   	devm_can_led_init(dev);
+>   
+> -	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
+> -		err = flexcan_setup_stop_mode(pdev);
+> -		if (err)
+> -			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
+> -	}
+> -
+>   	return 0;
+>   
+>    failed_register:
 > 
