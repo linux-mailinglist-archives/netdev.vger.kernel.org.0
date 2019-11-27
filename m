@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC71110B6AC
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 095FD10B6B6
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:26:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbfK0T0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 14:26:03 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56714 "EHLO
+        id S1727303AbfK0T0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 14:26:36 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56736 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbfK0T0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:26:02 -0500
+        with ESMTP id S1727149AbfK0T0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:26:36 -0500
 Received: from localhost (c-73-35-209-67.hsd1.wa.comcast.net [73.35.209.67])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DDD3C14A6F7FB;
-        Wed, 27 Nov 2019 11:26:01 -0800 (PST)
-Date:   Wed, 27 Nov 2019 11:26:01 -0800 (PST)
-Message-Id: <20191127.112601.310366065694298951.davem@davemloft.net>
-To:     nishadkamdar@gmail.com
-Cc:     jakub.kicinski@netronome.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, mcoquelin.stm32@gmail.com,
-        gregkh@linuxfoundation.org, joe@perches.com,
-        u.kleine-koenig@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: phy: Use the correct style for SPDX License
- Identifier
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 97D0514A6F7FF;
+        Wed, 27 Nov 2019 11:26:35 -0800 (PST)
+Date:   Wed, 27 Nov 2019 11:26:35 -0800 (PST)
+Message-Id: <20191127.112635.1621097212312385906.davem@davemloft.net>
+To:     yuehaibing@huawei.com
+Cc:     saeedm@mellanox.com, leon@kernel.org, eli@mellanox.com,
+        roid@mellanox.com, elibr@mellanox.com, kliteyn@mellanox.com,
+        ozsh@mellanox.com, pablo@netfilter.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5e: Fix build error without IPV6
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191127131904.GA28829@nishad>
-References: <20191127131904.GA28829@nishad>
+In-Reply-To: <20191127132700.25872-1-yuehaibing@huawei.com>
+References: <20191127132700.25872-1-yuehaibing@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 27 Nov 2019 11:26:02 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 27 Nov 2019 11:26:36 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nishad Kamdar <nishadkamdar@gmail.com>
-Date: Wed, 27 Nov 2019 18:49:08 +0530
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Wed, 27 Nov 2019 21:27:00 +0800
 
-> This patch corrects the SPDX License Identifier style in
-> header files related to PHY Layer for Ethernet drivers.
-> For C header files Documentation/process/license-rules.rst
-> mandates C-like comments (opposed to C source files where
-> C++ style should be used). This patch also gives an explicit
-> block comment to the SPDX License Identifier.
+> If IPV6 is not set and CONFIG_MLX5_ESWITCH is y,
+> building fails:
 > 
-> Changes made by using a script provided by Joe Perches here:
-> https://lkml.org/lkml/2019/2/7/46.
+> drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:322:5: error: redefinition of mlx5e_tc_tun_create_header_ipv6
+>  int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
+>      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In file included from drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:7:0:
+> drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h:67:1: note: previous definition of mlx5e_tc_tun_create_header_ipv6 was here
+>  mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
+>  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 > 
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
-> ---
-> Changes in v2:
->   - Remove unwanted blank space.
+> Use #ifdef to guard this, also move mlx5e_route_lookup_ipv6
+> to cleanup unused warning.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: e689e998e102 ("net/mlx5e: TC, Stub out ipv6 tun create header function")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Applied, thank you.
+Saeed et al., how do you want to handle this?
+
+Thanks.
