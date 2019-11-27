@@ -2,193 +2,343 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 572FB10AA76
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 06:57:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AF410AA82
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 07:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726556AbfK0F46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 00:56:58 -0500
-Received: from mail-eopbgr150050.outbound.protection.outlook.com ([40.107.15.50]:3753
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726078AbfK0F45 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 00:56:57 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TCXUVJvf63uoRLGLZ1bbeJH0b1MpzxZWTiNUGTmcOidkjjeNCyuDHal5w4Iv8X4v/SwxqTnkZSaplsUXmMXXWpjg6Nt1isdLLbPJnt9rV4n+IGrpJFJMAOyuOVaMnYYI6XCkXDd1RjTM396mI69v0MusorsBgCsQYQiJRt8/yZH5IV8fbgdK7dimNUmhOFjz1rQ/FtVPdrcBYIfmUEkuUkecdpPc3EGXcM34tK9fCHUfZuWiNypJeResc4SLF9jz8uINg1VJYHQJu2B9HKA6BaMh+xux5802ITt80jB8P+5yQNXtTf7tb/AcUqJbIH5y3GkL49rBaKOpIMatRZHuJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5f84Cx8UmrPuYKl/6j6fd8H4BYxh9f/5OStr+GrMOBY=;
- b=fXd/J+M4AcXlpnk51TU7xiqUAsMyi+ZToogd7/eyYhi1EMudY6wkQqVLyoXtit6JKLRzZPImWwGoU1g29r7gOED0YvSaTDW61gBxVgaCuTGjGWHV0ROXDadlasm8hDlbJ/uDUGdCa85l11738fD8gW9pazJ2kR6t7+xib0Oit7bwMY9rGzxhjJRsBXiWfxi7PXRnmD7+IUHoTkApzeG1rIYGaC6jjai/2NBHsJ6+kFE+YKQtfLdm5Y8WZUtsQMMtIa+W50dX/f1NCnunlATXloOuR6lv/1r+8MnzVF2nEjwGzPY7j6tCqGvy/gCZ9osmZCP5U5ULTK11E7d8QGMgOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5f84Cx8UmrPuYKl/6j6fd8H4BYxh9f/5OStr+GrMOBY=;
- b=pzAJUzwaAbS5H0TwP3HiYjqMTf139/TNjqYnTNIaObI+RcPG8l2dH07F9bN+r9BzQ6GJ9uw9/OK8Zdl/AzZtf/W5rIWAdHRW/L4HewRxf3HOaBdbWl4cMUWdKSFPTgaXjk1+WixHxSXQHSil5LgaSHdnmU9CC8ucJ3oclWuBu9E=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4092.eurprd04.prod.outlook.com (52.135.131.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.19; Wed, 27 Nov 2019 05:56:52 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2474.023; Wed, 27 Nov 2019
- 05:56:52 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH V2 4/4] can: flexcan: add LPSR mode support
-Thread-Topic: [PATCH V2 4/4] can: flexcan: add LPSR mode support
-Thread-Index: AQHVpOd3D9txXS3dtUSMzmH9fMhQMQ==
-Date:   Wed, 27 Nov 2019 05:56:52 +0000
-Message-ID: <20191127055334.1476-5-qiangqing.zhang@nxp.com>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.17.1
-x-clientproxiedby: SG2PR03CA0089.apcprd03.prod.outlook.com
- (2603:1096:4:7c::17) To DB7PR04MB4618.eurprd04.prod.outlook.com
- (2603:10a6:5:38::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0968cb74-fd81-4155-088b-08d772fe99dd
-x-ms-traffictypediagnostic: DB7PR04MB4092:|DB7PR04MB4092:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB409256F82E1C3BDBF23D4E4CE6440@DB7PR04MB4092.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2276;
-x-forefront-prvs: 023495660C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(189003)(199004)(54534003)(81156014)(316002)(6486002)(6436002)(6512007)(76176011)(102836004)(11346002)(2501003)(6506007)(386003)(186003)(8676002)(86362001)(5660300002)(66946007)(64756008)(66556008)(66446008)(66476007)(446003)(2201001)(50226002)(26005)(1076003)(25786009)(305945005)(6116002)(7736002)(2616005)(81166006)(3846002)(2906002)(4326008)(8936002)(14454004)(52116002)(36756003)(66066001)(478600001)(71200400001)(110136005)(14444005)(99286004)(256004)(54906003)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4092;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hKOrYiFgepA9eBQRibQ6HVtVYP7a4upPzAPvy17QtBdp1fhG9XKtrTYSTR421Hjp5AQLCU+IFouki9Eeki+yMUdhGpIkedrxb3n4NF0FfPqYD87vyXSXSFMBhSCHZn8ecG606TbiKOxHLJf+rKpzS70PiaWg5NK5mV7Gtd9x6AvD8Y5joOF98toP4zvsPq8cO75KjrfUIMR+90G+rlsoBvOCTyeIVKA5q7shETY/LTOsbe0Q4W8cBOgOc394w65TQipQazGmtQA1u1crANCLH7Ah7XLXvj3LQ79z1dDMDWCWaDSPXnv6DqfO/1+Z//3hAOIk7NqqJv/u7MWLNAbhR31HKMFDdWh6JvpLQD9vSlC36vWlqvCSY3vsnclEtzSqGSCbH/dHl4rno+2kcPj7ChvxiF9oZ8OD/CuxQySsGk5Vs4Wmr3Hve/PbWzVTOiEG
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1726260AbfK0GCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 01:02:07 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:25516 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726219AbfK0GCH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 01:02:07 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAR5sWbr011149
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 22:02:06 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=g8fQeLTN83YGyfFECqulZQ7UAjHkBM9K9hcNcq9uClQ=;
+ b=YQ2aHim3IG40VsrrlehA7keZNoi8K2LDW+OEsQpTn9Vjk7n9o8r48keZS1Pv0n/59i8g
+ StL27RXEHfQpcB915J53+estpj2Ry1ec+e76Fx7JWze//XCTsTH4HR5xjNMzddjcZq8F
+ CDLtgrVHrlaJ5LyszXLfzsAWhr3tXif1y6M= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2whcy2t1kp-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 26 Nov 2019 22:02:06 -0800
+Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 26 Nov 2019 22:01:53 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 9FE542EC1E42; Tue, 26 Nov 2019 22:01:48 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] libbpf: fix global variable relocation
+Date:   Tue, 26 Nov 2019 22:01:44 -0800
+Message-ID: <20191127060144.3066500-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0968cb74-fd81-4155-088b-08d772fe99dd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 05:56:52.6862
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: guDkdhyvDrIIekBHxwY4RvEvH9FaxOrZYxruVYxkG2d6K4SDuo8F0v7d+k/mibAb1qgnJi68mnpcu4PdJWs0OQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4092
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-27_01:2019-11-26,2019-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 clxscore=1015
+ mlxlogscore=962 lowpriorityscore=0 suspectscore=0 malwarescore=0
+ impostorscore=0 adultscore=0 phishscore=0 bulkscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911270048
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For i.MX7D LPSR mode, the controller will lost power and got the
-configuration state lost after system resume back. (coming i.MX8QM/QXP
-will also completely power off the domain, the controller state will be
-lost and needs restore).
-So we need to set pinctrl state again and re-start chip to do
-re-configuration after resume.
+Similarly to a0d7da26ce86 ("libbpf: Fix call relocation offset calculation
+bug"), relocations against global variables need to take into account
+referenced symbol's st_value, which holds offset into a corresponding data
+section (and, subsequently, offset into internal backing map). For static
+variables this offset is always zero and data offset is completely described
+by respective instruction's imm field.
 
-For wakeup case, it should not set pinctrl to sleep state by
-pinctrl_pm_select_sleep_state.
-For interface is not up before suspend case, we don't need
-re-configure as it will be configured by user later by interface up.
+Convert a bunch of selftests to global variables. Previously they were relying
+on `static volatile` trick to ensure Clang doesn't inline static variables,
+which with global variables is not necessary anymore.
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-------
-ChangeLog:
-	V1->V2: no change.
+Fixes: 393cdfbee809 ("libbpf: Support initialized global variables")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/can/flexcan.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ tools/lib/bpf/libbpf.c                        | 40 +++++++++----------
+ .../testing/selftests/bpf/progs/fentry_test.c | 12 +++---
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |  6 +--
+ .../testing/selftests/bpf/progs/fexit_test.c  | 12 +++---
+ tools/testing/selftests/bpf/progs/test_mmap.c |  4 +-
+ 5 files changed, 35 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index d178146b3da5..d1509cffdd24 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/regmap.h>
-=20
- #define DRV_NAME			"flexcan"
-@@ -1707,7 +1708,7 @@ static int __maybe_unused flexcan_suspend(struct devi=
-ce *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	if (netif_running(dev)) {
- 		/* if wakeup is enabled, enter stop mode
-@@ -1719,25 +1720,27 @@ static int __maybe_unused flexcan_suspend(struct de=
-vice *device)
- 			if (err)
- 				return err;
- 		} else {
--			err =3D flexcan_chip_disable(priv);
-+			flexcan_chip_stop(dev);
-+
-+			err =3D pm_runtime_force_suspend(device);
- 			if (err)
- 				return err;
-=20
--			err =3D pm_runtime_force_suspend(device);
-+			pinctrl_pm_select_sleep_state(device);
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index b20f82e58989..4209b5a23a53 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -171,10 +171,8 @@ struct bpf_program {
+ 			RELO_DATA,
+ 		} type;
+ 		int insn_idx;
+-		union {
+-			int map_idx;
+-			int text_off;
+-		};
++		int map_idx;
++		int sym_off;
+ 	} *reloc_desc;
+ 	int nr_reloc;
+ 	int log_level;
+@@ -1824,7 +1822,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
  		}
- 		netif_stop_queue(dev);
- 		netif_device_detach(dev);
+ 		reloc_desc->type = RELO_CALL;
+ 		reloc_desc->insn_idx = insn_idx;
+-		reloc_desc->text_off = sym->st_value / 8;
++		reloc_desc->sym_off = sym->st_value;
+ 		obj->has_pseudo_calls = true;
+ 		return 0;
  	}
- 	priv->can.state =3D CAN_STATE_SLEEPING;
-=20
--	return err;
-+	return 0;
+@@ -1868,6 +1866,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 		reloc_desc->type = RELO_LD64;
+ 		reloc_desc->insn_idx = insn_idx;
+ 		reloc_desc->map_idx = map_idx;
++		reloc_desc->sym_off = 0; /* sym->st_value determines map_idx */
+ 		return 0;
+ 	}
+ 
+@@ -1899,6 +1898,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 	reloc_desc->type = RELO_DATA;
+ 	reloc_desc->insn_idx = insn_idx;
+ 	reloc_desc->map_idx = map_idx;
++	reloc_desc->sym_off = sym->st_value;
+ 	return 0;
  }
-=20
- static int __maybe_unused flexcan_resume(struct device *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
- 	if (netif_running(dev)) {
-@@ -1749,15 +1752,19 @@ static int __maybe_unused flexcan_resume(struct dev=
-ice *device)
- 			if (err)
- 				return err;
- 		} else {
-+			pinctrl_pm_select_default_state(device);
+ 
+@@ -3563,8 +3563,8 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
+ 		return -LIBBPF_ERRNO__RELOC;
+ 
+ 	if (prog->idx == obj->efile.text_shndx) {
+-		pr_warn("relo in .text insn %d into off %d\n",
+-			relo->insn_idx, relo->text_off);
++		pr_warn("relo in .text insn %d into off %d (insn #%d)\n",
++			relo->insn_idx, relo->sym_off, relo->sym_off / 8);
+ 		return -LIBBPF_ERRNO__RELOC;
+ 	}
+ 
+@@ -3599,7 +3599,7 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
+ 			 prog->section_name);
+ 	}
+ 	insn = &prog->insns[relo->insn_idx];
+-	insn->imm += relo->text_off + prog->main_prog_cnt - relo->insn_idx;
++	insn->imm += relo->sym_off / 8 + prog->main_prog_cnt - relo->insn_idx;
+ 	return 0;
+ }
+ 
+@@ -3622,31 +3622,27 @@ bpf_program__relocate(struct bpf_program *prog, struct bpf_object *obj)
+ 		return 0;
+ 
+ 	for (i = 0; i < prog->nr_reloc; i++) {
++		struct reloc_desc *relo = &prog->reloc_desc[i];
 +
- 			err =3D pm_runtime_force_resume(device);
+ 		if (prog->reloc_desc[i].type == RELO_LD64 ||
+ 		    prog->reloc_desc[i].type == RELO_DATA) {
+-			bool relo_data = prog->reloc_desc[i].type == RELO_DATA;
+-			struct bpf_insn *insns = prog->insns;
+-			int insn_idx, map_idx;
+-
+-			insn_idx = prog->reloc_desc[i].insn_idx;
+-			map_idx = prog->reloc_desc[i].map_idx;
++			struct bpf_insn *insn = &prog->insns[relo->insn_idx];
+ 
+-			if (insn_idx + 1 >= (int)prog->insns_cnt) {
++			if (relo->insn_idx + 1 >= (int)prog->insns_cnt) {
+ 				pr_warn("relocation out of range: '%s'\n",
+ 					prog->section_name);
+ 				return -LIBBPF_ERRNO__RELOC;
+ 			}
+ 
+-			if (!relo_data) {
+-				insns[insn_idx].src_reg = BPF_PSEUDO_MAP_FD;
++			if (relo->type != RELO_DATA) {
++				insn[0].src_reg = BPF_PSEUDO_MAP_FD;
+ 			} else {
+-				insns[insn_idx].src_reg = BPF_PSEUDO_MAP_VALUE;
+-				insns[insn_idx + 1].imm = insns[insn_idx].imm;
++				insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
++				insn[1].imm = insn[0].imm + relo->sym_off;
+ 			}
+-			insns[insn_idx].imm = obj->maps[map_idx].fd;
++			insn[0].imm = obj->maps[relo->map_idx].fd;
+ 		} else if (prog->reloc_desc[i].type == RELO_CALL) {
+-			err = bpf_program__reloc_text(prog, obj,
+-						      &prog->reloc_desc[i]);
++			err = bpf_program__reloc_text(prog, obj, relo);
  			if (err)
  				return err;
-=20
--			err =3D flexcan_chip_enable(priv);
-+			err =3D flexcan_chip_start(dev);
-+			if (err)
-+				return err;
  		}
- 	}
-=20
--	return err;
-+	return 0;
+diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
+index d2af9f039df5..615f7c6bca77 100644
+--- a/tools/testing/selftests/bpf/progs/fentry_test.c
++++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+@@ -6,28 +6,28 @@
+ 
+ char _license[] SEC("license") = "GPL";
+ 
+-static volatile __u64 test1_result;
++__u64 test1_result = 0;
+ BPF_TRACE_1("fentry/bpf_fentry_test1", test1, int, a)
+ {
+ 	test1_result = a == 1;
+ 	return 0;
  }
-=20
- static int __maybe_unused flexcan_runtime_suspend(struct device *device)
---=20
+ 
+-static volatile __u64 test2_result;
++__u64 test2_result = 0;
+ BPF_TRACE_2("fentry/bpf_fentry_test2", test2, int, a, __u64, b)
+ {
+ 	test2_result = a == 2 && b == 3;
+ 	return 0;
+ }
+ 
+-static volatile __u64 test3_result;
++__u64 test3_result = 0;
+ BPF_TRACE_3("fentry/bpf_fentry_test3", test3, char, a, int, b, __u64, c)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6;
+ 	return 0;
+ }
+ 
+-static volatile __u64 test4_result;
++__u64 test4_result = 0;
+ BPF_TRACE_4("fentry/bpf_fentry_test4", test4,
+ 	    void *, a, char, b, int, c, __u64, d)
+ {
+@@ -35,7 +35,7 @@ BPF_TRACE_4("fentry/bpf_fentry_test4", test4,
+ 	return 0;
+ }
+ 
+-static volatile __u64 test5_result;
++__u64 test5_result = 0;
+ BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+ 	    __u64, a, void *, b, short, c, int, d, __u64, e)
+ {
+@@ -44,7 +44,7 @@ BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+ 	return 0;
+ }
+ 
+-static volatile __u64 test6_result;
++__u64 test6_result = 0;
+ BPF_TRACE_6("fentry/bpf_fentry_test6", test6,
+ 	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f)
+ {
+diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+index 525d47d7b589..2d211ee98a1c 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+@@ -8,7 +8,7 @@ struct sk_buff {
+ 	unsigned int len;
+ };
+ 
+-static volatile __u64 test_result;
++__u64 test_result = 0;
+ BPF_TRACE_2("fexit/test_pkt_access", test_main,
+ 	    struct sk_buff *, skb, int, ret)
+ {
+@@ -23,7 +23,7 @@ BPF_TRACE_2("fexit/test_pkt_access", test_main,
+ 	return 0;
+ }
+ 
+-static volatile __u64 test_result_subprog1;
++__u64 test_result_subprog1 = 0;
+ BPF_TRACE_2("fexit/test_pkt_access_subprog1", test_subprog1,
+ 	    struct sk_buff *, skb, int, ret)
+ {
+@@ -56,7 +56,7 @@ struct args_subprog2 {
+ 	__u64 args[5];
+ 	__u64 ret;
+ };
+-static volatile __u64 test_result_subprog2;
++__u64 test_result_subprog2 = 0;
+ SEC("fexit/test_pkt_access_subprog2")
+ int test_subprog2(struct args_subprog2 *ctx)
+ {
+diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
+index 2487e98edb34..86db0d60fb6e 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_test.c
++++ b/tools/testing/selftests/bpf/progs/fexit_test.c
+@@ -6,28 +6,28 @@
+ 
+ char _license[] SEC("license") = "GPL";
+ 
+-static volatile __u64 test1_result;
++__u64 test1_result = 0;
+ BPF_TRACE_2("fexit/bpf_fentry_test1", test1, int, a, int, ret)
+ {
+ 	test1_result = a == 1 && ret == 2;
+ 	return 0;
+ }
+ 
+-static volatile __u64 test2_result;
++__u64 test2_result = 0;
+ BPF_TRACE_3("fexit/bpf_fentry_test2", test2, int, a, __u64, b, int, ret)
+ {
+ 	test2_result = a == 2 && b == 3 && ret == 5;
+ 	return 0;
+ }
+ 
+-static volatile __u64 test3_result;
++__u64 test3_result = 0;
+ BPF_TRACE_4("fexit/bpf_fentry_test3", test3, char, a, int, b, __u64, c, int, ret)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6 && ret == 15;
+ 	return 0;
+ }
+ 
+-static volatile __u64 test4_result;
++__u64 test4_result = 0;
+ BPF_TRACE_5("fexit/bpf_fentry_test4", test4,
+ 	    void *, a, char, b, int, c, __u64, d, int, ret)
+ {
+@@ -37,7 +37,7 @@ BPF_TRACE_5("fexit/bpf_fentry_test4", test4,
+ 	return 0;
+ }
+ 
+-static volatile __u64 test5_result;
++__u64 test5_result = 0;
+ BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+ 	    __u64, a, void *, b, short, c, int, d, __u64, e, int, ret)
+ {
+@@ -46,7 +46,7 @@ BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+ 	return 0;
+ }
+ 
+-static volatile __u64 test6_result;
++__u64 test6_result = 0;
+ BPF_TRACE_7("fexit/bpf_fentry_test6", test6,
+ 	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f,
+ 	    int, ret)
+diff --git a/tools/testing/selftests/bpf/progs/test_mmap.c b/tools/testing/selftests/bpf/progs/test_mmap.c
+index 0d2ec9fbcf61..e808791b7047 100644
+--- a/tools/testing/selftests/bpf/progs/test_mmap.c
++++ b/tools/testing/selftests/bpf/progs/test_mmap.c
+@@ -15,8 +15,8 @@ struct {
+ 	__type(value, __u64);
+ } data_map SEC(".maps");
+ 
+-static volatile __u64 in_val;
+-static volatile __u64 out_val;
++__u64 in_val = 0;
++__u64 out_val = 0;
+ 
+ SEC("raw_tracepoint/sys_enter")
+ int test_mmap(void *ctx)
+-- 
 2.17.1
 
