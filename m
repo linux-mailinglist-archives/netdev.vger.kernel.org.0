@@ -2,103 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E7310AC62
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E69BB10ACAA
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbfK0JE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 04:04:59 -0500
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:52248 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726112AbfK0JE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 04:04:58 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0TjDNUDL_1574845494;
-Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TjDNUDL_1574845494)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 27 Nov 2019 17:04:55 +0800
-From:   Cambda Zhu <cambda@linux.alibaba.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Radoslaw Tyl <radoslawx.tyl@intel.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Cambda Zhu <cambda@linux.alibaba.com>
-Subject: [PATCH] ixgbe: Fix calculation of queue with VFs and flow director on interface flap
-Date:   Wed, 27 Nov 2019 17:03:55 +0800
-Message-Id: <20191127090355.27708-1-cambda@linux.alibaba.com>
-X-Mailer: git-send-email 2.16.5
+        id S1726296AbfK0Jf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:35:28 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:44127 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbfK0Jf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 04:35:28 -0500
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1iZtjF-0003Tf-UB; Wed, 27 Nov 2019 10:35:21 +0100
+Date:   Wed, 27 Nov 2019 10:35:21 +0100
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH net 2/2] net: gro: Let the timeout timer expire in
+ softirq context with `threadirqs'
+Message-ID: <20191127093521.6achiubslhv7u46c@linutronix.de>
+References: <20191126222013.1904785-1-bigeasy@linutronix.de>
+ <20191126222013.1904785-3-bigeasy@linutronix.de>
+ <CANn89iJtCwB=RdYnAYXU-uZvv=gHJgYD=dcfhohuLi_Qjfv6Ag@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CANn89iJtCwB=RdYnAYXU-uZvv=gHJgYD=dcfhohuLi_Qjfv6Ag@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the calculation of queue when we restore flow director
-filters after resetting adapter. In ixgbe_fdir_filter_restore(), filter's
-vf may be zero which makes the queue outside of the rx_ring array.
+On 2019-11-26 14:39:47 [-0800], Eric Dumazet wrote:
+> On Tue, Nov 26, 2019 at 2:20 PM Sebastian Andrzej Siewior
+> <bigeasy@linutronix.de> wrote:
+> >
+> > The timer callback (napi_watchdog()) invokes __napi_schedule_irqoff()
+> > with disabled interrupts. With the `threadirqs' commandline option all
+> > interrupt handler are threaded and using __napi_schedule_irqoff() is not
+> > an issue because everyone is using it in threaded context which is
+> > synchronised with local_bh_disable().
+> > The napi_watchdog() timer is still expiring in hardirq context and may
+> > interrupt a threaded handler which is in the middle of
+> > __napi_schedule_irqoff() leading to list corruption.
+> 
+> Sorry, I do not understand this changelog.
+> 
+> Where/how do you get list corruption  exactly ?
+> 
+>  __napi_schedule_irqoff() _has_ to be called with hard IRQ disabled.
+> 
+> Please post a stack trace.
 
-The calculation is changed to the same as ixgbe_add_ethtool_fdir_entry().
+I don't have a stack trace, this is based on review.
+__napi_schedule_irqoff() is used in IRQ context and this is only the
+primary IRQ handler. There is no other in-IRQ usage (like SMP-function
+call or so (excluding the HV network driver)) but there is the hrtimer.
 
-Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 37 +++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 10 deletions(-)
+With `threadirqs' you don't have the in-IRQ usage from the IRQ handler
+anymore. The IRQ-handler for two different NICs don't interrupt/
+preempt each other because the handler is invoked with disabled softirq
+(which also disables preemption). This is all safe.
+The hrtimer fires always in IRQ context no matter if `threadirqs' is
+used or not. Which brings us to the following race condition:
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 25c097cd8100..6d5be31cc9cb 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5239,7 +5239,7 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
- 	struct ixgbe_hw *hw = &adapter->hw;
- 	struct hlist_node *node2;
- 	struct ixgbe_fdir_filter *filter;
--	u64 action;
-+	u8 queue;
- 
- 	spin_lock(&adapter->fdir_perfect_lock);
- 
-@@ -5248,17 +5248,34 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
- 
- 	hlist_for_each_entry_safe(filter, node2,
- 				  &adapter->fdir_filter_list, fdir_node) {
--		action = filter->action;
--		if (action != IXGBE_FDIR_DROP_QUEUE && action != 0)
--			action =
--			(action >> ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF) - 1;
-+		if (filter->action == IXGBE_FDIR_DROP_QUEUE) {
-+			queue = IXGBE_FDIR_DROP_QUEUE;
-+		} else {
-+			u32 ring = ethtool_get_flow_spec_ring(filter->action);
-+			u8 vf = ethtool_get_flow_spec_ring_vf(filter->action);
-+
-+			if (!vf && (ring >= adapter->num_rx_queues)) {
-+				e_err(drv, "FDIR restore failed without VF, "
-+				      "ring: %u\n", ring);
-+				continue;
-+			} else if (vf &&
-+				   ((vf > adapter->num_vfs) ||
-+				     ring >= adapter->num_rx_queues_per_pool)) {
-+				e_err(drv, "FDIR restore failed with VF, "
-+				      "vf: %hhu, ring: %u\n", vf, ring);
-+				continue;
-+			}
-+
-+			/* Map the ring onto the absolute queue index */
-+			if (!vf)
-+				queue = adapter->rx_ring[ring]->reg_idx;
-+			else
-+				queue = ((vf - 1) *
-+					adapter->num_rx_queues_per_pool) + ring;
-+		}
- 
- 		ixgbe_fdir_write_perfect_filter_82599(hw,
--				&filter->filter,
--				filter->sw_idx,
--				(action == IXGBE_FDIR_DROP_QUEUE) ?
--				IXGBE_FDIR_DROP_QUEUE :
--				adapter->rx_ring[action]->reg_idx);
-+				&filter->filter, filter->sw_idx, queue);
- 	}
- 
- 	spin_unlock(&adapter->fdir_perfect_lock);
--- 
-2.16.5
+One CPU, 2 NICs:
 
+    threaded_IRQ of NIC1                     hard-irq context, hrtimer
+       local_bh_disable()
+         nic_irq_handler()
+	  if (napi_schedule_prep())
+	    __napi_schedule_irqoff()
+	       ____napi_schedule(this_cpu_ptr(&softnet_data), n);
+->	         list_add_tail(, &sd->poll_list);
+
+                                        hrtimer_interrupt()
+                                          __hrtimer_run_queues()
+                                             napi_watchdog()
+                                               __napi_schedule_irqoff()
+                                    	       ____napi_schedule(this_cpu_ptr(&softnet_data), n);
+->	                                         list_add_tail(&napi->poll_list, &sd->poll_list);
+
+The same per-CPU list modified again.
+If the callback is moved to softirq instead:
+
+    threaded_IRQ of NIC1                     hard-irq context, hrtimer
+       local_bh_disable()
+         nic_irq_handler()
+	  if (napi_schedule_prep())
+	    __napi_schedule_irqoff()
+	       ____napi_schedule(this_cpu_ptr(&softnet_data), n);
+->	         list_add_tail(, &sd->poll_list);
+
+                                        hrtimer_interrupt()
+                                          raise_softirq_irqoff(HRTIMER_SOFTIRQ);
+                 list_add_tail() completes
+       local_bh_enable()
+          if (unlikely(!in_interrupt() && local_softirq_pending())) {
+             do_softirq();
+                                               napi_watchdog()
+                                                 __napi_schedule_irqoff()
+                                    	           ____napi_schedule(this_cpu_ptr(&softnet_data), n);
+	                                             list_add_tail(, &sd->poll_list);
+
+> > Let the napi_watchdog() expire in softirq context if `threadirqs' is
+> > used.
+> >
+> > Fixes: 3b47d30396bae ("net: gro: add a per device gro flush timer")
+> 
+> Are you sure this commit is the root cause of the problem you see ?
+
+This commit was introduced in v3.19-rc1 and threadirqs was introduced in
+commit
+   8d32a307e4faa ("genirq: Provide forced interrupt threading")
+
+which is v2.6.39-rc1. Based on my explanation above this problem exists
+with the timer and `threadirqs'. The hrtimer always expired in hardirq
+context.
+
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > ---
+> >  net/core/dev.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 99ac84ff398f4..ec533d20931bc 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -5994,6 +5994,8 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
+> >                 napi_gro_flush(n, !!timeout);
+> >                 if (timeout)
+> >                         hrtimer_start(&n->timer, ns_to_ktime(timeout),
+> > +                                     force_irqthreads ?
+> 
+> Honestly something is wrong with this patch, force_irqthreads should
+> not be used in net/ territory,
+> that is some layering problem.
+
+I'm not aware of an other problems of this kind.
+Most drivers do spin_lock_irqsave() and in that case in does not matter
+if the interrupt is threaded or not vs the hrtimer callback. Which means
+they do not assume that the IRQ handler runs with interrupts disabled.
+The timeout timers are usually timer_list timer which run in softirq
+context and since the force-IRQ-thread runs also with disabled softirq
+it is fine using just spin_lock().
+
+If you don't want this here maybe tglx can add some hrtimer annotation.
+
+Sebastian
