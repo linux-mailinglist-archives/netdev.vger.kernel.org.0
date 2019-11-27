@@ -2,91 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BBF510AFFD
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:14:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F1C10B007
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbfK0NOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 08:14:12 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43384 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbfK0NOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:14:12 -0500
-Received: by mail-qk1-f195.google.com with SMTP id q28so443748qkn.10;
-        Wed, 27 Nov 2019 05:14:11 -0800 (PST)
+        id S1726655AbfK0NTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 08:19:17 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39034 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbfK0NTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:19:17 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x28so10985001pfo.6;
+        Wed, 27 Nov 2019 05:19:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
          :user-agent;
-        bh=tKU4ythhj/IOrUSC8YM0GQ9azaoq8ej8gEJR824Q+qQ=;
-        b=gk5fN9CpW4d5L6Trae5cnloGnvV3fZQZVUMAVnYEDz7dY/CgIszYnd0ytdry/TSmUM
-         THmphwEJDaB1PrbCQxgoDrZqmywQpdHkyAO8wpIzfAEq+4fYfUWDnFTarNNW2nZfpdQz
-         hOBlmz4hyFcEZwLYwwy/pf4SatxAnlR2po42zD8pO9QoYCTVp4XopA+d1gQW8Kz4aBot
-         8jlqH0x0K1008tTTopESeFdSDoY9KNSLe51IbzvK+htiQ2wWnYsCKNU9UF6JsUhKXo0v
-         cxtt54YxV4tdnuHFiiPVJsalm/+x5CBDnpRtUiKAhPIBxccc0Iaol1YCSFj8mIoYkwjY
-         E9rA==
+        bh=HSvzzY/G7lC73xlGrMu73kxZNzii6k+S2gUvGl4rWlM=;
+        b=MlUM2RjzlBn2unniM/WJl4TDvrx0YjlGycQFTXHiwoXbaH//v34CbIzU+Rfr4i1SjZ
+         ATVk70dyZZ2ONyNZU1rC7OSgnueL7CM7VJnMjWrGqUgo09O93KGbe+/WEAZwVjMdATx3
+         mB3gOgK1oDBnuClVaD2Zqcl16+ueoRgzcSrTgStrzWnIo0XgFSkWFI0rfAolixqnOazW
+         1s9vJy8tmtEuTZVsTMs6R4P1LYZj+O3kSk8/NmQiEmqk8b8GVe4SmCeELn0i0LcEeuI+
+         0qPx/HGUnY3jjcVRmZweVXki8m1iUdSVGU5atMojUzNGNSvQIA856Iy0kOY3Ma8WLCFK
+         cjGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=tKU4ythhj/IOrUSC8YM0GQ9azaoq8ej8gEJR824Q+qQ=;
-        b=ANqpYjDsyiyDokn/xenp/5iadbd7UcKO3KNXm3y2mMP046v0S10/VX+/RYuOLTyELC
-         UljOZspnn7CBYXlrIzEwRn3mr4nHvisuN6lvkpf9NiNDk8nGe4aLI1oeRR4NB3l3vyM8
-         we7wIuZ0X2YncfH1xoba6Ce09WRlDiaj7upJgjky3LSNqHaJz3l4zR1YdQq+/Af2gDcb
-         CwnbYQR2IIel3n3jDMIv+1oYQDBqcuyyxp2/NL1lsxYK4AddlvvMYeiT0i4ZMjPaUPV8
-         wOvzfvPVHFLiiEMdQyDuv7ZgDfh203jV5eVlywZoisrXL70zrRw0+I9ZE8jdiFafVvs+
-         tj4g==
-X-Gm-Message-State: APjAAAWl4EX6n6gx0HQYye+ykZ/y+AKe6qvzVnSNY6WxYosmFS0T8Eh9
-        c6kfWFj+vb+oo03FjUHCe34=
-X-Google-Smtp-Source: APXvYqy8HojzKwysLLuCi9ir+JXbM8z+DD9nwNf6+GA9NlEtCdysn2BJZUp2/8qfL30wWpgotmyXkQ==
-X-Received: by 2002:a05:620a:a1a:: with SMTP id i26mr819123qka.383.1574860451228;
-        Wed, 27 Nov 2019 05:14:11 -0800 (PST)
-Received: from localhost.localdomain ([168.181.48.195])
-        by smtp.gmail.com with ESMTPSA id r4sm7642974qtd.17.2019.11.27.05.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 05:14:10 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 43A6EC510E; Wed, 27 Nov 2019 10:14:07 -0300 (-03)
-Date:   Wed, 27 Nov 2019 10:14:07 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>
-Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
-Message-ID: <20191127131407.GA377783@localhost.localdomain>
-References: <20191127001313.183170-1-zenczykowski@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=HSvzzY/G7lC73xlGrMu73kxZNzii6k+S2gUvGl4rWlM=;
+        b=aRYczHGY0EvxeXAnsp4zPo8PaXFAOh3TN6lSpKPpwPWg3VdwyHV9kIaPhzHGzL23it
+         W738Mm2d1qLpejAZm9mRT3+WCrI/KrT8idAwDZUMsYMFNXUNt1DmJKl1WJsH9J+Vq0cX
+         tYceygWJdRprsqfDo+TInRcAv7A4ze9hIYyfYfzQ/pVWLHbRICNcQpT4riQx9UvqIY+l
+         9GfYUiuhGpskU//wZzW3hFSjbI3VIYpVds5jF5PCw4DuvC7OV+ZsS6dOhFLww+MGmXaE
+         16pMrtsj+MmkWx+D0WPZZ+BowI/06DU0E5t/8npbyMjT+5eZ04SSabXTdo4mYxeqpJ/0
+         PVzg==
+X-Gm-Message-State: APjAAAVOvd1mb22taAilasqcjwBLlDlyStiJhEBFj7pprzpIaqmyHvOJ
+        nXqV2AMSsC4r7Tld4Hl/GQ3UwHkOErCMrA==
+X-Google-Smtp-Source: APXvYqzphMU1x4UjTe568wWqFDGp/UWVlLIHRgKsVhKnaVdDOWmCrzuYvlzznTz8o+Wyb3bRIZBR1Q==
+X-Received: by 2002:a63:e94d:: with SMTP id q13mr4832006pgj.209.1574860756204;
+        Wed, 27 Nov 2019 05:19:16 -0800 (PST)
+Received: from nishad ([106.51.232.103])
+        by smtp.gmail.com with ESMTPSA id l7sm2597116pfl.11.2019.11.27.05.19.12
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 27 Nov 2019 05:19:15 -0800 (PST)
+Date:   Wed, 27 Nov 2019 18:49:08 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: phy: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20191127131904.GA28829@nishad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191127001313.183170-1-zenczykowski@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 26, 2019 at 04:13:13PM -0800, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
-> 
-> and associated inet_is_local_unbindable_port() helper function:
-> use it to make explicitly binding to an unbindable port return
-> -EPERM 'Operation not permitted'.
-> 
-> Autobind doesn't honour this new sysctl since:
->   (a) you can simply set both if that's the behaviour you desire
->   (b) there could be a use for preventing explicit while allowing auto
->   (c) it's faster in the relatively critical path of doing port selection
->       during connect() to only check one bitmap instead of both
-...
-> If we *know* that certain ports are simply unusable, then it's better
-> nothing even gets the opportunity to try to use them.  This way we at
-> least get a quick failure, instead of some sort of timeout (or possibly
-> even corruption of the data stream of the non-kernel based use case).
+This patch corrects the SPDX License Identifier style in
+header files related to PHY Layer for Ethernet drivers.
+For C header files Documentation/process/license-rules.rst
+mandates C-like comments (opposed to C source files where
+C++ style should be used). This patch also gives an explicit
+block comment to the SPDX License Identifier.
 
-This is doable with SELinux today, no?
+Changes made by using a script provided by Joe Perches here:
+https://lkml.org/lkml/2019/2/7/46.
+
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+Changes in v2:
+  - Remove unwanted blank space.
+---
+ drivers/net/phy/aquantia.h    | 4 ++--
+ drivers/net/phy/bcm-phy-lib.h | 2 +-
+ drivers/net/phy/mdio-cavium.h | 2 +-
+ drivers/net/phy/mdio-i2c.h    | 2 +-
+ drivers/net/phy/mdio-xgene.h  | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/phy/aquantia.h b/drivers/net/phy/aquantia.h
+index 5a16caab7b2f..c684b65c642c 100644
+--- a/drivers/net/phy/aquantia.h
++++ b/drivers/net/phy/aquantia.h
+@@ -1,5 +1,5 @@
+-/* SPDX-License-Identifier: GPL-2.0
+- * HWMON driver for Aquantia PHY
++/* SPDX-License-Identifier: GPL-2.0 */
++/* HWMON driver for Aquantia PHY
+  *
+  * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+  * Author: Andrew Lunn <andrew@lunn.ch>
+diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
+index 5ecacb4e64f0..c86fb9d1240c 100644
+--- a/drivers/net/phy/bcm-phy-lib.h
++++ b/drivers/net/phy/bcm-phy-lib.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2015 Broadcom Corporation
+  */
+diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
+index b7f89ad27465..e33d3ea9a907 100644
+--- a/drivers/net/phy/mdio-cavium.h
++++ b/drivers/net/phy/mdio-cavium.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2009-2016 Cavium, Inc.
+  */
+diff --git a/drivers/net/phy/mdio-i2c.h b/drivers/net/phy/mdio-i2c.h
+index 751dab281f57..b1d27f7cd23f 100644
+--- a/drivers/net/phy/mdio-i2c.h
++++ b/drivers/net/phy/mdio-i2c.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * MDIO I2C bridge
+  *
+diff --git a/drivers/net/phy/mdio-xgene.h b/drivers/net/phy/mdio-xgene.h
+index b1f5ccb4ad9c..8af93ada8b64 100644
+--- a/drivers/net/phy/mdio-xgene.h
++++ b/drivers/net/phy/mdio-xgene.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /* Applied Micro X-Gene SoC MDIO Driver
+  *
+  * Copyright (c) 2016, Applied Micro Circuits Corporation
+-- 
+2.17.1
+
