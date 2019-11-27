@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F38A910B2DC
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 16:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AB410B2E7
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfK0P7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 10:59:40 -0500
-Received: from mail-qt1-f178.google.com ([209.85.160.178]:35721 "EHLO
-        mail-qt1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbfK0P7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 10:59:40 -0500
-Received: by mail-qt1-f178.google.com with SMTP id n4so25858657qte.2;
-        Wed, 27 Nov 2019 07:59:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=UP/A/8ZyD4j1YZR182zTc2bHEQDWRudBnSjV/1JGrFA=;
-        b=Ti3BTgK5d2HEDPSqrLdjysff5a2gLfcqTfMXe658LeJ6coCSw4ae3Nxb2aBHjLoNoS
-         sAoZq/egbd21qkGXjcG9Yjzh8LQbBQIcuYU1ep39iOXf/KUndbuOg4cWMkt8/2T70GX5
-         m40KSGqgDJyWjmt2nj8honGUBTX+YY7d0PBNvJfgHt4576HaHBFHUk+Vm+71IJS4x4Ra
-         fU8b+q0gH7ZwgVwLU016Bi8N/kNKXzXUo9KjnLJm/XDSaoaIEKe9Zvlc3kk99Oz+j6xE
-         L9ItnqvOr0GVM5wVUE7qJB6RytJq135V44rd49/Va81VNv+2AOhtyRqj2q62Ce/MV0IG
-         yczA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UP/A/8ZyD4j1YZR182zTc2bHEQDWRudBnSjV/1JGrFA=;
-        b=YshUeHjzAH4NEPYHhyXvAucYXcnPrLotgSQNJEDtZL+T/TIaZbdGa6YYFnQJs2Ll/E
-         xq5DfJL4WHL4BVtPEkDsM/iZSgXFzwymH7Ywi0AmnZ71h50hDaBY5quebZT9YizkjxWJ
-         bv7m/Se6K4NUqxMyF0Kpl8nktNof4u8MbPBetwbBKJ64eRWlCLKiU//eMHBWnFxrBBIj
-         HnS/1d0Fmtjamh52a85KLQggUFQa6JZG67KoJv2MGpMwIk8SfEtquliCgu8h9ghTed3q
-         lFoTrGyTHWyvwLdgCPThA9s+IxfvmGoTborvVFA+OjSl/AqTyoR6cPTuqxJxGpeg8je0
-         cxVQ==
-X-Gm-Message-State: APjAAAXq5iQcn/xeAj/fnmN+MXq7YotOcx3Btahe6EiGIurLueoUQ7Uk
-        /kqba1DgmF6XSf2hUgWpESM=
-X-Google-Smtp-Source: APXvYqyRSLfj0P2QBGvATZSgjsonhKDW4HXos0PDYoN5r18l/hkhwGaq+b8rfkd3OUjePYRr/zboyg==
-X-Received: by 2002:ac8:104:: with SMTP id e4mr26478494qtg.37.1574870379268;
-        Wed, 27 Nov 2019 07:59:39 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id m29sm8124177qtf.1.2019.11.27.07.59.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 07:59:38 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1BB2440D3E; Wed, 27 Nov 2019 12:59:36 -0300 (-03)
-Date:   Wed, 27 Nov 2019 12:59:36 -0300
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH 3/3] bpftool: Allow to link libbpf dynamically
-Message-ID: <20191127155936.GL22719@kernel.org>
-References: <20191127094837.4045-1-jolsa@kernel.org>
- <20191127094837.4045-4-jolsa@kernel.org>
- <fd22660f-2f70-4ffa-b45f-bb417d006d0a@netronome.com>
- <20191127141520.GJ32367@krava>
- <20191127142449.GD22719@kernel.org>
- <d9bc04a6-0f72-9408-7c2e-2fb30e6a8f74@netronome.com>
- <20191127154849.GK22719@kernel.org>
- <d78a306f-a736-63d1-4d14-695ba33d3d9c@netronome.com>
+        id S1727104AbfK0QER convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 11:04:17 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:34350 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726747AbfK0QEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:04:16 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-18-Aa6kDxC7OPi54Qqo1k4BMw-1; Wed, 27 Nov 2019 16:04:12 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 27 Nov 2019 16:04:12 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 27 Nov 2019 16:04:12 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jesper Dangaard Brouer' <brouer@redhat.com>
+CC:     'Marek Majkowski' <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: RE: epoll_wait() performance
+Thread-Topic: epoll_wait() performance
+Thread-Index: AdWgk3jgEIFNwcnRS6+4A+/jFPxTuQEdLCCAAAAn2qAADFPagAAAV68A
+Date:   Wed, 27 Nov 2019 16:04:12 +0000
+Message-ID: <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+        <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+        <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+ <20191127164821.1c41deff@carbon>
+In-Reply-To: <20191127164821.1c41deff@carbon>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d78a306f-a736-63d1-4d14-695ba33d3d9c@netronome.com>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: Aa6kDxC7OPi54Qqo1k4BMw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, Nov 27, 2019 at 03:52:06PM +0000, Quentin Monnet escreveu:
-> 2019-11-27 12:48 UTC-0300 ~ Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Em Wed, Nov 27, 2019 at 02:31:31PM +0000, Quentin Monnet escreveu:
-> >> 2019-11-27 11:24 UTC-0300 ~ Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> >>> Em Wed, Nov 27, 2019 at 03:15:20PM +0100, Jiri Olsa escreveu:
-> >>>> On Wed, Nov 27, 2019 at 01:38:55PM +0000, Quentin Monnet wrote:
-> >>>>> 2019-11-27 10:48 UTC+0100 ~ Jiri Olsa <jolsa@kernel.org>
-> >>>>> On the plus side, all build attempts from
-> >>>>> tools/testing/selftests/bpf/test_bpftool_build.sh pass successfully on
-> >>>>> my setup with dynamic linking from your branch.
+From: Jesper Dangaard Brouer
+> Sent: 27 November 2019 15:48
+> On Wed, 27 Nov 2019 10:39:44 +0000 David Laight <David.Laight@ACULAB.COM> wrote:
+> 
+> > ...
+> > > > While using recvmmsg() to read multiple messages might seem a good idea, it is much
+> > > > slower than recv() when there is only one message (even recvmsg() is a lot slower).
+> > > > (I'm not sure why the code paths are so slow, I suspect it is all the copy_from_user()
+> > > > and faffing with the user iov[].)
+> > > >
+> > > > So using poll() we repoll the fd after calling recv() to find is there is a second message.
+> > > > However the second poll has a significant performance cost (but less than using recvmmsg()).
+> > >
+> > > That sounds wrong. Single recvmmsg(), even when receiving only a
+> > > single message, should be faster than two syscalls - recv() and
+> > > poll().
+> >
+> > My suspicion is the extra two copy_from_user() needed for each recvmsg are a
+> > significant overhead, most likely due to the crappy code that tries to stop
+> > the kernel buffer being overrun.
+> >
+> > I need to run the tests on a system with a 'home built' kernel to see how much
+> > difference this make (by seeing how much slower duplicating the copy makes it).
+> >
+> > The system call cost of poll() gets factored over a reasonable number of sockets.
+> > So doing poll() on a socket with no data is a lot faster that the setup for recvmsg
+> > even allowing for looking up the fd.
+> >
+> > This could be fixed by an extra flag to recvmmsg() to indicate that you only really
+> > expect one message and to call the poll() function before each subsequent receive.
+> >
+> > There is also the 'reschedule' that Eric added to the loop in recvmmsg.
+> > I don't know how much that actually costs.
+> > In this case the process is likely to be running at a RT priority and pinned to a cpu.
+> > In some cases the cpu is also reserved (at boot time) so that 'random' other code can't use it.
+> >
+> > We really do want to receive all these UDP packets in a timely manner.
+> > Although very low latency isn't itself an issue.
+> > The data is telephony audio with (typically) one packet every 20ms.
+> > The code only looks for packets every 10ms - that helps no end since, in principle,
+> > only a single poll()/epoll_wait() call (on all the sockets) is needed every 10ms.
+> 
+> I have a simple udp_sink tool[1] that cycle through the different
+> receive socket system calls.  I gave it a quick spin on a F31 kernel
+> 5.3.12-300.fc31.x86_64 on a mlx5 100G interface, and I'm very surprised
+> to see a significant regression/slowdown for recvMmsg.
+> 
+> $ sudo ./udp_sink --port 9 --repeat 1 --count $((10**7))
+>           	run      count   	ns/pkt	pps		cycles	payload
+> recvMmsg/32  	run:  0	10000000	1461.41	684270.96	5261	18	 demux:1
+> recvmsg   	run:  0	10000000	889.82	1123824.84	3203	18	 demux:1
+> read      	run:  0	10000000	974.81	1025841.68	3509	18	 demux:1
+> recvfrom  	run:  0	10000000	1056.51	946513.44	3803	18	 demux:1
+> 
+> Normal recvmsg almost have double performance that recvmmsg.
+>  recvMmsg/32 = 684,270 pps
+>  recvmsg     = 1,123,824 pps
 
-> >>>> cool, had no idea there was such test ;-)
+Can you test recv() as well?
+I think it might be faster than read().
 
-> >>> Should be the the equivalent to 'make -C tools/perf build-test' :-)
+...
+> Found some old results (approx v4.10-rc1):
+> 
+> [brouer@skylake src]$ sudo taskset -c 2 ./udp_sink --count $((10**7)) --port 9 --connect
+>  recvMmsg/32    run: 0 10000000 537.89  1859106.74      2155    21559353816
+>  recvmsg        run: 0 10000000 552.69  1809344.44      2215    22152468673
+>  read           run: 0 10000000 476.65  2097970.76      1910    19104864199
+>  recvfrom       run: 0 10000000 450.76  2218492.60      1806    18066972794
 
-> >>> Perhaps we should make tools/testing/selftests/perf/ link to that?
+That is probably nearer what I am seeing on a 4.15 Ubuntu 18.04 kernel.
+recvmmsg() and recvmsg() are similar - but both a lot slower then recv().
 
-> >> It is already run as part of the bpf selftests, so probably no need.
+	David
 
-> > You mean 'make -C tools/perf build-test' is run from the bpf selftests?
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-> Ah, no, sorry for the confusion. I meant that test_bpftool_build.sh is
-> run from the bpf selftests.
-
-> I am not familiar with perf build-test, but maybe that's something worth
-> adding to perf selftests indeed.
-
-Yeah, I think is worth considering plugging perf's build-test to
-selftests, if only to expose it to the people that are used with
-selftests and may start testing perf builds more regularly.
-
-- Arnaldo
