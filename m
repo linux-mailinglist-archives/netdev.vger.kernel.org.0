@@ -2,113 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60EB610AD01
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 560A410AD06
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:58:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbfK0J6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 04:58:08 -0500
-Received: from mail-eopbgr50054.outbound.protection.outlook.com ([40.107.5.54]:16777
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726383AbfK0J6I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 04:58:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KOgAov2d3VyMVVv/wVo8ehv8MLl2jv4G9+BqJ8JcS8oPhqXSkP6PAhUa4EvBW8LsLkm74yssKSLoNL1GLdvahvL1NvrBv/DhT5pSO1s9L6zJM5Q11g9UbOHwDqcsC4wBV3225O4OHuaLgjt7uT7RVjQ8A44uzQ7wGpFKFAE5LNnolzdc2YNvoZPrQN0h4vjzbgZYSnlCFL0HZkG0Jwg3XuclQNx18rO5IHhBInADd+8ElDVGCQ7g1fCaV34FNTNiT6M5ZXmbCnDQabToUIigCUC8Q1376ZfD7ZJ+Exb77J3dB1NyJ8CGu06+MVOMDgkvPtFqPIN3OHp3e/e2fDwIHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WhGwbh7zVFcGIJrdq9oEkyPiUy6ODz8AG3j8KS4BDzc=;
- b=EdSun/BU44bfH0gBAHu81c4xhEUxeglhQ5tt0vuZNklf7Q91TZQiSoCsZxUNNpls3OyebhDadjV2NuJx2pt4zugloiswbWFQYJmVl79FHbbPpay6r4y5hDL5R/fygiKncScxWD1wGkz+oxLbfEF55KUjGgYMBGYhkRGLWsYWCgwU6Ujpy/sXIqkGkZBcnx+2uAuPxvRtKBuI0YB+CE0QgVpOyotVtEoDtAXBxujHD5LagVJgxm48viQZGvbIB3Nw6UeLycJdeSavLb33PoBJHxIT98RjJpSvmOGC6aTHWYpMkmTIhsAANXtZszT1EBXXr4BI4TLZx4Y6QLL4PdEHEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WhGwbh7zVFcGIJrdq9oEkyPiUy6ODz8AG3j8KS4BDzc=;
- b=Bio5v1By5hjU1cv26EDL0LgDIsqxsy0Cm6hUSa+QqDfZbvtqNavTzZEDhxg6Qnn5x/gQluuOz66qwJcRuuIJwEo65teSKyVXoWUe2dVOL2Cmtz1FSFWx3Wvopj2n4MOw9u1MKmVShAKr3LNm9B/FagJbg3dKjvYVSNmWSt4ZSgI=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB6009.eurprd04.prod.outlook.com (20.178.105.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.18; Wed, 27 Nov 2019 09:58:03 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2474.023; Wed, 27 Nov 2019
- 09:58:03 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Sean Nyekjaer <sean@geanix.com>,
+        id S1726729AbfK0J6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:58:48 -0500
+Received: from first.geanix.com ([116.203.34.67]:40472 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726227AbfK0J6r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 04:58:47 -0500
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 8BE22932E2;
+        Wed, 27 Nov 2019 09:55:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1574848501; bh=EqbvLJUqmlNqOu2BfsSKko8WT0L0d1pwMozqcVEo61M=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=DrajxCbK2NpLi73k4FJUd4/Vv/yFXep5Hd90PsqfbeziX26wVfE0K+5/gJnoVOyfE
+         VWkev2iZCRsjM7HSnfzQPxgqcz/eXZtty5E8NWZXcXwWcBymm3UETNKJKIeR5KmhB8
+         MTWlWlK87bX3XfJXPRe/iAs+1/GPL1uusA1AR1ML/LCH/vcVwOJIw+XzqZOjp61V/u
+         mTGWnyJMTPqDqR8kj7EC1IOMjOzNlqF03TvOYf3pvL/Y1ROLSeWTxq/D1t/JhWUoBm
+         a9++Cpowi4A4u6H/VZJa5+owlh7GpYoJpM1zFaztoG2fPX36eC2jteXJ+vUfn07zxG
+         /OyRTe6YHmEng==
+Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
         "mkl@pengutronix.de" <mkl@pengutronix.de>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH V2 0/4] can: flexcan: fixes for stop mode
-Thread-Topic: [PATCH V2 0/4] can: flexcan: fixes for stop mode
-Thread-Index: AQHVpOdxXAI9W9cZiUqxHtJbOFpoG6eeiWMAgAAhqwCAABa5QIAAAZ0wgAADdACAAADr0A==
-Date:   Wed, 27 Nov 2019 09:58:03 +0000
-Message-ID: <DB7PR04MB46180EE59D373F9634DD936AE6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
 References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <e936b9b1-d602-ac38-213c-7272df529bef@geanix.com>
- <4a9c2e4a-c62d-6e88-bd9e-01778dab503b@geanix.com>
- <DB7PR04MB46186472F0437A825548CE11E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <DB7PR04MB4618C541894AD851BED5B0B7E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <1c71c2ef-39a4-6f38-98c0-4ee43767a725@geanix.com>
-In-Reply-To: <1c71c2ef-39a4-6f38-98c0-4ee43767a725@geanix.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 73280cf5-3a0e-4f75-efa6-08d773204b4e
-x-ms-traffictypediagnostic: DB7PR04MB6009:|DB7PR04MB6009:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB600960D88EC56CF97869F2CEE6440@DB7PR04MB6009.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 023495660C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(396003)(346002)(39860400002)(189003)(199004)(13464003)(478600001)(4326008)(76176011)(76116006)(66946007)(7696005)(66476007)(66556008)(64756008)(66446008)(6506007)(14454004)(99286004)(14444005)(71200400001)(71190400001)(256004)(316002)(110136005)(54906003)(229853002)(6246003)(305945005)(9686003)(6436002)(5660300002)(7736002)(74316002)(2201001)(52536014)(55016002)(86362001)(2906002)(66066001)(186003)(33656002)(6116002)(3846002)(102836004)(25786009)(53546011)(8676002)(81156014)(81166006)(8936002)(26005)(446003)(11346002)(2501003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB6009;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PWSCB8el0mkdUAwZ3j14rVXPBIhq6KDZ3atTBO82dhS1BoK2UvBH5bUNYoB6Ctyqf+WtW2imAo6Vv03PqWqErGxfJJgw7lw2FtNLnzLBK6YeDcn1qrEtBG82fPMJWJVm4ou4q/GW064CDGEDrG4USGqLuVJ7fEeKSx0Wk6dIOpdItFvXn/FMa4EptKPme7k3kvLSMJTPnKfS0Wg/tAXdKu8c7aVGAg+Re9snZEm+xhpRskxQwzZrzPTUfn+f1diOZiHfx+nhxIocPxAchjCPYlhvDltURXJxi6FVxElLzpuqGy8RbD+fjNDs/sCJnrWfR4TqIn41MI2AKRC4KIOgjrl9Xl8lyciSEXYWB9K3Jw2Z/dx4OkKl4l2wYV8sPsYZ6z8S6SCLUxiJNkIuiruE+HslNAXtTjvD/BVP4GZfegPqc/pMDEKMNwKnLWqy3YxF
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <199aa895-833c-f6b0-105b-1450600fc21e@geanix.com>
+Date:   Wed, 27 Nov 2019 10:58:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73280cf5-3a0e-4f75-efa6-08d773204b4e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 09:58:03.3677
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lPSYW8gZAReuSCkf1jWJNTxgpRkI1f66/17Tm0P+/vwEltDcNHWDzGEi8qKv9/B0BCEHAkAkM6sH/NHY4Zl4aA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB6009
+In-Reply-To: <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on b0d531b295e6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNlYW4gTnlla2phZXIgPHNl
-YW5AZ2Vhbml4LmNvbT4NCj4gU2VudDogMjAxOeW5tDEx5pyIMjfml6UgMTc6NTINCj4gVG86IEpv
-YWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBta2xAcGVuZ3V0cm9uaXguZGU7
-DQo+IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgt
-aW14QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFU
-Q0ggVjIgMC80XSBjYW46IGZsZXhjYW46IGZpeGVzIGZvciBzdG9wIG1vZGUNCj4gDQo+IA0KPiAN
-Cj4gT24gMjcvMTEvMjAxOSAxMC40OCwgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+IE9uZSBtb3Jl
-IHNob3VsZCBjb25maXJtIHdpdGggeW91LCB5b3UgaW5zZXJ0ZWQgYSBmbGV4Y2FuLmtvIGFmdGVy
-IHN0b3ANCj4gPiBtb2RlIGFjdGl2YXRlZCB3aXRob3V0IGZpeCBwYXRjaCBmaXJzdGx5LCBhbmQg
-dGhlbiBpbnNlcnRlZCBhDQo+ID4gZmxleGNhbi5rbyB3aXRoIGZpeCBwYXRjaC4gSWYgeWVzLCB0
-aGlzIGNvdWxkIGNhdXNlIHVuYmFsYW5jZWQNCj4gcG1fcnVudGltZV9lbmFibGVkLiBUaGUgcmVh
-c29uIGlzIHRoYXQgZmlyc3RseSBpbnNlcnRlZCB0aGUgZmxleGNhbi5rbyB3b3VsZA0KPiBlbmFi
-bGUgZGV2aWNlIHJ1bnRpbWUgcG0sIGFuZCB0aGVuIHlvdSBpbnNlcnRlZCBmbGV4Y2FuLmtvIGVu
-YWJsZSBkZXZpY2UNCj4gcnVudGltZSBwbSBhZ2Fpbi4NCj4gPg0KPiA+IENvdWxkIHlvdSBwbGVh
-c2UgaW5zZXJ0IGZsZXhjYW4ua28gd2l0aCBmaXggcGF0Y2ggZGlyZWN0bHkgYWZ0ZXIgc3RvcCBt
-b2RlDQo+IGFjdGl2YXRlZD8NCj4gPg0KPiBIaSwNCj4gDQo+IElmIEkgaW5zZXJ0IGZsZXhjYW4u
-a28gd2l0aCBmaXggcGF0Y2ggZGlyZWN0bHkgYWZ0ZXIgc3RvcCBtb2RlIGFjdGl2YXRlZCwgdGhl
-DQo+IHVuYmFsYW5jZWQgbXNnIGlzIG5vdCBzaG93bi4uLg0KPiBJIGd1ZXNzIHdlIGFyZSBnb29k
-IHRoZW4gOikNCg0KR3JlYXQsIFRoYW5rcyBhIGxvdCENCg0KQ291bGQgeW91IGdpdmUgeW91ciBU
-ZXN0LWJ5IHRhZyBmb3IgdGhpcyBwYXRjaCBzZXQ/IEFuZCB0aGVuIE1hcmMgY291bGQgcmV2aWV3
-IHRoaXMgcGF0Y2ggc2V0Lg0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gL1NlYW4N
-Cg==
+
+
+On 27/11/2019 06.56, Joakim Zhang wrote:
+> From: Sean Nyekjaer <sean@geanix.com>
+> 
+> When suspending, when there is still can traffic on the interfaces the
+> flexcan immediately wakes the platform again. As it should :-). But it
+> throws this error msg:
+> [ 3169.378661] PM: noirq suspend of devices failed
+> 
+> On the way down to suspend the interface that throws the error message does
+> call flexcan_suspend but fails to call flexcan_noirq_suspend. That means the
+> flexcan_enter_stop_mode is called, but on the way out of suspend the driver
+> only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't call
+> flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
+> current driver it can't recover from this even with a soft reboot, it requires
+> a hard reboot.
+> 
+> This patch can fix deadlock when using self wakeup, it happenes to be
+> able to fix another issue that frames out-of-order in first IRQ handler
+> run after wakeup.
+> 
+> In wakeup case, after system resume, frames received out-of-order in
+> first IRQ handler, the problem is wakeup latency from frame reception to
+> IRQ handler is much bigger than the counter overflow. This means it's
+> impossible to sort the CAN frames by timestamp. The reason is that controller
+> exits stop mode during noirq resume, then it can receive the frame immediately.
+> If noirq reusme stage consumes much time, it will extend interrupt response
+> time. So exit stop mode during resume stage instead of noirq resume can
+> fix this issue.
+> 
+> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+> Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Tested-by: Sean Nyekjaer <sean@geanix.com>
+> ------
+> ChangeLog:
+> 	V1->V2: no change.
+> ---
+>   drivers/net/can/flexcan.c | 19 +++++++++++--------
+>   1 file changed, 11 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index 2efa06119f68..2297663cacb2 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -134,8 +134,7 @@
+>   	(FLEXCAN_ESR_ERR_BUS | FLEXCAN_ESR_ERR_STATE)
+>   #define FLEXCAN_ESR_ALL_INT \
+>   	(FLEXCAN_ESR_TWRN_INT | FLEXCAN_ESR_RWRN_INT | \
+> -	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT | \
+> -	 FLEXCAN_ESR_WAK_INT)
+> +	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT)
+>   
+>   /* FLEXCAN interrupt flag register (IFLAG) bits */
+>   /* Errata ERR005829 step7: Reserve first valid MB */
+> @@ -960,6 +959,12 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+>   
+>   	reg_esr = priv->read(&regs->esr);
+>   
+> +	/* ACK wakeup interrupt */
+> +	if (reg_esr & FLEXCAN_ESR_WAK_INT) {
+> +		handled = IRQ_HANDLED;
+> +		priv->write(reg_esr & FLEXCAN_ESR_WAK_INT, &regs->esr);
+> +	}
+> +
+>   	/* ACK all bus error and state change IRQ sources */
+>   	if (reg_esr & FLEXCAN_ESR_ALL_INT) {
+>   		handled = IRQ_HANDLED;
+> @@ -1722,6 +1727,9 @@ static int __maybe_unused flexcan_resume(struct device *device)
+>   		netif_start_queue(dev);
+>   		if (device_may_wakeup(device)) {
+>   			disable_irq_wake(dev->irq);
+> +			err = flexcan_exit_stop_mode(priv);
+> +			if (err)
+> +				return err;
+>   		} else {
+>   			err = pm_runtime_force_resume(device);
+>   			if (err)
+> @@ -1767,14 +1775,9 @@ static int __maybe_unused flexcan_noirq_resume(struct device *device)
+>   {
+>   	struct net_device *dev = dev_get_drvdata(device);
+>   	struct flexcan_priv *priv = netdev_priv(dev);
+> -	int err;
+>   
+> -	if (netif_running(dev) && device_may_wakeup(device)) {
+> +	if (netif_running(dev) && device_may_wakeup(device))
+>   		flexcan_enable_wakeup_irq(priv, false);
+> -		err = flexcan_exit_stop_mode(priv);
+> -		if (err)
+> -			return err;
+> -	}
+>   
+>   	return 0;
+>   }
+> 
