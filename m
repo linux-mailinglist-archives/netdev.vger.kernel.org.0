@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A23C10B6C9
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:30:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205EB10B6D3
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:33:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727663AbfK0TaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 14:30:24 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:44840 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727646AbfK0TaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:30:23 -0500
-Received: by mail-lf1-f65.google.com with SMTP id v201so17049822lfa.11;
-        Wed, 27 Nov 2019 11:30:20 -0800 (PST)
+        id S1727834AbfK0TdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 14:33:14 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:43184 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727822AbfK0TdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:33:14 -0500
+Received: by mail-lf1-f67.google.com with SMTP id l14so18090616lfh.10;
+        Wed, 27 Nov 2019 11:33:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/jKEk9MaR5LWSyKK9ek2s+4axInXSAcfLVt7L03UVkM=;
-        b=sOqHNvow2Wbqj1ZZFgMQMK0M9BRhiMOk7gQHIQJnyTDooA3qbL05Evp35am94MhbJ/
-         X7O6gtC9mOLXfxWrRz/6cLR09fpckbFRSugKlW/ELiTRD2anxBwj1bc4ajtC87Oo3i8w
-         fc4CoOkPHD0E4d90A5BtSvpYLoWi80AZVaLCMCwcq0JWxt2d1+PD2wq1HaGRPrEnu628
-         UxRAakx+RM6erc9/7yzokp1UvbSfhWo70IEuKrpQbrnMpWoAO4FOGJIWwXaVJmDNywTu
-         Gg9qzkzmrt4K+Nbd3xrg33vWi/HlvfMgD/IILL4cx9z45L3B2GLT8daPy7mAOiDhvaho
-         NS7w==
+        bh=RSx7OTjw0zpOYqU/X0SJ0HyqOXCDIW8v0m9WjClqi/s=;
+        b=vIGB6nuya7dBARFwL6uh1DiYOzq9Jys1GzivJONLdY04SYXv4UC7ZOPhw6WqAfC23n
+         LPrzYDsE++IHWb7q3NQQIcJtb6xVjkXFvTfth888vv+nGy7XUk9U6qqNDztXIP3064re
+         JCJQmGmKlGV3vYma9bj19BRsJarwG16feKZZm1gh+bhg8BqI79uYYLZPy9CtybMu/la+
+         qHry2xprY9N581HzFYnT/E1QdgTBgANf+KFi8bhSVhTrNGnaYIhGqzuEbfGLWdFut48J
+         q1C6unGkgI3hjK2QsgjQeJ9MqH8gzcNTN2IkjcFfTp3gdaMGBCX6ShmxnOAYooUbCz8s
+         9QAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/jKEk9MaR5LWSyKK9ek2s+4axInXSAcfLVt7L03UVkM=;
-        b=jnUXImG71Mg+T4A9dka6BJJfUYYZHSWvsQsXRuRtF0o4oDvFPgxhjUgM/2sVNFLC3V
-         ZkucfWleqdlbt1Yu428/ng7n+w5CyQPP7sDFQujL4CZf5U5fWcfyKkbKye6DqZ7bzVlY
-         ZXKuCCDEi+ICr0lFKtfP/OBV73NL8fgt5V28IJUMETLrhFJFtUrKq1bWF8+L042G8BcD
-         5APBfVhMe2SmfAValpatpVTJXxbJn8WR7y3SfWsmn/S4B2UjorzTAmDlsbTIP3jdyf8O
-         TbPII6aoXwVeNIRPdy7znwbLpWv4m3e7SBfMuemKvV7YrrHxpElAx4tfm5yiZtCnzvYQ
-         Cz7g==
-X-Gm-Message-State: APjAAAUtku7oxh6UGF48UHs4vvkb7zvAHHU+bocKtB91hyHKzJWNCOd9
-        PoxsN63E8t8QrA41dOI0M/OBzBU/7/XFk3vr/A0=
-X-Google-Smtp-Source: APXvYqyT3bUX2usMnMrAvL6WfAyRFGYg0ISbbXXbc6M8vLi0OQ+Y9E0UViPHLPguHBrNSE44hgOiXjjn0fTBmMdzimE=
-X-Received: by 2002:ac2:5462:: with SMTP id e2mr20307174lfn.181.1574883019416;
- Wed, 27 Nov 2019 11:30:19 -0800 (PST)
+        bh=RSx7OTjw0zpOYqU/X0SJ0HyqOXCDIW8v0m9WjClqi/s=;
+        b=J6z7czPM1xNMWvOuzgXnUfHcdK06Ia/RgUk6455NR729eLoFJSmxy6fObSzBtgPfi3
+         m0C/HqijyRPK6IpFhmva3S+3x0vztC8JNJnPiY+KPRovPtMgm8Y2xZAk+wkzdtY/yCbB
+         krrp9kMzZcqaNssctInAz7tDPzVDOUz0shxKlKeYFqYv3Ma/CUsicpH3aV01Py96Ixru
+         0NQ5F4jcHX50h1iXmRqndTkAyDu42BFKh6lp8uSQVyztXElh9J5u6RWwJ1mt5qBfjGTm
+         sSu5tx4nyoAaF0X/6jvh04V1Wxq2Dvx3Z+AIweQvD/P0XL/P6KUoop1g9OhgVZ0XyOEu
+         UlKw==
+X-Gm-Message-State: APjAAAW5jP0hA6mtklvwFUJhxVq8rXZazWISR/WoYf3n3fBRKrfbEg1z
+        9ZYwVuosS0dzphILHWLrkH+O47kQm/drXPQBRTOvEg==
+X-Google-Smtp-Source: APXvYqy7HPCiJyTFwTniD3JzD0iem2k+Ybd0glPQhP2ykdIub0GuS7FZOgktbwp0EhMv0fROSauC/ZqH+aDJTAlO9GE=
+X-Received: by 2002:a19:888:: with SMTP id 130mr20156546lfi.167.1574883191745;
+ Wed, 27 Nov 2019 11:33:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20191127161410.57327-1-sdf@google.com>
-In-Reply-To: <20191127161410.57327-1-sdf@google.com>
+References: <20191126183451.GC29071@kernel.org> <87d0dexyij.fsf@toke.dk>
+ <20191126190450.GD29071@kernel.org> <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
+ <20191126221018.GA22719@kernel.org> <20191126221733.GB22719@kernel.org>
+ <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com>
+ <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net> <20191126155228.0e6ed54c@cakuba.netronome.com>
+ <20191127013901.GE29071@kernel.org> <20191127134553.GC22719@kernel.org>
+In-Reply-To: <20191127134553.GC22719@kernel.org>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 27 Nov 2019 11:30:08 -0800
-Message-ID: <CAADnVQ+4kwSWzJYTOe2WFB=2G2sCoK1Yc8seJeLBseX5fS_X8A@mail.gmail.com>
-Subject: Re: [PATCH bpf v3] bpf: support pre-2.25-binutils objcopy for vmlinux BTF
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Wed, 27 Nov 2019 11:33:00 -0800
+Message-ID: <CAADnVQ+Hgqg0Pi0GRrRw-fwySbMiYVNwdgvTqOtRTRJPAnEhcQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Use PRIu64 for sym->st_value to fix build on
+ 32-bit arches
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
+        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Quentin Monnet <quentin.monnet@netronome.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 8:14 AM Stanislav Fomichev <sdf@google.com> wrote:
+On Wed, Nov 27, 2019 at 5:45 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
 >
-> If vmlinux BTF generation fails, but CONFIG_DEBUG_INFO_BTF is set,
-> .BTF section of vmlinux is empty and kernel will prohibit
-> BPF loading and return "in-kernel BTF is malformed".
+> Another fix I'm carrying in my perf/core branch,
 >
-> --dump-section argument to binutils' objcopy was added in version 2.25.
-> When using pre-2.25 binutils, BTF generation silently fails. Convert
-> to --only-section which is present on pre-2.25 binutils.
+> Regards,
 >
-> Documentation/process/changes.rst states that binutils 2.21+
-> is supported, not sure those standards apply to BPF subsystem.
+> - Arnaldo
 >
-> v2:
-> * exit and print an error if gen_btf fails (John Fastabend)
+> commit 98bb09f90a0ae33125fabc8f41529345382f1498
+> Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+> Date:   Wed Nov 27 09:26:54 2019 -0300
 >
-> v3:
-> * resend with Andrii's Acked-by/Tested-by tags
+>     libbpf: Use PRIu64 for sym->st_value to fix build on 32-bit arches
 >
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Fixes: 341dfcf8d78ea ("btf: expose BTF info through sysfs")
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Tested-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+>     The st_value field is a 64-bit value, so use PRIu64 to fix this error on
+>     32-bit arches:
+>
+>       In file included from libbpf.c:52:
+>       libbpf.c: In function 'bpf_program__record_reloc':
+>       libbpf_internal.h:59:22: error: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'Elf64_Addr' {aka 'const long long unsigned int'} [-Werror=format=]
+>         libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
+>                             ^~~~~~~~~~
+>       libbpf_internal.h:62:27: note: in expansion of macro '__pr'
+>        #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
+>                                  ^~~~
+>       libbpf.c:1822:4: note: in expansion of macro 'pr_warn'
+>           pr_warn("bad call relo offset: %lu\n", sym->st_value);
+>           ^~~~~~~
+>       libbpf.c:1822:37: note: format string is defined here
+>           pr_warn("bad call relo offset: %lu\n", sym->st_value);
+>                                          ~~^
+>                                          %llu
+>
+>     Fixes: 1f8e2bcb2cd5 ("libbpf: Refactor relocation handling")
+>     Cc: Alexei Starovoitov <ast@kernel.org>
+>     Cc: Andrii Nakryiko <andriin@fb.com>
+>     Link: https://lkml.kernel.org/n/tip-iabs1wq19c357bkk84p7blif@git.kernel.org
+>     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index b20f82e58989..6b0eae5c8a94 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -1819,7 +1819,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+>                         return -LIBBPF_ERRNO__RELOC;
+>                 }
+>                 if (sym->st_value % 8) {
+> -                       pr_warn("bad call relo offset: %lu\n", sym->st_value);
+> +                       pr_warn("bad call relo offset: %" PRIu64 "\n", sym->st_value);
 
-Applied. Thanks
+Looking at this more... I never liked this PRI stuff. It makes for
+such unreadable code.
+How about just typecasting st_value to (long) ?
