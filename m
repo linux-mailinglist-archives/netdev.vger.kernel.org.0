@@ -2,141 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC9910B331
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:27:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA44610B334
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 17:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfK0Q06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 11:26:58 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47017 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726514AbfK0Q06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:26:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574872016;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K5j6toD0BFeVtaIARVqGdTgt6vile1DqjAIyA0acZ78=;
-        b=L2mE3cL5onaoAKimLx+QOZlxeH4eyTz0mURO2ipNu+2ZtFpEgxU8qbsylimDMtLc03HkG7
-        NgVBJt3oTScpaxA3Ej7jzcxZzPJlARL426P4OOkIMEQ3IumKjlBijEq79euarVEXg33+Hq
-        Vwhc2wEWnrzyv0lDSIQ+X2qgYA8qNMM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-170-1MrmtW4TONip9Xmkn6yp9g-1; Wed, 27 Nov 2019 11:26:55 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3F2010C58DA;
-        Wed, 27 Nov 2019 16:26:53 +0000 (UTC)
-Received: from ovpn-118-152.ams2.redhat.com (unknown [10.36.118.152])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8414E5D9D6;
-        Wed, 27 Nov 2019 16:26:49 +0000 (UTC)
-Message-ID: <0b8d7447e129539aec559fa797c07047f5a6a1b2.camel@redhat.com>
-Subject: Re: epoll_wait() performance
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Cc:     'Marek Majkowski' <marek@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Date:   Wed, 27 Nov 2019 17:26:48 +0100
-In-Reply-To: <20191127164821.1c41deff@carbon>
-References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
-         <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
-         <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
-         <20191127164821.1c41deff@carbon>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
+        id S1727141AbfK0Q1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 11:27:06 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:40087 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbfK0Q1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 11:27:06 -0500
+Received: by mail-pj1-f65.google.com with SMTP id ep1so10241992pjb.7
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 08:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4ByurB3uoftNyPJxjg/pSE8HCA7AZ3lTy5lSUA2KW7Y=;
+        b=kCYVJDHh9cGfWUw83DLpNyFKv0jWeuQ5l7Q+2za2z4YWcUGPVRtWvAW6SSlXyEljK4
+         msHxl2JkG4w3j6igppemE5Nc6G0zJC56TsrrArjR9QLKMAR9PISMBRumsNp0oX3IwyPB
+         lvtHJb4/bNFcF04mQopUVl6D9pup2xNBfxWMPMpAPX6337P4ZymX+igVsegcY6zkzKfC
+         xqSgujTBqevWleJGQpJ+PPZ3V2Pnd8gcZnHT2NDJpy6CvSrZJcV4TiAlg1/wOmDA77Nz
+         SMEnn0oxMFtjnjdMfQEfyiGmOTdvUp7YQeTeawSNsOTmwSwUFZREEcZvJmyhIocD66c+
+         x00A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4ByurB3uoftNyPJxjg/pSE8HCA7AZ3lTy5lSUA2KW7Y=;
+        b=AyFQFc8vx3v3gOIbMbbUZKViHtuCUx3KycTNnb6Bhrf+3pIPL92rkHjE7hpvPnExqM
+         WLVy3hckxrnzVq5qIhH0R7VaTJpNLWInnaqP/JjISjAEcq5bNJeklF9sjlqr1aRzwUaB
+         HbNE7AVeXZ/uCH6ISxv5RDp1fmqvdwG8idVP1Q3NQdiF/zEoic89X+T1BbTtE0L6m43K
+         8uIIy1Drk3Y+Zt0vKlCAaHZPJOlceQyi0CUX2A1vQAJ+b68QHQmw++op7fm53HUOJD5e
+         NwYbiO/dxtcYfCv0aUQdLRClMzc/mHviIEeQRk2gc6y+I7NnDhXVf1UwrMi3Lie7DCUX
+         RaCA==
+X-Gm-Message-State: APjAAAV5lDDIAudGAmEv3e6H2ipr1XQT9ckXxcoow5WoHn3LdNrFH7Rq
+        7yO3UJ+9JGMgpAt0rE8KSUpAEQ==
+X-Google-Smtp-Source: APXvYqxp4T93/VXLqJNIlxzJVxfykqTTUZXednnjdSQV+nodrBzYcEThf4CP0uGDOeqMrXvrp4e6eQ==
+X-Received: by 2002:a17:902:a718:: with SMTP id w24mr5127139plq.268.1574872024452;
+        Wed, 27 Nov 2019 08:27:04 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id 81sm764800pfx.73.2019.11.27.08.27.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 08:27:04 -0800 (PST)
+Date:   Wed, 27 Nov 2019 08:26:55 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Maciej Zenczykowski <maze@google.com>, netdev@vger.kernel.org,
+        Leslie Monis <lesliemonis@gmail.com>
+Subject: Re: [PATCH iproute2] tc: fix warning in q_pie.c
+Message-ID: <20191127082655.2e914675@hermes.lan>
+In-Reply-To: <20191127052059.162120-1-brianvv@google.com>
+References: <20191127052059.162120-1-brianvv@google.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: 1MrmtW4TONip9Xmkn6yp9g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-11-27 at 16:48 +0100, Jesper Dangaard Brouer wrote:
-> On Wed, 27 Nov 2019 10:39:44 +0000 David Laight <David.Laight@ACULAB.COM> wrote:
+On Tue, 26 Nov 2019 21:20:59 -0800
+Brian Vazquez <brianvv@google.com> wrote:
+
+> Warning was:
+> q_pie.c:202:22: error: implicit conversion from 'unsigned long' to
+> 'double'
 > 
-> > ...
-> > > > While using recvmmsg() to read multiple messages might seem a good idea, it is much
-> > > > slower than recv() when there is only one message (even recvmsg() is a lot slower).
-> > > > (I'm not sure why the code paths are so slow, I suspect it is all the copy_from_user()
-> > > > and faffing with the user iov[].)
-> > > > 
-> > > > So using poll() we repoll the fd after calling recv() to find is there is a second message.
-> > > > However the second poll has a significant performance cost (but less than using recvmmsg()).  
-> > > 
-> > > That sounds wrong. Single recvmmsg(), even when receiving only a
-> > > single message, should be faster than two syscalls - recv() and
-> > > poll().  
-> > 
-> > My suspicion is the extra two copy_from_user() needed for each recvmsg are a
-> > significant overhead, most likely due to the crappy code that tries to stop
-> > the kernel buffer being overrun.
-> > 
-> > I need to run the tests on a system with a 'home built' kernel to see how much
-> > difference this make (by seeing how much slower duplicating the copy makes it).
-> > 
-> > The system call cost of poll() gets factored over a reasonable number of sockets.
-> > So doing poll() on a socket with no data is a lot faster that the setup for recvmsg
-> > even allowing for looking up the fd.
-> > 
-> > This could be fixed by an extra flag to recvmmsg() to indicate that you only really
-> > expect one message and to call the poll() function before each subsequent receive.
-> > 
-> > There is also the 'reschedule' that Eric added to the loop in recvmmsg.
-> > I don't know how much that actually costs.
-> > In this case the process is likely to be running at a RT priority and pinned to a cpu.
-> > In some cases the cpu is also reserved (at boot time) so that 'random' other code can't use it.
-> > 
-> > We really do want to receive all these UDP packets in a timely manner.
-> > Although very low latency isn't itself an issue.
-> > The data is telephony audio with (typically) one packet every 20ms.
-> > The code only looks for packets every 10ms - that helps no end since, in principle,
-> > only a single poll()/epoll_wait() call (on all the sockets) is needed every 10ms.
+> Fixes: 492ec9558b30 ("tc: pie: change maximum integer value of tc_pie_xstats->prob")
+> Cc: Leslie Monis <lesliemonis@gmail.com>
+> Signed-off-by: Brian Vazquez <brianvv@google.com>
+> ---
+>  tc/q_pie.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I have a simple udp_sink tool[1] that cycle through the different
-> receive socket system calls.  I gave it a quick spin on a F31 kernel
-> 5.3.12-300.fc31.x86_64 on a mlx5 100G interface, and I'm very surprised
-> to see a significant regression/slowdown for recvMmsg.
-> 
-> $ sudo ./udp_sink --port 9 --repeat 1 --count $((10**7))
->           	run      count   	ns/pkt	pps		cycles	payload
-> recvMmsg/32  	run:  0	10000000	1461.41	684270.96	5261	18	 demux:1
-> recvmsg   	run:  0	10000000	889.82	1123824.84	3203	18	 demux:1
-> read      	run:  0	10000000	974.81	1025841.68	3509	18	 demux:1
-> recvfrom  	run:  0	10000000	1056.51	946513.44	3803	18	 demux:1
-> 
-> Normal recvmsg almost have double performance that recvmmsg.
+> diff --git a/tc/q_pie.c b/tc/q_pie.c
+> index 40982f96..52ba7256 100644
+> --- a/tc/q_pie.c
+> +++ b/tc/q_pie.c
+> @@ -199,7 +199,7 @@ static int pie_print_xstats(struct qdisc_util *qu, FILE *f,
+>  	st = RTA_DATA(xstats);
+>  	/*prob is returned as a fracion of maximum integer value */
+>  	fprintf(f, "prob %f delay %uus avg_dq_rate %u\n",
+> -		(double)st->prob / UINT64_MAX, st->delay,
+> +		(double)st->prob / (double)UINT64_MAX, st->delay,
+>  		st->avg_dq_rate);
+>  	fprintf(f, "pkts_in %u overlimit %u dropped %u maxq %u ecn_mark %u\n",
+>  		st->packets_in, st->overlimit, st->dropped, st->maxq,
 
-For stream tests, the above is true, if the BH is able to push the
-packets to the socket fast enough. Otherwise the recvmmsg() will make
-the user space even faster, the BH will find the user space process
-sleeping more often and the BH will have to spend more time waking-up
-the process.
-
-If a single receive queue is in use this condition is not easy to meet.
-
-Before spectre/meltdown and others mitigations using connected sockets
-and removing ct/nf was usually sufficient - at least in my scenarios -
-to make BH fast enough. 
-
-But it's no more the case, and I have to use 2 or more different
-receive queues.
-
-@David: If I read your message correctly, the pkt rate you are dealing
-with is quite low... are we talking about tput or latency? I guess
-latency could be measurably higher with recvmmsg() in respect to other
-syscall. How do you measure the releative performances of recvmmsg()
-and recv() ? with micro-benchmark/rdtsc()? Am I right that you are
-usually getting a single packet per recvmmsg() call?
-
-Thanks,
-
-PAolo
-
+What compiler is this?
+The type seems correct already.  The type of double / unsigned long is double.
+And the conversion may give different answer.
