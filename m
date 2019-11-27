@@ -2,138 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F33410B088
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9377010B08E
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 14:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbfK0Np6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 08:45:58 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:45315 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfK0Np5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:45:57 -0500
-Received: by mail-qt1-f195.google.com with SMTP id 30so25342660qtz.12;
-        Wed, 27 Nov 2019 05:45:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tim0z48P/Ho4XX4rxvSqCrBEA1TS21VHvg9AxGU9cUo=;
-        b=loxi/+dyFPwW34NQEBvyXRBAXz7R51jVt1JzJNfdmksHqZYiuGv678bpygS7AyTcyG
-         px+L3G+F1bImhNWDkGnnts4PZBFKzn29ElHqENqeJv1jppPnXdKDAmjzBQQ6sVRfg1xr
-         6Xfzx7m2O343J2pCvuzBOP4K5kf/9uPJ/oE+wqljaY9Ng7Bu1p1RFWJoM6v+MbwS9sYM
-         pDH3hHrynI7szJWf2fIkuEKXn/ODjn9YzmNKfc21I/3WWe20Xm003fsEk4AA3xVIUytY
-         NlVAaF6dWfgsLRkRWEenDkwjZ5yvHsIBi1f1CHuL9tm84B/RkoY0FpUXgT3EMDwHhcNy
-         FCag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tim0z48P/Ho4XX4rxvSqCrBEA1TS21VHvg9AxGU9cUo=;
-        b=MSZpqcY3Tp2Tve+W7eLd4vYi7zS/9UeHKMr194FkFg5cJZOhQ9DNNYOaNpbvXHIIbG
-         QTS7WE2BDsLECgGoqIyMeGJlP05pqy3q5B+VluCnvwllTqnkYYWzIkresS6/UU8Veaum
-         8NOq5lBpadNh6x+lMtM+pWhD/IMU6ddOid9Jop3kat0LCEURxRRS7MtkEDy/t7eIgPuR
-         63Hejp/i4SQQZX0hYIUa0s0idsaH8zzdwvIUzX3P2dDcb4OEh/uDdgOHfRp5/WuvoUtZ
-         SfiyzboguzWwBb0b+f7kwzykeSIWLebw+ls/HMC06uOt9Cjd5E7QCOtO3nzC/CsWXPkq
-         aBrQ==
-X-Gm-Message-State: APjAAAVbXRP5XZU+JuB/wnRTdLOQVD+Uj9ck95HF08lI4XpuHJ9dbpSq
-        w6NbjTAc+tXU9GsyHuiMBASoiHZjIE4=
-X-Google-Smtp-Source: APXvYqwAPqmAF3/Vr+h2lq/WTBPNZOERbfyeIOC6lgge2oHvISvxGhaZJm/IbCgWQsceKUt1cm3bEA==
-X-Received: by 2002:ac8:198b:: with SMTP id u11mr26214987qtj.133.1574862356632;
-        Wed, 27 Nov 2019 05:45:56 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id y200sm6435632qkb.1.2019.11.27.05.45.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 05:45:56 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id A79E740D3E; Wed, 27 Nov 2019 10:45:53 -0300 (-03)
-Date:   Wed, 27 Nov 2019 10:45:53 -0300
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH] libbpf: Use PRIu64 for sym->st_value to fix build on 32-bit
- arches
-Message-ID: <20191127134553.GC22719@kernel.org>
-References: <20191126183451.GC29071@kernel.org>
- <87d0dexyij.fsf@toke.dk>
- <20191126190450.GD29071@kernel.org>
- <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
- <20191126221018.GA22719@kernel.org>
- <20191126221733.GB22719@kernel.org>
- <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com>
- <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net>
- <20191126155228.0e6ed54c@cakuba.netronome.com>
- <20191127013901.GE29071@kernel.org>
+        id S1726980AbfK0Nq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 08:46:26 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:19744 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbfK0Nq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 08:46:26 -0500
+Received: from [192.168.1.7] (unknown [180.157.109.16])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id CA2A041B4E;
+        Wed, 27 Nov 2019 21:46:20 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
+ <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
+ <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+ <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
+ <057b0ab1-5ce3-61f0-a59e-1c316e414c84@mellanox.com>
+ <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <5ce27064-97ee-a36d-8f20-10a0afe739cf@ucloud.cn>
+Date:   Wed, 27 Nov 2019 21:45:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191127013901.GE29071@kernel.org>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVQkpNS0tLS0tDTkNIS0xZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MEk6Sww6TDg9EwMLDDEvIwo5
+        DwkwChdVSlVKTkxPQ01JSENKSkhMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktCVUpNWVdZCAFZQU9MTkw3Bg++
+X-HM-Tid: 0a6ead1cdff12086kuqyca2a041b4e
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Another fix I'm carrying in my perf/core branch,
 
-Regards,
+在 2019/11/27 21:20, Paul Blakey 写道:
+> On 11/27/2019 3:11 PM, Paul Blakey wrote:
+>> On 11/27/2019 2:16 PM, wenxu wrote:
+>>
+>>> Sorry maybe something mess you,  Ignore with my patches.
+>>>
+>>>
+>>> I also did the test like you with route tc rules to ft callback.
+>>>
+>>>
+>>> please also did the following test:  mlx_p0 is the pf and mlx_pf0vf0 
+>>> is the vf .
+>>>
+>> Are you  in switchdev mode (via devlink) or default legacy mode?
+>>
+>>
+> mlx_pf0vf0  is representor device created after entring switchdev mode? and eth0 in vm is the binded mlx5 VF?
 
-- Arnaldo
+Yes, mlx_pf0vf0 is the representor and eth0 in vm is VF. It also in the switchdev mode.
 
-commit 98bb09f90a0ae33125fabc8f41529345382f1498
-Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-Date:   Wed Nov 27 09:26:54 2019 -0300
 
-    libbpf: Use PRIu64 for sym->st_value to fix build on 32-bit arches
-    
-    The st_value field is a 64-bit value, so use PRIu64 to fix this error on
-    32-bit arches:
-    
-      In file included from libbpf.c:52:
-      libbpf.c: In function 'bpf_program__record_reloc':
-      libbpf_internal.h:59:22: error: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'Elf64_Addr' {aka 'const long long unsigned int'} [-Werror=format=]
-        libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
-                            ^~~~~~~~~~
-      libbpf_internal.h:62:27: note: in expansion of macro '__pr'
-       #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-                                 ^~~~
-      libbpf.c:1822:4: note: in expansion of macro 'pr_warn'
-          pr_warn("bad call relo offset: %lu\n", sym->st_value);
-          ^~~~~~~
-      libbpf.c:1822:37: note: format string is defined here
-          pr_warn("bad call relo offset: %lu\n", sym->st_value);
-                                         ~~^
-                                         %llu
-    
-    Fixes: 1f8e2bcb2cd5 ("libbpf: Refactor relocation handling")
-    Cc: Alexei Starovoitov <ast@kernel.org>
-    Cc: Andrii Nakryiko <andriin@fb.com>
-    Link: https://lkml.kernel.org/n/tip-iabs1wq19c357bkk84p7blif@git.kernel.org
-    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+sudo grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
+/sys/class/net/mlx_p0/phys_port_name:p0
+/sys/class/net/mlx_p0/phys_switch_id:34ebc100034b6b50
+/sys/class/net/mlx_pf0vf0/phys_port_name:pf0vf0
+/sys/class/net/mlx_pf0vf0/phys_switch_id:34ebc100034b6b50
+/sys/class/net/mlx_pf0vf1/phys_port_name:pf0vf1
+/sys/class/net/mlx_pf0vf1/phys_switch_id:34ebc100034b6b50
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b20f82e58989..6b0eae5c8a94 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1819,7 +1819,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
- 			return -LIBBPF_ERRNO__RELOC;
- 		}
- 		if (sym->st_value % 8) {
--			pr_warn("bad call relo offset: %lu\n", sym->st_value);
-+			pr_warn("bad call relo offset: %" PRIu64 "\n", sym->st_value);
- 			return -LIBBPF_ERRNO__RELOC;
- 		}
- 		reloc_desc->type = RELO_CALL;
+The problem is when the last filter add in the tun1 will lead the outgoing syn packets can't be real offloaded
+
+>
+> Can you run this command:
+>
+> sudo grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
+>
+> example:
+> /sys/class/net/ens1f0_0/phys_port_name:pf0vf0
+> /sys/class/net/ens1f0_0/phys_switch_id:b828a50003078a24
+> /sys/class/net/ens1f0_1/phys_port_name:pf0vf1
+> /sys/class/net/ens1f0_1/phys_switch_id:b828a50003078a24
+> /sys/class/net/ens1f0/phys_port_name:p0
+> /sys/class/net/ens1f0/phys_switch_id:b828a50003078a24
+>
+> and
+> sudo ls /sys/class/net/*/device/virtfn*/net
+>
+> example:
+> /sys/class/net/ens1f0/device/virtfn0/net:
+> ens1f2
+>
+> /sys/class/net/ens1f0/device/virtfn1/net:
+> ens1f3
+>
+> and even
+>
+> lspci | grep -i mellanox ; ls -l /sys/class/net
+>
+>
+>
+>
+>
+>
+> Thansk.
+>
+>
