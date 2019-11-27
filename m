@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1D310B717
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 20:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6804E10B724
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 21:01:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbfK0T64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 14:58:56 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:55739 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726593AbfK0T64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 14:58:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574884734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U4tGDBi5zjoUswRrgwv5c3aU+wWyuxHCnduBquwVclQ=;
-        b=bXCwWe23VSfKqXXfGsLdpks2l2Dqq65dewPpDj2mDFxKuCcFi/tAEaw0X7Ua4w664z9Kwh
-        tZyjNGNU4y2/564liKRzMbN1YQtmqtFPIYyr5PXs6G3Lpnm01Y+0bvfeaH+xziWhxEe2Mt
-        YmWa3D9pejAQnRa2vFMT+eLD6/t30tg=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-224-fpzx8EesMweenfF1_enilQ-1; Wed, 27 Nov 2019 14:58:53 -0500
-Received: by mail-qv1-f70.google.com with SMTP id q20so3011990qvl.21
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 11:58:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w7lbDjreCJ/+n3nZbRY5zssEIPogdb2ZU5R4OKVip7Q=;
-        b=KO4lE0WIm+xYSnomO8YkLJjO+FncOkZ3uRitiu2qaGA0QkKjCr1QU4k0hcRdaoNdUy
-         W6xe2BqN0YaZ9wNxKCagpf+fhI6j7d1pFbT6V6I9bWmNLGUKTJOhuZ9gaCARmjpRI9ZL
-         scm5slc6A3edKss0iA/oo82mdgg0zH8ogvN4GV5Rmx1saOSm5UNPVb4c4UWqVlk4+O+M
-         ag3/iEEYZMfd0jSWXtZA2HNtnirY+vieQrDuwKgSeUjWNiJ6Zl6YGH7vA5t7BFCtxrz7
-         iH8trG47UiWHIuLifbnRjzo/g4Taft5R6SD4DUGaw4AMRBUus3LndoVbStlrrcGBXrrf
-         Eaow==
-X-Gm-Message-State: APjAAAXgZDexrC+hrYIM10ZEnAdZmp+q4wKzA33XIj73AkQzo+9he+Gl
-        gVOg/EVu8f/BEPxaCg5Dwg/UEIos8lQWGMMvWxtCZnGNpsbyS5760QTF0yrsx4o4SCVFbsBrc6R
-        H68Ll2vesXY94DdVi
-X-Received: by 2002:ac8:7550:: with SMTP id b16mr42375282qtr.286.1574884732213;
-        Wed, 27 Nov 2019 11:58:52 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyp1uYljGzQNQj1GUOP8o1QRLYz3GJR/t9h5oKrZE1r3QICK2aYBTYfj0ZMQGR+d/lwG3YesQ==
-X-Received: by 2002:ac8:7550:: with SMTP id b16mr42375271qtr.286.1574884731992;
-        Wed, 27 Nov 2019 11:58:51 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id 97sm8245913qtb.11.2019.11.27.11.58.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 11:58:51 -0800 (PST)
-Date:   Wed, 27 Nov 2019 14:58:45 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     jcfaracco@gmail.com, netdev@vger.kernel.org, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, dnmendes76@gmail.com
-Subject: Re: [net-next V3 0/2] drivers: net: virtio_net: implement
-Message-ID: <20191127145831-mutt-send-email-mst@kernel.org>
-References: <20191126200628.22251-1-jcfaracco@gmail.com>
- <20191126.140630.1195989367614358026.davem@davemloft.net>
- <20191127063624-mutt-send-email-mst@kernel.org>
- <20191127.105956.842685942160278820.davem@davemloft.net>
+        id S1727509AbfK0UBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 15:01:42 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43964 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727166AbfK0UBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 15:01:41 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xARJjKI8007771
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 12:01:40 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=VLtJO48uxuyJ7SfqxDRtBf38gccXRnQxgFAwTUfAuK0=;
+ b=FLMyV/2TcNwLzVdGcibwDQyQUa3VEopHIRBlapHUNDKnq6nb2sa0jzSq+Ib49yOKCpnV
+ m2Zipl2knLc+WDymDpVSyhZ+sJoNp321MaTt1AQN2Fg4wgXOO5tzawwB+zJiH0avyjF1
+ j4zdlBffajyf94ugtFRXd/a/U7Osas5ARDM= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2whcy2pc7p-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 12:01:40 -0800
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 27 Nov 2019 12:01:39 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id B90442EC1C8E; Wed, 27 Nov 2019 12:01:37 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] libbpf: fix Makefile' libbpf symbol mismatch diagnostic
+Date:   Wed, 27 Nov 2019 12:01:34 -0800
+Message-ID: <20191127200134.1360660-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20191127.105956.842685942160278820.davem@davemloft.net>
-X-MC-Unique: fpzx8EesMweenfF1_enilQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-27_04:2019-11-27,2019-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=713
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 spamscore=0 adultscore=0 suspectscore=0 impostorscore=0
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911270161
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 10:59:56AM -0800, David Miller wrote:
-> From: "Michael S. Tsirkin" <mst@redhat.com>
-> Date: Wed, 27 Nov 2019 06:38:35 -0500
->=20
-> > On Tue, Nov 26, 2019 at 02:06:30PM -0800, David Miller wrote:
-> >>=20
-> >> net-next is closed
-> >=20
-> > Could you merge this early when net-next reopens though?
-> > This way I don't need to keep adding drivers to update.
->=20
-> It simply needs to be reposted this as soon as net-next opens back up.
->=20
-> I fail to understand even what special treatment you want given to
-> a given change, it doesn't make any sense.  We have a process for
-> doing this, it's simple, it's straightforward, and is fair to
-> everyone.
->=20
-> Thanks.
+Fix Makefile's diagnostic diff output when there is LIBBPF_API-versioned
+symbols mismatch.
 
-Will do, thanks.
+Fixes: 1bd63524593b ("libbpf: handle symbol versioning properly for libbpf.a")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 99425d0be6ff..1470303b1922 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -214,7 +214,7 @@ check_abi: $(OUTPUT)libbpf.so
+ 		     "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
+ 		     "Please make sure all LIBBPF_API symbols are"	 \
+ 		     "versioned in $(VERSION_SCRIPT)." >&2;		 \
+-		readelf -s --wide $(OUTPUT)libbpf-in.o |		 \
++		readelf -s --wide $(BPF_IN_SHARED) |			 \
+ 		    cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' |	 \
+ 		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}'|   \
+ 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+-- 
+2.17.1
 
