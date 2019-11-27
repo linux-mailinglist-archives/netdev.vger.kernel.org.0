@@ -2,138 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABD310ACAC
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:36:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A82A10ACC7
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 10:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbfK0Jgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 04:36:46 -0500
-Received: from mail-eopbgr50085.outbound.protection.outlook.com ([40.107.5.85]:33252
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726130AbfK0Jgq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 04:36:46 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QvmlhdXlqzNjfdc8nnbeaJ3EBlCVYJOXLcI+HxOGUfJfy0BwsIGTtn+u5yGcSekYKPpZzgLVpfW7MJMLqvyh0AGQTIxZx/JsR7jJ9vlKsrJuyTZiif1Gz8dXU1NprM2Hcw1J6Go1C98K51kOuVVApxRmAnoXEwq9vn8Je5OeH3idC+9pn/NE/0eMeMCa5K93J5ZegVBXejatFwaIY3f1rh8NaJbPpiPGnaNBOwfLELVJGzVuTGBZYpf0KsTjCRyyJ5v4Y23bYrsWG+ITPYOlavBv4so8VOKlKUKbTUufZzsOHRp2MCJCfX9UjSQKZGkYnnH00BNvDru6tEdxXO6YYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W8GYJsHlCjZr0z0iqmbdDO1bdtYtbasuWv3bbjkbnLk=;
- b=k+7/HGTiWkhG+Q4JXehu0cD30n6fRmLozSYCSjklzjl2eeAPEBFviwP6H8c+gaVkZ/FC3T4SU+R9vmVhugbln/k66o47fH1aW0hTBMomru80zeE6raZ+Jw13aCEpB91EJcbvl6c6+7oxbD2ZNGgsXExx8eMtmuG3VyTERCPbVBNDpLsEnYQZkg7UZgb8Mx/i8zaiNSM39EJO2AmMiab91aYe5Pgthi0IdCBTUaztjEusLroPydau+uJ0cCQ0KO1V76eZ0JcPIWyPFyL7VlqR0y+cwSNRpEFZ0ML1TznxzSxdB1OZ4bpw6EkQBLqc3x6bvuReHiK8ECQtMd/iPV4PIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W8GYJsHlCjZr0z0iqmbdDO1bdtYtbasuWv3bbjkbnLk=;
- b=lPjA/Uqpu42TGi6tS81tD9XS6OyuW2J9mgG2SCvjzXi/Yk67SrVtPIiwx5lFaUjzMWn8WQSqYDzv/vkH9gvODkUlA6c7x+/gXHwP7B86NQWpTNCQGsC7z36sa4z4LZJtOY8UUGAENuXd2r0NVBlr5tSt46Y7j+Ld6N3n+E70y5w=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB5052.eurprd04.prod.outlook.com (20.176.234.224) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2474.21; Wed, 27 Nov 2019 09:36:39 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2474.023; Wed, 27 Nov 2019
- 09:36:39 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Sean Nyekjaer <sean@geanix.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH V2 0/4] can: flexcan: fixes for stop mode
-Thread-Topic: [PATCH V2 0/4] can: flexcan: fixes for stop mode
-Thread-Index: AQHVpOdxXAI9W9cZiUqxHtJbOFpoG6eeiWMAgAAhqwCAABa5QA==
-Date:   Wed, 27 Nov 2019 09:36:39 +0000
-Message-ID: <DB7PR04MB46186472F0437A825548CE11E6440@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <e936b9b1-d602-ac38-213c-7272df529bef@geanix.com>
- <4a9c2e4a-c62d-6e88-bd9e-01778dab503b@geanix.com>
-In-Reply-To: <4a9c2e4a-c62d-6e88-bd9e-01778dab503b@geanix.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e153b981-1467-4ff1-7cfe-08d7731d4e2e
-x-ms-traffictypediagnostic: DB7PR04MB5052:|DB7PR04MB5052:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB50529F6680D66AF72027CEF4E6440@DB7PR04MB5052.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 023495660C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(346002)(366004)(39860400002)(396003)(199004)(189003)(13464003)(66446008)(229853002)(76176011)(4326008)(2906002)(6506007)(7696005)(316002)(54906003)(5660300002)(110136005)(53546011)(102836004)(26005)(256004)(71200400001)(6436002)(66946007)(9686003)(66476007)(52536014)(33656002)(99286004)(3846002)(186003)(71190400001)(6116002)(14444005)(55016002)(66556008)(6246003)(305945005)(81156014)(2201001)(66066001)(8936002)(64756008)(81166006)(25786009)(76116006)(8676002)(2501003)(74316002)(86362001)(7736002)(11346002)(478600001)(14454004)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5052;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QH1Kd7ow5AO8R2EcFexBi9kcnYDvsRMROkzhbyRsw7TDhBE0aB4AECRrmkxtuRoVL2wcrwrMpIjuLXsiop4pibqJQ57JOfl9SV/Chwj6lfIKfBr6+GdAC6HAeygWAR+hkY8DKTnwVcYw3RdwcZXw6Loo778RZAnXxSRPlul2yAfxVLhOOiFKuwpPbc168NwN84X6b+BewVQG55JYRpoXmMxsI0jyOaum3sHzC7d6vRCpk1ZlVcQdjvbV0MNWX9h8sLLSV1HpJDRzmk6MwV/KfgPbJ8lTOELrKz/c9BE6pIp3cyn+W0oSCdKYidvb828WiRTpSQzHqlJbLSHU14fydMWyiwJHBRFxqdxILfKnD50HN/WTFbAQn4VynCKfMyDroXhKL+BhUeEEZSeS3llWBwJ14CMTgRv3fHjLoC4SZnOg7yrv9UKXvgxZBXAwc8vM
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726587AbfK0JnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 04:43:22 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:44698 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726281AbfK0JnV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 04:43:21 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 1C6AF1B2130C; Wed, 27 Nov 2019 12:43:18 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 1C6AF1B2130C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1574847799; bh=f9ywakjd6DOZRN8wGbpkHEur4i2IZ2IEiXwypzRgpnc=;
+        h=From:To:Cc:Subject:Date;
+        b=r5KR6a7KIsKaZV74ppiKTWqepDXWKqopiyWIK+GruJsZB+zpTGG4t8sc+iTdRa8zd
+         oMkzFBIWdeXkUz9ZLNNNFxikmktzAVH5GQvy4UaRm3ReWCWbMUhl0H01x7rSl2X580
+         npAASEG+sIUXrXAnRbmPwLHUVU9/xQdXHM1eKiYM=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 418B71B2128B;
+        Wed, 27 Nov 2019 12:43:07 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 418B71B2128B
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id B93291B22678;
+        Wed, 27 Nov 2019 12:43:05 +0300 (MSK)
+Received: from localhost.localdomain (unknown [196.196.203.126])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Wed, 27 Nov 2019 12:43:05 +0300 (MSK)
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
+        "Kenneth R. Crudup" <kenny@panix.com>,
+        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet stalling
+Date:   Wed, 27 Nov 2019 12:41:23 +0300
+Message-Id: <20191127094123.18161-1-alobakin@dlink.ru>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e153b981-1467-4ff1-7cfe-08d7731d4e2e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 09:36:39.7071
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HgJTYlNmXAfiQkXvj3ufX+S/TnI4mMtx/CxN8uGvcUdlufAeVGP9ke82msPbjQ516fHAnCEjcZm9Zh8gAH1uKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5052
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFNlYW4gTnlla2phZXIgPHNl
-YW5AZ2Vhbml4LmNvbT4NCj4gU2VudDogMjAxOeW5tDEx5pyIMjfml6UgMTY6MTMNCj4gVG86IEpv
-YWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBta2xAcGVuZ3V0cm9uaXguZGU7
-DQo+IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgt
-aW14QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFU
-Q0ggVjIgMC80XSBjYW46IGZsZXhjYW46IGZpeGVzIGZvciBzdG9wIG1vZGUNCj4gDQo+IA0KPiAN
-Cj4gT24gMjcvMTEvMjAxOSAwNy4xMiwgU2VhbiBOeWVramFlciB3cm90ZToNCj4gPg0KPiA+DQo+
-ID4gT24gMjcvMTEvMjAxOSAwNi41NiwgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+PiDCoMKgwqDC
-oENvdWxkIHlvdSBoZWxwIGNoZWNrIHRoZSBwYXRjaCBzZXQ/IFdpdGggeW91ciBzdWdnZXN0aW9u
-cywgSSBoYXZlDQo+ID4+IGNvb2tlZCBhIHBhdGNoIHRvIGV4aXQgc3RvcCBtb2RlIGR1cmluZyBw
-cm9iZSBzdGFnZS4NCj4gPj4NCj4gPj4gwqDCoMKgwqBJTUhPLCBJIHRoaW5rIHRoaXMgcGF0Y2gg
-aXMgdW5uZWVkLCBub3cgaW4gZmxleGNhbiBkcml2ZXIsIGVudGVyDQo+ID4+IHN0b3AgbW9kZSB3
-aGVuIHN1c3BlbmQsIGFuZCB0aGVuIGV4aXQgc3RvcCBtb2RlIHdoZW4gcmVzdW1lLg0KPiA+PiBB
-RkFJSywgYXMgbG9uZyBhcyBmbGV4Y2FuX3N1c3BlbmQgaGFzIGJlZW4gY2FsbGVkLCBmbGV4Y2Fu
-X3Jlc3VtZQ0KPiA+PiB3aWxsIGJlIGNhbGxlZCwgdW5sZXNzIHRoZSBzeXN0ZW0gaGFuZyBkdXJp
-bmcgc3VzcGVuZC9yZXN1bWUuIElmIHNvLA0KPiA+PiBvbmx5IGNvZGUgcmVzZXQgY2FuIGFjdGl2
-YXRlIE9TIGFnYWluLiBDb3VsZCB5b3UgcGxlYXNlIHRlbGwgbWUgaG93DQo+ID4+IGRvZXMgQ0FO
-IHN0dWNrZWQgaW4gc3RvcCBtb2RlIGF0IHlvdXIgc2lkZT8NCj4gPg0KPiA+IEhpIEpvYWtpbSwN
-Cj4gPg0KPiA+IFRoYW5rcyBJJ2xsIHRlc3QgdGhpcyA6LSkNCj4gPiBHdWVzcyBJIHdpbGwgaGF2
-ZSBkbyBzb21lIGhhY2tpbmcgdG8gZ2V0IGl0IHN0dWNrIGluIHN0b3AgbW9kZS4NCj4gPg0KPiA+
-IFdlIGhhdmUgYSBsb3Qgb2YgZGV2aWNlcyBpbiB0aGUgZmllbGQgdGhhdCBkb2Vzbid0IGhhdmU6
-DQo+ID4gImNhbjogZmxleGNhbjogZml4IGRlYWRsb2NrIHdoZW4gdXNpbmcgc2VsZiB3YWtldXAi
-DQo+ID4NCj4gPiBBbmQgdGhleSBoYXZlIHRyYWZmaWMgb24gYm90aCBDQU4gaW50ZXJmYWNlcywg
-dGhhdCB3YXkgaXQncyBxdWl0ZSBlYXN5DQo+ID4gdG8gZ2V0IHRoZW0gc3R1Y2sgaW4gc3RvcCBt
-b2RlLg0KPiA+DQo+ID4gL1NlYW4NCj4gDQo+IEhpIEpvYWtpbSwNCj4gDQo+IEkgaGF2ZSBiZWVu
-IHRlc3RpbmcgdGhpcy4NCj4gSSBoYXZlIGEgaGFja2VkIHZlcnNpb24gb2YgdGhlIGRyaXZlciB0
-aGF0IGNhbGxzDQo+IGZsZXhjYW5fZW50ZXJfc3RvcF9tb2RlKCkgYXMgdGhlIGxhc3Qgc3RlcCBp
-biB0aGUgcHJvYmUgZnVuY3Rpb24uDQo+IA0KPiBGaXJzdCBpbnNlcnQgb2YgZmxleGNhbi5rbyB3
-aGVuIHN0b3AgbW9kZSBpcyBhY3RpdmF0ZWQ6DQo+IGZsZXhjYW4gMjA5MDAwMC5mbGV4Y2FuOiBM
-aW5rZWQgYXMgYSBjb25zdW1lciB0byByZWd1bGF0b3IuNA0KPiANCj4gZmxleGNhbiAyMDkwMDAw
-LmZsZXhjYW46IHJlZ2lzdGVyaW5nIG5ldGRldiBmYWlsZWQNCj4gDQo+IGZsZXhjYW4gMjA5MDAw
-MC5mbGV4Y2FuOiBEcm9wcGluZyB0aGUgbGluayB0byByZWd1bGF0b3IuNA0KPiANCj4gZmxleGNh
-bjogcHJvYmUgb2YgMjA5MDAwMC5mbGV4Y2FuIGZhaWxlZCB3aXRoIGVycm9yIC0xMTANCj4gDQo+
-IGZsZXhjYW4gMjA5NDAwMC5mbGV4Y2FuOiBMaW5rZWQgYXMgYSBjb25zdW1lciB0byByZWd1bGF0
-b3IuNA0KPiANCj4gZmxleGNhbiAyMDk0MDAwLmZsZXhjYW46IHJlZ2lzdGVyaW5nIG5ldGRldiBm
-YWlsZWQNCj4gDQo+IGZsZXhjYW4gMjA5NDAwMC5mbGV4Y2FuOiBEcm9wcGluZyB0aGUgbGluayB0
-byByZWd1bGF0b3IuNA0KPiANCj4gZmxleGNhbjogcHJvYmUgb2YgMjA5NDAwMC5mbGV4Y2FuIGZh
-aWxlZCB3aXRoIGVycm9yIC0xMTANCj4gDQo+IA0KPiBXaGVuIEkgaW5zZXJ0IGEgZmxleGNhbi5r
-byB3aXRoIHRoZSBwYXRjaA0KPiAiY2FuOiBmbGV4Y2FuOiB0cnkgdG8gZXhpdCBzdG9wIG1vZGUg
-ZHVyaW5nIHByb2JlIHN0YWdlIjoNCj4gZmxleGNhbiAyMDkwMDAwLmZsZXhjYW46IExpbmtlZCBh
-cyBhIGNvbnN1bWVyIHRvIHJlZ3VsYXRvci40DQo+IA0KPiBmbGV4Y2FuIDIwOTAwMDAuZmxleGNh
-bjogVW5iYWxhbmNlZCBwbV9ydW50aW1lX2VuYWJsZSENCj4gDQo+IGZsZXhjYW4gMjA5NDAwMC5m
-bGV4Y2FuOiBMaW5rZWQgYXMgYSBjb25zdW1lciB0byByZWd1bGF0b3IuNA0KPiANCj4gZmxleGNh
-biAyMDk0MDAwLmZsZXhjYW46IFVuYmFsYW5jZWQgcG1fcnVudGltZV9lbmFibGUhDQo+IA0KPiBJ
-IHdvcmtzIGFzIEkgZXhwZWN0ZWQgYnV0LCBJIHRoaW5rIHdlIG5lZWQgdG8gZG8gc29tZSBwbV9y
-dW50aW1lIGNsZWFudXANCj4gd2hlbiBiYWlsaW5nIHdpdGggZXJyb3IgLTExMC4NCj4gQW55d2F5
-cyBpdCB3b3JrcyBncmVhdCwgdGhhbmtzIGZvciB5b3VyIHdvcmsgb24gdGhpcy4NCg0KSGkgU2Vh
-biwNCg0KVGhhbmtzIGZvciB5b3VyIHF1aXJrIHRlc3QsIEkgdXNlZCB1bmJpbmQvYmluZCB0byB0
-ZXN0LCBkbyBub3QgbWVldCBzdWNoIGlzc3VlLg0KSSB3aWxsIGJ1aWxkIGFzIGEgbW9kdWxlIHRv
-IGhhdmUgYSB0ZXN0Lg0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gL1NlYW4NCg==
+Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
+napi_gro_receive()") has applied batched GRO_NORMAL packets processing
+to all napi_gro_receive() users, including mac80211-based drivers.
+
+However, this change has led to a regression in iwlwifi driver [1][2] as
+it is required for NAPI users to call napi_complete_done() or
+napi_complete() and the end of every polling iteration, whilst iwlwifi
+doesn't use NAPI scheduling at all and just calls napi_gro_flush().
+In that particular case, packets which have not been already flushed
+from napi->rx_list stall in it until at least next Rx cycle.
+
+Fix this by adding a manual flushing of the list to iwlwifi driver right
+before napi_gro_flush() call to mimic napi_complete() logics.
+
+I prefer to open-code gro_normal_list() rather than exporting it for 2
+reasons:
+* to prevent from using it and napi_gro_flush() in any new drivers,
+  as it is the *really* bad way to use NAPI that should be avoided;
+* to keep gro_normal_list() static and don't lose any CC optimizations.
+
+I also don't add the "Fixes:" tag as the mentioned commit was only a
+trigger that only exposed an improper usage of NAPI in this particular
+driver.
+
+[1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+[2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
+
+Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+---
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index a4d325fcf94a..452da44a21e0 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -1421,6 +1421,7 @@ static struct iwl_rx_mem_buffer *iwl_pcie_get_rxb(struct iwl_trans *trans,
+ static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
+ {
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
++	struct napi_struct *napi;
+ 	struct iwl_rxq *rxq;
+ 	u32 r, i, count = 0;
+ 	bool emergency = false;
+@@ -1526,8 +1527,16 @@ static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
+ 	if (unlikely(emergency && count))
+ 		iwl_pcie_rxq_alloc_rbs(trans, GFP_ATOMIC, rxq);
+ 
+-	if (rxq->napi.poll)
+-		napi_gro_flush(&rxq->napi, false);
++	napi = &rxq->napi;
++	if (napi->poll) {
++		if (napi->rx_count) {
++			netif_receive_skb_list(&napi->rx_list);
++			INIT_LIST_HEAD(&napi->rx_list);
++			napi->rx_count = 0;
++		}
++
++		napi_gro_flush(napi, false);
++	}
+ 
+ 	iwl_pcie_rxq_restock(trans, rxq);
+ }
+-- 
+2.24.0
+
