@@ -2,114 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA4F10B114
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 15:23:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB6410B0DA
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 15:08:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbfK0OXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 09:23:12 -0500
-Received: from lan.nucleusys.com ([92.247.61.126]:45012 "EHLO
-        zztop.nucleusys.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726634AbfK0OXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 09:23:11 -0500
-X-Greylist: delayed 1729 seconds by postgrey-1.27 at vger.kernel.org; Wed, 27 Nov 2019 09:23:11 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=nucleusys.com; s=x; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:
-        From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xXUEy5RjR0d6ad7vv4cQTn7Eal/AhJZwP7ZGEUNr3Lo=; b=mGrnGONOKUqGDPCmlQtiAxHvR/
-        BLCTWyqt+faFgoJu+gbTWlHyp87X5KyQwLOG8wnmjkjFgcZaYlXmWln1O/WVFNJYyXFXKIQJfeQ9K
-        6nDVQyfi5Qqig6uF5dfo6/xeZoC9QQn5Y1nfcsLRUPYbk6rMzk7m6pvbitJ8NKes/1Wo=;
-Received: from 78-83-66-117.spectrumnet.bg ([78.83.66.117] helo=p310)
-        by zztop.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <petkan@nucleusys.com>)
-        id 1iZxlr-0003EE-Rw; Wed, 27 Nov 2019 15:54:20 +0200
-Date:   Wed, 27 Nov 2019 15:54:19 +0200
-From:   Petko Manolov <petkan@nucleusys.com>
-To:     Thor Thayer <thor.thayer@linux.intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Altera TSE driver not working in 100mbps mode
-Message-ID: <20191127135419.7r53qw6vtp747x62@p310>
+        id S1726747AbfK0OIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 09:08:07 -0500
+Received: from mail-qk1-f172.google.com ([209.85.222.172]:33760 "EHLO
+        mail-qk1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726664AbfK0OIH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 09:08:07 -0500
+Received: by mail-qk1-f172.google.com with SMTP id c124so15162417qkg.0
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 06:08:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=AnPx87uBw4dMGRP7zgUS/hamVUVQllq4PAsVS71MslU=;
+        b=aKonW0ATuixhUX8ToG1VmjVEG3jhfsHn9JjqKD9KFWhV7cAwmQK31SFiPnz0CabXO1
+         I3VzuSy6pYnn70/EAaMCIvVnC4UpAh8XXG3ZtZH87FDXTlJayM0f2ZuLQqp58t9Pk6LY
+         C7X8DmwAVadIDmHgljYnNJiowAsg9fvBIXkeA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=AnPx87uBw4dMGRP7zgUS/hamVUVQllq4PAsVS71MslU=;
+        b=A4bOghKJ9wwBaf+fMty2qRZqmTXGr3SyrnHegmfjAkpK39v5anitFsYealiob65exi
+         isYkq3fmpO8BLvoeG3ImDik0uPHEkJw1MTdowg1aWbpObXuhlQripFG5fX07J2s9+bfJ
+         sE7D5BgTo5/Hj9twnkC6FXigV6p9VXn0Q0pCOHhObuIMefp/URiowAfMNEXUq4P7IvUR
+         sVHSOdT6dNGiU3pvv/oJRwG92xvzEzgv9RjHMhm9MwaqL1vrBQIRrmjtCzxi0B6AZvWr
+         7j8JYc/yFn+dWk4WO+TFux00bDMFwzWZPTilUhKWCJ02u5LSk2tnNyVeQApLBRF5RVfi
+         4cCQ==
+X-Gm-Message-State: APjAAAWLppwUwzUw7UdQs5SNPTCqLAI5RSYtW/Jt2Ikaw+uOtYodQL0P
+        pNbHlpb36MlzBdA2vhPrGVVEpLhvaYIzsoyUtCIaOw==
+X-Google-Smtp-Source: APXvYqx9+ORxUEff+Sn8h86bbY1qDbXflaHgWB60+0qeefL3OkPu9PpeKYostRz1En64riZ9gwTu56Nrat2QuSpx9iI=
+X-Received: by 2002:a37:ae05:: with SMTP id x5mr4371052qke.243.1574863686206;
+ Wed, 27 Nov 2019 06:08:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
-X-Spam-Score: -1.0 (-)
-X-Spam-Report: Spam detection software, running on the system "zztop.nucleusys.com",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- the administrator of that system for details.
- Content preview:  Hi Thor, In my effort to move Altera TSE driver from PHYLIB
-    to PHYLINK i ran into a problem. The driver would not work properly on 100Mbit/s
-    links. This is true for the original driver in linux-5.4.y as well a [...]
- Content analysis details:   (-1.0 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
- -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-  0.0 TVD_RCVD_IP            Message was received from an IP address
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 27 Nov 2019 15:07:55 +0100
+Message-ID: <CAJPywTJzpZAXGdgZLJ+y7G2JoQMyd_JG+G8kgG+xruVVmZD-OA@mail.gmail.com>
+Subject: Delayed source port allocation for connected UDP sockets
+To:     Eric Dumazet <edumazet@google.com>, ncardwell@google.com,
+        maze@google.com, network dev <netdev@vger.kernel.org>
+Cc:     kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	Hi Thor,
+Morning,
 
-In my effort to move Altera TSE driver from PHYLIB to PHYLINK i ran into a 
-problem.  The driver would not work properly on 100Mbit/s links.  This is true 
-for the original driver in linux-5.4.y as well as for my PHYLINK/SFP enabled 
-version.
+In my applications I need something like a connectx()[1] syscall. On
+Linux I can get quite far with using bind-before-connect and
+IP_BIND_ADDRESS_NO_PORT. One corner case is missing though.
 
-This is a DT fragment of what i've been trying with 5.4.y kernels and the 
-stock driver:
+For various UDP applications I'm establishing connected sockets from
+specific 2-tuple. This is working fine with bind-before-connect, but
+in UDP it creates a slight race condition. It's possible the socket
+will receive packet from arbitrary source after bind():
 
-                tse_sub_2: ethernet@0xc0300000 {
-                        status = "disabled";
+s = socket(SOCK_DGRAM)
+s.bind((192.0.2.1, 1703))
+# here be dragons
+s.connect((198.18.0.1, 58910))
 
-                        compatible = "altr,tse-msgdma-1.0";
-                        reg =   <0xc0300000 0x00000400>,
-                                <0xc0301000 0x00000020>,
-                                <0xc0302000 0x00000020>,
-                                <0xc0303000 0x00000008>,
-                                <0xc0304000 0x00000020>,
-                                <0xc0305000 0x00000020>;
-                        reg-names = "control_port", "rx_csr", "rx_desc", "rx_resp", "tx_csr", "tx_desc";
-                        interrupt-parent =< &intc >;
-                        interrupts = <0 54 4>, <0 55 4>;
-                        interrupt-names = "rx_irq", "tx_irq";
-                        rx-fifo-depth = <2048>;
-                        tx-fifo-depth = <2048>;
-                        address-bits = <48>;
-                        max-frame-size = <1500>;
-                        local-mac-address = [ 00 0C ED 00 00 06 ];
-                        altr,has-supplementary-unicast;
-                        altr,has-hash-multicast-filter;
-                        phy-handle = <0>;
-                        fixed-link {
-                                speed = <1000>;
-                                full-duplex;
-                        };
-                };
+For the short amount of time after bind() and before connect(), the
+socket may receive packets from any peer. For situations when I don't
+need to specify source port, IP_BIND_ADDRESS_NO_PORT flag solves the
+issue. This code is fine:
 
-Trying "speed = <100>;" above also doesn't change much, except that the link is 
-reported (as expected) as 100Mbps.
+s = socket(SOCK_DGRAM)
+s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+s.bind((192.0.2.1, 0))
+s.connect((198.18.0.1, 58910))
 
-With the PHYLINK code the above fragment is pretty much the same except for:
+But the IP_BIND_ADDRESS_NO_PORT doesn't work when the source port is
+selected. It seems natural to expand the scope of
+IP_BIND_ADDRESS_NO_PORT flag. Perhaps this could be made to work:
 
-                        sfp = <&sfp0>;
-                        phy-mode = "sgmii";
-                        managed = "in-band-status";
+s = socket(SOCK_DGRAM)
+s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+s.bind((192.0.2.1, 1703))
+s.connect((198.18.0.1, 58910))
 
-Both (old and new) drivers are working fine on 1Gbps links with optics and 
-copper SFPs.  With PHYLINK code (and in auto-negotiation mode) the link speed 
-and duplex is properly detected as 100Mbps.  MAC and PCS also look correctly set 
-up, but the device is still unable to receive or transmit packages.
+I would like such code to delay the binding to port 1703 up until the
+connect(). IP_BIND_ADDRESS_NO_PORT only makes sense for connected
+sockets anyway. This raises a couple of questions though:
 
+ - IP_BIND_ADDRESS_NO_PORT name is confusing - we specify the port
+number in the bind!
 
-Please let me know should you need more details.
+ - Where to store the source port in __inet_bind. Neither
+inet->inet_sport nor inet->inet_num seem like correct places to store
+the user-passed source port hint. The alternative is to introduce
+yet-another field onto inet_sock struct, but that is wasteful.
 
+Suggestions?
 
-thanks,
-Petko
+Marek
+
+[1] https://www.unix.com/man-page/mojave/2/connectx/
