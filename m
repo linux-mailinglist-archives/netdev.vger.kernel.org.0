@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B48810AA9B
-	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 07:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8353610AAA1
+	for <lists+netdev@lfdr.de>; Wed, 27 Nov 2019 07:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbfK0GMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 01:12:49 -0500
-Received: from first.geanix.com ([116.203.34.67]:57816 "EHLO first.geanix.com"
+        id S1726282AbfK0GTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 01:19:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34938 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726026AbfK0GMt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Nov 2019 01:12:49 -0500
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 0928893B1C;
-        Wed, 27 Nov 2019 06:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1574834944; bh=emaCv2J/HHG0hWeBdetGv++669/Op4JbuFqbXvfzMrY=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=JiLeNeeG1zjXa+qq+M6lYOIR0LUax596aJIruSTqO21+KrggRfsxonHoJ+PCZcUOL
-         hb+8LP8vrwNgYDYzVpdiEQ7AJ231cATtlC76V0WKRTQMIUgisuGUri2O6ufzqw2D5J
-         Y4ri/ZH2PHuA9o1/AZx5q8KLInW4jDY+JAgKpWYkrmUK6R/NmsVq7i+n/MKGfegKC9
-         LA4oVJ/LMDXa3w0c8TcVd7tS8/IVMRrD36nRil+/mZkQ1Qab+x61Hpa4MCWOhxvnBy
-         bo0zNa72MIQWkf7cvwmkhzw1NP+JPXiupqAxtH+jONeIib9tblmsIKiqcrM2p4JmWv
-         jV/E2p68hqucg==
-Subject: Re: [PATCH V2 0/4] can: flexcan: fixes for stop mode
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <e936b9b1-d602-ac38-213c-7272df529bef@geanix.com>
-Date:   Wed, 27 Nov 2019 07:12:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726061AbfK0GTh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 01:19:37 -0500
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD3C9206F0;
+        Wed, 27 Nov 2019 06:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574835576;
+        bh=J3d4dyh/vmhHMv1z2Fxba6OHbvFsy8II4ba8oQdw1ds=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=012LBpBnwXDLUs/AxQ9KCJ+ro+73bPuGidZmwL51Y1G1wFUz82jMDsEC3AZPZNlLp
+         zKMl9X7c8VwwoX8SGtD6cwvtM6JbFyoYnkP1VpAoXxtoVDcKQV72G4r6wX7CFrefXh
+         mdfn5Scpjb8BspQSEsVwTRvLFGL59DbMU7AOMuwI=
+Date:   Tue, 26 Nov 2019 22:19:34 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     syzbot <syzbot+7810ed2e0cb359580c17@syzkaller.appspotmail.com>
+Cc:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        horms@verge.net.au, ja@ssi.bg, kadlec@blackhole.kfki.hu,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvs-devel@vger.kernel.org, mmarek@suse.com, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        wensong@linux-vs.org, yamada.masahiro@socionext.com
+Subject: Re: INFO: task hung in do_ip_vs_set_ctl (2)
+Message-ID: <20191127061934.GC227319@sol.localdomain>
+References: <94eb2c059ce0bca273056940d77d@google.com>
+ <0000000000007a85c4059841ca66@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on b0d531b295e6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000007a85c4059841ca66@google.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 27/11/2019 06.56, Joakim Zhang wrote:
-> 	Could you help check the patch set? With your suggestions, I
-> have cooked a patch to exit stop mode during probe stage.
+On Tue, Nov 26, 2019 at 07:47:00AM -0800, syzbot wrote:
+> syzbot has bisected this bug to:
 > 
-> 	IMHO, I think this patch is unneed, now in flexcan driver,
-> enter stop mode when suspend, and then exit stop mode when resume.
-> AFAIK, as long as flexcan_suspend has been called, flexcan_resume will
-> be called, unless the system hang during suspend/resume. If so, only
-> code reset can activate OS again. Could you please tell me how does CAN
-> stucked in stop mode at your side?
+> commit 6f7da290413ba713f0cdd9ff1a2a9bb129ef4f6c
+> Author: Linus Torvalds <torvalds@linux-foundation.org>
+> Date:   Sun Jul 2 23:07:02 2017 +0000
+> 
+>     Linux 4.12
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11a2b78ce00000
+> start commit:   17dec0a9 Merge branch 'userns-linus' of git://git.kernel.o..
+> git tree:       net-next
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=da08d02b86752ade
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7810ed2e0cb359580c17
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130abb47800000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=150a15bb800000
+> 
+> Reported-by: syzbot+7810ed2e0cb359580c17@syzkaller.appspotmail.com
+> Fixes: 6f7da290413b ("Linux 4.12")
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Hi Joakim,
+This bisection is obviously bogus, though oddly enough the bisection log shows
+that v4.12 crashed 10/10 times, while v4.12~1 crashed 0/10 times...
 
-Thanks I'll test this :-)
-Guess I will have do some hacking to get it stuck in stop mode.
+Anyway, this bug looks extremely stale, as it only occurred for a 2-week period
+in 2018.  Commit 5c64576a77 ("ipvs: fix rtnl_lock lockups caused by
+start_sync_thread") might have been the fix, but I'm just invalidating this:
 
-We have a lot of devices in the field that doesn't have:
-"can: flexcan: fix deadlock when using self wakeup"
+#syz invalid
 
-And they have traffic on both CAN interfaces, that way it's quite easy 
-to get them stuck in stop mode.
-
-/Sean
+- Eric
