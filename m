@@ -2,74 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF8810C211
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 03:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B73810C213
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 03:00:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728574AbfK1CAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 21:00:04 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:48145 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728569AbfK1CAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 21:00:03 -0500
-Received: by mail-io1-f69.google.com with SMTP id e15so14350771ioh.15
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 18:00:01 -0800 (PST)
+        id S1728626AbfK1CAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 21:00:36 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46408 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728608AbfK1CAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 21:00:36 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k1so3696606pga.13;
+        Wed, 27 Nov 2019 18:00:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1NWy/8kAMX+v65QvJYYfXEV09Sd7DFbVQpWA/O3VSdM=;
+        b=ZDQPuq5TBYpZoGzPhNGoHNbKKdXKxiCMMo601ZnEkkrmtx2u070725swBJXCqMCIgz
+         3LuimkszMxVGsLjMqO2UvAumaTNCGn8WhuwEa7k6pMaQisr75y8Oc7enPCWk3WYQzdGr
+         XXspDtLuA4K0Bny5rW/Y3DURJF37ZbHf8o3rPiaAVJHY81IdLFcFPW+TQM2n1hIi2YEV
+         N7moVQG/JEKQi1E30iPUzRCNdqyecCUsVzDig6/gxmwFLqLwFrLTSZ/iFRHWq9nRADQt
+         z9hDXDdaMUWFdQXl64g+aHn8A5fL/9PoCZPiZ9vwl+ZOR+S9If4E1HA2k+fDseJcBI4B
+         hsIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=DYCoVBntiKkpTeX6a8KJneZkYAcva9u1pdG4zXgpO64=;
-        b=t5efrV0OmtQ7XbB/PKR3TqEzKT0h/YWTlrd4NcHmnMkwi1VvguPqFoBj6j+wjSrD1j
-         vxCeTs2lGXh1mHhUV+o+QA8scTjQdbLh3xCa2L8MWUpD11uNTZ+4n9b8/6Soj3MWzjFg
-         AH5jyde70Q6cL9pV95Fu8VEwrsgE6KRHrUjuk+TF/nWnk2+X3xGEJrJU4483mTL7GFQQ
-         KR6wDZLrZ04qDB2nblgz4ehe0TTwN0DHB/bPMiUu6zGC4L/8nEByUqlye8MMFy0ueq/G
-         YgZznUVkgLlqn9lciPIADdoOJ3EAE+hY2blbGrXP+/7MH/cfeHQS5Pl9jmjYf2j7rPmg
-         l/8Q==
-X-Gm-Message-State: APjAAAW6WS+Qu5WGHvDhuseZ7e4d01eyyiddxyA46BhzJYaHmR23aOtW
-        8cZExiY44Yu4mSAJjoeKX+JACjIe2Pqgw4YTT1j0+K9iF7aZ
-X-Google-Smtp-Source: APXvYqxa6cVqXVISZzxW/NS5ndS0aUKG+LFds1IRmdw/COM4lIqUf7ADeUv9oT1zbWREBSImJJDTBYinlwECS+K++PZEc9N9rGqG
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1NWy/8kAMX+v65QvJYYfXEV09Sd7DFbVQpWA/O3VSdM=;
+        b=iC1S056egVUWrkMC9gR36DB2UmSd60Infl/Y9PjquaGGJrbj+7lv9yTpf6c8293OXh
+         6esUZnXtDsXlg7jaiZkxiDQ+zMdaUkApDs5HSSxyCUnLSzKeL5bjHwJuf68Vo5QuOe9F
+         7sJJts0foGoZgqc7g2p78KSVh+rwTVhLCwtS4la1Fi+lmtGIkdYyEWclFqt5dueqUfE1
+         mCxB82TW1GyMTjH6kooEI9ZxDy8dbuavouJwc44ColIYsJbA5QaujLBqCzNcfFNGi0S+
+         r5NF+2QjHCLcl7EG2pvkqT2nkvnqc82DRaY9qrzEk+FdVDZbe59jcvGXEgtc/P9o7KW6
+         i1Kg==
+X-Gm-Message-State: APjAAAVBs5IYIDDy4WGYlixv/95a79zGju8yuKRQZT1xDTb0IWhkxtHL
+        xiZrGrxLKQfOmKTLN41pw70=
+X-Google-Smtp-Source: APXvYqy/8U61avG9uOn9PWYfv+bT9v34GayzyHYrcWi8xfRCZ3hYaXwujSgokK2MAY4WhpNKrB0NYg==
+X-Received: by 2002:aa7:9d9c:: with SMTP id f28mr30916321pfq.20.1574906435782;
+        Wed, 27 Nov 2019 18:00:35 -0800 (PST)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id a19sm18387016pfn.144.2019.11.27.18.00.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 18:00:35 -0800 (PST)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH net v4] net: macb: add missed tasklet_kill
+Date:   Thu, 28 Nov 2019 10:00:21 +0800
+Message-Id: <20191128020021.23761-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:461d:: with SMTP id t29mr49468857ila.100.1574906401298;
- Wed, 27 Nov 2019 18:00:01 -0800 (PST)
-Date:   Wed, 27 Nov 2019 18:00:01 -0800
-In-Reply-To: <00000000000038b5c205983c2df4@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009aa32205985e78b6@google.com>
-Subject: Re: WARNING in mark_lock (3)
-From:   syzbot <syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, vinicius.gomes@intel.com,
-        wang.yi59@zte.com.cn, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+This driver forgets to kill tasklet in remove.
+Add the call to fix it.
 
-commit d665c1281bc89ac85b8b0c058c22a3f94640a1d6
-Author: Yi Wang <wang.yi59@zte.com.cn>
-Date:   Mon Oct 21 23:57:42 2019 +0000
+Fixes: 032dc41ba6e2 ("net: macb: Handle HRESP error")
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+Changes in v4:
+  - Put tasklet_kill after unregister_netdev to ensure
+    IRQs are disabled when killing tasklet.
 
-     net: sched: taprio: fix -Wmissing-prototypes warnings
+ drivers/net/ethernet/cadence/macb_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ee536e00000
-start commit:   89d57ddd Merge tag 'media/v5.5-1' of git://git.kernel.org/..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=10aee536e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=172ee536e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=595c15c951695d1b
-dashboard link: https://syzkaller.appspot.com/bug?extid=a229d8d995b74f8c4b6c
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1511af5ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16e0f17ae00000
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d5ae2e1e0b0e..9c767ee252ac 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4422,6 +4422,7 @@ static int macb_remove(struct platform_device *pdev)
+ 		mdiobus_free(bp->mii_bus);
+ 
+ 		unregister_netdev(dev);
++		tasklet_kill(&bp->hresp_err_tasklet);
+ 		pm_runtime_disable(&pdev->dev);
+ 		pm_runtime_dont_use_autosuspend(&pdev->dev);
+ 		if (!pm_runtime_suspended(&pdev->dev)) {
+-- 
+2.24.0
 
-Reported-by: syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com
-Fixes: d665c1281bc8 ("net: sched: taprio: fix -Wmissing-prototypes  
-warnings")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
