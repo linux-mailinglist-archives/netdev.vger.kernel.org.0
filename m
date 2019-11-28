@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D58410C558
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5983510C567
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727547AbfK1IlT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Nov 2019 03:41:19 -0500
-Received: from lithops.sigma-star.at ([195.201.40.130]:49034 "EHLO
-        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726937AbfK1IlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:41:19 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id C0F90605A915;
-        Thu, 28 Nov 2019 09:41:15 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 6HwXfqQxNdPA; Thu, 28 Nov 2019 09:41:12 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 743CB607BD98;
-        Thu, 28 Nov 2019 09:41:12 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id XTUUL9IeyYvs; Thu, 28 Nov 2019 09:41:12 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 3F62F605A915;
-        Thu, 28 Nov 2019 09:41:12 +0100 (CET)
-Date:   Thu, 28 Nov 2019 09:41:12 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     anton ivanov <anton.ivanov@cambridgegreys.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        linux-um <linux-um@lists.infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>
-Message-ID: <1784077834.99875.1574930472125.JavaMail.zimbra@nod.at>
-In-Reply-To: <5892ee7c-ff24-fb3c-6911-44e0b1d5895f@cambridgegreys.com>
-References: <20191128020147.191893-1-weiyongjun1@huawei.com> <20191128080641.GD1781@kadam> <5892ee7c-ff24-fb3c-6911-44e0b1d5895f@cambridgegreys.com>
-Subject: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+        id S1727573AbfK1Iq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 03:46:56 -0500
+Received: from dvalin.narfation.org ([213.160.73.56]:51516 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727040AbfK1Iq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:46:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1574930812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=s8TzhMdKiX5v4SAFsZkpzZcqBHz/OSQqMD7KCPXL3Rg=;
+        b=NFvPS2Oa1a8d7d6Yck2Lp/F6l7WkAx9Ly8mi8YNZPmz83Zf2sdXmAtf1xh/YJyWEjcT3E8
+        7UkE5Vf3I78wi6dHpeh7u1r/T/gH8mQIYrCLJ7SZo7956lSY4QnJLMJ+p4P1SBT4u+BBWQ
+        44LoIaCEV5iFkAkJS377ae9KbtbxS54=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzkaller <syzkaller@googlegroups.com>,
+        syzbot <syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com>,
+        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        =?utf-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        LKML <linux-kernel@vger.kernel.org>, mareklindner@neomailbox.ch,
+        netdev <netdev@vger.kernel.org>, sw@simonwunderlich.de,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        vinicius.gomes@intel.com, wang.yi59@zte.com.cn,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: WARNING in mark_lock (3)
+Date:   Thu, 28 Nov 2019 09:46:49 +0100
+Message-ID: <1809369.KjlzdqruN6@sven-edge>
+In-Reply-To: <CACT4Y+YwNGWCXBazm+7GHpSw-gXsxmA8NA-o7O7Mpj3d-dhGYA@mail.gmail.com>
+References: <0000000000009aa32205985e78b6@google.com> <2825703.dkhYCMB3mh@sven-edge> <CACT4Y+YwNGWCXBazm+7GHpSw-gXsxmA8NA-o7O7Mpj3d-dhGYA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF68 (Linux)/8.8.12_GA_3809)
-Thread-Topic: vector: use GFP_ATOMIC under spin lock
-Thread-Index: 2J60FgWBh1I2FSErd4xdDGw7I9dybg==
+Content-Type: multipart/signed; boundary="nextPart5668474.S8tDUuPlPh"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "anton ivanov" <anton.ivanov@cambridgegreys.com>
-> An: "Dan Carpenter" <dan.carpenter@oracle.com>, "Wei Yongjun" <weiyongjun1@huawei.com>
-> CC: "Song Liu" <songliubraving@fb.com>, "Daniel Borkmann" <daniel@iogearbox.net>, "kernel-janitors"
-> <kernel-janitors@vger.kernel.org>, "richard" <richard@nod.at>, "Jeff Dike" <jdike@addtoit.com>, "linux-um"
-> <linux-um@lists.infradead.org>, "Alexei Starovoitov" <ast@kernel.org>, "netdev" <netdev@vger.kernel.org>,
-> bpf@vger.kernel.org, "Martin KaFai Lau" <kafai@fb.com>
-> Gesendet: Donnerstag, 28. November 2019 09:18:30
-> Betreff: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+--nextPart5668474.S8tDUuPlPh
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-> On 28/11/2019 08:06, Dan Carpenter wrote:
->> On Thu, Nov 28, 2019 at 02:01:47AM +0000, Wei Yongjun wrote:
->>> A spin lock is taken here so we should use GFP_ATOMIC.
->>>
->>> Fixes: 9807019a62dc ("um: Loadable BPF "Firmware" for vector drivers")
->>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->>> ---
->>>   arch/um/drivers/vector_kern.c | 4 ++--
->>>   1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
->>> index 92617e16829e..6ff0065a271d 100644
->>> --- a/arch/um/drivers/vector_kern.c
->>> +++ b/arch/um/drivers/vector_kern.c
->>> @@ -1402,7 +1402,7 @@ static int vector_net_load_bpf_flash(struct net_device
->>> *dev,
->>>   		kfree(vp->bpf->filter);
->>>   		vp->bpf->filter = NULL;
->>>   	} else {
->>> -		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_KERNEL);
->>> +		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_ATOMIC);
->>>   		if (vp->bpf == NULL) {
->>>   			netdev_err(dev, "failed to allocate memory for firmware\n");
->>>   			goto flash_fail;
->>> @@ -1414,7 +1414,7 @@ static int vector_net_load_bpf_flash(struct net_device
->>> *dev,
->>>   	if (request_firmware(&fw, efl->data, &vdevice->pdev.dev))
->>              ^^^^^^^^^^^^^^^^
->> 
->> Is it really possible to call request_firmware() while holding a
->> spin_lock?  I was so sure that read from the disk.
+On Thursday, 28 November 2019 09:40:32 CET Dmitry Vyukov wrote:
+> On Thu, Nov 28, 2019 at 8:25 AM Sven Eckelmann <sven@narfation.org> wrote:
+> >
+> > On Thursday, 28 November 2019 03:00:01 CET syzbot wrote:
+> > [...]
+> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ee536e00000
+> > > start commit:   89d57ddd Merge tag 'media/v5.5-1' of git://git.kernel.org/..
+> > > git tree:       upstream
+> > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=10aee536e00000
+> >
+> > Can the syzbot infrastructure be told to ignore this crash in the bisect run?
+> > Because this should be an unrelated crash which is (hopefully) fixed in
+> > 40e220b4218b ("batman-adv: Avoid free/alloc race when handling OGM buffer").
 > 
-> Works, I tested the patch quite a few times.
+> +syzkaller mailing list for syzbot discussion
+> 
+> Hi Sven,
+> 
+> There is no such functionality at the moment.
+> What exactly do you mean? Somehow telling it interactively? Or
+> hardcode some set of crashes for linux? I don't see how any of these
+> options can really work...
 
-It works because of the nature of UML ->no  SMP or PREEMPT.
-But better request the firmware before taking the spinlock.
-request_firmware() can block.
-Same for the kmalloc(), just allocate the buffer before and then assign
-the pointer under the lock. That way you don't need GFP_ATOMIC.
+I was thinking more about rerunning the same bisect but tell it to assume 
+"crashed: general protection fault in batadv_iv_ogm_queue_add" as OK instead 
+of assuming that it is a crashed like the previous "crashed: WARNING in 
+mark_lock". Just to get a non-bogus bisect result. Or try to rerun the
+bisect between 40e220b4218b and 89d57dddd7d319ded00415790a0bb3c954b7e386
 
-Thanks,
-//richard
+Kind regards,
+	Sven
+--nextPart5668474.S8tDUuPlPh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl3fiXkACgkQXYcKB8Em
+e0aUTRAAiE/aMO9dt/lEAQXh270FSDvpoZUUk/4MxbE9B3niUjxx5CIqtT27U/4L
+I0dhj04aDedv/b5yWn4F7Ru1/dkMK8fPBrrkOwXWbU3UypUtgd3PEVC9m/6hU46v
+stMjVKXfWRBIU+KhS+/RHokrjyzSCqiaHMy+XXTspHy/lHe+3wz97K6ilVw+K+Kd
+nUIDzRiZgnuGmHXyUZCoZw8r79CXffr9Xrmdjf48zTwVMKTYXq+AfVT4oEvcYaj+
+RZ0alFRimq4y1r/4qNOE7bb4snJfzpUoPYNK3CrHoHf0ApffOf9vsjWCuvwOQAvo
+NjmXHqoyyQROeksc+1aJShSgehu3Ged2nc20RbZXQKBf3Am8BzouVWu8bxTQ95OD
+GoctEO9TxVRjO6bLZ35S58IbHhTJg9J4jXfysq6LbLNzFMgAC2kJPcGH8rDbeaxn
+iAGJ6gOJLQICQeT9GuKuux7T7NpCcSj22+pcwXHFcGXn6EdR/ddoUuht8MNJB+qs
+I3rOZ2/K2uhQlv5yPLOq8y9w0m1megfSxVKEoEaE+gDbHeqrOZGVM4cc08jHo4Xz
+OAkmaQ5m6GeFiYkaO4PWDdzTbfueK3Vj97vlgj3RuH2ykL6gkXUBg1Dft+7laEb5
+/JjPjbrajzioUEudQeB9TxK3oqJXUkxtDWnadAPrBtcg3XC3ZBw=
+=5EiG
+-----END PGP SIGNATURE-----
+
+--nextPart5668474.S8tDUuPlPh--
+
+
+
