@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F1C10C448
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A8C10C452
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:32:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbfK1HT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 02:19:26 -0500
-Received: from mail-qt1-f179.google.com ([209.85.160.179]:34199 "EHLO
-        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726492AbfK1HT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 02:19:26 -0500
-Received: by mail-qt1-f179.google.com with SMTP id i17so28176537qtq.1
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 23:19:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=S/AgBpo0HkEQBVQxSHMCfCK4aBQDo0Cv2zHEA8KD3wY=;
-        b=uI6IX+o4DQhbLKxKNTwL724QuSwJR3txkodI/lj5eRKK76X/ffgtmKZO4upbu5vx1I
-         k95xzr6wM5SRwmEfLH92SRdbb2JPFHEWlFjYJvdOd1bjBYPxPvONd5kooZ+HujkZ0ikV
-         DYpkW4eU573SwcIg0l5WOeYf2T37TBvT1VdyzyrORHcoAHZuizRjGsZ3+9T/dcsoInCB
-         Neockf41m1h4fqoPLN1emJmmwA0YO80lZ5riCQs6OYWLVTZ/ssBTChziLswVQh6eNJvh
-         hbMOEY+1kqFjp9uoMlkeINKoDGnNVWlCKc9N2i3epsXKCFDqitqP+lsHTx+DobkfBW+X
-         KmPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=S/AgBpo0HkEQBVQxSHMCfCK4aBQDo0Cv2zHEA8KD3wY=;
-        b=idD4AFZeXBTVlK8yXCRjYesXhIRagzgS/jZ0D7+CMLcAl8mKk1N6kt1mOtQEwZNYds
-         fgHUxGxBdcr2Agy3et+kmOAksQe1O75RxXpmmFi64nkmYrzPNTteB5/3KodRq57RQTio
-         KTZCcq1dKT8TecYbhjb9gCn1hrUO+i99ma6T20reylx0phuXs6FJOu3fminLFf3/+jIG
-         wErf/NkdTXX672kIIHO54PyjFztChL0+chJK2agA30qAr4AElNwjY71pltmabwndFVLp
-         vwcB3yFs4JcYfwf0R0Ivzp/VsgbIisRLikxVbAoU2o9jRxXJwjjSi+/+hRrid8Npn6ye
-         YpWQ==
-X-Gm-Message-State: APjAAAW9g3nwoFW+4vkq9IM0cjcS+2DQCZHACfGVUYXIlGWS0wQOGXJQ
-        seDq09tIUZdj4Zuqzl7e3iZLWggYYuWHpZXvewD73mpM7z0=
-X-Google-Smtp-Source: APXvYqzhKjWkz2Yr18icB2qHbn6THxoWVmCj12WTdtmpdoMYL3J/6vfUU30G2zaSEwFgXVeiJ1Fbwvf1eVkRtgaOkuA=
-X-Received: by 2002:aed:212e:: with SMTP id 43mr6147592qtc.25.1574925565460;
- Wed, 27 Nov 2019 23:19:25 -0800 (PST)
+        id S1727104AbfK1HZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 02:25:44 -0500
+Received: from dvalin.narfation.org ([213.160.73.56]:49716 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfK1HZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 02:25:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1574925941;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tdlxNmPjYz+T53Gzjo5bSd5rvu0/U9sFpAzZUIpHTf4=;
+        b=bNjezSZJ4+JfYhaLI6ZHByOzf/g/QwZJrhzY1luZJRIUCRBZ5fFTBWQW4eOZ70YZwWOw76
+        7t/tJfWXDW5VZuQ2/0duk63Hq6ooQnBIseefJO9PPpPPCGXY9s/BcjGsKdOIVujxzR83DA
+        /T1n7uJiSOlcEUfqYivGmhB+b036rFQ=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     syzbot <syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        vinicius.gomes@intel.com, wang.yi59@zte.com.cn,
+        xiyou.wangcong@gmail.com
+Subject: Re: WARNING in mark_lock (3)
+Date:   Thu, 28 Nov 2019 08:25:34 +0100
+Message-ID: <2825703.dkhYCMB3mh@sven-edge>
+In-Reply-To: <0000000000009aa32205985e78b6@google.com>
+References: <0000000000009aa32205985e78b6@google.com>
 MIME-Version: 1.0
-From:   Sam Lewis <sam.vr.lewis@gmail.com>
-Date:   Thu, 28 Nov 2019 18:19:14 +1100
-Message-ID: <CA+ZLECteuEZJM_4gtbxiEAAKbKnJ_3UfGN4zg_m2EVxk_9=WiA@mail.gmail.com>
-Subject: PROBLEM: smsc95xx loses config on link down/up
-To:     steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="nextPart2024983.uInpGIOpHj"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm using a LAN9514 chip in my embedded Linux device and have noticed
-that changing Ethernet configuration (with ethtool for example) does
-not persist after putting the link up.
+--nextPart2024983.uInpGIOpHj
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-I have tested this on kernel versions 4.14.0 and 5.0.0-36. As far as I
-can tell the driver hasn't had any related fixes since 5.0.0, so I
-don't think the behavior has changed in more recent kernel versions.
+On Thursday, 28 November 2019 03:00:01 CET syzbot wrote:
+[...]
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ee536e00000
+> start commit:   89d57ddd Merge tag 'media/v5.5-1' of git://git.kernel.org/..
+> git tree:       upstream
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=10aee536e00000
 
-To demonstrate, what I mean, if I:
+Can the syzbot infrastructure be told to ignore this crash in the bisect run? 
+Because this should be an unrelated crash which is (hopefully) fixed in 
+40e220b4218b ("batman-adv: Avoid free/alloc race when handling OGM buffer").
 
-1) Take the link down (with `ip link set eth0 down`)
-2) Turn auto-negotiation off (with `ethtool -s eth0 autoneg off`)
-3) Take the link up (with `ip link set eth0 up`)
+Kind regards,
+	Sven
 
-Then auto-negotiation is turned back on after the Ethernet interface
-is brought back up. This seems to be true for any of the ethtool
-configuration settings, like speed and duplex as well.
+--nextPart2024983.uInpGIOpHj
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
-This is frustrating for a few reasons:
+-----BEGIN PGP SIGNATURE-----
 
-- I can't set the Ethernet configuration before I put the link up
-- I can't use systemd .link files for managing link properties as they
-seem to set the properties of the link before it's up
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl3fdm4ACgkQXYcKB8Em
+e0Yhpg//TkD4LZe2QORpdzTJdAdLlx2bM1EYIhwWq2VPr+a/w89xre7Z0vpXmHHe
+CBG+X/XCYev7EAJhDE7HQU/Jo4WRl0ukTNPprzHn0jcq8VcEIAl3qoqHg1ZhSImU
+I242iP55uYzCcLfzj04hnlfgHHr5p8K4YMXUuSihL0SK2GGMdfMViRqb8mHXMwxi
+vFaDAfI4mu0gmVm0MTo5ehel9e5VLVnmOJoBsReXXeXjLhjR70liSC1gzOKPQztk
+oPiK8Ena8ZFDa6yEPPcB5sQQQfM0haPy1z3fmCFvIzAA9lnsYnJxIpWOBuzf2WfW
+6hSeX6+zvXRGDV9R0cVsGpkRaslfHgl+B/gwVMdw2XtVkwUvX3GW4ugLe/4Yw3WK
+jyzibIP1XunENnfUYwdPIMYXgMJxiJsZlS8ERWxBXG6fYlzTsKV5uKLYP3GfGuS2
+/7cFTBC5xT7rCgiJ89CWhYRabfDJLUNpvi01s1jUBIG0AXyjev8xEHXwLV6qG8Ht
+M6qzNcjrOnmOP80xzJrMvIr+lEawY3P5Gn3E/Ro6PoQzOs7zaVMV/Cg5VyTRyjQw
+jPJ9bZmvGjw3zB/4mdYzSeDN8ZR1/bbv65OeI5IOo9Y+s4b8/reptZVROpXF2N7Y
+CkO9awr7QYeRmeOHCtt+Adg5A6mJNz5LGUisgW1ZQJQzTLbOzVM=
+=GMnl
+-----END PGP SIGNATURE-----
 
-I've hacked through the driver code (without really knowing what I'm
-doing, just adding various print statements) and I think this happens
-because setting a link up causes the `smsc95xx_reset` function to be
-called which seems to clear all configuration through:
+--nextPart2024983.uInpGIOpHj--
 
-1) Doing a PHY reset (with `smsc95xx_write_reg(dev, PM_CTRL, PM_CTL_PHY_RST_)`)
-2) Doing (another?) PHY reset (with `smsc95xx_mdio_write(dev->net,
-dev->mii.phy_id, MII_BMCR, BMCR_RESET)`)
 
-I tested this by looking at the configuration through calling
-`mii_ethtool_gset` before and after those two resets. After the
-resets, it appears the configuration is cleared.
 
-I'm using the LAN9514 without an attached EEPROM, so understand that
-any settings set will not persist through a power cycle, but it would
-still be nice if they persisted through setting the interface down and
-then up. This seems to be the behavior on other Ethernet devices that
-I've tried (even ones without NV storage), so maybe this is a bug with
-the LAN95xx driver implementation?
-
-It's very possible that I'm doing something wrong though, I'm happy to
-hear if there's some other way to achieve what I'm trying to do.
-
-If this is a real bug I'd be happy to take a look into trying to fix
-it. Would it be acceptable to restore any configuration read from a
-`mii_ethtool_gset` after the `smsc95xx_reset` is run?
