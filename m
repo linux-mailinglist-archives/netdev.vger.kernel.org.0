@@ -2,188 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B80BF10C7C8
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 12:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8EAF10C7DD
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 12:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbfK1LMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 06:12:25 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35252 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726545AbfK1LMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 06:12:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574939543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0cRywjityWrbO6f+dCWuTxCiryKgAagA0J/Ea6HFqZY=;
-        b=MzRksjKJnWp4AE4z6BbrcMbcwJk0KWywAJUdiIn9OOtky+v3QetQK0ckWWKUctYBvP3C6m
-        DFsHVyI0T2atocDj7vikvkyhPrLsvWpMrvFiySngFEuewhkx49JunhJUYpAv738u9NeTxD
-        7teyNDdkDTkhR3sRFyfxJhaG8cnWUNo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-120-3BbIUKpPOQeF4WC1iv1nUA-1; Thu, 28 Nov 2019 06:12:15 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D5A88800D53;
-        Thu, 28 Nov 2019 11:12:13 +0000 (UTC)
-Received: from carbon (unknown [10.36.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 966F3600CA;
-        Thu, 28 Nov 2019 11:12:07 +0000 (UTC)
-Date:   Thu, 28 Nov 2019 12:12:05 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Marek Majkowski' <marek@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>, brouer@redhat.com
-Subject: Re: epoll_wait() performance
-Message-ID: <20191128121205.65c8dea1@carbon>
-In-Reply-To: <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
-References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
-        <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
-        <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
-        <20191127164821.1c41deff@carbon>
-        <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: 3BbIUKpPOQeF4WC1iv1nUA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726545AbfK1LX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 06:23:56 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40052 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbfK1LX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 06:23:56 -0500
+Received: by mail-wm1-f67.google.com with SMTP id y5so11241603wmi.5
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 03:23:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=2hiK+xRXlPxURuLqayLGvGiBlijvu9wohhwXV3tZ0rU=;
+        b=R5CIFAEqNiSoGH8YK6huQWKlyde3bmplcOVvOFropxLcO8nA+hgpT9GA8X0AJStXHX
+         p3yINxJU/ZhaYMwhNCk+/t4ECFtis1auqZ9FYeCk63WK33yhMXiCgaQj+cs2GMbO75cE
+         CGyCQh0EcN2ZsEas5Rh6vYYxhqXuwpDxZQ7ykuAswjRKa7/QRTBkvMXqQeWEiLPQUvns
+         jLVz3NTNDbtKPcymr6isPVs/Vl8mnw8c8KlVJIQ3ACDTLp0AbUt5uFXIQmtpOtAq3pof
+         p5QfaW/FbHwE+pOaLeocTtYQ4g1/hYlLO/QuxChfMLnY8zJgKsHD/CLkPabSzkBSjcqj
+         7mJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2hiK+xRXlPxURuLqayLGvGiBlijvu9wohhwXV3tZ0rU=;
+        b=P/5Z36y5c6QmoTPKq7HHNZiEcrUBYNThUOtFrb/tD1V/d4JK3Pb9tQSELqrDxi+tms
+         vQ/b3Q6gVD3UhSqlRqzHWtUM2o/b7xEgsuy9JjrjJlApeTfpyeaoHRFMLIx83sjqSJ77
+         ZA1OhRqP8vkBtumxFXfKAcveXxCTlWOzp2bAPMOW/8tumEpBXVyx8eLx87GnXya5r9V6
+         HjUHlT25wIZ1na9AB3Q9+MQtzBEGU8SRNLnPtkmF31O2Vuh8znXY1S1Le3qtV3Bm2aHa
+         vZOsY2rYKojX03UXiLB/1HpYv2nynqrIP1NaD48bHYfolrSwL9Jf2pS7dzZMZbEIglAy
+         qmbw==
+X-Gm-Message-State: APjAAAU/vSOQa4dljujP18oVDy2eUq7xtC2sBKkSOGD4kngt7zY2FceF
+        kevaA3NJf+GKL9qEZX0cfdM=
+X-Google-Smtp-Source: APXvYqyPSW029+zGm4aDe/FifDJuBB6u45DnbjEVSB9V03GwsQjzge4vIJaQ7yOt4994IPGKPydrVA==
+X-Received: by 2002:a1c:16:: with SMTP id 22mr9561375wma.0.1574940231558;
+        Thu, 28 Nov 2019 03:23:51 -0800 (PST)
+Received: from localhost.localdomain ([86.121.29.241])
+        by smtp.gmail.com with ESMTPSA id i25sm9642889wmd.25.2019.11.28.03.23.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Nov 2019 03:23:51 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, richardcochran@gmail.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
+        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Subject: [PATCH v2 net] net: mscc: ocelot: unregister the PTP clock on deinit
+Date:   Thu, 28 Nov 2019 13:23:42 +0200
+Message-Id: <20191128112342.2547-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Nov 2019 16:04:12 +0000
-David Laight <David.Laight@ACULAB.COM> wrote:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> From: Jesper Dangaard Brouer
-> > Sent: 27 November 2019 15:48
-> > On Wed, 27 Nov 2019 10:39:44 +0000 David Laight <David.Laight@ACULAB.COM> wrote:
-> >   
-> > > ...  
-> > > > > While using recvmmsg() to read multiple messages might seem a good idea, it is much
-> > > > > slower than recv() when there is only one message (even recvmsg() is a lot slower).
-> > > > > (I'm not sure why the code paths are so slow, I suspect it is all the copy_from_user()
-> > > > > and faffing with the user iov[].)
-> > > > >
-> > > > > So using poll() we repoll the fd after calling recv() to find is there is a second message.
-> > > > > However the second poll has a significant performance cost (but less than using recvmmsg()).  
-> > > >
-> > > > That sounds wrong. Single recvmmsg(), even when receiving only a
-> > > > single message, should be faster than two syscalls - recv() and
-> > > > poll().  
-> > >
-> > > My suspicion is the extra two copy_from_user() needed for each recvmsg are a
-> > > significant overhead, most likely due to the crappy code that tries to stop
-> > > the kernel buffer being overrun.
-> > >
-> > > I need to run the tests on a system with a 'home built' kernel to see how much
-> > > difference this make (by seeing how much slower duplicating the copy makes it).
-> > >
-> > > The system call cost of poll() gets factored over a reasonable number of sockets.
-> > > So doing poll() on a socket with no data is a lot faster that the setup for recvmsg
-> > > even allowing for looking up the fd.
-> > >
-> > > This could be fixed by an extra flag to recvmmsg() to indicate that you only really
-> > > expect one message and to call the poll() function before each subsequent receive.
-> > >
-> > > There is also the 'reschedule' that Eric added to the loop in recvmmsg.
-> > > I don't know how much that actually costs.
-> > > In this case the process is likely to be running at a RT priority and pinned to a cpu.
-> > > In some cases the cpu is also reserved (at boot time) so that 'random' other code can't use it.
-> > >
-> > > We really do want to receive all these UDP packets in a timely manner.
-> > > Although very low latency isn't itself an issue.
-> > > The data is telephony audio with (typically) one packet every 20ms.
-> > > The code only looks for packets every 10ms - that helps no end since, in principle,
-> > > only a single poll()/epoll_wait() call (on all the sockets) is needed every 10ms.  
-> > 
-> > I have a simple udp_sink tool[1] that cycle through the different
-> > receive socket system calls.  I gave it a quick spin on a F31 kernel
-> > 5.3.12-300.fc31.x86_64 on a mlx5 100G interface, and I'm very surprised
-> > to see a significant regression/slowdown for recvMmsg.
-> > 
-> > $ sudo ./udp_sink --port 9 --repeat 1 --count $((10**7))
-> >           	run      count   	ns/pkt	pps		cycles	payload
-> > recvMmsg/32	run:  0	10000000	1461.41	684270.96	5261	18	 demux:1
-> > recvmsg   	run:  0	10000000	889.82	1123824.84	3203	18	 demux:1
-> > read      	run:  0	10000000	974.81	1025841.68	3509	18	 demux:1
-> > recvfrom  	run:  0	10000000	1056.51	946513.44	3803	18	 demux:1
-> > 
-> > Normal recvmsg almost have double performance that recvmmsg.
-> >  recvMmsg/32 = 684,270 pps
-> >  recvmsg     = 1,123,824 pps  
-> 
-> Can you test recv() as well?
+Currently a switch driver deinit frees the regmaps, but the PTP clock is
+still out there, available to user space via /dev/ptpN. Any PTP
+operation is a ticking time bomb, since it will attempt to use the freed
+regmaps and thus trigger kernel panics:
 
-Sure: https://github.com/netoptimizer/network-testing/commit/9e3c8b86a2d662
+[    4.291746] fsl_enetc 0000:00:00.2 eth1: error -22 setting up slave phy
+[    4.291871] mscc_felix 0000:00:00.5: Failed to register DSA switch: -22
+[    4.308666] mscc_felix: probe of 0000:00:00.5 failed with error -22
+[    6.358270] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000088
+[    6.367090] Mem abort info:
+[    6.369888]   ESR = 0x96000046
+[    6.369891]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    6.369892]   SET = 0, FnV = 0
+[    6.369894]   EA = 0, S1PTW = 0
+[    6.369895] Data abort info:
+[    6.369897]   ISV = 0, ISS = 0x00000046
+[    6.369899]   CM = 0, WnR = 1
+[    6.369902] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020d58c7000
+[    6.369904] [0000000000000088] pgd=00000020d5912003, pud=00000020d5915003, pmd=0000000000000000
+[    6.369914] Internal error: Oops: 96000046 [#1] PREEMPT SMP
+[    6.420443] Modules linked in:
+[    6.423506] CPU: 1 PID: 262 Comm: phc_ctl Not tainted 5.4.0-03625-gb7b2a5dadd7f #204
+[    6.431273] Hardware name: LS1028A RDB Board (DT)
+[    6.435989] pstate: 40000085 (nZcv daIf -PAN -UAO)
+[    6.440802] pc : css_release+0x24/0x58
+[    6.444561] lr : regmap_read+0x40/0x78
+[    6.448316] sp : ffff800010513cc0
+[    6.451636] x29: ffff800010513cc0 x28: ffff002055873040
+[    6.456963] x27: 0000000000000000 x26: 0000000000000000
+[    6.462289] x25: 0000000000000000 x24: 0000000000000000
+[    6.467617] x23: 0000000000000000 x22: 0000000000000080
+[    6.472944] x21: ffff800010513d44 x20: 0000000000000080
+[    6.478270] x19: 0000000000000000 x18: 0000000000000000
+[    6.483596] x17: 0000000000000000 x16: 0000000000000000
+[    6.488921] x15: 0000000000000000 x14: 0000000000000000
+[    6.494247] x13: 0000000000000000 x12: 0000000000000000
+[    6.499573] x11: 0000000000000000 x10: 0000000000000000
+[    6.504899] x9 : 0000000000000000 x8 : 0000000000000000
+[    6.510225] x7 : 0000000000000000 x6 : ffff800010513cf0
+[    6.515550] x5 : 0000000000000000 x4 : 0000000fffffffe0
+[    6.520876] x3 : 0000000000000088 x2 : ffff800010513d44
+[    6.526202] x1 : ffffcada668ea000 x0 : ffffcada64d8b0c0
+[    6.531528] Call trace:
+[    6.533977]  css_release+0x24/0x58
+[    6.537385]  regmap_read+0x40/0x78
+[    6.540795]  __ocelot_read_ix+0x6c/0xa0
+[    6.544641]  ocelot_ptp_gettime64+0x4c/0x110
+[    6.548921]  ptp_clock_gettime+0x4c/0x58
+[    6.552853]  pc_clock_gettime+0x5c/0xa8
+[    6.556699]  __arm64_sys_clock_gettime+0x68/0xc8
+[    6.561331]  el0_svc_common.constprop.2+0x7c/0x178
+[    6.566133]  el0_svc_handler+0x34/0xa0
+[    6.569891]  el0_sync_handler+0x114/0x1d0
+[    6.573908]  el0_sync+0x140/0x180
+[    6.577232] Code: d503201f b00119a1 91022263 b27b7be4 (f9004663)
+[    6.583349] ---[ end trace d196b9b14cdae2da ]---
+[    6.587977] Kernel panic - not syncing: Fatal exception
+[    6.593216] SMP: stopping secondary CPUs
+[    6.597151] Kernel Offset: 0x4ada54400000 from 0xffff800010000000
+[    6.603261] PHYS_OFFSET: 0xffffd0a7c0000000
+[    6.607454] CPU features: 0x10002,21806008
+[    6.611558] Memory Limit: none
 
-$ sudo taskset -c 1 ./udp_sink --port 9  --count $((10**6*2))
-          	run      count   	ns/pkt	pps		cycles	payload
-recvMmsg/32  	run:  0	 2000000	653.29	1530704.29	2351	18	 demux:1
-recvmsg   	run:  0	 2000000	631.01	1584760.06	2271	18	 demux:1
-read      	run:  0	 2000000	582.24	1717518.16	2096	18	 demux:1
-recvfrom  	run:  0	 2000000	547.26	1827269.12	1970	18	 demux:1
-recv      	run:  0	 2000000	547.37	1826930.39	1970	18	 demux:1
+And now that ocelot->ptp_clock is checked at exit, prevent a potential
+error where ptp_clock_register returned a pointer-encoded error, which
+we are keeping in the ocelot private data structure. So now,
+ocelot->ptp_clock is now either NULL or a valid pointer.
 
-> I think it might be faster than read().
+Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
+Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Changes in v2:
+- Dropped the redundant check on ocelot->ptp and changed the topic of
+  the if condition.
+- Populated ocelot->ptp_clock in ocelot_init_timestamp only on valid
+  return value from ptp_clock_register, so that the deinit check can
+  never mis-trigger.
 
-Slightly, but same speed as recvfrom.
+ drivers/net/ethernet/mscc/ocelot.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Strangely recvMmsg is not that bad in this testrun, and it is on the
-same kernel 5.3.12-300.fc31.x86_64 and hardware.  I have CPU pinned
-udp_sink, as it if jumps to the CPU doing RX-NAPI it will be fighting
-for CPU time with softirq (which have Eric mitigated a bit), and
-results are bad and look like this:
-
-[broadwell src]$ sudo taskset -c 5 ./udp_sink --port 9  --count $((10**6*2))
-          	run      count   	ns/pkt	pps		cycles	payload
-recvMmsg/32  	run:  0	 2000000	1252.44	798439.60	4508	18	 demux:1
-recvmsg   	run:  0	 2000000	1917.65	521470.72	6903	18	 demux:1
-read      	run:  0	 2000000	1817.31	550263.37	6542	18	 demux:1
-recvfrom  	run:  0	 2000000	1742.44	573909.46	6272	18	 demux:1
-recv      	run:  0	 2000000	1741.51	574213.08	6269	18	 demux:1
-
-
-> [...]
-> > Found some old results (approx v4.10-rc1):
-> > 
-> > [brouer@skylake src]$ sudo taskset -c 2 ./udp_sink --count $((10**7)) --port 9 --connect
-> >  recvMmsg/32    run: 0 10000000 537.89  1859106.74      2155    21559353816
-> >  recvmsg        run: 0 10000000 552.69  1809344.44      2215    22152468673
-> >  read           run: 0 10000000 476.65  2097970.76      1910    19104864199
-> >  recvfrom       run: 0 10000000 450.76  2218492.60      1806    18066972794  
-> 
-> That is probably nearer what I am seeing on a 4.15 Ubuntu 18.04 kernel.
-> recvmmsg() and recvmsg() are similar - but both a lot slower then recv().
-
-Notice tool can also test connect UDP sockets, which is done in above.
-I did a quick run with --connect:
-
-$ sudo taskset -c 1 ./udp_sink --port 9  --count $((10**6*2)) --connect
-          	run      count   	ns/pkt	pps		cycles	payload
-recvMmsg/32  	run:  0	 2000000	500.72	1997107.02	1802	18	 demux:1 c:1
-recvmsg   	run:  0	 2000000	662.52	1509380.46	2385	18	 demux:1 c:1
-read      	run:  0	 2000000	613.46	1630103.14	2208	18	 demux:1 c:1
-recvfrom  	run:  0	 2000000	577.71	1730974.34	2079	18	 demux:1 c:1
-recv      	run:  0	 2000000	578.27	1729305.35	2081	18	 demux:1 c:1
-
-And now, recvMmsg is actually the fastest...?!
-
-
-p.s.
-DISPLAIMER: Do notice that this udp_sink tool is a network-overload
-micro-benchmark, that does not represent the use-case you are
-describing.
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 52a1b1f12af8..875eea702c58 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2166,16 +2166,26 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
+ 	.adjfine	= ocelot_ptp_adjfine,
+ };
+ 
++static void ocelot_deinit_timestamp(struct ocelot *ocelot)
++{
++	if (ocelot->ptp_clock)
++		ptp_clock_unregister(ocelot->ptp_clock);
++}
++
+ static int ocelot_init_timestamp(struct ocelot *ocelot)
+ {
++	struct ptp_clock *ptp_clock;
++
+ 	ocelot->ptp_info = ocelot_ptp_clock_info;
+-	ocelot->ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
+-	if (IS_ERR(ocelot->ptp_clock))
+-		return PTR_ERR(ocelot->ptp_clock);
++	ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
++	if (IS_ERR(ptp_clock))
++		return PTR_ERR(ptp_clock);
+ 	/* Check if PHC support is missing at the configuration level */
+-	if (!ocelot->ptp_clock)
++	if (!ptp_clock)
+ 		return 0;
+ 
++	ocelot->ptp_clock = ptp_clock;
++
+ 	ocelot_write(ocelot, SYS_PTP_CFG_PTP_STAMP_WID(30), SYS_PTP_CFG);
+ 	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_LOW);
+ 	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_HIGH);
+@@ -2508,6 +2518,7 @@ void ocelot_deinit(struct ocelot *ocelot)
+ 	destroy_workqueue(ocelot->stats_queue);
+ 	mutex_destroy(&ocelot->stats_lock);
+ 	ocelot_ace_deinit();
++	ocelot_deinit_timestamp(ocelot);
+ 
+ 	for (i = 0; i < ocelot->num_phys_ports; i++) {
+ 		port = ocelot->ports[i];
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.17.1
 
