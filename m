@@ -2,129 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CC610C5ED
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 10:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D913710C613
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 10:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbfK1JYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 04:24:23 -0500
-Received: from ivanoab7.miniserver.com ([37.128.132.42]:50718 "EHLO
-        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbfK1JYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 04:24:22 -0500
-Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
-        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1iaG23-0006JS-1o; Thu, 28 Nov 2019 09:24:16 +0000
-Received: from jain.kot-begemot.co.uk ([192.168.3.3])
-        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1iaG20-0006G8-LX; Thu, 28 Nov 2019 09:24:14 +0000
-Subject: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
-To:     Richard Weinberger <richard@nod.at>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-um <linux-um@lists.infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20191128020147.191893-1-weiyongjun1@huawei.com>
- <20191128080641.GD1781@kadam>
- <5892ee7c-ff24-fb3c-6911-44e0b1d5895f@cambridgegreys.com>
- <1784077834.99875.1574930472125.JavaMail.zimbra@nod.at>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Message-ID: <ceedf42c-2dc0-df2e-cf3f-323c675dec78@cambridgegreys.com>
-Date:   Thu, 28 Nov 2019 09:24:12 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726569AbfK1JiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 04:38:10 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40798 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726133AbfK1JiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 04:38:09 -0500
+Received: by mail-wm1-f67.google.com with SMTP id y5so10889921wmi.5
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 01:38:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NhpLhJz6+GDF9m5U6zWuGMsno9FtNQ2w1q9YdXHXl14=;
+        b=osNXp1PoN1pNhtrxYjY6DcE8SZhJaS2KskPEeSN8ztSvahvxN4BpUC+7LeDoz9PO8Z
+         I0gzYdxQfGjXIb6/Z67XNwX3QDLs3Bz/j0HpJ5RwuZYlymTwqf7Sja4a+Shhg+fzbAjb
+         Mg3ztcaeZsf6itIt3xHy9QPDOkbR4/u+TceDQjSv2SQyMK1k5TBdBaoIekpL35fkBKtR
+         UdlcWvz4JdBQIl0U6bY46pQ2nL8qHBKyKKqeOCFBpL6v2l/n6WxtfAr8VdtFE8/esimq
+         Yu0xg8AOreQ1svph/X3j3/tDkjyh4QuCeAvYcfu+4YgAVJMnwa5ZCT9FJ3WFW2Z2FJXJ
+         SGZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NhpLhJz6+GDF9m5U6zWuGMsno9FtNQ2w1q9YdXHXl14=;
+        b=MdSt+vsnYl7GUevhC20mQZIo0AuRcfdS1xS7z+CofqUaWSRIJHmJvN5Q5Hy41wovZ3
+         df7iq52OpCcvJomn6jXyGoPBTWRWRtE+t4tMm0AuMthaHsMD2LVt/ptrpNZLbWEG37UJ
+         mrATfMRYHnodSkMhNqIf6nf5/Sbznb2EkrR86UM8oLWuO0QxcDlrIALslmCoWbRN7qTF
+         BiCuKQrjx2QXWVAGG+ZpcwdWLedpHWGyBvAk8geLfNp9x84vvjx8ST64ZaXitBd7lG4F
+         zJ6UMgbP8kZWs3VJF01Lds+QVp3OIpi9yqn5ddHIcCm+1T4G9Y7L92TsTQlqGLROqdHn
+         fNyw==
+X-Gm-Message-State: APjAAAVxOmED1psRO5uHClNxIhgmK3GqQQaw6x4yMLZ644F1Qx9qKd8i
+        NDBO2ow4prjqWbKj14ykNaB67Q==
+X-Google-Smtp-Source: APXvYqxshxI1xLIjiArznE4nEZ0G3ax1Vs9ZBK7qgqy3CJVywQrE7TmI2c+oBXwRmIS83w6jJ6LDtA==
+X-Received: by 2002:a7b:cb89:: with SMTP id m9mr8563703wmi.141.1574933887456;
+        Thu, 28 Nov 2019 01:38:07 -0800 (PST)
+Received: from apalos.home (athedsl-4476713.home.otenet.gr. [94.71.27.49])
+        by smtp.gmail.com with ESMTPSA id f2sm3076753wmh.46.2019.11.28.01.38.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Nov 2019 01:38:06 -0800 (PST)
+Date:   Thu, 28 Nov 2019 11:38:04 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Sekhar Nori <nsekhar@ti.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: ti: ale: ensure vlan/mdb deleted when no
+ members
+Message-ID: <20191128093804.GA18633@apalos.home>
+References: <20191127155905.22921-1-grygorii.strashko@ti.com>
+ <20191128082127.GA16359@apalos.home>
 MIME-Version: 1.0
-In-Reply-To: <1784077834.99875.1574930472125.JavaMail.zimbra@nod.at>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -1.0
-X-Spam-Score: -1.0
-X-Clacks-Overhead: GNU Terry Pratchett
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191128082127.GA16359@apalos.home>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 28/11/2019 08:41, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
->> Von: "anton ivanov" <anton.ivanov@cambridgegreys.com>
->> An: "Dan Carpenter" <dan.carpenter@oracle.com>, "Wei Yongjun" <weiyongjun1@huawei.com>
->> CC: "Song Liu" <songliubraving@fb.com>, "Daniel Borkmann" <daniel@iogearbox.net>, "kernel-janitors"
->> <kernel-janitors@vger.kernel.org>, "richard" <richard@nod.at>, "Jeff Dike" <jdike@addtoit.com>, "linux-um"
->> <linux-um@lists.infradead.org>, "Alexei Starovoitov" <ast@kernel.org>, "netdev" <netdev@vger.kernel.org>,
->> bpf@vger.kernel.org, "Martin KaFai Lau" <kafai@fb.com>
->> Gesendet: Donnerstag, 28. November 2019 09:18:30
->> Betreff: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+On Thu, Nov 28, 2019 at 10:21:27AM +0200, Ilias Apalodimas wrote:
+> On Wed, Nov 27, 2019 at 05:59:05PM +0200, Grygorii Strashko wrote:
+> > The recently updated ALE APIs cpsw_ale_del_mcast() and
+> > cpsw_ale_del_vlan_modify() have an issue and will not delete ALE entry even
+> > if VLAN/mcast group has no more members. Hence fix it here and delete ALE
+> > entry if !port_mask.
+> > 
+> > The issue affected only new cpsw switchdev driver.
+> > 
+> > Fixes: e85c14370783 ("net: ethernet: ti: ale: modify vlan/mdb api for switchdev")
+> > Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> > ---
+> >  drivers/net/ethernet/ti/cpsw_ale.c | 14 ++++++++++----
+> >  1 file changed, 10 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+> > index 929f3d3354e3..a5179ecfea05 100644
+> > --- a/drivers/net/ethernet/ti/cpsw_ale.c
+> > +++ b/drivers/net/ethernet/ti/cpsw_ale.c
+> > @@ -396,12 +396,14 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
+> >  	if (port_mask) {
+> >  		mcast_members = cpsw_ale_get_port_mask(ale_entry,
+> >  						       ale->port_mask_bits);
+> > -		mcast_members &= ~port_mask;
+> > -		cpsw_ale_set_port_mask(ale_entry, mcast_members,
+> > +		port_mask = mcast_members & ~port_mask;
+> > +	}
+> > +
+> > +	if (port_mask)
+> > +		cpsw_ale_set_port_mask(ale_entry, port_mask,
+> >  				       ale->port_mask_bits);
+> > -	} else {
+> > +	else
+> >  		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
+> > -	}
 > 
->> On 28/11/2019 08:06, Dan Carpenter wrote:
->>> On Thu, Nov 28, 2019 at 02:01:47AM +0000, Wei Yongjun wrote:
->>>> A spin lock is taken here so we should use GFP_ATOMIC.
->>>>
->>>> Fixes: 9807019a62dc ("um: Loadable BPF "Firmware" for vector drivers")
->>>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->>>> ---
->>>>    arch/um/drivers/vector_kern.c | 4 ++--
->>>>    1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
->>>> index 92617e16829e..6ff0065a271d 100644
->>>> --- a/arch/um/drivers/vector_kern.c
->>>> +++ b/arch/um/drivers/vector_kern.c
->>>> @@ -1402,7 +1402,7 @@ static int vector_net_load_bpf_flash(struct net_device
->>>> *dev,
->>>>    		kfree(vp->bpf->filter);
->>>>    		vp->bpf->filter = NULL;
->>>>    	} else {
->>>> -		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_KERNEL);
->>>> +		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_ATOMIC);
->>>>    		if (vp->bpf == NULL) {
->>>>    			netdev_err(dev, "failed to allocate memory for firmware\n");
->>>>    			goto flash_fail;
->>>> @@ -1414,7 +1414,7 @@ static int vector_net_load_bpf_flash(struct net_device
->>>> *dev,
->>>>    	if (request_firmware(&fw, efl->data, &vdevice->pdev.dev))
->>>               ^^^^^^^^^^^^^^^^
->>>
->>> Is it really possible to call request_firmware() while holding a
->>> spin_lock?  I was so sure that read from the disk.
->>
->> Works, I tested the patch quite a few times.
-> 
-> It works because of the nature of UML ->no  SMP or PREEMPT.
-> But better request the firmware before taking the spinlock.
-> request_firmware() can block.
-> Same for the kmalloc(), just allocate the buffer before and then assign
-> the pointer under the lock. That way you don't need GFP_ATOMIC.
-
-Ack.
-
-I will make an incremental on top of the existing patch (as that is 
-already in -next
-
-Brgds,
-
-> 
-> Thanks,
-> //richard
-> 
-> _______________________________________________
-> linux-um mailing list
-> linux-um@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-um
+> The code assumed calls cpsw_ale_del_mcast() should have a port mask '0' when
+> deleting an entry. Do we want to have 'dual' functionality on it? 
+> This will delete mcast entries if port mask is 0 or port mask matches exactly
+> what's configured right?
 > 
 
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+Deleting the ALE entry if the port_mask matches execlty what's configured makes
+sense. Can we change it to something that doesn't change the function argument?
+
+I think something like: 
+mcast_members = 0;
+if (port_mask) {
+	mcast_members = cpsw_ale_get_port_mask(ale_entry,
+											ale->port_mask_bits);
+	mcast_members &= ~port_mask;
+}
+if (mcast_members)
+	cpsw_ale_set_port_mask(ale_entry, mcast_members, ....)
+else
+	cpsw_ale_set_entry_type(....)
+
+is more readable?
+
+Thanks
+/Ilias
