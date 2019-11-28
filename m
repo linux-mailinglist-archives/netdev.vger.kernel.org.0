@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 971B110C3E0
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 07:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B05610C3E6
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 07:31:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbfK1G31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 01:29:27 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:46473 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726565AbfK1G31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 01:29:27 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04446;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0TjHb.Ek_1574922549;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0TjHb.Ek_1574922549)
+        id S1726778AbfK1GbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 01:31:09 -0500
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:54794 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726438AbfK1GbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 01:31:09 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e07488;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0TjHc7.._1574922648;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0TjHc7.._1574922648)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 28 Nov 2019 14:29:23 +0800
+          Thu, 28 Nov 2019 14:30:57 +0800
 From:   Dust Li <dust.li@linux.alibaba.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         John Fastabend <john.fastabend@gmail.com>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH] net: sched: fix `tc -s class show` no bstats on class with nolock subqueues
-Date:   Thu, 28 Nov 2019 14:29:09 +0800
-Message-Id: <20191128062909.84666-1-dust.li@linux.alibaba.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>, netdev@vger.kernel.org
+Subject: [PATCH] net: sched: keep __gnet_stats_copy_xxx() same semantics for percpu stats
+Date:   Thu, 28 Nov 2019 14:30:48 +0800
+Message-Id: <20191128063048.90282-1-dust.li@linux.alibaba.com>
 X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -33,85 +32,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a classful qdisc's child qdisc has set the flag
-TCQ_F_CPUSTATS (pfifo_fast for example), the child qdisc's
-cpu_bstats should be passed to gnet_stats_copy_basic(),
-but many classful qdisc didn't do that. As a result,
-`tc -s class show dev DEV` always return 0 for bytes and
-packets in this case.
+__gnet_stats_copy_basic/queue() support both percpu stat and
+non-percpu stat, but they are handle in a different manner:
+1. For percpu stat, percpu stats are added to the return value;
+2. For non-percpu stat, non-percpu stats will overwrite the
+   return value;
+We should keep the same semantics for both type.
 
-Pass the child qdisc's cpu_bstats to gnet_stats_copy_basic()
-to fix this issue.
+This patch makes percpu stats follow non-percpu's manner by
+reset the return bstats before add the percpu bstats to it.
+Also changes the caller in sch_mq.c/sch_mqprio.c to make sure
+they dump the right statistics for percpu qdisc.
 
-The qstats also has this problem, but it has been fixed
-in 5dd431b6b9 ("net: sched: introduce and use qstats read...")
-and bstats still remains buggy.
+One more thing, the sch->q.qlen is not set with nonlock child
+qdisc in mq_dump()/mqprio_dump(), add that.
 
 Fixes: 22e0f8b9322c ("net: sched: make bstats per cpu and estimator RCU safe")
 Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
 Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
 ---
- net/sched/sch_mq.c     | 3 ++-
- net/sched/sch_mqprio.c | 4 ++--
- net/sched/sch_multiq.c | 2 +-
- net/sched/sch_prio.c   | 2 +-
- 4 files changed, 6 insertions(+), 5 deletions(-)
+ net/core/gen_stats.c   |  2 ++
+ net/sched/sch_mq.c     | 34 ++++++++++++++++------------------
+ net/sched/sch_mqprio.c | 35 +++++++++++++++++------------------
+ 3 files changed, 35 insertions(+), 36 deletions(-)
 
+diff --git a/net/core/gen_stats.c b/net/core/gen_stats.c
+index 1d653fbfcf52..d71af69196c9 100644
+--- a/net/core/gen_stats.c
++++ b/net/core/gen_stats.c
+@@ -120,6 +120,7 @@ __gnet_stats_copy_basic_cpu(struct gnet_stats_basic_packed *bstats,
+ {
+ 	int i;
+ 
++	memset(bstats, 0, sizeof(*bstats));
+ 	for_each_possible_cpu(i) {
+ 		struct gnet_stats_basic_cpu *bcpu = per_cpu_ptr(cpu, i);
+ 		unsigned int start;
+@@ -288,6 +289,7 @@ __gnet_stats_copy_queue_cpu(struct gnet_stats_queue *qstats,
+ {
+ 	int i;
+ 
++	memset(qstats, 0, sizeof(*qstats));
+ 	for_each_possible_cpu(i) {
+ 		const struct gnet_stats_queue *qcpu = per_cpu_ptr(q, i);
+ 
 diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
-index 0d578333e967..278c0b2dc523 100644
+index 278c0b2dc523..b2178b7fe3a3 100644
 --- a/net/sched/sch_mq.c
 +++ b/net/sched/sch_mq.c
-@@ -245,7 +245,8 @@ static int mq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
+@@ -131,6 +131,8 @@ static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct Qdisc *qdisc;
+ 	unsigned int ntx;
+ 	__u32 qlen = 0;
++	struct gnet_stats_queue qstats = {0};
++	struct gnet_stats_basic_packed bstats = {0};
  
- 	sch = dev_queue->qdisc_sleeping;
--	if (gnet_stats_copy_basic(&sch->running, d, NULL, &sch->bstats) < 0 ||
-+	if (gnet_stats_copy_basic(&sch->running, d, sch->cpu_bstats,
-+				  &sch->bstats) < 0 ||
- 	    qdisc_qstats_copy(d, sch) < 0)
- 		return -1;
- 	return 0;
+ 	sch->q.qlen = 0;
+ 	memset(&sch->bstats, 0, sizeof(sch->bstats));
+@@ -145,24 +147,20 @@ static int mq_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 		qdisc = netdev_get_tx_queue(dev, ntx)->qdisc_sleeping;
+ 		spin_lock_bh(qdisc_lock(qdisc));
+ 
+-		if (qdisc_is_percpu_stats(qdisc)) {
+-			qlen = qdisc_qlen_sum(qdisc);
+-			__gnet_stats_copy_basic(NULL, &sch->bstats,
+-						qdisc->cpu_bstats,
+-						&qdisc->bstats);
+-			__gnet_stats_copy_queue(&sch->qstats,
+-						qdisc->cpu_qstats,
+-						&qdisc->qstats, qlen);
+-		} else {
+-			sch->q.qlen		+= qdisc->q.qlen;
+-			sch->bstats.bytes	+= qdisc->bstats.bytes;
+-			sch->bstats.packets	+= qdisc->bstats.packets;
+-			sch->qstats.qlen	+= qdisc->qstats.qlen;
+-			sch->qstats.backlog	+= qdisc->qstats.backlog;
+-			sch->qstats.drops	+= qdisc->qstats.drops;
+-			sch->qstats.requeues	+= qdisc->qstats.requeues;
+-			sch->qstats.overlimits	+= qdisc->qstats.overlimits;
+-		}
++		qlen = qdisc_qlen_sum(qdisc);
++		__gnet_stats_copy_basic(NULL, &bstats, qdisc->cpu_bstats,
++					&qdisc->bstats);
++		__gnet_stats_copy_queue(&qstats, qdisc->cpu_qstats,
++					&qdisc->qstats, qlen);
++
++		sch->q.qlen		+= qdisc->q.qlen;
++		sch->bstats.bytes	+= bstats.bytes;
++		sch->bstats.packets	+= bstats.packets;
++		sch->qstats.qlen	+= qstats.qlen;
++		sch->qstats.backlog	+= qstats.backlog;
++		sch->qstats.drops	+= qstats.drops;
++		sch->qstats.requeues	+= qstats.requeues;
++		sch->qstats.overlimits	+= qstats.overlimits;
+ 
+ 		spin_unlock_bh(qdisc_lock(qdisc));
+ 	}
 diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 46980b8d66c5..0d0113a24962 100644
+index 0d0113a24962..6887084bd5ad 100644
 --- a/net/sched/sch_mqprio.c
 +++ b/net/sched/sch_mqprio.c
-@@ -557,8 +557,8 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
+@@ -388,6 +388,9 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct tc_mqprio_qopt opt = { 0 };
+ 	struct Qdisc *qdisc;
+ 	unsigned int ntx, tc;
++	__u32 qlen = 0;
++	struct gnet_stats_queue qstats = {0};
++	struct gnet_stats_basic_packed bstats = {0};
  
- 		sch = dev_queue->qdisc_sleeping;
--		if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
--					  d, NULL, &sch->bstats) < 0 ||
-+		if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch), d,
-+					  sch->cpu_bstats, &sch->bstats) < 0 ||
- 		    qdisc_qstats_copy(d, sch) < 0)
- 			return -1;
+ 	sch->q.qlen = 0;
+ 	memset(&sch->bstats, 0, sizeof(sch->bstats));
+@@ -402,24 +405,20 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 		qdisc = netdev_get_tx_queue(dev, ntx)->qdisc_sleeping;
+ 		spin_lock_bh(qdisc_lock(qdisc));
+ 
+-		if (qdisc_is_percpu_stats(qdisc)) {
+-			__u32 qlen = qdisc_qlen_sum(qdisc);
+-
+-			__gnet_stats_copy_basic(NULL, &sch->bstats,
+-						qdisc->cpu_bstats,
+-						&qdisc->bstats);
+-			__gnet_stats_copy_queue(&sch->qstats,
+-						qdisc->cpu_qstats,
+-						&qdisc->qstats, qlen);
+-		} else {
+-			sch->q.qlen		+= qdisc->q.qlen;
+-			sch->bstats.bytes	+= qdisc->bstats.bytes;
+-			sch->bstats.packets	+= qdisc->bstats.packets;
+-			sch->qstats.backlog	+= qdisc->qstats.backlog;
+-			sch->qstats.drops	+= qdisc->qstats.drops;
+-			sch->qstats.requeues	+= qdisc->qstats.requeues;
+-			sch->qstats.overlimits	+= qdisc->qstats.overlimits;
+-		}
++		qlen = qdisc_qlen_sum(qdisc);
++		__gnet_stats_copy_basic(NULL, &bstats, qdisc->cpu_bstats,
++					&qdisc->bstats);
++		__gnet_stats_copy_queue(&qstats, qdisc->cpu_qstats,
++					&qdisc->qstats, qlen);
++
++		sch->q.qlen		+= qdisc->q.qlen;
++		sch->bstats.bytes	+= bstats.bytes;
++		sch->bstats.packets	+= bstats.packets;
++		sch->qstats.qlen	+= qstats.qlen;
++		sch->qstats.backlog	+= qstats.backlog;
++		sch->qstats.drops	+= qstats.drops;
++		sch->qstats.requeues	+= qstats.requeues;
++		sch->qstats.overlimits	+= qstats.overlimits;
+ 
+ 		spin_unlock_bh(qdisc_lock(qdisc));
  	}
-diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-index b2b7fdb06fc6..1330ad224931 100644
---- a/net/sched/sch_multiq.c
-+++ b/net/sched/sch_multiq.c
-@@ -339,7 +339,7 @@ static int multiq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 
- 	cl_q = q->queues[cl - 1];
- 	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
--				  d, NULL, &cl_q->bstats) < 0 ||
-+				  d, cl_q->cpu_bstats, &cl_q->bstats) < 0 ||
- 	    qdisc_qstats_copy(d, cl_q) < 0)
- 		return -1;
- 
-diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-index 0f8fedb8809a..18b884cfdfe8 100644
---- a/net/sched/sch_prio.c
-+++ b/net/sched/sch_prio.c
-@@ -356,7 +356,7 @@ static int prio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 
- 	cl_q = q->queues[cl - 1];
- 	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
--				  d, NULL, &cl_q->bstats) < 0 ||
-+				  d, cl_q->cpu_bstats, &cl_q->bstats) < 0 ||
- 	    qdisc_qstats_copy(d, cl_q) < 0)
- 		return -1;
- 
 -- 
 2.19.1.3.ge56e4f7
 
