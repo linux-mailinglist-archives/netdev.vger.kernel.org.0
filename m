@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEAD210C130
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 01:59:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15BB710C155
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 02:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727300AbfK1A73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 19:59:29 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:47033 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726984AbfK1A73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 19:59:29 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e9so26497546ljp.13;
-        Wed, 27 Nov 2019 16:59:27 -0800 (PST)
+        id S1727191AbfK1BRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 20:17:12 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:42956 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726984AbfK1BRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 20:17:11 -0500
+Received: by mail-qk1-f193.google.com with SMTP id i3so21310291qkk.9;
+        Wed, 27 Nov 2019 17:17:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GlDsn7TqBs4w48Ao28vIPY+vTJ4FRLpQy82LHAO9FtM=;
-        b=dct7JSOOxj7fmLcV6CatAbFkMkk+UoveZkp97Ar7akOPlhi8ZWJjP/o4CXp431UR+N
-         luuDF+9IQPZooAfD62gbrYgCgQCevKJD9tE0gZ44JMcdYXWEXrGT7wzkva7n+koICphB
-         5bv2C8OHfCi4xq3Ru4/NPktJc/rNzrZeU8j5SR5e39AciMEWkXHN728967uZm+NFLpWF
-         0Gch3jGmwIfMcWCWrjr8B3jEWbu2PENANkdrtMV87F4xKFXztqbc1uES+Em/0KkU9cNk
-         4XIV5uwTpMr2wodZeqXhwzkw1jdu7hBok2fBoFU0g5Rww+7tzz4H5lX3bRdnroAIKDzs
-         vFKg==
+        h=from:date:user-agent:in-reply-to:references:mime-version
+         :content-transfer-encoding:subject:to:cc:message-id;
+        bh=SCnPXL8bPykPhZGlMn7ftNZt7W54n9LAos9Pr0g3VrY=;
+        b=j69KeExGYZcXpliLEGsVduDxjTfb5YVdrjeBMGGpE9Sam40UL8htV7UUYddYCw1Jmk
+         ebjWqo0B2xtEY/vUxQ7DrLoqtwBA8v3mHiuDIT2xTS0NZmFX8MKafKK2u28+WKReDqML
+         Nd0ADeLu57Fx1hZHmEwL0Pat7USdcS9h0A0xnW+OaB72ddRo4PP2RHuh53eJneMWCaWq
+         COIu9SmaLYUGxhxB6HDxwkpXimQlE6jpeTNOihlYfjrJL9yxCWo7i94h04c8z6RouuCN
+         bh50tk8rrPrciEGNLUCfDXX2h2InpIol4QF8jU/DNjN5Wa68/MabnRwFEIrw9PAKMZRo
+         VDwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GlDsn7TqBs4w48Ao28vIPY+vTJ4FRLpQy82LHAO9FtM=;
-        b=D6M3Nvv1oD3Kfwyne+z5SHtCJ5FXvyHy4RU8dUSGoYwZLF7R/QXdQrJ3xQvI1OlBVX
-         SJBZBaRtA159rOe7TRFiYet6613nn5uuK0/YvLbunb54QqWb3iM/E7vjWyJFD0t6QL3G
-         w1YeXd/ljDdYb7NShVSz785qAcspJEXOmH5oz1eh/mlkF8adJFnTMgEIWdRXgbKh4odd
-         oAyZtmULMmihzA59/EfOQuD47xpd0rmRoi+5uMjhKOKGnXHmN/ahZLIwd53/vRoY1ZlV
-         glFbi6SVyk1pjQZJUDtgxkPgDoiajZhxr0gruv541chjosjsmpP6NL7K0ubNun1yjm8S
-         vS9w==
-X-Gm-Message-State: APjAAAWO7JfukhxsQzAmSEI9Y0n4YTmpyWDC57XDP4P8wvyqhpz+fko9
-        +QmRrbcxJSQ8XuZZMEVyQ7aXhf9phS/4IpADCKU=
-X-Google-Smtp-Source: APXvYqxVO2dwVk/p7oC6P4ANvvZYmBGLPU6Bnady0f0cJ8kbFRAMU3/QWKWq4fr0Qbz/MbrXG5uh3N+OTfw63e9A9Uk=
-X-Received: by 2002:a2e:8508:: with SMTP id j8mr32148600lji.136.1574902766702;
- Wed, 27 Nov 2019 16:59:26 -0800 (PST)
+        h=x-gm-message-state:from:date:user-agent:in-reply-to:references
+         :mime-version:content-transfer-encoding:subject:to:cc:message-id;
+        bh=SCnPXL8bPykPhZGlMn7ftNZt7W54n9LAos9Pr0g3VrY=;
+        b=KLrLz48iU9tQyUQNzlf5TXI9bO0XpPmSnw5QsNbqBXSRCoQfBKzaNAVSyhb2uxC2jo
+         652hNSJnvX6Ycq9mMCFEDkq6AdLpumBtHn6l3VYx6g+FkAus+43Age07pte1wVVRZ0tF
+         ERVOKl7F3xaAxOUrmf9Rv72or8H/b71NTERi6vvKqwgpQuwnkdesWm+xgyB7b0F4HAaa
+         PIhJQftSLK3No57Np7t3QID/b1wWxYeebzIMzIb8nN/1yCfuzxlpT/Y813/GXOujur5w
+         Ts++k/PkFM5MhbYV7qmltoq6ME201UTnWNpsFCT/sHd2Bwap9xGznqYY+JwG2YODbdh4
+         32/g==
+X-Gm-Message-State: APjAAAV51sh2Y/khdek15ZfuoDIG2X3+2mr2r+qEdXwLY7fblNJSz+k/
+        F2viCGLvRLMJvWVFelnthtQ=
+X-Google-Smtp-Source: APXvYqxHH2BWJ2TvwiX7facJAjbmhR3H/5zqIxA+DcY2C4N8HeqCY1WukmDVkxhFo1EDkBH+ypkkZw==
+X-Received: by 2002:a37:7705:: with SMTP id s5mr7691937qkc.145.1574903830336;
+        Wed, 27 Nov 2019 17:17:10 -0800 (PST)
+Received: from [192.168.86.249] ([179.97.35.50])
+        by smtp.gmail.com with ESMTPSA id s44sm8837505qts.22.2019.11.27.17.17.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 27 Nov 2019 17:17:09 -0800 (PST)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Date:   Wed, 27 Nov 2019 22:17:46 -0300
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CAADnVQJc2cBU2jWmtbe5mNjWsE67DvunhubqJWWG_gaQc3p=Aw@mail.gmail.com>
+References: <87imn6y4n9.fsf@toke.dk> <20191126183451.GC29071@kernel.org> <87d0dexyij.fsf@toke.dk> <20191126190450.GD29071@kernel.org> <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com> <20191126221018.GA22719@kernel.org> <20191126221733.GB22719@kernel.org> <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com> <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net> <20191126155228.0e6ed54c@cakuba.netronome.com> <20191127013901.GE29071@kernel.org> <CAADnVQJCMpke49NNzy33EKdwpW+SY1orTm+0f0b-JuW8+uA7Yw@mail.gmail.com> <2993CDB0-8D4D-4A0C-9DB2-8FDD1A0538AB@kernel.org> <CAADnVQJc2cBU2jWmtbe5mNjWsE67DvunhubqJWWG_gaQc3p=Aw@mail.gmail.com>
 MIME-Version: 1.0
-References: <87imn6y4n9.fsf@toke.dk> <20191126183451.GC29071@kernel.org>
- <87d0dexyij.fsf@toke.dk> <20191126190450.GD29071@kernel.org>
- <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
- <20191126221018.GA22719@kernel.org> <20191126221733.GB22719@kernel.org>
- <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com>
- <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net> <20191126155228.0e6ed54c@cakuba.netronome.com>
- <20191127013901.GE29071@kernel.org> <CAADnVQJCMpke49NNzy33EKdwpW+SY1orTm+0f0b-JuW8+uA7Yw@mail.gmail.com>
- <2993CDB0-8D4D-4A0C-9DB2-8FDD1A0538AB@kernel.org>
-In-Reply-To: <2993CDB0-8D4D-4A0C-9DB2-8FDD1A0538AB@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 27 Nov 2019 16:59:15 -0800
-Message-ID: <CAADnVQJc2cBU2jWmtbe5mNjWsE67DvunhubqJWWG_gaQc3p=Aw@mail.gmail.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [PATCH] libbpf: Fix up generation of bpf_helper_defs.h
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Stanislav Fomichev <sdf@fomichev.me>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        =?ISO-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
         Andrii Nakryiko <andriin@fb.com>,
         Adrian Hunter <adrian.hunter@intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -69,22 +71,34 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         linux-perf-users@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Quentin Monnet <quentin.monnet@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <58CA150B-D006-48DF-A279-077BA2FFD6EC@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 4:50 PM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
+On November 27, 2019 9:59:15 PM GMT-03:00, Alexei Starovoitov <alexei=2Esta=
+rovoitov@gmail=2Ecom> wrote:
+>On Wed, Nov 27, 2019 at 4:50 PM Arnaldo Carvalho de Melo
+><arnaldo=2Emelo@gmail=2Ecom> wrote:
+>>
+>> Take it as one, I think it's what should have been in the cset it is
+>fixing, that way no breakage would have happened=2E
 >
-> Take it as one, I think it's what should have been in the cset it is fixing, that way no breakage would have happened.
+>Ok=2E I trimmed commit log and applied here:
+>https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/bpf/bpf=2Egit/commit/=
+?id=3D1fd450f99272791df8ea8e1b0f5657678e118e90
+>
+>What about your other fix and my suggestion there?
+>(__u64) cast instead of PRI ?
+>We do this already in two places:
+>libbpf=2Ec:                shdr_idx, (__u64)sym->st_value);
+>libbpf=2Ec:             (__u64)sym=2Est_value, GELF_ST_TYPE(sym=2Est_info=
+),
 
-Ok. I trimmed commit log and applied here:
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/commit/?id=1fd450f99272791df8ea8e1b0f5657678e118e90
 
-What about your other fix and my suggestion there?
-(__u64) cast instead of PRI ?
-We do this already in two places:
-libbpf.c:                shdr_idx, (__u64)sym->st_value);
-libbpf.c:             (__u64)sym.st_value, GELF_ST_TYPE(sym.st_info),
+I'm using the smartphone now, but I thought you first suggested using a ca=
+st to long, if you mean using %llu + cast to __u64, then should be was ugly=
+ as using PRI, IOW, should work on both 64 bit and 32 bit=2E :-)
+
+- Arnaldo
