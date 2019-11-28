@@ -2,208 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16AB810CAB2
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 15:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 474EF10CAF9
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 15:58:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbfK1Oxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 09:53:33 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:60389 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726446AbfK1Oxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 09:53:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574952810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rSRdu36kdw7cp4aj5uiQyY93zJOiHwsJ9kURwhoRP88=;
-        b=OqrDtNi/w4ql95WxW9pAzMfWN2FB4wzJHck8v9lqrjTxFwwDM+RFJfKYdri4YkS5F2PBd2
-        +MfdGd3i9yBmjEr88uTAFyH9sieB6Mx9to2GEtrbf77Qu0/GV9qrx4+xWCm1cF014QgeNt
-        4FenBwfDlO+oSSvne8SeqPHpUC55ZsY=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-400-BlRz4W30NQG6s5bf8Lw09Q-1; Thu, 28 Nov 2019 09:53:29 -0500
-Received: by mail-lj1-f197.google.com with SMTP id v26so1052493ljg.22
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 06:53:28 -0800 (PST)
+        id S1727606AbfK1O6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 09:58:08 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:46854 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727569AbfK1O6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 09:58:05 -0500
+Received: by mail-lj1-f196.google.com with SMTP id e9so28812740ljp.13
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 06:58:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LUyJI7Xtt6B49WNUawbgsGkfQ59e//4g+j9sie0K+wA=;
+        b=fr41RTJEy5Zr1Mf34JJS2aTc0bRxU1MD9uDHZeMlDw2PpU5RYyFvfn9cfdKFgw7gRi
+         2EnpXvd2e2Fbq0fLk6r3nWUB2D3yhONTgOXuQ+LTEUIQ9ozzk2aJcS/eQhTFDmKhAnrJ
+         enhP0jBLFcIMlhOAvq1jZL/fyPjFWIASW6ad0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DFfjqzHfd87DTRbEbayt6s48Ee8N6vIkSod5kqZnQ5Y=;
-        b=Ltw6welEA7MWOgiBKUBj+VSo7AOFmF10uUyd+VDrDbyDPSJuJj+R2QpGaxc+Rif8Rh
-         cf8Xc+NJPVg71QPJvEAgDR1H0nGErwbJV1/cWbr5hde9/ekgAwHlK/8RhW0ETFYoBkFv
-         rnOQ43lig0IXJck789W7rqTJPO4eUBPKn5lbPuUeE34LnhEvvFmNyI1Gal9ierSzRU7k
-         KLHAsaoLdGmgRxHrsOw8eYAm92PvV+OJJ5wax0LjKF+m1s3xlfN+np2I5CW/Mrhq2J5B
-         jnL6y8MBVyDWhCD9yREOe3pz/C8R6BEn6fo0ky3My3CL0W0d0xPO4CQ2WHArSWfZ9hu3
-         1bYQ==
-X-Gm-Message-State: APjAAAUNf88NnZIqVtDdnRcvnEtE5DgvTonbUNFmeLMXXgk+h5klrSxD
-        gKUoVHatprUolPU+JCN35lR71AENAWr9Z71f2l2u7m62f0sJXWrH88fCTu+CwKwNu+AAdwRCNiW
-        JMtmKPuSp6R2wfvjn
-X-Received: by 2002:a2e:b007:: with SMTP id y7mr34551269ljk.69.1574952807592;
-        Thu, 28 Nov 2019 06:53:27 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyX6WbETt4gMUWpV0wZ/2Py0Q2dWzIgwkCGxTImfwQqW1dKylmOb5oxrAJ6cM1GAIE8WjpyYQ==
-X-Received: by 2002:a2e:b007:: with SMTP id y7mr34551238ljk.69.1574952807282;
-        Thu, 28 Nov 2019 06:53:27 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id k10sm8611145lfo.76.2019.11.28.06.53.26
+        bh=LUyJI7Xtt6B49WNUawbgsGkfQ59e//4g+j9sie0K+wA=;
+        b=qFK5bfvI4WLjus5bw/+fwvxEpegS2pDHjrVGXIm3IRf6J7YFMB7U7ZtBNaEWn0u9gq
+         gND9Nbj1PtWM8S4qGlWSl+pwiaYq0OWOXcqj0CCZ7Pl+O4FT3cL3/6W7Pyqp43Kw8167
+         +oRyFgnouel+nvd9uuSIIq0Mv0Tt6w7GrWZB0G0/gmWFiHWr3hCAGE9LtaOCwhx/dUqL
+         W/c00U587tUifhTDUPcqa/KL0GghrySRHD9FF+cQrPVZ2GBNQSnmwWcIgF8ZXDHR/Wqe
+         +Wkb9zaV0JqPgs3glnYLJNV1BMRldqziMS2ZerDa9zwx9f06iZ56kRXYpJX0Js93BzLQ
+         OR6Q==
+X-Gm-Message-State: APjAAAXFDaeKnB/ALZ135G9QK1XkYXpGX0r3nO6SzaozllNa00NXx8Ox
+        OyoPdgLRU+RaRWXe5VmzsWHYfQ==
+X-Google-Smtp-Source: APXvYqzvOsid7pV5utL0Oet589uRnpcNr0xR7W0TnHfGMl1kiNe7Uit0KU1mpk3Kb2fnMEJkAeqIoA==
+X-Received: by 2002:a2e:b5b8:: with SMTP id f24mr33942968ljn.188.1574953082288;
+        Thu, 28 Nov 2019 06:58:02 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id u2sm2456803lfl.18.2019.11.28.06.58.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Nov 2019 06:53:26 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 62FC9180339; Thu, 28 Nov 2019 15:53:24 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: [PATCH bpf v2] bpftool: Allow to link libbpf dynamically
-Date:   Thu, 28 Nov 2019 15:53:16 +0100
-Message-Id: <20191128145316.1044912-1-toke@redhat.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191127094837.4045-1-jolsa@kernel.org>
-References: 
+        Thu, 28 Nov 2019 06:58:01 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        netdev@vger.kernel.org
+Subject: [PATCH v6 44/49] net/wan/fsl_ucc_hdlc: avoid use of IS_ERR_VALUE()
+Date:   Thu, 28 Nov 2019 15:55:49 +0100
+Message-Id: <20191128145554.1297-45-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
+References: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-X-MC-Unique: BlRz4W30NQG6s5bf8Lw09Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+When building this on a 64-bit platform gcc rightly warns that the
+error checking is broken (-ENOMEM stored in an u32 does not compare
+greater than (unsigned long)-MAX_ERRNO). Instead, now that
+qe_muram_alloc() returns s32, use that type to store the return value
+and use standard kernel style "ret < 0".
 
-Currently we support only static linking with kernel's libbpf
-(tools/lib/bpf). This patch adds LIBBPF_DYNAMIC compile variable
-that triggers libbpf detection and bpf dynamic linking:
-
-  $ make -C tools/bpf/bpftool make LIBBPF_DYNAMIC=3D1
-
-If libbpf is not installed, build (with LIBBPF_DYNAMIC=3D1) stops with:
-
-  $ make -C tools/bpf/bpftool LIBBPF_DYNAMIC=3D1
-    Auto-detecting system features:
-    ...                        libbfd: [ on  ]
-    ...        disassembler-four-args: [ on  ]
-    ...                          zlib: [ on  ]
-    ...                        libbpf: [ OFF ]
-
-  Makefile:102: *** Error: No libbpf devel library found, please install-de=
-vel or libbpf-dev.
-
-Adding LIBBPF_DIR compile variable to allow linking with
-libbpf installed into specific directory:
-
-  $ make -C tools/lib/bpf/ prefix=3D/tmp/libbpf/ install_lib install_header=
-s
-  $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=3D1 LIBBPF_DIR=3D/tmp/libbpf/
-
-It might be needed to clean build tree first because features
-framework does not detect the change properly:
-
-  $ make -C tools/build/feature clean
-  $ make -C tools/bpf/bpftool/ clean
-
-Since bpftool uses bits of libbpf that are not exported as public API in
-the .so version, we also pass in libbpf.a to the linker, which allows it to
-pick up the private functions from the static library without having to
-expose them as ABI.
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Reviewed-by: Timur Tabi <timur@kernel.org>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
-v2:
-  - Pass .a file to linker when dynamically linking, so bpftool can use
-    private functions from libbpf without exposing them as API.
-   =20
- tools/bpf/bpftool/Makefile | 38 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
+ drivers/net/wan/fsl_ucc_hdlc.c | 10 +++++-----
+ drivers/net/wan/fsl_ucc_hdlc.h |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index 39bc6f0f4f0b..397051ed9e41 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -1,6 +1,15 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+# LIBBPF_DYNAMIC to enable libbpf dynamic linking.
-+
- include ../../scripts/Makefile.include
- include ../../scripts/utilities.mak
-+include ../../scripts/Makefile.arch
-+
-+ifeq ($(LP64), 1)
-+  libdir_relative =3D lib64
-+else
-+  libdir_relative =3D lib
-+endif
-=20
- ifeq ($(srctree),)
- srctree :=3D $(patsubst %/,%,$(dir $(CURDIR)))
-@@ -55,7 +64,7 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS +=3D $(EXTRA_LDFLAGS)
- endif
-=20
--LIBS =3D $(LIBBPF) -lelf -lz
-+LIBS =3D -lelf -lz
-=20
- INSTALL ?=3D install
- RM ?=3D rm -f
-@@ -63,6 +72,19 @@ RM ?=3D rm -f
- FEATURE_USER =3D .bpftool
- FEATURE_TESTS =3D libbfd disassembler-four-args reallocarray zlib
- FEATURE_DISPLAY =3D libbfd disassembler-four-args zlib
-+ifdef LIBBPF_DYNAMIC
-+  FEATURE_TESTS   +=3D libbpf
-+  FEATURE_DISPLAY +=3D libbpf
-+
-+  # for linking with debug library run:
-+  # make LIBBPF_DYNAMIC=3D1 LIBBPF_DIR=3D/opt/libbpf
-+  ifdef LIBBPF_DIR
-+    LIBBPF_CFLAGS  :=3D -I$(LIBBPF_DIR)/include
-+    LIBBPF_LDFLAGS :=3D -L$(LIBBPF_DIR)/$(libdir_relative)
-+    FEATURE_CHECK_CFLAGS-libbpf  :=3D $(LIBBPF_CFLAGS)
-+    FEATURE_CHECK_LDFLAGS-libbpf :=3D $(LIBBPF_LDFLAGS)
-+  endif
-+endif
-=20
- check_feat :=3D 1
- NON_CHECK_FEAT_TARGETS :=3D clean uninstall doc doc-clean doc-install doc-=
-uninstall
-@@ -88,6 +110,20 @@ ifeq ($(feature-reallocarray), 0)
- CFLAGS +=3D -DCOMPAT_NEED_REALLOCARRAY
- endif
-=20
-+ifdef LIBBPF_DYNAMIC
-+  ifeq ($(feature-libbpf), 1)
-+    # bpftool uses non-exported functions from libbpf, so pass both dynami=
-c and
-+    # static versions and let the linker figure it out
-+    LIBS    :=3D -lbpf $(LIBBPF) $(LIBS)
-+    CFLAGS  +=3D $(LIBBPF_CFLAGS)
-+    LDFLAGS +=3D $(LIBBPF_LDFLAGS)
-+  else
-+    dummy :=3D $(error Error: No libbpf devel library found, please instal=
-l-devel or libbpf-dev.)
-+  endif
-+else
-+  LIBS :=3D $(LIBBPF) $(LIBS)
-+endif
-+
- include $(wildcard $(OUTPUT)*.d)
-=20
- all: $(OUTPUT)bpftool
---=20
-2.24.0
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+index ce6af7d5380f..405b24a5a60d 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.c
++++ b/drivers/net/wan/fsl_ucc_hdlc.c
+@@ -84,8 +84,8 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
+ 	int ret, i;
+ 	void *bd_buffer;
+ 	dma_addr_t bd_dma_addr;
+-	u32 riptr;
+-	u32 tiptr;
++	s32 riptr;
++	s32 tiptr;
+ 	u32 gumr;
+ 
+ 	ut_info = priv->ut_info;
+@@ -195,7 +195,7 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
+ 	priv->ucc_pram_offset = qe_muram_alloc(sizeof(struct ucc_hdlc_param),
+ 				ALIGNMENT_OF_UCC_HDLC_PRAM);
+ 
+-	if (IS_ERR_VALUE(priv->ucc_pram_offset)) {
++	if (priv->ucc_pram_offset < 0) {
+ 		dev_err(priv->dev, "Can not allocate MURAM for hdlc parameter.\n");
+ 		ret = -ENOMEM;
+ 		goto free_tx_bd;
+@@ -233,14 +233,14 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
+ 
+ 	/* Alloc riptr, tiptr */
+ 	riptr = qe_muram_alloc(32, 32);
+-	if (IS_ERR_VALUE(riptr)) {
++	if (riptr < 0) {
+ 		dev_err(priv->dev, "Cannot allocate MURAM mem for Receive internal temp data pointer\n");
+ 		ret = -ENOMEM;
+ 		goto free_tx_skbuff;
+ 	}
+ 
+ 	tiptr = qe_muram_alloc(32, 32);
+-	if (IS_ERR_VALUE(tiptr)) {
++	if (tiptr < 0) {
+ 		dev_err(priv->dev, "Cannot allocate MURAM mem for Transmit internal temp data pointer\n");
+ 		ret = -ENOMEM;
+ 		goto free_riptr;
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.h b/drivers/net/wan/fsl_ucc_hdlc.h
+index 8b3507ae1781..71d5ad0a7b98 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.h
++++ b/drivers/net/wan/fsl_ucc_hdlc.h
+@@ -98,7 +98,7 @@ struct ucc_hdlc_private {
+ 
+ 	unsigned short tx_ring_size;
+ 	unsigned short rx_ring_size;
+-	u32 ucc_pram_offset;
++	s32 ucc_pram_offset;
+ 
+ 	unsigned short encoding;
+ 	unsigned short parity;
+-- 
+2.23.0
 
