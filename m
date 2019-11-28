@@ -2,136 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB0B10C8C0
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 13:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C2DC10C8E6
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 13:47:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbfK1MjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 07:39:02 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39437 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfK1MjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 07:39:02 -0500
-Received: by mail-wm1-f65.google.com with SMTP id s14so4700078wmh.4
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 04:38:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=heCUQ7mmRjnHfzNJl8bAAtOV5SgKG2zv87RA2Z+HlU8=;
-        b=DSME8o2Ns/qXONuV7tzZuXoBgBl9IWxWcBQV3rHlGGSM34H2VjvXyTxakIfZzNY6qZ
-         VAfLzPUEj3NBIQi60EQwhMq2pxA4Y1qgPctiAd2PqGVbwAn/dXQSg0OUb0TfKim4wncu
-         5CkWB1H/lqCyfQT5St9tOCiEqsmfQBy8eBCQgInIjEuMwvWlxApSZDqEOFoGpQl65SK0
-         oZ+Ri2rwIKd8hXXsfu5vPrTeHSGRQZGpMdE884OA+ENkZ8uJfWCGit70CCXWUCkwr6Z/
-         i2RWw7wGrpFHhrEMjUdx4hM42fJWGS+txvzqjjTTG7SHmU8gkKPk5OANv9HzP70pf1Ar
-         ZZpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=heCUQ7mmRjnHfzNJl8bAAtOV5SgKG2zv87RA2Z+HlU8=;
-        b=ZFE5GaW02h5watbRgmZnTyhtIcqV2Abw0CBmySi07yfBBvl0WWFTg6cfHJkqQOxkU+
-         YeyFIvwzEWtwp+OmYbtUSr8SJ80pnAEUIH2xROak7XqoFPKZ+TjBvpFqqtarF8JXx9E/
-         7NykkZjqXFZHUbCadPZXLb+Mwyx7vG2HxGszo47KZtyKfxTjqdx2b1Ic9hemQwr/waof
-         cjG0B1SQEBZ2XvqvU6yRAxhbKvN831q5wI4OKC/z/MQi6oCIb2p/mXRQ1TxcdSDxZ664
-         vC2+e6NAy9LRQnTkySe55w4j0mNuFShStLvxp3sgBHydNLig7neOp3nz7XFS1Ch5ErP8
-         3cIA==
-X-Gm-Message-State: APjAAAUyspfkyw0wkoLXMGWQKaUn7GIoMWKl2frfKr4TNeyOHTF+Sdcf
-        74IzFP8oJn9ox6puhPyPYAETrBjKVAY=
-X-Google-Smtp-Source: APXvYqyeLHBEkzOZMbeeYTnj3/J3bP8eyZp/kQYJf/1dQdUkKS9fgDCUgQ9w5hLz2oa72YfbxZp8KQ==
-X-Received: by 2002:a1c:3c86:: with SMTP id j128mr9345786wma.137.1574944738188;
-        Thu, 28 Nov 2019 04:38:58 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f24sm9644429wmb.37.2019.11.28.04.38.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Nov 2019 04:38:57 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, mlxsw@mellanox.com
-Subject: [patch net] selftests: forwarding: fix race between packet receive and tc check
-Date:   Thu, 28 Nov 2019 13:38:57 +0100
-Message-Id: <20191128123857.1216-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.20.1
+        id S1726700AbfK1Mr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 07:47:27 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:39569 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726281AbfK1Mr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Nov 2019 07:47:26 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id db9d9fa5;
+        Thu, 28 Nov 2019 11:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=JWrJMMQI7xcRH9JA9rmWSPbtPaE=; b=ng6lE0
+        qiP3CR9yJpgauKGmvai0abXNjrKak/sIPsHkwMQGUKDxCzQ/vW1NZJyJ+SwjpP3x
+        I3DIJQTw+6Nc1RpXSUCy/RONCU1KKbAppCjBgrIn2DSIDcIo2tCP4OHLQQBbrkXU
+        YnH6HQcB68oQ2jYWMJGzdPT6FPrkSQSRmzdulYdSuOpzcl3QOK9KNTkB2U8W7W0P
+        1ZnYHj+lgEb6T+rlGlWm2J0Pt0FgfJnnhKBG4mk64LxHAV6+q/9pu/Yqiek3PWij
+        H6CqydFIgvOiGtC14XOIg01vFpr6mN6dA0hET/MLIVM7SVCl6vXWamtc8Ds5bcEc
+        cvyJAnZias5JXQLg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1a5a440d (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 28 Nov 2019 11:53:24 +0000 (UTC)
+Received: by mail-oi1-f180.google.com with SMTP id l20so23200001oie.10;
+        Thu, 28 Nov 2019 04:47:23 -0800 (PST)
+X-Gm-Message-State: APjAAAXYoHOgaeCg+X0GXMEY2sKkOAanhkWEScpJIrVQBQqoaPi9z4DB
+        kx/LuII+gJgst5b01sAxJA+x9Mh4CTAp+7lDpUU=
+X-Google-Smtp-Source: APXvYqzeVCxssZpzO5edbpWpxx6KjrwlgZzbotvXWLRC9YbNC1MtYuhfauThDHga/WjFuthpM4cMXys/DpWcXkoscLk=
+X-Received: by 2002:a05:6808:906:: with SMTP id w6mr7805253oih.122.1574945242419;
+ Thu, 28 Nov 2019 04:47:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHmME9oqT_BncUFaJRpj0xtL1MPcE=g5WQG_qE7oC231USQCPA@mail.gmail.com>
+ <20191127.105506.1224335279309401228.davem@davemloft.net>
+In-Reply-To: <20191127.105506.1224335279309401228.davem@davemloft.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 28 Nov 2019 13:47:11 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oo0GbTC6mxOoBkmHPWCgt9H9C9QJ9_oyP9OQjWY0AFgg@mail.gmail.com>
+Message-ID: <CAHmME9oo0GbTC6mxOoBkmHPWCgt9H9C9QJ9_oyP9OQjWY0AFgg@mail.gmail.com>
+Subject: Re: WireGuard for 5.5?
+To:     David Miller <davem@davemloft.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Wed, Nov 27, 2019 at 7:55 PM David Miller <davem@davemloft.net> wrote:
+> I haven't read the patch and plan to do so soon.
+>
+> The merge window is open and thus net-next is closed, so we can put
+> this into the next merge window.
 
-It is possible that tc stats get checked before the packet we check for
-actually arrived into the interface and accounted for.
-Fix it by checking for the expected result in a loop until
-timeout is reached (by default 1 second).
+Okay, no problem. That means 5.6. If there are comments on the v1 I
+sent, I'll send the v2 when net-next is actually open, per the norm.
 
-Fixes: 07e5c75184a1 ("selftests: forwarding: Introduce tc flower matching tests")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- .../selftests/net/forwarding/tc_common.sh     | 39 +++++++++++++++----
- 1 file changed, 31 insertions(+), 8 deletions(-)
-
-diff --git a/tools/testing/selftests/net/forwarding/tc_common.sh b/tools/testing/selftests/net/forwarding/tc_common.sh
-index d93589bd4d1d..64f652633585 100644
---- a/tools/testing/selftests/net/forwarding/tc_common.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_common.sh
-@@ -3,16 +3,42 @@
- 
- CHECK_TC="yes"
- 
-+# Can be overridden by the configuration file. See lib.sh
-+TC_HIT_TIMEOUT=${TC_HIT_TIMEOUT:=1000} # ms
-+
-+__tc_check_packets()
-+{
-+	local id=$1
-+	local handle=$2
-+	local count=$3
-+	local operator=$4
-+
-+	start_time="$(date -u +%s%3N)"
-+	while true
-+	do
-+		cmd_jq "tc -j -s filter show $id" \
-+		       ".[] | select(.options.handle == $handle) | \
-+			    select(.options.actions[0].stats.packets $operator $count)" \
-+		    &> /dev/null
-+		ret=$?
-+		if [[ $ret -eq 0 ]]; then
-+			return $ret
-+		fi
-+		current_time="$(date -u +%s%3N)"
-+		diff=$(expr $current_time - $start_time)
-+		if [ "$diff" -gt "$TC_HIT_TIMEOUT" ]; then
-+			return 1
-+		fi
-+	done
-+}
-+
- tc_check_packets()
- {
- 	local id=$1
- 	local handle=$2
- 	local count=$3
- 
--	cmd_jq "tc -j -s filter show $id" \
--	       ".[] | select(.options.handle == $handle) | \
--	              select(.options.actions[0].stats.packets == $count)" \
--	       &> /dev/null
-+	__tc_check_packets "$id" "$handle" "$count" "=="
- }
- 
- tc_check_packets_hitting()
-@@ -20,8 +46,5 @@ tc_check_packets_hitting()
- 	local id=$1
- 	local handle=$2
- 
--	cmd_jq "tc -j -s filter show $id" \
--	       ".[] | select(.options.handle == $handle) | \
--		      select(.options.actions[0].stats.packets > 0)" \
--	       &> /dev/null
-+	__tc_check_packets "$id" "$handle" 0 ">"
- }
--- 
-2.20.1
-
+Jason
