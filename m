@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1701310C460
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A692510C48A
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727309AbfK1HiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 02:38:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727142AbfK1HiA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Nov 2019 02:38:00 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8EA9F21736;
-        Thu, 28 Nov 2019 07:37:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574926678;
-        bh=cOkm7TWMCJ+gUlFjEYNdlFcXOzFTCWmQpq+5HclC0/Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bMbaOFimZ3QPj3fps1kS64u0fJxrxH1n/Ny7wM6A02u8689pkuD9JcLpWvACL7xdn
-         dW8eZO12e28H8VwReMK58nmoZyD6r+wEzxToFCGBzj0JFBWUbzEQcFUqgg3ROoACX5
-         TO+nkCucGNAY5WxyyEDjXGMvji+Jb3k3BdtGtJqo=
-Date:   Thu, 28 Nov 2019 08:36:23 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        lkft-triage@lists.linaro.org,
-        linux- stable <stable@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        jouni.hogander@unikie.com, "David S. Miller" <davem@davemloft.net>,
-        lukas.bulwahn@gmail.com
-Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
-Message-ID: <20191128073623.GE3317872@kroah.com>
-References: <20191127203114.766709977@linuxfoundation.org>
- <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
+        id S1726730AbfK1HvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 02:51:14 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:50472 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbfK1HvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 02:51:13 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1iaEZw-00064a-J8; Thu, 28 Nov 2019 07:51:08 +0000
+Received: from sleer.kot-begemot.co.uk ([192.168.3.72])
+        by jain.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1iaEZu-0003UN-3Z; Thu, 28 Nov 2019 07:51:08 +0000
+Subject: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+To:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Cc:     kernel-janitors@vger.kernel.org, linux-um@lists.infradead.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <20191128020147.191893-1-weiyongjun1@huawei.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Organization: Cambridge Greys
+Message-ID: <b4ebeac2-c180-0ca0-5170-e9ff2fac32e9@cambridgegreys.com>
+Date:   Thu, 28 Nov 2019 07:51:06 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191128020147.191893-1-weiyongjun1@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 12:23:41PM +0530, Naresh Kamboju wrote:
-> On Thu, 28 Nov 2019 at 02:25, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 4.19.87 release.
-> > There are 306 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Fri, 29 Nov 2019 20:18:09 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.87-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
+On 28/11/2019 02:01, Wei Yongjun wrote:
+> A spin lock is taken here so we should use GFP_ATOMIC.
 > 
-> Kernel BUG noticed on x86_64 device while booting 4.19.87-rc1 kernel.
+> Fixes: 9807019a62dc ("um: Loadable BPF "Firmware" for vector drivers")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>   arch/um/drivers/vector_kern.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> The problematic patch is,
+> diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
+> index 92617e16829e..6ff0065a271d 100644
+> --- a/arch/um/drivers/vector_kern.c
+> +++ b/arch/um/drivers/vector_kern.c
+> @@ -1402,7 +1402,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+>   		kfree(vp->bpf->filter);
+>   		vp->bpf->filter = NULL;
+>   	} else {
+> -		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_KERNEL);
+> +		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_ATOMIC);
+>   		if (vp->bpf == NULL) {
+>   			netdev_err(dev, "failed to allocate memory for firmware\n");
+>   			goto flash_fail;
+> @@ -1414,7 +1414,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+>   	if (request_firmware(&fw, efl->data, &vdevice->pdev.dev))
+>   		goto flash_fail;
+>   
+> -	vp->bpf->filter = kmemdup(fw->data, fw->size, GFP_KERNEL);
+> +	vp->bpf->filter = kmemdup(fw->data, fw->size, GFP_ATOMIC);
+>   	if (!vp->bpf->filter)
+>   		goto free_buffer;
 > 
-> > Jouni Hogander <jouni.hogander@unikie.com>
-> >     net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
 > 
-> And this kernel panic is been fixed by below patch,
 > 
-> commit 48a322b6f9965b2f1e4ce81af972f0e287b07ed0
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Wed Nov 20 19:19:07 2019 -0800
 > 
->     net-sysfs: fix netdev_queue_add_kobject() breakage
-> 
->     kobject_put() should only be called in error path.
-> 
->     Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in
-> rx|netdev_queue_add_kobject")
->     Signed-off-by: Eric Dumazet <edumazet@google.com>
->     Cc: Jouni Hogander <jouni.hogander@unikie.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-Now queued up, I'll push out -rc2 versions with this fix.
+Acked-by: Anton Ivanov <anton.ivanov@cambridgegreys.co.uk>
 
-greg k-h
+> _______________________________________________
+> linux-um mailing list
+> linux-um@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-um
+> 
+
+
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
