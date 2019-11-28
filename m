@@ -2,70 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B19C10C535
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ABD710C53F
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727519AbfK1IfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 03:35:11 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:49956 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727482AbfK1IfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:35:10 -0500
-Received: by mail-il1-f198.google.com with SMTP id c2so21594422ilj.16
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 00:35:08 -0800 (PST)
+        id S1727110AbfK1Ihe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 03:37:34 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:44082 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbfK1Ihd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:37:33 -0500
+Received: by mail-qt1-f194.google.com with SMTP id g24so21493521qtq.11
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 00:37:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6u7P0pT+m1avw2GIFNYZQ34T01piQ8kE385X/AIq78g=;
+        b=QZshRNUZBr5ALtvOYHI55X9QPZjYHWQM6OkQ26CESw8JOkaLWVE3SCNpz6Jxef3GK1
+         N63xpQJB3YzktG8IgnD8WPkjs25k2zaLapcvRmNuhJqR+zsJ96rCzPCwuc+NUs2VKMsS
+         IPdzCRFYHKAkEPnN3iHHQGRzxdSa7BLD+dlI1rg7zgU32P2FLZGBiw8qabG37KMZBBhq
+         m/BQiQ2m2RizbI01ONfvloWjp36yG7R/Y5ipDkoCyZ5gaszGdxvdIztLdI+lUtVWO9IY
+         Dv7PKe/bGPx/jZvoGttLbsZWHGkox1cf1O6ebXIgh0rVbnWSzJRg1FHATqzYfx4o5zOV
+         YWOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=iftIAuBJlzuFdFQ/gen9t495x074EdBNfttXbnSun7c=;
-        b=MPFje2TEFHn12HvF8fBcOZw5uxqmyC/k/GRoC3n0MdSrHvZRQ7cUNBHRO47VmDP5t6
-         h4UCTJdSqmQzsR4HhjQBMcSO8Rb3VqN1hutmmjcznF0/WpGh0Cn07tX+0zgRfNsiHWcs
-         bohLJcmxgOEdVAZqIbLfOp57DrZTZAy6krr7WJ2SZ0Vaj+ejvrcEuWR5rqnpcyiOMpa2
-         l+p8vwRPM4lh/z9TFvs5fj+gxeD5IvzzWCONdOs0gLOm+Y+lo882Yu8F/VG1sKX7M5ur
-         w5PxEpVRp5Hez2G+MgABQ0YWDBdggLMphyrYG8gfIldZBzIhOjZHAzW7pXALI9AeaY2j
-         70FA==
-X-Gm-Message-State: APjAAAVQir/xmZ/0TFGQJJJTDw+oausA9FgNvF7GL/nhV+kEbYZ830Kd
-        Di1P3rWYwzI3uXhcoCHILS073RPOf3mBySmdXjGaX6bDwYAa
-X-Google-Smtp-Source: APXvYqwc47ILKJSLeuogY0PCo5YYTgjn4x40uA/q653uZTlpFte125o18QRBlnDlCaHQrv4yol95s47lHqrmG2zlnnpSVVLS5Dm3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6u7P0pT+m1avw2GIFNYZQ34T01piQ8kE385X/AIq78g=;
+        b=sqjEZ9Kd1QwF0UIHjWNXDrrOj2Tk5/T1vndrnEvJhW1Y8jdtq54f7su4YjzCK7zEQJ
+         eDl+GXX83z/ZpJFXvjc9YRMm1EmLmEJcJWHarA9G6l6YQ70x97JzH/rue1nHx/Jhxv/C
+         gqTtwaDC2xXNsSRi42tmqipxP0okwyyb+OfBvI3ZHSHTYMiBEkmOBMi8FKjfyerLVuRN
+         M7YQg2h8jl6Mz1R21bzBRH0+YLNhAz9Ho6dnelTGpyHQYLXRvWWqAktv2/3hzJlzDCij
+         X9CxcUwIaeNcvxl6ujeKp4u6u4HV63vBK3nKjpSn1lehZchs4bjcetPgz1PCfwC2V0bz
+         JlKw==
+X-Gm-Message-State: APjAAAWTl/bYHkvcKLReRTJG2Nn6FMe3XtttKBs5pD/S1Lattp+ogy3U
+        HWQWsXQnbo8HlBf7APhtD2+1ro3pDcmdlZs+IKgngGgpfwE=
+X-Google-Smtp-Source: APXvYqy2wNwhnjUiRqGpMgfQGEjumGsSuvzRRhYXY9a/aMTl2PaNqNDT9FcS/UKU7vz5kiAskbxayH5YmZbjcEwXchY=
+X-Received: by 2002:ac8:6a0e:: with SMTP id t14mr10980160qtr.57.1574930252182;
+ Thu, 28 Nov 2019 00:37:32 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9294:: with SMTP id s20mr4653198iom.157.1574930108203;
- Thu, 28 Nov 2019 00:35:08 -0800 (PST)
-Date:   Thu, 28 Nov 2019 00:35:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a54cd9059863fd8c@google.com>
-Subject: bpf build error (2)
-From:   syzbot <syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <000000000000a54cd9059863fd8c@google.com>
+In-Reply-To: <000000000000a54cd9059863fd8c@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 28 Nov 2019 09:37:20 +0100
+Message-ID: <CACT4Y+YnLC93dzGE51KQmqwgOgcULtnE1fS_ruJns_Ar1uqYhg@mail.gmail.com>
+Subject: Re: bpf build error (2)
+To:     syzbot <syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Nov 28, 2019 at 9:35 AM syzbot
+<syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    7c3977d1 libbpf: Fix sym->st_value print on 32-bit arches
+> git tree:       bpf
+> console output: https://syzkaller.appspot.com/x/log.txt?x=108ab832e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=7a7e892e3a014d76
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c89a581922d5a98fccb8
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>
+> Unfortunately, I don't have any reproducer for this crash yet.
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com
+>
+> failed to run ["make" "bzImage" "CC=/syzkaller/gcc/bin/gcc" "-j64"]: exit
+> status 2
+>
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
-syzbot found the following crash on:
-
-HEAD commit:    7c3977d1 libbpf: Fix sym->st_value print on 32-bit arches
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=108ab832e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7a7e892e3a014d76
-dashboard link: https://syzkaller.appspot.com/bug?extid=c89a581922d5a98fccb8
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com
-
-failed to run ["make" "bzImage" "CC=/syzkaller/gcc/bin/gcc" "-j64"]: exit  
-status 2
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot distro does not provide pahole 1.13, so I followed the
+suggestion and disabled CONFIG_DEBUG_INFO_BTF:
+https://github.com/google/syzkaller/commit/861a5980df642d6b9fb59fda98d5a75a019f5f34
+#syz invalid
