@@ -2,165 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D527410CC7E
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:08:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E87010CC84
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbfK1QIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 11:08:55 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:33443 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726446AbfK1QIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 11:08:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574957333;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=CXzG1J/CFbsb4K3v/udO4wLVNEiWZJys9gAPx1PG8ro=;
-        b=f5fgFDybBIK7X2aNHM3/GLbzMDXEVWsYEc7oeybWPZzFjMne7LaHHtAM144rm/zwTwAgNm
-        1coJQ9CmqMP7mnUBLRvP7n8C1biDMHYk3W1CWcnu7T5YWuG8L7Cme/vt8/7+m1yyHO9tyK
-        wT5i/WY2q9FICHRIJ2z10yUrCHzMdwM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-235-TVBSW2wSOwmCZrTB49WmYA-1; Thu, 28 Nov 2019 11:08:49 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6B6B8800EBA;
-        Thu, 28 Nov 2019 16:08:48 +0000 (UTC)
-Received: from carbon (unknown [10.36.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8ED1210013A7;
-        Thu, 28 Nov 2019 16:08:40 +0000 (UTC)
-Date:   Thu, 28 Nov 2019 17:08:37 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     brouer@redhat.com,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Better ways to validate map via BTF?
-Message-ID: <20191128170837.2236713b@carbon>
+        id S1726569AbfK1QM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 11:12:58 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:32936 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726446AbfK1QM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 11:12:57 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 6so8563703pgk.0
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 08:12:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=v8X09G/jn0hNe8F4x3GVXBnyoHtLvjm3S2FCZ4SQSVw=;
+        b=A/+bWOxqqk22bq6wUmCw9XM4IG7vtDKpUHxJgRShr2+8IyUTVjKPyvsBT1reMD0bZz
+         OV4ELGxiYdKYkSUa0Z4oqzkOTFXRs8slptiaY0363h6t8gsn4SjdljeTQ0Hl+aAzAPko
+         yo4yRLmh3X5A3RY51A1wZazENTigiwgvpjLYgFovf30MlV4V5w6ariiZu/DaIP8XJ33b
+         S0o4j84PXXJ4iJaDjfuicT15raafMs25LxlyqA+r6/vSaBpJkoSdEP2pe4c605fRFyuN
+         z3DWsMW3+LtqMslB1kvYqlwN3Yk9NabYcCA3hJ59ukZzv6xLa0sCaIDKGMAqEgtzegf+
+         dPvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=v8X09G/jn0hNe8F4x3GVXBnyoHtLvjm3S2FCZ4SQSVw=;
+        b=oeqfnycqE4h5/8AqZIo7uDbz9uqDcsynhIN4E4y1OS3miXMgSZDRksnMnh9oM80r3R
+         YcJi2wVyB71EG0np1NTBnVL1AtiktJKk6qyLZ4Cz8XHiUNQHj2ZR8GGMdtDMB2JyQtZb
+         +4kt9qziSPC8v91NT+LYZdj/WiJ3dRmWoTOH9odX5SQ9B77QBFEWqC0ktRhszNwBBBnc
+         5/8HyZNNWRQgUZe1WBRLkt9G+VMefcd2sVvnQcgzwK5dyrMgG2ChWJFb8cqpLy66Hq6v
+         2uUM09QelGgBE2UEBRirfQSuyLdc1cr4vec6kpVk6D2GogzZ19KI4F/FsvgSdNicAeiM
+         PZ6g==
+X-Gm-Message-State: APjAAAVC8TFUZ9ZRcJSwqaEpGyADxrSjTv/NClL9TnEDoOJ494rQ1WLm
+        v/8X0xO8lJ1o0fK414gFJZE=
+X-Google-Smtp-Source: APXvYqwfdlxlhPKXFUdc5mnKiXguH8uau9UhhxzpQzBOCWbljFHVNu+mXL7xcCDSFbknTx6rDtj4nw==
+X-Received: by 2002:a62:1a16:: with SMTP id a22mr1600979pfa.34.1574957577339;
+        Thu, 28 Nov 2019 08:12:57 -0800 (PST)
+Received: from martin-VirtualBox ([42.109.141.206])
+        by smtp.gmail.com with ESMTPSA id x13sm4653681pfc.171.2019.11.28.08.12.56
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 28 Nov 2019 08:12:56 -0800 (PST)
+Date:   Thu, 28 Nov 2019 21:42:43 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH v3 net-next 2/2] Special handling for IP & MPLS.
+Message-ID: <20191128161243.GA2633@martin-VirtualBox>
+References: <cover.1573872263.git.martin.varghese@nokia.com>
+ <24ec93937d65fa2afc636a2887c78ae48736a649.1573872264.git.martin.varghese@nokia.com>
+ <CA+FuTSeHsZnHMUiZmHugCT=83g6EA8OJVWd9VdV-LqbA94xVqQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: TVBSW2wSOwmCZrTB49WmYA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: multipart/mixed; boundary="MP_/T92jVa0H16EwHN9B/ADyA.+"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSeHsZnHMUiZmHugCT=83g6EA8OJVWd9VdV-LqbA94xVqQ@mail.gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---MP_/T92jVa0H16EwHN9B/ADyA.+
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi Andrii,
-
-Is there are better way to validate that a userspace BPF-program uses
-the correct map via BTF?
-
-Below and in attached patch, I'm using bpf_obj_get_info_by_fd() to get
-some map-info, and check info.value_size and info.max_entries match
-what I expect.  What I really want, is to check that "map-value" have
-same struct layout as:
-
- struct config {
-	__u32 action;
-	int ifindex;
-	__u32 options;
- };
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+On Mon, Nov 18, 2019 at 12:30:11PM -0500, Willem de Bruijn wrote:
+> On Sat, Nov 16, 2019 at 12:45 AM Martin Varghese
+> <martinvarghesenokia@gmail.com> wrote:
+> >
+> > From: Martin Varghese <martin.varghese@nokia.com>
+> >
+> > Special handling is needed in bareudp module for IP & MPLS as they support
+> > more than one ethertypes.
+> >
+> > MPLS has 2 ethertypes. 0x8847 for MPLS unicast and 0x8848 for MPLS multicast.
+> > While decapsulating MPLS packet from UDP packet the tunnel destination IP
+> > address is checked to determine the ethertype. The ethertype of the packet
+> > will be set to 0x8848 if the  tunnel destination IP address is a multicast
+> > IP address. The ethertype of the packet will be set to 0x8847 if the
+> > tunnel destination IP address is a unicast IP address.
+> >
+> > IP has 2 ethertypes.0x0800 for IPV4 and 0x86dd for IPv6. The version field
+> > of the IP header tunnelled will be checked to determine the ethertype.
+> 
+> If using ipv6 dual stack, it might make more sense to use extended
+> mode with the ipv6 device instead of the ipv4 device.
+>
+ipv6 dual stack (v6 socket) is for the tunnel.the ethertype mentioned above
+is for the inner protocol being tunnelled
 
 
-static void check_config_map_fd_info(int map_fd) {
-	struct bpf_map_info info = { 0 };
-	__u32 info_len = sizeof(info);
-	__u32 exp_value_size = sizeof(struct config);
-	__u32 exp_entries = 1;
-	int err;
+ 
+> Also, the term extended mode is not self describing. Dual stack as
+> term would be, but is not relevant to MPLS. Maybe "dual_proto"?
+>
+multi_proto ?
 
-	/* BPF-info via bpf-syscall */
-	err = bpf_obj_get_info_by_fd(map_fd, &info, &info_len);
-	if (err) {
-		fprintf(stderr, "ERR: %s() can't get info - %s\n",
-			__func__,  strerror(errno));
-		exit(EXIT_FAIL_BPF);
-	}
+> > diff --git a/Documentation/networking/bareudp.rst b/Documentation/networking/bareudp.rst
+> > index 2828521..1f01dfd 100644
+> > --- a/Documentation/networking/bareudp.rst
+> > +++ b/Documentation/networking/bareudp.rst
+> > @@ -12,6 +12,15 @@ The Bareudp tunnel module provides a generic L3 encapsulation tunnelling
+> >  support for tunnelling different L3 protocols like MPLS, IP, NSH etc. inside
+> >  a UDP tunnel.
+> >
+> > +Special Handling
+> > +----------------
+> > +The bareudp device supports special handling for MPLS & IP as they can have
+> > +multiple ethertypes.
+> > +MPLS procotcol can have ethertypes ETH_P_MPLS_UC  (unicast) & ETH_P_MPLS_MC (multicast).
+> > +IP proctocol can have ethertypes ETH_P_IP (v4) & ETH_P_IPV6 (v6).
+> 
+> proctocol -> protocol
 
-	if (exp_value_size != info.value_size) {
-		fprintf(stderr, "ERR: %s() "
-			"Map value size(%d) mismatch expected size(%d)\n",
-			__func__, info.value_size, exp_value_size);
-		exit(EXIT_FAIL_BPF);
-	}
+Noted.
 
-	if (exp_entries != info.max_entries) {
-		fprintf(stderr, "ERR: %s() "
-			"Map max_entries(%d) mismatch expected entries(%d)\n",
-			__func__, info.max_entries, exp_entries);
-		exit(EXIT_FAIL_BPF);
-	}
-}
-
-
-struct config {
-	__u32 action;
-	int ifindex;
-	__u32 options;
-};
-
-
---MP_/T92jVa0H16EwHN9B/ADyA.+
-Content-Type: application/octet-stream; name=02-detect_map_mismatch
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=02-detect_map_mismatch
-
-c2FtcGxlcy9icGY6IHhkcF9yeHFfaW5mbyBjaGVjayB0aGF0IG1hcCBoYXZlIGV4cGVjdGVkIHNp
-emUKCkZyb206IEplc3BlciBEYW5nYWFyZCBCcm91ZXIgPGJyb3VlckByZWRoYXQuY29tPgoKU2ln
-bmVkLW9mZi1ieTogSmVzcGVyIERhbmdhYXJkIEJyb3VlciA8YnJvdWVyQHJlZGhhdC5jb20+Ci0t
-LQogc2FtcGxlcy9icGYveGRwX3J4cV9pbmZvX3VzZXIuYyB8ICAgMzMgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKystCiAxIGZpbGUgY2hhbmdlZCwgMzIgaW5zZXJ0aW9ucygrKSwgMSBk
-ZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL3NhbXBsZXMvYnBmL3hkcF9yeHFfaW5mb191c2VyLmMg
-Yi9zYW1wbGVzL2JwZi94ZHBfcnhxX2luZm9fdXNlci5jCmluZGV4IDUxZTBkODEwZTA3MC4uZmE2
-MDczMWZkYmFkIDEwMDY0NAotLS0gYS9zYW1wbGVzL2JwZi94ZHBfcnhxX2luZm9fdXNlci5jCisr
-KyBiL3NhbXBsZXMvYnBmL3hkcF9yeHFfaW5mb191c2VyLmMKQEAgLTQ1Myw2ICs0NTMsMzUgQEAg
-c3RhdGljIHZvaWQgc3RhdHNfcG9sbChpbnQgaW50ZXJ2YWwsIGludCBhY3Rpb24sIF9fdTMyIGNm
-Z19vcHQpCiAJZnJlZV9zdGF0c19yZWNvcmQocHJldik7CiB9CiAKK3N0YXRpYyB2b2lkIGNoZWNr
-X2NvbmZpZ19tYXBfZmRfaW5mbyhpbnQgbWFwX2ZkKSB7CisJc3RydWN0IGJwZl9tYXBfaW5mbyBp
-bmZvID0geyAwIH07CisJX191MzIgaW5mb19sZW4gPSBzaXplb2YoaW5mbyk7CisJX191MzIgZXhw
-X3ZhbHVlX3NpemUgPSBzaXplb2Yoc3RydWN0IGNvbmZpZyk7CisJX191MzIgZXhwX2VudHJpZXMg
-PSAxOworCWludCBlcnI7CisKKwkvKiBCUEYtaW5mbyB2aWEgYnBmLXN5c2NhbGwgKi8KKwllcnIg
-PSBicGZfb2JqX2dldF9pbmZvX2J5X2ZkKG1hcF9mZCwgJmluZm8sICZpbmZvX2xlbik7CisJaWYg
-KGVycikgeworCQlmcHJpbnRmKHN0ZGVyciwgIkVSUjogJXMoKSBjYW4ndCBnZXQgaW5mbyAtICVz
-XG4iLAorCQkJX19mdW5jX18sICBzdHJlcnJvcihlcnJubykpOworCQlleGl0KEVYSVRfRkFJTF9C
-UEYpOworCX0KKworCWlmIChleHBfdmFsdWVfc2l6ZSAhPSBpbmZvLnZhbHVlX3NpemUpIHsKKwkJ
-ZnByaW50ZihzdGRlcnIsICJFUlI6ICVzKCkgIgorCQkJIk1hcCB2YWx1ZSBzaXplKCVkKSBtaXNt
-YXRjaCBleHBlY3RlZCBzaXplKCVkKVxuIiwKKwkJCV9fZnVuY19fLCBpbmZvLnZhbHVlX3NpemUs
-IGV4cF92YWx1ZV9zaXplKTsKKwkJZXhpdChFWElUX0ZBSUxfQlBGKTsKKwl9CisKKwlpZiAoZXhw
-X2VudHJpZXMgIT0gaW5mby5tYXhfZW50cmllcykgeworCQlmcHJpbnRmKHN0ZGVyciwgIkVSUjog
-JXMoKSAiCisJCQkiTWFwIG1heF9lbnRyaWVzKCVkKSBtaXNtYXRjaCBleHBlY3RlZCBlbnRyaWVz
-KCVkKVxuIiwKKwkJCV9fZnVuY19fLCBpbmZvLm1heF9lbnRyaWVzLCBleHBfZW50cmllcyk7CisJ
-CWV4aXQoRVhJVF9GQUlMX0JQRik7CisJfQorfQogCiBpbnQgbWFpbihpbnQgYXJnYywgY2hhciAq
-KmFyZ3YpCiB7CkBAIC00NjEsNyArNDkwLDcgQEAgaW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKiph
-cmd2KQogCXN0cnVjdCBicGZfcHJvZ19sb2FkX2F0dHIgcHJvZ19sb2FkX2F0dHIgPSB7CiAJCS5w
-cm9nX3R5cGUJPSBCUEZfUFJPR19UWVBFX1hEUCwKIAl9OwotCXN0cnVjdCBicGZfcHJvZ19pbmZv
-IGluZm8gPSB7fTsKKwlzdHJ1Y3QgYnBmX3Byb2dfaW5mbyBpbmZvID0geyAwIH07CiAJX191MzIg
-aW5mb19sZW4gPSBzaXplb2YoaW5mbyk7CiAJaW50IHByb2dfZmQsIG1hcF9mZCwgb3B0LCBlcnI7
-CiAJYm9vbCB1c2Vfc2VwYXJhdG9ycyA9IHRydWU7CkBAIC00OTAsNiArNTE5LDcgQEAgaW50IG1h
-aW4oaW50IGFyZ2MsIGNoYXIgKiphcmd2KQogCQlyZXR1cm4gRVhJVF9GQUlMOwogCiAJbWFwID0g
-YnBmX21hcF9fbmV4dChOVUxMLCBvYmopOworLy8JbWFwID0gIGJwZl9vYmplY3RfX2ZpbmRfbWFw
-X2J5X25hbWUob2JqLCAiY29uZmlnIik7CiAJc3RhdHNfZ2xvYmFsX21hcCA9IGJwZl9tYXBfX25l
-eHQobWFwLCBvYmopOwogCXJ4X3F1ZXVlX2luZGV4X21hcCA9IGJwZl9tYXBfX25leHQoc3RhdHNf
-Z2xvYmFsX21hcCwgb2JqKTsKIAlpZiAoIW1hcCB8fCAhc3RhdHNfZ2xvYmFsX21hcCB8fCAhcnhf
-cXVldWVfaW5kZXhfbWFwKSB7CkBAIC01ODEsNiArNjExLDcgQEAgaW50IG1haW4oaW50IGFyZ2Ms
-IGNoYXIgKiphcmd2KQogCQlzZXRsb2NhbGUoTENfTlVNRVJJQywgImVuX1VTIik7CiAKIAkvKiBV
-c2VyLXNpZGUgc2V0dXAgaWZpbmRleCBpbiBjb25maWdfbWFwICovCisJY2hlY2tfY29uZmlnX21h
-cF9mZF9pbmZvKG1hcF9mZCk7CiAJZXJyID0gYnBmX21hcF91cGRhdGVfZWxlbShtYXBfZmQsICZr
-ZXksICZjZmcsIDApOwogCWlmIChlcnIpIHsKIAkJZnByaW50ZihzdGRlcnIsICJTdG9yZSBjb25m
-aWcgZmFpbGVkIChlcnI6JWQpXG4iLCBlcnIpOwo=
---MP_/T92jVa0H16EwHN9B/ADyA.+--
-
+Thanks for your time
