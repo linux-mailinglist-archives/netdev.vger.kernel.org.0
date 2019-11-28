@@ -2,92 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ABD710C53F
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 752C210C545
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbfK1Ihe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 03:37:34 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44082 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726558AbfK1Ihd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:37:33 -0500
-Received: by mail-qt1-f194.google.com with SMTP id g24so21493521qtq.11
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 00:37:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6u7P0pT+m1avw2GIFNYZQ34T01piQ8kE385X/AIq78g=;
-        b=QZshRNUZBr5ALtvOYHI55X9QPZjYHWQM6OkQ26CESw8JOkaLWVE3SCNpz6Jxef3GK1
-         N63xpQJB3YzktG8IgnD8WPkjs25k2zaLapcvRmNuhJqR+zsJ96rCzPCwuc+NUs2VKMsS
-         IPdzCRFYHKAkEPnN3iHHQGRzxdSa7BLD+dlI1rg7zgU32P2FLZGBiw8qabG37KMZBBhq
-         m/BQiQ2m2RizbI01ONfvloWjp36yG7R/Y5ipDkoCyZ5gaszGdxvdIztLdI+lUtVWO9IY
-         Dv7PKe/bGPx/jZvoGttLbsZWHGkox1cf1O6ebXIgh0rVbnWSzJRg1FHATqzYfx4o5zOV
-         YWOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6u7P0pT+m1avw2GIFNYZQ34T01piQ8kE385X/AIq78g=;
-        b=sqjEZ9Kd1QwF0UIHjWNXDrrOj2Tk5/T1vndrnEvJhW1Y8jdtq54f7su4YjzCK7zEQJ
-         eDl+GXX83z/ZpJFXvjc9YRMm1EmLmEJcJWHarA9G6l6YQ70x97JzH/rue1nHx/Jhxv/C
-         gqTtwaDC2xXNsSRi42tmqipxP0okwyyb+OfBvI3ZHSHTYMiBEkmOBMi8FKjfyerLVuRN
-         M7YQg2h8jl6Mz1R21bzBRH0+YLNhAz9Ho6dnelTGpyHQYLXRvWWqAktv2/3hzJlzDCij
-         X9CxcUwIaeNcvxl6ujeKp4u6u4HV63vBK3nKjpSn1lehZchs4bjcetPgz1PCfwC2V0bz
-         JlKw==
-X-Gm-Message-State: APjAAAWTl/bYHkvcKLReRTJG2Nn6FMe3XtttKBs5pD/S1Lattp+ogy3U
-        HWQWsXQnbo8HlBf7APhtD2+1ro3pDcmdlZs+IKgngGgpfwE=
-X-Google-Smtp-Source: APXvYqy2wNwhnjUiRqGpMgfQGEjumGsSuvzRRhYXY9a/aMTl2PaNqNDT9FcS/UKU7vz5kiAskbxayH5YmZbjcEwXchY=
-X-Received: by 2002:ac8:6a0e:: with SMTP id t14mr10980160qtr.57.1574930252182;
- Thu, 28 Nov 2019 00:37:32 -0800 (PST)
+        id S1727059AbfK1Iia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 03:38:30 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:55446 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726301AbfK1Ii3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:38:29 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAS8Y4Jo035180;
+        Thu, 28 Nov 2019 08:37:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=lT5186ZNBxR5ODA3TJnZ4mvt45f9bF6EnEE3JtOE2LE=;
+ b=R0O4N0uwWjPVpcQSpyAxWnjbP89B8lu82n+53715BCU9EGqXDv6fQqjFsIiVsc14Q2Dq
+ I3dKEUmacHX2yhLek9LuQUTPThKpniVbxpVGlbpJGVjjZEgtLn1i3uPdLwJxr3andgBW
+ ReUojJrt9UDJG3gg2C6sCgQsSxYxr3YMX8RYVeO0/REFnLMhvqm1DrRlHFzHmJouISlT
+ Zlwy4LlAyIGifexDgTLGERJ8d6FVI9LPDEWbrTI1p0vkcldyd0rkHxnAddb+7YpZk3Nr
+ pvw9garPA7sQUxehv3JOEklYMEoD/gD7RiGc+837YO+pdh+6mcZlYrOUf4xJZc4nrFCK /w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2wewdrj27s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Nov 2019 08:37:52 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAS8YAp3167927;
+        Thu, 28 Nov 2019 08:37:51 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 2why49pb3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Nov 2019 08:37:51 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAS8bkFY023351;
+        Thu, 28 Nov 2019 08:37:46 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 28 Nov 2019 00:37:45 -0800
+Date:   Thu, 28 Nov 2019 11:37:35 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-janitors@vger.kernel.org,
+        Richard Weinberger <richard@nod.at>,
+        Jeff Dike <jdike@addtoit.com>, linux-um@lists.infradead.org,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+Message-ID: <20191128083735.GE1781@kadam>
+References: <20191128020147.191893-1-weiyongjun1@huawei.com>
+ <20191128080641.GD1781@kadam>
+ <5892ee7c-ff24-fb3c-6911-44e0b1d5895f@cambridgegreys.com>
 MIME-Version: 1.0
-References: <000000000000a54cd9059863fd8c@google.com>
-In-Reply-To: <000000000000a54cd9059863fd8c@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 28 Nov 2019 09:37:20 +0100
-Message-ID: <CACT4Y+YnLC93dzGE51KQmqwgOgcULtnE1fS_ruJns_Ar1uqYhg@mail.gmail.com>
-Subject: Re: bpf build error (2)
-To:     syzbot <syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5892ee7c-ff24-fb3c-6911-44e0b1d5895f@cambridgegreys.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9454 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1911280073
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9454 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1911280073
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 9:35 AM syzbot
-<syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    7c3977d1 libbpf: Fix sym->st_value print on 32-bit arches
-> git tree:       bpf
-> console output: https://syzkaller.appspot.com/x/log.txt?x=108ab832e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7a7e892e3a014d76
-> dashboard link: https://syzkaller.appspot.com/bug?extid=c89a581922d5a98fccb8
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->
-> Unfortunately, I don't have any reproducer for this crash yet.
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+c89a581922d5a98fccb8@syzkaller.appspotmail.com
->
-> failed to run ["make" "bzImage" "CC=/syzkaller/gcc/bin/gcc" "-j64"]: exit
-> status 2
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+On Thu, Nov 28, 2019 at 08:18:30AM +0000, Anton Ivanov wrote:
+> 
+> 
+> On 28/11/2019 08:06, Dan Carpenter wrote:
+> > On Thu, Nov 28, 2019 at 02:01:47AM +0000, Wei Yongjun wrote:
+> > > A spin lock is taken here so we should use GFP_ATOMIC.
+> > > 
+> > > Fixes: 9807019a62dc ("um: Loadable BPF "Firmware" for vector drivers")
+> > > Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> > > ---
+> > >   arch/um/drivers/vector_kern.c | 4 ++--
+> > >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
+> > > index 92617e16829e..6ff0065a271d 100644
+> > > --- a/arch/um/drivers/vector_kern.c
+> > > +++ b/arch/um/drivers/vector_kern.c
+> > > @@ -1402,7 +1402,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+> > >   		kfree(vp->bpf->filter);
+> > >   		vp->bpf->filter = NULL;
+> > >   	} else {
+> > > -		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_KERNEL);
+> > > +		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_ATOMIC);
+> > >   		if (vp->bpf == NULL) {
+> > >   			netdev_err(dev, "failed to allocate memory for firmware\n");
+> > >   			goto flash_fail;
+> > > @@ -1414,7 +1414,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+> > >   	if (request_firmware(&fw, efl->data, &vdevice->pdev.dev))
+> >              ^^^^^^^^^^^^^^^^
+> > 
+> > Is it really possible to call request_firmware() while holding a
+> > spin_lock?  I was so sure that read from the disk.
+> 
+> Works, I tested the patch quite a few times.
+> 
 
-syzbot distro does not provide pahole 1.13, so I followed the
-suggestion and disabled CONFIG_DEBUG_INFO_BTF:
-https://github.com/google/syzkaller/commit/861a5980df642d6b9fb59fda98d5a75a019f5f34
-#syz invalid
+Do you have CONFIG_DEBUG_ATOMIC_SLEEP enabled?  The GFP_KERNEL calls
+should have triggered a warning if so.
+
+regards,
+dan carpenter
+
