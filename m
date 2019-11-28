@@ -2,119 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE1AC10C2CE
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 04:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 948C810C2DD
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 04:33:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727231AbfK1DYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 22:24:15 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32832 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727146AbfK1DYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 22:24:15 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id F27414B9D0;
-        Thu, 28 Nov 2019 14:10:13 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mail_dkim; t=
-        1574910613; bh=ucB/mpLQr+FlKPjIb3X0L0kJML9o22R6k+C578E75g4=; b=Y
-        0Yrd+9CVuPfFp7vdidRAVuz8NaFGe+cE8WZ18TrF+zJql7342lsT3BJBxQ7K1pzq
-        Q3KW8PlwyQbFqgkHxEr/t02n9HbBVWxFMuQ3PS4yiBREGX7FDMQWFH99ew/YIgYU
-        Z9CK4ajMhXBEAJ5aeK/JSeR61dh4cz76qfjG7taZqg=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id h6vQfWFuOPIY; Thu, 28 Nov 2019 14:10:13 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id CB35D4B9D1;
-        Thu, 28 Nov 2019 14:10:13 +1100 (AEDT)
-Received: from ubuntu.dek-tpc.internal (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 3A84C4B9D0;
-        Thu, 28 Nov 2019 14:10:13 +1100 (AEDT)
-From:   Tung Nguyen <tung.q.nguyen@dektech.com.au>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [tipc-discussion] [net v1 4/4] tipc: fix duplicate SYN messages under link congestion
-Date:   Thu, 28 Nov 2019 10:10:08 +0700
-Message-Id: <20191128031008.2045-5-tung.q.nguyen@dektech.com.au>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191128031008.2045-1-tung.q.nguyen@dektech.com.au>
-References: <20191128031008.2045-1-tung.q.nguyen@dektech.com.au>
+        id S1727200AbfK1DdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 22:33:03 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:44967 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727113AbfK1DdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 22:33:02 -0500
+Received: by mail-pj1-f65.google.com with SMTP id w8so11197902pjh.11;
+        Wed, 27 Nov 2019 19:33:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=VZufOeI6EHnATdk+crGenMQXH1a1O/8tB/n0iGNLkV8=;
+        b=dKQtPlN91MNy87OySN9B18nRHCSvt9bTQlxOGxhPhkhLnRVVYy630ue5Ia/NYZnKTS
+         BM3QmJpHmWoi5B+VzPN8eAGyQBqBURKxfWpCMq4dVNHg2zDFOtMbh6hnIyQY/72vI4OB
+         Vz8OM7iimW4JCTrBO8pcHIqPm/IAukMHlWDJE5P2sp+jIGvVXAc2t1ewEPfyjxuQTOnj
+         inGA002wU5as6GPAhKBzVr/pMjMwPEmA6Hv3XKNCMoEGLAkG4lpZ9c1R02aDQy4rgibK
+         h+0cijupCMC+UVfsbSL86wxmKi86P5WMLRISxyLfYE9x2fvwmYpBZQ6GbUhBxgG6vLR+
+         0Tlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=VZufOeI6EHnATdk+crGenMQXH1a1O/8tB/n0iGNLkV8=;
+        b=ZR00iOB34vkuM3Z2D9bwTgtUqUTSpZEqgteisYYogzR/l2ESbfkceoKuwftAlbeTvN
+         0TE7L2x2LRe1mqSZ1vVPkxNeWIkXjlp0/bAH0m/YhEEjTSQMu3kB7UgJZhMJK5+9qa20
+         V7IAfFroaE8na6yVZdVEIYFbbfXjSH64KRcn4+hvPUwYKsMtEDkWkH/+IdCobwZDLZIN
+         wPjrbYmDmwssWpGz5JeSooT4rEgsxAHP9pkspwvQ0+aLavXcvXsR3gJXVJgIqv0Iv/Rz
+         uM1uo4VloifDHdmyCdrq+/5bWtxmup04G0do72xWm7UW6j0i+00fs/Ji0i44dwiz5xKP
+         pZ+A==
+X-Gm-Message-State: APjAAAVRuEKL1fXhG05Dxe0E9gGXy9qpkw2dZfmsIDNo7gqvm8CjeciC
+        4Tqed1RFPBwYKNtBaiPAm9I=
+X-Google-Smtp-Source: APXvYqxribCE1N5toVJebzazASUvHWYS7YA66p7nDo+H1p+nZMKgBJT3LsQrl8bmwxM+QDhzryBd5Q==
+X-Received: by 2002:a17:902:8a8e:: with SMTP id p14mr7493221plo.72.1574911979995;
+        Wed, 27 Nov 2019 19:32:59 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::faaf])
+        by smtp.gmail.com with ESMTPSA id t8sm2932493pjg.17.2019.11.27.19.32.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 27 Nov 2019 19:32:59 -0800 (PST)
+Date:   Wed, 27 Nov 2019 19:32:57 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        qemu-devel@nongnu.org, kvm@vger.kernel.org
+Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
+Message-ID: <20191128033255.r66d4zedmhudeaa6@ast-mbp.dhcp.thefacebook.com>
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+ <20191126123514.3bdf6d6f@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191126123514.3bdf6d6f@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Scenario:
-1. A client socket initiates a SYN message to a listening socket.
-2. The send link is congested, the SYN message is put in the
-send link and a wakeup message is put in wakeup queue.
-3. The congestion situation is abated, the wakeup message is
-pulled out of the wakeup queue. Function tipc_sk_push_backlog()
-is called to send out delayed messages by Nagle. However,
-the client socket is still in CONNECTING state. So, it sends
-the SYN message in the socket write queue to the listening socket
-again.
-4. The listening socket receives the first SYN message and creates
-first server socket. The client socket receives ACK- and establishes
-a connection to the first server socket. The client socket closes
-its connection with the first server socket.
-5. The listening socket receives the second SYN message and creates
-second server socket. The second server socket sends ACK- to the
-client socket, but it has been closed. It results in connection
-reset error when reading from the server socket in user space.
+On Tue, Nov 26, 2019 at 12:35:14PM -0800, Jakub Kicinski wrote:
+> 
+> I'd appreciate if others could chime in.
 
-Solution: return from function tipc_sk_push_backlog() immediately
-if there is pending SYN message in the socket write queue.
+The performance improvements are quite appealing.
+In general offloading from higher layers into lower layers is necessary long term.
 
-Fixes: c0bceb97db9e ("tipc: add smart nagle feature")
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
----
- net/tipc/socket.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index da5fb84852a6..41688da233ab 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -540,12 +540,10 @@ static void __tipc_shutdown(struct socket *sock, int error)
- 	tipc_wait_for_cond(sock, &timeout, (!tsk->cong_link_cnt &&
- 					    !tsk_conn_cong(tsk)));
- 
--	/* Push out unsent messages or remove if pending SYN */
--	skb = skb_peek(&sk->sk_write_queue);
--	if (skb && !msg_is_syn(buf_msg(skb)))
--		tipc_sk_push_backlog(tsk);
--	else
--		__skb_queue_purge(&sk->sk_write_queue);
-+	/* Push out delayed messages if in Nagle mode */
-+	tipc_sk_push_backlog(tsk);
-+	/* Remove pending SYN */
-+	__skb_queue_purge(&sk->sk_write_queue);
- 
- 	/* Reject all unreceived messages, except on an active connection
- 	 * (which disconnects locally & sends a 'FIN+' to peer).
-@@ -1248,9 +1246,14 @@ static void tipc_sk_push_backlog(struct tipc_sock *tsk)
- 	struct sk_buff_head *txq = &tsk->sk.sk_write_queue;
- 	struct net *net = sock_net(&tsk->sk);
- 	u32 dnode = tsk_peer_node(tsk);
-+	struct sk_buff *skb = skb_peek(txq);
- 	int rc;
- 
--	if (skb_queue_empty(txq) || tsk->cong_link_cnt)
-+	if (!skb || tsk->cong_link_cnt)
-+		return;
-+
-+	/* Do not send SYN again after congestion */
-+	if (msg_is_syn(buf_msg(skb)))
- 		return;
- 
- 	tsk->snt_unacked += tsk->snd_backlog;
--- 
-2.17.1
+But the approach taken by patches 15 and 17 is a dead end. I don't see how it
+can ever catch up with the pace of bpf development. As presented this approach
+works for the most basic programs and simple maps. No line info, no BTF, no
+debuggability. There are no tail_calls either. I don't think I've seen a single
+production XDP program that doesn't use tail calls. Static and dynamic linking
+is coming. Wraping one bpf feature at a time with virtio api is never going to
+be complete. How FDs are going to be passed back? OBJ_GET_INFO_BY_FD ?
+OBJ_PIN/GET ? Where bpffs is going to live ? Any realistic XDP application will
+be using a lot more than single self contained XDP prog with hash and array
+maps. It feels that the whole sys_bpf needs to be forwarded as a whole from
+guest into host. In case of true hw offload the host is managing HW. So it
+doesn't forward syscalls into the driver. The offload from guest into host is
+different. BPF can be seen as a resource that host provides and guest kernel
+plus qemu would be forwarding requests between guest user space and host
+kernel. Like sys_bpf(BPF_MAP_CREATE) can passthrough into the host directly.
+The FD that hosts sees would need a corresponding mirror FD in the guest. There
+are still questions about bpffs paths, but the main issue of
+one-feature-at-a-time will be addressed in such approach. There could be other
+solutions, of course.
 
