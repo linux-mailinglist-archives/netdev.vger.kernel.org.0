@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E90C10CAFD
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 15:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2287F10CAF7
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 15:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbfK1O6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 09:58:07 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:32966 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727573AbfK1O6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 09:58:05 -0500
-Received: by mail-lf1-f65.google.com with SMTP id d6so20286223lfc.0
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 06:58:05 -0800 (PST)
+        id S1727618AbfK1O6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 09:58:08 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:34287 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727587AbfK1O6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 09:58:07 -0500
+Received: by mail-lj1-f195.google.com with SMTP id m6so21460828ljc.1
+        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 06:58:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=A61btIRCfGl2K49FU+YApUFpLzedg3OmEOwCORD6qFU=;
-        b=Hf/PPnAbgXenT8bkLjfb4K/u1LbHRKbg0TAYF79JBnqjid3M76xfsO2Iqr0VVwnFyD
-         rZNl4JtYAtUQD8Zu1LwxcvmtRvoRs1HGQ6aR9a88XKhA2wHLwBiX2tp7T944IhB1pgwY
-         FAIkJLiijQAUm9eh3TF6qwqwuxYQZ78WxFPpM=
+        bh=uJFqdfn2nSDjHf42hirywvV4nKXCcu5QZEHn2MRQUqE=;
+        b=Fm9J/BPtzefO6mLtz+s8hghaGLQl9/e0iHtM+c2WZUylSQ5IRCuZvLLrqa9pvESajc
+         sgUXiAdEW5ODvwgf/p7K3+6ps2qo4ojoUJEOeaW4+cvwZGzSxZUYdES0IEMWB57Deuf4
+         xjUml1c0Urakd08HfwFSCPyXLT1jfJ5CE/vuE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=A61btIRCfGl2K49FU+YApUFpLzedg3OmEOwCORD6qFU=;
-        b=tcMNZCw+pAknhNuy1sbykSd7fyEoyObedYmyklJb3BelbLHLjsB1DN+/+sw3iWb2iq
-         PPdAAFVjsIKv5dnkusx5dDvLVvssH4a+TN0tWcbz4ytUmGOYzBHD1L06gU9qHi/cdDMH
-         lQLZtUrN3UYp9xldUSk/pNTBg4NjzoL4drLwbv8Jnlxgh2tq2qVCATYmpiUbz+XTg6Zb
-         7Dt3nLtZvXHNUtKJnyDweNIJgSIMU/Aeu8Uds+VZRhAG5Ye7kqeRDFoJPouCf4eC6Rbi
-         Y+lEUYna2uGMcLCYECjNRTDnAVSIrA8ioqHzsDNgONzrcDGbCBzcpc3CdYljL1g81mpv
-         eo3Q==
-X-Gm-Message-State: APjAAAUWXnIV/bX7yQR8ICa5+1YjTSgtK+tjldBpQJOn5iZJjJMjWw+I
-        mNPeoAp6mTeqsS7iC3MxKOeVSQ==
-X-Google-Smtp-Source: APXvYqxhBAd4opJgrPy7P/4weZdPIJVgERAZIrjiD0AKu9eR6iQ1KzTsifkMtoeeLjTOMUJ9elo8CA==
-X-Received: by 2002:a19:cc08:: with SMTP id c8mr32134885lfg.124.1574953084507;
-        Thu, 28 Nov 2019 06:58:04 -0800 (PST)
+        bh=uJFqdfn2nSDjHf42hirywvV4nKXCcu5QZEHn2MRQUqE=;
+        b=A8DeHlaTrvywm2aXpTJP+OptU81Fi+TEHY4qhB2ROFcr4z9lDcEieraFZ4kJE788Ss
+         tBw+wG77+LgKIpmQb6o02j5ELW7wObxaBcE454TSPEMDitTYgaCMTVN07+FZvx4UwKTW
+         AmnZwgyWSrwdv13dTxpuB5lTg4/bmERRFabH9SduXiyY7hD9gr4ELuMfIkVpIl7qOfPD
+         7Esr1FKSiczpbUNd0i2ZV13Ee/NYwI4yeZBq2ckbyEa9G0VdcAessUVCCAdI922WvOIN
+         dUWslv5KksQZ4Z3f/NAzjzbOceMmGb7i71dxVd/4F6nNtuEZpQahYD7FHUO5HUi/hGZR
+         B/Wg==
+X-Gm-Message-State: APjAAAUuNz/AyNz6N7ZbjW2nZ9Yx+9Ja7slUeagP5e9YYAimNyR8xGJX
+        VLq1CImDBMkaql8r+EY7UKo3gA==
+X-Google-Smtp-Source: APXvYqyvULz2Tjp/CvI4s3FOQVWvQSzO1JW8WbB25Ky4p0+qkSxEH1U0IiPoAs0MVz6PY4HNawn0gg==
+X-Received: by 2002:a2e:90da:: with SMTP id o26mr1140714ljg.25.1574953085644;
+        Thu, 28 Nov 2019 06:58:05 -0800 (PST)
 Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id u2sm2456803lfl.18.2019.11.28.06.58.03
+        by smtp.gmail.com with ESMTPSA id u2sm2456803lfl.18.2019.11.28.06.58.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Nov 2019 06:58:04 -0800 (PST)
+        Thu, 28 Nov 2019 06:58:05 -0800 (PST)
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
 To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
         Christophe Leroy <christophe.leroy@c-s.fr>
@@ -49,9 +49,9 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         netdev@vger.kernel.org
-Subject: [PATCH v6 46/49] net/wan/fsl_ucc_hdlc: reject muram offsets above 64K
-Date:   Thu, 28 Nov 2019 15:55:51 +0100
-Message-Id: <20191128145554.1297-47-linux@rasmusvillemoes.dk>
+Subject: [PATCH v6 47/49] net: ethernet: freescale: make UCC_GETH explicitly depend on PPC32
+Date:   Thu, 28 Nov 2019 15:55:52 +0100
+Message-Id: <20191128145554.1297-48-linux@rasmusvillemoes.dk>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
 References: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
@@ -62,35 +62,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Qiang Zhao points out that these offsets get written to 16-bit
-registers, and there are some QE platforms with more than 64K
-muram. So it is possible that qe_muram_alloc() gives us an allocation
-that can't actually be used by the hardware, so detect and reject
-that.
+Currently, QUICC_ENGINE depends on PPC32, so this in itself does not
+change anything. In order to allow removing the PPC32 dependency from
+QUICC_ENGINE and avoid allmodconfig build failures, add this explicit
+dependency.
 
-Reported-by: Qiang Zhao <qiang.zhao@nxp.com>
+Also, the QE Ethernet has never been integrated on any non-PowerPC SoC
+and most likely will not be in the future.
+
 Reviewed-by: Timur Tabi <timur@kernel.org>
 Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- drivers/net/wan/fsl_ucc_hdlc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/freescale/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index 8d13586bb774..f029eaa7cfc0 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -245,6 +245,11 @@ static int uhdlc_init(struct ucc_hdlc_private *priv)
- 		ret = -ENOMEM;
- 		goto free_riptr;
- 	}
-+	if (riptr != (u16)riptr || tiptr != (u16)tiptr) {
-+		dev_err(priv->dev, "MURAM allocation out of addressable range\n");
-+		ret = -ENOMEM;
-+		goto free_tiptr;
-+	}
+diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
+index 6a7e8993119f..2bd7ace0a953 100644
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -74,7 +74,7 @@ config FSL_XGMAC_MDIO
  
- 	/* Set RIPTR, TIPTR */
- 	iowrite16be(riptr, &priv->ucc_pram->riptr);
+ config UCC_GETH
+ 	tristate "Freescale QE Gigabit Ethernet"
+-	depends on QUICC_ENGINE
++	depends on QUICC_ENGINE && PPC32
+ 	select FSL_PQ_MDIO
+ 	select PHYLIB
+ 	---help---
 -- 
 2.23.0
 
