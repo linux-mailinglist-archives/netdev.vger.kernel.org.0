@@ -2,355 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7128610CCC4
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA98610CCC9
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfK1QYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 11:24:46 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33672 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726446AbfK1QYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 11:24:46 -0500
-Received: by mail-pg1-f194.google.com with SMTP id 6so8574365pgk.0
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 08:24:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DYz6S1f5Kom3NJINAhOccNRGS3qbMAXKysZ2WpV9FXA=;
-        b=qEzQTknqffgre7RYyVjx/A4lsq8xmkWKycSVxU6bemEvDxu+G40onRbCpTVRanCT3d
-         vNWGFUN+AKfhyUwKSA1kCo4gLKUShyQU4PmuZFyM9/yexPSX4DveR/BP8WjK5B97bKC/
-         2d0CqXHiQ4ydR7Km7Td79J4CACwWkQ+9s6hh8Cx1b1eeXLatQKI/5SG35kqccZmhvIxu
-         6JI8VtfUbx0B3xpR14STBU/4kcaVMW0HQdc4/nNPqih4RluApMKRZBz3i0CQAGbv8YLJ
-         /cD4at2jCRRUhyHzXFITHNISTrko8gFTW04W7Ch64Lf4O52YUfl5rLmB0eV+PNsMtuXh
-         vWNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DYz6S1f5Kom3NJINAhOccNRGS3qbMAXKysZ2WpV9FXA=;
-        b=YiqTrnIgN71vIcUMWhR2l3rN7hDXPcb2zf3xghJKurmYeWWVgKHmiWXQWtB9TG2GDd
-         zFncd+A033qAxB/qYecmAW6TPhkKncjQZzm1cC/JnD6sDjTPg14XngLoLmJYvZlGQxR+
-         TIl07YdLfJQ12MoeYJNgjAIliamYeVlbPIGDksdeiM+TnTjMcfHa5QOEp8uhSXuPbj+m
-         3CiGiHgfGoy4b3GXk6eYEo29iKf7pSEdVNQtDxbY54v/OBT92wA7bvldL4zzdY/0Uzgk
-         run3A6JA86oyQDB0C2eD9FB+2jA8j7h18nxP6FU7HMiiaalVLtCzRSX0BmpBoKvnzljV
-         ICUg==
-X-Gm-Message-State: APjAAAUXbAlkZK9uxh013SRyuhSQ0kmA2d+SooHYVanw511Q6hpxLA/v
-        YlEmeDCW1KSnYGgKquPKhT4=
-X-Google-Smtp-Source: APXvYqzWNRvKn8gj6q9J2+Dfg04yzvBt3OnADR8XGysmOxwWferrF6DL/Yl4vh+QkxdOZ0NhxKPLvw==
-X-Received: by 2002:a63:7d8:: with SMTP id 207mr12147497pgh.154.1574958285370;
-        Thu, 28 Nov 2019 08:24:45 -0800 (PST)
-Received: from martin-VirtualBox ([42.109.141.206])
-        by smtp.gmail.com with ESMTPSA id s24sm20984383pfh.108.2019.11.28.08.24.44
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 28 Nov 2019 08:24:44 -0800 (PST)
-Date:   Thu, 28 Nov 2019 21:54:27 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, corbet@lwn.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH v3 net-next 1/2] UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-Message-ID: <20191128162427.GB2633@martin-VirtualBox>
-References: <cover.1573872263.git.martin.varghese@nokia.com>
- <5acab9e9da8aa9d1e554880b1f548d3057b70b75.1573872263.git.martin.varghese@nokia.com>
- <CA+FuTSeUGsWH-GR7N_N7PChaW4S6Hucmvo_1s_9bbisxz1eOAA@mail.gmail.com>
+        id S1726734AbfK1QZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 11:25:04 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:38422 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726446AbfK1QZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 11:25:04 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-234-9BIOC5miNL-BUa2iQ7QnXA-1; Thu, 28 Nov 2019 16:25:01 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 28 Nov 2019 16:25:00 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 28 Nov 2019 16:25:00 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>
+CC:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "network dev" <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: RE: epoll_wait() performance
+Thread-Topic: epoll_wait() performance
+Thread-Index: AdWgk3jgEIFNwcnRS6+4A+/jFPxTuQEdLCCAAAAn2qAADFPagAAAV68AAAgIvgAAHmS7QA==
+Date:   Thu, 28 Nov 2019 16:25:00 +0000
+Message-ID: <a52b09fdfbbc44c8b398d7fbadfc5a9c@AcuMS.aculab.com>
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+ <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+ <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+ <20191127164821.1c41deff@carbon>
+ <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
+ <CA+FuTSe8vfEME7EO6xru=i1++OWCNRJGePLNCzta+BVv_TY3Zw@mail.gmail.com>
+In-Reply-To: <CA+FuTSe8vfEME7EO6xru=i1++OWCNRJGePLNCzta+BVv_TY3Zw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSeUGsWH-GR7N_N7PChaW4S6Hucmvo_1s_9bbisxz1eOAA@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-MC-Unique: 9BIOC5miNL-BUa2iQ7QnXA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 12:23:09PM -0500, Willem de Bruijn wrote:
-> On Sat, Nov 16, 2019 at 12:45 AM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > From: Martin Varghese <martin.varghese@nokia.com>
-> >
-> > The Bareudp tunnel module provides a generic L3 encapsulation
-> > tunnelling module for tunnelling different protocols like MPLS,
-> > IP,NSH etc inside a UDP tunnel.
-> >
-> > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > ---
-> > Changes in v2:
-> >      - Fixed documentation errors.
-> >      - Converted documentation to rst format.
-> >      - Moved ip tunnel rt lookup code to a common location.
-> 
-> This does not actually deduplicate with the existing code in geneve
-> (and vxlan, maybe others).
-> 
-> Mentioned a few more obvious examples inline. I won't keep harping on
-> this point, as I have no real stake in this.
-> 
-> But if you don't deduplicate from the start, I'm skeptical that it
-> will happen later. And then fixes to one driver are likely to be
-> missed for the other, slowly drifting the code further apart.
-> 
+RnJvbTogV2lsbGVtIGRlIEJydWlqbg0KPiBTZW50OiAyNyBOb3ZlbWJlciAyMDE5IDE5OjQ4DQou
+Li4NCj4gQXJlIHRoZSBsYXRlc3QgbnVtYmVycyB3aXRoIENPTkZJR19IQVJERU5FRF9VU0VSQ09Q
+WT8NCg0KQWNjb3JkaW5nIHRvIC9ib290L2NvbmZpZy1gdW5hbWUgLXJgIGl0IGlzIGVuYWJsZWQg
+b24gbXkgc3lzdGVtLg0KSSBzdXNwZWN0IGl0IGhhcyBhIG1lYXN1cmFibGUgZWZmZWN0IG9uIHRo
+ZXNlIHRlc3RzLg0KDQo+IEkgYXNzdW1lIHRoYXQgdGhlIHBvbGwoKSBhZnRlciByZWN2KCkgaXMg
+bm9uLWJsb2NraW5nLiBJZiB1c2luZw0KPiByZWN2bXNnLCB0aGF0IGV4dHJhIHN5c2NhbGwgY291
+bGQgYmUgYXZvaWRlZCBieSBpbXBsZW1lbnRpbmcgYSBjbXNnDQo+IGlucSBoaW50IGZvciB1ZHAg
+c29ja2V0cyBhbmFsb2dvdXMgdG8gVENQX0NNX0lOUS90Y3BfaW5xX2hpbnQuDQoNCkFsbCB0aGUg
+cG9sbCgpIGNhbGxzIGFyZSBub24tYmxvY2tpbmcuDQpUaGUgZmlyc3QgcG9sbCgpIGhhcyBhbGwg
+dGhlIHNvY2tldHMgaW4gaXQuDQpUaGUgc2Vjb25kIHBvbGwoKSBvbmx5IHRob3NlIHRoYXQgcmV0
+dXJuZWQgZGF0YSB0aGUgZmlyc3QgdGltZSBhcm91bmQuDQpUaGUgY29kZSB0aGVuIHNsZWVwcyBl
+bHNld2hlcmUgZm9yIHRoZSByZXN0IG9mIHRoZSAxMG1zIGludGVydmFsLg0KKEFjdHVhbGx5IHRo
+ZSBwb2xscyBhcmUgZG9uZSBpbiBibG9ja3Mgb2YgNjQsIGZpbGxpbmcgdXAgdGhlIHBmZFtdIGVh
+Y2ggdGltZS4pDQoNClRoaXMgYXZvaWRzIHRoZSBwcm9ibGVtIG9mIHJlcGVhdGVkbHkgc2V0dGlu
+ZyB1cCBhbmQgdGVhcmluZyBkb3duIHRoZQ0KcGVyLWZkIGRhdGEgZm9yIHBvbGwoKS4NCg0KPiBN
+b3JlIG91dGxhbmRpc2ggd291bGQgYmUgdG8gYWJ1c2UgdGhlIG1tc2doZHItPm1zZ19sZW4gZmll
+bGQgdG8gcGFzcw0KPiBmaWxlIGRlc2NyaXB0b3JzIGFuZCBhbW9ydGl6ZSB0aGUga2VybmVsIHBh
+Z2UtdGFibGUgaXNvbGF0aW9uIGNvc3QNCj4gYWNyb3NzIHNvY2tldHMuIEJsb2NraW5nIHNlbWFu
+dGljcyB3b3VsZCBiZSB3ZWlyZCwgZm9yIHN0YXJ0ZXJzLg0KDQpJdCB3b3VsZCBiZSBiZXR0ZXIg
+dG8gYWxsb3cgYSBzaW5nbGUgVURQIHNvY2tldCBiZSBib3VuZCB0byBtdWx0aXBsZSBwb3J0cy4N
+CkFuZCB0aGVuIHVzZSB0aGUgY21zZyBkYXRhIHRvIHNvcnQgb3V0IHRoZSBhY3R1YWwgZGVzdGlu
+YXRpb24gcG9ydC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwg
+QnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVn
+aXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-Adaptation of geneve module to use the generic API will be in a 
-seperate patch series.
-
-> > +1) Device creation & deletion
-> > +
-> > +    a) ip link add dev bareudp0 type bareudp dstport 6635 ethertype 0x8847.
-> > +
-> > +       This creates a bareudp tunnel device which tunnels L3 traffic with ethertype
-> > +       0x8847 (MPLS traffic). The destination port of the UDP header will be set to
-> > +       6635.The device will listen on UDP port 6635 to receive traffic.
-> > +
-> 
-> Might be useful to also document how to use this on transmission.
-> 
-> > +struct bareudp_sock {
-> > +       struct socket           *sock;
-> > +       struct rcu_head         rcu;
-> > +       struct bareudp_dev      *bareudp;
-> > +};
-> 
-> Is this intermediate struct needed, or could struct bareudp_dev
-> directly hang off of sk_user_data if it gains a struct rcu_head?
-> Especially now that there is a 1:1 relationship between socket and
-> device.
-> 
-will check.
-
-> > +       skb_push(skb, sizeof(struct ethhdr));
-> > +       skb_reset_mac_header(skb);
-> > +
-> > +       err = skb_ensure_writable(skb, sizeof(struct ethhdr));
-> > +       if (unlikely(err))
-> > +               goto drop;
-> > +
-> > +       eh = (struct ethhdr *)skb->data;
-> > +       eh->h_proto = proto;
-> > +       skb->protocol = eth_type_trans(skb, bareudp->dev);
-> > +       oiph = skb_network_header(skb);
-> > +       skb_reset_network_header(skb);
-> 
-> After decapsulation packets now have a fake ethernet header with
-> garbage in the src and dst address. Tcpdump will show that.
-> 
-> Instead of pseudo Ethernet, should this device be of link layer type
-> ARPHRD_NONE. Or alternatively a new type analogous to ARPHRD_TUNNEL
-> that includes the udp header?
-> 
-> The same can probably be said about geneve, so no strong objection to
-> what is here. Just a point for thought.
->
-
-I am pondering more on this comment. 
-> > +       if (bareudp_get_sk_family(bs) == AF_INET)
-> > +               err = IP_ECN_decapsulate(oiph, skb);
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +       else
-> > +               err = IP6_ECN_decapsulate(oiph, skb);
-> > +#endif
-> 
-> with dual stack sockets, should this check now be based on packet
-> header instead of bareudp_get_sk_family?
-> 
-Noted
-
-> > +       if (unlikely(err)) {
-> > +               if (log_ecn_error) {
-> > +                       if (bareudp_get_sk_family(bs) == AF_INET)
-> > +                               net_info_ratelimited("non-ECT from %pI4 "
-> > +                                                    "with TOS=%#x\n",
-> > +                                                    &((struct iphdr *)oiph)->saddr,
-> > +                                                    ((struct iphdr *)oiph)->tos);
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +                       else
-> > +                               net_info_ratelimited("non-ECT from %pI6\n",
-> > +                                                    &((struct ipv6hdr *)oiph)->saddr);
-> > +#endif
-> > +               }
-> > +               if (err > 1) {
-> > +                       ++bareudp->dev->stats.rx_frame_errors;
-> > +                       ++bareudp->dev->stats.rx_errors;
-> > +                       goto drop;
-> > +               }
-> > +       }
-> > +
-> > +       len = skb->len;
-> > +       err = gro_cells_receive(&bareudp->gro_cells, skb);
-> > +       if (likely(err == NET_RX_SUCCESS)) {
-> > +               stats = this_cpu_ptr(bareudp->dev->tstats);
-> > +               u64_stats_update_begin(&stats->syncp);
-> > +               stats->rx_packets++;
-> > +               stats->rx_bytes += len;
-> > +               u64_stats_update_end(&stats->syncp);
-> > +       }
-> > +       return 0;
-> > +drop:
-> > +       /* Consume bad packet */
-> > +       kfree_skb(skb);
-> > +
-> > +       return 0;
-> > +}
-> 
-> All of this can pretty easily be shared with geneve.
->
-if we remove the bareudp_get_sk_family(bs) check.we may mot
-have lot of common code.will check. 
-
-> > +static struct socket *bareudp_create_sock(struct net *net, bool ipv6,
-> > +                                         __be16 port)
-> > +{
-> > +       struct socket *sock;
-> > +       struct udp_port_cfg udp_conf;
-> > +       int err;
-> > +
-> > +       memset(&udp_conf, 0, sizeof(udp_conf));
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +       udp_conf.family = AF_INET6;
-> > +#else
-> > +       udp_conf.family = AF_INET;
-> > +#endif
-> 
-> Still need to take bool ipv6 in account when creating the socket?
-> 
-noted
-> > +static int bareudp_sock_add(struct bareudp_dev *bareudp, bool ipv6)
-> > +{
-> > +       struct net *net = bareudp->net;
-> > +       struct bareudp_sock *bs;
-> > +
-> > +       bs = bareudp_socket_create(net, bareudp->conf.port, ipv6);
-> > +       if (IS_ERR(bs))
-> > +               return PTR_ERR(bs);
-> > +
-> > +       rcu_assign_pointer(bareudp->sock, bs);
-> > +       bs->bareudp = bareudp;
-> > +
-> > +       return 0;
-> 
-> Especially now that the device only has one socket, probably no need
-> to have a separate bareudp_socket_create from bareudp_sock_add.  Same
-> for __bareudp_sock_release and bareudp_sock_release.
->
-NOted 
-> > +}
-> > +
-> > +static void __bareudp_sock_release(struct bareudp_sock *bs)
-> > +{
-> > +       if (!bs)
-> > +               return;
-> > +
-> > +       udp_tunnel_sock_release(bs->sock);
-> > +       kfree_rcu(bs, rcu);
-> > +}
-> > +
-> > +static void bareudp_sock_release(struct bareudp_dev *bareudp)
-> > +{
-> > +       struct bareudp_sock *bs = rtnl_dereference(bareudp->sock);
-> > +
-> > +       rcu_assign_pointer(bareudp->sock, NULL);
-> > +       synchronize_net();
-> > +       __bareudp_sock_release(bs);
-> > +}
-> > +
-> > +static int bareudp_fill_metadata_dst(struct net_device *dev,
-> > +                                    struct sk_buff *skb)
-> > +{
-> > +       struct ip_tunnel_info *info = skb_tunnel_info(skb);
-> > +       struct bareudp_dev *bareudp = netdev_priv(dev);
-> > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
-> > +
-> > +       if (ip_tunnel_info_af(info) == AF_INET) {
-> > +               struct rtable *rt;
-> > +               struct flowi4 fl4;
-> > +
-> > +               rt = iptunnel_get_v4_rt(skb, dev, bareudp->net, &fl4, info,
-> > +                                       use_cache);
-> > +               if (IS_ERR(rt))
-> > +                       return PTR_ERR(rt);
-> > +
-> > +               ip_rt_put(rt);
-> > +               info->key.u.ipv4.src = fl4.saddr;
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +       } else if (ip_tunnel_info_af(info) == AF_INET6) {
-> > +               struct dst_entry *dst;
-> > +               struct flowi6 fl6;
-> > +               struct bareudp_sock *bs6 = rcu_dereference(bareudp->sock);
-> > +
-> > +               dst = ip6tunnel_get_dst(skb, dev, bareudp->net, bs6->sock, &fl6,
-> > +                                       info, use_cache);
-> > +               if (IS_ERR(dst))
-> > +                       return PTR_ERR(dst);
-> > +
-> > +               dst_release(dst);
-> > +               info->key.u.ipv6.src = fl6.saddr;
-> > +#endif
-> > +       } else {
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       info->key.tp_src = udp_flow_src_port(bareudp->net, skb,
-> > +                                            bareudp->sport_min,
-> > +                                            USHRT_MAX, true);
-> > +       info->key.tp_dst = bareudp->conf.port;
-> > +       return 0;
-> > +}
-> 
-> This can probably all be deduplicated with geneve_fill_metadata_dst
-> once both use iptunnel_get_v4_rt.
->
-
-Do you have any preference of file to keep the common function 
-> 
-> > +static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
-> > +{
-> > +       struct bareudp_dev *bareudp = netdev_priv(dev);
-> > +       struct ip_tunnel_info *info = NULL;
-> > +       int err;
-> > +
-> > +       if (skb->protocol != bareudp->ethertype) {
-> > +               err = -EINVAL;
-> > +               goto tx_error;
-> > +       }
-> > +
-> > +       info = skb_tunnel_info(skb);
-> 
-> Like geneve, should this have two modes, either associated with LWT if
-> geneve->collect_md, else static for the device (geneve->info)? As
-> opposed to requiring collect_md mode.
-> 
-This module will be used with OVS mostly and so it need not
-support static mode.
-
-> > +/* Initialize the device structure. */
-> > +static void bareudp_setup(struct net_device *dev)
-> > +{
-> > +       ether_setup(dev);
-> > +
-> > +       dev->netdev_ops = &bareudp_netdev_ops;
-> > +       dev->ethtool_ops = &bareudp_ethtool_ops;
-> > +       dev->needs_free_netdev = true;
-> > +
-> > +       SET_NETDEV_DEVTYPE(dev, &bareudp_type);
-> > +
-> > +       dev->features    |= NETIF_F_SG | NETIF_F_HW_CSUM;
-> > +       dev->features    |= NETIF_F_RXCSUM;
-> > +       dev->features    |= NETIF_F_GSO_SOFTWARE;
-> > +
-> > +       dev->hw_features |= NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
-> > +       dev->hw_features |= NETIF_F_GSO_SOFTWARE;
-> > +
-> > +       /* MTU range: 68 - (something less than 65535) */
-> > +       dev->min_mtu = ETH_MIN_MTU;
-> > +       dev->max_mtu = IP_MAX_MTU - BAREUDP_BASE_HLEN - dev->hard_header_len;
-> 
-> For IPv6, MSS is 64 kB without headers, so dev->max_mtu could perhaps
-> be IP_MAX_MTU. Also, why is hard_header_len subtracted? Again, same
-> for geneve, so if it works there, fine to leave here. Just something
-> that surprised me and might be worth giving another thought.
