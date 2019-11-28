@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B73810C213
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 03:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A24F210C21C
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 03:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728626AbfK1CAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 21:00:36 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46408 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728608AbfK1CAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 21:00:36 -0500
-Received: by mail-pg1-f193.google.com with SMTP id k1so3696606pga.13;
-        Wed, 27 Nov 2019 18:00:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1NWy/8kAMX+v65QvJYYfXEV09Sd7DFbVQpWA/O3VSdM=;
-        b=ZDQPuq5TBYpZoGzPhNGoHNbKKdXKxiCMMo601ZnEkkrmtx2u070725swBJXCqMCIgz
-         3LuimkszMxVGsLjMqO2UvAumaTNCGn8WhuwEa7k6pMaQisr75y8Oc7enPCWk3WYQzdGr
-         XXspDtLuA4K0Bny5rW/Y3DURJF37ZbHf8o3rPiaAVJHY81IdLFcFPW+TQM2n1hIi2YEV
-         N7moVQG/JEKQi1E30iPUzRCNdqyecCUsVzDig6/gxmwFLqLwFrLTSZ/iFRHWq9nRADQt
-         z9hDXDdaMUWFdQXl64g+aHn8A5fL/9PoCZPiZ9vwl+ZOR+S9If4E1HA2k+fDseJcBI4B
-         hsIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1NWy/8kAMX+v65QvJYYfXEV09Sd7DFbVQpWA/O3VSdM=;
-        b=iC1S056egVUWrkMC9gR36DB2UmSd60Infl/Y9PjquaGGJrbj+7lv9yTpf6c8293OXh
-         6esUZnXtDsXlg7jaiZkxiDQ+zMdaUkApDs5HSSxyCUnLSzKeL5bjHwJuf68Vo5QuOe9F
-         7sJJts0foGoZgqc7g2p78KSVh+rwTVhLCwtS4la1Fi+lmtGIkdYyEWclFqt5dueqUfE1
-         mCxB82TW1GyMTjH6kooEI9ZxDy8dbuavouJwc44ColIYsJbA5QaujLBqCzNcfFNGi0S+
-         r5NF+2QjHCLcl7EG2pvkqT2nkvnqc82DRaY9qrzEk+FdVDZbe59jcvGXEgtc/P9o7KW6
-         i1Kg==
-X-Gm-Message-State: APjAAAVBs5IYIDDy4WGYlixv/95a79zGju8yuKRQZT1xDTb0IWhkxtHL
-        xiZrGrxLKQfOmKTLN41pw70=
-X-Google-Smtp-Source: APXvYqy/8U61avG9uOn9PWYfv+bT9v34GayzyHYrcWi8xfRCZ3hYaXwujSgokK2MAY4WhpNKrB0NYg==
-X-Received: by 2002:aa7:9d9c:: with SMTP id f28mr30916321pfq.20.1574906435782;
-        Wed, 27 Nov 2019 18:00:35 -0800 (PST)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id a19sm18387016pfn.144.2019.11.27.18.00.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 18:00:35 -0800 (PST)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net v4] net: macb: add missed tasklet_kill
-Date:   Thu, 28 Nov 2019 10:00:21 +0800
-Message-Id: <20191128020021.23761-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S1728869AbfK1CDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 21:03:52 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6725 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728855AbfK1CDw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Nov 2019 21:03:52 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 266E1405FE787B313E56;
+        Thu, 28 Nov 2019 10:03:50 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 28 Nov 2019 10:03:42 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        "Anton Ivanov" <anton.ivanov@cambridgegreys.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>,
+        <linux-um@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH -next] um: vector: use GFP_ATOMIC under spin lock
+Date:   Thu, 28 Nov 2019 02:01:47 +0000
+Message-ID: <20191128020147.191893-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver forgets to kill tasklet in remove.
-Add the call to fix it.
+A spin lock is taken here so we should use GFP_ATOMIC.
 
-Fixes: 032dc41ba6e2 ("net: macb: Handle HRESP error")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Fixes: 9807019a62dc ("um: Loadable BPF "Firmware" for vector drivers")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
-Changes in v4:
-  - Put tasklet_kill after unregister_netdev to ensure
-    IRQs are disabled when killing tasklet.
+ arch/um/drivers/vector_kern.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/cadence/macb_main.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d5ae2e1e0b0e..9c767ee252ac 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4422,6 +4422,7 @@ static int macb_remove(struct platform_device *pdev)
- 		mdiobus_free(bp->mii_bus);
+diff --git a/arch/um/drivers/vector_kern.c b/arch/um/drivers/vector_kern.c
+index 92617e16829e..6ff0065a271d 100644
+--- a/arch/um/drivers/vector_kern.c
++++ b/arch/um/drivers/vector_kern.c
+@@ -1402,7 +1402,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+ 		kfree(vp->bpf->filter);
+ 		vp->bpf->filter = NULL;
+ 	} else {
+-		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_KERNEL);
++		vp->bpf = kmalloc(sizeof(struct sock_fprog), GFP_ATOMIC);
+ 		if (vp->bpf == NULL) {
+ 			netdev_err(dev, "failed to allocate memory for firmware\n");
+ 			goto flash_fail;
+@@ -1414,7 +1414,7 @@ static int vector_net_load_bpf_flash(struct net_device *dev,
+ 	if (request_firmware(&fw, efl->data, &vdevice->pdev.dev))
+ 		goto flash_fail;
  
- 		unregister_netdev(dev);
-+		tasklet_kill(&bp->hresp_err_tasklet);
- 		pm_runtime_disable(&pdev->dev);
- 		pm_runtime_dont_use_autosuspend(&pdev->dev);
- 		if (!pm_runtime_suspended(&pdev->dev)) {
--- 
-2.24.0
+-	vp->bpf->filter = kmemdup(fw->data, fw->size, GFP_KERNEL);
++	vp->bpf->filter = kmemdup(fw->data, fw->size, GFP_ATOMIC);
+ 	if (!vp->bpf->filter)
+ 		goto free_buffer;
+
+
 
