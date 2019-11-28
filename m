@@ -2,94 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6285E10C671
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 11:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86EFB10C683
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 11:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbfK1KLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 05:11:24 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38897 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbfK1KLX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 05:11:23 -0500
-Received: by mail-io1-f67.google.com with SMTP id u24so26615439iob.5
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 02:11:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=caaSd6i6Te0sPqdbYOvQPR7MFSXGucuFfhfB7ah3N6E=;
-        b=AM/Nqszwy18jfKw5caGl5+JFsgKVmwyoeV/f05v758icT6QTKRMXeKsqPAFLwLixNW
-         xqB7bukUxA0/w+gshPq2NKJHOgtj2GSTTd/qvTw3s33Uc5PH/smO6XJfrNCldldvDI/1
-         9C293aZ3Jfwmw36MmJun3A9waIQWErxabfAlkfRdF+0HgUbeQQTOzb45toqX1un3DX21
-         Ri8v/c/h1eJch4BSl0xl+6o/sphg41tRk32Sd9QSZnRCXa3Pok3OD/HlXoo7o7AvOKdv
-         b2O1sAckYLHHTZCMCSH+ZTSsTZHgfD7UIOLyyyUdZnBCEU6v+OEtOUj+6BHSoZFdljx/
-         4xyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=caaSd6i6Te0sPqdbYOvQPR7MFSXGucuFfhfB7ah3N6E=;
-        b=Dh0A4Suh0lWYScdlClwPSEILWaBPOVzLTDZuGsNNei4YEJtaSTq6BPsaKrJvHX0tAD
-         yl90N3rI2VCnFz8FnGpMrGhDvFYAvUSif0TqNOtg+e6zl58oeBRd2BcETjzZtDfht5vy
-         PPx4VkPSA6BaL3KukZFtegXOW7m+H43FEkp4peDrnRgAQElGKQuQGWnn2C8qyQGtuLW1
-         JVWzUlObK6jt67LvxqBTm1/3d/hNvCxj5SwRnVmxX3KOdWEXuAduyyMGpEabLgbRAhRP
-         qgT5Vpvqae7j++zgMCfaxuXPX2u5rx0BzvEf0WPKT9wnG/2rEaXcGSomZD0Dqxfvlccx
-         tnKQ==
-X-Gm-Message-State: APjAAAXipnHuvvaYvf8BV/YrssvyE+ciNLuMPb9Ju4E1JEJb0SpF1XSK
-        E89gzpIZo81yDYsZ9JgHoB9rRCrUlVYvFQEigFw0d6H/
-X-Google-Smtp-Source: APXvYqxF5U0TY2fzWFEqilRgsy8Z1oYyii9/Xqt/iyvltEDGpS3tdlCessJkvy9GOU/F/GBOu7HhP+jek9sARPD1xe8=
-X-Received: by 2002:a05:6638:959:: with SMTP id f25mr8772533jad.109.1574935882845;
- Thu, 28 Nov 2019 02:11:22 -0800 (PST)
+        id S1726565AbfK1KRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 05:17:38 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:57780 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726191AbfK1KRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 05:17:38 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-31-hUuKyJzuN2qaJR0SWDF11g-1; Thu, 28 Nov 2019 10:17:35 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 28 Nov 2019 10:17:34 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 28 Nov 2019 10:17:34 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     'Marek Majkowski' <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: RE: epoll_wait() performance
+Thread-Topic: epoll_wait() performance
+Thread-Index: AdWgk3jgEIFNwcnRS6+4A+/jFPxTuQEdLCCAAAAn2qAADa2dEAAA53BgAAHhYYAAIluz0A==
+Date:   Thu, 28 Nov 2019 10:17:34 +0000
+Message-ID: <1265e30d04484d08b86ba2abef5f5822@AcuMS.aculab.com>
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+ <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+ <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+ <20191127164821.1c41deff@carbon>
+ <0b8d7447e129539aec559fa797c07047f5a6a1b2.camel@redhat.com>
+ <2f1635d9300a4bec8a0422e9e9518751@AcuMS.aculab.com>
+ <313204cf-69fd-ec28-a22c-61526f1dea8b@gmail.com>
+In-Reply-To: <313204cf-69fd-ec28-a22c-61526f1dea8b@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Received: by 2002:a02:b782:0:0:0:0:0 with HTTP; Thu, 28 Nov 2019 02:11:22
- -0800 (PST)
-From:   Jeff Moneyman <jeffmoneyman10@gmail.com>
-Date:   Thu, 28 Nov 2019 02:11:22 -0800
-Message-ID: <CAEwmDKJ9JXUWOy1-RcWHpZF7T+d1nzzisw+pCP7p+wRT-jJ8Ag@mail.gmail.com>
-Subject: =?UTF-8?B?0K8gLSDQsy3QvSDQlNC20LXRhNGEINCc0LDQvdC40LzQsNC9LA==?=
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MC-Unique: hUuKyJzuN2qaJR0SWDF11g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-0K8gLSDQsy3QvSDQlNC20LXRhNGEINCc0LDQvdC40LzQsNC9LCDQv9C+INC/0YDQvtGE0LXRgdGB
-0LjQuCDQsdCw0L3QutC40YAsINC/0YDQvtGA0LDQsdC+0YLQsNC7INCyIEZpcnN0IEd1bGYNCkJh
-bmsg0LIg0JDQsdGDLdCU0LDQsdC4IDE1INC70LXRgi4gKNCe0LHRitC10LTQuNC90LXQvdC90YvQ
-tSDQkNGA0LDQsdGB0LrQuNC1INCt0LzQuNGA0LDRgtGLKSwg0LIg0L3QsNGB0YLQvtGP0YnQtdC1
-DQrQstGA0LXQvNGPINC30LDQvdC40LzQsNGOINC00L7Qu9C20L3QvtGB0YLRjCDQtNC40YDQtdC6
-0YLQvtGA0LAg0L/QviDQsNGD0LTQuNGC0YMg0LIg0LHRg9GF0LPQsNC70YLQtdGA0LjQuCDQsdCw
-0L3QutCwLiDQow0K0LzQtdC90Y8g0LXRgdGC0Ywg0LLQvtC30LzQvtC20L3QvtGB0YLRjCDQv9GA
-0Lgg0L/QtdGA0LXRh9C40YHQu9C10L3QuNC4INGB0YPQvNC80Ysg0LIg0YDQsNC30LzQtdGA0LUg
-MTEgNDgwIDAwMCwwMA0K0LTQvtC70LvQsNGA0L7QsiDQodCo0JApINC+0LTQuNC90L3QsNC00YbQ
-sNGC0Ywg0LzQuNC70LvQuNC+0L3QvtCyINGH0LXRgtGL0YDQtdGB0YLQsCDQstC+0YHQtdC80YzQ
-tNC10YHRj9GCINGC0YvRgdGP0YcNCtC00L7Qu9C70LDRgNC+0LIpINGPINCx0YvQuyDQt9Cw0YfQ
-uNGB0LvQtdC9INC90LAg0YbQtdC70LXQstC+0Lkg0LTQtdC/0L7Qt9C40YLQvdGL0Lkg0YHRh9C1
-0YIg0JrQu9C40LXQvdGC0LAsINC60L7RgtC+0YDRi9C5LA0K0Log0YHQvtC20LDQu9C10L3QuNGO
-LCDQv9C+0LPQuNCxIDE1INC40Y7Qu9GPIDIwMTYg0LPQvtC00LAg0LIg0YDQtdC30YPQu9GM0YLQ
-sNGC0LUg0LDQstC40LDQutCw0YLQsNGB0YLRgNC+0YTRiyDQsg0K0KHQtdCy0LXRgNC90L7QvCDQ
-mtC40YLQsNC1LCDQsiDQutC+0YLQvtGA0L7QuSDQv9C+0LPQuNCx0LvQuCDQstGB0Y8g0LXQs9C+
-INGB0LXQvNGM0Y8uINCY0YHRhdC+0LTRjyDQuNC3INGN0YLQuNGFDQrQvdC10LPQsNGC0LjQstC9
-0YvRhSDQvtCx0YHRgtC+0Y/RgtC10LvRjNGB0YLQsiwg0YPQvNC10YDRiNC40Lkg0LrQu9C40LXQ
-vdGCINC90LUg0LjQvNC10LXRgiDQvdC40LrQsNC60L7Qs9C+INC+0YLQvdC+0YjQtdC90LjRjywN
-CtC60LDQuiDQtdCz0L4g0LHQu9C40LbQsNC50YjQuNC1INGA0L7QtNGB0YLQstC10L3QvdC40LrQ
-uCDQuNC70Lgg0LHQtdC90LXRhNC40YbQuNCw0YAsINC+0YHRgtCw0LLQuNCy0YjQuNC5INC/0YDQ
-sNCy0L4g0L/QvtC00LDRgtGMDQrQt9Cw0Y/QstC70LXQvdC40LUg0L4g0LLRi9C/0LvQsNGC0LUg
-0YHRgNC10LTRgdGC0LIg0YDRg9C60L7QstC+0LTRgdGC0LLRgyDQsdCw0L3QutCwLiDQkiDRgdCy
-0Y/Qt9C4INGBINGN0YLQvtC5DQrQstC+0LfQvNC+0LbQvdC+0YHRgtGM0Y4g0Y8g0L7QsdGA0LDR
-idCw0Y7RgdGMINC6INCy0LDQvCwg0YfRgtC+0LHRiyDQstGL0YHRgtGD0L/QuNGC0Ywg0LIg0YDQ
-vtC70Lgg0YPQvNC10YDRiNC10LPQvg0K0LrQu9C40LXQvdGC0LAg0LHQtdC90LXRhNC40YbQuNCw
-0YAg0LTQu9GPINC/0L7Qu9GD0YfQtdC90LjRjyDRgdGA0LXQtNGB0YLQsiDQsiDQstCw0YjQtdC5
-INGB0YLRgNCw0L3QtS4g0K8g0LHRg9C00YMNCtC40YHQv9C+0LvRjNC30L7QstCw0YLRjCDRgdCy
-0L7QtSDQv9C+0LvQvtC20LXQvdC40LUg0Lgg0LLQu9C40Y/QvdC40LUg0LIg0LHQsNC90LrQtSwg
-0YDQsNCx0L7RgtCw0Y8g0YDRg9C60LAg0L7QsSDRgNGD0LrRgyDRgQ0K0LLQsNC80Lgg0LIg0L7R
-gtC90L7RiNC10L3QuNC4INGO0YDQuNC00LjRh9C10YHQutC40YUg0L/RgNC+0YbQtdC00YPRgCDQ
-uCDRg9C60LDQt9Cw0L3QuNC5INC+INGC0L7QvCwg0LrQsNC6DQrQvNCw0YLQtdGA0LjQsNC70LjQ
-t9C+0LLQsNGC0Ywg0YPRgdC/0LXRiNC90YvQuSDQv9C10YDQtdCy0L7QtCDRgdGA0LXQtNGB0YLQ
-siDQvdCwINC/0YDQtdC00L7RgdGC0LDQstC70LXQvdC90YvQtSDQstCw0LzQuA0K0LTQsNC90L3R
-i9C1INCy0L3QtdGI0L3QtdCz0L4g0YHRh9C10YLQsC4g0KfRgtC+DQrQoSDRg9Cy0LDQttC10L3Q
-uNC10Lwg0K3RgtC+INC80L7QuSDQsNC00YDQtdGBINGN0LvQtdC60YLRgNC+0L3QvdC+0Lkg0L/Q
-vtGH0YLRiyA6OiAoamVmZm1vbmV5bWFuMTBAZ21haWwuY29tKQ0K0JzQuNGB0YLQtdGAINCU0LbQ
-tdGE0YQg0JzQsNC90LjQvNCw0L0NCg==
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDI3IE5vdmVtYmVyIDIwMTkgMTc6NDcNCi4uLg0K
+PiBBIFFVSUMgc2VydmVyIGhhbmRsZXMgaHVuZHJlZCBvZiB0aG91c2FuZHMgb2YgJyBVRFAgZmxv
+d3MnIGFsbCB1c2luZyBvbmx5IG9uZSBVRFAgc29ja2V0DQo+IHBlciBjcHUuDQo+IA0KPiBUaGlz
+IGlzIHJlYWxseSB0aGUgb25seSB3YXkgdG8gc2NhbGUsIGFuZCBkb2VzIG5vdCBuZWVkIGtlcm5l
+bCBjaGFuZ2VzIHRvIGVmZmljaWVudGx5DQo+IG9yZ2FuaXplIG1pbGxpb25zIG9mIFVEUCBzb2Nr
+ZXRzIChodWdlIG1lbW9yeSBmb290cHJpbnQgZXZlbiBpZiB3ZSBnZXQgcmlnaHQgaG93DQo+IHdl
+IG1hbmFnZSB0aGVtKQ0KPiANCj4gR2l2ZW4gdGhhdCBVRFAgaGFzIG5vIHN0YXRlLCB0aGVyZSBp
+cyByZWFsbHkgbm8gcG9pbnQgdHJ5aW5nIHRvIGhhdmUgb25lIFVEUA0KPiBzb2NrZXQgcGVyIGZs
+b3csIGFuZCBoYXZpbmcgdG8gZGVhbCB3aXRoIGVwb2xsKCkvcG9sbCgpIG92ZXJoZWFkLg0KDQpI
+b3cgY2FuIHlvdSBkbyB0aGF0IHdoZW4gYWxsIHRoZSBVRFAgZmxvd3MgaGF2ZSBkaWZmZXJlbnQg
+ZGVzdGluYXRpb24gcG9ydCBudW1iZXJzPw0KVGhlc2UgYXJlIG1lc3NhZ2UgZmxvd3Mgbm90IGlk
+ZW1wb3RlbnQgcmVxdWVzdHMuDQpJIGRvbid0IHJlYWxseSB3YW50IHRvIGNvbGxlY3QgdGhlIHBh
+Y2tldHMgYmVmb3JlIHRoZXkndmUgYmVlbiBwcm9jZXNzZWQgYnkgSVAuDQoNCkkgY291bGQgd3Jp
+dGUgYSBkcml2ZXIgdGhhdCB1c2VzIGtlcm5lbCB1ZHAgc29ja2V0cyB0byBnZW5lcmF0ZSBhIHNp
+bmdsZSBtZXNzYWdlIHF1ZXVlDQp0aGFuIGNhbiBiZSBlZmZpY2llbnRseSBwcm9jZXNzZWQgZnJv
+bSB1c2Vyc3BhY2UgLSBidXQgaXQgaXMgYSBmYWZmIGNvbXBpbGluZyBpdCBmb3INCnRoZSBzeXN0
+ZW1zIGtlcm5lbCB2ZXJzaW9uLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExh
+a2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQs
+IFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+
