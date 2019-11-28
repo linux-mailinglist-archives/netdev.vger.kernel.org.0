@@ -2,92 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C19FD10CCE5
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:37:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FECA10CD41
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 17:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbfK1QhG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 28 Nov 2019 11:37:06 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:52315 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726520AbfK1QhF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 11:37:05 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-230-AxEAhMhqPBirovqvBRqSxg-1; Thu, 28 Nov 2019 16:37:02 +0000
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 28 Nov 2019 16:37:01 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 28 Nov 2019 16:37:01 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jesper Dangaard Brouer' <brouer@redhat.com>
-CC:     'Marek Majkowski' <marek@cloudflare.com>,
+        id S1727326AbfK1QwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 11:52:16 -0500
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:28027 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726582AbfK1QwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Nov 2019 11:52:16 -0500
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id xASGq5po012646;
+        Thu, 28 Nov 2019 17:52:05 +0100
+Date:   Thu, 28 Nov 2019 17:52:05 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "'Jesper Dangaard Brouer'" <brouer@redhat.com>,
+        "'Marek Majkowski'" <marek@cloudflare.com>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         network dev <netdev@vger.kernel.org>,
         kernel-team <kernel-team@cloudflare.com>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: RE: epoll_wait() performance
-Thread-Topic: epoll_wait() performance
-Thread-Index: AdWgk3jgEIFNwcnRS6+4A+/jFPxTuQEdLCCAAAAn2qAADFPagAAAV68AAChM6IAACxvV8A==
-Date:   Thu, 28 Nov 2019 16:37:01 +0000
-Message-ID: <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
+Subject: Re: epoll_wait() performance
+Message-ID: <20191128165205.GA12629@1wt.eu>
 References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
-        <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
-        <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
-        <20191127164821.1c41deff@carbon>
-        <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
+ <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+ <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+ <20191127164821.1c41deff@carbon>
+ <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
  <20191128121205.65c8dea1@carbon>
-In-Reply-To: <20191128121205.65c8dea1@carbon>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
 MIME-Version: 1.0
-X-MC-Unique: AxEAhMhqPBirovqvBRqSxg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer
-> Sent: 28 November 2019 11:12
-...
-> > Can you test recv() as well?
-> 
-> Sure: https://github.com/netoptimizer/network-testing/commit/9e3c8b86a2d662
-> 
-> $ sudo taskset -c 1 ./udp_sink --port 9  --count $((10**6*2))
->           	run      count   	ns/pkt	pps		cycles	payload
-> recvMmsg/32  	run:  0	 2000000	653.29	1530704.29	2351	18	 demux:1
-> recvmsg   	run:  0	 2000000	631.01	1584760.06	2271	18	 demux:1
-> read      	run:  0	 2000000	582.24	1717518.16	2096	18	 demux:1
-> recvfrom  	run:  0	 2000000	547.26	1827269.12	1970	18	 demux:1
-> recv      	run:  0	 2000000	547.37	1826930.39	1970	18	 demux:1
-> 
-> > I think it might be faster than read().
-> 
-> Slightly, but same speed as recvfrom.
+On Thu, Nov 28, 2019 at 04:37:01PM +0000, David Laight wrote:
+> My test system tends to increase its clock rate when busy.
+> (The fans speed up immediately, the cpu has a passive heatsink and all the
+> case fans are connected (via buffers) to the motherboard 'cpu fan' header.)
+> I could probably work out how to lock the frequency, but for some tests I run:
+> $ while :; do :; done
+> Putting 1 cpu into a userspace infinite loop make them all run flat out
+> (until thermally throttled).
 
-I notice that you recvfrom() code doesn't request the source address.
-So is probably identical to recv().
+It would be way more efficient to only make the CPUs spin in the idle
+loop. I wrote a small module a few years ago for this, which allows me
+to do the equivalent of "idle=poll" at runtime. It's very convenient
+in VMs as it significantly reduces your latency and jitter by preventing
+them from sleeping. It's quite efficient as well to stabilize CPUs having
+an important difference between their highest and lowest frequencies.
 
-My test system tends to increase its clock rate when busy.
-(The fans speed up immediately, the cpu has a passive heatsink and all the
-case fans are connected (via buffers) to the motherboard 'cpu fan' header.)
-I could probably work out how to lock the frequency, but for some tests I run:
-$ while :; do :; done
-Putting 1 cpu into a userspace infinite loop make them all run flat out
-(until thermally throttled).
+I'm attaching the patch here, it's straightforward, it was made on
+3.14 and still worked unmodified on 4.19, I'm sure it still does with
+more recent kernels.
 
-	David
+Hoping this helps,
+Willy
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+---
+
+From 22d67389c2b28d924260b8ced78111111006ed94 Mon Sep 17 00:00:00 2001
+From: Willy Tarreau <w@1wt.eu>
+Date: Wed, 27 Jan 2016 17:24:54 +0100
+Subject: staging: add a new "idle_poll" module to disable idle loop
+
+Sometimes it's convenient to be able to switch to polled mode for the
+idle loop. This module does just that, and reverts back to the original
+mode once unloaded.
+---
+ drivers/staging/Kconfig               |  2 ++
+ drivers/staging/Makefile              |  1 +
+ drivers/staging/idle_poll/Kconfig     |  8 ++++++++
+ drivers/staging/idle_poll/Makefile    |  7 +++++++
+ drivers/staging/idle_poll/idle_poll.c | 22 ++++++++++++++++++++++
+ kernel/cpu/idle.c                     |  1 +
+ 6 files changed, 41 insertions(+)
+ create mode 100644 drivers/staging/idle_poll/Kconfig
+ create mode 100644 drivers/staging/idle_poll/Makefile
+ create mode 100644 drivers/staging/idle_poll/idle_poll.c
+
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 9594f204d4fc..936a2721b0f7 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -148,4 +148,6 @@ source "drivers/staging/dgnc/Kconfig"
+ 
+ source "drivers/staging/dgap/Kconfig"
+ 
++source "drivers/staging/idle_poll/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index 6ca1cf3dbcd4..d3d45aff73d2 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -66,3 +66,4 @@ obj-$(CONFIG_XILLYBUS)		+= xillybus/
+ obj-$(CONFIG_DGNC)			+= dgnc/
+ obj-$(CONFIG_DGAP)			+= dgap/
+ obj-$(CONFIG_MTD_SPINAND_MT29F)	+= mt29f_spinand/
++obj-$(CONFIG_IDLE_POLL)		+= idle_poll/
+diff --git a/drivers/staging/idle_poll/Kconfig b/drivers/staging/idle_poll/Kconfig
+new file mode 100644
+index 000000000000..4c96a21f66aa
+--- /dev/null
++++ b/drivers/staging/idle_poll/Kconfig
+@@ -0,0 +1,8 @@
++config IDLE_POLL
++	tristate "IDLE_POLL enabler"
++	help
++	    This module automatically enables polling-based idle loop.
++	    It is convenient in certain situations to simply load the
++	    module to disable the idle loop, or unload it to re-enable
++	    it.
++
+diff --git a/drivers/staging/idle_poll/Makefile b/drivers/staging/idle_poll/Makefile
+new file mode 100644
+index 000000000000..60ad176f11f6
+--- /dev/null
++++ b/drivers/staging/idle_poll/Makefile
+@@ -0,0 +1,7 @@
++# This rule extracts the directory part from the location where this Makefile
++# is found, strips last slash and retrieves the last component which is used
++# to make a file name. It is a generic way of building modules which always
++# have the name of the directory they're located in. $(lastword) could have
++# been used instead of $(word $(words)) but it's bogus on some versions.
++
++obj-m += $(notdir $(patsubst %/,%,$(dir $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))))).o
+diff --git a/drivers/staging/idle_poll/idle_poll.c b/drivers/staging/idle_poll/idle_poll.c
+new file mode 100644
+index 000000000000..6f39f85cc61d
+--- /dev/null
++++ b/drivers/staging/idle_poll/idle_poll.c
+@@ -0,0 +1,22 @@
++#include <linux/module.h>
++#include <linux/cpu.h>
++
++static int __init modinit(void)
++{
++	cpu_idle_poll_ctrl(true);
++	return 0;
++}
++
++static void __exit modexit(void)
++{
++	cpu_idle_poll_ctrl(false);
++	return;
++}
++
++module_init(modinit);
++module_exit(modexit);
++
++MODULE_DESCRIPTION("idle_poll enabler");
++MODULE_AUTHOR("Willy Tarreau");
++MODULE_VERSION("0.0.1");
++MODULE_LICENSE("GPL");
+diff --git a/kernel/cpu/idle.c b/kernel/cpu/idle.c
+index 277f494c2a9a..fbf648bc52b2 100644
+--- a/kernel/cpu/idle.c
++++ b/kernel/cpu/idle.c
+@@ -22,6 +22,7 @@ void cpu_idle_poll_ctrl(bool enable)
+ 		WARN_ON_ONCE(cpu_idle_force_poll < 0);
+ 	}
+ }
++EXPORT_SYMBOL(cpu_idle_poll_ctrl);
+ 
+ #ifdef CONFIG_GENERIC_IDLE_POLL_SETUP
+ static int __init cpu_idle_poll_setup(char *__unused)
+-- 
+2.20.1
 
