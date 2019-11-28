@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CA4410C340
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC43710C342
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbfK1EhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 23:37:16 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41953 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726401AbfK1EhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:37:16 -0500
-Received: by mail-io1-f68.google.com with SMTP id z26so23946432iot.8;
-        Wed, 27 Nov 2019 20:37:16 -0800 (PST)
+        id S1727614AbfK1Ekh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 23:40:37 -0500
+Received: from mail-il1-f178.google.com ([209.85.166.178]:40371 "EHLO
+        mail-il1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726401AbfK1Ekg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:40:36 -0500
+Received: by mail-il1-f178.google.com with SMTP id b15so20537ila.7
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:40:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=MhBD8FldgWDB7ubM1+bg4CA0wEesKVjK+ARC6kecBbM=;
-        b=uePEqEdxv92L3sIfzubpAqH7fYlICZEKjnG6tZwRSrldFfjiGBQcEP/ri/HIj8H2fD
-         B50DaQfhflLV0weORepX0LHHtXBMeMSPBQrfmXhJwKex5Ki6vQ6upj3vcCFxAY0gGDe0
-         Sm3tnj0umtnVfSSccqACwedQJmC0rA+AJhVkmMTv740V2WP+LhPmAjyVHlkGrazMwqJ2
-         JCEfvVftCivGHsZwDYJk3P11ARg22fMfa0K1oBsUaWia6+5HCC4HQtWaxHY9eCaHRwiv
-         4cRX9J9HN68cPwVRXC71M0drLVEgYH6IM8F7+oZNWq4iDbYW5SyGauEvHCEPts/b2kQq
-         NjQA==
+        bh=q9yzU1nYNlf3EJM75747Cx3LdBPKXTXcGE0L7vaL7BY=;
+        b=ekiQQ4h6gswaEjG1c8OQCVp24V6IBRM+R2KhLms+6VfiUNzBNxSxaOYuW8wTifazyN
+         YtDoHmB0Ey4rr7pI9KLYtIgTviR+8tsp/vLWHROtrqe0NWRKi7AunE9kk3/mxyHNcs1w
+         EGOtt62vWBjz77BwAL8dG8aGY6E5L+RGQxpkxHNAoZJmxY9FHNaam8zVqhtaEVkGmzH5
+         uhPdNDILWyUCt0m8MwO5Z0DCrFk4GdQAmVMw1Z1B0PhlV2fAzO/Fr8XgzHaZFaQsYesl
+         jirgLGjKD2XMpJ6su71oV60bq8McBNIIxkcHF4ZCUr5HkJaIOVXjeA7bqClej0SfW++2
+         FIyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=MhBD8FldgWDB7ubM1+bg4CA0wEesKVjK+ARC6kecBbM=;
-        b=S7cX6jfGQv1aM7vRiPefcKzZDANPeBWgjGso4mTMWG2QxkmQJ5GGn56Ti+yz4+erc3
-         4gl2JgBJaLFT1yB1kQEsgTP5bkBmxaVP+zk744F/Nes+SijpkoDgwXrvG71u3Cm0hlN5
-         BM+jYF/a+9AWK9GO51ntbbbM861kVoOdFpO2hFkmZhZ4RVbpIdXQ5J/KMb8m6lcs58N/
-         sI1eJMdurdRGFYXbfQqfob/iXOMyZYfN++XbTOw4iEWGCfEcGNK2XJ8BFd3yFIKNBc8F
-         U9ybvELLPyWSEj7lp3BVYnoDTYGSXP6G5a7c6cjQgASxSCj1HR9f9kltVmccH+hj6Fki
-         ImKQ==
-X-Gm-Message-State: APjAAAVa1kYaEwhrkuv/EG+HVT0oBui/nFOc7ZibFdhnDwPvXEXlCRrB
-        tb9Cl959MAglWQXFqoF58WPwz1u4
-X-Google-Smtp-Source: APXvYqw6noxU06VeRXfTZCraNQ+koeXy+v6wrLYFU1b+DMhT3fEUFgPoBbCxtrD59jAWiiI2ylpLtw==
-X-Received: by 2002:a6b:d119:: with SMTP id l25mr38250926iob.44.1574915835625;
-        Wed, 27 Nov 2019 20:37:15 -0800 (PST)
+        bh=q9yzU1nYNlf3EJM75747Cx3LdBPKXTXcGE0L7vaL7BY=;
+        b=O+1iINp1sLwJwIdzo+BrM1FmOV6QCEKVNNY242hmRp7SvagInKhAKiMuBAbuBnEoE0
+         ypbxXyiZ4FedeSw6o8vc99JcvcvWGr0/ekBXR9AHOkVpccVfm8iCglDLRoN3o/gRRTGv
+         5XsANDZZUKlNpRkQWC7JSBgbW97i8MTTbGmAP3pVHBcvIf4poymY0Wt5xkgNi0cbNmhB
+         duSry/sErgQbAZSVzLs7NuqeGOEenUSjY30hOhuPqeHr1GLnoBLWI0MKR9KMHCD59c9O
+         pXgxEnPaIMX641qS+m9IvQ/2AW8EWeGTdLIK6SUfLT0F5Ev8UVDXvi7gTJK0dW23uQQ+
+         aXOA==
+X-Gm-Message-State: APjAAAVUNzTMGqlkG4eVgZmZU1vpMFmFhSSG484UslxyeaOFt1abb8HG
+        rw0Idhgo/Sx/pyxbpQo2ZWk=
+X-Google-Smtp-Source: APXvYqz/VOpqljQRVnaERzS0/qt3L3+CKz1gCmNAFRPLMI0Lwql7tl+NVcfYohdNN46HIHKUos1IKA==
+X-Received: by 2002:a92:b70c:: with SMTP id k12mr47885447ili.55.1574916034322;
+        Wed, 27 Nov 2019 20:40:34 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l9sm4266093iob.37.2019.11.27.20.37.12
+        by smtp.gmail.com with ESMTPSA id t4sm5067849ilh.29.2019.11.27.20.40.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Nov 2019 20:37:15 -0800 (PST)
-Date:   Wed, 27 Nov 2019 20:37:07 -0800
+        Wed, 27 Nov 2019 20:40:33 -0800 (PST)
+Date:   Wed, 27 Nov 2019 20:40:26 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Message-ID: <5ddf4ef366a69_3c082aca725cc5bcbb@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191127225759.39923-1-sdf@google.com>
-References: <20191127225759.39923-1-sdf@google.com>
-Subject: RE: [PATCH bpf] bpf: force .BTF section start to zero when dumping
- from vmlinux
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net,
+        john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, aviadye@mellanox.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Message-ID: <5ddf4fba39b92_3c082aca725cc5bc5e@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191127201646.25455-2-jakub.kicinski@netronome.com>
+References: <20191127201646.25455-1-jakub.kicinski@netronome.com>
+ <20191127201646.25455-2-jakub.kicinski@netronome.com>
+Subject: RE: [PATCH net 1/8] net/tls: take into account that
+ bpf_exec_tx_verdict() may free the record
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -65,32 +67,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stanislav Fomichev wrote:
-> While trying to figure out why fentry_fexit selftest doesn't pass for me
-> (old pahole, broken BTF), I found out that my latest patch can break vmlinux
-> .BTF generation. objcopy preserves section start when doing --only-section,
-> so there is a chance (depending on where pahole inserts .BTF section) to
-> have leading empty zeroes. Let's explicitly force section offset to zero.
+Jakub Kicinski wrote:
+> bpf_exec_tx_verdict() may free the record if tls_push_record()
+> fails, or if the entire record got consumed by BPF. Re-check
+> ctx->open_rec before touching the data.
 > 
-> Before:
-> $ objcopy --set-section-flags .BTF=alloc -O binary \
-> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
-> $ xxd .btf.vmlinux.bin | head -n1
-> 00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
-> 
-> After:
-> $ objcopy --change-section-address .BTF=0 \
-> 	--set-section-flags .BTF=alloc -O binary \
-> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
-> $ xxd .btf.vmlinux.bin | head -n1
-> 00000000: 9feb 0100 1800 0000 0000 0000 80e1 1c00  ................
->           ^BTF magic
-> 
-> As part of this change, I'm also dropping '2>/dev/null' from objcopy
-> invocation to be able to catch possible other issues (objcopy doesn't
-> produce any warnings for me anymore, it did before with --dump-section).
-
-Agree dropping /dev/null seems like a good choice. Otherwise seems reasonable
-to me.
+> Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> ---
+>  net/tls/tls_sw.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
