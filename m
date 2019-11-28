@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E24210C57D
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 09:54:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DFE10C596
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 10:03:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbfK1Iy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 03:54:28 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:40743 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726594AbfK1Iy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 03:54:28 -0500
-Received: by mail-qv1-f68.google.com with SMTP id i3so10028796qvv.7
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 00:54:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HoqmZ4ISGst+6RxBOTmccwmK74t4nIgQ0Amev8cPgJw=;
-        b=cM7lGvanWO5KiySXbzZYYcyrA6cgoAnT7nFXRAyOZh1whtmTQn7+SREmxD8m2HFExg
-         ZJTsDpaLLOX0RWst+X5UrTSn4MSOol0pqlgKEs2hfycLAGBl2V75cW8BAcy03nr+9UHu
-         O3VSnrploTWsSndKiNJWN98XCGaKsd+dogwMqEY5xD9H5+YCUC/c0DYmEL+iL6KuKyEE
-         xwdLNQ4G1Y+ixl27uFSGtaEsfRk08Jprnp6Jk507XQ2+l0SL3FqgwaSTJ7xWF7eSYDtu
-         89u/jkRigRPi66mttLx1EgLjn3M2n7B+AasFgU4AFuolX7BzG6nFUEWR45Id8SavuzfE
-         jRLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HoqmZ4ISGst+6RxBOTmccwmK74t4nIgQ0Amev8cPgJw=;
-        b=ay8KxZlbvRhbrhmT7/T/OSrxbau5S3ghcNPGOUzVTQj1MIw1ebjtstDLNqu4zAlTc3
-         +d8cqOg61tj53h9cQgChD6O0IsnKJG/dMaZ+cQ0PGO8Hn824+NJ7rZOTPQ0RHyXEyAXx
-         6/Bb1v0+gqvfizQ98oeMhvJ2z/L+iPCE7CKkcfJpxaBcoU7VSiN1W7zqtYTM5Vtb32Za
-         jRc/YWbaaaU6W4T1UwH5Levk0L/RO2zDrbef+bIGiJATh26DfAtCH9Xn/dUV01ruT1oF
-         ssBLkCVM5jcq94RR3QiXa2K1bArUl7GJ8VCmtftqf7w0FiYk+OvBjxm4V4Ub708zctOA
-         ZYXA==
-X-Gm-Message-State: APjAAAXL33Izl42PIndzWmQYhC2fUjQr/olux0TcA44CQ8fwFpEwNAxj
-        OQRW6oj+WDOtOoIIQEestIfMCZYXy+HXuCeQEBEIkg==
-X-Google-Smtp-Source: APXvYqwketckvdqNsCiapXjNAvjDeAQUljd4H4OG+vca5gsS5F+c5jxbOi0LjNMMxQMyhUr3JUWAVPy9Os8b4xje1Fs=
-X-Received: by 2002:a05:6214:8ee:: with SMTP id dr14mr9867650qvb.122.1574931266487;
- Thu, 28 Nov 2019 00:54:26 -0800 (PST)
-MIME-Version: 1.0
-References: <0000000000009aa32205985e78b6@google.com> <2825703.dkhYCMB3mh@sven-edge>
- <CACT4Y+YwNGWCXBazm+7GHpSw-gXsxmA8NA-o7O7Mpj3d-dhGYA@mail.gmail.com> <1809369.KjlzdqruN6@sven-edge>
-In-Reply-To: <1809369.KjlzdqruN6@sven-edge>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 28 Nov 2019 09:54:15 +0100
-Message-ID: <CACT4Y+abQSWfiN16BwXFOBi+d3CFGk53oj+5+zZwQPbcYu-Rew@mail.gmail.com>
-Subject: Re: WARNING in mark_lock (3)
-To:     Sven Eckelmann <sven@narfation.org>
+        id S1727408AbfK1JDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 04:03:20 -0500
+Received: from dvalin.narfation.org ([213.160.73.56]:51930 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726656AbfK1JDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 04:03:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1574931798;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NrOadlV/ly7FreKTOQxgRCOUZAeZYFuDY0qoRN8icgo=;
+        b=cDgC2CAdf2rhtq7hEdWN7O6A53wGbKZtVnG7HANS56jXbJDlbuy4WBQ6tB4iITPMinNWTz
+        8ufAeJhojywWlqfMM3ThtQ7p76e0n8Sj8L24AyTXsWhh6j9yKnLRF3K4dLr/DCAK8TyW4I
+        Yv0u0zLnBVZ7HdnC57anmxMMBMsSSdc=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
 Cc:     syzkaller <syzkaller@googlegroups.com>,
         syzbot <syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com>,
         a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
-        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        =?utf-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
         LKML <linux-kernel@vger.kernel.org>, mareklindner@neomailbox.ch,
         netdev <netdev@vger.kernel.org>, sw@simonwunderlich.de,
         syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
         vinicius.gomes@intel.com, wang.yi59@zte.com.cn,
         Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: WARNING in mark_lock (3)
+Date:   Thu, 28 Nov 2019 10:03:13 +0100
+Message-ID: <3691620.GRZi0niZ3p@sven-edge>
+In-Reply-To: <CACT4Y+abQSWfiN16BwXFOBi+d3CFGk53oj+5+zZwQPbcYu-Rew@mail.gmail.com>
+References: <0000000000009aa32205985e78b6@google.com> <1809369.KjlzdqruN6@sven-edge> <CACT4Y+abQSWfiN16BwXFOBi+d3CFGk53oj+5+zZwQPbcYu-Rew@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart3339975.5L7NHtn4j8"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 9:46 AM Sven Eckelmann <sven@narfation.org> wrote:
->
-> On Thursday, 28 November 2019 09:40:32 CET Dmitry Vyukov wrote:
-> > On Thu, Nov 28, 2019 at 8:25 AM Sven Eckelmann <sven@narfation.org> wrote:
-> > >
-> > > On Thursday, 28 November 2019 03:00:01 CET syzbot wrote:
-> > > [...]
-> > > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ee536e00000
-> > > > start commit:   89d57ddd Merge tag 'media/v5.5-1' of git://git.kernel.org/..
-> > > > git tree:       upstream
-> > > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=10aee536e00000
-> > >
-> > > Can the syzbot infrastructure be told to ignore this crash in the bisect run?
-> > > Because this should be an unrelated crash which is (hopefully) fixed in
-> > > 40e220b4218b ("batman-adv: Avoid free/alloc race when handling OGM buffer").
-> >
-> > +syzkaller mailing list for syzbot discussion
-> >
-> > Hi Sven,
-> >
-> > There is no such functionality at the moment.
-> > What exactly do you mean? Somehow telling it interactively? Or
-> > hardcode some set of crashes for linux? I don't see how any of these
-> > options can really work...
->
-> I was thinking more about rerunning the same bisect but tell it to assume
-> "crashed: general protection fault in batadv_iv_ogm_queue_add" as OK instead
-> of assuming that it is a crashed like the previous "crashed: WARNING in
-> mark_lock". Just to get a non-bogus bisect result. Or try to rerun the
-> bisect between 40e220b4218b and 89d57dddd7d319ded00415790a0bb3c954b7e386
+--nextPart3339975.5L7NHtn4j8
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-But... but this done by a program. What do you mean by "tell it"?
+On Thursday, 28 November 2019 09:54:15 CET Dmitry Vyukov wrote:
+[...]
+> > I was thinking more about rerunning the same bisect but tell it to assume
+> > "crashed: general protection fault in batadv_iv_ogm_queue_add" as OK instead
+> > of assuming that it is a crashed like the previous "crashed: WARNING in
+> > mark_lock". Just to get a non-bogus bisect result. Or try to rerun the
+> > bisect between 40e220b4218b and 89d57dddd7d319ded00415790a0bb3c954b7e386
+> 
+> But... but this done by a program. What do you mean by "tell it"?
+
+Sorry that I asked about what the infrastructure around syzbot can do and
+how the interaction with it looks like.
+
+Kind regards,
+	Sven
+--nextPart3339975.5L7NHtn4j8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl3fjVEACgkQXYcKB8Em
+e0ajQhAAvetvCCehY5SmHsrLLKW7/YkVm3Ez3oqtbu/VCn8TEvau5PVt48ojQYmu
+zOIZAs05i4JRI1WHZXyrAzPF3CI4juDdFCwOibiPDzCU2C3qD5s2AsZfxK22iPUt
+dkBhW19Cq115ZgcOmerAor0nLkRkglYwoAEg6j+edtXUU3JYQG6PSGICN1NMGhmY
+Q1jcXAGR1Hm+2SbR1sBBCflQHt8E6/wURkeqrvV82AcRSO3sPqQBWSEZ7QzIe3mc
+oh0v4o5xZQMqppDByKmS9kZ5kRPH0yQid9l/KU4yGAQ8IDIZRKJGSHbpdOSGHNB4
+9Wc3SR04lmn8WhwRBE8vpB/6n8cAq0mAv/kTa6pEYzjY499z8BjEkkAh9ggOuxLQ
+AOb4dpu0L+wyXP/vLhUKJI+KWAJ+OOJoAVxNXh6HvhQRpShpTN/7+o1AVyRXLlBZ
+bdjxVh3McRWvn8KYat3DtkON90uQRCZ9ufyTXcIPKkTiqQuT/UpwY0fNe3kjYfpK
+pd5dyM86JWGxd39ramOhFSBQyNUAmJ+9pY2uVypbSABbbyIlqerGqzRSvgxoynNN
+UrrZN3MVBCouMxM9+ES7L63jUg8JQQdAwr4RoisEyGLSPsstEnOd6PWYdsk6WYA2
+kDoKPp9EjAeGEb7qH+IbXSm73qP2xX+rBBjfcTn/1CHCkgAPvTg=
+=lHZm
+-----END PGP SIGNATURE-----
+
+--nextPart3339975.5L7NHtn4j8--
+
+
+
