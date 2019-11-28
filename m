@@ -2,227 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6EAA10C419
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 07:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A686C10C41F
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 07:53:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbfK1Guy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 01:50:54 -0500
-Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:44758 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726436AbfK1Guy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 01:50:54 -0500
-Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
-        by mx0a-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAS6kvVl024234;
-        Wed, 27 Nov 2019 22:50:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=proofpoint;
- bh=bC11/uzu5Y03ln+FArk3FOLUy/SFAACTUG8OsRsKg68=;
- b=bw7HIToDa61jUT0T/8uYR+YZnu4yEfcvNI+3UhxM1yaIntTfba6dGAl/i/DwiknR/66j
- cBxS0iMyJ+BvGt419ggCpZRA2VVyGBLgvcs73o3mCGh+OjG2de1aApypLgQFEoJrQ7/s
- uwbNgavsv65psTXbS0r+CkOo3YeHKJlFLNksBp14bQqiXc4IYvwYSLGLctqI10docwxI
- sLUASHOMeyKm3bkzQWZSeFdmttrJ+6GofGkRHsqNcYyFbmNN4f1f3MYLD0nApbCsLI6V
- Y1/Xrz3Uzm+rZJD5A2adHlQAC7p1XpfYgg8YH5fLKpq1WNipkZ33f17xNIUASk/r/Jat jQ== 
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2054.outbound.protection.outlook.com [104.47.37.54])
-        by mx0a-0014ca01.pphosted.com with ESMTP id 2whcxgq6hr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Nov 2019 22:50:13 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=odbM5FmaGVtysjgOl5Gskh1FSH6txqtWznJsWQOiLPgc9ulALIBqpHDXXjJqXuPno/+AxJmltUr/5P5WwQfjYau6o4cEEg/194wgsTl/4N5kQJQzRbsiAfC6gRiQPdhmrMRrzGcVpEUXkMrLsz2nM6rhaX47AmegnvojVjWx/1eO7TxCTSFwgJ4QX8WFM5FYSCmqMu3SQwNaUr/z6cRaEHj9UMx8twT0xnIBM9GDllZXN59XHInkDxANMadvSic4LrH1fv/dr8VpfQCdvshszO66SCiRXkkBZureZof32YPgsN4hnMbkD0Qxxlx96B9srUGB7GfRAcsyihxUkvvxcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bC11/uzu5Y03ln+FArk3FOLUy/SFAACTUG8OsRsKg68=;
- b=A2zsf2163BrcWu/pT5BklLmqYNUpTu+3ROkw/TNIFKRKJ9bKw7Fd1rfUqWNLPE6xHDHNO/HOkjbJCqZ3p58W+N2cvirm2GpXPt8nV2751a7NHwQKeZWrMsPNeiAxf2mNAeyPuI/YfUR58FMbGi/N/fREp9uim8gKTrZ9urHS0V9hQcHZGb61DjU1DLcaaOhvxN8jWZHZKazqcD0kxv+G+I5Jf6Fds437rrUGB026tdkZgwEkHeWB4CO9NZoDcc+u1nW3tDtOBHHu2aFu7Xhe53xdSvneyou4BsyylahbGa05pAIOjzOlCLnDciMRS0a36y/iOurNnsmeHo+ocanYvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cadence.com; dmarc=pass action=none header.from=cadence.com;
- dkim=pass header.d=cadence.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bC11/uzu5Y03ln+FArk3FOLUy/SFAACTUG8OsRsKg68=;
- b=3EI9AYVR4bKgm39SYioOgxuKK9Sp8GiDqQD0beO2xLjWN/BacYBFZg8GjlZff8YgxFJ7Wcp/r6XYaNoiTGFmsZYTIBMlDTXQuRx3dtAB2Eg3E4DeDLsoybpjnKQnKkk9fIT3gOD3Sk9Sc4cFjS8tHvTXDGccLWY4EWTAiZS1Mjo=
-Received: from BY5PR07MB6514.namprd07.prod.outlook.com (10.255.137.27) by
- BY5PR07MB7174.namprd07.prod.outlook.com (52.133.250.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.20; Thu, 28 Nov 2019 06:50:11 +0000
-Received: from BY5PR07MB6514.namprd07.prod.outlook.com
- ([fe80::fc51:186:dd82:f768]) by BY5PR07MB6514.namprd07.prod.outlook.com
- ([fe80::fc51:186:dd82:f768%7]) with mapi id 15.20.2495.014; Thu, 28 Nov 2019
- 06:50:11 +0000
-From:   Milind Parab <mparab@cadence.com>
-To:     "Nicolas.Ferre@microchip.com" <Nicolas.Ferre@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dhananjay Vilasrao Kangude <dkangude@cadence.com>,
-        Parshuram Raju Thombare <pthombar@cadence.com>,
-        "a.fatoum@pengutronix.de" <a.fatoum@pengutronix.de>,
-        "brad.mouring@ni.com" <brad.mouring@ni.com>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>
-Subject: RE: [PATCH 1/3] net: macb: fix for fixed-link mode
-Thread-Topic: [PATCH 1/3] net: macb: fix for fixed-link mode
-Thread-Index: AQHVpDlBnnMY4JNgZU2dTLIc6PgUU6efUTOAgADTG1A=
-Date:   Thu, 28 Nov 2019 06:50:10 +0000
-Message-ID: <BY5PR07MB65144B9F265EDF74FB7BB621D3470@BY5PR07MB6514.namprd07.prod.outlook.com>
-References: <1574759354-102696-1-git-send-email-mparab@cadence.com>
- <1574759380-102986-1-git-send-email-mparab@cadence.com>
- <e53eb865-6886-e7b6-3f4e-1ec40d38c7de@microchip.com>
-In-Reply-To: <e53eb865-6886-e7b6-3f4e-1ec40d38c7de@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbXBhcmFiXGFwcGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEyOWUzNWJcbXNnc1xtc2ctNTA1MmRmZTgtMTFhYi0xMWVhLWFlYzAtZDhmMmNhNGQyNWFhXGFtZS10ZXN0XDUwNTJkZmVhLTExYWItMTFlYS1hZWMwLWQ4ZjJjYTRkMjVhYWJvZHkudHh0IiBzej0iMzk1NSIgdD0iMTMyMTkzOTc0MDgzMDc5MjgyIiBoPSJIK0loenA0OEUzQXBaUUxyVThBYTFsUkZyeG89IiBpZD0iIiBibD0iMCIgYm89IjEiLz48L21ldGE+
-x-dg-rorf: true
-x-originating-ip: [14.143.9.161]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ac69cf83-3461-4faa-82df-08d773cf36d0
-x-ms-traffictypediagnostic: BY5PR07MB7174:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR07MB717448198813E15A7142A3B2D3470@BY5PR07MB7174.namprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0235CBE7D0
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(39860400002)(366004)(376002)(396003)(36092001)(13464003)(189003)(199004)(2501003)(55236004)(76176011)(6506007)(7696005)(102836004)(186003)(446003)(11346002)(54906003)(26005)(110136005)(316002)(33656002)(99286004)(71190400001)(71200400001)(86362001)(2201001)(256004)(14444005)(5024004)(55016002)(9686003)(6436002)(6246003)(478600001)(229853002)(6116002)(3846002)(2906002)(8936002)(8676002)(81156014)(81166006)(4326008)(7416002)(74316002)(305945005)(7736002)(64756008)(5660300002)(25786009)(66556008)(76116006)(66946007)(52536014)(66066001)(14454004)(66476007)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:BY5PR07MB7174;H:BY5PR07MB6514.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: cadence.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NLSo4d7VqULiPlQI6NEGdTUSk2gTF7YVhZme9PBDMYvB4eY478gB5gCNH+ypr4nwdafUumveemHQlDnuBUT0+I2SaSNCfDUhs4AE8k5mZ2Nwwnog2CraM78cNBRenOW0mCsoyEGH4HTlk4zxpZNbZYdT44re9dGG1+AQakDTYr1OJi9OtWkAJkYwFoDmBm3zkWrXL/3MYxeamOwbWoRfURF2/s/KbNQxMyASa2MTVYeI/6QVffYAHk0e4wdOdG0pTJTlAirAxwbPE7p4M1QNN6wxvrBwJ45CSEgbxK9acvVSd5p86PObW6vhmPf+Y11jdRceoUhnxZ6Y0xAMWmqCvfGFKK4uX76939HLGIVgLHiYSXGzsKpF/FmHz31Afx+S/91YuplRUmekhVSgZbc022LOWBfJTuhBxGgaM1gOYdJUFHpweAFNX0byNXw19c/iQ7oMYN6PKt9kWmejc7rM2A==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727030AbfK1Gxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 01:53:55 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:44075 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726656AbfK1Gxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 01:53:54 -0500
+Received: by mail-ot1-f66.google.com with SMTP id c19so21342334otr.11
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 22:53:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wJa16Nd4lZ1mLaB9TdiTkMJ+KJ3QKJBaGmOkeaLvJ6Q=;
+        b=pqm79NTlVdFNPQosYkLVtpIUGYu300ZPWBuGyDuPHfkrEeJ1j4RfGKGJM9HngluQor
+         WrZ3FaIC6kzJ/sCUbyKg3ievHC/+TaMFwwW+Uox10LJOB8TkPb3vyMxzS2eR0SjqJvVC
+         6sFs4kq38xIPSVz+oLJmYnCiGsRu+ije/bZk2m5cibO749CmSef7eIsv/J4180dmQ127
+         9hhBjpWQXKFo6IuJ/OLO9Arx3dg2MKJGbeNWlnBh4LXEqKNR7MKlXbo6OeiEqPf54qyo
+         OB9GwaqLkTLISwemCkaEeRQQ3RB/63ckkyVMKGJ8Yo9OxgnTLY4kPJlhgrnqkokwz5Oj
+         4lqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wJa16Nd4lZ1mLaB9TdiTkMJ+KJ3QKJBaGmOkeaLvJ6Q=;
+        b=erREczmeKVDCzCKsiXMzTVS96sgkzcf896tSXfrtl+XgfN6jvrCX/HySQgB62OUMYf
+         tAp9VEpgZhspEUY+9rKP7W8roSnzXNVUrTtPwMEyCoVGwN8+dzs1HRYFuwYeq6x2io7j
+         q9eMKQW/v83OmW3BFLhPl1hdTA2Ar6DW3YmSe/2BL3y2tuu28USlrxmik09TdaIl6/ZV
+         iF+CJbN0nsjGaQ1M2QkVZvlhL+S6s+9mqGxm4GvM91r92C11XbVPdUa9RKwUob0IsMyx
+         JsAhDL2CO498dKqYorV0TaFctnDmvhaL4YZEBOby0sqxheYwwTo/1C6DqpE2sfahYSdM
+         HwnA==
+X-Gm-Message-State: APjAAAV0meuAQ+QVGzQpN+T7za8pYMRxsjjKFtlB+cA2KtNHeIBZPZPY
+        SCFhORKT8hta3d3RzeSDrqVC/UBcHMDjhawZC8xTxA==
+X-Google-Smtp-Source: APXvYqycsSJyeSkya5N7feu4ipwA/fEvWBjaSHN8dgRJaaMaPTfF2MQbpi4S5RkSUFv6JuOW3Cl84a7YWwaukVc80wo=
+X-Received: by 2002:a9d:6294:: with SMTP id x20mr6138399otk.31.1574924032684;
+ Wed, 27 Nov 2019 22:53:52 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac69cf83-3461-4faa-82df-08d773cf36d0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2019 06:50:11.0734
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GtiypIYF3497kF78/SiM/ITFJ7Cs2wcZ9BKREQh7Jao2tdDh/ucI/WKExPG20v2FTqT7zmVp+scW6Eua/uNeLFsCZfNkExRgU0nl8LzdYFg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR07MB7174
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-27_07:2019-11-27,2019-11-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- lowpriorityscore=0 mlxscore=0 bulkscore=0 clxscore=1011 impostorscore=0
- spamscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0 phishscore=0
- priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1911280056
+References: <20191127203114.766709977@linuxfoundation.org>
+In-Reply-To: <20191127203114.766709977@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 28 Nov 2019 12:23:41 +0530
+Message-ID: <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
+Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        lkft-triage@lists.linaro.org,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        jouni.hogander@unikie.com, "David S. Miller" <davem@davemloft.net>,
+        lukas.bulwahn@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 28 Nov 2019 at 02:25, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.87 release.
+> There are 306 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 29 Nov 2019 20:18:09 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.87-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
->-----Original Message-----
->From: Nicolas.Ferre@microchip.com <Nicolas.Ferre@microchip.com>
->Sent: Wednesday, November 27, 2019 11:32 PM
->To: Milind Parab <mparab@cadence.com>; andrew@lunn.ch;
->antoine.tenart@bootlin.com; f.fainelli@gmail.com
->Cc: davem@davemloft.net; netdev@vger.kernel.org; hkallweit1@gmail.com;
->linux-kernel@vger.kernel.org; Dhananjay Vilasrao Kangude
-><dkangude@cadence.com>; Parshuram Raju Thombare
-><pthombar@cadence.com>; a.fatoum@pengutronix.de;
->brad.mouring@ni.com; rmk+kernel@armlinux.org.uk
->Subject: Re: [PATCH 1/3] net: macb: fix for fixed-link mode
->
->EXTERNAL MAIL
->
->
->On 26/11/2019 at 10:09, Milind Parab wrote:
->> This patch fix the issue with fixed link mode in macb.
->
->I would need more context here. What needs to be fixed?
->
->I think we had several attempts, at the phylib days, to have this part of =
-the
->driver behave correctly, so providing us more insight will help understand
->what is going wrong now.
->For instance, is it related to the patch that converts the driver to the p=
-hylink
->interface done by this patch in net-next "net: macb: convert to phylink"?
->
-Yes, this is related to the patch that converts the driver to phylink
-With phylink patch, in fixed-link the device open is failing. The reason fo=
-r failure is because
-here an attempt is made to search and connect to PHY even for the  fixed-li=
-nk.
-phylink_of_phy_connect() handles this case well, and for the fixed-link it =
-just returns 0.=20
-So, further steps to search and connect to PHY are not needed.=20
-This patch solves this problem by allowing phylink_of_phy_connect() to take=
- this decision
+Kernel BUG noticed on x86_64 device while booting 4.19.87-rc1 kernel.
 
->
->> Signed-off-by: Milind Parab <mparab@cadence.com>
->> ---
->>   drivers/net/ethernet/cadence/macb_main.c | 12 ++++--------
->>   1 file changed, 4 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/cadence/macb_main.c
->> b/drivers/net/ethernet/cadence/macb_main.c
->> index d5ae2e1e0b0e..5e6d27d33d43 100644
->> --- a/drivers/net/ethernet/cadence/macb_main.c
->> +++ b/drivers/net/ethernet/cadence/macb_main.c
->> @@ -617,15 +617,11 @@ static int macb_phylink_connect(struct macb *bp)
->>          struct phy_device *phydev;
->>          int ret;
->>
->> -       if (bp->pdev->dev.of_node &&
->> -           of_parse_phandle(bp->pdev->dev.of_node, "phy-handle", 0)) {
->
->You mean we don't need to parse this phandle anymore because it's better
->handled by phylink_of_phy_connect() below that takes care of the fixed-lin=
-k
->case?
->If yes, then telling it in commit message is worth it...
+The problematic patch is,
 
-Yes, this we will explain in the commit message
+> Jouni Hogander <jouni.hogander@unikie.com>
+>     net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
 
->
->> +       if (bp->pdev->dev.of_node)
->>                  ret =3D phylink_of_phy_connect(bp->phylink, bp->pdev-
->>dev.of_node,
->>                                               0);
->> -               if (ret) {
->> -                       netdev_err(dev, "Could not attach PHY (%d)\n", r=
-et);
->> -                       return ret;
->> -               }
->> -       } else {
->> +
->> +       if ((!bp->pdev->dev.of_node || ret =3D=3D -ENODEV) && bp->mii_bu=
-s)
->> + {
->>                  phydev =3D phy_find_first(bp->mii_bus);
->>                  if (!phydev) {
->>                          netdev_err(dev, "no PHY found\n"); @@ -635,7
->> +631,7 @@ static int macb_phylink_connect(struct macb *bp)
->>                  /* attach the mac to the phy */
->>                  ret =3D phylink_connect_phy(bp->phylink, phydev);
->>                  if (ret) {
->> -                       netdev_err(dev, "Could not attach to PHY (%d)\n"=
-, ret);
->> +                       netdev_err(dev, "Could not attach to PHY\n");
->
->Why modifying this?
+And this kernel panic is been fixed by below patch,
 
-This is by mistake. This will be corrected in the revision patch
+commit 48a322b6f9965b2f1e4ce81af972f0e287b07ed0
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Wed Nov 20 19:19:07 2019 -0800
 
->
->>                          return ret;
->>                  }
->>          }
->> --
->> 2.17.1
->>
->
->Best regards,
->   Nicolas
->
->--
->Nicolas Ferre
+    net-sysfs: fix netdev_queue_add_kobject() breakage
+
+    kobject_put() should only be called in error path.
+
+    Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in
+rx|netdev_queue_add_kobject")
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Cc: Jouni Hogander <jouni.hogander@unikie.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+Summary
+------------------------------------------------------------------------
+
+kernel: 4.19.87-rc1
+git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+git branch: linux-4.19.y
+git commit: 57c5d287ed483d6100bdca528c57562b894487b5
+git describe: v4.19.86-307-g57c5d287ed48
+Test details: https://qa-reports.linaro.org/lkft/linux-stable-rc-4.19-oe-sanity/build/v4.19.86-307-g57c5d287ed48
+
+Regressions (compared to build v4.19.86)
+
+[    3.556598] BUG: unable to handle kernel NULL pointer dereference
+at 0000000000000090
+[    3.569683] PGD 0 P4D 0
+[    3.572221] Oops: 0000 [#1] SMP PTI
+[    3.575705] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 4.19.87-rc1 #1
+[    3.582049] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+2.0b 07/27/2017
+[    3.589523] RIP: 0010:kernfs_find_ns+0x1f/0x130
+[    3.594053] Code: fe ff ff 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
+55 48 89 e5 41 57 41 56 41 55 41 54 49 89 ff 53 49 89 f6 49 89 d5 48
+83 ec 08 <0f> b7 87 90 00 00 00 48 8b 5f 68 66 83 e0 20 66 89 45 d6 8b
+05 68
+[    3.612788] RSP: 0000:ffffaf514002fba8 EFLAGS: 00010292
+[    3.618007] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff95d15b89
+[    3.625130] RDX: 0000000000000000 RSI: ffffffff95ddefc7 RDI: 0000000000000000
+[    3.632254] RBP: ffffaf514002fbd8 R08: ffffffff94b88f05 R09: 0000000000000001
+[    3.639377] R10: ffffaf514002fbd8 R11: 0000000000000001 R12: ffffffff95ddefc7
+[    3.646502] R13: 0000000000000000 R14: ffffffff95ddefc7 R15: 0000000000000000
+[    3.653625] FS:  0000000000000000(0000) GS:ffff95c0dfb00000(0000)
+knlGS:0000000000000000
+[    3.661704] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.667442] CR2: 0000000000000090 CR3: 00000003bc01e001 CR4: 00000000003606e0
+[    3.674565] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    3.681689] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    3.688811] Call Trace:
+[    3.691259]  kernfs_find_and_get_ns+0x33/0x60
+[    3.695616]  sysfs_remove_group+0x2a/0x90
+[    3.699622]  netdev_queue_update_kobjects+0xc6/0x150
+[    3.704587]  netif_set_real_num_tx_queues+0x7e/0x230
+[    3.709546]  ? igb_configure_msix+0xde/0x170
+[    3.713816]  __igb_open+0x19e/0x5e0
+[    3.717322]  igb_open+0x10/0x20
+[    3.720506]  __dev_open+0xd7/0x170
+[    3.723904]  ? _raw_spin_unlock_bh+0x35/0x40
+[    3.728168]  __dev_change_flags+0x17e/0x1d0
+[    3.732363]  dev_change_flags+0x29/0x60
+[    3.736195]  ip_auto_config+0x28b/0xf04
+[    3.740033]  ? tcp_set_default_congestion_control+0xac/0x150
+[    3.745683]  ? root_nfs_parse_addr+0xa5/0xa5
+[    3.749948]  ? set_debug_rodata+0x17/0x17
+[    3.753951]  do_one_initcall+0x61/0x2b4
+[    3.757783]  ? do_one_initcall+0x61/0x2b4
+[    3.761793]  ? set_debug_rodata+0xa/0x17
+[    3.765713]  ? rcu_read_lock_sched_held+0x81/0x90
+[    3.770418]  kernel_init_freeable+0x1d8/0x270
+[    3.774777]  ? rest_init+0x190/0x190
+[    3.778354]  kernel_init+0xe/0x110
+[    3.781753]  ret_from_fork+0x3a/0x50
+[    3.785349] Modules linked in:
+[    3.788427] CR2: 0000000000000090
+[    3.791740] ---[ end trace 831b7578b86a527b ]---
+[    3.796358] RIP: 0010:kernfs_find_ns+0x1f/0x130
+[    3.800889] Code: fe ff ff 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
+55 48 89 e5 41 57 41 56 41 55 41 54 49 89 ff 53 49 89 f6 49 89 d5 48
+83 ec 08 <0f> b7 87 90 00 00 00 48 8b 5f 68 66 83 e0 20 66 89 45 d6 8b
+05 68
+[    3.819625] RSP: 0000:ffffaf514002fba8 EFLAGS: 00010292
+[    3.824843] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff95d15b89
+[    3.831968] RDX: 0000000000000000 RSI: ffffffff95ddefc7 RDI: 0000000000000000
+[    3.839091] RBP: ffffaf514002fbd8 R08: ffffffff94b88f05 R09: 0000000000000001
+[    3.846216] R10: ffffaf514002fbd8 R11: 0000000000000001 R12: ffffffff95ddefc7
+[    3.853363] R13: 0000000000000000 R14: ffffffff95ddefc7 R15: 0000000000000000
+[    3.860499] FS:  0000000000000000(0000) GS:ffff95c0dfb00000(0000)
+knlGS:0000000000000000
+[    3.868583] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.874323] CR2: 0000000000000090 CR3: 00000003bc01e001 CR4: 00000000003606e0
+[    3.881454] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    3.888576] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    3.895702] BUG: sleeping function called from invalid context at
+/usr/src/kernel/include/linux/percpu-rwsem.h:34
+[    3.905946] in_atomic(): 0, irqs_disabled(): 1, pid: 1, name: swapper/0
+[    3.912550] INFO: lockdep is turned off.
+[    3.916465] irq event stamp: 1027104
+[    3.920038] hardirqs last  enabled at (1027103):
+[<ffffffff9553abd6>] _raw_spin_unlock_irqrestore+0x36/0x50
+[    3.929770] hardirqs last disabled at (1027104):
+[<ffffffff94801c8b>] trace_hardirqs_off_thunk+0x1a/0x1c
+[    3.939233] softirqs last  enabled at (1025718):
+[<ffffffff9580031f>] __do_softirq+0x31f/0x426
+[    3.947832] softirqs last disabled at (1025703):
+[<ffffffff948eddb6>] irq_exit+0xd6/0xe0
+[    3.955916] CPU: 2 PID: 1 Comm: swapper/0 Tainted: G      D
+  4.19.87-rc1 #1
+[    3.963648] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+2.0b 07/27/2017
+[    3.971126] Call Trace:
+[    3.973572]  dump_stack+0x7a/0xa5
+[    3.976890]  ___might_sleep+0x152/0x240
+[    3.980720]  __might_sleep+0x4a/0x80
+[    3.984309]  exit_signals+0x33/0x240
+[    3.987896]  do_exit+0xbd/0xcf0
+[    3.991035]  ? kernel_init_freeable+0x1d8/0x270
+[    3.995567]  ? rest_init+0x190/0x190
+[    3.999136]  rewind_stack_do_exit+0x17/0x20
+[    4.003348] Kernel panic - not syncing: Attempted to kill init!
+exitcode=0x00000009
+[    4.003348]
+[    4.012537] Kernel Offset: 0x13800000 from 0xffffffff81000000
+(relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[    4.023318] ---[ end Kernel panic - not syncing: Attempted to kill
+init! exitcode=0x00000009
+[    4.023318]  ]---
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
