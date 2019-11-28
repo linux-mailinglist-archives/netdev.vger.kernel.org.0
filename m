@@ -2,72 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CF5F10C0C8
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 00:45:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBB910C0E9
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 01:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbfK0Xpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 18:45:31 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:49910 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727126AbfK0Xpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 18:45:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6Ae0SH75w1m9aU+nYBuK6tJIXgbYW1zryuD5lKGbbEg=; b=Qsj7fvhIVgbdW2la4fC0lhgvY
-        Wo/EmrP1yYHewA72zmi/WVzozZvWb8lBeLvyml2xaT9VBDnOxnAGHjtQOGxdzIlOC5qV2ZrqnS+NM
-        XAUoLDYXcXJgriGImAKwHgBDiYZzXyac48+ufX83dxkhAlzZxijJteCqXkLhGN32LNCOsKAnFutZW
-        J6JDmuuZKrNUvGvKITm+V6dJTbkooW0ztS1A42D/+26BEzcL9QXK0lYrleCHS+aLYRzwi2BIt8XEN
-        TWKWq16+LWH7khXTfkKIY5EjuREmJ6NUW9bRgnSySIuUNyUiP4inGBQf9tYZGqKGbxGKhq0jltmVN
-        kr5sgfsBQ==;
-Received: from [2601:1c0:6280:3f0::5a22]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ia6zy-0003tM-SR; Wed, 27 Nov 2019 23:45:30 +0000
-Subject: Re: linux-next: Tree for Nov 19 (bpf/btf)
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191119194658.39af50d0@canb.auug.org.au>
- <ac0b86e4-611b-81d1-ba09-e819218efe3f@infradead.org>
-Message-ID: <8fa2ace8-c3a5-7d7d-b867-9f1c70981541@infradead.org>
-Date:   Wed, 27 Nov 2019 15:45:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1727601AbfK1ABA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 19:01:00 -0500
+Received: from mail-pj1-f45.google.com ([209.85.216.45]:35184 "EHLO
+        mail-pj1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727300AbfK1ABA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 19:01:00 -0500
+Received: by mail-pj1-f45.google.com with SMTP id s8so10935011pji.2
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 16:00:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=adQ+wUnZ3IALa2nL7g/CgLDZiAftusTPTXQegxAJmkE=;
+        b=T0mPqJKqDopNzwD6OuyaRcbQ8Bur82NFaSHZxXNaxfpFHTU7ltxW2/Hsd//FpsVsEw
+         fTpMXLmGjfQftPEGnjgZR5nPv+JIiW+AYoruvg19BRnSbe15+EnDlTHVPyqZjALAhaF1
+         KVijjt606b8N2VmILANSmu8Kohap2Vtjjuy750PqSFXTCIu8QT/6rr1wz8wo5CyuPS43
+         jiC7j3iO0lMLbxXJeHX5D1U2pfPK0EaAHsr2GlKEkNMS7Aji5xuxzgzEf8VFOZh5mGpM
+         V9OFR3l58ha6tz1LcgskO/HmY2gT5lbE6hFbVhtPePIJF4ZZ8IfciHaDU3pHnE3PldD/
+         jalg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=adQ+wUnZ3IALa2nL7g/CgLDZiAftusTPTXQegxAJmkE=;
+        b=Qgg6wZuFJukpQW0RH4KUJR7+JZLJaLN71bQdOVlPnKHN/wRyGnR2D5NAaYEHGW6D3s
+         1739ijgXbS2QXWzTViFH2yQQfKzE1dFke7Rr+a4pe0IpguiuveRpKTKvXpXmMUsdhpiS
+         LLopIb0bQnnKOvkq+T2ehOIvU2ggGQkduL8o/a+nZt503Vlwo71gkhFKAH7FbKYVhQZ1
+         kVDT1R396H2JAlq/xcaz4jqfJLkyqV4U16qc9tekydAS7jC7G6koIntJsU/TQB6JzlB3
+         k7F42FBHazRqwPJua5231TQRT8kzzDslSicwNlW2hGEsz62NLPfyzl0kpKRRXAetGuHP
+         FHYw==
+X-Gm-Message-State: APjAAAXU9LQGHHjK0otNokUpYElbUxkn479nVzhkwylg2r61qdS3/utn
+        PcdGZMCVv8IMSU5cBwuJQ2+6l7ycbda80A==
+X-Google-Smtp-Source: APXvYqzaEp+YIs2p7RuYt6zi8yUJXt20GP68PAExBo8dctTdreXaSZV2UZ7xMghXaoBbFerW1J9aMQ==
+X-Received: by 2002:a17:902:7b95:: with SMTP id w21mr6415433pll.298.1574899257854;
+        Wed, 27 Nov 2019 16:00:57 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d139sm19445358pfd.162.2019.11.27.16.00.57
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 16:00:57 -0800 (PST)
+Date:   Wed, 27 Nov 2019 16:00:49 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 205687] New: VXLAN from ipv6 is not sending ipv6
+ fragmetation pachets
+Message-ID: <20191127160049.79e74101@hermes.lan>
 MIME-Version: 1.0
-In-Reply-To: <ac0b86e4-611b-81d1-ba09-e819218efe3f@infradead.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/19 7:13 AM, Randy Dunlap wrote:
-> On 11/19/19 12:46 AM, Stephen Rothwell wrote:
->> Hi all,
->>
->> Changes since 20191118:
->>
-> 
-> on i386 or x86_64:
-> 
-> ../kernel/bpf/btf.c:3466:1: error: empty enum is invalid
->  };
->  ^
-> 
-> when CONFIG_NET is not set/enabled.
-> 
-> 
+Looks like a UDP PMTU related issue?
 
-Still seeing this on linux-next of 20191127.
+Begin forwarded message:
+
+Date: Wed, 27 Nov 2019 23:46:00 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 205687] New: VXLAN from ipv6 is not sending ipv6 fragmetation pachets
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=205687
+
+            Bug ID: 205687
+           Summary: VXLAN from ipv6 is not sending ipv6 fragmetation
+                    pachets
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.3.13-arch1-1
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: ne-vlezay80@yandex.ru
+        Regression: No
+
+ens3 mtu is 9000 bytes. Internal and guest network mtu 65535 bytes.
+
+Sending packet to guest network:
+
+#> ip netns exec test ping -s 8700 fd00::6  
+PING fd00::6(fd00::6) 8700 data bytes
+8708 bytes from fd00::6: icmp_seq=1 ttl=64 time=0.674 ms
+8708 bytes from fd00::6: icmp_seq=2 ttl=64 time=0.648 ms
+^C
+--- fd00::6 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1008ms
+rtt min/avg/max/mdev = 0.648/0.661/0.674/0.013 ms
+[root@arch user (0)]
+#> ip netns exec test ping -s 32768 fd00::6  
+PING fd00::6(fd00::6) 32768 data bytes
+^C
+--- fd00::6 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1022ms
+
+[root@arch user (1)]
+#>   
+
+
+Send big backet from ipb6 is failure from vxlan.
 
 -- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+You are receiving this mail because:
+You are the assignee for the bug.
