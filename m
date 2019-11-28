@@ -2,81 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD4CF10C33D
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA4410C340
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbfK1EfL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 23:35:11 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1742 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726401AbfK1EfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:35:11 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAS4SRRW026640
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:35:09 -0800
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2whcy3rewe-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:35:09 -0800
-Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 27 Nov 2019 20:35:08 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 285EF760F05; Wed, 27 Nov 2019 20:35:08 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <rdunlap@infradead.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: Fix build in minimal configurations
-Date:   Wed, 27 Nov 2019 20:35:08 -0800
-Message-ID: <20191128043508.2346723-1-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-27_07:2019-11-27,2019-11-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
- adultscore=0 spamscore=0 mlxlogscore=526 priorityscore=1501 malwarescore=0
- phishscore=0 mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=1
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911280037
-X-FB-Internal: deliver
+        id S1727599AbfK1EhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 23:37:16 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:41953 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726401AbfK1EhQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:37:16 -0500
+Received: by mail-io1-f68.google.com with SMTP id z26so23946432iot.8;
+        Wed, 27 Nov 2019 20:37:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=MhBD8FldgWDB7ubM1+bg4CA0wEesKVjK+ARC6kecBbM=;
+        b=uePEqEdxv92L3sIfzubpAqH7fYlICZEKjnG6tZwRSrldFfjiGBQcEP/ri/HIj8H2fD
+         B50DaQfhflLV0weORepX0LHHtXBMeMSPBQrfmXhJwKex5Ki6vQ6upj3vcCFxAY0gGDe0
+         Sm3tnj0umtnVfSSccqACwedQJmC0rA+AJhVkmMTv740V2WP+LhPmAjyVHlkGrazMwqJ2
+         JCEfvVftCivGHsZwDYJk3P11ARg22fMfa0K1oBsUaWia6+5HCC4HQtWaxHY9eCaHRwiv
+         4cRX9J9HN68cPwVRXC71M0drLVEgYH6IM8F7+oZNWq4iDbYW5SyGauEvHCEPts/b2kQq
+         NjQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=MhBD8FldgWDB7ubM1+bg4CA0wEesKVjK+ARC6kecBbM=;
+        b=S7cX6jfGQv1aM7vRiPefcKzZDANPeBWgjGso4mTMWG2QxkmQJ5GGn56Ti+yz4+erc3
+         4gl2JgBJaLFT1yB1kQEsgTP5bkBmxaVP+zk744F/Nes+SijpkoDgwXrvG71u3Cm0hlN5
+         BM+jYF/a+9AWK9GO51ntbbbM861kVoOdFpO2hFkmZhZ4RVbpIdXQ5J/KMb8m6lcs58N/
+         sI1eJMdurdRGFYXbfQqfob/iXOMyZYfN++XbTOw4iEWGCfEcGNK2XJ8BFd3yFIKNBc8F
+         U9ybvELLPyWSEj7lp3BVYnoDTYGSXP6G5a7c6cjQgASxSCj1HR9f9kltVmccH+hj6Fki
+         ImKQ==
+X-Gm-Message-State: APjAAAVa1kYaEwhrkuv/EG+HVT0oBui/nFOc7ZibFdhnDwPvXEXlCRrB
+        tb9Cl959MAglWQXFqoF58WPwz1u4
+X-Google-Smtp-Source: APXvYqw6noxU06VeRXfTZCraNQ+koeXy+v6wrLYFU1b+DMhT3fEUFgPoBbCxtrD59jAWiiI2ylpLtw==
+X-Received: by 2002:a6b:d119:: with SMTP id l25mr38250926iob.44.1574915835625;
+        Wed, 27 Nov 2019 20:37:15 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id l9sm4266093iob.37.2019.11.27.20.37.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Nov 2019 20:37:15 -0800 (PST)
+Date:   Wed, 27 Nov 2019 20:37:07 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Message-ID: <5ddf4ef366a69_3c082aca725cc5bcbb@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191127225759.39923-1-sdf@google.com>
+References: <20191127225759.39923-1-sdf@google.com>
+Subject: RE: [PATCH bpf] bpf: force .BTF section start to zero when dumping
+ from vmlinux
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some kconfigs can have BPF enabled without a single valid program type.
-In such configurations the build will fail with:
-./kernel/bpf/btf.c:3466:1: error: empty enum is invalid
+Stanislav Fomichev wrote:
+> While trying to figure out why fentry_fexit selftest doesn't pass for me
+> (old pahole, broken BTF), I found out that my latest patch can break vmlinux
+> .BTF generation. objcopy preserves section start when doing --only-section,
+> so there is a chance (depending on where pahole inserts .BTF section) to
+> have leading empty zeroes. Let's explicitly force section offset to zero.
+> 
+> Before:
+> $ objcopy --set-section-flags .BTF=alloc -O binary \
+> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
+> $ xxd .btf.vmlinux.bin | head -n1
+> 00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+> 
+> After:
+> $ objcopy --change-section-address .BTF=0 \
+> 	--set-section-flags .BTF=alloc -O binary \
+> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
+> $ xxd .btf.vmlinux.bin | head -n1
+> 00000000: 9feb 0100 1800 0000 0000 0000 80e1 1c00  ................
+>           ^BTF magic
+> 
+> As part of this change, I'm also dropping '2>/dev/null' from objcopy
+> invocation to be able to catch possible other issues (objcopy doesn't
+> produce any warnings for me anymore, it did before with --dump-section).
 
-Fix it by adding unused value to the enum.
+Agree dropping /dev/null seems like a good choice. Otherwise seems reasonable
+to me.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- kernel/bpf/btf.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index bd5e11881ba3..7d40da240891 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3463,6 +3463,7 @@ enum {
- 	__ctx_convert##_id,
- #include <linux/bpf_types.h>
- #undef BPF_PROG_TYPE
-+	__ctx_convert_unused, /* to avoid empty enum in extreme .config */
- };
- static u8 bpf_ctx_convert_map[] = {
- #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
--- 
-2.23.0
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
