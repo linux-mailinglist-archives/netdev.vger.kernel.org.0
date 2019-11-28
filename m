@@ -2,262 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71BDD10C2F2
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 04:42:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8268910C31E
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfK1Dms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 22:42:48 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43267 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727258AbfK1Dmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 22:42:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574912565;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oNpXXUPzEf7y4T1D/GmnsHSNzKOeTG0HJ+r3KP23ESE=;
-        b=YNrhUU2J2GyX6jKGmmnIZqj8dOvtrEuKkjTxXDz3XbAqHFQhG50GUPAnVBOsG2k4KQyhic
-        v+Pt+7AOMLxIWwtJlrdhmDBIZz8jJOQ56PDZBYSJqRxecYbEm2TWFzqxox6N+2reuUfdAy
-        FRWuuafKlsuHvv9Sx/6eCoC56+xMLjE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-8-hKnZHYPxOGS8eP4RC3ZEfg-1; Wed, 27 Nov 2019 22:42:43 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B324410054E3;
-        Thu, 28 Nov 2019 03:42:41 +0000 (UTC)
-Received: from [10.72.12.231] (ovpn-12-231.pek2.redhat.com [10.72.12.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 460A15D6D0;
-        Thu, 28 Nov 2019 03:41:59 +0000 (UTC)
-Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        qemu-devel@nongnu.org, Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Prashant Bhole <prashantbhole.linux@gmail.com>,
-        kvm@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
- <20191126123514.3bdf6d6f@cakuba.netronome.com>
- <48cec928-871f-3f50-e99f-c6a6d124cf4c@redhat.com>
- <20191127114913.0363a0e8@cakuba.netronome.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <285af7e2-6a4d-b20c-0aeb-165e3cd4309d@redhat.com>
-Date:   Thu, 28 Nov 2019 11:41:52 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727389AbfK1EAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Nov 2019 23:00:30 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46441 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727113AbfK1EA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:00:29 -0500
+Received: by mail-wr1-f67.google.com with SMTP id z7so25865956wrl.13
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:00:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=E5OSlJLSJ8MiAGb6VpBDjS91A2dQ5e+r96wJOjrxQzE=;
+        b=m4i98IaT1rikknt3ueQP4PdDZ7FOoeT6WT0H68pFx2JBzmpnZZb+VEhBN9DePnBEBt
+         fdW+Vox3heD/gZ5MOe9JvgCNnsWDZLVgQoKrz5fU9J5irG8D1mekbmtNnSnUgUEplFaU
+         t0JMN3FwTtnKdzCi55iPId8z6G5dJcEdIBNrkA3mSpmDbd+j7x5hOtemMpzadm3Ehlv0
+         munUfJh+Or6xIJFcqqmdo7sWZqK7p8Swr4bcoN1S0YSwpZyua6qj2wT67SbP9TUNNg2a
+         ho0D5FB3q1tnut5zNho7kMrq33AxmZaOb+bCfBxJfCPTPY74AmP2zz/4WNyopsdRj0dX
+         PFuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=E5OSlJLSJ8MiAGb6VpBDjS91A2dQ5e+r96wJOjrxQzE=;
+        b=Es+97WXLV2fNthdWm8ahEidA0jZ0+BJMuXILz+yp4NWaLUpNkWe5WrWxV7IJUIgBtd
+         J4j0qOT768nZ9jnha3utjqee09WgAlvPJS/aimQgP4GVU11yhXEXkGaKda5iLBPlK3Sy
+         bEwp0rRNChox+U/TEnSihOXDbVsgKEeCYyd1zIAXtbDofqEbRciVuB2ss8r0cNMbWtd6
+         k5lokCqlx0kFPszsaIB82hOcvN9wjsbdrUlgwpVbowKT0WZINO3lCWNNIKXUI4iK/9lR
+         CYOj5u/avmwAfmd0cUSFCu2L3u/Ze83d/MOeHCgIVAIkTVVXE6a0SnTuPPIhLPtxYHiH
+         y37Q==
+X-Gm-Message-State: APjAAAWZc7yA6YdU1zQ7s56rFlY2Z4fAiv6jq6S6KeEeFuCFRjw6Chr8
+        Dw5MW+IQWfqu+8kvQjm29d8=
+X-Google-Smtp-Source: APXvYqzQIQ8M3lBbibf2nY4Cb13/od/pHXAnurPVIyDLjFLGW2d0UYknlr7Ccw/nJQwkJQyMzFir3w==
+X-Received: by 2002:adf:de0a:: with SMTP id b10mr46082870wrm.268.1574913626496;
+        Wed, 27 Nov 2019 20:00:26 -0800 (PST)
+Received: from [10.230.31.140] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n10sm3104053wrt.14.2019.11.27.20.00.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Nov 2019 20:00:25 -0800 (PST)
+Subject: Re: [PATCH net] net: mscc: ocelot: unregister the PTP clock on deinit
+To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        richardcochran@gmail.com
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
+        yangbo.lu@nxp.com, netdev@vger.kernel.org,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20191128015636.26961-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <a4282b8e-e12a-21f3-e97b-cc4620339c69@gmail.com>
+Date:   Wed, 27 Nov 2019 20:00:22 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191127114913.0363a0e8@cakuba.netronome.com>
+In-Reply-To: <20191128015636.26961-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: hKnZHYPxOGS8eP4RC3ZEfg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/11/28 =E4=B8=8A=E5=8D=883:49, Jakub Kicinski wrote:
-> On Wed, 27 Nov 2019 10:59:37 +0800, Jason Wang wrote:
->> On 2019/11/27 =E4=B8=8A=E5=8D=884:35, Jakub Kicinski wrote:
->>> On Tue, 26 Nov 2019 19:07:26 +0900, Prashant Bhole wrote:
->>>> Note: This RFC has been sent to netdev as well as qemu-devel lists
->>>>
->>>> This series introduces XDP offloading from virtio_net. It is based on
->>>> the following work by Jason Wang:
->>>> https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
->>>>
->>>> Current XDP performance in virtio-net is far from what we can achieve
->>>> on host. Several major factors cause the difference:
->>>> - Cost of virtualization
->>>> - Cost of virtio (populating virtqueue and context switching)
->>>> - Cost of vhost, it needs more optimization
->>>> - Cost of data copy
->>>> Because of above reasons there is a need of offloading XDP program to
->>>> host. This set is an attempt to implement XDP offload from the guest.
->>> This turns the guest kernel into a uAPI proxy.
->>>
->>> BPF uAPI calls related to the "offloaded" BPF objects are forwarded
->>> to the hypervisor, they pop up in QEMU which makes the requested call
->>> to the hypervisor kernel. Today it's the Linux kernel tomorrow it may
->>> be someone's proprietary "SmartNIC" implementation.
->>>
->>> Why can't those calls be forwarded at the higher layer? Why do they
->>> have to go through the guest kernel?
->>
->> I think doing forwarding at higher layer have the following issues:
->>
->> - Need a dedicated library (probably libbpf) but application may choose
->>    to do eBPF syscall directly
->> - Depends on guest agent to work
-> This can be said about any user space functionality.
 
+On 11/27/2019 5:56 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Currently a switch driver deinit frees the regmaps, but the PTP clock is
+> still out there, available to user space via /dev/ptpN. Any PTP
+> operation is a ticking time bomb, since it will attempt to use the freed
+> regmaps and thus trigger kernel panics:
+> 
+> [    4.291746] fsl_enetc 0000:00:00.2 eth1: error -22 setting up slave phy
+> [    4.291871] mscc_felix 0000:00:00.5: Failed to register DSA switch: -22
+> [    4.308666] mscc_felix: probe of 0000:00:00.5 failed with error -22
+> [    6.358270] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000088
+> [    6.367090] Mem abort info:
+> [    6.369888]   ESR = 0x96000046
+> [    6.369891]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [    6.369892]   SET = 0, FnV = 0
+> [    6.369894]   EA = 0, S1PTW = 0
+> [    6.369895] Data abort info:
+> [    6.369897]   ISV = 0, ISS = 0x00000046
+> [    6.369899]   CM = 0, WnR = 1
+> [    6.369902] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020d58c7000
+> [    6.369904] [0000000000000088] pgd=00000020d5912003, pud=00000020d5915003, pmd=0000000000000000
+> [    6.369914] Internal error: Oops: 96000046 [#1] PREEMPT SMP
+> [    6.420443] Modules linked in:
+> [    6.423506] CPU: 1 PID: 262 Comm: phc_ctl Not tainted 5.4.0-03625-gb7b2a5dadd7f #204
+> [    6.431273] Hardware name: LS1028A RDB Board (DT)
+> [    6.435989] pstate: 40000085 (nZcv daIf -PAN -UAO)
+> [    6.440802] pc : css_release+0x24/0x58
+> [    6.444561] lr : regmap_read+0x40/0x78
+> [    6.448316] sp : ffff800010513cc0
+> [    6.451636] x29: ffff800010513cc0 x28: ffff002055873040
+> [    6.456963] x27: 0000000000000000 x26: 0000000000000000
+> [    6.462289] x25: 0000000000000000 x24: 0000000000000000
+> [    6.467617] x23: 0000000000000000 x22: 0000000000000080
+> [    6.472944] x21: ffff800010513d44 x20: 0000000000000080
+> [    6.478270] x19: 0000000000000000 x18: 0000000000000000
+> [    6.483596] x17: 0000000000000000 x16: 0000000000000000
+> [    6.488921] x15: 0000000000000000 x14: 0000000000000000
+> [    6.494247] x13: 0000000000000000 x12: 0000000000000000
+> [    6.499573] x11: 0000000000000000 x10: 0000000000000000
+> [    6.504899] x9 : 0000000000000000 x8 : 0000000000000000
+> [    6.510225] x7 : 0000000000000000 x6 : ffff800010513cf0
+> [    6.515550] x5 : 0000000000000000 x4 : 0000000fffffffe0
+> [    6.520876] x3 : 0000000000000088 x2 : ffff800010513d44
+> [    6.526202] x1 : ffffcada668ea000 x0 : ffffcada64d8b0c0
+> [    6.531528] Call trace:
+> [    6.533977]  css_release+0x24/0x58
+> [    6.537385]  regmap_read+0x40/0x78
+> [    6.540795]  __ocelot_read_ix+0x6c/0xa0
+> [    6.544641]  ocelot_ptp_gettime64+0x4c/0x110
+> [    6.548921]  ptp_clock_gettime+0x4c/0x58
+> [    6.552853]  pc_clock_gettime+0x5c/0xa8
+> [    6.556699]  __arm64_sys_clock_gettime+0x68/0xc8
+> [    6.561331]  el0_svc_common.constprop.2+0x7c/0x178
+> [    6.566133]  el0_svc_handler+0x34/0xa0
+> [    6.569891]  el0_sync_handler+0x114/0x1d0
+> [    6.573908]  el0_sync+0x140/0x180
+> [    6.577232] Code: d503201f b00119a1 91022263 b27b7be4 (f9004663)
+> [    6.583349] ---[ end trace d196b9b14cdae2da ]---
+> [    6.587977] Kernel panic - not syncing: Fatal exception
+> [    6.593216] SMP: stopping secondary CPUs
+> [    6.597151] Kernel Offset: 0x4ada54400000 from 0xffff800010000000
+> [    6.603261] PHYS_OFFSET: 0xffffd0a7c0000000
+> [    6.607454] CPU features: 0x10002,21806008
+> [    6.611558] Memory Limit: none
+> [    6.614620] Rebooting in 3 seconds..
+> 
+> Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Yes but the feature may have too much unnecessary dependencies:=20
-dedicated library, guest agent, host agent etc. This can only work for=20
-some specific setups and will lead vendor specific implementations.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-
->
->> - Can't work for virtio-net hardware, since it still requires a hardware
->> interface for carrying=C2=A0 offloading information
-> The HW virtio-net presumably still has a PF and hopefully reprs for
-> VFs, so why can't it attach the program there?
-
-
-Then you still need a interface for carrying such information? It will=20
-work like assuming we had a virtio-net VF with reprs:
-
-libbpf(guest) -> guest agent -> host agent -> libbpf(host) -> BPF=20
-syscall -> VF reprs/PF drvier -> VF/PF reprs -> virtio-net VF
-
-Still need a vendor specific way for passing eBPF commands from driver=20
-to reprs/PF, and possibility, it could still be a virtio interface there.
-
-In this proposal it will work out of box as simple as:
-
-libbpf(guest) -> guest kernel -> virtio-net driver -> virtio-net VF
-
-If the request comes from host (e.g flow offloading, configuration etc),=20
-VF reprs make perfect fit. But if the request comes from guest, having=20
-much longer journey looks quite like a burden (dependencies, bugs etc) .
-
-What's more important, we can not assume the how virtio-net HW is=20
-structured, it could even not a SRIOV or PCI card.
-
-
->
->> - Implement at the level of kernel may help for future extension like
->>    BPF object pinning and eBPF helper etc.
-> No idea what you mean by this.
-
-
-My understanding is, we should narrow the gap between non-offloaded eBPF=20
-program and offloaded eBPF program. Making maps or progs to be visible=20
-to kernel may help to persist a unified API e.g object pinning through=20
-sysfs, tracepoint, debug etc.
-
-
->
->> Basically, this series is trying to have an implementation of
->> transporting eBPF through virtio, so it's not necessarily a guest to
->> host but driver and device. For device, it could be either a virtual one
->> (as done in qemu) or a real hardware.
-> SmartNIC with a multi-core 64bit ARM CPUs is as much of a host as
-> is the x86 hypervisor side. This set turns the kernel into a uAPI
-> forwarder.
-
-
-Not necessarily, as what has been done by NFP, driver filter out the=20
-features that is not supported, and the bpf object is still visible in=20
-the kernel (and see above comment).
-
-
->
-> 3 years ago my answer to this proposal would have been very different.
-> Today after all the CPU bugs it seems like the SmartNICs (which are
-> just another CPU running proprietary code) may just take off..
->
-
-That's interesting but vendor may choose to use FPGA other than SoC in=20
-this case. Anyhow discussion like this is somehow out of the scope of=20
-the series.
-
-
->>> If kernel performs no significant work (or "adds value", pardon the
->>> expression), and problem can easily be solved otherwise we shouldn't
->>> do the work of maintaining the mechanism.
->> My understanding is that it should not be much difference compared to
->> other offloading technology.
-> I presume you mean TC offloads? In virtualization there is inherently a
-> hypervisor which will receive the request, be it an IO hub/SmartNIC or
-> the traditional hypervisor on the same CPU.
->
-> The ACL/routing offloads differ significantly, because it's either the
-> driver that does all the HW register poking directly or the complexity
-> of programming a rule into a HW table is quite low.
->
-> Same is true for the NFP BPF offload, BTW, the driver does all the
-> heavy lifting and compiles the final machine code image.
-
-
-Yes and this series benefit from the infrastructure invented from NFP.=20
-But I'm not sure this is a good point since, technically the machine=20
-code could be generated by smart NIC as well.
-
-
->
-> You can't say verifying and JITing BPF code into machine code entirely
-> in the hypervisor is similarly simple.
-
-
-Yes and that's why we choose to do in on the device (host) to simplify=20
-things.
-
-
->
-> So no, there is a huge difference.
->
-
->>> The approach of kernel generating actual machine code which is then
->>> loaded into a sandbox on the hypervisor/SmartNIC is another story.
->> We've considered such way, but actual machine code is not as portable as
->> eBPF bytecode consider we may want:
->>
->> - Support migration
->> - Further offload the program to smart NIC (e.g through macvtap
->>    passthrough mode etc).
-> You can re-JIT or JIT for SmartNIC..? Having the BPF bytecode does not
-> guarantee migration either,
-
-
-Yes, but it's more portable than machine code.
-
-
-> if the environment is expected to be
-> running different version of HW and SW.
-
-
-Right, we plan to have feature negotiation.
-
-
-> But yes, JITing in the guest
-> kernel when you don't know what to JIT for may be hard,
-
-
-Yes.
-
-
-> I was just
-> saying that I don't mean to discourage people from implementing
-> sandboxes which run JITed code on SmartNICs. My criticism is (as
-> always?) against turning the kernel into a one-to-one uAPI forwarder
-> into unknown platform code.
-
-
-We have FUSE and I think it's not only the forwarder, and we may do much=20
-more work on top in the future. For unknown platform code, I'm not sure=20
-why we need care about that. There's no way for us to prevent such=20
-implementation and if we try to formalize it through a specification=20
-(virtio spec and probably eBPF spec), it may help actually.
-
-
->
-> For cloud use cases I believe the higher layer should solve this.
->
-
-Technically possible, but have lots of drawbacks.
-
-Thanks
-
+Tag valid for either this version or Yangbo's suggestion.
+-- 
+Florian
