@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A8C10C452
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0206410C459
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 08:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727104AbfK1HZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 02:25:44 -0500
-Received: from dvalin.narfation.org ([213.160.73.56]:49716 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfK1HZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 02:25:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1574925941;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tdlxNmPjYz+T53Gzjo5bSd5rvu0/U9sFpAzZUIpHTf4=;
-        b=bNjezSZJ4+JfYhaLI6ZHByOzf/g/QwZJrhzY1luZJRIUCRBZ5fFTBWQW4eOZ70YZwWOw76
-        7t/tJfWXDW5VZuQ2/0duk63Hq6ooQnBIseefJO9PPpPPCGXY9s/BcjGsKdOIVujxzR83DA
-        /T1n7uJiSOlcEUfqYivGmhB+b036rFQ=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     syzbot <syzbot+a229d8d995b74f8c4b6c@syzkaller.appspotmail.com>
-Cc:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        jhs@mojatatu.com, jiri@resnulli.us, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
-        vinicius.gomes@intel.com, wang.yi59@zte.com.cn,
-        xiyou.wangcong@gmail.com
-Subject: Re: WARNING in mark_lock (3)
-Date:   Thu, 28 Nov 2019 08:25:34 +0100
-Message-ID: <2825703.dkhYCMB3mh@sven-edge>
-In-Reply-To: <0000000000009aa32205985e78b6@google.com>
-References: <0000000000009aa32205985e78b6@google.com>
+        id S1727227AbfK1Hhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 02:37:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58134 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727149AbfK1Hhx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Nov 2019 02:37:53 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0E934215F2;
+        Thu, 28 Nov 2019 07:37:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574926672;
+        bh=E6ooghBPKODRSq+Df3l6R0vCJz+fINANfaRvtCLidgs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qYxr13D76ia0vGFJAA9r8RFYht5xr4SZ7SJsmMAsuAugeQW6NQ9ZMxMogUtdV8jar
+         Nh4m54rd1gXwvgqSt9f/1RhYFAwvoxRBD/EJx3sMAt0rQLBtCRU5qwtYAGUt21VR7D
+         NZ/FdMEcSuI/reLw4ZgQr+N+QqRx3RRnqP7J9Nlw=
+Date:   Thu, 28 Nov 2019 08:35:14 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        lkft-triage@lists.linaro.org,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        jouni.hogander@unikie.com, "David S. Miller" <davem@davemloft.net>,
+        lukas.bulwahn@gmail.com
+Subject: Re: [PATCH 4.14 000/211] 4.14.157-stable review
+Message-ID: <20191128073514.GC3317872@kroah.com>
+References: <20191127203049.431810767@linuxfoundation.org>
+ <CA+G9fYtFNKTYiqm0Bvk_nqBTjsRMKTtNxr6PhE8YaDXFjqwhYQ@mail.gmail.com>
+ <CA+G9fYsuM-ALP_EtoFEzJiia26QnUvuKWsH0b-vi43Sp++es6A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2024983.uInpGIOpHj"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYsuM-ALP_EtoFEzJiia26QnUvuKWsH0b-vi43Sp++es6A@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart2024983.uInpGIOpHj
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+On Thu, Nov 28, 2019 at 11:51:37AM +0530, Naresh Kamboju wrote:
+> Hi Greg,
+> 
+> > Kernel BUG noticed on x86_64 device while booting 4.14.157-rc1 kernel.
+> 
+> 
+> The problematic patch is,
+> >> Jouni Hogander <jouni.hogander@unikie.com>
+> >>    net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
+> 
+> And this kernel panic is been fixed by below patch,
+> 
+> commit 48a322b6f9965b2f1e4ce81af972f0e287b07ed0
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Wed Nov 20 19:19:07 2019 -0800
+> 
+>     net-sysfs: fix netdev_queue_add_kobject() breakage
+> 
+>     kobject_put() should only be called in error path.
+> 
+>     Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in
+> rx|netdev_queue_add_kobject")
+>     Signed-off-by: Eric Dumazet <edumazet@google.com>
+>     Cc: Jouni Hogander <jouni.hogander@unikie.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-On Thursday, 28 November 2019 03:00:01 CET syzbot wrote:
-[...]
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132ee536e00000
-> start commit:   89d57ddd Merge tag 'media/v5.5-1' of git://git.kernel.org/..
-> git tree:       upstream
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=10aee536e00000
+Thanks for the report, will go queue it up now.
 
-Can the syzbot infrastructure be told to ignore this crash in the bisect run? 
-Because this should be an unrelated crash which is (hopefully) fixed in 
-40e220b4218b ("batman-adv: Avoid free/alloc race when handling OGM buffer").
-
-Kind regards,
-	Sven
-
---nextPart2024983.uInpGIOpHj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl3fdm4ACgkQXYcKB8Em
-e0Yhpg//TkD4LZe2QORpdzTJdAdLlx2bM1EYIhwWq2VPr+a/w89xre7Z0vpXmHHe
-CBG+X/XCYev7EAJhDE7HQU/Jo4WRl0ukTNPprzHn0jcq8VcEIAl3qoqHg1ZhSImU
-I242iP55uYzCcLfzj04hnlfgHHr5p8K4YMXUuSihL0SK2GGMdfMViRqb8mHXMwxi
-vFaDAfI4mu0gmVm0MTo5ehel9e5VLVnmOJoBsReXXeXjLhjR70liSC1gzOKPQztk
-oPiK8Ena8ZFDa6yEPPcB5sQQQfM0haPy1z3fmCFvIzAA9lnsYnJxIpWOBuzf2WfW
-6hSeX6+zvXRGDV9R0cVsGpkRaslfHgl+B/gwVMdw2XtVkwUvX3GW4ugLe/4Yw3WK
-jyzibIP1XunENnfUYwdPIMYXgMJxiJsZlS8ERWxBXG6fYlzTsKV5uKLYP3GfGuS2
-/7cFTBC5xT7rCgiJ89CWhYRabfDJLUNpvi01s1jUBIG0AXyjev8xEHXwLV6qG8Ht
-M6qzNcjrOnmOP80xzJrMvIr+lEawY3P5Gn3E/Ro6PoQzOs7zaVMV/Cg5VyTRyjQw
-jPJ9bZmvGjw3zB/4mdYzSeDN8ZR1/bbv65OeI5IOo9Y+s4b8/reptZVROpXF2N7Y
-CkO9awr7QYeRmeOHCtt+Adg5A6mJNz5LGUisgW1ZQJQzTLbOzVM=
-=GMnl
------END PGP SIGNATURE-----
-
---nextPart2024983.uInpGIOpHj--
-
-
-
+greg k-h
