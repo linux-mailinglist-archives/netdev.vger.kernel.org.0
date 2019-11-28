@@ -2,161 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C51510C32F
-	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:18:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4CF10C33D
+	for <lists+netdev@lfdr.de>; Thu, 28 Nov 2019 05:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727545AbfK1ESo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Nov 2019 23:18:44 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42743 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727113AbfK1ESo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:18:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1574914722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VZHfnpUHMVQfOJML2Ic3SHu+PaQ/ZeBlsp9ffMkTs9Y=;
-        b=SSUrzqMdWLqPxNuri94nNSaIVppDHmJjVbyh3M2AW78pOxVtte4FAeBIv0BxjlvWt3/FQi
-        iMA7a2SB6J2fFmLjh20m+Xlszj1AV86ZyRDt5awHndPoICCVVJbqrHNTH8FKdckx3lFPPk
-        IEDyRZ2PtHEz+UaZKMwY5A8f7l45Pms=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-420-phLk_qt-Pc6H7_DN1poGOw-1; Wed, 27 Nov 2019 23:18:41 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04631184CAA1;
-        Thu, 28 Nov 2019 04:18:39 +0000 (UTC)
-Received: from [10.72.12.231] (ovpn-12-231.pek2.redhat.com [10.72.12.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 114B1100164D;
-        Thu, 28 Nov 2019 04:18:22 +0000 (UTC)
-Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>, qemu-devel@nongnu.org,
-        netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Prashant Bhole <prashantbhole.linux@gmail.com>,
-        kvm@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
- <20191126123514.3bdf6d6f@cakuba.netronome.com>
- <20191128033255.r66d4zedmhudeaa6@ast-mbp.dhcp.thefacebook.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c6c6ca98-8793-5510-ad24-583e25403e35@redhat.com>
-Date:   Thu, 28 Nov 2019 12:18:15 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727566AbfK1EfL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Nov 2019 23:35:11 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1742 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726401AbfK1EfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Nov 2019 23:35:11 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAS4SRRW026640
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:35:09 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2whcy3rewe-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 27 Nov 2019 20:35:09 -0800
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 27 Nov 2019 20:35:08 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 285EF760F05; Wed, 27 Nov 2019 20:35:08 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <rdunlap@infradead.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: Fix build in minimal configurations
+Date:   Wed, 27 Nov 2019 20:35:08 -0800
+Message-ID: <20191128043508.2346723-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20191128033255.r66d4zedmhudeaa6@ast-mbp.dhcp.thefacebook.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: phLk_qt-Pc6H7_DN1poGOw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-27_07:2019-11-27,2019-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
+ adultscore=0 spamscore=0 mlxlogscore=526 priorityscore=1501 malwarescore=0
+ phishscore=0 mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=1
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911280037
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Some kconfigs can have BPF enabled without a single valid program type.
+In such configurations the build will fail with:
+./kernel/bpf/btf.c:3466:1: error: empty enum is invalid
 
-On 2019/11/28 =E4=B8=8A=E5=8D=8811:32, Alexei Starovoitov wrote:
-> On Tue, Nov 26, 2019 at 12:35:14PM -0800, Jakub Kicinski wrote:
->> I'd appreciate if others could chime in.
-> The performance improvements are quite appealing.
-> In general offloading from higher layers into lower layers is necessary l=
-ong term.
->
-> But the approach taken by patches 15 and 17 is a dead end. I don't see ho=
-w it
-> can ever catch up with the pace of bpf development.
+Fix it by adding unused value to the enum.
 
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/btf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-This applies for any hardware offloading features, isn't it?
-
-
->   As presented this approach
-> works for the most basic programs and simple maps. No line info, no BTF, =
-no
-> debuggability. There are no tail_calls either.
-
-
-If I understand correctly, neither of above were implemented in NFP. We=20
-can collaborate to find solution for all of those.
-
-
->   I don't think I've seen a single
-> production XDP program that doesn't use tail calls.
-
-
-It looks to me we can manage to add this support.
-
-
-> Static and dynamic linking
-> is coming. Wraping one bpf feature at a time with virtio api is never goi=
-ng to
-> be complete.
-
-
-It's a common problem for hardware that want to implement eBPF=20
-offloading, not a virtio specific one.
-
-
-> How FDs are going to be passed back? OBJ_GET_INFO_BY_FD ?
-> OBJ_PIN/GET ? Where bpffs is going to live ?
-
-
-If we want pinning work in the case of virt, it should live in both host=20
-and guest probably.
-
-
->   Any realistic XDP application will
-> be using a lot more than single self contained XDP prog with hash and arr=
-ay
-> maps.
-
-
-It's possible if we want to use XDP offloading to accelerate VNF which=20
-often has simple logic.
-
-
-> It feels that the whole sys_bpf needs to be forwarded as a whole from
-> guest into host. In case of true hw offload the host is managing HW. So i=
-t
-> doesn't forward syscalls into the driver. The offload from guest into hos=
-t is
-> different. BPF can be seen as a resource that host provides and guest ker=
-nel
-> plus qemu would be forwarding requests between guest user space and host
-> kernel. Like sys_bpf(BPF_MAP_CREATE) can passthrough into the host direct=
-ly.
-> The FD that hosts sees would need a corresponding mirror FD in the guest.=
- There
-> are still questions about bpffs paths, but the main issue of
-> one-feature-at-a-time will be addressed in such approach.
-
-
-We try to follow what NFP did by starting from a fraction of the whole=20
-eBPF features. It would be very hard to have all eBPF features=20
-implemented from the start.=C2=A0 It would be helpful to clarify what's the=
-=20
-minimal set of features that you want to have from the start.
-
-
-> There could be other
-> solutions, of course.
->
->
-
-Suggestions are welcomed.
-
-Thanks
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index bd5e11881ba3..7d40da240891 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3463,6 +3463,7 @@ enum {
+ 	__ctx_convert##_id,
+ #include <linux/bpf_types.h>
+ #undef BPF_PROG_TYPE
++	__ctx_convert_unused, /* to avoid empty enum in extreme .config */
+ };
+ static u8 bpf_ctx_convert_map[] = {
+ #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
+-- 
+2.23.0
 
