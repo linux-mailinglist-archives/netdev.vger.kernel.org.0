@@ -2,55 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC9D10D35B
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 10:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E0310D379
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 10:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726684AbfK2Jj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 04:39:58 -0500
-Received: from www262.sakura.ne.jp ([202.181.97.72]:64841 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbfK2Jj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 04:39:58 -0500
-Received: from fsav301.sakura.ne.jp (fsav301.sakura.ne.jp [153.120.85.132])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id xAT9duVL025281;
-        Fri, 29 Nov 2019 18:39:56 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav301.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav301.sakura.ne.jp);
- Fri, 29 Nov 2019 18:39:56 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav301.sakura.ne.jp)
-Received: from [192.168.1.9] (softbank126040062084.bbtec.net [126.40.62.84])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id xAT9dnVK025145
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
-        Fri, 29 Nov 2019 18:39:55 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Subject: Re: general protection fault in smack_socket_sendmsg (2)
-To:     syzbot <syzbot+131d2229316b7012ac06@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com
-References: <000000000000723a32059870fbd4@google.com>
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, jmorris@namei.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        serge@hallyn.com, Casey Schaufler <casey@schaufler-ca.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Message-ID: <ee964c66-da56-def6-9525-6d960ab9487a@I-love.SAKURA.ne.jp>
-Date:   Fri, 29 Nov 2019 18:39:49 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
-MIME-Version: 1.0
-In-Reply-To: <000000000000723a32059870fbd4@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726805AbfK2JvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 04:51:21 -0500
+Received: from mga07.intel.com ([134.134.136.100]:24278 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726143AbfK2JvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Nov 2019 04:51:20 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Nov 2019 01:51:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,257,1571727600"; 
+   d="scan'208";a="360026881"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.249.32.245])
+  by orsmga004.jf.intel.com with ESMTP; 29 Nov 2019 01:51:17 -0800
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     maximmi@mellanox.com, bpf@vger.kernel.org
+Subject: [PATCH bpf] xsk: add missing memory barrier in xskq_has_addrs()
+Date:   Fri, 29 Nov 2019 10:51:10 +0100
+Message-Id: <1575021070-28873-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/11/29 9:05, syzbot wrote:
->  rxrpc_send_keepalive+0x254/0x3c0 net/rxrpc/output.c:655
+The rings in AF_XDP between user space and kernel space have the
+following semantics:
 
-Again net/rxrpc/output.c:655
+producer                         consumer
 
-#syz dup: KMSAN: use-after-free in rxrpc_send_keepalive
+if (LOAD ->consumer) {           LOAD ->producer
+                   (A)           smp_rmb()       (C)
+   STORE $data                   LOAD $data
+   smp_wmb()       (B)           smp_mb()        (D)
+   STORE ->producer              STORE ->consumer
+}
+
+The consumer function xskq_has_addrs() below loads the producer
+pointer and updates the locally cached copy of it. However, it does
+not issue the smp_rmb() operation required by the lockless ring. This
+would have been ok had the function not updated the locally cached
+copy, as that could not have resulted in new data being read from the
+ring. But as it updates the local producer pointer, a subsequent peek
+operation, such as xskq_peek_addr(), might load data from the ring
+without issuing the required smp_rmb() memory barrier.
+
+static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
+{
+        u32 entries = q->prod_tail - q->cons_tail;
+
+        if (entries >= cnt)
+                return true;
+
+        /* Refresh the local pointer. */
+        q->prod_tail = READ_ONCE(q->ring->producer);
+	*** MISSING MEMORY BARRIER ***
+        entries = q->prod_tail - q->cons_tail;
+
+        return entries >= cnt;
+}
+
+Fix this by adding the missing memory barrier at the indicated point
+above.
+
+Fixes: d57d76428ae9 ("Add API to check for available entries in FQ")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ net/xdp/xsk_queue.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index eddae46..b5492c3 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -127,6 +127,7 @@ static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
+ 
+ 	/* Refresh the local pointer. */
+ 	q->prod_tail = READ_ONCE(q->ring->producer);
++	smp_rmb(); /* C, matches B */
+ 	entries = q->prod_tail - q->cons_tail;
+ 
+ 	return entries >= cnt;
+-- 
+2.7.4
+
