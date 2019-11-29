@@ -2,137 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E0610D109
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 06:27:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A811010D11E
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 06:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbfK2F1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 00:27:24 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40690 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbfK2F1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 00:27:24 -0500
-Received: by mail-qk1-f194.google.com with SMTP id a137so22733376qkc.7
-        for <netdev@vger.kernel.org>; Thu, 28 Nov 2019 21:27:23 -0800 (PST)
+        id S1726741AbfK2Fqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 00:46:31 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:34184 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726164AbfK2Fqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 00:46:31 -0500
+Received: by mail-il1-f196.google.com with SMTP id p6so26010831ilp.1;
+        Thu, 28 Nov 2019 21:46:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9GCzcGX+TrqCBvIo9wrovNA59sfGohi1AmZ+4gaNZKs=;
-        b=C/cHHHltT12mgLgVQqYx8VkCVH/xczjfwhIC99oRYhzyDE/Vs6QkA/jSc97s653/m5
-         0LFUFWpwUtuyoUWjgvMHmoJxZX7oI1cKv4N3sIDJ4v2czl/QiJkmiP49HkosqdvYDjUX
-         yseWzP/1G3CX8c1ewcKCW5iAzh17MC35obqBsG9expKNhm2w26MxYXnau+xZBZ996y72
-         npJSlnqBQ3E9jSQJfv31vng4Cxd/8yYOisF8kowO4ZQj0ZNgH8ug8yqDaZY/7rG87Vsc
-         VHWrqMqsxZ5YPGORO9d+Ffz203WWI3YuzKonQUCabkplOpjGvH+AGV20oLOCNaSd9BkI
-         Eizw==
+        bh=UeukSdDwiiSgiJFebwv7o38ymarkZLCclxi9kT/TLJY=;
+        b=jBqgi2OXhM53PJuTTmroI75k72bCJvOHMHV08+HLesmvLcf18N2XkDVZzREOvbqnhj
+         WREf6z8VvKHVJjKsia7IhwSv9I1iVh28cArodmOgq9Mye7SOXK7omsqhvnIVlKPSWzaK
+         Anf/SClsiR7/m9uIPQ8i2abUzGeoguiF9FQTWmbbHQsjX06bkoG0cOVGgowF5bt8TFvc
+         Rt0LYK0rKIcehlGh6W/rtE7gwvdmQnTEI9mqvmOPmGe/wIXNPbJKt92n05tnq2rSjZTE
+         BOeEuFbuV7canqF58bE/pVaQFDCve77ktRTtR9+ue2FE2zGxI9h0K/v3sOhtgdln8El8
+         zssQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9GCzcGX+TrqCBvIo9wrovNA59sfGohi1AmZ+4gaNZKs=;
-        b=jtW5efTGjLOvhstDrtx1oqnYV8asAhmQfotNcvjw2H7X/IQKc67zjUyA0kPjHJT2mE
-         VxsJZAFHsTZF5IDiShe+YFBZoeu/sfS6OaKkNLidgQ1T9zWI9ywflgp/IjqTtCdQNzYi
-         mZIF6waH1AWAOD0lgaFxHRD57COZSTFtOCV0TXWpBxSTctvEUBmqAkMdh+qNSxNhy0yq
-         kp3F9lbUWriT/0eyrT6ZjUdvcmkqJ5oZDqpXHpWApUkON/vt/DlDR3qcBgI5uxdm+iaa
-         ZGtttPAPKpCLlsn3nRTdVW2L+HQNN7G5XkgRAPB4juaeC99m8D37DaOXyIRdC2sei9aZ
-         +RTQ==
-X-Gm-Message-State: APjAAAVmPocyiKIaOi2lN82MJRN4AqhuhIWX5aRwwol9UQHW0SIZfkq9
-        +uc2E7RlRheiEz+IUfCQ02Mz1MVb6HtI96n0VQA=
-X-Google-Smtp-Source: APXvYqzmAigkUfCXQL5ivjBPn8VBlo/0qHejRsE8rcGP2XU1cdf1vKRM+aSD2wGhEOCX0YSvkDz9w6yg+BaZ9niIaEs=
-X-Received: by 2002:a37:a685:: with SMTP id p127mr14757109qke.449.1575005242789;
- Thu, 28 Nov 2019 21:27:22 -0800 (PST)
+        bh=UeukSdDwiiSgiJFebwv7o38ymarkZLCclxi9kT/TLJY=;
+        b=MEqxLje1MTLdWyDyGANbaXhI2BCwu2XP76BQ+e87L3BGjjmAYoZ5nvB/biLcGfZY0X
+         DZqCwLhVUe5V/pKEvHiGZlVBCZhAZECjIRZf418eD1qfDB+QcUA6ReX551+AKEhKSxzE
+         fWaVVsqdBN9IIpoKgOEvG1f/Lsz+P1G9sKV3fAjWnkKvDF48BvtXE62C4TrJkyNm/PW9
+         SRiB18u0ekjbBs+3jbNLpxUHGsWWItuAGotqZlUe48N+9uph9vVpwkliVOnAUFquLn/U
+         UV/eZLa6KrwHq16p+gLu4DZ1s2YOe8+KAZKhNkU6I3CvYPPiA3LQZdle3ZEotAWux6Fz
+         JSNg==
+X-Gm-Message-State: APjAAAVGA9zDFM4hpj4b31wWorTs5HDD8TCWpcXsW765sy2CI+uKckM/
+        iXHmq7L7SDgtqDwVj9zP5ZJi2aX6lB1kRnHGw+w=
+X-Google-Smtp-Source: APXvYqx9/KH+KOpP7pYSBhLZwgrvZVqIKBHf0wQdTXvrM6coKa20viLyZHeeJfy0W9pcVdtF96C02BM82HTYDbiKKV4=
+X-Received: by 2002:a92:d450:: with SMTP id r16mr8533331ilm.147.1575006390301;
+ Thu, 28 Nov 2019 21:46:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20191128170837.2236713b@carbon>
-In-Reply-To: <20191128170837.2236713b@carbon>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 28 Nov 2019 21:27:12 -0800
-Message-ID: <CAEf4BzY3jp=cw9N23dBJnEsMXys6ZtjW5LVHquq4kF9avaPKcg@mail.gmail.com>
-Subject: Re: Better ways to validate map via BTF?
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+References: <20191127203114.766709977@linuxfoundation.org> <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
+ <20191128073623.GE3317872@kroah.com>
+In-Reply-To: <20191128073623.GE3317872@kroah.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Fri, 29 Nov 2019 06:46:23 +0100
+Message-ID: <CAKXUXMy_=gVVw656AL5Rih_DJrdrFLoURS-et0+dpJ2cKaw6SQ@mail.gmail.com>
+Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        lkft-triage@lists.linaro.org,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Jouni_H=C3=B6gander?= <jouni.hogander@unikie.com>,
+        "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 8:08 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
+On Thu, Nov 28, 2019 at 8:37 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> Hi Andrii,
+> On Thu, Nov 28, 2019 at 12:23:41PM +0530, Naresh Kamboju wrote:
+> > On Thu, 28 Nov 2019 at 02:25, Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > This is the start of the stable review cycle for the 4.19.87 release.
+> > > There are 306 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > >
+> > > Responses should be made by Fri, 29 Nov 2019 20:18:09 +0000.
+> > > Anything received after that time might be too late.
+> > >
+> > > The whole patch series can be found in one patch at:
+> > >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.87-rc1.gz
+> > > or in the git tree and branch at:
+> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> > > and the diffstat can be found below.
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
+> >
+> > Kernel BUG noticed on x86_64 device while booting 4.19.87-rc1 kernel.
+> >
+> > The problematic patch is,
+> >
+> > > Jouni Hogander <jouni.hogander@unikie.com>
+> > >     net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject
+> >
+> > And this kernel panic is been fixed by below patch,
+> >
+> > commit 48a322b6f9965b2f1e4ce81af972f0e287b07ed0
+> > Author: Eric Dumazet <edumazet@google.com>
+> > Date:   Wed Nov 20 19:19:07 2019 -0800
+> >
+> >     net-sysfs: fix netdev_queue_add_kobject() breakage
+> >
+> >     kobject_put() should only be called in error path.
+> >
+> >     Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in
+> > rx|netdev_queue_add_kobject")
+> >     Signed-off-by: Eric Dumazet <edumazet@google.com>
+> >     Cc: Jouni Hogander <jouni.hogander@unikie.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+>
+> Now queued up, I'll push out -rc2 versions with this fix.
+>
+> greg k-h
 
+We have also been informed about another regression these two commits
+are causing:
 
-Hey, Jesper! Sorry for late reply, I'm on vacation for few days, so my
-availability is irregular at best :)
+https://lore.kernel.org/lkml/ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp/
 
->
-> Is there are better way to validate that a userspace BPF-program uses
-> the correct map via BTF?
->
-> Below and in attached patch, I'm using bpf_obj_get_info_by_fd() to get
-> some map-info, and check info.value_size and info.max_entries match
-> what I expect.  What I really want, is to check that "map-value" have
-> same struct layout as:
->
->  struct config {
->         __u32 action;
->         int ifindex;
->         __u32 options;
->  };
+I suggest to drop these two patches from this queue, and give us a
+week to shake out the regressions of the change, and once ready, we
+can include the complete set of fixes to stable (probably in a week or
+two).
 
-Well, there is no existing magical way to do this, but it is doable by
-comparing BTFs of two maps. It's not too hard to compare all the
-members of a struct, their names, sizes, types, etc (and do that
-recursively, if necessary), but it's a bunch of code requiring due
-diligence. Libbpf doesn't provide that in a ready-to-use form (it does
-implement equivalence checks between two type graphs for dedup, but
-it's quite coupled with and specific to BTF deduplication algorithm).
-Keep in mind, when Toke implemented map pinning support in libbpf, we
-decided to not check BTF for now, and just check key/value size,
-flags, type, max_elements, etc.
-
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
->
-> static void check_config_map_fd_info(int map_fd) {
->         struct bpf_map_info info = { 0 };
->         __u32 info_len = sizeof(info);
->         __u32 exp_value_size = sizeof(struct config);
->         __u32 exp_entries = 1;
->         int err;
->
->         /* BPF-info via bpf-syscall */
->         err = bpf_obj_get_info_by_fd(map_fd, &info, &info_len);
->         if (err) {
->                 fprintf(stderr, "ERR: %s() can't get info - %s\n",
->                         __func__,  strerror(errno));
->                 exit(EXIT_FAIL_BPF);
->         }
->
->         if (exp_value_size != info.value_size) {
->                 fprintf(stderr, "ERR: %s() "
->                         "Map value size(%d) mismatch expected size(%d)\n",
->                         __func__, info.value_size, exp_value_size);
->                 exit(EXIT_FAIL_BPF);
->         }
->
->         if (exp_entries != info.max_entries) {
->                 fprintf(stderr, "ERR: %s() "
->                         "Map max_entries(%d) mismatch expected entries(%d)\n",
->                         __func__, info.max_entries, exp_entries);
->                 exit(EXIT_FAIL_BPF);
->         }
-> }
->
->
-> struct config {
->         __u32 action;
->         int ifindex;
->         __u32 options;
-> };
->
+Lukas
