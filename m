@@ -2,208 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D4F10DABC
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 22:05:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 018A210DB51
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 22:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbfK2VFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 16:05:11 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:42975 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727165AbfK2VFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 16:05:11 -0500
-Received: by mail-io1-f71.google.com with SMTP id p1so21101941ioo.9
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 13:05:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=HRBN6HrxYoFZFgyjJ0Y/sNR1gbaNm2Kx7gw5Zi0YKu0=;
-        b=CHCdgOuyLtTgCUfBX9XI42Mq9SxC7vK7EBCSTUdcQHP36JRifkS+d9/VzYO8Uz5X0m
-         gZXFAONLRhLXmL/om5JjVxaFKj9VFjbo6Rr2M6oi7zqGNX9x0QU9Ae9WTasdtY3w+IaU
-         NJEiIztCnLNFionPMcuCDtjfb1tMQaafzj2DxZ5y6VPcv+LZdGwl//4FNRw/c7C3i8SN
-         WxPPB1h/cKScoCy2TZpCiwGSrHTcLs3MqcZOrf+2mntjhufdkBNxTBh1DjaS+HeIf47m
-         C9q0ffnzctwX0YtFD6cGzhWA1KnEo4PaKicCsL6DUYNLmCvSTcn0j6RLK0W42Z7adJ8n
-         wz2A==
-X-Gm-Message-State: APjAAAXZ7S9TkI4C2AouVF9NJW1lmJHl/YV6cXKt/aKEgBUxV1zdiUCp
-        8c4asgiW8RG4ZiQSgwCU4Dyqu+iEEZi7bnb2Ic2pTjlYd96c
-X-Google-Smtp-Source: APXvYqz3zr2QVaGXkF9LleNtOT0E5GTt+RWUNboOhvJgzdKMrY9xBkU0oNHV3Clq3zhXJAb8vwijeMAHpiftEa0O7pKu842lGKbl
+        id S1727247AbfK2Vro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 16:47:44 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:6093 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727073AbfK2Vro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 16:47:44 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5de192010000>; Fri, 29 Nov 2019 13:47:46 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 29 Nov 2019 13:47:42 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 29 Nov 2019 13:47:42 -0800
+Received: from [10.2.169.205] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 29 Nov
+ 2019 21:47:41 +0000
+Subject: Re: [PATCH v2 17/19] powerpc: book3s64: convert to pin_user_pages()
+ and put_user_page()
+To:     Jan Kara <jack@suse.cz>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191125231035.1539120-1-jhubbard@nvidia.com>
+ <20191125231035.1539120-18-jhubbard@nvidia.com>
+ <20191129112315.GB1121@quack2.suse.cz>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <cb3e2acc-0a83-4053-fbcc-6d75dc47f174@nvidia.com>
+Date:   Fri, 29 Nov 2019 13:44:53 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-Received: by 2002:a92:da0a:: with SMTP id z10mr13290724ilm.286.1575061508869;
- Fri, 29 Nov 2019 13:05:08 -0800 (PST)
-Date:   Fri, 29 Nov 2019 13:05:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bc5697059882957f@google.com>
-Subject: KASAN: use-after-free Read in ax88172a_unbind
-From:   syzbot <syzbot+4cd84f527bf4a10fc9c1@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, andreyknvl@google.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, kstewart@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, oneukum@suse.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20191129112315.GB1121@quack2.suse.cz>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1575064066; bh=tMvn6asqZgJ/8yczcC9lnf1pHEf7TJzCvRVZqLzUEIk=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=P515JTdy70KP3oimNK/fSAtObgW4JDQsh/LN+dj31w7qtgH6JUdGJYKS3j5J8enBM
+         oN04vymJSqszX58P75QNc1cW3k/Ll0LB9zwNlmlBWaR7zw2qd7/o9t2Cy3EugW3wgY
+         XBlQyEsBEMcfywkDPj201lclcvfOCs5gFzs/O+2QmSmHzciD31eTMBkNB0W6VGXEOL
+         BbnrGM91l0GAwjLm+XJmL4eoGQAce5JVCz6FfueQA4/sc24hO2mmz2R1mloKHyP2Ej
+         3q1StOVbP0t0OEBFEGay8puwUyC8jwyLEftGIYNcVrkaz5szmNasFETh2Ir0Xi5Q1g
+         8xDwDUM/1ii9A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 11/29/19 3:23 AM, Jan Kara wrote:
+> On Mon 25-11-19 15:10:33, John Hubbard wrote:
+>> 1. Convert from get_user_pages() to pin_user_pages().
+>>
+>> 2. As required by pin_user_pages(), release these pages via
+>> put_user_page(). In this case, do so via put_user_pages_dirty_lock().
+>>
+>> That has the side effect of calling set_page_dirty_lock(), instead
+>> of set_page_dirty(). This is probably more accurate.
+> 
+> Maybe more accurate but it doesn't work for mm_iommu_unpin(). As I'm
+> checking mm_iommu_unpin() gets called from RCU callback which is executed
+> interrupt context and you cannot lock pages from such context. So you need
+> to queue work from the RCU callback and then do the real work from the
+> workqueue...
+> 
+> 								Honza
 
-syzbot found the following crash on:
+ah yes, fixed locally. (In order to avoid  distracting people during the merge
+window, I won't post any more versions of the series until the merge window is
+over, unless a maintainer tells me that any of these patches are desired for
+5.5.)
 
-HEAD commit:    32b5e2b2 usb: gadget: add raw-gadget interface
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=12d808a6e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d88612251f7691bd
-dashboard link: https://syzkaller.appspot.com/bug?extid=4cd84f527bf4a10fc9c1
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=107034a2e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12da42dae00000
+With that, we are back to a one-line diff for this part:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4cd84f527bf4a10fc9c1@syzkaller.appspotmail.com
+@@ -215,7 +214,7 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
+                 if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
+                         SetPageDirty(page);
+  
+-               put_page(page);
++               put_user_page(page);
+                 mem->hpas[i] = 0;
+         }
+  }
 
-usb 1-1: USB disconnect, device number 2
-asix 1-1:0.147 eth1: unregister 'asix' usb-dummy_hcd.0-1, ASIX AX88172A USB  
-2.0 Ethernet
-==================================================================
-BUG: KASAN: use-after-free in ax88172a_remove_mdio  
-drivers/net/usb/ax88172a.c:123 [inline]
-BUG: KASAN: use-after-free in ax88172a_unbind+0x76/0xed  
-drivers/net/usb/ax88172a.c:274
-Read of size 8 at addr ffff8881d15e9100 by task kworker/0:2/102
+btw, I'm also working on your feedback for patch 17 (mm/gup: track FOLL_PIN pages [1]),
+from a few days earlier, it's not being ignored, I'm just trying to avoid distracting
+people during the merge window.
 
-CPU: 0 PID: 102 Comm: kworker/0:2 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xef/0x16e lib/dump_stack.c:118
-  print_address_description.constprop.0+0x36/0x50 mm/kasan/report.c:374
-  __kasan_report.cold+0x1a/0x33 mm/kasan/report.c:506
-  kasan_report+0xe/0x20 mm/kasan/common.c:634
-  ax88172a_remove_mdio drivers/net/usb/ax88172a.c:123 [inline]
-  ax88172a_unbind+0x76/0xed drivers/net/usb/ax88172a.c:274
-  usbnet_disconnect+0x145/0x270 drivers/net/usb/usbnet.c:1618
-  usb_unbind_interface+0x1bd/0x8a0 drivers/usb/core/driver.c:423
-  __device_release_driver drivers/base/dd.c:1134 [inline]
-  device_release_driver_internal+0x42f/0x500 drivers/base/dd.c:1165
-  bus_remove_device+0x2dc/0x4a0 drivers/base/bus.c:532
-  device_del+0x481/0xd30 drivers/base/core.c:2664
-  usb_disable_device+0x211/0x690 drivers/usb/core/message.c:1237
-  usb_disconnect+0x284/0x8d0 drivers/usb/core/hub.c:2200
-  hub_port_connect drivers/usb/core/hub.c:5035 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5324 [inline]
-  port_event drivers/usb/core/hub.c:5470 [inline]
-  hub_event+0x1753/0x3860 drivers/usb/core/hub.c:5552
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2264
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2410
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+[1] https://lore.kernel.org/r/20191121093941.GA18190@quack2.suse.cz
 
-Allocated by task 83:
-  save_stack+0x1b/0x80 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc mm/kasan/common.c:510 [inline]
-  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:483
-  kmalloc include/linux/slab.h:556 [inline]
-  kzalloc include/linux/slab.h:690 [inline]
-  ax88172a_bind+0x9f/0x7a2 drivers/net/usb/ax88172a.c:191
-  usbnet_probe+0xb43/0x2470 drivers/net/usb/usbnet.c:1737
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:430
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:490
-  device_add+0x1480/0x1c20 drivers/base/core.c:2487
-  usb_set_configuration+0xe67/0x1740 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:430
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:490
-  device_add+0x1480/0x1c20 drivers/base/core.c:2487
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2537
-  hub_port_connect drivers/usb/core/hub.c:5184 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5324 [inline]
-  port_event drivers/usb/core/hub.c:5470 [inline]
-  hub_event+0x1e59/0x3860 drivers/usb/core/hub.c:5552
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2264
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2410
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Freed by task 83:
-  save_stack+0x1b/0x80 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  kasan_set_free_info mm/kasan/common.c:332 [inline]
-  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:471
-  slab_free_hook mm/slub.c:1424 [inline]
-  slab_free_freelist_hook mm/slub.c:1457 [inline]
-  slab_free mm/slub.c:3004 [inline]
-  kfree+0xdc/0x310 mm/slub.c:3956
-  ax88172a_bind.cold+0x4d/0x1e8 drivers/net/usb/ax88172a.c:250
-  usbnet_probe+0xb43/0x2470 drivers/net/usb/usbnet.c:1737
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:430
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:490
-  device_add+0x1480/0x1c20 drivers/base/core.c:2487
-  usb_set_configuration+0xe67/0x1740 drivers/usb/core/message.c:2023
-  generic_probe+0x9d/0xd5 drivers/usb/core/generic.c:210
-  usb_probe_device+0x99/0x100 drivers/usb/core/driver.c:266
-  really_probe+0x281/0x6d0 drivers/base/dd.c:548
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:721
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:828
-  bus_for_each_drv+0x162/0x1e0 drivers/base/bus.c:430
-  __device_attach+0x217/0x360 drivers/base/dd.c:894
-  bus_probe_device+0x1e4/0x290 drivers/base/bus.c:490
-  device_add+0x1480/0x1c20 drivers/base/core.c:2487
-  usb_new_device.cold+0x6a4/0xe79 drivers/usb/core/hub.c:2537
-  hub_port_connect drivers/usb/core/hub.c:5184 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5324 [inline]
-  port_event drivers/usb/core/hub.c:5470 [inline]
-  hub_event+0x1e59/0x3860 drivers/usb/core/hub.c:5552
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2264
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2410
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the object at ffff8881d15e9100
-  which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 0 bytes inside of
-  64-byte region [ffff8881d15e9100, ffff8881d15e9140)
-The buggy address belongs to the page:
-page:ffffea0007457a40 refcount:1 mapcount:0 mapping:ffff8881da003180  
-index:0x0
-raw: 0200000000000200 ffffea00074686c0 0000000d0000000d ffff8881da003180
-raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8881d15e9000: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-  ffff8881d15e9080: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> ffff8881d15e9100: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-                    ^
-  ffff8881d15e9180: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-  ffff8881d15e9200: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+thanks,
+-- 
+John Hubbard
+NVIDIA
