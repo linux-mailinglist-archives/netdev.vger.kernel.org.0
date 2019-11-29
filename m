@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6621310D98C
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 19:19:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F04510D991
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 19:21:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727128AbfK2STS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 13:19:18 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:45256 "EHLO
+        id S1727120AbfK2SVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 13:21:16 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:33950 "EHLO
         mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbfK2STS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 13:19:18 -0500
-Received: by mail-yw1-f68.google.com with SMTP id j137so11244636ywa.12
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:19:17 -0800 (PST)
+        with ESMTP id S1727004AbfK2SVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 13:21:16 -0500
+Received: by mail-yw1-f68.google.com with SMTP id l14so8467109ywh.1
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:21:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HF+fjTjv7Oq23CsonP++AGYWtN5qhnREJzjOYelF2OY=;
-        b=PRY58aJLkO3/RkCMGiQ3dl4wqc+vEkLpJZtthcuGZG42ftGDSMUEBxUn51GbPQHvvx
-         u/ctenpUBasOPie5A5cjep+xgmzChNfD8FAkGjAtvoruwrMO4vRPzwgi+FiWxSiqvUIA
-         2RfUQXGm9lnvhhfSA+AZhfMyYaAzx7Jgo8rFh4mQBaWIAPtQtv11Hp4+K3dA2l3Zo+bX
-         1BzKzyxv/5YTMnDHyHPyVgrTohk+R3L3+S/vaK/FiSjUTc3fcGDMf4ucqpLjDXiJ5lUS
-         LDT6/KK5QRjiULwA2vyEM6VWm6VkG2cLU47pFihtYAzK/koXXjDqmYZXxhl3d0EgmJgU
-         3vQw==
+        bh=THE9+lq4GnpQ6+hv4lX72mDM0v1FjLlznaEXX65LMN4=;
+        b=EiaAXKKFPcbpG1MqqqisPMHTqa8rZMs4yA798HAQ4QjcP1Em6cql6ciz+/MU3bBrj/
+         K8OiZy6t8mdr8UoL1T08YeL9d8wL9+GxZel1aFl7SI+l7CRod/DZgoBIDxEMffDVP2/z
+         0Gk36PP8wwPs86EPwX3ocQ205We86RhuJxPIZ8UXr79Bs7WqNpkX07P7N08Tj7VEKwn/
+         /b4BSvCDslZ4Ib8+xKe/LThnDWkdeCewye6VU2Ao4EkU17Q0rPFfsootjxZteCPuQtvm
+         dsKAQM8pegqyI9P+KJdCfVTZOX62/SjgWlYTSR/8079IvVBkfW4UL2EDhSXa7pJyJXfI
+         HZWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HF+fjTjv7Oq23CsonP++AGYWtN5qhnREJzjOYelF2OY=;
-        b=QXiy56UvV4VXFniKml860P9aIoMFn472DCiM+sMPODNbaOr4eDFpG22AUe/G1uN2qt
-         OF3MR2j3jeu4fIdimYvoXEO3BW1QLCYWqafNHO70/h7Uf9R3dJtn8Viie0vaQudaqF5f
-         jQF7iM92qK12FuqZ1cv34ICWKWXdn0HPPzudgG6Yravr0x15emuhBWjG7asOahxGdTP+
-         80oQt6xQ2g8ukOobVyyU46qWK22Rd5fuKH/rDqENAv3X2HjCvle78IfH57HrOkokQGXi
-         Lv+rQS45Yd80agxrCFYNeZFHwVPNdRHSG6x3Y/be25dP/dP2jo4Iwc/fZK85ZeqSmUxp
-         K0QA==
-X-Gm-Message-State: APjAAAUDJkDFNb4YelxGM7O+uCCm7zNNx6y16+XAQmhZOPDh8FTxyUcX
-        HM96oNz2BF5Hb5uuQ+/m9zsrxD/x
-X-Google-Smtp-Source: APXvYqzaVWiResD87rc12VqIjnCcK8BBYG6kYrC2+T7aTzwKKi2DpKbFk86oJ6JTIgbcYiGo82IgfA==
-X-Received: by 2002:a81:e11:: with SMTP id 17mr12083916ywo.3.1575051555112;
-        Fri, 29 Nov 2019 10:19:15 -0800 (PST)
-Received: from mail-yw1-f44.google.com (mail-yw1-f44.google.com. [209.85.161.44])
-        by smtp.gmail.com with ESMTPSA id d138sm2166349ywe.102.2019.11.29.10.19.13
+        bh=THE9+lq4GnpQ6+hv4lX72mDM0v1FjLlznaEXX65LMN4=;
+        b=Gt78iFkhavkpwjLbLkf4+CdS1ez6ECkQRM4GOnn+k0CfIERw8WidmSyy3d7M8KGhNS
+         a0SVrdYEiTJBMgnCFKZ9Q18t8e/XY8yA1lTHgG6BBP3WGKp9TeIrwbdgvgrq5GuxH2mR
+         1hqOjtVafzDWKpXN7q2fLlEv0dfaZOhB1JyQt8wYkK70AOnW6Onz6lQKSt+iAmnirh+G
+         kPg4P1PVnVtFkuy1Lqd5NUxAkuTnIp44oCTvx/WZFXUa+0dQCGjT5iwD+SoVD34BkUs2
+         nyYPIH2rezBatSfEjma/1uwm+oSLWvLnyXaDdrz1XkOxLBjVI0CJwb+0scZNrmJa5aUf
+         6rfw==
+X-Gm-Message-State: APjAAAXsJmOCTEfyALfaHo/BvA/07SwWBjoCqENvHOH1QzkV8P4Rumgv
+        uRe2O/7NMM3Kdq5H16H67hOxBzRk
+X-Google-Smtp-Source: APXvYqx2kGghZBZav9XCW8vHFA2xLlboEhrr3UZA2uvLNJeE3tfC/Md/zeT+8mptlvd6vHA/eMWtbw==
+X-Received: by 2002:a81:7011:: with SMTP id l17mr13248229ywc.440.1575051674884;
+        Fri, 29 Nov 2019 10:21:14 -0800 (PST)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id c84sm10566708ywa.1.2019.11.29.10.21.13
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Nov 2019 10:19:13 -0800 (PST)
-Received: by mail-yw1-f44.google.com with SMTP id 192so3158697ywy.0
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:19:13 -0800 (PST)
-X-Received: by 2002:a0d:e8ca:: with SMTP id r193mr11109733ywe.64.1575051552361;
- Fri, 29 Nov 2019 10:19:12 -0800 (PST)
+        Fri, 29 Nov 2019 10:21:14 -0800 (PST)
+Received: by mail-yb1-f169.google.com with SMTP id i3so11835649ybe.12
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:21:13 -0800 (PST)
+X-Received: by 2002:a25:c444:: with SMTP id u65mr28262431ybf.443.1575051673213;
+ Fri, 29 Nov 2019 10:21:13 -0800 (PST)
 MIME-Version: 1.0
 References: <cover.1573872263.git.martin.varghese@nokia.com>
- <5acab9e9da8aa9d1e554880b1f548d3057b70b75.1573872263.git.martin.varghese@nokia.com>
- <CA+FuTSeUGsWH-GR7N_N7PChaW4S6Hucmvo_1s_9bbisxz1eOAA@mail.gmail.com> <20191128162427.GB2633@martin-VirtualBox>
-In-Reply-To: <20191128162427.GB2633@martin-VirtualBox>
+ <24ec93937d65fa2afc636a2887c78ae48736a649.1573872264.git.martin.varghese@nokia.com>
+ <CA+FuTSeHsZnHMUiZmHugCT=83g6EA8OJVWd9VdV-LqbA94xVqQ@mail.gmail.com> <20191128161243.GA2633@martin-VirtualBox>
+In-Reply-To: <20191128161243.GA2633@martin-VirtualBox>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 29 Nov 2019 13:18:36 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSc1GBxnWgMSVPNxx1wndFmauvTd7r54dDV92PeNprouWA@mail.gmail.com>
-Message-ID: <CA+FuTSc1GBxnWgMSVPNxx1wndFmauvTd7r54dDV92PeNprouWA@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/2] UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
+Date:   Fri, 29 Nov 2019 13:20:37 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSd5qhUeDeFWANd04cwTsnsC0LfEqtOztUbAnU_yfNkB9w@mail.gmail.com>
+Message-ID: <CA+FuTSd5qhUeDeFWANd04cwTsnsC0LfEqtOztUbAnU_yfNkB9w@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 2/2] Special handling for IP & MPLS.
 To:     Martin Varghese <martinvarghesenokia@gmail.com>
 Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Network Development <netdev@vger.kernel.org>,
@@ -74,68 +73,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 11:25 AM Martin Varghese
+On Thu, Nov 28, 2019 at 11:13 AM Martin Varghese
 <martinvarghesenokia@gmail.com> wrote:
 >
-> On Mon, Nov 18, 2019 at 12:23:09PM -0500, Willem de Bruijn wrote:
+> On Mon, Nov 18, 2019 at 12:30:11PM -0500, Willem de Bruijn wrote:
 > > On Sat, Nov 16, 2019 at 12:45 AM Martin Varghese
 > > <martinvarghesenokia@gmail.com> wrote:
 > > >
 > > > From: Martin Varghese <martin.varghese@nokia.com>
 > > >
-> > > The Bareudp tunnel module provides a generic L3 encapsulation
-> > > tunnelling module for tunnelling different protocols like MPLS,
-> > > IP,NSH etc inside a UDP tunnel.
+> > > Special handling is needed in bareudp module for IP & MPLS as they support
+> > > more than one ethertypes.
 > > >
-> > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-
-> > > +static int bareudp_fill_metadata_dst(struct net_device *dev,
-> > > +                                    struct sk_buff *skb)
-> > > +{
-> > > +       struct ip_tunnel_info *info = skb_tunnel_info(skb);
-> > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
-> > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
-> > > +
-> > > +       if (ip_tunnel_info_af(info) == AF_INET) {
-> > > +               struct rtable *rt;
-> > > +               struct flowi4 fl4;
-> > > +
-> > > +               rt = iptunnel_get_v4_rt(skb, dev, bareudp->net, &fl4, info,
-> > > +                                       use_cache);
-> > > +               if (IS_ERR(rt))
-> > > +                       return PTR_ERR(rt);
-> > > +
-> > > +               ip_rt_put(rt);
-> > > +               info->key.u.ipv4.src = fl4.saddr;
-> > > +#if IS_ENABLED(CONFIG_IPV6)
-> > > +       } else if (ip_tunnel_info_af(info) == AF_INET6) {
-> > > +               struct dst_entry *dst;
-> > > +               struct flowi6 fl6;
-> > > +               struct bareudp_sock *bs6 = rcu_dereference(bareudp->sock);
-> > > +
-> > > +               dst = ip6tunnel_get_dst(skb, dev, bareudp->net, bs6->sock, &fl6,
-> > > +                                       info, use_cache);
-> > > +               if (IS_ERR(dst))
-> > > +                       return PTR_ERR(dst);
-> > > +
-> > > +               dst_release(dst);
-> > > +               info->key.u.ipv6.src = fl6.saddr;
-> > > +#endif
-> > > +       } else {
-> > > +               return -EINVAL;
-> > > +       }
-> > > +
-> > > +       info->key.tp_src = udp_flow_src_port(bareudp->net, skb,
-> > > +                                            bareudp->sport_min,
-> > > +                                            USHRT_MAX, true);
-> > > +       info->key.tp_dst = bareudp->conf.port;
-> > > +       return 0;
-> > > +}
+> > > MPLS has 2 ethertypes. 0x8847 for MPLS unicast and 0x8848 for MPLS multicast.
+> > > While decapsulating MPLS packet from UDP packet the tunnel destination IP
+> > > address is checked to determine the ethertype. The ethertype of the packet
+> > > will be set to 0x8848 if the  tunnel destination IP address is a multicast
+> > > IP address. The ethertype of the packet will be set to 0x8847 if the
+> > > tunnel destination IP address is a unicast IP address.
+> > >
+> > > IP has 2 ethertypes.0x0800 for IPV4 and 0x86dd for IPv6. The version field
+> > > of the IP header tunnelled will be checked to determine the ethertype.
 > >
-> > This can probably all be deduplicated with geneve_fill_metadata_dst
-> > once both use iptunnel_get_v4_rt.
+> > If using ipv6 dual stack, it might make more sense to use extended
+> > mode with the ipv6 device instead of the ipv4 device.
 > >
+> ipv6 dual stack (v6 socket) is for the tunnel.the ethertype mentioned above
+> is for the inner protocol being tunnelled
 >
-> Do you have any preference of file to keep the common function
+> > Also, the term extended mode is not self describing. Dual stack as
+> > term would be, but is not relevant to MPLS. Maybe "dual_proto"?
+> >
+> multi_proto ?
 
-Perhaps net/ipv4/udp_tunnel.c
+Sounds good to me, thanks.
