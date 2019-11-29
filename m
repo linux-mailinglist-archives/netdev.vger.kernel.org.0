@@ -2,83 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94A1710D235
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:04:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6BA10D248
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:13:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfK2IEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 03:04:36 -0500
-Received: from correo.us.es ([193.147.175.20]:36758 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726770AbfK2IEg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Nov 2019 03:04:36 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4121827F8D8
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 09:04:33 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 309DADA712
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 09:04:33 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1F6ABDA738; Fri, 29 Nov 2019 09:04:33 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0C517DA70E;
-        Fri, 29 Nov 2019 09:04:31 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 29 Nov 2019 09:04:31 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726823AbfK2INM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 03:13:12 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21605 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726791AbfK2INL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:13:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575015190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ifxEBGz5Za3713/6wxZ5x5c+04Mqb6wSjHpoWmP22g=;
+        b=g7Wj6BBIoFQeyH3YewWFPa3nMMEKO14Z2kuZDOel3ZyxHOBjFZNggnw7J5uVbcfnY13tVJ
+        4C4c2ICH0Dz6NfRGjqS5pXlns3Gb/2Dyb57Os4kukOzwxzX4qaGhPyC6i1cp9wlrEuGNQi
+        ShfGVKoOC1rtlkEH1WNleR1e3QkpW1c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-409-jxWKkpjJN2aIP2zyAxxTJg-1; Fri, 29 Nov 2019 03:13:06 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D0C0041E4802;
-        Fri, 29 Nov 2019 09:04:30 +0100 (CET)
-Date:   Fri, 29 Nov 2019 09:04:32 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] netfilter: nf_flow_table_offload: Don't use offset
- uninitialized in flow_offload_port_{d,s}nat
-Message-ID: <20191129080432.jnsghajoenturr7v@salvia>
-References: <20191126201226.51857-1-natechancellor@gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2734C8024E7;
+        Fri, 29 Nov 2019 08:13:04 +0000 (UTC)
+Received: from krava (ovpn-205-32.brq.redhat.com [10.40.205.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 90C7461F37;
+        Fri, 29 Nov 2019 08:12:52 +0000 (UTC)
+Date:   Fri, 29 Nov 2019 09:12:51 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Subject: Re: [PATCH bpf v3] bpftool: Allow to link libbpf dynamically
+Message-ID: <20191129081251.GA14169@krava>
+References: <20191128145316.1044912-1-toke@redhat.com>
+ <20191128160712.1048793-1-toke@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20191128160712.1048793-1-toke@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: jxWKkpjJN2aIP2zyAxxTJg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-In-Reply-To: <20191126201226.51857-1-natechancellor@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 26, 2019 at 01:12:26PM -0700, Nathan Chancellor wrote:
-> Clang warns (trimmed the second warning for brevity):
-> 
-> ../net/netfilter/nf_flow_table_offload.c:342:2: warning: variable
-> 'offset' is used uninitialized whenever switch default is taken
-> [-Wsometimes-uninitialized]
->         default:
->         ^~~~~~~
-> ../net/netfilter/nf_flow_table_offload.c:346:57: note: uninitialized use
-> occurs here
->         flow_offload_mangle(entry, flow_offload_l4proto(flow), offset,
->                                                                ^~~~~~
-> ../net/netfilter/nf_flow_table_offload.c:331:12: note: initialize the
-> variable 'offset' to silence this warning
->         u32 offset;
->                   ^
->                    = 0
-> 
-> Match what was done in the flow_offload_ipv{4,6}_{d,s}nat functions and
-> just return in the default case, since port would also be uninitialized.
+On Thu, Nov 28, 2019 at 05:07:12PM +0100, Toke H=F8iland-J=F8rgensen wrote:
 
-Applied, thanks.
+SNIP
+
+>  ifeq ($(srctree),)
+>  srctree :=3D $(patsubst %/,%,$(dir $(CURDIR)))
+> @@ -63,6 +72,19 @@ RM ?=3D rm -f
+>  FEATURE_USER =3D .bpftool
+>  FEATURE_TESTS =3D libbfd disassembler-four-args reallocarray zlib
+>  FEATURE_DISPLAY =3D libbfd disassembler-four-args zlib
+> +ifdef LIBBPF_DYNAMIC
+> +  FEATURE_TESTS   +=3D libbpf
+> +  FEATURE_DISPLAY +=3D libbpf
+> +
+> +  # for linking with debug library run:
+> +  # make LIBBPF_DYNAMIC=3D1 LIBBPF_DIR=3D/opt/libbpf
+> +  ifdef LIBBPF_DIR
+> +    LIBBPF_CFLAGS  :=3D -I$(LIBBPF_DIR)/include
+> +    LIBBPF_LDFLAGS :=3D -L$(LIBBPF_DIR)/$(libdir_relative)
+> +    FEATURE_CHECK_CFLAGS-libbpf  :=3D $(LIBBPF_CFLAGS)
+> +    FEATURE_CHECK_LDFLAGS-libbpf :=3D $(LIBBPF_LDFLAGS)
+> +  endif
+> +endif
+> =20
+>  check_feat :=3D 1
+>  NON_CHECK_FEAT_TARGETS :=3D clean uninstall doc doc-clean doc-install do=
+c-uninstall
+> @@ -88,6 +110,18 @@ ifeq ($(feature-reallocarray), 0)
+>  CFLAGS +=3D -DCOMPAT_NEED_REALLOCARRAY
+>  endif
+> =20
+> +ifdef LIBBPF_DYNAMIC
+> +  ifeq ($(feature-libbpf), 1)
+> +    # bpftool uses non-exported functions from libbpf, so just add the d=
+ynamic
+> +    # version of libbpf and let the linker figure it out
+> +    LIBS    :=3D -lbpf $(LIBS)
+
+nice, so linker will pick up the missing symbols and we
+don't need to check on particular libbpf version then
+
+thanks,
+jirka
+
+> +    CFLAGS  +=3D $(LIBBPF_CFLAGS)
+> +    LDFLAGS +=3D $(LIBBPF_LDFLAGS)
+> +  else
+> +    dummy :=3D $(error Error: No libbpf devel library found, please inst=
+all libbpf-devel or libbpf-dev.)
+> +  endif
+> +endif
+> +
+>  include $(wildcard $(OUTPUT)*.d)
+> =20
+>  all: $(OUTPUT)bpftool
+> --=20
+> 2.24.0
+>=20
+
