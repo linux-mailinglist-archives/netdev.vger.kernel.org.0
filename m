@@ -2,115 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4692A10D26D
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CF410D2CC
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:54:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbfK2I1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 03:27:49 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:43919 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725892AbfK2I1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:27:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575016067;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WyZJEooqY157FQmuO7+hU0ElGstNoXM7pKnTNDwtZp8=;
-        b=MyNS1D2Mc4STEOuRlvkbQLZddhaTtqD4EmKZ1yPmXpg2r9Ro7wZr6qgkocB+ptesgVQe3T
-        TphWh54pSgRPgZY03W5CNNEDMSutwygYC0iQGtn0iP0Oq5sABJvLgNPwMw7KhokdK9tSto
-        w8/Io4EICpKzwLRBk6Ef0Pn1zny59BU=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-23-ik4DrbyCOT2mldSeQypFoQ-1; Fri, 29 Nov 2019 03:27:43 -0500
-Received: by mail-lj1-f199.google.com with SMTP id d9so1971008lji.1
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:27:43 -0800 (PST)
+        id S1727169AbfK2IyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 03:54:20 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44772 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726877AbfK2IyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:54:20 -0500
+Received: by mail-lj1-f195.google.com with SMTP id c19so4106899lji.11
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:54:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4cIdzPem1gtTXrJfo2HafRoTCZRg5FNv5NypT6qP45U=;
+        b=sh5xZc0HwFEOqs7cDdnGBQgbaeliG0TskKpvg+mwd4TC21KSG2qJ/o+imPQXc6NWG6
+         yuRvf2zqJy38q5WSSxIc9fdihJHQU2pYdLKSW61stgQlkMTRuUzoUCk6XXgIKwxz/ZY4
+         4rTZDgMnnVV3HVPzqWIK0bAOZgqTk6t5VxoMUGNnDgLm078nn20Bipn52oF5rb35d4Zx
+         WT2IXY64UN6YFzZr1/RrDbW5cvy5IYP7esrM7kUJzPKX4oCduuCFMcx94gzixd5PM7qh
+         pWNblWuTGHM+MrP+TR0lsDqEvELeq0ck1PlctY9UiRzEniK94N2mJG3RQ/MhVfiPG+fg
+         lRHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=WyZJEooqY157FQmuO7+hU0ElGstNoXM7pKnTNDwtZp8=;
-        b=qhs3W9GqtfzMycTdgScuRiKmm1J6TD/QoOOl7ToTUjZ9ZGe3zHLtjk1FtOMbe6kSI5
-         RMfU7uZtSvYTdz7U7ZHBAYYS6qIEb6fV8o+QT1XWOo3Muz/B/ksockm1mfl2ArCaGjDx
-         lix6Yvot1zUbKkaLztjh/DdbugTLsrGNYlTv1Fe82yeRA5lbu/WGeymZg+6q4iWst8Tu
-         Yf7OpeWm3Dqd1CTud0o0HE+Dn+VBHDu12RTcJyNaK692sAUihS3CW9OekrpRM/07fJhy
-         SbNlxCGQZQGcTmsFNrzE+dHfpZlVIGkUHN0CyDBpDyt022pFTDTtc7+Bqut8IHdWlxzX
-         8fQQ==
-X-Gm-Message-State: APjAAAUQDytrmtrucEofceO1v1o1emwBeEGYeawzNppz/XwH3YUpomNk
-        lhRzp9OTqH26j5sySZScGmM5dVgCj/87pNLBUBrtQ9nBxhBL+ywHfMjCGq/OK40Bk8W/MOrW+37
-        QDcpj9D7bklNH1b/k
-X-Received: by 2002:a2e:9906:: with SMTP id v6mr11844357lji.90.1575016062485;
-        Fri, 29 Nov 2019 00:27:42 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyjsnwesS88bOXjqUaGt57AMxaYdThD0WrofOCAs5gajMzZRA087w0B+ybbHRoLVjBZaRciog==
-X-Received: by 2002:a2e:9906:: with SMTP id v6mr11844349lji.90.1575016062351;
-        Fri, 29 Nov 2019 00:27:42 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id 145sm4998765ljj.69.2019.11.29.00.27.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Nov 2019 00:27:41 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EDF571818BD; Fri, 29 Nov 2019 09:27:40 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Better ways to validate map via BTF?
-In-Reply-To: <CAEf4BzY3jp=cw9N23dBJnEsMXys6ZtjW5LVHquq4kF9avaPKcg@mail.gmail.com>
-References: <20191128170837.2236713b@carbon> <CAEf4BzY3jp=cw9N23dBJnEsMXys6ZtjW5LVHquq4kF9avaPKcg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 29 Nov 2019 09:27:40 +0100
-Message-ID: <87pnhbulxf.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4cIdzPem1gtTXrJfo2HafRoTCZRg5FNv5NypT6qP45U=;
+        b=ELil3vJ1Vwd2DjL0+bG6m/ymk+/mvjM4P7nlnkOicgn1iQYA61SDYXquY91PjXpG4h
+         +ui1NBDlDzM28GlpLhCe4TSuejz1siJIfDd6Sh99AyKrCacXi71Rs3CzfPll20GN4pZY
+         jpLx+rCCsLOUDfXuorYj6eI3l8QZx7jeoM3/CwiVtLGPlsCoJcMYRgQUZZTsrhTm6yMK
+         rejkL+3E2G+JRo161uoo/MLT3/1CWMwc8+iw5bNjbVQ64/0Lm8DK8SiM3mZ57/N1mUrG
+         b0sr1kHaBj3U5pzFgtmgWZy8s6NPnXvBsF8IkeHug6xmUMk6vFQcP/eOzsiUUC0QkYlu
+         vRHg==
+X-Gm-Message-State: APjAAAUP5Qw1cPYn0uu4+cayv1XcXIINCdSIs1ozyWvgo0xDzPjAIqST
+        L9WEhoG7aJ6cKFayw9oTl0WlKhEUN3D/vDJA3EbyOA==
+X-Google-Smtp-Source: APXvYqyt+7PQVsnFlfoRnd/SSRNCt5JxFY7QCWPcBAiJ7bkcleAU7YSSvhv9WR+7iwmYdFhc3x1cmkttsKVYTTRvJsU=
+X-Received: by 2002:a2e:a0c6:: with SMTP id f6mr69283ljm.46.1575017657691;
+ Fri, 29 Nov 2019 00:54:17 -0800 (PST)
 MIME-Version: 1.0
-X-MC-Unique: ik4DrbyCOT2mldSeQypFoQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain
+References: <20191127203114.766709977@linuxfoundation.org> <CA+G9fYuAY+14aPiRVUcXLbsr5zJ-GLjULX=s9jcGWcw_vb5Kzw@mail.gmail.com>
+ <20191128073623.GE3317872@kroah.com>
+In-Reply-To: <20191128073623.GE3317872@kroah.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 29 Nov 2019 14:24:06 +0530
+Message-ID: <CA+G9fYtPJLNVvXapfr1vtpH=T6MxU7NY_Kac-T7U31w-kQu62A@mail.gmail.com>
+Subject: Re: [PATCH 4.19 000/306] 4.19.87-stable review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        lkft-triage@lists.linaro.org,
+        linux- stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        jouni.hogander@unikie.com, "David S. Miller" <davem@davemloft.net>,
+        lukas.bulwahn@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Thu, 28 Nov 2019 at 13:07, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 
-> On Thu, Nov 28, 2019 at 8:08 AM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
->>
->> Hi Andrii,
->
->
-> Hey, Jesper! Sorry for late reply, I'm on vacation for few days, so my
-> availability is irregular at best :)
->
->>
->> Is there are better way to validate that a userspace BPF-program uses
->> the correct map via BTF?
->>
->> Below and in attached patch, I'm using bpf_obj_get_info_by_fd() to get
->> some map-info, and check info.value_size and info.max_entries match
->> what I expect.  What I really want, is to check that "map-value" have
->> same struct layout as:
->>
->>  struct config {
->>         __u32 action;
->>         int ifindex;
->>         __u32 options;
->>  };
->
-> Well, there is no existing magical way to do this, but it is doable by
-> comparing BTFs of two maps. It's not too hard to compare all the
-> members of a struct, their names, sizes, types, etc (and do that
-> recursively, if necessary), but it's a bunch of code requiring due
-> diligence. Libbpf doesn't provide that in a ready-to-use form (it does
-> implement equivalence checks between two type graphs for dedup, but
-> it's quite coupled with and specific to BTF deduplication algorithm).
-> Keep in mind, when Toke implemented map pinning support in libbpf, we
-> decided to not check BTF for now, and just check key/value size,
-> flags, type, max_elements, etc.
 
-Yeah. Probably a good idea to provide convenience functions for this in
-libbpf (split out the existing code and make it more general?). Then we
-can also use that for the test in the map pinning code :)
+> Now queued up, I'll push out -rc2 versions with this fix.
 
--Toke
+Results from Linaro=E2=80=99s test farm.
+Regressions detected on i386.
 
+i386 build failed on 4.19 and 4.14
+
+In function 'setup_cpu_entry_area_ptes',
+    inlined from 'setup_cpu_entry_areas' at arch/x86/mm/cpu_entry_area.c:20=
+9:2:
+include/linux/compiler.h:348:38: error: call to
+'__compiletime_assert_192' declared with attribute error: BUILD_BUG_ON
+failed: (CPU_ENTRY_AREA_PAGES+1)*PAGE_SIZE !=3D CPU_ENTRY_AREA_MAP_SIZE
+  _compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+                                      ^
+include/linux/compiler.h:329:4: note: in definition of macro
+'__compiletime_assert'
+    prefix ## suffix();    \
+    ^~~~~~
+include/linux/compiler.h:348:2: note: in expansion of macro
+'_compiletime_assert'
+  _compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+  ^~~~~~~~~~~~~~~~~~~
+include/linux/build_bug.h:45:37: note: in expansion of macro
+'compiletime_assert'
+ #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+                                     ^~~~~~~~~~~~~~~~~~
+
+Bisection points to "x86/cpu_entry_area: Add guard page for entry
+stack on 32bit" (e50622b4a1, also present in 4.14.y as 880a98c339).
+
+
+Summary
+------------------------------------------------------------------------
+
+kernel: 4.19.87-rc2
+git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
+le-rc.git
+git branch: linux-4.19.y
+git commit: 63633b307be0161e7bd6f854a28d7d9fa05f69ef
+git describe: v4.19.86-309-g63633b307be0
+Test details: https://qa-reports.linaro.org/lkft/linux-stable-rc-4.19-oe/bu=
+ild/v4.19.86-309-g63633b307be0
+
+Regressions (compared to build v4.19.86)
+------------------------------------------------------------------------
+
+i386:
+  build:
+    * build_process
+
+
+No fixes (compared to build v4.19.86)
+
+
+Ran 18913 total tests in the following environments and test suites.
+
+Environments
+--------------
+- dragonboard-410c - arm64
+- hi6220-hikey - arm64
+- i386
+- juno-r2 - arm64
+- qemu_arm
+- qemu_arm64
+- qemu_x86_64
+- x15 - arm
+- x86_64
+
+Test Suites
+-----------
+* build
+* install-android-platform-tools-r2600
+* kselftest
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-cpuhotplug-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* perf
+* spectre-meltdown-checker-test
+* v4l2-compliance
+* ltp-fs-tests
+* network-basic-tests
+* kvm-unit-tests
+* ltp-open-posix-tests
+* ssuite
+* kselftest-vsyscall-mode-native
+* kselftest-vsyscall-mode-none
+
+--=20
+Linaro LKFT
+https://lkft.linaro.org
