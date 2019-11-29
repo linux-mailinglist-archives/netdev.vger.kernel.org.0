@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4CC10D72B
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 15:40:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341EC10D7ED
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 16:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbfK2Oj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 09:39:59 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:55103 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727011AbfK2Oj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 09:39:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575038398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FfyXChrBe1vZ1PcTn0iTJTc7p7Xm2eml7LrBbaxtCas=;
-        b=h2Z4p+9lzt83uKoRyK69/duN2d7B7CCKGflpZEyTTgo2nkoNVLD+di6KXGhOg32GO96F2h
-        Xumr+7698f3KvT5WzKmOO6+3xmwvcMJA1HKu+d0tsv8D5x9S4oyoflSiYjyBk7l8nZUxNS
-        hrmmNIAbDiGoaYa0qcZ616O+6ZpjHQQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-43-frV0228iPLGX0XOTTtzT5g-1; Fri, 29 Nov 2019 09:39:55 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A06A9800D41;
-        Fri, 29 Nov 2019 14:39:53 +0000 (UTC)
-Received: from elisabeth (ovpn-200-40.brq.redhat.com [10.40.200.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 939A4600C8;
-        Fri, 29 Nov 2019 14:39:51 +0000 (UTC)
-Date:   Fri, 29 Nov 2019 15:39:45 +0100
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, shuah@kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH] selftests: pmtu: use -oneline for ip route list cache
-Message-ID: <20191129153945.03836fea@elisabeth>
-In-Reply-To: <20191128185806.23706-1-cascardo@canonical.com>
-References: <20191128185806.23706-1-cascardo@canonical.com>
-Organization: Red Hat
+        id S1726987AbfK2Pii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 10:38:38 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53462 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726608AbfK2Pii (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 10:38:38 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iai0b-0000SR-7F; Fri, 29 Nov 2019 16:16:37 +0100
+Received: from [2a02:1205:507e:bf80:bef8:7f66:49c8:72e5] (helo=pc-11.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iai0a-00026b-V5; Fri, 29 Nov 2019 16:16:36 +0100
+Subject: Re: [PATCH bpf] bpf: force .BTF section start to zero when dumping
+ from vmlinux
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20191127225759.39923-1-sdf@google.com>
+ <5ddf4ef366a69_3c082aca725cc5bcbb@john-XPS-13-9370.notmuch>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a727a688-2555-b7e3-ab29-43f46a3c3e52@iogearbox.net>
+Date:   Fri, 29 Nov 2019 16:16:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: frV0228iPLGX0XOTTtzT5g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <5ddf4ef366a69_3c082aca725cc5bcbb@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25648/Fri Nov 29 10:44:54 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, 28 Nov 2019 15:58:06 -0300
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com> wrote:
-
-> Some versions of iproute2 will output more than one line per entry, which
-> will cause the test to fail, like:
+On 11/28/19 5:37 AM, John Fastabend wrote:
+> Stanislav Fomichev wrote:
+>> While trying to figure out why fentry_fexit selftest doesn't pass for me
+>> (old pahole, broken BTF), I found out that my latest patch can break vmlinux
+>> .BTF generation. objcopy preserves section start when doing --only-section,
+>> so there is a chance (depending on where pahole inserts .BTF section) to
+>> have leading empty zeroes. Let's explicitly force section offset to zero.
+>>
+>> Before:
+>> $ objcopy --set-section-flags .BTF=alloc -O binary \
+>> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
+>> $ xxd .btf.vmlinux.bin | head -n1
+>> 00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+>>
+>> After:
+>> $ objcopy --change-section-address .BTF=0 \
+>> 	--set-section-flags .BTF=alloc -O binary \
+>> 	--only-section=.BTF vmlinux .btf.vmlinux.bin
+>> $ xxd .btf.vmlinux.bin | head -n1
+>> 00000000: 9feb 0100 1800 0000 0000 0000 80e1 1c00  ................
+>>            ^BTF magic
+>>
+>> As part of this change, I'm also dropping '2>/dev/null' from objcopy
+>> invocation to be able to catch possible other issues (objcopy doesn't
+>> produce any warnings for me anymore, it did before with --dump-section).
 > 
-> TEST: ipv6: list and flush cached exceptions                        [FAIL]
->   can't list cached exceptions
+> Agree dropping /dev/null seems like a good choice. Otherwise seems reasonable
+> to me.
 > 
-> That happens, for example, with iproute2 4.15.0. When using the -oneline
-> option, this will work just fine:
-> 
-> TEST: ipv6: list and flush cached exceptions                        [ OK ]
-> 
-> This also works just fine with a more recent version of iproute2, like
-> 5.4.0.
-> 
-> For some reason, two lines are printed for the IPv4 test no matter what
-> version of iproute2 is used. Use the same -oneline parameter there instead
-> of counting the lines twice.
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-Thanks, it looks definitely more robust this way.
+Could reproduce as well:
 
-Fixes: b964641e9925 ("selftests: pmtu: Make list_flush_ipv6_exception test more demanding")
+root@apoc:~/bpf# xxd .btf.vmlinux.bin.old | head -n1                   (original)
+00000000: 9feb 0100 1800 0000 0000 0000 5088 2000  ............P. .
 
-> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+root@apoc:~/bpf# ls -l .btf.vmlinux.bin.old
+-rw-r--r-- 1 root root 3439882 Nov 29 15:59 .btf.vmlinux.bin.old
 
-Acked-by: Stefano Brivio <sbrivio@redhat.com>
 
--- 
-Stefano
+root@apoc:~/bpf# xxd .btf.vmlinux.bin.new-buggy | head -n1             ('bpf: Support pre-2.25-binutils objcopy for vmlinux BTF')
+00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
 
+root@apoc:~/bpf# ls -l .btf.vmlinux.bin.new-buggy
+-rwxr-xr-x 1 root root 45705482 Nov 29 16:01 .btf.vmlinux.bin.new-buggy
+
+
+root@apoc:~/bpf# xxd .btf.vmlinux.bin.new-fixed | head -n1             ('bpf: Force .BTF section start to zero when dumping from vmlinux')
+00000000: 9feb 0100 1800 0000 0000 0000 5088 2000  ............P. .
+
+root@apoc:~/bpf# ls -l .btf.vmlinux.bin.new-fixed
+-rwxr-xr-x 1 root root 3439882 Nov 29 16:02 .btf.vmlinux.bin.new-fixed
+
+
+root@apoc:~/bpf# diff .btf.vmlinux.bin.old .btf.vmlinux.bin.new-buggy
+Binary files .btf.vmlinux.bin.old and .btf.vmlinux.bin.new-buggy differ
+
+root@apoc:~/bpf# diff .btf.vmlinux.bin.old .btf.vmlinux.bin.new-fixed
+root@apoc:~/bpf#
+
+
+Applied, thanks!
