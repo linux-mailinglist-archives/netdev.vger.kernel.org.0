@@ -2,130 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C80C10D945
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 18:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6621310D98C
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 19:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727234AbfK2R6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 12:58:52 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:58644 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbfK2R6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 12:58:52 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xATHwltV058119;
-        Fri, 29 Nov 2019 11:58:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575050327;
-        bh=zw3/H6QkElTXo6jVuCmTPMcqTN3zsUIuzuy9J4YYVWA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=uLdsnhCaZR5O3m31XcK5d6zbqjOkZ3Q21VrPuG0DgnLwmNzvkMVRAWMmGRWiUELUT
-         uEWym6cNl9kbKA2+CoN6zcngwpw9M2t7faEfIRySyFe0gveUmzGQsgYOEfhhWezygP
-         gVWDgzJaBqgjrlv1sbkZWpUXG44ovrv8S/RyV3ZI=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xATHwlnF027393;
-        Fri, 29 Nov 2019 11:58:47 -0600
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 29
- Nov 2019 11:58:47 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 29 Nov 2019 11:58:47 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xATHwi1t101026;
-        Fri, 29 Nov 2019 11:58:45 -0600
-Subject: Re: [PATCH] net: ethernet: ti: ale: ensure vlan/mdb deleted when no
- members
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Sekhar Nori <nsekhar@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>
-References: <20191127155905.22921-1-grygorii.strashko@ti.com>
- <20191128082127.GA16359@apalos.home> <20191128093804.GA18633@apalos.home>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <9068bff5-1542-f19a-e947-3b0be332e8e5@ti.com>
-Date:   Fri, 29 Nov 2019 19:58:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727128AbfK2STS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 13:19:18 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:45256 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727107AbfK2STS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 13:19:18 -0500
+Received: by mail-yw1-f68.google.com with SMTP id j137so11244636ywa.12
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:19:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HF+fjTjv7Oq23CsonP++AGYWtN5qhnREJzjOYelF2OY=;
+        b=PRY58aJLkO3/RkCMGiQ3dl4wqc+vEkLpJZtthcuGZG42ftGDSMUEBxUn51GbPQHvvx
+         u/ctenpUBasOPie5A5cjep+xgmzChNfD8FAkGjAtvoruwrMO4vRPzwgi+FiWxSiqvUIA
+         2RfUQXGm9lnvhhfSA+AZhfMyYaAzx7Jgo8rFh4mQBaWIAPtQtv11Hp4+K3dA2l3Zo+bX
+         1BzKzyxv/5YTMnDHyHPyVgrTohk+R3L3+S/vaK/FiSjUTc3fcGDMf4ucqpLjDXiJ5lUS
+         LDT6/KK5QRjiULwA2vyEM6VWm6VkG2cLU47pFihtYAzK/koXXjDqmYZXxhl3d0EgmJgU
+         3vQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HF+fjTjv7Oq23CsonP++AGYWtN5qhnREJzjOYelF2OY=;
+        b=QXiy56UvV4VXFniKml860P9aIoMFn472DCiM+sMPODNbaOr4eDFpG22AUe/G1uN2qt
+         OF3MR2j3jeu4fIdimYvoXEO3BW1QLCYWqafNHO70/h7Uf9R3dJtn8Viie0vaQudaqF5f
+         jQF7iM92qK12FuqZ1cv34ICWKWXdn0HPPzudgG6Yravr0x15emuhBWjG7asOahxGdTP+
+         80oQt6xQ2g8ukOobVyyU46qWK22Rd5fuKH/rDqENAv3X2HjCvle78IfH57HrOkokQGXi
+         Lv+rQS45Yd80agxrCFYNeZFHwVPNdRHSG6x3Y/be25dP/dP2jo4Iwc/fZK85ZeqSmUxp
+         K0QA==
+X-Gm-Message-State: APjAAAUDJkDFNb4YelxGM7O+uCCm7zNNx6y16+XAQmhZOPDh8FTxyUcX
+        HM96oNz2BF5Hb5uuQ+/m9zsrxD/x
+X-Google-Smtp-Source: APXvYqzaVWiResD87rc12VqIjnCcK8BBYG6kYrC2+T7aTzwKKi2DpKbFk86oJ6JTIgbcYiGo82IgfA==
+X-Received: by 2002:a81:e11:: with SMTP id 17mr12083916ywo.3.1575051555112;
+        Fri, 29 Nov 2019 10:19:15 -0800 (PST)
+Received: from mail-yw1-f44.google.com (mail-yw1-f44.google.com. [209.85.161.44])
+        by smtp.gmail.com with ESMTPSA id d138sm2166349ywe.102.2019.11.29.10.19.13
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Nov 2019 10:19:13 -0800 (PST)
+Received: by mail-yw1-f44.google.com with SMTP id 192so3158697ywy.0
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 10:19:13 -0800 (PST)
+X-Received: by 2002:a0d:e8ca:: with SMTP id r193mr11109733ywe.64.1575051552361;
+ Fri, 29 Nov 2019 10:19:12 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191128093804.GA18633@apalos.home>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <cover.1573872263.git.martin.varghese@nokia.com>
+ <5acab9e9da8aa9d1e554880b1f548d3057b70b75.1573872263.git.martin.varghese@nokia.com>
+ <CA+FuTSeUGsWH-GR7N_N7PChaW4S6Hucmvo_1s_9bbisxz1eOAA@mail.gmail.com> <20191128162427.GB2633@martin-VirtualBox>
+In-Reply-To: <20191128162427.GB2633@martin-VirtualBox>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 29 Nov 2019 13:18:36 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSc1GBxnWgMSVPNxx1wndFmauvTd7r54dDV92PeNprouWA@mail.gmail.com>
+Message-ID: <CA+FuTSc1GBxnWgMSVPNxx1wndFmauvTd7r54dDV92PeNprouWA@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 1/2] UDP tunnel encapsulation module for
+ tunnelling different protocols like MPLS,IP,NSH etc.
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, corbet@lwn.net,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
+        martin.varghese@nokia.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 28, 2019 at 11:25 AM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
+>
+> On Mon, Nov 18, 2019 at 12:23:09PM -0500, Willem de Bruijn wrote:
+> > On Sat, Nov 16, 2019 at 12:45 AM Martin Varghese
+> > <martinvarghesenokia@gmail.com> wrote:
+> > >
+> > > From: Martin Varghese <martin.varghese@nokia.com>
+> > >
+> > > The Bareudp tunnel module provides a generic L3 encapsulation
+> > > tunnelling module for tunnelling different protocols like MPLS,
+> > > IP,NSH etc inside a UDP tunnel.
+> > >
+> > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
 
+> > > +static int bareudp_fill_metadata_dst(struct net_device *dev,
+> > > +                                    struct sk_buff *skb)
+> > > +{
+> > > +       struct ip_tunnel_info *info = skb_tunnel_info(skb);
+> > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+> > > +
+> > > +       if (ip_tunnel_info_af(info) == AF_INET) {
+> > > +               struct rtable *rt;
+> > > +               struct flowi4 fl4;
+> > > +
+> > > +               rt = iptunnel_get_v4_rt(skb, dev, bareudp->net, &fl4, info,
+> > > +                                       use_cache);
+> > > +               if (IS_ERR(rt))
+> > > +                       return PTR_ERR(rt);
+> > > +
+> > > +               ip_rt_put(rt);
+> > > +               info->key.u.ipv4.src = fl4.saddr;
+> > > +#if IS_ENABLED(CONFIG_IPV6)
+> > > +       } else if (ip_tunnel_info_af(info) == AF_INET6) {
+> > > +               struct dst_entry *dst;
+> > > +               struct flowi6 fl6;
+> > > +               struct bareudp_sock *bs6 = rcu_dereference(bareudp->sock);
+> > > +
+> > > +               dst = ip6tunnel_get_dst(skb, dev, bareudp->net, bs6->sock, &fl6,
+> > > +                                       info, use_cache);
+> > > +               if (IS_ERR(dst))
+> > > +                       return PTR_ERR(dst);
+> > > +
+> > > +               dst_release(dst);
+> > > +               info->key.u.ipv6.src = fl6.saddr;
+> > > +#endif
+> > > +       } else {
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       info->key.tp_src = udp_flow_src_port(bareudp->net, skb,
+> > > +                                            bareudp->sport_min,
+> > > +                                            USHRT_MAX, true);
+> > > +       info->key.tp_dst = bareudp->conf.port;
+> > > +       return 0;
+> > > +}
+> >
+> > This can probably all be deduplicated with geneve_fill_metadata_dst
+> > once both use iptunnel_get_v4_rt.
+> >
+>
+> Do you have any preference of file to keep the common function
 
-On 28/11/2019 11:38, Ilias Apalodimas wrote:
-> On Thu, Nov 28, 2019 at 10:21:27AM +0200, Ilias Apalodimas wrote:
->> On Wed, Nov 27, 2019 at 05:59:05PM +0200, Grygorii Strashko wrote:
->>> The recently updated ALE APIs cpsw_ale_del_mcast() and
->>> cpsw_ale_del_vlan_modify() have an issue and will not delete ALE entry even
->>> if VLAN/mcast group has no more members. Hence fix it here and delete ALE
->>> entry if !port_mask.
->>>
->>> The issue affected only new cpsw switchdev driver.
->>>
->>> Fixes: e85c14370783 ("net: ethernet: ti: ale: modify vlan/mdb api for switchdev")
->>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>> ---
->>>   drivers/net/ethernet/ti/cpsw_ale.c | 14 ++++++++++----
->>>   1 file changed, 10 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
->>> index 929f3d3354e3..a5179ecfea05 100644
->>> --- a/drivers/net/ethernet/ti/cpsw_ale.c
->>> +++ b/drivers/net/ethernet/ti/cpsw_ale.c
->>> @@ -396,12 +396,14 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
->>>   	if (port_mask) {
->>>   		mcast_members = cpsw_ale_get_port_mask(ale_entry,
->>>   						       ale->port_mask_bits);
->>> -		mcast_members &= ~port_mask;
->>> -		cpsw_ale_set_port_mask(ale_entry, mcast_members,
->>> +		port_mask = mcast_members & ~port_mask;
->>> +	}
->>> +
->>> +	if (port_mask)
->>> +		cpsw_ale_set_port_mask(ale_entry, port_mask,
->>>   				       ale->port_mask_bits);
->>> -	} else {
->>> +	else
->>>   		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
->>> -	}
->>
->> The code assumed calls cpsw_ale_del_mcast() should have a port mask '0' when
->> deleting an entry. Do we want to have 'dual' functionality on it?
->> This will delete mcast entries if port mask is 0 or port mask matches exactly
->> what's configured right?
->>
-> 
-> Deleting the ALE entry if the port_mask matches execlty what's configured makes
-> sense. Can we change it to something that doesn't change the function argument?
-> 
-> I think something like:
-> mcast_members = 0;
-> if (port_mask) {
-> 	mcast_members = cpsw_ale_get_port_mask(ale_entry,
-> 											ale->port_mask_bits);
-> 	mcast_members &= ~port_mask;
-> }
-> if (mcast_members)
-> 	cpsw_ale_set_port_mask(ale_entry, mcast_members, ....)
-> else
-> 	cpsw_ale_set_entry_type(....)
-> 
-> is more readable?
-> 
-
-Thank you. I've sent v2.	
-
-
--- 
-Best regards,
-grygorii
+Perhaps net/ipv4/udp_tunnel.c
