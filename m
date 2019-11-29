@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D561910D4C3
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 12:27:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0B110D525
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 12:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbfK2L1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 06:27:01 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:51687 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726702AbfK2L1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 06:27:01 -0500
-Received: by mail-il1-f198.google.com with SMTP id x2so24419125ilk.18
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 03:27:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1R/eyR91b2qzrd9oYXwpA7kVnLlS3eW/CPo2xuZ2tZs=;
-        b=ccxgzbGFvK4cOKKHDmPe8eDBhLSU3/OT8xnuIqf5nCsuCVSHBdatYKSgc9yfGVmSqm
-         tskia/ZRCdwY6ZeTzO4VUCLiySY3DA367Kmblb/FlxMVr5bBo5HIsLz/WvWRClDVDCY9
-         BWQxXvGmSbkJoyDnM+0dY5U52W9O0TLwAUDCZJJz26aIU5OjCBDXttDWPM6PBybeiHKB
-         6Hju8xZG7wsWlaDbr2VYFWx7lOqQ+T0oGPZgYyLU4n4F2mzxwy+bUSV9sI62dHBCKVv9
-         kTDDg4qzjHFA1fC0jcS8VQOQ0SeLV3od9CAi3w7lAtBcURA5EPO+W4BUkEODzvMcsQgh
-         KxuA==
-X-Gm-Message-State: APjAAAXi7XCh96Bw0ufzNvta0BxUo/02aBc06Mv7s+fF2nI/+cpalisQ
-        npI1MTpfENXW6reSaS/m6YEjSFun2dCgyosbUa4947uItptH
-X-Google-Smtp-Source: APXvYqx2WOuve6jGICcXm51Pk+hIsPcOb1OO3yj2Zia1Hs0+ZR99DkvW/INJgLvPm6G6NaW5WS+Y11Kyq0HaFv6HhYvElj2iUAAo
+        id S1726806AbfK2Lrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 06:47:53 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:32947 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725892AbfK2Lrx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Nov 2019 06:47:53 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id c22c92ed;
+        Fri, 29 Nov 2019 10:53:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=lEpJtkHaOd7GowBKrJ3B/YN/11g=; b=mrf//5
+        +HFMqsM3JXCbIOHBw3KhhWGga9oJMyfgfI+imBai1aZ7nYIthunm8IpU25u+xF7g
+        iYWs0/dgPCpUvQMjrfpTa/fOOZRbnvd4isoem3nfDvQQSCa2V8L/p2aAle61ckeG
+        hZ97l78wfyjw7ZbYEYpQlz7ZvagvKj41VO6sC+ateR7cI52s/2mNDun2dpHLZd8J
+        L9zY5otkIEQkk2Zt0NhaRwM5WPIBNyrwxA5/oqDEj2OrzDrQppWJAOoYMPd+Y3q/
+        ayDgc9QNk5Lhfv60tpheEccWFaqF4qFGNHo50OA1h2qnZ8unAymixrUjpfTq6TZF
+        FWNurdHM1n71U4Kg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b4d24bf9 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Fri, 29 Nov 2019 10:53:43 +0000 (UTC)
+Received: by mail-ot1-f50.google.com with SMTP id m15so24667103otq.7;
+        Fri, 29 Nov 2019 03:47:49 -0800 (PST)
+X-Gm-Message-State: APjAAAXMsQoKmPI+ngWxStbSI6PgjhaGbMLNKy1q7p3usHjaZ3RfJCt2
+        +KIotTigQPcr7fvdIuUMA7I/n2SMlQ4oN4vvTXE=
+X-Google-Smtp-Source: APXvYqx3Q7DMiecStDC9+rNFKGUSNsMhh7Ix+sa+yiMKb6vcL+XWPNQk0WiF1NbH1qs0r+XJ8CX2Ds+lWDWNbQvpsSQ=
+X-Received: by 2002:a9d:1e88:: with SMTP id n8mr3305587otn.369.1575028069075;
+ Fri, 29 Nov 2019 03:47:49 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:c525:: with SMTP id m5mr52192194ili.91.1575026820788;
- Fri, 29 Nov 2019 03:27:00 -0800 (PST)
-Date:   Fri, 29 Nov 2019 03:27:00 -0800
-In-Reply-To: <20191129104156.GH29518@localhost>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002a380f05987a8239@google.com>
-Subject: Re: WARNING: ODEBUG bug in rsi_probe
-From:   syzbot <syzbot+1d1597a5aa3679c65b9f@syzkaller.appspotmail.com>
-To:     amitkarwar@gmail.com, andreyknvl@google.com, davem@davemloft.net,
-        johan@kernel.org, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        siva8118@gmail.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20191127112643.441509-1-Jason@zx2c4.com> <20191128.133023.1503723038764717212.davem@davemloft.net>
+ <20191129033205.GA67257@zx2c4.com> <20191128.222735.1430087391284485253.davem@davemloft.net>
+In-Reply-To: <20191128.222735.1430087391284485253.davem@davemloft.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 29 Nov 2019 12:47:37 +0100
+X-Gmail-Original-Message-ID: <CAHmME9p8cxUtZhegkNrCF+GgREKQA=5LQ_km35qopC-2SKtJaw@mail.gmail.com>
+Message-ID: <CAHmME9p8cxUtZhegkNrCF+GgREKQA=5LQ_km35qopC-2SKtJaw@mail.gmail.com>
+Subject: Re: [PATCH v1] net: WireGuard secure network tunnel
+To:     David Miller <davem@davemloft.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Nov 29, 2019 at 7:27 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> Date: Fri, 29 Nov 2019 04:32:05 +0100
+>
+> > I'm not a huge fan of doing manual skb surgery either. The annoying
+> > thing here is that skb_gso_segment returns a list of skbs that's
+> > terminated by the last one's next pointer being NULL. I assume it's this
+> > way so that the GSO code doesn't have to pass a head around.
+>
+> Sorry, I missed that this was processing a GSO list which doesn't use
+> double linked list semantics.
+>
+> So ignore my feedback on this one :-)
 
-syzbot has tested the proposed patch and the reproducer did not trigger  
-crash:
-
-Reported-and-tested-by:  
-syzbot+1d1597a5aa3679c65b9f@syzkaller.appspotmail.com
-
-Tested on:
-
-commit:         d34f9519 usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c73d1bb5aeaeae20
-dashboard link: https://syzkaller.appspot.com/bug?extid=1d1597a5aa3679c65b9f
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=122808a6e00000
-
-Note: testing is done by a robot and is best-effort only.
+Okay, no problem. I'll submit some global tree-wide cleanup patches in
+the way of a helper macro sometime after all the wireguard dust
+settles, then, and we can assess that separately.
