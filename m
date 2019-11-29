@@ -2,55 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 510BC10D02D
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 01:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A09E10D0A6
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 04:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbfK2AZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Nov 2019 19:25:33 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48930 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726610AbfK2AZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Nov 2019 19:25:32 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iaU65-00004y-A8; Fri, 29 Nov 2019 01:25:21 +0100
-Received: from [178.197.249.15] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iaU65-0003VS-21; Fri, 29 Nov 2019 01:25:21 +0100
-Subject: Re: [PATCH bpf] bpf: Fix build in minimal configurations
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     rdunlap@infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-References: <20191128043508.2346723-1-ast@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <775e2e54-f2f8-18b6-444d-27699b7666ff@iogearbox.net>
-Date:   Fri, 29 Nov 2019 01:25:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726881AbfK2DcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Nov 2019 22:32:10 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:50913 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726764AbfK2DcK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Nov 2019 22:32:10 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 261fdee4;
+        Fri, 29 Nov 2019 02:38:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=date:from:to
+        :cc:subject:message-id:references:mime-version:content-type
+        :in-reply-to; s=mail; bh=QnhIEK3n2PL2veutrTDB1byHOuI=; b=XWR//nI
+        pUhfZoUNt+GgvwJFxvAY0gNHPOXOUsdaCoQPsZX7gInLGeIkZDSlga06X6SnEFWp
+        GYJxTuWwbiLsN8bMhbiftR3C+4WDJUebO2e33TpH/7fKUmAS1K57ulmd5k/GWaHh
+        zA2rAcofYYiaSSgGdlGpaUV01mZQtEZhyiv7xhvMfsXqrtRd14FaIllBmyyGzYTq
+        eWcuIGkWvO1laLhLfNoB2KDaA+nKokoyl4MdkccjUnP4Vqe9wmwC3J7ANaLRZinn
+        7jbxT8/M318CcQq6g5/VV328oJac7dNU0RAwO71ghpCdfvHw15StHblWVRWQiwn4
+        gxUMZKPbxvkHpSA==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 44972ea7 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Fri, 29 Nov 2019 02:38:04 +0000 (UTC)
+Date:   Fri, 29 Nov 2019 04:32:05 +0100
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, torvalds@linux-foundation.org,
+        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v1] net: WireGuard secure network tunnel
+Message-ID: <20191129033205.GA67257@zx2c4.com>
+References: <20191127112643.441509-1-Jason@zx2c4.com>
+ <20191128.133023.1503723038764717212.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20191128043508.2346723-1-ast@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25647/Thu Nov 28 10:49:14 2019)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191128.133023.1503723038764717212.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/28/19 5:35 AM, Alexei Starovoitov wrote:
-> Some kconfigs can have BPF enabled without a single valid program type.
-> In such configurations the build will fail with:
-> ./kernel/bpf/btf.c:3466:1: error: empty enum is invalid
-> 
-> Fix it by adding unused value to the enum.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Hey Dave,
 
-Applied, thanks!
+On Thu, Nov 28, 2019 at 01:30:23PM -0800, David Miller wrote:
+> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> Date: Wed, 27 Nov 2019 12:26:43 +0100
+> 
+> > +	do {
+> > +		next = skb->next;
+> 
+> I've been trying desperately to remove all direct references to the SKB list
+> implementation details so that we can convert it over to list_head.  This
+> means no direct references to skb->next nor skb->prev.
+> 
+> Please rearrange this using appropriate helpers and abstractions from skbuff.h
+
+I'm not a huge fan of doing manual skb surgery either. The annoying
+thing here is that skb_gso_segment returns a list of skbs that's
+terminated by the last one's next pointer being NULL. I assume it's this
+way so that the GSO code doesn't have to pass a head around. I went to
+see what other drivers are doing to deal with the return value of
+skb_gso_segment, and found that every place without fail does pretty
+much the same thing as me, whether it's wifi drivers, ethernet drivers,
+qdiscs, ipsec, etc. Here's (one of) IPsec's usage, for example:
+
+	segs = skb_gso_segment(skb, 0);
+	kfree_skb(skb);
+	if (IS_ERR(segs))
+		return PTR_ERR(segs);
+	if (segs == NULL)
+		return -EINVAL;
+
+	do {
+		struct sk_buff *nskb = segs->next;
+		int err;
+
+		skb_mark_not_on_list(segs);
+		err = xfrm_output2(net, sk, segs);
+
+		if (unlikely(err)) {
+			kfree_skb_list(nskb);
+			return err;
+		}
+
+		segs = nskb;
+	} while (segs);
+
+Given that so much code does the same skb surgery, this seems like it
+would be a good opportunity for actually adding the right helper /
+abstraction around this. If that sounds good to you, I'll send a commit
+adding something like the below, along with fixing up a couple of the
+more straight-forward existing places to use the new helper:
+
+#define skb_walk_null_list_safe(first, skb, next)                          \
+        for (skb = first, next = skb->next; skb;                           \
+             skb = next, next = skb ? skb->next : NULL)
+
+Does this sound good to you? If so, would you like this as lead-up
+commits to WireGuard, or just a new independent series all together?
+
+Regards,
+Jason
