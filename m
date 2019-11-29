@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7676F10D251
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8C110D256
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:19:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbfK2IQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 03:16:10 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:39782 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726604AbfK2IQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:16:10 -0500
-Received: by mail-io1-f70.google.com with SMTP id u13so17434944iol.6
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:16:08 -0800 (PST)
+        id S1726819AbfK2ITK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 03:19:10 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:55924 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726604AbfK2ITJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:19:09 -0500
+Received: by mail-il1-f199.google.com with SMTP id p21so16706879ilk.22
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:19:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=AwcCGb7KsCpa79UEtOA464CD/IKJAmHuJiBH6WO8loY=;
-        b=n1QOSH5jOGQ87NYBIEQsmrRiUU1amUUI0phk9Tp0PuOuzEZfuYodMp4eMAhwIt5muy
-         XK0mjTN24eI0Vjvr0M43lFlKjYIkrsIcjRoGEZModTgVaMFR6slJSDNu+ox3Ax4kwmxc
-         /xB/7YDQG00jSGRL8xk8MBSecsse1C15JKq3pf5I8k2QNs6SvdKrmc0YkjhvTyvEiApj
-         c+HVta+Yw9t8pB7GvfnDcZu4igKsPou9ZzIKqLOKTtde66uvKqtLvLdxL+lOklP7uUtQ
-         GBX+esVLkipqMtDPZX5JFoK46XAcByaiByePK3BQqZC91YRaWvyAUl9k1iHI5TvxD67R
-         rVxQ==
-X-Gm-Message-State: APjAAAUO1LcIeqfBuZGKX0YhLHDJIuGB2K1isxrkkI/JwT5LfknukDz0
-        D53N4cRJth/4AyCLlgLTVJc0Rd8t5pbh0rel5bqqXBcQK1Qa
-X-Google-Smtp-Source: APXvYqwFHk6mxg2Lu7CRNOnD1s8Ows1XQz2PxL+0+NcYkpVSNXDEpE1frZBQ2NJoHouaLAxAdZqR3W2tJb7p9vHct1Hh6EvHQeFH
+        bh=E5gKeVgtMrp7If0kAH9nlbsGZrXj2cLc/13fs8BlcyY=;
+        b=IZGVs2tK8AVcl1TenW2joe0CZuvY3CppP4/Z4mRkrsVCIukW3h12vUMxE4LvbF4hbh
+         yURcpZPgwCeaic+6g8JhJYjEPPkl2FdyyJwebno/zDqMXdnZ7yT/k17IXiwEJIV47N+r
+         K7ggHlh70a3oPOY/UstSgJOjRUj+QzUQEI3hUTdLvmj24hVcM9sLC+uH4JuggphKB4Ok
+         URJrrJHIXPE15BFV262ibKVIX+Q0A6E8JoYzRUF7GeHDKKOknw20SEszJEkl+rOidl5+
+         K5H/SvNpaoC7CwEEWa9McDDnzFThwhQfUQbsrkwa6CeomiQhgQzMph5LKiUNKlN8Yg0k
+         7O5g==
+X-Gm-Message-State: APjAAAWqSK0r5AaJ6A0vaa/jsP//yhIvrjIVXr+ZkKKi26UAAb1aokc9
+        Izff25ggd/KvtPX6Di4LHTUMcqr6tz8Jueldv4iGxXuxUSiI
+X-Google-Smtp-Source: APXvYqy4pHLWLogIRjyJjyaAyud0GMGq8Kjm8MfuVskkdAlrCtsM4Wm0yFekqGAUXGYs71702OegRnLrg7/eFH8LiD1nncjWqKg0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9b08:: with SMTP id y8mr7598324ion.108.1575015367819;
- Fri, 29 Nov 2019 00:16:07 -0800 (PST)
-Date:   Fri, 29 Nov 2019 00:16:07 -0800
+X-Received: by 2002:a02:9503:: with SMTP id y3mr13025084jah.14.1575015548603;
+ Fri, 29 Nov 2019 00:19:08 -0800 (PST)
+Date:   Fri, 29 Nov 2019 00:19:08 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000083c858059877d77c@google.com>
-Subject: KASAN: use-after-free Write in nr_release
-From:   syzbot <syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
+Message-ID: <0000000000004a5415059877e248@google.com>
+Subject: KASAN: slab-out-of-bounds Read in __xfrm_decode_session
+From:   syzbot <syzbot+6883e878b7a8f2efeeb2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,70 +48,68 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    81b6b964 Merge branch 'master' of git://git.kernel.org/pub..
+HEAD commit:    cbafe18c Merge branch 'akpm' (patches from Andrew)
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1553197ae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6349516b24252b37
-dashboard link: https://syzkaller.appspot.com/bug?extid=caa188bdfc1eeafeb418
+console output: https://syzkaller.appspot.com/x/log.txt?x=12f20ca3600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cb5c74e7f328d20b
+dashboard link: https://syzkaller.appspot.com/bug?extid=6883e878b7a8f2efeeb2
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
+Reported-by: syzbot+6883e878b7a8f2efeeb2@syzkaller.appspotmail.com
 
 ==================================================================
-BUG: KASAN: use-after-free in atomic_fetch_add  
-include/asm-generic/atomic-instrumented.h:111 [inline]
-BUG: KASAN: use-after-free in refcount_add include/linux/refcount.h:188  
-[inline]
-BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:228  
-[inline]
-BUG: KASAN: use-after-free in sock_hold include/net/sock.h:648 [inline]
-BUG: KASAN: use-after-free in nr_release+0x65/0x4c0  
-net/netrom/af_netrom.c:498
-Write of size 4 at addr ffff88805abb0080 by task syz-executor.1/8686
+BUG: KASAN: slab-out-of-bounds in decode_session6  
+net/xfrm/xfrm_policy.c:3390 [inline]
+BUG: KASAN: slab-out-of-bounds in __xfrm_decode_session+0x1cfb/0x2e90  
+net/xfrm/xfrm_policy.c:3482
+Read of size 1 at addr ffff8880915d1b49 by task kworker/0:0/16350
 
-CPU: 1 PID: 8686 Comm: syz-executor.1 Not tainted 5.4.0-syzkaller #0
+CPU: 0 PID: 16350 Comm: kworker/0:0 Not tainted 5.3.0+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
+Workqueue: events rt6_probe_deferred
 Call Trace:
   __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
   print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
   __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
   kasan_report+0x12/0x20 mm/kasan/common.c:634
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
-  atomic_fetch_add include/asm-generic/atomic-instrumented.h:111 [inline]
-  refcount_add include/linux/refcount.h:188 [inline]
-  refcount_inc include/linux/refcount.h:228 [inline]
-  sock_hold include/net/sock.h:648 [inline]
-  nr_release+0x65/0x4c0 net/netrom/af_netrom.c:498
-  __sock_release+0xce/0x280 net/socket.c:591
-  sock_close+0x1e/0x30 net/socket.c:1269
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:164
-  prepare_exit_to_usermode arch/x86/entry/common.c:195 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:278 [inline]
-  do_syscall_64+0x676/0x790 arch/x86/entry/common.c:304
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x414211
-Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 04 1b 00 00 c3 48  
-83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48  
-89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007ffdfe3cb280 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 000000000000000a RCX: 0000000000414211
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000009
-RBP: 0000000000000001 R08: 000000008135072a R09: ffffffffffffffff
-R10: 00007ffdfe3cb360 R11: 0000000000000293 R12: 000000000075c9a0
-R13: 000000000075c9a0 R14: 0000000000761a30 R15: 000000000075bf2c
+  __asan_report_load1_noabort+0x14/0x20 mm/kasan/generic_report.c:129
+  decode_session6 net/xfrm/xfrm_policy.c:3390 [inline]
+  __xfrm_decode_session+0x1cfb/0x2e90 net/xfrm/xfrm_policy.c:3482
+  xfrm_decode_session include/net/xfrm.h:1137 [inline]
+  vti_tunnel_xmit+0x277/0x17a0 net/ipv4/ip_vti.c:269
+  __netdev_start_xmit include/linux/netdevice.h:4420 [inline]
+  netdev_start_xmit include/linux/netdevice.h:4434 [inline]
+  xmit_one net/core/dev.c:3280 [inline]
+  dev_hard_start_xmit+0x1a3/0x9b0 net/core/dev.c:3296
+  sch_direct_xmit+0x372/0xc30 net/sched/sch_generic.c:313
+  qdisc_restart net/sched/sch_generic.c:376 [inline]
+  __qdisc_run+0x577/0x1a00 net/sched/sch_generic.c:384
+  __dev_xmit_skb net/core/dev.c:3537 [inline]
+  __dev_queue_xmit+0x169d/0x3720 net/core/dev.c:3842
+  dev_queue_xmit+0x18/0x20 net/core/dev.c:3906
+  neigh_direct_output+0x16/0x20 net/core/neighbour.c:1530
+  neigh_output include/net/neighbour.h:511 [inline]
+  ip6_finish_output2+0x1034/0x2550 net/ipv6/ip6_output.c:116
+  __ip6_finish_output+0x444/0xaa0 net/ipv6/ip6_output.c:142
+  ip6_finish_output+0x38/0x1f0 net/ipv6/ip6_output.c:152
+  NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+  ip6_output+0x235/0x7f0 net/ipv6/ip6_output.c:175
+  dst_output include/net/dst.h:436 [inline]
+  NF_HOOK include/linux/netfilter.h:305 [inline]
+  ndisc_send_skb+0xf29/0x14a0 net/ipv6/ndisc.c:505
+  ndisc_send_ns+0x3a9/0x850 net/ipv6/ndisc.c:647
+  rt6_probe_deferred+0xe3/0x1a0 net/ipv6/route.c:615
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-Allocated by task 8697:
+Allocated by task 3892:
   save_stack+0x23/0x90 mm/kasan/common.c:69
   set_track mm/kasan/common.c:77 [inline]
   __kasan_kmalloc mm/kasan/common.c:510 [inline]
@@ -119,20 +117,20 @@ Allocated by task 8697:
   kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
   __do_kmalloc mm/slab.c:3655 [inline]
   __kmalloc+0x163/0x770 mm/slab.c:3664
-  kmalloc include/linux/slab.h:561 [inline]
-  sk_prot_alloc+0x23a/0x310 net/core/sock.c:1603
-  sk_alloc+0x39/0xfd0 net/core/sock.c:1657
-  nr_create+0xb9/0x5e0 net/netrom/af_netrom.c:411
-  __sock_create+0x3ce/0x730 net/socket.c:1419
-  sock_create net/socket.c:1470 [inline]
-  __sys_socket+0x103/0x220 net/socket.c:1512
-  __do_sys_socket net/socket.c:1521 [inline]
-  __se_sys_socket net/socket.c:1519 [inline]
-  __x64_sys_socket+0x73/0xb0 net/socket.c:1519
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  kmalloc include/linux/slab.h:557 [inline]
+  tomoyo_realpath_from_path+0xcd/0x7b0 security/tomoyo/realpath.c:277
+  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+  tomoyo_path_number_perm+0x1dd/0x520 security/tomoyo/file.c:723
+  tomoyo_file_ioctl+0x23/0x30 security/tomoyo/tomoyo.c:335
+  security_file_ioctl+0x77/0xc0 security/security.c:1375
+  ksys_ioctl+0x57/0xd0 fs/ioctl.c:711
+  __do_sys_ioctl fs/ioctl.c:720 [inline]
+  __se_sys_ioctl fs/ioctl.c:718 [inline]
+  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Freed by task 8686:
+Freed by task 3892:
   save_stack+0x23/0x90 mm/kasan/common.c:69
   set_track mm/kasan/common.c:77 [inline]
   kasan_set_free_info mm/kasan/common.c:332 [inline]
@@ -140,43 +138,37 @@ Freed by task 8686:
   kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
   __cache_free mm/slab.c:3425 [inline]
   kfree+0x10a/0x2c0 mm/slab.c:3756
-  sk_prot_free net/core/sock.c:1640 [inline]
-  __sk_destruct+0x4fc/0x6f0 net/core/sock.c:1724
-  sk_destruct+0xd5/0x110 net/core/sock.c:1739
-  __sk_free+0xfb/0x360 net/core/sock.c:1750
-  sk_free+0x83/0xb0 net/core/sock.c:1761
-  sock_put include/net/sock.h:1729 [inline]
-  nr_release+0x3f4/0x4c0 net/netrom/af_netrom.c:532
-  __sock_release+0xce/0x280 net/socket.c:591
-  sock_close+0x1e/0x30 net/socket.c:1269
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:164
-  prepare_exit_to_usermode arch/x86/entry/common.c:195 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:278 [inline]
-  do_syscall_64+0x676/0x790 arch/x86/entry/common.c:304
+  tomoyo_realpath_from_path+0x1de/0x7b0 security/tomoyo/realpath.c:319
+  tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+  tomoyo_path_number_perm+0x1dd/0x520 security/tomoyo/file.c:723
+  tomoyo_file_ioctl+0x23/0x30 security/tomoyo/tomoyo.c:335
+  security_file_ioctl+0x77/0xc0 security/security.c:1375
+  ksys_ioctl+0x57/0xd0 fs/ioctl.c:711
+  __do_sys_ioctl fs/ioctl.c:720 [inline]
+  __se_sys_ioctl fs/ioctl.c:718 [inline]
+  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-The buggy address belongs to the object at ffff88805abb0000
-  which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 128 bytes inside of
-  2048-byte region [ffff88805abb0000, ffff88805abb0800)
+The buggy address belongs to the object at ffff8880915d0680
+  which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 1225 bytes to the right of
+  4096-byte region [ffff8880915d0680, ffff8880915d1680)
 The buggy address belongs to the page:
-page:ffffea00016aec00 refcount:1 mapcount:0 mapping:ffff8880aa400e00  
-index:0x0
-raw: 01fffc0000000200 ffffea00016eaa48 ffffea000276f1c8 ffff8880aa400e00
-raw: 0000000000000000 ffff88805abb0000 0000000100000001 0000000000000000
+page:ffffea0002457400 refcount:1 mapcount:0 mapping:ffff8880aa402000  
+index:0x0 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea0000d97208 ffffea00025a7b88 ffff8880aa402000
+raw: 0000000000000000 ffff8880915d0680 0000000100000001 0000000000000000
 page dumped because: kasan: bad access detected
 
 Memory state around the buggy address:
-  ffff88805abaff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff88805abb0000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff88805abb0080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                    ^
-  ffff88805abb0100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88805abb0180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8880915d1a00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff8880915d1a80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ffff8880915d1b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                               ^
+  ffff8880915d1b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff8880915d1c00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 ==================================================================
 
 
