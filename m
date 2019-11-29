@@ -2,87 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3907710D127
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 06:55:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B49E10D13C
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 07:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbfK2Fyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 00:54:55 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:37091 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbfK2Fyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 00:54:54 -0500
-Received: by mail-io1-f65.google.com with SMTP id k24so20511450ioc.4;
-        Thu, 28 Nov 2019 21:54:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jmqoLt1Ipq80GEdpA7uVx5mVDtS/SHGillzYT51kWkE=;
-        b=drRBrsLJwOsSDbcgTdjYnL5YhMtimm45cqMj6s4jIv1ZiQMoJ+n2QJ7Y4N2fpxng+k
-         Av+QFRIqa3MGfDJvB6fXNrrtHwh/kKJkEwpY9NxTP5WdivkgkRF61Ef6lL7lkGNhzDUn
-         mBh9Eabz7V+PMQcprEOS3wCgTBqMtOwzW53Da7vf+dbdon4HexOvCTcVAdFWAV/fyDQQ
-         KvrRpmTc4IPAcG2Rmqyz5DUUXcMHWsyn6PctBCfMdcRQtValX9jxUzw/OogRD1nIfNKC
-         zghJpMGqLmvnXVts6NHiYcNaN/WiKBs/svtV0BjUNRC61e+3CXOCi/kv/X5GG9ScEWIR
-         Wlww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jmqoLt1Ipq80GEdpA7uVx5mVDtS/SHGillzYT51kWkE=;
-        b=XdJU8TheBbhTC+up6Wx+DJOmJgBlo32F3IPJ3Jgaiq9PqdxKwBlUbYNdCUdyxKiZdq
-         bU+Rmg18OhpttAc91ViAheUjsFePQxBiRJcPY5Nmq/++aeOdUThqILzps7YATSnYsUeS
-         8V+c7HRA+zmgvyVv0louhi3/1l7HPzE/gqZauhPifxUFCf/7eRLCt7mB3HCZyvmW2eT0
-         kc10p3y8+UXkVC2BwszKfqOaaXPuEjVj+OKY/u1oXLNiG19uVfx+hsNIcNN/s2aaMLCP
-         jk0dh3W+vNUZ/Kt6dzr/vdVcplg+FmDs0MGqCNvqUhQK06WSgpO5iA6ucSxBpVzETqRx
-         gZ6w==
-X-Gm-Message-State: APjAAAVJCs9ifF4MWHI0cvs6P+gRJydiISXO03DjK/x6AG6bcZ3qMCTt
-        KRUlPRljM4cwcSuOM8+nExsg7TbsmzbiWfIwZ3E=
-X-Google-Smtp-Source: APXvYqwV3CFFzruKf9Fkvty9F4uglgcC+7qYiLkkXVZIkvaTCtnY+i383rzfNHnGK2g/uDxWCVCXSbrggK+AdFMZcrU=
-X-Received: by 2002:a02:a08:: with SMTP id 8mr8538761jaw.98.1575006893958;
- Thu, 28 Nov 2019 21:54:53 -0800 (PST)
+        id S1727118AbfK2GDM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Nov 2019 01:03:12 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:48099 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727047AbfK2GDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 01:03:11 -0500
+Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tip-bot2@linutronix.de>)
+        id 1iaZMi-0008I2-HE; Fri, 29 Nov 2019 07:02:52 +0100
+Received: from [127.0.1.1] (localhost [IPv6:::1])
+        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 384291C2102;
+        Fri, 29 Nov 2019 07:02:51 +0100 (CET)
+Date:   Fri, 29 Nov 2019 06:02:51 -0000
+From:   "tip-bot2 for Jiri Olsa" <tip-bot2@linutronix.de>
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf tools: Allow to link with libbpf dynamicaly
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        toke@redhat.com,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, x86 <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+In-Reply-To: <20191126121253.28253-1-jolsa@kernel.org>
+References: <20191126121253.28253-1-jolsa@kernel.org>
 MIME-Version: 1.0
-References: <0000000000007d22100573d66078@google.com> <alpine.LFD.2.20.1808201527230.2758@ja.home.ssi.bg>
- <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
-In-Reply-To: <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Date:   Fri, 29 Nov 2019 06:54:47 +0100
-Message-ID: <CAKXUXMwwxvJYjB0BkcmYg=AkzxW37SPiEuhyFPoATzEVY-MC7g@mail.gmail.com>
-Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Jouni Hogander <jouni.hogander@unikie.com>,
-        Julian Anastasov <ja@ssi.bg>, ddstreet@ieee.org,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
-        Hulk Robot <hulkci@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <157500737114.21853.14426283162041132071.tip-bot2@tip-bot2>
+X-Mailer: tip-git-log-daemon
+Robot-ID: <tip-bot2.linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 28, 2019 at 10:56 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> Hello people involved in commit a3e23f719f5c4a38 ("net-sysfs: call dev_hold if kobject_init_and_add success")
-> and commit b8eb718348b8fb30 ("net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject").
->
-> syzbot is reporting that unregister_netdevice() hangs due to underflowing
-> device refcount when kobject_init_and_add() failed due to -ENOMEM.
->
+The following commit has been merged into the perf/urgent branch of tip:
 
-Tetsuo, would you happen to have a C reproducer program that creates
-the trace you reported?
+Commit-ID:     7b65e2034fde011d090d4ec472902b71129c6cbd
+Gitweb:        https://git.kernel.org/tip/7b65e2034fde011d090d4ec472902b71129c6cbd
+Author:        Jiri Olsa <jolsa@kernel.org>
+AuthorDate:    Tue, 26 Nov 2019 13:12:53 +01:00
+Committer:     Arnaldo Carvalho de Melo <acme@redhat.com>
+CommitterDate: Tue, 26 Nov 2019 11:17:45 -03:00
 
-I could not quickly find one that by the date would fit to when we
-included our change on this syzbot page:
-https://syzkaller.appspot.com/bug?id=bae9a2236bfede42cf3d219e6bf6740c583568a4
+perf tools: Allow to link with libbpf dynamicaly
 
-Jouni, can you please follow up on this report.
+Currently we support only static linking with kernel's libbpf
+(tools/lib/bpf). This patch adds libbpf package detection and support to
+link perf with it dynamically.
 
-Thanks.
+The libbpf package status is displayed with:
 
-Lukas
+  $ make VF=1
+  Auto-detecting system features:
+  ...
+  ...                        libbpf: [ on  ]
+
+It's not checked by default, because it's quite new.  Once it's on most
+distros we can switch it on.
+
+For the same reason it's not added to the test-all check.
+
+Perf does not need advanced version of libbpf, so we can check just for
+the base bpf_object__open function.
+
+Adding new compile variable to detect libbpf package and link bpf
+dynamically:
+
+  $ make LIBBPF_DYNAMIC=1
+    ...
+    LINK     perf
+  $ ldd perf | grep bpf
+    libbpf.so.0 => /lib64/libbpf.so.0 (0x00007f46818bc000)
+
+If libbpf is not installed, build stops with:
+
+  Makefile.config:486: *** Error: No libbpf devel library found,\
+  please install libbpf-devel.  Stop.
+
+Committer testing:
+
+  $ make LIBBPF_DYNAMIC=1 -C tools/perf O=/tmp/build/perf
+  make: Entering directory '/home/acme/git/perf/tools/perf'
+    BUILD:   Doing 'make -j8' parallel build
+  Makefile.config:493: *** Error: No libbpf devel library found, please install libbpf-devel.  Stop.
+  make[1]: *** [Makefile.perf:225: sub-make] Error 2
+  make: *** [Makefile:70: all] Error 2
+  make: Leaving directory '/home/acme/git/perf/tools/perf'
+  $
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Link: http://lore.kernel.org/lkml/20191126121253.28253-1-jolsa@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/build/Makefile.feature      |  3 ++-
+ tools/build/feature/Makefile      |  4 ++++
+ tools/build/feature/test-libbpf.c |  7 +++++++
+ tools/perf/Makefile.config        | 10 ++++++++++
+ tools/perf/Makefile.perf          |  6 +++++-
+ 5 files changed, 28 insertions(+), 2 deletions(-)
+ create mode 100644 tools/build/feature/test-libbpf.c
+
+diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
+index 8a19753..574c2e0 100644
+--- a/tools/build/Makefile.feature
++++ b/tools/build/Makefile.feature
+@@ -96,7 +96,8 @@ FEATURE_TESTS_EXTRA :=                  \
+          cxx                            \
+          llvm                           \
+          llvm-version                   \
+-         clang
++         clang                          \
++         libbpf
+ 
+ FEATURE_TESTS ?= $(FEATURE_TESTS_BASIC)
+ 
+diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+index 8499385..f30a890 100644
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -53,6 +53,7 @@ FILES=                                          \
+          test-zlib.bin                          \
+          test-lzma.bin                          \
+          test-bpf.bin                           \
++         test-libbpf.bin                        \
+          test-get_cpuid.bin                     \
+          test-sdt.bin                           \
+          test-cxx.bin                           \
+@@ -270,6 +271,9 @@ $(OUTPUT)test-get_cpuid.bin:
+ $(OUTPUT)test-bpf.bin:
+ 	$(BUILD)
+ 
++$(OUTPUT)test-libbpf.bin:
++	$(BUILD) -lbpf
++
+ $(OUTPUT)test-sdt.bin:
+ 	$(BUILD)
+ 
+diff --git a/tools/build/feature/test-libbpf.c b/tools/build/feature/test-libbpf.c
+new file mode 100644
+index 0000000..a508756
+--- /dev/null
++++ b/tools/build/feature/test-libbpf.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <bpf/libbpf.h>
++
++int main(void)
++{
++	return bpf_object__open("test") ? 0 : -1;
++}
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index 1783427..c90f414 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -483,6 +483,16 @@ ifndef NO_LIBELF
+     ifeq ($(feature-bpf), 1)
+       CFLAGS += -DHAVE_LIBBPF_SUPPORT
+       $(call detected,CONFIG_LIBBPF)
++
++      # detecting libbpf without LIBBPF_DYNAMIC, so make VF=1 shows libbpf detection status
++      $(call feature_check,libbpf)
++      ifdef LIBBPF_DYNAMIC
++        ifeq ($(feature-libbpf), 1)
++          EXTLIBS += -lbpf
++        else
++          dummy := $(error Error: No libbpf devel library found, please install libbpf-devel);
++        endif
++      endif
+     endif
+ 
+     ifndef NO_DWARF
+diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
+index 1cd2944..eae5d5e 100644
+--- a/tools/perf/Makefile.perf
++++ b/tools/perf/Makefile.perf
+@@ -116,6 +116,8 @@ include ../scripts/utilities.mak
+ #
+ # Define TCMALLOC to enable tcmalloc heap profiling.
+ #
++# Define LIBBPF_DYNAMIC to enable libbpf dynamic linking.
++#
+ 
+ # As per kernel Makefile, avoid funny character set dependencies
+ unexport LC_ALL
+@@ -360,7 +362,9 @@ export PERL_PATH
+ 
+ PERFLIBS = $(LIBAPI) $(LIBTRACEEVENT) $(LIBSUBCMD) $(LIBPERF)
+ ifndef NO_LIBBPF
+-  PERFLIBS += $(LIBBPF)
++  ifndef LIBBPF_DYNAMIC
++    PERFLIBS += $(LIBBPF)
++  endif
+ endif
+ 
+ # We choose to avoid "if .. else if .. else .. endif endif"
