@@ -2,136 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F9510D24A
-	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D6D110D24D
+	for <lists+netdev@lfdr.de>; Fri, 29 Nov 2019 09:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbfK2INL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 03:13:11 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:44206 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbfK2INK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:13:10 -0500
-Received: by mail-io1-f70.google.com with SMTP id t16so14744897iog.11
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:13:08 -0800 (PST)
+        id S1726876AbfK2INm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 03:13:42 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45999 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726780AbfK2INm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 03:13:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575015220;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V4fWKLODm9Au9CvqDIVy+1ephSGebHzzzXPkl3u566k=;
+        b=QpqtloHwg/gvtYZUMthmu8vLvIr8rGUwJkdMenjdqP0DMbmjCgoIKyJyUEs50GD8s770iZ
+        AQRN+K+0ZD0U7Ph0qHLeywStJYScIEb3xmRnj5rXDUG1kgOWebcsMujwIMimcUBqxp7QK7
+        72l+T3BAeAgfTWizrEThD9g4QLPmpYw=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-72-IiBjJpnGMgmK0gkAlWqEhw-1; Fri, 29 Nov 2019 03:13:39 -0500
+Received: by mail-wr1-f71.google.com with SMTP id 90so11825832wrq.6
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 00:13:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=a1fEaqHoFp3OE0xOJ+yzl9G2kFByF8iDW8WA6fZk+mc=;
-        b=bwJRuQKEPrzlqXqg+dqKihrgK4p9E5sfXXJz0Tps52ftOI3DBNdSnf0NFyMRLC88oF
-         gt/LktMMsoV69deQuJZEeR9qP4/BiUdRvgP+UUFqGkTzIJhdVzCqkGa1IT6G+W1MqqoY
-         zDInl67ji45lCAvCSVLeALZ0RdmFvIagRhAG/Ezi0DuQxIiTQ958XA6HbM3w9hVE3l02
-         CqIjaBprUz5VSKm1LzmWcZrRXrlrWLOf4NSR5XA52Io3afoxwR9IvpmRpspLs8IvDmrh
-         gKiuZb+dyWcHMfWDWofpN74YyMISjF4kebTWGKSoaD+xWAeu7b8djx0hlt1hynFAUwJI
-         ZrTQ==
-X-Gm-Message-State: APjAAAVaAKsMUtPwmw3MCmIfeAU4KnF0M3qfg2h0SvzoOmedpGuiRTfk
-        XWlrmk9KNULdLyILqv4ZZxVAJiI2djw9GlZG86eAy5K/8PQM
-X-Google-Smtp-Source: APXvYqyiu8qU8ClqW1sFDcQYSs0kmZUKS8dXsX9tV0TcbR7EftpgScOub0H4UDTu4IRwwCnRsKQJvpEDFrohcupUJgFrL/W6s59C
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=CTDUUc5+1yefPe5vsNVG6xJ3clLcLuHgKB0Wxxj7i9s=;
+        b=D/BlC5EvBPxGKQygy+9N13HKaohwi24oONAR4fkx26StJ/9cQQzdb0riQYgmzasnTj
+         pMXWoqkeqJUWHgoCxqLTDy9SX/EZKpcD2wPk/eBN1Pj7DDqyRiejnuGgKa7fx4shTsy3
+         K4BNe7sCWiQidvhHOsyRUmjFnMpT7RPC+SnGo0oxDXA60YExfdRcGYZR5jRk9rsb7tLj
+         xL+75lCnqT1GWf3fSq5MFeXEKiFBiFAVcZPC8d55mnzaJOZFNp5YHy+q8AoezdPGLLKR
+         PG3dg10wkhxcE8ey+4/IXFJQ8kllFVP/OQD45c7SgkscZNhxYl6rxYxBpg5zX4fa0s+i
+         lQSQ==
+X-Gm-Message-State: APjAAAVEo6BSI7n/D/eYeCyK2F2Cw41d3l7w+sCieecOc2xJFL7IUO84
+        kfsEYipWuFblIdbXi/vapVQVOjxnCKjearX7nh2PaOdUqXN8D7DEv+wuuR6djJa915iuwsbiSRF
+        12nLND/iQL7oILRpT
+X-Received: by 2002:a5d:5284:: with SMTP id c4mr14937620wrv.376.1575015217412;
+        Fri, 29 Nov 2019 00:13:37 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx2rtzm42/LrDm9lUVP4cOer6EstubXQgMPndSKHTi7xHi2noG0z0WOji+Z4+3OWbs3QL6f9A==
+X-Received: by 2002:a5d:5284:: with SMTP id c4mr14937596wrv.376.1575015217133;
+        Fri, 29 Nov 2019 00:13:37 -0800 (PST)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id k4sm13561419wmk.26.2019.11.29.00.13.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Nov 2019 00:13:36 -0800 (PST)
+Date:   Fri, 29 Nov 2019 09:13:34 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH net] tcp: Avoid time_after32() underflow when handling
+ syncookies
+Message-ID: <20191129081334.GA8118@linux.home>
+References: <2601e43617d707a28f60f2fe6927b1aaaa0a37f8.1574976866.git.gnault@redhat.com>
+ <CANn89i+G0jCU=JtSit3X9w+SaExgbbo-d1x4UEkTEJRdypN3gQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:88c3:: with SMTP id i3mr43571723iol.69.1575015187753;
- Fri, 29 Nov 2019 00:13:07 -0800 (PST)
-Date:   Fri, 29 Nov 2019 00:13:07 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c832e2059877ccdb@google.com>
-Subject: general protection fault in skb_clone (2)
-From:   syzbot <syzbot+9fe8e3f6c64aa5e5d82c@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <CANn89i+G0jCU=JtSit3X9w+SaExgbbo-d1x4UEkTEJRdypN3gQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: IiBjJpnGMgmK0gkAlWqEhw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Nov 28, 2019 at 02:04:19PM -0800, Eric Dumazet wrote:
+> On Thu, Nov 28, 2019 at 1:36 PM Guillaume Nault <gnault@redhat.com> wrote=
+:
+> >
+> > In tcp_synq_overflow() and tcp_synq_no_recent_overflow(), the
+> > time_after32() call might underflow and return the opposite of the
+> > expected result.
+> >
+> > This happens after socket initialisation, when ->synq_overflow_ts and
+> > ->rx_opt.ts_recent_stamp are still set to zero. In this case, they
+> > can't be compared reliably to the current value of jiffies using
+> > time_after32(), because jiffies may be too far apart (especially soon
+> > after system startup, when it's close to 2^32).
+> >
+> > In such a situation, the erroneous time_after32() result prevents
+> > tcp_synq_overflow() from updating ->synq_overflow_ts and
+> > ->rx_opt.ts_recent_stamp, so the problem remains until jiffies wraps
+> > and exceeds HZ.
+> >
+> > Practical consequences should be quite limited though, because the
+> > time_after32() call of tcp_synq_no_recent_overflow() would also
+> > underflow (unless jiffies wrapped since the first time_after32() call),
+> > thus detecting a socket overflow and triggering the syncookie
+> > verification anyway.
+> >
+> > Also, since commit 399040847084 ("bpf: add helper to check for a valid
+> > SYN cookie") and commit 70d66244317e ("bpf: add bpf_tcp_gen_syncookie
+> > helper"), tcp_synq_overflow() and tcp_synq_no_recent_overflow() can be
+> > triggered from BPF programs. Even though such programs would normally
+> > pair these two operations, so both underflows would compensate each
+> > other as described above, we'd better avoid exposing the problem
+> > outside of the kernel networking stack.
+> >
+> > Let's fix it by initialising ->rx_opt.ts_recent_stamp and
+> > ->synq_overflow_ts to a value that can be safely compared to jiffies
+> > using time_after32(). Use "jiffies - TCP_SYNCOOKIE_VALID - 1", to
+> > indicate that we're not in a socket overflow phase.
+> >
+> > Fixes: cca9bab1b72c ("tcp: use monotonic timestamps for PAWS")
+> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> > ---
+> >  net/core/sock_reuseport.c | 10 ++++++++++
+> >  net/ipv4/tcp.c            |  8 ++++++++
+> >  2 files changed, 18 insertions(+)
+> >
+> > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+> > index f19f179538b9..87c287433a52 100644
+> > --- a/net/core/sock_reuseport.c
+> > +++ b/net/core/sock_reuseport.c
+> > @@ -11,6 +11,7 @@
+> >  #include <linux/idr.h>
+> >  #include <linux/filter.h>
+> >  #include <linux/rcupdate.h>
+> > +#include <net/tcp.h>
+> >
+> >  #define INIT_SOCKS 128
+> >
+> > @@ -85,6 +86,15 @@ int reuseport_alloc(struct sock *sk, bool bind_inany=
+)
+> >         reuse->socks[0] =3D sk;
+> >         reuse->num_socks =3D 1;
+> >         reuse->bind_inany =3D bind_inany;
+> > +
+> > +       /* synq_overflow_ts can be used for syncookies. Ensure that it =
+has a
+> > +        * recent value, so that tcp_synq_overflow() and
+> > +        * tcp_synq_no_recent_overflow() can safely use time_after32().
+> > +        * Initialise it 'TCP_SYNCOOKIE_VALID + 1' jiffies in the past,=
+ to
+> > +        * ensure that we start in the 'no recent overflow' case.
+> > +        */
+> > +       reuse->synq_overflow_ts =3D jiffies - TCP_SYNCOOKIE_VALID - 1;
+> > +
+> >         rcu_assign_pointer(sk->sk_reuseport_cb, reuse);
+> >
+> >  out:
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index 9b48aec29aca..e9555db95dff 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -443,6 +443,14 @@ void tcp_init_sock(struct sock *sk)
+> >         tp->tsoffset =3D 0;
+> >         tp->rack.reo_wnd_steps =3D 1;
+> >
+> > +       /* ts_recent_stamp can be used for syncookies. Ensure that it h=
+as a
+> > +        * recent value, so that tcp_synq_overflow() and
+> > +        * tcp_synq_no_recent_overflow() can safely use time_after32().
+> > +        * Initialise it 'TCP_SYNCOOKIE_VALID + 1' jiffies in the past,=
+ to
+> > +        * ensure that we start in the 'no recent overflow' case.
+> > +        */
+> > +       tp->rx_opt.ts_recent_stamp =3D jiffies - TCP_SYNCOOKIE_VALID - =
+1;
+> > +
+> >         sk->sk_state =3D TCP_CLOSE;
+> >
+> >         sk->sk_write_space =3D sk_stream_write_space;
+> > --
+> > 2.21.0
+> >
+>=20
+> A listener could be live for one year, and flip its ' I am under
+> synflood' status every 24 days (assuming HZ=3D1000)
+>=20
+> You only made sure the first 24 days are ok, but the problem is still the=
+re.
+>=20
+> We need to refresh the values, maybe in tcp_synq_no_recent_overflow()
+>=20
+Indeed. I'll work on that.
 
-syzbot found the following crash on:
+> (Note the issue has been there forever on 32bit arches)
+>=20
+Yes, I'll also update the Fixes tag.
 
-HEAD commit:    0be0ee71 vfs: properly and reliably lock f_pos in fdget_po..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10ac989ce00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c483a72a6c4b4dab
-dashboard link: https://syzkaller.appspot.com/bug?extid=9fe8e3f6c64aa5e5d82c
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Thanks.
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9fe8e3f6c64aa5e5d82c@syzkaller.appspotmail.com
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 18879 Comm: syz-executor.1 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:skb_clone+0xea/0x3d0 net/core/skbuff.c:1440
-Code: 89 de e8 09 ef ce fb 84 db 0f 85 ec 00 00 00 e8 bc ed ce fb 49 8d 5c  
-24 7e 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 04 02 48  
-89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 75 02 00 00
-RSP: 0018:ffff8881ff037878 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: 000000000000007e RCX: ffffc90008198000
-RDX: 000000000000000f RSI: ffffffff85a46964 RDI: 0000000000000000
-RBP: ffff8881ff0378a0 R08: 1ffffffff14f0156 R09: fffffbfff14f0157
-R10: fffffbfff14f0156 R11: ffffffff8a780ab7 R12: 0000000000000000
-R13: 0000000000000004 R14: 0000000000000a20 R15: ffffed1002d69894
-FS:  00007fc8606cb700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2f531000 CR3: 000000021338a000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  nr_kick.part.0+0x3ca/0x5e0 net/netrom/nr_out.c:156
-  nr_kick net/netrom/nr_out.c:131 [inline]
-  nr_output+0x5c4/0x710 net/netrom/nr_out.c:72
-  nr_sendmsg+0x915/0xb00 net/netrom/af_netrom.c:1111
-  sock_sendmsg_nosec net/socket.c:638 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:658
-  sock_write_iter+0x27c/0x3e0 net/socket.c:990
-  call_write_iter include/linux/fs.h:1893 [inline]
-  new_sync_write+0x4d3/0x770 fs/read_write.c:483
-  __vfs_write+0xe1/0x110 fs/read_write.c:496
-  vfs_write+0x268/0x5d0 fs/read_write.c:558
-  ksys_write+0x220/0x290 fs/read_write.c:611
-  __do_sys_write fs/read_write.c:623 [inline]
-  __se_sys_write fs/read_write.c:620 [inline]
-  __x64_sys_write+0x73/0xb0 fs/read_write.c:620
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45a639
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fc8606cac78 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a639
-RDX: 0000000000000278 RSI: 00000000200002c0 RDI: 0000000000000007
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc8606cb6d4
-R13: 00000000004cb0e4 R14: 00000000004e3810 R15: 00000000ffffffff
-Modules linked in:
----[ end trace 30cf82ed03f1b88f ]---
-RIP: 0010:skb_clone+0xea/0x3d0 net/core/skbuff.c:1440
-Code: 89 de e8 09 ef ce fb 84 db 0f 85 ec 00 00 00 e8 bc ed ce fb 49 8d 5c  
-24 7e 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <0f> b6 04 02 48  
-89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 75 02 00 00
-RSP: 0018:ffff8881ff037878 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: 000000000000007e RCX: ffffc90008198000
-RDX: 000000000000000f RSI: ffffffff85a46964 RDI: 0000000000000000
-RBP: ffff8881ff0378a0 R08: 1ffffffff14f0156 R09: fffffbfff14f0157
-R10: fffffbfff14f0156 R11: ffffffff8a780ab7 R12: 0000000000000000
-R13: 0000000000000004 R14: 0000000000000a20 R15: ffffed1002d69894
-FS:  00007fc8606cb700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b31c29000 CR3: 000000021338a000 CR4: 00000000001426f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
