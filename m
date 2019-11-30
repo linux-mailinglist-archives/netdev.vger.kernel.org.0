@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E9A10DC07
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 02:38:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C7510DC34
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 03:51:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbfK3BiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 20:38:00 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:32773 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727142AbfK3BiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 20:38:00 -0500
-Received: by mail-pf1-f196.google.com with SMTP id y206so6838695pfb.0;
-        Fri, 29 Nov 2019 17:37:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t45gUtK+uM9mXjiLOJb5swNVbq1vD3irWLp7sG1Ctu8=;
-        b=Ue3Vs3fZvHJEWZYZulg2C54l8z5eEMBS/Uxt7hAM+L3CNGsm5us7TVdTsydqyEQfPv
-         1SVJu/Q5UfM/AUsh2gJRB2mNUg3TRXOSUy0nB+ex/DXZxtp7JEF6Y5VSoPTD1IAlE1pq
-         vTIROm7MCp/SqCYhPxPMndDxd4G4ck6qrPsoF4WlwrFbbMQg9W+qS3r98KfB5sY8DhJY
-         XjfS5GU8rpG1qHmpisPxsh96wfQnKcQYLBDutbCct4dc4u9/ehs/p5IGJzVl0OUlVoto
-         74S2PdRgTLF01i5uSEKu5n8qD6S4IpIQ1Xvtn+Cfj4URGWH2hiJqDCgg4dxCw2nwONKQ
-         2WvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t45gUtK+uM9mXjiLOJb5swNVbq1vD3irWLp7sG1Ctu8=;
-        b=r9Xtvlp2wPLq+xnbIXjrOTPKmiaaK0DCYvMOldTIv7Wx55NsI4ENfSOZpMwxjCQkKN
-         tOAuP/eL74+cwnkVQls9Z+S7OYB5QNs8ZGVMwwKJ8coHkBvGyGxw/ycPynFnlpOPRRza
-         tFj+33WAWw9Lm25wpGgU3T3CXBaAqlWJtTdgdIzBLH5N0kAfLTmX/EuwABs+7vmsWomv
-         pho8nTjyOv01S4Mq/OEF83ZJkwGyNRdI3KUNla29cmcO95W/vbPzPO602D4gDBx3S6MN
-         lW6GnvQ9ottBKjVOCQp7gE+cZtUmAplG6tEDdod2BTWpm4ioQw4c4FmMjmDOJUx8VE6H
-         +28g==
-X-Gm-Message-State: APjAAAX8wMSciH4sQ9B5RCyijPPwNaZJ1TdHmv+1xfGfkkmvcO3BABf8
-        lV+ULNT48U4v0PiA5HxQoSY=
-X-Google-Smtp-Source: APXvYqxRVDvofp4K48J2STEhlQkL2kouyRxmAijrBD2y+RICCWu6L6dDxIrKH0X/A3OSqfifOpTYpA==
-X-Received: by 2002:a63:551a:: with SMTP id j26mr19600497pgb.370.1575077879570;
-        Fri, 29 Nov 2019 17:37:59 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c17sm25614319pfo.42.2019.11.29.17.37.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Nov 2019 17:37:58 -0800 (PST)
-Subject: Re: [PATCH bpf] bpf: avoid setting bpf insns pages read-only when
- prog is jited
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        alexei.starovoitov@gmail.com
-Cc:     peterz@infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-References: <20191129222911.3710-1-daniel@iogearbox.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ec8264ad-8806-208a-1375-51e7cad1866e@gmail.com>
-Date:   Fri, 29 Nov 2019 17:37:57 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727192AbfK3CvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 21:51:20 -0500
+Received: from a27-11.smtp-out.us-west-2.amazonses.com ([54.240.27.11]:56352
+        "EHLO a27-11.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727142AbfK3CvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 21:51:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1575082279;
+        h=MIME-Version:Content-Type:Content-Transfer-Encoding:Date:From:To:Cc:Subject:In-Reply-To:References:Message-ID;
+        bh=rgnN/cHlY9yIEL0ptAF+Jq7dhmAxyr674IK0bFVsQaA=;
+        b=Cso7yuV3yap/uH1YN559eN24nYpcOk10hVW6FFgr8Kl6MXZFqHkXHyVLxo0ECBJD
+        4ObDq/0u5jlTQm28JsLX9PVtkl4Wklcyw3Rt80msQzpjQHu3uXc007VmeYCayx4LwEL
+        lqWr1OwKWDd5UasxaWH4nLZ++XNv8tXwAb0vHkH4=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1575082279;
+        h=MIME-Version:Content-Type:Content-Transfer-Encoding:Date:From:To:Cc:Subject:In-Reply-To:References:Message-ID:Feedback-ID;
+        bh=rgnN/cHlY9yIEL0ptAF+Jq7dhmAxyr674IK0bFVsQaA=;
+        b=AyqRkJdC7Tx+rf5nHDC2UM+EoR3GaUbRLwQqeCiUURWxf2O50DlHDTV11DvUu0Gw
+        SMuPpirR2V0LSSqoVCItUg5dM02dU+Q4e9TzLJilzfJhQDnfvyBQJlHd2tKV3N4U/C4
+        cBfvAsWewNNqXxwLgQuA738bgoPoh4z17q8UjYlE=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED
+        autolearn=unavailable autolearn_force=no version=3.4.0
 MIME-Version: 1.0
-In-Reply-To: <20191129222911.3710-1-daniel@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Sat, 30 Nov 2019 02:51:19 +0000
+From:   subashab@codeaurora.org
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Josh Hunt <johunt@akamai.com>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
+In-Reply-To: <5a267a9d-2bf5-4978-b71d-0c8e71a64807@gmail.com>
+References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
+ <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
+ <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
+ <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
+ <2279a8988c3f37771dda5593b350d014@codeaurora.org>
+ <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
+ <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
+ <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
+ <81ace6052228e12629f73724236ade63@codeaurora.org>
+ <CADVnQymDSZb=K8R1Gv=RYDLawW9Ju1tuskkk8LZG4fm3yxyq3w@mail.gmail.com>
+ <74827a046961422207515b1bb354101d@codeaurora.org>
+ <827f0898-df46-0f05-980e-fffa5717641f@akamai.com>
+ <cae50d97-5d19-7b35-0e82-630f905c1bf6@gmail.com>
+ <5a267a9d-2bf5-4978-b71d-0c8e71a64807@gmail.com>
+Message-ID: <0101016eba384308-7dd6b335-8b75-4890-8733-a4dde8064d11-000000@us-west-2.amazonses.com>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+X-SES-Outgoing: 2019.11.30-54.240.27.11
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+>>> Since tcp_write_queue_purge() calls tcp_rtx_queue_purge() and we're 
+>>> deleting everything in the retrans queue there, doesn't it make sense 
+>>> to zero out all of those associated counters? Obviously clearing 
+>>> sacked_out is helping here, but is there a reason to keep track of 
+>>> lost_out, retrans_out, etc if retrans queue is now empty? Maybe 
+>>> calling tcp_clear_retrans() from tcp_rtx_queue_purge() ?
+>> 
+>> First, I would like to understand if we hit this problem on current 
+>> upstream kernels.
+>> 
+>> Maybe a backport forgot a dependency.
+>> 
+>> tcp_write_queue_purge() calls tcp_clear_all_retrans_hints(), not 
+>> tcp_clear_retrans(),
+>> this is probably for a reason.
+>> 
+>> Brute force clearing these fields might hide a serious bug.
+>> 
+> 
+> I guess we are all too busy to get more understanding on this :/
 
-
-On 11/29/19 2:29 PM, Daniel Borkmann wrote:
-> For the case where the interpreter is compiled out or when the prog is jited
-> it is completely unnecessary to set the BPF insn pages as read-only. In fact,
-> on frequent churn of BPF programs, it could lead to performance degradation of
-> the system over time since it would break the direct map down to 4k pages when
-> calling set_memory_ro() for the insn buffer on x86-64 / arm64 and there is no
-> reverse operation. Thus, avoid breaking up large pages for data maps, and only
-> limit this to the module range used by the JIT where it is necessary to set
-> the image read-only and executable.
-
-Interesting... But why the non JIT case would need RO protection ?
-
-Do you have any performance measures to share ?
-
-Thanks.
+Our test devices are on 4.19.x and it is not possible to switch to a 
+newer
+version. Perhaps Josh has seen this on a newer kernel.
