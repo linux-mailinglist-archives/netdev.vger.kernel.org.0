@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F2C10DF44
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 21:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFBB210DF47
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 21:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbfK3U1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 15:27:44 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44872 "EHLO
+        id S1727142AbfK3Ubg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 15:31:36 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:44890 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbfK3U1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 15:27:43 -0500
+        with ESMTP id S1726981AbfK3Ubg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 15:31:36 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3:a597:786a:2aef:1599])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4960A14511F6C;
-        Sat, 30 Nov 2019 12:27:43 -0800 (PST)
-Date:   Sat, 30 Nov 2019 12:27:42 -0800 (PST)
-Message-Id: <20191130.122742.343376576614064539.davem@davemloft.net>
-To:     fugang.duan@nxp.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net,stable 1/1] net: fec: match the dev_id between
- probe and remove
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D51A414522EE6;
+        Sat, 30 Nov 2019 12:31:35 -0800 (PST)
+Date:   Sat, 30 Nov 2019 12:31:35 -0800 (PST)
+Message-Id: <20191130.123135.109392310105227339.davem@davemloft.net>
+To:     xiyou.wangcong@gmail.com
+Cc:     netdev@vger.kernel.org,
+        syzbot+9fe8e3f6c64aa5e5d82c@syzkaller.appspotmail.com
+Subject: Re: [Patch net] netrom: fix a potential NULL pointer dereference
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1575009408-30362-1-git-send-email-fugang.duan@nxp.com>
-References: <1575009408-30362-1-git-send-email-fugang.duan@nxp.com>
+In-Reply-To: <20191130200540.2461-1-xiyou.wangcong@gmail.com>
+References: <20191130200540.2461-1-xiyou.wangcong@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 30 Nov 2019 12:27:43 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 30 Nov 2019 12:31:36 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Duan <fugang.duan@nxp.com>
-Date: Fri, 29 Nov 2019 06:40:28 +0000
+From: Cong Wang <xiyou.wangcong@gmail.com>
+Date: Sat, 30 Nov 2019 12:05:40 -0800
 
-> Test device bind/unbind on i.MX8QM platform:
-> echo 5b040000.ethernet > /sys/bus/platform/drivers/fec/unbind
-> echo 5b040000.ethernet > /sys/bus/platform/drivers/fec/bind
+> It is possible that the skb gets removed between skb_peek() and
+> skb_dequeue(). So we should just check the return value of
+> skb_dequeue().  Otherwise, skb_clone() may get a NULL pointer.
 > 
-> error log:
-> pps pps0: new PPS source ptp0 /sys/bus/platform/drivers/fec/bind
-> fec: probe of 5b040000.ethernet failed with error -2
+> Technically, this should be protected by sock lock, but netrom
+> doesn't use it correctly. It is harder to fix sock lock than just
+> fixing this.
 > 
-> It should decrease the dev_id when device is unbinded. So let
-> the fec_dev_id as global variable and let the count match in
-> .probe() and .remvoe().
-> 
-> Reported-by: shivani.patel <shivani.patel@volansystech.com>
-> Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+> Reported-by: syzbot+9fe8e3f6c64aa5e5d82c@syzkaller.appspotmail.com
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-This is not correct.
+This is really bogus because it also means that all of the other
+state such as the ack_queue, nr->va, nr->vs, nr->window can also
+change meanwhile.
 
-Nothing says that there is a direct correlation between the devices
-added and the ones removed, nor the order in which these operations
-occur relative to eachother.
+And these determine whether a dequeue should be done at all, and
+I'm sure some range violations are possible as a result as well.
 
-This dev_id allocation is buggy because you aren't using a proper
-ID allocation scheme such as IDR.
+This code is really terminally broken and just adding this check
+will leave many other other obvious bugs here that syzbot will
+trigger eventually.
 
-I'm not applying this patch, it is incorrect and makes things
-worse rather than better.
+Sorry I'm not applying this, it's a hack that leaves obvious remaining
+problems in the code.
