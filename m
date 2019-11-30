@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9EF110DBE7
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 01:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B5210DBFB
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 02:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbfK3AM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Nov 2019 19:12:58 -0500
-Received: from www62.your-server.de ([213.133.104.62]:43690 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727130AbfK3AM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 19:12:58 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iaq82-0002ph-Pq; Sat, 30 Nov 2019 00:56:50 +0100
-Received: from [178.197.249.29] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iaq82-000WjV-90; Sat, 30 Nov 2019 00:56:50 +0100
-Subject: Re: [PATCH bpf v3] bpftool: Allow to link libbpf dynamically
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>, kubakici@wp.pl
-References: <20191128160712.1048793-1-toke@redhat.com>
- <f6e8f6d2-6155-3b20-9975-81e29e460915@iogearbox.net> <87a78evl2v.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9853054b-dc1f-35ba-ba3c-4d0ab01c8f14@iogearbox.net>
-Date:   Sat, 30 Nov 2019 00:56:49 +0100
+        id S1727193AbfK3BHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Nov 2019 20:07:23 -0500
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:44897 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727130AbfK3BHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Nov 2019 20:07:23 -0500
+Received: by mail-pg1-f170.google.com with SMTP id e6so15245881pgi.11;
+        Fri, 29 Nov 2019 17:07:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DqHe6XHoB6ntir8k9+BBIjfzbn1qklwyIMSziLPtcEo=;
+        b=p98y+HOKewbDx98DIoaSAqPC//CS3PsGGRjU4XgtPhc4Ngk+kMkYeVpQfOLFXfrmF5
+         hnjgwhhgLoVIf/16BKh0fTFWPDE3qpRsKxr2RYKDPt+HWRfIwn1SOa6oM0rbyPgQ6EYL
+         WZesBGxya8dX4Ioxi5iFeNvjdI3NvJBmcb9T3pDoxwroDBtWZzbPUXOElEDrdm0c2Mo/
+         953f1pfF7KLdZ6df3+XVC1kjWvMZs0TBmDDXRQ7PfQ/CT0YGC+hppE0nqfRvtPILZiKW
+         7KEtUfRZQvQAgfxUQQUe5nuLrmoquSptsICh6Zj5PrvwweGstJuQ24k5S+65eyuR7jE2
+         rudw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DqHe6XHoB6ntir8k9+BBIjfzbn1qklwyIMSziLPtcEo=;
+        b=dbJ9q6nEcesFPGFKwJliPakNlQ0jTdkFrs6DxM3xeOpnejUQQqNc7qxsMkcCkx6hib
+         tvN/Q6Nq2xZWU+7tqy7yjW4IYBunK9oHgKWte+ToXEjq+CejhFbMGFMI9BgN2fFK6H3u
+         myP0/3fl0jUkP/o5FBSm+FWV/LmJZxzEk9zC06A0kZUkCFR1yyVjUAIZJ3k+RgPVfF6q
+         P25sD2VbBc5C7h63okc7nEEAjimSRKIZHl2Njv19sQog5IwMvgXQG+Vh8SLVq3a7UdqF
+         q3UbzOC4JaQAKo+Us9V8aDJdhxIBHzfPY7nIOWMQv9oFsP1uUfVHdcNc3M6+MlYew4EW
+         v1Pw==
+X-Gm-Message-State: APjAAAVFAug82DSB+b9Jp8gtcJ35gNEMC8v3DMKDxozXNfxEUH+9dU4b
+        t2UiakB9tWDjCHSLX9uIEbI=
+X-Google-Smtp-Source: APXvYqzdfBasFtusCfaSifX9tepAzZOa8hO2xdiRTr8OLxrd+UMN97U3givgzW0KxtgmChO3JEtZJQ==
+X-Received: by 2002:a62:b40b:: with SMTP id h11mr58794576pfn.57.1575076042802;
+        Fri, 29 Nov 2019 17:07:22 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id y26sm26454549pfo.76.2019.11.29.17.07.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Nov 2019 17:07:21 -0800 (PST)
+Subject: Re: epoll_wait() performance
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     'Marek Majkowski' <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+ <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+ <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+ <20191127164821.1c41deff@carbon>
+ <0b8d7447e129539aec559fa797c07047f5a6a1b2.camel@redhat.com>
+ <2f1635d9300a4bec8a0422e9e9518751@AcuMS.aculab.com>
+ <313204cf-69fd-ec28-a22c-61526f1dea8b@gmail.com>
+ <1265e30d04484d08b86ba2abef5f5822@AcuMS.aculab.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c46e43d1-ba7d-39d9-688f-0141931df1b0@gmail.com>
+Date:   Fri, 29 Nov 2019 17:07:20 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <87a78evl2v.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <1265e30d04484d08b86ba2abef5f5822@AcuMS.aculab.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25648/Fri Nov 29 10:44:54 2019)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29/19 3:00 PM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 11/28/19 5:07 PM, Toke Høiland-Jørgensen wrote:
->>> From: Jiri Olsa <jolsa@kernel.org>
-[...]
->>>    ifeq ($(srctree),)
->>>    srctree := $(patsubst %/,%,$(dir $(CURDIR)))
->>> @@ -63,6 +72,19 @@ RM ?= rm -f
->>>    FEATURE_USER = .bpftool
->>>    FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib
->>>    FEATURE_DISPLAY = libbfd disassembler-four-args zlib
->>> +ifdef LIBBPF_DYNAMIC
->>> +  FEATURE_TESTS   += libbpf
->>> +  FEATURE_DISPLAY += libbpf
->>> +
->>> +  # for linking with debug library run:
->>> +  # make LIBBPF_DYNAMIC=1 LIBBPF_DIR=/opt/libbpf
+
+
+On 11/28/19 2:17 AM, David Laight wrote:
+> From: Eric Dumazet
+>> Sent: 27 November 2019 17:47
+> ...
+>> A QUIC server handles hundred of thousands of ' UDP flows' all using only one UDP socket
+>> per cpu.
 >>
->> The Makefile already has BPF_DIR which points right now to
->> '$(srctree)/tools/lib/bpf/' and LIBBPF_PATH for the final one and
->> where $(LIBBPF_PATH)libbpf.a is expected to reside. Can't we improve
->> the Makefile to reuse and work with these instead of adding yet
->> another LIBBPF_DIR var which makes future changes in this area more
->> confusing? The libbpf build spills out libbpf.{a,so*} by default
->> anyway.
+>> This is really the only way to scale, and does not need kernel changes to efficiently
+>> organize millions of UDP sockets (huge memory footprint even if we get right how
+>> we manage them)
+>>
+>> Given that UDP has no state, there is really no point trying to have one UDP
+>> socket per flow, and having to deal with epoll()/poll() overhead.
 > 
-> I see what you mean; however, LIBBPF_DIR is meant to be specifically an
-> override for the dynamic library, not just the path to libbpf.
+> How can you do that when all the UDP flows have different destination port numbers?
+> These are message flows not idempotent requests.
+> I don't really want to collect the packets before they've been processed by IP.
 > 
-> Would it be less confusing to overload the LIBBPF_DYNAMIC variable
-> instead? I.e.,
-> 
-> make LIBBPF_DYNAMIC=1
-> 
-> would dynamically link against the libbpf installed in the system, but
-> 
-> make LIBBPF_DYNAMIC=/opt/libbpf
-> 
-> would override that and link against whatever is in /opt/libbpf instead?
-> WDYT?
+> I could write a driver that uses kernel udp sockets to generate a single message queue
+> than can be efficiently processed from userspace - but it is a faff compiling it for
+> the systems kernel version.
 
-Hm, given perf tool has similar LIB*_DIR vars in place for its libs, it probably
-makes sense to stick with this convention as well then. Perhaps better in this
-case to just rename s/BPF_DIR/BPF_SRC_DIR/, s/LIBBPF_OUTPUT/LIBBPF_BUILD_OUTPUT/,
-and s/LIBBPF_PATH/LIBBPF_BUILD_PATH/ to make their purpose more clear.
+Well if destinations ports are not under your control,
+you also could use AF_PACKET sockets, no need for 'UDP sockets' to receive UDP traffic,
+especially it the rate is small.
 
-One thing that would be good to do as well for this patch is to:
-
-  i) Document both LIBBPF_DYNAMIC and LIBBPF_DIR in the Makefile comment you
-     added at the top along with a simple usage example.
-
-ii) Extend tools/testing/selftests/bpf/test_bpftool_build.sh with a dynamic
-     linking test case, e.g. building libbpf into a temp dir and pointing
-     LIBBPF_DIR to it for bpftool LIBBPF_DYNAMIC=1 build.
-
-Thanks,
-Daniel
