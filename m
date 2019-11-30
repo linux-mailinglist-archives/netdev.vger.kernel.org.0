@@ -2,125 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1967910DD74
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 12:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303D010DDC8
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 14:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfK3L2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 06:28:17 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46195 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725887AbfK3L2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 06:28:17 -0500
-Received: by mail-pg1-f196.google.com with SMTP id z124so47380pgb.13
-        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 03:28:15 -0800 (PST)
+        id S1726718AbfK3N3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 08:29:47 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:45809 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725985AbfK3N3r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 08:29:47 -0500
+Received: by mail-lj1-f196.google.com with SMTP id d20so4999019ljc.12
+        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 05:29:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=iai8gOE3z1MAnydfDZ/hmRICotLqvoUpCxmpbWuvdhk=;
-        b=zKRu7RrhrkiEUyF3rwVCcli7TCk2GVVka+2HLae++qjdDgoW5ghKokWGbfEKpWKDeE
-         IRO//NDvRDaIw17ehPbk139sjc5jOYG02HIePBbsIbdhv3CqZVl/bca9PDgqAxX4TNtm
-         3hw8q2Un1Bdv7oyXcuaphFIuqi4oTwHQRKMUN/Bxxi0MGj2v87zPVJdHeWQyz9RFhILw
-         Pv/iTTnxZnIxGQyq5db6gFK9EIDxDQHgsac7IFqK6ywlL0l/PZae9vAPvHJkvG8m7dp3
-         j2OgR4Z1Z5lt7OCqIcq52E5I7A/8mnYiTxMB3MHxeAW6V0Kmcx+9D35zVl/5foOVG1tq
-         J7lg==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=Mdb4T961s/1Pcn7Snum1QFXu2ONNJ1wf0K7LmowejOA=;
+        b=rt7I1jNZ+ZXMKPBdgk96daMbufwwaKUPrQaESEumVv8rQbRp30PqGaZnYoAKntNCR7
+         WrXLq/uHKDBbHZaScQlym69MOhFeSqOH/RPd7SsTiiH2Hr1HLHdFZey6LkPwbNUTLZRb
+         gHbXb9B5A3EPoG+ipS14E+Uxo3UidVTAWcsY0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iai8gOE3z1MAnydfDZ/hmRICotLqvoUpCxmpbWuvdhk=;
-        b=TYPvSx6kUyy1LkAaqvUlYcii1uA52mwZKu893fyhN82P/qnLJ/CGncN9s+AJ0HOdir
-         bvWcEMKxxcKkOtt6R3eV0hJDMWj8T9CCM0UtCtqsXA49/1L+rBY2lFQEMuAF8PpJLxG6
-         Y9Ii7/UigMRSI3DFXDMxBVJnMaNRbfsTrODsSZsZR2gKRFEDtYWS32rRDUNV5Tzhn+OK
-         kohiy2njbKxlRmwJwJySX/BsuPuN/dxNMDl5yDVg8RfPEojp+O1Sv67BzLL7HpKmRPg3
-         T7/g05hn8Q1ps4QOD2Iwk02udYd7nYZ8JGnVcgHmJykVecbM7w8no4Fh7cUoHh8FdYf6
-         5QxA==
-X-Gm-Message-State: APjAAAXV/p4XK7GZWYboL1VwHQg40rAdwB049FJt1JA2/67g/6kyQEsf
-        Wy4z/k4UNTB5Scy1fqx8qSHv3Q==
-X-Google-Smtp-Source: APXvYqyG+ZhxvFRKoPJOQAjOuPGebTseFZQpHs4mycCxOnX53ohMvPGcUywJyK7N+GOAVkAq+GTdAA==
-X-Received: by 2002:a63:1c5c:: with SMTP id c28mr21374323pgm.241.1575113295143;
-        Sat, 30 Nov 2019 03:28:15 -0800 (PST)
-Received: from Iliass-MacBook-Pro.local ([50.225.178.238])
-        by smtp.gmail.com with ESMTPSA id 39sm18732330pjo.7.2019.11.30.03.28.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 30 Nov 2019 03:28:14 -0800 (PST)
-Date:   Sat, 30 Nov 2019 03:28:12 -0800
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Sekhar Nori <nsekhar@ti.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v2] net: ethernet: ti: ale: ensure vlan/mdb deleted when
- no members
-Message-ID: <20191130112812.GA2779@Iliass-MacBook-Pro.local>
-References: <20191129175809.815-1-grygorii.strashko@ti.com>
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=Mdb4T961s/1Pcn7Snum1QFXu2ONNJ1wf0K7LmowejOA=;
+        b=Skd+bUYbtRdb2TSeMD3sSde5oLqiiynu7pgAagZu9+IUG7LWAL+3qEtlL4pILHjIgu
+         yfs2YyFRo2FjJbr6WJTOzHAGpsW5qKybxRAUgfCU+yyMrHLqlfegZCW5B57TlXB5m84m
+         3tGHKggBQlaF0t2x3JhieDdX9NDHnbsH+NPS3D1USr7e/XPvg+41ydbXvTMX3MHzNzbr
+         d/EwsAbSwOegI2dpKl+n4PBKbqbBSwrKWHfa1iNt3yxT0M9cWjtSVr3UQ9EyA25J6uXm
+         KOOCFxSQJYpC7yMLpWJy69YIjbGPIXPbSNG8Yl5D0aPJFCCeKPknNWx3xbqjprqSKhen
+         9zHg==
+X-Gm-Message-State: APjAAAWqDYcHi/DKxtz8eV4fa9H5TLjF3kS9CBKL76jZ3T/GgIQbSdex
+        UcmCz6ueMn1yfhtL6/MS4wnVNA==
+X-Google-Smtp-Source: APXvYqzF5JiIbgzFnCwRNgVkm0roxjKO5TwpSIQR326r09K+QY0zUppTu5iT6aFPPSjuBKYOENiQbA==
+X-Received: by 2002:a2e:7318:: with SMTP id o24mr6000039ljc.185.1575120584323;
+        Sat, 30 Nov 2019 05:29:44 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id a12sm6967959ljk.48.2019.11.30.05.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Nov 2019 05:29:43 -0800 (PST)
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com> <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com> <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com> <20191127164821.1c41deff@carbon> <0b8d7447e129539aec559fa797c07047f5a6a1b2.camel@redhat.com> <2f1635d9300a4bec8a0422e9e9518751@AcuMS.aculab.com> <313204cf-69fd-ec28-a22c-61526f1dea8b@gmail.com> <1265e30d04484d08b86ba2abef5f5822@AcuMS.aculab.com> <c46e43d1-ba7d-39d9-688f-0141931df1b0@gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        'Marek Majkowski' <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: Re: epoll_wait() performance
+In-reply-to: <c46e43d1-ba7d-39d9-688f-0141931df1b0@gmail.com>
+Date:   Sat, 30 Nov 2019 14:29:41 +0100
+Message-ID: <878snxo5kq.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191129175809.815-1-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.9.5 (2018-04-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 29, 2019 at 07:58:09PM +0200, Grygorii Strashko wrote:
-> The recently updated ALE APIs cpsw_ale_del_mcast() and
-> cpsw_ale_del_vlan_modify() have an issue and will not delete ALE entry even
-> if VLAN/mcast group has no more members. Hence fix it here and delete ALE
-> entry if !port_mask.
-> 
-> The issue affected only new cpsw switchdev driver.
-> 
-> Fixes: e85c14370783 ("net: ethernet: ti: ale: modify vlan/mdb api for switchdev")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> ---
->  drivers/net/ethernet/ti/cpsw_ale.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-> index 929f3d3354e3..ecdbde539eb7 100644
-> --- a/drivers/net/ethernet/ti/cpsw_ale.c
-> +++ b/drivers/net/ethernet/ti/cpsw_ale.c
-> @@ -384,7 +384,7 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
->  		       int flags, u16 vid)
->  {
->  	u32 ale_entry[ALE_ENTRY_WORDS] = {0, 0, 0};
-> -	int mcast_members;
-> +	int mcast_members = 0;
->  	int idx;
->  
->  	idx = cpsw_ale_match_addr(ale, addr, (flags & ALE_VLAN) ? vid : 0);
-> @@ -397,11 +397,13 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
->  		mcast_members = cpsw_ale_get_port_mask(ale_entry,
->  						       ale->port_mask_bits);
->  		mcast_members &= ~port_mask;
-> +	}
-> +
-> +	if (mcast_members)
->  		cpsw_ale_set_port_mask(ale_entry, mcast_members,
->  				       ale->port_mask_bits);
-> -	} else {
-> +	else
->  		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
-> -	}
->  
->  	cpsw_ale_write(ale, idx, ale_entry);
->  	return 0;
-> @@ -478,6 +480,10 @@ static void cpsw_ale_del_vlan_modify(struct cpsw_ale *ale, u32 *ale_entry,
->  	members = cpsw_ale_get_vlan_member_list(ale_entry,
->  						ale->vlan_field_bits);
->  	members &= ~port_mask;
-> +	if (!members) {
-> +		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
-> +		return;
-> +	}
->  
->  	untag = cpsw_ale_get_vlan_untag_force(ale_entry,
->  					      ale->vlan_field_bits);
-> -- 
-> 2.17.1
-> 
+On Sat, Nov 30, 2019 at 02:07 AM CET, Eric Dumazet wrote:
+> On 11/28/19 2:17 AM, David Laight wrote:
+>> From: Eric Dumazet
+>>> Sent: 27 November 2019 17:47
+>> ...
+>>> A QUIC server handles hundred of thousands of ' UDP flows' all using only one UDP socket
+>>> per cpu.
+>>>
+>>> This is really the only way to scale, and does not need kernel changes to efficiently
+>>> organize millions of UDP sockets (huge memory footprint even if we get right how
+>>> we manage them)
+>>>
+>>> Given that UDP has no state, there is really no point trying to have one UDP
+>>> socket per flow, and having to deal with epoll()/poll() overhead.
+>>
+>> How can you do that when all the UDP flows have different destination port numbers?
+>> These are message flows not idempotent requests.
+>> I don't really want to collect the packets before they've been processed by IP.
+>>
+>> I could write a driver that uses kernel udp sockets to generate a single message queue
+>> than can be efficiently processed from userspace - but it is a faff compiling it for
+>> the systems kernel version.
+>
+> Well if destinations ports are not under your control,
+> you also could use AF_PACKET sockets, no need for 'UDP sockets' to receive UDP traffic,
+> especially it the rate is small.
 
-Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Alternatively, you could steer UDP flows coming to a certain port range
+to one UDP socket using TPROXY [0, 1].
+
+TPROXY has the same downside as AF_PACKET, meaning that it requires at
+least CAP_NET_RAW to create/set up the socket.
+
+OTOH, with TPROXY you can gracefully co-reside with other services,
+filering on just the destination addresses you want in iptables/nftables.
+
+Fan-out / load-balancing with reuseport to have one socket per CPU is
+not possible, though. You would need to do that with Netfilter.
+
+-Jakub
+
+[0] https://www.kernel.org/doc/Documentation/networking/tproxy.txt
+[1] https://blog.cloudflare.com/how-we-built-spectrum/
