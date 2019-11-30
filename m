@@ -2,104 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0101110DCB7
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 06:39:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DBE710DCB8
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 06:49:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725825AbfK3Fjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 00:39:42 -0500
-Received: from mail-oi1-f170.google.com ([209.85.167.170]:46348 "EHLO
-        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbfK3Fjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 00:39:41 -0500
-Received: by mail-oi1-f170.google.com with SMTP id a124so4135931oii.13
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 21:39:41 -0800 (PST)
+        id S1725834AbfK3FpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 00:45:04 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35098 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbfK3FpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 00:45:04 -0500
+Received: by mail-pl1-f195.google.com with SMTP id s10so13788061plp.2
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 21:45:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=q/hy16ieaAkbFI/xEX93KuHwjI5EpxTeuAlhz8FxldM=;
-        b=nx9vJElMcZJehegwb99jLW/48kXSwR0p9SBYnb7TW0bJVe2g5yxjMEz+SvhrCW3YWp
-         uUifSndlvM7ikNvGQzdaVeH/k/7E7DXFyC2QbXhu1kc7Cp2IGru32ftz6SHd17SSb83C
-         fRic0IuOU3RHq9H7/bYunMauy1qH0RBdGq/foVNbxT4m6jna9o7zzi8JIMT1Ds9CcEpX
-         H/W5zbuNmd7nD2kuGabkW0joHvAQqNTc4zGQfW1SjuNklFzltR43SGb7BOHduJJT31w7
-         3OurhWDt+RNZnZNywmd2kVSHD2BdXSPESGgc16ZgWYIzxTqCt6BYZstKQu3LPFESRe9U
-         r9ng==
+        bh=bo8UTbn2I0UhAnxGVUhq9aeLyZDq0y88qPx178xvBoA=;
+        b=FiKhLU694hR+C38VZslnVaEs7xDacSWiUZOYm3i3f8OYUPyI0vV2zWLGzjpO7kIuvV
+         voh7CyMRadAxn707kzsw40fErId1IEzUUq+aephyL+fWqEIYGp3/IYJfMkd4TaJSgg9w
+         NxBYxSqKct6/AHY5EewS09y4Lpma58dpNEi+/xIf27HK30UQ0lTi9RMwSAT618pCyRZP
+         HBRjdEim7BEJclkbCDG4y+lrbGs18uSzSAEBdtU9w6geoj34LRyERL1s1+rIwRlGgz5I
+         c5jqeJ63C6Q+56F9WNcWc18xPYsPA77yiHwaHPztN7pFpIkYccaDvZGM9TL22wgpwV8d
+         viBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=q/hy16ieaAkbFI/xEX93KuHwjI5EpxTeuAlhz8FxldM=;
-        b=eyxCB+08PakgpG5gRYuvJaJIFmBKSVCfOyDKgvGI4XG7Fd8UPvoDh373Q2l7sVIhen
-         7R4g8F/sJIsnRa+IM7OSeWt9fCzgOeF/lqEw/xYnFFfuHpTBrETLDu344+B7VgWodWxt
-         94flt92oY8+DKfpuwOCDaK+2ELqiDV61TtdHS8V+8k1hFV6mRjRG1CSR4+ax/gL7+rAY
-         lUrNzYNKCFPg/uHmm4hLW4G7OVFm/o509KFp/Xxf8+F778Q2UQ+ovj4oplu/R9Jrftkc
-         DVvKev2BDE/iz/AJ3J2zNHdetQSP2lc+rSTJ1yhjUFqyH5QPSPac5ZEK8gBBfYoQsa1j
-         IcEw==
-X-Gm-Message-State: APjAAAW5uKjceDtiEKH0wAtyDo+L31ty0InQ4IGNYS2WFoK9qxj4uKyM
-        ziWLzY1YGwMavYTLYJDFWmmZCumpD6KJo4O8wCI=
-X-Google-Smtp-Source: APXvYqz4FXzrlxHJv61ZR4y+mjDx37HpW4dI5Le+AKtLW2z7KGXjoQFxi4fiqD9ho46WwKMNO0xAA04PRYJSe586QaI=
-X-Received: by 2002:a05:6808:ab4:: with SMTP id r20mr15566900oij.166.1575092380748;
- Fri, 29 Nov 2019 21:39:40 -0800 (PST)
+        bh=bo8UTbn2I0UhAnxGVUhq9aeLyZDq0y88qPx178xvBoA=;
+        b=KovYEgRGLKJ5Ncjcs6fZ3VxRnFc37GotaOPly4LgTFelnth/zRmzkrBvitEzd7mduN
+         s25EutvhoV3h/6iP75DivD5CYphdbniykJUFc2n3a8GzAZVOMJA1EkOpOc7qnHsBM4kB
+         8z5Z71K8mDnkNqfqq2yHjgdlccVVNK5DzKHnsj8PFEILMOi9kQSW4mntB7WMvC8XJcb9
+         y54PeQp4TUrGyHvU53Mc9EnP8x411xuuyNmbhoxRdlZZXCK0Dlo7MpWn9QNPF2pZMsED
+         YEFgiRxSITdhFCI9BOk4CdtqLxy2UKHKiH0DqaPBTwCRPRVsPxnc69DdeI5bB31OEVdK
+         RU4g==
+X-Gm-Message-State: APjAAAVc9oZzwGBBXlzAImrqV3QHiVM3HMYOjC/iPktowOP6ha6LzQ1c
+        FwQjC6dK6p0pazMHQejgdwDfWoBzQV8Tl38qgJM=
+X-Google-Smtp-Source: APXvYqzLTsF//a0DqjjxuIBNj9BGi2jiqnfZ6FzeziiRNochujHyw3xna0IyXMifW6ok0rJqDPwT4AFxf6dZfu6X60s=
+X-Received: by 2002:a17:90a:77c9:: with SMTP id e9mr23503128pjs.70.1575092703539;
+ Fri, 29 Nov 2019 21:45:03 -0800 (PST)
 MIME-Version: 1.0
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org> <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org> <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
- <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org> <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
- <81ace6052228e12629f73724236ade63@codeaurora.org> <CADVnQymDSZb=K8R1Gv=RYDLawW9Ju1tuskkk8LZG4fm3yxyq3w@mail.gmail.com>
- <74827a046961422207515b1bb354101d@codeaurora.org> <827f0898-df46-0f05-980e-fffa5717641f@akamai.com>
- <cae50d97-5d19-7b35-0e82-630f905c1bf6@gmail.com> <5a267a9d-2bf5-4978-b71d-0c8e71a64807@gmail.com>
- <0101016eba384308-7dd6b335-8b75-4890-8733-a4dde8064d11-000000@us-west-2.amazonses.com>
-In-Reply-To: <0101016eba384308-7dd6b335-8b75-4890-8733-a4dde8064d11-000000@us-west-2.amazonses.com>
-From:   Avinash Patil <avinashapatil@gmail.com>
-Date:   Fri, 29 Nov 2019 21:39:33 -0800
-Message-ID: <CAJwzM1mkR1dO-Jq7XH40MQz6CxU97YON5tembVL2DRPD6RYy9g@mail.gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     subashab@codeaurora.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Josh Hunt <johunt@akamai.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
+References: <20191128063048.90282-1-dust.li@linux.alibaba.com>
+In-Reply-To: <20191128063048.90282-1-dust.li@linux.alibaba.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 29 Nov 2019 21:44:52 -0800
+Message-ID: <CAM_iQpVYS9Am6G46iiNhg_OAft_=CLd5ziAFsMKt8sLmhuMCnQ@mail.gmail.com>
+Subject: Re: [PATCH] net: sched: keep __gnet_stats_copy_xxx() same semantics
+ for percpu stats
+To:     Dust Li <dust.li@linux.alibaba.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-
-This crash looks quite similar to the one I am experiencing [1] and
-reported already.
-
-[1] https://www.spinics.net/lists/netdev/msg611694.html
-
-Thanks,
-Avinash
-
-On Fri, Nov 29, 2019 at 6:52 PM <subashab@codeaurora.org> wrote:
+On Wed, Nov 27, 2019 at 10:31 PM Dust Li <dust.li@linux.alibaba.com> wrote:
 >
-> >>> Since tcp_write_queue_purge() calls tcp_rtx_queue_purge() and we're
-> >>> deleting everything in the retrans queue there, doesn't it make sense
-> >>> to zero out all of those associated counters? Obviously clearing
-> >>> sacked_out is helping here, but is there a reason to keep track of
-> >>> lost_out, retrans_out, etc if retrans queue is now empty? Maybe
-> >>> calling tcp_clear_retrans() from tcp_rtx_queue_purge() ?
-> >>
-> >> First, I would like to understand if we hit this problem on current
-> >> upstream kernels.
-> >>
-> >> Maybe a backport forgot a dependency.
-> >>
-> >> tcp_write_queue_purge() calls tcp_clear_all_retrans_hints(), not
-> >> tcp_clear_retrans(),
-> >> this is probably for a reason.
-> >>
-> >> Brute force clearing these fields might hide a serious bug.
-> >>
-> >
-> > I guess we are all too busy to get more understanding on this :/
+> __gnet_stats_copy_basic/queue() support both percpu stat and
+> non-percpu stat, but they are handle in a different manner:
+> 1. For percpu stat, percpu stats are added to the return value;
+> 2. For non-percpu stat, non-percpu stats will overwrite the
+>    return value;
+> We should keep the same semantics for both type.
 >
-> Our test devices are on 4.19.x and it is not possible to switch to a
-> newer
-> version. Perhaps Josh has seen this on a newer kernel.
+> This patch makes percpu stats follow non-percpu's manner by
+> reset the return bstats before add the percpu bstats to it.
+> Also changes the caller in sch_mq.c/sch_mqprio.c to make sure
+> they dump the right statistics for percpu qdisc.
+>
+> One more thing, the sch->q.qlen is not set with nonlock child
+> qdisc in mq_dump()/mqprio_dump(), add that.
+>
+> Fixes: 22e0f8b9322c ("net: sched: make bstats per cpu and estimator RCU safe")
+> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> ---
+>  net/core/gen_stats.c   |  2 ++
+>  net/sched/sch_mq.c     | 34 ++++++++++++++++------------------
+>  net/sched/sch_mqprio.c | 35 +++++++++++++++++------------------
+>  3 files changed, 35 insertions(+), 36 deletions(-)
+>
+> diff --git a/net/core/gen_stats.c b/net/core/gen_stats.c
+> index 1d653fbfcf52..d71af69196c9 100644
+> --- a/net/core/gen_stats.c
+> +++ b/net/core/gen_stats.c
+> @@ -120,6 +120,7 @@ __gnet_stats_copy_basic_cpu(struct gnet_stats_basic_packed *bstats,
+>  {
+>         int i;
+>
+> +       memset(bstats, 0, sizeof(*bstats));
+>         for_each_possible_cpu(i) {
+>                 struct gnet_stats_basic_cpu *bcpu = per_cpu_ptr(cpu, i);
+>                 unsigned int start;
+> @@ -288,6 +289,7 @@ __gnet_stats_copy_queue_cpu(struct gnet_stats_queue *qstats,
+>  {
+>         int i;
+>
+> +       memset(qstats, 0, sizeof(*qstats));
+
+
+I think its caller is responsible to clear the stats, so you don't need to
+clear them here? It looks like you do memset() twice.
+
+Does this patch fix any bug? It looks more like a clean up to me, if so
+please mark it for net-next.
+
+Thanks.
