@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70CE410DCC2
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 07:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B865710DCD3
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 07:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725874AbfK3GIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 01:08:07 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34878 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbfK3GIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 01:08:07 -0500
-Received: by mail-pf1-f196.google.com with SMTP id q13so15690393pff.2
-        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 22:08:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pu7mgGugDk77kg65Gvrgjv44Cixq42LYmr59MdubKI4=;
-        b=sU+Mf/kIhSeoRLmPQMAkmsuqTlc2oR9TsBGS3anOVRZxSbJ0z+Hk17l0noldXOT3B9
-         HktbvLVL3iAkZIG4N6QfZ8QmrOIXRVBnyL9Y6SEv5ybKmbTgVJCk8UQDn2MWfGZZNzXd
-         sWyPxssbvSxQhVOi1KzMIlnjMEUehdH/kyFMUMs9thKMqRYjjBGMEM4pfXrK8/S8DUEV
-         s2kWHvKoWGanFiIgl9S6AQr9GiBR/i+NSl360Ht8chaxMl+S+7rDHzSJhHx0Z3q5vKUP
-         IHWtdAcve1qZl7CaGgegvAyYxdSUvSvPCmfXQjTv6U7UegBAL44GbtkM/WXipA7iDgP4
-         dSaQ==
+        id S1725997AbfK3GwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 01:52:02 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:47533 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbfK3GwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 01:52:01 -0500
+Received: by mail-il1-f199.google.com with SMTP id d4so22106943ile.14
+        for <netdev@vger.kernel.org>; Fri, 29 Nov 2019 22:52:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pu7mgGugDk77kg65Gvrgjv44Cixq42LYmr59MdubKI4=;
-        b=pAt7YZDlYlXSi/dQzRo0yYvy//5q+g1vxiP3GUPdQhJnddfmVfoQN2opJ6Vi0SIWdn
-         b5m51T9WgrqUEwH02LySLBUflJK4HWLaLcYmrGTjufNk3mUy7ogI9gC6R8/CBLpJuS/y
-         qyFJvrNVWytGh9pPXBwCrxAEGbRA3Juo7nTNgrkeua9xpXDcKNOPnx5r5TQFwy196RAK
-         JHFx3aVbU4fHNEbYBD0ccfgmqpvSEKWjP9DRzYy9JL7nZiF93NsFgNEChdnr/sEuWXXb
-         asdb9oMgAubFhn0Bo9ek1dAvVzxo/uuUr5bsIrxGu5MGShF3ULGgKbtO17tApI3iXLJ5
-         yLrA==
-X-Gm-Message-State: APjAAAXiXNEkGRIexmi0BZYwDrPgl8878+HRV/LLdx7tbZ0MvOs9Q4qV
-        yxDzD6zcUgARMYsCTNGc+YRgEfWsC4SDCmDtcg2jOsfBIp8=
-X-Google-Smtp-Source: APXvYqyWs6Md31ROUqiXfOWjb7MY2RDGNuoAkWgqYpYAVzFRxVpTpIgZZ4MV3OvwZfWuMNe1XbWSn1qN99UqfGosvs4=
-X-Received: by 2002:aa7:96ef:: with SMTP id i15mr59429567pfq.242.1575094085469;
- Fri, 29 Nov 2019 22:08:05 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=LH+oNIdXBIwxjg57W3FD/l3zRLVtt0ZQgS0IxdqkKI4=;
+        b=RkaiTDLl09m/B8V8dt6z5PUkZ9+OcIrlzDNgCKyOuC/uJ0pqaSgopokSKPZgrazlAv
+         B2y8qE24Wsvm7p4IvTd3hXK5hO4xbm08k6Mj4vhDFaCW2+I9573wDjX9qVk2KSKnY4EO
+         uJrhOPjHfmt6zsrwwkPTF2cdT+JPxJz5V70yeyiTG18wKXlpwKkBbmfQg7OXB5kYVsWI
+         otYKldC/LsVs5u1XqClocqY7vRJbysctbjkiI+Jcf129nAzBmtjywCqMF5lgbm5oYR7S
+         iUFn4CfN9dImDKbjmP0Hgf+zKxYTuxZ6d6JTOd4xznwoii2Gbm61JDwjpOXiMDCbnv+I
+         c4fQ==
+X-Gm-Message-State: APjAAAWM4mUlzTDpHB+RDtvdQnTXi91Cqf/r7YuWZ6yO5+6DdxfpKRBR
+        vDkcIU39CojI2Om4MkFbXDVapLv8MF+Va/t0DG+4X0ne19YA
+X-Google-Smtp-Source: APXvYqzqoowMlvXf8CnOvya7QGH5LnuwTEQxwGpMIbMv3o9ZqFbpzbnW4ixzkc+NCt/1cA8yqhHjXrz1y4jgMjrpQgUS8JclaVsN
 MIME-Version: 1.0
-References: <1574848877-7531-1-git-send-email-martinvarghesenokia@gmail.com> <20191127.112401.1924842050321978996.davem@davemloft.net>
-In-Reply-To: <20191127.112401.1924842050321978996.davem@davemloft.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 29 Nov 2019 22:07:53 -0800
-Message-ID: <CAM_iQpWu9DQ06FYo7xtuLFnHP-wx35Uva_0-im7XwemKtLno0A@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] Enhanced skb_mpls_pop to update ethertype of
- the packet in all the cases when an ethernet header is present is the packet.
-To:     David Miller <davem@davemloft.net>
-Cc:     martinvarghesenokia@gmail.com,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        pravin shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, martin.varghese@nokia.com
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a6b:6e05:: with SMTP id d5mr11393518ioh.90.1575096721095;
+ Fri, 29 Nov 2019 22:52:01 -0800 (PST)
+Date:   Fri, 29 Nov 2019 22:52:01 -0800
+In-Reply-To: <001a113f39820d16d50567379661@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008c415905988ac808@google.com>
+Subject: Re: WARNING in tcp_enter_loss (2)
+From:   syzbot <syzbot+c5a3099b94cbdd9cd6da@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, jmorris@namei.org,
+        kaber@trash.net, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, ncardwell@google.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        ycheng@google.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 11:24 AM David Miller <davem@davemloft.net> wrote:
->
->
-> net-next is closed, please resubmit this when net-next opens back up.
->
+syzbot has bisected this bug to:
 
-I think this patch is intended for -net as it fixes a bug in OVS?
+commit a0370b3f3f2cfb8b424b04c0545414abaa53f5ee
+Author: Yuchung Cheng <ycheng@google.com>
+Date:   Fri Jan 13 06:11:36 2017 +0000
 
-Martin, if it is the case, please resend with targeting to -net instead.
-Also, please make the $subject shorter.
+     tcp: enable RACK loss detection to trigger recovery
 
-Thanks.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=114cbdf2e00000
+start commit:   0644f186 Merge tag 'for_linus' of git://git.kernel.org/pub..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=134cbdf2e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=154cbdf2e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=61c12b53c2a25ec4
+dashboard link: https://syzkaller.appspot.com/bug?extid=c5a3099b94cbdd9cd6da
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=112146e7800000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1317f95b800000
+
+Reported-by: syzbot+c5a3099b94cbdd9cd6da@syzkaller.appspotmail.com
+Fixes: a0370b3f3f2c ("tcp: enable RACK loss detection to trigger recovery")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
