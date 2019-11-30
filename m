@@ -2,71 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CC310DF53
-	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 22:04:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7696D10DF54
+	for <lists+netdev@lfdr.de>; Sat, 30 Nov 2019 22:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbfK3VED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 16:04:03 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:51975 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbfK3VED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 16:04:03 -0500
-Received: by mail-io1-f71.google.com with SMTP id t18so17272290iob.18
-        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 13:04:01 -0800 (PST)
+        id S1727303AbfK3VES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 16:04:18 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36010 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727025AbfK3VES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 16:04:18 -0500
+Received: by mail-pl1-f196.google.com with SMTP id k20so1899536pls.3
+        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 13:04:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q7CNSVKfYHf9+OSdLNEmF7ICS08y+nP7CNDcprbXNzo=;
+        b=tZW7gu5xRldUWPZ3mC53D19hCrr2ORZyORiUq6sOwIzWIprZvwg1PW38181sunXpLf
+         7czihvj4Try9Qoq/GYrvRGe1/UsqFM+n7byXOzg3H4NisiZAuHjsbwOdp82SE8/oHT9K
+         Mv9dUiD616Qa14zosR71CGx1eze7rE3QwC4SbrHM9RdAa+73wvg97i47O0d5GTKsMIP+
+         tZdAiM79e4HceThm3yBpa8HEj59m5OKXvzixKdkj3ns/pTVoMUsGsAz6oNp0SsagXE3c
+         6GZm8FLpNnaJjxbTP6gNphzNtlVYaU9OkP4/y3jDQMd6zdOB2pXopM/o25mWydZgmrGK
+         YDkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=ajRnvypnjscQlLjcnb2EcjX6WsZvwjmcn8iDAJm1MBA=;
-        b=jBrEC0ibeqO9WPDvRNraMSkJbzvWQbGdg9XhSgeqXkDWb7q5DuR5o7NnaugkhLWXsG
-         2XKUJBdrs60dEMT8uwOlhUg99Kq846yTG5YsdGiLuttvrWZlwH0331xVC78uHQPRlbwD
-         tdgcZAsu5TjjxVA88BoXxFv4kd+tEXHh9aCzgpItDiHerEhYPLhzGlwxzkhq7G7PTGcL
-         LVRIMoAk/r+qP5QCp3yJe+UeTuntFQtULwrVSiUo0XgnX2arp0aEBJnUPIJ9WfgjNDTL
-         1q+50wHjydzgc1+5olp9URzJ7xn7mTHUawt85TuR+R9pUCnfy2Xk1uAKH2q0WIISQZkG
-         Y8rA==
-X-Gm-Message-State: APjAAAWk6fvuWx3/JE7AVx2BKb1B+CbgPIWX9aKB4czTcDL1Nb0mkrL7
-        z7Auj3IX1CrIMmaH/xIWv+zfZElxiVKnF1R8qGW7wYndDq6e
-X-Google-Smtp-Source: APXvYqyk0rTcqugfdtur6uiuIuBVEo0q39xqazGWbjHn8D5vwxIrxEHCKojMOgpwHWUMv5+j3+qw1ag0Lxh+CojKUAkDMAHfCxI3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q7CNSVKfYHf9+OSdLNEmF7ICS08y+nP7CNDcprbXNzo=;
+        b=sE5h4jSL+05uTqyqVblPEHRVwDpfJB/8zjwZ0vrdUDskYLpHvnu1h1Ryt9kEsT7Y3h
+         xEUykDW4Td0gzBUAtCbZ/5iWvpkhGtqVRd2LgpV7qsBsJSLEQyMdxA4lWGJtSQCAC5bJ
+         K76JMqWwTitq1EbPYGetoCvADO1A5fV5CVeJfdjT/xDihoDLhz4f0WaHWIL1xEMglsV/
+         YI3AFJOAPPOixhZ+vAx+3MFWgyPgHZe+w5PVXFi7LuyNNEl9r8StDIqrcOTR71E6rhor
+         qydGYRGRBVk/o7mS0BGowCnUAMFIuNAWtv02gBclB6a3NX8bzFiuNVix9WysbR11d7d7
+         UFfA==
+X-Gm-Message-State: APjAAAXy/tr3iAlUN8jvG713wSiuWR5JsbtN+r8iZAWL3kzukPtF0tHY
+        IbIcrkNcomnoQTo7z21uUsGpDOHVapSpN3JeAc4=
+X-Google-Smtp-Source: APXvYqwziRqU2vx/5CWenNVXo/1+xikTb17+n9Cqr6C/ptmpENCI12ALHwjWFICJT65L6tyGv0cum+OYZvUPUQglD7s=
+X-Received: by 2002:a17:902:9a03:: with SMTP id v3mr20382318plp.61.1575147857420;
+ Sat, 30 Nov 2019 13:04:17 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3b6:: with SMTP id z22mr8076076jap.35.1575147841422;
- Sat, 30 Nov 2019 13:04:01 -0800 (PST)
-Date:   Sat, 30 Nov 2019 13:04:01 -0800
-In-Reply-To: <089e0825d4a4d2cb2a0562e878f1@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008e8a99059896af4c@google.com>
-Subject: Re: possible deadlock in sch_direct_xmit
-From:   syzbot <syzbot+29cc278357da941e304e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        lucien.xin@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20191130142400.3930-1-ap420073@gmail.com> <CAM_iQpWmwreeCuOVnTTucHcXkmLP-QRtzW22_g6QWM2-QoS5WA@mail.gmail.com>
+In-Reply-To: <CAM_iQpWmwreeCuOVnTTucHcXkmLP-QRtzW22_g6QWM2-QoS5WA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 30 Nov 2019 13:04:05 -0800
+Message-ID: <CAM_iQpWYrFx-NbnHpHWmVaf7AoF3Zvi1s6i0Egsf7Ct064X0Xw@mail.gmail.com>
+Subject: Re: [net PATCH] hsr: fix a NULL pointer dereference in hsr_dev_xmit()
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        treeze.taeung@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Sat, Nov 30, 2019 at 10:35 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > Test commands:
+> >     ip netns add nst
+> >     ip link add v0 type veth peer name v1
+> >     ip link add v2 type veth peer name v3
+> >     ip link set v1 netns nst
+> >     ip link set v3 netns nst
+> >     ip link add hsr0 type hsr slave1 v0 slave2 v2
+> >     ip a a 192.168.100.1/24 dev hsr0
+> >     ip link set v0 up
+> >     ip link set v2 up
+> >     ip link set hsr0 up
+> >     ip netns exec nst ip link add hsr1 type hsr slave1 v1 slave2 v3
+> >     ip netns exec nst ip a a 192.168.100.2/24 dev hsr1
+> >     ip netns exec nst ip link set v1 up
+> >     ip netns exec nst ip link set v3 up
+> >     ip netns exec nst ip link set hsr1 up
+> >     hping3 192.168.100.2 -2 --flood &
+> >     modprobe -rv hsr
+>
+> Looks like the master port got deleted without respecting RCU
+> readers, let me look into it.
 
-commit c84bed440e4e11a973e8c0254d0dfaccfca41fb0
-Author: Xin Long <lucien.xin@gmail.com>
-Date:   Sun Oct 1 14:00:56 2017 +0000
 
-     ip_gre: erspan device should keep dst
+It seems hsr_del_port() gets called on module removal path too
+and we delete the master port before waiting for RCU readers
+there.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=153a767ee00000
-start commit:   c92a9a46
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=173a767ee00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=133a767ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46986c099cb53bc6
-dashboard link: https://syzkaller.appspot.com/bug?extid=29cc278357da941e304e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143636c9800000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16856849800000
+Does the following patch help anything? It just moves the list_del_rcu()
+after synchronize_rcu() only for master port.
 
-Reported-by: syzbot+29cc278357da941e304e@syzkaller.appspotmail.com
-Fixes: c84bed440e4e ("ip_gre: erspan device should keep dst")
+diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
+index ee561297d8a7..c9638ee00d20 100644
+--- a/net/hsr/hsr_slave.c
++++ b/net/hsr/hsr_slave.c
+@@ -174,9 +174,9 @@ void hsr_del_port(struct hsr_port *port)
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+        hsr = port->hsr;
+        master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
+-       list_del_rcu(&port->port_list);
+
+        if (port != master) {
++               list_del_rcu(&port->port_list);
+                if (master) {
+                        netdev_update_features(master->dev);
+                        dev_set_mtu(master->dev, hsr_get_max_mtu(hsr));
+@@ -193,5 +193,7 @@ void hsr_del_port(struct hsr_port *port)
+
+        if (port != master)
+                dev_put(port->dev);
++       else
++               list_del_rcu(&port->port_list);
+        kfree(port);
+ }
