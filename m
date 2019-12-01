@@ -2,143 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B02BF10DFBC
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 00:04:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A48C10DFE4
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 01:05:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbfK3XDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 18:03:17 -0500
-Received: from rfvt.org.uk ([37.187.119.221]:49596 "EHLO rfvt.org.uk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727025AbfK3XDR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Nov 2019 18:03:17 -0500
-X-Greylist: delayed 546 seconds by postgrey-1.27 at vger.kernel.org; Sat, 30 Nov 2019 18:03:16 EST
-Received: from wylie.me.uk (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by rfvt.org.uk (Postfix) with ESMTPS id 074BD80260;
-        Sat, 30 Nov 2019 22:54:09 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wylie.me.uk;
-        s=mydkim005; t=1575154449;
-        bh=sCORn2MAw0TG+WBgIwwZWALjHRYvQWJaKn2hxmwLojU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=vO+WHnDz+j6Oog/JSlgcz93NUFWToy9N2FtsN3fmP/2xIbIN5LQRdaNQvnwnRl+jm
-         BmrKbuqiLUvPdEc53/v5rLSuzRPmFhLP7YePb58BpQPiNlUJrRgQufmPJaBF4UmCH3
-         TWnOJrLdwjm1kPYu1BKE06LtyyIOB1KPJDkMxwdms/xPPU/M2/Uqkv4+lnnE0lI57e
-         1jfEWOpcixDYoWaZzoODt0MXtkJ7wDh0mBTEkALCN+9PgNqT3L27b63WwQRyEuGg3K
-         bZuUMoxtkHOI0Jfsna63beJI5KlW26OgWdRq6jswJPYAxSPCNHtFmNoK/uD6hDCCOG
-         CZGqB86xKeSwA==
+        id S1726968AbfLAAEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Nov 2019 19:04:54 -0500
+Received: from mail104.syd.optusnet.com.au ([211.29.132.246]:36306 "EHLO
+        mail104.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725897AbfLAAEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 19:04:54 -0500
+Received: from dimstar.local.net (n122-110-44-45.sun2.vic.optusnet.com.au [122.110.44.45])
+        by mail104.syd.optusnet.com.au (Postfix) with SMTP id 964D743FE5E
+        for <netdev@vger.kernel.org>; Sun,  1 Dec 2019 11:04:40 +1100 (AEDT)
+Received: (qmail 19400 invoked by uid 501); 1 Dec 2019 00:04:39 -0000
+Date:   Sun, 1 Dec 2019 11:04:39 +1100
+From:   Duncan Roe <duncan_roe@optusnet.com.au>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Chris Metcalf <cmetcalf@ezchip.com>, coreteam@netfilter.org,
+        David Miller <davem@davemloft.net>,
+        Chen Gang <gang.chen.5i5j@gmail.com>,
+        Patrick McHardy <kaber@trash.net>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: KASAN: use-after-free Read in blkdev_get
+Message-ID: <20191201000439.GA15496@dimstar.local.net>
+Mail-Followup-To: Dmitry Vyukov <dvyukov@google.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Chris Metcalf <cmetcalf@ezchip.com>, coreteam@netfilter.org,
+        David Miller <davem@davemloft.net>,
+        Chen Gang <gang.chen.5i5j@gmail.com>,
+        Patrick McHardy <kaber@trash.net>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <000000000000e59aab056e8873ae@google.com>
+ <0000000000000beff305981c5ac6@google.com>
+ <20191124193035.GA4203@ZenIV.linux.org.uk>
+ <20191130110645.GA4405@dimstar.local.net>
+ <CACT4Y+bg7bZOSg0P9VXq8yG2odAJMg6b6N2fXxbamOmKiz3ohw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <24034.62224.766635.808185@wylie.me.uk>
-Date:   Sat, 30 Nov 2019 22:54:08 +0000
-From:   "Alan J. Wylie" <alan@wylie.me.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: 5.4 Regression in r8169 with jumbo frames - packet loss/delays
-In-Reply-To: <75146b50-9518-8588-81fa-f2811faf6cca@gmail.com>
-References: <24034.56114.248207.524177@wylie.me.uk>
-        <75146b50-9518-8588-81fa-f2811faf6cca@gmail.com>
-X-Mailer: VM 8.2.0b under 26.3 (x86_64-pc-linux-gnu)
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+bg7bZOSg0P9VXq8yG2odAJMg6b6N2fXxbamOmKiz3ohw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.3 cv=LYdCFQXi c=1 sm=1 tr=0
+        a=4DzML1vCOQ6Odsy8BUtSXQ==:117 a=4DzML1vCOQ6Odsy8BUtSXQ==:17
+        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=pxVhFHJ0LMsA:10
+        a=RSmzAf-M6YYA:10 a=PO7r1zJSAAAA:8 a=7QvuB2UPAAAA:8 a=edf1wS77AAAA:8
+        a=hSkVLCK3AAAA:8 a=mzoz-TVAAAAA:20 a=VwQbUJbxAAAA:8 a=kGbAZRCgAAAA:20
+        a=EI3vZeS8J00HEDANUmYA:9 a=CjuIK1q_8ugA:10 a=vVHabExCe68A:10
+        a=PyAPxfarwdVEPLbpdMBu:22 a=DcSpbTIhAlouE1Uv7lRv:22
+        a=cQPPKAXgyycSBL8etih5:22 a=AjGcO6oz07-iQ99wixmX:22
+        a=pHzHmUro8NiASowvMSCR:22 a=Ew2E2A-JSTLzCXPT_086:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-at 22:37 on Sat 30-Nov-2019 Heiner Kallweit (hkallweit1@gmail.com) wrote:
+On Sat, Nov 30, 2019 at 04:53:12PM +0100, Dmitry Vyukov wrote:
+> On Sat, Nov 30, 2019 at 12:06 PM Duncan Roe <duncan_roe@optusnet.com.au> wrote:
+> > > > syzbot has bisected this bug to:
+> > > >
+> > > > commit 77ef8f5177599efd0cedeb52c1950c1bd73fa5e3
+> > > > Author: Chris Metcalf <cmetcalf@ezchip.com>
+> > > > Date:   Mon Jan 25 20:05:34 2016 +0000
+> > > >
+> > > >     tile kgdb: fix bug in copy to gdb regs, and optimize memset
+> > > >
+> > > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1131bc0ee00000
+> > > > start commit:   f5b7769e Revert "debugfs: inode: debugfs_create_dir uses m..
+> > > > git tree:       upstream
+> > > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=1331bc0ee00000
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1531bc0ee00000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=709f8187af941e84
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=eaeb616d85c9a0afec7d
+> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=177f898f800000
+> > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147eb85f800000
+> > > >
+> > > > Reported-by: syzbot+eaeb616d85c9a0afec7d@syzkaller.appspotmail.com
+> > > > Fixes: 77ef8f517759 ("tile kgdb: fix bug in copy to gdb regs, and optimize
+> > > > memset")
+> > > >
+> > > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> > >
+> > > Seriously?  How can the commit in question (limited to arch/tile/kernel/kgdb.c)
+> > > possibly affect a bug that manages to produce a crash report with
+> > > RSP: 0018:ffffffff82e03eb8  EFLAGS: 00000282
+> > > RAX: 0000000000000000 RBX: ffffffff82e00000 RCX: 0000000000000000
+> > > RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff81088779
+> > > RBP: ffffffff82e03eb8 R08: 0000000000000000 R09: 0000000000000001
+> > > R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> > > R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff82e00000
+> > > FS:  0000000000000000(0000) GS:ffff88021fc00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 000000c420447ff8 CR3: 0000000213184000 CR4: 00000000001406f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > in it?  Unless something very odd has happened to tile, this crash has
+> > > been observed on 64bit x86; the names of registers alone are enough
+> > > to be certain of that.
+> > >
+> > > And the binaries produced by an x86 build should not be affected by any
+> > > changes in arch/tile; not unless something is very wrong with the build
+> > > system.  It's not even that this commit has fixed an earlier bug that
+> > > used to mask the one manifested here - it really should have had zero
+> > > impact on x86 builds, period.
+> > >
+> > > So I'm sorry, but I'm calling bullshit.  Something's quite wrong with
+> > > the bot - either its build system or the bisection process.
+> >
+> > The acid test would be: does reverting that commit make the problem go away?
+> >
+> > See, for example, https://bugzilla.kernel.org/show_bug.cgi?id=203935
+> >
+> > Cheers ... Duncan.
+>
+> This is done as part of any bisection by definition, right? The test
+> was done on the previous commit (effectively this one reverted) and no
+> crash was observed. Otherwise bisection would have been pointed to a
+> different commit.
+>
+Agree that's what bisecting does. What I had in mind was to make a patch to
+remove the identified commit, and apply that to the most recent revision
+possible. Then see if that makes the problem go away.
 
-> Thanks for the report. A jumbo fix for one chip version may have
-> revealed an issue with another chip version. Could you please try
-> the following?
+However when I look at my clone of
+git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git and compare
+77ef8f5177 with the previous commit a7d1357664, "git diff --stat" shows
 
-I'll do that in the morning.
+> 745 files changed, 8192 insertions(+), 15408 deletions(-)
 
-> I checked the vendor driver r8168 and there's no special sequence
-> to configure jumbo mode.
-> 
-> What would be interesting:
-> Do you set the (jumbo) MTU before bringing the device up?
+The last few lines from a grep of "arch" are:
 
-In the meantime here's some info: I use systemd/networkd, I'd suspect
-that it does the MTU in the link, before the network.
+> arch/s390/oprofile/backtrace.c                     |    8 +-
+> arch/tile/kernel/kgdb.c                            |    8 +-
+> arch/x86/Kconfig                                   |    5 +-
+> arch/x86/include/asm/livepatch.h                   |    2 +-
+> arch/x86/include/asm/processor.h                   |    2 +-
+> arch/x86/kernel/cpu/perf_event_amd_uncore.c        |    2 +
+> arch/x86/lib/copy_user_64.S                        |  142 ++-
+> arch/x86/mm/fault.c                                |   15 +-
+> arch/x86/mm/gup.c                                  |    2 +-
+> arch/x86/mm/numa.c                                 |    2 +-
 
-$ for f in /etc/systemd/network/*; do echo "========== $f =========="; cat $f; done
-========== /etc/systemd/network/01br0.netdev ==========
-[NetDev]
-Name=br0
-Kind=bridge
-MACAddress=90:2b:34:9d:ed:6f
-========== /etc/systemd/network/02enp3s0.link ==========
-[Match]
-Driver=r8169
+Enough said?
 
-[Link]
-MTUBytes=6000
-========== /etc/systemd/network/02enp3s0.network ==========
-[Match]
-Name=enp3s0
-
-[Network]
-Bridge=br0
-
-[Link]
-MTUBytes=6000
-========== /etc/systemd/network/03br0.network ==========
-[Match]
-Name=br0
-
-[Link]
-MTUBytes=6000
-
-[Network]
-DNS=192.168.21.1
-Address=192.168.21.2/24
-Gateway=192.168.21.1
-
-Also, here's a grep of the syslog, I'm not sure how much to trust the
-ordering though:
-
-Nov 30 20:02:10 frodo kernel: Linux version 5.4.0-rc1-00312-g4ebcb113edcc (alan@frodo) (gcc version 9.2.0 (Gentoo Hardened 9.2.0-r2 p3)) #4 SMP PREEMPT Sat Nov 30 19:59:34 GMT 2019
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: netdev ready
-Nov 30 20:02:10 frodo systemd-networkd[819]: Enumeration completed
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: rtnl: received neighbor message with invalid family, ignoring.
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: IPv6 successfully enabled
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: Gained carrier
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: Lost carrier
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: Gained IPv6LL
-Nov 30 20:02:10 frodo systemd-networkd[819]: enp3s0: Gained carrier
-Nov 30 20:02:10 frodo systemd-networkd[819]: enp3s0: Configured
-Nov 30 20:02:10 frodo systemd-networkd[819]: br0: Gained carrier
-Nov 30 20:02:10 frodo ntpd[1029]: 2019-11-30T20:02:10 ntpd[1029]: IO: Listen normally on 3 br0 192.168.21.2:123
-Nov 30 20:02:10 frodo ntpd[1029]: 2019-11-30T20:02:10 ntpd[1029]: IO: Listen normally on 5 br0 [fe80::922b:34ff:fe9d:ed6f%3]:123
-Nov 30 20:02:10 frodo ntpd[1029]: IO: Listen normally on 3 br0 192.168.21.2:123
-Nov 30 20:02:10 frodo ntpd[1029]: IO: Listen normally on 5 br0 [fe80::922b:34ff:fe9d:ed6f%3]:123
-Nov 30 20:02:10 frodo kernel: device: 'eth0': device_add
-Nov 30 20:02:10 frodo kernel: PM: Adding info for No Bus:eth0
-Nov 30 20:02:10 frodo kernel: r8169 0000:03:00.0 eth0: RTL8168evl/8111evl, 90:2b:34:9d:ed:6f, XID 2c9, IRQ 30
-Nov 30 20:02:10 frodo kernel: r8169 0000:03:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
-Nov 30 20:02:10 frodo kernel: r8169 0000:03:00.0 enp3s0: renamed from eth0
-Nov 30 20:02:10 frodo kernel: net eth0: renaming to enp3s0
-Nov 30 20:02:10 frodo kernel: device: 'br0': device_add
-Nov 30 20:02:10 frodo kernel: PM: Adding info for No Bus:br0
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered blocking state
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered disabled state
-Nov 30 20:02:10 frodo kernel: device enp3s0 entered promiscuous mode
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered blocking state
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered forwarding state
-Nov 30 20:02:10 frodo kernel: r8169 0000:03:00.0 enp3s0: Link is Down
-Nov 30 20:02:10 frodo kernel: IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered disabled state
-Nov 30 20:02:10 frodo kernel: r8169 0000:03:00.0 enp3s0: Link is Up - 1Gbps/Full - flow control rx/tx
-Nov 30 20:02:10 frodo kernel: IPv6: ADDRCONF(NETDEV_CHANGE): enp3s0: link becomes ready
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered blocking state
-Nov 30 20:02:10 frodo kernel: br0: port 1(enp3s0) entered forwarding state
-Nov 30 20:02:14 frodo systemd-networkd[819]: br0: Configured
-
--- 
-Alan J. Wylie                                          https://www.wylie.me.uk/
-
-Dance like no-one's watching. / Encrypt like everyone is.
-Security is inversely proportional to convenience
+Cheers ... Duncan.
