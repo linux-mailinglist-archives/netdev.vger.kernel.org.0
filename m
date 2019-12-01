@@ -2,112 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FD8410E269
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 16:51:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC0B10E26A
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 16:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbfLAPvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 10:51:02 -0500
-Received: from mta03.svc.cra.dublin.eircom.net ([159.134.118.145]:36642 "HELO
-        mta03.svc.cra.dublin.eircom.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1726393AbfLAPvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 10:51:02 -0500
-X-Greylist: delayed 398 seconds by postgrey-1.27 at vger.kernel.org; Sun, 01 Dec 2019 10:51:00 EST
-Received: (qmail 7534 messnum 15620897 invoked from network[213.94.190.12/avas01.vendorsvc.cra.dublin.eircom.net]); 1 Dec 2019 15:44:17 -0000
-Received: from avas01.vendorsvc.cra.dublin.eircom.net (HELO avas01) (213.94.190.12)
-  by mta03.svc.cra.dublin.eircom.net (qp 7534) with SMTP; 1 Dec 2019 15:44:17 -0000
-Received: from vzmbx43.eircom.net ([86.43.60.56])
-        by Cloudmark Gateway with SMTP
-        id bROTis73fvSCGbROTiL6lN; Sun, 01 Dec 2019 15:44:17 +0000
-X-Spam-Flag: NO
-X-CNFS-Analysis: v=2.2 cv=Vs1TO6+n c=1 sm=1 tr=0
- a=pgi/oO0IPhCgn3FzazVCEw==:117 a=9cW_t1CCXrUA:10 a=FKkrIqjQGGEA:10
- a=p94CGIwvSaIA:10 a=jeM8b-Vrk40A:10 a=IkcTkHD0fZMA:10 a=x7bEGLp0ZPQA:10
- a=lQWrZL7Q7ZgA:10 a=ADsKrdVn5_oA:10 a=ZZnuYtJkoWoA:10
- a=u-cqGMF9Mb8qadtxIEAA:9 a=tp77xZrL5w-9LVuu:21 a=P6e4BrMchbnZWgjd:21
- a=QEXdDO2ut3YA:10
-Date:   Sun, 1 Dec 2019 15:44:17 +0000 (GMT)
-From:   Mrs Nisha <d2r0e2@eircom.net>
-Reply-To: mosh.tan7.6@googlemail.com
-Message-ID: <1830087487.130422.1575215057214.JavaMail.zimbra@eircom.net>
-Subject: Hello Dear,
+        id S1726819AbfLAPwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 10:52:41 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:35643 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726393AbfLAPwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 10:52:40 -0500
+Received: by mail-lj1-f196.google.com with SMTP id j6so28047791lja.2
+        for <netdev@vger.kernel.org>; Sun, 01 Dec 2019 07:52:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l19Fdg/fv/nWXTklwCIzDNkaeZWyglfRZtL5j2GsPg0=;
+        b=d/bUG9G8ZbkvovQYggaGlTyBXJvNQAbrqI5mTCQFFT5v3G5/0ibx0WTX0HC7CQbxhz
+         31i6yccXadK+9nUvwynGfcqErXYKs2ROUvdpEC4Cd1BjRE0z20bSzxqwUYvY7M3KncvO
+         vz6K+OT5rNOjSuVAtbKF+lujeDaYsfZyGO/g+DTwvSV0meaTt/JeOhy73/FgQfEZ+7BR
+         ygdLDKUCqZDGz8RG6MReCifrJhVNI5Yd7vPXvYVaZd+DuU7dlkCAtYH58xNZgVY5zYuA
+         5XxwOwqa1DmK586kFqZdDUzqBNPTwcuMv2b95U65t2R7tMeMR9qZbS2vS2t/gLVbnwyQ
+         t5Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l19Fdg/fv/nWXTklwCIzDNkaeZWyglfRZtL5j2GsPg0=;
+        b=GSBgjj94exntqNg1i+s3K+pn0t8kGlzyO7DnLMw6oOQTMayTOmCm0Di4+wnHH5Ybdc
+         KJHue843gxv69NyIabyWFGeCyaXkLifhAR7kAhGMkMuDx3Mu5JxO9qbDEKkFHtPnQ9ql
+         Qs8qDinc1blZUsxRh0OnD6F+ysbmzzVS8uZocd5pHczMgOQejlJ1FLOd24rNz9i3AjMR
+         4iGESmEzncktuaT0/Hi5Dp1voXlQ5hmLa7oCDTAp/yGvrJ7HjugD8C9/6HuqSvpxwUMP
+         RMgbXNXe/jZxAJbiFw39XhgkzuzWseVktFRauTw6ZD6Mj4Vy1CBwoo5yqvwe7efVI1RL
+         Zg9w==
+X-Gm-Message-State: APjAAAX23K7qUw1cXf2EpFOGO7DzLp+hVDliBK/ea3MKvTxtY0E4E4Q8
+        QrInpflzCVdEcLDD3VU0+1HokB+g00xE3WUfBL0=
+X-Google-Smtp-Source: APXvYqwYpRyG9YwHiR9dP8/bsURv0qDumM7Ds5btZ6LrAtfYuUYuuBxCQ5Emk2jIXeFsk3jCbIt+G+UuxND42mxxC2c=
+X-Received: by 2002:a05:651c:1b5:: with SMTP id c21mr29154677ljn.115.1575215558686;
+ Sun, 01 Dec 2019 07:52:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [31.41.44.231]
-X-Mailer: Zimbra 8.6.0_GA_1242 (zclient/8.6.0_GA_1242)
-Thread-Topic: Hello Dear,
-Thread-Index: cGVDSouXa3ZypENXjsVzYqHfccpAxg==
-X-CMAE-Envelope: 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
-To:     unlisted-recipients:; (no To-header on input)
+References: <20191130142400.3930-1-ap420073@gmail.com> <20191130.103411.2158582570201430879.davem@davemloft.net>
+In-Reply-To: <20191130.103411.2158582570201430879.davem@davemloft.net>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Mon, 2 Dec 2019 00:52:27 +0900
+Message-ID: <CAMArcTVUo+fwUGEX1KbsxjfZWQdJCCMboVx_XOe-S0A_UtoZWQ@mail.gmail.com>
+Subject: Re: [net PATCH] hsr: fix a NULL pointer dereference in hsr_dev_xmit()
+To:     David Miller <davem@davemloft.net>
+Cc:     xiyou.wangcong@gmail.com, Netdev <netdev@vger.kernel.org>,
+        treeze.taeung@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 1 Dec 2019 at 03:34, David Miller <davem@davemloft.net> wrote:
+>
+Hi David,
+Thank you for the review!
 
+> From: Taehee Yoo <ap420073@gmail.com>
+> Date: Sat, 30 Nov 2019 14:24:00 +0000
+>
+> > @@ -226,9 +226,16 @@ static int hsr_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+> >       struct hsr_priv *hsr = netdev_priv(dev);
+> >       struct hsr_port *master;
+> >
+> > +     rcu_read_lock();
+> >       master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
+>
+> I don't want to distract from your bug fix but I had to audit and learn
+> how this hsr->ports stuff works while reading your patch.
+>
+> hsr->ports has supposedly RCU protection...
+>
+> But add and delete opertions to the port list only occur by newlink
+> netlink operations (the device isn't even visible yet at this point)
+> and network device teardown (all packet processing paths will quiesce
+> beforehand).
+>
+> Therefore, the port list never changes from it's effectively static
+> configuration made at hsr_dev_finalize() time.
+>
+> The whole driver very inconsistently accesses the hsr->port list,
+> and it all works only because of the above invariant.
+>
+> So let's not try to fix the RCU protection issues here ok?  That
+> should be handled separately, and there are no real problems caused by
+> the lack of RCU protection here right now.
+>
+> Thank you.
 
+Why I thought that rcu_read_lock() is needed in the hsr_dev_xmit() is
+that hsr_port_get_hsr() and hsr_forward_skb() should be called under
+rcu_read_lock() but I found there is no rcu_read_lock() in the TX datapath.
+Below is the test code.
 
-HELLO FRIEND
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index ddd9605bad04..8a62474eb1f6 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -349,6 +349,8 @@ void hsr_forward_skb(struct sk_buff *skb, struct
+hsr_port *port)
+ {
+        struct hsr_frame_info frame;
 
-I AM MRS DHAWAN NISHA PRADEEP, I HAVE BEEN SUFFERING FROM CANCER DISEASE AND THE DOCTOR SAID THAT I HAVE JUST FEW DAYS TO LIVE. I AM FROM ULHASNAGAR, INDIA BUT BASED IN AFRICA BURKINA FASO FOR EIGHT YEARS AS A BUSINESS WOMAN DEALING WITH GOLD EXPORTATION.
++       printk("[TEST]%s %u rcu_read_lock_held() = %d\n",
++               __func__, __LINE__, rcu_read_lock_held());
+        if (skb_mac_header(skb) != skb->data) {
+                WARN_ONCE(1, "%s:%d: Malformed frame (port_src %s)\n",
+                          __FILE__, __LINE__, port->dev->name);
 
-I HAVE 4.5 MILLION EURO AT CENTRAL BANK OF WEST AFRICAN STATE (CBOA) HERE IN BURKINA FASO AND I INSTRUCTED THE BANK TO TRANSFER THE FUND TO YOU AS FOREIGNER THAT WILL APPLY TO THE BANK AFTER I HAVE GONE, THAT THEY SHOULD RELEASE THE FUND TO YOU, BUT YOU WILL ASSURE ME THAT YOU WILL TAKE 50% OF THE FUND AND GIVE 50% TO THE ORPHANAGES HOME IN YOUR COUNTRY FOR MY HEART TO REST.
+[12990.180324][    C2] [TEST]hsr_forward_skb 353 rcu_read_lock_held() = 1
+[12990.337812][ T1946] [TEST]hsr_forward_skb 353 rcu_read_lock_held() = 0
+[12990.341608][    C2] [TEST]hsr_forward_skb 353 rcu_read_lock_held() = 1
 
-RESPOND TO ME IMMEDIATELY FOR FURTHER DETAILS SINCE I HAVE JUST FEW DAYS TO END MY LIFE DUE TO THE CANCER DISEASE, PLEASE I WANT YOU TO SEND YOUR DETAILS AS LISTED BELOW SO THAT I WILL FORWARD IT TO THE BANK AS REQUESTED FOR THE PROCESSING OF THE TRANSFER OF THE FUND INTO YOUR BANK ACCOUNT.
+$ cat /proc/1946/cmdlind
+ping192.168.100.2
 
-YOUR COMPLETE NAME
-ADDRESS (HOME/OFFICE)
-YOUR MOBILE NUMBER
-YOUR AGE
-OCCUPATION
-A COPY OF YOUR ID
+we could see there is no rcu_read_lock() in the TX datapath.
+So I'm sure that rcu_read_lock() should be added to the hsr_dev_xmit().
 
-GOD BLESS YOU AS I WAIT PATIENTLY FOR YOUR QUICK REPLY.
+If rcu_read_lock() is unnecessary in there, please let me know about
+the reason.
 
-YOURS SINCERELY
-MRS DHAWAN NISHA PRADEEP.
-
-
+Thank you!
+Taehee
