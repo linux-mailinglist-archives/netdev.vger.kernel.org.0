@@ -2,93 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 040E010E25E
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 16:30:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD8410E269
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 16:51:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfLAPay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 10:30:54 -0500
-Received: from pindarots.xs4all.nl ([82.161.210.87]:36684 "EHLO
-        pindarots.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbfLAPax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 10:30:53 -0500
-Received: from surfplank2.hierzo (localhost.localdomain [127.0.0.1])
-        by pindarots.xs4all.nl (8.15.2/8.14.5) with ESMTPS id xB1FUnLr007565
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Sun, 1 Dec 2019 16:30:50 +0100
-Subject: Re: 5.4.1 WARNINGs with r8169
-To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <46e7dcf9-3c89-25c1-ccb8-336450047bec@xs4all.nl>
- <aa3b11a5-eb7e-dc2c-e5b4-96e53942246d@applied-asynchrony.com>
-From:   Udo van den Heuvel <udovdh@xs4all.nl>
-Autocrypt: addr=udovdh@xs4all.nl; prefer-encrypt=mutual; keydata=
- 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
- JjyRAfO8kEkwCkTZ6/Mnrxsunx9VNLGDEw==
-Organization: hierzo
-Message-ID: <f0600725-4e0a-6801-308a-b7bd48cd473b@xs4all.nl>
-Date:   Sun, 1 Dec 2019 16:30:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727084AbfLAPvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 10:51:02 -0500
+Received: from mta03.svc.cra.dublin.eircom.net ([159.134.118.145]:36642 "HELO
+        mta03.svc.cra.dublin.eircom.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S1726393AbfLAPvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 10:51:02 -0500
+X-Greylist: delayed 398 seconds by postgrey-1.27 at vger.kernel.org; Sun, 01 Dec 2019 10:51:00 EST
+Received: (qmail 7534 messnum 15620897 invoked from network[213.94.190.12/avas01.vendorsvc.cra.dublin.eircom.net]); 1 Dec 2019 15:44:17 -0000
+Received: from avas01.vendorsvc.cra.dublin.eircom.net (HELO avas01) (213.94.190.12)
+  by mta03.svc.cra.dublin.eircom.net (qp 7534) with SMTP; 1 Dec 2019 15:44:17 -0000
+Received: from vzmbx43.eircom.net ([86.43.60.56])
+        by Cloudmark Gateway with SMTP
+        id bROTis73fvSCGbROTiL6lN; Sun, 01 Dec 2019 15:44:17 +0000
+X-Spam-Flag: NO
+X-CNFS-Analysis: v=2.2 cv=Vs1TO6+n c=1 sm=1 tr=0
+ a=pgi/oO0IPhCgn3FzazVCEw==:117 a=9cW_t1CCXrUA:10 a=FKkrIqjQGGEA:10
+ a=p94CGIwvSaIA:10 a=jeM8b-Vrk40A:10 a=IkcTkHD0fZMA:10 a=x7bEGLp0ZPQA:10
+ a=lQWrZL7Q7ZgA:10 a=ADsKrdVn5_oA:10 a=ZZnuYtJkoWoA:10
+ a=u-cqGMF9Mb8qadtxIEAA:9 a=tp77xZrL5w-9LVuu:21 a=P6e4BrMchbnZWgjd:21
+ a=QEXdDO2ut3YA:10
+Date:   Sun, 1 Dec 2019 15:44:17 +0000 (GMT)
+From:   Mrs Nisha <d2r0e2@eircom.net>
+Reply-To: mosh.tan7.6@googlemail.com
+Message-ID: <1830087487.130422.1575215057214.JavaMail.zimbra@eircom.net>
+Subject: Hello Dear,
 MIME-Version: 1.0
-In-Reply-To: <aa3b11a5-eb7e-dc2c-e5b4-96e53942246d@applied-asynchrony.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [31.41.44.231]
+X-Mailer: Zimbra 8.6.0_GA_1242 (zclient/8.6.0_GA_1242)
+Thread-Topic: Hello Dear,
+Thread-Index: cGVDSouXa3ZypENXjsVzYqHfccpAxg==
+X-CMAE-Envelope: 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
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01-12-2019 10:52, Holger Hoffstätte wrote:
-> (cc:'ing netdev & Heiner)
-> 
-> Are you using Jumbo packets? If so please check the thread at
-> https://lore.kernel.org/lkml/24034.56114.248207.524177@wylie.me.uk/
-> 
 
-Unfortunately the patch at that url does not help here.
-That is weird IMHO as the hardware looks to be the same...
 
-Udo
+
+HELLO FRIEND
+
+I AM MRS DHAWAN NISHA PRADEEP, I HAVE BEEN SUFFERING FROM CANCER DISEASE AND THE DOCTOR SAID THAT I HAVE JUST FEW DAYS TO LIVE. I AM FROM ULHASNAGAR, INDIA BUT BASED IN AFRICA BURKINA FASO FOR EIGHT YEARS AS A BUSINESS WOMAN DEALING WITH GOLD EXPORTATION.
+
+I HAVE 4.5 MILLION EURO AT CENTRAL BANK OF WEST AFRICAN STATE (CBOA) HERE IN BURKINA FASO AND I INSTRUCTED THE BANK TO TRANSFER THE FUND TO YOU AS FOREIGNER THAT WILL APPLY TO THE BANK AFTER I HAVE GONE, THAT THEY SHOULD RELEASE THE FUND TO YOU, BUT YOU WILL ASSURE ME THAT YOU WILL TAKE 50% OF THE FUND AND GIVE 50% TO THE ORPHANAGES HOME IN YOUR COUNTRY FOR MY HEART TO REST.
+
+RESPOND TO ME IMMEDIATELY FOR FURTHER DETAILS SINCE I HAVE JUST FEW DAYS TO END MY LIFE DUE TO THE CANCER DISEASE, PLEASE I WANT YOU TO SEND YOUR DETAILS AS LISTED BELOW SO THAT I WILL FORWARD IT TO THE BANK AS REQUESTED FOR THE PROCESSING OF THE TRANSFER OF THE FUND INTO YOUR BANK ACCOUNT.
+
+YOUR COMPLETE NAME
+ADDRESS (HOME/OFFICE)
+YOUR MOBILE NUMBER
+YOUR AGE
+OCCUPATION
+A COPY OF YOUR ID
+
+GOD BLESS YOU AS I WAIT PATIENTLY FOR YOUR QUICK REPLY.
+
+YOURS SINCERELY
+MRS DHAWAN NISHA PRADEEP.
+
+
