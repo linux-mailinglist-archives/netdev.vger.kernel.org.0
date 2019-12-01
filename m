@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 927C910E236
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 15:34:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 040E010E25E
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 16:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbfLAOek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 09:34:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49114 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726498AbfLAOej (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Dec 2019 09:34:39 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 098B120725;
-        Sun,  1 Dec 2019 14:34:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575210878;
-        bh=K8rs8jjTNo+YjtPHch9ujxhFdvlkbw04xZ/DlEjvXmA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X8LvnoV+ZPy/EFvVU0aJRwEOLjieEn833fKjD4mA1VvGWFWPgDzkbvmwPpedC01uS
-         4v5RBKw7xncGiVV7KGxzU4J231F8BfqeXGG69xfzgH/8kE1chbYSSl6hE7tPMqVnJT
-         Ke3CEUQp3PVqEw+u6cztQz1F1v+MEx6/EQdhXnhw=
-Date:   Sun, 1 Dec 2019 09:34:36 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Ilya Dryomov <idryomov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH AUTOSEL 4.19 140/219] libceph: drop last_piece logic from
- write_partial_message_data()
-Message-ID: <20191201143436.GS5861@sasha-vm>
-References: <20191122054911.1750-1-sashal@kernel.org>
- <20191122054911.1750-133-sashal@kernel.org>
- <CAOi1vP9MCrPf44V2GMyODH185A0HJcuPsYfVkOAVGkcMRb+=iw@mail.gmail.com>
+        id S1726793AbfLAPay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 10:30:54 -0500
+Received: from pindarots.xs4all.nl ([82.161.210.87]:36684 "EHLO
+        pindarots.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726393AbfLAPax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 10:30:53 -0500
+Received: from surfplank2.hierzo (localhost.localdomain [127.0.0.1])
+        by pindarots.xs4all.nl (8.15.2/8.14.5) with ESMTPS id xB1FUnLr007565
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Sun, 1 Dec 2019 16:30:50 +0100
+Subject: Re: 5.4.1 WARNINGs with r8169
+To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <46e7dcf9-3c89-25c1-ccb8-336450047bec@xs4all.nl>
+ <aa3b11a5-eb7e-dc2c-e5b4-96e53942246d@applied-asynchrony.com>
+From:   Udo van den Heuvel <udovdh@xs4all.nl>
+Autocrypt: addr=udovdh@xs4all.nl; prefer-encrypt=mutual; keydata=
+ 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
+ JjyRAfO8kEkwCkTZ6/Mnrxsunx9VNLGDEw==
+Organization: hierzo
+Message-ID: <f0600725-4e0a-6801-308a-b7bd48cd473b@xs4all.nl>
+Date:   Sun, 1 Dec 2019 16:30:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAOi1vP9MCrPf44V2GMyODH185A0HJcuPsYfVkOAVGkcMRb+=iw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <aa3b11a5-eb7e-dc2c-e5b4-96e53942246d@applied-asynchrony.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 22, 2019 at 03:00:43PM +0100, Ilya Dryomov wrote:
->On Fri, Nov 22, 2019 at 6:51 AM Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Ilya Dryomov <idryomov@gmail.com>
->>
->> [ Upstream commit 1f6b821aef78e3d79e8d598ae59fc7e23fb6c563 ]
->>
->> last_piece is for the last piece in the current data item, not in the
->> entire data payload of the message.  This is harmful for messages with
->> multiple data items.  On top of that, we don't need to signal the end
->> of a data payload either because it is always followed by a footer.
->>
->> We used to signal "more" unconditionally, until commit fe38a2b67bc6
->> ("libceph: start defining message data cursor").  Part of a large
->> series, it introduced cursor->last_piece and also mistakenly inverted
->> the hint by passing last_piece for "more".  This was corrected with
->> commit c2cfa1940097 ("libceph: Fix ceph_tcp_sendpage()'s more boolean
->> usage").
->>
->> As it is, last_piece is not helping at all: because Nagle algorithm is
->> disabled, for a simple message with two 512-byte data items we end up
->> emitting three packets: front + first data item, second data item and
->> footer.  Go back to the original pre-fe38a2b67bc6 behavior -- a single
->> packet in most cases.
->>
->> Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  net/ceph/messenger.c | 8 +++-----
->>  1 file changed, 3 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
->> index f7d7f32ac673c..6514816947fbe 100644
->> --- a/net/ceph/messenger.c
->> +++ b/net/ceph/messenger.c
->> @@ -1612,7 +1612,6 @@ static int write_partial_message_data(struct ceph_connection *con)
->>                 struct page *page;
->>                 size_t page_offset;
->>                 size_t length;
->> -               bool last_piece;
->>                 int ret;
->>
->>                 if (!cursor->resid) {
->> @@ -1620,10 +1619,9 @@ static int write_partial_message_data(struct ceph_connection *con)
->>                         continue;
->>                 }
->>
->> -               page = ceph_msg_data_next(cursor, &page_offset, &length,
->> -                                         &last_piece);
->> -               ret = ceph_tcp_sendpage(con->sock, page, page_offset,
->> -                                       length, !last_piece);
->> +               page = ceph_msg_data_next(cursor, &page_offset, &length, NULL);
->> +               ret = ceph_tcp_sendpage(con->sock, page, page_offset, length,
->> +                                       true);
->>                 if (ret <= 0) {
->>                         if (do_datacrc)
->>                                 msg->footer.data_crc = cpu_to_le32(crc);
->
->Hi Sasha,
->
->This commit was part of a larger series and shouldn't be backported on
->its own.  Please drop it.
+On 01-12-2019 10:52, Holger Hoffstätte wrote:
+> (cc:'ing netdev & Heiner)
+> 
+> Are you using Jumbo packets? If so please check the thread at
+> https://lore.kernel.org/lkml/24034.56114.248207.524177@wylie.me.uk/
+> 
 
-Now dropped, thanks!
+Unfortunately the patch at that url does not help here.
+That is weird IMHO as the hardware looks to be the same...
 
--- 
-Thanks,
-Sasha
+Udo
