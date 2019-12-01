@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4684610E05A
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 05:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B15910E0E4
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 06:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727320AbfLAE5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Nov 2019 23:57:38 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43956 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727169AbfLAE5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Nov 2019 23:57:38 -0500
-Received: by mail-pl1-f193.google.com with SMTP id q16so10559435plr.10
-        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 20:57:38 -0800 (PST)
+        id S1725939AbfLAFu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 00:50:57 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37286 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbfLAFu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 00:50:56 -0500
+Received: by mail-pf1-f194.google.com with SMTP id s18so2685023pfm.4
+        for <netdev@vger.kernel.org>; Sat, 30 Nov 2019 21:50:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=M5UdpxtXvZnWhbY5xsRKN13c+prK17Ipuz3ygov9Xfw=;
-        b=ljN00OVGde3qbgLsgzYd7IKphBFINTf8+KWps/mIS9GELWMwhXs1r6DexiE8Wud69l
-         i5WaQxUGkwVhtiIMvg/I7+LVivdTyTlaQjGsRjm3+82u3QzMKUwHFB2ZQk5pwof64vGt
-         Rf0wHxFhAeU9drkxSZB7ejMkDFa2kFwO1YtwCCCzlgimMtR/JcRIl6Yl2FScYvhoEqNi
-         sCaapqV7LjJP6CxDXJXZxbAM+WbJ6zHw9ZAQmJ/ju1AZpoZGa5oDvpCyPxx0WnX69EoS
-         rLRDsCNdicnAXK4TL1qjr895Bk9YHYNOdAC1ZEyJYCEvwj7iTpvIbuaDfcsIJqRcEWSC
-         Bvww==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0zYOqIkkrOhulR+R1m32O6XEYLoZjT35qsqm0yiWLBs=;
+        b=X+nh+ZBHksVgX7dKVMxVBsBj1KZZjZv/EJvLb/aI6d+BALnnzPBfB+slQ1TP6DIWju
+         7/wTRiM+tgjf0rgVQd6+ewiJSRKa8oqSnY2hr9t26j6M+4KiCvKrgRB85KKlj3hQMfOB
+         qL36nhf0lqRkjh+AkWyHAJrKvMAnL6pqV9QoHxBuuelN3gpNOoXoSYcYn9tmEtJXnJi7
+         gDC5/7h3cp2uhGrlmEScCX+wJzzpQbj4dLi46GVo2b5MeEmGcPHu8OqmWAtoeK9nEUi/
+         nleAWcOr5gA2H4qJAl7sn5mxnppro8bn2QhOcjckhLZ9eT/NFLEdyvmXkuzYKrRvuEwG
+         N9Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=M5UdpxtXvZnWhbY5xsRKN13c+prK17Ipuz3ygov9Xfw=;
-        b=VsIH2tXXPwts/v9kv6uXjb7/h6V9kw8UEp79iD6qiG2wUq6f2yY1zg6Cmn/nRQSUIx
-         Vqo33URlFg0GJ1J6jiPomU80RgJq4cYQNcSFCWESNpghbAhF4VRKLA/wV2fe/YC36Nkr
-         HlthBwPzVeDcDmgOdFeJQBtlIdGyyu9NJTKs0aQkHC+9CHaVIbPXDkLed6OyyUn/6VDk
-         s0DMAqM5sSKIJpXC9KbCd3v6WkvitUkwNwdFV8k1iOznpDxDyjNG1p0QViYfxHleFEGx
-         KSGMIQTxJQd7mwasnaY0uTNsMVQIle46Njwv1eXntBxKJJikaw3pZ6xe9QXm1t6vUQjp
-         RLzA==
-X-Gm-Message-State: APjAAAUqHvqlYcppfAwG1VptubKUpgAL4buKNBES2OnutCc6cs64Lj3N
-        oc6MLHFRnIsrtYZF9wW8qMxYPceB
-X-Google-Smtp-Source: APXvYqxgM40xZly+KuQYTbb1XuqSN31hzAq4KFd2iMCNLZZwrK26k2UpeDagSD6DqhKDsJzZcaqL3A==
-X-Received: by 2002:a17:90a:30a4:: with SMTP id h33mr27678769pjb.50.1575176258040;
-        Sat, 30 Nov 2019 20:57:38 -0800 (PST)
-Received: from martin-VirtualBox ([42.109.129.152])
-        by smtp.gmail.com with ESMTPSA id s2sm30685160pfb.109.2019.11.30.20.57.36
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 30 Nov 2019 20:57:37 -0800 (PST)
-Date:   Sun, 1 Dec 2019 10:27:27 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0zYOqIkkrOhulR+R1m32O6XEYLoZjT35qsqm0yiWLBs=;
+        b=Qsx9Z757/w8DL11WGBYqy6Ps/yQ8kRRUKJmPizKpU923nG7s22c7QfIsv/zLuVb4wT
+         tggKEfPsmjY7DETU0bdLxWS4Nojhw0X/mVmRYMOiPhi57aScW9D9NmmEHE0Aps3PP/M5
+         /LHblV0qL+D/J+kba1DWgA7el/+vwB1Y8CO/YxmxufwrIhxjZYEF/X0pf59iDnFsCjkW
+         tEEQI4OdSW3qccFvv99vk5tafRmoFRpnO1cY8uslb7wG61FJHy8HLIpv2mZjcczDjtrd
+         4VGTKkfiPOZ+3JMolt0RCXl8TebQ/w4VG6832AErkytkF9klR9qpvAjTCYF3ePnlMAkO
+         qOJA==
+X-Gm-Message-State: APjAAAUVtavZ3gwxEqty7U8WMKZX9vas6UasgMvCWk4f6gAh76U/eT6y
+        cEj4IpzJm13olZxlvT1W4/uGklFf/2/Xnt3kLZE=
+X-Google-Smtp-Source: APXvYqxpnTPUBp63g9HnBvoEtdDMMFdiuQIFq5RH+q/IPqMM3m9gPAiSKgWod9IwM7FaGhyYb34qprCRJlNlFV6JSlE=
+X-Received: by 2002:aa7:85d7:: with SMTP id z23mr65411253pfn.24.1575179456115;
+ Sat, 30 Nov 2019 21:50:56 -0800 (PST)
+MIME-Version: 1.0
+References: <1574848877-7531-1-git-send-email-martinvarghesenokia@gmail.com>
+ <20191127.112401.1924842050321978996.davem@davemloft.net> <CAM_iQpWu9DQ06FYo7xtuLFnHP-wx35Uva_0-im7XwemKtLno0A@mail.gmail.com>
+ <20191201045727.GA2548@martin-VirtualBox>
+In-Reply-To: <20191201045727.GA2548@martin-VirtualBox>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 30 Nov 2019 21:50:45 -0800
+Message-ID: <CAM_iQpUZECPes-WxQnPo19=vehTqzW_yfJrYbuUB5bAPJEdkfw@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next] Enhanced skb_mpls_pop to update ethertype of
+ the packet in all the cases when an ethernet header is present is the packet.
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
 Cc:     David Miller <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
         pravin shelar <pshelar@ovn.org>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>, martin.varghese@nokia.com
-Subject: Re: [PATCH v3 net-next] Enhanced skb_mpls_pop to update ethertype of
- the packet in all the cases when an ethernet header is present is the
- packet.
-Message-ID: <20191201045727.GA2548@martin-VirtualBox>
-References: <1574848877-7531-1-git-send-email-martinvarghesenokia@gmail.com>
- <20191127.112401.1924842050321978996.davem@davemloft.net>
- <CAM_iQpWu9DQ06FYo7xtuLFnHP-wx35Uva_0-im7XwemKtLno0A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpWu9DQ06FYo7xtuLFnHP-wx35Uva_0-im7XwemKtLno0A@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 29, 2019 at 10:07:53PM -0800, Cong Wang wrote:
-> On Wed, Nov 27, 2019 at 11:24 AM David Miller <davem@davemloft.net> wrote:
-> >
-> >
-> > net-next is closed, please resubmit this when net-next opens back up.
-> >
-> 
-> I think this patch is intended for -net as it fixes a bug in OVS?
-> 
-> Martin, if it is the case, please resend with targeting to -net instead.
-> Also, please make the $subject shorter.
+On Sat, Nov 30, 2019 at 8:57 PM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
 >
-There are few upcoming features to net-next from my side which relies on this fix.
-In that case should i post against both net and net-next ?
-Please advice
- 
-Thanks
-Martin
+> On Fri, Nov 29, 2019 at 10:07:53PM -0800, Cong Wang wrote:
+> > On Wed, Nov 27, 2019 at 11:24 AM David Miller <davem@davemloft.net> wrote:
+> > >
+> > >
+> > > net-next is closed, please resubmit this when net-next opens back up.
+> > >
+> >
+> > I think this patch is intended for -net as it fixes a bug in OVS?
+> >
+> > Martin, if it is the case, please resend with targeting to -net instead.
+> > Also, please make the $subject shorter.
+> >
+> There are few upcoming features to net-next from my side which relies on this fix.
+> In that case should i post against both net and net-next ?
+> Please advice
+
+If this is a bug fix, you only need to post for net. Then David will
+merge net into
+net-next regularly, after that you can rebase your feature patches
+onto net-next.
+
+Thanks.
