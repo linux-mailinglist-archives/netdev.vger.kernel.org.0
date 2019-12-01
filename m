@@ -2,71 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92C6B10E1DB
-	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 13:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927C910E236
+	for <lists+netdev@lfdr.de>; Sun,  1 Dec 2019 15:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfLAMVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 07:21:02 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:38989 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbfLAMVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 07:21:01 -0500
-Received: by mail-il1-f199.google.com with SMTP id t4so29280329iln.6
-        for <netdev@vger.kernel.org>; Sun, 01 Dec 2019 04:21:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=GVY0UTUiXioZDjlRk/qecxkTZeBZDfVOMX99Ih6OaLc=;
-        b=LKQO7xCZY2VKasalAek6TFBFiqVJjCvee03W1XMsoSIzQx28gc3/RAkPI0D5etxx+H
-         0CQP6YXlrmy5n20fgiUKxXupp0gxQXLFHDhgfmsoIOCvVXFrZhhAiLpIo50sGg/kLS1Z
-         IVh+gThjuZA2dFaRaD+qHyhsNItoA93/qk4VPVHPNyeOfo0zYDPA8OiN2MAZJYjqCqIB
-         TjG4vdX0wxk7pBHwXA19NdbP1nv0XHUJMd2JdyhcApCvDmxxFR4x7gXHzKKyb7S0O2Ve
-         zdf1FNFbk8MNPUAtUI3y0TB0c21+TcfW5GGV+ab7Zp/b18D86ifwaTLI8TC9nmykU718
-         bjMA==
-X-Gm-Message-State: APjAAAWs80X3UpIm3csH2n2fxsPkT3HwgTPvJDbyAOCoNLgufOI64e1M
-        ZAvzQhIiZdwXe/rBhcquw32B3QmoQ+IlPLuGTn3hwvOZATsx
-X-Google-Smtp-Source: APXvYqwLjsnwo03Ul2BYgUkun/p3JrCB6SxssAjMKsUkndmkq3uSYWsLeXnN03u+Z3ZugKktO5DrMm7z1HBb+XaIz9d6MA9i8PdJ
+        id S1727263AbfLAOek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 09:34:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49114 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726498AbfLAOej (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Dec 2019 09:34:39 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 098B120725;
+        Sun,  1 Dec 2019 14:34:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575210878;
+        bh=K8rs8jjTNo+YjtPHch9ujxhFdvlkbw04xZ/DlEjvXmA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X8LvnoV+ZPy/EFvVU0aJRwEOLjieEn833fKjD4mA1VvGWFWPgDzkbvmwPpedC01uS
+         4v5RBKw7xncGiVV7KGxzU4J231F8BfqeXGG69xfzgH/8kE1chbYSSl6hE7tPMqVnJT
+         Ke3CEUQp3PVqEw+u6cztQz1F1v+MEx6/EQdhXnhw=
+Date:   Sun, 1 Dec 2019 09:34:36 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Ilya Dryomov <idryomov@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.19 140/219] libceph: drop last_piece logic from
+ write_partial_message_data()
+Message-ID: <20191201143436.GS5861@sasha-vm>
+References: <20191122054911.1750-1-sashal@kernel.org>
+ <20191122054911.1750-133-sashal@kernel.org>
+ <CAOi1vP9MCrPf44V2GMyODH185A0HJcuPsYfVkOAVGkcMRb+=iw@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:6c1:: with SMTP id p1mr19554105ils.217.1575202861317;
- Sun, 01 Dec 2019 04:21:01 -0800 (PST)
-Date:   Sun, 01 Dec 2019 04:21:01 -0800
-In-Reply-To: <0000000000007cace40598282858@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ff87e40598a37ead@google.com>
-Subject: Re: WARNING: refcount bug in smc_release (2)
-From:   syzbot <syzbot+96d3f9ff6a86d37e44c8@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kgraul@linux.ibm.com,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        ubraun@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAOi1vP9MCrPf44V2GMyODH185A0HJcuPsYfVkOAVGkcMRb+=iw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Fri, Nov 22, 2019 at 03:00:43PM +0100, Ilya Dryomov wrote:
+>On Fri, Nov 22, 2019 at 6:51 AM Sasha Levin <sashal@kernel.org> wrote:
+>>
+>> From: Ilya Dryomov <idryomov@gmail.com>
+>>
+>> [ Upstream commit 1f6b821aef78e3d79e8d598ae59fc7e23fb6c563 ]
+>>
+>> last_piece is for the last piece in the current data item, not in the
+>> entire data payload of the message.  This is harmful for messages with
+>> multiple data items.  On top of that, we don't need to signal the end
+>> of a data payload either because it is always followed by a footer.
+>>
+>> We used to signal "more" unconditionally, until commit fe38a2b67bc6
+>> ("libceph: start defining message data cursor").  Part of a large
+>> series, it introduced cursor->last_piece and also mistakenly inverted
+>> the hint by passing last_piece for "more".  This was corrected with
+>> commit c2cfa1940097 ("libceph: Fix ceph_tcp_sendpage()'s more boolean
+>> usage").
+>>
+>> As it is, last_piece is not helping at all: because Nagle algorithm is
+>> disabled, for a simple message with two 512-byte data items we end up
+>> emitting three packets: front + first data item, second data item and
+>> footer.  Go back to the original pre-fe38a2b67bc6 behavior -- a single
+>> packet in most cases.
+>>
+>> Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>> ---
+>>  net/ceph/messenger.c | 8 +++-----
+>>  1 file changed, 3 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+>> index f7d7f32ac673c..6514816947fbe 100644
+>> --- a/net/ceph/messenger.c
+>> +++ b/net/ceph/messenger.c
+>> @@ -1612,7 +1612,6 @@ static int write_partial_message_data(struct ceph_connection *con)
+>>                 struct page *page;
+>>                 size_t page_offset;
+>>                 size_t length;
+>> -               bool last_piece;
+>>                 int ret;
+>>
+>>                 if (!cursor->resid) {
+>> @@ -1620,10 +1619,9 @@ static int write_partial_message_data(struct ceph_connection *con)
+>>                         continue;
+>>                 }
+>>
+>> -               page = ceph_msg_data_next(cursor, &page_offset, &length,
+>> -                                         &last_piece);
+>> -               ret = ceph_tcp_sendpage(con->sock, page, page_offset,
+>> -                                       length, !last_piece);
+>> +               page = ceph_msg_data_next(cursor, &page_offset, &length, NULL);
+>> +               ret = ceph_tcp_sendpage(con->sock, page, page_offset, length,
+>> +                                       true);
+>>                 if (ret <= 0) {
+>>                         if (do_datacrc)
+>>                                 msg->footer.data_crc = cpu_to_le32(crc);
+>
+>Hi Sasha,
+>
+>This commit was part of a larger series and shouldn't be backported on
+>its own.  Please drop it.
 
-commit 50717a37db032ce783f50685a73bb2ac68471a5a
-Author: Ursula Braun <ubraun@linux.ibm.com>
-Date:   Fri Apr 12 10:57:23 2019 +0000
+Now dropped, thanks!
 
-     net/smc: nonblocking connect rework
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a234a2e00000
-start commit:   32ef9553 Merge tag 'fsnotify_for_v5.5-rc1' of git://git.ke..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=12a234a2e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14a234a2e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff560c3de405258c
-dashboard link: https://syzkaller.appspot.com/bug?extid=96d3f9ff6a86d37e44c8
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14b57336e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149e357ae00000
-
-Reported-by: syzbot+96d3f9ff6a86d37e44c8@syzkaller.appspotmail.com
-Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-- 
+Thanks,
+Sasha
