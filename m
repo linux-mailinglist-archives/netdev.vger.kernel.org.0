@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7340610EA28
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 13:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A1710EA50
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 14:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbfLBMhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 07:37:41 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40340 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727362AbfLBMhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 07:37:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575290259;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yKdovxrcS0kfPyHRtLPGUT9M9ZoTTuzziE5WyqUZ19Q=;
-        b=ZfOrxrbuKjCI7dIyE4FYXo4NK9WrZ49ct3CU9T1O2t3ToKcsn0kpQd/TAJZsRA/7I2dTCo
-        DOkdI/tDFZujrJkn2SotdgM1+BG8FBkeBF1JrcXVJPWF4u1pgZHQcAdjFLonNMwvN/1ubu
-        cxRyIPFMY5V5xCPIexreBTgms2YvgGI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-300-UFqDkaEXMeytyetN9qZbxA-1; Mon, 02 Dec 2019 07:37:36 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 86C5FDB20;
-        Mon,  2 Dec 2019 12:37:35 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-200-58.brq.redhat.com [10.40.200.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F2F75C290;
-        Mon,  2 Dec 2019 12:37:32 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 566DD319D2A0B;
-        Mon,  2 Dec 2019 13:37:31 +0100 (CET)
-Subject: [bpf PATCH] samples/bpf: fix broken xdp_rxq_info due to map order
- assumptions
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        danieltimlee@gmail.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 02 Dec 2019 13:37:31 +0100
-Message-ID: <157529025128.29832.5953245340679936909.stgit@firesoul>
-User-Agent: StGit/0.17.1-dirty
+        id S1727452AbfLBNCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 08:02:35 -0500
+Received: from mail-eopbgr770071.outbound.protection.outlook.com ([40.107.77.71]:41102
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727391AbfLBNCd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Dec 2019 08:02:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OxzDwtHlsuauTce4MSTn9mmR9clYDr5csPtfow2YCKxsl0oOWMKZmdSZcGroNh4AidIGOyY9PkaCps01DPhOTeFAQnsNVj5CdaQiuIt4O24XVPKNbDz81T7ZQSKENFurAZ6eUA9zeOxplaB7ZgEfJCEBQS2N4wP0RDoktnS9E8FSIqyFjIZOc/jgORVvP5qoDOpPoId4/2bn+X82ZuWKLorWUeuFuxHzI+DjIPhXVE/ThHCcJXmyOpaoT8b2wTesL05tNxuobB1hIFV/XnAh9l/IZ/05NAtt+YI9Wg3pQ3QPFgze4ahDnZiAEvU8JDQKMA+lH3bVKC59CG3lUMmAyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rTlAXqhI5gJcyj6P1xEX3iw2FbZ4NW07IIWRCbtE5/I=;
+ b=MMMPvpTg17oXEWf0CtZxyLT1XdiF/eyCHsr4TAHet1vLUHsSSPosN6ZuH7V5s7nnZCrB8Q4xsOLrTQfuuxl5JraVUsgkmCyrsr76/bJkA0dWNi30VSpu7L0z7uetJqmaynjVNXHfOXUFl6aDoe7muTCTtNA4msRpkl9FoGH7o3tPr0s+WNOmjbawonO4ROwtAcPxlzavWE61uENfLvFCuESg+A0J5dpf5zzg3EJLCMtVmPhAKBhip5tBTmuUqcJ+AHVrH9vsMONKGgeVM2S9qGhwoMUdwBulFJMXcF7U7FtuwlCSyRGLib0d7sClRqao2ScQg6dR0ldxmx6cs0ZUyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=grandegger.com smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rTlAXqhI5gJcyj6P1xEX3iw2FbZ4NW07IIWRCbtE5/I=;
+ b=bs3Yn7m8Ma+2NOVEzET5fAJGLWkyAnebe/u4UAESRPt28BAvMsHDnL17RPNBdksGdbwNG141HGyGe1nqM/ypadGwp0JR3t5/yKwRzNnd3ZeO9JltBLNbI2lNlukHQzPXabb0RiWJnCdusdNzhtBdHrBxePjV5Gs0er+f+Zt/xm0=
+Received: from SN4PR0201CA0051.namprd02.prod.outlook.com
+ (2603:10b6:803:20::13) by SN4PR0201MB3453.namprd02.prod.outlook.com
+ (2603:10b6:803:50::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.22; Mon, 2 Dec
+ 2019 13:02:30 +0000
+Received: from BL2NAM02FT026.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::201) by SN4PR0201CA0051.outlook.office365.com
+ (2603:10b6:803:20::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.18 via Frontend
+ Transport; Mon, 2 Dec 2019 13:02:30 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; grandegger.com; dkim=none (message not signed)
+ header.d=none;grandegger.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ BL2NAM02FT026.mail.protection.outlook.com (10.152.77.156) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
+ via Frontend Transport; Mon, 2 Dec 2019 13:02:29 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1iblLR-00088M-3Z; Mon, 02 Dec 2019 05:02:29 -0800
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1iblLM-0007cC-02; Mon, 02 Dec 2019 05:02:24 -0800
+Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1iblLI-0007b6-5u; Mon, 02 Dec 2019 05:02:20 -0800
+From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        michal.simek@xilinx.com, appanad@xilinx.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, nagasure@xilinx.com,
+        Srinivas Neeli <srinivas.neeli@xilinx.com>
+Subject: [PATCH V2 0/2] can: xilinx_can: Bug fixes on can driver
+Date:   Mon,  2 Dec 2019 18:32:09 +0530
+Message-Id: <1575291731-11022-1-git-send-email-srinivas.neeli@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(396003)(376002)(199004)(189003)(36756003)(4326008)(51416003)(7696005)(2906002)(70586007)(70206006)(14444005)(316002)(9786002)(6666004)(16586007)(356004)(47776003)(2616005)(426003)(4744005)(305945005)(36386004)(336012)(81166006)(48376002)(81156014)(8936002)(50466002)(44832011)(50226002)(478600001)(5660300002)(186003)(26005)(107886003)(106002)(8676002)(6636002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN4PR0201MB3453;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: UFqDkaEXMeytyetN9qZbxA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7b4a01d3-8bbc-4791-3d3f-08d77727e362
+X-MS-TrafficTypeDiagnostic: SN4PR0201MB3453:
+X-Microsoft-Antispam-PRVS: <SN4PR0201MB3453701E78740CD143EF39A9AF430@SN4PR0201MB3453.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
+X-Forefront-PRVS: 0239D46DB6
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l5iJD3MWXAUGQKPHvA13FK/QQqZi+VV4mSy0cLyANCiU+3T2OqoBUT3x2wDBRsbFXEcSyvtW0Tw2XHBc0ULpu/f72aGebVHGO3x0MWNBNeR0HrDP2Owe8Ps3YDoV8uqyu9B86QodPj88+yz4gBVigcGfAcsBwY65kbeCZMdIAL7eeZoKYqr2LCQsZi/pMmQXvI4ZD7xA6JzIklL+3IPe6A3DeABQuk2auMTNfv5JzKNjIilt+Cuudo6DDKAHYq5zMon1Je9aBiXuivCGr1+jnwSIlz9gWAfGFxCINuXhW+/beBXcOjjugJs9qe68n0m7aStNtba2aKBaILAQk/8jhByVv4FlLIWc7BuxjtVaDUR1gr/07FeWZy1E/b3uwWDKQrqC/4hu2uJ95T6H6BdH/Ou2Gxyh2xifx6m/l5eby1MNYXpZ1ygxJtzYVRTT3O07
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2019 13:02:29.6769
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b4a01d3-8bbc-4791-3d3f-08d77727e362
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0201MB3453
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the days of using bpf_load.c the order in which the 'maps' sections
-were defines in BPF side (*_kern.c) file, were used by userspace side
-to identify the map via using the map order as an index. In effect the
-order-index is created based on the order the maps sections are stored
-in the ELF-object file, by the LLVM compiler.
-
-This have also carried over in libbpf via API bpf_map__next(NULL, obj)
-to extract maps in the order libbpf parsed the ELF-object file.
-
-When BTF based maps were introduced a new section type ".maps" were
-created. I found that the LLVM compiler doesn't create the ".maps"
-sections in the order they are defined in the C-file. The order in the
-ELF file is based on the order the map pointer is referenced in the code.
-
-This combination of changes lead to xdp_rxq_info mixing up the map
-file-descriptors in userspace, resulting in very broken behaviour, but
-without warning the user.
-
-This patch fix issue by instead using bpf_object__find_map_by_name()
-to find maps via their names. (Note, this is the ELF name, which can
-be longer than the name the kernel retains).
-
-Fixes: be5bca44aa6b ("samples: bpf: convert some XDP samples from bpf_load to libbpf")
-Fixes: 451d1dc886b5 ("samples: bpf: update map definition to new syntax BTF-defined map")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+This patch series does the following:
+-skip printing error message on deferred probe
+-Fix usage of skb memory
 ---
- samples/bpf/xdp_rxq_info_user.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Changes in V2:
+-Called can_put_echo_skb call after usage of skb memory
+---
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 51e0d810e070..8fc3ad01de72 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -489,9 +489,9 @@ int main(int argc, char **argv)
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return EXIT_FAIL;
- 
--	map = bpf_map__next(NULL, obj);
--	stats_global_map = bpf_map__next(map, obj);
--	rx_queue_index_map = bpf_map__next(stats_global_map, obj);
-+	map =  bpf_object__find_map_by_name(obj, "config_map");
-+	stats_global_map = bpf_object__find_map_by_name(obj, "stats_global_map");
-+	rx_queue_index_map = bpf_object__find_map_by_name(obj, "rx_queue_index_map");
- 	if (!map || !stats_global_map || !rx_queue_index_map) {
- 		printf("finding a map in obj file failed\n");
- 		return EXIT_FAIL;
+Srinivas Neeli (1):
+  can: xilinx_can: Fix usage of skb memory
+
+Venkatesh Yadav Abbarapu (1):
+  can: xilinx_can: skip error message on deferred probe
+
+ drivers/net/can/xilinx_can.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+-- 
+2.7.4
 
