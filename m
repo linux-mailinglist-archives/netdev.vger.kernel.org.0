@@ -2,250 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1EBB10EC69
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 16:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B0A10ECCF
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 17:03:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727454AbfLBPiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 10:38:11 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38669 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727417AbfLBPiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 10:38:10 -0500
-Received: by mail-wr1-f65.google.com with SMTP id y17so6217901wrh.5
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 07:38:08 -0800 (PST)
+        id S1727486AbfLBQDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 11:03:53 -0500
+Received: from mail-yw1-f41.google.com ([209.85.161.41]:40551 "EHLO
+        mail-yw1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727442AbfLBQDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 11:03:53 -0500
+Received: by mail-yw1-f41.google.com with SMTP id i126so4592704ywe.7
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 08:03:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QKV9dnpf6rp/7gDFmeYHF8ufaitXlU/8eSk2SUEebjs=;
-        b=ZyvekxJLZtDwVbwOLLgdQNc4s2uE92lbdxbxNobLNUKUv0rn8HRutBpDS4oquS+Qht
-         eRvAoInkI1A2tv1aOZrP9H4qPdsQmb52aZIqdXHwBI/ELB8bk3QBuMnVVI6SIIpCeV71
-         PwjVnZ/LkHCSgib5zTsyRxjw2/ybKVRsdKkg6nHhrCbsc0uMZwDLlwQWNTkmcfjrPKg1
-         /Vmfb1F8IJl/6ENpg7LRe5+HqZobiv+POOr8xL3a3mpbhFx38nUsrIW3q34+94T4xoZp
-         jFg+4r+Qx+I5lzArrdMY7ism2O8ZJzERvuFfT9B4Z7qosuW2RyxogLZmT9tik6Ma1njW
-         VXAw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fgxmeklhIzZCFqVgjNfZswKO4i8uNUVrjelUbri+GBE=;
+        b=sls2NW7gSoAgdJ/jdhu+wHp0GG3mEB1t8CC3N6qhwpuCM7SE5l2xho+qa8TjNOCkix
+         mZYx1/9/UN6Ghbmw2Dcy3wKP+oEUH3DCa/9ggTx8rkAN9nglkG5sGjYxpQKiXgBfjBa3
+         Ox0k677a2gF6GVPmu+xBNwxRpJj6qVHs4k9+MH9gtoN/F99H06nSSs6YHAUV3tqjSKmY
+         7Ofq4OcKbBWKaVbZxbp6voVRTLeStAOGr6RXekR9YQiB6wg6ojJwGouwk0cENXyTfbqR
+         ll2qsyLpSzVC+bk0tDNjAEUcyuPNUyCx0eeOVuDAPu0rgrglJv8tm6mLbi4APbESlJZq
+         JUvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=QKV9dnpf6rp/7gDFmeYHF8ufaitXlU/8eSk2SUEebjs=;
-        b=jsgykryTTGGnT5RgHhetP8xSHPQnFosUuD7b2dSD91tvEv/TiVRa8pfLo7BzviIahp
-         LzOYCWIWC7rVyg0yvhUTljHczWbhFwmMEmtLuOYkP0ke0DtsAfkFymDOT8zqkXu4ptMG
-         l/j5x69iwVMHUus8+M91uLF5GabRbcc5h/1j6I5CDMcstQBSlDxSI0nHXDYxgpUHBChj
-         59Xj/tc8JSiQwj8XMDDy26IJxhLHLSotjfBuyucjaJypbnIhasw4D1qSCnOsQkqLcGSN
-         tkT2wCG0ok/kIpQ5FVvyoZ1zBKvY2/F/a+MocBfcnaKxSCpvvtmUOYsRiLtxPAAQEVqu
-         Nhgw==
-X-Gm-Message-State: APjAAAXk6TK7ATunpmXkX4VVclfRdqiyLcxEwk65N3+3b5pUXdowYVbr
-        H3L5njTUywnK/nZ51I0MQZg5yQ==
-X-Google-Smtp-Source: APXvYqxlnGAp6DSIGUHFiagpYBLtt3X/ylwKXsTkltvFZ2yEl6JIrwdsK5Y74yyL6oDAduga8fOvTw==
-X-Received: by 2002:adf:ef92:: with SMTP id d18mr32451336wro.234.1575301087685;
-        Mon, 02 Dec 2019 07:38:07 -0800 (PST)
-Received: from [172.20.1.104] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id n3sm16187328wrs.8.2019.12.02.07.38.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Dec 2019 07:38:06 -0800 (PST)
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-References: <20191202131847.30837-1-jolsa@kernel.org>
- <20191202131847.30837-7-jolsa@kernel.org>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [PATCH 6/6] selftests, bpftool: Add build test for libbpf dynamic
- linking
-Message-ID: <091d7dc2-0adb-f907-38d2-1750b1ec008a@netronome.com>
-Date:   Mon, 2 Dec 2019 15:38:05 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fgxmeklhIzZCFqVgjNfZswKO4i8uNUVrjelUbri+GBE=;
+        b=dHGCU3BrHWhMDa1+yFsXU1XN9LsvtjaRE0fwj6fVHdlArgJ7UxP1HttsGE5P+MBIqd
+         DpEfWm1eCP65MpTW6iimqCF2bGqdJ+ptRIP8iS5EOIbsLelOgT76edBQuAvWppSuEUrb
+         CYJHlF8VITg6uvNBTQ74wjmfyD+tp2ivVMFwq1JH+yG65Tp2EkQPcirb0WEjqOuqQS33
+         1A8ZvYWNj/bvlQG9ji9f4ZP6jdiSHXS6kzLwkMLuJVtXr2jNA0FnB+1mOdzN6zMpR25X
+         G7TmL+Sogo2kmHCD6mavNjn5lTJ8LAwALSUXJ+Gm4tBloGbvInawAwd64VxwAWcQrOmw
+         IZNQ==
+X-Gm-Message-State: APjAAAWL+pYIb4WSZsfRHdsihW/Uzrx1xhJPIg0Lz+IybJ/L7jss8LgA
+        9kx3JdbFzhtb4mfcgxJKHvFJSwM8
+X-Google-Smtp-Source: APXvYqzPa1g0tAD6DxmNxvqlIXqJolcTigL95ocTB2GKRk3kBUI2J4TbW4VnXti/SQneUCTFSCUZ2A==
+X-Received: by 2002:a81:5583:: with SMTP id j125mr23424187ywb.497.1575302631523;
+        Mon, 02 Dec 2019 08:03:51 -0800 (PST)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id u136sm14031124ywf.101.2019.12.02.08.03.49
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Dec 2019 08:03:50 -0800 (PST)
+Received: by mail-yb1-f173.google.com with SMTP id q18so152523ybq.6
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 08:03:49 -0800 (PST)
+X-Received: by 2002:a25:cf55:: with SMTP id f82mr51387ybg.203.1575302628959;
+ Mon, 02 Dec 2019 08:03:48 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191202131847.30837-7-jolsa@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <CAJPywTJzpZAXGdgZLJ+y7G2JoQMyd_JG+G8kgG+xruVVmZD-OA@mail.gmail.com>
+ <877e3fniep.fsf@cloudflare.com>
+In-Reply-To: <877e3fniep.fsf@cloudflare.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 2 Dec 2019 11:03:12 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfA9o=yQk5EjR2hMuhwRDLXCAwYQ+eGqx2YSh=hx03c8g@mail.gmail.com>
+Message-ID: <CA+FuTSfA9o=yQk5EjR2hMuhwRDLXCAwYQ+eGqx2YSh=hx03c8g@mail.gmail.com>
+Subject: Re: Delayed source port allocation for connected UDP sockets
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Jiri ! A few comments inline.
+On Mon, Dec 2, 2019 at 5:15 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Wed, Nov 27, 2019 at 03:07 PM CET, Marek Majkowski wrote:
+> > In my applications I need something like a connectx()[1] syscall. On
+> > Linux I can get quite far with using bind-before-connect and
+> > IP_BIND_ADDRESS_NO_PORT. One corner case is missing though.
+> >
+> > For various UDP applications I'm establishing connected sockets from
+> > specific 2-tuple. This is working fine with bind-before-connect, but
+> > in UDP it creates a slight race condition. It's possible the socket
+> > will receive packet from arbitrary source after bind():
+> >
+> > s = socket(SOCK_DGRAM)
+> > s.bind((192.0.2.1, 1703))
+> > # here be dragons
+> > s.connect((198.18.0.1, 58910))
+> >
+> > For the short amount of time after bind() and before connect(), the
+> > socket may receive packets from any peer. For situations when I don't
+> > need to specify source port, IP_BIND_ADDRESS_NO_PORT flag solves the
+> > issue. This code is fine:
+> >
+> > s = socket(SOCK_DGRAM)
+> > s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+> > s.bind((192.0.2.1, 0))
+> > s.connect((198.18.0.1, 58910))
+> >
+> > But the IP_BIND_ADDRESS_NO_PORT doesn't work when the source port is
+> > selected. It seems natural to expand the scope of
+> > IP_BIND_ADDRESS_NO_PORT flag. Perhaps this could be made to work:
+> >
+> > s = socket(SOCK_DGRAM)
+> > s.setsockopt(IP_BIND_ADDRESS_NO_PORT)
+> > s.bind((192.0.2.1, 1703))
+> > s.connect((198.18.0.1, 58910))
+> >
+> > I would like such code to delay the binding to port 1703 up until the
+> > connect(). IP_BIND_ADDRESS_NO_PORT only makes sense for connected
+> > sockets anyway. This raises a couple of questions though:
+> >
+> >  - IP_BIND_ADDRESS_NO_PORT name is confusing - we specify the port
+> > number in the bind!
+> >
+> >  - Where to store the source port in __inet_bind. Neither
+> > inet->inet_sport nor inet->inet_num seem like correct places to store
+> > the user-passed source port hint. The alternative is to introduce
+> > yet-another field onto inet_sock struct, but that is wasteful.
+>
+> We've been talking with Marek about it some more. I'll summarize for the
+> sake of keeping the discussion open.
+>
+> 1. inet->inet_sport as storage for port hint
+>
+>    It seems inet->inet_sport could be used to hold the port passed to
+>    bind() when we're delaying port allocation with
+>    IP_BIND_ADDRESS_NO_PORT. As long as local port, inet->inet_num, is
+>    not set, connect() and sendmsg() will know the socket needs to be
+>    bound to a port first.
 
-2019-12-02 14:18 UTC+0100 ~ Jiri Olsa <jolsa@kernel.org>
-> Adding new test to test_bpftool_build.sh script to
-> test the dynamic linkage of libbpf for bpftool:
-> 
->   $ ./test_bpftool_build.sh
->   [SNIP]
-> 
->   ... with dynamic libbpf
-> 
->   $PWD:    /home/jolsa/kernel/linux-perf/tools/bpf/bpftool
->   command: make -s -C ../../build/feature clean >/dev/null
->   command: make -s -C ../../lib/bpf clean >/dev/null
->   command: make -s -C ../../lib/bpf prefix=/tmp/tmp.fG8O2Ps8ER install_lib install_headers >/dev/null
->   Parsed description of 117 helper function(s)
->   command: make -s clean >/dev/null
->   command: make -s LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/tmp.fG8O2Ps8ER >/dev/null
->   binary:  /home/jolsa/kernel/linux-perf/tools/bpf/bpftool/bpftool
->   binary:  linked with libbpf
-> 
-> The test installs libbpf into temp directory
-> and links bpftool dynamically with it.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../selftests/bpf/test_bpftool_build.sh       | 53 +++++++++++++++++++
->  1 file changed, 53 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/test_bpftool_build.sh b/tools/testing/selftests/bpf/test_bpftool_build.sh
-> index ac349a5cea7e..e4a6a0520f8e 100755
-> --- a/tools/testing/selftests/bpf/test_bpftool_build.sh
-> +++ b/tools/testing/selftests/bpf/test_bpftool_build.sh
-> @@ -85,6 +85,55 @@ make_with_tmpdir() {
->  	echo
->  }
->  
-> +# Assumes current directory is tools/bpf/bpftool
-> +make_with_dynamic_libbpf() {
-> +	TMPDIR=$(mktemp -d)
-> +	echo -e "\$PWD:    $PWD"
-> +
-> +	# It might be needed to clean build tree first because features
-> +	# framework does not detect the change properly
-> +	echo -e "command: make -s -C ../../build/feature clean >/dev/null"
+So bind might succeed, but connect fail later if the port is already
+bound by another socket inbetween?
 
-(So far I did not echo the "make clean" commands, I printed only the
-ones used to build bpftool. But that's your call.)
+Related, I have toyed with unhashed sockets with inet_sport set in the
+past for a different use-case: transmit-only sockets. If all receive
+processing happens on a small set (say, per cpu) of unconnected
+listening sockets. Then have unhashed transmit-only connected sockets
+to transmit without route lookup. But the route caching did not
+warrant the cost of maintaining a socket per connection at scale.
 
-> +	make $J -s -C ../../build/feature clean >/dev/null
-> +	if [ $? -ne 0 ] ; then
-> +		ERROR=1
-> +	fi
-> +	echo -e "command: make -s -C ../../lib/bpf clean >/dev/null"
-> +	make $J -s -C ../../lib/bpf clean >/dev/null
-> +	if [ $? -ne 0 ] ; then
-> +		ERROR=1
-> +	fi
-> +
-> +	# Now install libbpf into TMPDIR
-> +	echo -e "command: make -s -C ../../lib/bpf prefix=$TMPDIR install_lib install_headers >/dev/null"
-> +	make $J -s -C ../../lib/bpf prefix=$TMPDIR install_lib install_headers >/dev/null
-> +	if [ $? -ne 0 ] ; then
-> +		ERROR=1
-> +	fi
-> +
-> +	# And final bpftool build (with clean first) with libbpf dynamic link
-> +	echo -e "command: make -s clean >/dev/null"
-> +	if [ $? -ne 0 ] ; then
-> +		ERROR=1
-> +	fi
+>
+>    We didn't do a detailed audit of all access sites to
+>    inet->inet_sport. Potentially we missed something.
+>
+>
 
-I do not believe you need to "make clean" here, this should have been
-done by the previous test in that dir earlier in the script (cd
-tools/bpf/bpftool; make_and_clean)
+> 4. Why connected UDP sockets?
+>
+>    We know that it's better to stick to receiving UDP sockets and
+>    demultiplex the client requests/sessions in user-space. Being hashed
+>    just by local address & port, connected UDP sockets don't scale well.
+>
+>    We think there is one useful application, though. Service draining
+>    during restarts.
+>
+>    When a service is being restarted, we would like the dying process to
+>    handle the ongoing L7 sessions until they come to an end. New UDP
+>    flows should go to a fresh service instance.
 
-> +	echo -e "command: make -s LIBBPF_DYNAMIC=1 LIBBPF_DIR=$TMPDIR >/dev/null"
-> +	make $J -s LIBBPF_DYNAMIC=1 LIBBPF_DIR=$TMPDIR >/dev/null
-> +	if [ $? -ne 0 ] ; then
-> +		ERROR=1
-> +	fi
-> +
-> +	check .
-> +	ldd bpftool | grep -q libbpf.so
-> +	if [ $? -ne 0 ] ; then
+Service hand-off is a prime use case of reuseport BPF. With UDP it is
+trickier than TCP. Requires a map to store session to process affinity,
+likely.
 
-(Or "if ldd bpftool | grep -q libbpf.so ; then")
+>    To achieve that, for each ongoing session we would open a connected
+>    UDP socket. This way socket lookup logic would deliver just the flows
+>    we care about to the old process.
+>
+> 5. reuseport BPF with SOCKARRAY to the rescue?
+>
+>    Since we're talking about opening connected UDP sockets that share
+>    the local port with other receiving UDP sockets (owned by another
+>    process), we would need to opt for port sharing with REUSEPORT [3].
+>
+>    If we don't want the connected UDP sockets to receive any traffic
+>    during the short window of opportunity when the socket is bound but
+>    not connected, we could exclude it from the reuseport group by
+>    controlling the socket set with BPF & SOCKARRAY.
+>
+> Comments and thoughts more than welcome.
 
-> +		printf "FAILURE: Did not find libbpf linked\n"
+If CAP_NET_RAW is no issue, Maciej's suggestion of temporarily binding
+to a dummy device (or even lo) might be the simplest approach?
 
-Please also set $(ERROR) here.
-
-(Also, stick to echo rather than mixing with printf? I can't remember
-why I used one over echo in the check() function, that was probably not
-on purpose.)
-
-> +	else
-> +		echo "binary:  linked with libbpf"
-> +	fi
-> +	make -s -C ../../lib/bpf clean
-> +	make -s clean
-> +	rm -rf -- $TMPDIR
-
-We probably want to clean features too? We tried to check that libbpf
-was available, but with a very specific $(LIBBPF_DIR), which was
-temporary and no longer exist. So better to reset features to a clean state?
-
-> +	echo
-> +}
-> +
->  echo "Trying to build bpftool"
->  echo -e "... through kbuild\n"
->  
-> @@ -145,3 +194,7 @@ make_and_clean
->  make_with_tmpdir OUTPUT
->  
->  make_with_tmpdir O
-> +
-> +echo -e "... with dynamic libbpf\n"
-> +
-> +make_with_dynamic_libbpf
-> 
-
-Thanks,
-Quentin
+>
+> -Jakub
+>
+> [0] Unless we call it IP_BIND_ADDRESS_NO_PORT_FOR_REAL... ;-)
+> [1] https://www.unix.com/man-page/mojave/2/connectx/
+> [2] Or REUSEADDR which semantics allow it for unicast UDP.
