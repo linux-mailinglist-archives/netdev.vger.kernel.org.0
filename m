@@ -2,101 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA2A710EA17
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 13:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E6910EA1D
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 13:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbfLBMbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 07:31:49 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:34366 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727382AbfLBMbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 07:31:49 -0500
-Received: by mail-ot1-f68.google.com with SMTP id a15so3417949otf.1;
-        Mon, 02 Dec 2019 04:31:48 -0800 (PST)
+        id S1727437AbfLBMe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 07:34:58 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52373 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727382AbfLBMe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 07:34:58 -0500
+Received: by mail-wm1-f66.google.com with SMTP id p9so6620308wmc.2
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 04:34:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y3/WupH4Qim+Jtfwvw0/dF9jXvDuuoGX3pS6ZZoAhNc=;
-        b=hmC4OqRZ+m+B5/FRgP/NMzRMPu4Mjh7PYtMnrrmI1qYtQTH2MK8Zcd2Wbouq1p7THb
-         xgEiLOQaSRHebooCs1CnxEK3jH/hphrMh+PH5MCcXHsiTsNeoIu/h3q+pt1ci0vpXIfL
-         vpqpGGw5xSEizZKCzoyOlkDdT14+8Kaz1MFp3dU+AiHpdzt8AwquVfhJgT6BzGn6+PcV
-         w4kK+3yqnnBhP2JDXWx/B14bttTGZiuUjAPhaLg6sD4sUWyKLc0SblXRYGENSt2CYvWC
-         HHBp8FrHo1JR4rJGYCvXgKiOZMj5vbDHIQgOR3sOrH04D5z5G6U+dAlvv0LnWAH3IdfG
-         SITw==
+        d=tanaza-com.20150623.gappssmtp.com; s=20150623;
+        h=user-agent:from:to:cc:subject:date:message-id:mime-version;
+        bh=si4Qt/WqY+cuoLWiKhaIj+u/k3AZYYwbUnJI7p4ynE8=;
+        b=h//gGqry2mEd1I2IzUX4xqvElIANo6yfvbrfVkZ+o3t5nCk+YcsaniWTXAmzCXDDox
+         0xJVw4OlxGye+W/YMlUEKOop/d25P8mOHHvjU4/e1JivaroqDWwfVZU+Dv5S1QkliPSF
+         xZAOE10HP8SgX4AJo7zMEkTfg1QS9ZexuPItvsGlDZr7ESD/RipsxYBwQydlYaXz98cp
+         2KjQdGzHZv9WNhBdXYR6ATVXBqLuItVewkS46f0EmZC+1svzX9530l2o+dqADL7EgO2x
+         TBip8t+q1UvC8z1dhr0y+q6tDrQ8caFhEV/xibW1BwY4kWHTgr0Y25MtWoRkZ+ZxA8FN
+         C1Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y3/WupH4Qim+Jtfwvw0/dF9jXvDuuoGX3pS6ZZoAhNc=;
-        b=h9CUL9844PBA53fm7rq9eQoohFKdUJ0MJBWacVnymiJGxWB/bAEedgRPW1sq9/fM5N
-         7K0ATC5IexwBCIeB7dbrbRTU8dlAu7WNb/wX2+FOI3d7x2zLRkzG7EpV5NcS9/oWNhiv
-         m0Kfj0GpUFVRQQgN2BMY0djJciTv9GSy3ga4HPLdfZlw2l5ZmIBHqjGHzZuPvEFgehgt
-         kucLFGdPMGT36YthCkcgFUfIYDZYOoi9k12xVQCwrkrU+eIaal0eiwyQ8tfbhK5pCVrP
-         RpsUZHANHQG6YAvfVK6CygQbg5VxlsP55dcyO6fT6dLP5+hLWxN4ESkte8Q/YhTz+xsH
-         2Waw==
-X-Gm-Message-State: APjAAAVK3GpNhLCtILRr/KKXWfU6YZnsiB6d/WDAXlNlb9Mlg+MdiLtG
-        U+9K5qsZMPL0ZrmDVr4MddFflgt756MRPnAzOXM=
-X-Google-Smtp-Source: APXvYqxTm0A+XWPhMBVpIwSs2hPG256uQnaCVIMOXQrA/Xdlgh+WtKadWFIU2w8KQ9lXr84fmeAEfBzAssk9fnm8xZU=
-X-Received: by 2002:a9d:3a37:: with SMTP id j52mr496572otc.39.1575289908085;
- Mon, 02 Dec 2019 04:31:48 -0800 (PST)
+        h=x-gm-message-state:user-agent:from:to:cc:subject:date:message-id
+         :mime-version;
+        bh=si4Qt/WqY+cuoLWiKhaIj+u/k3AZYYwbUnJI7p4ynE8=;
+        b=IC87jtbv0evdF0Kfmga4m+Untm6aIfVJ514dJLgZrWdGAQzaMJ8HiQ9d4h1WgZQX/f
+         KFGaWd4gZUKqafirQpUtm2BZsmxCxcqmWIrH8KpgyEgf7uU+ksQDwkBtd9L/CGwtRUlv
+         KeVdciQRNmzYyB5/rasG6Rq7CH3V+SjFD5DEMo4yVE0FsCySlZzPzfN1zrNsOKSueiEm
+         rLt5aFMLkIilVPuP1fsLJyjJOTIy916o+ziLSXVHa3CNkETJs6oscNsj0BkyM0SbpbL/
+         e3jXtbiZZEH6n9nn61JyhmkpsXvnV25JNoBuFyD6zcKIGO/+0fmykDazRQeH1AiQR7lW
+         yeQQ==
+X-Gm-Message-State: APjAAAVqOdKot2YHrViHH9AgWDMAS3EPJk5Zx4vyvKkisGsTQrQZkzoJ
+        Uj93E1bWqC9eBPCjmsp4yZ3+L27gip3Kuw==
+X-Google-Smtp-Source: APXvYqzHOiRsu2vcc7QO823R5r7yPixuu25GtLEeWyv+t2re3G8D4cT9nrYe6fc+Q3IAs9tale45gQ==
+X-Received: by 2002:a1c:f415:: with SMTP id z21mr28329341wma.140.1575290096457;
+        Mon, 02 Dec 2019 04:34:56 -0800 (PST)
+Received: from sancho ([160.97.163.130])
+        by smtp.gmail.com with ESMTPSA id a186sm12601970wmd.41.2019.12.02.04.34.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Dec 2019 04:34:55 -0800 (PST)
+User-agent: mu4e 1.2.0; emacs 26.3
+From:   Marco Oliverio <marco.oliverio@tanaza.com>
+To:     netfilter-devel@vger.kernel.org
+Cc:     Marco Oliverio <marco.oliverio@tanaza.com>,
+        Rocco Folino <notifications@github.com>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>
+Subject: forwarded bridged packets enqueuing is broken
+Date:   Mon, 02 Dec 2019 13:34:54 +0100
+Message-ID: <87pnh6lxch.fsf@tanaza.com>
 MIME-Version: 1.0
-References: <1575021070-28873-1-git-send-email-magnus.karlsson@intel.com> <c15a81e1-252f-936c-26f0-f21e8165c622@mellanox.com>
-In-Reply-To: <c15a81e1-252f-936c-26f0-f21e8165c622@mellanox.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 2 Dec 2019 13:31:37 +0100
-Message-ID: <CAJ8uoz1RAwLW+smZDOWd+oCvC0LRjRgZ7avx6hobZLTLNNoVfw@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: add missing memory barrier in xskq_has_addrs()
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 2, 2019 at 10:30 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
->
-> On 2019-11-29 11:51, Magnus Karlsson wrote:
-> > The rings in AF_XDP between user space and kernel space have the
-> > following semantics:
-> >
-> > producer                         consumer
-> >
-> > if (LOAD ->consumer) {           LOAD ->producer
-> >                     (A)           smp_rmb()       (C)
-> >     STORE $data                   LOAD $data
-> >     smp_wmb()       (B)           smp_mb()        (D)
-> >     STORE ->producer              STORE ->consumer
-> > }
-> >
-> > The consumer function xskq_has_addrs() below loads the producer
-> > pointer and updates the locally cached copy of it. However, it does
-> > not issue the smp_rmb() operation required by the lockless ring. This
-> > would have been ok had the function not updated the locally cached
-> > copy, as that could not have resulted in new data being read from the
-> > ring. But as it updates the local producer pointer, a subsequent peek
-> > operation, such as xskq_peek_addr(), might load data from the ring
-> > without issuing the required smp_rmb() memory barrier.
->
-> Thanks for paying attention to it, but I don't think it can really
-> happen. xskq_has_addrs only updates prod_tail, but xskq_peek_addr
-> doesn't use prod_tail, it reads from cons_tail to cons_head, and every
-> cons_head update has the necessary smp_rmb.
 
-You are correct, it cannot happen. I am working on a 10 part patch set
-that simplifies the rings and was staring blindly at that. In that
-patch set it can happen since I only have two cached pointers instead
-of four so there is a dependency, but not in the current code. I will
-include this barrier in my patch set at the appropriate place. Thanks
-for looking into this Maxim.
+Hi,
 
-Please drop this patch.
+We cannot enqueue userspace bridged forwarded packets (neither in the
+forward chain nor in the postrouting one):
 
-/Magnus
+nft add table bridge t
+nft add chain bridge t forward {type filter hook forward priority 0\;}
+nft add rule bridge t forward queue
+
+packets from machines other than localhost aren't enqueued at all.
+
+(this is also true for the postrouting chain).
+
+We think the root of the problem is the check introduced by
+b60a77386b1d4868f72f6353d35dabe5fbe981f2 (net: make skb_dst_force
+return true when dst is refcounted):
+
+modified   net/netfilter/nf_queue.c
+@@ -174,6 +174,11 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
+ 		goto err;
+ 	}
+ 
++	if (!skb_dst_force(skb) && state->hook != NF_INET_PRE_ROUTING) {
++		status = -ENETDOWN;
++		goto err;
++	}
++
+
+AFAIU forwarded bridge packets have a null dst entry in the first
+place, as they don't enter the ip stack, so skb_dst_force() returns
+false. The very same commit suggested to check skb_dst() before
+skb_dst_force(), doing that indeed fix the issue for us:
+
+modified   net/netfilter/nf_queue.c
+@@ -174,7 +174,7 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
+ 		goto err;
+ 	}
+ 
+-	if (!skb_dst_force(skb) && state->hook != NF_INET_PRE_ROUTING) {
++	if (skb_dst(skb) && !skb_dst_force(skb)) {
+ 		status = -ENETDOWN;
+ 		goto err;
+ 	}
+
+This assumes that we shouldn't enqueue the packet if skb_dst_force()
+sets not-NULL skb->dst to NULL, but it is safe to do that if skb->dst
+was NULL in the first place. It should also cover che PRE_ROUTING hook
+case. Is this assumption correct? Are there any side effects we're
+missing?
+
+If it is correct and it helps we can send a patch on top of the
+netfilter tree.
+
+Greetins
+Marco
+
