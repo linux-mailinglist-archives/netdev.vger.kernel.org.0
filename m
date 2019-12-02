@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 675A810EFB6
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 20:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3890510EFC4
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 20:05:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbfLBTDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 14:03:31 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:41438 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727992AbfLBTDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 14:03:31 -0500
-Received: by mail-oi1-f196.google.com with SMTP id e9so693163oif.8
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 11:03:30 -0800 (PST)
+        id S1728051AbfLBTFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 14:05:12 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39618 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727580AbfLBTFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 14:05:11 -0500
+Received: by mail-wm1-f67.google.com with SMTP id s14so636447wmh.4
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 11:05:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=hN4cKVKWV5dZulV5surd+sofKfbesrv42WgjwEXqGTw=;
-        b=CD/GHY9F8f+TCGIsm83JgqbQX+fdlIo5hnQj4qpbloyF6zYuKsWTllScF/yBeW2X+w
-         a+n5UDm8m/v+vb1sPCUT6k03dQSx/t4IQN2nXlWWbEbOlSQhcqweFW74kQPwtdGnMDO8
-         bmX5+3smX6v83DpvbUyUwcL/ULZFVe7/9g7Z2PAjubsXTrCnnOLeLSco0FEmReHVtjuM
-         iI3Uu0ce2myETlgSTWbVc8ikTvhfKxKoH2Ea/r7XaIfD+o/o+nyR6KlfikyhCQ6HDBW5
-         ezn2CoRk+OOPKbMu3J2XilsLaMuo5ZVCn8YPsrtCH2p+V42xfJO7Bg4q3RrxJlVfgBtB
-         1eYw==
+        d=tanaza-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:message-id:in-reply-to
+         :date:mime-version;
+        bh=cpDuQ+8S1NqmWh2GgkrifCfeM8SlTPIIbhI2n6BWOvs=;
+        b=sonkycj1mFy8Md475zDtj1AcFk5pt6Lup/DZrpQiH9Mku7PBXg96UbiXN7bNn3Q6gu
+         LvdWF/DqMoCYIoLf1KYLQh5fE426TWIrDjM8ItYYFYHzaP0iaRQwRES1ZA3KRxOhGpRP
+         UiEYYPcYklySl06jvrC9Y6BhpQM3IX+KEqNUfJwBKTAiuqk2WwL3LBEASEM2tLQnJCjR
+         p4Km4TTqKack3gX3zFL5efSJmCQHtO6rHK9fm8ZXmmjsfZ1MBuRrNKPROyjfzs+xBrRF
+         WRaOGLWo7r1qu8/CYAKzaY0E6HlX8/1Th6zpmZfxp9zpvBDDlO+gtzu/fhlNiLVFy/Uy
+         oRpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=hN4cKVKWV5dZulV5surd+sofKfbesrv42WgjwEXqGTw=;
-        b=XJPiEmvMn3jH1e9HOyxopRw5L0aQfirduktgtGx1sHXUrwVCK72qwCCCioFhp4mmtF
-         sp72juq7FarD8Tnxb9JVXs67jtXY3Ld5Yw1UPoEhdxn6ifQLDT7g+HTusl73DoUVQbcU
-         Hr873VSeyD7RpI5V2JcVCWN+yNkslX3NYa45tUo+/wdjLZ6biTqhoLkJrGQ892gM3TnX
-         whL647S9TVCcirFPmNeh9v6PW63mznL9y0zMWsbyrkZvrWh0/wdrPqMKQmZqIPI5qK8Z
-         7gpoAyBCSrtEKVqnsNjZB+w36qYgGJZDNusov4NVbzw+b+l28R7r3V4zYUSRhz0wvxu7
-         sEmw==
-X-Gm-Message-State: APjAAAXOTzxn6UZEE0bSSoO1LpSoUjXmI3rHzfNC+PX8HYJpRURS+oa7
-        qhL5/9RE9sq8+ciCCjTktmUgA0rj
-X-Google-Smtp-Source: APXvYqx+u06hPRPmbc2r43rBMSFKadIcwaw0fmXpX5WMlmrpieSy2eGb3F5rmuX/vLtY7/dZuJgI9Q==
-X-Received: by 2002:aca:39d4:: with SMTP id g203mr482537oia.78.1575313409944;
-        Mon, 02 Dec 2019 11:03:29 -0800 (PST)
-Received: from [192.168.1.104] ([74.197.19.145])
-        by smtp.gmail.com with ESMTPSA id a16sm92378otd.64.2019.12.02.11.03.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Dec 2019 11:03:29 -0800 (PST)
-Subject: Re: Followup: Kernel memory leak on 4.11+ & 5.3.x with IPsec
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org
-References: <CAMnf+Pg4BLVKAGsr9iuF1uH-GMOiyb8OW0nKQSEKmjJvXj+t1g@mail.gmail.com>
- <20191101075335.GG14361@gauss3.secunet.de>
- <f5d26eeb-02b5-20f4-14f5-e56721c97eb8@gmail.com>
- <20191111062832.GP13225@gauss3.secunet.de>
- <a1a60471-7395-2bb0-5c6d-290b9af4b7dc@gmail.com>
- <20191202183522.GA734264@kroah.com>
-From:   JD <jdtxs00@gmail.com>
-Message-ID: <00d705ec-858e-0e89-1ddb-23cb30131ab7@gmail.com>
-Date:   Mon, 2 Dec 2019 13:03:29 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :message-id:in-reply-to:date:mime-version;
+        bh=cpDuQ+8S1NqmWh2GgkrifCfeM8SlTPIIbhI2n6BWOvs=;
+        b=o1cmFyx5DdHGJSr7OG0HcrknS58QpQ0Tg4hAsABFeotGOUp6USOVjOXztEI39eeRRR
+         MlySsVgCm1EnnFuYtTz4PY+Gm5PC1uyNqNJZrhHd5FfFRCAcKzzyR66GBbr8CBIzq15v
+         HTeuaVDlIaeAgE6qKPJBZGh+Sc2SFASgGEOn1fL3zcToo4l1Lclk3aIPl74VYrJCe+W8
+         1kbA1RYW066ukTJRiKlGtGbr8S975hxKJAdc+grDB5hxcd2mDPOQsVo+OLmRG67xCJmG
+         GktiricVviE0hW5osexaBpQCQYPUH5CdGOwLSGxRqXfoY4zd0U06NHZOc+cTi1yZTs/j
+         kerw==
+X-Gm-Message-State: APjAAAV1W1papHy0Xch+edrBF7lOet7n/wIBzX9qaqVHGxHqUnRvX/eN
+        eCLXVQxuW6K+zUJhXscj+9FEf3WZdWgntg==
+X-Google-Smtp-Source: APXvYqzXJDiESvArk5u/jax/qwNnw5RQ+BTZyzJ0XCZtnxIJWw8vPfN7p/aPNd9ERrjj1W1VOi5jTg==
+X-Received: by 2002:a1c:3d87:: with SMTP id k129mr31825358wma.26.1575313509766;
+        Mon, 02 Dec 2019 11:05:09 -0800 (PST)
+Received: from sancho ([37.162.99.119])
+        by smtp.gmail.com with ESMTPSA id c2sm378380wrp.46.2019.12.02.11.04.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Dec 2019 11:05:01 -0800 (PST)
+References: <20191202185430.31367-1-marco.oliverio@tanaza.com>
+User-agent: mu4e 1.2.0; emacs 26.3
+From:   Marco Oliverio <marco.oliverio@tanaza.com>
+To:     Marco Oliverio <marco.oliverio@tanaza.com>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        fw@strlen.de, rocco.folino@tanaza.com
+Subject: Re: [PATCH nf] netfilter: nf_queue: enqueue skbs with NULL dst
+Message-ID: <87r21mv9aj.fsf@tanaza.com>
+In-reply-to: <20191202185430.31367-1-marco.oliverio@tanaza.com>
+Date:   Mon, 02 Dec 2019 20:04:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <20191202183522.GA734264@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/2/2019 12:35 PM, Greg KH wrote:
-> On Mon, Dec 02, 2019 at 12:10:32PM -0600, JD wrote:
->> Hello,
->>
->> I noticed the patch hasn't been in the last two stable releases for 4.14 and
->> 4.19.  I checked the 4.14.157 and 4.19.87 release but the xfrm_state.c file
->> doesn't have the patch.
->>
->> Any update on or eta when this patch will backported to those two?  Also, I
->> suppose 5.3.14 will need it as well.
-> Sorry, I didn't realize this was already in the stable kernel tree.
->
-> I'll go queue it up now...
->
-> greg k-h
 
-Awesome, thank you Greg!
+Marco Oliverio writes:
 
+> Bridge packets that are forwarded have skb->dst == NULL and get
+> dropped by the check introduced by
+> ...
+
+ops. sorry for the multiple emails, made a mess :-)
+
+Refer to this thread.
+
+M
