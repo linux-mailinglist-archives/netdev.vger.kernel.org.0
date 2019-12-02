@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5765610EDC9
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 18:05:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FE810EDE6
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 18:09:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727698AbfLBRFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 12:05:16 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41856 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727795AbfLBRFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 12:05:13 -0500
-Received: by mail-io1-f72.google.com with SMTP id p2so57907ioh.8
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 09:05:11 -0800 (PST)
+        id S1727789AbfLBRJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 12:09:48 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:39597 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727724AbfLBRJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 12:09:47 -0500
+Received: by mail-qv1-f65.google.com with SMTP id y8so110641qvk.6;
+        Mon, 02 Dec 2019 09:09:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fSLpCsC0gIfY0yNpzNg6ZYUHgfqDiFco3xCemoRy4iM=;
+        b=JGT1wvi7Mxpe5wO3iuZdiTBowwcSDL2PV10ehqW5a71+rQ8d6L/dY66/rzqHw0LHX/
+         c7m+7Pk7qw4vQMyyODN43cp4rn/eWqjSiRitTnp9UuhEV2AiWOxvSjc5fhm8RVH5N2Hy
+         omEoeo4cuGcHsrI8I5WCS0BaJI0NUx9tTmFfyCLj+P9BW+QpohFNsNyxNB24J8OPEg2H
+         W3QtFiQ5u5fixCsExbVo/A/D1FrCl8jd9HQVlCGvvneGeobDxcWpElppYnMMRTj/Ygkv
+         TZUeONnst/mdYNJNa5+95qZ+v8u6J0WK+efkGQd5dgIMli9HQtFFuJNwZB0st2e6ejEU
+         rLdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/F3uYH/byikiR4pmME4NQXaB6rRlktnnY/q/Qtr+i/s=;
-        b=UiygTgCKHvEfpaNQCyDqpGvtvGzNBlf0DoyjJQL/Q968ZsKAaW2i9zw/uOyNHpMeIS
-         dlgypRTtTtkaWPNzsds9p71l9W0HxNkNcejsvKwrxL8dTDVK+1UbTShCND5hNdMMb/wB
-         z31PHCQlqrO9I7MyY9emS90pSRWOPfkVZapYg1mo4lBB0XrnkOgEG/XHNtwWjvhEqeHe
-         ycouN36JhE54l1kU0FNGzYKCGwv0nN2Y0XwebDo02XrzuMEcSkpcQwLdxF2/hMnJKnTk
-         lm0aY6iMK2r/P3Ldj9CMVrOhtgDSUMhigGQXsPnKL8X2+y/3RSFoT0qxtVkrE+q2Axf/
-         LmDQ==
-X-Gm-Message-State: APjAAAXH7udVZ/E7Qh20ymsPVpyPgcMiRn6mWh+W3NRucyA6g9qF+sol
-        eCeFfHA0f0pad23N2sgKS0zcIpyK0phwU2/0tBWIejMnggRF
-X-Google-Smtp-Source: APXvYqzH3vRxxo/e5Rnqon9juvNsa0peNh8SNnU9SFGGATkjF0W0EzwyjVm/9zbzPbmVcjQdCrHlvcQtR9q+hG+UgogP+UAoGXjl
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fSLpCsC0gIfY0yNpzNg6ZYUHgfqDiFco3xCemoRy4iM=;
+        b=qX56gglAEv0ERKkxFSLlDNTbKUUbHkAisR8kvKT7n3J8iYCsompO0TOMR8706NRWS5
+         m3mSB10B4cOO/AAB2joKYe8APQqNVD/euAE96EUC8XZS4N5YfapFH2Lvt77LE/pKQ7UY
+         hUnI+TZX9lGCFiyvwKfzfqewFJw7eJ5HMdCZccwD7difyIpSOEB3LzknngyBl8dAZ3ch
+         uMiv7/Vato3Gk58K8ugQrS18HWBcAgZC1XdYX3URU5uMiCEx4OqeTpi4v9ViiRUqnHM0
+         In01SFHN3IrWhHazRUrOIhLu9ewgfoq3h00pmoBa12FYsrVYYIzrgYwI79cPUCcd64Kb
+         OPRQ==
+X-Gm-Message-State: APjAAAWCU8XqZdnh0neodgWx7xnBBNI9GKLaIqAr/UMZjwjPKOrCwwAm
+        G7uP9cKrdxa79V0yKEl2qB4UKrfwU0M5hTVvrs0=
+X-Google-Smtp-Source: APXvYqyKT6NO6KDsZ2ei5bKypY+iyosLPbJZy/xkL0hciZw1x+t08E3mYmWD+InttgZD7tNu/S5UBmrc2HpBRhRWSwc=
+X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr1561456qvy.224.1575306584723;
+ Mon, 02 Dec 2019 09:09:44 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:68a:: with SMTP id o10mr17451276ils.202.1575306311244;
- Mon, 02 Dec 2019 09:05:11 -0800 (PST)
-Date:   Mon, 02 Dec 2019 09:05:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001821bf0598bb955c@google.com>
-Subject: memory leak in fdb_create (2)
-From:   syzbot <syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com>
-To:     bridge@lists.linux-foundation.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20191127094837.4045-1-jolsa@kernel.org>
+In-Reply-To: <20191127094837.4045-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Dec 2019 09:09:33 -0800
+Message-ID: <CAEf4BzbUK98tsYH1mSNoTjuVB4dstRsL5rpkA+9nRCcqrdn6-Q@mail.gmail.com>
+Subject: Re: [PATCH 0/3] perf/bpftool: Allow to link libbpf dynamically
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Nov 27, 2019 at 1:49 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> hi,
+> adding support to link bpftool with libbpf dynamically,
+> and config change for perf.
+>
+> It's now possible to use:
+>   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=3D1
 
-syzbot found the following crash on:
+I wonder what's the motivation behind these changes, though? Why is
+linking bpftool dynamically with libbpf is necessary and important?
+They are both developed tightly within kernel repo, so I fail to see
+what are the huge advantages one can get from linking them
+dynamically.
 
-HEAD commit:    ceb30747 Merge tag 'y2038-cleanups-5.5' of git://git.kerne..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=142b3e7ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=26f873e40f2b4134
-dashboard link: https://syzkaller.appspot.com/bug?extid=2add91c08eb181fea1bf
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12976feee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10604feee00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff888124fa7080 (size 128):
-   comm "syz-executor163", pid 7170, jiffies 4294954254 (age 12.500s)
-   hex dump (first 32 bytes):
-     d1 16 b6 1f 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-     aa aa aa aa aa 0c 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<000000001bbce457>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000001bbce457>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<000000001bbce457>] slab_alloc mm/slab.c:3319 [inline]
-     [<000000001bbce457>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
-     [<000000005e78ed69>] fdb_create+0x37/0x530 net/bridge/br_fdb.c:498
-     [<000000009cc867aa>] fdb_insert+0xb2/0xf0 net/bridge/br_fdb.c:537
-     [<00000000a443c9ff>] br_fdb_change_mac_address+0x80/0x1f0  
-net/bridge/br_fdb.c:316
-     [<00000000370e41a8>] br_stp_change_bridge_id+0x4c/0x190  
-net/bridge/br_stp_if.c:223
-     [<00000000db15c550>] br_set_mac_address+0xa2/0xb0  
-net/bridge/br_device.c:251
-     [<00000000547a827c>] dev_set_mac_address+0xdd/0x150 net/core/dev.c:8350
-     [<0000000068a207bd>] __bond_release_one.cold+0x319/0x4ac  
-drivers/net/bonding/bond_main.c:2055
-     [<00000000189411c7>] bond_slave_netdev_event  
-drivers/net/bonding/bond_main.c:3169 [inline]
-     [<00000000189411c7>] bond_netdev_event+0x2ac/0x2c0  
-drivers/net/bonding/bond_main.c:3280
-     [<000000002bd5677b>] notifier_call_chain+0x66/0xb0 kernel/notifier.c:95
-     [<0000000044f0058c>] __raw_notifier_call_chain kernel/notifier.c:396  
-[inline]
-     [<0000000044f0058c>] raw_notifier_call_chain+0x2e/0x40  
-kernel/notifier.c:403
-     [<000000009782bbd6>] call_netdevice_notifiers_info net/core/dev.c:1893  
-[inline]
-     [<000000009782bbd6>] call_netdevice_notifiers_info+0x60/0xb0  
-net/core/dev.c:1878
-     [<000000005904fef6>] call_netdevice_notifiers_extack  
-net/core/dev.c:1905 [inline]
-     [<000000005904fef6>] call_netdevice_notifiers net/core/dev.c:1919  
-[inline]
-     [<000000005904fef6>] rollback_registered_many+0x373/0x640  
-net/core/dev.c:8743
-     [<00000000806944eb>] unregister_netdevice_many.part.0+0x17/0x90  
-net/core/dev.c:9906
-     [<00000000c0997ee2>] unregister_netdevice_many+0x24/0x30  
-net/core/dev.c:9905
-     [<0000000042445981>] rtnl_delete_link+0x63/0xa0  
-net/core/rtnetlink.c:2926
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+>
+> which will detect libbpf devel package with needed version,
+> and if found, link it with bpftool.
+>
+> It's possible to use arbitrary installed libbpf:
+>   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=3D1 LIBBPF_DIR=3D/tmp/libbp=
+f/
+>
+> I based this change on top of Arnaldo's perf/core, because
+> it contains libbpf feature detection code as dependency.
+> It's now also synced with latest bpf-next, so Toke's change
+> applies correctly.
+>
+> Also available in:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+>   libbpf/dyn
+>
+> thanks,
+> jirka
+>
+>
+> ---
+> Jiri Olsa (2):
+>       perf tools: Allow to specify libbpf install directory
+>       bpftool: Allow to link libbpf dynamically
+>
+> Toke H=C3=B8iland-J=C3=B8rgensen (1):
+>       libbpf: Export netlink functions used by bpftool
+>
+>  tools/bpf/bpftool/Makefile        | 40 +++++++++++++++++++++++++++++++++=
+++++++-
+>  tools/build/feature/test-libbpf.c |  9 +++++++++
+>  tools/lib/bpf/libbpf.h            | 22 +++++++++++++---------
+>  tools/lib/bpf/libbpf.map          |  7 +++++++
+>  tools/lib/bpf/nlattr.h            | 15 ++++++++++-----
+>  tools/perf/Makefile.config        | 27 ++++++++++++++++++++-------
+>  6 files changed, 98 insertions(+), 22 deletions(-)
+>
