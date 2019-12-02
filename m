@@ -2,178 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC2710E542
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 06:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07F110E59B
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 06:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725903AbfLBFUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 00:20:06 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36152 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbfLBFUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 00:20:06 -0500
-Received: by mail-pg1-f196.google.com with SMTP id k13so17780012pgh.3
-        for <netdev@vger.kernel.org>; Sun, 01 Dec 2019 21:20:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=65zZM5jAx2UyOpGPpufi+bpk8NMcLIMTkuf/67nlcg4=;
-        b=iVDqjapOrsElMuDQy87yNqIPMNu9ikbPx/ge3oAu1lVv1caNjZ/C7wFFsFdmHNG51f
-         UC7C6bQ0UJy6Xo7Xfo7dbK8Iqa9EugfWP6bZt1I+xi9PorzwQpb/s42xuQN7HKB70sCZ
-         0+X9q2QF0zQ4LOJ2zVOi/BZip/P7wjSluTYo9gkNZZjre/DU1V5P750thY2O8QgtuiRz
-         UWVIXO7W+1z/L6aF6zbaCfIEZbsdR7AUzaQ+PovLfBi98ut5ACv8bxQIQS9CdNfa7Htg
-         lUWHyzf003RlaYUWHIAEjgici0azzVMeZyIoJairt4IvgA66ercKlkA5zeRtARsabOU+
-         Mfpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=65zZM5jAx2UyOpGPpufi+bpk8NMcLIMTkuf/67nlcg4=;
-        b=Dz7jtLOz2Iqx0PgDA1RfDQfRO8iYDVMzXUebRblxxygd7rPIxk0tCArvbvgu1294IY
-         TzB8WlNZh2YEqnPP8gtNJuPhtKx/I1Fna886MQu7Gng1NnrPvWpsGfHgPtAAERTuzLhm
-         3xbcgeN3SMuxMDaAS9H2LKpfZVHl0Nu7SLpIxew9p9WKz0bwShKkMF+jGfHmLsIkKquZ
-         O/4/AkOfWDHYJwj3Z2ESb5qdVzECpbQDFppL77iwezmwLmavnnrGMiFYkEFI6Xd+jL3+
-         S5s6DrF9lxTJLqYhrdd1ZYcjWmElnXIN2CoYkes2yB2xM3N9YK9sRKorNmM+0imZC8dL
-         PwuA==
-X-Gm-Message-State: APjAAAXeSiEVb3aetLQfeUpznauByrhqPbUWUkqqJDuPvuhxHBRNT/cp
-        sJ0+ZaJ0Dm2vRrnebbttZLIp1Jd2
-X-Google-Smtp-Source: APXvYqzF4+Um2wHEw3C+mTnuxlyKHULeOmhYUbeZrbt/h94dTi1QkWV1RyR6FcF2mVykFcBGY7azWg==
-X-Received: by 2002:a63:cf4f:: with SMTP id b15mr29688524pgj.216.1575264005562;
-        Sun, 01 Dec 2019 21:20:05 -0800 (PST)
-Received: from localhost.localdomain ([42.109.137.125])
-        by smtp.gmail.com with ESMTPSA id f8sm2548351pjg.28.2019.12.01.21.20.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 01 Dec 2019 21:20:04 -0800 (PST)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        martin.varghese@nokia.com
-Subject: [PATCH v3 net] Fixed updating of ethertype in function skb_mpls_pop
-Date:   Mon,  2 Dec 2019 10:49:51 +0530
-Message-Id: <1575263991-5915-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1726319AbfLBFxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 00:53:30 -0500
+Received: from ozlabs.org ([203.11.71.1]:56981 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725807AbfLBFxa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 2 Dec 2019 00:53:30 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47RDn32QZ8z9sPL;
+        Mon,  2 Dec 2019 16:53:26 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1575266008;
+        bh=EH+luGXjEilyQ8e+4eAH4LRNqk79yUFe6oQvFYlUr4k=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=noH5xNFoZXpnOmGLtGuWcghVmhFwCLZEThi4IM+78KPiDy/A0K25QrTucZRFgHP4w
+         p2UM2USUd7MJu6d/A3e/ccqQDysB0pqm//W3VLWOjSJkms+GcIcpkZBglp3shAkzHi
+         RZjxs5MUi7Nr6wZG0CZoxOL4RIqdc2dVDsEY/IGWMv0fCVY89W6dj1rFiZxl2I2Ypr
+         f1S3RlnKxSPmoNNdJ0AicXhAYf/uqa2zcQMFULONaZNMVJthAQMinzzwXbfXBu51PT
+         Dlux5u8JToEHyTEfhuOlQpqbXMouCkWZi+nWI+na3hSy6B9D1f6/pFDHTJb5DjlUoB
+         k0lXg7QDgxh0A==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Aurelien Jarno <aurelien@aurel32.net>, linux-kernel@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, debian-kernel@lists.debian.org,
+        Aurelien Jarno <aurelien@aurel32.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "open list\:BPF \(Safe dynamic programs and tools\)" 
+        <netdev@vger.kernel.org>,
+        "open list\:BPF \(Safe dynamic programs and tools\)" 
+        <bpf@vger.kernel.org>
+Subject: Re: [PATCH] libbpf: fix readelf output parsing on powerpc with recent binutils
+In-Reply-To: <20191201195728.4161537-1-aurelien@aurel32.net>
+References: <20191201195728.4161537-1-aurelien@aurel32.net>
+Date:   Mon, 02 Dec 2019 16:53:26 +1100
+Message-ID: <87zhgbe0ix.fsf@mpe.ellerman.id.au>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+Aurelien Jarno <aurelien@aurel32.net> writes:
+> On powerpc with recent versions of binutils, readelf outputs an extra
+> field when dumping the symbols of an object file. For example:
+>
+>     35: 0000000000000838    96 FUNC    LOCAL  DEFAULT [<localentry>: 8]     1 btf_is_struct
+>
+> The extra "[<localentry>: 8]" prevents the GLOBAL_SYM_COUNT variable to
+> be computed correctly and causes the checkabi target to fail.
+>
+> Fix that by looking for the symbol name in the last field instead of the
+> 8th one. This way it should also cope with future extra fields.
+>
+> Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+> ---
+>  tools/lib/bpf/Makefile | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-The skb_mpls_pop was not updating ethertype of an ethernet packet if the
-packet was originally received from a non ARPHRD_ETHER device.
+Thanks for fixing that, it's been on my very long list of test failures
+for a while.
 
-In the below OVS data path flow, since the device corresponding to port 7
-is an l3 device (ARPHRD_NONE) the skb_mpls_pop function does not update
-the ethertype of the packet even though the previous push_eth action had
-added an ethernet header to the packet.
+Tested-by: Michael Ellerman <mpe@ellerman.id.au>
 
-recirc_id(0),in_port(7),eth_type(0x8847),
-mpls(label=12/0xfffff,tc=0/0,ttl=0/0x0,bos=1/1),
-actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-pop_mpls(eth_type=0x800),4
+cheers
 
-Fixes: ed246cee09b9 ("net: core: move pop MPLS functionality from OvS to core helper")
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
-Changes in v2:
-    - In function skb_mpls_pop check for dev type removed
-      while updating ethertype.
-    - key->mac_proto is checked in function pop_mpls to pass
-      ethernet flag to skb_mpls_pop.
-    - dev type is checked in function tcf_mpls_act to pass
-      ethernet flag to skb_mpls_pop.
-
-Changes in v3:
-    - Fixed header inclusion order.
-    - Removed unwanted braces.
-    - Retain space between function argements and description in the
-      coments of function skb_mpls_pop.
-    - used ovs_key_mac_proto(key) to check if the packet is ethernet.
-    - Added fixes tag.
-
- include/linux/skbuff.h    | 3 ++-
- net/core/skbuff.c         | 6 ++++--
- net/openvswitch/actions.c | 3 ++-
- net/sched/act_mpls.c      | 4 +++-
- 4 files changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index dfe02b6..70204b9 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3530,7 +3530,8 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
- int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
- int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 		  int mac_len);
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len);
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-+		 bool ethernet);
- int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
- int skb_mpls_dec_ttl(struct sk_buff *skb);
- struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 867e61d..312e80e 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5529,12 +5529,14 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
-  * @skb: buffer
-  * @next_proto: ethertype of header after popped MPLS header
-  * @mac_len: length of the MAC header
-+ * @ethernet: flag to indicate if ethernet header is present in packet
-  *
-  * Expects skb->data at mac header.
-  *
-  * Returns 0 on success, -errno otherwise.
-  */
--int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
-+		 bool ethernet)
- {
- 	int err;
- 
-@@ -5553,7 +5555,7 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len)
- 	skb_reset_mac_header(skb);
- 	skb_set_network_header(skb, mac_len);
- 
--	if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-+	if (ethernet) {
- 		struct ethhdr *hdr;
- 
- 		/* use mpls_hdr() to get ethertype to account for VLANs. */
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 12936c1..91e2100 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -179,7 +179,8 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
- 	int err;
- 
--	err = skb_mpls_pop(skb, ethertype, skb->mac_len);
-+	err = skb_mpls_pop(skb, ethertype, skb->mac_len,
-+			   ovs_key_mac_proto(key) == MAC_PROTO_ETHERNET);
- 	if (err)
- 		return err;
- 
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index 4d8c822..47e0cfd 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- /* Copyright (C) 2019 Netronome Systems, Inc. */
- 
-+#include <linux/if_arp.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -76,7 +77,8 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	switch (p->tcfm_action) {
- 	case TCA_MPLS_ACT_POP:
--		if (skb_mpls_pop(skb, p->tcfm_proto, mac_len))
-+		if (skb_mpls_pop(skb, p->tcfm_proto, mac_len,
-+				 skb->dev && skb->dev->type == ARPHRD_ETHER))
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_PUSH:
--- 
-1.8.3.1
-
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index 99425d0be6ff..333900cf3f4f 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -147,7 +147,7 @@ TAGS_PROG := $(if $(shell which etags 2>/dev/null),etags,ctags)
+>  
+>  GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
+>  			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
+> -			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}' | \
+> +			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
+>  			   sort -u | wc -l)
+>  VERSIONED_SYM_COUNT = $(shell readelf -s --wide $(OUTPUT)libbpf.so | \
+>  			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+> @@ -216,7 +216,7 @@ check_abi: $(OUTPUT)libbpf.so
+>  		     "versioned in $(VERSION_SCRIPT)." >&2;		 \
+>  		readelf -s --wide $(OUTPUT)libbpf-in.o |		 \
+>  		    cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' |	 \
+> -		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$8}'|   \
+> +		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
+>  		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+>  		readelf -s --wide $(OUTPUT)libbpf.so |			 \
+>  		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
+> -- 
+> 2.24.0
