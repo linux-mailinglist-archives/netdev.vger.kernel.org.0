@@ -2,99 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 953EA10E485
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 03:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FBF210E492
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 03:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfLBCXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 21:23:24 -0500
-Received: from mail-pf1-f180.google.com ([209.85.210.180]:39498 "EHLO
-        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727285AbfLBCXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 21:23:24 -0500
-Received: by mail-pf1-f180.google.com with SMTP id x28so17691881pfo.6
-        for <netdev@vger.kernel.org>; Sun, 01 Dec 2019 18:23:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RKHQkROqUsIA1U7zF2OcwdUVM3/MpQ+b/q7sXYQGJPQ=;
-        b=UgDroZETrHoK001TuB23HdPKpqy8bxgqLieA1iITRl2MFIprjCOIojjIqNmB5lUegI
-         RKp2AHsLM+7Tx7CpnhvcYRN3Zn62il1Q7vAU6aY2aJsBtvZPI7WXJluz3t41/NCI7pzB
-         sgGueEf0O7hR/MU9dlelMlChH6e1dpA9ICO1W+qG1yFEjc/oa/5qMwBOB9KIkQfTomYv
-         GKnH7CFSkUcUb7a4wyAlzpCCg3WK+7dIFLuACpabure/q9vkCwXW8uDMu5ylJl8mZSA8
-         7Zf30eW9z3vAhDHPLcqAUym7miXkwb4eC/b8TYyKSSvSEoTE8k+xcRjTT1bUvgo+3oW4
-         Sb4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RKHQkROqUsIA1U7zF2OcwdUVM3/MpQ+b/q7sXYQGJPQ=;
-        b=rtUJfGOQaJqRO/lAlF/aI0HNSArQFn/0+78LnIzekszmBaI75bWLyhRP8IHclXgJPb
-         88svJicHzssfT/tgXTfTKohIXjn1zQXNxEL4SzMaaA0K7inKJ/27b7OCd7On5pr1+2K8
-         TB65EDHtgxXYTTYIUiNu4qtSQ1DT9cvLDOPbd7JCWTwoQHWObdmY5whiS03a7gU5AngM
-         D+AeIUvizh2r+rBT5He2+fj6sf+DoIUwj/q/57KWjWP1ruO2MBYoL+3ulnCeYU4KSIqJ
-         PG3fb29SHrBSq2PvdxMb/vDkpu9M327g9om4CaSAB8kjx7Ub19oUBa9j/9HHKKs/K3+l
-         Kavg==
-X-Gm-Message-State: APjAAAUfs6R1T/93mJQJZjE23vZ6MygoyclgydipemfJ1I8vTzXDgfPm
-        9WD3AcAlTuqQMkIf5UJzP24=
-X-Google-Smtp-Source: APXvYqxoP3cveq85Vr4bAOOQV+JwWZgqg43KvExSO7KpHzMe/jdQ2v1DuWgBk971AnF6Cnn+HnV9Ug==
-X-Received: by 2002:a63:1953:: with SMTP id 19mr23228779pgz.157.1575253403514;
-        Sun, 01 Dec 2019 18:23:23 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id m14sm31439883pgn.41.2019.12.01.18.23.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Dec 2019 18:23:22 -0800 (PST)
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     Avinash Patil <avinashapatil@gmail.com>, subashab@codeaurora.org
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Josh Hunt <johunt@akamai.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
- <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org>
- <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
- <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
- <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
- <81ace6052228e12629f73724236ade63@codeaurora.org>
- <CADVnQymDSZb=K8R1Gv=RYDLawW9Ju1tuskkk8LZG4fm3yxyq3w@mail.gmail.com>
- <74827a046961422207515b1bb354101d@codeaurora.org>
- <827f0898-df46-0f05-980e-fffa5717641f@akamai.com>
- <cae50d97-5d19-7b35-0e82-630f905c1bf6@gmail.com>
- <5a267a9d-2bf5-4978-b71d-0c8e71a64807@gmail.com>
- <0101016eba384308-7dd6b335-8b75-4890-8733-a4dde8064d11-000000@us-west-2.amazonses.com>
- <CAJwzM1mkR1dO-Jq7XH40MQz6CxU97YON5tembVL2DRPD6RYy9g@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <fb78c016-d421-762c-e0eb-d148b7e55b17@gmail.com>
-Date:   Sun, 1 Dec 2019 18:23:21 -0800
+        id S1727339AbfLBCoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 21:44:55 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:32123 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727298AbfLBCoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 21:44:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575254693;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vSf88/Ymm45hVchy24xxnNDl7fg3cEgjk/44EM+Uozc=;
+        b=MobWEOH6wuagXBXOg+MkICgdw28yULk217TjIUy1dGSJP0KbYeG7SxKbx7rcyw8dPjn7/a
+        ymN4qoTU9428lcvINA7hBke2N73HFNZV4cIopcna8Mey5mNdsTQa7imSKFWVcWc9ibLi8G
+        LWeID1t2spY3TWwfxK6bM2DQYAOr/dg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-321-BAKKw8eROF-P6vqOzIgWug-1; Sun, 01 Dec 2019 21:44:50 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 877B18017CC;
+        Mon,  2 Dec 2019 02:44:47 +0000 (UTC)
+Received: from [10.72.12.226] (ovpn-12-226.pek2.redhat.com [10.72.12.226])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 04E095D9CA;
+        Mon,  2 Dec 2019 02:44:38 +0000 (UTC)
+Subject: Re: [RFC net-next 07/18] tun: set offloaded xdp program
+To:     David Ahern <dsahern@gmail.com>,
+        Prashant Bhole <prashantbhole.linux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        qemu-devel@nongnu.org, kvm@vger.kernel.org
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+ <20191126100744.5083-8-prashantbhole.linux@gmail.com>
+ <e0631f09-28ce-7d13-e58c-87a700a39353@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <10625932-aa8b-f8ff-b835-7b142d9f45a2@redhat.com>
+Date:   Mon, 2 Dec 2019 10:44:37 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <CAJwzM1mkR1dO-Jq7XH40MQz6CxU97YON5tembVL2DRPD6RYy9g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <e0631f09-28ce-7d13-e58c-87a700a39353@gmail.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: BAKKw8eROF-P6vqOzIgWug-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 11/29/19 9:39 PM, Avinash Patil wrote:
-> Hi Eric,
-> 
-> This crash looks quite similar to the one I am experiencing [1] and
-> reported already.
-> 
-> [1] https://www.spinics.net/lists/netdev/msg611694.html
+On 2019/12/2 =E4=B8=8A=E5=8D=8812:35, David Ahern wrote:
+> On 11/26/19 4:07 AM, Prashant Bhole wrote:
+>> From: Jason Wang <jasowang@redhat.com>
+>>
+>> This patch introduces an ioctl way to set an offloaded XDP program
+>> to tun driver. This ioctl will be used by qemu to offload XDP program
+>> from virtio_net in the guest.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+>> ---
+>>   drivers/net/tun.c           | 19 ++++++++++++++-----
+>>   include/uapi/linux/if_tun.h |  1 +
+>>   2 files changed, 15 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index d078b4659897..ecb49101b0b5 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -241,6 +241,7 @@ struct tun_struct {
+>>   =09struct bpf_prog __rcu *xdp_prog;
+>>   =09struct tun_prog __rcu *steering_prog;
+>>   =09struct tun_prog __rcu *filter_prog;
+>> +=09struct tun_prog __rcu *offloaded_xdp_prog;
+> I have been looking into running XDP pograms in the TX path of a tap
+> device [1] where the program is installed and managed by a process in
+> the host. The code paths are the same as what you are doing with XDP
+> offload, so how about calling this xdp_prog_tx?
+>
+> [1]
+> https://github.com/dsahern/linux/commit/f2303d05187c8a604cdb70b288338e9b1=
+d1b0db6
 >
 
-Please start a bisection.
+I think it's fine, btw, except for the netlink part there should be no=20
+much difference.
 
-Thanks you.
+Thanks
 
