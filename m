@@ -2,130 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E2E10E4E4
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 04:42:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 130AE10E4EA
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 04:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbfLBDmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 22:42:20 -0500
-Received: from mail-eopbgr150057.outbound.protection.outlook.com ([40.107.15.57]:28130
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727285AbfLBDmU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Dec 2019 22:42:20 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UM5v8aIlRdOLcxmV995p4M+F3B4fSm1b5goA4q7ALO0kl2YIOyvzY80v6EA1reMKgQsSYfjvR831+Hv13KTb92bEQdx0qFeQKqG6TilmUkKWgMTN6xxWr6XQNsZpOGKgpJ+vJy8VZ/zQQLiwmi/lCFo3cTC5F6OfZvNq4IlOdFzCQHPK77AVCsxuACAUoC8/EuOhsCpNAZkQfwGbHPbLIGGFWCmvdQA3HA+JaTyFN+tPNC1T7zHfaEv1eXpiSAzY82o++Mly62xbbaOczhONwrlPxMAsl/RIEcpzpotCtY8C7bcckc4gt9qRCIilRXNV/BB4Naisg0k6wIkSTSep1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9Dtx1vSqQEfGMAo5PsuAQSNEBUa9e6+XqpNyQIeSrAA=;
- b=UujogP6I33hhEWHISU1S+kTNZ8iOhPKEFLzkD3YAY7STjc8QnLtMN0OPOSEImOCHD9EOoZkNUIosFgLh77G3h1aE4d6sA4WdnnwyQzhNPXoeQO86Fg7NUSax1R+/MVu9g+rQaenLpNJmz+4mrUn5q8vwTfuo9euwxEdWpd6eLRvwjt6pfuRW4cS0T1r8BhyhAF0DNHd8QtYZhEd90Vq1CG6cNjNvUfYHmMLzYQxP0KSM+IPE/2xoH9PQkhw7A6GSmYt6mOaA10N1xA0qyyN/9a7ySB8XS3yXdvQnbozWW94q8nRMdGu/1eBSGHAJpXabY+MkzLbQtEzSIhT/7gGGYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9Dtx1vSqQEfGMAo5PsuAQSNEBUa9e6+XqpNyQIeSrAA=;
- b=EHhytyY79igGJWTbHjffX3Gx3biLU6Vt+9Hf/Se0DAWlVXyVLg4CeQdjt4LWWAF0X7JgInC/LqkLh07013nskucM8TRlsc3NLnEQ9jMHMMbseFhff+oSh4dcRcmpntipO/FBo6dYI4Q0bN7v/JF8DtUUX5lhVbuSqCOrD3M4ZvA=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
- VI1PR0402MB3533.eurprd04.prod.outlook.com (52.134.5.149) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.22; Mon, 2 Dec 2019 03:42:13 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::30e0:6638:e97c:e625]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::30e0:6638:e97c:e625%7]) with mapi id 15.20.2495.014; Mon, 2 Dec 2019
- 03:42:13 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net,stable 1/1] net: fec: match the dev_id
- between probe and remove
-Thread-Topic: [EXT] Re: [PATCH net,stable 1/1] net: fec: match the dev_id
- between probe and remove
-Thread-Index: AQHVpn/jrt25MiDjN0mpVyW3r4862qekLDsAgAHkeqCAACCfAIAABVYQ
-Date:   Mon, 2 Dec 2019 03:42:13 +0000
-Message-ID: <VI1PR0402MB3600C3F9F1DAA24EC6C81B79FF430@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <1575009408-30362-1-git-send-email-fugang.duan@nxp.com>
- <20191130.122742.343376576614064539.davem@davemloft.net>
- <VI1PR0402MB3600232AF1CF9203704DCE83FF430@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <f6c05c83-4784-7017-187c-3262a3b45622@gmail.com>
-In-Reply-To: <f6c05c83-4784-7017-187c-3262a3b45622@gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-Mentions: f.fainelli@gmail.com
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7c45f67b-e8e3-4dd1-1af4-08d776d99e9f
-x-ms-traffictypediagnostic: VI1PR0402MB3533:
-x-microsoft-antispam-prvs: <VI1PR0402MB3533359F612C2F58263F0787FF430@VI1PR0402MB3533.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0239D46DB6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(39860400002)(136003)(396003)(376002)(189003)(199004)(74316002)(76176011)(53546011)(11346002)(6506007)(110136005)(71200400001)(71190400001)(14444005)(256004)(66446008)(76116006)(3846002)(229853002)(8676002)(5660300002)(14454004)(6116002)(99286004)(64756008)(66556008)(66946007)(66476007)(52536014)(9686003)(81166006)(305945005)(8936002)(81156014)(4326008)(7736002)(6246003)(2906002)(55016002)(86362001)(66066001)(6436002)(33656002)(102836004)(478600001)(26005)(186003)(316002)(446003)(7696005)(25786009)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3533;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VaOaSfLh+OZMAiGULc1EJK21X5K9W8OEG6dy6IEoAmW64KYIEawcAeJ5XnV5wwWQ2FFUs/pznN7tGWVGjTAcj8FUID/4BpZhgultyYdXBhACvPdjN6Aiss3IvoQiyfD5LfyTIkIGG2omqLgJzARH7Dl9lVlbMxM78VF8fLE7rtl77dlXBqLe2KlJHoVDRdmyT4iPaFmkPehAL0f11gDvpIXlBEuZt5RFvnQC6OUTI1nCKqikDT7cAOf61RxPaCiFgRsMXNcY/t8wOGd9q9Ab5TnFjmXcV8eiMZ0cePHZqle87MUoVFUUQ9dQJFtOOLo1OWVPE7Oop8KWI3bzT/0VxsMonaixVxhJPa3OfwDnaw3bxZigwRyUkw9wTbgwWnhxSaDb/kqtj1v0dhOAIMr0d/9CA3g+Gqkz/oSyJn6D7uoGrINuAFfSBPfUmRbkb6oA
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727374AbfLBDpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 22:45:16 -0500
+Received: from terminus.zytor.com ([198.137.202.136]:52761 "EHLO
+        mail.zytor.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727285AbfLBDpQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 1 Dec 2019 22:45:16 -0500
+Received: from [IPv6:2601:646:8600:3281:ad1f:fd74:80df:7eb5] ([IPv6:2601:646:8600:3281:ad1f:fd74:80df:7eb5])
+        (authenticated bits=0)
+        by mail.zytor.com (8.15.2/8.15.2) with ESMTPSA id xB23ild5941514
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Sun, 1 Dec 2019 19:44:49 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com xB23ild5941514
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2019111901; t=1575258290;
+        bh=r9ToDsFCnt2xkGs1bQs22MxbKA0z6g+7BcFNxXPoCXY=;
+        h=Date:In-Reply-To:References:Subject:To:CC:From:From;
+        b=QRulXa+W4B6nxkSpwbUBJdz83aLLQtyefosnqfjtvVHQOiTR+3arV4rYQNmbkRt7m
+         wYYCTUGiVvVvoIUTqxmusfJJm98uE3RYL3PKx28o6iZkG8Nww9bJpEU2JHeycTgmF/
+         bwZsLIG9eMoehdNJvaxvkZie8g2maYv8QcN1xNdHeKwCBJkTwt/XsEJbdRSy/ty6NU
+         RR9XPzdKuQVEPjf4Y2gZ7+3KDNAfClDsmMaxkHjCSjotStZzMaOz+0DAIyZXtJZSMR
+         NicNlCBDGwKpAVkH57u+en51uGnVwiVaLrrV5gPQdYHnVNAsTthYeqMThyOYfP4hG0
+         iJyMH1uf7g70Q==
+Date:   Sun, 01 Dec 2019 19:44:39 -0800
+User-Agent: K-9 Mail for Android
+In-Reply-To: <adc89dbf-361a-838f-a0a5-8ef7ea619848@gmail.com>
+References: <20191129222911.3710-1-daniel@iogearbox.net> <ec8264ad-8806-208a-1375-51e7cad1866e@gmail.com> <10d4c87c-3d53-2dbf-d8c0-8b36863fec60@iogearbox.net> <adc89dbf-361a-838f-a0a5-8ef7ea619848@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c45f67b-e8e3-4dd1-1af4-08d776d99e9f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2019 03:42:13.5843
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OF5R59l+POO54dolAlcV9K1Im6XhAr+lGSsdbMewvV544vxTdJN2X2MubbsLf0SGxy6LwskvQv0pc3wWLc14LA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3533
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH bpf] bpf: avoid setting bpf insns pages read-only when prog is jited
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        alexei.starovoitov@gmail.com
+CC:     peterz@infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+From:   hpa@zytor.com
+Message-ID: <E02AAB2B-987E-497C-B241-6E86472CC529@zytor.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+IFNlbnQ6IE1vbmRh
-eSwgRGVjZW1iZXIgMiwgMjAxOSAxMToxOCBBTQ0KPiBPbiAxMi8xLzIwMTkgNzowNCBQTSwgQW5k
-eSBEdWFuIHdyb3RlOg0KPiA+IEZyb206IG5ldGRldi1vd25lckB2Z2VyLmtlcm5lbC5vcmcgPG5l
-dGRldi1vd25lckB2Z2VyLmtlcm5lbC5vcmc+DQo+ID4gU2VudDogU3VuZGF5LCBEZWNlbWJlciAx
-LCAyMDE5IDQ6MjggQU0NCj4gPj4gRnJvbTogQW5keSBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29t
-Pg0KPiA+PiBEYXRlOiBGcmksIDI5IE5vdiAyMDE5IDA2OjQwOjI4ICswMDAwDQo+ID4+DQo+ID4+
-PiBUZXN0IGRldmljZSBiaW5kL3VuYmluZCBvbiBpLk1YOFFNIHBsYXRmb3JtOg0KPiA+Pj4gZWNo
-byA1YjA0MDAwMC5ldGhlcm5ldCA+IC9zeXMvYnVzL3BsYXRmb3JtL2RyaXZlcnMvZmVjL3VuYmlu
-ZA0KPiA+Pj4gZWNobyA1YjA0MDAwMC5ldGhlcm5ldCA+IC9zeXMvYnVzL3BsYXRmb3JtL2RyaXZl
-cnMvZmVjL2JpbmQNCj4gPj4+DQo+ID4+PiBlcnJvciBsb2c6DQo+ID4+PiBwcHMgcHBzMDogbmV3
-IFBQUyBzb3VyY2UgcHRwMCAvc3lzL2J1cy9wbGF0Zm9ybS9kcml2ZXJzL2ZlYy9iaW5kDQo+ID4+
-PiBmZWM6IHByb2JlIG9mIDViMDQwMDAwLmV0aGVybmV0IGZhaWxlZCB3aXRoIGVycm9yIC0yDQo+
-ID4+Pg0KPiA+Pj4gSXQgc2hvdWxkIGRlY3JlYXNlIHRoZSBkZXZfaWQgd2hlbiBkZXZpY2UgaXMg
-dW5iaW5kZWQuIFNvIGxldCB0aGUNCj4gPj4+IGZlY19kZXZfaWQgYXMgZ2xvYmFsIHZhcmlhYmxl
-IGFuZCBsZXQgdGhlIGNvdW50IG1hdGNoIGluDQo+ID4+PiAucHJvYmUoKSBhbmQgLnJlbXZvZSgp
-Lg0KPiA+Pj4NCj4gPj4+IFJlcG9ydGVkLWJ5OiBzaGl2YW5pLnBhdGVsIDxzaGl2YW5pLnBhdGVs
-QHZvbGFuc3lzdGVjaC5jb20+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBGdWdhbmcgRHVhbiA8ZnVn
-YW5nLmR1YW5AbnhwLmNvbT4NCj4gPj4NCj4gPj4gVGhpcyBpcyBub3QgY29ycmVjdC4NCj4gPj4N
-Cj4gPj4gTm90aGluZyBzYXlzIHRoYXQgdGhlcmUgaXMgYSBkaXJlY3QgY29ycmVsYXRpb24gYmV0
-d2VlbiB0aGUgZGV2aWNlcw0KPiA+PiBhZGRlZCBhbmQgdGhlIG9uZXMgcmVtb3ZlZCwgbm9yIHRo
-ZSBvcmRlciBpbiB3aGljaCB0aGVzZSBvcGVyYXRpb25zDQo+ID4+IG9jY3VyIHJlbGF0aXZlIHRv
-IGVhY2hvdGhlci4NCj4gPj4NCj4gPj4gVGhpcyBkZXZfaWQgYWxsb2NhdGlvbiBpcyBidWdneSBi
-ZWNhdXNlIHlvdSBhcmVuJ3QgdXNpbmcgYSBwcm9wZXIgSUQNCj4gPj4gYWxsb2NhdGlvbiBzY2hl
-bWUgc3VjaCBhcyBJRFIuDQo+ID4gRGF2aWQsIHlvdSBhcmUgY29ycmVjdC4gVGhlcmUgc3RpbGwg
-aGFzIGlzc3VlIHRvIHN1cHBvcnQgYmluZC91bmJpbmQNCj4gPiBmZWF0dXJlIGV2ZW4gaWYgdXNl
-IElEUiB0byBhbGxvY2F0ZSBJRCBiZWNhdXNlIGVuZXQgaW5zdGFuY2UjMSBkZXBlbmQNCj4gPiBv
-biBpbnN0YW5jZSMwIGludGVybmFsIE1ESU8gYnVzIGZvciBzb21lIHBsYXRmb3JtcyBhbmQgd2Ug
-ZG9uJ3Qga25vdw0KPiB3aG8gaXMgdGhlIHJlYWwgaW5zdGFuY2UjMCB3aGlsZSBiaW5naW5nIHRo
-ZSBkZXZpY2UuDQo+ID4NCj4gPiBEbyB5b3UgaGF2ZSBhbnkgc3VnZ2VzdGlvbiB0byBpbXBsZW1l
-bnQgdGhlIGJpbmQvdW5iaW5kIGZlYXR1cmUgd2l0aA0KPiBjdXJyZW50IGRlcGVuZGVuY2U/DQo+
-ID4gVGhhbmtzLg0KPiANCj4gQ2FuIHlvdSB1c2UgdGhlIGRldmljZSBkcml2ZXIgbW9kZWwgdG8g
-cmVmbGVjdCB0aGUgbGluayBiZXR3ZWVuIHRoZSBNRElPIGJ1cw0KPiBkZXZpY2UsIGl0cyBwYXJl
-bnQgRXRoZXJuZXQgY29udHJvbGxlciBhbmQgdGhlIHNlY29uZCBpbnN0YW5jZSBFdGhlcm5ldA0K
-PiBjb250cm9sbGVyPyBCZSBpdCB0aHJvdWdoIHRoZSB1c2Ugb2YgZGV2aWNlIGxpbmtzLCBvciBh
-biBhY3R1YWwNCj4gZGV2LT5wYXJlbnQgcmVsYXRpb25zaGlwPw0KDQpGb3IgZGV2aWNlIGRlcGVu
-ZGVuY2UsIGRldmljZSBsaW5rcyBtYXliZSB0aGUgZ29vZCBzb2x1dGlvbi4NClNpbmNlIHRoZXJl
-IGluc3RhbmNlIzEgb25seSBkZXBlbmRzIG9uIGluc3RhbmNlIzAgaW50ZXJuYWwgbWRpbyBidXMs
-DQptYXliZSBoaXZlIG9mZiBtZGlvIGJ1cyBkcml2ZXIgZnJvbSBpbnN0YW5jZUAwIGlzIGEgYmV0
-dGVyIHNvbHV0aW9uLg0KDQpARmxvcmlhbiBGYWluZWxsaSwgVGhhbmtzIGZvciB5b3VyIHN1Z2dl
-c3Rpb24uDQoNCkFuZHkNCj4gLS0NCj4gRmxvcmlhbg0K
+On December 1, 2019 6:49:32 PM PST, Eric Dumazet <eric=2Edumazet@gmail=2Eco=
+m> wrote:
+>
+>
+>On 11/30/19 1:52 AM, Daniel Borkmann wrote:
+>> On 11/30/19 2:37 AM, Eric Dumazet wrote:
+>>> On 11/29/19 2:29 PM, Daniel Borkmann wrote:
+>>>> For the case where the interpreter is compiled out or when the prog
+>is jited
+>>>> it is completely unnecessary to set the BPF insn pages as
+>read-only=2E In fact,
+>>>> on frequent churn of BPF programs, it could lead to performance
+>degradation of
+>>>> the system over time since it would break the direct map down to 4k
+>pages when
+>>>> calling set_memory_ro() for the insn buffer on x86-64 / arm64 and
+>there is no
+>>>> reverse operation=2E Thus, avoid breaking up large pages for data
+>maps, and only
+>>>> limit this to the module range used by the JIT where it is
+>necessary to set
+>>>> the image read-only and executable=2E
+>>>
+>>> Interesting=2E=2E=2E But why the non JIT case would need RO protection=
+ ?
+>>=20
+>> It was done for interpreter around 5 years ago mainly due to concerns
+>from security
+>> folks that the BPF insn image could get corrupted (through some other
+>bug in the
+>> kernel) in post-verifier stage by an attacker and then there's
+>nothing really that
+>> would provide any sort of protection guarantees; pretty much the same
+>reasons why
+>> e=2Eg=2E modules are set to read-only in the kernel=2E
+>>=20
+>>> Do you have any performance measures to share ?
+>>=20
+>> No numbers, and I'm also not aware of any reports from users, but it
+>was recently
+>> brought to our attention from mm folks during discussion of a
+>different set:
+>>=20
+>>
+>https://lore=2Ekernel=2Eorg/lkml/1572171452-7958-2-git-send-email-rppt@ke=
+rnel=2Eorg/T/
+>>=20
+>
+>Thanks for the link !
+>
+>Having RO protection as a debug feature would be useful=2E
+>
+>I believe we have CONFIG_STRICT_MODULE_RWX (and
+>CONFIG_STRICT_KERNEL_RWX) for that already=2E
+>
+>Or are we saying we also want to get rid of them ?
+
+The notion is that for security there should never been a page which is bo=
+th writable and executable at the same time=2E This makes it harder to inje=
+ct code=2E
+--=20
+Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
