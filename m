@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A1FE10EAAB
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 14:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44F8110EAAD
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 14:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727516AbfLBNTF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Dec 2019 08:19:05 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:50625 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727493AbfLBNTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 08:19:04 -0500
+        id S1727551AbfLBNTK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Dec 2019 08:19:10 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48667 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727527AbfLBNTJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 08:19:09 -0500
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-NRPZF_c0PLuMKmVQmC_W2A-1; Mon, 02 Dec 2019 08:19:02 -0500
+ us-mta-352-jWYtbyG7PlG6nn6dqdpm2A-1; Mon, 02 Dec 2019 08:19:05 -0500
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8CF7910054E3;
-        Mon,  2 Dec 2019 13:18:59 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5F73110054E3;
+        Mon,  2 Dec 2019 13:19:03 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 26DB5600C8;
-        Mon,  2 Dec 2019 13:18:55 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DFFDF600C8;
+        Mon,  2 Dec 2019 13:18:59 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
@@ -38,103 +38,125 @@ Cc:     lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH 1/6] perf tools: Allow to specify libbpf install directory
-Date:   Mon,  2 Dec 2019 14:18:41 +0100
-Message-Id: <20191202131847.30837-2-jolsa@kernel.org>
+Subject: [PATCH 2/6] bpftool: Allow to link libbpf dynamically
+Date:   Mon,  2 Dec 2019 14:18:42 +0100
+Message-Id: <20191202131847.30837-3-jolsa@kernel.org>
 In-Reply-To: <20191202131847.30837-1-jolsa@kernel.org>
 References: <20191202131847.30837-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: NRPZF_c0PLuMKmVQmC_W2A-1
+X-MC-Unique: jWYtbyG7PlG6nn6dqdpm2A-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently we support only static linking with kernel's libbpf
+(tools/lib/bpf). This patch adds LIBBPF_DYNAMIC compile variable
+that triggers libbpf detection and bpf dynamic linking:
+
+  $ make -C tools/bpf/bpftool make LIBBPF_DYNAMIC=1
+
+If libbpf is not installed, build (with LIBBPF_DYNAMIC=1) stops with:
+
+  $ make -C tools/bpf/bpftool LIBBPF_DYNAMIC=1
+    Auto-detecting system features:
+    ...                        libbfd: [ on  ]
+    ...        disassembler-four-args: [ on  ]
+    ...                          zlib: [ on  ]
+    ...                        libbpf: [ OFF ]
+
+  Makefile:102: *** Error: No libbpf devel library found, please install libbpf-devel or libbpf-dev.
+
 Adding LIBBPF_DIR compile variable to allow linking with
 libbpf installed into specific directory:
 
   $ make -C tools/lib/bpf/ prefix=/tmp/libbpf/ install_lib install_headers
-  $ make -C tools/perf/ LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/libbpf/ VF=1
+  $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/libbpf/
 
 It might be needed to clean build tree first because features
 framework does not detect the change properly:
 
   $ make -C tools/build/feature clean
-  $ make -C tools/perf/ clean
+  $ make -C tools/bpf/bpftool/ clean
 
+Since bpftool uses bits of libbpf that are not exported as public API in
+the .so version, we also pass in libbpf.a to the linker, which allows it to
+pick up the private functions from the static library without having to
+expose them as ABI.
+
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/perf/Makefile.config | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ tools/bpf/bpftool/Makefile | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index c90f4146e5a2..eb9d9b70b7d3 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -22,6 +22,14 @@ include $(srctree)/tools/scripts/Makefile.arch
+diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+index 39bc6f0f4f0b..be6dea7eb9fd 100644
+--- a/tools/bpf/bpftool/Makefile
++++ b/tools/bpf/bpftool/Makefile
+@@ -1,6 +1,21 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++
++# To link dynamically with libbpf run:
++#   make LIBBPF_DYNAMIC=1
++# build will try to detect installed devel package of libbpf.
++#
++# For linking dynamically with libbpf installed at specific PATH run:
++#   make LIBBPF_DYNAMIC=1 LIBBPF_DIR=<PATH>
++
+ include ../../scripts/Makefile.include
+ include ../../scripts/utilities.mak
++include ../../scripts/Makefile.arch
++
++ifeq ($(LP64), 1)
++  libdir_relative = lib64
++else
++  libdir_relative = lib
++endif
  
- $(call detected_var,SRCARCH)
- 
-+ifndef lib
-+  ifeq ($(SRCARCH)$(IS_64_BIT), x861)
-+    lib = lib64
-+  else
-+    lib = lib
+ ifeq ($(srctree),)
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+@@ -63,6 +78,17 @@ RM ?= rm -f
+ FEATURE_USER = .bpftool
+ FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib
+ FEATURE_DISPLAY = libbfd disassembler-four-args zlib
++ifdef LIBBPF_DYNAMIC
++  FEATURE_TESTS   += libbpf
++  FEATURE_DISPLAY += libbpf
++
++  ifdef LIBBPF_DIR
++    LIBBPF_CFLAGS  := -I$(LIBBPF_DIR)/include
++    LIBBPF_LDFLAGS := -L$(LIBBPF_DIR)/$(libdir_relative)
++    FEATURE_CHECK_CFLAGS-libbpf  := $(LIBBPF_CFLAGS)
++    FEATURE_CHECK_LDFLAGS-libbpf := $(LIBBPF_LDFLAGS)
 +  endif
-+endif # lib
-+
- NO_PERF_REGS := 1
- NO_SYSCALL_TABLE := 1
++endif
  
-@@ -484,11 +492,22 @@ ifndef NO_LIBELF
-       CFLAGS += -DHAVE_LIBBPF_SUPPORT
-       $(call detected,CONFIG_LIBBPF)
- 
-+      # for linking with debug library run:
-+      # make DEBUG=1 LIBBPF_DIR=/opt/libbpf
-+      ifdef LIBBPF_DIR
-+        LIBBPF_CFLAGS  := -I$(LIBBPF_DIR)/include
-+        LIBBPF_LDFLAGS := -L$(LIBBPF_DIR)/$(lib)
-+        FEATURE_CHECK_CFLAGS-libbpf  := $(LIBBPF_CFLAGS)
-+        FEATURE_CHECK_LDFLAGS-libbpf := $(LIBBPF_LDFLAGS)
-+      endif
-+
-       # detecting libbpf without LIBBPF_DYNAMIC, so make VF=1 shows libbpf detection status
-       $(call feature_check,libbpf)
-       ifdef LIBBPF_DYNAMIC
-         ifeq ($(feature-libbpf), 1)
-           EXTLIBS += -lbpf
-+          CFLAGS  += $(LIBBPF_CFLAGS)
-+          LDFLAGS += $(LIBBPF_LDFLAGS)
-         else
-           dummy := $(error Error: No libbpf devel library found, please install libbpf-devel);
-         endif
-@@ -1037,13 +1056,6 @@ else
- sysconfdir = $(prefix)/etc
- ETC_PERFCONFIG = etc/perfconfig
+ check_feat := 1
+ NON_CHECK_FEAT_TARGETS := clean uninstall doc doc-clean doc-install doc-uninstall
+@@ -88,6 +114,18 @@ ifeq ($(feature-reallocarray), 0)
+ CFLAGS += -DCOMPAT_NEED_REALLOCARRAY
  endif
--ifndef lib
--ifeq ($(SRCARCH)$(IS_64_BIT), x861)
--lib = lib64
--else
--lib = lib
--endif
--endif # lib
- libdir = $(prefix)/$(lib)
  
- # Shell quote (do not use $(call) to accommodate ancient setups);
-@@ -1108,6 +1120,7 @@ ifeq ($(VF),1)
-   $(call print_var,LIBUNWIND_DIR)
-   $(call print_var,LIBDW_DIR)
-   $(call print_var,JDIR)
-+  $(call print_var,LIBBPF_DIR)
++ifdef LIBBPF_DYNAMIC
++  ifeq ($(feature-libbpf), 1)
++    # bpftool uses non-exported functions from libbpf, so just add the dynamic
++    # version of libbpf and let the linker figure it out
++    LIBS    := -lbpf $(LIBS)
++    CFLAGS  += $(LIBBPF_CFLAGS)
++    LDFLAGS += $(LIBBPF_LDFLAGS)
++  else
++    dummy := $(error Error: No libbpf devel library found, please install libbpf-devel or libbpf-dev.)
++  endif
++endif
++
+ include $(wildcard $(OUTPUT)*.d)
  
-   ifeq ($(dwarf-post-unwind),1)
-     $(call feature_print_text,"DWARF post unwind library", $(dwarf-post-unwind-text))
+ all: $(OUTPUT)bpftool
 -- 
 2.21.0
 
