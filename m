@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D6C10EDCA
+	by mail.lfdr.de (Postfix) with ESMTP id 5765610EDC9
 	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 18:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727804AbfLBRFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 12:05:17 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:39408 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727644AbfLBRFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 12:05:12 -0500
-Received: by mail-il1-f197.google.com with SMTP id v11so227874ilg.6
+        id S1727698AbfLBRFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 12:05:16 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41856 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727795AbfLBRFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 12:05:13 -0500
+Received: by mail-io1-f72.google.com with SMTP id p2so57907ioh.8
         for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 09:05:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2f8HtfQq4IK9cIhIvyj5C1mmc9kchy4GexxX8Jm5qow=;
-        b=W1ET5YHnQrPvD5DWCmnCy924Xr15axjt878IP1AAoGn/QIlbGC4yxky8EcIDnxfgTD
-         ISccLqXIMVm+O6j/KwEnK4jLJigOw2BYoME7T9P+Un6Z9fjH1VY0gweBpjDaLsNwkGb8
-         p6ja53GChJwyv0B5Ts5uRZKBwukGwVg6BjHhgJ/N8dQAgNj3ysNF0yePfbUPEcKhc1GP
-         9LyzyjEej6NUi3NwsZ4p5PzpzkV0RjUNLgVCMZzXxtHOPTUAa7VhWmqFlaxU73Ag7fFJ
-         G2xzFLzKzUwX2MFaLJxddK0o7jcDHrqWVCKRM/gz3wMgGA4WEMehGHezaABzKBwKdElM
-         S1iQ==
-X-Gm-Message-State: APjAAAUkVZwtHS9Pj78mbftSU8zzTkgaBWk/dLNUOn946FNmjP17v5iI
-        wVtrnJA6dqnOtarzSoiRM2MP5kyBhL9zvFT9JllFTvd/fvSG
-X-Google-Smtp-Source: APXvYqwpG98Lsjm+MLH/KeR7s4+Wt1CjQooDZbumphbBU/JcL3Uj+ajYP3g92Tw5uzecd+/GVX82AqJUsyj9oQP5QACSA5YU+LgR
+        bh=/F3uYH/byikiR4pmME4NQXaB6rRlktnnY/q/Qtr+i/s=;
+        b=UiygTgCKHvEfpaNQCyDqpGvtvGzNBlf0DoyjJQL/Q968ZsKAaW2i9zw/uOyNHpMeIS
+         dlgypRTtTtkaWPNzsds9p71l9W0HxNkNcejsvKwrxL8dTDVK+1UbTShCND5hNdMMb/wB
+         z31PHCQlqrO9I7MyY9emS90pSRWOPfkVZapYg1mo4lBB0XrnkOgEG/XHNtwWjvhEqeHe
+         ycouN36JhE54l1kU0FNGzYKCGwv0nN2Y0XwebDo02XrzuMEcSkpcQwLdxF2/hMnJKnTk
+         lm0aY6iMK2r/P3Ldj9CMVrOhtgDSUMhigGQXsPnKL8X2+y/3RSFoT0qxtVkrE+q2Axf/
+         LmDQ==
+X-Gm-Message-State: APjAAAXH7udVZ/E7Qh20ymsPVpyPgcMiRn6mWh+W3NRucyA6g9qF+sol
+        eCeFfHA0f0pad23N2sgKS0zcIpyK0phwU2/0tBWIejMnggRF
+X-Google-Smtp-Source: APXvYqzH3vRxxo/e5Rnqon9juvNsa0peNh8SNnU9SFGGATkjF0W0EzwyjVm/9zbzPbmVcjQdCrHlvcQtR9q+hG+UgogP+UAoGXjl
 MIME-Version: 1.0
-X-Received: by 2002:a6b:d912:: with SMTP id r18mr42792632ioc.306.1575306310599;
- Mon, 02 Dec 2019 09:05:10 -0800 (PST)
-Date:   Mon, 02 Dec 2019 09:05:10 -0800
+X-Received: by 2002:a05:6e02:68a:: with SMTP id o10mr17451276ils.202.1575306311244;
+ Mon, 02 Dec 2019 09:05:11 -0800 (PST)
+Date:   Mon, 02 Dec 2019 09:05:11 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000e4f720598bb95f8@google.com>
-Subject: KASAN: use-after-free Read in slcan_open
-From:   syzbot <syzbot+b5ec6fd05ab552a78532@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        wg@grandegger.com
+Message-ID: <0000000000001821bf0598bb955c@google.com>
+Subject: memory leak in fdb_create (2)
+From:   syzbot <syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com>
+To:     bridge@lists.linux-foundation.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,134 +49,67 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    32ef9553 Merge tag 'fsnotify_for_v5.5-rc1' of git://git.ke..
+HEAD commit:    ceb30747 Merge tag 'y2038-cleanups-5.5' of git://git.kerne..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a48e9ce00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff560c3de405258c
-dashboard link: https://syzkaller.appspot.com/bug?extid=b5ec6fd05ab552a78532
+console output: https://syzkaller.appspot.com/x/log.txt?x=142b3e7ee00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=26f873e40f2b4134
+dashboard link: https://syzkaller.appspot.com/bug?extid=2add91c08eb181fea1bf
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12943882e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10562f86e00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12976feee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10604feee00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b5ec6fd05ab552a78532@syzkaller.appspotmail.com
+Reported-by: syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com
 
-==================================================================
-BUG: KASAN: use-after-free in slc_sync drivers/net/can/slcan.c:504 [inline]
-BUG: KASAN: use-after-free in slcan_open+0x8a1/0x9e0  
-drivers/net/can/slcan.c:579
-Read of size 8 at addr ffff88809a6e0b88 by task syz-executor961/9030
+BUG: memory leak
+unreferenced object 0xffff888124fa7080 (size 128):
+   comm "syz-executor163", pid 7170, jiffies 4294954254 (age 12.500s)
+   hex dump (first 32 bytes):
+     d1 16 b6 1f 81 88 ff ff 00 00 00 00 00 00 00 00  ................
+     aa aa aa aa aa 0c 00 00 00 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<000000001bbce457>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<000000001bbce457>] slab_post_alloc_hook mm/slab.h:586 [inline]
+     [<000000001bbce457>] slab_alloc mm/slab.c:3319 [inline]
+     [<000000001bbce457>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<000000005e78ed69>] fdb_create+0x37/0x530 net/bridge/br_fdb.c:498
+     [<000000009cc867aa>] fdb_insert+0xb2/0xf0 net/bridge/br_fdb.c:537
+     [<00000000a443c9ff>] br_fdb_change_mac_address+0x80/0x1f0  
+net/bridge/br_fdb.c:316
+     [<00000000370e41a8>] br_stp_change_bridge_id+0x4c/0x190  
+net/bridge/br_stp_if.c:223
+     [<00000000db15c550>] br_set_mac_address+0xa2/0xb0  
+net/bridge/br_device.c:251
+     [<00000000547a827c>] dev_set_mac_address+0xdd/0x150 net/core/dev.c:8350
+     [<0000000068a207bd>] __bond_release_one.cold+0x319/0x4ac  
+drivers/net/bonding/bond_main.c:2055
+     [<00000000189411c7>] bond_slave_netdev_event  
+drivers/net/bonding/bond_main.c:3169 [inline]
+     [<00000000189411c7>] bond_netdev_event+0x2ac/0x2c0  
+drivers/net/bonding/bond_main.c:3280
+     [<000000002bd5677b>] notifier_call_chain+0x66/0xb0 kernel/notifier.c:95
+     [<0000000044f0058c>] __raw_notifier_call_chain kernel/notifier.c:396  
+[inline]
+     [<0000000044f0058c>] raw_notifier_call_chain+0x2e/0x40  
+kernel/notifier.c:403
+     [<000000009782bbd6>] call_netdevice_notifiers_info net/core/dev.c:1893  
+[inline]
+     [<000000009782bbd6>] call_netdevice_notifiers_info+0x60/0xb0  
+net/core/dev.c:1878
+     [<000000005904fef6>] call_netdevice_notifiers_extack  
+net/core/dev.c:1905 [inline]
+     [<000000005904fef6>] call_netdevice_notifiers net/core/dev.c:1919  
+[inline]
+     [<000000005904fef6>] rollback_registered_many+0x373/0x640  
+net/core/dev.c:8743
+     [<00000000806944eb>] unregister_netdevice_many.part.0+0x17/0x90  
+net/core/dev.c:9906
+     [<00000000c0997ee2>] unregister_netdevice_many+0x24/0x30  
+net/core/dev.c:9905
+     [<0000000042445981>] rtnl_delete_link+0x63/0xa0  
+net/core/rtnetlink.c:2926
 
-CPU: 1 PID: 9030 Comm: syz-executor961 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:634
-  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
-  slc_sync drivers/net/can/slcan.c:504 [inline]
-  slcan_open+0x8a1/0x9e0 drivers/net/can/slcan.c:579
-  tty_ldisc_open.isra.0+0xa3/0x110 drivers/tty/tty_ldisc.c:469
-  tty_set_ldisc+0x30e/0x6b0 drivers/tty/tty_ldisc.c:596
-  tiocsetd drivers/tty/tty_io.c:2334 [inline]
-  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2594
-  vfs_ioctl fs/ioctl.c:46 [inline]
-  file_ioctl fs/ioctl.c:509 [inline]
-  do_vfs_ioctl+0xdb6/0x13e0 fs/ioctl.c:696
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
-  __do_sys_ioctl fs/ioctl.c:720 [inline]
-  __se_sys_ioctl fs/ioctl.c:718 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4429e9
-Code: e8 dc 02 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 1b 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc7db87168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004429e9
-RDX: 00000000200000c0 RSI: 0000000000005423 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000003031
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000004 R14: 00007ffc7db871dc R15: 0000000000000000
-
-Allocated by task 9029:
-  save_stack+0x23/0x90 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc mm/kasan/common.c:510 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
-  __do_kmalloc_node mm/slab.c:3615 [inline]
-  __kmalloc_node+0x4e/0x70 mm/slab.c:3622
-  kmalloc_node include/linux/slab.h:599 [inline]
-  kvmalloc_node+0xbd/0x100 mm/util.c:564
-  kvmalloc include/linux/mm.h:670 [inline]
-  kvzalloc include/linux/mm.h:678 [inline]
-  alloc_netdev_mqs+0x98/0xde0 net/core/dev.c:9730
-  slc_alloc drivers/net/can/slcan.c:533 [inline]
-  slcan_open+0x32d/0x9e0 drivers/net/can/slcan.c:590
-  tty_ldisc_open.isra.0+0xa3/0x110 drivers/tty/tty_ldisc.c:469
-  tty_set_ldisc+0x30e/0x6b0 drivers/tty/tty_ldisc.c:596
-  tiocsetd drivers/tty/tty_io.c:2334 [inline]
-  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2594
-  vfs_ioctl fs/ioctl.c:46 [inline]
-  file_ioctl fs/ioctl.c:509 [inline]
-  do_vfs_ioctl+0xdb6/0x13e0 fs/ioctl.c:696
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
-  __do_sys_ioctl fs/ioctl.c:720 [inline]
-  __se_sys_ioctl fs/ioctl.c:718 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 9029:
-  save_stack+0x23/0x90 mm/kasan/common.c:69
-  set_track mm/kasan/common.c:77 [inline]
-  kasan_set_free_info mm/kasan/common.c:332 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:471
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
-  __cache_free mm/slab.c:3425 [inline]
-  kfree+0x10a/0x2c0 mm/slab.c:3756
-  kvfree+0x61/0x70 mm/util.c:593
-  netdev_freemem net/core/dev.c:9684 [inline]
-  free_netdev+0x3c0/0x470 net/core/dev.c:9839
-  slcan_open+0x848/0x9e0 drivers/net/can/slcan.c:620
-  tty_ldisc_open.isra.0+0xa3/0x110 drivers/tty/tty_ldisc.c:469
-  tty_set_ldisc+0x30e/0x6b0 drivers/tty/tty_ldisc.c:596
-  tiocsetd drivers/tty/tty_io.c:2334 [inline]
-  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2594
-  vfs_ioctl fs/ioctl.c:46 [inline]
-  file_ioctl fs/ioctl.c:509 [inline]
-  do_vfs_ioctl+0xdb6/0x13e0 fs/ioctl.c:696
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:713
-  __do_sys_ioctl fs/ioctl.c:720 [inline]
-  __se_sys_ioctl fs/ioctl.c:718 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:718
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff88809a6e0000
-  which belongs to the cache kmalloc-32k of size 32768
-The buggy address is located 2952 bytes inside of
-  32768-byte region [ffff88809a6e0000, ffff88809a6e8000)
-The buggy address belongs to the page:
-page:ffffea000269b800 refcount:1 mapcount:0 mapping:ffff8880aa402540  
-index:0x0 compound_mapcount: 0
-raw: 00fffe0000010200 ffffea000244d008 ffff8880aa401d48 ffff8880aa402540
-raw: 0000000000000000 ffff88809a6e0000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88809a6e0a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809a6e0b00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff88809a6e0b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                       ^
-  ffff88809a6e0c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff88809a6e0c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
 
 
 ---
