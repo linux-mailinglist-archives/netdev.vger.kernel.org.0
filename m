@@ -2,118 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E6910EA1D
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 13:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7340610EA28
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 13:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbfLBMe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 07:34:58 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52373 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727382AbfLBMe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 07:34:58 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so6620308wmc.2
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 04:34:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tanaza-com.20150623.gappssmtp.com; s=20150623;
-        h=user-agent:from:to:cc:subject:date:message-id:mime-version;
-        bh=si4Qt/WqY+cuoLWiKhaIj+u/k3AZYYwbUnJI7p4ynE8=;
-        b=h//gGqry2mEd1I2IzUX4xqvElIANo6yfvbrfVkZ+o3t5nCk+YcsaniWTXAmzCXDDox
-         0xJVw4OlxGye+W/YMlUEKOop/d25P8mOHHvjU4/e1JivaroqDWwfVZU+Dv5S1QkliPSF
-         xZAOE10HP8SgX4AJo7zMEkTfg1QS9ZexuPItvsGlDZr7ESD/RipsxYBwQydlYaXz98cp
-         2KjQdGzHZv9WNhBdXYR6ATVXBqLuItVewkS46f0EmZC+1svzX9530l2o+dqADL7EgO2x
-         TBip8t+q1UvC8z1dhr0y+q6tDrQ8caFhEV/xibW1BwY4kWHTgr0Y25MtWoRkZ+ZxA8FN
-         C1Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:user-agent:from:to:cc:subject:date:message-id
-         :mime-version;
-        bh=si4Qt/WqY+cuoLWiKhaIj+u/k3AZYYwbUnJI7p4ynE8=;
-        b=IC87jtbv0evdF0Kfmga4m+Untm6aIfVJ514dJLgZrWdGAQzaMJ8HiQ9d4h1WgZQX/f
-         KFGaWd4gZUKqafirQpUtm2BZsmxCxcqmWIrH8KpgyEgf7uU+ksQDwkBtd9L/CGwtRUlv
-         KeVdciQRNmzYyB5/rasG6Rq7CH3V+SjFD5DEMo4yVE0FsCySlZzPzfN1zrNsOKSueiEm
-         rLt5aFMLkIilVPuP1fsLJyjJOTIy916o+ziLSXVHa3CNkETJs6oscNsj0BkyM0SbpbL/
-         e3jXtbiZZEH6n9nn61JyhmkpsXvnV25JNoBuFyD6zcKIGO/+0fmykDazRQeH1AiQR7lW
-         yeQQ==
-X-Gm-Message-State: APjAAAVqOdKot2YHrViHH9AgWDMAS3EPJk5Zx4vyvKkisGsTQrQZkzoJ
-        Uj93E1bWqC9eBPCjmsp4yZ3+L27gip3Kuw==
-X-Google-Smtp-Source: APXvYqzHOiRsu2vcc7QO823R5r7yPixuu25GtLEeWyv+t2re3G8D4cT9nrYe6fc+Q3IAs9tale45gQ==
-X-Received: by 2002:a1c:f415:: with SMTP id z21mr28329341wma.140.1575290096457;
-        Mon, 02 Dec 2019 04:34:56 -0800 (PST)
-Received: from sancho ([160.97.163.130])
-        by smtp.gmail.com with ESMTPSA id a186sm12601970wmd.41.2019.12.02.04.34.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 04:34:55 -0800 (PST)
-User-agent: mu4e 1.2.0; emacs 26.3
-From:   Marco Oliverio <marco.oliverio@tanaza.com>
-To:     netfilter-devel@vger.kernel.org
-Cc:     Marco Oliverio <marco.oliverio@tanaza.com>,
-        Rocco Folino <notifications@github.com>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>
-Subject: forwarded bridged packets enqueuing is broken
-Date:   Mon, 02 Dec 2019 13:34:54 +0100
-Message-ID: <87pnh6lxch.fsf@tanaza.com>
+        id S1727409AbfLBMhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 07:37:41 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40340 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727362AbfLBMhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 07:37:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575290259;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=yKdovxrcS0kfPyHRtLPGUT9M9ZoTTuzziE5WyqUZ19Q=;
+        b=ZfOrxrbuKjCI7dIyE4FYXo4NK9WrZ49ct3CU9T1O2t3ToKcsn0kpQd/TAJZsRA/7I2dTCo
+        DOkdI/tDFZujrJkn2SotdgM1+BG8FBkeBF1JrcXVJPWF4u1pgZHQcAdjFLonNMwvN/1ubu
+        cxRyIPFMY5V5xCPIexreBTgms2YvgGI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-300-UFqDkaEXMeytyetN9qZbxA-1; Mon, 02 Dec 2019 07:37:36 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 86C5FDB20;
+        Mon,  2 Dec 2019 12:37:35 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-58.brq.redhat.com [10.40.200.58])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F2F75C290;
+        Mon,  2 Dec 2019 12:37:32 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 566DD319D2A0B;
+        Mon,  2 Dec 2019 13:37:31 +0100 (CET)
+Subject: [bpf PATCH] samples/bpf: fix broken xdp_rxq_info due to map order
+ assumptions
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        danieltimlee@gmail.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 02 Dec 2019 13:37:31 +0100
+Message-ID: <157529025128.29832.5953245340679936909.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: UFqDkaEXMeytyetN9qZbxA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In the days of using bpf_load.c the order in which the 'maps' sections
+were defines in BPF side (*_kern.c) file, were used by userspace side
+to identify the map via using the map order as an index. In effect the
+order-index is created based on the order the maps sections are stored
+in the ELF-object file, by the LLVM compiler.
 
-Hi,
+This have also carried over in libbpf via API bpf_map__next(NULL, obj)
+to extract maps in the order libbpf parsed the ELF-object file.
 
-We cannot enqueue userspace bridged forwarded packets (neither in the
-forward chain nor in the postrouting one):
+When BTF based maps were introduced a new section type ".maps" were
+created. I found that the LLVM compiler doesn't create the ".maps"
+sections in the order they are defined in the C-file. The order in the
+ELF file is based on the order the map pointer is referenced in the code.
 
-nft add table bridge t
-nft add chain bridge t forward {type filter hook forward priority 0\;}
-nft add rule bridge t forward queue
+This combination of changes lead to xdp_rxq_info mixing up the map
+file-descriptors in userspace, resulting in very broken behaviour, but
+without warning the user.
 
-packets from machines other than localhost aren't enqueued at all.
+This patch fix issue by instead using bpf_object__find_map_by_name()
+to find maps via their names. (Note, this is the ELF name, which can
+be longer than the name the kernel retains).
 
-(this is also true for the postrouting chain).
+Fixes: be5bca44aa6b ("samples: bpf: convert some XDP samples from bpf_load to libbpf")
+Fixes: 451d1dc886b5 ("samples: bpf: update map definition to new syntax BTF-defined map")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ samples/bpf/xdp_rxq_info_user.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-We think the root of the problem is the check introduced by
-b60a77386b1d4868f72f6353d35dabe5fbe981f2 (net: make skb_dst_force
-return true when dst is refcounted):
-
-modified   net/netfilter/nf_queue.c
-@@ -174,6 +174,11 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
- 		goto err;
- 	}
+diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
+index 51e0d810e070..8fc3ad01de72 100644
+--- a/samples/bpf/xdp_rxq_info_user.c
++++ b/samples/bpf/xdp_rxq_info_user.c
+@@ -489,9 +489,9 @@ int main(int argc, char **argv)
+ 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+ 		return EXIT_FAIL;
  
-+	if (!skb_dst_force(skb) && state->hook != NF_INET_PRE_ROUTING) {
-+		status = -ENETDOWN;
-+		goto err;
-+	}
-+
-
-AFAIU forwarded bridge packets have a null dst entry in the first
-place, as they don't enter the ip stack, so skb_dst_force() returns
-false. The very same commit suggested to check skb_dst() before
-skb_dst_force(), doing that indeed fix the issue for us:
-
-modified   net/netfilter/nf_queue.c
-@@ -174,7 +174,7 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
- 		goto err;
- 	}
- 
--	if (!skb_dst_force(skb) && state->hook != NF_INET_PRE_ROUTING) {
-+	if (skb_dst(skb) && !skb_dst_force(skb)) {
- 		status = -ENETDOWN;
- 		goto err;
- 	}
-
-This assumes that we shouldn't enqueue the packet if skb_dst_force()
-sets not-NULL skb->dst to NULL, but it is safe to do that if skb->dst
-was NULL in the first place. It should also cover che PRE_ROUTING hook
-case. Is this assumption correct? Are there any side effects we're
-missing?
-
-If it is correct and it helps we can send a patch on top of the
-netfilter tree.
-
-Greetins
-Marco
+-	map = bpf_map__next(NULL, obj);
+-	stats_global_map = bpf_map__next(map, obj);
+-	rx_queue_index_map = bpf_map__next(stats_global_map, obj);
++	map =  bpf_object__find_map_by_name(obj, "config_map");
++	stats_global_map = bpf_object__find_map_by_name(obj, "stats_global_map");
++	rx_queue_index_map = bpf_object__find_map_by_name(obj, "rx_queue_index_map");
+ 	if (!map || !stats_global_map || !rx_queue_index_map) {
+ 		printf("finding a map in obj file failed\n");
+ 		return EXIT_FAIL;
 
