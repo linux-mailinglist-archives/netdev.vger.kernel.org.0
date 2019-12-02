@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C6010F26B
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 22:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3BC10F273
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 22:57:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbfLBVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 16:52:42 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44585 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbfLBVwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 16:52:42 -0500
-Received: by mail-pl1-f195.google.com with SMTP id az9so577660plb.11;
-        Mon, 02 Dec 2019 13:52:41 -0800 (PST)
+        id S1726074AbfLBV5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 16:57:25 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37023 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725825AbfLBV5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 16:57:24 -0500
+Received: by mail-qt1-f196.google.com with SMTP id w47so1464530qtk.4;
+        Mon, 02 Dec 2019 13:57:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DKQuQUQU+fWjwkzxr/9M3x6IPd20hNnMSDfxGwR3Y/4=;
-        b=KM7LQlpn2KyybSGilq38mPO/47e0cUj2zVxIpZAQcdNlKSb1hktZB++pZf9yjLprnB
-         bJRYb5AfPAEcrVbHx4Go25MwF5L1l6EjTJGjt81B99Te14/CfkYHQkYq8MdfSLi2U/mW
-         9Vo8lJuwS9ppRGQ3Peap19A+JM096XBFLKwLFt4geV8dPyzOdRemTZHMS1uA9qyaScFc
-         4U5786BkF5FUOWT6HJ+/WoLhNkg49fvFBrKJpdBmiPx0uPwowFdvD6hGaXg72N62hK1q
-         DICDt89N+JhEg+s9zn2PHQnPudnLQ1KIr1kwIdOWvVpgC/iLmIWkv0D62wmj+8APIZMx
-         FeGA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6VxLgXL3DqmQ1VDYv5dFHrIFz0lPsv+vZq63pd9PDAA=;
+        b=m2rd4IYQ/gxlouukwkl1G9JO2SYo98Zsvevp+hzgcxjwi5jaZs1rsJu4GUdduJp6s8
+         dgbZRhONGKq/lO+oqWF6M+VsxSEtb+XXp7zakmfsS+9+PnoGC/7NnA6oVFwyrdIc+Gyv
+         t78561jqyq2ovC6FgtTZd/fSY+BAvWZnby1vscGpczogTNI2U0KXOWB40rEjok0S/v6V
+         /Rmdb3TageZKpK8toQJFaGlGa46U00+5R1TGRf9ESitqxwKYDIX0U7OVfl1AO6vFQvUz
+         qRX0cHZkWe7MwlvMuxuYSZkGghDRGw6RDNFYD3+9eZsSSlWgw7cNnRCs55iEK/jRB2J2
+         havQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DKQuQUQU+fWjwkzxr/9M3x6IPd20hNnMSDfxGwR3Y/4=;
-        b=pk5nsxyzFIdP1n+tBahcBmrul6OYeb/RjY735eCFDAi4oeDYfYpHMG/z0qgs7SkA/z
-         zS7XNpzBMBKvqgVjmjpaCPsGGQL+npc6vV1AbjUTF6jeDpF3+5s4TOkHSc3UrPC2/KGB
-         D4GZ03V7CHL8SbLQZTUtaKQmaq+2/zGPuQSN/zgdVisiciFd0+iGM1obA/tLuo2E4dHG
-         /AN3Dv9OZP36lELIqU48NEIB98GGiNhzUACxMwJyYA+7yqLfE8YqsFCsd2MyKbMduT07
-         P3pz1jmORIMqwvADG3o5zNAPSTES2Z+IbVH8QF5SVkpTo3eucs+GjEYmQ2rS/ONRwMBw
-         AkvQ==
-X-Gm-Message-State: APjAAAVWoXsxl/5Mi5eVHcY3hGZdeAKMtBWnd1r5GWrLRP5ge+LASxPJ
-        OZtB5r8ucSFqNNiBhzvZOSY=
-X-Google-Smtp-Source: APXvYqyYk7B/uTbdN1PRD7srWRuJs2LVk2wDcPCLPWC8JPFAcNPmFN/GIXrqWqN2FZofn5IB1uVtFw==
-X-Received: by 2002:a17:90a:a4cb:: with SMTP id l11mr1424187pjw.47.1575323560958;
-        Mon, 02 Dec 2019 13:52:40 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:7624])
-        by smtp.gmail.com with ESMTPSA id a25sm473564pff.50.2019.12.02.13.52.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Dec 2019 13:52:39 -0800 (PST)
-Date:   Mon, 2 Dec 2019 13:52:38 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     tglx@linutronix.de, ast@kernel.org, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: bpf and local lock
-Message-ID: <20191202215237.jz7zkriantxyclj5@ast-mbp.dhcp.thefacebook.com>
-References: <20191125.111433.742571582032938766.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6VxLgXL3DqmQ1VDYv5dFHrIFz0lPsv+vZq63pd9PDAA=;
+        b=hmZcTGR7NvVh+rcBIbccuaGvxITdcxWkcNkZ6oakz1x6T2VW2AXqPGB/Y98Y6ThypX
+         GbwTIo248dQsO1IcYN2MukF3SFl7zem1yH0PEOw9PSCsqvqSftXC6nAkFgVd/rF4Uvx9
+         jfHDV+E/hD8RBa3R6Z9waUZMx8vKT+W5chIzpYzUC8LtQq3DJ+stYXDB1joiyBOLrgc1
+         JY1E9FHkX+qRsBU/nBtXMWfYKpqpU9p0D6OZLOqLkgFl2YOpZBwhDGcqLlmU7bgKKyj1
+         r+vYZ2H8/qTWlb62rYSmCtyM7usi03vGsCYpZV3iXL3U6LYucSiv7cAEd0cv56HDDC3H
+         qXQg==
+X-Gm-Message-State: APjAAAWO7EDXTzzwCezWT+66h+vQJABxsLsY1k997sGHzQM173nitsxa
+        V1Y/aZCzlLvwo4P3ukydqTfekdG89a3l3H/ih7M=
+X-Google-Smtp-Source: APXvYqwX/KxnSoByURZI9ZdOypnqwHj7uuJDi1UpdEl7CGHUqdOxfpRkLNRRLK0O0YBHSU/8TiXP8WUVoZG8lFDFDjk=
+X-Received: by 2002:ac8:6613:: with SMTP id c19mr1826035qtp.117.1575323843575;
+ Mon, 02 Dec 2019 13:57:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191125.111433.742571582032938766.davem@davemloft.net>
-User-Agent: NeoMutt/20180223
+References: <20191202202112.167120-1-sdf@google.com> <CAEf4BzZGOSAFU-75hymmv2pThs_WJd+o25zFO0q4XQ=mWpYgZA@mail.gmail.com>
+ <20191202214935.GA202854@mini-arch>
+In-Reply-To: <20191202214935.GA202854@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 2 Dec 2019 13:57:12 -0800
+Message-ID: <CAEf4BzYzY2WsiDoGokeo9AjmYfnrAhEn0YhTeQV6Gt-53WhR4A@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: bring back c++ include/link test
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 25, 2019 at 11:14:33AM -0800, David Miller wrote:
-> 
-> Thomas,
-> 
-> I am working on eliminating the explicit softirq disables around BPF
-> program invocation and replacing it with local lock usage instead.
-> 
-> We would really need to at least have the non-RT stubs upstream to
-> propagate this cleanly, do you think this is possible?
+On Mon, Dec 2, 2019 at 1:49 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 12/02, Andrii Nakryiko wrote:
+> > On Mon, Dec 2, 2019 at 12:28 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > > +# Make sure we are able to include and link libbpf against c++.
+> > > +$(OUTPUT)/test_cpp: test_cpp.cpp $(BPFOBJ)
+> > > +       $(CXX) $(CFLAGS) $^ -lelf -o $@
+> >
+> > let's use $(LDLIBS) instead here
+> Sure, I'll send a v2 with $(LDLIBS); it might be worth doing for
+> consistency.
+>
+> Just curious: any particular reason you want to do it?
+> (looking it tools/build/features, I don't see any possible -lelf
+> cross-dependency)
 
-Hi Thomas,
-
-seconding the same question: any chance local lock api can be sent upstream
-soon? If api skeleton can get in during this merge window we will have the next
-bpf-next/net-next cycle to sort out details. If not the bpf+rt would need to
-wait one more release. Not a big deal. Just trying to figure out a time line
-when can we start working on concrete bpf+rt patches.
-
+The main reason is that I'd like to only have one (at least one per
+Makefile) place where we specify expected library dependencies. In my
+extern libbpf change I was adding explicit dependency on zlib, for
+instance, and having to grep for -lxxx to see where I should add -lz
+is error-prone and annoying. Nothing beyond that.
