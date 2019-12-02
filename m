@@ -2,154 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B0E10E7B1
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 10:32:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA1710E7B5
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 10:33:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbfLBJcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 04:32:16 -0500
-Received: from mail105.syd.optusnet.com.au ([211.29.132.249]:51994 "EHLO
-        mail105.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726428AbfLBJcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 04:32:16 -0500
-Received: from dimstar.local.net (n122-110-44-45.sun2.vic.optusnet.com.au [122.110.44.45])
-        by mail105.syd.optusnet.com.au (Postfix) with SMTP id 206643A17D1
-        for <netdev@vger.kernel.org>; Mon,  2 Dec 2019 20:32:02 +1100 (AEDT)
-Received: (qmail 27087 invoked by uid 501); 2 Dec 2019 09:31:59 -0000
-Date:   Mon, 2 Dec 2019 20:31:59 +1100
-From:   Duncan Roe <duncan_roe@optusnet.com.au>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Chris Metcalf <cmetcalf@ezchip.com>, coreteam@netfilter.org,
-        David Miller <davem@davemloft.net>,
-        Chen Gang <gang.chen.5i5j@gmail.com>,
-        Patrick McHardy <kaber@trash.net>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KASAN: use-after-free Read in blkdev_get
-Message-ID: <20191202093159.GA3185@dimstar.local.net>
-Mail-Followup-To: Dmitry Vyukov <dvyukov@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Chris Metcalf <cmetcalf@ezchip.com>, coreteam@netfilter.org,
-        David Miller <davem@davemloft.net>,
-        Chen Gang <gang.chen.5i5j@gmail.com>,
-        Patrick McHardy <kaber@trash.net>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <000000000000e59aab056e8873ae@google.com>
- <0000000000000beff305981c5ac6@google.com>
- <20191124193035.GA4203@ZenIV.linux.org.uk>
- <20191130110645.GA4405@dimstar.local.net>
- <CACT4Y+bg7bZOSg0P9VXq8yG2odAJMg6b6N2fXxbamOmKiz3ohw@mail.gmail.com>
- <20191201000439.GA15496@dimstar.local.net>
- <CACT4Y+YhYaEC2of_6bZ6aZxX_kc3+4Li=MZU-MB1RcNr6Z7iww@mail.gmail.com>
+        id S1726486AbfLBJdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 04:33:45 -0500
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:60132 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726190AbfLBJdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 04:33:44 -0500
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1ibi5E-0004Xs-Gt; Mon, 02 Dec 2019 09:33:32 +0000
+Received: from jain.kot-begemot.co.uk ([192.168.3.3])
+        by jain.kot-begemot.co.uk with esmtp (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1ibi5C-0006As-2n; Mon, 02 Dec 2019 09:33:32 +0000
+Subject: Re: [PATCH] um: vector: fix BPF loading in vector drivers
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        linux-um@lists.infradead.org
+Cc:     songliubraving@fb.com, jakub.kicinski@netronome.com,
+        richard@nod.at, kernel-janitors@vger.kernel.org, ast@kernel.org,
+        weiyongjun1@huawei.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kafai@fb.com, dan.carpenter@oracle.com
+References: <20191128174405.4244-1-anton.ivanov@cambridgegreys.com>
+ <1416753c-e966-e259-a84d-2a5f0a166660@iogearbox.net>
+ <cccc22d6-ee0a-c219-2bf0-2b89ae07ac2b@cambridgegreys.com>
+ <c54efbb0-8ac4-2788-5957-ff99ab357584@iogearbox.net>
+ <fe8a15ff-7e95-548e-d41d-fa3ce1113202@cambridgegreys.com>
+Message-ID: <643996ce-7b19-16b6-e02f-61859de04968@cambridgegreys.com>
+Date:   Mon, 2 Dec 2019 09:33:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+YhYaEC2of_6bZ6aZxX_kc3+4Li=MZU-MB1RcNr6Z7iww@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.3 cv=W5xGqiek c=1 sm=1 tr=0
-        a=4DzML1vCOQ6Odsy8BUtSXQ==:117 a=4DzML1vCOQ6Odsy8BUtSXQ==:17
-        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=pxVhFHJ0LMsA:10
-        a=RSmzAf-M6YYA:10 a=PO7r1zJSAAAA:8 a=7QvuB2UPAAAA:8 a=edf1wS77AAAA:8
-        a=hSkVLCK3AAAA:8 a=mzoz-TVAAAAA:20 a=VwQbUJbxAAAA:8 a=kGbAZRCgAAAA:20
-        a=RZrVL_RPe_AL--TquSQA:9 a=CjuIK1q_8ugA:10 a=vVHabExCe68A:10
-        a=PyAPxfarwdVEPLbpdMBu:22 a=DcSpbTIhAlouE1Uv7lRv:22
-        a=cQPPKAXgyycSBL8etih5:22 a=AjGcO6oz07-iQ99wixmX:22
-        a=pHzHmUro8NiASowvMSCR:22 a=Ew2E2A-JSTLzCXPT_086:22
+In-Reply-To: <fe8a15ff-7e95-548e-d41d-fa3ce1113202@cambridgegreys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 02, 2019 at 07:47:11AM +0100, Dmitry Vyukov wrote:
-> On Sun, Dec 1, 2019 at 1:04 AM Duncan Roe <duncan_roe@optusnet.com.au> wrote:
-> >
-> > On Sat, Nov 30, 2019 at 04:53:12PM +0100, Dmitry Vyukov wrote:
-> > > On Sat, Nov 30, 2019 at 12:06 PM Duncan Roe <duncan_roe@optusnet.com.au> wrote:
-> > > > > > syzbot has bisected this bug to:
-> > > > > >
-> > > > > > commit 77ef8f5177599efd0cedeb52c1950c1bd73fa5e3
-> > > > > > Author: Chris Metcalf <cmetcalf@ezchip.com>
-> > > > > > Date:   Mon Jan 25 20:05:34 2016 +0000
-> > > > > >
-> > > > > >     tile kgdb: fix bug in copy to gdb regs, and optimize memset
-> > > > > >
-> > > > > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1131bc0ee00000
-> > > > > > start commit:   f5b7769e Revert "debugfs: inode: debugfs_create_dir uses m..
-> > > > > > git tree:       upstream
-> > > > > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=1331bc0ee00000
-> > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1531bc0ee00000
-> > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=709f8187af941e84
-> > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=eaeb616d85c9a0afec7d
-> > > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=177f898f800000
-> > > > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147eb85f800000
-> > > > > >
-> > > > > > Reported-by: syzbot+eaeb616d85c9a0afec7d@syzkaller.appspotmail.com
-> > > > > > Fixes: 77ef8f517759 ("tile kgdb: fix bug in copy to gdb regs, and optimize
-> > > > > > memset")
-> > > > > >
-> > > > > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> > > > >
-> > > > > Seriously?  How can the commit in question (limited to arch/tile/kernel/kgdb.c)
-> > > > > possibly affect a bug that manages to produce a crash report with
-> > > > > RSP: 0018:ffffffff82e03eb8  EFLAGS: 00000282
-> > > > > RAX: 0000000000000000 RBX: ffffffff82e00000 RCX: 0000000000000000
-> > > > > RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff81088779
-> > > > > RBP: ffffffff82e03eb8 R08: 0000000000000000 R09: 0000000000000001
-> > > > > R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> > > > > R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff82e00000
-> > > > > FS:  0000000000000000(0000) GS:ffff88021fc00000(0000) knlGS:0000000000000000
-> > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > CR2: 000000c420447ff8 CR3: 0000000213184000 CR4: 00000000001406f0
-> > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > > in it?  Unless something very odd has happened to tile, this crash has
-> > > > > been observed on 64bit x86; the names of registers alone are enough
-> > > > > to be certain of that.
-> > > > >
-> > > > > And the binaries produced by an x86 build should not be affected by any
-> > > > > changes in arch/tile; not unless something is very wrong with the build
-> > > > > system.  It's not even that this commit has fixed an earlier bug that
-> > > > > used to mask the one manifested here - it really should have had zero
-> > > > > impact on x86 builds, period.
-> > > > >
-> > > > > So I'm sorry, but I'm calling bullshit.  Something's quite wrong with
-> > > > > the bot - either its build system or the bisection process.
-> > > >
-> > > > The acid test would be: does reverting that commit make the problem go away?
-> > > >
-> > > > See, for example, https://bugzilla.kernel.org/show_bug.cgi?id=203935
-> > > >
-> > > > Cheers ... Duncan.
-> > >
-> > > This is done as part of any bisection by definition, right? The test
-> > > was done on the previous commit (effectively this one reverted) and no
-> > > crash was observed. Otherwise bisection would have been pointed to a
-> > > different commit.
-> > >
-> > Agree that's what bisecting does. What I had in mind was to make a patch to
-> > remove the identified commit, and apply that to the most recent revision
-> > possible. Then see if that makes the problem go away.
->
-> I wonder in what percent of cases:
-> 1. It gives signal different from reverting the commit in place.
-> 2. The revert can be cleanly applied to head.
-> 3. The revert does not introduce other bugs.
->
-> For this to be worth doing, all these 3 should be reasonably high. I
-> can imagine 3 may be high (?), but I am not sure about 1 and 2.
 
-The whole arch/tile directory no longer exists, so the patch cannot be applied.
-If I had realised that earlier, I would not have posted at all.
-Sorry for the noise.
+
+On 30/11/2019 07:29, Anton Ivanov wrote:
+> On 29/11/2019 23:12, Daniel Borkmann wrote:
+>> On 11/29/19 12:54 PM, Anton Ivanov wrote:
+>>> On 29/11/2019 09:15, Daniel Borkmann wrote:
+>>>> On 11/28/19 6:44 PM, anton.ivanov@cambridgegreys.com wrote:
+>>>>> From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>>
+>>>>> This fixes a possible hang in bpf firmware loading in the
+>>>>> UML vector io drivers due to use of GFP_KERNEL while holding
+>>>>> a spinlock.
+>>>>>
+>>>>> Based on a prposed fix by weiyongjun1@huawei.com and suggestions for
+>>>>> improving it by dan.carpenter@oracle.com
+>>>>>
+>>>>> Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+>>>>
+>>>> Any reason why this BPF firmware loading mechanism in UML vector 
+>>>> driver that was
+>>>> recently added [0] is plain old classic BPF? Quoting your commit log 
+>>>> [0]:
+>>>
+>>> It will allow whatever is allowed by sockfilter. Looking at the 
+>>> sockfilter implementation in the kernel it takes eBPF, however even 
+>>> the kernel docs still state BPF.
+>>
+>> You are using SO_ATTACH_FILTER in uml_vector_attach_bpf() which is the 
+>> old classic
+>> BPF (and not eBPF). The kernel internally moves that over to eBPF 
+>> insns, but you'll
+>> be constrained forever with the abilities of cBPF. The later added 
+>> SO_ATTACH_BPF is
+>> the one for eBPF where you pass the prog fd from bpf().
+> 
+> I will switch to that in the next version.
+> 
+>>
+>>>>    All vector drivers now allow a BPF program to be loaded and
+>>>>    associated with the RX socket in the host kernel.
+>>>>
+>>>>    1. The program can be loaded as an extra kernel command line
+>>>>    option to any of the vector drivers.
+>>>>
+>>>>    2. The program can also be loaded as "firmware", using the
+>>>>    ethtool flash option. It is possible to turn this facility
+>>>>    on or off using a command line option.
+>>>>
+>>>>    A simplistic wrapper for generating the BPF firmware for the raw
+>>>>    socket driver out of a tcpdump/libpcap filter expression can be
+>>>>    found at: https://github.com/kot-begemot-uk/uml_vector_utilities/
+>>>>
+>>>> ... it tells what it does but /nothing/ about the original rationale 
+>>>> / use case
+>>>> why it is needed. So what is the use case? And why is this only 
+>>>> classic BPF? Is
+>>>> there any discussion to read up that lead you to this decision of 
+>>>> only implementing
+>>>> handling for classic BPF?
+>>>
+>>> Moving processing out of the GUEST onto the HOST using a safe 
+>>> language. The firmware load is on the GUEST and your BPF is your 
+>>> virtual NIC "firmware" which runs on the HOST (in the host kernel in 
+>>> fact).
+>>>
+>>> It is identical as an idea to what Netronome cards do in hardware.
+>>>
+>>>> I'm asking because classic BPF is /legacy/ stuff that is on feature 
+>>>> freeze and
+>>>> only very limited in terms of functionality compared to native 
+>>>> (e)BPF which is
+>>>> why you need this weird 'firmware' loader [1] which wraps around 
+>>>> tcpdump to
+>>>> parse the -ddd output into BPF insns ...
+>>>
+>>> Because there is no other mechanism of retrieving it after it is 
+>>> compiled by libpcap in any of the common scripting languages.
+>>>
+>>> The pcap Perl, Python, Go (or whatever else) wrappers do not give you 
+>>> access to the compiled code after the filter has been compiled.
+>>>
+>>> Why is that ingenious design - you have to take it with their 
+>>> maintainers.
+>>>
+>>> So if you want to start with pcap/tcpdump syntax and you do not want 
+>>> to rewrite that part of tcpdump as a dumper in C you have no other 
+>>> choice.
+>>>
+>>> The starting point is chosen because the idea is at some point to 
+>>> replace the existing and very aged pcap network transport in UML. 
+>>> That takes pcap syntax on the kernel command line.
+>>>
+>>> I admit it is a kludge, I will probably do the "do not want" bit and 
+>>> rewrite that in C.
+>>
+>> Yeah, it would probably be about the same # of LOC in C.
+>>
+>>> In any case - the "loader" is only an example, you can compile BPF 
+>>> using LLVM or whatever else you like.
+>>
+>> But did you try that with the code you have? Seems not, which is 
+>> perhaps why there are some
+>> wrong assumptions.
+> 
+> All of my tests were done using bpf generated by tcpdump out of a pcap 
+> expression. So the answer is no - I did not try LLVM because I did not 
+> need to for what I was aiming to achieve.
+> 
+> The pcap route matches 1:1 existing functionality in the uml pcap driver 
+> as well as existing functionality in the vector drivers for the cases 
+> where they need to avoid seeing their own xmits and cannot use features 
+> like QDISC_BYPASS.
+> 
+>>
+>> You can't use LLVM's BPF backend here since you only allow to pass in 
+>> cBPF, and LLVM emits
+>> an object file with native eBPF insns (you could use libbpf (in-tree 
+>> under tools/lib/bpf/)
+>> for loading that).
+> 
+> My initial aim was the same feature sets as pcap and achieve it using a 
+> virtual analogue of what cards like Netronome do - via the firmware route.
+> 
+> Switching to SO_ATTACH_BPF will come in the next revision.
+> 
+> A.
+> 
+>>
+>>> A.
+>>
+>> _______________________________________________
+>> linux-um mailing list
+>> linux-um@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-um
+> 
+> 
+After reviewing what is needed for switching from SOCK_FILTER to 
+SOCK_BPF, IMHO it will have to wait for a while.
+
+1. I am not sticking yet another direct host syscall invocation into the 
+userspace portion of the uml kernel and we cannot add extra userspace 
+libraries like libbpf at present because it is not supported by kbuild.
+
+I have a patch in the queue for that, but it will need to be approved by 
+the kernel build people and merged before this can be done.
+
+2. On top of that, in order to make use of eBPF for vNIC firmware 
+properly, I will need to figure out the correct abstractions. The 
+"program" part is quite clear - an  eBPF program fits exactly into the 
+role of virtual nic firmware - it is identical to classic BPF and the 
+way it is used at present.
+
+The maps, however, and how do they go along with the "program firmware" 
+is something which will need to be figured out. It may require a more 
+complex load mechanisms and a proper (not 5 liner wrapper around pcap or 
+tcpdump) firmware packer/unpacker.
+
+Once I have figured it out and it can fit into the kbuild, I will send 
+the next revision. I suspect that it will happen at about the same time 
+I will finish the AF_XDP UML vNIC transport (it has the same 
+requirements, needs the same calls and uses the same libraries).
+
+-- 
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
