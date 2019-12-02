@@ -2,74 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3890510EFC4
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 20:05:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 493EA10EFF2
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 20:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbfLBTFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 14:05:12 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39618 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727580AbfLBTFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 14:05:11 -0500
-Received: by mail-wm1-f67.google.com with SMTP id s14so636447wmh.4
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 11:05:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tanaza-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:message-id:in-reply-to
-         :date:mime-version;
-        bh=cpDuQ+8S1NqmWh2GgkrifCfeM8SlTPIIbhI2n6BWOvs=;
-        b=sonkycj1mFy8Md475zDtj1AcFk5pt6Lup/DZrpQiH9Mku7PBXg96UbiXN7bNn3Q6gu
-         LvdWF/DqMoCYIoLf1KYLQh5fE426TWIrDjM8ItYYFYHzaP0iaRQwRES1ZA3KRxOhGpRP
-         UiEYYPcYklySl06jvrC9Y6BhpQM3IX+KEqNUfJwBKTAiuqk2WwL3LBEASEM2tLQnJCjR
-         p4Km4TTqKack3gX3zFL5efSJmCQHtO6rHK9fm8ZXmmjsfZ1MBuRrNKPROyjfzs+xBrRF
-         WRaOGLWo7r1qu8/CYAKzaY0E6HlX8/1Th6zpmZfxp9zpvBDDlO+gtzu/fhlNiLVFy/Uy
-         oRpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :message-id:in-reply-to:date:mime-version;
-        bh=cpDuQ+8S1NqmWh2GgkrifCfeM8SlTPIIbhI2n6BWOvs=;
-        b=o1cmFyx5DdHGJSr7OG0HcrknS58QpQ0Tg4hAsABFeotGOUp6USOVjOXztEI39eeRRR
-         MlySsVgCm1EnnFuYtTz4PY+Gm5PC1uyNqNJZrhHd5FfFRCAcKzzyR66GBbr8CBIzq15v
-         HTeuaVDlIaeAgE6qKPJBZGh+Sc2SFASgGEOn1fL3zcToo4l1Lclk3aIPl74VYrJCe+W8
-         1kbA1RYW066ukTJRiKlGtGbr8S975hxKJAdc+grDB5hxcd2mDPOQsVo+OLmRG67xCJmG
-         GktiricVviE0hW5osexaBpQCQYPUH5CdGOwLSGxRqXfoY4zd0U06NHZOc+cTi1yZTs/j
-         kerw==
-X-Gm-Message-State: APjAAAV1W1papHy0Xch+edrBF7lOet7n/wIBzX9qaqVHGxHqUnRvX/eN
-        eCLXVQxuW6K+zUJhXscj+9FEf3WZdWgntg==
-X-Google-Smtp-Source: APXvYqzXJDiESvArk5u/jax/qwNnw5RQ+BTZyzJ0XCZtnxIJWw8vPfN7p/aPNd9ERrjj1W1VOi5jTg==
-X-Received: by 2002:a1c:3d87:: with SMTP id k129mr31825358wma.26.1575313509766;
-        Mon, 02 Dec 2019 11:05:09 -0800 (PST)
-Received: from sancho ([37.162.99.119])
-        by smtp.gmail.com with ESMTPSA id c2sm378380wrp.46.2019.12.02.11.04.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 11:05:01 -0800 (PST)
-References: <20191202185430.31367-1-marco.oliverio@tanaza.com>
-User-agent: mu4e 1.2.0; emacs 26.3
-From:   Marco Oliverio <marco.oliverio@tanaza.com>
-To:     Marco Oliverio <marco.oliverio@tanaza.com>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        fw@strlen.de, rocco.folino@tanaza.com
-Subject: Re: [PATCH nf] netfilter: nf_queue: enqueue skbs with NULL dst
-Message-ID: <87r21mv9aj.fsf@tanaza.com>
-In-reply-to: <20191202185430.31367-1-marco.oliverio@tanaza.com>
-Date:   Mon, 02 Dec 2019 20:04:37 +0100
+        id S1727993AbfLBTVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 14:21:42 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54277 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727935AbfLBTVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 14:21:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575314501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eaAylSD5PcvTCe/IhcrnehIoQyyCa6W45unVR5JJMi4=;
+        b=h8jJ4WEm6oTwpFMWGkEwp3gTMTa0ds3LQn2zUfBvBasjG+GeXJbluStTRSZkOuEzKszc8+
+        DjV1oRM+lwEKlnAvvL0cM60DJUSjXqZfLH5FiFRQAA7xjcQX+JP+pDuinRNuWK8q2NgUqq
+        iPPKt1yiGaqc/5yd5jd9vW9wmTXmTYE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-283-l2RZnPazP7SVpiORIoTWMw-1; Mon, 02 Dec 2019 14:21:39 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BDB2E1883521;
+        Mon,  2 Dec 2019 19:21:36 +0000 (UTC)
+Received: from krava (ovpn-204-100.brq.redhat.com [10.40.204.100])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3EFE95C28C;
+        Mon,  2 Dec 2019 19:21:24 +0000 (UTC)
+Date:   Mon, 2 Dec 2019 20:21:22 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH 0/3] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191202192122.GA22100@krava>
+References: <20191127094837.4045-1-jolsa@kernel.org>
+ <CAEf4BzbUK98tsYH1mSNoTjuVB4dstRsL5rpkA+9nRCcqrdn6-Q@mail.gmail.com>
+ <87zhgappl7.fsf@toke.dk>
+ <CAEf4BzYoJUttk=o+p=NHK8K_aS3z2LdLiqzRni7PwyDaOxu68A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAEf4BzYoJUttk=o+p=NHK8K_aS3z2LdLiqzRni7PwyDaOxu68A@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: l2RZnPazP7SVpiORIoTWMw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Dec 02, 2019 at 10:42:53AM -0800, Andrii Nakryiko wrote:
+> On Mon, Dec 2, 2019 at 10:09 AM Toke H=F8iland-J=F8rgensen <toke@redhat.c=
+om> wrote:
+> >
+> > Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >
+> > > On Wed, Nov 27, 2019 at 1:49 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >>
+> > >> hi,
+> > >> adding support to link bpftool with libbpf dynamically,
+> > >> and config change for perf.
+> > >>
+> > >> It's now possible to use:
+> > >>   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=3D1
+> > >
+> > > I wonder what's the motivation behind these changes, though? Why is
+> > > linking bpftool dynamically with libbpf is necessary and important?
+> > > They are both developed tightly within kernel repo, so I fail to see
+> > > what are the huge advantages one can get from linking them
+> > > dynamically.
+> >
+> > Well, all the regular reasons for using dynamic linking (memory usage,
+> > binary size, etc).
+>=20
+> bpftool is 327KB with statically linked libbpf. Hardly a huge problem
+> for either binary size or memory usage. CPU instruction cache usage is
+> also hardly a concern for bpftool specifically.
+>=20
+> > But in particular, the ability to update the libbpf
+> > package if there's a serious bug, and have that be picked up by all
+> > utilities making use of it.
+>=20
+> I agree, and that works only for utilities linking with libbpf
+> dynamically. For tools that build statically, you'd have to update
+> tools anyways. And if you can update libbpf, you can as well update
+> bpftool at the same time, so I don't think linking bpftool statically
+> with libbpf causes any new problems.
 
-Marco Oliverio writes:
+it makes difference for us if we need to respin just one library
+instead of several applications (bpftool and perf at the moment),
+because of the bug in the library
 
-> Bridge packets that are forwarded have skb->dst == NULL and get
-> dropped by the check introduced by
-> ...
+with the Toke's approach we compile some bits of libbpf statically into
+bpftool, but there's still the official API in the dynamic libbpf that
+we care about and that could carry on the fix without bpftool respin
 
-ops. sorry for the multiple emails, made a mess :-)
+> > No reason why bpftool should be special in that respect.
+>=20
+> But I think bpftool is special and we actually want it to be special
+> and tightly coupled to libbpf with sometimes very intimate knowledge
+> of libbpf and access to "hidden" APIs. That allows us to experiment
+> with new stuff that requires use of bpftool (e.g., code generation for
+> BPF programs), without having to expose and seal public APIs. And I
+> don't think it's a problem from the point of code maintenance, because
+> both live in the same repository and are updated "atomically" when new
+> features are added or changed.
 
-Refer to this thread.
+I thought we solved this by Toke's approach, so there' no need
+to expose any new/experimental API .. also you guys will probably
+continue using static linking I guess
 
-M
+jirka
+
+>=20
+> Beyond superficial binary size worries, I don't see any good reason
+> why we should add more complexity and variables to libbpf and bpftool
+> build processes just to have a "nice to have" option of linking
+> bpftool dynamically with libbpf.
+
