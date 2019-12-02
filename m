@@ -2,305 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E74D10E415
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 01:37:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 953EA10E485
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 03:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbfLBAbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 Dec 2019 19:31:01 -0500
-Received: from outpost.hi.is ([130.208.165.166]:46456 "EHLO outpost.hi.is"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727266AbfLBAbB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 1 Dec 2019 19:31:01 -0500
-X-Greylist: delayed 773 seconds by postgrey-1.27 at vger.kernel.org; Sun, 01 Dec 2019 19:31:00 EST
-Received: from inpost.hi.is (inpost.hi.is [IPv6:2a00:c88:4000:1650::165:62])
-        by outpost.hi.is (8.14.7/8.14.7) with ESMTP id xB20I7Aa011912
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
-        for <netdev@vger.kernel.org>; Mon, 2 Dec 2019 00:18:07 GMT
-DKIM-Filter: OpenDKIM Filter v2.11.0 outpost.hi.is xB20I7Aa011912
-Received: from hekla.rhi.hi.is (hekla.rhi.hi.is [IPv6:2a00:c88:4000:1650::165:2])
-        by inpost.hi.is (8.14.7/8.14.7) with ESMTP id xB20I4FU007456
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
-        for <netdev@vger.kernel.org>; Mon, 2 Dec 2019 00:18:05 GMT
-DKIM-Filter: OpenDKIM Filter v2.11.0 inpost.hi.is xB20I4FU007456
-Received: from hekla.rhi.hi.is (localhost [127.0.0.1])
-        by hekla.rhi.hi.is (8.14.4/8.14.4) with ESMTP id xB20I4A2029771
-        for <netdev@vger.kernel.org>; Mon, 2 Dec 2019 00:18:04 GMT
-Received: (from bjarniig@localhost)
-        by hekla.rhi.hi.is (8.14.4/8.14.4/Submit) id xB20I4qN029770
-        for netdev@vger.kernel.org; Mon, 2 Dec 2019 00:18:04 GMT
-Date:   Mon, 2 Dec 2019 00:18:04 +0000
-From:   Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] iproute2-next/man/man*: Fix unequal number of .RS and .RE
- macros
-Message-ID: <20191202001804.GA29741@rhi.hi.is>
+        id S1727345AbfLBCXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 Dec 2019 21:23:24 -0500
+Received: from mail-pf1-f180.google.com ([209.85.210.180]:39498 "EHLO
+        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727285AbfLBCXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 Dec 2019 21:23:24 -0500
+Received: by mail-pf1-f180.google.com with SMTP id x28so17691881pfo.6
+        for <netdev@vger.kernel.org>; Sun, 01 Dec 2019 18:23:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RKHQkROqUsIA1U7zF2OcwdUVM3/MpQ+b/q7sXYQGJPQ=;
+        b=UgDroZETrHoK001TuB23HdPKpqy8bxgqLieA1iITRl2MFIprjCOIojjIqNmB5lUegI
+         RKp2AHsLM+7Tx7CpnhvcYRN3Zn62il1Q7vAU6aY2aJsBtvZPI7WXJluz3t41/NCI7pzB
+         sgGueEf0O7hR/MU9dlelMlChH6e1dpA9ICO1W+qG1yFEjc/oa/5qMwBOB9KIkQfTomYv
+         GKnH7CFSkUcUb7a4wyAlzpCCg3WK+7dIFLuACpabure/q9vkCwXW8uDMu5ylJl8mZSA8
+         7Zf30eW9z3vAhDHPLcqAUym7miXkwb4eC/b8TYyKSSvSEoTE8k+xcRjTT1bUvgo+3oW4
+         Sb4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RKHQkROqUsIA1U7zF2OcwdUVM3/MpQ+b/q7sXYQGJPQ=;
+        b=rtUJfGOQaJqRO/lAlF/aI0HNSArQFn/0+78LnIzekszmBaI75bWLyhRP8IHclXgJPb
+         88svJicHzssfT/tgXTfTKohIXjn1zQXNxEL4SzMaaA0K7inKJ/27b7OCd7On5pr1+2K8
+         TB65EDHtgxXYTTYIUiNu4qtSQ1DT9cvLDOPbd7JCWTwoQHWObdmY5whiS03a7gU5AngM
+         D+AeIUvizh2r+rBT5He2+fj6sf+DoIUwj/q/57KWjWP1ruO2MBYoL+3ulnCeYU4KSIqJ
+         PG3fb29SHrBSq2PvdxMb/vDkpu9M327g9om4CaSAB8kjx7Ub19oUBa9j/9HHKKs/K3+l
+         Kavg==
+X-Gm-Message-State: APjAAAUfs6R1T/93mJQJZjE23vZ6MygoyclgydipemfJ1I8vTzXDgfPm
+        9WD3AcAlTuqQMkIf5UJzP24=
+X-Google-Smtp-Source: APXvYqxoP3cveq85Vr4bAOOQV+JwWZgqg43KvExSO7KpHzMe/jdQ2v1DuWgBk971AnF6Cnn+HnV9Ug==
+X-Received: by 2002:a63:1953:: with SMTP id 19mr23228779pgz.157.1575253403514;
+        Sun, 01 Dec 2019 18:23:23 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id m14sm31439883pgn.41.2019.12.01.18.23.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Dec 2019 18:23:22 -0800 (PST)
+Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
+To:     Avinash Patil <avinashapatil@gmail.com>, subashab@codeaurora.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Josh Hunt <johunt@akamai.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
+ <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
+ <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
+ <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
+ <2279a8988c3f37771dda5593b350d014@codeaurora.org>
+ <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
+ <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
+ <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
+ <81ace6052228e12629f73724236ade63@codeaurora.org>
+ <CADVnQymDSZb=K8R1Gv=RYDLawW9Ju1tuskkk8LZG4fm3yxyq3w@mail.gmail.com>
+ <74827a046961422207515b1bb354101d@codeaurora.org>
+ <827f0898-df46-0f05-980e-fffa5717641f@akamai.com>
+ <cae50d97-5d19-7b35-0e82-630f905c1bf6@gmail.com>
+ <5a267a9d-2bf5-4978-b71d-0c8e71a64807@gmail.com>
+ <0101016eba384308-7dd6b335-8b75-4890-8733-a4dde8064d11-000000@us-west-2.amazonses.com>
+ <CAJwzM1mkR1dO-Jq7XH40MQz6CxU97YON5tembVL2DRPD6RYy9g@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <fb78c016-d421-762c-e0eb-d148b7e55b17@gmail.com>
+Date:   Sun, 1 Dec 2019 18:23:21 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.20 (2009-12-10)
+In-Reply-To: <CAJwzM1mkR1dO-Jq7XH40MQz6CxU97YON5tembVL2DRPD6RYy9g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  Add missing or excessive ".RE" macros.
 
-  Remove an excessive ".EE" macro.
 
-Signed-off-by: Bjarni Ingi Gislason <bjarniig@rhi.hi.is>
----
- man/man7/tc-hfsc.7          | 1 +
- man/man8/devlink-dev.8      | 1 +
- man/man8/devlink-port.8     | 1 +
- man/man8/devlink-region.8   | 1 +
- man/man8/devlink-resource.8 | 1 +
- man/man8/devlink-sb.8       | 1 +
- man/man8/devlink-trap.8     | 1 +
- man/man8/ip-neighbour.8     | 1 +
- man/man8/ip-nexthop.8       | 2 --
- man/man8/ip.8               | 1 -
- man/man8/rdma-statistic.8   | 1 +
- man/man8/tc-ctinfo.8        | 1 +
- man/man8/tc-police.8        | 1 +
- man/man8/tc-sample.8        | 3 ---
- man/man8/tc-simple.8        | 1 -
- man/man8/tc-skbmod.8        | 1 +
- man/man8/tc-u32.8           | 1 +
- man/man8/tc.8               | 1 +
- 18 files changed, 14 insertions(+), 7 deletions(-)
+On 11/29/19 9:39 PM, Avinash Patil wrote:
+> Hi Eric,
+> 
+> This crash looks quite similar to the one I am experiencing [1] and
+> reported already.
+> 
+> [1] https://www.spinics.net/lists/netdev/msg611694.html
+>
 
-diff --git a/man/man7/tc-hfsc.7 b/man/man7/tc-hfsc.7
-index 5ae5e6b3..412b4c3b 100644
---- a/man/man7/tc-hfsc.7
-+++ b/man/man7/tc-hfsc.7
-@@ -56,6 +56,7 @@ RT \- realtime
- LS \- linkshare
- UL \- upperlimit
- SC \- service curve
-+.RE
- .fi
- .
- .SH "BASICS OF HFSC"
-diff --git a/man/man8/devlink-dev.8 b/man/man8/devlink-dev.8
-index 2c6acbd3..289935db 100644
---- a/man/man8/devlink-dev.8
-+++ b/man/man8/devlink-dev.8
-@@ -262,6 +262,7 @@ Preparing to flash
- Flashing 100%
- .br
- Flashing done
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
-diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-index a639d01f..188bffb7 100644
---- a/man/man8/devlink-port.8
-+++ b/man/man8/devlink-port.8
-@@ -116,6 +116,7 @@ Split the specified devlink port into four ports.
- devlink port unsplit pci/0000:01:00.0/1
- .RS 4
- Unplit the specified previously split devlink port.
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
-diff --git a/man/man8/devlink-region.8 b/man/man8/devlink-region.8
-index ff10cdbd..c6756566 100644
---- a/man/man8/devlink-region.8
-+++ b/man/man8/devlink-region.8
-@@ -119,6 +119,7 @@ Dump the snapshot taken from cr-space address region with ID 1
- devlink region read pci/0000:00:05.0/cr-space snapshot 1 address 0x10 legth 16
- .RS 4
- Read from address 0x10, 16 Bytes of snapshot ID 1 taken from cr-space address region
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
-diff --git a/man/man8/devlink-resource.8 b/man/man8/devlink-resource.8
-index b8f78806..8c315807 100644
---- a/man/man8/devlink-resource.8
-+++ b/man/man8/devlink-resource.8
-@@ -66,6 +66,7 @@ Shows the resources of the specified devlink device.
- devlink resource set pci/0000:01:00.0 /kvd/linear 98304
- .RS 4
- Sets the size of the specified resource for the specified devlink device.
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
-diff --git a/man/man8/devlink-sb.8 b/man/man8/devlink-sb.8
-index 91b68189..5a5a9bb9 100644
---- a/man/man8/devlink-sb.8
-+++ b/man/man8/devlink-sb.8
-@@ -310,6 +310,7 @@ Show occupancy for specified port from the snapshot.
- sudo devlink sb occupancy clearmax pci/0000:03:00.0
- .RS 4
- Clear watermarks for shared buffer of specified devlink device.
-+.RE
- 
- 
- .SH SEE ALSO
-diff --git a/man/man8/devlink-trap.8 b/man/man8/devlink-trap.8
-index 4f079eb8..db19fe4c 100644
---- a/man/man8/devlink-trap.8
-+++ b/man/man8/devlink-trap.8
-@@ -127,6 +127,7 @@ Show attributes and statistics of a specific packet trap group.
- devlink trap set pci/0000:01:00.0 trap source_mac_is_multicast action trap
- .RS 4
- Set the action of a specific packet trap to 'trap'.
-+.RE
- 
- .SH SEE ALSO
- .BR devlink (8),
-diff --git a/man/man8/ip-neighbour.8 b/man/man8/ip-neighbour.8
-index bc77b439..f71f18b1 100644
---- a/man/man8/ip-neighbour.8
-+++ b/man/man8/ip-neighbour.8
-@@ -253,6 +253,7 @@ the prefix selecting the neighbour to query.
- .TP
- .BI dev " NAME"
- get neighbour entry attached to this device.
-+.RE
- 
- .SH EXAMPLES
- .PP
-diff --git a/man/man8/ip-nexthop.8 b/man/man8/ip-nexthop.8
-index da87ca3b..68164f3c 100644
---- a/man/man8/ip-nexthop.8
-+++ b/man/man8/ip-nexthop.8
-@@ -130,7 +130,6 @@ create a blackhole nexthop
- .TP
- ip nexthop delete id ID
- delete nexthop with given id.
--.RE
- 
- .TP
- ip nexthop show
-@@ -154,7 +153,6 @@ show only nexthop groups
- ip nexthop flush
- flushes nexthops selected by some criteria. Criteria options are the same
- as show.
--.RE
- 
- .TP
- ip nexthop get id ID
-diff --git a/man/man8/ip.8 b/man/man8/ip.8
-index e2bda2a2..1661aa67 100644
---- a/man/man8/ip.8
-+++ b/man/man8/ip.8
-@@ -382,7 +382,6 @@ Bring up interface x.
- .RE
- .PP
- ip link set x down
--.RE
- .RS 4
- Bring down interface x.
- .RE
-diff --git a/man/man8/rdma-statistic.8 b/man/man8/rdma-statistic.8
-index 541b5d63..e3f4b51b 100644
---- a/man/man8/rdma-statistic.8
-+++ b/man/man8/rdma-statistic.8
-@@ -162,6 +162,7 @@ List all currently allocated MR's and their counters.
- rdma statistic show mr mrn 6
- .RS 4
- Dump a specific MR statistics with mrn 6. Dumps nothing if does not exists.
-+.RE
- 
- .SH SEE ALSO
- .BR rdma (8),
-diff --git a/man/man8/tc-ctinfo.8 b/man/man8/tc-ctinfo.8
-index 9015b844..5b761a8f 100644
---- a/man/man8/tc-ctinfo.8
-+++ b/man/man8/tc-ctinfo.8
-@@ -161,6 +161,7 @@ tc -s filter show dev eth0
-     Sent 32890260 bytes 120441 pkt (dropped 0, overlimits 0 requeues 0)
-     backlog 0b 0p requeues 0
- .br
-+.RE
- .SH SEE ALSO
- .BR tc (8),
- .BR tc-cake (8)
-diff --git a/man/man8/tc-police.8 b/man/man8/tc-police.8
-index bcc5f438..52279755 100644
---- a/man/man8/tc-police.8
-+++ b/man/man8/tc-police.8
-@@ -116,6 +116,7 @@ continue with the next filter in line (if any). This is the default for
- exceeding packets.
- .IP pipe
- Pass the packet to the next action in line.
-+.RE
- .SH EXAMPLES
- A typical application of the police action is to enforce ingress traffic rate
- by dropping exceeding packets. Although better done on the sender's side,
-diff --git a/man/man8/tc-sample.8 b/man/man8/tc-sample.8
-index 3e03eba2..c4277caf 100644
---- a/man/man8/tc-sample.8
-+++ b/man/man8/tc-sample.8
-@@ -67,7 +67,6 @@ group
- .TP
- .BI PSAMPLE_ATTR_SAMPLE_RATE
- The rate the packet was sampled with
--.RE
- 
- .SH OPTIONS
- .TP
-@@ -117,8 +116,6 @@ tc filter add dev eth1 parent ffff: matchall \\
- .EE
- .RE
- 
--.EE
--.RE
- .SH SEE ALSO
- .BR tc (8),
- .BR tc-matchall (8)
-diff --git a/man/man8/tc-simple.8 b/man/man8/tc-simple.8
-index 7363ab56..f565755e 100644
---- a/man/man8/tc-simple.8
-+++ b/man/man8/tc-simple.8
-@@ -54,7 +54,6 @@ grep the logs to see the logged message
- .IP 6) 4
- display stats again and observe increment by 1
- 
--.RE
- .EX
-   hadi@noma1:$ tc qdisc add dev eth0 ingress
-   hadi@noma1:$tc filter add dev eth0 parent ffff: protocol ip prio 5 \\
-diff --git a/man/man8/tc-skbmod.8 b/man/man8/tc-skbmod.8
-index 46418b65..eb3c38fa 100644
---- a/man/man8/tc-skbmod.8
-+++ b/man/man8/tc-skbmod.8
-@@ -75,6 +75,7 @@ Continue classification with the next filter in line.
- .B pass
- Finish classification process and return to calling qdisc for further packet
- processing. This is the default.
-+.RE
- .SH EXAMPLES
- To start, observe the following filter with a pedit action:
- 
-diff --git a/man/man8/tc-u32.8 b/man/man8/tc-u32.8
-index 2bf2e3e9..a23a1846 100644
---- a/man/man8/tc-u32.8
-+++ b/man/man8/tc-u32.8
-@@ -490,6 +490,7 @@ Match on source or destination ethernet address. This is dangerous: It assumes
- an ethernet header is present at the start of the packet. This will probably
- lead to unexpected things if used with layer three interfaces like e.g. tun or
- ppp.
-+.RE
- .SH EXAMPLES
- .RS
- .EX
-diff --git a/man/man8/tc.8 b/man/man8/tc.8
-index b81a396f..d25aadda 100644
---- a/man/man8/tc.8
-+++ b/man/man8/tc.8
-@@ -828,6 +828,7 @@ Shows classes as ASCII graph on eth0 interface.
- tc -g -s class show dev eth0
- .RS 4
- Shows classes as ASCII graph with stats info under each class.
-+.RE
- 
- .SH HISTORY
- .B tc
--- 
-2.24.0
+Please start a bisection.
+
+Thanks you.
+
