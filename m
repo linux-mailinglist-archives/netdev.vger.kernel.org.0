@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9443D10E786
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 10:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A9E10E79D
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 10:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbfLBJSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 04:18:37 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42741 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbfLBJSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 04:18:37 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e28so14984618ljo.9
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 01:18:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6ja9ch4L0w7bAa4bcbmZySUMxjC9CzLUpvj1cQSMwa8=;
-        b=uTPBkofEFIQC1nYNeb3vu7LG+NQ2nRnifiuCq4czf9Xq9Sw6sSQloZymgl2qZ1CDFs
-         RPDy6rBjA9PIdmwDXFJtzsW4jQKHkCQCw8J8uQP3w3y54R7jgHpgAwV9hviCtrCphXxn
-         40MeEzGl4xX05vlCMNrLZ/Jzt6j6ZsX1PSPi2EOppkBQaGROJ8VzTtlWoikjZt8O1mms
-         UJ4BilLQ2Q01XGvwaRCLI3qZoEbSuUKzxZQPz/+7rggWsCiOJ+d8c4q2z7TY4GdL3iF1
-         pPagjRHFNmYnFeot7JpNyLGTEo280oearTe34ZzyVXuKchY2o7cICtf51vtpzqPqa2rA
-         M6cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6ja9ch4L0w7bAa4bcbmZySUMxjC9CzLUpvj1cQSMwa8=;
-        b=e3GGV+FjP4VvaODe23/jbuMSexqZfAjRf+LA/c0U4pixK95eONNqRaohztyW1qBNeZ
-         8izMu0Xmi1HeTAtjA9nEeIB6jdQp/6iJ+0Z9OOyIVlXsjuDNRRPozidS/pX9tl79KrW/
-         uAjrNAdrwmULg6KBwkUPWh6PEgnAOwT6ZpUznFGIeewAtgpXEBbja+X0w2IRv2hzIhui
-         EP2V12Ywzj2DvTuFRsk44YFtJAujvnYpwgIv78iLZHYUWMX7EG3HdIO6izFaSr1Z/3KJ
-         78RIHS7P0JUQFBH+UMRADriROJ477tzi4BZqgd6cSEnVjYPTNzoIDOtBQ6005ccwGJIn
-         cmgw==
-X-Gm-Message-State: APjAAAUhWAX3kOx0sl3aCqKtrjuucMboXVe60FLyr5i4nvIe15A5Z2vk
-        5LpsORyRTKtfeKi9i1IZ8qrSpQ==
-X-Google-Smtp-Source: APXvYqxwpAVRrTt+ohqj3sU9ZfRrVqX02o1vwts4WBMtf4EDXl5MbSuF6EQGuhRhWwZFug6WCJYv4Q==
-X-Received: by 2002:a2e:b5ae:: with SMTP id f14mr13855009ljn.31.1575278314710;
-        Mon, 02 Dec 2019 01:18:34 -0800 (PST)
-Received: from ?IPv6:2a00:1fa0:61d:753e:cc38:6b74:7e0d:a1da? ([2a00:1fa0:61d:753e:cc38:6b74:7e0d:a1da])
-        by smtp.gmail.com with ESMTPSA id l8sm14769303ljj.96.2019.12.02.01.18.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 Dec 2019 01:18:34 -0800 (PST)
-Subject: Re: [PATCH v1] mt76: mt7615: Fix build with older compilers
+        id S1727317AbfLBJZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 04:25:07 -0500
+Received: from a27-21.smtp-out.us-west-2.amazonses.com ([54.240.27.21]:42634
+        "EHLO a27-21.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726087AbfLBJZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 04:25:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1575278705;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
+        bh=PsbuLqg3PnKHZC8fFLVJ8BSKlIh+aXX3eRcWBfbOHQk=;
+        b=T2szKvc/XxMT/ZvGa0HxlsftgkKoplO4jc3Ije5Bt9DUIFfHYlwZz9/c83wKnCEa
+        jCicj+RykvK2G+2ZpUW99QF2bzArEe6fgvqdm0MB/pxwn1a9nEIttxWbNf/egYysv+v
+        +FygTZ96NhRjG4VJuzv6s36voeJ6nnOv7ZRCvuXk=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1575278705;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
+        bh=PsbuLqg3PnKHZC8fFLVJ8BSKlIh+aXX3eRcWBfbOHQk=;
+        b=bBsIqyQtxqaJOzQfgUnPNfVvRfUjTSpzldVz+tYN13bdKRO1GMSEkCdv8X8ZN7Bc
+        xUK8KyWiIE0BS/ZUEmH6e3Oxnd2Vv7+2dkVNdoHAWwKCVqy7vbghoZ7ID2a1biurDIZ
+        1O3AujZnUI1FLvkmDcZ+9+7G7ud7aNrn5w6rP60E=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7F829C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
 To:     Pablo Greco <pgreco@centosproject.org>
 Cc:     Felix Fietkau <nbd@nbd.name>,
         Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
         Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+        Roy Luo <royluo@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] mt76: mt7615: Fix build with older compilers
 References: <20191201181716.61892-1-pgreco@centosproject.org>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <e18d798d-cdf3-da05-c139-403dfc80e8a3@cogentembedded.com>
-Date:   Mon, 2 Dec 2019 12:18:28 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+Date:   Mon, 2 Dec 2019 09:25:05 +0000
+In-Reply-To: <20191201181716.61892-1-pgreco@centosproject.org> (Pablo Greco's
+        message of "Sun, 1 Dec 2019 15:17:10 -0300")
+Message-ID: <0101016ec5ed7c43-209a11a1-70b1-4151-bf9c-a2c5ce9f5348-000000@us-west-2.amazonses.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20191201181716.61892-1-pgreco@centosproject.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-SES-Outgoing: 2019.12.02-54.240.27.21
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On 01.12.2019 21:17, Pablo Greco wrote:
+Pablo Greco <pgreco@centosproject.org> writes:
 
 > Some compilers (tested with 4.8.5 from CentOS 7) fail properly process
-
-    Fail to?
-
 > FIELD_GET inside an inline function, which ends up in a BUILD_BUG_ON.
 > Convert inline function to a macro.
-> 
+>
 > Fixes commit bf92e7685100 ("mt76: mt7615: add support for per-chain
 > signal strength reporting")
-
-    Should be:
-
-Fixes: bf92e7685100 ("mt76: mt7615: add support for per-chain signal strength 
-reporting")
-
-    Do not ever break up the Fixes: line and don't insert empty lines between 
-it and other tags.
-
 > Reported in https://lkml.org/lkml/2019/9/21/146
-> 
+>
 > Reported-by: kbuild test robot <lkp@intel.com>
 > Signed-off-by: Pablo Greco <pgreco@centosproject.org>
-[...]
+> ---
+>  drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+> index c77adc5d2552..77e395ca2c6a 100644
+> --- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+> +++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+> @@ -13,10 +13,7 @@
+>  #include "../dma.h"
+>  #include "mac.h"
+>  
+> -static inline s8 to_rssi(u32 field, u32 rxv)
+> -{
+> -	return (FIELD_GET(field, rxv) - 220) / 2;
+> -}
+> +#define to_rssi(field, rxv)		((FIELD_GET(field, rxv) - 220) / 2)
 
-MBR, Sergei
+What about u32_get_bits() instead of FIELD_GET(), would that work? I
+guess chances for that is slim, but it's always a shame to convert a
+function to a macro so we should try other methods first.
+
+Or even better if we could fix FIELD_GET() to work with older compilers.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
