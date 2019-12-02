@@ -2,107 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D58E310EA4E
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 14:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB5E10EAA7
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 14:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbfLBNCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 08:02:33 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29071 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727399AbfLBNCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 08:02:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575291752;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wnZYQHNyF93TOuzpHzsjI/rl9jczeNd2hf1BHCa51L8=;
-        b=CV9Zyb/+lUY4BPuTX3H0HR0A0EQT8TmAjDfPKFHn07LOxCSvKFcTgQClUrGGRKF8WV1CSI
-        +hNVgdanGcAzAX4QPsTm3o0Ag33NP5Ru06rqJQpaBEaOCL8v5idG/3MJcx+hiraGDTLKfH
-        WbuzY+PpFgLf8m0NiCQOyeyCHoMuxLs=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-155-_kSq0rQJOfmGTY6mChqquw-1; Mon, 02 Dec 2019 08:02:31 -0500
-Received: by mail-lf1-f69.google.com with SMTP id y4so5921992lfg.1
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 05:02:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=wnZYQHNyF93TOuzpHzsjI/rl9jczeNd2hf1BHCa51L8=;
-        b=ZeLVgHoD2+EOGx5zUd9MdwfExeD67sglY39APeltcWoWSfj1Npa8jQtopRCNmWD9NX
-         g8nSit54/3wcjTkEo2C1ohKUQcfEKVrrHjhIgq6MSEjRKSfr5GSP97S7m2+laQRuLhLt
-         UO53XXv88zA0RrMbo71k/G1yKpqjLiMZVCDHFNWr/ct6RL3n5AWcGxAJXaTH+07sg+U3
-         5O1puOu0Bsp86KQ9I3Fg7B/dq0xP2+hv6ZW6Ph1CoIaVcCRIJPrGRAjJpqrdYxmWCvQE
-         Wz04i+4wC8XyoZqwll3NZpXXyeJjQ53o5SKE/yeUCgT7q8tRlTLViIMA+iTT7yaOSKXY
-         IveQ==
-X-Gm-Message-State: APjAAAVgdzv/xewJ0PQnD8OPer8Gjq5KsMVD9L7lUoLmQrr8C/VvzNs0
-        B99NhkQ3QlRiKzq69GGiS7QqpjwUE5yI+YSev3zJ7c9bXOvVeKdqmcO4mzeFZf+MD49dvM3AMU/
-        v4Vlj7dLCKgq/SGa5
-X-Received: by 2002:a05:651c:1066:: with SMTP id y6mr47130199ljm.96.1575291749398;
-        Mon, 02 Dec 2019 05:02:29 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz9rDXleedQx7EL3lXGtVOObHOfwWLrWorFA2PCi83Q4ChTqbLiZbDzrUkNFFwJzJoFQlZsvA==
-X-Received: by 2002:a05:651c:1066:: with SMTP id y6mr47130185ljm.96.1575291749249;
-        Mon, 02 Dec 2019 05:02:29 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u3sm9692949lfm.37.2019.12.02.05.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 05:02:28 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E1875181942; Mon,  2 Dec 2019 14:02:27 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
-Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        id S1727469AbfLBNTC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 2 Dec 2019 08:19:02 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:24001 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727381AbfLBNTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 08:19:02 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-17-EV2vrjPkOf2HJGQRGcFDgA-1; Mon, 02 Dec 2019 08:18:58 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D48868017DF;
+        Mon,  2 Dec 2019 13:18:55 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.43.17.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B3DB5600C8;
+        Mon,  2 Dec 2019 13:18:47 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        danieltimlee@gmail.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Subject: Re: [bpf PATCH] samples/bpf: fix broken xdp_rxq_info due to map order assumptions
-In-Reply-To: <157529025128.29832.5953245340679936909.stgit@firesoul>
-References: <157529025128.29832.5953245340679936909.stgit@firesoul>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 02 Dec 2019 14:02:27 +0100
-Message-ID: <87k17ericc.fsf@toke.dk>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Date:   Mon,  2 Dec 2019 14:18:40 +0100
+Message-Id: <20191202131847.30837-1-jolsa@kernel.org>
 MIME-Version: 1.0
-X-MC-Unique: _kSq0rQJOfmGTY6mChqquw-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: EV2vrjPkOf2HJGQRGcFDgA-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+hi,
+adding support to link bpftool with libbpf dynamically,
+and config change for perf.
 
-> In the days of using bpf_load.c the order in which the 'maps' sections
-> were defines in BPF side (*_kern.c) file, were used by userspace side
-> to identify the map via using the map order as an index. In effect the
-> order-index is created based on the order the maps sections are stored
-> in the ELF-object file, by the LLVM compiler.
->
-> This have also carried over in libbpf via API bpf_map__next(NULL, obj)
-> to extract maps in the order libbpf parsed the ELF-object file.
->
-> When BTF based maps were introduced a new section type ".maps" were
-> created. I found that the LLVM compiler doesn't create the ".maps"
-> sections in the order they are defined in the C-file. The order in the
-> ELF file is based on the order the map pointer is referenced in the code.
->
-> This combination of changes lead to xdp_rxq_info mixing up the map
-> file-descriptors in userspace, resulting in very broken behaviour, but
-> without warning the user.
->
-> This patch fix issue by instead using bpf_object__find_map_by_name()
-> to find maps via their names. (Note, this is the ELF name, which can
-> be longer than the name the kernel retains).
->
-> Fixes: be5bca44aa6b ("samples: bpf: convert some XDP samples from bpf_loa=
-d to libbpf")
-> Fixes: 451d1dc886b5 ("samples: bpf: update map definition to new syntax B=
-TF-defined map")
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+It's now possible to use:
+  $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+which will detect libbpf devel package and if found, link it with bpftool.
+
+It's possible to use arbitrary installed libbpf:
+  $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=1 LIBBPF_DIR=/tmp/libbpf/
+
+I based this change on top of Arnaldo's perf/core, because
+it contains libbpf feature detection code as dependency.
+
+Also available in:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  libbpf/dyn
+
+v4 changes:
+  - based on Toke's v3 post, there's no need for additional API exports:
+
+    Since bpftool uses bits of libbpf that are not exported as public API in
+    the .so version, we also pass in libbpf.a to the linker, which allows it to
+    pick up the private functions from the static library without having to
+    expose them as ABI.
+
+  - changing some Makefile variable names
+  - documenting LIBBPF_DYNAMIC and LIBBPF_DIR in the Makefile comment
+  - extending test_bpftool_build.sh with libbpf dynamic link
+
+thanks,
+jirka
+
+
+---
+Jiri Olsa (6):
+      perf tools: Allow to specify libbpf install directory
+      bpftool: Allow to link libbpf dynamically
+      bpftool: Rename BPF_DIR Makefile variable to LIBBPF_SRC_DIR
+      bpftool: Rename LIBBPF_OUTPUT Makefile variable to LIBBPF_BUILD_OUTPUT
+      bpftool: Rename LIBBPF_PATH Makefile variable to LIBBPF_BUILD_PATH
+      selftests, bpftool: Add build test for libbpf dynamic linking
+
+ tools/bpf/bpftool/Makefile                        | 54 ++++++++++++++++++++++++++++++++++++++++++++++--------
+ tools/perf/Makefile.config                        | 27 ++++++++++++++++++++-------
+ tools/testing/selftests/bpf/test_bpftool_build.sh | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 119 insertions(+), 15 deletions(-)
 
