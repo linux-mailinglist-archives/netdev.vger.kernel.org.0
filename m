@@ -2,88 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 550C010F30B
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 23:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A4E10F30F
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 00:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbfLBW6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 17:58:54 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:39765 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbfLBW6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 17:58:54 -0500
-Received: by mail-qv1-f67.google.com with SMTP id y8so649570qvk.6;
-        Mon, 02 Dec 2019 14:58:53 -0800 (PST)
+        id S1726024AbfLBXA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 18:00:29 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:45921 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbfLBXA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 18:00:28 -0500
+Received: by mail-lf1-f68.google.com with SMTP id 203so1189884lfa.12
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 15:00:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=0qnWSxRRAXLp5G5QvipAnlqLWrSW9gEmrB/VVz4a0Ig=;
-        b=QHdkbEp23x0rVpagGKosMguQgVm67PxekkCIBfekExh9iYgTwcoO2lhyGF3H1kDvgc
-         9a1leDZEEEYiXOudkTwCnNMC/KrFVE9hRAXLAcOX+k5mjw7kDlBRRqFhfTUMvEGagBeN
-         55xk0irdxDb3ZuIpyCE9TFKGiBGF27ot9joJw30aHR6z9Rp0viy5RiOFpqH8gjQrHsfv
-         0zyxeevQt6wThvbNNFlAQIVQu9RCpTmZ8Y5oT6mGutB0X6HHEykdwJIm6OzOnjhkxB9+
-         wjtNTX3JFJlbVpDxUXJvhDQTMAni/ZzH4Eg1YPlf9mvomGH10PzbIm1vEIcXLjk8cTbu
-         gshw==
+        bh=PwQrFv0qE39Z6AMGqk24ch6f5YGVUIl38q/H8NtbwdQ=;
+        b=kPEQ9RtrQFLj2nDevpnPo4B3ffEGEwMaciO2htuuC3xiLLjLo9hcBfn0+9zYld9vTz
+         5P4FgXqwaJmAxUPaIHPuHT5uIjYPD7DCK2ihxBMLoWhKVbtS1Itncz9k8B74yB6xcDaz
+         zFHvFw3M6+NM/jlrtDSqhs538zTwOIgRm4Z6t9clTwH/Scc+khmyAp8zuDz0OM5b6sTG
+         vWTAHpjjDMf5hn1VxHGfPoWVBT1aQNYEPKJ37FYiFEBM1frtx1LKok3OgciItxyD96Gm
+         3mmKsfshTQm9Ge/SnVKN4nqjLwSKOLSh05p4Uw/5I9r5tG0vIy0fPIbVPnEfMU/QuCgC
+         7f1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0qnWSxRRAXLp5G5QvipAnlqLWrSW9gEmrB/VVz4a0Ig=;
-        b=l+O8wctFwfUlsJ2/d8Fgdc66FH5me+hUPQSeA1mkuCTktcosgggE3U4BKV5BSJZeed
-         4hQJ2ptSOBmmRuO8rlIIzhnwwelTfxowwQ5XMJk1GUUR/sc+S4La4f6g+CdiFKtTpzXE
-         ohFh86spDiKHtM34SHppKetlfSY6mdD7qB1DM2ieTzuGAgcSW/6+iyxxZLLDW+o2WQKF
-         rrXRdyRKxTo6AUdyZOygQtKFM/1WNuzsNoYyF5QtWO5f9nLdJ8g9Af9v+/PwVU5+VnJ/
-         WiyBm3TZA2LWhF8ZP8etmZ0nCWbpIk6UOUxGRCN4OE0gnsBEAPFzO0TjFUPeOX1fbB1M
-         42uA==
-X-Gm-Message-State: APjAAAXq79cb47Atj6ddiIXe36YsbQob8beIgdUT5yXFXcjwRUK29afF
-        zTy7eTU2AdmoqqA81PWx7nSeSxpmQJzr1Ed1LOI=
-X-Google-Smtp-Source: APXvYqwpU2a085eDgk4vIJTDm9ndMGggaHA2LJbe5C/5SNiwTgpgNWMn7XPz5r2p6AdiJcVBepIdi6HDdt6cW2uner4=
-X-Received: by 2002:ad4:514e:: with SMTP id g14mr1904987qvq.196.1575327533175;
- Mon, 02 Dec 2019 14:58:53 -0800 (PST)
+        bh=PwQrFv0qE39Z6AMGqk24ch6f5YGVUIl38q/H8NtbwdQ=;
+        b=Dt9qHWRur4CVIOy9WxnRQXBpfPqN3s03nrCdQmVcqbghz/huulPmRetpv7XdwQ1sEH
+         Fn5U3Pxy6G2puwA6DKtQNDEzEvxdT7CN+9oWQLPqycDaNcjAyNGy33cO6sZJWD6WHUN/
+         XmgKrez/wISX5fRp0RjSWzyM0sGDJkDBgoQfZCVTYVELTKUAmPK1OFR5CBRBXFgBych+
+         B/5fkopA3KAhDGXce76ydxvZlB0OaWsGMnYn4sRBmR16X+JVWw4VrSFp0TLd/uK8i4Ey
+         5BwbLBF6zFm3jx/+PRvPizPb/frhTYxBUmYUjjzOzYxPddzon+E0205VzPgqHnGlkheT
+         VO/g==
+X-Gm-Message-State: APjAAAXygYFY433/9zH3L94bddPmTt/WTWsKy5ZTYKSax4jhY3vNtSOZ
+        V8f9pPclNQGHBQfaujYaRGtw3/Mf6cZ2zHhTFpSM
+X-Google-Smtp-Source: APXvYqwAASv9sx4uk88WgOrQWrHIZ31Yso3wS72CLdnuEcxMBTfmJk88MCa1DSZFQTcUxhuzuTB9D+Axh2H2Qpd0vkk=
+X-Received: by 2002:a19:6553:: with SMTP id c19mr837129lfj.158.1575327625976;
+ Mon, 02 Dec 2019 15:00:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20191202215931.248178-1-sdf@google.com>
-In-Reply-To: <20191202215931.248178-1-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 2 Dec 2019 14:58:42 -0800
-Message-ID: <CAEf4BzbYk3Wd5mPeFRbFCfFZ4sz4E4BcCO48G6LkiACHt9BBXw@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] selftests/bpf: bring back c++ include/link test
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+References: <20191128091633.29275-1-jolsa@kernel.org>
+In-Reply-To: <20191128091633.29275-1-jolsa@kernel.org>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 2 Dec 2019 18:00:14 -0500
+Message-ID: <CAHC9VhQ7zkXdz1V5hQ8PN68-NnCn56TjKA0wCL6ZjHy9Up8fuQ@mail.gmail.com>
+Subject: Re: [RFC] bpf: Emit audit messages upon successful prog load and unload
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-audit@redhat.com,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 2, 2019 at 1:59 PM Stanislav Fomichev <sdf@google.com> wrote:
+On Thu, Nov 28, 2019 at 4:16 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> From: Daniel Borkmann <daniel@iogearbox.net>
 >
-> Commit 5c26f9a78358 ("libbpf: Don't use cxx to test_libpf target")
-> converted existing c++ test to c. We still want to include and
-> link against libbpf from c++ code, so reinstate this test back,
-> this time in a form of a selftest with a clear comment about
-> its purpose.
+> Allow for audit messages to be emitted upon BPF program load and
+> unload for having a timeline of events. The load itself is in
+> syscall context, so additional info about the process initiating
+> the BPF prog creation can be logged and later directly correlated
+> to the unload event.
 >
-> v2:
-> * -lelf -> $(LDLIBS) (Andrii Nakryiko)
+> The only info really needed from BPF side is the globally unique
+> prog ID where then audit user space tooling can query / dump all
+> info needed about the specific BPF program right upon load event
+> and enrich the record, thus these changes needed here can be kept
+> small and non-intrusive to the core.
 >
-> Fixes: 5c26f9a78358 ("libbpf: Don't use cxx to test_libpf target")
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> Raw example output:
+>
+>   # auditctl -D
+>   # auditctl -a always,exit -F arch=x86_64 -S bpf
+>   # ausearch --start recent -m 1334
+>   ...
+>   ----
+>   time->Wed Nov 27 16:04:13 2019
+>   type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
+>   type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
+>     success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
+>     pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
+>     egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
+>     exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
+>     subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
+>   type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
+>   ----
+>   time->Wed Nov 27 16:04:13 2019
+>   type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
+>   ...
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
+>  include/uapi/linux/audit.h |  1 +
+>  kernel/bpf/syscall.c       | 27 +++++++++++++++++++++++++++
+>  2 files changed, 28 insertions(+)
 
-LGTM.
+Hi all, sorry for the delay; the merge window in combination with the
+holiday in the US bumped this back a bit.  Small comments inline below
+...
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/lib/bpf/.gitignore                                    | 1 -
->  tools/lib/bpf/Makefile                                      | 5 +----
->  tools/testing/selftests/bpf/.gitignore                      | 1 +
->  tools/testing/selftests/bpf/Makefile                        | 6 +++++-
->  .../test_libbpf.c => testing/selftests/bpf/test_cpp.cpp}    | 0
->  5 files changed, 7 insertions(+), 6 deletions(-)
->  rename tools/{lib/bpf/test_libbpf.c => testing/selftests/bpf/test_cpp.cpp} (100%)
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/timekeeping.h>
+>  #include <linux/ctype.h>
+>  #include <linux/nospec.h>
+> +#include <linux/audit.h>
+>  #include <uapi/linux/btf.h>
 >
+>  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+> @@ -1306,6 +1307,30 @@ static int find_prog_type(enum bpf_prog_type type, struct bpf_prog *prog)
+>         return 0;
+>  }
+>
+> +enum bpf_audit {
+> +       BPF_AUDIT_LOAD,
+> +       BPF_AUDIT_UNLOAD,
+> +};
+> +
+> +static const char * const bpf_audit_str[] = {
+> +       [BPF_AUDIT_LOAD]   = "LOAD",
+> +       [BPF_AUDIT_UNLOAD] = "UNLOAD",
+> +};
+> +
+> +static void bpf_audit_prog(const struct bpf_prog *prog, enum bpf_audit op)
+> +{
+> +       struct audit_buffer *ab;
+> +
+> +       if (audit_enabled == AUDIT_OFF)
+> +               return;
 
-[...]
+I think you would probably also want to check the results of
+audit_dummy_context() here as well, see all the various audit_XXX()
+functions in include/linux/audit.h as an example.  You'll see a
+pattern similar to the following:
+
+static inline void audit_foo(...)
+{
+  if (unlikely(!audit_dummy_context()))
+    __audit_foo(...)
+}
+
+> +       ab = audit_log_start(audit_context(), GFP_ATOMIC, AUDIT_BPF);
+> +       if (unlikely(!ab))
+> +               return;
+> +       audit_log_format(ab, "prog-id=%u op=%s",
+> +                        prog->aux->id, bpf_audit_str[op]);
+
+Is it worth putting some checks in here to make sure that you don't
+blow past the end of the bpf_audit_str array?
+
+> +       audit_log_end(ab);
+> +}
+
+The audit record format looks much better now, thank you.  Although I
+do wonder if you want bpf_audit_prog() to live in kernel/bpf/syscall.c
+or in kernel/auditsc.c?  There is plenty of precedence for moving it
+into auditsc.c and defining a no-op version for when
+CONFIG_AUDITSYSCALL is not enabled, but I personally don't feel that
+strongly about either option.  I just wanted to mention this in case
+you weren't already aware.
+
+If you do keep it in syscall.c, I don't think there is a need to
+implement a no-op version dependent on CONFIG_AUDITSYSCALL; that will
+just clutter the code.
+
+If you do move it to auditsc.c please change the name to
+audit_bpf()/__audit_bpf() so it matches the other functions; if you
+keep it in syscall.c you can name it whatever you like :)
+
+--
+paul moore
+www.paul-moore.com
