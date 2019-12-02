@@ -2,110 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4256010EEEC
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 19:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E6D10EEEF
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 19:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbfLBSJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 13:09:02 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41351 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727453AbfLBSJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 13:09:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575310141;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P4ecEttM3yApxyxrsr44NMQb+oeialaWZ1R4NWHga6Y=;
-        b=WZhxTDuDjU0wiZug6+8AoXZKGF5uYFMkTOeBHxYfqKTp+utizSJzN9MTVRKIilfeTyR0BN
-        8FVkgqdgRSkh+UEocQII3nu6K52HJ3t5qVLKCZxYzL32zc+8VRHh2FgTvUF340N/JoMB/l
-        fTu2YeRuVK6uwZQwRLOZqNTEIf1CpmE=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-268-TQji6zNfNRKtNplL8pQPNg-1; Mon, 02 Dec 2019 13:08:57 -0500
-Received: by mail-lj1-f200.google.com with SMTP id y18so55410ljj.16
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 10:08:56 -0800 (PST)
+        id S1727874AbfLBSKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 13:10:33 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:37553 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727670AbfLBSKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 13:10:33 -0500
+Received: by mail-ot1-f68.google.com with SMTP id k14so330375otn.4
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 10:10:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=3T3a+kwSOtasigIO0jGcMyTt9hkxgH3VEfkRkQo8HuI=;
+        b=UHH5PVDDVS/shIwtYgzKbfKKTtE76aMr0RjHV+3VmzGMstnmcVwXZc7PlEkB5eXFhE
+         2rn+FXoHaM53lAcOVejvD4ZBryo7aXWBcxIplVHWDvMZQ4NSbHhnpSDaNegtjE1MUhAS
+         IlIBygkoB+6l7ki2cH4zC3NkjfoezebQn+zOfJUdo/fZs9iIZk1OkCsfT7zC0HJq8hPT
+         xssmdidgZh8STvG3F8EeXMpCD7jk9YjqbphVvB7Zy+4SjOtJREHODe/r78kfUUWjTOvB
+         OHfikh+oh2phtx+HV8UoE8OnkJkQNWKmR5Yy4McjeZqasfQf0KDxMvdvJk0+4EXYsG+D
+         +XRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=R3A1rQuYRQ18AFn43+yCBqk/Ud+1TsgtYotLFNawFuU=;
-        b=H1ORRyzqQVv6wSPZk42P4PvtEkEQnPLETRz/hduCgrGY4T8onDC0U+JNy3m1nLPR/N
-         T52nS79y73/2eImzU5p6vHwttN2B7OfUMeNgVb9+MSeDHrll+Zyrk5IUpz/y5vUxrh9q
-         hk5AHw0HNG8Pfb9mS+22GNGxXvWJLNpv8Wza3s+tP7SC7rlN5b3JTWTzAd5U//ltCVCe
-         uJtINN6jIFfab8NyFfOO5nOefdZqFbaa0UDB2NfTX4FW6mIzQGA1UcLTdjPME6VqUUdC
-         8lItJeg/UW7zgOu+iW8hAjPqG72vQhrphHo0ewZqNSvyly35rPH1+95ws8YGlrMFILPc
-         DOkA==
-X-Gm-Message-State: APjAAAVtkXJzYZ3S8sD5b29UG/oDZNKn699ZU8xQ/A5+ek6uFq2os5/e
-        //s+5BtZbkBQai9g4uLBHrVjhSW45NvH2ARILDBBfS9oyHBUKXdr9YlPfgt5ikxEfBErFRR712i
-        ByrW9u7uLYjBpkKgl
-X-Received: by 2002:ac2:5931:: with SMTP id v17mr202404lfi.166.1575310135583;
-        Mon, 02 Dec 2019 10:08:55 -0800 (PST)
-X-Google-Smtp-Source: APXvYqw+ErVGcirRgq/taxG0hc0PK3IZELxdIQ1H+CTFmxm/d8vQkPE9sNJgKnUenWoxN34oySG/8A==
-X-Received: by 2002:ac2:5931:: with SMTP id v17mr202380lfi.166.1575310135338;
-        Mon, 02 Dec 2019 10:08:55 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id v2sm148047ljv.70.2019.12.02.10.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 10:08:54 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AE3941804D1; Mon,  2 Dec 2019 19:08:52 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH 0/3] perf/bpftool: Allow to link libbpf dynamically
-In-Reply-To: <CAEf4BzbUK98tsYH1mSNoTjuVB4dstRsL5rpkA+9nRCcqrdn6-Q@mail.gmail.com>
-References: <20191127094837.4045-1-jolsa@kernel.org> <CAEf4BzbUK98tsYH1mSNoTjuVB4dstRsL5rpkA+9nRCcqrdn6-Q@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 02 Dec 2019 19:08:52 +0100
-Message-ID: <87zhgappl7.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=3T3a+kwSOtasigIO0jGcMyTt9hkxgH3VEfkRkQo8HuI=;
+        b=mxyuzSbnfHSa+ciMQx59jwQ+2fyxv88XRQxCiSIjlMbUtdQHZA6o9Bw+O4X9QPero5
+         sMwFgOo8/hKCRqgm5jDfYSn89pMa5XIkayMS56dvLvzViTyixdvGuw/ABvKyW+Mt/CT7
+         GF3OQryKgKj0Cn144+HIClxsgK6Bor+tlTi5Ye+MpoLfgNxTxeV0l8PnpPLu7+Ns0Jxc
+         Vm4Ng0lrbSoADScMxnOjInBo6K2xolNoq+dcpwowYBrijlY72VXmdsaaxP1nQ1+ruoZc
+         mBPOh0J13wLBWRLFGqvWsSgkHA2t1ZQ43nFQHTtfCRJKG+0R94dhVkM0XFMk6k8N0lrq
+         i5sg==
+X-Gm-Message-State: APjAAAW2n47NP8IGX4iwdYfAme0khUVhXvDcJB7JXTt4qC/Wv8WTh7el
+        yRkyPwKFYP6fg+Q2PlqkwkcZDnat
+X-Google-Smtp-Source: APXvYqyceclujpyrVYra3K8X9X6uakgjqFU+ivXmHplgTaSAYYsqeZdHb+Iac2E5LBVLNt6bwxLlvQ==
+X-Received: by 2002:a9d:70d2:: with SMTP id w18mr307007otj.48.1575310232748;
+        Mon, 02 Dec 2019 10:10:32 -0800 (PST)
+Received: from [192.168.1.104] ([74.197.19.145])
+        by smtp.gmail.com with ESMTPSA id b20sm63018oib.1.2019.12.02.10.10.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Dec 2019 10:10:32 -0800 (PST)
+Subject: Re: Followup: Kernel memory leak on 4.11+ & 5.3.x with IPsec
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, gregkh@linuxfoundation.org
+References: <CAMnf+Pg4BLVKAGsr9iuF1uH-GMOiyb8OW0nKQSEKmjJvXj+t1g@mail.gmail.com>
+ <20191101075335.GG14361@gauss3.secunet.de>
+ <f5d26eeb-02b5-20f4-14f5-e56721c97eb8@gmail.com>
+ <20191111062832.GP13225@gauss3.secunet.de>
+From:   JD <jdtxs00@gmail.com>
+Message-ID: <a1a60471-7395-2bb0-5c6d-290b9af4b7dc@gmail.com>
+Date:   Mon, 2 Dec 2019 12:10:32 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-MC-Unique: TQji6zNfNRKtNplL8pQPNg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191111062832.GP13225@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Hello,
 
-> On Wed, Nov 27, 2019 at 1:49 AM Jiri Olsa <jolsa@kernel.org> wrote:
+I noticed the patch hasn't been in the last two stable releases for 4.14 
+and 4.19.  I checked the 4.14.157 and 4.19.87 release but the 
+xfrm_state.c file doesn't have the patch.
+
+Any update on or eta when this patch will backported to those two?  
+Also, I suppose 5.3.14 will need it as well.
+
+Thank you.
+
+On 11/11/2019 12:28 AM, Steffen Klassert wrote:
+> On Mon, Nov 04, 2019 at 12:25:37PM -0600, JD wrote:
+>> Hello Steffen,
 >>
->> hi,
->> adding support to link bpftool with libbpf dynamically,
->> and config change for perf.
->>
->> It's now possible to use:
->>   $ make -C tools/bpf/bpftool/ LIBBPF_DYNAMIC=3D1
+>> I left the stress test running over the weekend and everything still looks
+>> great. Your patch definitely resolves the leak.
+> I've just applied the patch below to the IPsec tree.
 >
-> I wonder what's the motivation behind these changes, though? Why is
-> linking bpftool dynamically with libbpf is necessary and important?
-> They are both developed tightly within kernel repo, so I fail to see
-> what are the huge advantages one can get from linking them
-> dynamically.
+> Thanks again for reporting and testing!
+>
+> Subject: [PATCH] xfrm: Fix memleak on xfrm state destroy
+>
+> We leak the page that we use to create skb page fragments
+> when destroying the xfrm_state. Fix this by dropping a
+> page reference if a page was assigned to the xfrm_state.
+>
+> Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+> Reported-by: JD <jdtxs00@gmail.com>
+> Reported-by: Paul Wouters <paul@nohats.ca>
+> Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+> ---
+>   net/xfrm/xfrm_state.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index c6f3c4a1bd99..f3423562d933 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -495,6 +495,8 @@ static void ___xfrm_state_destroy(struct xfrm_state *x)
+>   		x->type->destructor(x);
+>   		xfrm_put_type(x->type);
+>   	}
+> +	if (x->xfrag.page)
+> +		put_page(x->xfrag.page);
+>   	xfrm_dev_state_free(x);
+>   	security_xfrm_state_free(x);
+>   	xfrm_state_free(x);
 
-Well, all the regular reasons for using dynamic linking (memory usage,
-binary size, etc). But in particular, the ability to update the libbpf
-package if there's a serious bug, and have that be picked up by all
-utilities making use of it. No reason why bpftool should be special in
-that respect.
-
--Toke
 
