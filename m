@@ -2,94 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2785F10EC50
-	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 16:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7F810EC64
+	for <lists+netdev@lfdr.de>; Mon,  2 Dec 2019 16:37:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727462AbfLBP3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 10:29:50 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:28815 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727435AbfLBP3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 10:29:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575300588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0z2tQm4iXkieh7Y2qc0PIyltREwM+PT4orb8BcP5pjQ=;
-        b=hRMlCTQXnuVQ3Nnqz0nxWgZFK9SweGw58EVWmJp0B9Ze0KHggQ+/g7VWhT58x2w6j2YOcM
-        +m2z50nzUJu1d/PKtX1SbHklTfXR4v/vqOhCQYLVBeQKrAdNAXwK/D++4VSWNw9MWKleK3
-        RdtDf0uTTh4vKrW20lOZVDlytqg2Nuo=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-eXPGVTJENJajwtUyyI8rTg-1; Mon, 02 Dec 2019 10:29:45 -0500
-Received: by mail-qt1-f198.google.com with SMTP id u9so97229qte.5
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 07:29:45 -0800 (PST)
+        id S1727543AbfLBPhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 10:37:08 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:36052 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727432AbfLBPhI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 10:37:08 -0500
+Received: by mail-lj1-f195.google.com with SMTP id r19so6899139ljg.3;
+        Mon, 02 Dec 2019 07:37:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ymp5dH/tOyhbFrKcFGc6DHB4DSRD4uUTLeaKmTaGYlk=;
+        b=q2oPyHZL/3TTBFpgCRtqjuBrofVA+pJljiayFPlHIVQyibDp/pGPUhQ4TPN0BTMBq1
+         PwgrcrM1HNMU4z1Bbeu4P7uml7uMCVVI1vmC7wPBe5JLgqJO2lztslMGkn0kPFleNGll
+         sPO/e8Mv2lbuNUgTpAdsAwV7iHWeBThvzKsO97R7GNeIrnGKnE7gK6DRNj/Ed9K7OPkv
+         33/8mDP+LfoNfzjPGmgSxL5dclhWkjDhkp/yoHMzZK7hxYg4/asGxsH2KPoqaGQS5hec
+         Lt3rD5rOFmwlSHTx24/50CdWjJNq8gMIxG9TicislTLdUzTtZYVBX0UfncfZEZUGSNgO
+         jj3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UHNVZK66LNTKTGCBCYSRNRG2nM4kaD92FRubfSh9yTo=;
-        b=iI6MLn+iOnwiYUAblRu3BOfP2DSWP45LhHrP4/VldXV/qG02HTevT943ljS5OMfVyi
-         yTIlNBjOzvlh9z5JAWfOJnVi3mpROoXyFsdDiyMUjVKhz6IN7c3Lwa1SPvNKoQb+ONrN
-         AY0JP+McFMEN+Vo1cj6UIogof2Kn3fi/J7wv6ziCC2kVWLuDW/6CxHFip4y9kxDdn/HB
-         WQU+xarBqcO+dBc12OaOye6ozRpBNduznNxN7YZsOG6sXh7HJldar0+h+vTC+4G6ZVPm
-         A3QZ5TGbynKWGNTWUE+Nv3x4O9V8+WtDepOabMPDm5xdoUVRMn/MQdPa1csxw+dpW3Ka
-         nHIg==
-X-Gm-Message-State: APjAAAWNh1Ks5veE7o0rHn1uIL5a5dRlqktH5pD7psPzNriFSBJBxovc
-        Y43D/luArOBjk0d6rkNsij0ymr0FcN/w6dn98/OdlVLL8cUXUZMIdFtBgCYoSQJGfOm04U5kMta
-        3YatjYjT2HPBq9VSX
-X-Received: by 2002:a0c:f990:: with SMTP id t16mr16297119qvn.134.1575300584890;
-        Mon, 02 Dec 2019 07:29:44 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwiflZ/75vDGfgMJ5OKhk/kspL4JpVa3xIK//K0jByQmCbTNb/IuB45oI9Mm2q6ml+h0rnrOg==
-X-Received: by 2002:a0c:f990:: with SMTP id t16mr16297085qvn.134.1575300584679;
-        Mon, 02 Dec 2019 07:29:44 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id v7sm16794967qtk.89.2019.12.02.07.29.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 07:29:43 -0800 (PST)
-Date:   Mon, 2 Dec 2019 10:29:38 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ymp5dH/tOyhbFrKcFGc6DHB4DSRD4uUTLeaKmTaGYlk=;
+        b=Q3wrA/4N4yUmo/0c1UPqd19WeooLoSI4QMDh6S9vRNSZOoF5z3pcF4piJmogmaXFQ8
+         PyD52nGOUXuXP9x+OhIT6GLMbpa1AyXtcRAOo03XnpsR+07HvkXDi+zPrRp/jpJmC0Wj
+         wrFaFk3XH1SbXNCpmrQnconT3Z3L5+YtyVcdhCezD1LVoB8/olW+PJ2BAOhtCR38RPmU
+         MbtAZ76p6J+ilwLp+rSAxeWSoKW50RqN1Dn/2d/sErWaQ+iHa7PaiQMu9NtlUzolXXJ3
+         5dyvb8Ark683NOfqZEaB+MGeQlHXnl+luzRnOOp5Owi3zNvx8p6Ym6S/HtvKPWeAvL3I
+         fP9A==
+X-Gm-Message-State: APjAAAVdg4Lsbuzp3rEB9Xlbn16uwSmTeaRyhU0phAoM4bDFau3Ezo4w
+        /08xxkA1e61QeqjSSsVbnZmuoT1zTshDiON0M48=
+X-Google-Smtp-Source: APXvYqwluwHJ6hkTF0NdET0BqZsz1RG5BnqEKPDWQm71gKK2/C2dOu3aO1fOjtjyUbv3pS8tU7kPR1sxYHn5T2ry3ek=
+X-Received: by 2002:a2e:9610:: with SMTP id v16mr32464966ljh.88.1575301025532;
+ Mon, 02 Dec 2019 07:37:05 -0800 (PST)
+MIME-Version: 1.0
+References: <CAD56B7dwKDKnrCjpGmrnxz2P0QpNWU3CGBvOtqg3RBx3ejPh9g@mail.gmail.com>
+ <20191129164842.qimcmjlz5xq7uupw@linutronix.de>
+In-Reply-To: <20191129164842.qimcmjlz5xq7uupw@linutronix.de>
+From:   Paul Thomas <pthomas8589@gmail.com>
+Date:   Mon, 2 Dec 2019 10:36:54 -0500
+Message-ID: <CAD56B7dtR4GtPUUmmPVcuc0L+7BixW9+S=CR1g4ub3_6ZgRobg@mail.gmail.com>
+Subject: Re: xdpsock poll with 5.2.21rt kernel
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        qemu-devel@nongnu.org, kvm@vger.kernel.org
-Subject: Re: [RFC net-next 00/18] virtio_net XDP offload
-Message-ID: <20191128024912-mutt-send-email-mst@kernel.org>
-References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
- <20191126123514.3bdf6d6f@cakuba.netronome.com>
- <20191127152653-mutt-send-email-mst@kernel.org>
- <20191127154014.2b91ecc2@cakuba.netronome.com>
-MIME-Version: 1.0
-In-Reply-To: <20191127154014.2b91ecc2@cakuba.netronome.com>
-X-MC-Unique: eXPGVTJENJajwtUyyI8rTg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org,
+        linux-rt-users <linux-rt-users@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 03:40:14PM -0800, Jakub Kicinski wrote:
-> > For better or worse that's how userspace is written.
->=20
-> HW offload requires modifying the user space, too. The offload is not
-> transparent. Do you know that?
+On Fri, Nov 29, 2019 at 11:48 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> On 2019-11-12 17:42:42 [-0500], Paul Thomas wrote:
+> > Any thoughts would be appreciated.
+>
+> Could please enable CONFIG_DEBUG_ATOMIC_SLEEP and check if the kernel
+> complains?
 
-It's true, offload of program itself isn't transparent. Adding a 3rd
-interface (software/hardware/host) isn't welcome though, IMHO.
+Hi Sebastian,
 
---=20
-MST
+Well, it does complain (report below), but I'm not sure it's related.
+The other thing I tried was the AF_XDP example here:
+https://github.com/xdp-project/xdp-tutorial/tree/master/advanced03-AF_XDP
 
+With this example poll() always seems to block correctly, so I think
+maybe there is something wrong with the xdpsock_user.c example or how
+I'm using it.
+
+[  259.591480] BUG: assuming atomic context at net/core/ptp_classifier.c:106
+[  259.591488] in_atomic(): 0, irqs_disabled(): 0, pid: 953, name: irq/22-eth%d
+[  259.591494] CPU: 0 PID: 953 Comm: irq/22-eth%d Tainted: G        WC
+       5.
+
+                        2.21-rt13-00016-g93898e751d0e #90
+[  259.591499] Hardware name: Enclustra XU5 SOM (DT)
+[  259.591501] Call trace:
+[  259.591503] dump_backtrace (/arch/arm64/kernel/traps.c:94)
+[  259.591514] show_stack (/arch/arm64/kernel/traps.c:151)
+[  259.591520] dump_stack (/lib/dump_stack.c:115)
+[  259.591526] __cant_sleep (/kernel/sched/core.c:6386)
+[  259.591531] ptp_classify_raw (/./include/linux/compiler.h:194
+/./include/asm-generic/atomic-instrumented.h:27
+/./include/linux/jump_label.h:251 /net/core/ptp_classifier.c:106)
+[  259.591537] skb_defer_rx_timestamp (/./include/linux/skbuff.h:2236
+/net/core/timestamping.c:60)
+[  259.591541] netif_receive_skb_internal (/net/core/dev.c:5217)
+[  259.591547] netif_receive_skb (/net/core/dev.c:5296)
+[  259.591550] gem_rx (/drivers/net/ethernet/cadence/macb_main.c:993)
+[  259.591556] macb_poll (/drivers/net/ethernet/cadence/macb_main.c:1265)
+[  259.591561] net_rx_action (/net/core/dev.c:6387 /net/core/dev.c:6461)
+[  259.591565] __do_softirq (/./include/linux/compiler.h:194
+/./arch/arm64/include/asm/preempt.h:12 /kernel/softirq.c:400)
+[  259.591569] __local_bh_enable_ip (/kernel/softirq.c:182)
+[  259.591574] irq_forced_thread_fn (/kernel/irq/manage.c:1008)
+[  259.591579] irq_thread (/kernel/irq/manage.c:1101)
+[  259.591584] kthread (/kernel/kthread.c:255)
+[  259.591589] ret_from_fork (/arch/arm64/kernel/entry.S:1176)
