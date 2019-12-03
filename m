@@ -2,189 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC970110185
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:46:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 477CE110186
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfLCPq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 10:46:28 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53652 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfLCPq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 10:46:28 -0500
-Received: by mail-wm1-f66.google.com with SMTP id u18so3422779wmc.3
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 07:46:26 -0800 (PST)
+        id S1726564AbfLCPrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 10:47:06 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:52816 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbfLCPrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 10:47:06 -0500
+Received: by mail-pf1-f202.google.com with SMTP id f20so2497624pfn.19
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 07:47:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=63xIryqlQfX9ux0Lr5o1K9UWCLuVFo4RPSqmxiDl4F4=;
-        b=R9awnIvJLWuhEpqhRwrceX1HCRuj9X72ucZ80+i836hxP0LFeavP9SzOCHOzSliWAu
-         3uBVvq7uFM6Ii+IMd/jQQ4mAruY14FIYovnoFefF3zfnRGKp87XeJIeQyV+KzjziNU46
-         L7/wYhXAagDYVdPeV/ANXJsvLJUve6qMQczc2wOPD9mhYS9r4rK7qzRaYCn1z/nReZfk
-         ZKHb3ixvjHRU9yxEs5Zx3olMuZ4btvxFPLViNrw00Ml4rw8bxhWSW2KJwhjuNW/bh5tz
-         eTnjIeDLT8QwJoIJt6pkyc4SbL7WlKWgfsUeQlbsTeaEV4KhCTj5rsHGurDvDgmb5LRB
-         T9aw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=kRouJ8RTqEgeOWOKZnXkXMRduTDj4jmtaojGXNiKbM0=;
+        b=bCpnDgbs02ulSZ+iYJ+c1fRLiFYO6ymrrR0Ci99XIMO/l9kn+1yejEYV0aNMlZq23h
+         Eoy7KEYSch6NUg/nOKo8CAhCMwwCfNHjBM85ONegRAxrCmH3ZENb3l5fEvR4+gPXINpK
+         QFB5SqAZHjfY2P9bo+ASA4coU7wRrYgFXyLLBweCLfR5zgmWbNm/Wueq2Bcc/169G0Vb
+         j5sKclTmAuUrS5jWRMWGhja/vODC72zS7amFtr5sKick9grsKuXy21sOE5QCQROmucm+
+         us0GgjGOcijQkDJsFb0kd93KmHxEwNWYNXFtCNb31Kfax8OSi7qyq9WWEFqh+lhlTP7A
+         GOJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=63xIryqlQfX9ux0Lr5o1K9UWCLuVFo4RPSqmxiDl4F4=;
-        b=s4MdxsGuHnHIjs33jNWN50O92CMoAZs8B3q9V/U6bANZ2t6CGLnbw4T3DawAlcffBd
-         FJtAdvEABZzgsuhz+HH/XBZs7KNtNZR3Z+Q48rNY6aZC4Va9seeKF7E7oxPdek0cwejs
-         XyRfw5Zysu5LsYVLjvvv0OQpTrMgHjeF/2RbV/vQKdZ5IrxJ2tmOgvs/xXPeS5IHM/ar
-         nDDl4OOntYnC/soGg86OF/SH5okRcdLU67XUTO/Zq468saiAPNkdvr8NcCSGO3xORuKk
-         EJlVY/tLcySXZjSRV88Zz9wW0/qSYaNEiXDguelpyFYha97WgDuTkG1qR3Yk5ynio+Zs
-         QfYQ==
-X-Gm-Message-State: APjAAAUw94rXQwrh+xKAR5vWMTPC5QjxsatTthqmsIL8XJfnnEl3TkOW
-        YSpjap+xO5D8zh2F/UAbZaQ=
-X-Google-Smtp-Source: APXvYqxtZL/9HkpXTlxNwpUdKx1DdnCrS6Jha4LkJGzQBY9wkg5GNpdJydTnukKbmpTsjr/5ipPmvQ==
-X-Received: by 2002:a05:600c:2150:: with SMTP id v16mr20418608wml.156.1575387985279;
-        Tue, 03 Dec 2019 07:46:25 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id s1sm822741wmc.23.2019.12.03.07.46.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 07:46:24 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, richardcochran@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
-        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Subject: [PATCH v3 net] net: mscc: ocelot: unregister the PTP clock on deinit
-Date:   Tue,  3 Dec 2019 17:45:35 +0200
-Message-Id: <20191203154535.21183-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=kRouJ8RTqEgeOWOKZnXkXMRduTDj4jmtaojGXNiKbM0=;
+        b=tl8PJ2iRQqmMII6t47nsrDsj53H4odS1FT8GVkLURbEOgE3VYYloXsHJY2bzy3hYoQ
+         EJzitGp+Hp4Krmh9t9t9jijaGLKc5fVEDD6rWNGuwlB8XRiKISNkPeoHe4/sbOhkpOkt
+         Z7tKLKqTOj5Sq8KDvnsSYFHSrBZ3tiNMEzrVNBO26Lr25ktPylBpWz4c3m30zDbOPOhY
+         Z95va8u54VHEF3EUa90V1FY7fQenkoAQ2FerVXfIb+6wwrw9AsxDjItANjcsc5wMKvDJ
+         t7iETpDkI4jNxep4mKJLZmttlYv9eYQV/Dsg+rqbkeUUZIS7Ok3YGXsepOX4n+POhWy1
+         /PWg==
+X-Gm-Message-State: APjAAAWW0ZmsMMD77ugL0LuXjA3rCB1qC0o8ppMIASPB83I8vWbAlk3r
+        DXhJ4EuJ3cqAoTHzPLsbd4DARFma/pfEjg==
+X-Google-Smtp-Source: APXvYqxzLWH8KVRDbcLNfIc8bX9Xrhx6DaomOrPeXgmq1/2MjPSf9qG/XVqcYig0jPglpM26uwshHQotUvwTcg==
+X-Received: by 2002:a65:6249:: with SMTP id q9mr6270504pgv.340.1575388025676;
+ Tue, 03 Dec 2019 07:47:05 -0800 (PST)
+Date:   Tue,  3 Dec 2019 07:47:01 -0800
+Message-Id: <20191203154701.187275-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
+Subject: [PATCH iproute2] tc_util: support TCA_STATS_PKT64 attribute
+From:   Eric Dumazet <edumazet@google.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Kernel exports 64bit packet counters for qdisc/class stats in linux-5.5
 
-Currently a switch driver deinit frees the regmaps, but the PTP clock is
-still out there, available to user space via /dev/ptpN. Any PTP
-operation is a ticking time bomb, since it will attempt to use the freed
-regmaps and thus trigger kernel panics:
+Tested:
 
-[    4.291746] fsl_enetc 0000:00:00.2 eth1: error -22 setting up slave phy
-[    4.291871] mscc_felix 0000:00:00.5: Failed to register DSA switch: -22
-[    4.308666] mscc_felix: probe of 0000:00:00.5 failed with error -22
-[    6.358270] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000088
-[    6.367090] Mem abort info:
-[    6.369888]   ESR = 0x96000046
-[    6.369891]   EC = 0x25: DABT (current EL), IL = 32 bits
-[    6.369892]   SET = 0, FnV = 0
-[    6.369894]   EA = 0, S1PTW = 0
-[    6.369895] Data abort info:
-[    6.369897]   ISV = 0, ISS = 0x00000046
-[    6.369899]   CM = 0, WnR = 1
-[    6.369902] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020d58c7000
-[    6.369904] [0000000000000088] pgd=00000020d5912003, pud=00000020d5915003, pmd=0000000000000000
-[    6.369914] Internal error: Oops: 96000046 [#1] PREEMPT SMP
-[    6.420443] Modules linked in:
-[    6.423506] CPU: 1 PID: 262 Comm: phc_ctl Not tainted 5.4.0-03625-gb7b2a5dadd7f #204
-[    6.431273] Hardware name: LS1028A RDB Board (DT)
-[    6.435989] pstate: 40000085 (nZcv daIf -PAN -UAO)
-[    6.440802] pc : css_release+0x24/0x58
-[    6.444561] lr : regmap_read+0x40/0x78
-[    6.448316] sp : ffff800010513cc0
-[    6.451636] x29: ffff800010513cc0 x28: ffff002055873040
-[    6.456963] x27: 0000000000000000 x26: 0000000000000000
-[    6.462289] x25: 0000000000000000 x24: 0000000000000000
-[    6.467617] x23: 0000000000000000 x22: 0000000000000080
-[    6.472944] x21: ffff800010513d44 x20: 0000000000000080
-[    6.478270] x19: 0000000000000000 x18: 0000000000000000
-[    6.483596] x17: 0000000000000000 x16: 0000000000000000
-[    6.488921] x15: 0000000000000000 x14: 0000000000000000
-[    6.494247] x13: 0000000000000000 x12: 0000000000000000
-[    6.499573] x11: 0000000000000000 x10: 0000000000000000
-[    6.504899] x9 : 0000000000000000 x8 : 0000000000000000
-[    6.510225] x7 : 0000000000000000 x6 : ffff800010513cf0
-[    6.515550] x5 : 0000000000000000 x4 : 0000000fffffffe0
-[    6.520876] x3 : 0000000000000088 x2 : ffff800010513d44
-[    6.526202] x1 : ffffcada668ea000 x0 : ffffcada64d8b0c0
-[    6.531528] Call trace:
-[    6.533977]  css_release+0x24/0x58
-[    6.537385]  regmap_read+0x40/0x78
-[    6.540795]  __ocelot_read_ix+0x6c/0xa0
-[    6.544641]  ocelot_ptp_gettime64+0x4c/0x110
-[    6.548921]  ptp_clock_gettime+0x4c/0x58
-[    6.552853]  pc_clock_gettime+0x5c/0xa8
-[    6.556699]  __arm64_sys_clock_gettime+0x68/0xc8
-[    6.561331]  el0_svc_common.constprop.2+0x7c/0x178
-[    6.566133]  el0_svc_handler+0x34/0xa0
-[    6.569891]  el0_sync_handler+0x114/0x1d0
-[    6.573908]  el0_sync+0x140/0x180
-[    6.577232] Code: d503201f b00119a1 91022263 b27b7be4 (f9004663)
-[    6.583349] ---[ end trace d196b9b14cdae2da ]---
-[    6.587977] Kernel panic - not syncing: Fatal exception
-[    6.593216] SMP: stopping secondary CPUs
-[    6.597151] Kernel Offset: 0x4ada54400000 from 0xffff800010000000
-[    6.603261] PHYS_OFFSET: 0xffffd0a7c0000000
-[    6.607454] CPU features: 0x10002,21806008
-[    6.611558] Memory Limit: none
+$ tc -s -d qd sh dev eth1 | grep pkt
+ Sent 4041158922097 bytes 46393862190 pkt (dropped 0, overlimits 0 requeues 2072)
+ Sent 501362903764 bytes 5762621697 pkt (dropped 0, overlimits 0 requeues 247)
+ Sent 533282357858 bytes 6128246542 pkt (dropped 0, overlimits 0 requeues 329)
+ Sent 515878280709 bytes 5875638916 pkt (dropped 0, overlimits 0 requeues 267)
+ Sent 516221011694 bytes 5933395197 pkt (dropped 0, overlimits 0 requeues 258)
+ Sent 513175109761 bytes 5898402114 pkt (dropped 0, overlimits 0 requeues 231)
+ Sent 480207942964 bytes 5519535407 pkt (dropped 0, overlimits 0 requeues 229)
+ Sent 483111196765 bytes 5552917950 pkt (dropped 0, overlimits 0 requeues 240)
+ Sent 497920120322 bytes 5723104387 pkt (dropped 0, overlimits 0 requeues 271)
+$ tc -s -d cl sh dev eth1 | grep pkt
+ Sent 513196316238 bytes 5898645862 pkt (dropped 0, overlimits 0 requeues 231)
+ Sent 533304444981 bytes 6128500406 pkt (dropped 0, overlimits 0 requeues 329)
+ Sent 480227709687 bytes 5519762597 pkt (dropped 0, overlimits 0 requeues 229)
+ Sent 501383660279 bytes 5762860276 pkt (dropped 0, overlimits 0 requeues 247)
+ Sent 483131168192 bytes 5553147506 pkt (dropped 0, overlimits 0 requeues 240)
+ Sent 515899485505 bytes 5875882649 pkt (dropped 0, overlimits 0 requeues 267)
+ Sent 497940747031 bytes 5723341475 pkt (dropped 0, overlimits 0 requeues 271)
+ Sent 516242376893 bytes 5933640774 pkt (dropped 0, overlimits 0 requeues 258)
 
-And now that ocelot->ptp_clock is checked at exit, prevent a potential
-error where ptp_clock_register returned a pointer-encoded error, which
-we are keeping in the ocelot private data structure. So now,
-ocelot->ptp_clock is now either NULL or a valid pointer.
-
-Fixes: 4e3b0468e6d7 ("net: mscc: PTP Hardware Clock (PHC) support")
-Cc: Antoine Tenart <antoine.tenart@bootlin.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
-Changes in v3:
-- Unregistered the PTP clock inline instead of calling a separate
-  function (ocelot_deinit_timestamp).
+ tc/tc_util.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Changes in v2:
-- Dropped the redundant check on ocelot->ptp and changed the topic of
-  the if condition.
-- Populated ocelot->ptp_clock in ocelot_init_timestamp only on valid
-  return value from ptp_clock_register, so that the deinit check can
-  never mis-trigger.
-
- drivers/net/ethernet/mscc/ocelot.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index ff491510e5b2..658a86867419 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2165,14 +2165,18 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index afdfc78f2e5b11af178bdf1db540d917b1f457f3..23115f9b950a8786453fad25be4244ff7c3bdd76 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -809,11 +809,18 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
  
- static int ocelot_init_timestamp(struct ocelot *ocelot)
- {
-+	struct ptp_clock *ptp_clock;
+ 	if (tbs[TCA_STATS_BASIC]) {
+ 		struct gnet_stats_basic bs = {0};
++		__u64 packets64 = 0;
 +
- 	ocelot->ptp_info = ocelot_ptp_clock_info;
--	ocelot->ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
--	if (IS_ERR(ocelot->ptp_clock))
--		return PTR_ERR(ocelot->ptp_clock);
-+	ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
-+	if (IS_ERR(ptp_clock))
-+		return PTR_ERR(ptp_clock);
- 	/* Check if PHC support is missing at the configuration level */
--	if (!ocelot->ptp_clock)
-+	if (!ptp_clock)
- 		return 0;
++		if (tbs[TCA_STATS_PKT64])
++			packets64 = rta_getattr_u64(tbs[TCA_STATS_PKT64]);
  
-+	ocelot->ptp_clock = ptp_clock;
-+
- 	ocelot_write(ocelot, SYS_PTP_CFG_PTP_STAMP_WID(30), SYS_PTP_CFG);
- 	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_LOW);
- 	ocelot_write(ocelot, 0xffffffff, ANA_TABLES_PTP_ID_HIGH);
-@@ -2503,6 +2507,8 @@ void ocelot_deinit(struct ocelot *ocelot)
- 	destroy_workqueue(ocelot->stats_queue);
- 	mutex_destroy(&ocelot->stats_lock);
- 	ocelot_ace_deinit();
-+	if (ocelot->ptp_clock)
-+		ptp_clock_unregister(ocelot->ptp_clock);
+ 		memcpy(&bs, RTA_DATA(tbs[TCA_STATS_BASIC]), MIN(RTA_PAYLOAD(tbs[TCA_STATS_BASIC]), sizeof(bs)));
+ 		print_string(PRINT_FP, NULL, "%s", prefix);
+ 		print_lluint(PRINT_ANY, "bytes", "Sent %llu bytes", bs.bytes);
+-		print_uint(PRINT_ANY, "packets", " %u pkt", bs.packets);
++		if (packets64)
++			print_lluint(PRINT_ANY, "packets", " %llu pkt", packets64);
++		else
++			print_uint(PRINT_ANY, "packets", " %u pkt", bs.packets);
+ 	}
  
- 	for (i = 0; i < ocelot->num_phys_ports; i++) {
- 		port = ocelot->ports[i];
+ 	if (tbs[TCA_STATS_QUEUE]) {
 -- 
-2.17.1
+2.24.0.393.g34dc348eaf-goog
 
