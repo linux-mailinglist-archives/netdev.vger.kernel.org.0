@@ -2,290 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EAEB1103B4
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 18:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE871103C1
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 18:42:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbfLCRhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 12:37:53 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41820 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfLCRhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 12:37:53 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB3HaZ0N092264;
-        Tue, 3 Dec 2019 11:36:35 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575394595;
-        bh=cW8dd0IJph474lyImc/alBU3rL38u96bd2N6SHoEXxQ=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=Z3lf5yGIMbfvc1k8s4OHOYvPr6E3YQygeoidSfEQRryL/nv9iQT76ag34fDwUQ0oz
-         Vq+K87qkLhJbQkgsz4VJdmQ8wWNFvr2SehqLApldSK6UFa4ZWGR2uGzDFwVH8C7ccT
-         50EiKNp3sx3gialKyZQL+TzQeGvd3tLbXJ4K/SEk=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB3HaZI6105825
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Dec 2019 11:36:35 -0600
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 3 Dec
- 2019 11:36:35 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 3 Dec 2019 11:36:35 -0600
-Received: from [158.218.113.14] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB3HaXL7071601;
-        Tue, 3 Dec 2019 11:36:33 -0600
-Subject: Re: [v1,ethtool] ethtool: add setting frame preemption of traffic
- classes
-To:     Po Liu <po.liu@nxp.com>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "netdev-owner@vger.kernel.org" <netdev-owner@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
-References: <20191127094448.6206-1-Po.Liu@nxp.com>
- <20191203162659.GC2680@khorivan>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <62250ff1-ab89-b6c2-051b-93f1650139eb@ti.com>
-Date:   Tue, 3 Dec 2019 12:42:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1726819AbfLCRm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 12:42:26 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:38015 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfLCRmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 12:42:25 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1icCBq-0005oE-IA; Tue, 03 Dec 2019 18:42:22 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4F629488926;
+        Tue,  3 Dec 2019 17:42:21 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+ <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+Message-ID: <cad4be61-b409-093a-9f05-9de691bc4a10@pengutronix.de>
+Date:   Tue, 3 Dec 2019 18:42:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191203162659.GC2680@khorivan>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="ZdprwuE3cNf2makzjCF94lWLWaF8l5zOZ"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Po Liu,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ZdprwuE3cNf2makzjCF94lWLWaF8l5zOZ
+Content-Type: multipart/mixed; boundary="rXgueoG2aS9fXa7QTPleYh8Uui2FgnUQM";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, "sean@geanix.com"
+ <sean@geanix.com>, "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <cad4be61-b409-093a-9f05-9de691bc4a10@pengutronix.de>
+Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+ <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
+In-Reply-To: <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
 
-Thanks for working on this! Some suggestion below as we are working on
-adding this support to Texas Instrument's CPSW driver on AM65x family
-of SoCs as well. TRM for that is provided below for your reference.
-Relevant section for IET (Frame pre-emption) is
+--rXgueoG2aS9fXa7QTPleYh8Uui2FgnUQM
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-12.2.1.4.6.6.1IET Configuration
-
-http://www.ti.com/lit/ug/spruid7d/spruid7d.pdf
-
-On 12/03/2019 11:27 AM, Ivan Khoronzhuk wrote:
-> On Wed, Nov 27, 2019 at 09:58:52AM +0000, Po Liu wrote:
-> 
-> Hi Po Liu,
-> 
->> IEEE Std 802.1Qbu standard defined the frame preemption of port
->> trffic classes. User can set a value to hardware. The value will
->> be translated to a binary, each bit represent a traffic class.
->> Bit "1" means preemptable traffic class. Bit "0" means express
->> traffic class.  MSB represent high number traffic class.
+On 12/3/19 6:25 PM, Marc Kleine-Budde wrote:
+> On 11/27/19 6:56 AM, Joakim Zhang wrote:
+>> From: Sean Nyekjaer <sean@geanix.com>
 >>
->> ethtool -k devname
+>> When suspending, when there is still can traffic on the interfaces the=
+
+>> flexcan immediately wakes the platform again. As it should :-). But it=
+
+>> throws this error msg:
+>> [ 3169.378661] PM: noirq suspend of devices failed
 >>
->> This command would show if the tx-preemption feature is available.
->> If hareware set preemption feature. The property would be a fixed
->> value 'on' if hardware support the frame preemption. Feature would
->> show a fixed value 'off' if hardware don't support the frame preemption.
+>> On the way down to suspend the interface that throws the error message=
+ does
+>> call flexcan_suspend but fails to call flexcan_noirq_suspend. That mea=
+ns the
+>> flexcan_enter_stop_mode is called, but on the way out of suspend the d=
+river
+>> only calls flexcan_resume and skips flexcan_noirq_resume, thus it does=
+n't call
+>> flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with=
+ the
+>> current driver it can't recover from this even with a soft reboot, it =
+requires
+>> a hard reboot.
 >>
->> ethtool devname
+>> This patch can fix deadlock when using self wakeup, it happenes to be
+>> able to fix another issue that frames out-of-order in first IRQ handle=
+r
+>> run after wakeup.
 >>
->> This command would show include an item 'preemption'. A following
->> value '0' means all traffic classes are 'express'. A value none zero
->> means traffic classes preemption capabilities. The value will be
->> translated to a binary, each bit represent a traffic class. Bit '1'
->> means preemptable traffic class. Bit '0' means express traffic class.
->> MSB represent high number traffic class.
+>> In wakeup case, after system resume, frames received out-of-order in
+>> first IRQ handler, the problem is wakeup latency from frame reception =
+to
+>> IRQ handler is much bigger than the counter overflow. This means it's
+>> impossible to sort the CAN frames by timestamp. The reason is that con=
+troller
+>> exits stop mode during noirq resume, then it can receive the frame imm=
+ediately.
+>> If noirq reusme stage consumes much time, it will extend interrupt res=
+ponse
+>> time. So exit stop mode during resume stage instead of noirq resume ca=
+n
+>> fix this issue.
 >>
->> ethtool -s devname preemption N
-> 
-> What about other potential parameters like MAC fragment size, mac hold?
-> Shouldn't be it considered along with other FP parameters to provide 
-> correct
-> interface later?
-> 
-> Say, preemption, lets name it fp-mask or frame-preemption-mask.
-> Then other potential setting can be similar and added later:
-> 
-> frame-preemption-mask
-> frame-preemption-fragsize
-> frame-preemption-machold
-Need additional capabilities as described by Ivan above. Thanks Ivan!
-
-So it would be better to use feature/sub-parameter format so that it can 
-be extended as needed in the future.
-
-For express/Preemptable mask setting it becomes
-
-ethtool -s devname frame-preemption tc-mask  N
-
-For setting min fragment size
-
-ethtool -s devname frame-preemption min-fragsize 64
-
-Also the device may be capable of doing Verify process to detect the
-capability of neighbor device and show the status. So we should have a
-way to show this status as well when user type
-
-ethtool devname
-
-We are working currently to add this feature to CPSW driver on AM65x
-which will be upstream-ed soon. So want to have this done in an
-way that we can extend it later.
-
-Similarly for taprio, there are some parameters that user
-might want to tune such as Max SDU size per tc class. I hope
-we could use ethtool to set the same on a similar way.
-
-Thanks
-
-Murali
-
-> ....
-> 
-> mac-hold it's rather flag, at least I've used it as priv-flag.
-> so can or so
-> 
-> frame-preemption-flags
-> 
->>
->> This command would set which traffic classes are frame preemptable.
->> The value will be translated to a binary, each bit represent a
->> traffic class. Bit '1' means preemptable traffic class. Bit '0'
->> means express traffic class. MSB represent high number traffic class.
->>
->> Signed-off-by: Po Liu <Po.Liu@nxp.com>
+>> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+>> Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+>> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+>> ------
+>> ChangeLog:
+>> 	V1->V2: no change.
 >> ---
->> ethtool-copy.h |  6 +++++-
->> ethtool.8.in   |  8 ++++++++
->> ethtool.c      | 18 ++++++++++++++++++
->> 3 files changed, 31 insertions(+), 1 deletion(-)
+>>  drivers/net/can/flexcan.c | 19 +++++++++++--------
+>>  1 file changed, 11 insertions(+), 8 deletions(-)
 >>
->> diff --git a/ethtool-copy.h b/ethtool-copy.h
->> index 9afd2e6..e04bdf3 100644
->> --- a/ethtool-copy.h
->> +++ b/ethtool-copy.h
->> @@ -1662,6 +1662,9 @@ static __inline__ int 
->> ethtool_validate_duplex(__u8 duplex)
->> #define AUTONEG_DISABLE        0x00
->> #define AUTONEG_ENABLE        0x01
->>
->> +/* Disable preemtion. */
->> +#define PREEMPTION_DISABLE    0x0
->> +
->> /* MDI or MDI-X status/control - if MDI/MDI_X/AUTO is set then
->>  * the driver is required to renegotiate link
->>  */
->> @@ -1878,7 +1881,8 @@ struct ethtool_link_settings {
->>     __s8    link_mode_masks_nwords;
->>     __u8    transceiver;
->>     __u8    reserved1[3];
->> -    __u32    reserved[7];
->> +    __u32    preemption;
->> +    __u32    reserved[6];
->>     __u32    link_mode_masks[0];
->>     /* layout of link_mode_masks fields:
->>      * __u32 map_supported[link_mode_masks_nwords];
->> diff --git a/ethtool.8.in b/ethtool.8.in
->> index 062695a..7d612b2 100644
->> --- a/ethtool.8.in
->> +++ b/ethtool.8.in
->> @@ -236,6 +236,7 @@ ethtool \- query or control network driver and 
->> hardware settings
->> .B2 autoneg on off
->> .BN advertise
->> .BN phyad
->> +.BN preemption
->> .B2 xcvr internal external
->> .RB [ wol \ \*(WO]
->> .RB [ sopass \ \*(MA]
->> @@ -703,6 +704,13 @@ lB    l    lB.
->> .BI phyad \ N
->> PHY address.
->> .TP
->> +.BI preemption \ N
->> +Set preemptable traffic classes by bits.
->> +.B A
->> +value will be translated to a binary, each bit represent a traffic 
->> class.
->> +Bit "1" means preemptable traffic class. Bit "0" means express 
->> traffic class.
->> +MSB represent high number traffic class.
->> +.TP
->> .A2 xcvr internal external
->> Selects transceiver type. Currently only internal and external can be
->> specified, in the future further types might be added.
->> diff --git a/ethtool.c b/ethtool.c
->> index acf183d..d5240f8 100644
->> --- a/ethtool.c
->> +++ b/ethtool.c
->> @@ -928,6 +928,12 @@ dump_link_usettings(const struct 
->> ethtool_link_usettings *link_usettings)
->>         }
->>     }
->>
->> +    if (link_usettings->base.preemption == PREEMPTION_DISABLE)
->> +        fprintf(stdout, "    Preemption: 0x0 (off)\n");
->> +    else
->> +        fprintf(stdout, "    Preemption: 0x%x\n",
->> +            link_usettings->base.preemption);
->> +
->>     return 0;
->> }
->>
->> @@ -2869,6 +2875,7 @@ static int do_sset(struct cmd_context *ctx)
->>     int port_wanted = -1;
->>     int mdix_wanted = -1;
->>     int autoneg_wanted = -1;
->> +    int preemption_wanted = -1;
->>     int phyad_wanted = -1;
->>     int xcvr_wanted = -1;
->>     u32 *full_advertising_wanted = NULL;
->> @@ -2957,6 +2964,12 @@ static int do_sset(struct cmd_context *ctx)
->>             } else {
->>                 exit_bad_args();
->>             }
->> +        } else if (!strcmp(argp[i], "preemption")) {
->> +            gset_changed = 1;
->> +            i += 1;
->> +            if (i >= argc)
->> +                exit_bad_args();
->> +            preemption_wanted = get_u32(argp[i], 16);
->>         } else if (!strcmp(argp[i], "advertise")) {
->>             gset_changed = 1;
->>             i += 1;
->> @@ -3094,6 +3107,9 @@ static int do_sset(struct cmd_context *ctx)
->>             }
->>             if (autoneg_wanted != -1)
->>                 link_usettings->base.autoneg = autoneg_wanted;
->> +            if (preemption_wanted != -1)
->> +                link_usettings->base.preemption
->> +                    = preemption_wanted;
->>             if (phyad_wanted != -1)
->>                 link_usettings->base.phy_address = phyad_wanted;
->>             if (xcvr_wanted != -1)
->> @@ -3186,6 +3202,8 @@ static int do_sset(struct cmd_context *ctx)
->>                 fprintf(stderr, "  not setting transceiver\n");
->>             if (mdix_wanted != -1)
->>                 fprintf(stderr, "  not setting mdix\n");
->> +            if (preemption_wanted != -1)
->> +                fprintf(stderr, "  not setting preemption\n");
->>         }
->>     }
->>
->> -- 
->> 2.17.1
->>
-> 
+>> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+>> index 2efa06119f68..2297663cacb2 100644
+>> --- a/drivers/net/can/flexcan.c
+>> +++ b/drivers/net/can/flexcan.c
+>> @@ -134,8 +134,7 @@
+>>  	(FLEXCAN_ESR_ERR_BUS | FLEXCAN_ESR_ERR_STATE)
+>>  #define FLEXCAN_ESR_ALL_INT \
+>>  	(FLEXCAN_ESR_TWRN_INT | FLEXCAN_ESR_RWRN_INT | \
+>> -	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT | \
+>> -	 FLEXCAN_ESR_WAK_INT)
+>> +	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT)
+>=20
+> Why do you remove the FLEXCAN_ESR_WAK_INT from the FLEXCAN_ESR_ALL_INT?=
 
+>=20
+>> =20
+>>  /* FLEXCAN interrupt flag register (IFLAG) bits */
+>>  /* Errata ERR005829 step7: Reserve first valid MB */
+>> @@ -960,6 +959,12 @@ static irqreturn_t flexcan_irq(int irq, void *dev=
+_id)
+>> =20
+>>  	reg_esr =3D priv->read(&regs->esr);
+>> =20
+>> +	/* ACK wakeup interrupt */
+>> +	if (reg_esr & FLEXCAN_ESR_WAK_INT) {
+>> +		handled =3D IRQ_HANDLED;
+>> +		priv->write(reg_esr & FLEXCAN_ESR_WAK_INT, &regs->esr);
+>> +	}
+>> +
+>=20
+> If FLEXCAN_ESR_WAK_INT stays in FLEXCAN_ESR_ALL_INT, you don't need tha=
+t
+> explicit ACK here.
+
+Otherwise this patch is OK. With this patch the flexcan_suspend() and
+flexcan_resume() look finally symmetric. \o/
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--rXgueoG2aS9fXa7QTPleYh8Uui2FgnUQM--
+
+--ZdprwuE3cNf2makzjCF94lWLWaF8l5zOZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3mnngACgkQWsYho5Hk
+nSCbbAf9GTNY32FjDHxCFGnQ2gEBruslKHFI/9nxoXsH5SLr1gcj766MWXGsJXYO
+6QpXSNpjedsL5jxeyZbDCWY2nyZeg4jYFKf5zPbH5HoOaWziVqyi+HgmJA2V2kqS
+PnEqbE4pr9h3RyKB8IfUZ9PLjUH6SHWbl8EsLKhwJ+uWJh0TgUZ0b3aJz4lJEflB
+am3djIVh+vu2xmY6KwgZ54uTSV8QCJEuXlfZ4sR00+SqndpbfnKuKXt0b4wSQdbR
+Fc2n1JCwY4OUYYa9uDmEr24VP9eS5qpjIB1iztxjA8A3LLagRGWqmH9ZyvCoQpuy
+RlTUlW9gXDYrEoeZexkxVu7rjaEs7w==
+=3CZG
+-----END PGP SIGNATURE-----
+
+--ZdprwuE3cNf2makzjCF94lWLWaF8l5zOZ--
