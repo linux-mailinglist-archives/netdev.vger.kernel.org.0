@@ -2,187 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9DE710FBBA
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:29:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F14310FBBF
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:30:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbfLCK27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 05:28:59 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56908 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbfLCK26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:28:58 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB3ASdQU125781;
-        Tue, 3 Dec 2019 04:28:39 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575368919;
-        bh=jo8iHnrEm+gjBKUyjYXLNWcDF2FN0eHXQrGt/UkiHa4=;
-        h=To:From:Subject:Date;
-        b=EMOJSUz93bWqRHEL3lGPAA3VzTzTaTXmpsJ4Tf69gv1p0286b7O/CdEguK0J/nFCi
-         ahMIH0SNmhVU49e5WAShIW9r6e/xuaRoGf4T6rxqz/NxJW/fVMasF630ki4Zrf+XF0
-         piNEBS2YQ3F859uVwSFdGul6bD7ZL45VUJTQFYEs=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB3ASdDX033407
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 3 Dec 2019 04:28:39 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 3 Dec
- 2019 04:28:39 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 3 Dec 2019 04:28:39 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB3ASZsP092888;
-        Tue, 3 Dec 2019 04:28:36 -0600
-To:     netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: linux-master: WARNING: suspicious RCU usage in
- mem_allocator_disconnect
-Message-ID: <09e42c75-228a-f390-abd5-43e8f6ae70f2@ti.com>
-Date:   Tue, 3 Dec 2019 12:28:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+        id S1726190AbfLCK37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 05:29:59 -0500
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:53790 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725954AbfLCK36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:29:58 -0500
+Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2AE49C038E;
+        Tue,  3 Dec 2019 10:29:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1575368998; bh=GQvvwXfp6Wu3YxCV4uDd/otutEowcrPuxOlIahBofpA=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=bhPIgMrESaDz3XoVKF2w94Az05FE3YOjCCAFK24JOvn5FgWTw/jcmcPNHUkmH6hXm
+         xw9OG+labIHGZW/c6ye9sBqWLyqtXEkMMiVVXhpLTr+V74Q++kzzMZdjJAeiKNYkyj
+         RtWO3wDCjPtxvnKvHBBVWhBjV0n6f8Gq0ccnSQBbj5O2HXm2izpgd81efbotiN3Qcg
+         QI0BhUbmihVsPkD5dsZkrIOGawEIceJ3V/euk1SLvEMcl9yGyVppStKfYukMXBmZuV
+         9Cg1j/v1DXcAPXvrPVMFvoBQCoUL083Os/9C6AjZKdF79SNRmXqodcooE3O/SbCULs
+         K5eMP0zAoy6iA==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 7C5CEA007E;
+        Tue,  3 Dec 2019 10:29:57 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 3 Dec 2019 02:29:57 -0800
+Received: from NAM03-DM3-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Tue, 3 Dec 2019 02:29:56 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LT8dlv5QlRtC4hdkhLOXKbeYl97WaVOySN+ttRluf56i5RhVndaCUKkaCboA+JjEtmjXydndb8uVcoQ2caSro9pBUVSFiuHbJ2veXZMCH25cd+t68JwaTmiIPI6iIWvn6MWkrQUYr16nZR0zrwuGWI12zbCjh+lR3VQZ21KnD3LzzShfd2zLaH2T96gRAT4GKFe2EPO4NLskEzUyS+CuARW2kd1x0qeiSKms3/sXOd2DK2DqDc5TI800Bz/TP7KjHoTGx+aESTXwTAeAEyrlNnvVp4nfx63ZNHrQl8qbj27OH/oyoxLe80JSOv3Wi7eklPPz6QAO/93xei3BbNscqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GQvvwXfp6Wu3YxCV4uDd/otutEowcrPuxOlIahBofpA=;
+ b=Kzs9G7YYCzrbM9SMklcryjfUWltIB1x1E/kFTH2OR5RxnDLrUXX5X0H1X2JOcwlbJ6McIhiDZix5kygMT695VrMXx99BtphqLQVpb9LzaN3HddrDns29F0kug0QYA7rkDyEhNddIJ6WZfiWRJ9akMv2tuT+B0a458iGuPrMDL9Aw8HkL1CiyNlqr0Rk/GxGUXNEpXAhQWEbCHjmij68M6PwjdcaqxsDoyexac8Hu02mDo2yD2uSzOTZq68OZ1xJrjc3HeHlELMe8X9nTdEFKsSZYn/+OQTnhOeMQ6kbAzXz2t0yNbdv9N2JrN9RaG9qyTDz6RsWYBInIP2s8/Kt+pQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GQvvwXfp6Wu3YxCV4uDd/otutEowcrPuxOlIahBofpA=;
+ b=ITrEtDtIUgJG7ax3u1JuZDafk9UHPuaqt4MkLQhB2X+VMEJp40Qti+ET3J7Yj8duoa65DzlpFRYroXyayPjwmu3Zn+KGNdybR/psjAuqRpq6MiFxnIZS2QHwCeqp2e6brw9qaMEyPCYIRBf+9vYCEgMZZlERvwoxvNi9wHO4768=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3267.namprd12.prod.outlook.com (20.179.65.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.18; Tue, 3 Dec 2019 10:29:55 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510%7]) with mapi id 15.20.2516.003; Tue, 3 Dec 2019
+ 10:29:55 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Po Liu <po.liu@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Subject: RE: tperf: An initial TSN Performance Utility
+Thread-Topic: tperf: An initial TSN Performance Utility
+Thread-Index: AdWpvq0AbHwx928HRWCrJZjwLL/EqwAA0WEAAABsyUA=
+Date:   Tue, 3 Dec 2019 10:29:54 +0000
+Message-ID: <BN8PR12MB32665269FD80546B81708A93D3420@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <BN8PR12MB3266E99E5C289CB6B77A5C58D3420@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <CA+h21hpTLOtjobFjGt5dzJ+nZvLjAMfCO+_-3OCCAaSE1yMSfQ@mail.gmail.com>
+In-Reply-To: <CA+h21hpTLOtjobFjGt5dzJ+nZvLjAMfCO+_-3OCCAaSE1yMSfQ@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 66de4aaf-8cd5-45ed-d9fd-08d777dbbd1a
+x-ms-traffictypediagnostic: BN8PR12MB3267:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB3267ECB05F80896DA17452A7D3420@BN8PR12MB3267.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 02408926C4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(199004)(189003)(71200400001)(71190400001)(102836004)(52536014)(6916009)(14454004)(8676002)(11346002)(8936002)(305945005)(81166006)(7736002)(81156014)(3846002)(256004)(6116002)(25786009)(498600001)(2906002)(74316002)(186003)(26005)(229853002)(76116006)(66476007)(54906003)(86362001)(6436002)(1411001)(66946007)(66556008)(33656002)(6246003)(66446008)(64756008)(9686003)(6506007)(55016002)(99286004)(5660300002)(76176011)(4326008)(7696005)(4744005)(446003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3267;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TIKn9rFGoEx1LIXhoOiquKrXlJ6IqEp6QsNeHoRmJvX/jpt3skmp/xV1TXn6yKC+cXIeJLSUeYtg9UOf9Zk+WvHlxiX83s3DG2TPyAXzM6bJSdVb/qGjbW2HsR/0M57ZFN20YYf6z5jQu9TTEKFVyd3vvBMpYl+4ZGcdmVwqVb83BkactyVXcXsQ4lABo71jZe01zIeHbV4lBdo2vbHvk2vD5tNe32H0oR16gMsJpNpmSXjsWPJSK3siDU7OUO52RfGhg3qr4bcflbNC5PEtx4QXhMjk5Bfiy2vtCpVhtMUzzL1PebxNjlLEJS2Zvp/fKaMmeo/YtNn1cbK+IEwCufvpn25HX5jug5cKQdieoPz4EpLSdmQGippKJrrT9Fqtii0mHk4qcT8ypKRQUgt0pm8aIUoBbYbhQlUarI49Gv6SmHlJ2UH5Tqh/ht1hD4DF
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66de4aaf-8cd5-45ed-d9fd-08d777dbbd1a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Dec 2019 10:29:54.8182
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Dsk4Olr3Mu4gd9QscG+s1Nmw1Gt/C0mnnT807rXjYba2BQy0KetO2yuFhC00LAwUvYJkiErgYIaFtwzNSLXHlA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3267
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
-
-While placing intf down I'm getting below splat with debug options enabled.
-Not sure how to fix it, so will be appreciated for any help.
-
-
-
-=========================================================
-[  333.933896]
-[  333.935511] =============================
-[  333.939552] WARNING: suspicious RCU usage
-[  333.943724] 5.4.0-08849-ga6eb3c7b339b-dirty #40 Not tainted
-[  333.949335] -----------------------------
-[  333.953445] ./include/linux/rcupdate.h:273 Illegal context switch in RCU read-side critical section!
-[  333.962698]
-[  333.962698] other info that might help us debug this:
-[  333.962698]
-[  333.970752]
-[  333.970752] rcu_scheduler_active = 2, debug_locks = 1
-[  333.977391] 2 locks held by ifconfig/1007:
-[  333.981520]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
-[  333.988534]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
-[  333.996939]
-[  333.996939] stack backtrace:
-[  334.001334] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
-[  334.009733] Hardware name: Generic DRA72X (Flattened Device Tree)
-[  334.015878] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
-[  334.023675] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
-[  334.031038] [<c09f9e08>] (dump_stack) from [<c016e4a4>] (___might_sleep+0x1e8/0x2bc)
-[  334.038834] [<c016e4a4>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
-[  334.046716] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
-[  334.054774] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
-[  334.063966] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
-[  334.073242] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
-[  334.081822] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
-[  334.090663] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
-[  334.099331] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
-[  334.107475] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
-[  334.116053] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
-[  334.124545] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
-[  334.132775] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
-[  334.140483] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
-[  334.147929] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
-[  334.155461] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
-[  334.162905] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
-[  334.170781] Exception stack(0xed517fa8 to 0xed517ff0)
-[  334.175870] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
-[  334.184099] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
-[  334.192325] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
-[  334.197604] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
-[  334.206157] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1007, name: ifconfig
-[  334.214274] 2 locks held by ifconfig/1007:
-[  334.218401]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
-[  334.225407]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
-[  334.233813] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
-[  334.242212] Hardware name: Generic DRA72X (Flattened Device Tree)
-[  334.248351] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
-[  334.256147] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
-[  334.263506] [<c09f9e08>] (dump_stack) from [<c016e464>] (___might_sleep+0x1a8/0x2bc)
-[  334.271300] [<c016e464>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
-[  334.279181] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
-[  334.287238] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
-[  334.296427] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
-[  334.305703] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
-[  334.314281] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
-[  334.323122] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
-[  334.331788] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
-[  334.339931] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
-[  334.348510] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
-[  334.357000] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
-[  334.365228] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
-[  334.372935] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
-[  334.380380] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
-[  334.387911] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
-[  334.395355] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
-[  334.403231] Exception stack(0xed517fa8 to 0xed517ff0)
-[  334.408319] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
-[  334.416548] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
-[  334.424774] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
-
-
-Enabled debug options:
-=================================================
-+CONFIG_LOCKUP_DETECTOR=y
-+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC=y
-+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=1
-+CONFIG_DETECT_HUNG_TASK=y
-+CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=300
-+CONFIG_BOOTPARAM_HUNG_TASK_PANIC=y
-+CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=1
-+CONFIG_PANIC_ON_OOPS=y
-+CONFIG_PANIC_ON_OOPS_VALUE=1
-+
-+CONFIG_DEBUG_RT_MUTEXES=y
-+CONFIG_DEBUG_PI_LIST=y
-+CONFIG_DEBUG_SPINLOCK=y
-+CONFIG_DEBUG_MUTEXES=y
-+CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
-+CONFIG_DEBUG_LOCK_ALLOC=y
-+CONFIG_PROVE_LOCKING=y
-+CONFIG_LOCKDEP=y
-+CONFIG_DEBUG_LOCKDEP=y
-+CONFIG_DEBUG_ATOMIC_SLEEP=y
-+CONFIG_DEBUG_LOCKING_API_SELFTESTS=n
-+CONFIG_STACKTRACE=y
-+CONFIG_DEBUG_BUGVERBOSE=y
-+CONFIG_DEBUG_LIST=y
-+CONFIG_DEBUG_SG=y
-+CONFIG_DEBUG_NOTIFIERS=y
-+
-+CONFIG_SPARSE_RCU_POINTER=y
-+CONFIG_RCU_CPU_STALL_TIMEOUT=60
-+CONFIG_RCU_CPU_STALL_INFO=y
-+CONFIG_RCU_TRACE=y
-+CONFIG_PROVE_RCU=y
-+CONFIG_PROVE_RCU_REPEATEDLY=y
-+
-+CONFIG_DMA_API_DEBUG=y
-
-
--- 
-Best regards,
-grygorii
+RnJvbTogVmxhZGltaXIgT2x0ZWFuIDxvbHRlYW52QGdtYWlsLmNvbT4NCkRhdGU6IERlYy8wMy8y
+MDE5LCAxMDoxMDo1NCAoVVRDKzAwOjAwKQ0KDQo+IFNvdW5kcyBuaWNlLCBJJ20gaW50ZXJlc3Rl
+ZCBpbiBnaXZpbmcgdGhpcyBhIHRyeSBvbiB0aGUgTFMxMDI4QSBFTkVUQy4NCj4gDQo+IERvIHlv
+dSBoYXZlIGFueSBtb3JlIHRvb2xpbmcgYXJvdW5kIHRwZXJmPyBEb2VzIHRoZSB0YWxrZXIgYWR2
+ZXJ0aXNlDQo+IHRoZSBzdHJlYW0gaW4gc3VjaCBhIHdheSB0aGF0IGEgc3dpdGNoIGNvdWxkIHJl
+c2VydmUgYmFuZHdpZHRoIHRvbz8NCg0KTm8sIGJ1dCB0aGF0IHdvdWxkIGJlIGEgZ3JlYXQgYWRk
+aXRpb24gISBVbmZvcnR1bmF0ZWx5LCBmb3Igbm93IHlvdSBuZWVkIA0KdG8gdXNlIHZsYW4gdXRp
+bGl0eSBhbG9uZyB3aXRoIHRjIHRvIGNvbmZpZ3VyZSBldmVyeXRoaW5nLiBNeSBrbm93bGVkZ2Ug
+DQpvZiB0YyBpcyBub25lIHNvIEkgZG9uJ3Qga25vdyB3aGF0J3MgbmVjZXNzYXJ5IHRvIGp1c3Qg
+dXNlIHRwZXJmIHRvIA0KY29uZmlndXJlIGV2ZXJ5dGhpbmcgLi4uDQoNCj4gRG8geW91IHBsYW4g
+dG8gYWRkIHRoaXMgdG8gdGhlIGtlcm5lbCB0cmVlIChlLmcuDQo+IHRvb2xzL3Rlc3Rpbmcvc2Vs
+ZnRlc3RzL3RzbiBvciBzdWNoKSBvciBob3cgZG8geW91IHdhbnQgdG8gbWFpbnRhaW4NCj4gdGhp
+cyBsb25nLXRlcm0/DQoNCldlIHdpbGwgZm9sbG93IHRoZSBwYXRoIHRoYXQgY29tbXVuaXR5IHRo
+aW5rcyBpdCBzdWl0cyBiZXR0ZXIgLi4uIA0KIA0KPiBJJ3ZlIGFkZGVkIG1vcmUgcGVvcGxlIGZy
+b20gTlhQIHdobyBtYXkgYWxzbyBiZSBpbnRlcmVzdGVkLg0KDQpUaGFua3MgVmxhZGltaXIuDQoN
+Ci0tLQ0KVGhhbmtzLA0KSm9zZSBNaWd1ZWwgQWJyZXUNCg==
