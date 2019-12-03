@@ -2,150 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE5511007F
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 15:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E77110098
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 15:49:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbfLCOlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 09:41:13 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:44574 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfLCOlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 09:41:12 -0500
-Received: by mail-qk1-f195.google.com with SMTP id i18so3573813qkl.11;
-        Tue, 03 Dec 2019 06:41:12 -0800 (PST)
+        id S1726473AbfLCOtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 09:49:10 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:34086 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbfLCOtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 09:49:10 -0500
+Received: by mail-lj1-f195.google.com with SMTP id m6so4170874ljc.1
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 06:49:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vXhD/Cg42jzYXyNOmi+P51+bDzKABFgmqewXbwdhiSk=;
-        b=dRDTh2Hj0zfw0Y+ySTQkBAU7i7qdkFlw/LNWWR+faN6evr5Ox1mXGMcF9Ai5IetlRf
-         7KaAx/kf4dUxrfnaAsjq0pT7p4YIkqh96IQKizZdGg0MheEiJv4vkFI8sgvqIroZjJ2S
-         9z2uq1luL160NGANBP50NvBWurbNnGKxSqId2NgowdHRkqM7N+/cBp6wO5PW94F6dGl6
-         4TKB7IkcKxinHV9u/piVO3uB9lx0sJE377C5D5A0wTUeGrOMK0sT3AXvJUL3Mg1rgFX4
-         rGCrksL0cG3q4SgVzE/tVIf8RpI7W5uCnrkX0SBPlB+QLsfAxLbSF9q6ay7q28jvIJdm
-         FCiQ==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1JlQBMxxT3n3gAP2JXiQSbnDJJNfheSAcd5t6AqVGSo=;
+        b=ZNiepIuLIrtejAWnmFt5t5qitJU02H4vfzlitq8/B/tjRfr3LDvPFFcJedFPx4QBj4
+         lR9ECyCtLEfeXUwSAaC0s9+RJwXzI8+eRhLfOQF2EGiFfT26AgqdP7Eh6fJCwbAYuzKg
+         ZGevXGPdnqQ1mOo+pkzDA+h/Z8Yf+kcd0D9hI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vXhD/Cg42jzYXyNOmi+P51+bDzKABFgmqewXbwdhiSk=;
-        b=EGYQespowV7DV2hGVdXpCfiStD57NqElMc3tWB6ISBpVV78vue8bOexKsSy8SJFT1i
-         T3Z+MDk7t0N6CJAPj4PtbeIVZ4dPwsmhTz7YqkYIA2nRlbHoFRqvVeaLbFBfGvmDiYn9
-         7mXEcwrdZNp3AcAAAvnpQkZE7ZqCnouzyAcrKTxkpq1kCVg1yCu0ZWDVUzLiArxRo+Km
-         NcMWUhPPnc7243WzDfKetZlwP3pDVxqzJHRacgFr3K3O0sGRvpdsyq6Z83OnPtZoocmI
-         d/2bUMB5sIQjI+QO+K9bUEYTYKrYi1hCJukRIE9NKKJVKI5L6/Fi43WOWpVxp8MAVP23
-         SkAw==
-X-Gm-Message-State: APjAAAW9OsDb1akagDkMz/uvazPYXihCy69S4KZVAA6Smxeio6JPPchN
-        zTU3I6ipT7mpmNkGops7/d0=
-X-Google-Smtp-Source: APXvYqyXniDHUkFbSP7EpOte5PHY8jktoIGaL43k/lR3zWNKsmV0wcQJ/pjpRobQYuEvOIG8qzi39A==
-X-Received: by 2002:a05:620a:131a:: with SMTP id o26mr4903868qkj.160.1575384071571;
-        Tue, 03 Dec 2019 06:41:11 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id j7sm1780104qkd.46.2019.12.03.06.41.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1JlQBMxxT3n3gAP2JXiQSbnDJJNfheSAcd5t6AqVGSo=;
+        b=E78Da5RtqWdZni0G1lmkOn1YXEGW9bDzCP9HzynhOsfu/lWhAk1eoKovVNNd8Af61/
+         l2k24NX6uScnQ401rfUWzxgKQ1b0ZfrlChlWJrjFSGV9Ci8vYhSa5X0y0UJIFP8iwMlY
+         afqiR8asIPgU/017K8FLl251BvoMXW08ZO2Z+OTvPD0W9I1jfhz7tKT8j6+2SmvLBkY/
+         8L5Gr5xF9F02T4RSB0/YXA+tC0vgfh0pKon8ntsIn3ks7e65mEcUrQ38meonG8doeVrI
+         NPKCiZGMQWMIfi6urYwNeAPWqdbaL+ETBrPpcKilmXX/GPNFhHeprrkqDoY4IkLWEpDO
+         MMsQ==
+X-Gm-Message-State: APjAAAXcdnIXxDzJjnkYvud6Hy+0S4PIfy/+/SpCOEi6RzpfB7YMNQa7
+        xFtlkDhWJ5bKXDDE+MR0qJgr0NsYViQ=
+X-Google-Smtp-Source: APXvYqyeQS+jeZDXUd6p39xVya9AaTVQ/U1VEDHu8kGWPuGimAh0A5V8dmgxf8JLz9ZMx27PX7MYfQ==
+X-Received: by 2002:a2e:9e55:: with SMTP id g21mr2758124ljk.245.1575384548149;
+        Tue, 03 Dec 2019 06:49:08 -0800 (PST)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id c19sm1460976lff.79.2019.12.03.06.49.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 06:41:10 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 2FBC3405B6; Tue,  3 Dec 2019 11:41:07 -0300 (-03)
-Date:   Tue, 3 Dec 2019 11:41:07 -0300
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: Re: [PATCH] libbpf: Use PRIu64 for sym->st_value to fix build on
- 32-bit arches
-Message-ID: <20191203144107.GC3247@kernel.org>
-References: <20191126190450.GD29071@kernel.org>
- <CAEf4Bzbq3J9g7cP=KMqR=bMFcs=qPiNZwnkvCKz3-SAp_m0GzA@mail.gmail.com>
- <20191126221018.GA22719@kernel.org>
- <20191126221733.GB22719@kernel.org>
- <CAEf4BzbZLiJnUb+BdUMEwcgcKCjJBWx1895p8qS8rK2r5TYu3w@mail.gmail.com>
- <20191126231030.GE3145429@mini-arch.hsd1.ca.comcast.net>
- <20191126155228.0e6ed54c@cakuba.netronome.com>
- <20191127013901.GE29071@kernel.org>
- <20191127134553.GC22719@kernel.org>
- <CA+G9fYsK8zn3jqF=Wz6=8BBx4i1JTkv2h-LCbjE11UJkcz_NEA@mail.gmail.com>
+        Tue, 03 Dec 2019 06:49:07 -0800 (PST)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, syzkaller-bugs@googlegroups.com,
+        stephen@networkplumber.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com
+Subject: [PATCH net] net: bridge: deny dev_set_mac_address() when unregistering
+Date:   Tue,  3 Dec 2019 16:48:06 +0200
+Message-Id: <20191203144806.10468-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYsK8zn3jqF=Wz6=8BBx4i1JTkv2h-LCbjE11UJkcz_NEA@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, Dec 03, 2019 at 07:20:08PM +0530, Naresh Kamboju escreveu:
-> Hi Arnaldo,
-> 
-> FYI,
-> 
-> On Wed, 27 Nov 2019 at 19:15, Arnaldo Carvalho de Melo
-> <arnaldo.melo@gmail.com> wrote:
-> >
-> > Another fix I'm carrying in my perf/core branch,
-> >
-> > Regards,
-> >
-> > - Arnaldo
-> >
-> > commit 98bb09f90a0ae33125fabc8f41529345382f1498
-> > Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > Date:   Wed Nov 27 09:26:54 2019 -0300
-> >
-> >     libbpf: Use PRIu64 for sym->st_value to fix build on 32-bit arches
-> >
-> >     The st_value field is a 64-bit value, so use PRIu64 to fix this error on
-> >     32-bit arches:
-> >
-> >       In file included from libbpf.c:52:
-> >       libbpf.c: In function 'bpf_program__record_reloc':
-> >       libbpf_internal.h:59:22: error: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'Elf64_Addr' {aka 'const long long unsigned int'} [-Werror=format=]
-> >         libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
-> >                             ^~~~~~~~~~
-> >       libbpf_internal.h:62:27: note: in expansion of macro '__pr'
-> >        #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
-> >                                  ^~~~
-> >       libbpf.c:1822:4: note: in expansion of macro 'pr_warn'
-> >           pr_warn("bad call relo offset: %lu\n", sym->st_value);
-> >           ^~~~~~~
-> >       libbpf.c:1822:37: note: format string is defined here
-> >           pr_warn("bad call relo offset: %lu\n", sym->st_value);
-> >                                          ~~^
-> >                                          %llu
-> 
-> This build error is been noticed on Linux mainline kernel for 32-bit
-> architectures from Nov 26.
+We have an interesting memory leak in the bridge when it is being
+unregistered and is a slave to a master device which would change the
+mac of its slaves on unregister (e.g. bond, team). This is a very
+unusual setup but we do end up leaking 1 fdb entry because
+dev_set_mac_address() would cause the bridge to insert the new mac address
+into its table after all fdbs are flushed, i.e. after dellink() on the
+bridge has finished and we call NETDEV_UNREGISTER the bond/team would
+release it and will call dev_set_mac_address() to restore its original
+address and that in turn will add an fdb in the bridge.
+One fix is to check for the bridge dev's reg_state in its
+ndo_set_mac_address callback and return an error if the bridge is not in
+NETREG_REGISTERED.
 
-Right, the fix is in the bpf tree:
+Easy steps to reproduce:
+ 1. add bond in mode != A/B
+ 2. add any slave to the bond
+ 3. add bridge dev as a slave to the bond
+ 4. destroy the bridge device
 
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/commit/?id=7c3977d1e804
+Trace:
+ unreferenced object 0xffff888035c4d080 (size 128):
+   comm "ip", pid 4068, jiffies 4296209429 (age 1413.753s)
+   hex dump (first 32 bytes):
+     41 1d c9 36 80 88 ff ff 00 00 00 00 00 00 00 00  A..6............
+     d2 19 c9 5e 3f d7 00 00 00 00 00 00 00 00 00 00  ...^?...........
+   backtrace:
+     [<00000000ddb525dc>] kmem_cache_alloc+0x155/0x26f
+     [<00000000633ff1e0>] fdb_create+0x21/0x486 [bridge]
+     [<0000000092b17e9c>] fdb_insert+0x91/0xdc [bridge]
+     [<00000000f2a0f0ff>] br_fdb_change_mac_address+0xb3/0x175 [bridge]
+     [<000000001de02dbd>] br_stp_change_bridge_id+0xf/0xff [bridge]
+     [<00000000ac0e32b1>] br_set_mac_address+0x76/0x99 [bridge]
+     [<000000006846a77f>] dev_set_mac_address+0x63/0x9b
+     [<00000000d30738fc>] __bond_release_one+0x3f6/0x455 [bonding]
+     [<00000000fc7ec01d>] bond_netdev_event+0x2f2/0x400 [bonding]
+     [<00000000305d7795>] notifier_call_chain+0x38/0x56
+     [<0000000028885d4a>] call_netdevice_notifiers+0x1e/0x23
+     [<000000008279477b>] rollback_registered_many+0x353/0x6a4
+     [<0000000018ef753a>] unregister_netdevice_many+0x17/0x6f
+     [<00000000ba854b7a>] rtnl_delete_link+0x3c/0x43
+     [<00000000adf8618d>] rtnl_dellink+0x1dc/0x20a
+     [<000000009b6395fd>] rtnetlink_rcv_msg+0x23d/0x268
 
-Should go upstream soon.
+Fixes: 43598813386f ("bridge: add local MAC address to forwarding table (v2)")
+Reported-by: syzbot+2add91c08eb181fea1bf@syzkaller.appspotmail.com
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+An alternative is to move the fdb flush to br_dev_uninit() but that
+would ruin the symmetry with br_dev_init(). Since this is an extremely
+unlikely case I think this fix is safer and easier for backports.
 
-- Arnaldo
+ net/bridge/br_device.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 434effde02c3..539d55baae78 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -245,6 +245,12 @@ static int br_set_mac_address(struct net_device *dev, void *p)
+ 	if (!is_valid_ether_addr(addr->sa_data))
+ 		return -EADDRNOTAVAIL;
  
-> Full build log,
-> https://ci.linaro.org/job/openembedded-lkft-linux-mainline/DISTRO=lkft,MACHINE=intel-core2-32,label=docker-lkft/2297/consoleText
-> https://ci.linaro.org/job/openembedded-lkft-linux-mainline/
-> 
-> - Naresh
-
++	/* dev_set_mac_addr() can be called by a master device on bridge's
++	 * NETDEV_UNREGISTER, but since it's being destroyed do nothing
++	 */
++	if (dev->reg_state != NETREG_REGISTERED)
++		return -EBUSY;
++
+ 	spin_lock_bh(&br->lock);
+ 	if (!ether_addr_equal(dev->dev_addr, addr->sa_data)) {
+ 		/* Mac address will be changed in br_stp_change_bridge_id(). */
 -- 
+2.21.0
 
-- Arnaldo
