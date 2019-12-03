@@ -2,63 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A5D1104D5
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 20:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 159441104E0
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 20:15:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfLCTNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 14:13:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbfLCTNR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Dec 2019 14:13:17 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 92D9820674;
-        Tue,  3 Dec 2019 19:13:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575400397;
-        bh=JAAMoiwm17wHMzHQjD8AJ+mJNcK9Cmw0OJtMdSra3LQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gv5XkklKG6Bcrp06PLoTG2Ngdh9SuFEYSSJWbs2y9O6v6NqY+bJF3H4wH/bp/uZCg
-         t+7jOLnzzF2+Vlbw/V92yPmiJ/BKwcK4J38bkBSXodgnPlAdVBTTqzGW69lQCiklKi
-         uA7owXcZlEULgdelnf/Sda9aA4GP4hrjXfrhicsU=
-Date:   Tue, 3 Dec 2019 20:13:14 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net] tcp: refactor tcp_retransmit_timer()
-Message-ID: <20191203191314.GA2734645@kroah.com>
-References: <20191203160552.31071-1-edumazet@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191203160552.31071-1-edumazet@google.com>
+        id S1727426AbfLCTPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 14:15:01 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:51594 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727010AbfLCTPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 14:15:00 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 45D9F1510318A;
+        Tue,  3 Dec 2019 11:15:00 -0800 (PST)
+Date:   Tue, 03 Dec 2019 11:14:57 -0800 (PST)
+Message-Id: <20191203.111457.631787255568854644.davem@davemloft.net>
+To:     mkl@pengutronix.de
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: pull-request: can 2019-12-03
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191203104703.14620-1-mkl@pengutronix.de>
+References: <20191203104703.14620-1-mkl@pengutronix.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Dec 2019 11:15:00 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 03, 2019 at 08:05:52AM -0800, Eric Dumazet wrote:
-> It appears linux-4.14 stable needs a backport of commit
-> 88f8598d0a30 ("tcp: exit if nothing to retransmit on RTO timeout")
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Date: Tue,  3 Dec 2019 11:46:57 +0100
+
+> this is a pull request of 6 patches for net/master.
 > 
-> Since tcp_rtx_queue_empty() is not in pre 4.15 kernels,
-> let's refactor tcp_retransmit_timer() to only use tcp_rtx_queue_head()
+> The first two patches are against the MAINTAINERS file and adds Appana
+> Durga Kedareswara rao as maintainer for the xilinx-can driver and Sriram
+> Dash for the m_can (mmio) driver.
+> 
+> The next patch is by Jouni Hogander and fixes a use-after-free in the
+> slcan driver.
+> 
+> Johan Hovold's patch for the ucan driver fixes the non-atomic allocation
+> in the completion handler.
+> 
+> The last two patches target the xilinx-can driver. The first one is by
+> Venkatesh Yadav Abbarapu and skips the error message on deferred probe,
+> the second one is by Srinivas Neeli and fixes the usage of the skb after
+> can_put_echo_skb().
 
-So does that mean that 4.19.y should get 88f8598d0a30 ("tcp: exit if
-nothing to retransmit on RTO timeout") as-is?
-
-> I will provide to stable teams the squashed patches.
-
-This is that squashed patch, right?
-
-thanks,
-
-greg k-h
+Pulled, thanks Marc.
