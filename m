@@ -2,182 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1071510FC52
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 12:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2DB010FC5E
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 12:17:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbfLCLQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 06:16:38 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:58465 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbfLCLQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 06:16:37 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ic6AR-0004af-Kx; Tue, 03 Dec 2019 12:16:31 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 08A30488562;
-        Tue,  3 Dec 2019 11:16:27 +0000 (UTC)
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
-        davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, nagasure@xilinx.com
-References: <1575371522-3030-1-git-send-email-srinivas.neeli@xilinx.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH] can: xilinx_can: Fix missing Rx can packets on CANFD2.0
-Message-ID: <885dca39-92be-50f1-8814-f14fa3271c7f@pengutronix.de>
-Date:   Tue, 3 Dec 2019 12:16:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1725939AbfLCLRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 06:17:48 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:34929 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725997AbfLCLRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 06:17:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575371867;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P0GMfVL6QAezA2eT0aIWQXB/37RirCO0eO2hEzXqpFM=;
+        b=gFVruzjSiGxkv8iSoeg1Io5S3NxZaxTBgESUeQZQ3xXUqEpUivEDkZHUidoApQXUkEPDuB
+        u0nRBNfzsikXj8UCFk/P/BOceSAaL6qbghGv8khWkbUhJ4lswPW6ljTFQSpr57RBFSj/2A
+        P87H56lHEMkxcCdPdgrhb4HHmnbDEvI=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-JAY8vFYkMiKoKaBYECl7Bg-1; Tue, 03 Dec 2019 06:17:43 -0500
+Received: by mail-wr1-f72.google.com with SMTP id z15so1631741wrw.0
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 03:17:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8m7nF4w29pgZQB4V/SdwIROmAwTn+h+KHeQv4HnXE8M=;
+        b=a0wNNMjZ8dRUsZ5l+hl1dA4kru8vOFuT8QxAKSa1cpyTbt+RY72OzEQBGiaKYagP2H
+         EXPpkPJ+nGRVpm5M4xDNZlobTVe2xyPvzTZl69b5A+8Aw77z2TSNsEFdqw9+KtIaqipq
+         5TKujZzHm29l5VXaV0FCo1WcCoO5lF0cjprU/cBJcgRN6hN9mmU9KWUGgE6Y5NBkNrK3
+         Bs+pQk/GBq3wy+4ruB1PQOKv2mEn7mdvrHIQRwe9CjN50LZJWz6qS4nqKPG5e6GrbV/Q
+         P+3hsh+h+VApwlU3L9VTupRe5ktNAJiiEW1j9FXqL3AXglk6+sWcy+dh+B4igWZiUHYI
+         wuIw==
+X-Gm-Message-State: APjAAAUjtZpUyXNkao1y/9cnyIBCEC9D5raGSmr/vx7q985wj32MRT12
+        NdZfeU8jqn4N9wXVcgiseW1Xr1qG1UQ5AXT87Kb3RXyu6YHy8Sf1urgEOTcngBI4yhrtSPyJ7RA
+        JJ9p+6yxZM+ocC/KU
+X-Received: by 2002:a5d:49c7:: with SMTP id t7mr4444054wrs.369.1575371862792;
+        Tue, 03 Dec 2019 03:17:42 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxHsfuHbTjkQH8eviKJ48+Nlp7C/1JLX3I4FiWaDe4+xpQuoyOM0/YkQJewOzX/cskP8i9LEw==
+X-Received: by 2002:a5d:49c7:: with SMTP id t7mr4444037wrs.369.1575371862537;
+        Tue, 03 Dec 2019 03:17:42 -0800 (PST)
+Received: from steredhat (host28-88-dynamic.16-87-r.retail.telecomitalia.it. [87.16.88.28])
+        by smtp.gmail.com with ESMTPSA id p17sm3209682wrx.20.2019.12.03.03.17.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Dec 2019 03:17:41 -0800 (PST)
+Date:   Tue, 3 Dec 2019 12:17:39 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stefan Hajnoczi <stefanha@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jorgen Hansen <jhansen@vmware.com>
+Subject: Re: [RFC PATCH 0/3] vsock: support network namespace
+Message-ID: <20191203111739.jbxptcpmvtwg7j2g@steredhat>
+References: <20191128171519.203979-1-sgarzare@redhat.com>
+ <20191203092649.GB153510@stefanha-x1.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <1575371522-3030-1-git-send-email-srinivas.neeli@xilinx.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="KRPJWEPvktscw2cXv6pxzoCjmQsk8lzFK"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20191203092649.GB153510@stefanha-x1.localdomain>
+X-MC-Unique: JAY8vFYkMiKoKaBYECl7Bg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---KRPJWEPvktscw2cXv6pxzoCjmQsk8lzFK
-Content-Type: multipart/mixed; boundary="TyjDWf9B9YjbpCa7nSUZyuRlmimp8m8Ab";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Srinivas Neeli <srinivas.neeli@xilinx.com>, wg@grandegger.com,
- davem@davemloft.net, michal.simek@xilinx.com, appanad@xilinx.com
-Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- git@xilinx.com, nagasure@xilinx.com
-Message-ID: <885dca39-92be-50f1-8814-f14fa3271c7f@pengutronix.de>
-Subject: Re: [PATCH] can: xilinx_can: Fix missing Rx can packets on CANFD2.0
-References: <1575371522-3030-1-git-send-email-srinivas.neeli@xilinx.com>
-In-Reply-To: <1575371522-3030-1-git-send-email-srinivas.neeli@xilinx.com>
-
---TyjDWf9B9YjbpCa7nSUZyuRlmimp8m8Ab
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 12/3/19 12:12 PM, Srinivas Neeli wrote:
-> CANFD2.0 core uses BRAM for storing acceptance filter ID(AFID) and MASK=
-
-> (AFMASK)registers. So by default AFID and AFMASK registers contain rand=
-om
-> data. Due to random data, not able to receive all CAN ids.
+On Tue, Dec 03, 2019 at 09:26:49AM +0000, Stefan Hajnoczi wrote:
+> On Thu, Nov 28, 2019 at 06:15:16PM +0100, Stefano Garzarella wrote:
+> > Hi,
+> > now that we have multi-transport upstream, I started to take a look to
+> > support network namespace (netns) in vsock.
+> >=20
+> > As we partially discussed in the multi-transport proposal [1], it could
+> > be nice to support network namespace in vsock to reach the following
+> > goals:
+> > - isolate host applications from guest applications using the same port=
+s
+> >   with CID_ANY
+> > - assign the same CID of VMs running in different network namespaces
+> > - partition VMs between VMMs or at finer granularity
+> >=20
+> > This preliminary implementation provides the following behavior:
+> > - packets received from the host (received by G2H transports) are
+> >   assigned to the default netns (init_net)
+> > - packets received from the guest (received by H2G - vhost-vsock) are
+> >   assigned to the netns of the process that opens /dev/vhost-vsock
+> >   (usually the VMM, qemu in my tests, opens the /dev/vhost-vsock)
+> >     - for vmci I need some suggestions, because I don't know how to do
+> >       and test the same in the vmci driver, for now vmci uses the
+> >       init_net
+> > - loopback packets are exchanged only in the same netns
+> >=20
+> > Questions:
+> > 1. Should we make configurable the netns (now it is init_net) where
+> >    packets from the host should be delivered?
 >=20
-> Initializing AFID and AFMASK registers with Zero before enabling
-> acceptance filter to receive all packets irrespective of ID and Mask.
+> Yes, it should be possible to have multiple G2H (e.g. virtio-vsock)
+> devices and to assign them to different net namespaces.  Something like
+> net/core/dev.c:dev_change_net_namespace() will eventually be needed.
 >=20
-> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-> Reviewed-by: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>=
 
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Make sense, but for now we support only one G2H.
+How we can provide this feature to the userspace?
+Should we interface vsock with ip-link(8)?
 
-Please add a "Fixes:" tag.
+I don't know if initially we can provide through sysfs a way to set the
+netns of the only G2H loaded.
 
-Some nitpicks: Please add your S-o-B as the last one. Further I'd be
-happier, if Naga Sureshkumar Relli adds the Reviewed-by in a seperate mai=
-l.
+> > 2. Should we provide an ioctl in vhost-vsock to configure the netns
+> >    to use? (instead of using the netns of the process that opens
+> >    /dev/vhost-vsock)
+>=20
+> Creating the vhost-vsock instance in the process' net namespace makes
+> sense.  Maybe wait for a use case before adding an ioctl.
+>=20
 
-Marc
+Agree.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> > 3. Should we provide a way to disable the netns support in vsock?
+>=20
+> The code should follow CONFIG_NET_NS semantics.  I'm not sure what they
+> are exactly since struct net is always defined, regardless of whether
+> network namespaces are enabled.
 
+I think that if CONFIG_NET_NS is not defined, all sockets and processes
+are assigned to init_net and this RFC should work in this case, but I'll
+try this case before v1.
 
---TyjDWf9B9YjbpCa7nSUZyuRlmimp8m8Ab--
+I was thinking about the Kata's use case, I don't know if they launch the
+VM in a netns and even the runtime in the host runs inside the same netns.
 
---KRPJWEPvktscw2cXv6pxzoCjmQsk8lzFK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I'll send an e-mail to kata mailing list.
 
------BEGIN PGP SIGNATURE-----
+Thanks,
+Stefano
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3mRAcACgkQWsYho5Hk
-nSAHJgf/VaE8e0cY3G9IlwKJ61hgtboO4c1PW+e40qaBOKTY3MuF00XIC7DecbHR
-xoA1DHwh50kmqgg60wegLAy7GQaLEQ1zAs8qQzOuduf8Fr4EHgWzFnIwFWBrajrA
-WakrmzfLHMQlS3nSKYEDwDd1eI+AfdRdt+JYp7JXCskKGeR/ZUTge6PXVeO1aCEN
-iRX9VtCuwD6gFvylMYs0Zt8o/h23sD2p7yjGY5yHaiQK9QTBktstdoiCAHGg3tl6
-NoY7+qPLo2xpT+FGuDWmBlsTNCItPcIoeHMansRze2hB+STuFoiuommKFiHLG4U/
-X6Vt72cS7CeQrAqveG256vhbdu+MjA==
-=4+Hn
------END PGP SIGNATURE-----
-
---KRPJWEPvktscw2cXv6pxzoCjmQsk8lzFK--
