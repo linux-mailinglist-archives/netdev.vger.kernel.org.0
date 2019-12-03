@@ -2,112 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 477CE110186
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:47:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D3611018C
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:50:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbfLCPrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 10:47:06 -0500
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:52816 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfLCPrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 10:47:06 -0500
-Received: by mail-pf1-f202.google.com with SMTP id f20so2497624pfn.19
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 07:47:06 -0800 (PST)
+        id S1726105AbfLCPu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 10:50:56 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40839 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbfLCPuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 10:50:55 -0500
+Received: by mail-wr1-f67.google.com with SMTP id c14so4266500wrn.7
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 07:50:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=kRouJ8RTqEgeOWOKZnXkXMRduTDj4jmtaojGXNiKbM0=;
-        b=bCpnDgbs02ulSZ+iYJ+c1fRLiFYO6ymrrR0Ci99XIMO/l9kn+1yejEYV0aNMlZq23h
-         Eoy7KEYSch6NUg/nOKo8CAhCMwwCfNHjBM85ONegRAxrCmH3ZENb3l5fEvR4+gPXINpK
-         QFB5SqAZHjfY2P9bo+ASA4coU7wRrYgFXyLLBweCLfR5zgmWbNm/Wueq2Bcc/169G0Vb
-         j5sKclTmAuUrS5jWRMWGhja/vODC72zS7amFtr5sKick9grsKuXy21sOE5QCQROmucm+
-         us0GgjGOcijQkDJsFb0kd93KmHxEwNWYNXFtCNb31Kfax8OSi7qyq9WWEFqh+lhlTP7A
-         GOJg==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xKpLkJ4TcM/K4DTyzjgCR04MySzz0rqcTbbc1IOsCEM=;
+        b=cK54oECVFbL0pc1TN/Kj7PjGB4LWxCKnhI44h5p4/tSV/Vmdf6yyRftD0uK8jWUQp2
+         oU35UOkJI1nMb4NMWTyvkEWcU0cMs5jhkzPBQIccbgHR9gXb0TXoLbdCNIgUkyu2SVae
+         X+xb2HzOFoufZFOwD4gG2LyyO4UgMyQ4yGGr4lbaGNzLEVOEUfgz5y0wtmOc1x04XIUp
+         QbRy3bFDBw9HBx1hG1EZl46mwYG/ChO1RFglCKe0rOkuwvx8BtVMwueqiu+AOnbp6l5C
+         Cw3mmrPhtoIuTDubQx4RkvQLltAc879cGqo1UjumIlf+G0wjacS8COYsQmBBxYJxtXCT
+         Debw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=kRouJ8RTqEgeOWOKZnXkXMRduTDj4jmtaojGXNiKbM0=;
-        b=tl8PJ2iRQqmMII6t47nsrDsj53H4odS1FT8GVkLURbEOgE3VYYloXsHJY2bzy3hYoQ
-         EJzitGp+Hp4Krmh9t9t9jijaGLKc5fVEDD6rWNGuwlB8XRiKISNkPeoHe4/sbOhkpOkt
-         Z7tKLKqTOj5Sq8KDvnsSYFHSrBZ3tiNMEzrVNBO26Lr25ktPylBpWz4c3m30zDbOPOhY
-         Z95va8u54VHEF3EUa90V1FY7fQenkoAQ2FerVXfIb+6wwrw9AsxDjItANjcsc5wMKvDJ
-         t7iETpDkI4jNxep4mKJLZmttlYv9eYQV/Dsg+rqbkeUUZIS7Ok3YGXsepOX4n+POhWy1
-         /PWg==
-X-Gm-Message-State: APjAAAWW0ZmsMMD77ugL0LuXjA3rCB1qC0o8ppMIASPB83I8vWbAlk3r
-        DXhJ4EuJ3cqAoTHzPLsbd4DARFma/pfEjg==
-X-Google-Smtp-Source: APXvYqxzLWH8KVRDbcLNfIc8bX9Xrhx6DaomOrPeXgmq1/2MjPSf9qG/XVqcYig0jPglpM26uwshHQotUvwTcg==
-X-Received: by 2002:a65:6249:: with SMTP id q9mr6270504pgv.340.1575388025676;
- Tue, 03 Dec 2019 07:47:05 -0800 (PST)
-Date:   Tue,  3 Dec 2019 07:47:01 -0800
-Message-Id: <20191203154701.187275-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
-Subject: [PATCH iproute2] tc_util: support TCA_STATS_PKT64 attribute
-From:   Eric Dumazet <edumazet@google.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=xKpLkJ4TcM/K4DTyzjgCR04MySzz0rqcTbbc1IOsCEM=;
+        b=is/0OhlogFSLRrWnPirf0iNmXnSkfwCy9VhOhj0a2yMPoTphL/Egn6+F++5Arjx1Vy
+         DUM0sQc9WpUB+VSRe3VSzX0Oy2lyb7uoS1tRQlEfDWgdPBpVSOqmDMu2zYqFg8mqXjsL
+         E4lFqvsixiTJSq9ZIDls01EU1m3ZCogtsdo/dbwVQUnwj0otSCHM2dRDdA7mdXZ32PJG
+         WjJIqM6VpfoaMdIZ7/E6VWNOIhMEuVEw1RMphvG00XTZze/nDDrXxVZPjoh2VZCiCCTv
+         2IWl33RcX6c6sDbCSSanYMt65Af82UxT8GW7TR+uEUBITGTwWjt56WxQH9TvCuGq1ILc
+         OFMw==
+X-Gm-Message-State: APjAAAV9UIgu/djdsYp8R9H7oZw6fdKr+lIya4lxOa3HafM2ymuEjnaq
+        pLNYRvU6a4aB9w4veudQgAqP2g==
+X-Google-Smtp-Source: APXvYqxntFyiJbOfCDR0kELEkL8MRRYIlKUNkm9YXk+E7STtb5Pyns/VrzmqE3P+gYOCh/2WG9W0Eg==
+X-Received: by 2002:adf:ba4b:: with SMTP id t11mr5668806wrg.331.1575388253455;
+        Tue, 03 Dec 2019 07:50:53 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:7594:27:53f2:5cc7? ([2a01:e0a:410:bb00:7594:27:53f2:5cc7])
+        by smtp.gmail.com with ESMTPSA id x10sm4103190wrv.60.2019.12.03.07.50.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Dec 2019 07:50:52 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: xfrmi: request for stable trees
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+References: <20190905102201.1636-1-steffen.klassert@secunet.com>
+ <3a94c153-c8f1-45d1-9f0d-68ca5b83b44c@6wind.com>
+ <65447cc6-0dd4-1dbd-3616-ca6e88ca5fc0@6wind.com>
+ <20191203130345.GC8621@gauss3.secunet.de>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <95ca675f-3581-2784-c77d-95f2995ea3d7@6wind.com>
+Date:   Tue, 3 Dec 2019 16:50:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
+MIME-Version: 1.0
+In-Reply-To: <20191203130345.GC8621@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel exports 64bit packet counters for qdisc/class stats in linux-5.5
+Le 03/12/2019 à 14:03, Steffen Klassert a écrit :
+> On Mon, Nov 18, 2019 at 04:31:14PM +0100, Nicolas Dichtel wrote:
+>> Le 14/10/2019 à 11:31, Nicolas Dichtel a écrit :
+>>> Le 05/09/2019 à 12:21, Steffen Klassert a écrit :
+>>>> 1) Several xfrm interface fixes from Nicolas Dichtel:
+>>>>    - Avoid an interface ID corruption on changelink.
+>>>>    - Fix wrong intterface names in the logs.
+>>>>    - Fix a list corruption when changing network namespaces.
+>>>>    - Fix unregistation of the underying phydev.
+>>> Is it possible to queue those patches for the stable trees?
+>>
+>> Is there a chance to get them in the 4.19 stable tree?
+>>
+>> Here are the sha1:
+>> e9e7e85d75f3 ("xfrm interface: avoid corruption on changelink")
+>> e0aaa332e6a9 ("xfrm interface: ifname may be wrong in logs")
+>> c5d1030f2300 ("xfrm interface: fix list corruption for x-netns")
+>> 22d6552f827e ("xfrm interface: fix management of phydev")
+> 
+> Nicolas,
+> 
+> I'm currently processing the stable queue for v4.19.
+> I guess we also need this patch from you:
+> 
+> 56c5ee1a5823 ("xfrm interface: fix memory leak on creation")
+> 
+> before we apply the above mentioned patches, right?
+> 
+Right, I point it in my first email but I get an email from Sasha Levin the 25th
+October:
+[PATCH AUTOSEL 4.19 16/37] xfrm interface: fix memory leak on creation
 
-Tested:
-
-$ tc -s -d qd sh dev eth1 | grep pkt
- Sent 4041158922097 bytes 46393862190 pkt (dropped 0, overlimits 0 requeues 2072)
- Sent 501362903764 bytes 5762621697 pkt (dropped 0, overlimits 0 requeues 247)
- Sent 533282357858 bytes 6128246542 pkt (dropped 0, overlimits 0 requeues 329)
- Sent 515878280709 bytes 5875638916 pkt (dropped 0, overlimits 0 requeues 267)
- Sent 516221011694 bytes 5933395197 pkt (dropped 0, overlimits 0 requeues 258)
- Sent 513175109761 bytes 5898402114 pkt (dropped 0, overlimits 0 requeues 231)
- Sent 480207942964 bytes 5519535407 pkt (dropped 0, overlimits 0 requeues 229)
- Sent 483111196765 bytes 5552917950 pkt (dropped 0, overlimits 0 requeues 240)
- Sent 497920120322 bytes 5723104387 pkt (dropped 0, overlimits 0 requeues 271)
-$ tc -s -d cl sh dev eth1 | grep pkt
- Sent 513196316238 bytes 5898645862 pkt (dropped 0, overlimits 0 requeues 231)
- Sent 533304444981 bytes 6128500406 pkt (dropped 0, overlimits 0 requeues 329)
- Sent 480227709687 bytes 5519762597 pkt (dropped 0, overlimits 0 requeues 229)
- Sent 501383660279 bytes 5762860276 pkt (dropped 0, overlimits 0 requeues 247)
- Sent 483131168192 bytes 5553147506 pkt (dropped 0, overlimits 0 requeues 240)
- Sent 515899485505 bytes 5875882649 pkt (dropped 0, overlimits 0 requeues 267)
- Sent 497940747031 bytes 5723341475 pkt (dropped 0, overlimits 0 requeues 271)
- Sent 516242376893 bytes 5933640774 pkt (dropped 0, overlimits 0 requeues 258)
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- tc/tc_util.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index afdfc78f2e5b11af178bdf1db540d917b1f457f3..23115f9b950a8786453fad25be4244ff7c3bdd76 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -809,11 +809,18 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
- 
- 	if (tbs[TCA_STATS_BASIC]) {
- 		struct gnet_stats_basic bs = {0};
-+		__u64 packets64 = 0;
-+
-+		if (tbs[TCA_STATS_PKT64])
-+			packets64 = rta_getattr_u64(tbs[TCA_STATS_PKT64]);
- 
- 		memcpy(&bs, RTA_DATA(tbs[TCA_STATS_BASIC]), MIN(RTA_PAYLOAD(tbs[TCA_STATS_BASIC]), sizeof(bs)));
- 		print_string(PRINT_FP, NULL, "%s", prefix);
- 		print_lluint(PRINT_ANY, "bytes", "Sent %llu bytes", bs.bytes);
--		print_uint(PRINT_ANY, "packets", " %u pkt", bs.packets);
-+		if (packets64)
-+			print_lluint(PRINT_ANY, "packets", " %llu pkt", packets64);
-+		else
-+			print_uint(PRINT_ANY, "packets", " %u pkt", bs.packets);
- 	}
- 
- 	if (tbs[TCA_STATS_QUEUE]) {
--- 
-2.24.0.393.g34dc348eaf-goog
-
+so I was thinking that it is already queued. But I can't see it in linux-stable.
