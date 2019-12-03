@@ -2,206 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D12B010FBE2
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF8410FBEA
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfLCKkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 05:40:23 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37499 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726291AbfLCKkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:40:21 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ic5bL-0000Wl-Kc; Tue, 03 Dec 2019 11:40:16 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id EAF1A48847D;
-        Tue,  3 Dec 2019 10:40:12 +0000 (UTC)
-Subject: Re: KMSAN: uninit-value in can_receive
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000005c08d10597a3a05d@google.com>
- <a5f73d92-fdf2-2590-c863-39a181dca8e1@hartkopp.net>
- <deedd609-6f3b-8035-47e1-252ab221faa1@pengutronix.de>
- <7934bc2b-597f-0bb3-be2d-32f3b07b4de9@hartkopp.net>
- <7f5c4546-0c1a-86ae-581e-0203b5fca446@pengutronix.de>
- <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
- <9e06266a-67f3-7352-7b87-2b9144c7c9a9@gmail.com>
- <3142c032-e46a-531c-d1b8-d532e5b403a6@hartkopp.net>
- <92c04159-b83a-3e33-91da-25a727a692d0@gmail.com>
- <c1f80bac-bb75-e671-ba32-05cfae86569c@hartkopp.net>
- <0f395f1e-b7d4-6254-2a0c-54029b4dc38f@pengutronix.de>
- <82b02a62-51ff-4568-c33d-90223a2aed86@hartkopp.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <5d539fdf-dcd8-3bab-1347-dbcbe63c646d@pengutronix.de>
-Date:   Tue, 3 Dec 2019 11:40:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <82b02a62-51ff-4568-c33d-90223a2aed86@hartkopp.net>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="wTDiHAZ40UyZRmeXKAzo1IfJUECuaBNE4"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1725907AbfLCKns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 05:43:48 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39655 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbfLCKns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:43:48 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x28so1657357pfo.6
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 02:43:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=6ZnhHi7K7xtYsCdxw+JUayvelYXGOWzs64a6QGNePwU=;
+        b=lUQUm0zOlD+O+q66+d2qnYlXVwoM3t4adCrPJxbkNEQfbDfQ/Zk6sr4JQ02j3bzCMZ
+         MxxqW8lemvvCtzKus6DtYcpR6EKjvTcMz3OsDxVjlvoPguus8plSMkZ2WRwd0/DOnQ33
+         6E43bpgvwTxlSJkQasP+Iklk3hXAVtiH5drmjtJmQh3Q2KmAOqpQon0vEIAhyg4Ftn+Q
+         csQVR/jriuxfybuviklRXpYGNNHKxGuYVqmO9zttBSRoec6TKfYHRrZQ/xuhkB+SFGgf
+         c7pVIWqFTMSClQgdBqyAw7QZRQK1bASwNOz5RyS5Qtldnd9e2o5qv1NMToX6CGMJs0ye
+         +q4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6ZnhHi7K7xtYsCdxw+JUayvelYXGOWzs64a6QGNePwU=;
+        b=H7wv6F+7bWyacpbl3tmkQn7ws7XgFJK69dW26H9l7sBaWvbuKbPhKYHHLF1DBPQkSU
+         qj2Sib7hTpcK+8JMjNOwvxko0U9aGdLM2DkiaQ6hpZXdKn7cbIefSZA2xXw87KIjunQB
+         zTWS5x+eAgsnNJwftIOhNiFljjM6bQLhlyzC8/o7I7o2ie9RmIqaCmGczwFCcufxBPUH
+         cnxL0jgUYA8Rf+ZabFklk6o72baOc2iYPZaJw3w+yb1mYJFbaDByrPTJAuP6s7MI5KUk
+         wBNnAIrdk+UInxjsjdVjKIc/rJgGqrskHa1Fg0MDVEoKv1jmLLksQzXyyxDQY3GfIDTL
+         hIEg==
+X-Gm-Message-State: APjAAAULh9kB6IUCpkrz8vQlTGAc+qvWS3fepN2+IPJUYcw+pMwfSufx
+        xug7AUNACnthlK0dU9pmG6I=
+X-Google-Smtp-Source: APXvYqw8+cR70Ut1J0DWrTAsVi3CrPPSLYtSSV8GihHW0bLbhI3Fd6MSiEG0TpmFkGK0ZinpjLXbSg==
+X-Received: by 2002:a63:d501:: with SMTP id c1mr4525215pgg.356.1575369827574;
+        Tue, 03 Dec 2019 02:43:47 -0800 (PST)
+Received: from hpg8-3.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id h5sm2534700pjc.9.2019.12.03.02.43.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 03 Dec 2019 02:43:47 -0800 (PST)
+From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH net] cls_flower: Fix the behavior using port ranges with hw-offload
+Date:   Tue,  3 Dec 2019 19:40:12 +0900
+Message-Id: <20191203104012.59113-1-komachi.yoshiki@gmail.com>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wTDiHAZ40UyZRmeXKAzo1IfJUECuaBNE4
-Content-Type: multipart/mixed; boundary="erGAT8plmeXGe87IUrkUEGtfmoKpbKo9C";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>,
- Eric Dumazet <eric.dumazet@gmail.com>,
- syzbot <syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com>,
- davem@davemloft.net, glider@google.com, linux-can@vger.kernel.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
- syzkaller-bugs@googlegroups.com
-Message-ID: <5d539fdf-dcd8-3bab-1347-dbcbe63c646d@pengutronix.de>
-Subject: Re: KMSAN: uninit-value in can_receive
-References: <0000000000005c08d10597a3a05d@google.com>
- <a5f73d92-fdf2-2590-c863-39a181dca8e1@hartkopp.net>
- <deedd609-6f3b-8035-47e1-252ab221faa1@pengutronix.de>
- <7934bc2b-597f-0bb3-be2d-32f3b07b4de9@hartkopp.net>
- <7f5c4546-0c1a-86ae-581e-0203b5fca446@pengutronix.de>
- <1f7d6ea7-152e-ff18-549c-b196d8b5e3a7@hartkopp.net>
- <9e06266a-67f3-7352-7b87-2b9144c7c9a9@gmail.com>
- <3142c032-e46a-531c-d1b8-d532e5b403a6@hartkopp.net>
- <92c04159-b83a-3e33-91da-25a727a692d0@gmail.com>
- <c1f80bac-bb75-e671-ba32-05cfae86569c@hartkopp.net>
- <0f395f1e-b7d4-6254-2a0c-54029b4dc38f@pengutronix.de>
- <82b02a62-51ff-4568-c33d-90223a2aed86@hartkopp.net>
-In-Reply-To: <82b02a62-51ff-4568-c33d-90223a2aed86@hartkopp.net>
+The recent commit 5c72299fba9d ("net: sched: cls_flower: Classify
+packets using port ranges") had added filtering based on port ranges
+to tc flower. However the commit missed necessary changes in hw-offload
+code, so the feature gave rise to generating incorrect offloaded flow
+keys in NIC.
 
---erGAT8plmeXGe87IUrkUEGtfmoKpbKo9C
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+One more detailed example is below:
 
-Hey Oliver,
+$ tc qdisc add dev eth0 ingress
+$ tc filter add dev eth0 ingress protocol ip flower ip_proto tcp \
+  dst_port 100-200 action drop
 
-On 12/3/19 11:37 AM, Oliver Hartkopp wrote:
-> No. I have analyzed several solutions which turn out to be either unsaf=
-e=20
-> in processing or need some changes in af_packet :-(
->=20
-> I'm currently very busy @work
+With the setup above, an exact match filter with dst_port == 0 will be
+installed in NIC by hw-offload. IOW, the NIC will have a rule which is
+equivalent to the following one.
 
-I know this problem :/
-Thanks for your quick feedback, although your busy.
+$ tc qdisc add dev eth0 ingress
+$ tc filter add dev eth0 ingress protocol ip flower ip_proto tcp \
+  dst_port 0 action drop
 
-> but will come up with a discussion until end of this week.
+The behavior was caused by the flow dissector which extracts packet
+data into the flow key in the tc flower. More specifically, regardless
+of exact match or specified port ranges, fl_init_dissector() set the
+FLOW_DISSECTOR_KEY_PORTS flag in struct flow_dissector to extract port
+numbers from skb in skb_flow_dissect() called by fl_classify(). Note
+that device drivers received the same struct flow_dissector object as
+used in skb_flow_dissect(). Thus, offloaded drivers could not identify
+which of these is used because the FLOW_DISSECTOR_KEY_PORTS flag was
+set to struct flow_dissector in either case.
 
-Looking forward to this.
+This patch adds the new FLOW_DISSECTOR_KEY_PORTS_RANGE flag and the new
+tp_range field in struct fl_flow_key to recognize which filters are applied
+to offloaded drivers. At this point, when filters based on port ranges
+passed to drivers, drivers return the EOPNOTSUPP error because they do
+not support the feature (the newly created FLOW_DISSECTOR_KEY_PORTS_RANGE
+flag).
 
-> There is no big pressure as the problem is more unpleasant than causing=
-=20
-> a real problem right now.
+Fixes: 5c72299fba9d ("net: sched: cls_flower: Classify packets using port ranges")
+Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+---
+ include/net/flow_dissector.h |   1 +
+ net/core/flow_dissector.c    |  37 ++++++++++----
+ net/sched/cls_flower.c       | 118 ++++++++++++++++++++++++-------------------
+ 3 files changed, 95 insertions(+), 61 deletions(-)
 
-regards,
-Marc
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index b8c20e9..d93017a 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -235,6 +235,7 @@ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_IPV4_ADDRS, /* struct flow_dissector_key_ipv4_addrs */
+ 	FLOW_DISSECTOR_KEY_IPV6_ADDRS, /* struct flow_dissector_key_ipv6_addrs */
+ 	FLOW_DISSECTOR_KEY_PORTS, /* struct flow_dissector_key_ports */
++	FLOW_DISSECTOR_KEY_PORTS_RANGE, /* struct flow_dissector_key_ports */
+ 	FLOW_DISSECTOR_KEY_ICMP, /* struct flow_dissector_key_icmp */
+ 	FLOW_DISSECTOR_KEY_ETH_ADDRS, /* struct flow_dissector_key_eth_addrs */
+ 	FLOW_DISSECTOR_KEY_TIPC, /* struct flow_dissector_key_tipc */
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index ca87165..69395b8 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -760,6 +760,31 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
+ }
+ 
+ static void
++__skb_flow_dissect_ports(const struct sk_buff *skb,
++			 struct flow_dissector *flow_dissector,
++			 void *target_container, void *data, int nhoff,
++			 u8 ip_proto, int hlen)
++{
++	enum flow_dissector_key_id dissector_ports = FLOW_DISSECTOR_KEY_MAX;
++	struct flow_dissector_key_ports *key_ports;
++
++	if (dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_PORTS))
++		dissector_ports = FLOW_DISSECTOR_KEY_PORTS;
++	else if (dissector_uses_key(flow_dissector,
++				    FLOW_DISSECTOR_KEY_PORTS_RANGE))
++		dissector_ports = FLOW_DISSECTOR_KEY_PORTS_RANGE;
++
++	if (dissector_ports == FLOW_DISSECTOR_KEY_MAX)
++		return;
++
++	key_ports = skb_flow_dissector_target(flow_dissector,
++					      dissector_ports,
++					      target_container);
++	key_ports->ports = __skb_flow_get_ports(skb, nhoff, ip_proto,
++						data, hlen);
++}
++
++static void
+ __skb_flow_dissect_ipv4(const struct sk_buff *skb,
+ 			struct flow_dissector *flow_dissector,
+ 			void *target_container, void *data, const struct iphdr *iph)
+@@ -928,7 +953,6 @@ bool __skb_flow_dissect(const struct net *net,
+ 	struct flow_dissector_key_control *key_control;
+ 	struct flow_dissector_key_basic *key_basic;
+ 	struct flow_dissector_key_addrs *key_addrs;
+-	struct flow_dissector_key_ports *key_ports;
+ 	struct flow_dissector_key_tags *key_tags;
+ 	struct flow_dissector_key_vlan *key_vlan;
+ 	struct bpf_prog *attached = NULL;
+@@ -1383,14 +1407,9 @@ bool __skb_flow_dissect(const struct net *net,
+ 		break;
+ 	}
+ 
+-	if (dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_PORTS) &&
+-	    !(key_control->flags & FLOW_DIS_IS_FRAGMENT)) {
+-		key_ports = skb_flow_dissector_target(flow_dissector,
+-						      FLOW_DISSECTOR_KEY_PORTS,
+-						      target_container);
+-		key_ports->ports = __skb_flow_get_ports(skb, nhoff, ip_proto,
+-							data, hlen);
+-	}
++	if (!(key_control->flags & FLOW_DIS_IS_FRAGMENT))
++		__skb_flow_dissect_ports(skb, flow_dissector, target_container,
++					 data, nhoff, ip_proto, hlen);
+ 
+ 	/* Process result of IP proto processing */
+ 	switch (fdret) {
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index c307ee1..6c68971 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -56,8 +56,13 @@ struct fl_flow_key {
+ 	struct flow_dissector_key_ip ip;
+ 	struct flow_dissector_key_ip enc_ip;
+ 	struct flow_dissector_key_enc_opts enc_opts;
+-	struct flow_dissector_key_ports tp_min;
+-	struct flow_dissector_key_ports tp_max;
++	union {
++		struct flow_dissector_key_ports tp;
++		struct {
++			struct flow_dissector_key_ports tp_min;
++			struct flow_dissector_key_ports tp_max;
++		};
++	} tp_range;
+ 	struct flow_dissector_key_ct ct;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+ 
+@@ -200,19 +205,19 @@ static bool fl_range_port_dst_cmp(struct cls_fl_filter *filter,
+ {
+ 	__be16 min_mask, max_mask, min_val, max_val;
+ 
+-	min_mask = htons(filter->mask->key.tp_min.dst);
+-	max_mask = htons(filter->mask->key.tp_max.dst);
+-	min_val = htons(filter->key.tp_min.dst);
+-	max_val = htons(filter->key.tp_max.dst);
++	min_mask = htons(filter->mask->key.tp_range.tp_min.dst);
++	max_mask = htons(filter->mask->key.tp_range.tp_max.dst);
++	min_val = htons(filter->key.tp_range.tp_min.dst);
++	max_val = htons(filter->key.tp_range.tp_max.dst);
+ 
+ 	if (min_mask && max_mask) {
+-		if (htons(key->tp.dst) < min_val ||
+-		    htons(key->tp.dst) > max_val)
++		if (htons(key->tp_range.tp.dst) < min_val ||
++		    htons(key->tp_range.tp.dst) > max_val)
+ 			return false;
+ 
+ 		/* skb does not have min and max values */
+-		mkey->tp_min.dst = filter->mkey.tp_min.dst;
+-		mkey->tp_max.dst = filter->mkey.tp_max.dst;
++		mkey->tp_range.tp_min.dst = filter->mkey.tp_range.tp_min.dst;
++		mkey->tp_range.tp_max.dst = filter->mkey.tp_range.tp_max.dst;
+ 	}
+ 	return true;
+ }
+@@ -223,19 +228,19 @@ static bool fl_range_port_src_cmp(struct cls_fl_filter *filter,
+ {
+ 	__be16 min_mask, max_mask, min_val, max_val;
+ 
+-	min_mask = htons(filter->mask->key.tp_min.src);
+-	max_mask = htons(filter->mask->key.tp_max.src);
+-	min_val = htons(filter->key.tp_min.src);
+-	max_val = htons(filter->key.tp_max.src);
++	min_mask = htons(filter->mask->key.tp_range.tp_min.src);
++	max_mask = htons(filter->mask->key.tp_range.tp_max.src);
++	min_val = htons(filter->key.tp_range.tp_min.src);
++	max_val = htons(filter->key.tp_range.tp_max.src);
+ 
+ 	if (min_mask && max_mask) {
+-		if (htons(key->tp.src) < min_val ||
+-		    htons(key->tp.src) > max_val)
++		if (htons(key->tp_range.tp.src) < min_val ||
++		    htons(key->tp_range.tp.src) > max_val)
+ 			return false;
+ 
+ 		/* skb does not have min and max values */
+-		mkey->tp_min.src = filter->mkey.tp_min.src;
+-		mkey->tp_max.src = filter->mkey.tp_max.src;
++		mkey->tp_range.tp_min.src = filter->mkey.tp_range.tp_min.src;
++		mkey->tp_range.tp_max.src = filter->mkey.tp_range.tp_max.src;
+ 	}
+ 	return true;
+ }
+@@ -734,23 +739,25 @@ static void fl_set_key_val(struct nlattr **tb,
+ static int fl_set_key_port_range(struct nlattr **tb, struct fl_flow_key *key,
+ 				 struct fl_flow_key *mask)
+ {
+-	fl_set_key_val(tb, &key->tp_min.dst,
+-		       TCA_FLOWER_KEY_PORT_DST_MIN, &mask->tp_min.dst,
+-		       TCA_FLOWER_UNSPEC, sizeof(key->tp_min.dst));
+-	fl_set_key_val(tb, &key->tp_max.dst,
+-		       TCA_FLOWER_KEY_PORT_DST_MAX, &mask->tp_max.dst,
+-		       TCA_FLOWER_UNSPEC, sizeof(key->tp_max.dst));
+-	fl_set_key_val(tb, &key->tp_min.src,
+-		       TCA_FLOWER_KEY_PORT_SRC_MIN, &mask->tp_min.src,
+-		       TCA_FLOWER_UNSPEC, sizeof(key->tp_min.src));
+-	fl_set_key_val(tb, &key->tp_max.src,
+-		       TCA_FLOWER_KEY_PORT_SRC_MAX, &mask->tp_max.src,
+-		       TCA_FLOWER_UNSPEC, sizeof(key->tp_max.src));
+-
+-	if ((mask->tp_min.dst && mask->tp_max.dst &&
+-	     htons(key->tp_max.dst) <= htons(key->tp_min.dst)) ||
+-	     (mask->tp_min.src && mask->tp_max.src &&
+-	      htons(key->tp_max.src) <= htons(key->tp_min.src)))
++	fl_set_key_val(tb, &key->tp_range.tp_min.dst,
++		       TCA_FLOWER_KEY_PORT_DST_MIN, &mask->tp_range.tp_min.dst,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_min.dst));
++	fl_set_key_val(tb, &key->tp_range.tp_max.dst,
++		       TCA_FLOWER_KEY_PORT_DST_MAX, &mask->tp_range.tp_max.dst,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_max.dst));
++	fl_set_key_val(tb, &key->tp_range.tp_min.src,
++		       TCA_FLOWER_KEY_PORT_SRC_MIN, &mask->tp_range.tp_min.src,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_min.src));
++	fl_set_key_val(tb, &key->tp_range.tp_max.src,
++		       TCA_FLOWER_KEY_PORT_SRC_MAX, &mask->tp_range.tp_max.src,
++		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_max.src));
++
++	if ((mask->tp_range.tp_min.dst && mask->tp_range.tp_max.dst &&
++	     htons(key->tp_range.tp_max.dst) <=
++		 htons(key->tp_range.tp_min.dst)) ||
++	    (mask->tp_range.tp_min.src && mask->tp_range.tp_max.src &&
++	     htons(key->tp_range.tp_max.src) <=
++		 htons(key->tp_range.tp_min.src)))
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -1509,9 +1516,10 @@ static void fl_init_dissector(struct flow_dissector *dissector,
+ 			     FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+ 			     FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6);
+-	if (FL_KEY_IS_MASKED(mask, tp) ||
+-	    FL_KEY_IS_MASKED(mask, tp_min) || FL_KEY_IS_MASKED(mask, tp_max))
+-		FL_KEY_SET(keys, cnt, FLOW_DISSECTOR_KEY_PORTS, tp);
++	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_PORTS, tp);
++	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_PORTS_RANGE, tp_range);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+ 			     FLOW_DISSECTOR_KEY_IP, ip);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+@@ -1560,8 +1568,10 @@ static struct fl_flow_mask *fl_create_new_mask(struct cls_fl_head *head,
+ 
+ 	fl_mask_copy(newmask, mask);
+ 
+-	if ((newmask->key.tp_min.dst && newmask->key.tp_max.dst) ||
+-	    (newmask->key.tp_min.src && newmask->key.tp_max.src))
++	if ((newmask->key.tp_range.tp_min.dst &&
++	     newmask->key.tp_range.tp_max.dst) ||
++	    (newmask->key.tp_range.tp_min.src &&
++	     newmask->key.tp_range.tp_max.src))
+ 		newmask->flags |= TCA_FLOWER_MASK_FLAGS_RANGE;
+ 
+ 	err = fl_init_mask_hashtable(newmask);
+@@ -2159,18 +2169,22 @@ static int fl_dump_key_val(struct sk_buff *skb,
+ static int fl_dump_key_port_range(struct sk_buff *skb, struct fl_flow_key *key,
+ 				  struct fl_flow_key *mask)
+ {
+-	if (fl_dump_key_val(skb, &key->tp_min.dst, TCA_FLOWER_KEY_PORT_DST_MIN,
+-			    &mask->tp_min.dst, TCA_FLOWER_UNSPEC,
+-			    sizeof(key->tp_min.dst)) ||
+-	    fl_dump_key_val(skb, &key->tp_max.dst, TCA_FLOWER_KEY_PORT_DST_MAX,
+-			    &mask->tp_max.dst, TCA_FLOWER_UNSPEC,
+-			    sizeof(key->tp_max.dst)) ||
+-	    fl_dump_key_val(skb, &key->tp_min.src, TCA_FLOWER_KEY_PORT_SRC_MIN,
+-			    &mask->tp_min.src, TCA_FLOWER_UNSPEC,
+-			    sizeof(key->tp_min.src)) ||
+-	    fl_dump_key_val(skb, &key->tp_max.src, TCA_FLOWER_KEY_PORT_SRC_MAX,
+-			    &mask->tp_max.src, TCA_FLOWER_UNSPEC,
+-			    sizeof(key->tp_max.src)))
++	if (fl_dump_key_val(skb, &key->tp_range.tp_min.dst,
++			    TCA_FLOWER_KEY_PORT_DST_MIN,
++			    &mask->tp_range.tp_min.dst, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_min.dst)) ||
++	    fl_dump_key_val(skb, &key->tp_range.tp_max.dst,
++			    TCA_FLOWER_KEY_PORT_DST_MAX,
++			    &mask->tp_range.tp_max.dst, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_max.dst)) ||
++	    fl_dump_key_val(skb, &key->tp_range.tp_min.src,
++			    TCA_FLOWER_KEY_PORT_SRC_MIN,
++			    &mask->tp_range.tp_min.src, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_min.src)) ||
++	    fl_dump_key_val(skb, &key->tp_range.tp_max.src,
++			    TCA_FLOWER_KEY_PORT_SRC_MAX,
++			    &mask->tp_range.tp_max.src, TCA_FLOWER_UNSPEC,
++			    sizeof(key->tp_range.tp_max.src)))
+ 		return -1;
+ 
+ 	return 0;
+-- 
+1.8.3.1
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---erGAT8plmeXGe87IUrkUEGtfmoKpbKo9C--
-
---wTDiHAZ40UyZRmeXKAzo1IfJUECuaBNE4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3mO4cACgkQWsYho5Hk
-nSBSUQgAl5zQRiGygswxp9a9NSLOCofSwtPE+kM+7Izoe32OLmU2K0YOFTriUIzu
-AEOMbMH1+4Yd3E62m8OojYRQdbmIxJuGpCFG0tz/1qxBPy5Er6T8oLM2j1cdUTYa
-X5ySXkdeS5Sfo20zf7w0FxrqdPXH8xbmDuerAnjE2lRESjPx2Lxepo5oLd305rlK
-lHAj4AehgNQfqdVTAN/abFLIQ1AeA8RGsZC5F2E9nizS6A+x5vLDxqim9RaXXbdE
-swFN32k3eOZz1Sr1453ehAsuFgcJ33dZwzOFZzvineAFSE9/RaI+cDJcFfzO+B7F
-dwRPXiwR5HvkzL7NIz43rO/Qtk0ytA==
-=Vtx6
------END PGP SIGNATURE-----
-
---wTDiHAZ40UyZRmeXKAzo1IfJUECuaBNE4--
