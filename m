@@ -2,94 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70D7E10FBE5
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B680210FBEF
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbfLCKlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 05:41:35 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52214 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbfLCKlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:41:35 -0500
-Received: by mail-wm1-f68.google.com with SMTP id g206so2421743wme.1
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 02:41:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=e79VIZfMRB3Lj+NeZhCKngWf43D2LXtU7QFBOS7N04I=;
-        b=cZZd/ZjCp93PFcTdBlmDzqFOFk+SldNJZSgIr4lM5cwyNV3hUepF0/PJs1VTXOLax+
-         wUn9HrSxDvtL/nnveuM3hpngaiYEpxaHxVuTXgVmJTdsxO7cBzCKMFfOSZQ7JuWzvijR
-         Pimpk6cvJs50eBiPfOgwYX7NfeLIHtl34gtC3TLnt/ujEjtGlbuCrKkdrCLkCWrJu1rB
-         BQH2Rtm4sQ9kZJKIed8TdVY3JG/K8VDkmdgx0Uy+w7DWe8LojT5vEwzwEAdmoBF2PVFD
-         uCO+EhXI1lg5xmLy5Ku1PHCIPov9wOP8BUJ3oJcqRyHRW78O6k3c0L4tYeua5vpLI3WE
-         Y8ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=e79VIZfMRB3Lj+NeZhCKngWf43D2LXtU7QFBOS7N04I=;
-        b=bFnBja1dV/Ve/LCh/Yk6tGVfRN/mHP1TNvZ9Du3PrxF258mRRAdv0FwU17I8bh+Egf
-         4kdbUb2Ba97FBJjmQM8LH75SGu4/ZvOANXNQiUPNw+tS9VuAgPyYvj2e1tPzrI3rUkPP
-         Fghfa6F+7Gu5Typmd/6pLKDwbSgtJhIZk3yftCU3VJ8EsaHqbpWpfhI/gddGhI+JvLTe
-         u/TxH5g7o9Kv535mmDHp5fdbApmtARupgA4YgIpPROf8z2bMrMvAl5HuxKz36b9thaml
-         gmNhtv+EYbRcZ00hiNVGEKSB5m2geig61HnaVO+A4w9gzsNW0iRnKjIMLQV+s8vota8m
-         XAMg==
-X-Gm-Message-State: APjAAAXyVe6A1wFiNFBqY2Sf80ja300xvIoqlbgVLczOUjHsXEU86/ce
-        94dXaXPLEBrk04gGdSlKH7NaCH9FI/qQR68Udyc=
-X-Google-Smtp-Source: APXvYqxo3ku+lAtRi7dtuuw4JgfnQx3pZ82NMc7xIq5Rx9hp1sTODNO7nTOdOrefH1KvbkcdL+FQsh36n4oMFpOQT10=
-X-Received: by 2002:a05:600c:20f:: with SMTP id 15mr695868wmi.128.1575369693474;
- Tue, 03 Dec 2019 02:41:33 -0800 (PST)
+        id S1725997AbfLCKrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 05:47:07 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55033 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbfLCKrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:47:07 -0500
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ic5hx-0001BG-Em; Tue, 03 Dec 2019 11:47:05 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2019-12-03
+Date:   Tue,  3 Dec 2019 11:46:57 +0100
+Message-Id: <20191203104703.14620-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Received: by 2002:a5d:480e:0:0:0:0:0 with HTTP; Tue, 3 Dec 2019 02:41:31 -0800 (PST)
-From:   DEAN CHARLES <dean008800@gmail.com>
-Date:   Tue, 3 Dec 2019 11:41:31 +0100
-Message-ID: <CAADHdmU13i2Gqig0KucnZ-+7f=J1W3oxPp+YYMAinfThv5P2zQ@mail.gmail.com>
-Subject: INQUIRY
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-FROM: DEAN  CHARLES
+Hello David,
 
-    GOOD DAY AS YOU RECEIVE THIS LETTER.IT HAS BEING A LONGEST
-TIME,REASON.I HAD SOME ISSUE WITH MY GOVERNMENT AND WAS INCARCERATED
-FOR SOME YEARS. NOW I AM FREE,HENCE MY LETTER.SO HOW ARE YOU DOING ALL
-THIS WHILE? AS REGARDS TO
+this is a pull request of 6 patches for net/master.
 
-OUR LAST DISCUSSION,DURING THE PROCEEDINGS ON THE FAMILY.A CRITICAL
-FACTOR IN PREVENTION A WORKSHOP SPONSORED BY THE DIVISION OF MATERNAL
-AND CHILD HEALTH,BUREAU OF HEALTH CARE DELIVERY AND SERVICES
-ADMINISTRATION,DEPARTMENT OF HEALTH AND HUMAN SERVICES AND THE
-UNIVERSITY OF PITTSBURGH.
+The first two patches are against the MAINTAINERS file and adds Appana
+Durga Kedareswara rao as maintainer for the xilinx-can driver and Sriram
+Dash for the m_can (mmio) driver.
 
-I PROMISED TO BUILD AND DELIVER AN ORPHANAGE ,MATERNAL AND CHILD
-HEALTH CARE FOR YOUR MANAGEMENT IN MY SPONSOR, IT WAS  DURING
-PROCUREMENT OF THIS FUNDS THAT I HAD PROBLEM WITH GOVERNMENT ON
-CORRUPTION AND MISMANAGEMENT OF
-GOVERNMENT  FUNDS.i AM HAPPY NOW THAT IT IS ALL OVER AND AM FREE FROM
-ALL CHARGES.I DECIDED TO WRITE YOU THIS LETTER THROUGH YOUR OFFICE
-ADDRESS AS THE ONLY CONTACT I HAVE.
+The next patch is by Jouni Hogander and fixes a use-after-free in the
+slcan driver.
 
-i HAVE ALSO DESIGNED THE WAY FORWARD.HOW TO MOVE THIS FUNDS TO YOU VIA
-DIPLOMATIC COURIER SERVICE AND NOT THROUGH BANK TO BANK TRANSACTION,TO
-AVOID RAISING EYE BROWS.THIS METHOD OF USING DIPLOMATIC COURIER
-SERVICE IS TO CLOSE ANY
+Johan Hovold's patch for the ucan driver fixes the non-atomic allocation
+in the completion handler.
 
-ACT OF SEARCH TILL FUNDS GETS TO YOU AND THE AMOUNT IS FORTY-FIVE
-MILLION DOLLARS.YOU WILL USE $25 MILLION US DOLLARS FOR THE PROJECT
-ALREADY DISCUSSED WITH YOU,WHILE YOU WILL SET ASIDE 20 MILLION US
-DOLLARS FOR ME 30% OF IT WILL BE FOR YOUR SERVICES TILL THIS FUNDS
-GETS TO YOU,WHILE 10% IS SET ASIDE FOR SUNDRY
-OR MISCELLANEOUS EXPENSES.AS SOON AS THE FUNDS GETS TO YOU.I WILL JOIN
-YOU AND MIGHT EVEN DECIDE TO LIVE PERMANENTLY IN USA.IF YOU HAVE THE
-TIME AND CHANCE TO PERFORM THIS TASK,DO NOT HESITATE TO INFORM ME,SO
-WE CAN
-PROCEED AND MOVE FORWARD
+The last two patches target the xilinx-can driver. The first one is by
+Venkatesh Yadav Abbarapu and skips the error message on deferred probe,
+the second one is by Srinivas Neeli and fixes the usage of the skb after
+can_put_echo_skb().
 
-THANKS FOR YOUR USUAL AND ANTICIPATED CO-OPERATION.
+regards,
+Marc
 
-                                                  YOUS FAITHFUL
-                                                  DEAN CHARLES
+---
+
+The following changes since commit 040b5cfbcefa263ccf2c118c4938308606bb7ed8:
+
+  Fixed updating of ethertype in function skb_mpls_pop (2019-12-02 13:03:50 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.5-20191203
+
+for you to fetch changes up to 3d3c817c3a409ba51ad6e44dd8fde4cfc07c93fe:
+
+  can: xilinx_can: Fix usage of skb memory (2019-12-03 11:15:08 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.5-20191203
+
+----------------------------------------------------------------
+Appana Durga Kedareswara rao (1):
+      MAINTAINERS: add fragment for xilinx CAN driver
+
+Johan Hovold (1):
+      can: ucan: fix non-atomic allocation in completion handler
+
+Jouni Hogander (1):
+      can: slcan: Fix use-after-free Read in slcan_open
+
+Srinivas Neeli (1):
+      can: xilinx_can: Fix usage of skb memory
+
+Sriram Dash (1):
+      MAINTAINERS: add myself as maintainer of MCAN MMIO device driver
+
+Venkatesh Yadav Abbarapu (1):
+      can: xilinx_can: skip error message on deferred probe
+
+ MAINTAINERS                  | 17 +++++++++++++++++
+ drivers/net/can/slcan.c      |  1 +
+ drivers/net/can/usb/ucan.c   |  2 +-
+ drivers/net/can/xilinx_can.c | 28 +++++++++++++++-------------
+ 4 files changed, 34 insertions(+), 14 deletions(-)
+
+
