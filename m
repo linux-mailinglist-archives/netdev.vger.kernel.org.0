@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A69011041F
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 19:14:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9174A110429
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 19:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbfLCSOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 13:14:52 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33189 "EHLO
+        id S1726808AbfLCSVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 13:21:45 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:41909 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726339AbfLCSOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 13:14:52 -0500
+        with ESMTP id S1726628AbfLCSVp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 13:21:45 -0500
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1icChE-0000Ft-SJ; Tue, 03 Dec 2019 19:14:48 +0100
+        id 1icCnt-0000tr-Pt; Tue, 03 Dec 2019 19:21:41 +0100
 Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AE72B488956;
-        Tue,  3 Dec 2019 18:14:47 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B8CE0488960;
+        Tue,  3 Dec 2019 18:21:40 +0000 (UTC)
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
         "sean@geanix.com" <sean@geanix.com>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
 Cc:     dl-linux-imx <linux-imx@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-4-qiangqing.zhang@nxp.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -93,17 +93,17 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
- stage
-Message-ID: <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
-Date:   Tue, 3 Dec 2019 19:14:43 +0100
+Subject: Re: [PATCH V2 3/4] can: flexcan: change the way of stop mode
+ acknowledgment
+Message-ID: <8795fcdb-d102-758d-6257-ffcd05108715@pengutronix.de>
+Date:   Tue, 3 Dec 2019 19:21:36 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+In-Reply-To: <20191127055334.1476-4-qiangqing.zhang@nxp.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="VrN6U5vdUimsFlJbMXEBNc31sgUCZSRzq"
+ boundary="2Ob8pop3426oy7nhLxm2NZsQ1tGt7oV71"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -114,117 +114,192 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---VrN6U5vdUimsFlJbMXEBNc31sgUCZSRzq
-Content-Type: multipart/mixed; boundary="1F5tyDKUqYTdgbJ3Qoh3wjMf89MtzP1T3";
+--2Ob8pop3426oy7nhLxm2NZsQ1tGt7oV71
+Content-Type: multipart/mixed; boundary="0dKgauQox5wbWHudvwt0wwiXJLKXq2Iv5";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Joakim Zhang <qiangqing.zhang@nxp.com>, "sean@geanix.com"
  <sean@geanix.com>, "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
 Cc: dl-linux-imx <linux-imx@nxp.com>,
  "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
-Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
- stage
+Message-ID: <8795fcdb-d102-758d-6257-ffcd05108715@pengutronix.de>
+Subject: Re: [PATCH V2 3/4] can: flexcan: change the way of stop mode
+ acknowledgment
 References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-3-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-4-qiangqing.zhang@nxp.com>
+In-Reply-To: <20191127055334.1476-4-qiangqing.zhang@nxp.com>
 
---1F5tyDKUqYTdgbJ3Qoh3wjMf89MtzP1T3
+--0dKgauQox5wbWHudvwt0wwiXJLKXq2Iv5
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
 On 11/27/19 6:56 AM, Joakim Zhang wrote:
-> CAN controller could be stucked in stop mode once it enters stop mode
-                          ^^^^^^^ stuck
-> when suspend, and then it fails to exit stop mode when resume.
-
-How can this happen?
-
-> Only code reset can get CAN out of stop mode,
-
-What is "code reset"?
-
-> so add stop mode remove request during probe stage for other
-> methods(soft reset from chip level, unbind/bind driver, etc) to let
-        ^^^ please add a space
-> CAN active again.
-
-Can you rephrase the sentence after "so add stop mode remove request
-during probe stage". I'm not completely sure what you want to tell.
-
-> MCR[LPMACK] will be checked when enable CAN in=20
-> register_flexcandev().
+> Stop mode is entered when Stop mode is requested at chip level and
+> MCR[LPM_ACK] is asserted by the FlexCAN.
 >=20
-> Suggested-by: Sean Nyekjaer <sean@geanix.com>
+> Double check with IP owner, should poll MCR[LPM_ACK] for stop mode
+> acknowledgment, not the acknowledgment from chip level which is used
+> for glitch filter.
+>=20
+> Fixes: 5f186c257fa4(can: flexcan: fix stop mode acknowledgment)
 > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 > ------
 > ChangeLog:
-> 	V1->V2: new add.
+> 	V1->V2: no change.
 > ---
->  drivers/net/can/flexcan.c | 28 ++++++++++++++++++++++------
->  1 file changed, 22 insertions(+), 6 deletions(-)
+>  drivers/net/can/flexcan.c | 64 ++++++++++++++++++++-------------------=
+
+>  1 file changed, 33 insertions(+), 31 deletions(-)
 >=20
 > diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 2297663cacb2..5d5ed28d3005 100644
+> index 5d5ed28d3005..d178146b3da5 100644
 > --- a/drivers/net/can/flexcan.c
 > +++ b/drivers/net/can/flexcan.c
-> @@ -449,6 +449,13 @@ static inline int flexcan_exit_stop_mode(struct fl=
-excan_priv *priv)
->  	return 0;
+> @@ -388,6 +388,34 @@ static struct flexcan_mb __iomem *flexcan_get_mb(c=
+onst struct flexcan_priv *priv
+>  		(&priv->regs->mb[bank][priv->mb_size * mb_index]);
 >  }
 > =20
-> +static void flexcan_try_exit_stop_mode(struct flexcan_priv *priv)
+> +static int flexcan_enter_low_power_ack(struct flexcan_priv *priv)
+
+nitpick: please call this flexcan_low_power_enter_ack()
 > +{
-> +	/* remove stop request */
-> +	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
-> +			   1 << priv->stm.req_bit, 0);
+> +	struct flexcan_regs __iomem *regs =3D priv->regs;
+> +	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
+> +
+> +	while (timeout-- && !(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> +		udelay(10);
+> +
+> +	if (!(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> +		return -ETIMEDOUT;
+> +
+> +	return 0;
 > +}
 > +
->  static inline void flexcan_error_irq_enable(const struct flexcan_priv =
-*priv)
->  {
->  	struct flexcan_regs __iomem *regs =3D priv->regs;
-> @@ -1649,6 +1656,21 @@ static int flexcan_probe(struct platform_device =
-*pdev)
->  	priv->devtype_data =3D devtype_data;
->  	priv->reg_xceiver =3D reg_xceiver;
-> =20
-> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
-> +		err =3D flexcan_setup_stop_mode(pdev);
-> +		if (err)
-> +			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
+> +static int flexcan_exit_low_power_ack(struct flexcan_priv *priv)
+
+=2E..and this one flexcan_low_power_exit_ack()
+
+> +{
+> +	struct flexcan_regs __iomem *regs =3D priv->regs;
+> +	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
 > +
-> +		/* CAN controller could be stucked in stop mode once it enters
-> +		 * stop mode when suspend, and then it fails to exit stop
-> +		 * mode when resume. Only code reset can get CAN out of stop
-> +		 * mode, so add stop mode remove request here for other methods
-> +		 * (soft reset, bind, etc) to let CAN active again. MCR[LPMACK]
-> +		 * will be checked when enable CAN in register_flexcandev().
-> +		 */
-> +		flexcan_try_exit_stop_mode(priv);
-> +	}
+> +	while (timeout-- && (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> +		udelay(10);
 > +
->  	pm_runtime_get_noresume(&pdev->dev);
->  	pm_runtime_set_active(&pdev->dev);
->  	pm_runtime_enable(&pdev->dev);
-> @@ -1661,12 +1683,6 @@ static int flexcan_probe(struct platform_device =
-*pdev)
-> =20
->  	devm_can_led_init(dev);
-> =20
-> -	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE) {
-> -		err =3D flexcan_setup_stop_mode(pdev);
-> -		if (err)
-> -			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
-> -	}
-> -
->  	return 0;
-> =20
->   failed_register:
->=20
+> +	if (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
+> +		return -ETIMEDOUT;
+> +
+> +	return 0;
+> +}
+
+Can you move split the creation of
+flexcan_low_power_enter_ack()/flexcan_low_power_exit_ack() and use in
+flexcan_chip_enable/disable() into one patch and the conversion of
+flexcan_enter_stop_mode()/flexcan_exit_stop_mode() into another.
 
 Marc
+
+> +
+>  static void flexcan_enable_wakeup_irq(struct flexcan_priv *priv, bool =
+enable)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+> @@ -406,7 +434,6 @@ static void flexcan_enable_wakeup_irq(struct flexca=
+n_priv *priv, bool enable)
+>  static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+> -	unsigned int ackval;
+>  	u32 reg_mcr;
+> =20
+>  	reg_mcr =3D priv->read(&regs->mcr);
+> @@ -418,35 +445,24 @@ static inline int flexcan_enter_stop_mode(struct =
+flexcan_priv *priv)
+>  			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
+> =20
+>  	/* get stop acknowledgment */
+> -	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
+> -				     ackval, ackval & (1 << priv->stm.ack_bit),
+> -				     0, FLEXCAN_TIMEOUT_US))
+> -		return -ETIMEDOUT;
+> -
+> -	return 0;
+> +	return flexcan_enter_low_power_ack(priv);
+>  }
+> =20
+>  static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+> -	unsigned int ackval;
+>  	u32 reg_mcr;
+> =20
+>  	/* remove stop request */
+>  	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+>  			   1 << priv->stm.req_bit, 0);
+> =20
+> -	/* get stop acknowledgment */
+> -	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
+> -				     ackval, !(ackval & (1 << priv->stm.ack_bit)),
+> -				     0, FLEXCAN_TIMEOUT_US))
+> -		return -ETIMEDOUT;
+> -
+>  	reg_mcr =3D priv->read(&regs->mcr);
+>  	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
+>  	priv->write(reg_mcr, &regs->mcr);
+> =20
+> -	return 0;
+> +	/* get stop acknowledgment */
+> +	return flexcan_exit_low_power_ack(priv);
+>  }
+> =20
+>  static void flexcan_try_exit_stop_mode(struct flexcan_priv *priv)
+> @@ -512,39 +528,25 @@ static inline int flexcan_transceiver_disable(con=
+st struct flexcan_priv *priv)
+>  static int flexcan_chip_enable(struct flexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+> -	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
+>  	u32 reg;
+> =20
+>  	reg =3D priv->read(&regs->mcr);
+>  	reg &=3D ~FLEXCAN_MCR_MDIS;
+>  	priv->write(reg, &regs->mcr);
+> =20
+> -	while (timeout-- && (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> -		udelay(10);
+> -
+> -	if (priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK)
+> -		return -ETIMEDOUT;
+> -
+> -	return 0;
+> +	return flexcan_exit_low_power_ack(priv);
+>  }
+> =20
+>  static int flexcan_chip_disable(struct flexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+> -	unsigned int timeout =3D FLEXCAN_TIMEOUT_US / 10;
+>  	u32 reg;
+> =20
+>  	reg =3D priv->read(&regs->mcr);
+>  	reg |=3D FLEXCAN_MCR_MDIS;
+>  	priv->write(reg, &regs->mcr);
+> =20
+> -	while (timeout-- && !(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> -		udelay(10);
+> -
+> -	if (!(priv->read(&regs->mcr) & FLEXCAN_MCR_LPM_ACK))
+> -		return -ETIMEDOUT;
+> -
+> -	return 0;
+> +	return flexcan_enter_low_power_ack(priv);
+>  }
+> =20
+>  static int flexcan_chip_freeze(struct flexcan_priv *priv)
+>=20
+
 
 --=20
 Pengutronix e.K.                 | Marc Kleine-Budde           |
@@ -233,23 +308,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---1F5tyDKUqYTdgbJ3Qoh3wjMf89MtzP1T3--
+--0dKgauQox5wbWHudvwt0wwiXJLKXq2Iv5--
 
---VrN6U5vdUimsFlJbMXEBNc31sgUCZSRzq
+--2Ob8pop3426oy7nhLxm2NZsQ1tGt7oV71
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3mphMACgkQWsYho5Hk
-nSCg4gf+Kbn7Hg/oriUAAWf5Rn7kNzxRMupwOWre8I/hWOazqQ094ZegCQhKNejM
-poABLlu7UIeyAyAzAGuTH17mM+ZtJVj9DseGMeg3EdL5wQ9izHmLLt8GAZMv0AZg
-iiW6LLVAnhm4IAG9MOC9cXIa/IZYIpXjeq1wG7z03MpkYZV9HzPWNoaOe6he1iBm
-bsdQj3a3H0FgJs9ap+3Qm0jOs0kF+nmLqfuw/nqxPlCIHC34nR6Piyqc5Z1qCEJS
-OfPMVBNBEq828eOi/jLXDxY+Z+tcxD6TuRMkKj9KMunneVx1fblKv1NVtLMKb/NU
-UYqdw/Q8Sr/0zz2lXl5i7YwESYQ6MA==
-=zlog
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3mp7AACgkQWsYho5Hk
+nSBRMQf/fIElqnTsXHrm17GDRyQ2uUqFDG0aosj4xTj2Twz1v9E0NJd3KJR5LKmA
+wdi527vCf3hL//OI2GapaE3AeZb754VhjMiOhGVsPeTepRVqGX7TEZAqILxwjH6z
+9J4+6b+/4OMq6eP5tBdjy46G1pNuAfVFugnW60DTcrgSpxpaUyCBcubOHG0tq9UU
+vckjnHigFSkWKu8jg8s7uCGn/KZgdAeU6kPv9PP0OBsKeZ30Jk4XGjjIZNPrClTr
+yVzsP6PPGI+jgBuBG0sY8F9GVUQuvv23zsLEyrnPijUjSZvRJfbODkDn3xWGxoEO
+3TEiCN7JMxvpswKbr3U9M/KQOgTeNw==
+=IGww
 -----END PGP SIGNATURE-----
 
---VrN6U5vdUimsFlJbMXEBNc31sgUCZSRzq--
+--2Ob8pop3426oy7nhLxm2NZsQ1tGt7oV71--
