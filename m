@@ -2,149 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A548510FD7D
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 13:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5F010FE43
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 14:00:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfLCMRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 07:17:42 -0500
-Received: from mail-eopbgr740085.outbound.protection.outlook.com ([40.107.74.85]:35990
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725907AbfLCMRm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Dec 2019 07:17:42 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kPiacHwhjhyvwDrf47lgcbGWyduJgalPV9KwSO2ZixMkfaneKt5zHGKimwPuevLasvONOj73kass1M6qMXYk8mAvyTlQSj1ZtU1WlU6yKQ1B8d6HBAroDKtxr4SNuY2cbT++PFDUACZoO0bLToiy9dBR7WIo8o6vEwZRoqNgYL3Gupa7JHFz+T+OumMzRSRNvzKNw68HsP+amA/KvsPiRMZmtuQYnaGBp87Qnb0df+kVJCCtBkBsoSoVCmwLCcrk++0LEeDtGlF0KI2QyliXcJ+mSjZza2Uv08HKUHXmMkLLgfc6FT5BLF0UbPPWktZCRdERQQgypTLBnyWPbZXEfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3bC/DBH+Fsqt9IFQLULfciwewb1aPMv738DvhiWhzDc=;
- b=T88Avg77KjzAIBM4cBJPONjs96Jb0sIaidGbs1zamOvnG0Jyr2+gk6SivAV/Tpoqm9hebE/Yj42mqkYL1m2noPbAXDWRocVrv7/UOVfWNyL/7tYqb61UVbAZ9RaDZYCgqUOZPhIdUGataVCaAQVIaBMXODO/d48jkmN3BJlE0KyiSzaxGMrhCd6eeG2iHab0eKmbImxQ5N0/bfzj5iy0mucFW7oETUjLhrz4fFK4VLlxIaN3cAlYEIMS59XVqdtb/j0HdGtNOZz8NGJrHQXlBWIWQofOW210KLSUoCeQOJUy0rblAZCXQ2YQTsV5CAuLHBazrXEnA9OPHqAdk1Ur9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3bC/DBH+Fsqt9IFQLULfciwewb1aPMv738DvhiWhzDc=;
- b=qtgHH97nrT07HFCbnV/BMWld+yBjCNd98uTd/Eb6adfiZ7rlli3tGEyLxUrgxXpCG5fZn7vuLg8EQZv7T/2hIqcrl4yJEoSHxMWcvFw0veZ/H9YmA+XQXB5VlpwUsbhb9GP4mN4F/JL8SGY6EVB8nCMIEz6+hBUbMHlgPf40s+M=
-Received: from SN6PR02CA0009.namprd02.prod.outlook.com (2603:10b6:805:a2::22)
- by DM6PR02MB4779.namprd02.prod.outlook.com (2603:10b6:5:16::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.22; Tue, 3 Dec
- 2019 12:16:56 +0000
-Received: from CY1NAM02FT014.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::204) by SN6PR02CA0009.outlook.office365.com
- (2603:10b6:805:a2::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.18 via Frontend
- Transport; Tue, 3 Dec 2019 12:16:56 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- CY1NAM02FT014.mail.protection.outlook.com (10.152.75.142) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
- via Frontend Transport; Tue, 3 Dec 2019 12:16:55 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-        (envelope-from <srinivas.neeli@xilinx.com>)
-        id 1ic76t-0006qd-EU; Tue, 03 Dec 2019 04:16:55 -0800
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <srinivas.neeli@xilinx.com>)
-        id 1ic76o-0006DO-Aw; Tue, 03 Dec 2019 04:16:50 -0800
-Received: from xsj-pvapsmtp01 (mailman.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id xB3CGfvb025018;
-        Tue, 3 Dec 2019 04:16:41 -0800
-Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <srinivas.neeli@xilinx.com>)
-        id 1ic76f-0006CV-4p; Tue, 03 Dec 2019 04:16:41 -0800
-From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        michal.simek@xilinx.com, appanad@xilinx.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, nagasure@xilinx.com,
-        Srinivas Neeli <srinivas.neeli@xilinx.com>
-Subject: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on CANFD2.0
-Date:   Tue,  3 Dec 2019 17:46:36 +0530
-Message-Id: <1575375396-3403-1-git-send-email-srinivas.neeli@xilinx.com>
-X-Mailer: git-send-email 2.7.4
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(39860400002)(346002)(136003)(189003)(199004)(356004)(7696005)(70586007)(51416003)(50226002)(81156014)(336012)(5660300002)(316002)(6666004)(186003)(2616005)(26005)(8676002)(16586007)(70206006)(8936002)(81166006)(426003)(305945005)(44832011)(107886003)(106002)(9786002)(6636002)(48376002)(4326008)(50466002)(36756003)(36386004)(2906002)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR02MB4779;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
+        id S1726131AbfLCNAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 08:00:47 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:36878 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbfLCNAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 08:00:47 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xB3CxGds005144;
+        Tue, 3 Dec 2019 13:00:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
+ bh=5tZAlCPgdVP36CP+akVJP1u8E+MEetlLScOAxSdVQhw=;
+ b=SJu8Y51JJ5p6fOvhe/9orsFUTwliY2bSUX6SRJkaHgN4MlXf8H1u/yvbNA59AGVefu67
+ JyMzafeXOFgcZJFJ9L5N7rIAQ3Q2FN+1MsrCQj2OITx14tJDFk8jhiCqF1KpCWQa4rqy
+ pIC94IscUFAicRWwQcE2XIxv+HlcWptF5Vjh0x7lcmK702/SvhNgPwGn9hNfPanc4rAg
+ O9hwCHV0vwhTh/vMCF8Z6H8a8KxI7TVXXLg98neiAqi3HqQ6UwpYYYdXzkb6M6iGMaE/
+ 1VFV1owSjNozociKkGJMoEuwFn39kJ6CJ8o7GYOdskugx94cM0hX3/qd0BMn6a1c2RoO fg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 2wkgcq7dss-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 Dec 2019 13:00:23 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xB3CxC1i051007;
+        Tue, 3 Dec 2019 13:00:23 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2wn7pq19uy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 03 Dec 2019 13:00:23 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xB3D0K6v009086;
+        Tue, 3 Dec 2019 13:00:20 GMT
+Received: from kili.mountain (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 03 Dec 2019 05:00:19 -0800
+Date:   Tue, 3 Dec 2019 16:00:11 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] net: fix a leak in register_netdevice()
+Message-ID: <20191203130011.wzzwdi5sebevkenj@kili.mountain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 21c6aa24-7193-491a-6511-08d777eab051
-X-MS-TrafficTypeDiagnostic: DM6PR02MB4779:
-X-Microsoft-Antispam-PRVS: <DM6PR02MB47793B736800DA643558DD81AF420@DM6PR02MB4779.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-Forefront-PRVS: 02408926C4
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Iyq/kJnNGjkrPIa/KQlIA5eAf/mtyN3JvzqXwIGkN8HQbir3StVJRrlZ7FOzkcTFWPMwisL6yIKWqK/ewdLTt2alirq0lkv19QYtGbYZzG5lAnD1fAqUyaFEfp6bma0RLT6zxu2rOPjnKAAB4UMhHrn+K4kKuTWqikyu4Tmvlesz1EE/JlwSpPrIBGMMs7qBJg0j9ldRZ3J8sB/1ds5XgQhlcXfYbGbwg/1801EDfND3+S6iwBuqxLIATIJtxCuDYNlUh9DGkL4AsiFrSqY9lCsd9uritcWCCEC5l8JoXudCVj0xY77j33fawCPvMbTbxqJ5JfcPiDqQ5e93Hn3Rr+A/s7BkSN+V8frJVWc/M8qwB5Bg74FFM3FKKvUpJZEsrU4NQlNT0bku9+xdXdwWkDag2Gkw2TVGojl571gnUZz7yb/VNTS1MFWT3Kj47xKY
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2019 12:16:55.9090
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21c6aa24-7193-491a-6511-08d777eab051
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4779
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9459 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1912030101
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9459 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1912030101
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CANFD2.0 core uses BRAM for storing acceptance filter ID(AFID) and MASK
-(AFMASK)registers. So by default AFID and AFMASK registers contain random
-data. Due to random data, we are not able to receive all CAN ids.
+We have to free "dev->name_node" on this error path.
 
-Initializing AFID and AFMASK registers with Zero before enabling
-acceptance filter to receive all packets irrespective of ID and Mask.
-
-Fixes: 0db9071353a0 ("can: xilinx: add can 2.0 support")
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Fixes: ff92741270bf ("net: introduce name_node struct to be used in hashlist")
+Reported-by: syzbot+6e13e65ffbaa33757bcb@syzkaller.appspotmail.com
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/net/can/xilinx_can.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/core/dev.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 464af939cd8a..c1dbab8c896d 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -60,6 +60,8 @@ enum xcan_reg {
- 	XCAN_TXMSG_BASE_OFFSET	= 0x0100, /* TX Message Space */
- 	XCAN_RXMSG_BASE_OFFSET	= 0x1100, /* RX Message Space */
- 	XCAN_RXMSG_2_BASE_OFFSET	= 0x2100, /* RX Message Space */
-+	XCAN_AFR_2_MASK_OFFSET	= 0x0A00, /* Acceptance Filter MASK */
-+	XCAN_AFR_2_ID_OFFSET	= 0x0A04, /* Acceptance Filter ID */
- };
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d75fd04d4e2c..9cc4b193d8c4 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9246,7 +9246,7 @@ int register_netdevice(struct net_device *dev)
+ 		if (ret) {
+ 			if (ret > 0)
+ 				ret = -EIO;
+-			goto out;
++			goto err_free_name;
+ 		}
+ 	}
  
- #define XCAN_FRAME_ID_OFFSET(frame_base)	((frame_base) + 0x00)
-@@ -1809,6 +1811,11 @@ static int xcan_probe(struct platform_device *pdev)
+@@ -9361,12 +9361,13 @@ int register_netdevice(struct net_device *dev)
+ 	return ret;
  
- 	pm_runtime_put(&pdev->dev);
- 
-+	if (priv->devtype.flags & XCAN_FLAG_CANFD_2) {
-+		priv->write_reg(priv, XCAN_AFR_2_ID_OFFSET, 0x00000000);
-+		priv->write_reg(priv, XCAN_AFR_2_MASK_OFFSET, 0x00000000);
-+	}
-+
- 	netdev_dbg(ndev, "reg_base=0x%p irq=%d clock=%d, tx buffers: actual %d, using %d\n",
- 		   priv->reg_base, ndev->irq, priv->can.clock.freq,
- 		   hw_tx_max, priv->tx_max);
+ err_uninit:
+-	if (dev->name_node)
+-		netdev_name_node_free(dev->name_node);
+ 	if (dev->netdev_ops->ndo_uninit)
+ 		dev->netdev_ops->ndo_uninit(dev);
+ 	if (dev->priv_destructor)
+ 		dev->priv_destructor(dev);
++err_free_name:
++	if (dev->name_node)
++		netdev_name_node_free(dev->name_node);
+ 	goto out;
+ }
+ EXPORT_SYMBOL(register_netdevice);
 -- 
-2.7.4
+2.11.0
 
