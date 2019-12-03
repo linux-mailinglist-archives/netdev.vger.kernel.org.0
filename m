@@ -2,125 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A63BE10FBF3
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:47:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90BAD10FC2B
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 12:06:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbfLCKrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 05:47:11 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33995 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726195AbfLCKrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:47:10 -0500
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ic5i0-0001BG-PD; Tue, 03 Dec 2019 11:47:08 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Srinivas Neeli <srinivas.neeli@xilinx.com>,
-        Appana Durga Kedareswara Rao <appana.durga.rao@xilinx.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 6/6] can: xilinx_can: Fix usage of skb memory
-Date:   Tue,  3 Dec 2019 11:47:03 +0100
-Message-Id: <20191203104703.14620-7-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191203104703.14620-1-mkl@pengutronix.de>
-References: <20191203104703.14620-1-mkl@pengutronix.de>
+        id S1726107AbfLCLGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 06:06:00 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37215 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725939AbfLCLF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 06:05:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575371158;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=g8wIj/+7Uu6mwDZD6eBwLAeeZ7c67O5dDCPoJ8FiFsw=;
+        b=E49Ztgy2viSowEGCRyuE50UadZ0C6+mtuPytLegW3YGa8WXHN0/3IvAHUP+CNpQiMp6CRW
+        ktwmYPj2I8mfCAZFfsMcZvxKE9KpegMeRdKb9PyhAw0mASPB1nmWKtjhXCmL3kUrO+ZzX8
+        Flq9TUnpNLy+agT9BMz91YReH3ynk4o=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-49-3KE5f1rCPi2kwSdfwZstiA-1; Tue, 03 Dec 2019 06:05:57 -0500
+Received: by mail-lf1-f70.google.com with SMTP id u14so831168lfg.3
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 03:05:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=V8CIWd+jImrTtfvsB6vFA+BEXkmrNtVLFpFsIB4E0cA=;
+        b=iQrmYGPOSbOagPxFL+CCUdY9HonaabWtBULYxcRrAKgc8UCYfPR5KmJh6mB5IKVbEP
+         fBnTfsKOBQxjSFfyTrUSrpx53E1/Ot8noJzkQYac2f1KJ6W0M6kcgUkfsZzRhGWFGYVM
+         rcATg9bJZa0gMl896utDiB/iCeNQXM3Mt8EurD/FGJ3cV2qpg34qyAYJPrmVqECtaCsJ
+         mUVRVajJG4Cauat+FheAzWhV8iy4EZuBJjptHbNDARarXZR+kXL+tVncE0uiYvuVr35B
+         ldQuuzJfGJVszGQWN3rCS7UD4kkJ2kJ5pws00nZr+OKbO8sTiZQr8QfVPYdgBt9nJ6S9
+         6osQ==
+X-Gm-Message-State: APjAAAVNlKnju/jyNk8wHVlqu/PAEnm5kg4sW2VWg6MABjRtuHI7mi6L
+        okIFPfRoKNCIwfHUycsJyp2pUHmHjQqsEAtaIsAS08QZ16KQy6coiYq72YIkIeJcDR95AY4kdeX
+        Ym0rwvLFpaqICvCXP
+X-Received: by 2002:a2e:9b52:: with SMTP id o18mr2105784ljj.205.1575371156270;
+        Tue, 03 Dec 2019 03:05:56 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwo50fGFo8pv96BZQKak3qX0V58pQJksf6J0MKuQ+rJrI21+fktSHr9IwKuVoTh0bDQWQSTtQ==
+X-Received: by 2002:a2e:9b52:: with SMTP id o18mr2105766ljj.205.1575371156018;
+        Tue, 03 Dec 2019 03:05:56 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id m13sm1108395lfo.40.2019.12.03.03.05.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Dec 2019 03:05:54 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C7B0618193A; Tue,  3 Dec 2019 12:05:52 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Better ways to validate map via BTF?
+In-Reply-To: <CAEf4BzYg-eM-di=GZOEaTMpgbqjuByY-hXjWpnRyBGyy-AkQYA@mail.gmail.com>
+References: <20191128170837.2236713b@carbon> <CAEf4BzY3jp=cw9N23dBJnEsMXys6ZtjW5LVHquq4kF9avaPKcg@mail.gmail.com> <87pnhbulxf.fsf@toke.dk> <CAEf4BzYg-eM-di=GZOEaTMpgbqjuByY-hXjWpnRyBGyy-AkQYA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 03 Dec 2019 12:05:52 +0100
+Message-ID: <87o8wppt2n.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-MC-Unique: 3KE5f1rCPi2kwSdfwZstiA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-As per linux can framework, driver not allowed to touch the skb memory
-after can_put_echo_skb() call.
-This patch fixes the same.
-https://www.spinics.net/lists/linux-can/msg02199.html
+> On Fri, Nov 29, 2019 at 12:27 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Thu, Nov 28, 2019 at 8:08 AM Jesper Dangaard Brouer
+>> > <brouer@redhat.com> wrote:
+>> >>
+>> >> Hi Andrii,
+>> >
+>> >
+>> > Hey, Jesper! Sorry for late reply, I'm on vacation for few days, so my
+>> > availability is irregular at best :)
+>> >
+>> >>
+>> >> Is there are better way to validate that a userspace BPF-program uses
+>> >> the correct map via BTF?
+>> >>
+>> >> Below and in attached patch, I'm using bpf_obj_get_info_by_fd() to ge=
+t
+>> >> some map-info, and check info.value_size and info.max_entries match
+>> >> what I expect.  What I really want, is to check that "map-value" have
+>> >> same struct layout as:
+>> >>
+>> >>  struct config {
+>> >>         __u32 action;
+>> >>         int ifindex;
+>> >>         __u32 options;
+>> >>  };
+>> >
+>> > Well, there is no existing magical way to do this, but it is doable by
+>> > comparing BTFs of two maps. It's not too hard to compare all the
+>> > members of a struct, their names, sizes, types, etc (and do that
+>> > recursively, if necessary), but it's a bunch of code requiring due
+>> > diligence. Libbpf doesn't provide that in a ready-to-use form (it does
+>> > implement equivalence checks between two type graphs for dedup, but
+>> > it's quite coupled with and specific to BTF deduplication algorithm).
+>> > Keep in mind, when Toke implemented map pinning support in libbpf, we
+>> > decided to not check BTF for now, and just check key/value size,
+>> > flags, type, max_elements, etc.
+>>
+>> Yeah. Probably a good idea to provide convenience functions for this in
+>> libbpf (split out the existing code and make it more general?). Then we
+>> can also use that for the test in the map pinning code :)
+>
+> As I said, type graph equivalence for btf_dedup() is very specific to
+> dedup. It does deep (i.e., structs that are referenced by pointer only
+> also have to match exactly) and strict (const, volatile, typedefs, all
+> that matters **and** has to come in exactly the same order)
+> equivalence checks. In addition, it does forward declaration
+> resolution into concrete struct/union. So no, it can't be reused or
+> generalized.
+>
+> It has to be a new code, but even then I'm hesitant to provide
+> something "generic", because it's again not clear what the right
+> semantics is for all the cases. E.g., should we ignore
+> const/volatile/restrict? Or, if some typedef is used, which ultimately
+> resolves to the same underlying type -- should we ignore such
+> differences? Also, should we follow and check types that are
+> referenced through pointers only? I think in different cases users
+> might be want to be strict or more lenient about such cases, which
+> suggests that we shouldn't have a generic API (at least yet, until we
+> see 2, 3, 4, real-life use cases). And there are more potential
+> differences in semantics without a clear answer of which one should be
+> used. So we can code it up for map pinning case (after having a
+> discussion of what two maps should be considered compatible), but I
+> don't think we should go all the way to exposing it as an API.
 
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-Reviewed-by: Appana Durga Kedareswara Rao <appana.durga.rao@xilinx.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/xilinx_can.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+My immediate thought is that we'd want the strict interpretation by
+default; at least for maps. My reasoning being that I expect most people
+will just define a struct in a C file somewhere for their map contents,
+and want to ensure that the map matches this, which would mean that any
+changes to the struct definition should break the match.
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index c5f05b994435..464af939cd8a 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -542,16 +542,17 @@ static int xcan_do_set_mode(struct net_device *ndev, enum can_mode mode)
- 
- /**
-  * xcan_write_frame - Write a frame to HW
-- * @priv:		Driver private data structure
-+ * @ndev:		Pointer to net_device structure
-  * @skb:		sk_buff pointer that contains data to be Txed
-  * @frame_offset:	Register offset to write the frame to
-  */
--static void xcan_write_frame(struct xcan_priv *priv, struct sk_buff *skb,
-+static void xcan_write_frame(struct net_device *ndev, struct sk_buff *skb,
- 			     int frame_offset)
- {
- 	u32 id, dlc, data[2] = {0, 0};
- 	struct canfd_frame *cf = (struct canfd_frame *)skb->data;
- 	u32 ramoff, dwindex = 0, i;
-+	struct xcan_priv *priv = netdev_priv(ndev);
- 
- 	/* Watch carefully on the bit sequence */
- 	if (cf->can_id & CAN_EFF_FLAG) {
-@@ -587,6 +588,14 @@ static void xcan_write_frame(struct xcan_priv *priv, struct sk_buff *skb,
- 		dlc |= XCAN_DLCR_EDL_MASK;
- 	}
- 
-+	if (!(priv->devtype.flags & XCAN_FLAG_TX_MAILBOXES) &&
-+	    (priv->devtype.flags & XCAN_FLAG_TXFEMP))
-+		can_put_echo_skb(skb, ndev, priv->tx_head % priv->tx_max);
-+	else
-+		can_put_echo_skb(skb, ndev, 0);
-+
-+	priv->tx_head++;
-+
- 	priv->write_reg(priv, XCAN_FRAME_ID_OFFSET(frame_offset), id);
- 	/* If the CAN frame is RTR frame this write triggers transmission
- 	 * (not on CAN FD)
-@@ -638,13 +647,9 @@ static int xcan_start_xmit_fifo(struct sk_buff *skb, struct net_device *ndev)
- 			XCAN_SR_TXFLL_MASK))
- 		return -ENOSPC;
- 
--	can_put_echo_skb(skb, ndev, priv->tx_head % priv->tx_max);
--
- 	spin_lock_irqsave(&priv->tx_lock, flags);
- 
--	priv->tx_head++;
--
--	xcan_write_frame(priv, skb, XCAN_TXFIFO_OFFSET);
-+	xcan_write_frame(ndev, skb, XCAN_TXFIFO_OFFSET);
- 
- 	/* Clear TX-FIFO-empty interrupt for xcan_tx_interrupt() */
- 	if (priv->tx_max > 1)
-@@ -675,13 +680,9 @@ static int xcan_start_xmit_mailbox(struct sk_buff *skb, struct net_device *ndev)
- 		     BIT(XCAN_TX_MAILBOX_IDX)))
- 		return -ENOSPC;
- 
--	can_put_echo_skb(skb, ndev, 0);
--
- 	spin_lock_irqsave(&priv->tx_lock, flags);
- 
--	priv->tx_head++;
--
--	xcan_write_frame(priv, skb,
-+	xcan_write_frame(ndev, skb,
- 			 XCAN_TXMSG_FRAME_OFFSET(XCAN_TX_MAILBOX_IDX));
- 
- 	/* Mark buffer as ready for transmit */
--- 
-2.24.0
+I'll go read the dedup code, and try to base a comparison function for
+maps on this; then we can discuss from there. I'm fine with keeping it
+internal to begin with, but I worry that if we don't (eventually) expose
+something as an API, people are just going to go the
+reuse-via-copy-paste route instead. But sure, let's spend some time
+collecting more experience with this before committing to an API.
+
+-Toke
 
