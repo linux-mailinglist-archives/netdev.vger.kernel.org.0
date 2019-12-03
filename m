@@ -2,157 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90BAD10FC2B
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 12:06:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6B1310FC41
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 12:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726107AbfLCLGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 06:06:00 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37215 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725939AbfLCLF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 06:05:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575371158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g8wIj/+7Uu6mwDZD6eBwLAeeZ7c67O5dDCPoJ8FiFsw=;
-        b=E49Ztgy2viSowEGCRyuE50UadZ0C6+mtuPytLegW3YGa8WXHN0/3IvAHUP+CNpQiMp6CRW
-        ktwmYPj2I8mfCAZFfsMcZvxKE9KpegMeRdKb9PyhAw0mASPB1nmWKtjhXCmL3kUrO+ZzX8
-        Flq9TUnpNLy+agT9BMz91YReH3ynk4o=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-49-3KE5f1rCPi2kwSdfwZstiA-1; Tue, 03 Dec 2019 06:05:57 -0500
-Received: by mail-lf1-f70.google.com with SMTP id u14so831168lfg.3
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 03:05:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=V8CIWd+jImrTtfvsB6vFA+BEXkmrNtVLFpFsIB4E0cA=;
-        b=iQrmYGPOSbOagPxFL+CCUdY9HonaabWtBULYxcRrAKgc8UCYfPR5KmJh6mB5IKVbEP
-         fBnTfsKOBQxjSFfyTrUSrpx53E1/Ot8noJzkQYac2f1KJ6W0M6kcgUkfsZzRhGWFGYVM
-         rcATg9bJZa0gMl896utDiB/iCeNQXM3Mt8EurD/FGJ3cV2qpg34qyAYJPrmVqECtaCsJ
-         mUVRVajJG4Cauat+FheAzWhV8iy4EZuBJjptHbNDARarXZR+kXL+tVncE0uiYvuVr35B
-         ldQuuzJfGJVszGQWN3rCS7UD4kkJ2kJ5pws00nZr+OKbO8sTiZQr8QfVPYdgBt9nJ6S9
-         6osQ==
-X-Gm-Message-State: APjAAAVNlKnju/jyNk8wHVlqu/PAEnm5kg4sW2VWg6MABjRtuHI7mi6L
-        okIFPfRoKNCIwfHUycsJyp2pUHmHjQqsEAtaIsAS08QZ16KQy6coiYq72YIkIeJcDR95AY4kdeX
-        Ym0rwvLFpaqICvCXP
-X-Received: by 2002:a2e:9b52:: with SMTP id o18mr2105784ljj.205.1575371156270;
-        Tue, 03 Dec 2019 03:05:56 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwo50fGFo8pv96BZQKak3qX0V58pQJksf6J0MKuQ+rJrI21+fktSHr9IwKuVoTh0bDQWQSTtQ==
-X-Received: by 2002:a2e:9b52:: with SMTP id o18mr2105766ljj.205.1575371156018;
-        Tue, 03 Dec 2019 03:05:56 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m13sm1108395lfo.40.2019.12.03.03.05.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 03:05:54 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C7B0618193A; Tue,  3 Dec 2019 12:05:52 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Better ways to validate map via BTF?
-In-Reply-To: <CAEf4BzYg-eM-di=GZOEaTMpgbqjuByY-hXjWpnRyBGyy-AkQYA@mail.gmail.com>
-References: <20191128170837.2236713b@carbon> <CAEf4BzY3jp=cw9N23dBJnEsMXys6ZtjW5LVHquq4kF9avaPKcg@mail.gmail.com> <87pnhbulxf.fsf@toke.dk> <CAEf4BzYg-eM-di=GZOEaTMpgbqjuByY-hXjWpnRyBGyy-AkQYA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 03 Dec 2019 12:05:52 +0100
-Message-ID: <87o8wppt2n.fsf@toke.dk>
+        id S1726224AbfLCLNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 06:13:04 -0500
+Received: from mail-eopbgr770055.outbound.protection.outlook.com ([40.107.77.55]:33749
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725838AbfLCLNE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 06:13:04 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IDy9tLy7htd0iLVXI2nT9Vth/iCryBSluBWLsixPNi+UZFvr6O+zOySpaUIo+e+AhV5sQzyatDJXaWLkGG5RhYjnmEYtQ+Ttg+l7aKuQMWRlxsGOukJ53COOpWYKZHIRfqE6nn3uoBWlsVh0iv8NobP25a7jDrVp0DCbVtwIn7n2SpbZ11jdpebP2m4OJ5Yq4lAdrv/DixUq6rvmr0lO2EXE9U32T+Zp+LqYktJ+FbWw+VHn87VhTPApwzYgx4c+8qJWZodgdP41oFxSwa3C9/+MaZzWDrqJ8m5QpmXu7wZZj03tX86v+u4JeM/FNVHFvnlB3Av1r7M/LFgoiYy3gA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4PghPG/WOgHq98k92wlVS7DW6YKMERHO0oIyNnO2uaA=;
+ b=TtSFwO0KcKLPlP6qasl4UP4WUGbE9h0tXXX97EtW1dfHXES0WpOi1cWyL7Oa6A02ub37LA0RQN04nEhWU9beflMTrdk9kDTsp1wmpV6leI5p1xnkSxGoo16zELwkOjDfc5UDCkSmrNLw6NoYG3H5QiZpvTt4kmN16mwKS/UsSk+VYnCVkK3/Uh0Lnunzv1tIzj8+DaNLYyeHiDDwuVJFV8t3DPC/+t9HlpnbR3fCMkywlp7a+YzqNYPOrTC6EOpFroKbbyHoyBH1c5PYFDwz54iPRc28f41BfKxeEFpIqsrevIqWfjuSy6EfqQWqIGtYvKG5lAAM08+hlztr/JVzCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4PghPG/WOgHq98k92wlVS7DW6YKMERHO0oIyNnO2uaA=;
+ b=QpzpqVUBUv4BEDyty4KTJ+99ZojXHwtsycHBvOjjsrBaO2lYYTXptTL5qtk8hhHr+/WFcscKNwMQvwhrAMiYogt+s1E7PQFWNWZnNCIJ4JjuwlWjGkEkJ5pM8b+Qx+PebIheubE+D/bpGPlNbe5GJ+G96e5GluyoRO7QP7uH+wM=
+Received: from BL0PR02CA0038.namprd02.prod.outlook.com (2603:10b6:207:3d::15)
+ by CH2PR02MB7094.namprd02.prod.outlook.com (2603:10b6:610:89::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.20; Tue, 3 Dec
+ 2019 11:12:21 +0000
+Received: from SN1NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::207) by BL0PR02CA0038.outlook.office365.com
+ (2603:10b6:207:3d::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2451.23 via Frontend
+ Transport; Tue, 3 Dec 2019 11:12:21 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT035.mail.protection.outlook.com (10.152.72.145) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
+ via Frontend Transport; Tue, 3 Dec 2019 11:12:20 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1ic66O-0005t0-4A; Tue, 03 Dec 2019 03:12:20 -0800
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1ic66J-0007xX-1J; Tue, 03 Dec 2019 03:12:15 -0800
+Received: from xsj-pvapsmtp01 (xsj-mail.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id xB3BC8WU020864;
+        Tue, 3 Dec 2019 03:12:08 -0800
+Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1ic66B-0007vg-OO; Tue, 03 Dec 2019 03:12:08 -0800
+From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        michal.simek@xilinx.com, appanad@xilinx.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, nagasure@xilinx.com,
+        Srinivas Neeli <srinivas.neeli@xilinx.com>
+Subject: [PATCH] can: xilinx_can: Fix missing Rx can packets on CANFD2.0
+Date:   Tue,  3 Dec 2019 16:42:02 +0530
+Message-Id: <1575371522-3030-1-git-send-email-srinivas.neeli@xilinx.com>
+X-Mailer: git-send-email 2.7.4
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(376002)(39860400002)(346002)(199004)(189003)(36386004)(50226002)(8936002)(16586007)(36756003)(6636002)(6666004)(356004)(50466002)(9786002)(48376002)(106002)(316002)(478600001)(81166006)(336012)(8676002)(5660300002)(2906002)(81156014)(107886003)(305945005)(7696005)(51416003)(26005)(44832011)(70586007)(2616005)(70206006)(4326008)(186003)(426003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB7094;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
 MIME-Version: 1.0
-X-MC-Unique: 3KE5f1rCPi2kwSdfwZstiA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5815e2f4-ba1c-49b6-4dda-08d777e1aa86
+X-MS-TrafficTypeDiagnostic: CH2PR02MB7094:
+X-Microsoft-Antispam-PRVS: <CH2PR02MB7094D457DDAB7D19FE2AD217AF420@CH2PR02MB7094.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Forefront-PRVS: 02408926C4
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nJPM9Fm0KNS6qC8b+01O6F6qY4VxviFR/2limORUHztSQkFx12ZGPfyyAfesAQPsD2+dnrmjIo6dxt9CkBtTH+nIPUZV8dBJ9cBS4jU2xoii9l2pnhoL2wGmaTO8hPT+7slezajU/sRS2D0quHeLwlYfOLngrrZTIyfPIbiJ6A1lQINgkHjIac9SOCns3uWxlB2Q5aVU0EaR4NImBl0t96/BGq2pk4qwzZkLA+XIt3C7p4Dv8CtaAOVToA8boT/Ih3u//1Gn7KP9PihVMMFzCERkfWT/mgRjvhlTdt/FSCWkq5ZCeU6qsrEslTHIFv/BFMrszRdPNW9NydCjjNkEjPhZy9WCTVFjSlatr7b7DLOP01ZhEdWWDmM249JBgNQHWleF62qyzTZpYwNDnJ3QaDVn1gHuw0sO/4H52vKxVJgJ2raaDXhqk7ZBHBdH1Mlj
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2019 11:12:20.7369
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5815e2f4-ba1c-49b6-4dda-08d777e1aa86
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB7094
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+CANFD2.0 core uses BRAM for storing acceptance filter ID(AFID) and MASK
+(AFMASK)registers. So by default AFID and AFMASK registers contain random
+data. Due to random data, not able to receive all CAN ids.
 
-> On Fri, Nov 29, 2019 at 12:27 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->>
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>
->> > On Thu, Nov 28, 2019 at 8:08 AM Jesper Dangaard Brouer
->> > <brouer@redhat.com> wrote:
->> >>
->> >> Hi Andrii,
->> >
->> >
->> > Hey, Jesper! Sorry for late reply, I'm on vacation for few days, so my
->> > availability is irregular at best :)
->> >
->> >>
->> >> Is there are better way to validate that a userspace BPF-program uses
->> >> the correct map via BTF?
->> >>
->> >> Below and in attached patch, I'm using bpf_obj_get_info_by_fd() to ge=
-t
->> >> some map-info, and check info.value_size and info.max_entries match
->> >> what I expect.  What I really want, is to check that "map-value" have
->> >> same struct layout as:
->> >>
->> >>  struct config {
->> >>         __u32 action;
->> >>         int ifindex;
->> >>         __u32 options;
->> >>  };
->> >
->> > Well, there is no existing magical way to do this, but it is doable by
->> > comparing BTFs of two maps. It's not too hard to compare all the
->> > members of a struct, their names, sizes, types, etc (and do that
->> > recursively, if necessary), but it's a bunch of code requiring due
->> > diligence. Libbpf doesn't provide that in a ready-to-use form (it does
->> > implement equivalence checks between two type graphs for dedup, but
->> > it's quite coupled with and specific to BTF deduplication algorithm).
->> > Keep in mind, when Toke implemented map pinning support in libbpf, we
->> > decided to not check BTF for now, and just check key/value size,
->> > flags, type, max_elements, etc.
->>
->> Yeah. Probably a good idea to provide convenience functions for this in
->> libbpf (split out the existing code and make it more general?). Then we
->> can also use that for the test in the map pinning code :)
->
-> As I said, type graph equivalence for btf_dedup() is very specific to
-> dedup. It does deep (i.e., structs that are referenced by pointer only
-> also have to match exactly) and strict (const, volatile, typedefs, all
-> that matters **and** has to come in exactly the same order)
-> equivalence checks. In addition, it does forward declaration
-> resolution into concrete struct/union. So no, it can't be reused or
-> generalized.
->
-> It has to be a new code, but even then I'm hesitant to provide
-> something "generic", because it's again not clear what the right
-> semantics is for all the cases. E.g., should we ignore
-> const/volatile/restrict? Or, if some typedef is used, which ultimately
-> resolves to the same underlying type -- should we ignore such
-> differences? Also, should we follow and check types that are
-> referenced through pointers only? I think in different cases users
-> might be want to be strict or more lenient about such cases, which
-> suggests that we shouldn't have a generic API (at least yet, until we
-> see 2, 3, 4, real-life use cases). And there are more potential
-> differences in semantics without a clear answer of which one should be
-> used. So we can code it up for map pinning case (after having a
-> discussion of what two maps should be considered compatible), but I
-> don't think we should go all the way to exposing it as an API.
+Initializing AFID and AFMASK registers with Zero before enabling
+acceptance filter to receive all packets irrespective of ID and Mask.
 
-My immediate thought is that we'd want the strict interpretation by
-default; at least for maps. My reasoning being that I expect most people
-will just define a struct in a C file somewhere for their map contents,
-and want to ensure that the map matches this, which would mean that any
-changes to the struct definition should break the match.
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Reviewed-by: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
+ drivers/net/can/xilinx_can.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-I'll go read the dedup code, and try to base a comparison function for
-maps on this; then we can discuss from there. I'm fine with keeping it
-internal to begin with, but I worry that if we don't (eventually) expose
-something as an API, people are just going to go the
-reuse-via-copy-paste route instead. But sure, let's spend some time
-collecting more experience with this before committing to an API.
-
--Toke
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 464af939cd8a..c1dbab8c896d 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -60,6 +60,8 @@ enum xcan_reg {
+ 	XCAN_TXMSG_BASE_OFFSET	= 0x0100, /* TX Message Space */
+ 	XCAN_RXMSG_BASE_OFFSET	= 0x1100, /* RX Message Space */
+ 	XCAN_RXMSG_2_BASE_OFFSET	= 0x2100, /* RX Message Space */
++	XCAN_AFR_2_MASK_OFFSET	= 0x0A00, /* Acceptance Filter MASK */
++	XCAN_AFR_2_ID_OFFSET	= 0x0A04, /* Acceptance Filter ID */
+ };
+ 
+ #define XCAN_FRAME_ID_OFFSET(frame_base)	((frame_base) + 0x00)
+@@ -1809,6 +1811,11 @@ static int xcan_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_put(&pdev->dev);
+ 
++	if (priv->devtype.flags & XCAN_FLAG_CANFD_2) {
++		priv->write_reg(priv, XCAN_AFR_2_ID_OFFSET, 0x00000000);
++		priv->write_reg(priv, XCAN_AFR_2_MASK_OFFSET, 0x00000000);
++	}
++
+ 	netdev_dbg(ndev, "reg_base=0x%p irq=%d clock=%d, tx buffers: actual %d, using %d\n",
+ 		   priv->reg_base, ndev->irq, priv->can.clock.freq,
+ 		   hw_tx_max, priv->tx_max);
+-- 
+2.7.4
 
