@@ -2,68 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3689110666
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 22:18:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F8B111B0C
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 22:34:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727497AbfLCVSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 16:18:47 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52868 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727430AbfLCVSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 16:18:47 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D895D151218B0;
-        Tue,  3 Dec 2019 13:18:46 -0800 (PST)
-Date:   Tue, 03 Dec 2019 13:18:44 -0800 (PST)
-Message-Id: <20191203.131844.1288568107728597971.davem@davemloft.net>
-To:     gregkh@linuxfoundation.org
-Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, soheil@google.com, ncardwell@google.com,
-        ycheng@google.com, willemb@google.com
-Subject: Re: [PATCH net] tcp: refactor tcp_retransmit_timer()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191203202358.GB3183510@kroah.com>
-References: <20191203160552.31071-1-edumazet@google.com>
-        <20191203.115311.1412019727224973630.davem@davemloft.net>
-        <20191203202358.GB3183510@kroah.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Dec 2019 13:18:47 -0800 (PST)
+        id S1727541AbfLCVeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 16:34:25 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25475 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727430AbfLCVeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 16:34:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575408864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rnD3VITWSjlaVbE4q1AGNQXRN6ub2ZDZ+V3FVYGlgO8=;
+        b=Y3FL72gGq5xkYcXXX4EvoShNG3swzliXd0nTQt15ehen9A5T5Toi3l0lgysBJBcRQfCzMI
+        r3a2KDEidOMRFyvpqxszffGIX/8Hije6YXSWUHg8wVIeuhKiwaq67gyfKTiNB6YY68BgVS
+        dLzklNywq/B+Kj9onGO7EbAxHkJudv0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-142-F_iBIdSJOjmgHBfq5E6Deg-1; Tue, 03 Dec 2019 16:34:21 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB14D1856A60;
+        Tue,  3 Dec 2019 21:34:18 +0000 (UTC)
+Received: from dhcp-25.97.bos.redhat.com (ovpn-123-35.rdu2.redhat.com [10.10.123.35])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 267F55C28F;
+        Tue,  3 Dec 2019 21:34:14 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH 1/2] openvswitch: support asymmetric conntrack
+Date:   Tue,  3 Dec 2019 16:34:13 -0500
+Message-Id: <20191203213414.24109-1-aconole@redhat.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: F_iBIdSJOjmgHBfq5E6Deg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg KH <gregkh@linuxfoundation.org>
-Date: Tue, 3 Dec 2019 21:23:58 +0100
+The openvswitch module shares a common conntrack and NAT infrastructure
+exposed via netfilter.  It's possible that a packet needs both SNAT and
+DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
+this because it runs through the NAT table twice - once on ingress and
+again after egress.  The openvswitch module doesn't have such capability.
 
-> On Tue, Dec 03, 2019 at 11:53:11AM -0800, David Miller wrote:
->> From: Eric Dumazet <edumazet@google.com>
->> Date: Tue,  3 Dec 2019 08:05:52 -0800
->> 
->> > It appears linux-4.14 stable needs a backport of commit
->> > 88f8598d0a30 ("tcp: exit if nothing to retransmit on RTO timeout")
->> > 
->> > Since tcp_rtx_queue_empty() is not in pre 4.15 kernels,
->> > let's refactor tcp_retransmit_timer() to only use tcp_rtx_queue_head()
->> > 
->> > I will provide to stable teams the squashed patches.
->> > 
->> > Signed-off-by: Eric Dumazet <edumazet@google.com>
->> 
->> Applied, thanks Eric.
-> 
-> Applied where, do you have a 4.14-stable queue too?  :)
+Like netfilter hook infrastructure, we should run through NAT twice to
+keep the symmetry.
 
-Applied to my net GIT tree, I do not have a 4.14 -stable queue :-)
+Fixes: 05752523e565 ("openvswitch: Interface with NAT.")
+Signed-off-by: Aaron Conole <aconole@redhat.com>
+---
+NOTE: this is a repost to see if the email client issues go away.
 
-> I can just take this directly to my 4.14.y tree now if you don't object.
+ net/openvswitch/conntrack.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Please integrate all of the -stable parts, yes.
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index df9c80bf621d..e726159cfcfa 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -903,6 +903,17 @@ static int ovs_ct_nat(struct net *net, struct sw_flow_=
+key *key,
+ =09}
+ =09err =3D ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype);
+=20
++=09if (err =3D=3D NF_ACCEPT &&
++=09    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
++=09=09if (maniptype =3D=3D NF_NAT_MANIP_SRC)
++=09=09=09maniptype =3D NF_NAT_MANIP_DST;
++=09=09else
++=09=09=09maniptype =3D NF_NAT_MANIP_SRC;
++
++=09=09err =3D ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
++=09=09=09=09=09 maniptype);
++=09}
++
+ =09/* Mark NAT done if successful and update the flow key. */
+ =09if (err =3D=3D NF_ACCEPT)
+ =09=09ovs_nat_update_key(key, skb, maniptype);
+--=20
+2.21.0
 
-Thanks.
