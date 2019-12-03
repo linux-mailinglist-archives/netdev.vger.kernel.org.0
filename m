@@ -2,98 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7696F10FBB4
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:25:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DE710FBBA
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 11:29:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725997AbfLCKZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 05:25:46 -0500
-Received: from mail-pj1-f53.google.com ([209.85.216.53]:43235 "EHLO
-        mail-pj1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725773AbfLCKZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:25:46 -0500
-Received: by mail-pj1-f53.google.com with SMTP id g4so1338572pjs.10
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 02:25:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Mf3Sb607PKT/ZuH7m8VJHeLiBmK0FHllPmByNNn4bFQ=;
-        b=RLFJbTqBCbRMeCsRQJS3jVx9w1KhlJ83GnB/KnrwcpgsWMMJSlOFRZNykdo1f7P219
-         W4DfN4bVoqvmY1nIY8y0rUzEtz3nFVcdqegaJ2vCBZNhx6bI63knzLnBikwJhyj0Q8/j
-         KbWQNWlXtAHryPOD6vHrRLaksd+v0Sv+7Q1WUZDvcFOZ+tByCV8DhoIQrbTtgtR4svl0
-         es1pVOyI9X5WKr8F1ZJouB36fI05v3iMUHVhlPWcDsSqRAyZlH4+g6ECKAjST+4WSv1C
-         SuR1cmzVZT0bbP4elpgdC6cUIj2r6URnkk7DVLwfnSAbgXGuIgPFE3vYSIu1dKfaYcRM
-         sdGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Mf3Sb607PKT/ZuH7m8VJHeLiBmK0FHllPmByNNn4bFQ=;
-        b=OJWVB8h7pdhcHfQ448aKiSqzQeFr8PIKvIizMosSjiv4rowqKJXvrO2rfBXEloSSiq
-         iQ3VMIsYPePF2B0Urri2Ml8aKNvn81ZBBLhWpk6RdL2EalQbx07HdSfgAQc6zKDhRKYN
-         U+Kq8D7PEHU6Aq77gPF4ik4pBIu8w7dYiOgGQQXECuYTERQwYzHYZq5GS6iEbc/4PDUa
-         ea8sQk+aT32K0HFZQCGC2YGFtni9YeTvUV6QF/tM7KIP4ESBl7N+ANL1/lN1Xf39m0Hv
-         qjYQsR38cGvWP0fez5h9J5ItdmwLmhBPqwN6AKmwOnOkSmJq5zDEhrcEnWQsuBaVXL+j
-         bH9w==
-X-Gm-Message-State: APjAAAXEV9GNKrtqMM7v9TZeB7QHJ8UoTAVRABGZAnJljKfDm5AOW3p8
-        8xTzP1zsxJ0TDwowcnE/fzv8nReN12bIFw==
-X-Google-Smtp-Source: APXvYqyztpesJ9b8ivfNEQ9d0OleKVHr8gQ297tbrvm7cmHtd1xsVoTvTUeNWmj6V3vUDnDyYTJXPA==
-X-Received: by 2002:a17:902:b70e:: with SMTP id d14mr3956326pls.51.1575368745060;
-        Tue, 03 Dec 2019 02:25:45 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t8sm3316885pfq.92.2019.12.03.02.25.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 02:25:44 -0800 (PST)
-Date:   Tue, 3 Dec 2019 18:25:35 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, ja@ssi.bg, marcelo.leitner@gmail.com,
-        dsahern@gmail.com, edumazet@google.com
-Subject: Re: [PATCHv2 net] ipv6/route: should not update neigh confirm time
- during PMTU update
-Message-ID: <20191203102534.GK18865@dhcp-12-139.nay.redhat.com>
-References: <20191122061919.26157-1-liuhangbin@gmail.com>
- <20191203021137.26809-1-liuhangbin@gmail.com>
- <20191202.184704.723174427717421022.davem@davemloft.net>
- <20191203101536.GJ18865@dhcp-12-139.nay.redhat.com>
+        id S1726057AbfLCK27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 05:28:59 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:56908 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbfLCK26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 05:28:58 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB3ASdQU125781;
+        Tue, 3 Dec 2019 04:28:39 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1575368919;
+        bh=jo8iHnrEm+gjBKUyjYXLNWcDF2FN0eHXQrGt/UkiHa4=;
+        h=To:From:Subject:Date;
+        b=EMOJSUz93bWqRHEL3lGPAA3VzTzTaTXmpsJ4Tf69gv1p0286b7O/CdEguK0J/nFCi
+         ahMIH0SNmhVU49e5WAShIW9r6e/xuaRoGf4T6rxqz/NxJW/fVMasF630ki4Zrf+XF0
+         piNEBS2YQ3F859uVwSFdGul6bD7ZL45VUJTQFYEs=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB3ASdDX033407
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 3 Dec 2019 04:28:39 -0600
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 3 Dec
+ 2019 04:28:39 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Tue, 3 Dec 2019 04:28:39 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB3ASZsP092888;
+        Tue, 3 Dec 2019 04:28:36 -0600
+To:     netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: linux-master: WARNING: suspicious RCU usage in
+ mem_allocator_disconnect
+Message-ID: <09e42c75-228a-f390-abd5-43e8f6ae70f2@ti.com>
+Date:   Tue, 3 Dec 2019 12:28:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191203101536.GJ18865@dhcp-12-139.nay.redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi All,
 
-Hi David,
-On Tue, Dec 03, 2019 at 06:15:36PM +0800, Hangbin Liu wrote:
-> On Mon, Dec 02, 2019 at 06:47:04PM -0800, David Miller wrote:
-> > From: Hangbin Liu <liuhangbin@gmail.com>
-> > Date: Tue,  3 Dec 2019 10:11:37 +0800
-> > 
-> > > Fix it by removing the dst_confirm_neigh() in __ip6_rt_update_pmtu() as
-> > > there is no two-way communication during PMTU update.
-> > > 
-> > > v2: remove dst_confirm_neigh directly as David Miller pointed out.
-> > 
-> > That's not what I said.
-> > 
-> > I said that this interface is designed for situations where the neigh
-> > update is appropriate, and that's what happens for most callers _except_
-> > these tunnel cases.
-> > 
-> > The tunnel use is the exception and invoking the interface
-> > inappropriately.
-> > 
-> > It is important to keep the neigh reachability fresh for TCP flows so
-> > you cannot remove this dst_confirm_neigh() call.
+While placing intf down I'm getting below splat with debug options enabled.
+Not sure how to fix it, so will be appreciated for any help.
 
-I have one question here. Since we have the .confirm_neigh fuction in
-struct dst_ops. How about do a dst->ops->confirm_neigh() separately after
-dst->ops->update_pmtu()? Why should we mix the confirm_neigh() in
-update_pmtu(), like ip6_rt_update_pmtu()?
 
-Thanks
-Hangbin
+
+=========================================================
+[  333.933896]
+[  333.935511] =============================
+[  333.939552] WARNING: suspicious RCU usage
+[  333.943724] 5.4.0-08849-ga6eb3c7b339b-dirty #40 Not tainted
+[  333.949335] -----------------------------
+[  333.953445] ./include/linux/rcupdate.h:273 Illegal context switch in RCU read-side critical section!
+[  333.962698]
+[  333.962698] other info that might help us debug this:
+[  333.962698]
+[  333.970752]
+[  333.970752] rcu_scheduler_active = 2, debug_locks = 1
+[  333.977391] 2 locks held by ifconfig/1007:
+[  333.981520]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
+[  333.988534]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
+[  333.996939]
+[  333.996939] stack backtrace:
+[  334.001334] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
+[  334.009733] Hardware name: Generic DRA72X (Flattened Device Tree)
+[  334.015878] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
+[  334.023675] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
+[  334.031038] [<c09f9e08>] (dump_stack) from [<c016e4a4>] (___might_sleep+0x1e8/0x2bc)
+[  334.038834] [<c016e4a4>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
+[  334.046716] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
+[  334.054774] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
+[  334.063966] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
+[  334.073242] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
+[  334.081822] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
+[  334.090663] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
+[  334.099331] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
+[  334.107475] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
+[  334.116053] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
+[  334.124545] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
+[  334.132775] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
+[  334.140483] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
+[  334.147929] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
+[  334.155461] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
+[  334.162905] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
+[  334.170781] Exception stack(0xed517fa8 to 0xed517ff0)
+[  334.175870] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
+[  334.184099] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
+[  334.192325] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
+[  334.197604] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
+[  334.206157] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1007, name: ifconfig
+[  334.214274] 2 locks held by ifconfig/1007:
+[  334.218401]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
+[  334.225407]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
+[  334.233813] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
+[  334.242212] Hardware name: Generic DRA72X (Flattened Device Tree)
+[  334.248351] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
+[  334.256147] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
+[  334.263506] [<c09f9e08>] (dump_stack) from [<c016e464>] (___might_sleep+0x1a8/0x2bc)
+[  334.271300] [<c016e464>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
+[  334.279181] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
+[  334.287238] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
+[  334.296427] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
+[  334.305703] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
+[  334.314281] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
+[  334.323122] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
+[  334.331788] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
+[  334.339931] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
+[  334.348510] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
+[  334.357000] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
+[  334.365228] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
+[  334.372935] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
+[  334.380380] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
+[  334.387911] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
+[  334.395355] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
+[  334.403231] Exception stack(0xed517fa8 to 0xed517ff0)
+[  334.408319] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
+[  334.416548] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
+[  334.424774] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
+
+
+Enabled debug options:
+=================================================
++CONFIG_LOCKUP_DETECTOR=y
++CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC=y
++CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=1
++CONFIG_DETECT_HUNG_TASK=y
++CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=300
++CONFIG_BOOTPARAM_HUNG_TASK_PANIC=y
++CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=1
++CONFIG_PANIC_ON_OOPS=y
++CONFIG_PANIC_ON_OOPS_VALUE=1
++
++CONFIG_DEBUG_RT_MUTEXES=y
++CONFIG_DEBUG_PI_LIST=y
++CONFIG_DEBUG_SPINLOCK=y
++CONFIG_DEBUG_MUTEXES=y
++CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
++CONFIG_DEBUG_LOCK_ALLOC=y
++CONFIG_PROVE_LOCKING=y
++CONFIG_LOCKDEP=y
++CONFIG_DEBUG_LOCKDEP=y
++CONFIG_DEBUG_ATOMIC_SLEEP=y
++CONFIG_DEBUG_LOCKING_API_SELFTESTS=n
++CONFIG_STACKTRACE=y
++CONFIG_DEBUG_BUGVERBOSE=y
++CONFIG_DEBUG_LIST=y
++CONFIG_DEBUG_SG=y
++CONFIG_DEBUG_NOTIFIERS=y
++
++CONFIG_SPARSE_RCU_POINTER=y
++CONFIG_RCU_CPU_STALL_TIMEOUT=60
++CONFIG_RCU_CPU_STALL_INFO=y
++CONFIG_RCU_TRACE=y
++CONFIG_PROVE_RCU=y
++CONFIG_PROVE_RCU_REPEATEDLY=y
++
++CONFIG_DMA_API_DEBUG=y
+
+
+-- 
+Best regards,
+grygorii
