@@ -2,114 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6B1111B0E
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 22:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BC0111B43
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 23:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727560AbfLCVe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 16:34:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26556 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727519AbfLCVe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 16:34:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575408866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qs1VjeG7KK4WQrVAKNIiY/1MqhAXX/lIQTckj+a0UkY=;
-        b=M4qpAMzS3OErhMWJdQPVPEzhmASZeHRSuhZY8cONv7IUBu1dYh6Q2oA9+Jho8trOz/LPTr
-        TI9Ths39js6jHF7y9eEUMwKAjX21eHYmMBpTtdWe19ubOvsUJ0dn/Fvw5qVUv9QZseRFik
-        FOCzGlmTYSvQ4La56NDFx/TlkfdiVgQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-271-hePFQX5GMaWVgE44x0-cCw-1; Tue, 03 Dec 2019 16:34:23 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C305800D41;
-        Tue,  3 Dec 2019 21:34:21 +0000 (UTC)
-Received: from dhcp-25.97.bos.redhat.com (ovpn-123-35.rdu2.redhat.com [10.10.123.35])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ECEE15C297;
-        Tue,  3 Dec 2019 21:34:18 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org,
-        Marcelo Leitner <mleitner@redhat.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH 2/2] act_ct: support asymmetric conntrack
-Date:   Tue,  3 Dec 2019 16:34:14 -0500
-Message-Id: <20191203213414.24109-2-aconole@redhat.com>
-In-Reply-To: <20191203213414.24109-1-aconole@redhat.com>
-References: <20191203213414.24109-1-aconole@redhat.com>
+        id S1727519AbfLCWBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 17:01:20 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6098 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727416AbfLCWBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 17:01:20 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xB3LqlHR010889
+        for <netdev@vger.kernel.org>; Tue, 3 Dec 2019 14:01:18 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2wnd6sdc0k-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 14:01:18 -0800
+Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 3 Dec 2019 14:01:17 -0800
+Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
+        id 402EC70BE9FB; Tue,  3 Dec 2019 14:01:14 -0800 (PST)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <kernel-team@fb.com>, <brouer@redhat.com>,
+        <grygorii.strashko@ti.com>
+Smtp-Origin-Cluster: vll1c12
+Subject: [net PATCH] xdp: obtain the mem_id mutex before trying to remove an entry.
+Date:   Tue, 3 Dec 2019 14:01:14 -0800
+Message-ID: <20191203220114.1524992-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: hePFQX5GMaWVgE44x0-cCw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-03_07:2019-12-02,2019-12-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 phishscore=0
+ mlxlogscore=800 lowpriorityscore=0 clxscore=1034 suspectscore=2
+ adultscore=0 spamscore=0 priorityscore=1501 bulkscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912030163
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The act_ct TC module shares a common conntrack and NAT infrastructure
-exposed via netfilter.  It's possible that a packet needs both SNAT and
-DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
-this because it runs through the NAT table twice - once on ingress and
-again after egress.  The act_ct action doesn't have such capability.
+A lockdep splat was observed when trying to remove an xdp memory
+model from the table since the mutex was obtained when trying to
+remove the entry, but not before the table walk started:
 
-Like netfilter hook infrastructure, we should run through NAT twice to
-keep the symmetry.
+Fix the splat by obtaining the lock before starting the table walk.
 
-Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-
-Signed-off-by: Aaron Conole <aconole@redhat.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Fixes: c3f812cea0d7 ("page_pool: do not release pool until inflight == 0.")
+Reported-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
-NOTE: this is a repost to see if the email client issues go away.
+ net/core/xdp.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- net/sched/act_ct.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index ae0de372b1c8..bf2d69335d4b 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -329,6 +329,7 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
- =09=09=09  bool commit)
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index e334fad0a6b8..7c8390ad4dc6 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -80,12 +80,8 @@ static void mem_xa_remove(struct xdp_mem_allocator *xa)
  {
- #if IS_ENABLED(CONFIG_NF_NAT)
-+=09int err;
- =09enum nf_nat_manip_type maniptype;
-=20
- =09if (!(ct_action & TCA_CT_ACT_NAT))
-@@ -359,7 +360,17 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
- =09=09return NF_ACCEPT;
- =09}
-=20
--=09return ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+=09if (err =3D=3D NF_ACCEPT &&
-+=09    ct->status & IPS_SRC_NAT && ct->status & IPS_DST_NAT) {
-+=09=09if (maniptype =3D=3D NF_NAT_MANIP_SRC)
-+=09=09=09maniptype =3D NF_NAT_MANIP_DST;
-+=09=09else
-+=09=09=09maniptype =3D NF_NAT_MANIP_SRC;
+ 	trace_mem_disconnect(xa);
+ 
+-	mutex_lock(&mem_id_lock);
+-
+ 	if (!rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
+ 		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+-
+-	mutex_unlock(&mem_id_lock);
+ }
+ 
+ static void mem_allocator_disconnect(void *allocator)
+@@ -93,6 +89,8 @@ static void mem_allocator_disconnect(void *allocator)
+ 	struct xdp_mem_allocator *xa;
+ 	struct rhashtable_iter iter;
+ 
++	mutex_lock(&mem_id_lock);
 +
-+=09=09err =3D ct_nat_execute(skb, ct, ctinfo, range, maniptype);
-+=09}
-+=09return err;
- #else
- =09return NF_ACCEPT;
- #endif
---=20
-2.21.0
+ 	rhashtable_walk_enter(mem_id_ht, &iter);
+ 	do {
+ 		rhashtable_walk_start(&iter);
+@@ -106,6 +104,8 @@ static void mem_allocator_disconnect(void *allocator)
+ 
+ 	} while (xa == ERR_PTR(-EAGAIN));
+ 	rhashtable_walk_exit(&iter);
++
++	mutex_unlock(&mem_id_lock);
+ }
+ 
+ static void mem_id_disconnect(int id)
+-- 
+2.17.1
 
