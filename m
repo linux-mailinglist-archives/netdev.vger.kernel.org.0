@@ -2,86 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE0C10FEC3
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 14:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A8710FF01
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 14:42:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbfLCN1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 08:27:40 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35120 "EHLO vps0.lunn.ch"
+        id S1726567AbfLCNmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 08:42:31 -0500
+Received: from mx01-fr.bfs.de ([193.174.231.67]:18570 "EHLO mx01-fr.bfs.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726086AbfLCN1j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Dec 2019 08:27:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=eJyah7dYBX5u0LYEhSimzhwPDy/5Lpv50W9F2mk/SS4=; b=C+pXhVT8PUGcoJlnv3HYAff5f1
-        XowwDMrr+z2qLllhbeyjUcC1hA4hHNgGKyq0KZUdTFOQDQDiZkuo1lj6O3TKlOZf2ZHgc/RQSavrD
-        XoKAFQdLGBgy0HdviZKTkFfklGO2nhRZbWYvhXaFACF507hffcHzonPwVehoDiDaSPdg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ic8DC-0005YA-Qg; Tue, 03 Dec 2019 14:27:30 +0100
-Date:   Tue, 3 Dec 2019 14:27:30 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sam Lewis <sam.vr.lewis@gmail.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: Re: PROBLEM: smsc95xx loses config on link down/up
-Message-ID: <20191203132730.GC1234@lunn.ch>
-References: <CA+ZLECteuEZJM_4gtbxiEAAKbKnJ_3UfGN4zg_m2EVxk_9=WiA@mail.gmail.com>
- <20191202134606.GA1234@lunn.ch>
- <CA+ZLECv7AcQSa1VZeeiOFJ43Vh=nfn_ptMB6XwXsfbRSz9VJ6A@mail.gmail.com>
+        id S1726190AbfLCNmb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 08:42:31 -0500
+Received: from mail-fr.bfs.de (mail-fr.bfs.de [10.177.18.200])
+        by mx01-fr.bfs.de (Postfix) with ESMTPS id 69DCA20321;
+        Tue,  3 Dec 2019 14:42:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
+        t=1575380545; h=from:from:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zTrdGdcdKAaJuFODTrzP2KCZ1YSOb/GviD8pdPVM5pM=;
+        b=DT8PXpnOOCWJdd8tlABC6YIWcanBJmmhfohIt62je7d8mRfsZPjNo0PhXKP4ys1RlVD0UE
+        y9A4oiHQbwg6kR12IkVB05eYhN+1op/CqPz8hQilZQZMZqY4L0Nc41VLPkDp0Mzpv6wBFN
+        E7YC5yKx/zpVDZDJKD3yxZNeU3802R/q7o2UeFnpvz3VP7jU2AhNgZLSvnf2G/ZkNoXGaz
+        GU21DkZzKDmeVnOjhD0BgOeyqCaj4eELJi/iOxLCGLPZPUv0sS1ldQtlFxZqAjDfrtxKqb
+        IcNVX/ZHy8/aWZfXz2hUGskXONUB7fxRP4/dkj+ZCiuVvtBBPXfCpQTAmBUZKQ==
+Received: from [134.92.181.33] (unknown [134.92.181.33])
+        by mail-fr.bfs.de (Postfix) with ESMTPS id 4CE28BEEBD;
+        Tue,  3 Dec 2019 14:42:24 +0100 (CET)
+Message-ID: <5DE6663F.40803@bfs.de>
+Date:   Tue, 03 Dec 2019 14:42:23 +0100
+From:   walter harms <wharms@bfs.de>
+Reply-To: wharms@bfs.de
+User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; de; rv:1.9.1.16) Gecko/20101125 SUSE/3.0.11 Thunderbird/3.0.11
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+ZLECv7AcQSa1VZeeiOFJ43Vh=nfn_ptMB6XwXsfbRSz9VJ6A@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: fix a leak in register_netdevice()
+References: <20191203130011.wzzwdi5sebevkenj@kili.mountain>
+In-Reply-To: <20191203130011.wzzwdi5sebevkenj@kili.mountain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.10
+Authentication-Results: mx01-fr.bfs.de
+X-Spamd-Result: default: False [-3.10 / 7.00];
+         ARC_NA(0.00)[];
+         HAS_REPLYTO(0.00)[wharms@bfs.de];
+         BAYES_HAM(-3.00)[100.00%];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         MIME_GOOD(-0.10)[text/plain];
+         REPLYTO_ADDR_EQ_FROM(0.00)[];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_TWELVE(0.00)[12];
+         NEURAL_HAM(-0.00)[-0.999,0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         RCVD_COUNT_TWO(0.00)[2];
+         MID_RHS_MATCH_FROM(0.00)[];
+         RCVD_TLS_ALL(0.00)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Basically it looks as though doing a BMCR_RESET does, in fact, reset
-> every PHY R/W register bit except for those marked as "Not Affected by
-> Software Reset" (NASR). This means it will reset, to the default
-> value:
+
+
+Am 03.12.2019 14:00, schrieb Dan Carpenter:
+> We have to free "dev->name_node" on this error path.
 > 
-> - Autonegotiation
-> - Speed
-> - Duplex
-> - Auto MDIX
-> - Energy Detect Power-Down
-> - Auto Negotiation Advertisement
-> - PHY Identification (although I don't know why you'd change this?)
-> - Power down
-> - Loopback
+> Fixes: ff92741270bf ("net: introduce name_node struct to be used in hashlist")
+> Reported-by: syzbot+6e13e65ffbaa33757bcb@syzkaller.appspotmail.com
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  net/core/dev.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 > 
-> I tested this by checking the value of the BMCR register before and
-> after doing a BMCR_RESET and it did reset the BMCR register to its
-> default values.
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index d75fd04d4e2c..9cc4b193d8c4 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9246,7 +9246,7 @@ int register_netdevice(struct net_device *dev)
+>  		if (ret) {
+>  			if (ret > 0)
+>  				ret = -EIO;
+> -			goto out;
+> +			goto err_free_name;
+>  		}
+>  	}
+>  
+> @@ -9361,12 +9361,13 @@ int register_netdevice(struct net_device *dev)
+>  	return ret;
+>  
+>  err_uninit:
+> -	if (dev->name_node)
+> -		netdev_name_node_free(dev->name_node);
+>  	if (dev->netdev_ops->ndo_uninit)
+>  		dev->netdev_ops->ndo_uninit(dev);
+>  	if (dev->priv_destructor)
+>  		dev->priv_destructor(dev);
+> +err_free_name:
+> +	if (dev->name_node)
+> +		netdev_name_node_free(dev->name_node);
+>  	goto out;
+>  }
+>  EXPORT_SYMBOL(register_netdevice);
 
-O.K, not what we want.
+nitpick:
+netdev_name_node_free() is a wrapper for kfree().
+no need to check dev->name_node.
 
-So there are two different paths here you can follow:
+jm2c
 
-1) Moving the reset out of open and into bind.
-2) Re-write the driver to make use of the core phylib support.
-
-1) is probably the quick and simple solution, but watch out for
-suspend/resume.
-
-2) is more work, but brings the driver into line with other MAC
-drivers. phylib would then program the PHY, maybe via PHY driver. It
-would do this during open, using state information. So it should
-correctly handle state change while the interface is down, or
-suspended etc.
-
-The USB-ethernet drivers lan78xx and ax88172a both use phylib.  They
-can give you ideas how this should work.
-
-drivers/net/phy/smsc.c might be a good basis for a PHY driver, but it
-looks like you will need to extend it for MDIX, etc.
-
-      Andrew
+re,
+ wh
