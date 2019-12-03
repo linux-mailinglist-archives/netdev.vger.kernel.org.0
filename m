@@ -2,118 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D557010FA1E
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 09:46:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F7610FA23
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 09:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbfLCIqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 03:46:40 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35923 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726008AbfLCIqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 03:46:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575362798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6S/cp50CX4iCq+Gvl9oMm5iLtDZ8r5C5Y48vBVIfKoc=;
-        b=L328nOM4fFmsIziZ+iVlO5lF238xG9QBtLoaz7UHdSYRSDDC6Inu3dhuXsN/oXUF/jF9fN
-        bYTyJ0ElQ6N+y/ztkau0oJTM0XvS2xl5Rs4WQ4DhVu4KoAZrMKUrLIjhtPlGO0a8Uc0SQM
-        NZbq3VyjaFHFmlgC8qna+QKunqsCY4A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-228-OI-lXgHtO6yoe-yoPLTHhw-1; Tue, 03 Dec 2019 03:46:34 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5175F800D4E;
-        Tue,  3 Dec 2019 08:46:33 +0000 (UTC)
-Received: from krava (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with SMTP id D89B667E58;
-        Tue,  3 Dec 2019 08:46:27 +0000 (UTC)
-Date:   Tue, 3 Dec 2019 09:46:26 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-audit@redhat.com,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Subject: Re: [RFC] bpf: Emit audit messages upon successful prog load and
- unload
-Message-ID: <20191203084626.GB17468@krava>
-References: <20191128091633.29275-1-jolsa@kernel.org>
- <CAHC9VhQ7zkXdz1V5hQ8PN68-NnCn56TjKA0wCL6ZjHy9Up8fuQ@mail.gmail.com>
- <1915471.OmxkCOUsnW@x2>
-MIME-Version: 1.0
-In-Reply-To: <1915471.OmxkCOUsnW@x2>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: OI-lXgHtO6yoe-yoPLTHhw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        id S1726055AbfLCIsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 03:48:54 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:46274 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbfLCIsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 03:48:54 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4700E1500CC09;
+        Tue,  3 Dec 2019 00:48:53 -0800 (PST)
+Date:   Tue, 03 Dec 2019 00:48:50 -0800 (PST)
+Message-Id: <20191203.004850.2142378371017096251.davem@davemloft.net>
+To:     linyunsheng@huawei.com
+Cc:     tanhuazhong@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, salil.mehta@huawei.com,
+        yisen.zhuang@huawei.com, linuxarm@huawei.com,
+        jakub.kicinski@netronome.com
+Subject: Re: [PATCH net 1/3] net: hns3: fix for TX queue not restarted
+ problem
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <2f017ae3-ddec-928c-16b7-5ed59e6fc8d6@huawei.com>
+References: <1575342535-2981-2-git-send-email-tanhuazhong@huawei.com>
+        <20191202.192539.1290120247243731738.davem@davemloft.net>
+        <2f017ae3-ddec-928c-16b7-5ed59e6fc8d6@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 03 Dec 2019 00:48:53 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 02, 2019 at 11:57:22PM -0500, Steve Grubb wrote:
-> On Monday, December 2, 2019 6:00:14 PM EST Paul Moore wrote:
-> > On Thu, Nov 28, 2019 at 4:16 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > From: Daniel Borkmann <daniel@iogearbox.net>
-> > >=20
-> > > Allow for audit messages to be emitted upon BPF program load and
-> > > unload for having a timeline of events. The load itself is in
-> > > syscall context, so additional info about the process initiating
-> > > the BPF prog creation can be logged and later directly correlated
-> > > to the unload event.
-> > >=20
-> > > The only info really needed from BPF side is the globally unique
-> > > prog ID where then audit user space tooling can query / dump all
-> > > info needed about the specific BPF program right upon load event
-> > > and enrich the record, thus these changes needed here can be kept
-> > > small and non-intrusive to the core.
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Date: Tue, 3 Dec 2019 12:28:22 +0800
 
-SNIP
+> On 2019/12/3 11:25, David Miller wrote:
+>> From: Huazhong Tan <tanhuazhong@huawei.com>
+>> Date: Tue, 3 Dec 2019 11:08:53 +0800
+>> 
+>>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>>> index ba05368..b2bb8e2 100644
+>>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+>>> @@ -1286,13 +1286,16 @@ static bool hns3_skb_need_linearized(struct sk_buff *skb, unsigned int *bd_size,
+>>>  	return false;
+>>>  }
+>>>  
+>>> -static int hns3_nic_maybe_stop_tx(struct hns3_enet_ring *ring,
+>>> +static int hns3_nic_maybe_stop_tx(struct net_device *netdev,
+>>>  				  struct sk_buff **out_skb)
+>>>  {
+>>> +	struct hns3_nic_priv *priv = netdev_priv(netdev);
+>>>  	unsigned int bd_size[HNS3_MAX_TSO_BD_NUM + 1U];
+>>>  	struct sk_buff *skb = *out_skb;
+>>> +	struct hns3_enet_ring *ring;
+>>>  	unsigned int bd_num;
+>>>  
+>>> +	ring = &priv->ring[skb->queue_mapping];
+>> 
+>> Please just pass the ring pointer into hns3_nic_maybe_stop_tx() instead of
+>> needlessly recalculating it.
+> 
+> The reason that I am passing the netdev instead of ring pointer is
+> that the netif_start_subqueue() need a netdev parameter, and the
+> netdev can not be derived from the ring pointer.
+> 
+> Do you think it is better to keep it as this patch, or add a new
+> netdevice parameter? like below:
 
-> > I think you would probably also want to check the results of
-> > audit_dummy_context() here as well, see all the various audit_XXX()
-> > functions in include/linux/audit.h as an example.  You'll see a
-> > pattern similar to the following:
-> >=20
-> > static inline void audit_foo(...)
-> > {
-> >   if (unlikely(!audit_dummy_context()))
-> >     __audit_foo(...)
-> > }
-> >=20
-> > > +       ab =3D audit_log_start(audit_context(), GFP_ATOMIC, AUDIT_BPF=
-);
-> > > +       if (unlikely(!ab))
-> > > +               return;
-> > > +       audit_log_format(ab, "prog-id=3D%u op=3D%s",
-> > > +                        prog->aux->id, bpf_audit_str[op]);
-> >=20
-> > Is it worth putting some checks in here to make sure that you don't
-> > blow past the end of the bpf_audit_str array?
->=20
-> I am wondering if prog-id was really the only information that was needed=
-? Is=20
-> it meaningful to other tools? Does that correlate to anything in /proc? I=
-n=20
-> earlier discussion, it sounded like more information was needed to be sur=
-e=20
-> what was happening.
+Just add the netdev parameter, in addition to the ring parameter.
 
-yep, as David mentions in the changelog the global ID is enough,
-because you can get all the other bpf program info based on that
-
-jirka
-
+All arguments fit in the register argument passing conventions of
+various cpus so the cost of adding the parameter is zero.
