@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D72112062
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 00:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F177C112071
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 00:51:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfLCXnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 18:43:14 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:57184 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfLCXnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 18:43:13 -0500
+        id S1726480AbfLCXvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 18:51:35 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:57142 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbfLCXve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 18:51:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OPqV2nFrcb2kveUIO3yew2jRvZwyS9xTFWvVWcs/spM=; b=iq0/EIA9iexEmIjjiLPdaYHs4
-        7BdmVMdoj3wljvzDO3pkZVaF1Wr0nxYgJgLm3fzx5EA5oSg+H3hMxQ302BVueNhBS+2AkjSGdRog8
-        TVyD5WtJiUIXVsHeLGp5wibrlD0aHaf0qlEmkm0MOUJNN+hBEovPsNViw+t59+Sowqng5rt+oip9D
-        gjUNPEFXB2RUoagAaA9p1uUBh/Js94QdDNn3/JbSK5TETsO90oTHighhyYgl2DRnGXc9E8kBZhCMz
-        P2zTagF5/f6w1g2Mz8pGi03vG6/Yt1MAjE1RXhCeNHF+7sI6h9EFzrmcyHal8J27DPH9WdJ+Ej+FH
-        zBpFDIvOQ==;
-Received: from [2601:1c0:6280:3f0::5a22]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1icHp1-0003aR-6R; Tue, 03 Dec 2019 23:43:11 +0000
-Subject: Re: linux-next: Tree for Dec 3 (switchdev & TI_CPSW_SWITCHDEV)
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        linux-omap@vger.kernel.org
-References: <20191203155405.31404722@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <58aebf62-54f8-9084-147b-801ea65327bb@infradead.org>
-Date:   Tue, 3 Dec 2019 15:43:09 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gJWYrYIkfYnDnhed5YeyLDrnvL+/+vmNTQlpwWNYO5M=; b=vsa+LDV2z12HVDnA6YGtJC95v9
+        Mgqs8QkufO+wav1kDLtpBOFUlTu7q0oSsMomaAU7yfFXdhx5BtqKROrL8YbhZb3fZ4G0hBvHs/kK3
+        6p+u/vYby5gORrhqjkVOSRmY+A/NQGMUn2vzom63KtEQx4RHdLpiEvQLEYxZrW9fvOxph3rbunFqt
+        r1Tc6VhvZkfsv4i8da5yPOfnnG0r9H6Xs42KBFMON9NSjy5DgP2R5auE/qmH97wXXjrkupZGKAISR
+        DqXSN2WTfGQZAQF/Z9gHoy8xyOMo7rsK6hckjVa4MF9vcrpc5Q84H80XeVXWl9evxlQnKHkAhC8Gy
+        7hTv6lPw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:40996 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1icHwx-00011m-Nv; Tue, 03 Dec 2019 23:51:23 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1icHww-00043d-U9; Tue, 03 Dec 2019 23:51:23 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net] net: sfp: fix unbind
 MIME-Version: 1.0
-In-Reply-To: <20191203155405.31404722@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1icHww-00043d-U9@rmk-PC.armlinux.org.uk>
+Date:   Tue, 03 Dec 2019 23:51:22 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/2/19 8:54 PM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Please do not add any material for v5.6 to your linux-next included
-> trees until after v5.5-rc1 has been released.
-> 
-> Changes since 20191202:
+When unbinding, we don't correctly tear down the module state, leaving
+(for example) the hwmon registration behind. Ensure everything is
+properly removed by sending a remove event at unbind.
 
-I am seeing this (happens to be on i386; I doubt that it matters):
-CONFIG_COMPILE_TEST=y
+Fixes: 6b0da5c9c1a3 ("net: sfp: track upstream's attachment state in state machine")
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/sfp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-
-WARNING: unmet direct dependencies detected for NET_SWITCHDEV
-  Depends on [n]: NET [=y] && INET [=n]
-  Selected by [y]:
-  - TI_CPSW_SWITCHDEV [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_TI [=y] && (ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST [=y])
-
-because TI_CPSW_SWITCHDEV blindly selects NET_SWITCHDEV even though
-INET is not set/enabled, while NET_SWITCHDEV depends on INET.
-
-However, the build succeeds, including net/switchdev/*.
-
-So why does NET_SWITCHDEV depend on INET?
-
-It looks like TI_CPSW_SWITCHDEV should depend on INET (based on the
-Kconfig rules), but in practice it doesn't seem to matter to the build.
-
-thanks.
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 8d05e888d3f8..78f53da1e34e 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -2294,6 +2294,10 @@ static int sfp_remove(struct platform_device *pdev)
+ 
+ 	sfp_unregister_socket(sfp->sfp_bus);
+ 
++	rtnl_lock();
++	sfp_sm_event(sfp, SFP_E_REMOVE);
++	rtnl_unlock();
++
+ 	return 0;
+ }
+ 
 -- 
-~Randy
+2.20.1
 
