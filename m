@@ -2,106 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D3611018C
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:50:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BB2D110196
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 16:53:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbfLCPu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 10:50:56 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40839 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbfLCPuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 10:50:55 -0500
-Received: by mail-wr1-f67.google.com with SMTP id c14so4266500wrn.7
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 07:50:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xKpLkJ4TcM/K4DTyzjgCR04MySzz0rqcTbbc1IOsCEM=;
-        b=cK54oECVFbL0pc1TN/Kj7PjGB4LWxCKnhI44h5p4/tSV/Vmdf6yyRftD0uK8jWUQp2
-         oU35UOkJI1nMb4NMWTyvkEWcU0cMs5jhkzPBQIccbgHR9gXb0TXoLbdCNIgUkyu2SVae
-         X+xb2HzOFoufZFOwD4gG2LyyO4UgMyQ4yGGr4lbaGNzLEVOEUfgz5y0wtmOc1x04XIUp
-         QbRy3bFDBw9HBx1hG1EZl46mwYG/ChO1RFglCKe0rOkuwvx8BtVMwueqiu+AOnbp6l5C
-         Cw3mmrPhtoIuTDubQx4RkvQLltAc879cGqo1UjumIlf+G0wjacS8COYsQmBBxYJxtXCT
-         Debw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=xKpLkJ4TcM/K4DTyzjgCR04MySzz0rqcTbbc1IOsCEM=;
-        b=is/0OhlogFSLRrWnPirf0iNmXnSkfwCy9VhOhj0a2yMPoTphL/Egn6+F++5Arjx1Vy
-         DUM0sQc9WpUB+VSRe3VSzX0Oy2lyb7uoS1tRQlEfDWgdPBpVSOqmDMu2zYqFg8mqXjsL
-         E4lFqvsixiTJSq9ZIDls01EU1m3ZCogtsdo/dbwVQUnwj0otSCHM2dRDdA7mdXZ32PJG
-         WjJIqM6VpfoaMdIZ7/E6VWNOIhMEuVEw1RMphvG00XTZze/nDDrXxVZPjoh2VZCiCCTv
-         2IWl33RcX6c6sDbCSSanYMt65Af82UxT8GW7TR+uEUBITGTwWjt56WxQH9TvCuGq1ILc
-         OFMw==
-X-Gm-Message-State: APjAAAV9UIgu/djdsYp8R9H7oZw6fdKr+lIya4lxOa3HafM2ymuEjnaq
-        pLNYRvU6a4aB9w4veudQgAqP2g==
-X-Google-Smtp-Source: APXvYqxntFyiJbOfCDR0kELEkL8MRRYIlKUNkm9YXk+E7STtb5Pyns/VrzmqE3P+gYOCh/2WG9W0Eg==
-X-Received: by 2002:adf:ba4b:: with SMTP id t11mr5668806wrg.331.1575388253455;
-        Tue, 03 Dec 2019 07:50:53 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:7594:27:53f2:5cc7? ([2a01:e0a:410:bb00:7594:27:53f2:5cc7])
-        by smtp.gmail.com with ESMTPSA id x10sm4103190wrv.60.2019.12.03.07.50.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Dec 2019 07:50:52 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: xfrmi: request for stable trees
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-References: <20190905102201.1636-1-steffen.klassert@secunet.com>
- <3a94c153-c8f1-45d1-9f0d-68ca5b83b44c@6wind.com>
- <65447cc6-0dd4-1dbd-3616-ca6e88ca5fc0@6wind.com>
- <20191203130345.GC8621@gauss3.secunet.de>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <95ca675f-3581-2784-c77d-95f2995ea3d7@6wind.com>
-Date:   Tue, 3 Dec 2019 16:50:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1726856AbfLCPxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 10:53:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbfLCPxV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 10:53:21 -0500
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 05A6D2073F;
+        Tue,  3 Dec 2019 15:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575388400;
+        bh=cKUlQJxyEbNNE534SxNpTQSfjp4RJhfRU1TUcm+QH08=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Nm1H73YFEpWiEJ7OcGsNEJd3BOuiFHQOpmau/UXVgeM0A3bJ4zEmI/hHgl2R62C1y
+         Ms62vpk7yOnX3u1BuWQss6CwRWnVQXsDzid8yYPpfAB1VJO4Tgm8AGk7nzJRGSJKld
+         i6dHTj8CNyyW9bPfXgUO/tMXqTZtxcPv3D8aWTdQ=
+Received: by mail-qv1-f52.google.com with SMTP id t9so1680702qvh.13;
+        Tue, 03 Dec 2019 07:53:19 -0800 (PST)
+X-Gm-Message-State: APjAAAVJ49WG1m4rnxIDzV6bZNgvIYDKKpBsv2NUCEBJIK1euNEkDUZm
+        7u/8oY6z25IWCMPjFJ4zKb1FAEq1P/tWCDr4HA==
+X-Google-Smtp-Source: APXvYqyICjW3HYnUPFqTgR4rEp2A1uuQE3BOephqhDMI2H3gFhNk2aTw/xPKbNHQEIKUpgOnuSfcOdrza+JvE1yn/H8=
+X-Received: by 2002:ad4:450a:: with SMTP id k10mr5459306qvu.136.1575388397912;
+ Tue, 03 Dec 2019 07:53:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191203130345.GC8621@gauss3.secunet.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20191203114743.1294-1-nsaenzjulienne@suse.de> <20191203114743.1294-9-nsaenzjulienne@suse.de>
+In-Reply-To: <20191203114743.1294-9-nsaenzjulienne@suse.de>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 3 Dec 2019 09:53:05 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLMCXdnZag3jihV_dzuR+wFaVKFb7q_PdKTxTg0LVA6cw@mail.gmail.com>
+Message-ID: <CAL_JsqLMCXdnZag3jihV_dzuR+wFaVKFb7q_PdKTxTg0LVA6cw@mail.gmail.com>
+Subject: Re: [PATCH v4 8/8] linux/log2.h: Use roundup/dow_pow_two() on 64bit calculations
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     Andrew Murray <andrew.murray@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        james.quinlan@broadcom.com, Matthias Brugger <mbrugger@suse.com>,
+        Phil Elwell <phil@raspberrypi.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        PCI <linux-pci@vger.kernel.org>,
+        "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-acpi@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 03/12/2019 à 14:03, Steffen Klassert a écrit :
-> On Mon, Nov 18, 2019 at 04:31:14PM +0100, Nicolas Dichtel wrote:
->> Le 14/10/2019 à 11:31, Nicolas Dichtel a écrit :
->>> Le 05/09/2019 à 12:21, Steffen Klassert a écrit :
->>>> 1) Several xfrm interface fixes from Nicolas Dichtel:
->>>>    - Avoid an interface ID corruption on changelink.
->>>>    - Fix wrong intterface names in the logs.
->>>>    - Fix a list corruption when changing network namespaces.
->>>>    - Fix unregistation of the underying phydev.
->>> Is it possible to queue those patches for the stable trees?
->>
->> Is there a chance to get them in the 4.19 stable tree?
->>
->> Here are the sha1:
->> e9e7e85d75f3 ("xfrm interface: avoid corruption on changelink")
->> e0aaa332e6a9 ("xfrm interface: ifname may be wrong in logs")
->> c5d1030f2300 ("xfrm interface: fix list corruption for x-netns")
->> 22d6552f827e ("xfrm interface: fix management of phydev")
-> 
-> Nicolas,
-> 
-> I'm currently processing the stable queue for v4.19.
-> I guess we also need this patch from you:
-> 
-> 56c5ee1a5823 ("xfrm interface: fix memory leak on creation")
-> 
-> before we apply the above mentioned patches, right?
-> 
-Right, I point it in my first email but I get an email from Sasha Levin the 25th
-October:
-[PATCH AUTOSEL 4.19 16/37] xfrm interface: fix memory leak on creation
+On Tue, Dec 3, 2019 at 5:48 AM Nicolas Saenz Julienne
+<nsaenzjulienne@suse.de> wrote:
+>
+> The function now is safe to use while expecting a 64bit value. Use it
+> where relevant.
 
-so I was thinking that it is already queued. But I can't see it in linux-stable.
+What was wrong with the existing code? This is missing some context.
+
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> ---
+>  drivers/acpi/arm64/iort.c                        | 2 +-
+>  drivers/net/ethernet/mellanox/mlx4/en_clock.c    | 3 ++-
+>  drivers/of/device.c                              | 3 ++-
+
+In any case,
+
+Acked-by: Rob Herring <robh@kernel.org>
+
+>  drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 ++-
+>  drivers/pci/controller/cadence/pcie-cadence.c    | 3 ++-
+>  drivers/pci/controller/pcie-brcmstb.c            | 3 ++-
+>  drivers/pci/controller/pcie-rockchip-ep.c        | 5 +++--
+>  kernel/dma/direct.c                              | 2 +-
+>  8 files changed, 15 insertions(+), 9 deletions(-)
