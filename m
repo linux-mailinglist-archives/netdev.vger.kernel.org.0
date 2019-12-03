@@ -2,135 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 276F61101CE
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 17:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC18D1101D8
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 17:08:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfLCQGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 11:06:51 -0500
-Received: from mx2.suse.de ([195.135.220.15]:51528 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725848AbfLCQGv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Dec 2019 11:06:51 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id AD9186A2F7;
-        Tue,  3 Dec 2019 16:06:47 +0000 (UTC)
-Message-ID: <d1c87c83f38e74f0c6b0692248fe88dfd2bdec3e.camel@suse.de>
-Subject: Re: [PATCH v4 8/8] linux/log2.h: Use roundup/dow_pow_two() on 64bit
- calculations
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Murray <andrew.murray@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
+        id S1727059AbfLCQIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 11:08:11 -0500
+Received: from foss.arm.com ([217.140.110.172]:44940 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726098AbfLCQIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 11:08:11 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A2D1131B;
+        Tue,  3 Dec 2019 08:08:10 -0800 (PST)
+Received: from arrakis.emea.arm.com (arrakis.cambridge.arm.com [10.1.197.42])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C3C23F52E;
+        Tue,  3 Dec 2019 08:08:08 -0800 (PST)
+Date:   Tue, 3 Dec 2019 16:08:06 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Noam Stolero <noams@mellanox.com>
+Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>, Qian Cai <cai@lca.pw>,
+        Tal Gilboa <talgi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Eric Anholt <eric@anholt.net>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        james.quinlan@broadcom.com, Matthias Brugger <mbrugger@suse.com>,
-        Phil Elwell <phil@raspberrypi.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        PCI <linux-pci@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-acpi@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>
-Date:   Tue, 03 Dec 2019 17:06:43 +0100
-In-Reply-To: <CAL_JsqLMCXdnZag3jihV_dzuR+wFaVKFb7q_PdKTxTg0LVA6cw@mail.gmail.com>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-         <20191203114743.1294-9-nsaenzjulienne@suse.de>
-         <CAL_JsqLMCXdnZag3jihV_dzuR+wFaVKFb7q_PdKTxTg0LVA6cw@mail.gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-VHC+bPmpbRjqhnK2ykxw"
-User-Agent: Evolution 3.34.1 
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Amir Ancel <amira@mellanox.com>,
+        Matan Nir <matann@mellanox.com>, Bar Tuaf <bartu@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 0/3] mm: kmemleak: Use a memory pool for kmemleak
+ object allocations
+Message-ID: <20191203160806.GB23522@arrakis.emea.arm.com>
+References: <20190812160642.52134-1-catalin.marinas@arm.com>
+ <08847a90-c37b-890f-8d0e-3ae1c3a1dd71@mellanox.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <08847a90-c37b-890f-8d0e-3ae1c3a1dd71@mellanox.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 03, 2019 at 03:51:50PM +0000, Noam Stolero wrote:
+> On 8/12/2019 7:06 PM, Catalin Marinas wrote:
+> >     Following the discussions on v2 of this patch(set) [1], this series
+> >     takes slightly different approach:
+> > 
+> >     - it implements its own simple memory pool that does not rely on the
+> >       slab allocator
+> > 
+> >     - drops the early log buffer logic entirely since it can now allocate
+> >       metadata from the memory pool directly before kmemleak is fully
+> >       initialised
+> > 
+> >     - CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE option is renamed to
+> >       CONFIG_DEBUG_KMEMLEAK_MEM_POOL_SIZE
+> > 
+> >     - moves the kmemleak_init() call earlier (mm_init())
+> > 
+> >     - to avoid a separate memory pool for struct scan_area, it makes the
+> >       tool robust when such allocations fail as scan areas are rather an
+> >       optimisation
+> > 
+> >     [1] http://lkml.kernel.org/r/20190727132334.9184-1-catalin.marinas@arm.com
+> > 
+> >     Catalin Marinas (3):
+> >       mm: kmemleak: Make the tool tolerant to struct scan_area allocation
+> >         failures
+> >       mm: kmemleak: Simple memory allocation pool for kmemleak objects
+> >       mm: kmemleak: Use the memory pool for early allocations
+> > 
+> >      init/main.c       |   2 +-
+> >      lib/Kconfig.debug |  11 +-
+> >      mm/kmemleak.c     | 325 ++++++++++++----------------------------------
+> >      3 files changed, 91 insertions(+), 247 deletions(-)
+> 
+> We observe severe degradation in our network performance affecting all
+> of our NICs. The degradation is directly linked to this patch.
+> 
+> What we run:
+> Simple Iperf TCP loopback with 8 streams on ConnectX5-100GbE.
+> Since it's a loopback test, traffic goes from the socket through the IP
+> stack and back to the socket, without going through the NIC driver.
 
---=-VHC+bPmpbRjqhnK2ykxw
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Something similar was reported before. Can you try commit 2abd839aa7e6
+("kmemleak: Do not corrupt the object_list during clean-up") and see if
+it fixes the problem for you? It was merged in 5.4-rc4.
 
-Hi Rob,
-
-On Tue, 2019-12-03 at 09:53 -0600, Rob Herring wrote:
-> On Tue, Dec 3, 2019 at 5:48 AM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > The function now is safe to use while expecting a 64bit value. Use it
-> > where relevant.
->=20
-> What was wrong with the existing code? This is missing some context.
-
-You're right, I'll update it.
-
-For most of files changed the benefit here is factoring out a common patter=
-n
-using the standard function roundup/down_pow_two() which now provides corre=
-ct
-64bit results.
-
-As for of/device.c and arm64/iort.c it's more of a readability enhancement.=
- I
-consider it's easier to understand than the current calculation as it abstr=
-acts
-the math.
-
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > ---
-> >  drivers/acpi/arm64/iort.c                        | 2 +-
-> >  drivers/net/ethernet/mellanox/mlx4/en_clock.c    | 3 ++-
-> >  drivers/of/device.c                              | 3 ++-
->=20
-> In any case,
->=20
-> Acked-by: Rob Herring <robh@kernel.org>
->=20
-
-Thanks!
-
-Regards,
-Nicolas
-
-
---=-VHC+bPmpbRjqhnK2ykxw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3miBMACgkQlfZmHno8
-x/5s+Af/a2icSd66GHrsABoMtUfJXpQclSae81ThRP5Bfx6+mK4Ty4en3T+IxOK+
-NPmneod0gjSfyqqQniFbEcmlKAd8wXyUnBCCi6urRvuqOWcw65h10DA3fQCivaOt
-NWn3FRWMlPZbBIAYr/XOcsdOOkbD+VaFE/PaBYmxU/rWaCLGMWpYYBhF/Vcm+ASd
-VPQ4g8AfxyGvQW9EgbmRTMC0k7kMP6qrpmgIjNWvUPyJ+8ytD2Zly2xvbVf9TqhX
-/PP/t19fWayTqhsg+B04K0aN0oriRqSFX44yvCOApKhLBSsF6Nyc40m2sreqKMYY
-98kwrOrux/Fb3OeV/Wzdhhh8VhH+Sg==
-=4wmf
------END PGP SIGNATURE-----
-
---=-VHC+bPmpbRjqhnK2ykxw--
-
+-- 
+Catalin
