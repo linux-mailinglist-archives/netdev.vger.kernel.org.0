@@ -2,109 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 305BC10FA12
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 09:42:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D557010FA1E
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 09:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725773AbfLCIm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 03:42:29 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34012 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbfLCIm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 03:42:28 -0500
-Received: by mail-qt1-f196.google.com with SMTP id 5so446909qtz.1
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 00:42:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YRtvDaubhKMLsinpUhhIgN2f+Mjhkw2KgaEk+i6x64s=;
-        b=oXWTvzBEcP/kRj50+pmeAL2NaG9Yw3hzt7a2ADoE2FFJRrMTHHEDVBcDpCp24ksoEj
-         I5YMWQPSXgVcNEdB4GmzvezYKY3oaCa3x/3tIHF7415fm09OTTNZEed1Irfv/ljezjKq
-         OJG93KZHcd5gHsECgwFKRkhoaa0n+NsKXp0+pg+fuAjdwLFHrc4+hs6J54v8Aar8hwMd
-         Y/acpeTUrAFp4WH8ZEL0bXXid8O8qXTMgk/ooQv8mgoUkXLkcdoMA/6aS8NUwnzfkPLP
-         144ODpwlJ6Hz2lTtWUIKignt0+pojEbao7L/SKti11A3x5fu1lxixfSGfaxJWyT4hjFJ
-         hD4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YRtvDaubhKMLsinpUhhIgN2f+Mjhkw2KgaEk+i6x64s=;
-        b=Wa8xpxttvEHLIS1YMRKblAlpHxMTcx92HMelJw0E1ayvY6xRrkNG/OquhXwnKPPDim
-         tIu4IBF1LfMxgDuw9fS3+dcI5jskeJJCzcF6ADMZIuVQJLiWaiqTAMlF1uzphnF+2fBL
-         2+2/Tn3c22H2hJ6cBUIUMHmkQDc4Ub5zXcI454NXqTSaFRyW/yaWYdA+Yfb70O2O28NV
-         +0hfjMMa1WkJHOQC+HIzWaii6BPDugZSE4Y4l5sZllhMDpFlfNApxr9kCVFS/WUH7QdS
-         /yKyEyxsd/QRjc9wjie1NaBQc1NtL/dKvrHq60Hp7X1lu6ez6DYTw3Sf4uZT5xU+uTQh
-         kYJQ==
-X-Gm-Message-State: APjAAAXvLAK7BPbi815IOCS9kl4ns/R4QShtSoMD8QWIsan0SKsJMhcx
-        plKbryggT/yrBrNVKtctM358zKyYkWpOLASdlQjQBg==
-X-Google-Smtp-Source: APXvYqwuTfimEU8gymcthDGHJy6fAwXsVAzJea4UVojRBIMQu07+jSaOROWe/wd8DHo6lNHCfZAQa/aDLt+qAPiQUZc=
-X-Received: by 2002:ac8:ccf:: with SMTP id o15mr3961228qti.380.1575362545833;
- Tue, 03 Dec 2019 00:42:25 -0800 (PST)
+        id S1726254AbfLCIqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 03:46:40 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35923 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726008AbfLCIqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 03:46:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575362798;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6S/cp50CX4iCq+Gvl9oMm5iLtDZ8r5C5Y48vBVIfKoc=;
+        b=L328nOM4fFmsIziZ+iVlO5lF238xG9QBtLoaz7UHdSYRSDDC6Inu3dhuXsN/oXUF/jF9fN
+        bYTyJ0ElQ6N+y/ztkau0oJTM0XvS2xl5Rs4WQ4DhVu4KoAZrMKUrLIjhtPlGO0a8Uc0SQM
+        NZbq3VyjaFHFmlgC8qna+QKunqsCY4A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-228-OI-lXgHtO6yoe-yoPLTHhw-1; Tue, 03 Dec 2019 03:46:34 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5175F800D4E;
+        Tue,  3 Dec 2019 08:46:33 +0000 (UTC)
+Received: from krava (unknown [10.43.17.48])
+        by smtp.corp.redhat.com (Postfix) with SMTP id D89B667E58;
+        Tue,  3 Dec 2019 08:46:27 +0000 (UTC)
+Date:   Tue, 3 Dec 2019 09:46:26 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Steve Grubb <sgrubb@redhat.com>
+Cc:     Paul Moore <paul@paul-moore.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-audit@redhat.com,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Subject: Re: [RFC] bpf: Emit audit messages upon successful prog load and
+ unload
+Message-ID: <20191203084626.GB17468@krava>
+References: <20191128091633.29275-1-jolsa@kernel.org>
+ <CAHC9VhQ7zkXdz1V5hQ8PN68-NnCn56TjKA0wCL6ZjHy9Up8fuQ@mail.gmail.com>
+ <1915471.OmxkCOUsnW@x2>
 MIME-Version: 1.0
-References: <001a114372a6074e6505642b7f72@google.com> <000000000000039751059891760e@google.com>
- <CACT4Y+Yrg8JxWABi4CJgBG7GpBSCmT0DHr_eZhQA-ikLH-X5Yw@mail.gmail.com> <20191202183912.GC377783@localhost.localdomain>
-In-Reply-To: <20191202183912.GC377783@localhost.localdomain>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 3 Dec 2019 09:42:14 +0100
-Message-ID: <CACT4Y+ZpZVYgA-oiE_YYC49LRA2=iTQLxOaKTA3TEYBt8KjFbw@mail.gmail.com>
-Subject: Re: kernel BUG at net/core/skbuff.c:LINE! (3)
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     syzbot <syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>, mvohra@vmware.com,
-        netdev <netdev@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        William Tu <u9012063@gmail.com>,
-        Vladislav Yasevich <vyasevich@gmail.com>,
-        websitedesignservices4u@gmail.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1915471.OmxkCOUsnW@x2>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: OI-lXgHtO6yoe-yoPLTHhw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 2, 2019 at 7:39 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Sat, Nov 30, 2019 at 04:37:56PM +0100, Dmitry Vyukov wrote:
-> > On Sat, Nov 30, 2019 at 3:50 PM syzbot
-> > <syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com> wrote:
-> > >
-> > > syzbot has bisected this bug to:
-> > >
-> > > commit 84e54fe0a5eaed696dee4019c396f8396f5a908b
-> > > Author: William Tu <u9012063@gmail.com>
-> > > Date:   Tue Aug 22 16:40:28 2017 +0000
-> > >
-> > >      gre: introduce native tunnel support for ERSPAN
-> > >
-> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=158a2f86e00000
-> > > start commit:   f9f1e414 Merge tag 'for-linus-4.16-rc1-tag' of git://git.k..
-> > > git tree:       upstream
-> > > final crash:    https://syzkaller.appspot.com/x/report.txt?x=178a2f86e00000
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=138a2f86e00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=34a80ee1ac29767b
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=b2bf2652983d23734c5c
-> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=147bfebd800000
-> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d8d543800000
-> > >
-> > > Reported-by: syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com
-> > > Fixes: 84e54fe0a5ea ("gre: introduce native tunnel support for ERSPAN")
-> > >
-> > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> >
-> > Humm... the repro contains syz_emit_ethernet, wonder if it's
-> > remote-triggerable...
->
-> The call trace is still from the tx path. Packet never left the system
-> in this case.
+On Mon, Dec 02, 2019 at 11:57:22PM -0500, Steve Grubb wrote:
+> On Monday, December 2, 2019 6:00:14 PM EST Paul Moore wrote:
+> > On Thu, Nov 28, 2019 at 4:16 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > From: Daniel Borkmann <daniel@iogearbox.net>
+> > >=20
+> > > Allow for audit messages to be emitted upon BPF program load and
+> > > unload for having a timeline of events. The load itself is in
+> > > syscall context, so additional info about the process initiating
+> > > the BPF prog creation can be logged and later directly correlated
+> > > to the unload event.
+> > >=20
+> > > The only info really needed from BPF side is the globally unique
+> > > prog ID where then audit user space tooling can query / dump all
+> > > info needed about the specific BPF program right upon load event
+> > > and enrich the record, thus these changes needed here can be kept
+> > > small and non-intrusive to the core.
 
-My understanding is that this does not necessarily mean that the
-remote side is not involved. There is enough state on the host for L4
-protocols, so that the remote side can mess things and then the bad
-thing will happen with local trigger. But that local trigger can be
-just anything trivial that everybody does.
+SNIP
+
+> > I think you would probably also want to check the results of
+> > audit_dummy_context() here as well, see all the various audit_XXX()
+> > functions in include/linux/audit.h as an example.  You'll see a
+> > pattern similar to the following:
+> >=20
+> > static inline void audit_foo(...)
+> > {
+> >   if (unlikely(!audit_dummy_context()))
+> >     __audit_foo(...)
+> > }
+> >=20
+> > > +       ab =3D audit_log_start(audit_context(), GFP_ATOMIC, AUDIT_BPF=
+);
+> > > +       if (unlikely(!ab))
+> > > +               return;
+> > > +       audit_log_format(ab, "prog-id=3D%u op=3D%s",
+> > > +                        prog->aux->id, bpf_audit_str[op]);
+> >=20
+> > Is it worth putting some checks in here to make sure that you don't
+> > blow past the end of the bpf_audit_str array?
+>=20
+> I am wondering if prog-id was really the only information that was needed=
+? Is=20
+> it meaningful to other tools? Does that correlate to anything in /proc? I=
+n=20
+> earlier discussion, it sounded like more information was needed to be sur=
+e=20
+> what was happening.
+
+yep, as David mentions in the changelog the global ID is enough,
+because you can get all the other bpf program info based on that
+
+jirka
+
