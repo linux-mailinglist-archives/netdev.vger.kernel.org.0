@@ -2,436 +2,414 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19AC410F53D
-	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 03:55:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D070E10F53E
+	for <lists+netdev@lfdr.de>; Tue,  3 Dec 2019 03:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726374AbfLCCy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Dec 2019 21:54:58 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34830 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbfLCCy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 21:54:58 -0500
-Received: by mail-pl1-f194.google.com with SMTP id s10so1050636plp.2
-        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 18:54:57 -0800 (PST)
+        id S1726452AbfLCCzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 Dec 2019 21:55:01 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46032 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726291AbfLCCzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 Dec 2019 21:55:00 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 2so1013159pfg.12
+        for <netdev@vger.kernel.org>; Mon, 02 Dec 2019 18:55:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5QhEYS+kl7+QUsvoMH+o5Su+lCHvRF1WMsBAbJGpKk4=;
-        b=M77zR5e98QdVo7EVuujSr4Aj1uFcLfZ3vWI+GJoNqu1R/XtRrabpd75/xnnzXkLnWh
-         rLNCZka2Sxf3wsNqRqeT+rjljZYrAXoC4HYht+izNz4O2hMzU9v693kuD0sH3Ma/pwHI
-         saiRAW4a6LsjqRu+1uF/McMs0MNgTlkij/DGAVp+4Z1hEpth9oAlHdcmXbYySQI+mJ7i
-         2jn1WU8oxN6NyK+vZ4xIWrNiixESPf8bEVjUnvfyqv8f90rU9YRwzBeRuM70JCtc3pGw
-         VAUru/LxkRGH+LuaucqTameOy1pmjxpkLCWRymKAoYEfg+VXFwIiTphHXoVgWVRoYd7c
-         qrQQ==
+        bh=TE6I6G93atKYVf6ZV9OVwH1JZ1SZk7mrg0So4NCD+aI=;
+        b=cLd5MskuKqroUsrBy9eja2MEDEnN7EiT4936/12jxsELKaq4pYreM2Xjoe1flfLQWH
+         A2K0Qah7ZYy5w8tI6vNu5fCv9zoyg2DTEN+ATjaUo7iCKmDDMtEQ0fr1As4BAKwTwzM+
+         ljpszP+5DyOJMzUnYihx9mZXgVk5TR1PvFif2i3isoM2iNBSwTEpzcDSMoNpB5iuoJWA
+         z5eTEP/NRvlomOCLbQ7m4l5+ApGfu41Yv+ihy3K6ycgFRLz5M8aLF935qNP/tZwW/7PG
+         G9lyIf7Hzh+3VdV2nzpnurM2LFy9sFJg46l2V5OixFM3kvUhIym6ILAYpeexefpNHau5
+         aDKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5QhEYS+kl7+QUsvoMH+o5Su+lCHvRF1WMsBAbJGpKk4=;
-        b=I+3j9VCRLvIcawWrKNoPArFX8dQ2HJPhkegieOkVar0zJFY7x2CW7UgGMrSua6ptIb
-         OsqjujvWndvyqSYMsncbuXVaaDqlLWejz+dzKdsTZLD7ABtD3FP/cv8xooJLzTDaQDOW
-         5IiYC6CAqPLF5bZoA0KXuHcEZ7GOD7/XhovffMGHEkkrIXn2uveRmPmXA2rMOWLNJQql
-         +nvEHcm69B7N6DBdL+WhKDekuYxLxCaYsOW9rbMeVyV1blGk6EoV/Sn83aEgZpoKF6Rx
-         VyKsOfHAgS5yUTt/w2LU/ToXarla/itZ2tW6yONCggraXDc0kzFue3jkVVxPkwHQ0Lse
-         Xf6Q==
-X-Gm-Message-State: APjAAAW9TEuAgSTnNh+1FNJ9okQAbknx+CRUeAz1UODjceWdrIaFhBmg
-        IdUVz6NbmMG6d70RCQccGupuxA==
-X-Google-Smtp-Source: APXvYqyV0x7A9Z4QaY/aFGv4ReNzwrw1d1C+KrJM7IB4O1ec99gJOIH8WaEqfuHAQzzJr9Ks506YcQ==
-X-Received: by 2002:a17:902:d697:: with SMTP id v23mr2809955ply.106.1575341697293;
-        Mon, 02 Dec 2019 18:54:57 -0800 (PST)
+        bh=TE6I6G93atKYVf6ZV9OVwH1JZ1SZk7mrg0So4NCD+aI=;
+        b=DDrJAhFOxmfYSMzMkq7P/NQVkfUyisc0xNVi5AjcuHKBSbbFpiLt1nOwihHyj1EM8j
+         69uDR7lcMWhCB6yGLMi6r9p+QGIjir866rZNDvIEk9kFa0joUim+MtVGhBjB00oNOOxB
+         nRoCuVsL5bMiB7OP0Bppf/7Yv+0zMX7vbXGvkEs3dZ5ajoGF26vAtAiLS57pUXDMSPHa
+         CUsVTlIvDI7Hhna5o2v3i2hFlyof1E8ytpvlUn0UVfBuy07+OzHu/NuwVyEyKjWHmg3c
+         ycXUGrxIyqPkWgKdEmD+vCf5QS998+za4Qe9+tbkxxSV+nQYS0tA2neRcfl175lTijT9
+         Qnzw==
+X-Gm-Message-State: APjAAAVFLEBCK7+i/35u+bWmskqHdJcXRMuO8vzHdvnIF/NggwFNpL+0
+        KYt9lAah9njejxwuEjUIVKZ3vw==
+X-Google-Smtp-Source: APXvYqyfyXbRcijZFBa+KEem2BjfnMisTJq5PpH4Z+piPGajMt+y1osQ4DAiyQWDPLneJgyDK56Q0A==
+X-Received: by 2002:a65:6081:: with SMTP id t1mr2865427pgu.391.1575341700017;
+        Mon, 02 Dec 2019 18:55:00 -0800 (PST)
 Received: from localhost.localdomain ([66.219.217.79])
-        by smtp.gmail.com with ESMTPSA id z7sm959364pfk.41.2019.12.02.18.54.54
+        by smtp.gmail.com with ESMTPSA id z7sm959364pfk.41.2019.12.02.18.54.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Dec 2019 18:54:56 -0800 (PST)
+        Mon, 02 Dec 2019 18:54:58 -0800 (PST)
 From:   Jens Axboe <axboe@kernel.dk>
 To:     io-uring@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        =?UTF-8?q?=E6=9D=8E=E9=80=9A=E6=B4=B2?= <carter.li@eoitek.com>
-Subject: [PATCH 2/5] io_uring: ensure async punted read/write requests copy iovec
-Date:   Mon,  2 Dec 2019 19:54:41 -0700
-Message-Id: <20191203025444.29344-3-axboe@kernel.dk>
+Cc:     netdev@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 3/5] io_uring: ensure async punted sendmsg/recvmsg requests copy data
+Date:   Mon,  2 Dec 2019 19:54:42 -0700
+Message-Id: <20191203025444.29344-4-axboe@kernel.dk>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191203025444.29344-1-axboe@kernel.dk>
 References: <20191203025444.29344-1-axboe@kernel.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we don't copy the iovecs when we punt to async context. This
-can be problematic for applications that store the iovec on the stack,
-as they often assume that it's safe to let the iovec go out of scope
-as soon as IO submission has been called. This isn't always safe, as we
-will re-copy the iovec once we're in async context.
+Just like commit bd26dacbd5ce for read/write requests, this one ensures
+that the msghdr data is fully copied if we need to punt a recvmsg or
+sendmsg system call to async context.
 
-Make this 100% safe by copying the iovec just once. With this change,
-applications may safely store the iovec on the stack for all cases.
-
-Reported-by: 李通洲 <carter.li@eoitek.com>
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 ---
- fs/io_uring.c | 241 +++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 179 insertions(+), 62 deletions(-)
+ fs/io_uring.c          | 145 +++++++++++++++++++++++++++++++++++------
+ include/linux/socket.h |  15 +++--
+ net/socket.c           |  60 +++++------------
+ 3 files changed, 152 insertions(+), 68 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index bbbd9f664b1e..bd8fab9277d6 100644
+index bd8fab9277d6..11d181ed2076 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -308,8 +308,18 @@ struct io_timeout {
+@@ -308,6 +308,13 @@ struct io_timeout {
  	struct io_timeout_data		*data;
  };
  
-+struct io_async_rw {
++struct io_async_msghdr {
 +	struct iovec			fast_iov[UIO_FASTIOV];
 +	struct iovec			*iov;
-+	ssize_t				nr_segs;
-+	ssize_t				size;
++	struct sockaddr __user		*uaddr;
++	struct msghdr			msg;
 +};
 +
- struct io_async_ctx {
+ struct io_async_rw {
+ 	struct iovec			fast_iov[UIO_FASTIOV];
+ 	struct iovec			*iov;
+@@ -319,6 +326,7 @@ struct io_async_ctx {
  	struct io_uring_sqe		sqe;
-+	union {
-+		struct io_async_rw	rw;
-+	};
+ 	union {
+ 		struct io_async_rw	rw;
++		struct io_async_msghdr	msg;
+ 	};
  };
  
- /*
-@@ -1415,15 +1425,6 @@ static int io_prep_rw(struct io_kiocb *req, bool force_nonblock)
- 	if (S_ISREG(file_inode(req->file)->i_mode))
- 		req->flags |= REQ_F_ISREG;
- 
--	/*
--	 * If the file doesn't support async, mark it as REQ_F_MUST_PUNT so
--	 * we know to async punt it even if it was opened O_NONBLOCK
--	 */
--	if (force_nonblock && !io_file_supports_async(req->file)) {
--		req->flags |= REQ_F_MUST_PUNT;
--		return -EAGAIN;
--	}
--
- 	kiocb->ki_pos = READ_ONCE(sqe->off);
- 	kiocb->ki_flags = iocb_flags(kiocb->ki_filp);
- 	kiocb->ki_hint = ki_hint_validate(file_write_hint(kiocb->ki_filp));
-@@ -1592,6 +1593,16 @@ static ssize_t io_import_iovec(int rw, struct io_kiocb *req,
- 		return io_import_fixed(req->ctx, rw, sqe, iter);
- 	}
- 
-+	if (req->io) {
-+		struct io_async_rw *iorw = &req->io->rw;
-+
-+		*iovec = iorw->iov;
-+		iov_iter_init(iter, rw, *iovec, iorw->nr_segs, iorw->size);
-+		if (iorw->iov == iorw->fast_iov)
-+			*iovec = NULL;
-+		return iorw->size;
-+	}
-+
- 	if (!req->has_user)
- 		return -EFAULT;
- 
-@@ -1662,6 +1673,50 @@ static ssize_t loop_rw_iter(int rw, struct file *file, struct kiocb *kiocb,
- 	return ret;
- }
- 
-+static void io_req_map_io(struct io_kiocb *req, ssize_t io_size,
-+			  struct iovec *iovec, struct iovec *fast_iov,
-+			  struct iov_iter *iter)
-+{
-+	req->io->rw.nr_segs = iter->nr_segs;
-+	req->io->rw.size = io_size;
-+	req->io->rw.iov = iovec;
-+	if (!req->io->rw.iov) {
-+		req->io->rw.iov = req->io->rw.fast_iov;
-+		memcpy(req->io->rw.iov, fast_iov,
-+			sizeof(struct iovec) * iter->nr_segs);
-+	}
-+}
-+
-+static int io_setup_async_io(struct io_kiocb *req, ssize_t io_size,
-+			     struct iovec *iovec, struct iovec *fast_iov,
-+			     struct iov_iter *iter)
-+{
-+	req->io = kmalloc(sizeof(*req->io), GFP_KERNEL);
-+	if (req->io) {
-+		io_req_map_io(req, io_size, iovec, fast_iov, iter);
-+		memcpy(&req->io->sqe, req->sqe, sizeof(req->io->sqe));
-+		req->sqe = &req->io->sqe;
-+		return 0;
-+	}
-+
-+	return -ENOMEM;
-+}
-+
-+static int io_read_prep(struct io_kiocb *req, struct iovec **iovec,
-+			struct iov_iter *iter, bool force_nonblock)
-+{
-+	ssize_t ret;
-+
-+	ret = io_prep_rw(req, force_nonblock);
-+	if (ret)
-+		return ret;
-+
-+	if (unlikely(!(req->file->f_mode & FMODE_READ)))
-+		return -EBADF;
-+
-+	return io_import_iovec(READ, req, iovec, iter);
-+}
-+
- static int io_read(struct io_kiocb *req, struct io_kiocb **nxt,
- 		   bool force_nonblock)
- {
-@@ -1670,23 +1725,31 @@ static int io_read(struct io_kiocb *req, struct io_kiocb **nxt,
- 	struct iov_iter iter;
- 	struct file *file;
- 	size_t iov_count;
--	ssize_t read_size, ret;
-+	ssize_t io_size, ret;
- 
--	ret = io_prep_rw(req, force_nonblock);
--	if (ret)
--		return ret;
--	file = kiocb->ki_filp;
--
--	if (unlikely(!(file->f_mode & FMODE_READ)))
--		return -EBADF;
--
--	ret = io_import_iovec(READ, req, &iovec, &iter);
--	if (ret < 0)
--		return ret;
-+	if (!req->io) {
-+		ret = io_read_prep(req, &iovec, &iter, force_nonblock);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		ret = io_import_iovec(READ, req, &iovec, &iter);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
--	read_size = ret;
-+	file = req->file;
-+	io_size = ret;
- 	if (req->flags & REQ_F_LINK)
--		req->result = read_size;
-+		req->result = io_size;
-+
-+	/*
-+	 * If the file doesn't support async, mark it as REQ_F_MUST_PUNT so
-+	 * we know to async punt it even if it was opened O_NONBLOCK
-+	 */
-+	if (force_nonblock && !io_file_supports_async(file)) {
-+		req->flags |= REQ_F_MUST_PUNT;
-+		goto copy_iov;
-+	}
- 
- 	iov_count = iov_iter_count(&iter);
- 	ret = rw_verify_area(READ, file, &kiocb->ki_pos, iov_count);
-@@ -1708,18 +1771,40 @@ static int io_read(struct io_kiocb *req, struct io_kiocb **nxt,
- 		 */
- 		if (force_nonblock && !(req->flags & REQ_F_NOWAIT) &&
- 		    (req->flags & REQ_F_ISREG) &&
--		    ret2 > 0 && ret2 < read_size)
-+		    ret2 > 0 && ret2 < io_size)
- 			ret2 = -EAGAIN;
- 		/* Catch -EAGAIN return for forced non-blocking submission */
--		if (!force_nonblock || ret2 != -EAGAIN)
-+		if (!force_nonblock || ret2 != -EAGAIN) {
- 			kiocb_done(kiocb, ret2, nxt, req->in_async);
--		else
--			ret = -EAGAIN;
-+		} else {
-+copy_iov:
-+			ret = io_setup_async_io(req, io_size, iovec,
-+						inline_vecs, &iter);
-+			if (ret)
-+				goto out_free;
-+			return -EAGAIN;
-+		}
- 	}
-+out_free:
- 	kfree(iovec);
- 	return ret;
- }
- 
-+static int io_write_prep(struct io_kiocb *req, struct iovec **iovec,
-+			 struct iov_iter *iter, bool force_nonblock)
-+{
-+	ssize_t ret;
-+
-+	ret = io_prep_rw(req, force_nonblock);
-+	if (ret)
-+		return ret;
-+
-+	if (unlikely(!(req->file->f_mode & FMODE_WRITE)))
-+		return -EBADF;
-+
-+	return io_import_iovec(WRITE, req, iovec, iter);
-+}
-+
- static int io_write(struct io_kiocb *req, struct io_kiocb **nxt,
- 		    bool force_nonblock)
- {
-@@ -1728,29 +1813,36 @@ static int io_write(struct io_kiocb *req, struct io_kiocb **nxt,
- 	struct iov_iter iter;
- 	struct file *file;
- 	size_t iov_count;
--	ssize_t ret;
-+	ssize_t ret, io_size;
- 
--	ret = io_prep_rw(req, force_nonblock);
--	if (ret)
--		return ret;
-+	if (!req->io) {
-+		ret = io_write_prep(req, &iovec, &iter, force_nonblock);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		ret = io_import_iovec(WRITE, req, &iovec, &iter);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	file = kiocb->ki_filp;
--	if (unlikely(!(file->f_mode & FMODE_WRITE)))
--		return -EBADF;
--
--	ret = io_import_iovec(WRITE, req, &iovec, &iter);
--	if (ret < 0)
--		return ret;
--
-+	io_size = ret;
- 	if (req->flags & REQ_F_LINK)
--		req->result = ret;
-+		req->result = io_size;
- 
--	iov_count = iov_iter_count(&iter);
-+	/*
-+	 * If the file doesn't support async, mark it as REQ_F_MUST_PUNT so
-+	 * we know to async punt it even if it was opened O_NONBLOCK
-+	 */
-+	if (force_nonblock && !io_file_supports_async(req->file)) {
-+		req->flags |= REQ_F_MUST_PUNT;
-+		goto copy_iov;
-+	}
- 
--	ret = -EAGAIN;
- 	if (force_nonblock && !(kiocb->ki_flags & IOCB_DIRECT))
--		goto out_free;
-+		goto copy_iov;
- 
-+	iov_count = iov_iter_count(&iter);
- 	ret = rw_verify_area(WRITE, file, &kiocb->ki_pos, iov_count);
- 	if (!ret) {
- 		ssize_t ret2;
-@@ -1774,10 +1866,16 @@ static int io_write(struct io_kiocb *req, struct io_kiocb **nxt,
- 			ret2 = call_write_iter(file, kiocb, &iter);
- 		else
- 			ret2 = loop_rw_iter(WRITE, file, kiocb, &iter);
--		if (!force_nonblock || ret2 != -EAGAIN)
-+		if (!force_nonblock || ret2 != -EAGAIN) {
- 			kiocb_done(kiocb, ret2, nxt, req->in_async);
--		else
--			ret = -EAGAIN;
-+		} else {
-+copy_iov:
-+			ret = io_setup_async_io(req, io_size, iovec,
-+						inline_vecs, &iter);
-+			if (ret)
-+				goto out_free;
-+			return -EAGAIN;
-+		}
- 	}
- out_free:
- 	kfree(iovec);
-@@ -2605,10 +2703,40 @@ static int io_async_cancel(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+@@ -1991,12 +1999,21 @@ static int io_sync_file_range(struct io_kiocb *req,
  	return 0;
  }
  
-+static int io_req_defer_prep(struct io_kiocb *req, struct io_async_ctx *io)
-+{
-+	struct iovec inline_vecs[UIO_FASTIOV], *iovec = inline_vecs;
-+	struct iov_iter iter;
-+	ssize_t ret;
+-#if defined(CONFIG_NET)
+-static int io_send_recvmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+-			   struct io_kiocb **nxt, bool force_nonblock,
+-		   long (*fn)(struct socket *, struct user_msghdr __user *,
+-				unsigned int))
++static int io_sendmsg_prep(struct io_kiocb *req, struct io_async_ctx *io)
+ {
++	const struct io_uring_sqe *sqe = req->sqe;
++	struct user_msghdr __user *msg;
++	unsigned flags;
 +
-+	memcpy(&io->sqe, req->sqe, sizeof(io->sqe));
-+	req->sqe = &io->sqe;
-+
-+	switch (io->sqe.opcode) {
-+	case IORING_OP_READV:
-+		ret = io_read_prep(req, &iovec, &iter, true);
-+		break;
-+	case IORING_OP_WRITEV:
-+		ret = io_write_prep(req, &iovec, &iter, true);
-+		break;
-+	default:
-+		req->io = io;
-+		return 0;
-+	}
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	req->io = io;
-+	io_req_map_io(req, ret, iovec, inline_vecs, &iter);
-+	return 0;
++	flags = READ_ONCE(sqe->msg_flags);
++	msg = (struct user_msghdr __user *)(unsigned long) READ_ONCE(sqe->addr);
++	return sendmsg_copy_msghdr(&io->msg.msg, msg, flags, &io->msg.iov);
 +}
 +
- static int io_req_defer(struct io_kiocb *req)
- {
- 	struct io_ring_ctx *ctx = req->ctx;
- 	struct io_async_ctx *io;
-+	int ret;
++static int io_sendmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
++		      struct io_kiocb **nxt, bool force_nonblock)
++{
++#if defined(CONFIG_NET)
+ 	struct socket *sock;
+ 	int ret;
  
- 	/* Still need defer if there is pending req in defer list. */
- 	if (!req_need_defer(req) && list_empty(&ctx->defer_list))
-@@ -2625,9 +2753,9 @@ static int io_req_defer(struct io_kiocb *req)
- 		return 0;
+@@ -2005,7 +2022,9 @@ static int io_send_recvmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+ 
+ 	sock = sock_from_file(req->file, &ret);
+ 	if (sock) {
+-		struct user_msghdr __user *msg;
++		struct io_async_ctx io, *copy;
++		struct sockaddr_storage addr;
++		struct msghdr *kmsg;
+ 		unsigned flags;
+ 
+ 		flags = READ_ONCE(sqe->msg_flags);
+@@ -2014,41 +2033,119 @@ static int io_send_recvmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+ 		else if (force_nonblock)
+ 			flags |= MSG_DONTWAIT;
+ 
+-		msg = (struct user_msghdr __user *) (unsigned long)
+-			READ_ONCE(sqe->addr);
++		if (req->io) {
++			kmsg = &req->io->msg.msg;
++			kmsg->msg_name = &addr;
++		} else {
++			kmsg = &io.msg.msg;
++			kmsg->msg_name = &addr;
++			io.msg.iov = io.msg.fast_iov;
++			ret = io_sendmsg_prep(req, &io);
++			if (ret)
++				goto out;
++		}
+ 
+-		ret = fn(sock, msg, flags);
+-		if (force_nonblock && ret == -EAGAIN)
++		ret = __sys_sendmsg_sock(sock, kmsg, flags);
++		if (force_nonblock && ret == -EAGAIN) {
++			copy = kmalloc(sizeof(*copy), GFP_KERNEL);
++			if (!copy) {
++				ret = -ENOMEM;
++				goto out;
++			}
++			memcpy(&copy->msg, &io.msg, sizeof(copy->msg));
++			req->io = copy;
++			memcpy(&req->io->sqe, req->sqe, sizeof(*req->sqe));
++			req->sqe = &req->io->sqe;
+ 			return ret;
++		}
+ 		if (ret == -ERESTARTSYS)
+ 			ret = -EINTR;
  	}
  
--	memcpy(&io->sqe, req->sqe, sizeof(io->sqe));
--	req->sqe = &io->sqe;
--	req->io = io;
-+	ret = io_req_defer_prep(req, io);
-+	if (ret < 0)
-+		return ret;
++out:
+ 	io_cqring_add_event(req, ret);
+ 	if (ret < 0 && (req->flags & REQ_F_LINK))
+ 		req->flags |= REQ_F_FAIL_LINK;
+ 	io_put_req_find_next(req, nxt);
+ 	return 0;
+-}
+-#endif
+-
+-static int io_sendmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+-		      struct io_kiocb **nxt, bool force_nonblock)
+-{
+-#if defined(CONFIG_NET)
+-	return io_send_recvmsg(req, sqe, nxt, force_nonblock,
+-				__sys_sendmsg_sock);
+ #else
+ 	return -EOPNOTSUPP;
+ #endif
+ }
  
- 	trace_io_uring_defer(ctx, req, req->user_data);
- 	list_add_tail(&req->list, &ctx->defer_list);
-@@ -2960,17 +3088,6 @@ static void __io_queue_sqe(struct io_kiocb *req)
- 	 */
- 	if (ret == -EAGAIN && (!(req->flags & REQ_F_NOWAIT) ||
- 	    (req->flags & REQ_F_MUST_PUNT))) {
--		struct io_async_ctx *io;
--
--		io = kmalloc(sizeof(*io), GFP_KERNEL);
--		if (!io)
--			goto err;
--
--		memcpy(&io->sqe, req->sqe, sizeof(io->sqe));
--
--		req->sqe = &io->sqe;
--		req->io = io;
--
- 		if (req->work.flags & IO_WQ_WORK_NEEDS_FILES) {
- 			ret = io_grab_files(req);
- 			if (ret)
-@@ -3092,9 +3209,9 @@ static void io_submit_sqe(struct io_kiocb *req, struct io_submit_state *state,
- 			goto err_req;
- 		}
++static int io_recvmsg_prep(struct io_kiocb *req, struct io_async_ctx *io)
++{
++	const struct io_uring_sqe *sqe = req->sqe;
++	struct user_msghdr __user *msg;
++	unsigned flags;
++
++	flags = READ_ONCE(sqe->msg_flags);
++	msg = (struct user_msghdr __user *)(unsigned long) READ_ONCE(sqe->addr);
++	return recvmsg_copy_msghdr(&io->msg.msg, msg, flags, &io->msg.uaddr,
++					&io->msg.iov);
++}
++
+ static int io_recvmsg(struct io_kiocb *req, const struct io_uring_sqe *sqe,
+ 		      struct io_kiocb **nxt, bool force_nonblock)
+ {
+ #if defined(CONFIG_NET)
+-	return io_send_recvmsg(req, sqe, nxt, force_nonblock,
+-				__sys_recvmsg_sock);
++	struct socket *sock;
++	int ret;
++
++	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
++		return -EINVAL;
++
++	sock = sock_from_file(req->file, &ret);
++	if (sock) {
++		struct user_msghdr __user *msg;
++		struct io_async_ctx io, *copy;
++		struct sockaddr_storage addr;
++		struct msghdr *kmsg;
++		unsigned flags;
++
++		flags = READ_ONCE(sqe->msg_flags);
++		if (flags & MSG_DONTWAIT)
++			req->flags |= REQ_F_NOWAIT;
++		else if (force_nonblock)
++			flags |= MSG_DONTWAIT;
++
++		msg = (struct user_msghdr __user *) (unsigned long)
++			READ_ONCE(sqe->addr);
++		if (req->io) {
++			kmsg = &req->io->msg.msg;
++			kmsg->msg_name = &addr;
++		} else {
++			kmsg = &io.msg.msg;
++			kmsg->msg_name = &addr;
++			io.msg.iov = io.msg.fast_iov;
++			ret = io_recvmsg_prep(req, &io);
++			if (ret)
++				goto out;
++		}
++
++		ret = __sys_recvmsg_sock(sock, kmsg, msg, io.msg.uaddr, flags);
++		if (force_nonblock && ret == -EAGAIN) {
++			copy = kmalloc(sizeof(*copy), GFP_KERNEL);
++			if (!copy) {
++				ret = -ENOMEM;
++				goto out;
++			}
++			memcpy(copy, &io, sizeof(*copy));
++			req->io = copy;
++			memcpy(&req->io->sqe, req->sqe, sizeof(*req->sqe));
++			req->sqe = &req->io->sqe;
++			return ret;
++		}
++		if (ret == -ERESTARTSYS)
++			ret = -EINTR;
++	}
++
++out:
++	io_cqring_add_event(req, ret);
++	if (ret < 0 && (req->flags & REQ_F_LINK))
++		req->flags |= REQ_F_FAIL_LINK;
++	io_put_req_find_next(req, nxt);
++	return 0;
+ #else
+ 	return -EOPNOTSUPP;
+ #endif
+@@ -2719,6 +2816,12 @@ static int io_req_defer_prep(struct io_kiocb *req, struct io_async_ctx *io)
+ 	case IORING_OP_WRITEV:
+ 		ret = io_write_prep(req, &iovec, &iter, true);
+ 		break;
++	case IORING_OP_SENDMSG:
++		ret = io_sendmsg_prep(req, io);
++		break;
++	case IORING_OP_RECVMSG:
++		ret = io_recvmsg_prep(req, io);
++		break;
+ 	default:
+ 		req->io = io;
+ 		return 0;
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 4bde63021c09..903507fb901f 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -378,12 +378,19 @@ extern int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+ extern int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg,
+ 			  unsigned int vlen, unsigned int flags,
+ 			  bool forbid_cmsg_compat);
+-extern long __sys_sendmsg_sock(struct socket *sock,
+-			       struct user_msghdr __user *msg,
++extern long __sys_sendmsg_sock(struct socket *sock, struct msghdr *msg,
+ 			       unsigned int flags);
+-extern long __sys_recvmsg_sock(struct socket *sock,
+-			       struct user_msghdr __user *msg,
++extern long __sys_recvmsg_sock(struct socket *sock, struct msghdr *msg,
++			       struct user_msghdr __user *umsg,
++			       struct sockaddr __user *uaddr,
+ 			       unsigned int flags);
++extern int sendmsg_copy_msghdr(struct msghdr *msg,
++			       struct user_msghdr __user *umsg, unsigned flags,
++			       struct iovec **iov);
++extern int recvmsg_copy_msghdr(struct msghdr *msg,
++			       struct user_msghdr __user *umsg, unsigned flags,
++			       struct sockaddr __user **uaddr,
++			       struct iovec **iov);
  
--		memcpy(&io->sqe, req->sqe, sizeof(io->sqe));
--		req->sqe = &io->sqe;
--		req->io = io;
-+		ret = io_req_defer_prep(req, io);
-+		if (ret)
-+			goto err_req;
- 		trace_io_uring_link(ctx, req, prev);
- 		list_add_tail(&req->list, &prev->link_list);
- 	} else if (req->sqe->flags & IOSQE_IO_LINK) {
+ /* helpers which do the actual work for syscalls */
+ extern int __sys_recvfrom(int fd, void __user *ubuf, size_t size,
+diff --git a/net/socket.c b/net/socket.c
+index ea28cbb9e2e7..0fb0820edeec 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2346,9 +2346,9 @@ static int ____sys_sendmsg(struct socket *sock, struct msghdr *msg_sys,
+ 	return err;
+ }
+ 
+-static int sendmsg_copy_msghdr(struct msghdr *msg,
+-			       struct user_msghdr __user *umsg, unsigned flags,
+-			       struct iovec **iov)
++int sendmsg_copy_msghdr(struct msghdr *msg,
++			struct user_msghdr __user *umsg, unsigned flags,
++			struct iovec **iov)
+ {
+ 	int err;
+ 
+@@ -2390,27 +2390,14 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
+ /*
+  *	BSD sendmsg interface
+  */
+-long __sys_sendmsg_sock(struct socket *sock, struct user_msghdr __user *umsg,
++long __sys_sendmsg_sock(struct socket *sock, struct msghdr *msg,
+ 			unsigned int flags)
+ {
+-	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+-	struct sockaddr_storage address;
+-	struct msghdr msg = { .msg_name = &address };
+-	ssize_t err;
+-
+-	err = sendmsg_copy_msghdr(&msg, umsg, flags, &iov);
+-	if (err)
+-		return err;
+ 	/* disallow ancillary data requests from this path */
+-	if (msg.msg_control || msg.msg_controllen) {
+-		err = -EINVAL;
+-		goto out;
+-	}
++	if (msg->msg_control || msg->msg_controllen)
++		return -EINVAL;
+ 
+-	err = ____sys_sendmsg(sock, &msg, flags, NULL, 0);
+-out:
+-	kfree(iov);
+-	return err;
++	return ____sys_sendmsg(sock, msg, flags, NULL, 0);
+ }
+ 
+ long __sys_sendmsg(int fd, struct user_msghdr __user *msg, unsigned int flags,
+@@ -2516,10 +2503,10 @@ SYSCALL_DEFINE4(sendmmsg, int, fd, struct mmsghdr __user *, mmsg,
+ 	return __sys_sendmmsg(fd, mmsg, vlen, flags, true);
+ }
+ 
+-static int recvmsg_copy_msghdr(struct msghdr *msg,
+-			       struct user_msghdr __user *umsg, unsigned flags,
+-			       struct sockaddr __user **uaddr,
+-			       struct iovec **iov)
++int recvmsg_copy_msghdr(struct msghdr *msg,
++			struct user_msghdr __user *umsg, unsigned flags,
++			struct sockaddr __user **uaddr,
++			struct iovec **iov)
+ {
+ 	ssize_t err;
+ 
+@@ -2609,28 +2596,15 @@ static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
+  *	BSD recvmsg interface
+  */
+ 
+-long __sys_recvmsg_sock(struct socket *sock, struct user_msghdr __user *umsg,
+-			unsigned int flags)
++long __sys_recvmsg_sock(struct socket *sock, struct msghdr *msg,
++			struct user_msghdr __user *umsg,
++			struct sockaddr __user *uaddr, unsigned int flags)
+ {
+-	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+-	struct sockaddr_storage address;
+-	struct msghdr msg = { .msg_name = &address };
+-	struct sockaddr __user *uaddr;
+-	ssize_t err;
+-
+-	err = recvmsg_copy_msghdr(&msg, umsg, flags, &uaddr, &iov);
+-	if (err)
+-		return err;
+ 	/* disallow ancillary data requests from this path */
+-	if (msg.msg_control || msg.msg_controllen) {
+-		err = -EINVAL;
+-		goto out;
+-	}
++	if (msg->msg_control || msg->msg_controllen)
++		return -EINVAL;
+ 
+-	err = ____sys_recvmsg(sock, &msg, umsg, uaddr, flags, 0);
+-out:
+-	kfree(iov);
+-	return err;
++	return ____sys_recvmsg(sock, msg, umsg, uaddr, flags, 0);
+ }
+ 
+ long __sys_recvmsg(int fd, struct user_msghdr __user *msg, unsigned int flags,
 -- 
 2.24.0
 
