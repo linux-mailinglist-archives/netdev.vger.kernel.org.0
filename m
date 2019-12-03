@@ -2,103 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1217111E5D
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 00:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2D72112062
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 00:43:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730593AbfLCXBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 18:01:34 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:40256 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730383AbfLCWz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 17:55:56 -0500
-Received: by mail-lj1-f195.google.com with SMTP id s22so5743077ljs.7
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 14:55:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Cr74USMS7o2KnmyixbloqBJA2JGrzMyz1VPBNGaTjTU=;
-        b=pUTeoB/B/c7n3sIbM6o9Y00LsAXCHxNwVMJsa5upgXV/7QLVLHgYcPEKzWZ766NjXa
-         314xWdi15XbJovZ/FUWSw6LpC7GnkQNQoiJRjh5YkZ7bJrg1Gw38Ysbf5Sho5KU/Z3xx
-         y+V5eeKP/jqO92i8+wC22UvLXbMbNZ4XncW05NyjNTXMYqy7aQMiRIR++55pL7H1Vwne
-         IIpZWLD4l/XYwJ0qAg1FuOI7mFNe2o5wG7yVegvndufwPB4AdXa759iMmJOFdo1OWazz
-         f4AuMBIwHpWm6y4h2vZzmI3aVgRqskwy/M7T/ebOHfDfaEuGEDniAaxF/R1jHY/KnAVA
-         1uuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Cr74USMS7o2KnmyixbloqBJA2JGrzMyz1VPBNGaTjTU=;
-        b=VMYdLlkrV4QuYrPI5FaUbG2d58BZzeoKtnDKkTC6ZX0ZgRE6HEnjIfifxX8mccE4vR
-         yRGjFZHUk52thiHxy8qA43mgu3i1qrGQvSwybXUeN+goEPFMlWvRUl3C3kfBSAu1IoII
-         n92cBuE3JrzKtPO0Xu1yim8GGDV6xpGwSkKdWD1SSg6PZ22m5qGYautWjUSEyF8cjP43
-         OyCwcCv0u6AOdbCtswik7G1v/CUwjYaWa5P64WWyxpk9XXuKOqO07s0WCLPMv9/C/97s
-         NK0NpLyNmw+q9apaOvWQdnX6h0iyP0riE0OERyihtYIVhUjt6P0BZvck60Ye4zYaaLqT
-         8r0A==
-X-Gm-Message-State: APjAAAVnytVDSblqAFdqSotV8HF9kxp0HCovx5F32dH78IewI9mRB05x
-        CWZ03LnMei+K4lPQa20aZbE8HA==
-X-Google-Smtp-Source: APXvYqxe7JZN3BlGibb97rF9j+EpiLYaGeW5+ag63tvVfeiJ3KxIvN+5YbyLiPNAZ+HVcLqWQGc77A==
-X-Received: by 2002:a2e:2c0a:: with SMTP id s10mr25415ljs.193.1575413754281;
-        Tue, 03 Dec 2019 14:55:54 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id h14sm91779lfc.2.2019.12.03.14.55.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 14:55:54 -0800 (PST)
-Date:   Tue, 3 Dec 2019 14:55:35 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Valentin Vidic <vvidic@valentin-vidic.from.hr>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/tls: Fix return values for setsockopt
-Message-ID: <20191203145535.5a416ef3@cakuba.netronome.com>
-In-Reply-To: <20191203224458.24338-1-vvidic@valentin-vidic.from.hr>
-References: <20191203224458.24338-1-vvidic@valentin-vidic.from.hr>
-Organization: Netronome Systems, Ltd.
+        id S1726505AbfLCXnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 18:43:14 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:57184 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbfLCXnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 18:43:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=OPqV2nFrcb2kveUIO3yew2jRvZwyS9xTFWvVWcs/spM=; b=iq0/EIA9iexEmIjjiLPdaYHs4
+        7BdmVMdoj3wljvzDO3pkZVaF1Wr0nxYgJgLm3fzx5EA5oSg+H3hMxQ302BVueNhBS+2AkjSGdRog8
+        TVyD5WtJiUIXVsHeLGp5wibrlD0aHaf0qlEmkm0MOUJNN+hBEovPsNViw+t59+Sowqng5rt+oip9D
+        gjUNPEFXB2RUoagAaA9p1uUBh/Js94QdDNn3/JbSK5TETsO90oTHighhyYgl2DRnGXc9E8kBZhCMz
+        P2zTagF5/f6w1g2Mz8pGi03vG6/Yt1MAjE1RXhCeNHF+7sI6h9EFzrmcyHal8J27DPH9WdJ+Ej+FH
+        zBpFDIvOQ==;
+Received: from [2601:1c0:6280:3f0::5a22]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1icHp1-0003aR-6R; Tue, 03 Dec 2019 23:43:11 +0000
+Subject: Re: linux-next: Tree for Dec 3 (switchdev & TI_CPSW_SWITCHDEV)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-omap@vger.kernel.org
+References: <20191203155405.31404722@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <58aebf62-54f8-9084-147b-801ea65327bb@infradead.org>
+Date:   Tue, 3 Dec 2019 15:43:09 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20191203155405.31404722@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 Dec 2019 23:44:58 +0100, Valentin Vidic wrote:
-> ENOTSUPP is not available in userspace:
+On 12/2/19 8:54 PM, Stephen Rothwell wrote:
+> Hi all,
 > 
->   setsockopt failed, 524, Unknown error 524
+> Please do not add any material for v5.6 to your linux-next included
+> trees until after v5.5-rc1 has been released.
 > 
-> Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
+> Changes since 20191202:
 
-I'm not 100% clear on whether we can change the return codes after they
-had been exposed to user space for numerous releases..
+I am seeing this (happens to be on i386; I doubt that it matters):
+CONFIG_COMPILE_TEST=y
 
-But if we can - please fix the tools/testing/selftests/net/tls.c test
-as well, because it expects ENOTSUPP.
 
-> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> index bdca31ffe6da..5830b8e02a36 100644
-> --- a/net/tls/tls_main.c
-> +++ b/net/tls/tls_main.c
-> @@ -496,7 +496,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
->  	/* check version */
->  	if (crypto_info->version != TLS_1_2_VERSION &&
->  	    crypto_info->version != TLS_1_3_VERSION) {
-> -		rc = -ENOTSUPP;
-> +		rc = -EINVAL;
->  		goto err_crypto_info;
->  	}
->  
-> @@ -723,7 +723,7 @@ static int tls_init(struct sock *sk)
->  	 * share the ulp context.
->  	 */
->  	if (sk->sk_state != TCP_ESTABLISHED)
-> -		return -ENOTSUPP;
-> +		return -ENOTCONN;
->  
->  	/* allocate tls context */
->  	write_lock_bh(&sk->sk_callback_lock);
+WARNING: unmet direct dependencies detected for NET_SWITCHDEV
+  Depends on [n]: NET [=y] && INET [=n]
+  Selected by [y]:
+  - TI_CPSW_SWITCHDEV [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_TI [=y] && (ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST [=y])
+
+because TI_CPSW_SWITCHDEV blindly selects NET_SWITCHDEV even though
+INET is not set/enabled, while NET_SWITCHDEV depends on INET.
+
+However, the build succeeds, including net/switchdev/*.
+
+So why does NET_SWITCHDEV depend on INET?
+
+It looks like TI_CPSW_SWITCHDEV should depend on INET (based on the
+Kconfig rules), but in practice it doesn't seem to matter to the build.
+
+thanks.
+-- 
+~Randy
 
