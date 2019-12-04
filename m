@@ -2,87 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A131130CA
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 371D71130CD
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728011AbfLDRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 12:30:08 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:44478 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfLDRaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 12:30:08 -0500
-Received: by mail-pj1-f66.google.com with SMTP id w5so82847pjh.11
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 09:30:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gQiqrl+Hf9nh6yjqsNO29WDHQri21nv5UIyJmlJHpa0=;
-        b=flBwRlJsmgANom0y6S5hRTA9gO2lPGKd5B/m/VAbFI3UPFcv45gxt9zdMNpqKRl1Cl
-         tQyVVYZybVHjKeHrhMbSs3uys9pvKyBQsrQXUSfRSbpmsJ1oSlPwgOYetr1UbD1Teo03
-         mJu7o+vEIUzf7ui3rmvg2XSYuE/2CCzexy02it0Y2OeAeqEggHQfOVnAM7Tao2fWR0BZ
-         B+9g9tvTdf/g5NPSha2LJZdiy8sNp7sdFLpWo9GEtKWFIelkHANIbW+yv1JumyArEUCs
-         bkGZeABtybLimbWk5HIu7m6pT8EOTjkKogbj590Rz2dIOCR2g+9xrWuhjU0XY1LRL02+
-         NncA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gQiqrl+Hf9nh6yjqsNO29WDHQri21nv5UIyJmlJHpa0=;
-        b=tO/I4VL9rjQo+tOOBHS3eW+C4wlIEbHU/lWNYugN7A5e1t3kFQOIx2wrg8y2Jhku0e
-         A2d6HMNMOPTzcCemRkxFBX4Tm57WZRZCBrw1Aqz/u6BMWw8+Ik7efGsMekkxQqGutX6j
-         Jhi5aUUSPQsD/7HVpM30dwaOVbdlrLtNoyGLqc9g4YHuy4XjvSP4gk5m4n0xcwBQ3CP7
-         fZry/2fs4H4W4paKbRtUuwziqK/2fbNsBDJWmn+wEoUSwoFmFsAY32SAI7ZiDa7S0YqL
-         96IW/CsCiEfawM6Jj67u78xbsgB97vhR0DXUW77YIMa9jR5gKPo/wR0juKDG1W6G/7PO
-         94iw==
-X-Gm-Message-State: APjAAAUG/cnGqKRWeyRJ1ZBR3PcOp+9URKr+GTPh3xXWA2oqrPT+snJp
-        T9ogM9vssDqUBAqW6zWY2cW+VspbfMYHOje9EOE=
-X-Google-Smtp-Source: APXvYqx40PpZmZvjaHnnsE4MiqK8Si+zDKBShNd9CO1rePkfy0vizYECT0SnWoTuCRZO6Ct0yk5IJPLahXzMm2eQL88=
-X-Received: by 2002:a17:902:9a03:: with SMTP id v3mr4506943plp.61.1575480607585;
- Wed, 04 Dec 2019 09:30:07 -0800 (PST)
+        id S1728072AbfLDRaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 12:30:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37038 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726934AbfLDRaM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 12:30:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lAsG+T4/3QI7MFHFX6DTkoBl6UOaIUr3qpKXn/UuyzU=; b=v9Bfxxq7/fD63NH2anKtkms+QE
+        zT1nIfBwxeIHbzjfzDHTmQj/mjqQEYJ/mln0h91fRLQ+1WxljHQFNOCM891gV2GacAz/+CjE4n4PS
+        RvFqkVPlKlU3g4f93Q4jpgxqLBU6lrLT9v8h7a5+VdBFr9fNZeSckZOK1mbt+K4/oQJs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1icYTY-0003Dk-D6; Wed, 04 Dec 2019 18:30:08 +0100
+Date:   Wed, 4 Dec 2019 18:30:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mian Yousaf Kaukab <ykaukab@suse.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, tharvey@gateworks.com,
+        davem@davemloft.net, rric@kernel.org, sgoutham@cavium.com,
+        sergei.shtylyov@cogentembedded.com
+Subject: Re: [PATCH v1] net: thunderx: start phy before starting
+ autonegotiation
+Message-ID: <20191204173008.GG21904@lunn.ch>
+References: <20191204172351.29709-1-ykaukab@suse.de>
 MIME-Version: 1.0
-References: <20191130142400.3930-1-ap420073@gmail.com>
-In-Reply-To: <20191130142400.3930-1-ap420073@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 4 Dec 2019 09:29:56 -0800
-Message-ID: <CAM_iQpXG-3XBxKxPR5s8jyZEZthaBaG73No3DOqr78aWNn1c3w@mail.gmail.com>
-Subject: Re: [net PATCH] hsr: fix a NULL pointer dereference in hsr_dev_xmit()
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        treeze.taeung@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191204172351.29709-1-ykaukab@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 30, 2019 at 6:24 AM Taehee Yoo <ap420073@gmail.com> wrote:
->
-> hsr_dev_xmit() calls hsr_port_get_hsr() to find master node and that would
-> return NULL if master node is not existing in the list.
-> But hsr_dev_xmit() doesn't check return pointer so a NULL dereference
-> could occur.
->
-> In the TX datapath, there is no rcu_read_lock() so this patch adds missing
-> rcu_read_lock() in the hsr_dev_xmit() too.
+On Wed, Dec 04, 2019 at 06:23:51PM +0100, Mian Yousaf Kaukab wrote:
+> Since commit 2b3e88ea6528 ("net: phy: improve phy state checking")
+> phy_start_aneg() expects phy state to be >= PHY_UP. Call phy_start()
+> before calling phy_start_aneg() during probe so that autonegotiation
+> is initiated.
+> 
+> As phy_start() takes care of calling phy_start_aneg(), drop the explicit
+> call to phy_start_aneg().
+> 
+> Network fails without this patch on Octeon TX.
+> 
+> Signed-off-by: Mian Yousaf Kaukab <ykaukab@suse.de>
+> ---
+> v1: 
 
-Just a correction:
-The TX path _has_ RCU read lock, but it harms nothing to take it again.
+This should really be v2.
 
-[...]
->
-> Fixes: 311633b60406 ("hsr: switch ->dellink() to ->ndo_uninit()")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+You should add fixes: tag
 
-This fix is correct. There is no other way to workaround this RCU
-rule, checking against NULL is the only way to fix RCU reader
-races, so:
+And the subject line should indicate which tree this is for:
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+[PATCH v2 net] net: thunderx: start phy before starting autonegotiation
 
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
 
-Taehee, you might have to resend this with my Acked-by as David
-probably already drops it from patchwork.
-
-Thanks.
+       Andrew
