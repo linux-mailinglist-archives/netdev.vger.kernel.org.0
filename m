@@ -2,572 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F361411384B
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 00:37:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0502411384E
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 00:39:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbfLDXhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 18:37:37 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38882 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728011AbfLDXhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 18:37:36 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x185so629258pfc.5
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 15:37:36 -0800 (PST)
+        id S1728374AbfLDXjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 18:39:54 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34076 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727989AbfLDXjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 18:39:53 -0500
+Received: by mail-pg1-f194.google.com with SMTP id r11so650219pgf.1;
+        Wed, 04 Dec 2019 15:39:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zg8KNX+CcJMt0CgGDsPaVXvk2JWoyFmQ57r8nK+k8Q0=;
-        b=1wMIAbc3fgZZwIUAdUJxdPZYBL2ClQsa0GZyWNeFixrj8CiQWpPCzuXlCdBvY+LaME
-         dL/VoODootWpGvl5Jx1Y1MGql5uP+yOy6EEdxHEfalAlfT03VKYX2ZHW1ZEDqIEtiIOQ
-         bcikv3plXJSFhndD2Et3f4KFDF+2IDBjFD9htfUBuUCqaj15vFa7pPJ5OeGDT/hwCV6A
-         nbg5bEhLXKnYWRmxEggqglY9PoKsZUH/VZnhVfxuwHuGzTRcjle1WicUSZu7VC4hlMTt
-         EHrdmDXmxpdFDZ7N9zERq5do+kZYXJq6rxCWtIUDFfsf+Oa0zeBwaRIHSE5FNgpfEytv
-         sEUA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=T+fmIAcbvPunjOne4lSVzDFj12f4dda2gaEWlkYAhO4=;
+        b=QC9uba6k0eil9dabA/dnJu+IfZoCjL9HkwHTeIfZ+PvQfEaylkJZq80YcxGpIVce4D
+         +ZO5pgMqjg+Oiefmbv1wppCCjVejhHdyZyDCh8JfeRXomomdyoHZzx5gnxRf4vOXxU2Z
+         ARnlPk2dCZStJ27MIPhSdwb8Fl1Gf+zSpcPWqX8A16j/jDKkJ4dZY1jJiCeD0EYTUX9Y
+         iFjAN+GCdi0GTJ+EGs1G1NsitP4FGspIHa/ZBpIAc9prEZT37p20N0HUDMo2ApYRGxv8
+         HQTWCZoXgU68jZ2e9y3t5Yh78Jak00gmDgnb71iBDcyq6ccpCv7Ca5sPx85OfDLrFrAB
+         JYwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zg8KNX+CcJMt0CgGDsPaVXvk2JWoyFmQ57r8nK+k8Q0=;
-        b=WnfQ2t5H6oPnJquMSMXTp2X/UmqOxJcO5NUoB7TJNdCDethFR3bxWbqRKwrG7lB84y
-         q82FPbAcS/ysV36Lk47rD2SC2exPS3oIsPb8yW8DImE3VKG609y+ks2bdCxvlWL1d30u
-         WfxV6RYJpJ5qXzmi0vF/bbFgUHga2yUB1wGz60Jk6a5J1xIOCnII4UvL/H3B9zOloKuQ
-         xlLngdrk8UUmc2lpWlypswH7lOozBi8aA5aDitigPd2osHklA3I7ClOivsdUPY8xPiti
-         dHwiWrTM0IsrQhRXTPkLAj0KOyaXuYKVHOG8NwT0OTqb0+yy6cpKDQ8//+Z/+G0nbTUt
-         lHmg==
-X-Gm-Message-State: APjAAAVxJoWJINLAQVMmYUNYgE2MqFT3m09xopHmDRMDHpGFCXBPGUV5
-        NdexGERDlb4/Xuh0kdta8JaIdqFaICulaA==
-X-Google-Smtp-Source: APXvYqwACpYC2YOQhh4qpaTzLwB1d8OrdYQqi/IALeCqBpeElqcCOfhIdBBDMqYS/QWDwrXnnqJ1hA==
-X-Received: by 2002:a63:e608:: with SMTP id g8mr6055573pgh.448.1575502655210;
-        Wed, 04 Dec 2019 15:37:35 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i9sm9617510pfk.24.2019.12.04.15.37.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 15:37:34 -0800 (PST)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v2 iproute2-next] tc: do not output newline in oneline mode
-Date:   Wed,  4 Dec 2019 15:37:26 -0800
-Message-Id: <20191204233726.3152-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=T+fmIAcbvPunjOne4lSVzDFj12f4dda2gaEWlkYAhO4=;
+        b=kRgn+2TQjAKOnR6t+dGuo0mo2mbK3j+bLZu+in9JOev5oyyZNqNr65mWBBtmRBkHz9
+         PWXo+/YmNuEBlatq5jRwx7BYKktbvB1bWGpqC6odgmBPkFb+7ZWJ/2p+YeCbE8XlqmW4
+         tQjtF7uvxbLxqSQ2bpZwlEkjL77kETuuaSI5k+tuyP7bPfVfhfvh3VrXPOCes/vqUFAH
+         7ZJpBjDtQ9ldAq5P83K8fRtX0yaUwGUcnYX3OIIYwep9lGvy7AnZ6CLSp7sF6U2MbGt+
+         COfZpQAqYjoQPqnWOFCMPr9ZG65DHS9VtCmbqIr2J4JMAazcW3C1bHEYktCW1vxHD6HS
+         xIag==
+X-Gm-Message-State: APjAAAVRDgHQ8rFwPzLBodfzv3hALoKHrgqWtFjjidH9VZuayCmbiOlz
+        AQxDdzhvBwfBlLKn56b75eU=
+X-Google-Smtp-Source: APXvYqwGFrV46HuiqLpRY8kXemfGVnefFTlDWtqzEP44TXsqp4AkeVHfpn7V9XR9DokKpMf9Db4i9w==
+X-Received: by 2002:a62:e210:: with SMTP id a16mr6209696pfi.123.1575502792921;
+        Wed, 04 Dec 2019 15:39:52 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::f9fe])
+        by smtp.gmail.com with ESMTPSA id r193sm3923243pfr.100.2019.12.04.15.39.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Dec 2019 15:39:52 -0800 (PST)
+Date:   Wed, 4 Dec 2019 15:39:49 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
+References: <20191202131847.30837-1-jolsa@kernel.org>
+ <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+ <87wobepgy0.fsf@toke.dk>
+ <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+ <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
+ <20191204135405.3ffb9ad6@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191204135405.3ffb9ad6@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In oneline mode the line seperator should be \
-but several parts of tc aren't doing it right.
+On Wed, Dec 04, 2019 at 01:54:05PM -0800, Jakub Kicinski wrote:
+> On Wed, 4 Dec 2019 13:16:13 -0800, Andrii Nakryiko wrote:
+> > I wonder what big advantage having bpftool in libbpf's Github repo
+> > brings, actually? The reason we need libbpf on github is to allow
+> > other projects like pahole to be able to use libbpf from submodule.
+> > There is no such need for bpftool.
+> > 
+> > I agree about preference to release them in sync, but that could be
+> > easily done by releasing based on corresponding commits in github's
+> > libbpf repo and kernel repo. bpftool doesn't have to physically live
+> > next to libbpf on Github, does it?
+> 
+> +1
+> 
+> > Calling github repo a "mirror" is incorrect. It's not a 1:1 copy of
+> > files. We have a completely separate Makefile for libbpf, and we have
+> > a bunch of stuff we had to re-implement to detach libbpf code from
+> > kernel's non-UAPI headers. Doing this for bpftool as well seems like
+> > just more maintenance. Keeping github's Makefile in sync with kernel's
+> > Makefile (for libbpf) is PITA, I'd rather avoid similar pains for
+> > bpftool without a really good reason.
+> 
+> Agreed. Having libbpf on GH is definitely useful today, but one can hope
+> a day will come when distroes will get up to speed on packaging libbpf,
+> and perhaps we can retire it? Maybe 2, 3 years from now? Putting
+> bpftool in the same boat is just more baggage.
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
-v2 - found more places that need changing
-
- tc/f_flower.c     | 66 +++++++++++++++++++++++++++++++----------------
- tc/m_csum.c       |  4 +--
- tc/m_ct.c         |  5 ++--
- tc/m_gact.c       |  8 +++---
- tc/m_mirred.c     |  5 ++--
- tc/m_mpls.c       |  3 ++-
- tc/m_pedit.c      |  2 +-
- tc/m_simple.c     |  2 +-
- tc/m_tunnel_key.c |  3 ++-
- tc/m_vlan.c       |  5 ++--
- tc/m_xt.c         |  2 +-
- tc/q_cake.c       |  4 +--
- tc/q_fq_codel.c   |  3 ++-
- tc/tc_filter.c    |  4 +--
- tc/tc_qdisc.c     |  8 +++---
- tc/tc_util.c      |  2 +-
- 16 files changed, 78 insertions(+), 48 deletions(-)
-
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index a193c0eca22a..ce057a72cc7c 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -1624,7 +1624,8 @@ static void flower_print_eth_type(__be16 *p_eth_type,
- 	else
- 		sprintf(out, "%04x", ntohs(eth_type));
- 
--	print_string(PRINT_ANY, "eth_type", "\n  eth_type %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "eth_type", "  eth_type %s", out);
- 	*p_eth_type = eth_type;
- }
- 
-@@ -1651,7 +1652,8 @@ static void flower_print_ip_proto(__u8 *p_ip_proto,
- 	else
- 		sprintf(out, "%02x", ip_proto);
- 
--	print_string(PRINT_ANY, "ip_proto", "\n  ip_proto %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ip_proto", "  ip_proto %s", out);
- 	*p_ip_proto = ip_proto;
- }
- 
-@@ -1682,7 +1684,8 @@ static void flower_print_matching_flags(char *name,
- 			continue;
- 		if (mtf_mask & flags_str[i].flag) {
- 			if (++count == 1) {
--				print_string(PRINT_FP, NULL, "\n  %s ", name);
-+				print_nl();
-+				print_string(PRINT_FP, NULL, "  %s ", name);
- 				open_json_object(name);
- 			} else {
- 				print_string(PRINT_FP, NULL, "/", NULL);
-@@ -1829,7 +1832,8 @@ static void flower_print_ct_state(struct rtattr *flags_attr,
- 					flower_ct_states[i].str);
- 	}
- 
--	print_string(PRINT_ANY, "ct_state", "\n  ct_state %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ct_state", "  ct_state %s", out);
- }
- 
- static void flower_print_ct_label(struct rtattr *attr,
-@@ -1864,7 +1868,8 @@ static void flower_print_ct_label(struct rtattr *attr,
- 	}
- 	*p = '\0';
- 
--	print_string(PRINT_ANY, "ct_label", "\n  ct_label %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ct_label", "  ct_label %s", out);
- }
- 
- static void flower_print_ct_zone(struct rtattr *attr,
-@@ -1886,7 +1891,8 @@ static void flower_print_key_id(const char *name, struct rtattr *attr)
- 	if (!attr)
- 		return;
- 
--	sprintf(namefrm,"\n  %s %%u", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%u", name);
- 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_be32(attr));
- }
- 
-@@ -1934,7 +1940,7 @@ static void flower_print_geneve_opts(const char *name, struct rtattr *attr,
- static void flower_print_geneve_parts(const char *name, struct rtattr *attr,
- 				      char *key, char *mask)
- {
--	char *namefrm = "\n  geneve_opt %s";
-+	char *namefrm = "  geneve_opt %s";
- 	char *key_token, *mask_token, *out;
- 	int len;
- 
-@@ -1952,6 +1958,7 @@ static void flower_print_geneve_parts(const char *name, struct rtattr *attr,
- 	}
- 
- 	out[len - 1] = '\0';
-+	print_nl();
- 	print_string(PRINT_FP, name, namefrm, out);
- 	free(out);
- }
-@@ -2015,7 +2022,8 @@ static void flower_print_masked_u8(const char *name, struct rtattr *attr,
- 	if (mask != UINT8_MAX)
- 		sprintf(out + done, "/%d", mask);
- 
--	sprintf(namefrm,"\n  %s %%s", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%s", name);
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- 
-@@ -2031,7 +2039,8 @@ static void flower_print_u32(const char *name, struct rtattr *attr)
- 	if (!attr)
- 		return;
- 
--	sprintf(namefrm,"\n  %s %%u", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%u", name);
- 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
- }
- 
-@@ -2086,14 +2095,16 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_KEY_VLAN_ID]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_ID];
- 
--		print_uint(PRINT_ANY, "vlan_id", "\n  vlan_id %u",
-+		print_nl();
-+		print_uint(PRINT_ANY, "vlan_id", "  vlan_id %u",
- 			   rta_getattr_u16(attr));
- 	}
- 
- 	if (tb[TCA_FLOWER_KEY_VLAN_PRIO]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_PRIO];
- 
--		print_uint(PRINT_ANY, "vlan_prio", "\n  vlan_prio %d",
-+		print_nl();
-+		print_uint(PRINT_ANY, "vlan_prio", "  vlan_prio %d",
- 			   rta_getattr_u8(attr));
- 	}
- 
-@@ -2101,7 +2112,8 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 		SPRINT_BUF(buf);
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE];
- 
--		print_string(PRINT_ANY, "vlan_ethtype", "\n  vlan_ethtype %s",
-+		print_nl();
-+		print_string(PRINT_ANY, "vlan_ethtype", "  vlan_ethtype %s",
- 			     ll_proto_n2a(rta_getattr_u16(attr),
- 			     buf, sizeof(buf)));
- 	}
-@@ -2109,14 +2121,16 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_KEY_CVLAN_ID]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_ID];
- 
--		print_uint(PRINT_ANY, "cvlan_id", "\n  cvlan_id %u",
-+		print_nl();
-+		print_uint(PRINT_ANY, "cvlan_id", "  cvlan_id %u",
- 			   rta_getattr_u16(attr));
- 	}
- 
- 	if (tb[TCA_FLOWER_KEY_CVLAN_PRIO]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_PRIO];
- 
--		print_uint(PRINT_ANY, "cvlan_prio", "\n  cvlan_prio %d",
-+		print_nl();
-+		print_uint(PRINT_ANY, "cvlan_prio", "  cvlan_prio %d",
- 			   rta_getattr_u8(attr));
- 	}
- 
-@@ -2124,7 +2138,8 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 		SPRINT_BUF(buf);
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_ETH_TYPE];
- 
--		print_string(PRINT_ANY, "cvlan_ethtype", "\n  cvlan_ethtype %s",
-+		print_nl();
-+		print_string(PRINT_ANY, "cvlan_ethtype", "  cvlan_ethtype %s",
- 			     ll_proto_n2a(rta_getattr_u16(attr),
- 			     buf, sizeof(buf)));
- 	}
-@@ -2254,13 +2269,18 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_FLAGS]) {
- 		__u32 flags = rta_getattr_u32(tb[TCA_FLOWER_FLAGS]);
- 
--		if (flags & TCA_CLS_FLAGS_SKIP_HW)
--			print_bool(PRINT_ANY, "skip_hw", "\n  skip_hw", true);
--		if (flags & TCA_CLS_FLAGS_SKIP_SW)
--			print_bool(PRINT_ANY, "skip_sw", "\n  skip_sw", true);
-+		if (flags & TCA_CLS_FLAGS_SKIP_HW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "skip_hw", "  skip_hw", true);
-+		}
-+		if (flags & TCA_CLS_FLAGS_SKIP_SW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "skip_sw", "  skip_sw", true);
-+		}
- 
- 		if (flags & TCA_CLS_FLAGS_IN_HW) {
--			print_bool(PRINT_ANY, "in_hw", "\n  in_hw", true);
-+			print_nl();
-+			print_bool(PRINT_ANY, "in_hw", "  in_hw", true);
- 
- 			if (tb[TCA_FLOWER_IN_HW_COUNT]) {
- 				__u32 count = rta_getattr_u32(tb[TCA_FLOWER_IN_HW_COUNT]);
-@@ -2269,8 +2289,10 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 					   " in_hw_count %u", count);
- 			}
- 		}
--		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW)
--			print_bool(PRINT_ANY, "not_in_hw", "\n  not_in_hw", true);
-+		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "not_in_hw", "  not_in_hw", true);
-+		}
- 	}
- 
- 	if (tb[TCA_FLOWER_ACT])
-diff --git a/tc/m_csum.c b/tc/m_csum.c
-index 3e3dc251ea38..afbee9c8de0f 100644
---- a/tc/m_csum.c
-+++ b/tc/m_csum.c
-@@ -205,7 +205,7 @@ print_csum(struct action_util *au, FILE *f, struct rtattr *arg)
- 		 uflag_4, uflag_5, uflag_6, uflag_7);
- 	print_string(PRINT_ANY, "csum", "(%s) ", buf);
- 
--	print_action_control(f, "action ", sel->action, "\n");
-+	print_action_control(f, "action ", sel->action, _SL_);
- 	print_uint(PRINT_ANY, "index", "\tindex %u", sel->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", sel->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", sel->bindcnt);
-@@ -217,7 +217,7 @@ print_csum(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	print_string(PRINT_FP, NULL, "%s", "\n");
-+	print_nl();
- 
- 	return 0;
- }
-diff --git a/tc/m_ct.c b/tc/m_ct.c
-index 8df2f6103601..b36e55d9c5cd 100644
---- a/tc/m_ct.c
-+++ b/tc/m_ct.c
-@@ -473,7 +473,8 @@ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
- 
- 	print_action_control(f, " ", p->action, "");
- 
--	print_uint(PRINT_ANY, "index", "\n\t index %u", p->index);
-+	print_nl();
-+	print_uint(PRINT_ANY, "index", "\t index %u", p->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
- 
-@@ -484,7 +485,7 @@ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	print_string(PRINT_FP, NULL, "%s", "\n ");
-+	print_nl();
- 
- 	return 0;
- }
-diff --git a/tc/m_gact.c b/tc/m_gact.c
-index b06e8ee95818..33f326f823d1 100644
---- a/tc/m_gact.c
-+++ b/tc/m_gact.c
-@@ -193,13 +193,15 @@ print_gact(struct action_util *au, FILE *f, struct rtattr *arg)
- 		pp = &pp_dummy;
- 	}
- 	open_json_object("prob");
--	print_string(PRINT_ANY, "random_type", "\n\t random type %s",
-+	print_nl();
-+	print_string(PRINT_ANY, "random_type", "\t random type %s",
- 		     prob_n2a(pp->ptype));
- 	print_action_control(f, " ", pp->paction, " ");
- 	print_int(PRINT_ANY, "val", "val %d", pp->pval);
- 	close_json_object();
- #endif
--	print_uint(PRINT_ANY, "index", "\n\t index %u", p->index);
-+	print_nl();
-+	print_uint(PRINT_ANY, "index", "\t index %u", p->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
- 	if (show_stats) {
-@@ -209,7 +211,7 @@ print_gact(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	print_string(PRINT_FP, NULL, "%s", "\n");
-+	print_nl();
- 	return 0;
- }
- 
-diff --git a/tc/m_mirred.c b/tc/m_mirred.c
-index 132095237929..d2bdf4074a73 100644
---- a/tc/m_mirred.c
-+++ b/tc/m_mirred.c
-@@ -307,7 +307,8 @@ print_mirred(struct action_util *au, FILE *f, struct rtattr *arg)
- 	print_string(PRINT_ANY, "to_dev", " to device %s)", dev);
- 	print_action_control(f, " ", p->action, "");
- 
--	print_uint(PRINT_ANY, "index", "\n \tindex %u", p->index);
-+	print_nl();
-+	print_uint(PRINT_ANY, "index", "\tindex %u", p->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
- 
-@@ -318,7 +319,7 @@ print_mirred(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	print_string(PRINT_FP, NULL, "%s", "\n ");
-+	print_nl();
- 	return 0;
- }
- 
-diff --git a/tc/m_mpls.c b/tc/m_mpls.c
-index 4b1ec70e3b4a..6f3a39f43ce1 100644
---- a/tc/m_mpls.c
-+++ b/tc/m_mpls.c
-@@ -252,7 +252,8 @@ static int print_mpls(struct action_util *au, FILE *f, struct rtattr *arg)
- 	}
- 	print_action_control(f, " ", parm->action, "");
- 
--	print_uint(PRINT_ANY, "index", "\n\t index %u", parm->index);
-+	print_nl();
-+	print_uint(PRINT_ANY, "index", "\t index %u", parm->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", parm->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", parm->bindcnt);
- 
-diff --git a/tc/m_pedit.c b/tc/m_pedit.c
-index 1cd2d162fc2a..fccfd17ca270 100644
---- a/tc/m_pedit.c
-+++ b/tc/m_pedit.c
-@@ -820,7 +820,7 @@ static int print_pedit(struct action_util *au, FILE *f, struct rtattr *arg)
- 			sel->nkeys);
- 	}
- 
--	fprintf(f, "\n ");
-+	print_nl();
- 
- 	free(keys_ex);
- 	return 0;
-diff --git a/tc/m_simple.c b/tc/m_simple.c
-index 49e250472e04..70897d6b7c13 100644
---- a/tc/m_simple.c
-+++ b/tc/m_simple.c
-@@ -194,7 +194,7 @@ static int print_simple(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	fprintf(f, "\n");
-+	print_nl();
- 
- 	return 0;
- }
-diff --git a/tc/m_tunnel_key.c b/tc/m_tunnel_key.c
-index 4e65e444776a..8fde689137fd 100644
---- a/tc/m_tunnel_key.c
-+++ b/tc/m_tunnel_key.c
-@@ -420,7 +420,8 @@ static void tunnel_key_print_geneve_options(const char *name,
- 	uint8_t type;
- 
- 	open_json_array(PRINT_JSON, name);
--	print_string(PRINT_FP, name, "\n\t%s ", "geneve_opt");
-+	print_nl();
-+	print_string(PRINT_FP, name, "\t%s ", "geneve_opt");
- 
- 	while (rem) {
- 		parse_rtattr(tb, TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX, i, rem);
-diff --git a/tc/m_vlan.c b/tc/m_vlan.c
-index 9c8071e9dbbe..1096ba0fbf12 100644
---- a/tc/m_vlan.c
-+++ b/tc/m_vlan.c
-@@ -219,7 +219,8 @@ static int print_vlan(struct action_util *au, FILE *f, struct rtattr *arg)
- 	}
- 	print_action_control(f, " ", parm->action, "");
- 
--	print_uint(PRINT_ANY, "index", "\n\t index %u", parm->index);
-+	print_nl();
-+	print_uint(PRINT_ANY, "index", "\t index %u", parm->index);
- 	print_int(PRINT_ANY, "ref", " ref %d", parm->refcnt);
- 	print_int(PRINT_ANY, "bind", " bind %d", parm->bindcnt);
- 
-@@ -231,7 +232,7 @@ static int print_vlan(struct action_util *au, FILE *f, struct rtattr *arg)
- 		}
- 	}
- 
--	print_string(PRINT_FP, NULL, "%s", "\n");
-+	print_nl();
- 
- 	return 0;
- }
-diff --git a/tc/m_xt.c b/tc/m_xt.c
-index bf0db2be99a4..487ba25ad391 100644
---- a/tc/m_xt.c
-+++ b/tc/m_xt.c
-@@ -391,7 +391,7 @@ print_ipt(struct action_util *au, FILE *f, struct rtattr *arg)
- 			print_tm(f, tm);
- 		}
- 	}
--	fprintf(f, "\n");
-+	print_nl();
- 
- 	xtables_free_opts(1);
- 
-diff --git a/tc/q_cake.c b/tc/q_cake.c
-index 65ea07ef6cb5..3c78b1767e0b 100644
---- a/tc/q_cake.c
-+++ b/tc/q_cake.c
-@@ -766,7 +766,7 @@ static int cake_print_xstats(struct qdisc_util *qu, FILE *f,
- 			fprintf(f, "          ");
- 			for (i = 0; i < num_tins; i++)
- 				fprintf(f, "        Tin %u", i);
--			fprintf(f, "\n");
-+			fprintf(f, "%s", _SL_);
- 		};
- 
- #define GET_TSTAT(i, attr) (tstat[i][TCA_CAKE_TIN_STATS_ ## attr])
-@@ -775,7 +775,7 @@ static int cake_print_xstats(struct qdisc_util *qu, FILE *f,
- 				fprintf(f, name);		\
- 				for (i = 0; i < num_tins; i++)	\
- 					fprintf(f, " %12" fmts,	val);	\
--				fprintf(f, "\n");			\
-+				fprintf(f, "%s", _SL_);			\
- 			}						\
- 		} while (0)
- 
-diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
-index 376ac50da1a5..12ce3fbfd203 100644
---- a/tc/q_fq_codel.c
-+++ b/tc/q_fq_codel.c
-@@ -257,7 +257,8 @@ static int fq_codel_print_xstats(struct qdisc_util *qu, FILE *f,
- 		if (st->qdisc_stats.drop_overmemory)
- 			print_uint(PRINT_ANY, "drop_overmemory", " drop_overmemory %u",
- 				st->qdisc_stats.drop_overmemory);
--		print_uint(PRINT_ANY, "new_flows_len", "\n  new_flows_len %u",
-+		print_nl();
-+		print_uint(PRINT_ANY, "new_flows_len", "  new_flows_len %u",
- 			st->qdisc_stats.new_flows_len);
- 		print_uint(PRINT_ANY, "old_flows_len", " old_flows_len %u",
- 			st->qdisc_stats.old_flows_len);
-diff --git a/tc/tc_filter.c b/tc/tc_filter.c
-index f7d2e4a66a35..dcddca77ef1b 100644
---- a/tc/tc_filter.c
-+++ b/tc/tc_filter.c
-@@ -364,11 +364,11 @@ int print_filter(struct nlmsghdr *n, void *arg)
- 			close_json_object();
- 		}
- 	}
--	print_string(PRINT_FP, NULL, "\n", NULL);
-+	print_nl();
- 
- 	if (show_stats && (tb[TCA_STATS] || tb[TCA_STATS2])) {
- 		print_tcstats_attr(fp, tb, " ", NULL);
--		print_string(PRINT_FP, NULL, "\n", NULL);
-+		print_nl();
- 	}
- 
- 	close_json_object();
-diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
-index 17e399830a75..75a146721c40 100644
---- a/tc/tc_qdisc.c
-+++ b/tc/tc_qdisc.c
-@@ -317,11 +317,11 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
- 	}
- 	close_json_object();
- 
--	print_string(PRINT_FP, NULL, "\n", NULL);
-+	print_nl();
- 
- 	if (show_details && tb[TCA_STAB]) {
- 		print_size_table(fp, " ", tb[TCA_STAB]);
--		print_string(PRINT_FP, NULL, "\n", NULL);
-+		print_nl();
- 	}
- 
- 	if (show_stats) {
-@@ -329,12 +329,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
- 
- 		if (tb[TCA_STATS] || tb[TCA_STATS2] || tb[TCA_XSTATS]) {
- 			print_tcstats_attr(fp, tb, " ", &xstats);
--			print_string(PRINT_FP, NULL, "\n", NULL);
-+			print_nl();
- 		}
- 
- 		if (q && xstats && q->print_xstats) {
- 			q->print_xstats(q, fp, xstats);
--			print_string(PRINT_FP, NULL, "\n", NULL);
-+			print_nl();
- 		}
- 	}
- 	close_json_object();
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index afdfc78f2e5b..879d74111679 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -857,7 +857,7 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
- 
- 		memcpy(&q, RTA_DATA(tbs[TCA_STATS_QUEUE]), MIN(RTA_PAYLOAD(tbs[TCA_STATS_QUEUE]), sizeof(q)));
- 		if (!tbs[TCA_STATS_RATE_EST])
--			print_string(PRINT_FP, NULL, "\n", "");
-+			print_nl();
- 		print_uint(PRINT_JSON, "backlog", NULL, q.backlog);
- 		print_string(PRINT_FP, NULL, "%s", prefix);
- 		print_string(PRINT_FP, NULL, "backlog %s",
--- 
-2.20.1
+Distros should be packaging libbpf and bpftool from single repo on github.
+Kernel tree is for packaging kernel.
 
