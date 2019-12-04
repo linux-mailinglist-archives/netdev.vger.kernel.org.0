@@ -2,109 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD921130EE
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C73AE1130F3
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:40:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728031AbfLDRj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 12:39:27 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:36084 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfLDRj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 12:39:27 -0500
-Received: by mail-pj1-f68.google.com with SMTP id n96so108956pjc.3;
-        Wed, 04 Dec 2019 09:39:26 -0800 (PST)
+        id S1728152AbfLDRkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 12:40:13 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37786 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726934AbfLDRkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 12:40:13 -0500
+Received: by mail-lf1-f65.google.com with SMTP id b15so244480lfc.4;
+        Wed, 04 Dec 2019 09:40:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LiJocrhksCvpO+19ZdExpChYK8w6nQgoAmY+U1ToVCw=;
-        b=DFVeuZX8iTexCHx8t3r9+DFmLx/hWSshdMstwuBvqeXm/taPQxGkeLpYDDdOktV7KC
-         y6oi9Y38zDn3633Eya9Ka5B6eJZSkvOO/saG/83igdkdtK/Xpf4QyZowDVvxVYdFQQ90
-         /vBCnSAbNsyWNm8sVmkVRIyfl+3n3caPM/xCmkuibaIORcQY8Hrfwvd4HjWa1n7yOQUw
-         Bt5yhDjKtOFzuthd9dVDDxbAmYbj16C/BrI8xzpXOBkI15DizyUT+rSOsE93HxZW+KNQ
-         ImGZhsnVhOd6cys76qCNeHLTRKEVdFaqD688dS4wskjOocqD9JrzmKQTAgfG5PgOHmVI
-         J+KA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=oHB3In8TJ1BoCV3yfap7FG1+zu7GC+PatNJi/jkJ27I=;
+        b=hbu9w8wL5kU21nC4Jlndxk45Zim9mXAingOu5sCV6Bz8G5uoLAWrDCbTkJkWEVs7rI
+         vX0qoW9oDhTHObJPHKvWMOyZqDRF2kyYcIyENI/1UnPtdE1kZ071fSoXDg8AD611hMTT
+         n+vqleKxuST2C98p+/minoqhQliHmuoY0Z2slwtJA8zA4W3E/MGmT1tbrsKCp2U1s9L2
+         mE7UkOyhi+sOSKVGalPNq2xw2uQNlCHIwk3IWYVICfSvd4TZcXFWtobRgDT7FP/zL/rs
+         kOiEygnrod05ifzqQn4Ec6EBbLUfKHVsEcyHtj5cip60SjIsTV6/CSQZhRZXYq+Y/UFm
+         iO0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LiJocrhksCvpO+19ZdExpChYK8w6nQgoAmY+U1ToVCw=;
-        b=ISVsFWAVHjsACFml5DM6kViYQJ0tXEIV/IPOisRbwpUnc6gorkY0jF30c2JSEoZ/rC
-         NbCeUHw8/wVl0iitzh1lfMSEFYStVzn0Wrn1RevkD//XVwh84UW4uzVWmCCFdLELJVHF
-         PQohA0gIrYEKGNIxVcZRte9uiMvYXIdEjVKLZycfRCWWeogVAr5hssGZLMsoUPtciEmF
-         iq57tqadijDoT66ivoFpUFFsByCcOR4/fh4uBWqWux1pPoIKhyOuDWe8whnUJIP0RBs4
-         3qfhUj+jQP4iE3IihGiUT+3sIsqppHBzE+LWZTNF2oRlMfZsRULpVhOUZLE6mTrb+T3y
-         Uf4A==
-X-Gm-Message-State: APjAAAWAEI58tk62hBdVbV3QikgdjVqPONYvWFTV/8HeptP2EI+Yob/q
-        ndMKaDjeqVjG+Z/B6zK47W3a+ZEr
-X-Google-Smtp-Source: APXvYqwe3IcNYdntM1drGvi5vv9cb2mBcY251MgrD5fiAgLt2Jx1ESE7j+6W8y9jVGNETF4QVvvsuQ==
-X-Received: by 2002:a17:90a:bf81:: with SMTP id d1mr4465454pjs.125.1575481166109;
-        Wed, 04 Dec 2019 09:39:26 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id j20sm8350166pff.182.2019.12.04.09.39.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2019 09:39:25 -0800 (PST)
-Subject: Re: [PATCH] net/decnet: fix -EFAULT error that is not getting
- returned
-To:     Colin King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20191204151144.1434209-1-colin.king@canonical.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b75479fd-055e-3758-fc59-3385185a705b@gmail.com>
-Date:   Wed, 4 Dec 2019 09:39:24 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oHB3In8TJ1BoCV3yfap7FG1+zu7GC+PatNJi/jkJ27I=;
+        b=Q36g5P5YCCE/Gyy/mjM96+awojrhUWGjidpS65xESBazkHL5Uc/mFfKheDf5dEGCyv
+         8hx05eUL3djQgjDzluigMCFdtOU1ivxTo361HTppdHFxHSXhRMS7YWxK8hVU5fduVeBU
+         D+wZE/gb/7pC7wdEzgp1mrtlUK5SOMauqD/qxVp/irPutQ1VpRYtC3FzNhl5Lo8qEG3D
+         trMivjk289R0Q9Ux6JeRCm0aQa8kZ8lodhNGw93CmiROfri6riwPF/l+VoJyYv6SLinX
+         05WIqNE7YTYnXsmvbZHrlA9f3OsVJX5uPSyqZyhGogBudoDSgVEYZINL6s2qnZYAgxEx
+         ZEsg==
+X-Gm-Message-State: APjAAAXPpopVGQZGcfmLakDLUm5VXenh52rsIWgvFhM4fTW4RpS81QbP
+        m6or+7xE1UgFFumEXiTqfWCqgea5cDOVuR72Hho=
+X-Google-Smtp-Source: APXvYqyPEupUr7tGIzShjf7qHeDrPAasDt0WdGU+LboeMyuNSjbt7jEx6hQU6c+7Rz9evygBa/WupWihLONa8TAWcSM=
+X-Received: by 2002:ac2:5237:: with SMTP id i23mr1937122lfl.100.1575481210398;
+ Wed, 04 Dec 2019 09:40:10 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191204151144.1434209-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191202131847.30837-1-jolsa@kernel.org> <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+ <87wobepgy0.fsf@toke.dk> <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+ <877e3cpdc9.fsf@toke.dk>
+In-Reply-To: <877e3cpdc9.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 4 Dec 2019 09:39:59 -0800
+Message-ID: <CAADnVQJeC9FQDXhv34KTiFSRq-=x4cBaspj-bTXdQ1=7prphcA@mail.gmail.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 4, 2019 at 2:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> > On Mon, Dec 2, 2019 at 1:15 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >>
+> >> Ah, that is my mistake: I was getting dynamic libbpf symbols with this
+> >> approach, but that was because I had the version of libbpf.so in my
+> >> $LIBDIR that had the patch to expose the netlink APIs as versioned
+> >> symbols; so it was just pulling in everything from the shared library.
+> >>
+> >> So what I was going for was exactly what you described above; but it
+> >> seems that doesn't actually work. Too bad, and sorry for wasting your
+> >> time on this :/
+> >
+> > bpftool is currently tightly coupled with libbpf and very likely
+> > in the future the dependency will be even tighter.
+> > In that sense bpftool is an extension of libbpf and libbpf is an extens=
+ion
+> > of bpftool.
+> > Andrii is working on set of patches to generate user space .c code
+> > from bpf program.
+> > bpftool will be generating the code that is specific for the version
+> > bpftool and for
+> > the version of libbpf. There will be compatibility layers as usual.
+> > But in general the situation where a bug in libbpf is so criticial
+> > that bpftool needs to repackaged is imo less likely than a bug in
+> > bpftool that will require re-packaging of libbpf.
+> > bpftool is quite special. It's not a typical user of libbpf.
+> > The other way around is more correct. libbpf is a user of the code
+> > that bpftool generates and both depend on each other.
+> > perf on the other side is what typical user space app that uses
+> > libbpf will look like.
+> > I think keeping bpftool in the kernel while packaging libbpf
+> > out of github was an oversight.
+> > I think we need to mirror bpftool into github/libbpf as well
+> > and make sure they stay together. The version of libbpf =3D=3D version =
+of bpftool.
+> > Both should come from the same package and so on.
+> > May be they can be two different packages but
+> > upgrading one should trigger upgrade of another and vice versa.
+> > I think one package would be easier though.
+> > Thoughts?
+>
+> Yup, making bpftool explicitly the "libbpf command line interface" makes
+> sense and would help clarify the relationship between the two. As Jiri
+> said, we are already moving in that direction packaging-wise...
 
-
-On 12/4/19 7:11 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Currently an -EFAULT error on a memcpy_to_msg is not being returned
-> because it is being overwritten when variable rv is being re-assigned
-> to the number of bytes copied after breaking out of a loop. Fix this
-> by instead assigning the error to variable copied so that this error
-> code propegated to rv and hence is returned at the end of the function.
-> 
-> [ This bug was was introduced before the current git history ]
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  net/decnet/af_decnet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/decnet/af_decnet.c b/net/decnet/af_decnet.c
-> index e19a92a62e14..e23d9f219597 100644
-> --- a/net/decnet/af_decnet.c
-> +++ b/net/decnet/af_decnet.c
-> @@ -1759,7 +1759,7 @@ static int dn_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->  			chunk = size - copied;
->  
->  		if (memcpy_to_msg(msg, skb->data, chunk)) {
-> -			rv = -EFAULT;
-> +			copied = -EFAULT;
-
-This does not look right.
-
-We probably want :
-		if (!copied)
-			copied = -EFAULT;
-
->  			break;
->  		}
->  		copied += chunk;
-> 
+Awesome. Let's figure out the logistics.
+Should we do:
+git mv tools/bpf/bpftool/ tools/lib/bpf/
+and appropriate adjustment to Makefiles ?
+or keep it where it is and only add to
+https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh ?
