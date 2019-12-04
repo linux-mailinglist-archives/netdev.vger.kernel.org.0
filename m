@@ -2,250 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF1F112158
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 03:20:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0074211215C
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 03:22:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbfLDCU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 21:20:28 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43214 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbfLDCU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 21:20:27 -0500
-Received: by mail-pl1-f195.google.com with SMTP id q16so2465872plr.10
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 18:20:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=e0Hc3M00YYLfDrn2zHyhOuMtbWm4AU9KT8BmLgOCglk=;
-        b=PZ+idJAXMQYJHIgsrYT5DQoZJJc5mNZB29gXz2hhu9g+4iHAxWoPRLx/9EJrXAVL3o
-         WFLrR04586dlmZqZDn/VOYl5GVidnJYkkMbmTlddnurDsHlP86EjVXYtSy8HDzcq66Z+
-         WYfxS4faaP35Toa23szIaptwGMmUkkJsAf5TDGsEgudSMcbZJxE9tb34lXUzLnbD1s4r
-         LtsuZOWF7cWnztFIgxxlD8ozK0+D2zKqLufZ9eiJIG4UIoGH+RTQp+wgpdeuC48yMMpY
-         k26fQ4RywUWzDLMvnOXbvMdb9bvI4k5thU76atQxUIv4XWl2mpxbQJRVNs1wJZBWX2FN
-         dCEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e0Hc3M00YYLfDrn2zHyhOuMtbWm4AU9KT8BmLgOCglk=;
-        b=oXJm/pp5RN+T2cd2VBJQM80kMTCR4Mug/DSyW1lUSqpIt2X1lCQNfNW4/Uoy0H51bv
-         caZErbAFtqTFlCXmfTqRyMrGnPrBaKJ48DK7AtvvFYHEur/ohiqb3+/lMTq1pxrKkiE2
-         ykjgl2w3uYzaPNvsAmzaOsEEkCb5z0IbphHkbePgIuYq4ZsW/QR7+nDzkeuAgJY3GaSw
-         HpViC5N2ktPRSM/PRKWt7IxEYTitXbtmY9QZvV0mpTsLoT4BB1SEpyVap5AV6XTMjGB7
-         3di8wcSeI2A29JmfghYrkSYx9mEhY0NSGRj1Iq+C8GwqJ4Anvw/JgrugQ7yAUINYf+7D
-         dRog==
-X-Gm-Message-State: APjAAAVQWJqKIWfKcj4/dUC5DgNhifP9OGIpWPGXcF3LQIjGmkzwHcJb
-        X8f2x+nWKgv4JEgpNfWDU2E=
-X-Google-Smtp-Source: APXvYqxJ11XIjAXzjzZxQWjZ02HV26nYSzPUpMd8i3gBGe6+tJ2c/QYm95Fgl27Tkw4Z46l1hZth/A==
-X-Received: by 2002:a17:90a:218c:: with SMTP id q12mr790515pjc.0.1575426026750;
-        Tue, 03 Dec 2019 18:20:26 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 129sm5510772pfw.71.2019.12.03.18.20.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Dec 2019 18:20:25 -0800 (PST)
-Subject: Re: [PATCH net] tcp: Avoid time_after32() underflow when handling
- syncookies
-To:     Guillaume Nault <gnault@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
-References: <2601e43617d707a28f60f2fe6927b1aaaa0a37f8.1574976866.git.gnault@redhat.com>
- <CANn89i+G0jCU=JtSit3X9w+SaExgbbo-d1x4UEkTEJRdypN3gQ@mail.gmail.com>
- <20191202215143.GA13231@linux.home>
- <CANn89i+k3+NN8=5fD9RN4BnPT5dei=iKJaps_0vmcMNQwC58mw@mail.gmail.com>
- <20191204004654.GA22999@linux.home>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d6b6e3c4-cae6-6127-7bda-235a00d351ef@gmail.com>
-Date:   Tue, 3 Dec 2019 18:20:24 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191204004654.GA22999@linux.home>
-Content-Type: text/plain; charset=utf-8
+        id S1726834AbfLDCWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 21:22:34 -0500
+Received: from mail-eopbgr00075.outbound.protection.outlook.com ([40.107.0.75]:22004
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726162AbfLDCWd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 21:22:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q0FjtU7DG92khteA2jEJWevfemyVOqTE+soQJ7xlX/d/UwMwUlFcq+3o7Bvt2ioCyjxqQ9P2KAXI/zXRa4rZK/55FlWS74IbqkRQknBUEf+LgmJtPH5N1VSfcEucUBoNTsXfWUiKtlUInwt2Yx3wQQ1ikWqA2XX1cMxc7kM8kfFU7yDsw3JhDjTVhKpVh874x2UuULan3XOO0L/fA+4EHulMYWS1qUrPjJG6sRTd+BIZRyH5hBXMwltptr/kDD+UzV3OLWltI9ZPqF2kjC+hJr9A2tyEMIla1PjyFksLLcgAknO3OQtaiS4gRbd4c8izU6FYSk+wERUu/kLro+t1xA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KWDoFVojJl6z6rj79GW7lf3isVHJn4UfTOTzO1MrywE=;
+ b=P7IcTigUlnuUX+i4gWxJd7pW6Yw7o5K5ryhySg3UODm8LQXEgunOJfgTb1OIqzSNbLR8pkZAtf4bdPoTNEkGAVjxDHAkkvPviTxEwXa72MyUco2rRtlUHKSz9AKiopWk28FVX5heV1rlH+mbSs1NpCpI93uPKUB/lbx6P38bja0LDo6g91ephZXc8mGk3wYZY+S90XPAWpjQQ0G2S94oXkcwom8SaP5Meo8v9W4XgYle7jQGhZ7mmc31OcZxX316/EV6AL/9TjyY3A1EmBgWAAKjzKDerpA4F/ehm1QvY34Pis8wVNNEck6ndugZOAer1ZORGbnnn4ElyE3uX6Hi3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KWDoFVojJl6z6rj79GW7lf3isVHJn4UfTOTzO1MrywE=;
+ b=aFzDwBk9GYkyeGbD8nZkzzrVsW6i6KADpvk3Tix2HFXZZG/GgED5ZlQexRD0EHjtPDhF7U2Abd2C+uZq20mbSy0wkO+1mnsxn/umeiLpQEV4e0PPqmPO+V5rmKB8yp2PyT1nx+f3lJe/+uVkxYLaJ7lFygOwLOWjuD+ThbECxTQ=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4857.eurprd04.prod.outlook.com (20.176.233.81) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.21; Wed, 4 Dec 2019 02:22:30 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.003; Wed, 4 Dec 2019
+ 02:22:30 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
+Thread-Topic: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
+Thread-Index: AQHVpOd0/zAyRBOEIkuRK6cuc/m3PqeowUOAgACCKzA=
+Date:   Wed, 4 Dec 2019 02:22:29 +0000
+Message-ID: <DB7PR04MB46180C5F1EAC7C4A69A45E0CE65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
+In-Reply-To: <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Mentions: sean@geanix.com
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f9cefacc-1205-46e9-695e-08d77860d026
+x-ms-traffictypediagnostic: DB7PR04MB4857:|DB7PR04MB4857:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB4857879EBF894FE4FFE461FAE65D0@DB7PR04MB4857.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 0241D5F98C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(39860400002)(396003)(346002)(376002)(13464003)(199004)(189003)(55016002)(3846002)(26005)(33656002)(99286004)(86362001)(7736002)(966005)(6436002)(305945005)(2906002)(4326008)(2201001)(25786009)(71200400001)(52536014)(446003)(186003)(8676002)(6306002)(5660300002)(54906003)(11346002)(110136005)(6246003)(71190400001)(81166006)(81156014)(6116002)(76116006)(2501003)(66946007)(316002)(76176011)(478600001)(229853002)(14444005)(8936002)(66556008)(9686003)(14454004)(102836004)(53546011)(6506007)(64756008)(256004)(74316002)(66446008)(7696005)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4857;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mCQirs/7cyZ2V+4WCZ8I68XHr3CdgFN0VElU7n5O/TnQsxMaMWrKW5oXm5CsL3mvWLwfY40RLlIPb+wy5JV2DN5BTU7DUfJT5jAvuGTlUIuiavTVp4J/oCMBZN7MLzwVwkyWcWJJAiHFqCXEG8htINuGm3dWU0l5epwhWAW9RkTkgocdJYpf2fohVUguqJLW2BJ0/XpWNzIGmPyJtUDu8iAOHdegDUmi5yH7WzZ46daNiqiFfEgOMQ46amJRfsj3uKI4l1JTI3dNgBYiL+N1pxNv9fH7s2nilMNEy7sjYRHhV4KZI+OmsjSs6ivZ5DjAGHB4vlxQj8ksvGDs/Z6HNbGcO0rnVVIaf2ca2c22MuiF/8UJVJR5rprtQuIJuloA011eQ30LhanYlKKZV5q7SWxFPfOOmFITJEqYu3mgOOShvwLMePj0/eokRqCCrQRpIqyQrZUv35JVamkCyFPnGvRDCVUXnX+fa4I6DHTsx2Pk1+mulwqTcPrzjUxyI9fLd2ilsXmm0avJT5cE6zKZtf/CrLRLDo9sIPZ7GTPGawk=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9cefacc-1205-46e9-695e-08d77860d026
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2019 02:22:29.8837
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HCHyfnGHvuNO1+E66851jpJZsUVV/+fLfulSVWf+rmYC5jMLAuq9eX3KBIAFPXrNxqPlUAJHTJ2U71QpwrXOig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4857
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/3/19 4:46 PM, Guillaume Nault wrote:
-> On Mon, Dec 02, 2019 at 02:23:35PM -0800, Eric Dumazet wrote:
->> On Mon, Dec 2, 2019 at 1:51 PM Guillaume Nault <gnault@redhat.com> wrote:
->>>
->>> On Thu, Nov 28, 2019 at 02:04:19PM -0800, Eric Dumazet wrote:
->>>> On Thu, Nov 28, 2019 at 1:36 PM Guillaume Nault <gnault@redhat.com> wrote:
->>>>>
->>>>> In tcp_synq_overflow() and tcp_synq_no_recent_overflow(), the
->>>>> time_after32() call might underflow and return the opposite of the
->>>>> expected result.
->>>>>
->>>>> This happens after socket initialisation, when ->synq_overflow_ts and
->>>>> ->rx_opt.ts_recent_stamp are still set to zero. In this case, they
->>>>> can't be compared reliably to the current value of jiffies using
->>>>> time_after32(), because jiffies may be too far apart (especially soon
->>>>> after system startup, when it's close to 2^32).
->>>>>
->>>>> In such a situation, the erroneous time_after32() result prevents
->>>>> tcp_synq_overflow() from updating ->synq_overflow_ts and
->>>>> ->rx_opt.ts_recent_stamp, so the problem remains until jiffies wraps
->>>>> and exceeds HZ.
->>>>>
->>>>> Practical consequences should be quite limited though, because the
->>>>> time_after32() call of tcp_synq_no_recent_overflow() would also
->>>>> underflow (unless jiffies wrapped since the first time_after32() call),
->>>>> thus detecting a socket overflow and triggering the syncookie
->>>>> verification anyway.
->>>>>
->>>>> Also, since commit 399040847084 ("bpf: add helper to check for a valid
->>>>> SYN cookie") and commit 70d66244317e ("bpf: add bpf_tcp_gen_syncookie
->>>>> helper"), tcp_synq_overflow() and tcp_synq_no_recent_overflow() can be
->>>>> triggered from BPF programs. Even though such programs would normally
->>>>> pair these two operations, so both underflows would compensate each
->>>>> other as described above, we'd better avoid exposing the problem
->>>>> outside of the kernel networking stack.
->>>>>
->>>>> Let's fix it by initialising ->rx_opt.ts_recent_stamp and
->>>>> ->synq_overflow_ts to a value that can be safely compared to jiffies
->>>>> using time_after32(). Use "jiffies - TCP_SYNCOOKIE_VALID - 1", to
->>>>> indicate that we're not in a socket overflow phase.
->>>>>
->>>>
->>>> A listener could be live for one year, and flip its ' I am under
->>>> synflood' status every 24 days (assuming HZ=1000)
->>>>
->>>> You only made sure the first 24 days are ok, but the problem is still there.
->>>>
->>>> We need to refresh the values, maybe in tcp_synq_no_recent_overflow()
->>>>
->>> Yes, but can't we refresh it in tcp_synq_overflow() instead? We
->>> basically always want to update the timestamp, unless it's already in
->>> the [last_overflow, last_overflow + HZ] interval:
->>>
->>> diff --git a/include/net/tcp.h b/include/net/tcp.h
->>> index 36f195fb576a..1a3d76dafba8 100644
->>> --- a/include/net/tcp.h
->>> +++ b/include/net/tcp.h
->>> @@ -494,14 +494,16 @@ static inline void tcp_synq_overflow(const struct sock *sk)
->>>                 reuse = rcu_dereference(sk->sk_reuseport_cb);
->>>                 if (likely(reuse)) {
->>>                         last_overflow = READ_ONCE(reuse->synq_overflow_ts);
->>> -                       if (time_after32(now, last_overflow + HZ))
->>> +                       if (time_before32(now, last_overflow) ||
->>> +                           time_after32(now, last_overflow + HZ))
->>>                                 WRITE_ONCE(reuse->synq_overflow_ts, now);
->>>                         return;
->>>                 }
->>>         }
->>>
->>>         last_overflow = tcp_sk(sk)->rx_opt.ts_recent_stamp;
->>> -       if (time_after32(now, last_overflow + HZ))
->>> +       if (time_before32(now, last_overflow) ||
->>> +           time_after32(now, last_overflow + HZ))
->>>                 tcp_sk(sk)->rx_opt.ts_recent_stamp = now;
->>>  }
->>>
->>> This way, tcp_synq_no_recent_overflow() should always have a recent
->>> timestamp to work on, unless tcp_synq_overflow() wasn't called. But I
->>> can't see this case happening for a legitimate connection (unless I've
->>> missed something of course).
->>>
->>> One could send an ACK without a SYN and get into this situation, but
->>> then the timestamp value doesn't have too much importance since we have
->>> to drop the connection anyway. So, even though an expired timestamp
->>> could let the packet pass the tcp_synq_no_recent_overflow() test, the
->>> syncookie validation would fail. So the packet is correctly rejected in
->>> any case.
->>
->> But the bug never has been that we could accept an invalid cookie
->> (this is unlikely because of the secret matching)
->>
-> I didn't mean that it was. Maybe I wasn't clear, but this last
-> paragraph was there just to explain why I didn't address the stray
-> ACK scenario: such packets are correctly rejected anyway (yes we could
-> be more efficient at it, but that wasn't the original purpose of the
-> patch).
-> 
->> The bug was that even if we have not sent recent SYNCOOKIES, we would
->> still try to validate a cookie when a stray packet comes.
->>
-> I realise that I misunderstood your original answer. I was looking at
-> this problem from a different angle: my original intend was to fix the
-> legitimate syncookie packet case.
-> 
-> Stale last_overflow timestamps can cause tcp_synq_overflow() to reject
-> valid packets in the following situation:
-> 
->   * tcp_synq_overflow() is called while jiffies is not within the
->     (last_overflow + HZ, last_overflow + HZ + 2^31] interval. So the
->     stale last_overflow timestamp isn't updated because
->     time_after32(jiffies, last_overflow + HZ) returns false.
-> 
->   * Then tcp_synq_no_recent_overflow() is called, jiffies might have
->     increased a bit, but can still be in the (last_overflow + TCP_SYNCOOKIE_VALID,
->     last_overflow + TCP_SYNCOOKIE_VALID + 2^31] interval. If so,
->     time_after32(jiffies, last_overflow + TCP_SYNCOOKIE_VALID) returns
->     true and the packet is rejected.
-> 
-> The case is unlikely, and whenever it happens, it can't last more than
-> two minutes. But the problem is now exposed to BPF programs and the fix
-> is small, so I think it's worth considering it. Admittedly my original
-> submission wasn't complete. Checking that jiffies is outside of the
-> [last_overflow, last_overflow + HZ] interval, as in my second proposal,
-> should fix the problem completely.
-> 
->> In the end, the packet would be dropped anyway, but we could drop the
->> packet much faster.
->>
->> Updating timestamps in tcp_synq_overflow() is not going to work if we
->> never call it :)
->>
->> I believe tcp_synq_no_recent_overflow() is the right place to add the fix.
->>
-> Are you talking about a flood of stray ACKs (just to be sure we're on
-> the same page here)? If so, I guess tcp_synq_no_recent_overflow() is
-> our only chance to update last_overflow. But do we really need it?
-> 
-> I think tcp_synq_no_recent_overflow() should first check if jiffies
-> isn't within the [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID]
-> interval. Currently, we just test that it's not within
-> (last_overflow + TCP_SYNCOOKIE_VALID - 2^31, last_overflow + TCP_SYNCOOKIE_VALID].
-> That leaves a lot of room for stale timestamps to erroneously trigger
-> syncookie verification. By reducing the interval, we'd make sure that
-> only values that are undistinguishable from accurate fresh overflow
-> timestamps can trigger syncookie verification.
-> 
-> The only bad scenario that'd remain is if a stray ACK flood happens
-> when last_overflow is stale and jiffies is within the
-> (last_overflow, last_overflow + TCP_SYNCOOKIE_VALID) interval. If the
-> flood starts while we're in this state, then I fear that we can't do
-> anything but to wait for jiffies to exeed the interval's upper bound
-> (2 minutes max) and to rely on syncookies verification to reject stray
-> ACKs in the mean time. For cases where the flood starts before
-> jiffies enters that interval, then refreshing last_overflow in
-> tcp_synq_no_recent_overflow() would prevent jiffies from entering the
-> interval for the duration of the flood. last_overflow would have to be
-> set TCP_SYNCOOKIE_VALID seconds in the past. But since we have
-> no synchronisation with tcp_synq_overflow(), we'd have a race where
-> tcp_synq_overflow() would refresh last_overflow (entering
-> syncookie validation mode) and tcp_synq_no_recent_overflow() would
-> immediately move it backward (leaving syncookie validation mode). We'd
-> have to wait for the next SYN to finally reach a stable state with
-> syncookies validation re-enabled. This is a bit far fetched, and
-> requires a stray ACK arriving at the same moment a SYN flood is
-> detected. Still, I feel that moving last_overflow backward in
-> tcp_synq_no_recent_overflow() is a bit dangerous.
-> 
-
-
-Sorry I am completely lost with this amount of text.
-
-Whatever solution you come up with, make sure it covers all the points
-that have been raised.
-
-Thanks.
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMTnlubQxMuaciDTml6UgMjoxNQ0KPiBU
+bzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IHNlYW5AZ2Vhbml4LmNv
+bTsNCj4gbGludXgtY2FuQHZnZXIua2VybmVsLm9yZw0KPiBDYzogZGwtbGludXgtaW14IDxsaW51
+eC1pbXhAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQ
+QVRDSCBWMiAyLzRdIGNhbjogZmxleGNhbjogdHJ5IHRvIGV4aXQgc3RvcCBtb2RlIGR1cmluZyBw
+cm9iZQ0KPiBzdGFnZQ0KPiANCj4gT24gMTEvMjcvMTkgNjo1NiBBTSwgSm9ha2ltIFpoYW5nIHdy
+b3RlOg0KPiA+IENBTiBjb250cm9sbGVyIGNvdWxkIGJlIHN0dWNrZWQgaW4gc3RvcCBtb2RlIG9u
+Y2UgaXQgZW50ZXJzIHN0b3AgbW9kZQ0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgIF5eXl5e
+Xl4gc3R1Y2sNCj4gPiB3aGVuIHN1c3BlbmQsIGFuZCB0aGVuIGl0IGZhaWxzIHRvIGV4aXQgc3Rv
+cCBtb2RlIHdoZW4gcmVzdW1lLg0KPiANCj4gSG93IGNhbiB0aGlzIGhhcHBlbj8NCg0KSSBhbSBh
+bHNvIGNvbmZ1c2VkIGhvdyBjYW4gdGhpcyBoYXBwZW4sIGFzIEkgYXNrZWQgU2Vhbiwgb25seSBD
+QU4gZW50ZXIgc3RvcCBtb2RlIHdoZW4gc3VzcGVuZCwgdGhlbiBzeXN0ZW0gaGFuZywgaXQgY291
+bGQgbGV0IENBTg0Kc3R1Y2sgaW4gc3RvcCBtb2RlLiBIb3dldmVyLCBTZWFuIHNhaWQgdGhpcyBp
+bmRlZWQgaGFwcGVuIGF0IGhpcyBzaWRlLCBAc2VhbkBnZWFuaXguY29tLCBjb3VsZCB5b3UgZXhw
+bGFpbiBob3cgdGhpcyBoYXBwZW4gaW4gZGV0YWlscz8NCg0KPiA+IE9ubHkgY29kZSByZXNldCBj
+YW4gZ2V0IENBTiBvdXQgb2Ygc3RvcCBtb2RlLA0KPiANCj4gV2hhdCBpcyAiY29kZSByZXNldCI/
+DQoNCkFzIEkga25vdywgImNvZGUgcmVzZXQiIGlzIHRvIHByZXNzIHRoZSBQT1dFUiBLRVkgZnJv
+bSB0aGUgYm9hcmQuIEF0IG15IHNpZGUsIHJlYm9vdCBjb21tYW5kIGZyb20gT1MgYWxzbyBjYW4g
+Z2V0IENBTiBvdXQgb2Ygc3RvcCBtb2RlLg0KQmVsb3cgaXMgZXhwZXJpbWVudCBJIGRpZDoNCglG
+aXJzdGx5LCBkbyBhIGhhY2tpbmcgdG8gbGV0IENBTiBzdHVjayBpbnRvIHN0b3AgbW9kZSwgdGhl
+bjoNCgkoMSkgcHJlc3MgcG93ZXIgb24vb2ZmIGtleSwgZ2V0IENBTiBvdXQgb2Ygc3RvcCBtb2Rl
+Ow0KCSgyKSByZWJvb3QgY29tbWFuZCBmcm9tIGNvbnNvbGUsIGdldCBDQU4gb3V0IG9mIHN0b3Ag
+bW9kZTsNCgkoMykgdW5iaW5kL2JpbmQgZHJpdmVyLCBjYW5ub3QgZ2V0IENBTiBvdXQgb2Ygc3Rv
+cCBtb2RlOyAgDQoJKDQpIHJlbW9kL2luc21vZCBtb2R1bGUsIGNhbm5vdCBnZXQgQ0FOIG91dCBv
+ZiBzdG9wIG1vZGU7DQoNCj4gPiBzbyBhZGQgc3RvcCBtb2RlIHJlbW92ZSByZXF1ZXN0IGR1cmlu
+ZyBwcm9iZSBzdGFnZSBmb3Igb3RoZXINCj4gPiBtZXRob2RzKHNvZnQgcmVzZXQgZnJvbSBjaGlw
+IGxldmVsLCB1bmJpbmQvYmluZCBkcml2ZXIsIGV0YykgdG8gbGV0DQo+ICAgICAgICAgXl5eIHBs
+ZWFzZSBhZGQgYSBzcGFjZQ0KPiA+IENBTiBhY3RpdmUgYWdhaW4uDQo+IA0KPiBDYW4geW91IHJl
+cGhyYXNlIHRoZSBzZW50ZW5jZSBhZnRlciAic28gYWRkIHN0b3AgbW9kZSByZW1vdmUgcmVxdWVz
+dCBkdXJpbmcNCj4gcHJvYmUgc3RhZ2UiLiBJJ20gbm90IGNvbXBsZXRlbHkgc3VyZSB3aGF0IHlv
+dSB3YW50IHRvIHRlbGwuDQoNClN1cmUuDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0K
+PiA+IE1DUltMUE1BQ0tdIHdpbGwgYmUgY2hlY2tlZCB3aGVuIGVuYWJsZSBDQU4gaW4gcmVnaXN0
+ZXJfZmxleGNhbmRldigpLg0KPiA+DQo+ID4gU3VnZ2VzdGVkLWJ5OiBTZWFuIE55ZWtqYWVyIDxz
+ZWFuQGdlYW5peC5jb20+DQo+ID4gU2lnbmVkLW9mZi1ieTogSm9ha2ltIFpoYW5nIDxxaWFuZ3Fp
+bmcuemhhbmdAbnhwLmNvbT4NCg0KWy4uLl0NCg0KPiBNYXJjDQo+IA0KPiAtLQ0KPiBQZW5ndXRy
+b25peCBlLksuICAgICAgICAgICAgICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAgICAgICB8
+DQo+IEVtYmVkZGVkIExpbnV4ICAgICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0
+cm9uaXguZGUgIHwNCj4gVmVydHJldHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQaG9uZTog
+KzQ5LTIzMS0yODI2LTkyNCAgICAgfA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4
+NiB8IEZheDogICArNDktNTEyMS0yMDY5MTctNTU1NSB8DQoNCg==
