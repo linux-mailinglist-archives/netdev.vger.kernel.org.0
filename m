@@ -2,84 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1792C113425
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:22:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0CAE1134D5
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:28:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730064AbfLDSWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 13:22:16 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42449 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729798AbfLDSF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:05:29 -0500
-Received: by mail-qk1-f195.google.com with SMTP id a10so787698qko.9
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:05:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=hBPDPqlOTcbRFWDkrHPNcSAGXGuhN4nHPkn7bkTrl0A=;
-        b=kHeIf4+u5A6tqDKL5atJpA8nyriND2btWSu0Kskwa2+Bxjvkm1rzfs4IqFG59qwtJW
-         +c0+MWjzcxPv+RJugUCMbW3GtPSrC7b2AmJ0pVIVE4bsn1YEtqPwam+a3Ib2wJUC7Kng
-         s7DAffXxVtc01aVNykMrxCjoOw6KQ+lggfkhCy+Wdu6vWfW+TtqOh8pEH/SG1EgL9mUm
-         uyXFobw3L/IIHsrAuE6OJz24vewHwG/ULX25aOJgDnvvIq2kzKW5Ksu3sXNx2RMJTted
-         gJCqQHio5Ha1rQjKRzsL206HaNnEUPo5KkEVgxKUugvdO95w/Vtxpafo0MJNOpVZtyGq
-         +t3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hBPDPqlOTcbRFWDkrHPNcSAGXGuhN4nHPkn7bkTrl0A=;
-        b=NKIUXpxGuvmvr3NDIHr2TYVZ/1qV9pKHuiiRje93PQ5A2Pc+xJnIc6kb9hqYEwZpBn
-         MTi9KL2zeGpSObXniJXZrI+l9XpNnL6+atriVQ1KpzDS5VHzfVSs33rvWHf+/WOseUA/
-         65gAG/mGIeW3RYGKl+iHs0fgTum6I/NWcSsswJcYvC4igsg8UH6t2Fedv0fbFLm/pMJs
-         1KK34078yzNhJtMX0SLr8gz0jSyVkClsOefdH39xcBxh4ioRm72gffsjrYBFWLbrlP03
-         h4P1yi1M5Npd9ZbFGOTrRzvxOG1T0zVHNsA5r9yGvuL4yvJc1PHNBSg32VxlV6h+Rap3
-         iTfg==
-X-Gm-Message-State: APjAAAVr8MjP5jpTZ2pvzo/M8V3jRLYcO1e9iN4P8LfTQKk06ydntfmR
-        i3oFZYWT1+FjHpKQyuI0ocu6+OyJ
-X-Google-Smtp-Source: APXvYqx0dwLEY70lELpr9qewKz8oNjvaCjn52haiYTs9jvRRexlJ6n+f0ue/W1uEnpYai92xMZuSEg==
-X-Received: by 2002:a05:620a:2094:: with SMTP id e20mr3725574qka.415.1575482727946;
-        Wed, 04 Dec 2019 10:05:27 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:bc97:d049:2862:6860])
-        by smtp.googlemail.com with ESMTPSA id p7sm4022580qkm.123.2019.12.04.10.05.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2019 10:05:27 -0800 (PST)
-Subject: Re: Endless "ip route show" if 255.255.255.255 route exists
-To:     Sven-Haegar Koch <haegar@sdinet.de>, netdev@vger.kernel.org
-References: <alpine.DEB.2.21.1912041616460.194530@aurora64.sdinet.de>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a57d26df-26a4-26dc-5acf-4a49f641bcb0@gmail.com>
-Date:   Wed, 4 Dec 2019 11:05:21 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1912041616460.194530@aurora64.sdinet.de>
-Content-Type: text/plain; charset=utf-8
+        id S1729867AbfLDS0B convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 4 Dec 2019 13:26:01 -0500
+Received: from mga02.intel.com ([134.134.136.20]:15408 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728326AbfLDSZ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 13:25:59 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Dec 2019 10:25:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,278,1571727600"; 
+   d="scan'208";a="242942985"
+Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
+  by fmsmga002.fm.intel.com with ESMTP; 04 Dec 2019 10:25:54 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 4 Dec 2019 10:25:54 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 4 Dec 2019 10:25:53 -0800
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
+ fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
+ Wed, 4 Dec 2019 10:25:53 -0800
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH] ixgbe: Fix calculation of queue with
+ VFs and flow director on interface flap
+Thread-Topic: [Intel-wired-lan] [PATCH] ixgbe: Fix calculation of queue with
+ VFs and flow director on interface flap
+Thread-Index: AQHVqT+sRBWDmorGrk+LGmHTdjVjZ6eqTcLQ
+Date:   Wed, 4 Dec 2019 18:25:53 +0000
+Message-ID: <da48f1f5ff794532b951591f5406ca21@intel.com>
+References: <20191127090355.27708-1-cambda@linux.alibaba.com>
+In-Reply-To: <20191127090355.27708-1-cambda@linux.alibaba.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNjhiY2Y5ZTUtYjg3NS00ZjJiLWE5ODEtYzk0ZTVlOWMwODVhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoibzU4bWVHWUxGeEpCbkdONHNiNnVHQmd1WGJXanM1eGVqaFNiNlRsTXlRdmEwWlpwdEJjdWpRVUZLMHpLYVIxOSJ9
+dlp-reaction: no-action
+dlp-version: 11.0.400.15
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/19 8:22 AM, Sven-Haegar Koch wrote:
-> Then trying to show the routing table:
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Cambda Zhu
+> Sent: Wednesday, November 27, 2019 1:04 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: Cambda Zhu <cambda@linux.alibaba.com>; Tyl, RadoslawX
+> <radoslawx.tyl@intel.com>; netdev@vger.kernel.org; Joseph Qi
+> <joseph.qi@linux.alibaba.com>; intel-wired-lan@lists.osuosl.org; David S.
+> Miller <davem@davemloft.net>
+> Subject: [Intel-wired-lan] [PATCH] ixgbe: Fix calculation of queue with VFs
+> and flow director on interface flap
 > 
-> root@haegar-test:~# ip ro sh | head -n 10
-> default via 10.140.184.1 dev ens18
-> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
-> 255.255.255.255 dev ens18 scope link
-> default via 10.140.184.1 dev ens18
-> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
-> 255.255.255.255 dev ens18 scope link
-> default via 10.140.184.1 dev ens18
-> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
-> 255.255.255.255 dev ens18 scope link
-> default via 10.140.184.1 dev ens18 
+> This patch fixes the calculation of queue when we restore flow director filters
+> after resetting adapter. In ixgbe_fdir_filter_restore(), filter's vf may be zero
+> which makes the queue outside of the rx_ring array.
 > 
-> (Repeats endless without the "head" limit)
+> The calculation is changed to the same as ixgbe_add_ethtool_fdir_entry().
 > 
+> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 37
+> +++++++++++++++++++--------
+>  1 file changed, 27 insertions(+), 10 deletions(-)
 
-Thanks for the report. Seems to be a problem with iproute2.
-iproute2-ss190924 works fine. I'll send a fix.
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+
+
