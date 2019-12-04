@@ -2,120 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F98C1130D0
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:30:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0360A1130D7
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:32:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbfLDRam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 12:30:42 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35557 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfLDRam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 12:30:42 -0500
-Received: by mail-pl1-f193.google.com with SMTP id s10so19737plp.2
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 09:30:42 -0800 (PST)
+        id S1728186AbfLDRcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 12:32:25 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:45706 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726934AbfLDRcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 12:32:25 -0500
+Received: by mail-pj1-f67.google.com with SMTP id r11so84090pjp.12
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 09:32:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=IUMhmPzNJS6OUWDxn0WL/R+Ty9K7orUyiXqUYVAEZz0=;
-        b=A+DNL8pGNpe6Q8EraPfmoTiK8b4OXPkesBs0KZ8LS3LmmLd8CvyU0ZOGOqth2QmQHd
-         w5vItFR6Uvv6EHbRiSpbjlPxfqPMU7bW4dZo/NqGhKhaTScNUp79XsaFkGiCq6WsvLTZ
-         JqZjDJyrq9YR4gn3r3IFzdUu1dsC6d3PdIT+lBNwo8fwCzddrsqlTlYslpvDrK9dUrlR
-         WhsExDAVRqPFEQWOpgJZVkN2EnjWa+/dhlg4c1vlxJx2nsVhzRQwh1msljiGYFtE5b4V
-         OdP6ZvoJkUqD9UdSVBdtoC1fcQ3KMGXlKfv02DWZrHFDEodyofdlCsLpMlZ+JHGYgKdN
-         TxpA==
+        bh=04f08x/BGZMIldWMMnPqD/nrVkZKi4PPGmsNh6XHSAE=;
+        b=WO0oOd5AbU6X/g7lIRCtVXaIPPcG+ot3bOVEu8m/NvVpX5cW/bMOioo1qIiF9LlTPs
+         4Q5lQ6XGjUMEMDHT8+wT4jeUrV63wXKkS2XsshWQQDSvzbQW4ALhAZvJV3XZ2nMeb7MD
+         G4yDtYcivnHb6IMMbXzp2IJPfSn3z0KdVYDGbo9SDP/rxka9sYgbOxVyDnDJ/ZHd+26u
+         S4ktpysLoee8kfsxPnZqUC0lwSnEzYFVKqrqyBnuOXKeI2ZQB8HFVF8NGnJKR4854gdr
+         R0vVVx3p5qw3vWqaCY8aMqrkPtPrV+kGhxk6Bh9JCfA0WCMsCARsaUuHoY3O4GNyxJI5
+         810g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=IUMhmPzNJS6OUWDxn0WL/R+Ty9K7orUyiXqUYVAEZz0=;
-        b=d4DFuVAlYoskzF8V4I2w63HQ/ppoMBDWYG4ZJIo9geHx2c8Os1KitaJLtUg6o/wRRp
-         ReddxHwA9tm2pOU+t2nyBsZxz948vwAooyGlpz5Lgx7WOay0q1qhxhPDFmbdzXutDATN
-         qfZmOcRZJTwA5z37GgEWsT0en0j//gl4l+XagXnsI2K/IKYc599q105hjyqOHky5BfLD
-         3P3qx60MSFGwFkGRO1xiH/zvut2/5YHEoz8+QMel2ZLl4owdfmsiUu3Pjc7VUTqqdwft
-         J2e08VY12/KEngeT98AsEeVymmYZxLw3VF/4LAoO6CANP49EIPdcU4hjtuUMIeNZrh6R
-         2SRA==
-X-Gm-Message-State: APjAAAX0NhupTyq29KGSLJyStRMfvNpgh4nLm5aL+qOxCqQClbLTsBjk
-        Ys6FDLW7zFEWmXbgBuN+05E=
-X-Google-Smtp-Source: APXvYqyBCZHQwvdgZxHD3Nvspj8hYFZrEUwtb8dab3PMcdl/J38jZv4l48U8IpT5SbwUAsGTMlZLNw==
-X-Received: by 2002:a17:902:904c:: with SMTP id w12mr4624215plz.144.1575480641698;
-        Wed, 04 Dec 2019 09:30:41 -0800 (PST)
+        bh=04f08x/BGZMIldWMMnPqD/nrVkZKi4PPGmsNh6XHSAE=;
+        b=pIFM64Vm8Jd859Vevo30QSJ4Q7LN1obmAu0MeZQ5bsfeYLpLeBvJ6Mo3QmcGaIUwUL
+         iQphsGwSmhs8IZK/H1ySDf/RTdtx/4mOrmJ1+mvTJDpA9GM8NpGDxAj2dRYxKmxJHPbc
+         J25xwuVdYBhn9z2bfpUzYoLMIlTHwjXe7QfyYUJfuGeMuchwZDV4rvg/0Wqaag3nN3s9
+         EuPh3aY+kujvwrOtQQyvb7343/eOaZuGDHRp3kbCn9sUd/+xfhPVbgU6DiFKHxZCdDEd
+         Aw4SuKuf3adFDDa9r4BJzEcZ9G2RH+KDLw4naYrCnTRpdjUw50kLiuHffZx94uiW3e1i
+         1q7A==
+X-Gm-Message-State: APjAAAVO8yILF6r1D4R91egAOQBjmWkWWPQ92UdtHtlpP3IPxxOMZ1/A
+        Kg0FoMsGUYmhUyJYNpO9Rjs=
+X-Google-Smtp-Source: APXvYqzwjuwLw/GWhKddHRGQBYzQPvoEnlRtjR2Blf36ibi7GUWzkHglveqK1t1Zc0MQUk8WUEAr5w==
+X-Received: by 2002:a17:902:a615:: with SMTP id u21mr4705879plq.44.1575480744398;
+        Wed, 04 Dec 2019 09:32:24 -0800 (PST)
 Received: from [172.20.160.202] ([2620:10d:c090:180::5fe1])
-        by smtp.gmail.com with ESMTPSA id p5sm8619748pga.69.2019.12.04.09.30.40
+        by smtp.gmail.com with ESMTPSA id i9sm5080149pfd.166.2019.12.04.09.32.23
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Dec 2019 09:30:40 -0800 (PST)
+        Wed, 04 Dec 2019 09:32:23 -0800 (PST)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     "Grygorii Strashko" <grygorii.strashko@ti.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, kernel-team@fb.com,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>
-Subject: Re: [net PATCH] xdp: obtain the mem_id mutex before trying to remove
- an entry.
-Date:   Wed, 04 Dec 2019 09:30:18 -0800
+To:     "Vladyslav Tarasiuk" <vladyslavt@mellanox.com>
+Cc:     "Tariq Toukan" <tariqt@mellanox.com>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
+        "Saeed Mahameed" <saeedm@mellanox.com>,
+        "Moshe Shemesh" <moshe@mellanox.com>, netdev@vger.kernel.org,
+        brouer@redhat.com, ilias.apalodimas@linaro.org, davem@davemloft.net
+Subject: Re: page_pool: mutex lock inside atomic context
+Date:   Wed, 04 Dec 2019 09:32:22 -0800
 X-Mailer: MailMate (1.13r5655)
-Message-ID: <49A0ABFF-32CD-4F21-B091-0997DC805B7B@gmail.com>
-In-Reply-To: <20191204123829.2af45813@carbon>
-References: <20191203220114.1524992-1-jonathan.lemon@gmail.com>
- <20191204093240.581543f3@carbon>
- <64b28372-e203-92db-bc67-1c308334042f@ti.com>
- <20191204123829.2af45813@carbon>
+Message-ID: <EF240E77-367A-44C2-A870-48DEE488B248@gmail.com>
+In-Reply-To: <DBBPR05MB6522EAE7219849CE10EF5023BF5D0@DBBPR05MB6522.eurprd05.prod.outlook.com>
+References: <DBBPR05MB6522EAE7219849CE10EF5023BF5D0@DBBPR05MB6522.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4 Dec 2019, at 3:38, Jesper Dangaard Brouer wrote:
+On 4 Dec 2019, at 9:05, Vladyslav Tarasiuk wrote:
 
-> On Wed, 4 Dec 2019 12:07:22 +0200
-> Grygorii Strashko <grygorii.strashko@ti.com> wrote:
+> Hello Jonathan,
 >
->> On 04/12/2019 10:32, Jesper Dangaard Brouer wrote:
->>> On Tue, 3 Dec 2019 14:01:14 -0800
->>> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->>>
->>>> A lockdep splat was observed when trying to remove an xdp memory
->>>> model from the table since the mutex was obtained when trying to
->>>> remove the entry, but not before the table walk started:
->>>>
->>>> Fix the splat by obtaining the lock before starting the table walk.
->>>>
->>>> Fixes: c3f812cea0d7 ("page_pool: do not release pool until inflight 
->>>> == 0.")
->>>> Reported-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->>>
->>> Have you tested if this patch fix the problem reported by Grygorii?
+> Recently we found a bug regarding invalid mutex lock inside atomic context.
+> The bug occurs when destroying a page pool that was registered as a
+> XDP allocator.
 
-Yes, I reproduced the problem locally, and confirmed that the patch
-resolves the issue.
---
+Thanks for the bug report - I sent a patch to -netlist yesterday which
+resolves the problem.
+-- 
 Jonathan
-
-
->>>
->>> Link: 
->>> https://lore.kernel.org/netdev/c2de8927-7bca-612f-cdfd-e9112fee412a@ti.com
->>>
->>> Grygorii can you test this?
->>
->> Thanks.
->> I do not see this trace any more and networking is working after if 
->> down/up
->>
->> Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>
->
-> Well if it fixes you issue, then I guess its okay.
->
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
->
-> I just though it was related to the rcu_read_lock() around the
-> page_pool_destroy() call. Guess, I was wrong.
->
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
