@@ -2,113 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41406113505
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C73F511350B
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:32:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728420AbfLDSaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 13:30:13 -0500
-Received: from valentin-vidic.from.hr ([94.229.67.141]:35815 "EHLO
-        valentin-vidic.from.hr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728273AbfLDSaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:30:13 -0500
-X-Virus-Scanned: Debian amavisd-new at valentin-vidic.from.hr
-Received: by valentin-vidic.from.hr (Postfix, from userid 1000)
-        id 3E978239; Wed,  4 Dec 2019 19:30:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=valentin-vidic.from.hr; s=2017; t=1575484206;
-        bh=1INDlaCJpLn0+6hFM2qct798lptXvkxMEEVD7w8HTnE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JvdlIsyO7/kU9WQYpMjEaFJiIk89QPGWPjXwoB5h2q5HNFQUPHDoLGq5VJ8MI7txM
-         0j0JR18glCTZ7O8GTTHDwD+pyZqcn3Ha4FsH9XBZWWMQ3jB/aVn7ci0vUDVbFLawiv
-         d4ycgDXPPEGXABJoz6h4CALIDr5syFFWloJhcAC8ez40ynlpTQi3U12iC34FLthIJR
-         IqGZYceR+xmj4cuJ8mT6piv/2H5cldoj/ZIjHUhuqPKGrA0otJFiHHgGXx8A3e9+WB
-         awgSSUbmxytmQJvv6lOS1NNfdBef/mtYqMzVaAt7A4+I+6Asc4HqzODwc+KqxWZLqO
-         ijt7aIv8rVK8g==
-From:   Valentin Vidic <vvidic@valentin-vidic.from.hr>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Valentin Vidic <vvidic@valentin-vidic.from.hr>
-Subject: [PATCH v2] net/tls: Fix return values for setsockopt
-Date:   Wed,  4 Dec 2019 19:29:40 +0100
-Message-Id: <20191204182940.29007-1-vvidic@valentin-vidic.from.hr>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191203145535.5a416ef3@cakuba.netronome.com>
-References: <20191203145535.5a416ef3@cakuba.netronome.com>
+        id S1728463AbfLDScS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 13:32:18 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38246 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728234AbfLDScR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:32:17 -0500
+Received: by mail-qt1-f193.google.com with SMTP id 14so773141qtf.5
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:32:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:references:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=qy7bm3dWO5qrYO1eCEebejs73Zbzm0TjnBqs1FgOkqw=;
+        b=Q/K1i/CXhsP0E+0gloMk3spDqVBHJfanD1rXV6EU6qw5MnLyKZ5Qljn4fgYazamWc8
+         6XIgdDDhihQqbp9A4S1q5FNdcLrPSbYSRusnCCcKBHst0qTmsbGcSxIIbkh5PQ2H53bp
+         /uNTy8/ffQPSir2N+A5LQ6gePnntPQfjUNt5BYAg0EQxQRa3c/KUr2orpiW4hwHMKWgH
+         QXOZ0MjwSwz7XfaoG9m9e0mxrnpB7mEanB+qiVGAV824A3KEKVQo5xICtAl2tOGFBd7f
+         X2Jw56Eedbjbj62Kzjdfq7sh+f9pZCJ0BVqNFyK7r3p2IrJp4b6ZgJk4e4ghliWqYofs
+         TztA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qy7bm3dWO5qrYO1eCEebejs73Zbzm0TjnBqs1FgOkqw=;
+        b=pncjOg0AScI0bm4i919eXZJ28fXYBKYvNKH6JI3eTCO8sGFgKKPzXgvTcp6aSh1G6x
+         giQKDpsJSSw+Rebt5rVqsXHvY/bjIPPg4wIwhjfyWFk1HWmJ9PWJ/Wpuf6zil+xEVft8
+         Sbs0fXBCZ1kQSGNzqXmMOiXjfPj3cF7DJEVAq8/Jktr/eyLC5a28iyZ147TqBL+EpIx1
+         jYIQDBW4yYiKBjsK8f1agUfnPfYgB6MzROXFAWmgCg4bgKfcgIQS5JQPZZxUtLEmQ1o3
+         +Fi8fRRejxLTdWe0BZ+8LfQ7p8/oMA7exC0Jd5LeOOrB9kFxEqaVgmIzApLhAq8hVm7o
+         5G5A==
+X-Gm-Message-State: APjAAAW+uSLHG+7vknupRx7ObCum83QdqX0a9DaA0OGGb5PckywyOBeJ
+        KIhvZ6K5+7V8QGC4jZi/3xAo454X
+X-Google-Smtp-Source: APXvYqwbAnlSu6Fqw2+tXE22yCseyaQEf2M7j5iaxNnPmYOv3XxQKAUnUBD048eKQKITiQ9qpLw5LA==
+X-Received: by 2002:ac8:60cc:: with SMTP id i12mr4088679qtm.103.1575484336766;
+        Wed, 04 Dec 2019 10:32:16 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:bc97:d049:2862:6860])
+        by smtp.googlemail.com with ESMTPSA id k185sm376037qke.29.2019.12.04.10.32.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Dec 2019 10:32:15 -0800 (PST)
+Subject: Re: Endless "ip route show" if 255.255.255.255 route exists
+From:   David Ahern <dsahern@gmail.com>
+To:     Sven-Haegar Koch <haegar@sdinet.de>, netdev@vger.kernel.org
+References: <alpine.DEB.2.21.1912041616460.194530@aurora64.sdinet.de>
+ <a57d26df-26a4-26dc-5acf-4a49f641bcb0@gmail.com>
+Message-ID: <6d6fe3ee-674a-a88b-897d-9aa9fa303be8@gmail.com>
+Date:   Wed, 4 Dec 2019 11:32:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <a57d26df-26a4-26dc-5acf-4a49f641bcb0@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ENOTSUPP is not available in userspace:
+On 12/4/19 11:05 AM, David Ahern wrote:
+> On 12/4/19 8:22 AM, Sven-Haegar Koch wrote:
+>> Then trying to show the routing table:
+>>
+>> root@haegar-test:~# ip ro sh | head -n 10
+>> default via 10.140.184.1 dev ens18
+>> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
+>> 255.255.255.255 dev ens18 scope link
+>> default via 10.140.184.1 dev ens18
+>> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
+>> 255.255.255.255 dev ens18 scope link
+>> default via 10.140.184.1 dev ens18
+>> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
+>> 255.255.255.255 dev ens18 scope link
+>> default via 10.140.184.1 dev ens18 
+>>
+>> (Repeats endless without the "head" limit)
+>>
+> 
+> Thanks for the report. Seems to be a problem with iproute2.
+> iproute2-ss190924 works fine. I'll send a fix.
+> 
 
-  setsockopt failed, 524, Unknown error 524
-
-Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
----
-v2: update error code in selftest
-
- net/tls/tls_main.c                | 4 ++--
- tools/testing/selftests/net/tls.c | 8 ++------
- 2 files changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index bdca31ffe6da..5830b8e02a36 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -496,7 +496,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
- 	/* check version */
- 	if (crypto_info->version != TLS_1_2_VERSION &&
- 	    crypto_info->version != TLS_1_3_VERSION) {
--		rc = -ENOTSUPP;
-+		rc = -EINVAL;
- 		goto err_crypto_info;
- 	}
- 
-@@ -723,7 +723,7 @@ static int tls_init(struct sock *sk)
- 	 * share the ulp context.
- 	 */
- 	if (sk->sk_state != TCP_ESTABLISHED)
--		return -ENOTSUPP;
-+		return -ENOTCONN;
- 
- 	/* allocate tls context */
- 	write_lock_bh(&sk->sk_callback_lock);
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 1c8f194d6556..97c056ab43d9 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -25,10 +25,6 @@
- #define TLS_PAYLOAD_MAX_LEN 16384
- #define SOL_TLS 282
- 
--#ifndef ENOTSUPP
--#define ENOTSUPP 524
--#endif
--
- FIXTURE(tls_basic)
- {
- 	int fd, cfd;
-@@ -1145,11 +1141,11 @@ TEST(non_established) {
- 	/* TLS ULP not supported */
- 	if (errno == ENOENT)
- 		return;
--	EXPECT_EQ(errno, ENOTSUPP);
-+	EXPECT_EQ(errno, ENOTCONN);
- 
- 	ret = setsockopt(sfd, IPPROTO_TCP, TCP_ULP, "tls", sizeof("tls"));
- 	EXPECT_EQ(ret, -1);
--	EXPECT_EQ(errno, ENOTSUPP);
-+	EXPECT_EQ(errno, ENOTCONN);
- 
- 	ret = getsockname(sfd, &addr, &len);
- 	ASSERT_EQ(ret, 0);
--- 
-2.20.1
-
+nope, it's a kernel side bug with the strict checking path.
