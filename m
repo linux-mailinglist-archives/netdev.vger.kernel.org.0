@@ -2,332 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDD911304C
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 659BC113075
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 18:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728916AbfLDQz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 11:55:57 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:41236 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfLDQz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 11:55:57 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB4GsVWb112486;
-        Wed, 4 Dec 2019 10:54:31 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575478471;
-        bh=lW5PKBvi48YJF7fIkLzfyMM9Iv2FXBYD/7nel/gzXv0=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=HuHGdgMwJaLEwtplq12FWz/L4g52TSfATIXTHfEL1fI4AI0mYInk79MkK1iteiuRv
-         7amC0rIQYxe/dXTb2owJrFtfJ7D9rS2gEFo8TjnMflz2tiProEqVOq4MIDSk6W5UGn
-         QDhf0KCRbqMCvS1XnrX1p9MbjnP6St6qeO4haVx8=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB4GsVXJ044253
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 4 Dec 2019 10:54:31 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 4 Dec
- 2019 10:54:31 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Wed, 4 Dec 2019 10:54:31 -0600
-Received: from [158.218.113.14] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB4GsJZr061204;
-        Wed, 4 Dec 2019 10:54:21 -0600
-Subject: Re: [EXT] Re: [v1,ethtool] ethtool: add setting frame preemption of
- traffic classes
-To:     Po Liu <po.liu@nxp.com>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        "linville@tuxdriver.com" <linville@tuxdriver.com>,
-        "netdev-owner@vger.kernel.org" <netdev-owner@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1728955AbfLDRFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 12:05:20 -0500
+Received: from mail-eopbgr40088.outbound.protection.outlook.com ([40.107.4.88]:16921
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728784AbfLDRFU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 12:05:20 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oL/0zocveqaPpcHZ/FtUGnk+m2kK+RubXd3L7WlK9y9p32R0qgTrP14p1HdmNKtSWVBh+UhNwAXnh5w2ouZyrrB07t2tm95cvCtBY87u/jCrO3uXaY1+AKN/s2/5U5iKrovzqN5xuHO2U1TcsY75PWcVoBZt5SaYM9yjK8mJvsruqvK6myxraxCUsEdgVMek7GLdbQhkGXBeBj3lJgsnhUcKmooBmwzjegzcLZ3gpALVAgGrThYk7YRDU5XE+/8mKKU6g5qhdSaB0WHk2mwbZ/pyAtZyI/gB4epmk1ao6Lu8Rso2IT7CsFedmv1Z6WvGD8muCUHhDFZeRbfq9q5gig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bwfpW+klggfKBxfwZjuraMMsRnAdf6shfazeHGkXByI=;
+ b=nR1Ga6iJ4FGcq8BNY9wVscKV380Loe9MAbjE/NidBZzXyXS2PvuyUdP5DINohQ+qACdY2ncsYCtOZx+CDLm/GyRa7MN0YoKe7P7IzAUNaHNRNp68ZoLmPluaZbx6MX2cEP4o65rK7Ru8A8bgbFwQhJwwD1oJrZD2BMhQnlMLZWTQlcjgAghtMMOe4d1QYh+jYew7d+NItERcz2coua4cmnxVtr4AKp8DNcENGOnVrTC2qSN7FT8ShkAYm8khcYInN6aWMsljjh6c/v1fkTJjv1in9i+0vaPh24MckLjZphC5Rp2jEmF4Iq0puq4DAxyCZQ/a1sL2tIqrHK1ZyMNtsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bwfpW+klggfKBxfwZjuraMMsRnAdf6shfazeHGkXByI=;
+ b=f8qRq2K0Kz4YMvLsFe9Sla5zW2EuM8vxu0WuKBjUIkf4HzHrJ8oQW221TaWty1BrjpzGcGEQmmP20Va6Jp5sfM7O36HtLFjlMe8M/a94A15tQug8a35airYwjQ0hJwX3mQXpM7JyLUxHkxdisA3IlBqgUzy2pTIb4tr/W9C43dc=
+Received: from DBBPR05MB6522.eurprd05.prod.outlook.com (20.179.40.143) by
+ DBBPR05MB6474.eurprd05.prod.outlook.com (20.179.42.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.12; Wed, 4 Dec 2019 17:05:16 +0000
+Received: from DBBPR05MB6522.eurprd05.prod.outlook.com
+ ([fe80::15f9:a1bb:26aa:6260]) by DBBPR05MB6522.eurprd05.prod.outlook.com
+ ([fe80::15f9:a1bb:26aa:6260%7]) with mapi id 15.20.2516.013; Wed, 4 Dec 2019
+ 17:05:16 +0000
+From:   Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+To:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>
+CC:     Tariq Toukan <tariqt@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-References: <20191127094448.6206-1-Po.Liu@nxp.com>
- <20191203162659.GC2680@khorivan>
- <62250ff1-ab89-b6c2-051b-93f1650139eb@ti.com>
- <VE1PR04MB649677D690436632ED407178925D0@VE1PR04MB6496.eurprd04.prod.outlook.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <1e451e89-a801-5f6d-e7e6-5563dc95267d@ti.com>
-Date:   Wed, 4 Dec 2019 11:59:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
-MIME-Version: 1.0
-In-Reply-To: <VE1PR04MB649677D690436632ED407178925D0@VE1PR04MB6496.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: page_pool: mutex lock inside atomic context
+Thread-Topic: page_pool: mutex lock inside atomic context
+Thread-Index: AdWqxNFDwXdvDTBZTeaRFFFtwkVXSw==
+Date:   Wed, 4 Dec 2019 17:05:16 +0000
+Message-ID: <DBBPR05MB6522EAE7219849CE10EF5023BF5D0@DBBPR05MB6522.eurprd05.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladyslavt@mellanox.com; 
+x-originating-ip: [77.75.144.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 605bca13-148a-49a1-8eb1-08d778dc2282
+x-ms-traffictypediagnostic: DBBPR05MB6474:|DBBPR05MB6474:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR05MB647420AD0716C34B9AA4E1D1BF5D0@DBBPR05MB6474.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 0241D5F98C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(199004)(189003)(1361003)(74316002)(71200400001)(7736002)(305945005)(2501003)(71190400001)(81156014)(8676002)(8936002)(2351001)(25786009)(81166006)(14444005)(316002)(186003)(5660300002)(5640700003)(76116006)(9686003)(6306002)(6916009)(99286004)(6506007)(7696005)(4326008)(102836004)(33656002)(3846002)(14454004)(66446008)(66556008)(54906003)(86362001)(64756008)(66476007)(66946007)(30864003)(55016002)(6436002)(2906002)(966005)(6116002)(26005)(52536014)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6474;H:DBBPR05MB6522.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0WMIi9Ri/HjrOvoyFsIbXH7LhyQuSYwicJE+om333SHeK6YuKBCqbxCOqNa08mGqDyarwEhXHweDogIwwuc07/MJl4sjyLIin/ae0xeuBuzOZhOF1CqFumtESnOY9wZjBWp/W3k63xp0nkzsBb8nKEgLuUy7eu7HH26IRJextcOkc1Tn61CERaX90GESGh15hcLTYRk7Kq4BC4ZaROIJ2pkzHXrHOSWJlKNwTCGhspSsxStJDcU48X7wzNO0bi7231mnykxGglmUY5L9RYvr8RU+mlk0SWKjU7WC6Jtpi5y5mR5FJtl5V59ZeSKYMI4S0RX7wkeRjOKHC/um/snJVy5hDQcJUrmqo0as5d1ybjzXere6AU9dvEsizFf7iE5YI4OPIEchUgz1xZuCTj7eR+V1wqSV6H4WOydZKm0Dac66dsgqaORoniVfMVUnfn46epbmpf48ysuMF/E/I+qOK4O3bvwDZebvBCbDMit0s0g=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 605bca13-148a-49a1-8eb1-08d778dc2282
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2019 17:05:16.2214
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2smGsc198m+hWHCHV5PNuaYoROrQOxI5DL2ZiAOBxQAQ1WWFTEAMA2Se4zK9zY6Gf0r6Bks4UK4ly46exEGdKA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6474
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/04/2019 03:14 AM, Po Liu wrote:
-> Hi Murali, Ivan,
-> 
-> Thank you for your feedback. Maybe it is better to use "RFC" type for these patches for the discussion.
-> 
-Yes please.
+Hello Jonathan,
 
-Murali
-> 
-> Br,
-> Po Liu
-> 
->> -----Original Message-----
->> From: Murali Karicheri <m-karicheri2@ti.com>
->> Sent: 2019年12月4日 1:42
->> To: Po Liu <po.liu@nxp.com>; rmk+kernel@armlinux.org.uk;
->> linville@tuxdriver.com; netdev-owner@vger.kernel.org; davem@davemloft.net;
->> linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
->> vinicius.gomes@intel.com; simon.horman@netronome.com; Claudiu Manoil
->> <claudiu.manoil@nxp.com>; Vladimir Oltean <vladimir.oltean@nxp.com>;
->> Xiaoliang Yang <xiaoliang.yang_1@nxp.com>; Roy Zang <roy.zang@nxp.com>;
->> Mingkai Hu <mingkai.hu@nxp.com>; Jerry Huang <jerry.huang@nxp.com>; Leo
->> Li <leoyang.li@nxp.com>
->> Subject: [EXT] Re: [v1,ethtool] ethtool: add setting frame preemption of traffic
->> classes
->>
->> Caution: EXT Email
->>
->> Hi Po Liu,
->>
->> Thanks for working on this! Some suggestion below as we are working on adding
->> this support to Texas Instrument's CPSW driver on AM65x family of SoCs as well.
->> TRM for that is provided below for your reference.
->> Relevant section for IET (Frame pre-emption) is
->>
->> 12.2.1.4.6.6.1IET Configuration
->>
->> https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fwww.ti.c
->> om%2Flit%2Fug%2Fspruid7d%2Fspruid7d.pdf&amp;data=02%7C01%7Cpo.liu%
->> 40nxp.com%7C15544a9db1ff422e2fdf08d77817647f%7C686ea1d3bc2b4c6fa
->> 92cd99c5c301635%7C0%7C1%7C637109914194485742&amp;sdata=VD5kg%
->> 2FY1SDDWjwMZHjgUNlFrcvXnDvdIPGblWkx4DXs%3D&amp;reserved=0
->>
->> On 12/03/2019 11:27 AM, Ivan Khoronzhuk wrote:
->>> On Wed, Nov 27, 2019 at 09:58:52AM +0000, Po Liu wrote:
->>>
->>> Hi Po Liu,
->>>
->>>> IEEE Std 802.1Qbu standard defined the frame preemption of port
->>>> trffic classes. User can set a value to hardware. The value will be
->>>> translated to a binary, each bit represent a traffic class.
->>>> Bit "1" means preemptable traffic class. Bit "0" means express
->>>> traffic class.  MSB represent high number traffic class.
->>>>
->>>> ethtool -k devname
->>>>
->>>> This command would show if the tx-preemption feature is available.
->>>> If hareware set preemption feature. The property would be a fixed
->>>> value 'on' if hardware support the frame preemption. Feature would
->>>> show a fixed value 'off' if hardware don't support the frame preemption.
->>>>
->>>> ethtool devname
->>>>
->>>> This command would show include an item 'preemption'. A following
->>>> value '0' means all traffic classes are 'express'. A value none zero
->>>> means traffic classes preemption capabilities. The value will be
->>>> translated to a binary, each bit represent a traffic class. Bit '1'
->>>> means preemptable traffic class. Bit '0' means express traffic class.
->>>> MSB represent high number traffic class.
->>>>
->>>> ethtool -s devname preemption N
->>>
->>> What about other potential parameters like MAC fragment size, mac hold?
->>> Shouldn't be it considered along with other FP parameters to provide
->>> correct interface later?
->>>
->>> Say, preemption, lets name it fp-mask or frame-preemption-mask.
->>> Then other potential setting can be similar and added later:
->>>
->>> frame-preemption-mask
->>> frame-preemption-fragsize
->>> frame-preemption-machold
->> Need additional capabilities as described by Ivan above. Thanks Ivan!
->>
->> So it would be better to use feature/sub-parameter format so that it can be
->> extended as needed in the future.
->>
->> For express/Preemptable mask setting it becomes
->>
->> ethtool -s devname frame-preemption tc-mask  N
->>
->> For setting min fragment size
->>
->> ethtool -s devname frame-preemption min-fragsize 64
->>
-> 
-> I thought the fragment size set 64 is enough for Qbv.  Anyway, if you prefer more details setting. I think it is better to set a specific serial type. For example, '-p' for set  tc-mask  N  and min-fragsize 64, '-P' for status.
-> 
->> Also the device may be capable of doing Verify process to detect the capability
->> of neighbor device and show the status. So we should have a way to show this
-> 
-> The verify process maybe disabled as default.
-> 
->> status as well when user type
->>
->> ethtool devname
->>
->> We are working currently to add this feature to CPSW driver on AM65x which
->> will be upstream-ed soon. So want to have this done in an way that we can
->> extend it later.
->> Similarly for taprio, there are some parameters that user might want to tune
->> such as Max SDU size per tc class. I hope we could use ethtool to set the same
->> on a similar way.
-> 
-> Furthermore, this setting could be extend for a serial setting for mac and traffic class.
-> 
->>
->> Thanks
->>
->> Murali
->>
->>> ....
->>>
->>> mac-hold it's rather flag, at least I've used it as priv-flag.
->>> so can or so
->>>
->>> frame-preemption-flags
->>>
->>>>
->>>> This command would set which traffic classes are frame preemptable.
->>>> The value will be translated to a binary, each bit represent a
->>>> traffic class. Bit '1' means preemptable traffic class. Bit '0'
->>>> means express traffic class. MSB represent high number traffic class.
->>>>
->>>> Signed-off-by: Po Liu <Po.Liu@nxp.com>
->>>> ---
->>>> ethtool-copy.h |  6 +++++-
->>>> ethtool.8.in   |  8 ++++++++
->>>> ethtool.c      | 18 ++++++++++++++++++
->>>> 3 files changed, 31 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/ethtool-copy.h b/ethtool-copy.h index 9afd2e6..e04bdf3
->>>> 100644
->>>> --- a/ethtool-copy.h
->>>> +++ b/ethtool-copy.h
->>>> @@ -1662,6 +1662,9 @@ static __inline__ int
->>>> ethtool_validate_duplex(__u8 duplex)
->>>> #define AUTONEG_DISABLE        0x00
->>>> #define AUTONEG_ENABLE        0x01
->>>>
->>>> +/* Disable preemtion. */
->>>> +#define PREEMPTION_DISABLE    0x0
->>>> +
->>>> /* MDI or MDI-X status/control - if MDI/MDI_X/AUTO is set then
->>>>   * the driver is required to renegotiate link  */ @@ -1878,7 +1881,8
->>>> @@ struct ethtool_link_settings {
->>>>      __s8    link_mode_masks_nwords;
->>>>      __u8    transceiver;
->>>>      __u8    reserved1[3];
->>>> -    __u32    reserved[7];
->>>> +    __u32    preemption;
->>>> +    __u32    reserved[6];
->>>>      __u32    link_mode_masks[0];
->>>>      /* layout of link_mode_masks fields:
->>>>       * __u32 map_supported[link_mode_masks_nwords];
->>>> diff --git a/ethtool.8.in b/ethtool.8.in index 062695a..7d612b2
->>>> 100644
->>>> --- a/ethtool.8.in
->>>> +++ b/ethtool.8.in
->>>> @@ -236,6 +236,7 @@ ethtool \- query or control network driver and
->>>> hardware settings
->>>> .B2 autoneg on off
->>>> .BN advertise
->>>> .BN phyad
->>>> +.BN preemption
->>>> .B2 xcvr internal external
->>>> .RB [ wol \ \*(WO]
->>>> .RB [ sopass \ \*(MA]
->>>> @@ -703,6 +704,13 @@ lB    l    lB.
->>>> .BI phyad \ N
->>>> PHY address.
->>>> .TP
->>>> +.BI preemption \ N
->>>> +Set preemptable traffic classes by bits.
->>>> +.B A
->>>> +value will be translated to a binary, each bit represent a traffic
->>>> class.
->>>> +Bit "1" means preemptable traffic class. Bit "0" means express
->>>> traffic class.
->>>> +MSB represent high number traffic class.
->>>> +.TP
->>>> .A2 xcvr internal external
->>>> Selects transceiver type. Currently only internal and external can be
->>>> specified, in the future further types might be added.
->>>> diff --git a/ethtool.c b/ethtool.c
->>>> index acf183d..d5240f8 100644
->>>> --- a/ethtool.c
->>>> +++ b/ethtool.c
->>>> @@ -928,6 +928,12 @@ dump_link_usettings(const struct
->>>> ethtool_link_usettings *link_usettings)
->>>>          }
->>>>      }
->>>>
->>>> +    if (link_usettings->base.preemption == PREEMPTION_DISABLE)
->>>> +        fprintf(stdout, "    Preemption: 0x0 (off)\n");
->>>> +    else
->>>> +        fprintf(stdout, "    Preemption: 0x%x\n",
->>>> +            link_usettings->base.preemption);
->>>> +
->>>>      return 0;
->>>> }
->>>>
->>>> @@ -2869,6 +2875,7 @@ static int do_sset(struct cmd_context *ctx)
->>>>      int port_wanted = -1;
->>>>      int mdix_wanted = -1;
->>>>      int autoneg_wanted = -1;
->>>> +    int preemption_wanted = -1;
->>>>      int phyad_wanted = -1;
->>>>      int xcvr_wanted = -1;
->>>>      u32 *full_advertising_wanted = NULL; @@ -2957,6 +2964,12 @@
->>>> static int do_sset(struct cmd_context *ctx)
->>>>              } else {
->>>>                  exit_bad_args();
->>>>              }
->>>> +        } else if (!strcmp(argp[i], "preemption")) {
->>>> +            gset_changed = 1;
->>>> +            i += 1;
->>>> +            if (i >= argc)
->>>> +                exit_bad_args();
->>>> +            preemption_wanted = get_u32(argp[i], 16);
->>>>          } else if (!strcmp(argp[i], "advertise")) {
->>>>              gset_changed = 1;
->>>>              i += 1;
->>>> @@ -3094,6 +3107,9 @@ static int do_sset(struct cmd_context *ctx)
->>>>              }
->>>>              if (autoneg_wanted != -1)
->>>>                  link_usettings->base.autoneg = autoneg_wanted;
->>>> +            if (preemption_wanted != -1)
->>>> +                link_usettings->base.preemption
->>>> +                    = preemption_wanted;
->>>>              if (phyad_wanted != -1)
->>>>                  link_usettings->base.phy_address = phyad_wanted;
->>>>              if (xcvr_wanted != -1)
->>>> @@ -3186,6 +3202,8 @@ static int do_sset(struct cmd_context *ctx)
->>>>                  fprintf(stderr, "  not setting transceiver\n");
->>>>              if (mdix_wanted != -1)
->>>>                  fprintf(stderr, "  not setting mdix\n");
->>>> +            if (preemption_wanted != -1)
->>>> +                fprintf(stderr, "  not setting preemption\n");
->>>>          }
->>>>      }
->>>>
->>>> --
->>>> 2.17.1
->>>>
->>>
-> 
+Recently we found a bug regarding invalid mutex lock inside atomic context.
+The bug occurs when destroying a page pool that was registered as a
+XDP allocator.
+An original stack trace for it is at the end of the mail, but in short,
+the flow from the mlx5 driver looks like this:
+- xdp_rxq_info_unreg is called before page_pool_destroy from the stack trac=
+e,
+  which in turn calls page_pool_destroy, but only decreases the refcount
+  and exits;
+- page_pool_destroy is called, which decreases refcount to zero
+  and starts releasing the pages;
+- page_pool_destroy eventually reaches page_pool_free, which calls a
+  mem_allocator_disconnect function via a function pointer stored in=20
+  'disconnect' field inside page_pool structure;
+- mem_allocator_disconnect takes rcu lock inside rhashtable_walk_start
+  and holds it while calling mem_xa_remove;
+- mem_xa_remove tries to lock on a mem_id_lock mutex which should not be
+  done while rcu lock is taken.
+ =20
+The pointer to mem_allocator_disconnect is assigned to 'disconnect' field
+of page_pool struct with a call to xdp_rxq_info_reg_mem_model function and
+is basically hardcoded, so this bug should always reproduce when destroying
+a page pool that was registered as a XDP allocator.
 
+We were able to reproduce this bug on Mellanox setup by unloading or reload=
+ing
+the mlx5 driver with, for example, executing this command:
+# devlink dev reload <PCI address>
+CONFIG_DEBUG_ATOMIC_SLEEP=3Dy is required to see this stacktrace.
+
+We found the commit that introduced this bug with a bisect and its patch
+discussion can be found here:
+https://patchwork.ozlabs.org/patch/1195227/
+
+Regards,
+Vlad
+
+[ 100.437147] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[ 100.437682] WARNING: suspicious RCU usage
+[ 100.438152] 5.4.0-rc7+ #296 Not tainted
+[ 100.438629] -----------------------------
+[ 100.439113] include/linux/rcupdate.h:272 Illegal context switch in RCU re=
+ad-side critical section!
+[ 100.440414]
+[ 100.440414] other info that might help us debug this:
+[ 100.440414]
+[ 100.441353]
+[ 100.441353] rcu_scheduler_active =3D 2, debug_locks =3D 1
+[ 100.442080] 4 locks held by modprobe/428:
+[ 100.442531] #0: ffffffffa04822b0 (mlx5_intf_mutex){+.+.}, at: mlx5_unregi=
+ster_interface+0x20/0x1d0 [mlx5_core]
+[ 100.443813] #1: ffffffff83f9ca70 (rtnl_mutex){+.+.}, at: unregister_netde=
+v+0xe/0x20
+[ 100.444734] #2: ffff88810fc82380 (&priv->state_lock){+.+.}, at: mlx5e_clo=
+se+0x4e/0xc0 [mlx5_core]
+[ 100.445621] #3: ffffffff839b04a0 (rcu_read_lock){....}, at: rhashtable_wa=
+lk_start_check+0xae/0xb30
+[ 100.446379]
+[ 100.446379] stack backtrace:
+[ 100.446852] CPU: 1 PID: 428 Comm: modprobe Not tainted 5.4.0-rc7+ #296
+[ 100.447402] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-=
+1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[ 100.448251] Call Trace:
+[ 100.448452] dump_stack+0x97/0xe0
+[ 100.448693] __might_sleep+0x226/0x2f0
+[ 100.448934] __mutex_lock+0xca/0x1570
+[ 100.449165] ? mem_xa_remove+0xe3/0x570
+[ 100.449417] ? sched_clock+0x5/0x10
+[ 100.449653] ? sched_clock_cpu+0x31/0x1f0
+[ 100.449886] ? mutex_lock_io_nested+0x1400/0x1400
+[ 100.450206] ? rcu_read_lock_sched_held+0xaf/0xe0
+[ 100.450537] ? rcu_read_lock_bh_held+0xc0/0xc0
+[ 100.450862] ? mem_xa_remove+0xe3/0x570
+[ 100.451097] mem_xa_remove+0xe3/0x570
+[ 100.451322] ? xdp_rxq_info_reg+0x160/0x160
+[ 100.451551] ? rhashtable_destroy+0x10/0x10
+[ 100.451787] mem_allocator_disconnect+0xd1/0x134
+[ 100.452096] ? mem_xa_remove+0x570/0x570
+[ 100.452333] ? rcu_read_lock_bh_held+0xc0/0xc0
+[ 100.452648] ? lockdep_hardirqs_on+0x39b/0x5a0
+[ 100.452958] ? page_pool_release+0x371/0x9d0
+[ 100.453276] page_pool_release+0x527/0x9d0
+[ 100.453515] page_pool_destroy+0x32/0x230
+[ 100.453788] mlx5e_free_rq+0x1e1/0x2f0 [mlx5_core]
+[ 100.454134] mlx5e_close_queues+0x31/0x330 [mlx5_core]
+[ 100.454495] mlx5e_close_channel+0x49/0x80 [mlx5_core]
+[ 100.454835] mlx5e_close_channels+0x95/0x160 [mlx5_core]
+[ 100.455181] mlx5e_close_locked+0xe0/0x110 [mlx5_core]
+[ 100.455529] mlx5e_close+0x85/0xc0 [mlx5_core]
+[ 100.455827] __dev_close_many+0x189/0x2a0
+[ 100.456051] ? list_netdevice+0x3a0/0x3a0
+[ 100.456294] dev_close_many+0x1d9/0x580
+[ 100.456548] ? find_held_lock+0x2d/0x110
+[ 100.456783] ? netif_stacked_transfer_operstate+0xd0/0xd0
+[ 100.457084] ? unregister_netdev+0xe/0x20
+[ 100.457321] rollback_registered_many+0x33b/0xe10
+[ 100.457651] ? netif_set_real_num_tx_queues+0x6d0/0x6d0
+[ 100.457975] ? unregister_netdev+0xe/0x20
+[ 100.458199] ? mutex_lock_io_nested+0x1400/0x1400
+[ 100.458503] rollback_registered+0xd0/0x180
+[ 100.458745] ? rollback_registered_many+0xe10/0xe10
+[ 100.459058] ? lock_downgrade+0x6a0/0x6a0
+[ 100.459280] unregister_netdevice_queue+0x18b/0x250
+[ 100.459629] ? mlx5e_destroy_netdev+0xb0/0xb0 [mlx5_core]
+[ 100.459934] unregister_netdev+0x18/0x20
+[ 100.460208] mlx5e_remove+0x7b/0xb0 [mlx5_core]
+[ 100.460582] mlx5_remove_device+0x220/0x2f0 [mlx5_core]
+[ 100.460908] mlx5_unregister_interface+0x4b/0x1d0 [mlx5_core]
+[ 100.461339] cleanup+0x5/0x1e [mlx5_core]
+[ 100.461600] __x64_sys_delete_module+0x270/0x380
+[ 100.461932] ? __ia32_sys_delete_module+0x380/0x380
+[ 100.462217] ? task_work_run+0xa4/0x180
+[ 100.462469] ? entry_SYSCALL_64_after_hwframe+0x3e/0xbe
+[ 100.462788] ? trace_hardirqs_off_thunk+0x1a/0x20
+[ 100.463101] ? do_syscall_64+0x18/0x4a0
+[ 100.463326] do_syscall_64+0x95/0x4a0
+[ 100.463566] entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[ 100.463875] RIP: 0033:0x7f93d7d43ebb
+[ 100.464113] Code: 73 01 c3 48 8b 0d cd 2f 0c 00 f7 d8 64 89 01 48 83 c8 f=
+f c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48>=
+ 3d 01 f0 ff ff 73 01 c3 48 8b 0d 9d 2f 0c 00 f7 d8 64 89 01 48
+[ 100.465174] RSP: 002b:00007ffddb2e7d68 EFLAGS: 00000206 ORIG_RAX: 0000000=
+0000000b0
+[ 100.465664] RAX: ffffffffffffffda RBX: 000055ec90c97b50 RCX: 00007f93d7d4=
+3ebb
+[ 100.466105] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 000055ec90c9=
+7bb8
+[ 100.466564] RBP: 000055ec90c97b50 R08: 0000000000000000 R09: 000000000000=
+0000
+[ 100.467038] R10: 00007f93d7db7ac0 R11: 0000000000000206 R12: 000055ec90c9=
+7bb8
+[ 100.467511] R13: 0000000000000000 R14: 000055ec90c980a0 R15: 000055ec90c9=
+7910
+[ 100.468005] BUG: sleeping function called from invalid context at kernel/=
+locking/mutex.c:935
+[ 100.468520] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 428, n=
+ame: modprobe
+[ 100.468968] 4 locks held by modprobe/428:
+[ 100.469194] #0: ffffffffa04822b0 (mlx5_intf_mutex){+.+.}, at: mlx5_unregi=
+ster_interface+0x20/0x1d0 [mlx5_core]
+[ 100.469837] #1: ffffffff83f9ca70 (rtnl_mutex){+.+.}, at: unregister_netde=
+v+0xe/0x20
+[ 100.470290] #2: ffff88810fc82380 (&priv->state_lock){+.+.}, at: mlx5e_clo=
+se+0x4e/0xc0 [mlx5_core]
+[ 100.470856] #3: ffffffff839b04a0 (rcu_read_lock){....}, at: rhashtable_wa=
+lk_start_check+0xae/0xb30
+[ 100.471372] CPU: 1 PID: 428 Comm: modprobe Not tainted 5.4.0-rc7+ #296
+[ 100.471758] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-=
+1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[ 100.472454] Call Trace:
+[ 100.472615] dump_stack+0x97/0xe0
+[ 100.472850] __might_sleep.cold+0x180/0x1b0
+[ 100.473152] __mutex_lock+0xca/0x1570
+[ 100.473389] ? mem_xa_remove+0xe3/0x570
+[ 100.473633] ? sched_clock+0x5/0x10
+[ 100.473863] ? sched_clock_cpu+0x31/0x1f0
+[ 100.474081] ? mutex_lock_io_nested+0x1400/0x1400
+[ 100.474384] ? rcu_read_lock_sched_held+0xaf/0xe0
+[ 100.474703] ? rcu_read_lock_bh_held+0xc0/0xc0
+[ 100.474999] ? mem_xa_remove+0xe3/0x570
+[ 100.475221] mem_xa_remove+0xe3/0x570
+[ 100.475464] ? xdp_rxq_info_reg+0x160/0x160
+[ 100.475694] ? rhashtable_destroy+0x10/0x10
+[ 100.475930] mem_allocator_disconnect+0xd1/0x134
+[ 100.476221] ? mem_xa_remove+0x570/0x570
+[ 100.476465] ? rcu_read_lock_bh_held+0xc0/0xc0
+[ 100.476774] ? lockdep_hardirqs_on+0x39b/0x5a0
+[ 100.477111] ? page_pool_release+0x371/0x9d0
+[ 100.477430] page_pool_release+0x527/0x9d0
+[ 100.477672] page_pool_destroy+0x32/0x230
+[ 100.477916] mlx5e_free_rq+0x1e1/0x2f0 [mlx5_core]
+[ 100.478254] mlx5e_close_queues+0x31/0x330 [mlx5_core]
+[ 100.478599] mlx5e_close_channel+0x49/0x80 [mlx5_core]
+[ 100.478947] mlx5e_close_channels+0x95/0x160 [mlx5_core]
+[ 100.479276] mlx5e_close_locked+0xe0/0x110 [mlx5_core]
+[ 100.479622] mlx5e_close+0x85/0xc0 [mlx5_core]
+[ 100.479925] __dev_close_many+0x189/0x2a0
+[ 100.480149] ? list_netdevice+0x3a0/0x3a0
+[ 100.480373] dev_close_many+0x1d9/0x580
+[ 100.480606] ? find_held_lock+0x2d/0x110
+[ 100.480857] ? netif_stacked_transfer_operstate+0xd0/0xd0
+[ 100.481144] ? unregister_netdev+0xe/0x20
+[ 100.481375] rollback_registered_many+0x33b/0xe10
+[ 100.481704] ? netif_set_real_num_tx_queues+0x6d0/0x6d0
+[ 100.482014] ? unregister_netdev+0xe/0x20
+[ 100.482225] ? mutex_lock_io_nested+0x1400/0x1400
+[ 100.482545] rollback_registered+0xd0/0x180
+[ 100.482789] ? rollback_registered_many+0xe10/0xe10
+[ 100.483091] ? lock_downgrade+0x6a0/0x6a0
+[ 100.483320] unregister_netdevice_queue+0x18b/0x250
+[ 100.483672] ? mlx5e_destroy_netdev+0xb0/0xb0 [mlx5_core]
+[ 100.483962] unregister_netdev+0x18/0x20
+[ 100.484237] mlx5e_remove+0x7b/0xb0 [mlx5_core]
+[ 100.484571] mlx5_remove_device+0x220/0x2f0 [mlx5_core]
+[ 100.484914] mlx5_unregister_interface+0x4b/0x1d0 [mlx5_core]
+[ 100.485319] cleanup+0x5/0x1e [mlx5_core]
+[ 100.485572] __x64_sys_delete_module+0x270/0x380
+[ 100.485882] ? __ia32_sys_delete_module+0x380/0x380
+[ 100.486179] ? task_work_run+0xa4/0x180
+[ 100.486412] ? entry_SYSCALL_64_after_hwframe+0x3e/0xbe
+[ 100.486725] ? trace_hardirqs_off_thunk+0x1a/0x20
+[ 100.487031] ? do_syscall_64+0x18/0x4a0
+[ 100.487269] do_syscall_64+0x95/0x4a0
+[ 100.487498] entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[ 100.487780] RIP: 0033:0x7f93d7d43ebb
+[ 100.488016] Code: 73 01 c3 48 8b 0d cd 2f 0c 00 f7 d8 64 89 01 48 83 c8 f=
+f c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48>=
+ 3d 01 f0 ff ff 73 01 c3 48 8b 0d 9d 2f 0c 00 f7 d8 64 89 01 48
+[ 100.489054] RSP: 002b:00007ffddb2e7d68 EFLAGS: 00000206 ORIG_RAX: 0000000=
+0000000b0
+[ 100.489513] RAX: ffffffffffffffda RBX: 000055ec90c97b50 RCX: 00007f93d7d4=
+3ebb
+[ 100.489978] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 000055ec90c9=
+7bb8
+[ 100.490417] RBP: 000055ec90c97b50 R08: 0000000000000000 R09: 000000000000=
+0000
+[ 100.490867] R10: 00007f93d7db7ac0 R11: 0000000000000206 R12: 000055ec90c9=
+7bb8
+[ 100.491321] R13: 0000000000000000 R14: 000055ec90c980a0 R15: 000055ec90c9=
+7910
