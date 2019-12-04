@@ -2,123 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 430B1112FB2
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:11:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D77F112FDB
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728374AbfLDQLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 11:11:15 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:48462 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727912AbfLDQLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 11:11:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=72LNbJrxc9NI8EQkst4zx3kMXmKGJx6Z/v7rruWC6F4=; b=Dho7oe/xPqW/+92cUdOOQdss5
-        4v7DPRlIQ/N+zdLdeHA5TTlkPd8hvvyn6BLDy/s+ZjbXRj/ON8avYZ7JjWlcVaNNao+dI/o6bOwhP
-        Dzyt+m6odRb+AHboYFEPLOTegx2jYevNrsdch2w+zfLr6MaXb+q+i06raBMpjCFjtFUb8j/D35Qst
-        mXkaSzdkE1kuSBsSNAK918xniqhWSEyVfBq0xUmrZmEr1ysF7p/YNWsFcX4Pi39EPcUH2+MW+YMzM
-        7pnilJ4OS7D4UCnH2jLxC1ERSkClK7zS+UjRkLV5NyHuRCXtMBXVYITTHzZPJ0MC0Cj3ygaPvlcsY
-        pPMkNsqaQ==;
-Received: from [2601:1c0:6280:3f0::3deb]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1icXFA-0003VC-Ta; Wed, 04 Dec 2019 16:11:12 +0000
-Subject: Re: linux-next: Tree for Dec 3 (switchdev & TI_CPSW_SWITCHDEV)
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-References: <20191203155405.31404722@canb.auug.org.au>
- <58aebf62-54f8-9084-147b-801ea65327bb@infradead.org>
- <f2700b07-df9b-94ce-0323-a4fece236838@ti.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <af707faa-7f95-0d6f-3f72-1746161e09a8@infradead.org>
-Date:   Wed, 4 Dec 2019 08:11:11 -0800
+        id S1728629AbfLDQUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 11:20:10 -0500
+Received: from mail-eopbgr00112.outbound.protection.outlook.com ([40.107.0.112]:4486
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727008AbfLDQUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 11:20:09 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZV+0OjINrNyU2lna73spVh5wPv3W5gylpGSlDmkrH/hsicNwJxXG2RwKitZmLc1khDcqbyatZ5RXz6MeVn2/kTg7FcjLoH+UXFUpmnQaiFMSqpqzccMqzUPNQSWu+Ye4l6vZLnavHaY5mIjHACtv7gUjzHVSRQFAJfwDUMNIoDm/7kd7NM3vuLilz7HBaG5JcvRE+DmyWe/t1rjabCfJOtKOEARDd9LVyCTqNmKUKExggRfplABBIhDlkyR94oLtIlsJqOJ9jD/jTdI0ItjU9NoH2uqPvN+RAcjOkWIepHP+az+MM4/56Fy139Hye6xLWaafcsrLsavk1xfah9kG/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UmLEAIKGH3jIQx77sL+LCiGPDd4a/fKM3/DI+wX3UmI=;
+ b=jSOu+6h/JFAxi9XTxOhr/2ZB+PtJGnNv9jVqMDU/j5Pv/gYBOTyvIyNhx9pKNJjuM11cLnB1U4Wf6XOjeT9v2hJh6+N1WJZ9kW7DCzROP8U7FiLwAKi/iInTVHMptIcwtBjZyZR7JPPZv+PE009v7SX08U1CVJxr0j53gKv0BMp8f5xQ7Fi1CRFA2ZKv1QWzMev2WpNC6Ki+0cFGxK6T8eIfCzom5N0Sa+O0VBMAcJMEyQUZM7NMtuC0xwJpBtu/LR+5yvqYWqTz19bFYLL+WFhzoLGMwrld52kLQTvsRRlT+DJl1rRyt5coeP0/XgCII+wGbxn57AnP05X1///rzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=televic.com; dmarc=pass action=none header.from=televic.com;
+ dkim=pass header.d=televic.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=televic.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UmLEAIKGH3jIQx77sL+LCiGPDd4a/fKM3/DI+wX3UmI=;
+ b=NKTSQanidF84wgInEhgr9oUZIv8K4B/Xq9URFIZlaBb34IZrsbdaZdKpvqROc7PqKimtbub3y1vQaxz/oHZO//45nKXVqI76JaI2VgdP9jULj2CTLRwTciQc3ZTt0tFxSVVM0KITzKsw7P7izd8Y3BIFUaoSsjaz874gxL0sjb0=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=J.Lambrecht@TELEVIC.com; 
+Received: from VI1PR07MB5085.eurprd07.prod.outlook.com (20.177.203.77) by
+ VI1PR07MB4655.eurprd07.prod.outlook.com (20.177.57.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.6; Wed, 4 Dec 2019 16:20:06 +0000
+Received: from VI1PR07MB5085.eurprd07.prod.outlook.com
+ ([fe80::1512:231a:ef92:4af0]) by VI1PR07MB5085.eurprd07.prod.outlook.com
+ ([fe80::1512:231a:ef92:4af0%5]) with mapi id 15.20.2516.003; Wed, 4 Dec 2019
+ 16:20:06 +0000
+Subject: Re: net: dsa: mv88e6xxx: error parsing ethernet node from dts
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        rasmus.villemoes@prevas.dk,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        vivien.didelot@gmail.com
+References: <27f65072-f3a1-7a3c-5e9e-0cc86d25ab51@televic.com>
+ <20191204153804.GD21904@lunn.ch>
+From:   =?UTF-8?Q?J=c3=bcrgen_Lambrecht?= <j.lambrecht@televic.com>
+Message-ID: <ccf9c80e-83e5-d207-8d09-1819cfb1cf35@televic.com>
+Date:   Wed, 4 Dec 2019 17:20:04 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
-MIME-Version: 1.0
-In-Reply-To: <f2700b07-df9b-94ce-0323-a4fece236838@ti.com>
+ Thunderbird/68.2.2
+In-Reply-To: <20191204153804.GD21904@lunn.ch>
 Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: AM4PR0101CA0084.eurprd01.prod.exchangelabs.com
+ (2603:10a6:200:41::52) To VI1PR07MB5085.eurprd07.prod.outlook.com
+ (2603:10a6:803:9d::13)
+MIME-Version: 1.0
+Received: from [IPv6:2a02:1811:b219:a500:baca:3aff:fed1:9b] (2a02:1811:b219:a500:baca:3aff:fed1:9b) by AM4PR0101CA0084.eurprd01.prod.exchangelabs.com (2603:10a6:200:41::52) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Wed, 4 Dec 2019 16:20:05 +0000
+X-Originating-IP: [2a02:1811:b219:a500:baca:3aff:fed1:9b]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c5b6eefe-135f-4b57-05c1-08d778d5d311
+X-MS-TrafficTypeDiagnostic: VI1PR07MB4655:
+X-Microsoft-Antispam-PRVS: <VI1PR07MB4655668C2D98B375F6A47E67FF5D0@VI1PR07MB4655.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0241D5F98C
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(366004)(376002)(396003)(136003)(39850400004)(189003)(199004)(5660300002)(50466002)(229853002)(8936002)(76176011)(6486002)(8676002)(478600001)(22746008)(66574012)(23746002)(52116002)(2616005)(11346002)(6436002)(36756003)(81156014)(31696002)(6116002)(86362001)(7736002)(14444005)(5024004)(66476007)(65956001)(66946007)(305945005)(6246003)(31686004)(66556008)(4326008)(25786009)(316002)(6916009)(81166006)(54906003)(53546011)(58126008)(2906002)(2870700001)(186003)(16526019);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB4655;H:VI1PR07MB5085.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: TELEVIC.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SszZr/pFgZg6LYapQ38LMlHeq69J//MnRq8ZiZ+KEY6p7+7lfa/q9DD6x5eSoSC2S/aieeATKxVPvq4ZRiSsYZjZizhABCbzpz8TVIJyzo6AaWlCDU3yaqS9vmlxkMuvjrUeJ0hAzmJNRGfqGFabiRLeXCACrOmvlJ+3LXEFM3oBAnn7GRHiWf4K20pxmDqVN4fYRhhfItGT+38jTtTszNzbPxsjlsuK3pXnxhIEQouZ3IjZuvxiwMvb2VaefnIG7g7fZVWDWIigTF6nbY0eOt0c1hpWQpRrve7t5phCUvvJMZwTq2K7LkHUcme40W05V29yiY+Asw714aZZu/dTbUc814GBMVDRivv/Uw7CBl46XeirAahlE2zz5NdEg8g0G7/uBZRKAUlsPios5cmIutEPIm4aKrMKgvqCXXWjYztvIPSzvaDUWoX3d6LLpgOT
+X-OriginatorOrg: televic.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5b6eefe-135f-4b57-05c1-08d778d5d311
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2019 16:20:06.2069
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 68a8593e-d1fc-4a6a-b782-1bdcb0633231
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SGt4Mn5O+CRAkHhhEUuT+lyxpphGz7VWU7HTgmspf8kutFhUJTJxk5dI5O/tSDS/zUYLvsH6rszAsCBxHvTggQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB4655
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/19 7:35 AM, Grygorii Strashko wrote:
-> 
-> 
-> On 04/12/2019 01:43, Randy Dunlap wrote:
->> On 12/2/19 8:54 PM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> Please do not add any material for v5.6 to your linux-next included
->>> trees until after v5.5-rc1 has been released.
->>>
->>> Changes since 20191202:
+On 12/4/19 4:38 PM, Andrew Lunn wrote:
+>> Here parts of dmesg (no error reported):
 >>
->> I am seeing this (happens to be on i386; I doubt that it matters):
->> CONFIG_COMPILE_TEST=y
+>> [    1.992342] libphy: Fixed MDIO Bus: probed
+>> [    2.009532] pps pps0: new PPS source ptp0
+>> [    2.014387] libphy: fec_enet_mii_bus: probed
+>> [    2.017159] mv88e6085 2188000.ethernet-1:00: switch 0x710 detected: Marvell 88E6071, revision 5
+>> [    2.125616] libphy: mv88e6xxx SMI: probed
+>> [    2.134450] fec 2188000.ethernet eth0: registered PHC device 0
+>> ...
+>> [   11.366359] Generic PHY fixed-0:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=fixed-0:00, irq=POLL)
+>> [   11.366722] fec 2188000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off
 >>
->>
->> WARNING: unmet direct dependencies detected for NET_SWITCHDEV
->>    Depends on [n]: NET [=y] && INET [=n]
->>    Selected by [y]:
->>    - TI_CPSW_SWITCHDEV [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_TI [=y] && (ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST [=y])
->>
->> because TI_CPSW_SWITCHDEV blindly selects NET_SWITCHDEV even though
->> INET is not set/enabled, while NET_SWITCHDEV depends on INET.
->>
->> However, the build succeeds, including net/switchdev/*.
->>
->> So why does NET_SWITCHDEV depend on INET?
->>
->> It looks like TI_CPSW_SWITCHDEV should depend on INET (based on the
->> Kconfig rules), but in practice it doesn't seem to matter to the build.
->>
-> 
-> Thanks for reporting this. I'd like to ask for some advice of how to proceed?
-> a) change it to "depends on NET_SWITCHDEV" (as it's done in other drivers),
-> but this will require to add NET_SWITCHDEV in defconfig
+>> When I enable debugging in the source code, I see that mv88e6xxx_probe() fails, because *'of_find_net_device_by_node(ethernet);'* fails. But why?,
+> That always happens the first time. There is a chicken/egg
+> problem. The MDIO bus is registered by the FEC driver, the switch is
+> probed, and the DSA core looks for the ethernet interface. But the FEC
+> driver has not yet registered the interface, it is still busy
+> registering the MDIO bus. So you get an EPRODE_DEFFER from the switch
+> probe. The FEC then completes its probe, registering the
+> interface. Sometime later Linux retries the switch probe, and this
+> time it works.
+>
+> What you are seeing here is the first attempt. There should be a
+> second go later in the log.
+>
+>        Andrew
 
-IMO TI_CPSW_SWITCHDEV should depend on NET_SWITCHDEV, as other drivers do that.
+Indeed, but that also fails because this second time, reading the switch ID (macreg 3 at addr 8) fails, it returns 0x0000!??
 
-That will require to add NET_SWITCHDEV in what defconfig?
-To me, it just means that whoever is doing the kernel config must enable/set
-NET_SWITCHDEV first, same as other drivers that depend on NET_SWITCHDEV.
+Last register read/write was 800ms before, disabling interrupts.
 
-> b) change it to "imply NET_SWITCHDEV", but then NET_SWITCHDEV can be switched off
-> manually or by random build and cause build failure of cpsw_new.
-> To fix build below diff can be used, but TI_CPSW_SWITCHDEV will not be functional
-> 
-> ---
-> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-> index 71215db7934b..22e8fc548d48 100644
-> --- a/drivers/net/ethernet/ti/cpsw_new.c
-> +++ b/drivers/net/ethernet/ti/cpsw_new.c
-> @@ -368,8 +368,9 @@ static void cpsw_rx_handler(void *token, int len, int status)
->                 page_pool_recycle_direct(pool, page);
->                 goto requeue;
->         }
-> -
-> +#ifdef CONFIG_NET_SWITCHDEV
->         skb->offload_fwd_mark = priv->offload_fwd_mark;
-> +#endif
->         skb_reserve(skb, headroom);
->         skb_put(skb, len);
->         skb->dev = ndev;
-> 
-> Thank you.
-> 
+Shortly after the first ID read (that succeeded 1 second before), all MAC ports have been disabled (macreg 4, PortState from forwarding to disabled). But that should have no influence on reading the ID. FYI, The switch is configured in CPU attached mode.
 
+Any ideas?
 
--- 
-~Randy
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Tomorrow I will try to run a user-space program to read/write the registers.
+
+Thanks a lot for clarifying this,
+
+Jürgen
+
