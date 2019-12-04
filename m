@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 248051134EC
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:28:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC2DC1134F2
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:28:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729514AbfLDS1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 13:27:10 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38556 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728926AbfLDS1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:27:08 -0500
-Received: by mail-qt1-f193.google.com with SMTP id 14so755859qtf.5;
-        Wed, 04 Dec 2019 10:27:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=rRv+rhzCfuGo++iU2PWMbxJtQJH0iLaP0UrU4w3CxNE=;
-        b=Ac1tXdmsBCtajajEJA4vlvGErEJ0vRZ6ndVyEEaMDrDdGqhrfVzLnzbdSwpV0eO2D1
-         v/KYC8iohhIlOxuJz2YVC2fBGWOmEXvK6CzjOcEeqscDHUiaji4shP9NfBBBy6uJDExt
-         UJhwwXdTIauV9neI//48hcMI49IIpntEcHzPTH4mkoQzFn7JEL93Q72pFAJn9/h1IBjj
-         LGesVGxiJLArzH9/AfeN6pQBb+yNAkA9ZI7X3ti4HkE6NVdIaudOv/5r+pf81Ui9SjUW
-         wUlwDCAzXQstSBePCPFMo20y2cg5uJBnRDs5TP0wTcPA6M9u7L3RJiH6uQl0ZLzvbS9T
-         Qqlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=rRv+rhzCfuGo++iU2PWMbxJtQJH0iLaP0UrU4w3CxNE=;
-        b=rWY5H9om4L2pZA3XLiLa4Zh0Vt/3VQ7+sZb2AqVBG/mPNXjOZEhcacf+RpxLN72CpI
-         wxZJbOKzYe7QesZOWyHGjbc/bYXArgTeeEprQCrMR5/pIXpze9cYSa13G6DeU/Lnyi5b
-         MbISJgA3U8OOtOxCofotZC0upt8vtIarYF8W96/vrAv/qfY9QEsiGCbTqsNV+evaK0Uz
-         hHoQKLLaFno5iqQpUs6HjHI2OvPP9flyPAn/CGa3hKb0BKHgU41wxvvJkxszQf52XwFY
-         OmW7cCHJq7tOp0zkW7mYcmosRrqno4Oc6e5dm9yzxnKef30Vypnm1/1A5C3K7ADuTXn0
-         IBqA==
-X-Gm-Message-State: APjAAAWjuLF1Y64lRtHkmdbJlrQuuWFh+EDnGkOYZyMfAxMbTnY6tPv0
-        wSfJSEcJe5poKYKxljvn6dA=
-X-Google-Smtp-Source: APXvYqwvOr5+lvRpVjUWa75G4U3wtt6BZ7VAdjo63IVeH/Hs3f6PYd9m2mq3+4pXf30bM7guaM5mXQ==
-X-Received: by 2002:ac8:22c4:: with SMTP id g4mr4076060qta.45.1575484026971;
-        Wed, 04 Dec 2019 10:27:06 -0800 (PST)
-Received: from localhost.localdomain ([177.220.176.179])
-        by smtp.gmail.com with ESMTPSA id c6sm4086905qka.111.2019.12.04.10.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 10:27:05 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 24F79C39A2; Wed,  4 Dec 2019 15:27:03 -0300 (-03)
-Date:   Wed, 4 Dec 2019 15:27:03 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>
-Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
-Message-ID: <20191204182703.GA5057@localhost.localdomain>
-References: <20191127001313.183170-1-zenczykowski@gmail.com>
- <20191127131407.GA377783@localhost.localdomain>
- <CANP3RGePJ+z1t8oq-QS1tcwEYWanPHPargKpHkZZGiT4jMa6xw@mail.gmail.com>
- <20191127230001.GO388551@localhost.localdomain>
- <CAHo-OowLw93a8P=RR=2jXQS92d118L3bNmBrUfPSBP4CDq_Ctg@mail.gmail.com>
+        id S1729642AbfLDS1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 13:27:41 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40604 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729345AbfLDS1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:27:40 -0500
+Received: from [194.230.159.159] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1icZN2-0004rF-GG; Wed, 04 Dec 2019 19:27:28 +0100
+Date:   Wed, 4 Dec 2019 19:27:27 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191204182727.GA29780@localhost.localdomain>
+References: <20191202131847.30837-1-jolsa@kernel.org>
+ <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+ <87wobepgy0.fsf@toke.dk>
+ <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+ <877e3cpdc9.fsf@toke.dk>
+ <CAADnVQJeC9FQDXhv34KTiFSRq-=x4cBaspj-bTXdQ1=7prphcA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHo-OowLw93a8P=RR=2jXQS92d118L3bNmBrUfPSBP4CDq_Ctg@mail.gmail.com>
+In-Reply-To: <CAADnVQJeC9FQDXhv34KTiFSRq-=x4cBaspj-bTXdQ1=7prphcA@mail.gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25653/Wed Dec  4 10:46:42 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 29, 2019 at 09:00:19PM +0100, Maciej Å»enczykowski wrote:
-...
-> I'm of the opinion that SELinux and other security policy modules
-> should be reserved for things related to system wide security policy.
-> Not for things that are more along the lines of 'functionality'.
-
-Makes sense.
-
+On Wed, Dec 04, 2019 at 09:39:59AM -0800, Alexei Starovoitov wrote:
+> On Wed, Dec 4, 2019 at 2:58 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> > > On Mon, Dec 2, 2019 at 1:15 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > >>
+> > >> Ah, that is my mistake: I was getting dynamic libbpf symbols with this
+> > >> approach, but that was because I had the version of libbpf.so in my
+> > >> $LIBDIR that had the patch to expose the netlink APIs as versioned
+> > >> symbols; so it was just pulling in everything from the shared library.
+> > >>
+> > >> So what I was going for was exactly what you described above; but it
+> > >> seems that doesn't actually work. Too bad, and sorry for wasting your
+> > >> time on this :/
+> > >
+> > > bpftool is currently tightly coupled with libbpf and very likely
+> > > in the future the dependency will be even tighter.
+> > > In that sense bpftool is an extension of libbpf and libbpf is an extension
+> > > of bpftool.
+> > > Andrii is working on set of patches to generate user space .c code
+> > > from bpf program.
+> > > bpftool will be generating the code that is specific for the version
+> > > bpftool and for
+> > > the version of libbpf. There will be compatibility layers as usual.
+> > > But in general the situation where a bug in libbpf is so criticial
+> > > that bpftool needs to repackaged is imo less likely than a bug in
+> > > bpftool that will require re-packaging of libbpf.
+> > > bpftool is quite special. It's not a typical user of libbpf.
+> > > The other way around is more correct. libbpf is a user of the code
+> > > that bpftool generates and both depend on each other.
+> > > perf on the other side is what typical user space app that uses
+> > > libbpf will look like.
+> > > I think keeping bpftool in the kernel while packaging libbpf
+> > > out of github was an oversight.
+> > > I think we need to mirror bpftool into github/libbpf as well
+> > > and make sure they stay together. The version of libbpf == version of bpftool.
+> > > Both should come from the same package and so on.
+> > > May be they can be two different packages but
+> > > upgrading one should trigger upgrade of another and vice versa.
+> > > I think one package would be easier though.
+> > > Thoughts?
+> >
+> > Yup, making bpftool explicitly the "libbpf command line interface" makes
+> > sense and would help clarify the relationship between the two. As Jiri
+> > said, we are already moving in that direction packaging-wise...
 > 
-> Also selinux has 'permissive' mode which causes the system to ignore
-> all selinux access controls (in favour of just logging) and this is
-> what is commonly used during development (because it's such a pain to
-> work with).
+> Awesome. Let's figure out the logistics.
+> Should we do:
+> git mv tools/bpf/bpftool/ tools/lib/bpf/
+> and appropriate adjustment to Makefiles ?
+> or keep it where it is and only add to
+> https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh ?
 
-Agree, this would be a big problem.
-IOW, "you don't have permission to access to this" != "you just can't use this, no
-matter what"
-
-FWIW, I rest my case :-)
+I'd be in preference of the latter aka keeping where it is.
 
 Thanks,
-Marcelo
+Daniel
