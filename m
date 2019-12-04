@@ -2,145 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4B7112ED6
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 16:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 430B1112FB2
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:11:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728372AbfLDPoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 10:44:09 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38957 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728230AbfLDPoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 10:44:07 -0500
-Received: by mail-pf1-f194.google.com with SMTP id 2so39294pfx.6
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 07:44:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=jUZWUL7pslZB3vmqcQ4lBzsC2xFiC+Nbq0yg0LFW440=;
-        b=syfzt65nf8ZBjQAsW+ohkwGzSgqbySrX4jG5aSaTcJRlvqX3AyimGFbAIdR8p5/tuQ
-         p971M4mzK98gOUs11gO36Q/DTXNOq7WH/7rS83Q+7I4M29+z0QhzB9uJL9J6E6se8lol
-         3WyzKF6T2xsJVyREF4ZNnJukD64ammZnYkpuqtlCY885jTqYMtOZSmnqtODSh6V1gW7y
-         sY2/8rUI06bdkWwfxD6UP+L2k2BpcNUUNeaUjE5AIFJVGdQ+cWn0as2PM6o4m1XmlTd5
-         rZSKBAZZStEEVVWC2np5tDFzE3zRoUY1RM7hofx7dcvjSyOmGSOwz/RVo5M953Mlthwe
-         BGkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=jUZWUL7pslZB3vmqcQ4lBzsC2xFiC+Nbq0yg0LFW440=;
-        b=PU8YnR4auAxXp4GRnu7citZcrG2Q3+V2wbt0rWpmykM/5UHkf2a2/9izBbugizTAwS
-         EQ3w0oZEgcGYTIbXxTKkq+ySg703sqxMGinFBKmDWuoCmXTFRq8rYAdLCUppv0i4a6nF
-         0RKQFZATij3wSZYCPWA80pRTIaLk7C7V8BbgY1WOCGA//24T052PTG+GnAeAFRcDcukI
-         4VVDZ3j86d/AhuiuEH7fpwhZ9qLRHCd5tOaxQI1vjGqpZbTZjJmKubxVbV8CDLxKzYFB
-         7G5Zle/OWACf006st2z1pvhQfZsxposp/GFoeo3Vom7FVzL4So5YX1MuuxIRIqldSayG
-         xzdA==
-X-Gm-Message-State: APjAAAWqfkyHPiGFZRDM8+obNoGZM6zmtptFRwerj0nk2ZQN1iezt1Zq
-        kriNZ9zTrLAVasFTnhfhBhEtTaJ8
-X-Google-Smtp-Source: APXvYqz0bF1OnXceyBieiCjTkp15zGJEQ58hRXirikeuvSf33A2XPhrVyTq4ZujAa7Yefpix3w7Gaw==
-X-Received: by 2002:a63:d543:: with SMTP id v3mr2350301pgi.285.1575474246721;
-        Wed, 04 Dec 2019 07:44:06 -0800 (PST)
-Received: from martin-VirtualBox.dlink.router ([122.182.209.142])
-        by smtp.gmail.com with ESMTPSA id 2sm7968749pgo.79.2019.12.04.07.44.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 04 Dec 2019 07:44:06 -0800 (PST)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        martin.varghese@nokia.com
-Subject: [PATCH net] Fixed updating of ethertype in function skb_mpls_push
-Date:   Wed,  4 Dec 2019 21:13:59 +0530
-Message-Id: <1575474239-4721-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1728374AbfLDQLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 11:11:15 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:48462 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727912AbfLDQLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 11:11:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=72LNbJrxc9NI8EQkst4zx3kMXmKGJx6Z/v7rruWC6F4=; b=Dho7oe/xPqW/+92cUdOOQdss5
+        4v7DPRlIQ/N+zdLdeHA5TTlkPd8hvvyn6BLDy/s+ZjbXRj/ON8avYZ7JjWlcVaNNao+dI/o6bOwhP
+        Dzyt+m6odRb+AHboYFEPLOTegx2jYevNrsdch2w+zfLr6MaXb+q+i06raBMpjCFjtFUb8j/D35Qst
+        mXkaSzdkE1kuSBsSNAK918xniqhWSEyVfBq0xUmrZmEr1ysF7p/YNWsFcX4Pi39EPcUH2+MW+YMzM
+        7pnilJ4OS7D4UCnH2jLxC1ERSkClK7zS+UjRkLV5NyHuRCXtMBXVYITTHzZPJ0MC0Cj3ygaPvlcsY
+        pPMkNsqaQ==;
+Received: from [2601:1c0:6280:3f0::3deb]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1icXFA-0003VC-Ta; Wed, 04 Dec 2019 16:11:12 +0000
+Subject: Re: linux-next: Tree for Dec 3 (switchdev & TI_CPSW_SWITCHDEV)
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+References: <20191203155405.31404722@canb.auug.org.au>
+ <58aebf62-54f8-9084-147b-801ea65327bb@infradead.org>
+ <f2700b07-df9b-94ce-0323-a4fece236838@ti.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <af707faa-7f95-0d6f-3f72-1746161e09a8@infradead.org>
+Date:   Wed, 4 Dec 2019 08:11:11 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
+MIME-Version: 1.0
+In-Reply-To: <f2700b07-df9b-94ce-0323-a4fece236838@ti.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+On 12/4/19 7:35 AM, Grygorii Strashko wrote:
+> 
+> 
+> On 04/12/2019 01:43, Randy Dunlap wrote:
+>> On 12/2/19 8:54 PM, Stephen Rothwell wrote:
+>>> Hi all,
+>>>
+>>> Please do not add any material for v5.6 to your linux-next included
+>>> trees until after v5.5-rc1 has been released.
+>>>
+>>> Changes since 20191202:
+>>
+>> I am seeing this (happens to be on i386; I doubt that it matters):
+>> CONFIG_COMPILE_TEST=y
+>>
+>>
+>> WARNING: unmet direct dependencies detected for NET_SWITCHDEV
+>>    Depends on [n]: NET [=y] && INET [=n]
+>>    Selected by [y]:
+>>    - TI_CPSW_SWITCHDEV [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_TI [=y] && (ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST [=y])
+>>
+>> because TI_CPSW_SWITCHDEV blindly selects NET_SWITCHDEV even though
+>> INET is not set/enabled, while NET_SWITCHDEV depends on INET.
+>>
+>> However, the build succeeds, including net/switchdev/*.
+>>
+>> So why does NET_SWITCHDEV depend on INET?
+>>
+>> It looks like TI_CPSW_SWITCHDEV should depend on INET (based on the
+>> Kconfig rules), but in practice it doesn't seem to matter to the build.
+>>
+> 
+> Thanks for reporting this. I'd like to ask for some advice of how to proceed?
+> a) change it to "depends on NET_SWITCHDEV" (as it's done in other drivers),
+> but this will require to add NET_SWITCHDEV in defconfig
 
-The skb_mpls_push was not updating ethertype of an ethernet packet if
-the packet was originally received from a non ARPHRD_ETHER device.
+IMO TI_CPSW_SWITCHDEV should depend on NET_SWITCHDEV, as other drivers do that.
 
-In the below OVS data path flow, since the device corresponding to
-port 7 is an l3 device (ARPHRD_NONE) the skb_mpls_push function does
-not update the ethertype of the packet even though the previous
-push_eth action had added an ethernet header to the packet.
+That will require to add NET_SWITCHDEV in what defconfig?
+To me, it just means that whoever is doing the kernel config must enable/set
+NET_SWITCHDEV first, same as other drivers that depend on NET_SWITCHDEV.
 
-recirc_id(0),in_port(7),eth_type(0x0800),ipv4(tos=0/0xfc,ttl=64,frag=no),
-actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
-push_mpls(label=13,tc=0,ttl=64,bos=1,eth_type=0x8847),4
+> b) change it to "imply NET_SWITCHDEV", but then NET_SWITCHDEV can be switched off
+> manually or by random build and cause build failure of cpsw_new.
+> To fix build below diff can be used, but TI_CPSW_SWITCHDEV will not be functional
+> 
+> ---
+> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+> index 71215db7934b..22e8fc548d48 100644
+> --- a/drivers/net/ethernet/ti/cpsw_new.c
+> +++ b/drivers/net/ethernet/ti/cpsw_new.c
+> @@ -368,8 +368,9 @@ static void cpsw_rx_handler(void *token, int len, int status)
+>                 page_pool_recycle_direct(pool, page);
+>                 goto requeue;
+>         }
+> -
+> +#ifdef CONFIG_NET_SWITCHDEV
+>         skb->offload_fwd_mark = priv->offload_fwd_mark;
+> +#endif
+>         skb_reserve(skb, headroom);
+>         skb_put(skb, len);
+>         skb->dev = ndev;
+> 
+> Thank you.
+> 
 
-Fixes: 8822e270d697 ("net: core: move push MPLS functionality from OvS to core helper")
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
- include/linux/skbuff.h    | 2 +-
- net/core/skbuff.c         | 4 ++--
- net/openvswitch/actions.c | 3 ++-
- net/sched/act_mpls.c      | 3 ++-
- 4 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 70204b9..6d81b99 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3529,7 +3529,7 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
- int skb_vlan_pop(struct sk_buff *skb);
- int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
- int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
--		  int mac_len);
-+		  int mac_len, bool ethernet);
- int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
- 		 bool ethernet);
- int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 312e80e..973a71f 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5484,7 +5484,7 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
-  * Returns 0 on success, -errno otherwise.
-  */
- int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
--		  int mac_len)
-+		  int mac_len, bool ethernet)
- {
- 	struct mpls_shim_hdr *lse;
- 	int err;
-@@ -5515,7 +5515,7 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 	lse->label_stack_entry = mpls_lse;
- 	skb_postpush_rcsum(skb, lse, MPLS_HLEN);
- 
--	if (skb->dev && skb->dev->type == ARPHRD_ETHER)
-+	if (ethernet)
- 		skb_mod_eth_type(skb, eth_hdr(skb), mpls_proto);
- 	skb->protocol = mpls_proto;
- 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 91e2100..4c83954 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -166,7 +166,8 @@ static int push_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- 	int err;
- 
- 	err = skb_mpls_push(skb, mpls->mpls_lse, mpls->mpls_ethertype,
--			    skb->mac_len);
-+			    skb->mac_len,
-+			    ovs_key_mac_proto(key) == MAC_PROTO_ETHERNET);
- 	if (err)
- 		return err;
- 
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index 47e0cfd..2552226 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -83,7 +83,8 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 		break;
- 	case TCA_MPLS_ACT_PUSH:
- 		new_lse = tcf_mpls_get_lse(NULL, p, !eth_p_mpls(skb->protocol));
--		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, mac_len))
-+		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, mac_len,
-+				  skb->dev && skb->dev->type == ARPHRD_ETHER))
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_MODIFY:
 -- 
-1.8.3.1
-
+~Randy
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
