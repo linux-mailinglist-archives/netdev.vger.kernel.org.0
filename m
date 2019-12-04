@@ -2,127 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E2D4112136
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 02:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04D9411214E
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 03:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbfLDB6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 20:58:32 -0500
-Received: from mail-eopbgr50070.outbound.protection.outlook.com ([40.107.5.70]:24997
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726131AbfLDB6c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 3 Dec 2019 20:58:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hZjpvd72lvU5ipLflS/fe3T9NL2EowHXgrVaJm4mOLQQhGZBWDtBhWtPr4RmGqPZBdW2fdQA5f8rGjFXHLSHtkPHrSlIPRdRqR2e4WZyEu+OwH6cBPL27Aas0CikkWALqjztWJCyUntUM756dsnMo+GxNkl1YoH0KMCRuMVTrFR7ejEXFoJZgTlghAKtj9jcNYIcP9+WS+Tqah6BgO6+AvQhW8cKhhVhd8qcfdnTGuAcbiLJH79jPpBcX34KKw/eZdSijhMZG4Q5TeGq3AWSQeHKeGyu+1ytrJ5xDsXgjz3MJUEUD4qWOT9SdrlfMbKytjEBAly+KjBvLu2yIPNGHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nqWFtamH5j9itVYjriZmXRp7Ail4OnEBrjPOd77ATo=;
- b=A0YXC21rq4LnAbtWNcIwxjXC/FZZaRJ+TJZY97uvZOVUX+xDnk7KfDHIoqlErVzUUYOmrdKBbf8sKPYjuLp/OSFFEyjNCSKQtvH0bJveybXyX40DqNWwhKiruzs+Pm9vwTrfgEbsqca/iqsXgTS7uVqX1e2O7Ivmlr9KQ7lW6/vmilWj9j8xl+7tfUarVGfc+vl9LN01NPQ9w1Nb7XRTpE0acu1++Ht+9ukaHvYDKJvjGktCaToSx8XDh30IIwmb0BtdDKbuNk2BXUoP7BTt9aJFX368QO0Ffl4rY2htKdg51WUXzvg8F+z+2J9zuNolKezJoQt1qdH5itJbZETmnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nqWFtamH5j9itVYjriZmXRp7Ail4OnEBrjPOd77ATo=;
- b=CGlnN/OgBiLP6LbW5wNItV8d0CffZ12MwOwyaIZpMpi4n8VVt6sZ42rBpQe6FW+s2rEpTLxsppF3GUhLudXRQaYHvNNP5Rh5wsE4lIAo7SnzEsR3aJwJIU8sauLychzV+Z+DbgmiyIGd2W6SfYQvLABRT+Nyc292et/szRbwxZE=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4665.eurprd04.prod.outlook.com (52.135.139.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.22; Wed, 4 Dec 2019 01:58:24 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.003; Wed, 4 Dec 2019
- 01:58:24 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
-Thread-Topic: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
-Thread-Index: AQHVpOdz4P6zsP3HCk29mcugpy847aeos2gAgACJGRA=
-Date:   Wed, 4 Dec 2019 01:58:24 +0000
-Message-ID: <DB7PR04MB46183730127339DAC15ABF33E65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-2-qiangqing.zhang@nxp.com>
- <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
-In-Reply-To: <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: dda10bab-0840-4d97-08d8-08d7785d729d
-x-ms-traffictypediagnostic: DB7PR04MB4665:|DB7PR04MB4665:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB4665E1E05BFFD3B4797DACCBE65D0@DB7PR04MB4665.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0241D5F98C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(136003)(376002)(39860400002)(396003)(13464003)(189003)(199004)(52536014)(316002)(71190400001)(99286004)(478600001)(256004)(11346002)(446003)(54906003)(110136005)(64756008)(33656002)(966005)(71200400001)(2201001)(14454004)(66556008)(66476007)(86362001)(8936002)(4326008)(66446008)(6436002)(55016002)(6246003)(229853002)(74316002)(2501003)(5660300002)(305945005)(6306002)(9686003)(6116002)(53546011)(7736002)(81166006)(3846002)(25786009)(26005)(81156014)(76176011)(102836004)(186003)(7696005)(8676002)(76116006)(66946007)(6506007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4665;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YKbtEIbtyfFQC4bO9VYDnFUnG4yrN8v+qHT5PmrZtw5LsGFnJe72opZuzPwLFEqluHYDRtcNBW+QByVSyJl/tV+Fc44qH2PmdlvffH1HHhhoAsOsVYUoGePYFeVg7y24o7aivmaRPNeaqEDRZkX8YN91JYT6VKKaSPTf96xJArvubNl1yJM4STvvHljKjYzg9QZ9nd6in3j7kw9WzDsDGQCJJkZqgxTEzY6csIH5AczwadIKCLUTjLaQ4OqGG5ej0BYt4Y3Rh1I2rmzR3eoVYfy52/Wh0vg88PXLoZ+2I0VBKIbvfibvT813IrIhJA9pPLck8jvQjdIlkeijg87neU0N871AFH514ruaMOpSf+RaQYPaUHuFCjG9kOs5ssZkVgcdSMn5vWqGGXAvRBvq5uSi9BE8AoNAzUSzUIMzUpEBdsPR18oQo+bQS0fcRyOVUO3nUHF+zoT9qmqVS8d1CzKr8z899xOrmD05s6hxAlvTXB9kgo4VLeyBP9CWNw00u6AsODJTJdlNcWQ58u8XwwL2f5+R4xC762G7QKDT92w=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726856AbfLDCMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 21:12:22 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:34511 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbfLDCMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 21:12:22 -0500
+Received: by mail-pj1-f66.google.com with SMTP id t21so2309675pjq.1
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 18:12:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=d8JP/FWT9gtWd9H2H4O5LfJoPl2j9Vqp3m7uUhjqRAA=;
+        b=ivwo6uEosK2WXJMYf1kF9+C5YJaEKZNsDQnUA21bt2H0JUQNlBbdyzdOsoz2RrRFf1
+         AxJAe6b6IMUGUA361FZF1U1X/UckH9wq/pD8eMaZlR+0RCJItWtjfaMpkqhjfx+gh5KE
+         9ppxMwor9PjO4P2W1VRZFHxxFyLU3vLb5UWNP9qN+hiis0ofhSO5N9xcVP6gv4Y0JjMQ
+         0CM/tMNOkQvaoFWKB6Tt913MN1K4MDsAQ8CuIm/QsvY2Yxflm5FTwQmINYL91Mg00cWQ
+         CvzFQhMXW4qDjgH3CTLmgIK/IGZeSZJ93NsgXget0tGWVYYYVv2VIUNQpjGTZ0iD/P8+
+         NhYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=d8JP/FWT9gtWd9H2H4O5LfJoPl2j9Vqp3m7uUhjqRAA=;
+        b=dHH7tyantdJvNwUAAPE5tc8vrGjZpQ/eOjMLa0SH0zEhBY2I8UGT6ujv1U+RjekR6R
+         XRuwBOpHctbnvCZciK3RRHTybqilUrvT2v8No31Z6zXareu4IhqNIR1XLO4WMUvfnTLm
+         5/xqo1tUGcmfM6gIlLxyRnd4oJmkOkVrM8VCE+J7hg6iScomCvLlkbnzfvvOZ8G7k6QR
+         zDJxpnxK/kjwen/6Vyt2BcWbbIJqO20GMCXOjphrEdSTcvnE8dTj8c1QFGLq5WGe514G
+         Hi6pHGVTV1Ck8VQj+i86aB+zzurwX1by9WXpmTIBHXUN2NhBPsGhMxlZODyApFqNOjh0
+         hsbw==
+X-Gm-Message-State: APjAAAU9uKv1WtE0CPF543TVS1Grcm+7SlK1ZJsZd4B76F2QItfxk4Cm
+        Vw7zqjL5haN6+L0foZCtV1fdFw==
+X-Google-Smtp-Source: APXvYqxPLtrgtC/2nK5gZd4mh1BWVrXX69PjY5JKYquNAi6t83mpCsQom1yzD7QBmPrPxaduwk3hPQ==
+X-Received: by 2002:a17:902:8342:: with SMTP id z2mr1067626pln.181.1575425541534;
+        Tue, 03 Dec 2019 18:12:21 -0800 (PST)
+Received: from Iliass-MacBook-Pro.local ([50.225.178.238])
+        by smtp.gmail.com with ESMTPSA id k5sm4323340pju.14.2019.12.03.18.12.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Dec 2019 18:12:20 -0800 (PST)
+Date:   Tue, 3 Dec 2019 18:12:15 -0800
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: linux-master: WARNING: suspicious RCU usage in
+ mem_allocator_disconnect
+Message-ID: <20191204021215.GA16019@Iliass-MacBook-Pro.local>
+References: <09e42c75-228a-f390-abd5-43e8f6ae70f2@ti.com>
+ <c2de8927-7bca-612f-cdfd-e9112fee412a@ti.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dda10bab-0840-4d97-08d8-08d7785d729d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2019 01:58:24.5450
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pQY8ABGVhoPQP+n6PnWBkSlpLHaRUIFOzyaqWvGPJykrToIXDwJfUmcDCNoXbvxgEbiyw38ej1RiDHJ4TpI5kw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4665
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c2de8927-7bca-612f-cdfd-e9112fee412a@ti.com>
+User-Agent: Mutt/1.9.5 (2018-04-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
-IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMTnlubQxMuaciDTml6UgMToyNQ0KPiBU
-bzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IHNlYW5AZ2Vhbml4LmNv
-bTsNCj4gbGludXgtY2FuQHZnZXIua2VybmVsLm9yZw0KPiBDYzogZGwtbGludXgtaW14IDxsaW51
-eC1pbXhAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCBWMiAxLzRdIGNhbjogZmxleGNhbjogZml4IGRlYWRsb2NrIHdoZW4gdXNpbmcgc2VsZiB3
-YWtldXANCg0KWy4uLl0NCj4gPiAgZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyB8IDE5ICsrKysr
-KysrKysrLS0tLS0tLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDgg
-ZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhj
-YW4uYyBiL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCj4gPiBpbmRleCAyZWZhMDYxMTlmNjgu
-LjIyOTc2NjNjYWNiMiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5j
-DQo+ID4gKysrIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KPiA+IEBAIC0xMzQsOCArMTM0
-LDcgQEANCj4gPiAgCShGTEVYQ0FOX0VTUl9FUlJfQlVTIHwgRkxFWENBTl9FU1JfRVJSX1NUQVRF
-KSAgI2RlZmluZQ0KPiA+IEZMRVhDQU5fRVNSX0FMTF9JTlQgXA0KPiA+ICAJKEZMRVhDQU5fRVNS
-X1RXUk5fSU5UIHwgRkxFWENBTl9FU1JfUldSTl9JTlQgfCBcDQo+ID4gLQkgRkxFWENBTl9FU1Jf
-Qk9GRl9JTlQgfCBGTEVYQ0FOX0VTUl9FUlJfSU5UIHwgXA0KPiA+IC0JIEZMRVhDQU5fRVNSX1dB
-S19JTlQpDQo+ID4gKwkgRkxFWENBTl9FU1JfQk9GRl9JTlQgfCBGTEVYQ0FOX0VTUl9FUlJfSU5U
-KQ0KPiANCj4gV2h5IGRvIHlvdSByZW1vdmUgdGhlIEZMRVhDQU5fRVNSX1dBS19JTlQgZnJvbSB0
-aGUNCj4gRkxFWENBTl9FU1JfQUxMX0lOVD8NCj4gDQo+ID4NCj4gPiAgLyogRkxFWENBTiBpbnRl
-cnJ1cHQgZmxhZyByZWdpc3RlciAoSUZMQUcpIGJpdHMgKi8NCj4gPiAgLyogRXJyYXRhIEVSUjAw
-NTgyOSBzdGVwNzogUmVzZXJ2ZSBmaXJzdCB2YWxpZCBNQiAqLyBAQCAtOTYwLDYNCj4gPiArOTU5
-LDEyIEBAIHN0YXRpYyBpcnFyZXR1cm5fdCBmbGV4Y2FuX2lycShpbnQgaXJxLCB2b2lkICpkZXZf
-aWQpDQo+ID4NCj4gPiAgCXJlZ19lc3IgPSBwcml2LT5yZWFkKCZyZWdzLT5lc3IpOw0KPiA+DQo+
-ID4gKwkvKiBBQ0sgd2FrZXVwIGludGVycnVwdCAqLw0KPiA+ICsJaWYgKHJlZ19lc3IgJiBGTEVY
-Q0FOX0VTUl9XQUtfSU5UKSB7DQo+ID4gKwkJaGFuZGxlZCA9IElSUV9IQU5ETEVEOw0KPiA+ICsJ
-CXByaXYtPndyaXRlKHJlZ19lc3IgJiBGTEVYQ0FOX0VTUl9XQUtfSU5ULCAmcmVncy0+ZXNyKTsN
-Cj4gPiArCX0NCj4gPiArDQo+IA0KPiBJZiBGTEVYQ0FOX0VTUl9XQUtfSU5UIHN0YXlzIGluIEZM
-RVhDQU5fRVNSX0FMTF9JTlQsIHlvdSBkb24ndCBuZWVkDQo+IHRoYXQgZXhwbGljaXQgQUNLIGhl
-cmUuDQoNCkhpIE1hcmMsDQoNCkkgcmVtb3ZlIHRoZSBGTEVYQ0FOX0VTUl9XQUtfSU5UIGZyb20g
-dGhlIEZMRVhDQU5fRVNSX0FMTF9JTlQgc2luY2UgRkxFWENBTl9FU1JfQUxMX0lOVCBpcyBmb3IN
-CmFsbCBidXMgZXJyb3IgYW5kIHN0YXRlIGNoYW5nZSBJUlEgc291cmNlcywgd2FrZXVwIGludGVy
-cnVwdCBkb2VzIG5vdCBiZWxvbmcgdG8gdGhlc2UuIElmIHlvdSB0aGluayB0aGlzIGRvZXMNCm5v
-dCBuZWVkLCBJIGNhbiByZW1vdmUgdGhpcyBjaGFuZ2UuDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtp
-bSBaaGFuZw0KPiBNYXJjDQo+IA0KPiAtLQ0KPiBQZW5ndXRyb25peCBlLksuICAgICAgICAgICAg
-ICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAgICAgICB8DQo+IEVtYmVkZGVkIExpbnV4ICAg
-ICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0cm9uaXguZGUgIHwNCj4gVmVydHJl
-dHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQaG9uZTogKzQ5LTIzMS0yODI2LTkyNCAgICAg
-fA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4NiB8IEZheDogICArNDktNTEyMS0y
-MDY5MTctNTU1NSB8DQoNCg==
+Hi Grygorii, 
+
+
+On Tue, Dec 03, 2019 at 01:28:37PM +0200, Grygorii Strashko wrote:
+> 
+> 
+> On 03/12/2019 12:28, Grygorii Strashko wrote:
+> > Hi All,
+> > 
+> > While placing intf down I'm getting below splat with debug options enabled.
+> > Not sure how to fix it, so will be appreciated for any help.\
+> 
+> And it seems introduced by commit:
+> 
+Sorry for the late response, i am on a trip. I'll try to replciate it once i am
+back home next week
+
+> commit c3f812cea0d7006469d1cf33a4a9f0a12bb4b3a3
+> Author: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Date:   Thu Nov 14 14:13:00 2019 -0800
+> 
+>     page_pool: do not release pool until inflight == 0.
+> 
+> 
+> > 
+> > 
+> > 
+> > =========================================================
+> > [  333.933896]
+> > [  333.935511] =============================
+> > [  333.939552] WARNING: suspicious RCU usage
+> > [  333.943724] 5.4.0-08849-ga6eb3c7b339b-dirty #40 Not tainted
+> > [  333.949335] -----------------------------
+> > [  333.953445] ./include/linux/rcupdate.h:273 Illegal context switch in RCU read-side critical section!
+> > [  333.962698]
+> > [  333.962698] other info that might help us debug this:
+> > [  333.962698]
+> > [  333.970752]
+> > [  333.970752] rcu_scheduler_active = 2, debug_locks = 1
+> > [  333.977391] 2 locks held by ifconfig/1007:
+> > [  333.981520]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
+> > [  333.988534]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
+> > [  333.996939]
+> > [  333.996939] stack backtrace:
+> > [  334.001334] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
+> > [  334.009733] Hardware name: Generic DRA72X (Flattened Device Tree)
+> > [  334.015878] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
+> > [  334.023675] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
+> > [  334.031038] [<c09f9e08>] (dump_stack) from [<c016e4a4>] (___might_sleep+0x1e8/0x2bc)
+> > [  334.038834] [<c016e4a4>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
+> > [  334.046716] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
+> > [  334.054774] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
+> > [  334.063966] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
+> > [  334.073242] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
+> > [  334.081822] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
+> > [  334.090663] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
+> > [  334.099331] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
+> > [  334.107475] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
+> > [  334.116053] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
+> > [  334.124545] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
+> > [  334.132775] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
+> > [  334.140483] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
+> > [  334.147929] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
+> > [  334.155461] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
+> > [  334.162905] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
+> > [  334.170781] Exception stack(0xed517fa8 to 0xed517ff0)
+> > [  334.175870] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
+> > [  334.184099] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
+> > [  334.192325] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
+> > [  334.197604] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:938
+> > [  334.206157] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1007, name: ifconfig
+> > [  334.214274] 2 locks held by ifconfig/1007:
+> > [  334.218401]  #0: c10b18ec (rtnl_mutex){+.+.}, at: devinet_ioctl+0xc4/0x850
+> > [  334.225407]  #1: c103e838 (rcu_read_lock){....}, at: rhashtable_walk_start_check+0x0/0x3dc
+> > [  334.233813] CPU: 0 PID: 1007 Comm: ifconfig Not tainted 5.4.0-08849-ga6eb3c7b339b-dirty #40
+> > [  334.242212] Hardware name: Generic DRA72X (Flattened Device Tree)
+> > [  334.248351] [<c0113330>] (unwind_backtrace) from [<c010d23c>] (show_stack+0x10/0x14)
+> > [  334.256147] [<c010d23c>] (show_stack) from [<c09f9e08>] (dump_stack+0xe4/0x11c)
+> > [  334.263506] [<c09f9e08>] (dump_stack) from [<c016e464>] (___might_sleep+0x1a8/0x2bc)
+> > [  334.271300] [<c016e464>] (___might_sleep) from [<c0a17bd0>] (__mutex_lock+0x38/0xa18)
+> > [  334.279181] [<c0a17bd0>] (__mutex_lock) from [<c0a185cc>] (mutex_lock_nested+0x1c/0x24)
+> > [  334.287238] [<c0a185cc>] (mutex_lock_nested) from [<c0858208>] (mem_allocator_disconnect+0xf8/0x288)
+> > [  334.296427] [<c0858208>] (mem_allocator_disconnect) from [<c085df50>] (page_pool_release+0x230/0x3b4)
+> > [  334.305703] [<c085df50>] (page_pool_release) from [<c085e12c>] (page_pool_destroy+0x58/0x11c)
+> > [  334.314281] [<c085e12c>] (page_pool_destroy) from [<c0771554>] (cpsw_destroy_xdp_rxqs+0x88/0xa0)
+> > [  334.323122] [<c0771554>] (cpsw_destroy_xdp_rxqs) from [<c0774638>] (cpsw_ndo_stop+0x100/0x10c)
+> > [  334.331788] [<c0774638>] (cpsw_ndo_stop) from [<c0814fdc>] (__dev_close_many+0xac/0x130)
+> > [  334.339931] [<c0814fdc>] (__dev_close_many) from [<c0824068>] (__dev_change_flags+0xc8/0x1f0)
+> > [  334.348510] [<c0824068>] (__dev_change_flags) from [<c08241a8>] (dev_change_flags+0x18/0x48)
+> > [  334.357000] [<c08241a8>] (dev_change_flags) from [<c08efc3c>] (devinet_ioctl+0x6c0/0x850)
+> > [  334.365228] [<c08efc3c>] (devinet_ioctl) from [<c08f2d98>] (inet_ioctl+0x1f8/0x3b4)
+> > [  334.372935] [<c08f2d98>] (inet_ioctl) from [<c07f4594>] (sock_ioctl+0x398/0x5f4)
+> > [  334.380380] [<c07f4594>] (sock_ioctl) from [<c03279b4>] (do_vfs_ioctl+0x9c/0xa08)
+> > [  334.387911] [<c03279b4>] (do_vfs_ioctl) from [<c0328384>] (ksys_ioctl+0x64/0x74)
+> > [  334.395355] [<c0328384>] (ksys_ioctl) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
+> > [  334.403231] Exception stack(0xed517fa8 to 0xed517ff0)
+> > [  334.408319] 7fa0:                   0007b4ec bee79d84 00000003 00008914 bee79a80 0007b4ec
+> > [  334.416548] 7fc0: 0007b4ec bee79d84 bee79d84 00000036 bee79c4c bee79c4c bee79a80 00000003
+> > [  334.424774] 7fe0: 0009d1ec bee79a14 0003214b b6e94f7c
+> > 
+> > 
+> > Enabled debug options:
+> > =================================================
+> > +CONFIG_LOCKUP_DETECTOR=y
+> > +CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC=y
+> > +CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=1
+> > +CONFIG_DETECT_HUNG_TASK=y
+> > +CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=300
+> > +CONFIG_BOOTPARAM_HUNG_TASK_PANIC=y
+> > +CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=1
+> > +CONFIG_PANIC_ON_OOPS=y
+> > +CONFIG_PANIC_ON_OOPS_VALUE=1
+> > +
+> > +CONFIG_DEBUG_RT_MUTEXES=y
+> > +CONFIG_DEBUG_PI_LIST=y
+> > +CONFIG_DEBUG_SPINLOCK=y
+> > +CONFIG_DEBUG_MUTEXES=y
+> > +CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
+> > +CONFIG_DEBUG_LOCK_ALLOC=y
+> > +CONFIG_PROVE_LOCKING=y
+> > +CONFIG_LOCKDEP=y
+> > +CONFIG_DEBUG_LOCKDEP=y
+> > +CONFIG_DEBUG_ATOMIC_SLEEP=y
+> > +CONFIG_DEBUG_LOCKING_API_SELFTESTS=n
+> > +CONFIG_STACKTRACE=y
+> > +CONFIG_DEBUG_BUGVERBOSE=y
+> > +CONFIG_DEBUG_LIST=y
+> > +CONFIG_DEBUG_SG=y
+> > +CONFIG_DEBUG_NOTIFIERS=y
+> > +
+> > +CONFIG_SPARSE_RCU_POINTER=y
+> > +CONFIG_RCU_CPU_STALL_TIMEOUT=60
+> > +CONFIG_RCU_CPU_STALL_INFO=y
+> > +CONFIG_RCU_TRACE=y
+> > +CONFIG_PROVE_RCU=y
+> > +CONFIG_PROVE_RCU_REPEATEDLY=y
+> > +
+> > +CONFIG_DMA_API_DEBUG=y
+> > 
+> > 
+> 
+> -- 
+> Best regards,
+> grygorii
