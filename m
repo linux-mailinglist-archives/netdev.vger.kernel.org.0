@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7E7113838
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 00:30:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F361411384B
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 00:37:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbfLDXaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 18:30:04 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:44212 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbfLDXaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 18:30:03 -0500
-Received: by mail-pj1-f68.google.com with SMTP id w5so446179pjh.11
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 15:30:03 -0800 (PST)
+        id S1728132AbfLDXhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 18:37:37 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38882 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728011AbfLDXhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 18:37:36 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x185so629258pfc.5
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 15:37:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=x4ldvkcJR4BHODKfG7i7sIj0NkfUyHTNL1WyoZOjiMQ=;
-        b=cu5jIFa0DgLNRTxro2rqr94C9Rltwkru5l1VNIum3NnZZStviFjgjHiqzZR2tsTEc0
-         8tKdNvAeCzOOxZZjWBbOGfg65YT5hUAEWaamT+679Gf2jJ5p9dVNxaHmiuC2taRq5MjM
-         /JKce6eFys/2MZuAcV7vLdVDR5wh4BE0f84CRhQeIB5focjjOVonxW45lJCTwd5UjO8n
-         w0XhLdP6Siq80hutiwgp1VozNE7rIv5We5DcjbwGGOeQ0Ar8yGg6S7codeVotqp+OnvG
-         3CCqPRW+2k5a0Irdd7JLSnK3pLHzXRG/NKLzBtLCWcTWclLxMYGQv6RwNPIV3i/Epgwy
-         NjJg==
+        bh=zg8KNX+CcJMt0CgGDsPaVXvk2JWoyFmQ57r8nK+k8Q0=;
+        b=1wMIAbc3fgZZwIUAdUJxdPZYBL2ClQsa0GZyWNeFixrj8CiQWpPCzuXlCdBvY+LaME
+         dL/VoODootWpGvl5Jx1Y1MGql5uP+yOy6EEdxHEfalAlfT03VKYX2ZHW1ZEDqIEtiIOQ
+         bcikv3plXJSFhndD2Et3f4KFDF+2IDBjFD9htfUBuUCqaj15vFa7pPJ5OeGDT/hwCV6A
+         nbg5bEhLXKnYWRmxEggqglY9PoKsZUH/VZnhVfxuwHuGzTRcjle1WicUSZu7VC4hlMTt
+         EHrdmDXmxpdFDZ7N9zERq5do+kZYXJq6rxCWtIUDFfsf+Oa0zeBwaRIHSE5FNgpfEytv
+         sEUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=x4ldvkcJR4BHODKfG7i7sIj0NkfUyHTNL1WyoZOjiMQ=;
-        b=PWuY8AHsXAPOMDe0zn+T7h02MSyYFjx6YSnzHZ0Ea348KVNRh/ujmBU2nLXe+o/Yld
-         pfQFOMhTPvU83ZjdxvpLG5Qv3vkouR/LFIZ8ZgVV+g8gdZoZCfXs7eQEMfhOq9CQx1PS
-         HppTwfDeoEhEjp/gEWbZVTBYRVTz1MACXkYwIlMQkCBZ6Golu2MpiPA6UvHFyZ5Uc01N
-         +Q2BN7+OjUwgy1LDMfMgsnHcyrdxfR13SYmgVEnrrLiqGvSXZ0rd12optuS/hkphi4eC
-         AtjevNghn3Qwnfj7bJGsLlEZ7OKwx2OdYJfkNF9/N7hvgW/F82pkkVmnhhV9I24rFd3l
-         M7nA==
-X-Gm-Message-State: APjAAAXcYbdGalKDnsVb9W7ha7eaMoJbfjGSFNNK4DIqBZ3eGPVSYEUG
-        9ViaCcwb3RZad1JrjpIAMo70sQF9ghH8NA==
-X-Google-Smtp-Source: APXvYqzn9tb5IfepCgvc7AMxFfwD6jcL7LOLfTj2HGXzbBwo2M6ExI5qC7hBbi9N1hid/PBzJVr/tA==
-X-Received: by 2002:a17:902:c509:: with SMTP id o9mr5899515plx.112.1575502202212;
-        Wed, 04 Dec 2019 15:30:02 -0800 (PST)
+        bh=zg8KNX+CcJMt0CgGDsPaVXvk2JWoyFmQ57r8nK+k8Q0=;
+        b=WnfQ2t5H6oPnJquMSMXTp2X/UmqOxJcO5NUoB7TJNdCDethFR3bxWbqRKwrG7lB84y
+         q82FPbAcS/ysV36Lk47rD2SC2exPS3oIsPb8yW8DImE3VKG609y+ks2bdCxvlWL1d30u
+         WfxV6RYJpJ5qXzmi0vF/bbFgUHga2yUB1wGz60Jk6a5J1xIOCnII4UvL/H3B9zOloKuQ
+         xlLngdrk8UUmc2lpWlypswH7lOozBi8aA5aDitigPd2osHklA3I7ClOivsdUPY8xPiti
+         dHwiWrTM0IsrQhRXTPkLAj0KOyaXuYKVHOG8NwT0OTqb0+yy6cpKDQ8//+Z/+G0nbTUt
+         lHmg==
+X-Gm-Message-State: APjAAAVxJoWJINLAQVMmYUNYgE2MqFT3m09xopHmDRMDHpGFCXBPGUV5
+        NdexGERDlb4/Xuh0kdta8JaIdqFaICulaA==
+X-Google-Smtp-Source: APXvYqwACpYC2YOQhh4qpaTzLwB1d8OrdYQqi/IALeCqBpeElqcCOfhIdBBDMqYS/QWDwrXnnqJ1hA==
+X-Received: by 2002:a63:e608:: with SMTP id g8mr6055573pgh.448.1575502655210;
+        Wed, 04 Dec 2019 15:37:35 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a3sm7451519pjh.31.2019.12.04.15.29.59
+        by smtp.gmail.com with ESMTPSA id i9sm9617510pfk.24.2019.12.04.15.37.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 15:30:00 -0800 (PST)
+        Wed, 04 Dec 2019 15:37:34 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next] tc: do not output newline in oneline mode
-Date:   Wed,  4 Dec 2019 15:29:52 -0800
-Message-Id: <20191204232952.30628-1-stephen@networkplumber.org>
+Subject: [PATCH v2 iproute2-next] tc: do not output newline in oneline mode
+Date:   Wed,  4 Dec 2019 15:37:26 -0800
+Message-Id: <20191204233726.3152-1-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,6 +63,8 @@ but several parts of tc aren't doing it right.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
+v2 - found more places that need changing
+
  tc/f_flower.c     | 66 +++++++++++++++++++++++++++++++----------------
  tc/m_csum.c       |  4 +--
  tc/m_ct.c         |  5 ++--
@@ -76,8 +78,10 @@ Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
  tc/m_xt.c         |  2 +-
  tc/q_cake.c       |  4 +--
  tc/q_fq_codel.c   |  3 ++-
- tc/tc_qdisc.c     |  2 +-
- 14 files changed, 72 insertions(+), 42 deletions(-)
+ tc/tc_filter.c    |  4 +--
+ tc/tc_qdisc.c     |  8 +++---
+ tc/tc_util.c      |  2 +-
+ 16 files changed, 78 insertions(+), 48 deletions(-)
 
 diff --git a/tc/f_flower.c b/tc/f_flower.c
 index a193c0eca22a..ce057a72cc7c 100644
@@ -500,11 +504,29 @@ index 376ac50da1a5..12ce3fbfd203 100644
  			st->qdisc_stats.new_flows_len);
  		print_uint(PRINT_ANY, "old_flows_len", " old_flows_len %u",
  			st->qdisc_stats.old_flows_len);
+diff --git a/tc/tc_filter.c b/tc/tc_filter.c
+index f7d2e4a66a35..dcddca77ef1b 100644
+--- a/tc/tc_filter.c
++++ b/tc/tc_filter.c
+@@ -364,11 +364,11 @@ int print_filter(struct nlmsghdr *n, void *arg)
+ 			close_json_object();
+ 		}
+ 	}
+-	print_string(PRINT_FP, NULL, "\n", NULL);
++	print_nl();
+ 
+ 	if (show_stats && (tb[TCA_STATS] || tb[TCA_STATS2])) {
+ 		print_tcstats_attr(fp, tb, " ", NULL);
+-		print_string(PRINT_FP, NULL, "\n", NULL);
++		print_nl();
+ 	}
+ 
+ 	close_json_object();
 diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
-index 17e399830a75..77aaaff6d220 100644
+index 17e399830a75..75a146721c40 100644
 --- a/tc/tc_qdisc.c
 +++ b/tc/tc_qdisc.c
-@@ -317,7 +317,7 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+@@ -317,11 +317,11 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
  	}
  	close_json_object();
  
@@ -513,6 +535,39 @@ index 17e399830a75..77aaaff6d220 100644
  
  	if (show_details && tb[TCA_STAB]) {
  		print_size_table(fp, " ", tb[TCA_STAB]);
+-		print_string(PRINT_FP, NULL, "\n", NULL);
++		print_nl();
+ 	}
+ 
+ 	if (show_stats) {
+@@ -329,12 +329,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 
+ 		if (tb[TCA_STATS] || tb[TCA_STATS2] || tb[TCA_XSTATS]) {
+ 			print_tcstats_attr(fp, tb, " ", &xstats);
+-			print_string(PRINT_FP, NULL, "\n", NULL);
++			print_nl();
+ 		}
+ 
+ 		if (q && xstats && q->print_xstats) {
+ 			q->print_xstats(q, fp, xstats);
+-			print_string(PRINT_FP, NULL, "\n", NULL);
++			print_nl();
+ 		}
+ 	}
+ 	close_json_object();
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index afdfc78f2e5b..879d74111679 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -857,7 +857,7 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
+ 
+ 		memcpy(&q, RTA_DATA(tbs[TCA_STATS_QUEUE]), MIN(RTA_PAYLOAD(tbs[TCA_STATS_QUEUE]), sizeof(q)));
+ 		if (!tbs[TCA_STATS_RATE_EST])
+-			print_string(PRINT_FP, NULL, "\n", "");
++			print_nl();
+ 		print_uint(PRINT_JSON, "backlog", NULL, q.backlog);
+ 		print_string(PRINT_FP, NULL, "%s", prefix);
+ 		print_string(PRINT_FP, NULL, "backlog %s",
 -- 
 2.20.1
 
