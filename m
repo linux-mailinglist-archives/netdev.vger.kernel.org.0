@@ -2,76 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13212113746
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 22:54:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D354F1137F1
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 00:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbfLDVye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 16:54:34 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:41733 "EHLO
+        id S1728132AbfLDXB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 18:01:58 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45889 "EHLO
         mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728011AbfLDVya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 16:54:30 -0500
-Received: by mail-lf1-f67.google.com with SMTP id m30so763720lfp.8
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 13:54:29 -0800 (PST)
+        with ESMTP id S1727989AbfLDXB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 18:01:58 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 203so861676lfa.12
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 15:01:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=VnhsCb+n6LgjC+6907Tb3B2Vl6EZOomyJ8tnp+TG/qc=;
-        b=sNHngkNWV9ev/PowIGAz1Y8jFs9+YDnaFQVf/lco03gsiAcIQu1SbZnuJ3nQdVH7NO
-         dqB3KDHH54WY/F8yOmZq7+XwbP3We2KsJhXSussbQI7WEkf2pJK9Dfv4VskpP8DP0xi9
-         RzokWdmqDSdtmSDaKdUMDRrvVxUrRdXp0gDizkbeHWwtxewzYwtw6aE5w/5hDpcO20SB
-         74FHt6IyhRWsBnQU/vFF7rWwOcznpjo77kfAOnzsGWoZ37J6sd+cfmNms7yTG4rlocFD
-         N1REEnbp/vd+gBJEzbLLWJqAMdZTJZ+uw1Sg2M976u4gSv6gz4dbBj3zq1DgrdBZ4xt+
-         T2eA==
+        bh=J0ucEi1G0QnviAHmx5pW9x6HCfetITK2+jAEtIBDfrI=;
+        b=jTQIKrnxHb/vY1zX7oguKswg6y2Sv/0RLFLCXXLBLnXxv+Mq8gGIViTnbLaifwF8QS
+         bS8o2l7KJnVGLsbTPSvJb7yzHApIt8X2ZaFyq1q16oumzSWVOQfAP4HC9mv868ouRM1O
+         05f2cS+n8ZB3TdYJs/drIK67c8yWqvSHYXL237lZ9Em8Jeqz8+8xjf9QVxXj78tpLNrQ
+         jKJdSboYvAK38WOwwmzbbMBXwTACGNAKA5d3Xd7ErwNM+eqOhGKs6HOJvEG3+KCzU6go
+         FWjQ0SUcpBy5SyPBhfw+YJ/jbD6rehZCIApmSBUOvapgn0rKsUKeB51W9ToTF+tXypv+
+         gZjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=VnhsCb+n6LgjC+6907Tb3B2Vl6EZOomyJ8tnp+TG/qc=;
-        b=EgwgO5GGjc8X0E4H4X46s0uUsxWMouniqwKglr/6ZsXhPkr64frvZK4oHuurWswSgQ
-         zu4XX4c+IB6dHjS+IhBaSBs8D4ZAhBcayJaSYX3PX+bH7Z18+9t+8w5sFIYVe2Oeyroi
-         XFsiv0aluXSinyd1pwwrjxdELc5jmBVBA2xjjUfw2zfQ3Myf363DNU/D6x8zZ/oXfdal
-         KU3+gx4J8LFnxLlqyRotvRY5PkLoQuQwXZwQdOXJAl8MxpwVKtg02nTZ78rt8EnHstnA
-         CixaU2DBJgpAXLv3Fabvuo+YQ+nwYkZLZaPxq1RWUR6tl7lO8ZDdgbP12fL+Be6KxVcF
-         rZsQ==
-X-Gm-Message-State: APjAAAU9VhpL13UvfeK1erAvOqrt7mu7U74S0D3txA5nZyMt3onP9k2S
-        tMfZvwtMFdF8tw1g2FPXjPP5Gg==
-X-Google-Smtp-Source: APXvYqzPvrDymPjXRh9qruHs8tBDH3UgArE45+g66WgCMyK1u3JpllpAjDPD+rE9wYXI6GOY+loWbw==
-X-Received: by 2002:a19:c382:: with SMTP id t124mr3210526lff.124.1575496468486;
-        Wed, 04 Dec 2019 13:54:28 -0800 (PST)
+        bh=J0ucEi1G0QnviAHmx5pW9x6HCfetITK2+jAEtIBDfrI=;
+        b=G65H0Lx0BQWlAhMC/vJw4GmTLYBS9InJjNEheOLXdzzrkFJE5cWHQ8SCSrjdc7dGP0
+         VvoVHI93qtwlMfU+Kp5QjlMqeXMKKJN+a+myD3591Me3pFxTNE+0RUVsCa91bvZUR3JO
+         lmpCj1p/b9kqaNMY/+uDaOY8M9P1SSQ+/dItYUNAlNAa7QcCvuUuiC9436beaJYgLFOG
+         f5sxdWEDFXhu8qpKZOyfe3uoeFa06PP3BRRr9ZF+3+5tI22ThHQa51dd++PKKUQCb4NN
+         JpLD5YAgYnk5gj+R1EpIen/KyrIRF/kQTn5jBBRh5YZUQVrCRZj02GyJ1EEJttxk4esD
+         +LKA==
+X-Gm-Message-State: APjAAAV2F+7p27s8sjmk5YikG/oUqRyKYir6GAvZH/jC24gs2tGglj7y
+        Xnv+tQjmP4ICflTXoJjcNEi5ww==
+X-Google-Smtp-Source: APXvYqxySJ7CXdTZalDskjNmsGdbbjR3D5tX2IaT+1GugoeOTw3GDKdUgKpg4BA7d25Cv6FtxtJ9WA==
+X-Received: by 2002:ac2:5107:: with SMTP id q7mr3389886lfb.177.1575500516805;
+        Wed, 04 Dec 2019 15:01:56 -0800 (PST)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e20sm3841379ljk.44.2019.12.04.13.54.23
+        by smtp.gmail.com with ESMTPSA id 138sm4101307lfa.76.2019.12.04.15.01.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 13:54:28 -0800 (PST)
-Date:   Wed, 4 Dec 2019 13:54:05 -0800
+        Wed, 04 Dec 2019 15:01:56 -0800 (PST)
+Date:   Wed, 4 Dec 2019 15:01:36 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
-Message-ID: <20191204135405.3ffb9ad6@cakuba.netronome.com>
-In-Reply-To: <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
-References: <20191202131847.30837-1-jolsa@kernel.org>
-        <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
-        <87wobepgy0.fsf@toke.dk>
-        <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
-        <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     willemdebruijn.kernel@gmail.com, vvidic@valentin-vidic.from.hr,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/tls: Fix return values for setsockopt
+Message-ID: <20191204150136.2f001242@cakuba.netronome.com>
+In-Reply-To: <20191204.125135.750458923752225025.davem@davemloft.net>
+References: <CA+FuTSdcDW1oJU=BK-rifxm1n4kh0tkj0qQQfOGSoUOkkBKrFg@mail.gmail.com>
+        <20191204113544.2d537bf7@cakuba.netronome.com>
+        <CA+FuTSdhtGZtTnuncpYaoOROF7L=coGawCPSLv7jzos2Q+Tb=Q@mail.gmail.com>
+        <20191204.125135.750458923752225025.davem@davemloft.net>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -81,28 +67,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Dec 2019 13:16:13 -0800, Andrii Nakryiko wrote:
-> I wonder what big advantage having bpftool in libbpf's Github repo
-> brings, actually? The reason we need libbpf on github is to allow
-> other projects like pahole to be able to use libbpf from submodule.
-> There is no such need for bpftool.
+On Wed, 04 Dec 2019 12:51:35 -0800 (PST), David Miller wrote:
+> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Date: Wed, 4 Dec 2019 15:43:00 -0500
+> > On Wed, Dec 4, 2019 at 2:36 PM Jakub Kicinski wrote:  
+> >> On Wed, 4 Dec 2019 14:22:55 -0500, Willem de Bruijn wrote:  
+> >> > On Tue, Dec 3, 2019 at 6:08 PM Jakub Kicinski wrote:  
+> >> > > On Tue,  3 Dec 2019 23:44:58 +0100, Valentin Vidic wrote:  
+> >> > > > ENOTSUPP is not available in userspace:
+> >> > > >
+> >> > > >   setsockopt failed, 524, Unknown error 524
+> >> > > >
+> >> > > > Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>  
+> >> > >
+> >> > > I'm not 100% clear on whether we can change the return codes after they
+> >> > > had been exposed to user space for numerous releases..  
+> >> >
+> >> > This has also come up in the context of SO_ZEROCOPY in the past. In my
+> >> > opinion the answer is no. A quick grep | wc -l in net/ shows 99
+> >> > matches for this error code. Only a fraction of those probably make it
+> >> > to userspace, but definitely more than this single case.
+> >> >
+> >> > If anything, it may be time to define it in uapi?  
+> >>
+> >> No opinion but FWIW I'm toying with some CI for netdev, I've added a
+> >> check for use of ENOTSUPP, apparently checkpatch already sniffs out
+> >> uses of ENOSYS, so seems appropriate to add this one.  
+> > 
+> > Good idea if not exposing this in UAPI.  
 > 
-> I agree about preference to release them in sync, but that could be
-> easily done by releasing based on corresponding commits in github's
-> libbpf repo and kernel repo. bpftool doesn't have to physically live
-> next to libbpf on Github, does it?
+> I'm trying to understand this part of the discussion.
+> 
+> If we have been returning a non-valid error code, this 524 internal
+> kernel thing, it is _NOT_ an exposed UAPI.
+> 
+> It is a kernel bug and we should fix it.
 
-+1
+I agree. We should just fix this.
 
-> Calling github repo a "mirror" is incorrect. It's not a 1:1 copy of
-> files. We have a completely separate Makefile for libbpf, and we have
-> a bunch of stuff we had to re-implement to detach libbpf code from
-> kernel's non-UAPI headers. Doing this for bpftool as well seems like
-> just more maintenance. Keeping github's Makefile in sync with kernel's
-> Makefile (for libbpf) is PITA, I'd rather avoid similar pains for
-> bpftool without a really good reason.
+As Willem points out the use of this error code has spread, but in
+theory I'm a co-maintainer of the TLS code now, and my maintainer 
+gut says "just fix it" :)
 
-Agreed. Having libbpf on GH is definitely useful today, but one can hope
-a day will come when distroes will get up to speed on packaging libbpf,
-and perhaps we can retire it? Maybe 2, 3 years from now? Putting
-bpftool in the same boat is just more baggage.
+> If userspace anywhere is checking for 524, that is what needs to be fixed.
+
+FWIW I did a quick grep through openssl and gnutls and fbthrift and I
+see no references to ENOTSUPP or 524.
+
+Valentin, what's the strategy you're using for this fix? There's a
+bunch of ENOTSUPP in net/tls/tls_sw.c as well, could you convert those,
+too?
