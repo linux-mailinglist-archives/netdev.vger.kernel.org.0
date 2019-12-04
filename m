@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6E3113546
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B44113547
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:59:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728105AbfLDS6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 13:58:48 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34658 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727978AbfLDS6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:58:47 -0500
-Received: by mail-pg1-f195.google.com with SMTP id r11so308685pgf.1
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:58:47 -0800 (PST)
+        id S1728133AbfLDS7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 13:59:47 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:45281 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727978AbfLDS7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:59:47 -0500
+Received: by mail-pj1-f68.google.com with SMTP id r11so172389pjp.12
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:59:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eH3HTsGQ47GyQqKA92RBuqmGmafmoTDlDTa1lrHmFuc=;
-        b=EgRUbp41uo7BVpa2A0NLDs+D/WgngowoL9Nul+Zp6W3XRM2xypleq6d5F8kaE7P2SL
-         9WP4Zl8RpD1/zonuOQf/PMuLDhPHfbnYP5rD1JllPh848RKbfxazsaAvtg+v6acMRP/4
-         sTAXxUpB1TsxgdQFpTdkrE3dkMSzHYiNrk02bNcJzuDJ/KHuPT0N+UM3OBbCiCUWZdM3
-         ms+A6y951IAlbaK0Etdbggjlgk+ABheOR3zq9V2TtCDzE26dXt4Vu17PxhqbP0MWn8cB
-         mlVF3C4jyggHxyLYCtgCIQhBPlKVwyi86oRzOQiNTXKEjkXzQkoQ++2Vk7TABnQT9ERt
-         UlyA==
+        bh=pBrHsGyBn53w6jItt7hpVmXyOYYGDRNVoEFpBteJ+nA=;
+        b=NqmWYoYbCmwY9L8bIei76YGL6zNleiOBnPB1JLdAQLkrqYZZNdhzWAZVB2xPEq98XI
+         uDS15JyR9t15cTxlDft+7Lv/M6b97ylbjIA8wILk6yhMnfLVH+xHgJXdtchTJG4kHMo/
+         ZQFXRcSx0H9MB0HjkGi3xrbxfEc6Yhp08g4NjB1gMbV6tb2knvPU6c2/bu2uXQCUm9+b
+         FUhaG29ZGQ4MuJD7iZ4b/FHnQOIGsbBGjD69Ws36ftrI4JPeNYm75taTVG8MCPwp7TfX
+         pJZNslz8xlbSpbjxkPO7LM9gaHR5wvLRqTUpeuCELXagOesQkxERnXxvWbbctRvxqH0W
+         HHYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eH3HTsGQ47GyQqKA92RBuqmGmafmoTDlDTa1lrHmFuc=;
-        b=eWpQhXj2eQUIPMEzMP6rwpUzzsYRD3Bx2vMDU9AxqEXs8Nbs8yamCzOeUGm1qyeL3p
-         APR4y+PEgU6mCxsu5Xdd8K7UW2Fs4gXr2skC1AnxYH+sSzk/bs3kprp2XPTy6mjSWKiP
-         sYZRtke5BdwjCXa6vENYLfZ63I0zDbYXnFTIz5ADICFzaQTPbYGrHRHpq1D+jkwrSUN/
-         NwL+IDmdy8DJ9IMPN468lJW8ghFlCb/tlfhfkRhirJzWJAmAHQLtlYvEKlL+uFVoVbAb
-         qihvM+mFKTXQ0UULGlPCEYzp7T1NN5gIatapHJNBRAXvOBqnQ3Facy++VftDTR4MxvlJ
-         vaSA==
-X-Gm-Message-State: APjAAAUGFrtKN1v7NsUaPqHr661g7vdK2lrxGHrlJm0L8r3OSODcRCoP
-        NbDCGtrOYcJXhEqnPiqNUR5glw==
-X-Google-Smtp-Source: APXvYqwqYYlI+xJOB1aMinjK4WEL1T/hPOnLGmi+bY/rK/CVM9B0fetQ4+flaQvoHJvpXflKRKcugQ==
-X-Received: by 2002:a65:4344:: with SMTP id k4mr4987459pgq.193.1575485927162;
-        Wed, 04 Dec 2019 10:58:47 -0800 (PST)
+        bh=pBrHsGyBn53w6jItt7hpVmXyOYYGDRNVoEFpBteJ+nA=;
+        b=UkNs3zeL1+tXJwRvSj+qwPxLfQXYzfCF7H33mRbTePSTFBVWejpGLtQJRVkFbeDirf
+         EbrLcKG0pAkRqtHN4W6QvFVWpICZJdy46gcUlD3kjABjFmnmW94ZD0odiffZ7EFNjm19
+         9Htmd7zICNvS7ALofn1/80C9SM6ZjdDi7pyiWEgIcXwiCG1uLtZ3qlPinGYKURrhxAnf
+         BRYKR4jKKBICFdBL1VHMAVvO3ONTYqL5PpGIFP2NvFKCG4ZZQdTFXFuQfTTaCJ2I7CYv
+         1bE6peiaHCjan+ZdazzkxayuzujqdC9wNd2VBZLFykJxwe6ylVCQ1f7ezYAanII6GnnI
+         CXtQ==
+X-Gm-Message-State: APjAAAVE8wv86IcxNNc3/cZ1xid+Y/JTrvN3zD8oTWvD5b9O+6nCX/s8
+        CCjsORWOcxVY0ylbtgxLyydWZA==
+X-Google-Smtp-Source: APXvYqyEe1uo03vzSO76sbF45V0SgwfHhgGuy1VC3aBJKX6PM1cH/kr5xWoUWDkD7FRwk1vX+SLNmA==
+X-Received: by 2002:a17:90a:374f:: with SMTP id u73mr4895895pjb.22.1575485986708;
+        Wed, 04 Dec 2019 10:59:46 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id e1sm9407125pfl.98.2019.12.04.10.58.46
+        by smtp.gmail.com with ESMTPSA id k21sm8195827pgt.22.2019.12.04.10.59.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 10:58:46 -0800 (PST)
-Date:   Wed, 4 Dec 2019 10:58:37 -0800
+        Wed, 04 Dec 2019 10:59:46 -0800 (PST)
+Date:   Wed, 4 Dec 2019 10:59:43 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH iproute2] tc_util: support TCA_STATS_PKT64 attribute
-Message-ID: <20191204105837.790d6d51@hermes.lan>
-In-Reply-To: <20191203154701.187275-1-edumazet@google.com>
-References: <20191203154701.187275-1-edumazet@google.com>
+To:     Gautam Ramakrishnan <gautamramk@gmail.com>
+Cc:     netdev@vger.kernel.org, Leslie Monis <lesliemonis@gmail.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>
+Subject: Re: [PATCH iproute2] tc: pie: add dq_rate_estimator option
+Message-ID: <20191204105943.5423f535@hermes.lan>
+In-Reply-To: <20191126115807.27843-1-gautamramk@gmail.com>
+References: <20191126115807.27843-1-gautamramk@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,36 +61,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 Dec 2019 07:47:01 -0800
-Eric Dumazet <edumazet@google.com> wrote:
+On Tue, 26 Nov 2019 17:28:07 +0530
+Gautam Ramakrishnan <gautamramk@gmail.com> wrote:
 
-> Kernel exports 64bit packet counters for qdisc/class stats in linux-5.5
+> PIE now uses per packet timestamps to calculate queuing
+> delay. The average dequeue rate based queue delay
+> calculation is now made optional. This patch adds the option
+> to enable or disable the use of Little's law to calculate
+> queuing delay.
 > 
-> Tested:
-> 
-> $ tc -s -d qd sh dev eth1 | grep pkt
->  Sent 4041158922097 bytes 46393862190 pkt (dropped 0, overlimits 0 requeues 2072)
->  Sent 501362903764 bytes 5762621697 pkt (dropped 0, overlimits 0 requeues 247)
->  Sent 533282357858 bytes 6128246542 pkt (dropped 0, overlimits 0 requeues 329)
->  Sent 515878280709 bytes 5875638916 pkt (dropped 0, overlimits 0 requeues 267)
->  Sent 516221011694 bytes 5933395197 pkt (dropped 0, overlimits 0 requeues 258)
->  Sent 513175109761 bytes 5898402114 pkt (dropped 0, overlimits 0 requeues 231)
->  Sent 480207942964 bytes 5519535407 pkt (dropped 0, overlimits 0 requeues 229)
->  Sent 483111196765 bytes 5552917950 pkt (dropped 0, overlimits 0 requeues 240)
->  Sent 497920120322 bytes 5723104387 pkt (dropped 0, overlimits 0 requeues 271)
-> $ tc -s -d cl sh dev eth1 | grep pkt
->  Sent 513196316238 bytes 5898645862 pkt (dropped 0, overlimits 0 requeues 231)
->  Sent 533304444981 bytes 6128500406 pkt (dropped 0, overlimits 0 requeues 329)
->  Sent 480227709687 bytes 5519762597 pkt (dropped 0, overlimits 0 requeues 229)
->  Sent 501383660279 bytes 5762860276 pkt (dropped 0, overlimits 0 requeues 247)
->  Sent 483131168192 bytes 5553147506 pkt (dropped 0, overlimits 0 requeues 240)
->  Sent 515899485505 bytes 5875882649 pkt (dropped 0, overlimits 0 requeues 267)
->  Sent 497940747031 bytes 5723341475 pkt (dropped 0, overlimits 0 requeues 271)
->  Sent 516242376893 bytes 5933640774 pkt (dropped 0, overlimits 0 requeues 258)
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  tc/tc_util.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+> Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
+> Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
+> Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
 
 Applied.
+
+Note: pie and several other qdisc need to be fixed to support
+JSON and oneline output format.
