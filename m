@@ -2,103 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A69B112A2E
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 12:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A33EF112A40
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 12:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727714AbfLDLcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 06:32:08 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:53882 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727268AbfLDLcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 06:32:08 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1icSt3-0005mp-Bd; Wed, 04 Dec 2019 11:32:05 +0000
-Subject: Re: [PATCH] i2400m/USB: fix error return when rx_size is too large
-To:     David Miller <davem@davemloft.net>
-Cc:     inaky@linux.intel.com, linux-wimax@intel.com,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191202174246.77305-1-colin.king@canonical.com>
- <20191202.131327.1991319206654704992.davem@davemloft.net>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <11a3e023-0b8d-ce2f-8fc0-567d0d3c1980@canonical.com>
-Date:   Wed, 4 Dec 2019 11:32:04 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191202.131327.1991319206654704992.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
+        id S1727552AbfLDLgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 06:36:08 -0500
+Received: from mail-eopbgr140074.outbound.protection.outlook.com ([40.107.14.74]:18334
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727445AbfLDLgI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 06:36:08 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HHPFBRguUT2Xj8OdKh704jaPXTQJVmXgG+mSVppJz/hhnRjOivFfonc5gHAyC0PPetM+1RIZTRM57t02aQdavQn5ttPfdi7Z+8lj9xxuAIRtnbfS8O6LYuLXuDKRWa41y5KlCwQo61zf9A4Dx4Nhe7IacNLF7PKmTn4hYQXWLH3VCckWuJfsP0sKFEEtXeQQoNOLpsYS0ZK9IOkdMF7y4gnICbTLcPA4+9c+FHHKOd413q1H+GiJ176EUtNalKoamFjg4zMumH6fyNdqHP7k0wKtCfd1bkSuWMS88hNF6VWBeOHv/CoEmOEGmZAouwTgfoCKnL7yb6csfO3j4FrVxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sWeSGITK13b36wWl8Ot8yAaRa4ZxAGVf64VUVvW/X6k=;
+ b=IEFz5A16wySwjijZAHB8zKWP/fJ00JKbDtgayRAKpYtVUyHDz4rCVji9CGu3r0k0hJZaSQTLdr9H7WAp+DnmBXtcxm6ogzUj20ryP1NfjD94eQv79LhDaKMn9mLkhhisHyQhKB0zx5N0bDmxVpIlQokGmo1qBrieWQFcVRC3sFqQEsCblTi4O8jX6Q2c456Dx4Ez2rS+yH/GLx2cprILs6fWVwIDzffoPKw7lnHo6XhTSSjpIscCZVRNPX1EwOaOavLTEuEBEC8YjX3Garfer0DNvvNUDlceYWKdIJdOTiDtsMnW16D88tfPtm2TRp2qUUfQp1szRN22IPEDWw3Dhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sWeSGITK13b36wWl8Ot8yAaRa4ZxAGVf64VUVvW/X6k=;
+ b=Hs0BL+SuqINr6ae84etWINwhZo7fueHbWfbTm+/ZIIuPP3OvgWWcEDWHce63hHnZ29oqt0tXjkp5WePM+Dc5/kGz+Ar/oKigruAmwd9DdRzMrY971z35pHnLZt7Z37RYxLcj77kp1djgbcgkHKFK6oJmXC6nEX2oj9Nfx3dsFOI=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5017.eurprd04.prod.outlook.com (20.176.234.213) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.13; Wed, 4 Dec 2019 11:36:04 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.003; Wed, 4 Dec 2019
+ 11:36:04 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH V3 0/6] can: flexcan: fixes for stop mode
+Thread-Topic: [PATCH V3 0/6] can: flexcan: fixes for stop mode
+Thread-Index: AQHVqpcC9+9ZZuOr5E+r+rwXW/eLZA==
+Date:   Wed, 4 Dec 2019 11:36:03 +0000
+Message-ID: <20191204113249.3381-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR02CA0050.apcprd02.prod.outlook.com
+ (2603:1096:4:54::14) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 69772538-82de-4502-7d1c-08d778ae24ef
+x-ms-traffictypediagnostic: DB7PR04MB5017:|DB7PR04MB5017:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB5017232297C03693AF54CFD9E65D0@DB7PR04MB5017.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0241D5F98C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(39860400002)(136003)(346002)(199004)(189003)(3846002)(316002)(36756003)(6512007)(305945005)(2201001)(6486002)(6436002)(2906002)(7736002)(52116002)(71190400001)(71200400001)(110136005)(6116002)(478600001)(14454004)(81166006)(99286004)(6506007)(102836004)(26005)(25786009)(1076003)(186003)(2501003)(81156014)(2616005)(8936002)(5660300002)(8676002)(50226002)(64756008)(4326008)(4744005)(66446008)(66946007)(66556008)(66476007)(86362001)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5017;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RHtwLCmy5KyGpTIXtK9p59RD2LJ30cIZdedt6ty/A2UsK1TdQ/zu/ofwotQ89qG9RVZF2g10b9TSNZ2oeTa8cR3j7+ipun2Ijv6qhd+JjwaiaZERB2xJn39K2kyhLE0G+9br0yUi5rW+gk03S6AKUMwWt7qAWRlXcHaJsALlC3asVFnXV+faIS59wkmFehg0F0DkrL4fPTDa07mVJ5PNSnDcDhKr1DN6n7mv9yqedhaR5peiJ4U6RnPQ2C4CSLYQFmRixb/uq86n64LVW8YxGcytCeBmSwsKxsXpHrd7SC3YUpY5/3YuKrMwENuviA4wbZHs3gckiVR4sBhcBmWSR2AK2aVcbFV94uuuLU8Xhe31t3qHlltSqe9lQR1cdTDBIG6rR4JsEXfb63AWQjkKaTyAxePcNVgt1mqjmr3Ytl6DZFMhM7byFkdwAkahkfKf
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69772538-82de-4502-7d1c-08d778ae24ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2019 11:36:03.8720
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: E+1BxOU9ouA4lFBcntj1IK5in8lT5yqAkye2n9GMzI4Rg/6YOUsUlG+U478/5EclBFvQYnE0AZldOBJdGOyOww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5017
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/12/2019 21:13, David Miller wrote:
-> From: Colin King <colin.king@canonical.com>
-> Date: Mon,  2 Dec 2019 17:42:46 +0000
-> 
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> Currently when the rx_size is too large the intended error
->> -EINVAL is not being returned as this is being assigned to
->> result rather than rx_skb. Fix this be setting rx_skb
->> to ERR_PTR(-EINVAL) so that the error is returned in rx_skb
->> as originally intended.
->>
->> Addresses-Coverity: ("Unused value")
->> Fixes: a8ebf98f5414 ("i2400m/USB: TX and RX path backends")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> 
-> This leaks rx_skb, the caller is supposed to clean up rx_skb
-> by freeing it if this function doesn't transmit it successfully.
-> 
-Oops, yes. Ignore this fix.
+Hi Marc,
 
-Colin
+   I removed the patch (can: flexcan: try to exit stop mode during probe st=
+age)
+out of this patch set for now. This patch should further discuss with Sean =
+and
+I will prepare it according to final conclusion. Thanks.
+
+Regards,
+Joakim Zhang
+
+Joakim Zhang (5):
+  can: flexcan: Ack wakeup interrupt separately
+  can: flexcan: add low power enter/exit acknowledgment helper
+  can: flexcan: change the way of stop mode acknowledgment
+  can: flexcan: propagate error value of flexcan_chip_stop()
+  can: flexcan: add LPSR mode support
+
+Sean Nyekjaer (1):
+  can: flexcan: fix deadlock when using self wakeup
+
+ drivers/net/can/flexcan.c | 131 +++++++++++++++++++++++---------------
+ 1 file changed, 79 insertions(+), 52 deletions(-)
+
+--=20
+2.17.1
+
