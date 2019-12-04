@@ -2,185 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3C911244F
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 09:18:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C489112502
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 09:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbfLDIS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 03:18:29 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:38178 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfLDIS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 03:18:29 -0500
-Received: by mail-qv1-f67.google.com with SMTP id t5so2719061qvs.5
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 00:18:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IOrpunYOl9f5imurR4iaLW0MWbzeDjpl3e51EdkQBxM=;
-        b=bNmjEXsL3LXOWJr9pXvuWuP7goPByOjxlTTmOiZ5PMGOjue/eC4wln79RfQ366yy9S
-         HeBWDH5pUfiVlVCsLJwIAGMoIpjZSj6nsK3C4K8z5CVrS2FzUIyL/RcWGJ9WGaNBIqZj
-         YfXk9dXBSuLc/GwkOcvpk6Hxs8qsQVgPPugFmRoISvxRC+6DXXVmNul4KNaiK5niFWt1
-         4+8dr4c5G9RFqkASuKUC7Rl5IDx+rGWPyPU8AH4jvIxsOF0aprCm37ldX7d5BZgD+3qA
-         ZvZLdb5RMvmdFQ1mWDAeQ5eftYCCorw26I7O+8uIFn5YwjB2lzwlAY9TB5h04pf1xO9r
-         jGYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IOrpunYOl9f5imurR4iaLW0MWbzeDjpl3e51EdkQBxM=;
-        b=NRnMvRd2+FTZAzc+r+o5LNeolYHjtl+aewdWmyPe0jb1Vw4YUOLKyt9f3dT6PI8mtX
-         bgWgWSmsUCae9tFn2qmZY0d1Th8kl4zkIZ1qmjKvTHey4PX44P5VJR62rGM0adFhSdbJ
-         SGE0sCXxwIBL41JHwZQ6o3lKFTDkZBFsA5T7JDezOaNT9ZOUWoT74fuLgCy7DyrekDw3
-         QRu7Gj30fFUxuJ+MImnsExqHBHzxYojP187W3SC1GjVq2g1Mw6qjA+KsATejZYMRR0Lg
-         Mo1scY7F9umf85SkDu5Yve57SB3Xrkde5WR8vTpAtmGEevALNEcOEvVQJrqodZ3R1DQT
-         gcvA==
-X-Gm-Message-State: APjAAAX8OPybhFwLJqxayGJMb6xFO5uP6eCfBIK94Zwe4OQ13uMXaihP
-        XBxlGo+iI9uoLoFQ2aPF61yQy4PjlylJGgpn3CabWA==
-X-Google-Smtp-Source: APXvYqysBvTqFphuPETAtOdHY0mhVi0A/Kh6B/KHBpk95x6M/MEXLFv73wtPkH1xBpxO5iQ1WYoLAKw3migOv4YHrBU=
-X-Received: by 2002:a0c:c125:: with SMTP id f34mr1555482qvh.22.1575447507606;
- Wed, 04 Dec 2019 00:18:27 -0800 (PST)
+        id S1727273AbfLDIbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 03:31:16 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:59217 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbfLDIbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 03:31:15 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1icQ3z-0002nE-Aq; Wed, 04 Dec 2019 09:31:11 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 18891488F0F;
+        Wed,  4 Dec 2019 08:31:10 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+ <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
+ <DB7PR04MB46183730127339DAC15ABF33E65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+Message-ID: <b4ce5a7a-7fc0-edb2-608e-4030ce6428a2@pengutronix.de>
+Date:   Wed, 4 Dec 2019 09:31:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <000000000000314c120598dc69bd@google.com>
-In-Reply-To: <000000000000314c120598dc69bd@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 4 Dec 2019 09:18:16 +0100
-Message-ID: <CACT4Y+ZTXKP0MAT3ivr5HO-skZOjSVdz7RbDoyc522_Nbk8nKQ@mail.gmail.com>
-Subject: Re: BUG: unable to handle kernel paging request in pcpu_alloc
-To:     syzbot <syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Daniel Axtens <dja@axtens.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <DB7PR04MB46183730127339DAC15ABF33E65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="gNfDjcm1x9HHDAIkEGdoHJkH587wTN8L3"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 4, 2019 at 9:15 AM syzbot
-<syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    1ab75b2e Add linux-next specific files for 20191203
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10edf2eae00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=de1505c727f0ec20
-> dashboard link: https://syzkaller.appspot.com/bug?extid=82e323920b78d54aaed5
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156ef061e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11641edae00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gNfDjcm1x9HHDAIkEGdoHJkH587wTN8L3
+Content-Type: multipart/mixed; boundary="RsU4ZEJsDnWk1wNwXlT3btpEzfioQ0U3D";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, "sean@geanix.com"
+ <sean@geanix.com>, "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <b4ce5a7a-7fc0-edb2-608e-4030ce6428a2@pengutronix.de>
+Subject: Re: [PATCH V2 1/4] can: flexcan: fix deadlock when using self wakeup
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-2-qiangqing.zhang@nxp.com>
+ <b77829d5-9eda-a244-3ee8-2ccdbdfb6524@pengutronix.de>
+ <DB7PR04MB46183730127339DAC15ABF33E65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+In-Reply-To: <DB7PR04MB46183730127339DAC15ABF33E65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
 
-+Daniel, is it the same as:
-https://syzkaller.appspot.com/bug?id=f6450554481c55c131cc23d581fbd8ea42e63e18
-If so, is it possible to make KASAN detect this consistently with the
-same crash type so that syzbot does not report duplicates?
+--RsU4ZEJsDnWk1wNwXlT3btpEzfioQ0U3D
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 12/4/19 2:58 AM, Joakim Zhang wrote:
+> [...]
+>>>  drivers/net/can/flexcan.c | 19 +++++++++++--------
+>>>  1 file changed, 11 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+>>> index 2efa06119f68..2297663cacb2 100644
+>>> --- a/drivers/net/can/flexcan.c
+>>> +++ b/drivers/net/can/flexcan.c
+>>> @@ -134,8 +134,7 @@
+>>>  	(FLEXCAN_ESR_ERR_BUS | FLEXCAN_ESR_ERR_STATE)  #define
+>>> FLEXCAN_ESR_ALL_INT \
+>>>  	(FLEXCAN_ESR_TWRN_INT | FLEXCAN_ESR_RWRN_INT | \
+>>> -	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT | \
+>>> -	 FLEXCAN_ESR_WAK_INT)
+>>> +	 FLEXCAN_ESR_BOFF_INT | FLEXCAN_ESR_ERR_INT)
+>>
+>> Why do you remove the FLEXCAN_ESR_WAK_INT from the
+>> FLEXCAN_ESR_ALL_INT?
+>>
+>>>
+>>>  /* FLEXCAN interrupt flag register (IFLAG) bits */
+>>>  /* Errata ERR005829 step7: Reserve first valid MB */ @@ -960,6
+>>> +959,12 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+>>>
+>>>  	reg_esr =3D priv->read(&regs->esr);
+>>>
+>>> +	/* ACK wakeup interrupt */
+>>> +	if (reg_esr & FLEXCAN_ESR_WAK_INT) {
+>>> +		handled =3D IRQ_HANDLED;
+>>> +		priv->write(reg_esr & FLEXCAN_ESR_WAK_INT, &regs->esr);
+>>> +	}
+>>> +
+>>
+>> If FLEXCAN_ESR_WAK_INT stays in FLEXCAN_ESR_ALL_INT, you don't need
+>> that explicit ACK here.
+>=20
+> Hi Marc,
+>=20
+> I remove the FLEXCAN_ESR_WAK_INT from the FLEXCAN_ESR_ALL_INT since
+> FLEXCAN_ESR_ALL_INT is for all bus error and state change IRQ
+> sources, wakeup interrupt does not belong to these. If you think this
+> does not need, I can remove this change.
+
+I see, makes sense.
+
+Make this a separate patch. Move the FLEXCAN_ESR_WAK_INT from the
+FLEXCAN_ESR_ALL_INT, but add it to the existing ack of the interrupts.
+Like this:
+
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index b6f675a5e2d9..74f622b40b61 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -960,10 +960,10 @@ static irqreturn_t flexcan_irq(int irq, void *dev=
+_id)
+> =20
+>         reg_esr =3D priv->read(&regs->esr);
+> =20
+> -       /* ACK all bus error and state change IRQ sources */
+> -       if (reg_esr & FLEXCAN_ESR_ALL_INT) {
+> +       /* ACK all bus error, state change and wake IRQ sources */
+> +       if (reg_esr & (FLEXCAN_ESR_ALL_INT | FLEXCAN_ESR_WAK_INT)) {
+>                 handled =3D IRQ_HANDLED;
+> -               priv->write(reg_esr & FLEXCAN_ESR_ALL_INT, &regs->esr);=
+
+> +               priv->write(reg_esr & (FLEXCAN_ESR_ALL_INT | FLEXCAN_ES=
+R_WAK_INT), &regs->esr);
+>         }
+> =20
+>         /* state change interrupt or broken error state quirk fix is en=
+abled */
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-> RDX: 000000000000003c RSI: 0000000020000080 RDI: 0c00000000000000
-> RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000018
-> R13: 0000000000000004 R14: 0000000000000005 R15: 0000000000000000
-> BUG: unable to handle page fault for address: fffff91ffff00000
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 21ffe6067 P4D 21ffe6067 PUD aa56c067 PMD aa56d067 PTE 0
-> Oops: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 8999 Comm: syz-executor865 Not tainted
-> 5.4.0-next-20191203-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> RIP: 0010:memory_is_nonzero mm/kasan/generic.c:121 [inline]
-> RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:135 [inline]
-> RIP: 0010:memory_is_poisoned mm/kasan/generic.c:166 [inline]
-> RIP: 0010:check_memory_region_inline mm/kasan/generic.c:182 [inline]
-> RIP: 0010:check_memory_region+0x9c/0x1a0 mm/kasan/generic.c:192
-> Code: c9 4d 0f 49 c1 49 c1 f8 03 45 85 c0 0f 84 10 01 00 00 41 83 e8 01 4e
-> 8d 44 c0 08 eb 0d 48 83 c0 08 4c 39 c0 0f 84 a7 00 00 00 <48> 83 38 00 74
-> ed 4c 8d 40 08 eb 09 48 83 c0 01 49 39 c0 74 53 80
-> RSP: 0018:ffffc90001f67a80 EFLAGS: 00010216
-> RAX: fffff91ffff00000 RBX: fffff91ffff01000 RCX: ffffffff819e1589
-> RDX: 0000000000000001 RSI: 0000000000008000 RDI: ffffe8ffff800000
-> RBP: ffffc90001f67a98 R08: fffff91ffff01000 R09: 0000000000001000
-> R10: fffff91ffff00fff R11: ffffe8ffff807fff R12: fffff91ffff00000
-> R13: 0000000000008000 R14: 0000000000000000 R15: ffff88821fffd100
-> FS:  00000000011a7880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: fffff91ffff00000 CR3: 00000000a94ad000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   memset+0x24/0x40 mm/kasan/common.c:107
->   memset include/linux/string.h:410 [inline]
->   pcpu_alloc+0x589/0x1380 mm/percpu.c:1734
->   __alloc_percpu_gfp+0x28/0x30 mm/percpu.c:1783
->   bpf_array_alloc_percpu kernel/bpf/arraymap.c:35 [inline]
->   array_map_alloc+0x698/0x7d0 kernel/bpf/arraymap.c:159
->   find_and_alloc_map kernel/bpf/syscall.c:123 [inline]
->   map_create kernel/bpf/syscall.c:654 [inline]
->   __do_sys_bpf+0x478/0x3810 kernel/bpf/syscall.c:3012
->   __se_sys_bpf kernel/bpf/syscall.c:2989 [inline]
->   __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2989
->   do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x442f99
-> Code: e8 ec 09 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7
-> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
-> ff 0f 83 cb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007ffc8aa156d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000442f99
-> RDX: 000000000000003c RSI: 0000000020000080 RDI: 0c00000000000000
-> RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000018
-> R13: 0000000000000004 R14: 0000000000000005 R15: 0000000000000000
-> Modules linked in:
-> CR2: fffff91ffff00000
-> ---[ end trace 449f8b43dad6ffb8 ]---
-> RIP: 0010:memory_is_nonzero mm/kasan/generic.c:121 [inline]
-> RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:135 [inline]
-> RIP: 0010:memory_is_poisoned mm/kasan/generic.c:166 [inline]
-> RIP: 0010:check_memory_region_inline mm/kasan/generic.c:182 [inline]
-> RIP: 0010:check_memory_region+0x9c/0x1a0 mm/kasan/generic.c:192
-> Code: c9 4d 0f 49 c1 49 c1 f8 03 45 85 c0 0f 84 10 01 00 00 41 83 e8 01 4e
-> 8d 44 c0 08 eb 0d 48 83 c0 08 4c 39 c0 0f 84 a7 00 00 00 <48> 83 38 00 74
-> ed 4c 8d 40 08 eb 09 48 83 c0 01 49 39 c0 74 53 80
-> RSP: 0018:ffffc90001f67a80 EFLAGS: 00010216
-> RAX: fffff91ffff00000 RBX: fffff91ffff01000 RCX: ffffffff819e1589
-> RDX: 0000000000000001 RSI: 0000000000008000 RDI: ffffe8ffff800000
-> RBP: ffffc90001f67a98 R08: fffff91ffff01000 R09: 0000000000001000
-> R10: fffff91ffff00fff R11: ffffe8ffff807fff R12: fffff91ffff00000
-> R13: 0000000000008000 R14: 0000000000000000 R15: ffff88821fffd100
-> FS:  00000000011a7880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: fffff91ffff00000 CR3: 00000000a94ad000 CR4: 00000000001406e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000314c120598dc69bd%40google.com.
+--RsU4ZEJsDnWk1wNwXlT3btpEzfioQ0U3D--
+
+--gNfDjcm1x9HHDAIkEGdoHJkH587wTN8L3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3nbskACgkQWsYho5Hk
+nSCM+Qf+O704RSvmyOPEQZDym+oL1w3DRt7iDaIrOET+5giecvKBt+xRX2ogTzqI
+BQnYlT4wf40FNlEi62/TJ3EBLEQS8FBH54hEtofn+JKm0yyf3ITpO/xSX0sGqr/+
+gC7a8eWCCo6Ypmdtw7kELWiKANXDmgd2RQMXLxwMKMiEa99DPrh/Bxf0kjZ/cVfm
+ptkQxARsOVxii03vlwA7w86bkHRLU15XZVhDMuXnI5YRTdL0+z85BR6lzW3CPFR3
+XifJ3jlWnDLh4g8BUG6OsJHhoj8HMuC0El2vcVTKEJBx6MUYvpU5Csl8AvbNmAAi
+MRTSL0LuB9cuQMCvPv55PY1+NRsBTg==
+=5XGv
+-----END PGP SIGNATURE-----
+
+--gNfDjcm1x9HHDAIkEGdoHJkH587wTN8L3--
