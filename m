@@ -2,104 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACBDE112195
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 03:51:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5CF811219C
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 03:53:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbfLDCvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 21:51:13 -0500
-Received: from pindarots.xs4all.nl ([82.161.210.87]:58188 "EHLO
-        pindarots.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726363AbfLDCvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 21:51:13 -0500
-Received: from surfplank2.hierzo (localhost.localdomain [127.0.0.1])
-        by pindarots.xs4all.nl (8.15.2/8.14.5) with ESMTPS id xB42p9Cx503509
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Wed, 4 Dec 2019 03:51:09 +0100
-Subject: Re: 5.4.1 WARNINGs with r8169
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-References: <46e7dcf9-3c89-25c1-ccb8-336450047bec@xs4all.nl>
- <aa3b11a5-eb7e-dc2c-e5b4-96e53942246d@applied-asynchrony.com>
- <3a1706be-e236-6f08-73eb-734f0ae41bbb@gmail.com>
-From:   Udo van den Heuvel <udovdh@xs4all.nl>
-Autocrypt: addr=udovdh@xs4all.nl; prefer-encrypt=mutual; keydata=
- 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
- JjyRAfO8kEkwCkTZ6/Mnrxsunx9VNLGDEw==
-Organization: hierzo
-Message-ID: <a3757aa2-9d72-1bb4-4524-edb0b7d191dd@xs4all.nl>
-Date:   Wed, 4 Dec 2019 03:51:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726521AbfLDCxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 21:53:30 -0500
+Received: from mail-lf1-f52.google.com ([209.85.167.52]:40466 "EHLO
+        mail-lf1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726678AbfLDCxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 21:53:30 -0500
+Received: by mail-lf1-f52.google.com with SMTP id y5so4811553lfy.7
+        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 18:53:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uR+pT65soPzjqJ67S48glzTfhGJEKMDDLWprJm5r4mY=;
+        b=aI4SDOI62/pPrhGCaEj1/ngReuOGp6v0q67iB7ucEval3f3gGBEC8Dwizix4mEsV65
+         N+tG1o/mmvoQZf+pi2hrlpgY0lPat20YwANxIleHDULtynaUMm1rZjbVYDgr0dy14c7T
+         6AblvCluhJtUHCGaa/qoKfbUiNTmwF1dTPx/ovhs2d0knIpyEK7Rhwuuyqh4HKzno9e8
+         tLWrxYiPt4rX06K9qnvHHcXkf2qk4LpK2fIIEycQOrDRPsyLzKkSwdti5RkkJns/bNjn
+         5iBjr8wbkrUGIeaqsCg0Vr7D03tyB6rOOgjJEA2dH8vRR8pZrriFZRP2nA6gMe5XOP6j
+         /nzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uR+pT65soPzjqJ67S48glzTfhGJEKMDDLWprJm5r4mY=;
+        b=BnDTRhfeGuNfdaDuolJpATvW8vq3tQotrd5UtyZrkchxPSSh6WYlI6DH3W42Vz24rw
+         O44bAXa1YaSvc9wqZ1g4uQB0R4I+KAGUlGJPeRlMa7KQmno8twJlOQMOQCqeUlezvGUY
+         acQ5Np9u6KgxhJmkIMlooeC9ihMVsG9dk6hq7E0cEkl6X4R8epRo6LaaoKEi62dwf/IJ
+         fEb216PVTTkceh9hvXpmQKpOgb5GxtfxZZiMK1Ft3X3GzllPJjxpneZ3ai9pWXGPKguN
+         Pfyr1dypYKb5UXgSM4JU53pBOnW5iw8I5YT/by1ah/NKU4lgUGKUQk2n+SxQCJHbz91P
+         7yuw==
+X-Gm-Message-State: APjAAAXVAauwEcPBicVGf2KKvnPStnu6LywaVx3wngYS52z4SkJH1afw
+        2s+15HN1D+4ffIyQumP7jiOFSKBgnQL6enJFt5IM
+X-Google-Smtp-Source: APXvYqxC2jCV69k21E2WvCNty27MXD7mqixisctmZLTFJfdlz1LwQeP4SH3ptOANsNEsWPDaO4sPYI3Qqt1vdi3PFGA=
+X-Received: by 2002:ac2:424d:: with SMTP id m13mr619905lfl.13.1575428007737;
+ Tue, 03 Dec 2019 18:53:27 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <3a1706be-e236-6f08-73eb-734f0ae41bbb@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191128091633.29275-1-jolsa@kernel.org> <CAHC9VhQ7zkXdz1V5hQ8PN68-NnCn56TjKA0wCL6ZjHy9Up8fuQ@mail.gmail.com>
+ <20191203093837.GC17468@krava>
+In-Reply-To: <20191203093837.GC17468@krava>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 3 Dec 2019 21:53:16 -0500
+Message-ID: <CAHC9VhRhMhsRPj1D2TY3O=Nc6Rx9=o1-Z5ZMjrCepfFY6VtdbQ@mail.gmail.com>
+Subject: Re: [RFC] bpf: Emit audit messages upon successful prog load and unload
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-audit@redhat.com,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03-12-2019 20:58, Heiner Kallweit wrote:
-> - full dmesg log
+On Tue, Dec 3, 2019 at 4:38 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> On Mon, Dec 02, 2019 at 06:00:14PM -0500, Paul Moore wrote:
+> > On Thu, Nov 28, 2019 at 4:16 AM Jiri Olsa <jolsa@kernel.org> wrote:
 
-The rest of dmesg is irrelevant but we will try to oblige of course
+...
 
-> - last known good kernel version
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -23,6 +23,7 @@
+> > >  #include <linux/timekeeping.h>
+> > >  #include <linux/ctype.h>
+> > >  #include <linux/nospec.h>
+> > > +#include <linux/audit.h>
+> > >  #include <uapi/linux/btf.h>
+> > >
+> > >  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+> > > @@ -1306,6 +1307,30 @@ static int find_prog_type(enum bpf_prog_type type, struct bpf_prog *prog)
+> > >         return 0;
+> > >  }
+> > >
+> > > +enum bpf_audit {
+> > > +       BPF_AUDIT_LOAD,
+> > > +       BPF_AUDIT_UNLOAD,
+> > > +};
+> > > +
+> > > +static const char * const bpf_audit_str[] = {
+> > > +       [BPF_AUDIT_LOAD]   = "LOAD",
+> > > +       [BPF_AUDIT_UNLOAD] = "UNLOAD",
+> > > +};
+> > > +
+> > > +static void bpf_audit_prog(const struct bpf_prog *prog, enum bpf_audit op)
+> > > +{
+> > > +       struct audit_buffer *ab;
+> > > +
+> > > +       if (audit_enabled == AUDIT_OFF)
+> > > +               return;
+> >
+> > I think you would probably also want to check the results of
+> > audit_dummy_context() here as well, see all the various audit_XXX()
+> > functions in include/linux/audit.h as an example.  You'll see a
+> > pattern similar to the following:
+> >
+> > static inline void audit_foo(...)
+> > {
+> >   if (unlikely(!audit_dummy_context()))
+> >     __audit_foo(...)
+> > }
+>
+> bpf_audit_prog might be called outside of syscall context for UNLOAD event,
+> so that would prevent it from being stored
 
-5.2.21-rt13
-Because of the mutex issues I switched to 5.4.1.
+Okay, right.  More on this below ...
 
-> - whether problem persists if you switch the one interface with jumbo
->   packets to standard MTU
+> I can see audit_log_start checks on value of audit_context() that we pass in,
 
-That test is prepared already.
+The check in audit_log_start() is for a different reason; it checks
+the passed context to see if it should associate the record with
+others in the same event, e.g. PATH records associated with the
+matching SYSCALL record.  This way all the associated records show up
+as part of the same event (as defined by the audit timestamp).
 
-> - best would be a bisect result
+> should we check for audit_dummy_context just for load event? like:
+>
+>
+> static void bpf_audit_prog(const struct bpf_prog *prog, enum bpf_audit op)
+> {
+>         struct audit_buffer *ab;
+>
+>         if (audit_enabled == AUDIT_OFF)
+>                 return;
+>         if (op == BPF_AUDIT_LOAD && audit_dummy_context())
+>                 return;
+>         ab = audit_log_start(audit_context(), GFP_ATOMIC, AUDIT_BPF);
+>         if (unlikely(!ab))
+>                 return;
+>         ...
+> }
 
-The offending commit is already known. (!?)
+Ignoring the dummy context for a minute, there is likely a larger
+issue here with using audit_context() when bpf_audit_prog() is called
+outside of a syscall, e.g. BPF_AUDIT_UNLOAD.  In this case we likely
+shouldn't be taking the audit context from the current task, we
+shouldn't be taking it from anywhere, it should be NULL.
 
-Udo
+As far as the dummy context is concerned, you might want to skip the
+dummy context check since you can only do that on the LOAD side, which
+means that depending on the system's configuration you could end up
+with a number of unbalanced LOAD/UNLOAD events.  The downside is that
+you are always going to get the BPF audit records on systemd based
+systems, since they ignore the admin's audit configuration and always
+enable audit (yes, we've tried to get systemd to change, they don't
+seem to care).
+
+-- 
+paul moore
+www.paul-moore.com
