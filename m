@@ -2,89 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73F511350B
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:32:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5EE11351C
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 19:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbfLDScS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 13:32:18 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38246 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728234AbfLDScR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:32:17 -0500
-Received: by mail-qt1-f193.google.com with SMTP id 14so773141qtf.5
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:32:17 -0800 (PST)
+        id S1728285AbfLDSkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 13:40:19 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39125 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728271AbfLDSkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 13:40:19 -0500
+Received: by mail-lj1-f194.google.com with SMTP id e10so461077ljj.6
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 10:40:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=qy7bm3dWO5qrYO1eCEebejs73Zbzm0TjnBqs1FgOkqw=;
-        b=Q/K1i/CXhsP0E+0gloMk3spDqVBHJfanD1rXV6EU6qw5MnLyKZ5Qljn4fgYazamWc8
-         6XIgdDDhihQqbp9A4S1q5FNdcLrPSbYSRusnCCcKBHst0qTmsbGcSxIIbkh5PQ2H53bp
-         /uNTy8/ffQPSir2N+A5LQ6gePnntPQfjUNt5BYAg0EQxQRa3c/KUr2orpiW4hwHMKWgH
-         QXOZ0MjwSwz7XfaoG9m9e0mxrnpB7mEanB+qiVGAV824A3KEKVQo5xICtAl2tOGFBd7f
-         X2Jw56Eedbjbj62Kzjdfq7sh+f9pZCJ0BVqNFyK7r3p2IrJp4b6ZgJk4e4ghliWqYofs
-         TztA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=MPUgt8BKK8jntMpPJJpiSxrSzMem1sQgZ2v86URinXA=;
+        b=q8nNR2JnYKwS3g9vjbQ3LUk+rSLD9sMW5X6tYyysV5UGJQTejC8CEhjzojGmF56EJg
+         MzrOIkU2eI//hos+tVVTrz5UrbWRNr188CTiCTjgseET0IO5HsgGi/tcJl8p4jNM3BwH
+         rtyt3Qsk4yAmL7hhGfYpgbk5xtCDX3V1e2SxNcC/yOx8qbJ3VhBYvd70O1llAIjC1o+z
+         Y0DfWuMLJIv9pOZgsTPNrQBJggY4rEzKIdZTTE7qMFEtYny79ScbaKo8zrhKmCpBi5sa
+         wUnV4WeWDl0kk1rWTPbFh2DZtV0r/bw9ujOIk6ekRJhvxNeqVCbK4C3bZQ71bT1DV4eZ
+         D1Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qy7bm3dWO5qrYO1eCEebejs73Zbzm0TjnBqs1FgOkqw=;
-        b=pncjOg0AScI0bm4i919eXZJ28fXYBKYvNKH6JI3eTCO8sGFgKKPzXgvTcp6aSh1G6x
-         giQKDpsJSSw+Rebt5rVqsXHvY/bjIPPg4wIwhjfyWFk1HWmJ9PWJ/Wpuf6zil+xEVft8
-         Sbs0fXBCZ1kQSGNzqXmMOiXjfPj3cF7DJEVAq8/Jktr/eyLC5a28iyZ147TqBL+EpIx1
-         jYIQDBW4yYiKBjsK8f1agUfnPfYgB6MzROXFAWmgCg4bgKfcgIQS5JQPZZxUtLEmQ1o3
-         +Fi8fRRejxLTdWe0BZ+8LfQ7p8/oMA7exC0Jd5LeOOrB9kFxEqaVgmIzApLhAq8hVm7o
-         5G5A==
-X-Gm-Message-State: APjAAAW+uSLHG+7vknupRx7ObCum83QdqX0a9DaA0OGGb5PckywyOBeJ
-        KIhvZ6K5+7V8QGC4jZi/3xAo454X
-X-Google-Smtp-Source: APXvYqwbAnlSu6Fqw2+tXE22yCseyaQEf2M7j5iaxNnPmYOv3XxQKAUnUBD048eKQKITiQ9qpLw5LA==
-X-Received: by 2002:ac8:60cc:: with SMTP id i12mr4088679qtm.103.1575484336766;
-        Wed, 04 Dec 2019 10:32:16 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:bc97:d049:2862:6860])
-        by smtp.googlemail.com with ESMTPSA id k185sm376037qke.29.2019.12.04.10.32.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2019 10:32:15 -0800 (PST)
-Subject: Re: Endless "ip route show" if 255.255.255.255 route exists
-From:   David Ahern <dsahern@gmail.com>
-To:     Sven-Haegar Koch <haegar@sdinet.de>, netdev@vger.kernel.org
-References: <alpine.DEB.2.21.1912041616460.194530@aurora64.sdinet.de>
- <a57d26df-26a4-26dc-5acf-4a49f641bcb0@gmail.com>
-Message-ID: <6d6fe3ee-674a-a88b-897d-9aa9fa303be8@gmail.com>
-Date:   Wed, 4 Dec 2019 11:32:13 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=MPUgt8BKK8jntMpPJJpiSxrSzMem1sQgZ2v86URinXA=;
+        b=HsSY01z4f/9VfZ7JV9jB4zfjlrjL/2oEUGuGjniPuhx7v/uFD43UBgzohPMfFo8SPC
+         Lzmltkj/buRPuxz1tM5Y1DtMYUeb6XNEJT4QcaWtBpnLc7Kxes5r5ErLYhSLUGVY/P3+
+         5ajN96UiWB5+57L98FLzMz4tBJUakeTb0Agb1ZCVK+8zBGmc/vMn8/R+HVXw0xedaGYg
+         H7HwMipSFgW/Oe0B6Z7zOq/hNZ90Pv0nl9zWN9yJmj8pZVC62XxEvSYGBD46ZBlzSeSy
+         IygvjnusqG5FGwSircpjwFRMhkFtr5qQAdHVxpeFTgyYRihRqaTDjG/Se2Y9pfiBKMC/
+         4THg==
+X-Gm-Message-State: APjAAAWZ4MR7Zg6TWZLERfbisEe6wY8HCK5MZW91XUKJuN7AOrDslS8q
+        IOQ69NimS/S5Jgz2Nqjqgnfy5Q==
+X-Google-Smtp-Source: APXvYqwdXIR+tb8hZ6Ua2SQCwf0XVGUGg7xt5ESgNSXxlS0m4rBtdDw61DUznFeBsV4bTXIUOIjh/A==
+X-Received: by 2002:a2e:84d0:: with SMTP id q16mr2935643ljh.138.1575484816865;
+        Wed, 04 Dec 2019 10:40:16 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a24sm3584077ljp.97.2019.12.04.10.40.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Dec 2019 10:40:16 -0800 (PST)
+Date:   Wed, 4 Dec 2019 10:39:55 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        John Hurley <john.hurley@netronome.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        oss-drivers@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] nfp: abm: fix memory leak in
+ nfp_abm_u32_knode_replace
+Message-ID: <20191204103955.63c4d9af@cakuba.netronome.com>
+In-Reply-To: <20190927015157.20070-1-navid.emamdoost@gmail.com>
+References: <20190925215314.10cf291d@cakuba.netronome.com>
+        <20190927015157.20070-1-navid.emamdoost@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <a57d26df-26a4-26dc-5acf-4a49f641bcb0@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/19 11:05 AM, David Ahern wrote:
-> On 12/4/19 8:22 AM, Sven-Haegar Koch wrote:
->> Then trying to show the routing table:
->>
->> root@haegar-test:~# ip ro sh | head -n 10
->> default via 10.140.184.1 dev ens18
->> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
->> 255.255.255.255 dev ens18 scope link
->> default via 10.140.184.1 dev ens18
->> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
->> 255.255.255.255 dev ens18 scope link
->> default via 10.140.184.1 dev ens18
->> 10.140.184.0/24 dev ens18 proto kernel scope link src 10.140.184.244
->> 255.255.255.255 dev ens18 scope link
->> default via 10.140.184.1 dev ens18 
->>
->> (Repeats endless without the "head" limit)
->>
+On Thu, 26 Sep 2019 20:51:46 -0500, Navid Emamdoost wrote:
+> In nfp_abm_u32_knode_replace if the allocation for match fails it should
+> go to the error handling instead of returning. Updated other gotos to
+> have correct errno returned, too.
 > 
-> Thanks for the report. Seems to be a problem with iproute2.
-> iproute2-ss190924 works fine. I'll send a fix.
-> 
+> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+> ---
+> Changes in v2:
+> 	- Reused err variable for erorr value returning.
+> Changes in v3:
+> 	- Fix the err value in the first goto, and fix subject prefix.
 
-nope, it's a kernel side bug with the strict checking path.
+Ugh damn this. Apparently this "fix" has made the news:
+
+https://news.softpedia.com/news/canonical-releases-major-kernel-security-update-for-ubuntu-19-10-and-18-04-lts-528433.shtml
+
+https://nvd.nist.gov/vuln/detail/CVE-2019-19076
+
+and (a) it would be a damn control path, root-only memory leak, but
+also (b) upon closer inspection there is no leak here at all!
+
+We don't need to delete the entry if we failed to allocate it...
+The delete path is in case the entry for the handle is changed, but 
+if we're trying to allocate one anew there can't be any on the list.
+
+Congratulations to whoever classified this as a security fix.
+
+I will send a revert, and go ask for the CVE to be marked invalid.
+What a waste of time. I should have paid more attention :/
+
+> diff --git a/drivers/net/ethernet/netronome/nfp/abm/cls.c b/drivers/net/ethernet/netronome/nfp/abm/cls.c
+> index 23ebddfb9532..9f8a1f69c0c4 100644
+> --- a/drivers/net/ethernet/netronome/nfp/abm/cls.c
+> +++ b/drivers/net/ethernet/netronome/nfp/abm/cls.c
+> @@ -176,8 +176,10 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+>  	u8 mask, val;
+>  	int err;
+>  
+> -	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack))
+> +	if (!nfp_abm_u32_check_knode(alink->abm, knode, proto, extack)) {
+> +		err = -EOPNOTSUPP;
+>  		goto err_delete;
+> +	}
+>  
+>  	tos_off = proto == htons(ETH_P_IP) ? 16 : 20;
+>  
+> @@ -198,14 +200,18 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+>  		if ((iter->val & cmask) == (val & cmask) &&
+>  		    iter->band != knode->res->classid) {
+>  			NL_SET_ERR_MSG_MOD(extack, "conflict with already offloaded filter");
+> +			err = -EOPNOTSUPP;
+>  			goto err_delete;
+>  		}
+>  	}
+>  
+>  	if (!match) {
+>  		match = kzalloc(sizeof(*match), GFP_KERNEL);
+> -		if (!match)
+> -			return -ENOMEM;
+> +		if (!match) {
+> +			err = -ENOMEM;
+> +			goto err_delete;
+> +		}
+> +
+>  		list_add(&match->list, &alink->dscp_map);
+>  	}
+>  	match->handle = knode->handle;
+> @@ -221,7 +227,7 @@ nfp_abm_u32_knode_replace(struct nfp_abm_link *alink,
+>  
+>  err_delete:
+>  	nfp_abm_u32_knode_delete(alink, knode);
+> -	return -EOPNOTSUPP;
+> +	return err;
+>  }
+>  
+>  static int nfp_abm_setup_tc_block_cb(enum tc_setup_type type,
+
