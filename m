@@ -2,189 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 753E91121E9
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 04:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAAE11121EF
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 04:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbfLDDpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 Dec 2019 22:45:08 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:52829 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726834AbfLDDpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 Dec 2019 22:45:08 -0500
-Received: by mail-io1-f69.google.com with SMTP id e124so4089227iof.19
-        for <netdev@vger.kernel.org>; Tue, 03 Dec 2019 19:45:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ybWV5ERE2DFFaXeFE6rBJTbeTy1J3ud09wZZavV8FC8=;
-        b=URYy9WZyOfYXmGfgT13TJUOjMi5DcedYe6r/ldF7JFekaPT0mj+O84xHa+QJNeBwhu
-         tMMDVgqZ0eTgfIb3D+Rtod3z3Ymv2y/8ZrMkdwfByVyUQfDr+A7xYFOewbHwN1KhDSpF
-         AHEUygWyL65ENbv6oDsz+JSqcrkLcCmz+p2EsqBbDPPbU/+n3F+J2ebvZbPEczAFhtf5
-         b6FsdU83P9LBEPof1+sN6hsMjptFSs3r7BQT89nx/MhnXPE2Ig72FGkZ739sImSt0sWT
-         F+YB5cfQ1kxgU6ieHOob/85D4Vxt2OKqL6JCEvpyXIqALw2CVISdLgXQhriNbl4wOa4H
-         ObHA==
-X-Gm-Message-State: APjAAAVsU5LUmF4h9y4nnqfT0ul0M1+hW5GRoDPsfZuzTA+DQPZbRfIm
-        qMe2H4X2CgvO7t0BhfXgvMOa0UlkzI1O+XvMexzQzIjqFUbm
-X-Google-Smtp-Source: APXvYqxtt4ikt2dqLQsg3nRKS4nKfvjThwSLubcbtBlgQg0k6rxaj1SOfgc0nk89IVYO/OwyKXv8rxT3+6rVbdy6L20yAzYfpfTk
+        id S1726955AbfLDD74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 Dec 2019 22:59:56 -0500
+Received: from mail-mw2nam10on2084.outbound.protection.outlook.com ([40.107.94.84]:6216
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726804AbfLDD7z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 3 Dec 2019 22:59:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z6XIA0tNkiwrPS3UBDbhW5c4VZFnmgzyVN4niX0jxXqNw/gXpp/8fMtzbc/CkKErOZAsVXxsx3WETqlOQHORfkZcFLb5hhTmuGoKr0xF1PyHwWtsWl3BjNa7jInJlK/Ie4pJ5h7w+F9++wmAH1ICTeaZfbwtcxdJHr626ejrEBinFlS99pfEP5fTB8BxQtjk+/xjfV+a8vpIBwUC0XkunK9cu3T3a+3AmveAUeza2xkOYubb2dcPBZtyqbeoES+dpXeGX4WHFEpQ8nCwQPknrJnL3FHygByfHrT0u3X+2XcQ/YDj25QHj+KcU6uXa2NRvHmVe3lN8A8V29hVvzwSlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QXexEJVnl/xEIpKkqq1x6epAL1V3IDl57gkiOME/5po=;
+ b=aE0s9IH9go3xsPHdMEwgfD3y2EtWDFcZhIPUSkpH3NIg9/jPCNfqrMwJ1NfU+/ITrd6tUyL39Xr1SN4WvU7e/RyLvIKuxVK11FzYHL6gBYCGOImv7TheiQg2lUVREZ9A5bCdKroMAzSEyK9p7c1UdGlqCuRsMc4vE2lXizWLZN9jYPNW1EC1L48N4wNak+R86Fs6tJrvthmsHf+uJ+OMuOFAU6JIrHNIDRhtaB2FizhJ4vQ1Vj24/09+fMOcNfxNLcQlLh7PvW0/lE5crQz6N3HTTm0Pyd+hqW/XFcxePaBzCstVymCIRrwjudETwZd7JbesqeMYyseP/woLZGQfYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QXexEJVnl/xEIpKkqq1x6epAL1V3IDl57gkiOME/5po=;
+ b=eh38D/dzYFeMZtv6DZ7xOc/u6UofG8pO83I9Q3KEcT/NscU68TfEb5pefbw384b/Js5LkemNAeE2Bf6a8Po154dZZed1iO0N7eEF8CrUYxrlc2RiXMI6S5TQZHmImfyEku17/fmqOE/jnizJMTWTZK+fw4zC83jdyxaWO1jSIkc=
+Received: from MN2PR02MB5727.namprd02.prod.outlook.com (20.179.85.153) by
+ MN2PR02MB6813.namprd02.prod.outlook.com (52.135.50.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.20; Wed, 4 Dec 2019 03:59:39 +0000
+Received: from MN2PR02MB5727.namprd02.prod.outlook.com
+ ([fe80::948:464d:e305:9adc]) by MN2PR02MB5727.namprd02.prod.outlook.com
+ ([fe80::948:464d:e305:9adc%5]) with mapi id 15.20.2516.003; Wed, 4 Dec 2019
+ 03:59:39 +0000
+From:   Naga Sureshkumar Relli <nagasure@xilinx.com>
+To:     Srinivas Neeli <sneeli@xilinx.com>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>,
+        Appana Durga Kedareswara Rao <appanad@xilinx.com>
+CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        git <git@xilinx.com>, Srinivas Neeli <sneeli@xilinx.com>
+Subject: RE: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on
+ CANFD2.0
+Thread-Topic: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on
+ CANFD2.0
+Thread-Index: AQHVqdOPUv7+hq6CjUSnDAohvbmmXKepWmLg
+Date:   Wed, 4 Dec 2019 03:59:38 +0000
+Message-ID: <MN2PR02MB5727E5E2BF394AC2898D5E1FAF5D0@MN2PR02MB5727.namprd02.prod.outlook.com>
+References: <1575375396-3403-1-git-send-email-srinivas.neeli@xilinx.com>
+In-Reply-To: <1575375396-3403-1-git-send-email-srinivas.neeli@xilinx.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=nagasure@xilinx.com; 
+x-originating-ip: [149.199.50.133]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b377bdd3-2a0c-4805-bbe5-08d7786e628d
+x-ms-traffictypediagnostic: MN2PR02MB6813:|MN2PR02MB6813:
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR02MB6813C7BD94430386A3ED4E13AF5D0@MN2PR02MB6813.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 0241D5F98C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(366004)(396003)(13464003)(199004)(189003)(478600001)(6116002)(53546011)(11346002)(6436002)(54906003)(99286004)(107886003)(64756008)(26005)(25786009)(71190400001)(446003)(229853002)(14454004)(66446008)(55016002)(186003)(102836004)(4326008)(2501003)(8676002)(9686003)(74316002)(6246003)(71200400001)(2906002)(81166006)(3846002)(6506007)(33656002)(110136005)(86362001)(6636002)(7736002)(256004)(7696005)(305945005)(66476007)(316002)(66946007)(2201001)(66556008)(8936002)(5660300002)(81156014)(76176011)(52536014)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR02MB6813;H:MN2PR02MB5727.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cPSu2VKPAILvtkzf4cU3Nmbtf+UtMN7uvrzs1J5BDIbLgk5EFiKhgrnWpflg/z8Mn6TAMlMERBmU4CEyuiijl6S2Sa1VOiivfszCEGPAWZwDlRyuFX0qZO2LcptTCtUb5QRXkKg3A9+sOSHOKNI5aeICjYkucnd+BYC0K9t5XoaROHB9e3QmsBf4+Hs2tq1a+0pJbHeDzQUiV4V8d6NNBkkTa9TcAz4iRIkkZq00rxbmXaF0AgbrrFuzRH3o5LM3IM5DJL9dTwscCiBuaEd1SGkMfhoF8wxnnpgxroWA85MbUqw6p/vlyfZZIgMJ3vYfbOLjxB1tXb9uVrCdaHpAbp7X9An9t2VSvla5x4se+VuX58sxcoU/hqU9LavjYNi+Zo0J5EG0wrhmFltAM5xZp1KdBxhQcH/SvnuwcyK1moiqEuQ9BSdqWgMD5X/AXYR+QUkui0XK1C1ebbZD+qh6AXWaKQiIjh/sUpIowHnWL1pwdf8nsEiDMeb5kmSWaQdi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8f04:: with SMTP id c4mr684206iok.50.1575431107219;
- Tue, 03 Dec 2019 19:45:07 -0800 (PST)
-Date:   Tue, 03 Dec 2019 19:45:07 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008399d40598d8a34d@google.com>
-Subject: KASAN: vmalloc-out-of-bounds Write in pcpu_alloc
-From:   syzbot <syzbot+59b7daa4315e07a994f1@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b377bdd3-2a0c-4805-bbe5-08d7786e628d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2019 03:59:39.0446
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N39VlpqxBGrIlMGauCvZS9BpQaD1zyD28g3RnbspcDV6pAK+nJWkCoXwiR2c5ZOmL4A38WRFVc0FNCZQJvm2Ig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6813
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Reviewed-by: Naga Sureshkumar Relli	<naga.sureshkumar.relli@xilinx.com>
 
-syzbot found the following crash on:
+> -----Original Message-----
+> From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> Sent: Tuesday, December 3, 2019 5:47 PM
+> To: wg@grandegger.com; mkl@pengutronix.de; davem@davemloft.net; Michal Si=
+mek
+> <michals@xilinx.com>; Appana Durga Kedareswara Rao <appanad@xilinx.com>
+> Cc: linux-can@vger.kernel.org; netdev@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; git <git@xilinx=
+.com>; Naga
+> Sureshkumar Relli <nagasure@xilinx.com>; Srinivas Neeli <sneeli@xilinx.co=
+m>
+> Subject: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on CANFD2=
+.0
+>=20
+> CANFD2.0 core uses BRAM for storing acceptance filter ID(AFID) and MASK
+> (AFMASK)registers. So by default AFID and AFMASK registers contain random=
+ data. Due to
+> random data, we are not able to receive all CAN ids.
+>=20
+> Initializing AFID and AFMASK registers with Zero before enabling acceptan=
+ce filter to
+> receive all packets irrespective of ID and Mask.
+>=20
+> Fixes: 0db9071353a0 ("can: xilinx: add can 2.0 support")
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> ---
+>  drivers/net/can/xilinx_can.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>=20
+> diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c =
+index
+> 464af939cd8a..c1dbab8c896d 100644
+> --- a/drivers/net/can/xilinx_can.c
+> +++ b/drivers/net/can/xilinx_can.c
+> @@ -60,6 +60,8 @@ enum xcan_reg {
+>  	XCAN_TXMSG_BASE_OFFSET	=3D 0x0100, /* TX Message Space */
+>  	XCAN_RXMSG_BASE_OFFSET	=3D 0x1100, /* RX Message Space */
+>  	XCAN_RXMSG_2_BASE_OFFSET	=3D 0x2100, /* RX Message Space */
+> +	XCAN_AFR_2_MASK_OFFSET	=3D 0x0A00, /* Acceptance Filter MASK */
+> +	XCAN_AFR_2_ID_OFFSET	=3D 0x0A04, /* Acceptance Filter ID */
+>  };
+>=20
+>  #define XCAN_FRAME_ID_OFFSET(frame_base)	((frame_base) + 0x00)
+> @@ -1809,6 +1811,11 @@ static int xcan_probe(struct platform_device *pdev=
+)
+>=20
+>  	pm_runtime_put(&pdev->dev);
+>=20
+> +	if (priv->devtype.flags & XCAN_FLAG_CANFD_2) {
+> +		priv->write_reg(priv, XCAN_AFR_2_ID_OFFSET, 0x00000000);
+> +		priv->write_reg(priv, XCAN_AFR_2_MASK_OFFSET, 0x00000000);
+> +	}
+> +
+>  	netdev_dbg(ndev, "reg_base=3D0x%p irq=3D%d clock=3D%d, tx buffers: actu=
+al %d, using
+> %d\n",
+>  		   priv->reg_base, ndev->irq, priv->can.clock.freq,
+>  		   hw_tx_max, priv->tx_max);
+> --
+> 2.7.4
 
-HEAD commit:    b3c424eb sch_cake: Add missing NLA policy entry TCA_CAKE_S..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=129c042ae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7d8ab2e0e09c2a82
-dashboard link: https://syzkaller.appspot.com/bug?extid=59b7daa4315e07a994f1
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=140df641e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147dcc2ae00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+59b7daa4315e07a994f1@syzkaller.appspotmail.com
-
-RBP: 00007fff1c60f370 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000003 R14: 00007fff1c60f370 R15: 0000000000000000
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in memset include/linux/string.h:365  
-[inline]
-BUG: KASAN: vmalloc-out-of-bounds in pcpu_alloc+0x589/0x1380  
-mm/percpu.c:1734
-Write of size 32768 at addr ffffe8ffff800000 by task syz-executor940/9026
-
-CPU: 1 PID: 9026 Comm: syz-executor940 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  print_address_description.constprop.0.cold+0x5/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:638
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  memset+0x24/0x40 mm/kasan/common.c:107
-  memset include/linux/string.h:365 [inline]
-  pcpu_alloc+0x589/0x1380 mm/percpu.c:1734
-  __alloc_percpu_gfp+0x28/0x30 mm/percpu.c:1783
-  prealloc_init kernel/bpf/hashtab.c:154 [inline]
-  htab_map_alloc+0xdb9/0x11c0 kernel/bpf/hashtab.c:378
-  find_and_alloc_map kernel/bpf/syscall.c:123 [inline]
-  map_create kernel/bpf/syscall.c:654 [inline]
-  __do_sys_bpf+0x478/0x37b0 kernel/bpf/syscall.c:3012
-  __se_sys_bpf kernel/bpf/syscall.c:2989 [inline]
-  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2989
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441b99
-Code: e8 ec 03 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 1b 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff1c60f318 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441b99
-RDX: 000000000000003c RSI: 0000000020000380 RDI: 0000000000000000
-RBP: 00007fff1c60f370 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000003 R14: 00007fff1c60f370 R15: 0000000000000000
-
-
-Memory state around the buggy address:
-BUG: unable to handle page fault for address: fffff91fffefffe0
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 21ffe6067 P4D 21ffe6067 PUD aa56b067 PMD aa56c067 PTE 0
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9026 Comm: syz-executor940 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:memcpy_erms+0x6/0x10 arch/x86/lib/memcpy_64.S:56
-Code: cc cc cc cc eb 1e 0f 1f 00 48 89 f8 48 89 d1 48 c1 e9 03 83 e2 07 f3  
-48 a5 89 d1 f3 a4 c3 66 0f 1f 44 00 00 48 89 f8 48 89 d1 <f3> a4 c3 0f 1f  
-80 00 00 00 00 48 89 f8 48 83 fa 20 72 7e 40 38 fe
-RSP: 0018:ffffc90001fa7990 EFLAGS: 00010082
-RAX: ffffc90001fa799c RBX: fffff91fffefffe0 RCX: 0000000000000010
-RDX: 0000000000000010 RSI: fffff91fffefffe0 RDI: ffffc90001fa799c
-RBP: ffffc90001fa79f0 R08: ffff888091714400 R09: fffff520003f4f38
-R10: fffff520003f4f37 R11: ffffc90001fa79be R12: fffff91ffff00000
-R13: 0000200000000000 R14: 00000000fffffffe R15: ffff88821fffd100
-FS:  0000000000d10880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffff91fffefffe0 CR3: 0000000099ba1000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  __kasan_report.cold+0x30/0x41 mm/kasan/report.c:508
-  kasan_report+0x12/0x20 mm/kasan/common.c:638
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  memset+0x24/0x40 mm/kasan/common.c:107
-  memset include/linux/string.h:365 [inline]
-  pcpu_alloc+0x589/0x1380 mm/percpu.c:1734
-  __alloc_percpu_gfp+0x28/0x30 mm/percpu.c:1783
-  prealloc_init kernel/bpf/hashtab.c:154 [inline]
-  htab_map_alloc+0xdb9/0x11c0 kernel/bpf/hashtab.c:378
-  find_and_alloc_map kernel/bpf/syscall.c:123 [inline]
-  map_create kernel/bpf/syscall.c:654 [inline]
-  __do_sys_bpf+0x478/0x37b0 kernel/bpf/syscall.c:3012
-  __se_sys_bpf kernel/bpf/syscall.c:2989 [inline]
-  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2989
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441b99
-Code: e8 ec 03 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 1b 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff1c60f318 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441b99
-RDX: 000000000000003c RSI: 0000000020000380 RDI: 0000000000000000
-RBP: 00007fff1c60f370 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-R13: 0000000000000003 R14: 00007fff1c60f370 R15: 0000000000000000
-Modules linked in:
-CR2: fffff91fffefffe0
----[ end trace 28e1dfa4887d81a1 ]---
-RIP: 0010:memcpy_erms+0x6/0x10 arch/x86/lib/memcpy_64.S:56
-Code: cc cc cc cc eb 1e 0f 1f 00 48 89 f8 48 89 d1 48 c1 e9 03 83 e2 07 f3  
-48 a5 89 d1 f3 a4 c3 66 0f 1f 44 00 00 48 89 f8 48 89 d1 <f3> a4 c3 0f 1f  
-80 00 00 00 00 48 89 f8 48 83 fa 20 72 7e 40 38 fe
-RSP: 0018:ffffc90001fa7990 EFLAGS: 00010082
-RAX: ffffc90001fa799c RBX: fffff91fffefffe0 RCX: 0000000000000010
-RDX: 0000000000000010 RSI: fffff91fffefffe0 RDI: ffffc90001fa799c
-RBP: ffffc90001fa79f0 R08: ffff888091714400 R09: fffff520003f4f38
-R10: fffff520003f4f37 R11: ffffc90001fa79be R12: fffff91ffff00000
-R13: 0000200000000000 R14: 00000000fffffffe R15: ffff88821fffd100
-FS:  0000000000d10880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: fffff91fffefffe0 CR3: 0000000099ba1000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
