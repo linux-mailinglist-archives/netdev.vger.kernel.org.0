@@ -2,193 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 745F6113579
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 20:10:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1522B11357A
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 20:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbfLDTJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 14:09:59 -0500
-Received: from mail-pj1-f73.google.com ([209.85.216.73]:50164 "EHLO
-        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728570AbfLDTJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 14:09:58 -0500
-Received: by mail-pj1-f73.google.com with SMTP id ck20so386377pjb.16
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 11:09:58 -0800 (PST)
+        id S1728892AbfLDTLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 14:11:17 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:44979 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728114AbfLDTLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 14:11:17 -0500
+Received: by mail-pj1-f65.google.com with SMTP id w5so184809pjh.11
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 11:11:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=7/u5MtE8GGNIkQpF6GaFbkK4Dp87PRCQ92z7Xcrt0r4=;
-        b=od3x94Imhn9QFPESnWqo3LZpm72cU0JXU8qOH3aVeJtVMRS+9HPtIaetT3aIzyfpuP
-         YCxVQI8wvyJCZ/qY810YxmgpO6bNAjoboyfxfB+Y4GeenjvXOM+BJhJ+wZlRjQsa16sp
-         aB2Y46ExUYl94wgj7e/RJhkiyMo68tAhoEIR1hYdLMiqaJ6SERuWHUrkOtE/fLYYMfMK
-         0r64psNmU9qn37TA/xA/oT3cVgvYaaJInvUII9XN49w6vD4ohs7ATWynBP7BaJQZL5Wu
-         heri2Z8n6vSOj10t7wm0HVUnEQk1zD6d7ednoy9KBqLY7SOsrpC1qBS3giHGgJHELVph
-         d8bA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0mtPLUBDUZNxIDlqYatMH176esO/n0zoyo9pGhJpYDw=;
+        b=vKYTjNIUUehfLsJKA0/zqoE4dSbPrMHwYu0aFjR6ve8MnySmoN1ml+BdX2+PDYBlZg
+         PiCBMIFaUKe/KgfMLJjBNLXv4v7mP2ZhHH5PmsVf6VLohSLn9woFgpbM/+XE2wwfyyer
+         IQEJ7gFctPvk/M2l/R+uVs2GNy3qi0ZVGkRTor2ickhFb+nCwbPxMtj1atkwdvt/1oMj
+         mBBxddrJQPhNIwri/xVcyGp7b4l+sMSmO+pfvhtNVln53pZcpoelxHACMZQn45o1lNXl
+         7tzIK1JFqv3ukQew8AnRb54OJEI+W4hDbD0csh6d3zwD1E4w+VTTtlECdJWvjsHCrypr
+         /uWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=7/u5MtE8GGNIkQpF6GaFbkK4Dp87PRCQ92z7Xcrt0r4=;
-        b=GWhzvXNRlve9HxD1O3GZfEE9PNLXV408vC4lTmxY3CRSa9S2NeeBWz8C2dnncn8cIQ
-         PuqySUO01KXtqTFLy9CTV21bQ3623ckw2aN2ucUAf2FpjShQudOowonEOrFRrQ1XZAwv
-         AiQT8YfqZh0AEIQOTeTeMajJhajTeShdMBxmVXIbm4G4dqzwgl66stsfQ7np8fh0uKq2
-         10jOf91ZNT77ZZwouCe/V0skWhtYKiClQu5q+5vC0kdPinw337xrqdjvk2e59RTrix8K
-         CHWkf2jg6TgWwrj+9gt3hPx5AXW4PDZEiZwFdaFcpq8ifdpafkoSZMuPFn/uwqzgcIjG
-         3aTQ==
-X-Gm-Message-State: APjAAAVsbbZwxj/IbdGXED6yPC26d3PA/pOekjicjH7moKtv9Xmsq7aJ
-        6HCOs4vgQwVoktT6UzoYNhdrya/lC7lgszpZz46GJlJX0hesk6bJsLE9ULWLbL5DHKwp1cRGn3z
-        3sqQU7SY+t8Hwz7ylWW7/84oMN1wH6yyxeOGUqYdnPil8cUXpcWnC5w==
-X-Google-Smtp-Source: APXvYqyM4s5RLWgvanS19DTCJlKXLvyiNbMBZkTY1/otUJXKxR104SfiOlCx8wrBqhUbDH/8LKjnyc0=
-X-Received: by 2002:a63:5104:: with SMTP id f4mr5134286pgb.192.1575486597837;
- Wed, 04 Dec 2019 11:09:57 -0800 (PST)
-Date:   Wed,  4 Dec 2019 11:09:55 -0800
-Message-Id: <20191204190955.170934-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
-Subject: [PATCH bpf] selftests/bpf: de-flake test_tcpbpf
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0mtPLUBDUZNxIDlqYatMH176esO/n0zoyo9pGhJpYDw=;
+        b=cbFcUm1vV3ez/oCxc2nwhRzZG81YRVS6kVhFt7uLt4ps0qiuW3bs204mXkhoI+JouO
+         2d/v5wiA9l6PFi0s30+bkI5Nt/JK5NPV6swPjFxfPl0PGWAcsh9M4LwxzPXNm1mv4Zi6
+         ALJCTJOC9qFnNYrCGBUVbNKrqfVWY1wCSxVm2lgHPSY0dMtcYrDTnIYu2x/WpewNVvYk
+         7FP0xiPoUzAYAnHMi42bxdiDBRGzp4omQ/k7Jxe2PeWWUNA7uWOUu6AVOYZqbDMfvVS0
+         GYUttZp4IE9rVpLylk5ktGID65XRbtNjTZ4RVbc9ArNOenLEPp/NGFrCMFxaa0x7ZsRk
+         rj1w==
+X-Gm-Message-State: APjAAAWLVTpYovfPQCJcoxbXI8kbvT+/i/iK5NDvEv/4gXKUTpDBNi6H
+        zHUW8XavoyprKP3FlcXsJI8Ewg==
+X-Google-Smtp-Source: APXvYqwmfhEmCrIz7XKZpH6t0I2b+FLAuUuQkK0NFjOpn4GfrIHZ+awjdLpKDkyig5BZq+cO6ioGyg==
+X-Received: by 2002:a17:902:8682:: with SMTP id g2mr4977456plo.110.1575486676425;
+        Wed, 04 Dec 2019 11:11:16 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id gc1sm7365845pjb.20.2019.12.04.11.11.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Dec 2019 11:11:15 -0800 (PST)
+Date:   Wed, 4 Dec 2019 11:11:07 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Maciej Zenczykowski <maze@google.com>, netdev@vger.kernel.org,
+        Hritik Vijay <hritikxx8@gmail.com>
+Subject: Re: [PATCH iproute2] ss: fix end-of-line printing in misc/ss.c
+Message-ID: <20191204111107.4a8d7115@hermes.lan>
+In-Reply-To: <20191127052118.163594-1-brianvv@google.com>
+References: <20191127052118.163594-1-brianvv@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It looks like BPF program that handles BPF_SOCK_OPS_STATE_CB state
-can race with the bpf_map_lookup_elem("global_map"); I sometimes
-see the failures in this test and re-running helps.
+On Tue, 26 Nov 2019 21:21:18 -0800
+Brian Vazquez <brianvv@google.com> wrote:
 
-Since we know that we expect the callback to be called 3 times (one
-time for listener socket, two times for both ends of the connection),
-let's export this number and add simple retry logic around that.
+> Before commit 5883c6eba517, function field_is_last() was incorrectly
+> reporting which column was the last because it was missing COL_PROC
+> and by purely coincidence it was correctly printing the end-of-line and
+> moving to the first column since the very last field was empty, and
+> end-of-line was added for the last non-empty token since it was seen as
+> the last field.
+> 
+> This commits correcrly prints the end-of-line for the last entrien in
+> the ss command.
+> 
+> Tested:
+> diff <(./ss.old -nltp) <(misc/ss -nltp)
+> 38c38
+> < LISTEN    0   128     [::1]:35417   [::]:*   users:(("foo",pid=65254,fd=116))
+> \ No newline at end of file
+> ---
+> > LISTEN    0   128     [::1]:35417   [::]:*   users:(("foo",pid=65254,fd=116))  
+> 
+> Cc: Hritik Vijay <hritikxx8@gmail.com>
+> Fixes: 5883c6eba517 ("ss: show header for --processes/-p")
+> Signed-off-by: Brian Vazquez <brianvv@google.com>
 
-Also, let's make EXPECT_EQ() not return on failure, but continue
-evaluating all conditions; that should make potential debugging
-easier.
+This commit message is really hard to understand and causes warnings
+in checkpatch. Also, blaming old code for doing the right thing
+is not necessary. The changelog doesn't need to explain why.
+The offending commit is already referenced by the fixes line.
 
-With this fix in place I don't observe the flakiness anymore.
+Instead, I propose:
 
-Cc: Lawrence Brakmo <brakmo@fb.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- .../selftests/bpf/progs/test_tcpbpf_kern.c    |  1 +
- tools/testing/selftests/bpf/test_tcpbpf.h     |  1 +
- .../testing/selftests/bpf/test_tcpbpf_user.c  | 25 +++++++++++++------
- 3 files changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index 2e233613d1fc..7fa4595d2b66 100644
---- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -131,6 +131,7 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 				g.bytes_received = skops->bytes_received;
- 				g.bytes_acked = skops->bytes_acked;
- 			}
-+			g.num_close_events++;
- 			bpf_map_update_elem(&global_map, &key, &g,
- 					    BPF_ANY);
- 		}
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf.h b/tools/testing/selftests/bpf/test_tcpbpf.h
-index 7bcfa6207005..6220b95cbd02 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf.h
-+++ b/tools/testing/selftests/bpf/test_tcpbpf.h
-@@ -13,5 +13,6 @@ struct tcpbpf_globals {
- 	__u64 bytes_received;
- 	__u64 bytes_acked;
- 	__u32 num_listen;
-+	__u32 num_close_events;
- };
- #endif
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf_user.c b/tools/testing/selftests/bpf/test_tcpbpf_user.c
-index 716b4e3be581..3ae127620463 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf_user.c
-+++ b/tools/testing/selftests/bpf/test_tcpbpf_user.c
-@@ -16,6 +16,9 @@
- 
- #include "test_tcpbpf.h"
- 
-+/* 3 comes from one listening socket + both ends of the connection */
-+#define EXPECTED_CLOSE_EVENTS		3
-+
- #define EXPECT_EQ(expected, actual, fmt)			\
- 	do {							\
- 		if ((expected) != (actual)) {			\
-@@ -23,13 +26,14 @@
- 			       "    Actual: %" fmt "\n"		\
- 			       "  Expected: %" fmt "\n",	\
- 			       (actual), (expected));		\
--			goto err;				\
-+			ret--;					\
- 		}						\
- 	} while (0)
- 
- int verify_result(const struct tcpbpf_globals *result)
- {
- 	__u32 expected_events;
-+	int ret = 0;
- 
- 	expected_events = ((1 << BPF_SOCK_OPS_TIMEOUT_INIT) |
- 			   (1 << BPF_SOCK_OPS_RWND_INIT) |
-@@ -48,15 +52,15 @@ int verify_result(const struct tcpbpf_globals *result)
- 	EXPECT_EQ(0x80, result->bad_cb_test_rv, PRIu32);
- 	EXPECT_EQ(0, result->good_cb_test_rv, PRIu32);
- 	EXPECT_EQ(1, result->num_listen, PRIu32);
-+	EXPECT_EQ(EXPECTED_CLOSE_EVENTS, result->num_close_events, PRIu32);
- 
--	return 0;
--err:
--	return -1;
-+	return ret;
- }
- 
- int verify_sockopt_result(int sock_map_fd)
- {
- 	__u32 key = 0;
-+	int ret = 0;
- 	int res;
- 	int rv;
- 
-@@ -69,9 +73,7 @@ int verify_sockopt_result(int sock_map_fd)
- 	rv = bpf_map_lookup_elem(sock_map_fd, &key, &res);
- 	EXPECT_EQ(0, rv, "d");
- 	EXPECT_EQ(1, res, "d");
--	return 0;
--err:
--	return -1;
-+	return ret;
- }
- 
- static int bpf_find_map(const char *test, struct bpf_object *obj,
-@@ -96,6 +98,7 @@ int main(int argc, char **argv)
- 	int error = EXIT_FAILURE;
- 	struct bpf_object *obj;
- 	int cg_fd = -1;
-+	int retry = 10;
- 	__u32 key = 0;
- 	int rv;
- 
-@@ -134,12 +137,20 @@ int main(int argc, char **argv)
- 	if (sock_map_fd < 0)
- 		goto err;
- 
-+retry_lookup:
- 	rv = bpf_map_lookup_elem(map_fd, &key, &g);
- 	if (rv != 0) {
- 		printf("FAILED: bpf_map_lookup_elem returns %d\n", rv);
- 		goto err;
- 	}
- 
-+	if (g.num_close_events != EXPECTED_CLOSE_EVENTS && retry--) {
-+		printf("Unexpected number of close events (%d), retrying!\n",
-+		       g.num_close_events);
-+		usleep(100);
-+		goto retry_lookup;
-+	}
-+
- 	if (verify_result(&g)) {
- 		printf("FAILED: Wrong stats\n");
- 		goto err;
--- 
-2.24.0.393.g34dc348eaf-goog
+The previous change to ss to show header broke the printing of end-of-line
+for the last entry.
 
+Fixes: 5883c6eba517 ("ss: show header for --processes/-p")
+Signed-off-by: Brian Vazquez <brianvv@google.com>
