@@ -2,121 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6FC113041
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:50:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD36113046
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 17:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728916AbfLDQug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 11:50:36 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:45716 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfLDQug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 11:50:36 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB4GoWR6091288;
-        Wed, 4 Dec 2019 10:50:32 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575478232;
-        bh=Fsq/sOp9KxxrreLSU1uAKOD6Ws/kWQRUU7rs0e7O1Bo=;
-        h=From:To:CC:Subject:Date;
-        b=Vrj2vo2Wt5iBs7dHFyOKFXF945VyQsaQIbLcJq/GHeEgC+RhsoC5NtspRH0zPNfZr
-         9zhpTathXj2IHuY+KvFjHMiB8tv3klK5JOLDxXin8j6kjdUIhIOwDt9uSKVyOxXKsN
-         2LsxfeWzftkirh/mvaokktXA5bBVCAY1G+CTqDB4=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB4GoWDC036211;
-        Wed, 4 Dec 2019 10:50:32 -0600
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 4 Dec
- 2019 10:50:32 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Wed, 4 Dec 2019 10:50:32 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB4GoV8Q046172;
-        Wed, 4 Dec 2019 10:50:32 -0600
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH v2] net: ethernet: ti: davinci_cpdma: fix warning "device driver frees DMA memory with different size"
-Date:   Wed, 4 Dec 2019 18:50:29 +0200
-Message-ID: <20191204165029.9264-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728896AbfLDQxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 11:53:12 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42339 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726934AbfLDQxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 11:53:11 -0500
+Received: by mail-pf1-f195.google.com with SMTP id 4so118354pfz.9
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 08:53:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Nxoz6BVeNAQHOf9JdrWQqBTT4e/HsPz+1BwMxNNEGCc=;
+        b=f4JP/0y042I07u83Lk0o6+YVPEjqfPyrpm0LNAw3nT3a4MN2YqezN/Gk/Q+gbqANzT
+         dPjhASajQ9TmraiASkeQ56OGocLlUhUW+ozH0pTYxAW3pV8EDzpcv7G+Vfp8aMHPuvA7
+         FbpOe7b3EpUeilQuQh3JhI+A7AtAptvO/I8XL9UKd9BFcha1hyBw/wrE63A+PYP3kZbe
+         6omJW1sucKpaMn8kXHyM5wYtA06zP8/6M1nNK+t+EvzgAmYVNUofxkZlwjCzoLqnLqbu
+         G28MV+jbAiKKhOUjY25hCzsn36slsuryuDfOnHety8cEnMg8pA0T0SZa+86WspKWXNl6
+         eN+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Nxoz6BVeNAQHOf9JdrWQqBTT4e/HsPz+1BwMxNNEGCc=;
+        b=kdwNr6z86aFcsNQcf/xxfSrG5qcPipZm4JHBPRSBg2uCU9pBCUghWBa6cSWxnpU0aJ
+         tCT8PNnxwH8yTxodheZwumT8RUV31Lc0IsaQhcdgYX3uJAVB6Rt52Z4npdCUqbo4NUYU
+         UkQjqoY6LXzk85HNDKOPw0g22CuCNuctSScMfOoo1MkSM7lF/uvWePUEsIaw8H1886Cu
+         TB9YFTFuUnoYUrirDEfuoP52qTvtAgmCLJoxecwBzHCnMQUzaaeYJKXd585pzPzJm/7D
+         XO+HV4mdYx7DmfLcKdPI/M5zEbOuT6xUxoo3Cdh53Ypoj/7K2Bg+SW7NDVlUAgGq2oet
+         h/WA==
+X-Gm-Message-State: APjAAAWiBDDHwS4E4IlDjVS3Oy8LWJg8as0Fo+w9bhzmAoJruJHlCh6u
+        Fp/suDdX4GRq6UsXHJDAVwM=
+X-Google-Smtp-Source: APXvYqyUdNmlVW0suFscg0c8AtHmBGzwwh++l0EqXWAgEo5htNobtrmAGdwf8Vtr1DG4iEtaGLKeog==
+X-Received: by 2002:a65:530d:: with SMTP id m13mr4466338pgq.172.1575478391147;
+        Wed, 04 Dec 2019 08:53:11 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id x11sm8505399pfn.53.2019.12.04.08.53.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Dec 2019 08:53:10 -0800 (PST)
+Subject: Re: [PATCH net] tcp: Avoid time_after32() underflow when handling
+ syncookies
+To:     Guillaume Nault <gnault@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+References: <2601e43617d707a28f60f2fe6927b1aaaa0a37f8.1574976866.git.gnault@redhat.com>
+ <CANn89i+G0jCU=JtSit3X9w+SaExgbbo-d1x4UEkTEJRdypN3gQ@mail.gmail.com>
+ <20191202215143.GA13231@linux.home>
+ <CANn89i+k3+NN8=5fD9RN4BnPT5dei=iKJaps_0vmcMNQwC58mw@mail.gmail.com>
+ <20191204004654.GA22999@linux.home>
+ <d6b6e3c4-cae6-6127-7bda-235a00d351ef@gmail.com>
+ <20191204143414.GA2358@linux.home>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <192e1cb1-2cf1-22e8-999b-c74c74492113@gmail.com>
+Date:   Wed, 4 Dec 2019 08:53:08 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20191204143414.GA2358@linux.home>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TI CPSW(s) driver produces warning with DMA API debug options enabled:
 
-WARNING: CPU: 0 PID: 1033 at kernel/dma/debug.c:1025 check_unmap+0x4a8/0x968
-DMA-API: cpsw 48484000.ethernet: device driver frees DMA memory with different size
- [device address=0x00000000abc6aa02] [map size=64 bytes] [unmap size=42 bytes]
-CPU: 0 PID: 1033 Comm: ping Not tainted 5.3.0-dirty #41
-Hardware name: Generic DRA72X (Flattened Device Tree)
-[<c0112c60>] (unwind_backtrace) from [<c010d270>] (show_stack+0x10/0x14)
-[<c010d270>] (show_stack) from [<c09bc564>] (dump_stack+0xd8/0x110)
-[<c09bc564>] (dump_stack) from [<c013b93c>] (__warn+0xe0/0x10c)
-[<c013b93c>] (__warn) from [<c013b9ac>] (warn_slowpath_fmt+0x44/0x6c)
-[<c013b9ac>] (warn_slowpath_fmt) from [<c01e0368>] (check_unmap+0x4a8/0x968)
-[<c01e0368>] (check_unmap) from [<c01e08a8>] (debug_dma_unmap_page+0x80/0x90)
-[<c01e08a8>] (debug_dma_unmap_page) from [<c0752414>] (__cpdma_chan_free+0x114/0x16c)
-[<c0752414>] (__cpdma_chan_free) from [<c07525c4>] (__cpdma_chan_process+0x158/0x17c)
-[<c07525c4>] (__cpdma_chan_process) from [<c0753690>] (cpdma_chan_process+0x3c/0x5c)
-[<c0753690>] (cpdma_chan_process) from [<c0758660>] (cpsw_tx_mq_poll+0x48/0x94)
-[<c0758660>] (cpsw_tx_mq_poll) from [<c0803018>] (net_rx_action+0x108/0x4e4)
-[<c0803018>] (net_rx_action) from [<c010230c>] (__do_softirq+0xec/0x598)
-[<c010230c>] (__do_softirq) from [<c0143914>] (do_softirq.part.4+0x68/0x74)
-[<c0143914>] (do_softirq.part.4) from [<c0143a44>] (__local_bh_enable_ip+0x124/0x17c)
-[<c0143a44>] (__local_bh_enable_ip) from [<c0871590>] (ip_finish_output2+0x294/0xb7c)
-[<c0871590>] (ip_finish_output2) from [<c0875440>] (ip_output+0x210/0x364)
-[<c0875440>] (ip_output) from [<c0875e2c>] (ip_send_skb+0x1c/0xf8)
-[<c0875e2c>] (ip_send_skb) from [<c08a7fd4>] (raw_sendmsg+0x9a8/0xc74)
-[<c08a7fd4>] (raw_sendmsg) from [<c07d6b90>] (sock_sendmsg+0x14/0x24)
-[<c07d6b90>] (sock_sendmsg) from [<c07d8260>] (__sys_sendto+0xbc/0x100)
-[<c07d8260>] (__sys_sendto) from [<c01011ac>] (__sys_trace_return+0x0/0x14)
-Exception stack(0xea9a7fa8 to 0xea9a7ff0)
-...
 
-The reason is that cpdma_chan_submit_si() now stores original buffer length
-(sw_len) in CPDMA descriptor instead of adjusted buffer length (hw_len)
-used to map the buffer.
+On 12/4/19 6:34 AM, Guillaume Nault wrote:
+> On Tue, Dec 03, 2019 at 06:20:24PM -0800, Eric Dumazet wrote:
+>>
+>> Sorry I am completely lost with this amount of text.
+>>
+> No problem. I'll write a v2 and remork the problem description to make
+> it clearer.
+> 
+>> Whatever solution you come up with, make sure it covers all the points
+>> that have been raised.
+>>
+> Will do.
+> Thanks.
+> 
 
-Hence, fix an issue by passing correct buffer length in CPDMA descriptor.
+Le me apologize for my last email.
 
-Cc: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Fixes: 6670acacd59e ("net: ethernet: ti: davinci_cpdma: add dma mapped submit")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/davinci_cpdma.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I should have slept first after my long day.
 
-diff --git a/drivers/net/ethernet/ti/davinci_cpdma.c b/drivers/net/ethernet/ti/davinci_cpdma.c
-index 37ba708ac781..f30a9b9c78a7 100644
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -1018,7 +1018,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 	struct cpdma_chan		*chan = si->chan;
- 	struct cpdma_ctlr		*ctlr = chan->ctlr;
- 	int				len = si->len;
--	int				swlen = len;
-+	int				swlen;
- 	struct cpdma_desc __iomem	*desc;
- 	dma_addr_t			buffer;
- 	u32				mode;
-@@ -1040,6 +1040,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
- 		chan->stats.runt_transmit_buff++;
- 	}
- 
-+	swlen = len;
- 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
- 	cpdma_desc_to_port(chan, mode, si->directed);
- 
--- 
-2.17.1
-
+Thanks a lot for working on this !
