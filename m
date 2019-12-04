@@ -2,86 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 915351122A8
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 06:52:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D10A51122FE
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 07:39:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbfLDFwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 00:52:43 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:56960 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfLDFwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 00:52:43 -0500
-Received: from localhost.localdomain ([90.126.97.183])
-        by mwinf5d51 with ME
-        id Zhsd210043xPcdm03hsday; Wed, 04 Dec 2019 06:52:41 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 04 Dec 2019 06:52:41 +0100
-X-ME-IP: 90.126.97.183
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kvalo@codeaurora.org, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, davem@davemloft.net
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] ath10k: Fix some typo in some warning messages
-Date:   Wed,  4 Dec 2019 06:52:35 +0100
-Message-Id: <20191204055235.11989-1-christophe.jaillet@wanadoo.fr>
+        id S1727136AbfLDGjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 01:39:48 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6745 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725932AbfLDGjr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 01:39:47 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 0E0FC20E8F9F239D4783;
+        Wed,  4 Dec 2019 14:39:45 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 4 Dec 2019 14:39:36 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <alexios.zavras@intel.com>, <oneukum@suse.com>,
+        <tglx@linutronix.de>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>,
+        "Hulk Robot" <hulkci@huawei.com>
+Subject: [PATCH -next] NFC: port100: Convert cpu_to_le16(le16_to_cpu(E1) + E2) to use le16_add_cpu().
+Date:   Wed, 4 Dec 2019 14:37:17 +0800
+Message-ID: <20191204063717.102854-1-maowenan@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix some typo:
-  s/to to/to/
-  s/even/event/
+It is better to convert cpu_to_le16(le16_to_cpu(frame->datalen) + len) to
+use le16_add_cpu().
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
 ---
- drivers/net/wireless/ath/ath10k/mac.c      | 2 +-
- drivers/net/wireless/ath/ath10k/testmode.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/nfc/port100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index e8bdb2ba9b18..5faa43cd7fef 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -1098,7 +1098,7 @@ static int ath10k_monitor_vdev_stop(struct ath10k *ar)
+diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
+index 604dba4..8e4d355 100644
+--- a/drivers/nfc/port100.c
++++ b/drivers/nfc/port100.c
+@@ -565,7 +565,7 @@ static void port100_tx_update_payload_len(void *_frame, int len)
+ {
+ 	struct port100_frame *frame = _frame;
  
- 	ret = ath10k_wmi_vdev_stop(ar, ar->monitor_vdev_id);
- 	if (ret)
--		ath10k_warn(ar, "failed to to request monitor vdev %i stop: %d\n",
-+		ath10k_warn(ar, "failed to request monitor vdev %i stop: %d\n",
- 			    ar->monitor_vdev_id, ret);
+-	frame->datalen = cpu_to_le16(le16_to_cpu(frame->datalen) + len);
++	le16_add_cpu(&frame->datalen, len);
+ }
  
- 	ret = ath10k_vdev_setup_sync(ar);
-diff --git a/drivers/net/wireless/ath/ath10k/testmode.c b/drivers/net/wireless/ath/ath10k/testmode.c
-index 1bffe3fbea3f..7a9b9bbcdbfc 100644
---- a/drivers/net/wireless/ath/ath10k/testmode.c
-+++ b/drivers/net/wireless/ath/ath10k/testmode.c
-@@ -65,7 +65,7 @@ bool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id, struct sk_buff *skb)
- 	ret = nla_put_u32(nl_skb, ATH10K_TM_ATTR_CMD, ATH10K_TM_CMD_WMI);
- 	if (ret) {
- 		ath10k_warn(ar,
--			    "failed to to put testmode wmi event cmd attribute: %d\n",
-+			    "failed to put testmode wmi event cmd attribute: %d\n",
- 			    ret);
- 		kfree_skb(nl_skb);
- 		goto out;
-@@ -74,7 +74,7 @@ bool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id, struct sk_buff *skb)
- 	ret = nla_put_u32(nl_skb, ATH10K_TM_ATTR_WMI_CMDID, cmd_id);
- 	if (ret) {
- 		ath10k_warn(ar,
--			    "failed to to put testmode wmi even cmd_id: %d\n",
-+			    "failed to put testmode wmi event cmd_id: %d\n",
- 			    ret);
- 		kfree_skb(nl_skb);
- 		goto out;
+ static bool port100_rx_frame_is_valid(void *_frame)
 -- 
-2.20.1
+2.7.4
 
