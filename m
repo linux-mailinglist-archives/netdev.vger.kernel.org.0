@@ -2,78 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53AB71135CE
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 20:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 097AE1135D9
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 20:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbfLDThd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 14:37:33 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:43529 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727982AbfLDThd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 14:37:33 -0500
-Received: by mail-pl1-f196.google.com with SMTP id q16so134754plr.10
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 11:37:33 -0800 (PST)
+        id S1728153AbfLDTkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 14:40:00 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38053 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727867AbfLDTkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 14:40:00 -0500
+Received: by mail-qk1-f195.google.com with SMTP id k6so1120495qki.5
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 11:39:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ui8e3AszIvSDCTj6jGH+9JPc+W4B8chEXx2R5guyhUQ=;
-        b=jhhdRWM2AE6EhY+oFzRcucC0tT/YDodGPpgFowTVQc7hzvx6W9jdBOrZBWIsarfg7e
-         0FoU+5XPrVtWjPlm3iiUxWpWftkS3Xzm90bc2i2iny06liECmEkC6O+dVS860KCL7tJq
-         cRfX7xADjbAH+ue+PNENqKpm5i4MkbZj6HuxhAeNkbaT1SlqUATgcgkKnkBT/QKn85vK
-         Nkm394347QwDdoVfN3jmJYcAGuZvlDNQUEIlnTsiHPryZcnj+YTd2VeMFXyhWSrwmUoW
-         Z+JDsa/GoUvTa4Yiuff4upF0BxKGIhIHYJJHTcO0ROf09+yoWFlXJXR2LLL+BX8FFORL
-         j6bg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GboJ6V04qDZWl8k87kSdRH1DQWAO/tS9mhCnR5F3HlQ=;
+        b=evP2SthnQmeHmWWlk2fH+TIGNwFVdqbL8d0jZtix9fITPoS8u6JLNCqyZJP3cKqM0n
+         jKq4hLkMh5yXQnIdLVowSuAJGnnfeOTvHEjBe7HgK94Pea/rn3kEXrCkJ6hrQUkUXUcl
+         tQRX2G17vULrr63GQk83vfa/XcYRMOVwIztoczuD0WFQkNgPBRBZHpBjiGnIyDUcG49N
+         ZUgfY5bWRf+6IYhKcHKEcUlhOvhEOfRdxog2ZegaMs2pNi+BWhNSHTMEsvSZtiJ63UPM
+         XkaBMfUOXyirlw8Aem+J00x44EkJc2zTMY7P0ONZn7FpI52IuPw/2rV/q0NgPlvFBWZA
+         J6Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ui8e3AszIvSDCTj6jGH+9JPc+W4B8chEXx2R5guyhUQ=;
-        b=MYDCfHvIanja1x48Y4uOb0lf2fY18kV0kHE8voiqYQnTAFQpU1BqzLXZmQv1Fe9J/f
-         4F5Bppx9QM/WUX2T+aPyBQtDOl6pU1ofLwwS2b07dHfIboSh/snyG+K5GufXdM8LzxOt
-         xTtiKHRKUpOk6UHbC7iX3LHK6exwGet3aRTyhus5qyHc1Z/vnurlg+59s0iuf2v2CWT8
-         8o5ha/LDnOCfkEqFIShBxnpB29UAik1WO9zD0wHBibhWg5m0JWaCW6i+WGZ2zGzzrUHD
-         Ao+uMDGupd+NiGrwf4Cc8dJgRPyo8KiByZ8iZKtMcbgQCSXfG4n+eKzs6R3cfCdGHtwU
-         V9CA==
-X-Gm-Message-State: APjAAAXnPD507b/uotQLz53BoJjGvh0T/4dQwOUvwbto752VqJA32FxQ
-        UTn19QusB7t5HVzHcCrgxxijgA==
-X-Google-Smtp-Source: APXvYqy8RAFYVgfxHB9a9MXhjBJb/DjoxTcpi2QqQY2s97yhrWKL8b9+qDiTnxPotX8rM1dtTOTTdA==
-X-Received: by 2002:a17:902:a98b:: with SMTP id bh11mr5177918plb.281.1575488252853;
-        Wed, 04 Dec 2019 11:37:32 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id r10sm8035661pgn.68.2019.12.04.11.37.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 11:37:32 -0800 (PST)
-Date:   Wed, 4 Dec 2019 11:37:29 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Brian Vazquez <brianvv@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GboJ6V04qDZWl8k87kSdRH1DQWAO/tS9mhCnR5F3HlQ=;
+        b=LNZwc4GjBKAD8CK6fwx1vdsu8EAiGr1zUunHMOBMCPn8uRdXUcpVMZsWHiAMen9kr7
+         wSWP0MrRJWisFg7vRXlsSFAg9B+lVDjWe3ZNPV+QqT1sJZrASQExCxAgnKaBYBYWROoH
+         v5+RxgAyreDHH4Pof7rfUBUjL/hFZX5LJXrNM744H8mDe0Oz9aGmz+Mv6CwRAa8Hbjix
+         m4fm0QotvKu/bbB4NPYdZcyAjEnhqUAinI/n9wqBq5cwBdJ7sPlHADDCu2x6Dfo1B9Wp
+         WA2i7Yd5H434uwHMy/KawTGW/yq41HDFN7IWNAAeE13zaUj/eXKacxgLSOQbXevfx7EA
+         hyCA==
+X-Gm-Message-State: APjAAAWBHRgCneTv+EYk4cjV5utgIpr9S4GO9l+jZVqbWYXqcxiMUbRr
+        DWRRfJeMO4MSI2a1SXdW+YsZkoZx9n+FiVancKEf1A==
+X-Google-Smtp-Source: APXvYqw7M3loYlMcwlYA6SCfua/A7vi1tp9Sdow3Kw8cYwHASbub8MC0jUpalf3cPcZbGCway02HmuxBK4/9SSB8PnU=
+X-Received: by 2002:a37:a3c1:: with SMTP id m184mr4759645qke.49.1575488398459;
+ Wed, 04 Dec 2019 11:39:58 -0800 (PST)
+MIME-Version: 1.0
+References: <20191127052118.163594-1-brianvv@google.com> <20191204111107.4a8d7115@hermes.lan>
+In-Reply-To: <20191204111107.4a8d7115@hermes.lan>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Wed, 4 Dec 2019 11:39:47 -0800
+Message-ID: <CAMzD94RmG0VE5tcfzASZEC60cFPgcDrbtEXAKsESX3aHTt_qcw@mail.gmail.com>
+Subject: Re: [PATCH iproute2] ss: fix end-of-line printing in misc/ss.c
+To:     Stephen Hemminger <stephen@networkplumber.org>
 Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
         David Ahern <dsahern@gmail.com>,
         Mahesh Bandewar <maheshb@google.com>,
-        Maciej Zenczykowski <maze@google.com>, netdev@vger.kernel.org,
-        Paul Blakey <paulb@mellanox.com>
-Subject: Re: [PATCH iproute2] tc: fix warning in tc/m_ct.c
-Message-ID: <20191204113729.52ac5f8a@hermes.lan>
-In-Reply-To: <20191127051934.158900-1-brianvv@google.com>
-References: <20191127051934.158900-1-brianvv@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Maciej Zenczykowski <maze@google.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Hritik Vijay <hritikxx8@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Nov 2019 21:19:34 -0800
-Brian Vazquez <brianvv@google.com> wrote:
+Thanks for reviewing it!
 
-> Warning was:
-> m_ct.c:370:13: warning: variable 'nat' is used uninitialized whenever
-> 'if' condition is false
-> 
-> Cc: Paul Blakey <paulb@mellanox.com>
-> Fixes: c8a494314c40 ("tc: Introduce tc ct action")
+On Wed, Dec 4, 2019 at 11:11 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Tue, 26 Nov 2019 21:21:18 -0800
+> Brian Vazquez <brianvv@google.com> wrote:
+>
+> > Before commit 5883c6eba517, function field_is_last() was incorrectly
+> > reporting which column was the last because it was missing COL_PROC
+> > and by purely coincidence it was correctly printing the end-of-line and
+> > moving to the first column since the very last field was empty, and
+> > end-of-line was added for the last non-empty token since it was seen as
+> > the last field.
+> >
+> > This commits correcrly prints the end-of-line for the last entrien in
+> > the ss command.
+> >
+> > Tested:
+> > diff <(./ss.old -nltp) <(misc/ss -nltp)
+> > 38c38
+> > < LISTEN    0   128     [::1]:35417   [::]:*   users:(("foo",pid=65254,fd=116))
+> > \ No newline at end of file
+> > ---
+> > > LISTEN    0   128     [::1]:35417   [::]:*   users:(("foo",pid=65254,fd=116))
+> >
+> > Cc: Hritik Vijay <hritikxx8@gmail.com>
+> > Fixes: 5883c6eba517 ("ss: show header for --processes/-p")
+> > Signed-off-by: Brian Vazquez <brianvv@google.com>
+>
+> This commit message is really hard to understand and causes warnings
+> in checkpatch. Also, blaming old code for doing the right thing
+> is not necessary. The changelog doesn't need to explain why.
+> The offending commit is already referenced by the fixes line.
+>
+> Instead, I propose:
+>
+>
+> The previous change to ss to show header broke the printing of end-of-line
+> for the last entry.
+
+This makes sense, I'll fix it in next version. Thanks!
+
+>
+> Fixes: 5883c6eba517 ("ss: show header for --processes/-p")
 > Signed-off-by: Brian Vazquez <brianvv@google.com>
-> ---
-
-Applied
