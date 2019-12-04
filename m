@@ -2,241 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32356112D7B
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 15:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD6E112D81
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 15:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbfLDOdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 09:33:07 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:43777 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727828AbfLDOdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 09:33:07 -0500
-Received: from [192.168.1.7] (unknown [180.157.173.7])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 1033141DA2;
-        Wed,  4 Dec 2019 22:32:54 +0800 (CST)
-Subject: Re: Bad performance for VF outgoing in offloaded mode
-To:     Roi Dayan <roid@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
- <20191119.163923.660983355933809356.davem@davemloft.net>
- <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
- <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
- <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
- <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
- <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
- <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
- <fc909cd7-3e82-89a6-9fe8-8eba546686d8@ucloud.cn>
- <ee1a369f-58c7-1fd4-f0fe-09b2a9900931@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <08de868c-31df-6688-9235-dea0ebd4d676@ucloud.cn>
-Date:   Wed, 4 Dec 2019 22:32:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1728047AbfLDOeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 09:34:21 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:49630 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727867AbfLDOeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 09:34:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575470060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Mk6kH1hrBfI30rN/qWP90ibSmIBKwHNx6LbIwV0P+6o=;
+        b=aB2G8w9i/ueZ8itV18wcCU1UOlvVX48p+m7uErRM1lofwPciF3SwnO44h6ZaVNTNZ0Pcmc
+        Tsacz5n6x4BAaYnta/YKWyp+vSbB+XLrniwrjzQTCBkuEcrMmy8ifB4Nnkp+upYmVVVFjA
+        kM1w5l1eRntFgdg0sUquSI/Lripr32w=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-kBMlleM3NP6pCU5ioJtsOw-1; Wed, 04 Dec 2019 09:34:18 -0500
+Received: by mail-wm1-f72.google.com with SMTP id v8so2264921wml.4
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 06:34:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3fSpOmCmX5dHOVhu+rXkU7ZnFijnP9eH/etXf1iQhw0=;
+        b=ooS52vK/LvVYqooAjm14xSpsX1QJe7uXdW1TSk87eTm9Z+gk6WZsPyFmvO5Fwk/mdm
+         3dOcu5F8S91qbnNmtHbPCzehQTnTAhDQPAtMzI7c9vV4jgiCR5w+0oi/BNzqWcczta7U
+         Z3smLVV3zjYtD3zNNPIOPnYzGOVlNUoBElluCr+Spuy1mq6UlswhHM9RlJZuDsLs4QPc
+         OM/5jayt9UaGJED/koWjrkmJGijYjhHkwyagHUqjgqmJSfBCJjVofQGiQv6+nwYNkYcz
+         Ajm2cYyWsxqljNzk4nYluouSZiE6Xfv8Mczk1wyl/STTuqlSCVLkoKyuGKSySqTISEwy
+         zfnQ==
+X-Gm-Message-State: APjAAAUUvzM+KEWVW7/9Ph2zuMepUPDobZp+XY8sx/BVau85247eR3SA
+        Jz95jpxlLhxlDCIYDn22w8ixYHU/VfpMuKeu/68qr4G+/EvxDMWtnF4C5x16hr5ZGBl1EfB5ptL
+        7Bsw0irWj26GTaCeD
+X-Received: by 2002:a05:600c:224d:: with SMTP id a13mr7808511wmm.57.1575470057538;
+        Wed, 04 Dec 2019 06:34:17 -0800 (PST)
+X-Google-Smtp-Source: APXvYqztrMqtygceCIJ/mpmpHOSprnkgWbjd4MJh4PGOIX2aolJ19K19vLDChPBOznCRdBOYlJXycw==
+X-Received: by 2002:a05:600c:224d:: with SMTP id a13mr7808493wmm.57.1575470057376;
+        Wed, 04 Dec 2019 06:34:17 -0800 (PST)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id c1sm8333663wrs.24.2019.12.04.06.34.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Dec 2019 06:34:16 -0800 (PST)
+Date:   Wed, 4 Dec 2019 15:34:14 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH net] tcp: Avoid time_after32() underflow when handling
+ syncookies
+Message-ID: <20191204143414.GA2358@linux.home>
+References: <2601e43617d707a28f60f2fe6927b1aaaa0a37f8.1574976866.git.gnault@redhat.com>
+ <CANn89i+G0jCU=JtSit3X9w+SaExgbbo-d1x4UEkTEJRdypN3gQ@mail.gmail.com>
+ <20191202215143.GA13231@linux.home>
+ <CANn89i+k3+NN8=5fD9RN4BnPT5dei=iKJaps_0vmcMNQwC58mw@mail.gmail.com>
+ <20191204004654.GA22999@linux.home>
+ <d6b6e3c4-cae6-6127-7bda-235a00d351ef@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <ee1a369f-58c7-1fd4-f0fe-09b2a9900931@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUtPS0tLSkpOSEJPTkJZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NAg6MRw*STg0NVYNCgIxCz4r
-        HQEaCRxVSlVKTkxOT01CQkxPSU1CVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSkxIVUxZV1kIAVlBQk5OSDcG
-X-HM-Tid: 0a6ed15402932086kuqy1033141da2
+In-Reply-To: <d6b6e3c4-cae6-6127-7bda-235a00d351ef@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: kBMlleM3NP6pCU5ioJtsOw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 03, 2019 at 06:20:24PM -0800, Eric Dumazet wrote:
+>=20
+> Sorry I am completely lost with this amount of text.
+>=20
+No problem. I'll write a v2 and remork the problem description to make
+it clearer.
 
-在 2019/12/4 21:50, Roi Dayan 写道:
->
-> On 2019-11-28 7:03 AM, wenxu wrote:
->> Hi mellanox team,
->>
->>
->> I did a performance test for tc offload with upstream kernel:
->>
->> I setup a vm with a VF as eth0
->>
->> In the vm:
->>
->> ifconfig eth0 10.0.0.75/24 up
->>
->>
->> On the host the mlx_p0 is the pf representor and mlx_pf0vf0 is the vf representor
->>
->> The device in the switchdev mode
->>
->> # grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
->> /sys/class/net/mlx_p0/phys_port_name:p0
->> /sys/class/net/mlx_p0/phys_switch_id:34ebc100034b6b50
->> /sys/class/net/mlx_pf0vf0/phys_port_name:pf0vf0
->> /sys/class/net/mlx_pf0vf0/phys_switch_id:34ebc100034b6b50
->> /sys/class/net/mlx_pf0vf1/phys_port_name:pf0vf1
->> /sys/class/net/mlx_pf0vf1/phys_switch_id:34ebc100034b6b50
->>
->>
->> The tc filter as following: just forward ip/arp packets  in mlx_p0 and mlx_pf0vf0 each other
->>
->> tc qdisc add dev mlx_p0 ingress
->> tc qdisc add dev mlx_pf0vf0 ingress
->>
->> tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower skip_sw action mirred egress redirect dev mlx_p0
->> tc filter add dev mlx_p0 pref 2 ingress  protocol ip flower skip_sw action mirred egress redirect dev mlx_pf0vf0
->>
->> tc filter add dev mlx_pf0vf0 pref 1 ingress  protocol arp flower skip_sw action mirred egress redirect dev mlx_p0
->> tc filter add dev mlx_p0 pref 1 ingress  protocol arp flower skip_sw action mirred egress redirect dev mlx_pf0vf0
->>
->>
->> The remote server device eth0:
->>
->> ifconfig eth0 10.0.0.241/24
->>
->>
->> test case 1:   tcp recieve from VF to PF
->>
->> In the vm: iperf -s
->>
->> On the remote server:
->>
->> iperf -c 10.0.0.75 -t 10 -i 2
->> ------------------------------------------------------------
->> Client connecting to 10.0.0.75, TCP port 5001
->> TCP window size: 85.0 KByte (default)
->> ------------------------------------------------------------
->> [  3] local 10.0.0.241 port 59708 connected with 10.0.0.75 port 5001
->> [ ID] Interval       Transfer     Bandwidth
->> [  3]  0.0- 2.0 sec  5.40 GBytes  23.2 Gbits/sec
->> [  3]  2.0- 4.0 sec  5.35 GBytes  23.0 Gbits/sec
->> [  3]  4.0- 6.0 sec  5.46 GBytes  23.5 Gbits/sec
->> [  3]  6.0- 8.0 sec  5.10 GBytes  21.9 Gbits/sec
->> [  3]  8.0-10.0 sec  5.36 GBytes  23.0 Gbits/sec
->> [  3]  0.0-10.0 sec  26.7 GBytes  22.9 Gbits/sec
->>
->>
->> Good performance with offload.
->>
->> # tc -s filter ls dev mlx_p0 ingress
->> filter protocol arp pref 1 flower chain 0
->> filter protocol arp pref 1 flower chain 0 handle 0x1
->>   eth_type arp
->>   skip_sw
->>   in_hw in_hw_count 1
->>     action order 1: mirred (Egress Redirect to device mlx_pf0vf0) stolen
->>      index 4 ref 1 bind 1 installed 971 sec used 82 sec
->>      Action statistics:
->>     Sent 420 bytes 7 pkt (dropped 0, overlimits 0 requeues 0)
->>     Sent software 0 bytes 0 pkt
->>     Sent hardware 420 bytes 7 pkt
->>     backlog 0b 0p requeues 0
->>
->> filter protocol ip pref 2 flower chain 0
->> filter protocol ip pref 2 flower chain 0 handle 0x1
->>   eth_type ipv4
->>   skip_sw
->>   in_hw in_hw_count 1
->>     action order 1: mirred (Egress Redirect to device mlx_pf0vf0) stolen
->>      index 2 ref 1 bind 1 installed 972 sec used 67 sec
->>      Action statistics:
->>     Sent 79272204362 bytes 91511261 pkt (dropped 0, overlimits 0 requeues 0)
->>     Sent software 0 bytes 0 pkt
->>     Sent hardware 79272204362 bytes 91511261 pkt
->>     backlog 0b 0p requeues 0
->>
->> #  tc -s filter ls dev mlx_pf0vf0 ingress
->> filter protocol arp pref 1 flower chain 0
->> filter protocol arp pref 1 flower chain 0 handle 0x1
->>   eth_type arp
->>   skip_sw
->>   in_hw in_hw_count 1
->>     action order 1: mirred (Egress Redirect to device mlx_p0) stolen
->>      index 3 ref 1 bind 1 installed 978 sec used 88 sec
->>      Action statistics:
->>     Sent 600 bytes 10 pkt (dropped 0, overlimits 0 requeues 0)
->>     Sent software 0 bytes 0 pkt
->>     Sent hardware 600 bytes 10 pkt
->>     backlog 0b 0p requeues 0
->>
->> filter protocol ip pref 2 flower chain 0
->> filter protocol ip pref 2 flower chain 0 handle 0x1
->>   eth_type ipv4
->>   skip_sw
->>   in_hw in_hw_count 1
->>     action order 1: mirred (Egress Redirect to device mlx_p0) stolen
->>      index 1 ref 1 bind 1 installed 978 sec used 73 sec
->>      Action statistics:
->>     Sent 71556027574 bytes 47805525 pkt (dropped 0, overlimits 0 requeues 0)
->>     Sent software 0 bytes 0 pkt
->>     Sent hardware 71556027574 bytes 47805525 pkt
->>     backlog 0b 0p requeues 0
->>
->>
->>
->> test case 2:  tcp send from VF to PF
->>
->> On the reomte server: iperf -s
->>
->> in the vm:
->>
->> # iperf -c 10.0.0.241 -t 10 -i 2
->>
->> ------------------------------------------------------------
->> Client connecting to 10.0.0.241, TCP port 5001
->> TCP window size:  230 KByte (default)
->> ------------------------------------------------------------
->> [  3] local 10.0.0.75 port 53166 connected with 10.0.0.241 port 5001
->> [ ID] Interval       Transfer     Bandwidth
->> [  3]  0.0- 2.0 sec   939 MBytes  3.94 Gbits/sec
->> [  3]  2.0- 4.0 sec   944 MBytes  3.96 Gbits/sec
->> [  3]  4.0- 6.0 sec  1.01 GBytes  4.34 Gbits/sec
->> [  3]  6.0- 8.0 sec  1.03 GBytes  4.44 Gbits/sec
->> [  3]  8.0-10.0 sec  1.02 GBytes  4.39 Gbits/sec
->> [  3]  0.0-10.0 sec  4.90 GBytes  4.21 Gbits/sec
->>
->>
->> Bad performance with offload.  All the packet are offloaded. 
->>
->> It is the offload problem in the hardware?
->>
->>
->> BR
->>
->> wenxu
->>
->>
-> Hi Wenxu,
->
-> We didn't notice this behavior.
-> Could it be your VM doesn't have enough resources to generate the traffic?
-> As a listener it's only sending the acks.
+> Whatever solution you come up with, make sure it covers all the points
+> that have been raised.
+>=20
+Will do.
+Thanks.
 
-I  don't think so. If delete the ingress qdisc on mlx_pf0vf0 and set ifconfig mlx_pf0vf0 10.0.0.241/24"
-
-iperf -s on the host.
-
-In the vm.
-
-# iperf -c 10.0.0.241 -t 10 -i 2
-------------------------------------------------------------
-Client connecting to 10.0.0.241, TCP port 5001
-TCP window size: 4.00 MByte (default)
-------------------------------------------------------------
-[  3] local 10.0.0.75 port 50960 connected with 10.0.0.241 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0- 2.0 sec  6.34 GBytes  27.3 Gbits/sec
-[  3]  2.0- 4.0 sec  6.45 GBytes  27.7 Gbits/sec
-[  3]  4.0- 6.0 sec  6.65 GBytes  28.6 Gbits/sec
-[  3]  6.0- 8.0 sec  6.60 GBytes  28.3 Gbits/sec
-[  3]  8.0-10.0 sec  6.29 GBytes  27.0 Gbits/sec
-[  3]  0.0-10.0 sec  32.3 GBytes  27.8 Gbits/sec
-
-
-The VM can generic enough traffic. Maybe you can test my case with upstream kernel
-
-> Thanks,
-> Roi
