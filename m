@@ -2,185 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 670FB1123B5
-	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 08:53:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D9E1123F7
+	for <lists+netdev@lfdr.de>; Wed,  4 Dec 2019 08:58:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbfLDHxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 02:53:02 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:44083 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727249AbfLDHw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 02:52:59 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1icPSw-0006y8-72; Wed, 04 Dec 2019 08:52:54 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 94B34488E72;
-        Wed,  4 Dec 2019 07:52:51 +0000 (UTC)
-Subject: Re: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on
- CANFD2.0
-To:     Naga Sureshkumar Relli <nagasure@xilinx.com>,
-        Srinivas Neeli <sneeli@xilinx.com>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>,
-        Appana Durga Kedareswara Rao <appanad@xilinx.com>
-Cc:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        git <git@xilinx.com>
-References: <1575375396-3403-1-git-send-email-srinivas.neeli@xilinx.com>
- <MN2PR02MB5727E5E2BF394AC2898D5E1FAF5D0@MN2PR02MB5727.namprd02.prod.outlook.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <528491f5-d28a-2f0a-0621-ab343e4ff7e5@pengutronix.de>
-Date:   Wed, 4 Dec 2019 08:52:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727223AbfLDH6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 02:58:21 -0500
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:18142 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725839AbfLDH6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 02:58:20 -0500
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB47m9OP027836;
+        Wed, 4 Dec 2019 02:57:11 -0500
+Received: from nam01-sn1-obe.outbound.protection.outlook.com (mail-sn1nam01lp2056.outbound.protection.outlook.com [104.47.32.56])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2wkk2c34r4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Dec 2019 02:57:11 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fwbZ3uqpEaviCo90MSQbWYrOWEk8cZ4LNySQozYkOv5Els8WLM8dyAALuTCO/+HxgTxQwWtO3FTHE5O29SEaLkZPm5fLyZa2uUghvPXJV1IL91l2/MScpkoGRsiU4qoRTMgMFUyNAILxK8uH0Nx4KcI6fzFC6m5/4jT3NZWMWXYzUC630miBjC51K/IT9Rf9ZXFcOJjc3zzhmaLvy4Po+5ZZ+QQyQZ1vm6KF//njGllc7M+HhI65eLs/fGA4cWu5oMPHhWKAfIFmebmMWfHv3JPp/VYt1CPyOUEvwlUzrhuilbPvttqdRlKFN6+fPt2mrK2oBiJflugSXOK+LkT/JA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j59hsWMxnp5c05fsZEeV99EfNHBKKPjZ2PHjyL0MRK4=;
+ b=BRBA+sEHoBOtMm6JBZE2IuApSxKdNMjInk9kaMSJc+FqNDfFzQqBWQ5X4XaC3M3MTg6hhl+rxNBC7FVL3Y5c3+HQksYzw58UARuCpHx2nXDS/0YlkVLT4g20EHJSt+lR7cBfq4AiF/24PFVjo6C80tbLWnHUAxPqD9jHqfEGl5M0a1IUjvO/p6phgBXz8FfcPu0t1Nmlt8+Fqtvh3i65BWqCRPEedYbNmsRYBjb4A3b46Vzoq8VGRJNTNA0swF+En7sZnbp2hC2rtllGwGM+c6vDmYoA4A9zUO+4YzNaEXYCARnvK+j8F7HzJRw5Cox1B3DbIhl6KYKYWEKiXC1DFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.55) smtp.rcpttodomain=davemloft.net smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j59hsWMxnp5c05fsZEeV99EfNHBKKPjZ2PHjyL0MRK4=;
+ b=Z3ddIbw2uAqxIK3Ivrk3G2GS863VnePle5Zf2xLf521kACzt40MSbq8/UaUQucEzS3Pt7lui5dkC6jM+dlmFtF9adQaktMy+4BzApz/gOncpD3HSRLAEwupkieI91BTEvd9gRAUTC1Li9b1EZqsj+nDaMTLkP4zMD3wEuJY7WmI=
+Received: from CY1PR03CA0011.namprd03.prod.outlook.com (2603:10b6:600::21) by
+ DM5PR03MB3147.namprd03.prod.outlook.com (2603:10b6:4:46::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.12; Wed, 4 Dec 2019 07:57:09 +0000
+Received: from BL2NAM02FT017.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::209) by CY1PR03CA0011.outlook.office365.com
+ (2603:10b6:600::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2516.12 via Frontend
+ Transport; Wed, 4 Dec 2019 07:57:09 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT017.mail.protection.outlook.com (10.152.77.174) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
+ via Frontend Transport; Wed, 4 Dec 2019 07:57:06 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id xB47v5rM017916
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 3 Dec 2019 23:57:05 -0800
+Received: from saturn.ad.analog.com (10.48.65.119) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Wed, 4 Dec 2019 02:57:04 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <frederic.danis@linux.intel.com>,
+        <alexios.zavras@intel.com>, <eric.lapuyade@linux.intel.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] NFC: NCI: use new `delay` structure for SPI transfer delays
+Date:   Wed, 4 Dec 2019 09:58:09 +0200
+Message-ID: <20191204075809.31612-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <MN2PR02MB5727E5E2BF394AC2898D5E1FAF5D0@MN2PR02MB5727.namprd02.prod.outlook.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="EsHhqYijumrOCWNOGfOVtR88b93OMXvMp"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(396003)(136003)(376002)(346002)(199004)(189003)(2870700001)(8936002)(107886003)(478600001)(2616005)(2906002)(305945005)(4326008)(106002)(5660300002)(7636002)(54906003)(36756003)(110136005)(14444005)(70206006)(86362001)(316002)(356004)(48376002)(50466002)(336012)(50226002)(26005)(70586007)(246002)(44832011)(8676002)(426003)(7696005)(186003)(51416003)(1076003)(81973001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR03MB3147;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8bed0f90-ec6d-4423-c929-08d7788f8eee
+X-MS-TrafficTypeDiagnostic: DM5PR03MB3147:
+X-Microsoft-Antispam-PRVS: <DM5PR03MB3147D3A1EB3C8243CAC55B82F95D0@DM5PR03MB3147.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:632;
+X-Forefront-PRVS: 0241D5F98C
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Skh/pmwHWCG9iXRTfSe5MRrBown6ST8Pk1zzu3HOoCThxcvEXRqfPj8OMhCY0T886FWrdzaw8bqDE/4lIbY19QO6p8h5oLVezQ3a6aehKceffdCl414RuJahFvAYn5ZIMRQ4MlizDJ+ebkhhu58eHd90Y708r/tVg9UEuJJV/sskihOfBYbEgD+ICenRGCHWaD1u0Vok4sI2/5Io8nD6G1Sx9JYecMslWGpmP5A7Pi9uJL8mv4bW86Q1v7yUqx7FSrNBsT9sxZweK8UiNTKNw/x36Mj8RrYipNgrhKv723X7NnhrNadrjizPsLwIYF2yTXZVYNMjy46kL1EiMzYOZwKknb3RUNh8GppOvBUj+wd038uGECMAywR2JvBwuqhDxwfeamIJrjMx93yr0qxEwc/KYdiCtskLUGIfZwvMduBeCMN6EB6pXFzEE5vddLARHV6rq4Et5xmypWnLogVB80DMY1JQqPAWkOcotiyXsg/pPbTPSqHTD++bui1n3Soi
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2019 07:57:06.9334
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8bed0f90-ec6d-4423-c929-08d7788f8eee
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR03MB3147
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-04_01:2019-12-04,2019-12-03 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=999 mlxscore=0
+ spamscore=0 bulkscore=0 adultscore=0 malwarescore=0 impostorscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912040057
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EsHhqYijumrOCWNOGfOVtR88b93OMXvMp
-Content-Type: multipart/mixed; boundary="6jAZiqs74AMe09G2oX3Cjn13Nl4WWl9FO";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Naga Sureshkumar Relli <nagasure@xilinx.com>,
- Srinivas Neeli <sneeli@xilinx.com>, "wg@grandegger.com" <wg@grandegger.com>,
- "davem@davemloft.net" <davem@davemloft.net>,
- Michal Simek <michals@xilinx.com>,
- Appana Durga Kedareswara Rao <appanad@xilinx.com>
-Cc: "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- git <git@xilinx.com>
-Message-ID: <528491f5-d28a-2f0a-0621-ab343e4ff7e5@pengutronix.de>
-Subject: Re: [PATCH V2] can: xilinx_can: Fix missing Rx can packets on
- CANFD2.0
-References: <1575375396-3403-1-git-send-email-srinivas.neeli@xilinx.com>
- <MN2PR02MB5727E5E2BF394AC2898D5E1FAF5D0@MN2PR02MB5727.namprd02.prod.outlook.com>
-In-Reply-To: <MN2PR02MB5727E5E2BF394AC2898D5E1FAF5D0@MN2PR02MB5727.namprd02.prod.outlook.com>
+In a recent change to the SPI subsystem [1], a new `delay` struct was added
+to replace the `delay_usecs`. This change replaces the current `delay_secs`
+with `delay` for this driver.
 
---6jAZiqs74AMe09G2oX3Cjn13Nl4WWl9FO
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+The `spi_transfer_delay_exec()` function [in the SPI framework] makes sure
+that both `delay_usecs` & `delay` are used (in this order to preserve
+backwards compatibility).
 
-On 12/4/19 4:59 AM, Naga Sureshkumar Relli wrote:
-> Reviewed-by: Naga Sureshkumar Relli	<naga.sureshkumar.relli@xilinx.com>=
+[1] commit bebcfd272df6485 ("spi: introduce `delay` field for
+`spi_transfer` + spi_transfer_delay_exec()")
 
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ net/nfc/nci/spi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Added to the patch.
+diff --git a/net/nfc/nci/spi.c b/net/nfc/nci/spi.c
+index 9dd8a1096916..7d8e10e27c20 100644
+--- a/net/nfc/nci/spi.c
++++ b/net/nfc/nci/spi.c
+@@ -44,7 +44,8 @@ static int __nci_spi_send(struct nci_spi *nspi, struct sk_buff *skb,
+ 		t.len = 0;
+ 	}
+ 	t.cs_change = cs_change;
+-	t.delay_usecs = nspi->xfer_udelay;
++	t.delay.value = nspi->xfer_udelay;
++	t.delay.unit = SPI_DELAY_UNIT_USECS;
+ 	t.speed_hz = nspi->xfer_speed_hz;
+ 
+ 	spi_message_init(&m);
+@@ -216,7 +217,8 @@ static struct sk_buff *__nci_spi_read(struct nci_spi *nspi)
+ 	rx.rx_buf = skb_put(skb, rx_len);
+ 	rx.len = rx_len;
+ 	rx.cs_change = 0;
+-	rx.delay_usecs = nspi->xfer_udelay;
++	rx.delay.value = nspi->xfer_udelay;
++	rx.delay.unit = SPI_DELAY_UNIT_USECS;
+ 	rx.speed_hz = nspi->xfer_speed_hz;
+ 	spi_message_add_tail(&rx, &m);
+ 
+-- 
+2.20.1
 
-tnx,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---6jAZiqs74AMe09G2oX3Cjn13Nl4WWl9FO--
-
---EsHhqYijumrOCWNOGfOVtR88b93OMXvMp
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3nZc8ACgkQWsYho5Hk
-nSC5xAf9E2O7Hpw8B7UnryAqewMRYuZNLn45EgXEkrrYc5HbpEIGtcdlCIZ5YEqf
-cb912bh159h/0mR7EorVvV4b4RCMnQPyCEAJ4cfwMLjzT0obZTiwtvQ9dQ0V2Av8
-TOSetZz0WRgly0LPy8HsGjmTUsXl57hfwrQp656nInYwbDm3LJRr90/rNE9PBOch
-M895jgoxPM0eXujRUOVN+gf/dJ7xV+5Qks+7cHhlI33CwyMfwXBhLo1gOAxdTOL6
-w95DvQfgO2jJieAv7ETIcpBbOaf23z8yMJ6BJciWTpgPBI1O+XSfXDWQGKCAkCb4
-nRNnRFbIPK+y2TgO3JDLK630H5Twkg==
-=FpiZ
------END PGP SIGNATURE-----
-
---EsHhqYijumrOCWNOGfOVtR88b93OMXvMp--
