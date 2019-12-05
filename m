@@ -2,163 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 593071142F1
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 15:48:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A95114327
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 15:59:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729574AbfLEOso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 09:48:44 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38775 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729535AbfLEOso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 09:48:44 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y17so3959708wrh.5
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 06:48:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oHdIrCO6kQ2Rshm7QZhBaPgPSsJahjIjSW1nStTA8NM=;
-        b=fgnbnepY9/THLXfaK+hiYjanJJ0I1nyLSyQYlGcsIGmWDFwPmtKQ0Ye+RP3ViSJsip
-         HNzrDUCzrzJIDOCSXuBj3TOFM3WjxI2R0pG5U8idEvHYCLwvH09/0ymUNzFrS7LFyoei
-         Dd852ZXd3sEw1MJOiVpe7e7uovotdYntQBJ+MNyexvp82k7LmM9yf/LS0hA5MX5H88m/
-         1TpFsUBDe7arywTtwD2yzaiJCXeUf8J+w1N+hoyh88D0TUcAurDq7+VibAPtMNjVLNw8
-         OVIWowpFo95XeUcJY2BCPtzIKIAd0IGhp66JvW5QGdHYA9I3cux8VR/IHwNRq3Bxnny3
-         rvLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oHdIrCO6kQ2Rshm7QZhBaPgPSsJahjIjSW1nStTA8NM=;
-        b=AR+yfNE4AXHZPTu0mQoizlW7mFA4DKFjTZ/7zDvputsVzcyXvGHmR6vP69lf2Tyrie
-         Cl5jD89U19KKKMQ+M6S+zYqYlZnvvcEcEcpMQJ8RfN4YGbuf6EnpXtP18P0Wj7Q3L+rl
-         5xqW+rO243FftFcOX6iRKr5xPs92x8ErbuibumfVhGFxqceQbdpn4LmzydvHTQkQo0+U
-         f7KH4jEI0kG1WUuy0SkMyJmJo2kOYIyhEQxYBlVZFVoat/wQTI3StmM66Nv+yj+W3gSQ
-         bFGnkhGC3behuVEP/cE4tMAS4RijSG44BQg7AoBpCBPWr280NBjKhulJz5+A2ER+aQp/
-         40AQ==
-X-Gm-Message-State: APjAAAWz9fySaKeYqd5SKZaw2qhzsbgty97umVu11hDjntonh8jvz/zo
-        plNfa3wwozH9oEcf65oxz2uoZw==
-X-Google-Smtp-Source: APXvYqxW+7gCTDwfdwZ9xn5nP1blFVvd2gKJZp5hqR+snnPERZdt+Sfx5QTBUvGLfYS8jhPOC9+PdQ==
-X-Received: by 2002:a5d:6a0f:: with SMTP id m15mr8241306wru.40.1575557320401;
-        Thu, 05 Dec 2019 06:48:40 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id c4sm75334wml.7.2019.12.05.06.48.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 06:48:39 -0800 (PST)
-Date:   Thu, 5 Dec 2019 15:48:38 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: mdio: use non vendor specific
- compatible string in example
-Message-ID: <20191205144837.GA28725@netronome.com>
-References: <20191127153928.22408-1-grygorii.strashko@ti.com>
+        id S1729662AbfLEO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 09:59:14 -0500
+Received: from mail.dlink.ru ([178.170.168.18]:49430 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729099AbfLEO7O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 09:59:14 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 266FB1B2130C; Thu,  5 Dec 2019 17:59:11 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 266FB1B2130C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1575557951; bh=KjNFJ+fpJBLEMDN29X7yO2/5Hj/TQQQOQnbnHQPMaPU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=FBHT35gXSJaj0BgKN/jH8RITpkruadh0TgkSPrwRil5DanevqLTEH7ckjAIvtSlqN
+         V6OzaqnZKdWTjTCkRQFH35r7ryV7W8pRopUcNG34XBmaFDc66TwrJ+9HWRjWaBnBtT
+         Gx9ggQhG+1YrWwniVc50N9/kZ6olg5jt2Jwh/LX8=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id B0BBD1B2025D;
+        Thu,  5 Dec 2019 17:58:57 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru B0BBD1B2025D
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 687D01B2265F;
+        Thu,  5 Dec 2019 17:58:57 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Thu,  5 Dec 2019 17:58:57 +0300 (MSK)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191127153928.22408-1-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 05 Dec 2019 17:58:57 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Muciri Gatimu <muciri@openmesh.com>,
+        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
+        John Crispin <john@phrozen.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
+In-Reply-To: <20191205140132.GD28269@lunn.ch>
+References: <20191205100235.14195-1-alobakin@dlink.ru>
+ <20191205125827.GA28269@lunn.ch> <2e03b82a8ec999fade26253ff35077c6@dlink.ru>
+ <20191205140132.GD28269@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.0
+Message-ID: <72a21c5f03abdc3d2d1c1bb85fd4489d@dlink.ru>
+X-Sender: alobakin@dlink.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 05:39:28PM +0200, Grygorii Strashko wrote:
-> Use non vendor specific compatible string in example, otherwise DT YAML
-> schemas validation may trigger warnings specific to TI ti,davinci_mdio
-> and not to the generic MDIO example.
+Andrew Lunn wrote 05.12.2019 17:01:
+>> Hi,
+>> 
+>> > What i'm missing here is an explanation why the flow dissector is
+>> > called here if the protocol is already set? It suggests there is a
+>> > case when the protocol is not correctly set, and we do need to look
+>> > into the frame?
+>> 
+>> If we have a device with multiple Tx queues, but XPS is not configured
+>> or system is running on uniprocessor system, then networking core code
+>> selects Tx queue depending on the flow to utilize as much Tx queues as
+>> possible but without breaking frames order.
+>> This selection happens in net/core/dev.c:skb_tx_hash() as:
+>> 
+>> reciprocal_scale(skb_get_hash(skb), qcount)
+>> 
+>> where 'qcount' is the total number of Tx queues on the network device.
+>> 
+>> If skb has not been hashed prior to this line, then skb_get_hash() 
+>> will
+>> call flow dissector to generate a new hash. That's why flow dissection
+>> can occur on Tx path.
 > 
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> 
+> Hi Alexander
+> 
+> So it looks like you are now skipping this hash. Which in your
+> testing, give better results, because the protocol is already set
+> correctly. But are there cases when the protocol is not set correctly?
+> We really do need to look into the frame?
 
-This seems sensible to me.
+Actually no, I'm not skipping the entire hashing, I'm only skipping
+tag_ops->flow_dissect() (helper that only alters network offset and
+replaces fake ETH_P_XDSA with the actual protocol) call on Tx path,
+because this only breaks flow dissection logics. All skbs are still
+processed and hashed by the generic code that goes after that call.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> How about when an outer header has just been removed? The frame was
+> received on a GRE tunnel, the GRE header has just been removed, and
+> now the frame is on its way out? Is the protocol still GRE, and we
+> should look into the frame to determine if it is IPv4, ARP etc?
+> 
+> Your patch looks to improve things for the cases you have tested, but
+> i'm wondering if there are other use cases where we really do need to
+> look into the frame? In which case, your fix is doing the wrong thing.
+> Should we be extending the tagger to handle the TX case as well as the
+> RX case?
 
-Are there any plans to address the errors DT YAML schema validation reports?
+We really have two options: don't call tag_ops->flow_dissect() on Tx
+(this patch), or extend tagger callbacks to handle Tx path too. I was
+using both of this for several months each and couldn't detect cases
+where the first one was worse than the second.
+I mean, there _might_ be such cases in theory, and if they will appear
+we should extend our taggers. But for now I don't see the necessity to
+do this as generic flow dissection logics works as expected after this
+patch and is completely broken without it.
+And remember that we have the reverse logic on Tx and all skbs are
+firstly queued on slave netdevice and only then on master/CPU port.
 
-$ ARCH=arm make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/mdio.yaml
-.../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-netgear-r6250.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-netgear-r6250.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-linksys-ea6300-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-linksys-ea6300-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac68u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac68u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-linksys-ea6500-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-linksys-ea6500-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-buffalo-wzr-1750dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-buffalo-wzr-1750dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-luxul-xap-1510.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-luxul-xap-1510.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-600dhp2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-600dhp2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-smartrg-sr400ac.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-smartrg-sr400ac.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-luxul-xwc-1000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-luxul-xwc-1000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4708-netgear-r6300-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4708-netgear-r6300-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-asus-rt-n18u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-asus-rt-n18u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-tplink-archer-c5-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-tplink-archer-c5-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-900dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-900dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-netgear-r7000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-netgear-r7000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-linksys-ea9200.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-linksys-ea9200.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47081-luxul-xap-1410.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47081-luxul-xap-1410.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3150-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3150-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xap-1610.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xap-1610.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-dlink-dir-885l.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-dlink-dir-885l.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-netgear-r8000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-netgear-r8000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-abr-4500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-abr-4500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-linksys-panamera.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-linksys-panamera.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3100.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3100.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm94709.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm94709.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xbr-4500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-luxul-xbr-4500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-phicomm-k3.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-phicomm-k3.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm911360k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm911360k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm47094-netgear-r8500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm47094-netgear-r8500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm94708.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm94708.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm953012k.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm953012k.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm953012er.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm953012er.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm911360_entphn.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm911360_entphn.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm953012hr.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm953012hr.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm958305k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm958305k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-.../linux/arch/arm/boot/dts/bcm958300k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-.../linux/arch/arm/boot/dts/bcm958300k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
+It would be nice to see what other people think about it anyways.
+
+>    Andrew
+
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
