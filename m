@@ -2,83 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9B3113D92
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 10:09:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B91F3113DB2
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 10:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbfLEJJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 04:09:05 -0500
-Received: from mout.kundenserver.de ([217.72.192.75]:48377 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfLEJJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 04:09:04 -0500
-Received: from mail-lj1-f173.google.com ([209.85.208.173]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1M7rxE-1ihlDI3fAQ-0053U2; Thu, 05 Dec 2019 10:09:02 +0100
-Received: by mail-lj1-f173.google.com with SMTP id z17so2589970ljk.13;
-        Thu, 05 Dec 2019 01:09:02 -0800 (PST)
-X-Gm-Message-State: APjAAAUU85VoQs/sar3CT2JhJxvP0uRgSFCcOtI8W3k8Us1mKpqiVgY6
-        pyE+KqHWE0XCHeyRUVucsjraGlciDtQkwuO3D6M=
-X-Google-Smtp-Source: APXvYqzGtpjRsvYhOdU68NUmIa/e9X8ki0UG0IcpbOcGgiqHGISxjpl72wMrhjllkh458C2mDVVxXqnz0zpKrVD54oA=
-X-Received: by 2002:a2e:9095:: with SMTP id l21mr4627561ljg.175.1575536942283;
- Thu, 05 Dec 2019 01:09:02 -0800 (PST)
+        id S1728955AbfLEJVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 04:21:39 -0500
+Received: from first.geanix.com ([116.203.34.67]:54610 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbfLEJVi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 04:21:38 -0500
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 939D5270;
+        Thu,  5 Dec 2019 09:21:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1575537694; bh=tB9aZZpuOVnbm6VcKYyMzI82WOA403rLw2lY36HOyWE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=jurS4YIS8UzRj591FbNotRklfD+QJnJ1JS1cvDR6zLjR7QVU8AEM1pwXcuumfGSZA
+         AcgD1f+2D9E62EEsuePdKRi1Yki9mj9ypTEJyNz4jpLllJwpgjS78BfFSqvTWf5u0k
+         D8S/eVqY2hCnQQTQTfniTBOsMTM9DHlMnvmCY9QLV/mtTuDN1Dk3ZJdsVyK0M8NlTd
+         yjOxNIaJxP5x9Npt7ELTPo/E0mU5dK8AdMag++WeUu9R9NqOs/ULKOyIOQb3H8VTU+
+         gUVlexEhuWmiZ9VuiT8b4kZGyXO+zad+cvNLM067tAmEFeWBSi9edm2Ax4KTm4cB8c
+         wjQ98b+4iQ/kg==
+Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
+ <DB7PR04MB46180C5F1EAC7C4A69A45E0CE65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <d68b2b79-34ec-eb4c-cf4b-047b5157d5e3@pengutronix.de>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <a1ded645-9e12-d939-7920-8e79983b02a0@geanix.com>
+Date:   Thu, 5 Dec 2019 10:21:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <000000000000cacc7e0592c42ce3@google.com> <20190928031510.GD1079@sol.localdomain>
- <20191205052220.GC1158@sol.localdomain>
-In-Reply-To: <20191205052220.GC1158@sol.localdomain>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 5 Dec 2019 10:08:45 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3XLzm+zGmADUR3VYi4NziY-Aox7a8QG6VcGYQcAJiGnQ@mail.gmail.com>
-Message-ID: <CAK8P3a3XLzm+zGmADUR3VYi4NziY-Aox7a8QG6VcGYQcAJiGnQ@mail.gmail.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in bpf_prog_create
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        syzbot <syzbot+eb853b51b10f1befa0b7@syzkaller.appspotmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-ppp@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:TzSxX4hlV2bd52db674bnSiDd8ctBfgwNLqaetjuvInLKrenlCT
- D4h4hDB4gG2gJVJJ+yy2ml9B2/1nira/9D1eM4/jrjeZ2sdGdDjz6yOY/4uN1K1C+aRlDbf
- vHtdwa1LK46uMDePcxsT637DYwPZTO6sEDsu8n89QOucDlQfk+qQcURAdOSlbq16WGFYn/A
- N0TBS+0Oc/YbHY3dGPosA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MC/cWPxqk0k=:He1YZdt6C57pvAnrGferk4
- mfHZzHZ/KWMebipyXU+AX/0i9bgbUn3ClClHx5mPNdpwy6p1hvmZFklB4nBIX2HLqdHKAPyhR
- LOWXtUNw3lu/BPxnZFdFLLaEAA5kxno+8k/yYj7b4kTZbmXEJ1szaw65ZrQHCpBD8eZQQLMLV
- ER947nzwrYAKQYUdFQjwJMKdtJb/A+uDRdr90eFk4G6QGaTzjK6uJ3Al4jEiXjWSJvDkJtPkK
- KobB4YnLofpExfMrlzAT94gI1GauAG90RpALlbH4swXLE7CfYoHWq4ALPMi6PFPfizkvAI3d8
- 5k3fkHOHPzKpWjnBa2Q0/dADZwc3XL5m0f7K9ONOWpQwWw0n0Xl1k5msPkv3iuTRGLz2ztQpf
- IcgB96lodbBxewG4aBDQv1lW1Ce3V68XNFsTXlwiqsgrkPB85CGvajMnpAo2b/3tAmKlqf9RB
- QaBJSvJW44tp+8Z3Rn615juYGYbCUuxYHOs5tWVITAY1jp3o4Z2VUJmOc+Gb2Wxw2Izu2pVxQ
- LXhMFu2NYPg3byIkSnLpDxOGZM7Z/xBsaeX2DzZGkwO7Vpc9PglCkBnG6pJPlPBtQhGeIwcvH
- 18BqZPBiop73RCTjVDoRYWwfMmA5PrCVQjUYR7aA57p8jzMTpaq0lFaREQ5eRp6nT7v5wJDbS
- sf6V+7ChUZSEaUDardG/mO3xI+eCCl5yAaQh4YAlFYTdiPP7ln7yfedsgru416bMCRXbNRuoA
- Whsug/fVF0jUGrEhTmAjz07wbvPVIPDxvlQefB064noTDUngiy2Wx2sGjDlUvGpaRK369mSSI
- MGVtVNrBVFEEc/hJJHDDJmkcUNbyPIP79ehuppQWSmiNSkMTewb38hnwsQ5GOLcUh67giTrdN
- gBSc336Lhfqg5pytNFtA==
+In-Reply-To: <d68b2b79-34ec-eb4c-cf4b-047b5157d5e3@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8b5b6f358cc9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 5, 2019 at 6:22 AM Eric Biggers <ebiggers@kernel.org> wrote:
 
-> >
->
-> Why did you ignore this and merge the buggy commit to mainline anyway?
-> I even told you how to fix it...
 
-I'm sorry about this, I completely missed the email about it originally.
+On 04/12/2019 09.45, Marc Kleine-Budde wrote:
+> On 12/4/19 3:22 AM, Joakim Zhang wrote:
+>>
+>>> -----Original Message-----
+>>> From: Marc Kleine-Budde <mkl@pengutronix.de>
+>>> Sent: 2019年12月4日 2:15
+>>> To: Joakim Zhang <qiangqing.zhang@nxp.com>; sean@geanix.com;
+>>> linux-can@vger.kernel.org
+>>> Cc: dl-linux-imx <linux-imx@nxp.com>; netdev@vger.kernel.org
+>>> Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+>>> stage
+>>>
+>>> On 11/27/19 6:56 AM, Joakim Zhang wrote:
+>>>> CAN controller could be stucked in stop mode once it enters stop mode
+>>>                            ^^^^^^^ stuck
+>>>> when suspend, and then it fails to exit stop mode when resume.
+>>>
+>>> How can this happen?
+>>
+>> I am also confused how can this happen, as I asked Sean, only CAN
+>> enter stop mode when suspend, then system hang,
+> How do you recover the system when suspended?
+> 
+>> it could let CAN
+>> stuck in stop mode. However, Sean said this indeed happen at his
+>> side, @sean@geanix.com, could you explain how this happen in
+>> details?
+> That would be good.
+> 
+>>>> Only code reset can get CAN out of stop mode,
+>>>
+>>> What is "code reset"?
+>>
+>> As I know, "code reset" is to press the POWER KEY from the board. At
+>> my side, reboot command from OS also can get CAN out of stop mode.
+> Do you mean "cold reset", also known as Power-On-Reset, POR or power cycle?
+> 
+> What does pressing the POWER KEY do? A power cycle of the system or
+> toggling the reset line of the imx?
+> 
+> We need to describe in detail, as not everyone has the same board as
+> you, and these boards might not even have a power key :)
+> 
+>> Below is experiment I did:
+>> 	Firstly, do a hacking to let CAN stuck into stop mode, then:
+> 
+> You mean you put the CAN into stop mode without keeping track in the CAN
+> driver that the CAN-IP is in stop mode, e.g. by hacking the driver.
+> 
+> Then you try several methods to recover:
+> 
+>> 	(1) press power on/off key, get CAN out of stop mode;
+>> 	(2) reboot command from console, get CAN out of stop mode;
+>> 	(3) unbind/bind driver, cannot get CAN out of stop mode;
+>> 	(4) remod/insmod module, cannot get CAN out of stop mode;
+> 
+> (2) resets the complete imx, including the CAN-IP core, (1) probably, too.
+No, if the CAN-IP core is in stop-mode it will stay that way even after 
+a reboot from the console.
+At least it's what we are seeing in the field.
 
-      Arnd
+This could be because we are missing a wire from the watchdog out to the 
+RESETBMCU/PWRON on the PMIC.
+But i guess a check for if the CAN-Ip is in stop-mode doesn't hurt 
+anything :)
+
+/Sean
