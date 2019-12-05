@@ -2,94 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DBA113D5D
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 09:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23732113D8E
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 10:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728549AbfLEIw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 03:52:26 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34008 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfLEIwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 03:52:25 -0500
-Received: by mail-wr1-f66.google.com with SMTP id t2so2494775wrr.1
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 00:52:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=54Oo8O+WoSdE+d9b0d6Cj6WIDzkBm0gBFOBZzeQ6IFs=;
-        b=GKEvClM6ybxBjnJCBRWqnA/jgDJitgM+qdEmZaoIOwYkvxQVG4KzhvgYMK16qyfWD4
-         cYlk1drvgFdhNL6tSk+XCyLiU8N4NEUzIaKgiabChLoDvgcoeTGHNDHV0xL898xTBALK
-         TA642pJh6bYVHlCMgZjn4tvmgR7vpmxBPgHNhnU2i+nAI8d/w8Fvcfd6GndQdoXSTDKy
-         8Fw3C41xqfp5J+/S5Pd+j/N1FRdqwAZaFTynzh1oFCcr3Qfp1alPCQMxI0bhoxeJ7Mb2
-         P/cwOPvXRlWu3cwc5hj/Go62QDggoz+66o2+VYJgSrJ/goLdpvIACUr169Y53MQkaZy0
-         aR/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=54Oo8O+WoSdE+d9b0d6Cj6WIDzkBm0gBFOBZzeQ6IFs=;
-        b=Eiw/vO5Y54tgmC/QgMyNCM86/2u4scPggEvm5IoAT6ehfhGdZkDlMKUizbn1rdtoOo
-         hR5Lk2EdESkT07tls1tbvPt7hdfBYOfH2sMsfh3tS5PsF7eiibEBclB73acp4T2dstUk
-         2xpXbuKzz60YI8ythknL9A9GI99gfwhN3cgMob36+aTk1TDFWx8wl6Hco47t0EKzFuc9
-         uqGduduixA7lOcw6GTjRoK5DasTHLtLZpOHnOeviFztTjFYtx1FK24BuuLhTGw8pk3CY
-         5oabzbK/LXwN/71VjSF0oYkfnikaX8Ex9cSSee6S5S0Kow7+25+5pqlxYUixYVHnwEBl
-         SwBg==
-X-Gm-Message-State: APjAAAWaaLnHdZN2q4U4IyRcJeCcE8HoaEZkF0Z7dgMhzJwUu9Kpqn64
-        VvWhsPAraIjJzOQnGhgOYHKyGg==
-X-Google-Smtp-Source: APXvYqxclD5NMbvrJZjJpaLu0mvDfpFR9nDrsF3OU+jmiZn5s02FbJsFaicL5uBojc3TWvQqTJvJlA==
-X-Received: by 2002:adf:e2cc:: with SMTP id d12mr8383292wrj.168.1575535943214;
-        Thu, 05 Dec 2019 00:52:23 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:1153:c308:9cc8:f584? ([2a01:e0a:410:bb00:1153:c308:9cc8:f584])
-        by smtp.gmail.com with ESMTPSA id s16sm11480936wrn.78.2019.12.05.00.52.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 00:52:22 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH ipsec] xfrm: check DST_NOPOLICY as well as DST_NOXFRM
-To:     Mark Gillott <mgillott@vyatta.att-mail.com>, netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-References: <20191204151714.20975-1-mgillott@vyatta.att-mail.com>
- <5a033c2e-dbf3-426a-007c-e7eec85fc3a6@6wind.com>
- <9a0813f2446b0423963d871795e34b3fe99e301d.camel@vyatta.att-mail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <c050dc8c-eb17-7195-51ed-18de0a270f5b@6wind.com>
-Date:   Thu, 5 Dec 2019 09:52:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1729047AbfLEJH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 04:07:58 -0500
+Received: from mout.kundenserver.de ([212.227.126.187]:42185 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726384AbfLEJH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 04:07:57 -0500
+Received: from mail-lf1-f42.google.com ([209.85.167.42]) by
+ mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MDQRy-1iVgMe44Tm-00AZOa; Thu, 05 Dec 2019 10:07:55 +0100
+Received: by mail-lf1-f42.google.com with SMTP id n25so1930431lfl.0;
+        Thu, 05 Dec 2019 01:07:54 -0800 (PST)
+X-Gm-Message-State: APjAAAWaX08cRKCjC9kcRjUAcKbVHB6rq2Rap8epvqa5d/be0qLqWlRj
+        NRkNh18YjbBt6U1M1LNYl3e+ju7bTX/N+jI1V/8=
+X-Google-Smtp-Source: APXvYqypV1X5EMz2sl1SKkaAbf4BM9c0wEFFQFI//IuQIHowR6BnovlkX8ELT08+5Z0laudy+q0gKPhwMe9Yp9XTz5g=
+X-Received: by 2002:a19:22cc:: with SMTP id i195mr4781773lfi.148.1575536874347;
+ Thu, 05 Dec 2019 01:07:54 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <9a0813f2446b0423963d871795e34b3fe99e301d.camel@vyatta.att-mail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20191205052220.GC1158@sol.localdomain> <20191205055419.13435-1-ebiggers@kernel.org>
+In-Reply-To: <20191205055419.13435-1-ebiggers@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 5 Dec 2019 10:07:37 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2Fka2tuCnYAsSM8DHVzV9Zpvj_J7rkGg6zgWLEsU3KAw@mail.gmail.com>
+Message-ID: <CAK8P3a2Fka2tuCnYAsSM8DHVzV9Zpvj_J7rkGg6zgWLEsU3KAw@mail.gmail.com>
+Subject: Re: [PATCH] ppp: fix out-of-bounds access in bpf_prog_create()
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Paul Mackerras <paulus@samba.org>, bpf@vger.kernel.org,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        linux-ppp@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        syzbot <syzbot+eb853b51b10f1befa0b7@syzkaller.appspotmail.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:XiJIUuR/OeqRdx0q/I6GwluGTGsdAMHUl4MQ9R4EKyAkzHom6AR
+ ODog5/k3OD8ftZArXfJ9gzj1bXo0vd6KSsKxMFDh3mq2+UwAwqIozNJjbNFrXoh3ufgFf3E
+ OD6F2mOrYl8HpkOW+aw4YeYHuOkyEDjuukaYJ9XE3e7BcYzz0NtpxN9q1SKaXb6SMWmyObG
+ hqBWPR75Zc9ym6LDePlNA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BEadTGh7wNM=:DRgQGSU66b4UPkvk7ATasF
+ 9Ey/O0yUQ/4D8Y3kcFbWOJ22PXJZ+G1+in5J4mGtqCBlhlQOa/30d+J+6hOmwWE85MDzf8GYO
+ Ejwb/qGjHW1Tijz1FK7yAw7TcIv5g8BG0I96YWzrwInHuFpxx2jlo/MVlj5bpj2vt56F0/JGL
+ iMBTG/+kBKyAQkzHyuv1JSLMn2bm9Ypox57hUDOjQMiBy7gPIuyYtHrjNI7rPXbAyX7TTpX1n
+ nQ0TLqGZJeB542oEvsd3KJ8BwvA3lvze5U16/LibU4XGKakmhY2Gvuhs51UrVSXh6ij58XM6K
+ 2pz/GFcbbMcDKw9lI9KF+OzQkhsPQCHj3ybp9rMEAqW2mnGP0G7IrUwze1kECDwFOh1tijywr
+ FgDva/kTC7hqTriwW5ubDBxWmEEnnoAv5YgbhpX/5xmV7PrgZ3yN8nizgPE+rg6QzGetnYUhS
+ lYJb4bHNBXRBH27/lIyjINtLv5ifRrUpu17pCxoVIOFouAJaDt7xw/EkBtKrG3Cra4rJ7x/T8
+ obrytdlwYs0+o/fDez1/bCGetN8y7zkMsgk8hTxQROqwG4GVT9XbNa0fDhCDxp7+CLPNjLzlA
+ DaePrBcufmX8GH9kbTZ5SXuQU8Rnq/BF9gVsdtsuqSV/qfaBcuuAg1AwrVb8qa42iMAi8gjP5
+ PczD6sUn6cSNmnFn0yi7ndsP2ebW9iDadXqw1MTPEvsi8Nzo+sKFifRN24NBjq+mJ/JtI2DlH
+ S47b0iUG55hZa2aGRPakliTMe1Qwkd6hPhvSrLJt1cFp7W3T/4GRaLvY7LE70SpvAJEaLzPof
+ FMvvPfs9M6DUNo6jeDxXP/4fS4u2E5NZyWgfc+o3XWUWo74pIg0OqgNInpVshdq/s+26OZFxZ
+ Y7PkkYEzHZzXLMaMSiXA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 05/12/2019 à 09:10, Mark Gillott a écrit :
-> On Wed, 2019-12-04 at 17:57 +0100, Nicolas Dichtel wrote:
->> Le 04/12/2019 à 16:17, Mark Gillott a écrit :
->>> Before performing a policy bundle lookup, check the DST_NOPOLICY
->>> option, as well as DST_NOXFRM. That is, skip further processing if
->>> either of the disable_policy or disable_xfrm sysctl attributes are
->>> set.
->>
->> Can you elaborate why this change is needed?
-> 
-> We have a separate DPDK-based dataplane that is responsible for all
-> IPsec processing - policy handing/encryption/decryption. Consequently
-> we set the net.ipv[4|6].conf.<if>.disable_policy sysctl to 1 for all
-> "interesting" interfaces. That is we want the kernel to ignore any
-> IPsec policies.
-> 
-> Despite the above & depending on configuration, we found that
-> originating traffic was ending up deep inside XFRM where it would get
-> dropped because of a route lookup problem.
-And why don't you set disable_xfrm to thoses interfaces also?
-disable_policy means no xfrm policy lookup on output, disable_xfrm means no xfrm
-policy check on input.
+On Thu, Dec 5, 2019 at 6:55 AM Eric Biggers <ebiggers@kernel.org> wrote:
+>
+> From: Eric Biggers <ebiggers@google.com>
+>
+> sock_fprog_kern::len is in units of struct sock_filter, not bytes.
+>
+> Fixes: 3e859adf3643 ("compat_ioctl: unify copy-in of ppp filters")
+> Reported-by: syzbot+eb853b51b10f1befa0b7@syzkaller.appspotmail.com
+> Signed-off-by: Eric Biggers <ebiggers@google.com>
 
-Nicolas
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+
+Thanks for fixing the bug I introduced!
