@@ -2,76 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC091138CF
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 01:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 383E81138DA
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 01:32:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728540AbfLEA3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 19:29:33 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38100 "EHLO
+        id S1728533AbfLEAce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 19:32:34 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38154 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728121AbfLEA3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 19:29:33 -0500
+        with ESMTP id S1728011AbfLEAce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 19:32:34 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8BF3C14F0E35A;
-        Wed,  4 Dec 2019 16:29:31 -0800 (PST)
-Date:   Wed, 04 Dec 2019 16:29:29 -0800 (PST)
-Message-Id: <20191204.162929.2216543178968689201.davem@davemloft.net>
-nTo:    jakub.kicinski@netronome.com
-Cc:     alexei.starovoitov@gmail.com, andrii.nakryiko@gmail.com,
-        toke@redhat.com, jolsa@kernel.org, acme@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, mingo@kernel.org, namhyung@kernel.org,
-        alexander.shishkin@linux.intel.com, a.p.zijlstra@chello.nl,
-        mpetlan@redhat.com, brouer@redhat.com, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        quentin.monnet@netronome.com
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CA86514F1748B;
+        Wed,  4 Dec 2019 16:32:32 -0800 (PST)
+Date:   Wed, 04 Dec 2019 16:32:32 -0800 (PST)
+Message-Id: <20191204.163232.1306369201437008300.davem@davemloft.net>
+To:     aconole@redhat.com
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, mleitner@redhat.com,
+        paulb@mellanox.com, roid@mellanox.com, nicolas.dichtel@6wind.com
+Subject: Re: [PATCH 1/2] openvswitch: support asymmetric conntrack
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191204162348.49be5f1b@cakuba.netronome.com>
-References: <20191204135405.3ffb9ad6@cakuba.netronome.com>
-        <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
-        <20191204162348.49be5f1b@cakuba.netronome.com>
+In-Reply-To: <20191203213414.24109-1-aconole@redhat.com>
+References: <20191203213414.24109-1-aconole@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 04 Dec 2019 16:29:32 -0800 (PST)
-To:     unlisted-recipients:; (no To-header on input)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 04 Dec 2019 16:32:33 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Wed, 4 Dec 2019 16:23:48 -0800
+From: Aaron Conole <aconole@redhat.com>
+Date: Tue,  3 Dec 2019 16:34:13 -0500
 
-> Jokes aside, you may need to provide some reasoning on this one..
-> The recommendation for packaging libbpf from GitHub never had any 
-> clear justification either AFAICR.
+> The openvswitch module shares a common conntrack and NAT infrastructure
+> exposed via netfilter.  It's possible that a packet needs both SNAT and
+> DNAT manipulation, due to e.g. tuple collision.  Netfilter can support
+> this because it runs through the NAT table twice - once on ingress and
+> again after egress.  The openvswitch module doesn't have such capability.
 > 
-> I honestly don't see why location matters. bpftool started out on GitHub
-> but we moved it into the tree for... ease of packaging/distribution(?!)
-> Now it's handy to have it in the tree to reuse the uapi headers.
+> Like netfilter hook infrastructure, we should run through NAT twice to
+> keep the symmetry.
 > 
-> As much as I don't care if we move it (back) out of the tree - having
-> two copies makes no sense to me. As does having it in the libbpf repo.
-> The sync effort is not warranted. User confusion is not warranted.
+> Fixes: 05752523e565 ("openvswitch: Interface with NAT.")
+> Signed-off-by: Aaron Conole <aconole@redhat.com>
+> ---
+> NOTE: this is a repost to see if the email client issues go away.
 
-Part of this story has to do with how bug fixes propagate via bpf-next
-instead of the bpf tree, as I understand it.
-
-But yeah it would be nice to have a clear documentation on all of the
-reasoning.
-
-On the distro side, people seem to not want to use the separate repo.
-If you're supporting enterprise customers you don't just sync with
-upstream, you cherry pick.  When cherry picking gets too painful, you
-sync with upstream possibly eliding upstream new features you don't
-want to appear in your supported product yet.
-
-I agree with tying bpftool and libbpf into the _resulting_ binary
-distro package, but I'm not totally convinced about separating them
-out of the kernel source tree.
+Applied and queued up for -stable.
