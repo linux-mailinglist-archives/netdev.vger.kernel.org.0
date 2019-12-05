@@ -2,150 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 147C3113EED
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 11:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C81DD113EFF
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 11:03:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbfLEKAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 05:00:09 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34171 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728629AbfLEKAJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 05:00:09 -0500
-Received: by mail-lj1-f194.google.com with SMTP id m6so2863911ljc.1
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 02:00:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=unikie-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=CmLQYer57shUUBOpu/Cd8aIR5RIL9543fihD/YvLsXE=;
-        b=iM86cNmC7keSOExpd9IrsKNuFPzBGDGkRHg9At0x8Lrs927cuxIwkxOcjGd0CnoM/D
-         z5r5s5SWGsk7yF3bsf5V9hfoh5RDpSKkWYcPg3e3zzXKP7HhymAcXeVYAItQ7IV4YoME
-         IPY22akkBZJFht2KUw2TExBOa0YroucwX7WSLSz4UktYJoH12fR9duIguY55evDR1Udx
-         W16vXoviQB27t+cbxA9drid0BBTkC4gGoo5xHG84DUPZ/xdIYh+ir3R3OxxV57BnwHD1
-         VuGhrL3Qrm559vqA0VoXMTsJxltJOxcVKaS3MoLTf4B2epukdJRAjl+BIJGcVsJpAApV
-         88EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version:content-transfer-encoding;
-        bh=CmLQYer57shUUBOpu/Cd8aIR5RIL9543fihD/YvLsXE=;
-        b=rjAcUqCNIJ9j+4Wou4c8CmJxkL0QMCvP0PStgd6tFF43Yk1CCMoA7gUtyrZ9C1PeQy
-         D9K1CmO9cQTBFlpuK/wQ9wGFegb10dY1AkplwX0EUKmzRLLLqVkdP2z3hxygmS1Erc7y
-         NTWgzr2QjGLeNXDiZIFWiPjk8saoGvykjFlOiD8qtVv3UKd1frlAPqhH7dXIm/2w9Xjl
-         1zx32I1LImXa/RskwKOy0awyVICiLYaUew/tUm4xD0gZAZMOjGWDzzP2JmRnOrxb4Cpe
-         j//vlQtPq7jxn7SgTooBjqKYbzrBHm4v3BgLxZBalmvFKCUIH2ZCiCobbeLcRT5MrNiZ
-         9upw==
-X-Gm-Message-State: APjAAAUef6xeRxDt7jHCLLN3co+/BWaWCpqQGM6YuwxtHjxV9LQSHHd6
-        7P5w8to1mGSSJ/siz+sHuAVONw==
-X-Google-Smtp-Source: APXvYqyUd6Hu34vl80xhCcuVStEXBKoEqU2PZVoi1m8XyMQLuipmj09Hb9bDLlW4CULsjFp7UzhYhQ==
-X-Received: by 2002:a2e:b52a:: with SMTP id z10mr4837726ljm.178.1575540006971;
-        Thu, 05 Dec 2019 02:00:06 -0800 (PST)
-Received: from GL-434 ([109.204.235.119])
-        by smtp.gmail.com with ESMTPSA id k5sm389873lfd.86.2019.12.05.02.00.05
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 05 Dec 2019 02:00:06 -0800 (PST)
-From:   jouni.hogander@unikie.com (Jouni =?utf-8?Q?H=C3=B6gander?=)
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
-        YueHaibing <yuehaibing@huawei.com>, Julian Anastasov <ja@ssi.bg>,
-        ddstreet@ieee.org, dvyukov@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, Hulk Robot <hulkci@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
-References: <0000000000007d22100573d66078@google.com>
-        <alpine.LFD.2.20.1808201527230.2758@ja.home.ssi.bg>
-        <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
-Date:   Thu, 05 Dec 2019 12:00:04 +0200
-In-Reply-To: <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
-        (Tetsuo Handa's message of "Thu, 28 Nov 2019 18:56:21 +0900")
-Message-ID: <87y2vrgkij.fsf@unikie.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.2 (gnu/linux)
+        id S1729074AbfLEKDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 05:03:48 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:38436 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726239AbfLEKDr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 05:03:47 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 0DCFD1B214D6; Thu,  5 Dec 2019 13:03:43 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 0DCFD1B214D6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1575540224; bh=yI7KF/bM4Qa4hyw06HNlRSt7/ikY+NEJAJCnnl7lFyY=;
+        h=From:To:Cc:Subject:Date;
+        b=HNhL63xCyq243WuhJA1bkWHqxknokV8KgpHTlCqpuj+wcYHSLqeU/yApJ6+XKsdAO
+         Wycy6lRs3et8dSpMHkLzzruDRj6O6CsfGMyJzfniIROvtEgCllYi+CmUFks1JsqRvs
+         TwpwZnQ4knnIjGAmVmZDBk8T5lpZlvWDle7S0jkw=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 403331B20144;
+        Thu,  5 Dec 2019 13:03:26 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 403331B20144
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 005F01B219AA;
+        Thu,  5 Dec 2019 13:03:24 +0300 (MSK)
+Received: from localhost.localdomain (unknown [196.196.203.126])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Thu,  5 Dec 2019 13:03:24 +0300 (MSK)
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Muciri Gatimu <muciri@openmesh.com>,
+        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
+        John Crispin <john@phrozen.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: fix flow dissection on Tx path
+Date:   Thu,  5 Dec 2019 13:02:35 +0300
+Message-Id: <20191205100235.14195-1-alobakin@dlink.ru>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> writes:
+Commit 43e665287f93 ("net-next: dsa: fix flow dissection") added an
+ability to override protocol and network offset during flow dissection
+for DSA-enabled devices (i.e. controllers shipped as switch CPU ports)
+in order to fix skb hashing for RPS on Rx path.
 
-> [   61.584734] Code: bd b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 4=
-8 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <=
-48> 3d 01 f0 ff ff 0f 83 8b b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> [   61.590407] RSP: 002b:00007f25d540ec88 EFLAGS: 00000246 ORIG_RAX: 0000=
-000000000010
-> [   61.592488] RAX: ffffffffffffffda RBX: 000000000071bf00 RCX: 000000000=
-045a729
-> [   61.594552] RDX: 0000000020000040 RSI: 00000000400454d9 RDI: 000000000=
-0000003
-> [   61.596829] RBP: 00007f25d540eca0 R08: 0000000000000000 R09: 000000000=
-0000000
-> [   61.598540] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f25d=
-540f6d4
-> [   61.600278] R13: 00000000004ac5a5 R14: 00000000006ee8a0 R15: 000000000=
-0000005
-> [   61.655323] kobject_add_internal failed for tx-1 (error: -12 parent: q=
-ueues)
-> [   71.760970] unregister_netdevice: waiting for vet to become free. Usag=
-e count =3D -1
-> [   82.028434] unregister_netdevice: waiting for vet to become free. Usag=
-e count =3D -1
-> [   92.140031] unregister_netdevice: waiting for vet to become free. Usag=
-e count =3D -1
-> ----------
->
-> Worrisome part is that tun_attach() calls tun_set_real_num_queues() at th=
-e end of tun_attach()
-> but tun_set_real_num_queues() is not handling netif_set_real_num_tx_queue=
-s() failure.
-> That is, tun_attach() is returning success even if netdev_queue_update_ko=
-bjects() from
-> netif_set_real_num_tx_queues() failed.
->
->   static void tun_set_real_num_queues(struct tun_struct *tun)
->   {
->           netif_set_real_num_tx_queues(tun->dev, tun->numqueues);
->           netif_set_real_num_rx_queues(tun->dev, tun->numqueues);
->   }
->
-> And I guess that ignoring that failure causes clean-up function to drop a=
- refcount
-> which was not held by initialization function. Applying below diff seems =
-to avoid
-> this problem. Please check.
->
-> ----------
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index ae3bcb1540ec..562d06c274aa 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -1459,14 +1459,14 @@ static int netdev_queue_add_kobject(struct net_de=
-vice *dev, int index)
->  	struct kobject *kobj =3D &queue->kobj;
->  	int error =3D 0;
->=20=20
-> +	dev_hold(queue->dev);
-> +
->  	kobj->kset =3D dev->queues_kset;
->  	error =3D kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
->  				     "tx-%u", index);
->  	if (error)
->  		goto err;
->=20=20
-> -	dev_hold(queue->dev);
-> -
->  #ifdef CONFIG_BQL
->  	error =3D sysfs_create_group(kobj, &dql_group);
->  	if (error)
+However, skb_hash() and added part of code can be invoked not only on
+Rx, but also on Tx path if we have a multi-queued device and:
+ - kernel is running on UP system or
+ - XPS is not configured.
 
-Now after reproducing the issue I think this is actually proper fix for
-the issue.  It's not related to missing error handling in in
-tun_set_real_num_queues as I commented earlier. Can you prepare patch
-for this?
+The call stack in this two cases will be like: dev_queue_xmit() ->
+__dev_queue_xmit() -> netdev_core_pick_tx() -> netdev_pick_tx() ->
+skb_tx_hash() -> skb_get_hash().
 
-BR,
+The problem is that skbs queued for Tx have both network offset and
+correct protocol already set up even after inserting a CPU tag by DSA
+tagger, so calling tag_ops->flow_dissect() on this path actually only
+breaks flow dissection and hashing.
 
-Jouni H=C3=B6gander
+This can be observed by adding debug prints just before and right after
+tag_ops->flow_dissect() call to the related block of code:
+
+Before the patch:
+
+Rx path (RPS):
+
+[   19.240001] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   19.244271] tag_ops->flow_dissect()
+[   19.247811] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
+
+[   19.215435] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   19.219746] tag_ops->flow_dissect()
+[   19.223241] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
+
+[   18.654057] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   18.658332] tag_ops->flow_dissect()
+[   18.661826] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
+
+Tx path (UP system):
+
+[   18.759560] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
+[   18.763933] tag_ops->flow_dissect()
+[   18.767485] Tx: proto: 0x920b, nhoff: 34	/* junk */
+
+[   22.800020] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
+[   22.804392] tag_ops->flow_dissect()
+[   22.807921] Tx: proto: 0x920b, nhoff: 34	/* junk */
+
+[   16.898342] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
+[   16.902705] tag_ops->flow_dissect()
+[   16.906227] Tx: proto: 0x920b, nhoff: 34	/* junk */
+
+After:
+
+Rx path (RPS):
+
+[   16.520993] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   16.525260] tag_ops->flow_dissect()
+[   16.528808] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
+
+[   15.484807] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   15.490417] tag_ops->flow_dissect()
+[   15.495223] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
+
+[   17.134621] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+[   17.138895] tag_ops->flow_dissect()
+[   17.142388] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
+
+Tx path (UP system):
+
+[   15.499558] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
+
+[   20.664689] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
+
+[   18.565782] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
+
+In order to fix that we can add the check 'proto == htons(ETH_P_XDSA)'
+to prevent code from calling tag_ops->flow_dissect() on Tx.
+I also decided to initialize 'offset' variable so tagger callbacks can
+now safely leave it untouched without provoking a chaos.
+
+Fixes: 43e665287f93 ("net-next: dsa: fix flow dissection")
+Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+---
+ net/core/flow_dissector.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 69395b804709..d524a693e00f 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -969,9 +969,10 @@ bool __skb_flow_dissect(const struct net *net,
+ 		nhoff = skb_network_offset(skb);
+ 		hlen = skb_headlen(skb);
+ #if IS_ENABLED(CONFIG_NET_DSA)
+-		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev))) {
++		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev) &&
++			     proto == htons(ETH_P_XDSA))) {
+ 			const struct dsa_device_ops *ops;
+-			int offset;
++			int offset = 0;
+ 
+ 			ops = skb->dev->dsa_ptr->tag_ops;
+ 			if (ops->flow_dissect &&
+-- 
+2.24.0
+
