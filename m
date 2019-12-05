@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDFF411498F
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 23:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7942F1149A1
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 00:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbfLEW5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 17:57:41 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48832 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725959AbfLEW5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 17:57:40 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EEA57150B96D6;
-        Thu,  5 Dec 2019 14:57:39 -0800 (PST)
-Date:   Thu, 05 Dec 2019 14:57:39 -0800 (PST)
-Message-Id: <20191205.145739.377846077558856039.davem@davemloft.net>
-To:     sfr@canb.auug.org.au
-Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sd@queasysnail.net
-Subject: Re: linux-next: build warning after merge of the net tree
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191205084440.1d2bb0fa@canb.auug.org.au>
-References: <20191205084440.1d2bb0fa@canb.auug.org.au>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 05 Dec 2019 14:57:40 -0800 (PST)
+        id S1726097AbfLEXDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 18:03:49 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:41532 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725927AbfLEXDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 18:03:49 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47TWVX4dRHz9vBr7
+        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 23:03:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9aaAV6OUjBOL for <netdev@vger.kernel.org>;
+        Thu,  5 Dec 2019 17:03:48 -0600 (CST)
+Received: from mail-yw1-f69.google.com (mail-yw1-f69.google.com [209.85.161.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47TWVX3fYXz9vDw5
+        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 17:03:48 -0600 (CST)
+Received: by mail-yw1-f69.google.com with SMTP id 16so3800353ywz.5
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 15:03:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=MO10ke4bfA3Py2gapxPNJKqGZHjnWV9jw2bft4Kl1Hw=;
+        b=o8kq/FV8cXLWxcKrmWwqxkUDv66DAT2G+5F8dgPlPsK2l/4v0bLFuw/zZ4WkoJUOra
+         j7d1rGmVPr1XObXlyoBCxoAbInrvrXSEM+7T9Q6Q4wgxzS7JLdnQIFeulqvLZr2ONMBT
+         TQ2P7rIP4szjGmrDnCCMZetziNAYCEtGnPREfJkkooWoZHwtYH+3xSHusomUuPG9t9b0
+         WbcwXT+JPAdQ6v9lbTR4jO0+1jSajHx1OrXCBdBxb89fUIU4Ur+cp8tZj2C0IaJCyjof
+         T4l7YuRus+ot8Yy0JmZ2SL6gXNSwFPkD4g02BZEI4gWsjd1C4KNwlHVfdqQ5q4n35Xr2
+         RuxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MO10ke4bfA3Py2gapxPNJKqGZHjnWV9jw2bft4Kl1Hw=;
+        b=EyCwronPmif5GAV3PzjzRyY3ZxwrfhhlrES8yfoE/xu24GAr2Ok9UWrMJk8Urqiamp
+         7VB8nKkQK6c/t4ChVjSY0uw7r9OGNGtw1t3CRBD6iT7ZYtGqi+PYRGEKoCUVpFpE6Irp
+         qzx/lWBNNIzD+Lm02x3bjWQYY6ZVOiNZnh15tIjca21QkGu0DitTlzRxTTIj9XUOw8e3
+         wJoivT9Kj1vIxHTWQqq6/ivyVkP0ejxDsV93bZMwRq77jqj4yfVPN62C+CWeTiaIEb1r
+         3gXnDd2P0Cmi+Lz10wDtQSbzmN61yNn2QyOATpwb49VKhNjWhkcPQVluhvuCseTwfv1C
+         /tWQ==
+X-Gm-Message-State: APjAAAW/d71QdGnD6RhFGqXOejqEwZF4ibKQAzwk/ESEbGe6Fy/qdzof
+        JoVE8Bw0PWUfxshTbivZhXKOrTzg/XhTbAtFar6chSqy5ce6aCRvm0XthvnRMZE85y53oNoEfmv
+        KaZ+XrRS8YjXJwBkUOlcY
+X-Received: by 2002:a25:d14f:: with SMTP id i76mr7709787ybg.247.1575587027810;
+        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwkEHr8jIGy9mRSBGOgEGBohtY9oZQx2HZqcHGHp7PRlziWpgnmiW+FCdEbCYBPqiawfQdx7A==
+X-Received: by 2002:a25:d14f:: with SMTP id i76mr7709757ybg.247.1575587027551;
+        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
+Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id y17sm5373245ywd.23.2019.12.05.15.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
+From:   Aditya Pakki <pakki001@umn.edu>
+To:     pakki001@umn.edu
+Cc:     klju@umn.edu, Michal Ostrowski <mostrows@earthlink.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] pppoe: remove redundant BUG_ON() check in pppoe_pernet
+Date:   Thu,  5 Dec 2019 17:03:42 -0600
+Message-Id: <20191205230342.8548-1-pakki001@umn.edu>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Thu, 5 Dec 2019 08:44:40 +1100
+Passing NULL to pppoe_pernet causes a crash via BUG_ON.
+Dereferencing net in net_generici() also has the same effect. This patch
+removes the redundant BUG_ON check on the same parameter.
 
-> After merging the net tree, today's linux-next build (x86_64 allmodconfig)
-> produced this warning:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c: In function 'mlx5e_tc_tun_create_header_ipv6':
-> drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:332:20: warning: 'n' may be used uninitialized in this function [-Wmaybe-uninitialized]
->   332 |  struct neighbour *n;
->       |                    ^
-> 
-> Introduced by commit
-> 
->   6c8991f41546 ("net: ipv6_stub: use ip6_dst_lookup_flow instead of ip6_dst_lookup")
-> 
-> It looks like a false positive.
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+---
+ drivers/net/ppp/pppoe.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-I think it is a false positive as well.  It looks like the compiler
-has trouble seeing through ptr error guards.  Actually, the top level
-logic looks generically like this:
+diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+index a44dd3c8af63..d760a36db28c 100644
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
+@@ -119,8 +119,6 @@ static inline bool stage_session(__be16 sid)
+ 
+ static inline struct pppoe_net *pppoe_pernet(struct net *net)
+ {
+-	BUG_ON(!net);
+-
+ 	return net_generic(net, pppoe_net_id);
+ }
+ 
+-- 
+2.17.1
 
-
-Old code:
-
-int foo(int *byref)
-{
-	int err, val;
-
-	err = something(&val);
-	if (err < 0)
-		return err;
-
-	*byref = val;
-	return 0;
-}
-
-...
-	struct whatever *obj;
-	
-	err = foo(&obj);
-	if (err < 0)
-		return err;
-	a = obj->something;
-
-New code:
-
-int foo(int *byref)
-{
-	struct otherthing *x;
-
-	x = something(&val);
-	if (IS_ERR(x))
-		return PTR_ERR(x);
-	*byref = bar(x);
-	return 0;
-}
-
-...
-	struct whatever *obj;
-
-	err = foo(&obj);
-	if (err < 0)
-		return err;
-	a = obj->somethng;
-
-In the new code the compiler can only see that the return value in the
-error case is non-zero, not necessarily that it is < 0 which is the
-guard against uninitialized accesses of 'obj'.
-
-It will satisfy this property, but through the various casts and
-implicit demotions, this information is lost on the compiler.
-
-My compiler didn't emit this warning FWIW.
-
-gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2)
-
-I'm unsure how to handle this, setting 'n' to explicitly be NULL
-is bogus because the compiler now will think that a NULL deref
-happens since the guard isn't guarding the existing assignment.
