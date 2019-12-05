@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC8A113916
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 02:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF9F11391E
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 02:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbfLEBBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 20:01:40 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:38466 "EHLO
+        id S1728560AbfLEBIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 20:08:47 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38524 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728100AbfLEBBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 20:01:39 -0500
+        with ESMTP id S1728100AbfLEBIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 20:08:47 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C6E7614F363AC;
-        Wed,  4 Dec 2019 17:01:38 -0800 (PST)
-Date:   Wed, 04 Dec 2019 17:01:38 -0800 (PST)
-Message-Id: <20191204.170138.1879380922714895667.davem@davemloft.net>
-To:     alexandru.ardelean@analog.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        frederic.danis@linux.intel.com, alexios.zavras@intel.com,
-        eric.lapuyade@linux.intel.com
-Subject: Re: [PATCH] NFC: NCI: use new `delay` structure for SPI transfer
- delays
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C54B914F35C6E;
+        Wed,  4 Dec 2019 17:08:46 -0800 (PST)
+Date:   Wed, 04 Dec 2019 17:08:46 -0800 (PST)
+Message-Id: <20191204.170846.1266614281989376759.davem@davemloft.net>
+To:     jaskaransingh7654321@gmail.com
+Cc:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] drivers: net: qlogic: apply alloc_cast.cocci to
+ qlogic/qed/qed_roce.c
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191204075809.31612-1-alexandru.ardelean@analog.com>
-References: <20191204075809.31612-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20191204114013.31726-1-jaskaransingh7654321@gmail.com>
+References: <20191204114013.31726-1-jaskaransingh7654321@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 04 Dec 2019 17:01:39 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 04 Dec 2019 17:08:47 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Date: Wed, 4 Dec 2019 09:58:09 +0200
+From: Jaskaran Singh <jaskaransingh7654321@gmail.com>
+Date: Wed,  4 Dec 2019 17:10:13 +0530
 
-> In a recent change to the SPI subsystem [1], a new `delay` struct was added
-> to replace the `delay_usecs`. This change replaces the current `delay_secs`
-> with `delay` for this driver.
+> coccicheck reports that qlogic/qed/qed_roce.c can be patched with the
+> semantic patch alloc_cast.cocci. The casts on the function
+> dma_alloc_coherent can be removed. Apply the semantic patch and perform
+> formatting changes as required.
 > 
-> The `spi_transfer_delay_exec()` function [in the SPI framework] makes sure
-> that both `delay_usecs` & `delay` are used (in this order to preserve
-> backwards compatibility).
-> 
-> [1] commit bebcfd272df6485 ("spi: introduce `delay` field for
-> `spi_transfer` + spi_transfer_delay_exec()")
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> Signed-off-by: Jaskaran Singh <jaskaransingh7654321@gmail.com>
 
-Applied.
+This is a cleanup and therefore net-next material.
+
+net-next is closed, please resubmit this when the net-next tree is
+open again.
+
+Thank you.
