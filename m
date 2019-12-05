@@ -2,116 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0FB0113ECD
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 10:55:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 147C3113EED
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 11:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729284AbfLEJzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 04:55:10 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55779 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729072AbfLEJzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 04:55:10 -0500
-Received: by mail-io1-f70.google.com with SMTP id z21so1988358iob.22
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 01:55:09 -0800 (PST)
+        id S1729247AbfLEKAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 05:00:09 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34171 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728629AbfLEKAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 05:00:09 -0500
+Received: by mail-lj1-f194.google.com with SMTP id m6so2863911ljc.1
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 02:00:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=CmLQYer57shUUBOpu/Cd8aIR5RIL9543fihD/YvLsXE=;
+        b=iM86cNmC7keSOExpd9IrsKNuFPzBGDGkRHg9At0x8Lrs927cuxIwkxOcjGd0CnoM/D
+         z5r5s5SWGsk7yF3bsf5V9hfoh5RDpSKkWYcPg3e3zzXKP7HhymAcXeVYAItQ7IV4YoME
+         IPY22akkBZJFht2KUw2TExBOa0YroucwX7WSLSz4UktYJoH12fR9duIguY55evDR1Udx
+         W16vXoviQB27t+cbxA9drid0BBTkC4gGoo5xHG84DUPZ/xdIYh+ir3R3OxxV57BnwHD1
+         VuGhrL3Qrm559vqA0VoXMTsJxltJOxcVKaS3MoLTf4B2epukdJRAjl+BIJGcVsJpAApV
+         88EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=UEstprLMXsCJ/HcpDk+4IwZmvggk9j9Se+yVTAfNs9w=;
-        b=bnPgss1Fa3AK07HiUvfjDVFndoUcuBgaCXMHTtAk+z/rEMS4UEWudkBzp53vISllT+
-         P7xnf7IewbAsmQMPsmAS69GmzCk8fMEow6QUS03BA+jVORos7KIwikRMhS7UB6pMrI2w
-         5PwDABG9SxNHhKtct7Z61u5zTMvOB16eacfeu5PTgEdO5KW4XRXnjmj/rtJ0DzWrsan0
-         QeDokvTeH9ndIHeVjbuVJ5pueobzPoXBrFsPTnCPDpen5ozLMpMbNpEot5DUqHA4+/j4
-         WeUNjw17hR/A+5i8mWIyTMr62w0kIAuGsq84lO7DkMEW8Gfl9QrJ1H1SZbH4csQL8O1u
-         vgzg==
-X-Gm-Message-State: APjAAAXi+EdSOsp2MlXXGaA4ABAUUrysxfPFjpT0YHw/bnfsWmvf8oVa
-        o706tycA7bRUPK4t+XlKwuWfn7puIcEvbVVbx2yYwV6/2KVL
-X-Google-Smtp-Source: APXvYqxEC5Hd+oGaUcY0dxSeF8ga0fUvD8JgCnawrnQBgpnq74Q3Bc3hsmSle+e1lMUiawGmo49tPO6f/EJzGkzv5s9tyC1W32Sd
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version:content-transfer-encoding;
+        bh=CmLQYer57shUUBOpu/Cd8aIR5RIL9543fihD/YvLsXE=;
+        b=rjAcUqCNIJ9j+4Wou4c8CmJxkL0QMCvP0PStgd6tFF43Yk1CCMoA7gUtyrZ9C1PeQy
+         D9K1CmO9cQTBFlpuK/wQ9wGFegb10dY1AkplwX0EUKmzRLLLqVkdP2z3hxygmS1Erc7y
+         NTWgzr2QjGLeNXDiZIFWiPjk8saoGvykjFlOiD8qtVv3UKd1frlAPqhH7dXIm/2w9Xjl
+         1zx32I1LImXa/RskwKOy0awyVICiLYaUew/tUm4xD0gZAZMOjGWDzzP2JmRnOrxb4Cpe
+         j//vlQtPq7jxn7SgTooBjqKYbzrBHm4v3BgLxZBalmvFKCUIH2ZCiCobbeLcRT5MrNiZ
+         9upw==
+X-Gm-Message-State: APjAAAUef6xeRxDt7jHCLLN3co+/BWaWCpqQGM6YuwxtHjxV9LQSHHd6
+        7P5w8to1mGSSJ/siz+sHuAVONw==
+X-Google-Smtp-Source: APXvYqyUd6Hu34vl80xhCcuVStEXBKoEqU2PZVoi1m8XyMQLuipmj09Hb9bDLlW4CULsjFp7UzhYhQ==
+X-Received: by 2002:a2e:b52a:: with SMTP id z10mr4837726ljm.178.1575540006971;
+        Thu, 05 Dec 2019 02:00:06 -0800 (PST)
+Received: from GL-434 ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id k5sm389873lfd.86.2019.12.05.02.00.05
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 05 Dec 2019 02:00:06 -0800 (PST)
+From:   jouni.hogander@unikie.com (Jouni =?utf-8?Q?H=C3=B6gander?=)
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>,
+        YueHaibing <yuehaibing@huawei.com>, Julian Anastasov <ja@ssi.bg>,
+        ddstreet@ieee.org, dvyukov@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, Hulk Robot <hulkci@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: unregister_netdevice: waiting for DEV to become free (2)
+References: <0000000000007d22100573d66078@google.com>
+        <alpine.LFD.2.20.1808201527230.2758@ja.home.ssi.bg>
+        <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
+Date:   Thu, 05 Dec 2019 12:00:04 +0200
+In-Reply-To: <ace19af4-7cae-babd-bac5-cd3505dcd874@I-love.SAKURA.ne.jp>
+        (Tetsuo Handa's message of "Thu, 28 Nov 2019 18:56:21 +0900")
+Message-ID: <87y2vrgkij.fsf@unikie.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.2 (gnu/linux)
 MIME-Version: 1.0
-X-Received: by 2002:a02:ca42:: with SMTP id i2mr7387961jal.87.1575539709420;
- Thu, 05 Dec 2019 01:55:09 -0800 (PST)
-Date:   Thu, 05 Dec 2019 01:55:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b5aff60598f1ec45@google.com>
-Subject: memory leak in genl_rcv_msg
-From:   syzbot <syzbot+21f04f481f449c8db840@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        jiri@mellanox.com, johannes.berg@intel.com,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        mkubecek@suse.cz, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> writes:
 
-syzbot found the following crash on:
+> [   61.584734] Code: bd b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 4=
+8 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <=
+48> 3d 01 f0 ff ff 0f 83 8b b1 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> [   61.590407] RSP: 002b:00007f25d540ec88 EFLAGS: 00000246 ORIG_RAX: 0000=
+000000000010
+> [   61.592488] RAX: ffffffffffffffda RBX: 000000000071bf00 RCX: 000000000=
+045a729
+> [   61.594552] RDX: 0000000020000040 RSI: 00000000400454d9 RDI: 000000000=
+0000003
+> [   61.596829] RBP: 00007f25d540eca0 R08: 0000000000000000 R09: 000000000=
+0000000
+> [   61.598540] R10: 0000000000000000 R11: 0000000000000246 R12: 00007f25d=
+540f6d4
+> [   61.600278] R13: 00000000004ac5a5 R14: 00000000006ee8a0 R15: 000000000=
+0000005
+> [   61.655323] kobject_add_internal failed for tx-1 (error: -12 parent: q=
+ueues)
+> [   71.760970] unregister_netdevice: waiting for vet to become free. Usag=
+e count =3D -1
+> [   82.028434] unregister_netdevice: waiting for vet to become free. Usag=
+e count =3D -1
+> [   92.140031] unregister_netdevice: waiting for vet to become free. Usag=
+e count =3D -1
+> ----------
+>
+> Worrisome part is that tun_attach() calls tun_set_real_num_queues() at th=
+e end of tun_attach()
+> but tun_set_real_num_queues() is not handling netif_set_real_num_tx_queue=
+s() failure.
+> That is, tun_attach() is returning success even if netdev_queue_update_ko=
+bjects() from
+> netif_set_real_num_tx_queues() failed.
+>
+>   static void tun_set_real_num_queues(struct tun_struct *tun)
+>   {
+>           netif_set_real_num_tx_queues(tun->dev, tun->numqueues);
+>           netif_set_real_num_rx_queues(tun->dev, tun->numqueues);
+>   }
+>
+> And I guess that ignoring that failure causes clean-up function to drop a=
+ refcount
+> which was not held by initialization function. Applying below diff seems =
+to avoid
+> this problem. Please check.
+>
+> ----------
+> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> index ae3bcb1540ec..562d06c274aa 100644
+> --- a/net/core/net-sysfs.c
+> +++ b/net/core/net-sysfs.c
+> @@ -1459,14 +1459,14 @@ static int netdev_queue_add_kobject(struct net_de=
+vice *dev, int index)
+>  	struct kobject *kobj =3D &queue->kobj;
+>  	int error =3D 0;
+>=20=20
+> +	dev_hold(queue->dev);
+> +
+>  	kobj->kset =3D dev->queues_kset;
+>  	error =3D kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+>  				     "tx-%u", index);
+>  	if (error)
+>  		goto err;
+>=20=20
+> -	dev_hold(queue->dev);
+> -
+>  #ifdef CONFIG_BQL
+>  	error =3D sysfs_create_group(kobj, &dql_group);
+>  	if (error)
 
-HEAD commit:    32ef9553 Merge tag 'fsnotify_for_v5.5-rc1' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10e778eae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3ceab2bd652d6555
-dashboard link: https://syzkaller.appspot.com/bug?extid=21f04f481f449c8db840
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11808adae00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=137058eae00000
+Now after reproducing the issue I think this is actually proper fix for
+the issue.  It's not related to missing error handling in in
+tun_set_real_num_queues as I commented earlier. Can you prepare patch
+for this?
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+21f04f481f449c8db840@syzkaller.appspotmail.com
+BR,
 
-BUG: memory leak
-unreferenced object 0xffff888121379340 (size 32):
-   comm "syz-executor138", pid 7118, jiffies 4294943875 (age 7.840s)
-   hex dump (first 32 bytes):
-     40 e9 11 84 ff ff ff ff d8 0a b4 83 ff ff ff ff  @...............
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-   backtrace:
-     [<000000005c57b8f8>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000005c57b8f8>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<000000005c57b8f8>] slab_alloc mm/slab.c:3319 [inline]
-     [<000000005c57b8f8>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<000000005e5d1167>] kmalloc include/linux/slab.h:556 [inline]
-     [<000000005e5d1167>] genl_dumpit_info_alloc net/netlink/genetlink.c:463  
-[inline]
-     [<000000005e5d1167>] genl_family_rcv_msg_dumpit  
-net/netlink/genetlink.c:597 [inline]
-     [<000000005e5d1167>] genl_family_rcv_msg net/netlink/genetlink.c:714  
-[inline]
-     [<000000005e5d1167>] genl_rcv_msg+0x385/0x580  
-net/netlink/genetlink.c:734
-     [<00000000f3f6d30b>] netlink_rcv_skb+0x61/0x170  
-net/netlink/af_netlink.c:2477
-     [<000000007bebabc8>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
-     [<0000000013f3b7b9>] netlink_unicast_kernel  
-net/netlink/af_netlink.c:1302 [inline]
-     [<0000000013f3b7b9>] netlink_unicast+0x223/0x310  
-net/netlink/af_netlink.c:1328
-     [<00000000bd3e2e68>] netlink_sendmsg+0x29f/0x550  
-net/netlink/af_netlink.c:1917
-     [<0000000061329f0f>] sock_sendmsg_nosec net/socket.c:638 [inline]
-     [<0000000061329f0f>] sock_sendmsg+0x54/0x70 net/socket.c:658
-     [<000000006ede6ef7>] ____sys_sendmsg+0x2d0/0x300 net/socket.c:2329
-     [<000000008306e582>] ___sys_sendmsg+0x9c/0x100 net/socket.c:2383
-     [<00000000194a34f7>] __sys_sendmsg+0x80/0xf0 net/socket.c:2429
-     [<00000000a228fcfc>] __do_sys_sendmsg net/socket.c:2438 [inline]
-     [<00000000a228fcfc>] __se_sys_sendmsg net/socket.c:2436 [inline]
-     [<00000000a228fcfc>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2436
-     [<0000000035c29044>] do_syscall_64+0x73/0x220  
-arch/x86/entry/common.c:294
-     [<000000005e1aef5b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Jouni H=C3=B6gander
