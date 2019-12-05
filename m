@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BD661141D9
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 14:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B46114205
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 14:57:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729547AbfLENpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 08:45:08 -0500
-Received: from xavier.telenet-ops.be ([195.130.132.52]:60908 "EHLO
-        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729535AbfLENpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 08:45:08 -0500
-Received: from ramsan ([84.195.182.253])
-        by xavier.telenet-ops.be with bizsmtp
-        id aDl52100X5USYZQ01Dl5nK; Thu, 05 Dec 2019 14:45:05 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1icrRJ-0002Bj-EY; Thu, 05 Dec 2019 14:45:05 +0100
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1icrRJ-0001i6-CG; Thu, 05 Dec 2019 14:45:05 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: net: ravb: Document r8a77961 support
-Date:   Thu,  5 Dec 2019 14:45:04 +0100
-Message-Id: <20191205134504.6533-1-geert+renesas@glider.be>
+        id S1729444AbfLEN55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 08:57:57 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:38829 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729099AbfLEN55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 08:57:57 -0500
+Received: by mail-lf1-f66.google.com with SMTP id r14so2572735lfm.5
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 05:57:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=1bwMcS8ClvkxemokRSe/pWkgFW4Ddoo+cBFPePmCPOo=;
+        b=OrVFDqIe6wOWZj2YgL+EkMgLVvLGH7pvvdl48CndPELHiYXODtt0lop4WJSLurubZJ
+         PXd+YBAOAqo0+kFXMl8Fv89GacqBjxLrW7WhvlWEY+PX2IRp76YHueSgO4xLNwP89BdI
+         8XHfLng9ptjhLtibnF/Ylr2C8fbLgTgbLpTVKRDZ90EJrf2tdfyaYSbqJ3Z5eIqaoNOC
+         2r1cLV5Q+An54P5pA6uCS7uPxiet4iGSJgFS1gOSQFp3WbIE3xorNgSySblzrKekfyNt
+         R0I2hmxVLyD9IiWguSk0WK2W6RwOtFemjLWqSK+iUuwWPVoBpyFyalFcgyzSdbR8t10q
+         bQEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1bwMcS8ClvkxemokRSe/pWkgFW4Ddoo+cBFPePmCPOo=;
+        b=NAhCeUuGITHPPjD6WoplOEFlzlFjI6rF9gzYZ/pES6RSIhRx5Lco0GBR2qMPJ9Syp8
+         AMX8u0tCUPmo63kwQlalSFkcK0k1V4l03EdX9yg+dS/bU9AEB8C8Cc0vy3jEkKnxJnoL
+         nFTHfKUxiD5298Zxqmd2U2ntm8c5vbq6+GYmj4x/ikF8enAMc2xJVcinfXsHUz3IsWw6
+         GhUXRO/wJP+PHdVMdxZvRXTnG6+UCTQIt5ygjiFgOAqINWxwrhlcCjjXgMX2hkbmTvJO
+         FLAi8D0pybz8ats5g1XoMqfXqLs2EEpNaIUWekb8wd7I2KuwDjYPsoAtnUAyl6UnTBLo
+         cPyw==
+X-Gm-Message-State: APjAAAWpBJqnR2nWuHMKH/Mttp6f3+h24Zz4DDxQDMO4YtjhUBFjBzoe
+        hF6ZmMcT0y8GlyrqS92H1U+MQJfv/Mc=
+X-Google-Smtp-Source: APXvYqwPu+v+uc95nECvlu7/4eUlnV3GPF9JkMWJ21Swv/S+5Vjok1FnB5zqS1OLmvjaHUNVFWyfpA==
+X-Received: by 2002:a19:888:: with SMTP id 130mr5362601lfi.167.1575554274855;
+        Thu, 05 Dec 2019 05:57:54 -0800 (PST)
+Received: from localhost.localdomain ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id i184sm5017129lfd.12.2019.12.05.05.57.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2019 05:57:54 -0800 (PST)
+From:   jouni.hogander@unikie.com
+To:     netdev@vger.kernel.org
+Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] net-sysfs: Call dev_hold always in netdev_queue_add_kobject
+Date:   Thu,  5 Dec 2019 15:57:07 +0200
+Message-Id: <20191205135707.13221-1-jouni.hogander@unikie.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document support for the Ethernet AVB interface in the Renesas R-Car
-M3-W+ (R8A77961) SoC.
+From: Jouni Hogander <jouni.hogander@unikie.com>
 
-Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
-avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
+Dev_hold has to be called always in netdev_queue_add_kobject.
+Otherwise usage count drops below 0 in case of failure in
+kobject_init_and_add.
 
-No driver update is needed.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- Documentation/devicetree/bindings/net/renesas,ravb.txt | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/core/net-sysfs.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-index 5df4aa7f681154ee..87dad2dd8ca0cd6c 100644
---- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
-+++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-@@ -21,7 +21,8 @@ Required properties:
-       - "renesas,etheravb-r8a774b1" for the R8A774B1 SoC.
-       - "renesas,etheravb-r8a774c0" for the R8A774C0 SoC.
-       - "renesas,etheravb-r8a7795" for the R8A7795 SoC.
--      - "renesas,etheravb-r8a7796" for the R8A7796 SoC.
-+      - "renesas,etheravb-r8a7796" for the R8A77960 SoC.
-+      - "renesas,etheravb-r8a77961" for the R8A77961 SoC.
-       - "renesas,etheravb-r8a77965" for the R8A77965 SoC.
-       - "renesas,etheravb-r8a77970" for the R8A77970 SoC.
-       - "renesas,etheravb-r8a77980" for the R8A77980 SoC.
-@@ -37,8 +38,8 @@ Required properties:
- - reg: Offset and length of (1) the register block and (2) the stream buffer.
-        The region for the register block is mandatory.
-        The region for the stream buffer is optional, as it is only present on
--       R-Car Gen2 and RZ/G1 SoCs, and on R-Car H3 (R8A7795), M3-W (R8A7796),
--       and M3-N (R8A77965).
-+       R-Car Gen2 and RZ/G1 SoCs, and on R-Car H3 (R8A7795), M3-W (R8A77960),
-+       M3-W+ (R8A77961), and M3-N (R8A77965).
- - interrupts: A list of interrupt-specifiers, one for each entry in
- 	      interrupt-names.
- 	      If interrupt-names is not present, an interrupt specifier
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index ae3bcb1540ec..5c4624298996 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1459,14 +1459,17 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	struct kobject *kobj = &queue->kobj;
+ 	int error = 0;
+ 
++	/* Kobject_put later will trigger netdev_queue_release call
++	 * which decreases dev refcount: Take that reference here
++	 */
++	dev_hold(queue->dev);
++
+ 	kobj->kset = dev->queues_kset;
+ 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+ 				     "tx-%u", index);
+ 	if (error)
+ 		goto err;
+ 
+-	dev_hold(queue->dev);
+-
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+ 	if (error)
 -- 
 2.17.1
 
