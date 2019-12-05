@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 285C8114118
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C6611411D
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:59:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729459AbfLEM6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 07:58:50 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38046 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729099AbfLEM6u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:58:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Re18R+zvHW22gTZUWM5G+y1mglFdF33WZZhd8u13ENU=; b=ISS+iwm4GEajcnWmdI+CAx1dLq
-        /pA0TK0twSbpVXEiHZUfMswjcFncqO8a+fpeQuEx9p4FYARYyLozq/Jtwd5/XCSxYyY67Jk/7Sl7I
-        hxY5Z3ZwD+8yUG/F1DJbo/zGql4/FJ/wj0M/YlPTTIBK/g0KfqVbGKLSUWXZF7RifIJE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1icqiB-0007OM-Fl; Thu, 05 Dec 2019 13:58:27 +0100
-Date:   Thu, 5 Dec 2019 13:58:27 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Lobakin <alobakin@dlink.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Muciri Gatimu <muciri@openmesh.com>,
-        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
-        John Crispin <john@phrozen.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S1729513AbfLEM7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 07:59:13 -0500
+Received: from www62.your-server.de ([213.133.104.62]:58488 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729503AbfLEM7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 07:59:12 -0500
+Received: from 29.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.29] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1icqii-00073e-Qh; Thu, 05 Dec 2019 13:59:02 +0100
+Date:   Thu, 5 Dec 2019 13:59:00 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Daniel Axtens <dja@axtens.net>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
-Message-ID: <20191205125827.GA28269@lunn.ch>
-References: <20191205100235.14195-1-alobakin@dlink.ru>
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>
+Subject: Re: BUG: unable to handle kernel paging request in pcpu_alloc
+Message-ID: <20191205125900.GB29780@localhost.localdomain>
+References: <000000000000314c120598dc69bd@google.com>
+ <CACT4Y+ZTXKP0MAT3ivr5HO-skZOjSVdz7RbDoyc522_Nbk8nKQ@mail.gmail.com>
+ <877e3be6eu.fsf@dja-thinkpad.axtens.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191205100235.14195-1-alobakin@dlink.ru>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <877e3be6eu.fsf@dja-thinkpad.axtens.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25654/Thu Dec  5 10:46:25 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 01:02:35PM +0300, Alexander Lobakin wrote:
-> Commit 43e665287f93 ("net-next: dsa: fix flow dissection") added an
-> ability to override protocol and network offset during flow dissection
-> for DSA-enabled devices (i.e. controllers shipped as switch CPU ports)
-> in order to fix skb hashing for RPS on Rx path.
+On Thu, Dec 05, 2019 at 03:35:21PM +1100, Daniel Axtens wrote:
+> >> HEAD commit:    1ab75b2e Add linux-next specific files for 20191203
+> >> git tree:       linux-next
+> >> console output: https://syzkaller.appspot.com/x/log.txt?x=10edf2eae00000
+> >> kernel config:  https://syzkaller.appspot.com/x/.config?x=de1505c727f0ec20
+> >> dashboard link: https://syzkaller.appspot.com/bug?extid=82e323920b78d54aaed5
+> >> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156ef061e00000
+> >> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11641edae00000
+> >>
+> >> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> >> Reported-by: syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com
+> >
+> > +Daniel, is it the same as:
+> > https://syzkaller.appspot.com/bug?id=f6450554481c55c131cc23d581fbd8ea42e63e18
+> > If so, is it possible to make KASAN detect this consistently with the
+> > same crash type so that syzbot does not report duplicates?
 > 
-> However, skb_hash() and added part of code can be invoked not only on
-> Rx, but also on Tx path if we have a multi-queued device and:
->  - kernel is running on UP system or
->  - XPS is not configured.
+> It looks like both of these occur immediately after failure injection. I
+> think my assumption that I could ignore the chance of failures in the
+> per-cpu allocation path will have to be revisited. That's annoying.
 > 
-> The call stack in this two cases will be like: dev_queue_xmit() ->
-> __dev_queue_xmit() -> netdev_core_pick_tx() -> netdev_pick_tx() ->
-> skb_tx_hash() -> skb_get_hash().
+> I'll try to spin something today but Andrey feel free to pip me at the
+> post again :)
 > 
-> The problem is that skbs queued for Tx have both network offset and
-> correct protocol already set up even after inserting a CPU tag by DSA
-> tagger, so calling tag_ops->flow_dissect() on this path actually only
-> breaks flow dissection and hashing.
+> I'm not 100% confident to call them dups just yet, but I'm about 80%
+> confident that they are.
 
-Hi Alexander
+Ok. Double checked BPF side yesterday night, but looks sane to me and the
+fault also hints into pcpu_alloc() rather than BPF code. Daniel, from your
+above reply, I read that you are aware of how the bisected commit would
+have caused the fault?
 
-What i'm missing here is an explanation why the flow dissector is
-called here if the protocol is already set? It suggests there is a
-case when the protocol is not correctly set, and we do need to look
-into the frame?
-
-     Andrew
+Thanks,
+Daniel
