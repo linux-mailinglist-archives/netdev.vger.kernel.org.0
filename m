@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6359F11408B
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424111140F8
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729398AbfLEMJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 07:09:13 -0500
-Received: from mx2.suse.de ([195.135.220.15]:58704 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729096AbfLEMJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:09:12 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A6C63AB87;
-        Thu,  5 Dec 2019 12:09:10 +0000 (UTC)
-Date:   Thu, 5 Dec 2019 12:09:05 +0000
-From:   Michal Rostecki <mrostecki@opensuse.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
+        id S1729295AbfLEMph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 07:45:37 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:34278 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729096AbfLEMph (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 07:45:37 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id BA9151B2120E; Thu,  5 Dec 2019 15:45:34 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru BA9151B2120E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1575549934; bh=/HwG0dFNg/hWKid+bfXzTVGWal/DPp90hVFX4aHbrbc=;
+        h=Date:From:To:Cc:Subject;
+        b=h0qVKVkg/afttyYI0TPqWQxoWE7CX/0o+OlWKNMDa38VoiEfPQIwqQ9gEzuxu3AuI
+         I+1TS9e8R/GXiVI+s2UXnwl76b7/Mugj7pyWAuMN3pdNxAtt2GEPvco0nwCjyd9T6v
+         EEL3gg/GLINRC37K0Zf5KkF1sgD13+VgW4Zzf0Vs=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 31A891B20153;
+        Thu,  5 Dec 2019 15:45:28 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 31A891B20153
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id CB0771B217D8;
+        Thu,  5 Dec 2019 15:45:27 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Thu,  5 Dec 2019 15:45:27 +0300 (MSK)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 05 Dec 2019 15:45:27 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     Paul Burton <paul.burton@mips.com>
+Cc:     Hassan Naveed <hnaveed@wavecomp.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Laura Abbott <labbott@redhat.com>
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
-Message-ID: <20191205120905.GA5127@wotan.suse.de>
-References: <20191202131847.30837-1-jolsa@kernel.org>
- <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
- <87wobepgy0.fsf@toke.dk>
- <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
- <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
- <20191204135405.3ffb9ad6@cakuba.netronome.com>
- <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
- <20191205093548.6eee1449@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191205093548.6eee1449@carbon>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: MIPS eBPF JIT support on pre-32R2
+User-Agent: Roundcube Webmail/1.4.0
+Message-ID: <09d713a59665d745e21d021deeaebe0a@dlink.ru>
+X-Sender: alobakin@dlink.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 09:35:48AM +0100, Jesper Dangaard Brouer wrote:
-> I don't think that is a good idea.  You are creating double work and
-> wasting distro developers time.  Let me explain: 
-> 
-> 1. First of all, GitHub libbpf does not have a stable branches (which
-> makes sense, given this is a read-only clone of kernel tree). Thus,
-> distro developers have to maintain that themselves, in their internal
-> package tree (that is based on GitHub libbpf).
-> 
-> 2. Kernel BPF changes usually require updates to libbpf, as selftests
-> uses libbpf.  Thus, the distro kernel backporter is already required to
-> backport libbpf parts.
-> 
-> This is double work, the code changes to libbpf are now maintained in
-> two places for the distro.
+Hey all,
 
-I totally agree with Jesper here.
+I'm writing about lines arch/mips/net/ebpf_jit.c:1806-1807:
 
-I don't know how the situatiom with packaging libbpf and bpftool looks
-like in Fedora/Centos/RHEL now, but in openSUSE we would like to build
-both of them from the kernel source - use kernel-source package as a
-requirement and use the kernel tree from /usr/src/linux to build those.
-We do that for bpftool and perf currently.
+	if (!prog->jit_requested || MIPS_ISA_REV < 2)
+		return prog;
 
-So far we are building bpftool and perf without libbpf being dynamically
-linked, so there is no dependency between those packages, although we
-would like to change it as soon as we find a consensus on this series of
-patches.
+Do pre-32R2 architectures (32R1, maybe even R3000-like) actually support
+this eBPF JIT code? If they do, then the condition 'MIPS_ISA_REV < 2'
+should be removed as it is always true for them and tells CC to remove
+JIT completely.
 
-> The disadvantage for distros to package libbpf (+ bpftool and perf) off
-> their distro kernel tree is that a fix to libbpf, requires rolling a
-> new kernel minor release.  The solution to that is simply that distro
-> package for libbpf have a separate (RPM) spec file, with own
-> versioning, which sources points to distro kernel tree.
+If they don't support instructions from this JIT, then the line
+arch/mips/Kconfig:50:
 
-That's a great idea. So far, we are using the same version for kernel,
-bfptool and perf, but all of these have separate RPM specs, so we can do
-that.
+	select HAVE_EBPF_JIT if (!CPU_MICROMIPS)
 
-Michal
+should be changed to something like:
+
+	select HAVE_EBPF_JIT if !CPU_MICROMIPS && TARGET_ISA_REV >= 2
+
+(and then the mentioned 'if' condition would become redundant)
+
+At the moment it is possible to build a kernel without both JIT and
+interpreter, but with CONFIG_BPF_SYSCALL=y (what should not be allowed
+I suppose?) within the following configuration:
+
+- select any pre-32R2 CPU (e.g. CONFIG_CPU_MIPS32_R1);
+- enable CONFIG_BPF_JIT (CONFIG_MIPS_EBPF_JIT will be autoselected);
+- enable CONFIG_BPF_JIT_ALWAYS_ON (this removes BPF interpreter from
+   the system).
+
+I may prepare a proper patch by myself if needed (after clarification).
+Thanks.
+
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
