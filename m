@@ -2,133 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE3A11389F
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 01:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 709401138C9
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 01:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728449AbfLEAYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 19:24:15 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:38020 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728121AbfLEAYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 19:24:14 -0500
-Received: by mail-lf1-f67.google.com with SMTP id r14so1034197lfm.5
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 16:24:13 -0800 (PST)
+        id S1728238AbfLEA1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 19:27:31 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43113 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728053AbfLEA1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 19:27:31 -0500
+Received: by mail-pl1-f195.google.com with SMTP id q16so434834plr.10
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 16:27:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=WlXLW2RI1tJQOcMNYgc98Qgcf4rYrGp8OIDLgoJCH0c=;
-        b=fNwiQqfGnNsyEJYMPlge43hvB2JRQtOIQ7khRISVYNFdvNINB6iKEx0QoEJON7A4qg
-         omWu6pKQJ8w6HgqGWf/MIO65vwjCsdYIYZYEtD4ySqIzqRvyd8CP/lBjPg1J2ol2FgZj
-         Rs1eI4tDR3rz0hMU1ncrKBRIHY2AAMoHQEfbmMNudMkELJbUTpVZklq88nj/dZVis8EY
-         vYBkyTnAjEkqNk34aamGnLh3muzsO95SpMOL7Or6FmPVzQ8pC2c2KY4yI/reU3XsRvOn
-         lb3ahcDI3+7vyUAVoS7mXj4eE6EF+IQqduJA1uUjhXuEQ5sxhx8d3EDrxT5l2KHwEN2P
-         ZkLw==
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=6EGq9rWlHhJFdXLEzitVVKeJkWoGiVKrAurXqrskrCk=;
+        b=kft+WHKPKVIw+Owh4ftOEgIz2fWcd7FLup5TaKxGY8B0igGad6HFpROwpJZ41MMB32
+         reB5Cugg9Yu2vQIZrgm6rYmRULFWxXOJBenUTxVs4vLScHdBjvAVr9Vf8vqF7nCSZ/8B
+         7/mft+oGuHOF0y63d4r8QG4o8lFpoFwSUn1haF+hWOy8k5piRS6Qsv2jipxA6YCMhw1B
+         FRYwdI/J02AFBNvDkcRddmmDiwPbGwJAjmSh2WxTrrDyRqY+DiKvlXdrfbLPtRvVfJ6v
+         4VZA2pGG2x8tr5nO7iB9zB2/UcAXllQtSN1ebRKHfGKrMScOfKgJBNz8X3BOtS2eo6Us
+         y9cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=WlXLW2RI1tJQOcMNYgc98Qgcf4rYrGp8OIDLgoJCH0c=;
-        b=ZuC+dpgx4jXQpG2EM2SAXDBiEYumEUZlvhic7Ge2tv86q6Fnt2ErzocRLsGhrhwJxo
-         kdILdb4XrsLfCjmBr+lUSyyvkqKsyl5YHJtYJvN4Al863ySyeOYNNJnTIgxGQYlXjbLl
-         11AljZWoUrvzyUaBCHjEE0IO5uZk1Xs8VHm5IqpT+zOYm6JaE0axak1FVr81UQC6ora+
-         1+KRUVm2jbdKgX5MKSJTmx2/Mwn8hQt4os620oJohO+2c5Hpaagq3YASnJ8GplbJQDwt
-         o3ZGmvMQTQFSP3IdDL45UpTFkMShKtitPKEXcMveMLDWtpihOxD85xqfdzALY8Zr9RQJ
-         oOdw==
-X-Gm-Message-State: APjAAAV8Qb4ZcZduop8PPSz4OYmVOvHtE0OfqcIXX9XZEeTgmMwPXoqJ
-        zvZvDGuGVl/2VUIh5E7VEUu/pA==
-X-Google-Smtp-Source: APXvYqy7QeMNXACuTpx2U0w7soJGbGDcz1sK5VXmG2ytucMOOYNINLaDrgync325PZJQuq3Nc0rb3g==
-X-Received: by 2002:a19:c7c5:: with SMTP id x188mr3580128lff.22.1575505452514;
-        Wed, 04 Dec 2019 16:24:12 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id l7sm4054402lfc.80.2019.12.04.16.24.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 16:24:12 -0800 (PST)
-Date:   Wed, 4 Dec 2019 16:23:48 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
-Message-ID: <20191204162348.49be5f1b@cakuba.netronome.com>
-In-Reply-To: <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
-References: <20191202131847.30837-1-jolsa@kernel.org>
-        <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
-        <87wobepgy0.fsf@toke.dk>
-        <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
-        <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
-        <20191204135405.3ffb9ad6@cakuba.netronome.com>
-        <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=6EGq9rWlHhJFdXLEzitVVKeJkWoGiVKrAurXqrskrCk=;
+        b=j2jPe2O+0fcPNRDZm+48W9YynE2NFZvd7fHMU4WTjZg8TmbJqgSeDOFuqke6bCPpkn
+         a1vSl4FrLKZAm049wKZytJ3yETokjyITgHv1Sod+T56+Yh9iC599YLPL/nUoyRLN4xt3
+         mRZ2I1+wYQSdGz79xlk7YdP9mnkixsZ4aubJOTb8/3E5e/tz3Alp8H7QXUKaG+1wQg4F
+         BEKb9l/ynDdvJBwvjbFez15Lyt9rEuTpZ+v58wewk4WKi2u0NosBQrkZrjBQgWxtLP5p
+         v+q3V6bdIj09EXm2Rgs9WVLiYtATqWr+DVCGJK6gvdNt2/V2r+Tob+PfbH6vj/qGGe4t
+         hiQA==
+X-Gm-Message-State: APjAAAVOvzf9UnERiaITMGIniqx930nLzuVE6RJ0ldcBYYTg7qMzcS0E
+        SFSwFpmaxb6mQTdxnbFfz+ImUYIM
+X-Google-Smtp-Source: APXvYqxhN3ijA1y54rPIqR3s9wgPy3Cj1weTSog82keddPxFgNLypdjr3CTeyQXg8NZWf9rR/NUXmw==
+X-Received: by 2002:a17:902:ba8e:: with SMTP id k14mr2610709pls.335.1575505650203;
+        Wed, 04 Dec 2019 16:27:30 -0800 (PST)
+Received: from martin-VirtualBox.dlink.router ([122.182.209.142])
+        by smtp.gmail.com with ESMTPSA id u9sm8846130pfm.102.2019.12.04.16.27.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 04 Dec 2019 16:27:29 -0800 (PST)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        martin.varghese@nokia.com
+Subject: [PATCH net v2] net: Fixed updating of ethertype in skb_mpls_push()
+Date:   Thu,  5 Dec 2019 05:57:22 +0530
+Message-Id: <1575505642-5626-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Dec 2019 15:39:49 -0800, Alexei Starovoitov wrote:
-> > Agreed. Having libbpf on GH is definitely useful today, but one can hope
-> > a day will come when distroes will get up to speed on packaging libbpf,
-> > and perhaps we can retire it? Maybe 2, 3 years from now? Putting
-> > bpftool in the same boat is just more baggage. =20
->=20
-> Distros should be packaging libbpf and bpftool from single repo on github.
-> Kernel tree is for packaging kernel.
+From: Martin Varghese <martin.varghese@nokia.com>
 
-Okay, single repo on GitHub:
+The skb_mpls_push was not updating ethertype of an ethernet packet if
+the packet was originally received from a non ARPHRD_ETHER device.
 
-https://github.com/torvalds/linux
+In the below OVS data path flow, since the device corresponding to
+port 7 is an l3 device (ARPHRD_NONE) the skb_mpls_push function does
+not update the ethertype of the packet even though the previous
+push_eth action had added an ethernet header to the packet.
 
-we are in agreement =F0=9F=98=9D
+recirc_id(0),in_port(7),eth_type(0x0800),ipv4(tos=0/0xfc,ttl=64,frag=no),
+actions:push_eth(src=00:00:00:00:00:00,dst=00:00:00:00:00:00),
+push_mpls(label=13,tc=0,ttl=64,bos=1,eth_type=0x8847),4
 
-Jokes aside, you may need to provide some reasoning on this one..
-The recommendation for packaging libbpf from GitHub never had any=20
-clear justification either AFAICR.
+Fixes: 8822e270d697 ("net: core: move push MPLS functionality from OvS to core helper")
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+---
+Changes in v2:
+    Changed the subject line of patch.
 
-I honestly don't see why location matters. bpftool started out on GitHub
-but we moved it into the tree for... ease of packaging/distribution(?!)
-Now it's handy to have it in the tree to reuse the uapi headers.
+ include/linux/skbuff.h    | 2 +-
+ net/core/skbuff.c         | 4 ++--
+ net/openvswitch/actions.c | 3 ++-
+ net/sched/act_mpls.c      | 3 ++-
+ 4 files changed, 7 insertions(+), 5 deletions(-)
 
-As much as I don't care if we move it (back) out of the tree - having
-two copies makes no sense to me. As does having it in the libbpf repo.
-The sync effort is not warranted. User confusion is not warranted.
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 70204b9..6d81b99 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3529,7 +3529,7 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
+ int skb_vlan_pop(struct sk_buff *skb);
+ int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
+ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+-		  int mac_len);
++		  int mac_len, bool ethernet);
+ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
+ 		 bool ethernet);
+ int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 312e80e..973a71f 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5484,7 +5484,7 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
+  * Returns 0 on success, -errno otherwise.
+  */
+ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+-		  int mac_len)
++		  int mac_len, bool ethernet)
+ {
+ 	struct mpls_shim_hdr *lse;
+ 	int err;
+@@ -5515,7 +5515,7 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+ 	lse->label_stack_entry = mpls_lse;
+ 	skb_postpush_rcsum(skb, lse, MPLS_HLEN);
+ 
+-	if (skb->dev && skb->dev->type == ARPHRD_ETHER)
++	if (ethernet)
+ 		skb_mod_eth_type(skb, eth_hdr(skb), mpls_proto);
+ 	skb->protocol = mpls_proto;
+ 
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 91e2100..4c83954 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -166,7 +166,8 @@ static int push_mpls(struct sk_buff *skb, struct sw_flow_key *key,
+ 	int err;
+ 
+ 	err = skb_mpls_push(skb, mpls->mpls_lse, mpls->mpls_ethertype,
+-			    skb->mac_len);
++			    skb->mac_len,
++			    ovs_key_mac_proto(key) == MAC_PROTO_ETHERNET);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 47e0cfd..2552226 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -83,7 +83,8 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+ 		break;
+ 	case TCA_MPLS_ACT_PUSH:
+ 		new_lse = tcf_mpls_get_lse(NULL, p, !eth_p_mpls(skb->protocol));
+-		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, mac_len))
++		if (skb_mpls_push(skb, new_lse, p->tcfm_proto, mac_len,
++				  skb->dev && skb->dev->type == ARPHRD_ETHER))
+ 			goto drop;
+ 		break;
+ 	case TCA_MPLS_ACT_MODIFY:
+-- 
+1.8.3.1
 
-The distroes already package bpftool from the kernel sources, people had
-put in time to get to this stage and there aren't any complaints.
-
-In fact all the BPF projects and test suites we are involved in at
-Netronome are entirely happy the packaged versions of LLVM and libbpf
-in Fedora _today_, IOW the GH libbpf is irrelevant to us already.
-
-As for the problem which sparked this discussion - I disagree that
-bpftool should have "special relationship" with the library. In fact
-bpftool uses the widest range of libbpf's interfaces of all known
-projects so it's invaluable for making sure that those interfaces are
-usable, consistent and complete.
-
-You also said a few times you don't want to merge fixes into bpf/net.
-That divergence from kernel development process is worrying.
-
-None of this makes very much sense to me. We're diverging from well
-established development practices without as much as a justification.
-
-Perhaps I'm not clever enough to follow. But if I'm allowed to make an
-uneducated guess it would be that it's some Facebook internal reason,
-like it's hard to do backports? :/
