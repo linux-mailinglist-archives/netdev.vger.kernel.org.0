@@ -2,88 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A07561146E9
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 19:30:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D417111470E
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 19:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729824AbfLESaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 13:30:04 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37831 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726028AbfLESaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 13:30:04 -0500
-Received: by mail-lj1-f193.google.com with SMTP id u17so4738407lja.4
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 10:30:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Liz72NCXkEAckQVD7MW+24BIWl0sOWnVX/96MZKykOg=;
-        b=mlQt3epE/9Va47JkSlhnWLLGH98u8ZNMYb964IRwKBztHOwNmlGfZBUO+lXGFTObYE
-         CR2jQIF+EomPEJo/zekfvqoXCBAmI4rPHh6IsBtA83+ORZ4CPEWSwb9+29+OOJAarc8J
-         9Y+cdDoVr2aFFHU9MZQ6E/JkLDUTqMJIQ4mDVZ1CWo8jA8wicFb4yE98Th6mSBNVV7iH
-         T0j4Tk2XzVTDaHuw3cHfq+8Y0eKeqMFpgtkIAyZXl0L71c29CNPVGdYtkH0pDEDwLicW
-         uNqufYHiwvimCRTd4TW616lxdmOryz+gjooLELPEs0m01LESnIbPgknOtPvTMm0l+wXr
-         e0HQ==
+        id S1729640AbfLESn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 13:43:59 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:36787 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbfLESn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 13:43:59 -0500
+Received: by mail-pl1-f194.google.com with SMTP id k20so1605071pls.3;
+        Thu, 05 Dec 2019 10:43:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Liz72NCXkEAckQVD7MW+24BIWl0sOWnVX/96MZKykOg=;
-        b=kso+hQogTd+oD/Wis6J4cxnjUJndMixFzQpq1oD8CY3xIXDXjHK0LuLzZyeSsXNwGa
-         zqFjWGisJZpy3SRS62FfF5maAYVIa0JY9Cg2ENK38RwgBxtFDWugC1Q5EBEHQrzJPngZ
-         pRj23yziwkXR6R79igGpdUEHcWDG1NKA1M5OZHeTrfaSNhkB9zUmTEBizN6ry7PrcH60
-         rw0AP9QLCHLkOdcWUba5Ild+77PP1sihSTyqi+nHYJE4tD8Gy6VCV6D6bRBdqha0RGxx
-         AJwZablsU4BGZy8uT7FE1HZb2nnb0Dt9UmizKjeHP73rAO7YRFd/xEniQGsQVUc4GGn/
-         E4aQ==
-X-Gm-Message-State: APjAAAVQ1WIdU19iyCjWbGIG2FEOnjtFvL36QokcFojNq3CQi5WLBVoQ
-        u9dogZ1wAnUsqeUNZlUCwwnH0A==
-X-Google-Smtp-Source: APXvYqwMRDhqK66bffFBTqeRC4iOCCV7YtIISsUrOoNQh9e5SDtQbwC+HAg6B9D5B7JttNFunAxI5g==
-X-Received: by 2002:a2e:b010:: with SMTP id y16mr6586985ljk.238.1575570602573;
-        Thu, 05 Dec 2019 10:30:02 -0800 (PST)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:461a:4d5:34ab:68cc:66b9:83dc])
-        by smtp.gmail.com with ESMTPSA id d16sm5341505lfa.16.2019.12.05.10.30.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Dec 2019 10:30:01 -0800 (PST)
-Subject: Re: [PATCH] dt-bindings: net: ravb: Document r8a77961 support
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <20191205134504.6533-1-geert+renesas@glider.be>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <b2db5dfd-8d8a-eaef-b969-d2d55f04623e@cogentembedded.com>
-Date:   Thu, 5 Dec 2019 21:30:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FCp49Ui27dydwY8694hG4UdI57V9y5xaYI+0ibAx9Mc=;
+        b=EwfdDzeJebLnKRGKcgosgHey0wK42t0sQk9CWjBY+NVVlAlon+T2fEoqLBaEy1HPlm
+         1Ri4tZacXbJy/6Se+pXlXRSyqyWISZlgfR0tYvZ9YFMrX29wvt4WUYNhjD0W5PL+puhg
+         upOMLVdycTmy3Et4J8+t2i/FldEusxTr3XIc1oWKFvAe03nrUey9uUzzCGc3K8UHL74A
+         8tQyIuYY7AOM3R/4/xX7pkDg7SZc5Eq75AX8LQnnJcJRg/gXQt+L4EAV83L8BDsFr9IK
+         hZTSQBqtUo3mDpHYt1Gxzkmq+CYURP3lukQHxSyYOZ94cUsHr1cNNEAak2GN1yUWt+QL
+         iHNw==
+X-Gm-Message-State: APjAAAVYeWv45aEyP5zMaEMhQqYoSorxaTokpTjGi+9kI59PAJRo7FxO
+        fxmMQtYFF4BgAAIqT8QHxms=
+X-Google-Smtp-Source: APXvYqxEGWkHqf3SoqS5JfOUeYQylUakgL3ONZFsTaapa4Y7GVYOM+MlCU3V6fpr61txQqIa5+ArzQ==
+X-Received: by 2002:a17:90a:23a9:: with SMTP id g38mr11278130pje.128.1575571438433;
+        Thu, 05 Dec 2019 10:43:58 -0800 (PST)
+Received: from localhost ([2601:646:8a00:9810:5af3:56d9:f882:39d4])
+        by smtp.gmail.com with ESMTPSA id p68sm13748345pfp.149.2019.12.05.10.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2019 10:43:57 -0800 (PST)
+Date:   Thu, 5 Dec 2019 10:44:50 -0800
+From:   Paul Burton <paulburton@kernel.org>
+To:     Alexander Lobakin <alobakin@dlink.ru>
+Cc:     Paul Burton <paul.burton@mips.com>,
+        Hassan Naveed <hnaveed@wavecomp.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: MIPS eBPF JIT support on pre-32R2
+Message-ID: <20191205184450.lbrkenmursz4zpdm@lantea.localdomain>
+References: <09d713a59665d745e21d021deeaebe0a@dlink.ru>
 MIME-Version: 1.0
-In-Reply-To: <20191205134504.6533-1-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <09d713a59665d745e21d021deeaebe0a@dlink.ru>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2019 04:45 PM, Geert Uytterhoeven wrote:
+Hi Alexander,
 
-> Document support for the Ethernet AVB interface in the Renesas R-Car
-> M3-W+ (R8A77961) SoC.
+On Thu, Dec 05, 2019 at 03:45:27PM +0300, Alexander Lobakin wrote:
+> Hey all,
 > 
-> Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
-> avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
+> I'm writing about lines arch/mips/net/ebpf_jit.c:1806-1807:
 > 
-> No driver update is needed.
+> 	if (!prog->jit_requested || MIPS_ISA_REV < 2)
+> 		return prog;
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Do pre-32R2 architectures (32R1, maybe even R3000-like) actually support
+> this eBPF JIT code?
 
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+No, they don't; the eBPF JIT makes unconditional use of at least the
+(d)ins & (d)ext instructions which were added in MIPSr2, so it would
+result in reserved instruction exceptions & panics if enabled on
+pre-MIPSr2 CPUs.
 
-[...]
+> If they do, then the condition 'MIPS_ISA_REV < 2'
+> should be removed as it is always true for them and tells CC to remove
+> JIT completely.
+> 
+> If they don't support instructions from this JIT, then the line
+> arch/mips/Kconfig:50:
+> 
+> 	select HAVE_EBPF_JIT if (!CPU_MICROMIPS)
+> 
+> should be changed to something like:
+> 
+> 	select HAVE_EBPF_JIT if !CPU_MICROMIPS && TARGET_ISA_REV >= 2
+> 
+> (and then the mentioned 'if' condition would become redundant)
 
-MBR, Sergei
+Good spot; I agree entirely, this dependency should be reflected in
+Kconfig.
+
+> At the moment it is possible to build a kernel without both JIT and
+> interpreter, but with CONFIG_BPF_SYSCALL=y (what should not be allowed
+> I suppose?) within the following configuration:
+> 
+> - select any pre-32R2 CPU (e.g. CONFIG_CPU_MIPS32_R1);
+> - enable CONFIG_BPF_JIT (CONFIG_MIPS_EBPF_JIT will be autoselected);
+> - enable CONFIG_BPF_JIT_ALWAYS_ON (this removes BPF interpreter from
+>   the system).
+> 
+> I may prepare a proper patch by myself if needed (after clarification).
+
+That would be great, thanks!
+
+One thing to note is that I hope we'll restore the cBPF JIT with this
+patch:
+
+https://lore.kernel.org/linux-mips/20191205182318.2761605-1-paulburton@kernel.org/T/#u
+
+The cBPF JIT looks like it should work on older pre-MIPSr2 CPUs, so the
+only way this is relevant is that your patch might have a minor
+conflict. But I thought I'd mention it anyway :)
+
+Thanks,
+    Paul
