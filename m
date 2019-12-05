@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0151F114550
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF87114551
 	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729941AbfLERD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 12:03:56 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:43232 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729430AbfLERDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 12:03:55 -0500
-Received: by mail-wr1-f66.google.com with SMTP id d16so4480123wre.10
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 09:03:54 -0800 (PST)
+        id S1730006AbfLERD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 12:03:57 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50745 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbfLERD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 12:03:56 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p9so4734627wmg.0
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 09:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=J8rTFWjeRom2OSy8/VgjlS2zWoMCCYdnebKLS5jGnMQ=;
-        b=FddM+lhhvPqVBKZyw+lvV2LrmZjFbkcwMakIlLwKT+MnmXGvEt/wWtQFuwmFsrNWI+
-         RGAZNV/8pRqoyqPhn0oIMyLBs6b0fl6AIGEiRJ6lxkR4Kfp8IkYTZHThLjsa6jteOU2g
-         9E0CRMa+72lezc9X4MkNsVyPoc2+dk8t7KfBmX+LEgeHfJZCiHVBn1QHzN1sfKU69bIq
-         yoiGUqT4oaeOy4CHMDokRLlzuVAIF8APlFFCZlOXXDxqLjywSsA5zrkpt9n2X6xyOI4N
-         /R3niRava1nFSVMtoAzkiOAJFlqtmw+G5uYYVrTdIAppzg600bOBZbFPpzrcxsLgFgty
-         13Jw==
+        bh=Q4UshksYPt6fg122pwhcfpb/H7dWjaT2ofzSdWgtSzo=;
+        b=OIdWFL4VAz2ZeZgxZ08hSIaFqyxYOUJme4IHn4lJDzr/TjmkdrRcuTnXjmynRIsr4d
+         iyQV3J9veJS1c5VmC5r4XCrQ9xVf84Y56d2AnDgl5jXkwinJFQB6G+q6Aqub4jVUpMbz
+         O7S+hRzzycG5mnLTJca2YTbgrr7TpY8IvOKJBIsAcrE8cblGmZGzcb7JON2i7AXbd4gC
+         T03YAYJEmuXZGM7b8zB4VkB/ixWKpj+8p6IE6eYH7LyE+gnaQ4riA86BQ5jMd1IYJZ8q
+         sODU8VP9Kamt6r6hcUXgcvoRpdk5o2KedrllQiD/UNl3V1KojVLlwxslA/4KyuXcyP1t
+         RLSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=J8rTFWjeRom2OSy8/VgjlS2zWoMCCYdnebKLS5jGnMQ=;
-        b=PQxB1Ixoj+ASWG4MeoT5FJ+uOMezRzO9gaDpunqK3Pi7LqmM9OSBemCWJHVfDuu3gM
-         +hgGLkxG35ifiKrB6R0uGZHXqXn8nhuPKyAj0MCOdg2NJtFQdMABXojVfTxk8l9oPy73
-         9njeSqRCwUzMMCbjtJ9/V0LB04IU0EUu4xZRoiJEMKLfweNT9sJxQG3HQOrHh7JuXTgv
-         FLacWPuGymmAtPQXHbMG2QrcbrTotuVL84nOe40lsGvtJ5unkbHpJq0wPyT41jw7ncUF
-         cHZ0GpZP8SQHqxZ2tLBOmPbfSHfWtNT9YQkxHxMVhMDQIGEk2wqyqU4f87ZtDOkIcgJe
-         LM7g==
-X-Gm-Message-State: APjAAAUvuD7ny2r7gnKiPlh7iBLqjh1WcVFcfFU4rbfMSVSi10yEONa2
-        LccQum/40wNg/TAtTk9GVvrn/QL2DJiiv2L1kcwide97I6uXKVpCOBUwcQIp93ba2K8XduVGwu8
-        DuJITpoiIxVkOojywJ/hzxBqnuGNn7F36IigORpMKfCmktAyXXjhEYRCsQJZnPAOY3/pgnYCU3w
+        bh=Q4UshksYPt6fg122pwhcfpb/H7dWjaT2ofzSdWgtSzo=;
+        b=QH9Y54076NwYpqayHLkEbxz7qKVntKV5LGRzzZXviOlwM9irbIj5jcq5hEYKrjwXSI
+         uTi0wSUygkR3/2s9HDWYMLUeDefDekBY3GrIqrhnyZiXjETzbod43ipguF6eJNEpvoKe
+         DaFRyE30ndKeqieBOP/j3/iMKK9/gyIKvY5diZLGOIk3e85tczNwWzkpif6xbXEM4Jzm
+         XuP5BlesqVnr9NTcYVfgwlB0dXeVSpdpj2+5ALwS5Xc4p+o9akqP2hozYKiGh+FAcb5L
+         urwXZPbICoJ54+z6qtXe/5IZr3zpMs4fYlCzjyACDvYR441hlO2cfE5Jub2jVKoV9AjM
+         Ik8A==
+X-Gm-Message-State: APjAAAWICe+wwd1/6Hs9EXU5mhDk9nyBFQURL8CljgqqSjsQJg2BVSI9
+        A0xiLAHkfIhzOMHI/eJ6VpAs1bEZ54RzQOk/NJJnVdzNGFhoz/8Iz9F/SRoS0c1osePWELDsazt
+        OUZVa2kXc9eAuh1AKB+oTFN+S37bNcsMePrkyzPW+Njq0Mae5ZUG1ehYNHhIv24IqFndphbCE5A
         ==
-X-Google-Smtp-Source: APXvYqwxfILcl6/l6QrOEJ6qfvAqVQG8Oo5bUP7AsgayBruTImS3+R7SArbGuKwk3lnvawBiNzOKRQ==
-X-Received: by 2002:a5d:4ec2:: with SMTP id s2mr10819748wrv.291.1575565433523;
-        Thu, 05 Dec 2019 09:03:53 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxxbPF+MsYIqRDlf7mEIylZtcAb9DWojLxk2ORx3fx0zrkfdllf+Jahd4ud0xD1qjZhVgkFRA==
+X-Received: by 2002:a7b:cd05:: with SMTP id f5mr6452826wmj.11.1575565434691;
+        Thu, 05 Dec 2019 09:03:54 -0800 (PST)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id b2sm13004971wrr.76.2019.12.05.09.03.52
+        by smtp.gmail.com with ESMTPSA id b2sm13004971wrr.76.2019.12.05.09.03.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 05 Dec 2019 09:03:52 -0800 (PST)
+        Thu, 05 Dec 2019 09:03:53 -0800 (PST)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     simon.horman@netronome.com, jakub.kicinski@netronome.com,
         oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net 1/2] net: core: rename indirect block ingress cb function
-Date:   Thu,  5 Dec 2019 17:03:34 +0000
-Message-Id: <1575565415-22942-2-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net 2/2] net: sched: allow indirect blocks to bind to clsact in TC
+Date:   Thu,  5 Dec 2019 17:03:35 +0000
+Message-Id: <1575565415-22942-3-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1575565415-22942-1-git-send-email-john.hurley@netronome.com>
 References: <1575565415-22942-1-git-send-email-john.hurley@netronome.com>
@@ -60,205 +60,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With indirect blocks, a driver can register for callbacks from a device
-that is does not 'own', for example, a tunnel device. When registering to
-or unregistering from a new device, a callback is triggered to generate
-a bind/unbind event. This, in turn, allows the driver to receive any
-existing rules or to properly clean up installed rules.
+When a device is bound to a clsact qdisc, bind events are triggered to
+registered drivers for both ingress and egress. However, if a driver
+registers to such a device using the indirect block routines then it is
+assumed that it is only interested in ingress offload and so only replays
+ingress bind/unbind messages.
 
-When first added, it was assumed that all indirect block registrations
-would be for ingress offloads. However, the NFP driver can, in some
-instances, support clsact qdisc binds for egress offload.
+The NFP driver supports the offload of some egress filters when
+registering to a block with qdisc of type clsact. However, on unregister,
+if the block is still active, it will not receive an unbind egress
+notification which can prevent proper cleanup of other registered
+callbacks.
 
-Change the name of the indirect block callback command in flow_offload to
-remove the 'ingress' identifier from it. While this does not change
-functionality, a follow up patch will implement a more more generic
-callback than just those currently just supporting ingress offload.
+Modify the indirect block callback command in TC to send messages of
+ingress and/or egress bind depending on the qdisc in use. NFP currently
+supports egress offload for TC flower offload so the changes are only
+added to TC.
 
 Fixes: 4d12ba42787b ("nfp: flower: allow offloading of matches on 'internal' ports")
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- include/net/flow_offload.h        | 15 ++++++-------
- net/core/flow_offload.c           | 45 +++++++++++++++++++--------------------
- net/netfilter/nf_tables_offload.c |  6 +++---
- net/sched/cls_api.c               |  4 ++--
- 4 files changed, 34 insertions(+), 36 deletions(-)
+ net/sched/cls_api.c | 52 +++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 33 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 86c567f..c6f7bd2 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -380,19 +380,18 @@ static inline void flow_block_init(struct flow_block *flow_block)
- typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
- 				      enum tc_setup_type type, void *type_data);
- 
--typedef void flow_indr_block_ing_cmd_t(struct net_device *dev,
--					flow_indr_block_bind_cb_t *cb,
--					void *cb_priv,
--					enum flow_block_command command);
-+typedef void flow_indr_block_cmd_t(struct net_device *dev,
-+				   flow_indr_block_bind_cb_t *cb, void *cb_priv,
-+				   enum flow_block_command command);
- 
--struct flow_indr_block_ing_entry {
--	flow_indr_block_ing_cmd_t *cb;
-+struct flow_indr_block_entry {
-+	flow_indr_block_cmd_t *cb;
- 	struct list_head	list;
- };
- 
--void flow_indr_add_block_ing_cb(struct flow_indr_block_ing_entry *entry);
-+void flow_indr_add_block_cb(struct flow_indr_block_entry *entry);
- 
--void flow_indr_del_block_ing_cb(struct flow_indr_block_ing_entry *entry);
-+void flow_indr_del_block_cb(struct flow_indr_block_entry *entry);
- 
- int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
- 				  flow_indr_block_bind_cb_t *cb,
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index cf52d9c..45b6a59 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -283,7 +283,7 @@ int flow_block_cb_setup_simple(struct flow_block_offload *f,
- }
- EXPORT_SYMBOL(flow_block_cb_setup_simple);
- 
--static LIST_HEAD(block_ing_cb_list);
-+static LIST_HEAD(block_cb_list);
- 
- static struct rhashtable indr_setup_block_ht;
- 
-@@ -391,20 +391,19 @@ static void flow_indr_block_cb_del(struct flow_indr_block_cb *indr_block_cb)
- 	kfree(indr_block_cb);
- }
- 
--static DEFINE_MUTEX(flow_indr_block_ing_cb_lock);
-+static DEFINE_MUTEX(flow_indr_block_cb_lock);
- 
--static void flow_block_ing_cmd(struct net_device *dev,
--			       flow_indr_block_bind_cb_t *cb,
--			       void *cb_priv,
--			       enum flow_block_command command)
-+static void flow_block_cmd(struct net_device *dev,
-+			   flow_indr_block_bind_cb_t *cb, void *cb_priv,
-+			   enum flow_block_command command)
- {
--	struct flow_indr_block_ing_entry *entry;
-+	struct flow_indr_block_entry *entry;
- 
--	mutex_lock(&flow_indr_block_ing_cb_lock);
--	list_for_each_entry(entry, &block_ing_cb_list, list) {
-+	mutex_lock(&flow_indr_block_cb_lock);
-+	list_for_each_entry(entry, &block_cb_list, list) {
- 		entry->cb(dev, cb, cb_priv, command);
- 	}
--	mutex_unlock(&flow_indr_block_ing_cb_lock);
-+	mutex_unlock(&flow_indr_block_cb_lock);
- }
- 
- int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
-@@ -424,8 +423,8 @@ int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
- 	if (err)
- 		goto err_dev_put;
- 
--	flow_block_ing_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
--			   FLOW_BLOCK_BIND);
-+	flow_block_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
-+		       FLOW_BLOCK_BIND);
- 
- 	return 0;
- 
-@@ -464,8 +463,8 @@ void __flow_indr_block_cb_unregister(struct net_device *dev,
- 	if (!indr_block_cb)
- 		return;
- 
--	flow_block_ing_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
--			   FLOW_BLOCK_UNBIND);
-+	flow_block_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
-+		       FLOW_BLOCK_UNBIND);
- 
- 	flow_indr_block_cb_del(indr_block_cb);
- 	flow_indr_block_dev_put(indr_dev);
-@@ -499,21 +498,21 @@ void flow_indr_block_call(struct net_device *dev,
- }
- EXPORT_SYMBOL_GPL(flow_indr_block_call);
- 
--void flow_indr_add_block_ing_cb(struct flow_indr_block_ing_entry *entry)
-+void flow_indr_add_block_cb(struct flow_indr_block_entry *entry)
- {
--	mutex_lock(&flow_indr_block_ing_cb_lock);
--	list_add_tail(&entry->list, &block_ing_cb_list);
--	mutex_unlock(&flow_indr_block_ing_cb_lock);
-+	mutex_lock(&flow_indr_block_cb_lock);
-+	list_add_tail(&entry->list, &block_cb_list);
-+	mutex_unlock(&flow_indr_block_cb_lock);
- }
--EXPORT_SYMBOL_GPL(flow_indr_add_block_ing_cb);
-+EXPORT_SYMBOL_GPL(flow_indr_add_block_cb);
- 
--void flow_indr_del_block_ing_cb(struct flow_indr_block_ing_entry *entry)
-+void flow_indr_del_block_cb(struct flow_indr_block_entry *entry)
- {
--	mutex_lock(&flow_indr_block_ing_cb_lock);
-+	mutex_lock(&flow_indr_block_cb_lock);
- 	list_del(&entry->list);
--	mutex_unlock(&flow_indr_block_ing_cb_lock);
-+	mutex_unlock(&flow_indr_block_cb_lock);
- }
--EXPORT_SYMBOL_GPL(flow_indr_del_block_ing_cb);
-+EXPORT_SYMBOL_GPL(flow_indr_del_block_cb);
- 
- static int __init init_flow_indr_rhashtable(void)
- {
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 68f17a69..431f3b8 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -588,7 +588,7 @@ static int nft_offload_netdev_event(struct notifier_block *this,
- 	return NOTIFY_DONE;
- }
- 
--static struct flow_indr_block_ing_entry block_ing_entry = {
-+static struct flow_indr_block_entry block_ing_entry = {
- 	.cb	= nft_indr_block_cb,
- 	.list	= LIST_HEAD_INIT(block_ing_entry.list),
- };
-@@ -605,13 +605,13 @@ int nft_offload_init(void)
- 	if (err < 0)
- 		return err;
- 
--	flow_indr_add_block_ing_cb(&block_ing_entry);
-+	flow_indr_add_block_cb(&block_ing_entry);
- 
- 	return 0;
- }
- 
- void nft_offload_exit(void)
- {
--	flow_indr_del_block_ing_cb(&block_ing_entry);
-+	flow_indr_del_block_cb(&block_ing_entry);
- 	unregister_netdevice_notifier(&nft_offload_netdev_notifier);
- }
 diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 20d60b8..75b4808 100644
+index 75b4808..3c335fd9 100644
 --- a/net/sched/cls_api.c
 +++ b/net/sched/cls_api.c
-@@ -3626,7 +3626,7 @@ static struct pernet_operations tcf_net_ops = {
+@@ -626,15 +626,15 @@ static void tcf_chain_flush(struct tcf_chain *chain, bool rtnl_held)
+ static int tcf_block_setup(struct tcf_block *block,
+ 			   struct flow_block_offload *bo);
+ 
+-static void tc_indr_block_ing_cmd(struct net_device *dev,
+-				  struct tcf_block *block,
+-				  flow_indr_block_bind_cb_t *cb,
+-				  void *cb_priv,
+-				  enum flow_block_command command)
++static void tc_indr_block_cmd(struct net_device *dev, struct tcf_block *block,
++			      flow_indr_block_bind_cb_t *cb, void *cb_priv,
++			      enum flow_block_command command, bool ingress)
+ {
+ 	struct flow_block_offload bo = {
+ 		.command	= command,
+-		.binder_type	= FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
++		.binder_type	= ingress ?
++				  FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS :
++				  FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
+ 		.net		= dev_net(dev),
+ 		.block_shared	= tcf_block_non_null_shared(block),
+ 	};
+@@ -652,9 +652,10 @@ static void tc_indr_block_ing_cmd(struct net_device *dev,
+ 	up_write(&block->cb_lock);
+ }
+ 
+-static struct tcf_block *tc_dev_ingress_block(struct net_device *dev)
++static struct tcf_block *tc_dev_block(struct net_device *dev, bool ingress)
+ {
+ 	const struct Qdisc_class_ops *cops;
++	const struct Qdisc_ops *ops;
+ 	struct Qdisc *qdisc;
+ 
+ 	if (!dev_ingress_queue(dev))
+@@ -664,24 +665,37 @@ static struct tcf_block *tc_dev_ingress_block(struct net_device *dev)
+ 	if (!qdisc)
+ 		return NULL;
+ 
+-	cops = qdisc->ops->cl_ops;
++	ops = qdisc->ops;
++	if (!ops)
++		return NULL;
++
++	if (!ingress && !strcmp("ingress", ops->id))
++		return NULL;
++
++	cops = ops->cl_ops;
+ 	if (!cops)
+ 		return NULL;
+ 
+ 	if (!cops->tcf_block)
+ 		return NULL;
+ 
+-	return cops->tcf_block(qdisc, TC_H_MIN_INGRESS, NULL);
++	return cops->tcf_block(qdisc,
++			       ingress ? TC_H_MIN_INGRESS : TC_H_MIN_EGRESS,
++			       NULL);
+ }
+ 
+-static void tc_indr_block_get_and_ing_cmd(struct net_device *dev,
+-					  flow_indr_block_bind_cb_t *cb,
+-					  void *cb_priv,
+-					  enum flow_block_command command)
++static void tc_indr_block_get_and_cmd(struct net_device *dev,
++				      flow_indr_block_bind_cb_t *cb,
++				      void *cb_priv,
++				      enum flow_block_command command)
+ {
+-	struct tcf_block *block = tc_dev_ingress_block(dev);
++	struct tcf_block *block;
++
++	block = tc_dev_block(dev, true);
++	tc_indr_block_cmd(dev, block, cb, cb_priv, command, true);
+ 
+-	tc_indr_block_ing_cmd(dev, block, cb, cb_priv, command);
++	block = tc_dev_block(dev, false);
++	tc_indr_block_cmd(dev, block, cb, cb_priv, command, false);
+ }
+ 
+ static void tc_indr_block_call(struct tcf_block *block,
+@@ -3626,9 +3640,9 @@ static struct pernet_operations tcf_net_ops = {
  	.size = sizeof(struct tcf_net),
  };
  
--static struct flow_indr_block_ing_entry block_ing_entry = {
-+static struct flow_indr_block_entry block_ing_entry = {
- 	.cb = tc_indr_block_get_and_ing_cmd,
- 	.list = LIST_HEAD_INIT(block_ing_entry.list),
+-static struct flow_indr_block_entry block_ing_entry = {
+-	.cb = tc_indr_block_get_and_ing_cmd,
+-	.list = LIST_HEAD_INIT(block_ing_entry.list),
++static struct flow_indr_block_entry block_entry = {
++	.cb = tc_indr_block_get_and_cmd,
++	.list = LIST_HEAD_INIT(block_entry.list),
  };
-@@ -3643,7 +3643,7 @@ static int __init tc_filter_init(void)
+ 
+ static int __init tc_filter_init(void)
+@@ -3643,7 +3657,7 @@ static int __init tc_filter_init(void)
  	if (err)
  		goto err_register_pernet_subsys;
  
--	flow_indr_add_block_ing_cb(&block_ing_entry);
-+	flow_indr_add_block_cb(&block_ing_entry);
+-	flow_indr_add_block_cb(&block_ing_entry);
++	flow_indr_add_block_cb(&block_entry);
  
  	rtnl_register(PF_UNSPEC, RTM_NEWTFILTER, tc_new_tfilter, NULL,
  		      RTNL_FLAG_DOIT_UNLOCKED);
