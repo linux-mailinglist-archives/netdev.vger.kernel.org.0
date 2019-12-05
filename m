@@ -2,81 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7FE6113979
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 03:02:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F3911398F
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 03:06:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728459AbfLECCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 21:02:07 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:33674 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728132AbfLECCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 21:02:07 -0500
-Received: by mail-lj1-f196.google.com with SMTP id 21so1651022ljr.0;
-        Wed, 04 Dec 2019 18:02:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vy4UrIm2jbRYKhBVybPxalNzM1Qcx1GEJhVkQOqA7Lk=;
-        b=YbeIjIJAG4/1dqJq1HBXEgM+DuGuWN84YjlLNDWvHv6RDBe2oEYSNsZGk/FZ+15qEq
-         TbkzU9xZcOy9kGJbOpKVzZMCivDH0tC2glfecWpHyuEfRUyQU1HxgltRcITUXwHGKKzP
-         cWW8I0JeGm6kkoEaSiHZndMqTwAmjhndPdP26uC5zX7Hlr/tbebkFPx+zkDaVwloCVp4
-         glnxFgD7cymIQRmILDMMLIbe/dChXXRviEu66jULnk7M6zvmHP8xYqfuQY8F+1KT1fOb
-         ZhalLsmEhQVPOGvE9eT8Dy2eAJweUbYTXshCI7S4NMmO8R9o+3HQEJQWTBtcplOku4qG
-         pZwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vy4UrIm2jbRYKhBVybPxalNzM1Qcx1GEJhVkQOqA7Lk=;
-        b=PbHGId8P4GTY+mjmW0fiZ2H0seXOyTAiIve4iK44zt+9FikWLu5C7oTz9hxXiqJ8ke
-         BQ+xcfhu8DV+VvZLblGJM9u21tdlGPwm3XMNl5Sov2j0BNwwT3W9GS9+eYDu3oBt+CMx
-         QCTYSdOXuHsk9HeVOVt6nDf7MBpveeVl+nmeMyoeu5pYUhpPadOK1YAQpR7B2Z1vkRPS
-         xlx7QOzR7GTfxAZZIB0xNodh/y5Hv/ehkgNwXDE31NXtpY+D4bclX+/iGakrfQLvrGyT
-         VIZsVJIKkCZkAh/ee6LGmy1nndaQmeh5zu92RBwakevEpoePwvgVf/CMLwI+h9NKMWRJ
-         KH8A==
-X-Gm-Message-State: APjAAAXBilUthMsVnz/Js0cMNjZ//MEC8D4S5EHB+RpnlV16Mdy0j6tz
-        ecGV/X7cBpjLTzk+0aBvW3r+slbzBgwDPI7p08oBCA==
-X-Google-Smtp-Source: APXvYqyggXNzsI94Lxc397HaN2n3ZkgbEF1fEG44wCPqbNffF+4/8JNMj/OoiJNPtWUyX+4u57f9aE/n9vYWu69gHI4=
-X-Received: by 2002:a2e:5850:: with SMTP id x16mr3874211ljd.228.1575511324788;
- Wed, 04 Dec 2019 18:02:04 -0800 (PST)
+        id S1728612AbfLECGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 21:06:24 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7636 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728490AbfLECGX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 21:06:23 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 907BCFCF253B4C295F08;
+        Thu,  5 Dec 2019 10:06:20 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Thu, 5 Dec 2019
+ 10:06:15 +0800
+Subject: =?UTF-8?B?UmU6IOetlOWkjTog562U5aSNOiBbUEFUQ0hdIHBhZ2VfcG9vbDogbWFy?=
+ =?UTF-8?Q?k_unbound_node_page_as_reusable_pages?=
+To:     "Li,Rongqing" <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>
+References: <1575454465-15386-1-git-send-email-lirongqing@baidu.com>
+ <d7836d35-ba21-69ab-8aba-457b2da6ffa1@huawei.com>
+ <656e11b6605740b18ac7bb8e3b67ed93@baidu.com>
+ <f52fe7e8-2b6f-5e67-aa4b-38277478a7d1@huawei.com>
+ <68135c0148894aa3b26db19120fb7bac@baidu.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <3e3b1e0c-e7e0-eea2-b1b5-20bf2b8fc34b@huawei.com>
+Date:   Thu, 5 Dec 2019 10:06:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20191204190955.170934-1-sdf@google.com>
-In-Reply-To: <20191204190955.170934-1-sdf@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 4 Dec 2019 18:01:53 -0800
-Message-ID: <CAADnVQKjVFxWK1VgQTkZp2+Swr=LD1Ar2ABMY3_=78nkjssoJA@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: de-flake test_tcpbpf
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lawrence Brakmo <brakmo@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <68135c0148894aa3b26db19120fb7bac@baidu.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 4, 2019 at 11:09 AM Stanislav Fomichev <sdf@google.com> wrote:
->
-> It looks like BPF program that handles BPF_SOCK_OPS_STATE_CB state
-> can race with the bpf_map_lookup_elem("global_map"); I sometimes
-> see the failures in this test and re-running helps.
->
-> Since we know that we expect the callback to be called 3 times (one
-> time for listener socket, two times for both ends of the connection),
-> let's export this number and add simple retry logic around that.
->
-> Also, let's make EXPECT_EQ() not return on failure, but continue
-> evaluating all conditions; that should make potential debugging
-> easier.
->
-> With this fix in place I don't observe the flakiness anymore.
->
-> Cc: Lawrence Brakmo <brakmo@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+On 2019/12/5 9:55, Li,Rongqing wrote:
+> 
+> 
+>> -----邮件原件-----
+>> 发件人: Yunsheng Lin [mailto:linyunsheng@huawei.com]
+>> 发送时间: 2019年12月5日 9:44
+>> 收件人: Li,Rongqing <lirongqing@baidu.com>; netdev@vger.kernel.org;
+>> saeedm@mellanox.com
+>> 主题: Re: 答复: [PATCH] page_pool: mark unbound node page as reusable
+>> pages
+>>
+>> On 2019/12/5 9:08, Li,Rongqing wrote:
+>>>
+>>>
+>>>> -----邮件原件-----
+>>>> 发件人: Yunsheng Lin [mailto:linyunsheng@huawei.com]
+>>>> 发送时间: 2019年12月5日 8:55
+>>>> 收件人: Li,Rongqing <lirongqing@baidu.com>; netdev@vger.kernel.org;
+>>>> saeedm@mellanox.com
+>>>> 主题: Re: [PATCH] page_pool: mark unbound node page as reusable pages
+>>>>
+>>>> On 2019/12/4 18:14, Li RongQing wrote:
+>>>>> some drivers uses page pool, but not require to allocate page from
+>>>>> bound node, so pool.p.nid is NUMA_NO_NODE, and this fixed patch will
+>>>>> block this kind of driver to recycle
+>>>>>
+>>>>> Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
+>>>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+>>>>> Cc: Saeed Mahameed <saeedm@mellanox.com>
+>>>>> ---
+>>>>>  net/core/page_pool.c | 4 +++-
+>>>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c index
+>>>>> a6aefe989043..4054db683178 100644
+>>>>> --- a/net/core/page_pool.c
+>>>>> +++ b/net/core/page_pool.c
+>>>>> @@ -317,7 +317,9 @@ static bool __page_pool_recycle_direct(struct
+>>>>> page
+>>>> *page,
+>>>>>   */
+>>>>>  static bool pool_page_reusable(struct page_pool *pool, struct page
+>>>>> *page)  {
+>>>>> -	return !page_is_pfmemalloc(page) && page_to_nid(page) ==
+>> pool->p.nid;
+>>>>> +	return !page_is_pfmemalloc(page) &&
+>>>>> +		(page_to_nid(page) == pool->p.nid ||
+>>>>> +		 pool->p.nid == NUMA_NO_NODE);
+>>>>
+>>>> If I understand it correctly, you are allowing recycling when
+>>>> pool->p.nid is NUMA_NO_NODE, which does not seems match the commit
+>>>> log: "this fixed patch will block this kind of driver to recycle".
+>>>>
+>>>> Maybe you mean "commit d5394610b1ba" by this fixed patch?
+>>>
+>>> yes
+>>>
+>>>>
+>>>> Also, maybe it is better to allow recycling if the below condition is matched:
+>>>>
+>>>> 	pool->p.nid == NUMA_NO_NODE && page_to_nid(page) ==
+>>>> numa_mem_id()
+>>>
+>>> If driver uses NUMA_NO_NODE, it does not care numa node, and maybe its
+>>> platform Only has a node, so not need to compare like "page_to_nid(page) ==
+>> numa_mem_id()"
+>>
+>> Normally, driver does not care if the node of a device is NUMA_NO_NODE or
+>> not, it just uses the node that returns from dev_to_node().
+>>
+>> Even for multi node system, the node of a device may be NUMA_NO_NODE
+>> when BIOS/FW has not specified it through ACPI/DT, see [1].
+>>
+>>
+>> [1] https://lore.kernel.org/patchwork/patch/1141952/
+>>
+> 
+> at this condition, page can be allocated from any node from driver boot,
+> why need to check "page_to_nid(page) == numa_mem_id()" at recycle?
 
-Applied. Thanks
+For performance, the performance is better when the rx page is on the same
+node as the rx process is running.
+
+We want the node of rx page is close to the node of device/cpu to achive
+better performance, since the node of device is unknown, maybe we choose
+the node of memory that is close to the cpu that is running to handle the
+rx cleaning.
+
+> 
+> -Li 
+> 
+>>>
+>>>
+>>> -RongQing
+>>>
+>>>
+>>>>
+>>>>>  }
+>>>>>
+>>>>>  void __page_pool_put_page(struct page_pool *pool, struct page
+>>>>> *page,
+>>>>>
+>>>
+> 
+
