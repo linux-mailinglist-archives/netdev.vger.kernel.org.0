@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6DDF113CB6
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 09:01:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED05113CB8
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 09:01:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728548AbfLEIB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 03:01:26 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:36449 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfLEIBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 03:01:25 -0500
-Received: by mail-pj1-f65.google.com with SMTP id n96so973717pjc.3;
-        Thu, 05 Dec 2019 00:01:25 -0800 (PST)
+        id S1728821AbfLEIB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 03:01:28 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:47010 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726007AbfLEIB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 03:01:26 -0500
+Received: by mail-pf1-f194.google.com with SMTP id y14so1207885pfm.13;
+        Thu, 05 Dec 2019 00:01:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5SmfLXA2j9dmElnAXf7Lf2Iqlec7nI/vhFa9+GlzqLI=;
-        b=KFHlesfeTRB/+vTvBm6n/PSwnJ5gz/ngzviPxNU9FJdzBev/IOctlkuQo0ZALi6N4n
-         tDb6wVC8j6EyxyVzV5vi1Ft6T8qJT/694G7ZJRoeox7HapdLQIq6qnooRJVFiZXHAkgV
-         HN/5IKrPUATIwx/IlAorG0JX0qc3cO2wHbXv1PspFYWDy29HK1gPp7CDk6byn/XJ5Fmm
-         WhtV01QJJY4JpIAEUkvzAh5dldiuM/pWM6s9IRTx1EIpIsFy/GyHB8i6Go88AfmXJV1i
-         R87yn49sSHQNz6g1iEtent0I0iBxBbzPsrnFVMsrRkhPvamY3JQjgdCnaGVNpc4MhYxi
-         OFQw==
+        bh=36DAjWG2mm2tz8K1vYwbwLCud3iD4r0zeR17P7GkWE4=;
+        b=cvM2xvVp4FcpPGysrIPQW8rZivr9Tl8u3AQ9vd8/G6KAzJrDWZccDwyD48Fo7/cO8B
+         Qv1yOVgsTRI3iJ11VFVq+XNVeSHA2bF6owg735Z89TacuPGcpoWiX4LeWCnZ4ub+FQNN
+         pPDWjZVa4V5h00gymNT1k7LJrlRsnF9JCkzMPzqXcLD/lXSbtag4xpSJfZErBTf0vkaB
+         9ky8V6gSBVDg+9DVWdUb9tg5hq1kM2UCS74NGzlAzwdFvTQVun/rM5JXcZw4qQh1GgHM
+         SMsr/SdAvv0Q1GVI7TtfXRljNYaq2mb4rgyWV1nw9apwPZxL/tuPInzybuFg2bd5ZIpt
+         tFsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5SmfLXA2j9dmElnAXf7Lf2Iqlec7nI/vhFa9+GlzqLI=;
-        b=lFnIVA/YXKoDjbfANjopvGtc4TjNTtIhtnFBCLNrLInzaliROQV61dTe51D1HGU/iD
-         lFAz8vO/8J9DJ/5tnapnzClj2mvVxGAXTkFDPMTvIUrzhkedIk553W7jRW8/OACHWC9C
-         br13MTzF+M5/8Mpu7Omnq0Yuq8k3JRg27fw5DZW9RXThJ6WD1x8PLga5IeNNlSG29M4+
-         kTLwWn70IjNcQcyvsyFBuda+4jUfGZHTOwfJncRXZ3uAwcf7b/s4XBvXfmHjoeXhYCup
-         Bryp2+uelEgh37mXzYCEtQm+lRcFSwE7CZ/f/1YlAEvIznlT5/teitq6X7lxy92qMHsU
-         dJZw==
-X-Gm-Message-State: APjAAAU7K3I6O5mZEkdNf9qADsxCQrKv8PzRrD48y7YbLeyP4WmNVjQg
-        nlZZAmnw10pkK2WGiSNvCg==
-X-Google-Smtp-Source: APXvYqwpcDYDSHhpkc1jF9WRhm48MwwDYwKV4bGvmE/XG1xLOTglkUfXAxME5mXuXVmGJd3zEpUERg==
-X-Received: by 2002:a17:90b:3cc:: with SMTP id go12mr7819707pjb.89.1575532884013;
-        Thu, 05 Dec 2019 00:01:24 -0800 (PST)
+        bh=36DAjWG2mm2tz8K1vYwbwLCud3iD4r0zeR17P7GkWE4=;
+        b=s2fohjC519WbAcS9tAbFAmBYjNQ8KPySUTKvgAUiVLpmk5vDpNcTzewYDijXV/xSz2
+         HCC5KAXnzD9SbTnaTzPyznJzYZp4LmNutXfZ2fxIggKmQad0ZVGKP0nGf0kj7A+V/jso
+         XuM7D4kT1BsbwjkWWNn55+7S2qdHrZLFMvScPA5gr7sqYy6jdrXvn6Uszzy1XJ63Lmzr
+         VkKxfNcH/6BmbS78vLtzJ7WBqCGBd6/wWCXZhHToucr7iys3IlLkI2R6l1K7Fp7Jx4H0
+         /A/uKPv9BhODbmh741zXCy+q8NFc4TFMxlbeLqUbbpQu8uEUOljcPhAji7X6MK1NBbR4
+         4VNw==
+X-Gm-Message-State: APjAAAU6T0O6cVctGKEOMiCLhAkD487NlzyntljPo7lFsfgnAcSrxZsz
+        ojvVQKxj5fcWfRu4a+NFhg==
+X-Google-Smtp-Source: APXvYqy8CN6ZQYwMK+lFuFUpsIWdFmdGbat4B8U5IBfF3Qwl3r1dgv20U0Exu23WAnba79uwsgkafg==
+X-Received: by 2002:a62:5547:: with SMTP id j68mr7944989pfb.6.1575532885813;
+        Thu, 05 Dec 2019 00:01:25 -0800 (PST)
 Received: from localhost.localdomain ([114.71.48.24])
-        by smtp.gmail.com with ESMTPSA id 129sm11510739pfw.71.2019.12.05.00.01.22
+        by smtp.gmail.com with ESMTPSA id 129sm11510739pfw.71.2019.12.05.00.01.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 00:01:23 -0800 (PST)
+        Thu, 05 Dec 2019 00:01:25 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH,bpf-next v2 1/2] samples: bpf: replace symbol compare of trace_event
-Date:   Thu,  5 Dec 2019 17:01:13 +0900
-Message-Id: <20191205080114.19766-2-danieltimlee@gmail.com>
+Subject: [PATCH,bpf-next v2 2/2] samples: bpf: fix syscall_tp due to unused syscall
+Date:   Thu,  5 Dec 2019 17:01:14 +0900
+Message-Id: <20191205080114.19766-3-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191205080114.19766-1-danieltimlee@gmail.com>
 References: <20191205080114.19766-1-danieltimlee@gmail.com>
@@ -61,37 +61,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously, when this sample is added, commit 1c47910ef8013
-("samples/bpf: add perf_event+bpf example"), a symbol 'sys_read' and
-'sys_write' has been used without no prefixes. But currently there are
-no exact symbols with these under kallsyms and this leads to failure.
+Currently, open() is called from the user program and it calls the syscall
+'sys_openat', not the 'sys_open'. This leads to an error of the program
+of user side, due to the fact that the counter maps are zero since no
+function such 'sys_open' is called.
 
-This commit changes exact compare to substring compare to keep compatible
-with exact symbol or prefixed symbol.
+This commit adds the kernel bpf program which are attached to the
+tracepoint 'sys_enter_openat' and 'sys_enter_openat'.
 
-Fixes: 1c47910ef8013 ("samples/bpf: add perf_event+bpf example")
+Fixes: 1da236b6be963 ("bpf: add a test case for syscalls/sys_{enter|exit}_* tracepoints")
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 
 ---
- samples/bpf/trace_event_user.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_user.c
-index 16a16eadd509..749a50f2f9f3 100644
---- a/samples/bpf/trace_event_user.c
-+++ b/samples/bpf/trace_event_user.c
-@@ -37,9 +37,9 @@ static void print_ksym(__u64 addr)
- 	}
+Changes in v2:
+ - Remove redundant casting
  
- 	printf("%s;", sym->name);
--	if (!strcmp(sym->name, "sys_read"))
-+	if (!strstr(sym->name, "sys_read"))
- 		sys_read_seen = true;
--	else if (!strcmp(sym->name, "sys_write"))
-+	else if (!strstr(sym->name, "sys_write"))
- 		sys_write_seen = true;
+ samples/bpf/syscall_tp_kern.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/samples/bpf/syscall_tp_kern.c b/samples/bpf/syscall_tp_kern.c
+index 1d78819ffef1..630ce8c4d5a2 100644
+--- a/samples/bpf/syscall_tp_kern.c
++++ b/samples/bpf/syscall_tp_kern.c
+@@ -47,13 +47,27 @@ static __always_inline void count(void *map)
+ SEC("tracepoint/syscalls/sys_enter_open")
+ int trace_enter_open(struct syscalls_enter_open_args *ctx)
+ {
+-	count((void *)&enter_open_map);
++	count(&enter_open_map);
++	return 0;
++}
++
++SEC("tracepoint/syscalls/sys_enter_openat")
++int trace_enter_open_at(struct syscalls_enter_open_args *ctx)
++{
++	count(&enter_open_map);
+ 	return 0;
  }
  
+ SEC("tracepoint/syscalls/sys_exit_open")
+ int trace_enter_exit(struct syscalls_exit_open_args *ctx)
+ {
+-	count((void *)&exit_open_map);
++	count(&exit_open_map);
++	return 0;
++}
++
++SEC("tracepoint/syscalls/sys_exit_openat")
++int trace_enter_exit_at(struct syscalls_exit_open_args *ctx)
++{
++	count(&exit_open_map);
+ 	return 0;
+ }
 -- 
 2.24.0
 
