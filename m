@@ -2,91 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CB7113CD7
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 09:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7AF113D27
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 09:36:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbfLEILD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 03:11:03 -0500
-Received: from mx0b-00191d01.pphosted.com ([67.231.157.136]:6886 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725974AbfLEILD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 03:11:03 -0500
-Received: from pps.filterd (m0049463.ppops.net [127.0.0.1])
-        by m0049463.ppops.net-00191d01. (8.16.0.42/8.16.0.42) with SMTP id xB585Bno032368;
-        Thu, 5 Dec 2019 03:10:53 -0500
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0049463.ppops.net-00191d01. with ESMTP id 2wpwt1rav0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 05 Dec 2019 03:10:53 -0500
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id xB58AqRI115623;
-        Thu, 5 Dec 2019 02:10:52 -0600
-Received: from zlp30493.vci.att.com (zlp30493.vci.att.com [135.46.181.176])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id xB58AmCC115538
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 5 Dec 2019 02:10:48 -0600
-Received: from zlp30493.vci.att.com (zlp30493.vci.att.com [127.0.0.1])
-        by zlp30493.vci.att.com (Service) with ESMTP id 68D96400AE38;
-        Thu,  5 Dec 2019 08:10:48 +0000 (GMT)
-Received: from clpi183.sldc.sbc.com (unknown [135.41.1.46])
-        by zlp30493.vci.att.com (Service) with ESMTP id 4B5E340006A2;
-        Thu,  5 Dec 2019 08:10:48 +0000 (GMT)
-Received: from sldc.sbc.com (localhost [127.0.0.1])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id xB58Amp3016230;
-        Thu, 5 Dec 2019 02:10:48 -0600
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id xB58Aec9014900;
-        Thu, 5 Dec 2019 02:10:41 -0600
-Received: from mgillott-7520 (unknown [10.156.47.174])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id 377AB360145;
-        Thu,  5 Dec 2019 00:10:38 -0800 (PST)
-Message-ID: <9a0813f2446b0423963d871795e34b3fe99e301d.camel@vyatta.att-mail.com>
-Subject: Re: [PATCH ipsec] xfrm: check DST_NOPOLICY as well as DST_NOXFRM
-From:   Mark Gillott <mgillott@vyatta.att-mail.com>
-To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-Date:   Thu, 05 Dec 2019 08:10:36 +0000
-In-Reply-To: <5a033c2e-dbf3-426a-007c-e7eec85fc3a6@6wind.com>
-References: <20191204151714.20975-1-mgillott@vyatta.att-mail.com>
-         <5a033c2e-dbf3-426a-007c-e7eec85fc3a6@6wind.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-05_01:2019-12-04,2019-12-05 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- lowpriorityscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
- mlxscore=0 spamscore=0 malwarescore=0 impostorscore=0 clxscore=1011
- adultscore=0 mlxlogscore=750 phishscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-1910280000
- definitions=main-1912050065
+        id S1729077AbfLEIgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 03:36:10 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60969 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729029AbfLEIgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 03:36:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575534965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=unOsoMJ+PDB7YTVJj+V77yM295LedXddpTVeN1xxafA=;
+        b=AXwzs1wHrcUpIU3bfzKqiWEMx1f1Dv97WM1FVwHw3wzN16qu7Q6VFxCgImuUZeTyqic7bE
+        KceBnTKdi3Hd753pujLZ1FG2j6be8dNlip1S1isbqqq0UYddawlkPc2WxUAxLK30HvqcKu
+        owL+tGvrGi0fmeM6Qrh+ayEmSwUU0f0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-421-k1QuIdDLNGS22CUrZdg5BA-1; Thu, 05 Dec 2019 03:36:03 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EC9E664A7D;
+        Thu,  5 Dec 2019 08:36:00 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8388C5D6A5;
+        Thu,  5 Dec 2019 08:35:49 +0000 (UTC)
+Date:   Thu, 5 Dec 2019 09:35:48 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        brouer@redhat.com, Laura Abbott <labbott@redhat.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191205093548.6eee1449@carbon>
+In-Reply-To: <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
+References: <20191202131847.30837-1-jolsa@kernel.org>
+        <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+        <87wobepgy0.fsf@toke.dk>
+        <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+        <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
+        <20191204135405.3ffb9ad6@cakuba.netronome.com>
+        <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: k1QuIdDLNGS22CUrZdg5BA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-12-04 at 17:57 +0100, Nicolas Dichtel wrote:
-> Le 04/12/2019 à 16:17, Mark Gillott a écrit :
-> > Before performing a policy bundle lookup, check the DST_NOPOLICY
-> > option, as well as DST_NOXFRM. That is, skip further processing if
-> > either of the disable_policy or disable_xfrm sysctl attributes are
-> > set.
+On Wed, 4 Dec 2019 15:39:49 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> On Wed, Dec 04, 2019 at 01:54:05PM -0800, Jakub Kicinski wrote:
+> > On Wed, 4 Dec 2019 13:16:13 -0800, Andrii Nakryiko wrote:  
+> > > I wonder what big advantage having bpftool in libbpf's Github repo
+> > > brings, actually? The reason we need libbpf on github is to allow
+> > > other projects like pahole to be able to use libbpf from submodule.
+> > > There is no such need for bpftool.
+> > > 
+> > > I agree about preference to release them in sync, but that could be
+> > > easily done by releasing based on corresponding commits in github's
+> > > libbpf repo and kernel repo. bpftool doesn't have to physically live
+> > > next to libbpf on Github, does it?  
+> > 
+> > +1
+
+I don't see any advantage of having bpftool in libbpf's GitHub repo.
+
+As Jakub mention we have seen bpftool crash fixes, which would be
+painful/annoying to maintain fixes for in the libbpf GitHub repo.
+
+As Andrii also points out, it requires more work, as GitHub libbpf have
+to maintain a separate Makefile for bpftool.
+
+
+> > > Calling github repo a "mirror" is incorrect. It's not a 1:1 copy of
+> > > files. We have a completely separate Makefile for libbpf, and we have
+> > > a bunch of stuff we had to re-implement to detach libbpf code from
+> > > kernel's non-UAPI headers. Doing this for bpftool as well seems like
+> > > just more maintenance. Keeping github's Makefile in sync with kernel's
+> > > Makefile (for libbpf) is PITA, I'd rather avoid similar pains for
+> > > bpftool without a really good reason.  
+> > 
+> > Agreed. Having libbpf on GH is definitely useful today, but one can hope
+> > a day will come when distroes will get up to speed on packaging libbpf,
+> > and perhaps we can retire it? Maybe 2, 3 years from now? Putting
+> > bpftool in the same boat is just more baggage.  
 > 
-> Can you elaborate why this change is needed?
+> Distros should be packaging libbpf and bpftool from single repo on github.
+> Kernel tree is for packaging kernel.
 
-We have a separate DPDK-based dataplane that is responsible for all
-IPsec processing - policy handing/encryption/decryption. Consequently
-we set the net.ipv[4|6].conf.<if>.disable_policy sysctl to 1 for all
-"interesting" interfaces. That is we want the kernel to ignore any
-IPsec policies.
+I don't think that is a good idea.  You are creating double work and
+wasting distro developers time.  Let me explain: 
 
-Despite the above & depending on configuration, we found that
-originating traffic was ending up deep inside XFRM where it would get
-dropped because of a route lookup problem.
+1. First of all, GitHub libbpf does not have a stable branches (which
+makes sense, given this is a read-only clone of kernel tree). Thus,
+distro developers have to maintain that themselves, in their internal
+package tree (that is based on GitHub libbpf).
 
-Does that help?
+2. Kernel BPF changes usually require updates to libbpf, as selftests
+uses libbpf.  Thus, the distro kernel backporter is already required to
+backport libbpf parts.
 
-Mark
+This is double work, the code changes to libbpf are now maintained in
+two places for the distro.
 
+
+The disadvantage for distros to package libbpf (+ bpftool and perf) off
+their distro kernel tree is that a fix to libbpf, requires rolling a
+new kernel minor release.  The solution to that is simply that distro
+package for libbpf have a separate (RPM) spec file, with own
+versioning, which sources points to distro kernel tree.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
