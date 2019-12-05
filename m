@@ -2,230 +2,521 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A8A1145EF
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:29:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F04114635
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730165AbfLER3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 12:29:14 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:38041 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729396AbfLER3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 12:29:14 -0500
-Received: by mail-ed1-f67.google.com with SMTP id i6so2241859edr.5;
-        Thu, 05 Dec 2019 09:29:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p2+5NVyqXKni3UfDeqBg+GwKAPXpgjVjW38hhs12SWY=;
-        b=mHdD7Vn1QOd1d6aWjbakrN8F9qhWqpoC8BBiao4PcQWdSKO37IBCO3ZAsoRfnw1TYN
-         zsSs7Bhp2cmHI9+YmVp0oTcujBefBjaA1JqOXNOJklKtuhbHDEpmi1w2krMJbbqPNKiB
-         R1bhhr6X65BNQi9bdvD3Bau7fEloFXlBRkgBZl62u0y89A2Rzl4TG4JWWZXrcuV1fgU6
-         LnbOJ2SGvy9HepU3gJA9GQtTyKytVwFLtUM4s1MiHle0EvFpC+IjmxL4bP7IHe6mzUdv
-         eDT3p5+v03JYU4IBVd0OCXWoJWDv9/cvo118eVhqA+6H1n/OLQoE5dumN48OFhEjW31S
-         Lk2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=p2+5NVyqXKni3UfDeqBg+GwKAPXpgjVjW38hhs12SWY=;
-        b=uDKufytY7owWH5JAOPcJGijen72arL+/ZS80P+/dfJ0smT0wYGlVMut7fSa5zUJj50
-         y9YhvAwRV6vDU+vhyo1tJpFRLWBRj7mfX7oh9oTF3ZVtlpsqiYSngqZ8CaQfwWc9t1my
-         pmtO++IaggCnazQsd/CyekFdndBCp1eN3fwIXf7S3mtZMUe1EBhy0e9WlQhrOmWYfAQO
-         R/JLsgjMzm7A15LBaEItOZGcmwWYYYRm1q1Rqf9MD9dijrITzxm4fvcNolG7LbAaYQZV
-         By7A2zXvfABoWWnnx4Ahes/9XpIarkcxLg8wOnUrB8rLMKwkSVsizlswjNrGBVAnl6rV
-         kMOg==
-X-Gm-Message-State: APjAAAXjb8jmSfWblNEAjo6DJyZeVgofnrKMN5uaS2vdT4W1sw2UWnuM
-        OiXJWoCGZmbmVFM87oR3nxt56O2E
-X-Google-Smtp-Source: APXvYqwOLg2pe5kKujhu85izYU1+p/E71BwUqB27fPtYebrD/QyTSmV1vnoDxJv9eYnrFnco34S64w==
-X-Received: by 2002:a17:906:27cb:: with SMTP id k11mr10116720ejc.301.1575566951388;
-        Thu, 05 Dec 2019 09:29:11 -0800 (PST)
-Received: from [10.67.50.21] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id dj21sm372488edb.55.2019.12.05.09.29.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 09:29:10 -0800 (PST)
-Subject: Re: [PATCH] dt-bindings: net: mdio: use non vendor specific
- compatible string in example
-To:     Simon Horman <simon.horman@netronome.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-References: <20191127153928.22408-1-grygorii.strashko@ti.com>
- <20191205144837.GA28725@netronome.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <60f445a1-e401-afeb-6b8f-4a16b92b43c8@gmail.com>
-Date:   Thu, 5 Dec 2019 09:29:07 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1730241AbfLERsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 12:48:46 -0500
+Received: from foss.arm.com ([217.140.110.172]:42126 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730142AbfLERsq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 12:48:46 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8FE9C31B;
+        Thu,  5 Dec 2019 09:48:44 -0800 (PST)
+Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6B69F3F52E;
+        Thu,  5 Dec 2019 09:48:38 -0800 (PST)
+Subject: Re: [PATCH v4 7/8] linux/log2.h: Fix 64bit calculations in
+ roundup/down_pow_two()
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        andrew.murray@arm.com, maz@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        =?UTF-8?Q?Emilio_L=c3=b3pez?= <emilio@elopez.com.ar>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Moni Shoua <monis@mellanox.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     james.quinlan@broadcom.com, mbrugger@suse.com,
+        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
+        jeremy.linton@arm.com, linux-pci@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        Robin Murphy <robin.murphy@arm.con>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kexec@lists.infradead.org,
+        linux-nfs@vger.kernel.org
+References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+ <20191203114743.1294-8-nsaenzjulienne@suse.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <70c6b704-a12a-fb44-e93f-a6db12ed928f@arm.com>
+Date:   Thu, 5 Dec 2019 17:48:36 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191205144837.GA28725@netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20191203114743.1294-8-nsaenzjulienne@suse.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/5/19 6:48 AM, Simon Horman wrote:
-> On Wed, Nov 27, 2019 at 05:39:28PM +0200, Grygorii Strashko wrote:
->> Use non vendor specific compatible string in example, otherwise DT YAML
->> schemas validation may trigger warnings specific to TI ti,davinci_mdio
->> and not to the generic MDIO example.
->>
->> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> 
-> This seems sensible to me.
-> 
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
-> 
-> Are there any plans to address the errors DT YAML schema validation reports?
+On 03/12/2019 11:47 am, Nicolas Saenz Julienne wrote:
+> Some users need to make sure their rounding function accepts and returns
+> 64bit long variables regardless of the architecture. Sadly
+> roundup/rounddown_pow_two() takes and returns unsigned longs. It turns
+> out ilog2() already handles 32/64bit calculations properly, and being
+> the building block to the round functions we can rework them as a
+> wrapper around it.
 
-Sure, let me try to tackle this weekend.
+Neat! Although all the additional ULL casts this introduces seem 
+somewhat unwelcome - I suppose the (1ULL << (ilog2(n))) makes it 
+effectively always return unsigned long long now. Might it make sense to 
+cast the return value to typeof(n) to avoid this slightly non-obvious 
+behaviour (and the associated churn)?
 
+Robin.
+
+> Suggested-by: Robin Murphy <robin.murphy@arm.con>
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> ---
+>   drivers/clk/clk-divider.c                    |  8 ++--
+>   drivers/clk/sunxi/clk-sunxi.c                |  2 +-
+>   drivers/infiniband/hw/hfi1/chip.c            |  4 +-
+>   drivers/infiniband/hw/hfi1/init.c            |  4 +-
+>   drivers/infiniband/hw/mlx4/srq.c             |  2 +-
+>   drivers/infiniband/hw/mthca/mthca_srq.c      |  2 +-
+>   drivers/infiniband/sw/rxe/rxe_qp.c           |  4 +-
+>   drivers/iommu/intel-iommu.c                  |  4 +-
+>   drivers/iommu/intel-svm.c                    |  4 +-
+>   drivers/iommu/intel_irq_remapping.c          |  2 +-
+>   drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c |  4 +-
+>   drivers/net/ethernet/marvell/sky2.c          |  2 +-
+>   drivers/net/ethernet/rocker/rocker_hw.h      |  4 +-
+>   drivers/net/ethernet/sfc/ef10.c              |  2 +-
+>   drivers/net/ethernet/sfc/efx.h               |  2 +-
+>   drivers/net/ethernet/sfc/falcon/efx.h        |  2 +-
+>   drivers/pci/msi.c                            |  2 +-
+>   include/linux/log2.h                         | 44 +++++---------------
+>   kernel/kexec_core.c                          |  3 +-
+>   lib/rhashtable.c                             |  2 +-
+>   net/sunrpc/xprtrdma/verbs.c                  |  2 +-
+>   21 files changed, 41 insertions(+), 64 deletions(-)
 > 
-> $ ARCH=arm make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/mdio.yaml
-> .../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-netgear-r6250.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-netgear-r6250.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-linksys-ea6300-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-linksys-ea6300-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac68u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac68u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-linksys-ea6500-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-linksys-ea6500-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-buffalo-wzr-1750dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-buffalo-wzr-1750dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-luxul-xap-1510.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-luxul-xap-1510.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-600dhp2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-600dhp2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-smartrg-sr400ac.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-smartrg-sr400ac.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-luxul-xwc-1000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-luxul-xwc-1000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-netgear-r6300-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4708-netgear-r6300-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-asus-rt-n18u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-asus-rt-n18u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-asus-rt-ac87u.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-tplink-archer-c5-v2.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-tplink-archer-c5-v2.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-900dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-buffalo-wzr-900dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-netgear-r7000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-netgear-r7000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-linksys-ea9200.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-linksys-ea9200.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-luxul-xap-1410.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47081-luxul-xap-1410.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3150-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3150-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xap-1610.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xap-1610.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-dlink-dir-885l.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-dlink-dir-885l.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-netgear-r8000.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-netgear-r8000.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-buffalo-wxr-1900dhp.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm4709-tplink-archer-c9-v1.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-abr-4500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-abr-4500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-linksys-panamera.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-linksys-panamera.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3100.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xwr-3100.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm94709.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm94709.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xbr-4500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-luxul-xbr-4500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-phicomm-k3.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-phicomm-k3.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm911360k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm911360k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-netgear-r8500.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm47094-netgear-r8500.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm94708.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm94708.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm953012k.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm953012k.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm953012er.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm953012er.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm911360_entphn.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm911360_entphn.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm953012hr.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm953012hr.dt.yaml: mdio@18003000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm958305k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm958305k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
-> .../linux/arch/arm/boot/dts/bcm958300k.dt.yaml: mdio@18002000: #address-cells:0:0: 1 was expected
-> .../linux/arch/arm/boot/dts/bcm958300k.dt.yaml: mdio@18002000: #size-cells:0:0: 0 was expected
+> diff --git a/drivers/clk/clk-divider.c b/drivers/clk/clk-divider.c
+> index 098b2b01f0af..ba947e4c8193 100644
+> --- a/drivers/clk/clk-divider.c
+> +++ b/drivers/clk/clk-divider.c
+> @@ -222,7 +222,7 @@ static int _div_round_up(const struct clk_div_table *table,
+>   	int div = DIV_ROUND_UP_ULL((u64)parent_rate, rate);
+>   
+>   	if (flags & CLK_DIVIDER_POWER_OF_TWO)
+> -		div = __roundup_pow_of_two(div);
+> +		div = roundup_pow_of_two(div);
+>   	if (table)
+>   		div = _round_up_table(table, div);
+>   
+> @@ -240,8 +240,8 @@ static int _div_round_closest(const struct clk_div_table *table,
+>   	down = parent_rate / rate;
+>   
+>   	if (flags & CLK_DIVIDER_POWER_OF_TWO) {
+> -		up = __roundup_pow_of_two(up);
+> -		down = __rounddown_pow_of_two(down);
+> +		up = roundup_pow_of_two(up);
+> +		down = rounddown_pow_of_two(down);
+>   	} else if (table) {
+>   		up = _round_up_table(table, up);
+>   		down = _round_down_table(table, down);
+> @@ -278,7 +278,7 @@ static int _next_div(const struct clk_div_table *table, int div,
+>   	div++;
+>   
+>   	if (flags & CLK_DIVIDER_POWER_OF_TWO)
+> -		return __roundup_pow_of_two(div);
+> +		return roundup_pow_of_two(div);
+>   	if (table)
+>   		return _round_up_table(table, div);
+>   
+> diff --git a/drivers/clk/sunxi/clk-sunxi.c b/drivers/clk/sunxi/clk-sunxi.c
+> index 27201fd26e44..faec99dc09c0 100644
+> --- a/drivers/clk/sunxi/clk-sunxi.c
+> +++ b/drivers/clk/sunxi/clk-sunxi.c
+> @@ -311,7 +311,7 @@ static void sun6i_get_ahb1_factors(struct factors_request *req)
+>   
+>   		calcm = DIV_ROUND_UP(div, 1 << calcp);
+>   	} else {
+> -		calcp = __roundup_pow_of_two(div);
+> +		calcp = roundup_pow_of_two(div);
+>   		calcp = calcp > 3 ? 3 : calcp;
+>   	}
+>   
+> diff --git a/drivers/infiniband/hw/hfi1/chip.c b/drivers/infiniband/hw/hfi1/chip.c
+> index 9b1fb84a3d45..96b1d343c32f 100644
+> --- a/drivers/infiniband/hw/hfi1/chip.c
+> +++ b/drivers/infiniband/hw/hfi1/chip.c
+> @@ -14199,10 +14199,10 @@ static int qos_rmt_entries(struct hfi1_devdata *dd, unsigned int *mp,
+>   			max_by_vl = krcvqs[i];
+>   	if (max_by_vl > 32)
+>   		goto no_qos;
+> -	m = ilog2(__roundup_pow_of_two(max_by_vl));
+> +	m = ilog2(roundup_pow_of_two(max_by_vl));
+>   
+>   	/* determine bits for vl */
+> -	n = ilog2(__roundup_pow_of_two(num_vls));
+> +	n = ilog2(roundup_pow_of_two(num_vls));
+>   
+>   	/* reject if too much is used */
+>   	if ((m + n) > 7)
+> diff --git a/drivers/infiniband/hw/hfi1/init.c b/drivers/infiniband/hw/hfi1/init.c
+> index 26b792bb1027..838c789c7cce 100644
+> --- a/drivers/infiniband/hw/hfi1/init.c
+> +++ b/drivers/infiniband/hw/hfi1/init.c
+> @@ -467,7 +467,7 @@ int hfi1_create_ctxtdata(struct hfi1_pportdata *ppd, int numa,
+>   		 * MTU supported.
+>   		 */
+>   		if (rcd->egrbufs.size < hfi1_max_mtu) {
+> -			rcd->egrbufs.size = __roundup_pow_of_two(hfi1_max_mtu);
+> +			rcd->egrbufs.size = roundup_pow_of_two(hfi1_max_mtu);
+>   			hfi1_cdbg(PROC,
+>   				  "ctxt%u: eager bufs size too small. Adjusting to %u\n",
+>   				    rcd->ctxt, rcd->egrbufs.size);
+> @@ -1959,7 +1959,7 @@ int hfi1_setup_eagerbufs(struct hfi1_ctxtdata *rcd)
+>   	 * to satisfy the "multiple of 8 RcvArray entries" requirement.
+>   	 */
+>   	if (rcd->egrbufs.size <= (1 << 20))
+> -		rcd->egrbufs.rcvtid_size = max((unsigned long)round_mtu,
+> +		rcd->egrbufs.rcvtid_size = max((unsigned long long)round_mtu,
+>   			rounddown_pow_of_two(rcd->egrbufs.size / 8));
+>   
+>   	while (alloced_bytes < rcd->egrbufs.size &&
+> diff --git a/drivers/infiniband/hw/mlx4/srq.c b/drivers/infiniband/hw/mlx4/srq.c
+> index 8dcf6e3d9ae2..7e685600a7b3 100644
+> --- a/drivers/infiniband/hw/mlx4/srq.c
+> +++ b/drivers/infiniband/hw/mlx4/srq.c
+> @@ -96,7 +96,7 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
+>   	srq->msrq.max    = roundup_pow_of_two(init_attr->attr.max_wr + 1);
+>   	srq->msrq.max_gs = init_attr->attr.max_sge;
+>   
+> -	desc_size = max(32UL,
+> +	desc_size = max(32ULL,
+>   			roundup_pow_of_two(sizeof (struct mlx4_wqe_srq_next_seg) +
+>   					   srq->msrq.max_gs *
+>   					   sizeof (struct mlx4_wqe_data_seg)));
+> diff --git a/drivers/infiniband/hw/mthca/mthca_srq.c b/drivers/infiniband/hw/mthca/mthca_srq.c
+> index a85935ccce88..0c2e14b4142a 100644
+> --- a/drivers/infiniband/hw/mthca/mthca_srq.c
+> +++ b/drivers/infiniband/hw/mthca/mthca_srq.c
+> @@ -225,7 +225,7 @@ int mthca_alloc_srq(struct mthca_dev *dev, struct mthca_pd *pd,
+>   	else
+>   		srq->max = srq->max + 1;
+>   
+> -	ds = max(64UL,
+> +	ds = max(64ULL,
+>   		 roundup_pow_of_two(sizeof (struct mthca_next_seg) +
+>   				    srq->max_gs * sizeof (struct mthca_data_seg)));
+>   
+> diff --git a/drivers/infiniband/sw/rxe/rxe_qp.c b/drivers/infiniband/sw/rxe/rxe_qp.c
+> index e2c6d1cedf41..040b707b0877 100644
+> --- a/drivers/infiniband/sw/rxe/rxe_qp.c
+> +++ b/drivers/infiniband/sw/rxe/rxe_qp.c
+> @@ -592,7 +592,7 @@ int rxe_qp_from_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask,
+>   	int err;
+>   
+>   	if (mask & IB_QP_MAX_QP_RD_ATOMIC) {
+> -		int max_rd_atomic = __roundup_pow_of_two(attr->max_rd_atomic);
+> +		int max_rd_atomic = roundup_pow_of_two(attr->max_rd_atomic);
+>   
+>   		qp->attr.max_rd_atomic = max_rd_atomic;
+>   		atomic_set(&qp->req.rd_atomic, max_rd_atomic);
+> @@ -600,7 +600,7 @@ int rxe_qp_from_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask,
+>   
+>   	if (mask & IB_QP_MAX_DEST_RD_ATOMIC) {
+>   		int max_dest_rd_atomic =
+> -			__roundup_pow_of_two(attr->max_dest_rd_atomic);
+> +			roundup_pow_of_two(attr->max_dest_rd_atomic);
+>   
+>   		qp->attr.max_dest_rd_atomic = max_dest_rd_atomic;
+>   
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0c8d81f56a30..ce7c900bd666 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1488,7 +1488,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+>   				  unsigned long pfn, unsigned int pages,
+>   				  int ih, int map)
+>   {
+> -	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
+> +	unsigned int mask = ilog2(roundup_pow_of_two(pages));
+>   	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
+>   	u16 did = domain->iommu_did[iommu->seq_id];
+>   
+> @@ -3390,7 +3390,7 @@ static unsigned long intel_alloc_iova(struct device *dev,
+>   	/* Restrict dma_mask to the width that the iommu can handle */
+>   	dma_mask = min_t(uint64_t, DOMAIN_MAX_ADDR(domain->gaw), dma_mask);
+>   	/* Ensure we reserve the whole size-aligned region */
+> -	nrpages = __roundup_pow_of_two(nrpages);
+> +	nrpages = roundup_pow_of_two(nrpages);
+>   
+>   	if (!dmar_forcedac && dma_mask > DMA_BIT_MASK(32)) {
+>   		/*
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 9b159132405d..602caca3cd1a 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -115,7 +115,7 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+>   			QI_EIOTLB_TYPE;
+>   		desc.qw1 = 0;
+>   	} else {
+> -		int mask = ilog2(__roundup_pow_of_two(pages));
+> +		int mask = ilog2(roundup_pow_of_two(pages));
+>   
+>   		desc.qw0 = QI_EIOTLB_PASID(svm->pasid) |
+>   				QI_EIOTLB_DID(sdev->did) |
+> @@ -142,7 +142,7 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
+>   			 * for example, an "address" value of 0x12345f000 will
+>   			 * flush from 0x123440000 to 0x12347ffff (256KiB). */
+>   			unsigned long last = address + ((unsigned long)(pages - 1) << VTD_PAGE_SHIFT);
+> -			unsigned long mask = __rounddown_pow_of_two(address ^ last);
+> +			unsigned long mask = rounddown_pow_of_two(address ^ last);
+>   
+>   			desc.qw1 = QI_DEV_EIOTLB_ADDR((address & ~mask) |
+>   					(mask - 1)) | QI_DEV_EIOTLB_SIZE;
+> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+> index 81e43c1df7ec..935657b2c661 100644
+> --- a/drivers/iommu/intel_irq_remapping.c
+> +++ b/drivers/iommu/intel_irq_remapping.c
+> @@ -113,7 +113,7 @@ static int alloc_irte(struct intel_iommu *iommu,
+>   		return -1;
+>   
+>   	if (count > 1) {
+> -		count = __roundup_pow_of_two(count);
+> +		count = roundup_pow_of_two(count);
+>   		mask = ilog2(count);
+>   	}
+>   
+> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
+> index 6a757dadb5f1..fd5b12c23eaa 100644
+> --- a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
+> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
+> @@ -680,13 +680,13 @@ static int xgbe_set_ringparam(struct net_device *netdev,
+>   		return -EINVAL;
+>   	}
+>   
+> -	rx = __rounddown_pow_of_two(ringparam->rx_pending);
+> +	rx = rounddown_pow_of_two(ringparam->rx_pending);
+>   	if (rx != ringparam->rx_pending)
+>   		netdev_notice(netdev,
+>   			      "rx ring parameter rounded to power of two: %u\n",
+>   			      rx);
+>   
+> -	tx = __rounddown_pow_of_two(ringparam->tx_pending);
+> +	tx = rounddown_pow_of_two(ringparam->tx_pending);
+>   	if (tx != ringparam->tx_pending)
+>   		netdev_notice(netdev,
+>   			      "tx ring parameter rounded to power of two: %u\n",
+> diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+> index 5f56ee83e3b1..cc3a03b4a611 100644
+> --- a/drivers/net/ethernet/marvell/sky2.c
+> +++ b/drivers/net/ethernet/marvell/sky2.c
+> @@ -4139,7 +4139,7 @@ static int sky2_set_coalesce(struct net_device *dev,
+>    */
+>   static unsigned long roundup_ring_size(unsigned long pending)
+>   {
+> -	return max(128ul, roundup_pow_of_two(pending+1));
+> +	return max(128ull, roundup_pow_of_two(pending+1));
+>   }
+>   
+>   static void sky2_get_ringparam(struct net_device *dev,
+> diff --git a/drivers/net/ethernet/rocker/rocker_hw.h b/drivers/net/ethernet/rocker/rocker_hw.h
+> index 59f1f8b690d2..d8de15509e2c 100644
+> --- a/drivers/net/ethernet/rocker/rocker_hw.h
+> +++ b/drivers/net/ethernet/rocker/rocker_hw.h
+> @@ -88,8 +88,8 @@ enum rocker_dma_type {
+>   };
+>   
+>   /* Rocker DMA ring size limits and default sizes */
+> -#define ROCKER_DMA_SIZE_MIN		2ul
+> -#define ROCKER_DMA_SIZE_MAX		65536ul
+> +#define ROCKER_DMA_SIZE_MIN		2ull
+> +#define ROCKER_DMA_SIZE_MAX		65536ull
+>   #define ROCKER_DMA_CMD_DEFAULT_SIZE	32ul
+>   #define ROCKER_DMA_EVENT_DEFAULT_SIZE	32ul
+>   #define ROCKER_DMA_TX_DEFAULT_SIZE	64ul
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index 4d9bbccc6f89..4f4d9a5b3b75 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -27,7 +27,7 @@ enum {
+>   };
+>   /* The maximum size of a shared RSS context */
+>   /* TODO: this should really be from the mcdi protocol export */
+> -#define EFX_EF10_MAX_SHARED_RSS_CONTEXT_SIZE 64UL
+> +#define EFX_EF10_MAX_SHARED_RSS_CONTEXT_SIZE 64ULL
+>   
+>   /* The filter table(s) are managed by firmware and we have write-only
+>    * access.  When removing filters we must identify them to the
+> diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
+> index 2dd8d5002315..fea2add5860e 100644
+> --- a/drivers/net/ethernet/sfc/efx.h
+> +++ b/drivers/net/ethernet/sfc/efx.h
+> @@ -52,7 +52,7 @@ void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue);
+>   
+>   #define EFX_MAX_DMAQ_SIZE 4096UL
+>   #define EFX_DEFAULT_DMAQ_SIZE 1024UL
+> -#define EFX_MIN_DMAQ_SIZE 512UL
+> +#define EFX_MIN_DMAQ_SIZE 512ULL
+>   
+>   #define EFX_MAX_EVQ_SIZE 16384UL
+>   #define EFX_MIN_EVQ_SIZE 512UL
+> diff --git a/drivers/net/ethernet/sfc/falcon/efx.h b/drivers/net/ethernet/sfc/falcon/efx.h
+> index d3b4646545fa..0d16257156d6 100644
+> --- a/drivers/net/ethernet/sfc/falcon/efx.h
+> +++ b/drivers/net/ethernet/sfc/falcon/efx.h
+> @@ -55,7 +55,7 @@ void ef4_schedule_slow_fill(struct ef4_rx_queue *rx_queue);
+>   
+>   #define EF4_MAX_DMAQ_SIZE 4096UL
+>   #define EF4_DEFAULT_DMAQ_SIZE 1024UL
+> -#define EF4_MIN_DMAQ_SIZE 512UL
+> +#define EF4_MIN_DMAQ_SIZE 512ULL
+>   
+>   #define EF4_MAX_EVQ_SIZE 16384UL
+>   #define EF4_MIN_EVQ_SIZE 512UL
+> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> index c7709e49f0e4..f0391e88bc42 100644
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -578,7 +578,7 @@ msi_setup_entry(struct pci_dev *dev, int nvec, struct irq_affinity *affd)
+>   	entry->msi_attrib.maskbit	= !!(control & PCI_MSI_FLAGS_MASKBIT);
+>   	entry->msi_attrib.default_irq	= dev->irq;	/* Save IOAPIC IRQ */
+>   	entry->msi_attrib.multi_cap	= (control & PCI_MSI_FLAGS_QMASK) >> 1;
+> -	entry->msi_attrib.multiple	= ilog2(__roundup_pow_of_two(nvec));
+> +	entry->msi_attrib.multiple	= ilog2(roundup_pow_of_two(nvec));
+>   
+>   	if (control & PCI_MSI_FLAGS_64BIT)
+>   		entry->mask_pos = dev->msi_cap + PCI_MSI_MASK_64;
+> diff --git a/include/linux/log2.h b/include/linux/log2.h
+> index 83a4a3ca3e8a..53a727303dac 100644
+> --- a/include/linux/log2.h
+> +++ b/include/linux/log2.h
+> @@ -47,26 +47,6 @@ bool is_power_of_2(unsigned long n)
+>   	return (n != 0 && ((n & (n - 1)) == 0));
+>   }
+>   
+> -/**
+> - * __roundup_pow_of_two() - round up to nearest power of two
+> - * @n: value to round up
+> - */
+> -static inline __attribute__((const))
+> -unsigned long __roundup_pow_of_two(unsigned long n)
+> -{
+> -	return 1UL << fls_long(n - 1);
+> -}
+> -
+> -/**
+> - * __rounddown_pow_of_two() - round down to nearest power of two
+> - * @n: value to round down
+> - */
+> -static inline __attribute__((const))
+> -unsigned long __rounddown_pow_of_two(unsigned long n)
+> -{
+> -	return 1UL << (fls_long(n) - 1);
+> -}
+> -
+>   /**
+>    * const_ilog2 - log base 2 of 32-bit or a 64-bit constant unsigned value
+>    * @n: parameter
+> @@ -170,14 +150,11 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
+>    * - the result is undefined when n == 0
+>    * - this can be used to initialise global variables from constant data
+>    */
+> -#define roundup_pow_of_two(n)			\
+> -(						\
+> -	__builtin_constant_p(n) ? (		\
+> -		(n == 1) ? 1 :			\
+> -		(1UL << (ilog2((n) - 1) + 1))	\
+> -				   ) :		\
+> -	__roundup_pow_of_two(n)			\
+> - )
+> +#define roundup_pow_of_two(n)			  \
+> +(						  \
+> +	(__builtin_constant_p(n) && ((n) == 1)) ? \
+> +	1 : (1ULL << (ilog2((n) - 1) + 1))        \
+> +)
+>   
+>   /**
+>    * rounddown_pow_of_two - round the given value down to nearest power of two
+> @@ -187,12 +164,11 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
+>    * - the result is undefined when n == 0
+>    * - this can be used to initialise global variables from constant data
+>    */
+> -#define rounddown_pow_of_two(n)			\
+> -(						\
+> -	__builtin_constant_p(n) ? (		\
+> -		(1UL << ilog2(n))) :		\
+> -	__rounddown_pow_of_two(n)		\
+> - )
+> +#define rounddown_pow_of_two(n)			  \
+> +(						  \
+> +	(__builtin_constant_p(n) && ((n) == 1)) ? \
+> +	1 : (1ULL << (ilog2(n)))		  \
+> +)
+>   
+>   static inline __attribute_const__
+>   int __order_base_2(unsigned long n)
+> diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+> index 15d70a90b50d..bb9efc6944a4 100644
+> --- a/kernel/kexec_core.c
+> +++ b/kernel/kexec_core.c
+> @@ -1094,7 +1094,8 @@ static int __init crash_notes_memory_init(void)
+>   	 * crash_notes is allocated inside one physical page.
+>   	 */
+>   	size = sizeof(note_buf_t);
+> -	align = min(roundup_pow_of_two(sizeof(note_buf_t)), PAGE_SIZE);
+> +	align = min(roundup_pow_of_two(sizeof(note_buf_t)),
+> +		    (unsigned long long)PAGE_SIZE);
+>   
+>   	/*
+>   	 * Break compile if size is bigger than PAGE_SIZE since crash_notes
+> diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+> index bdb7e4cadf05..70908678c7a8 100644
+> --- a/lib/rhashtable.c
+> +++ b/lib/rhashtable.c
+> @@ -950,7 +950,7 @@ static size_t rounded_hashtable_size(const struct rhashtable_params *params)
+>   
+>   	if (params->nelem_hint)
+>   		retsize = max(roundup_pow_of_two(params->nelem_hint * 4 / 3),
+> -			      (unsigned long)params->min_size);
+> +			      (unsigned long long)params->min_size);
+>   	else
+>   		retsize = max(HASH_DEFAULT_SIZE,
+>   			      (unsigned long)params->min_size);
+> diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
+> index 77c7dd7f05e8..78fb8ccabddd 100644
+> --- a/net/sunrpc/xprtrdma/verbs.c
+> +++ b/net/sunrpc/xprtrdma/verbs.c
+> @@ -1015,7 +1015,7 @@ struct rpcrdma_req *rpcrdma_req_create(struct rpcrdma_xprt *r_xprt, size_t size,
+>   	maxhdrsize = rpcrdma_fixed_maxsz + 3 +
+>   		     r_xprt->rx_ia.ri_max_segs * rpcrdma_readchunk_maxsz;
+>   	maxhdrsize *= sizeof(__be32);
+> -	rb = rpcrdma_regbuf_alloc(__roundup_pow_of_two(maxhdrsize),
+> +	rb = rpcrdma_regbuf_alloc(roundup_pow_of_two(maxhdrsize),
+>   				  DMA_TO_DEVICE, flags);
+>   	if (!rb)
+>   		goto out2;
 > 
-
-
--- 
-Florian
