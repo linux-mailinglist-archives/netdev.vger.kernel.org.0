@@ -2,72 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 190021148F2
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 22:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B9F211494E
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 23:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729796AbfLEV4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 16:56:31 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:35390 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726589AbfLEV4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 16:56:31 -0500
-Received: by mail-oi1-f193.google.com with SMTP id k196so4270106oib.2;
-        Thu, 05 Dec 2019 13:56:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+4jN+XaXHwrYJI+muu2FvEZSPfGj9LIVkbxEwDHYMas=;
-        b=BD6GPwcMe0BLBUvudzCr/chkM/YfW+yRM2U+Jxya9K7lPf4ThUT7+8Umyz5e/ucNFA
-         MtC+iCzrzM1tsp/0DuoPaKbrxkmtSyWkRtxvpEqtozMVRDqiIf7uLYKgY9aIJSEeBjA2
-         XsB16DcxxiqhMDCYWJ6GB5cTyqT9KGFNkLNyBZcaxNEejmO8nv1k7DyO28rKxLJYLuzg
-         GQUJlAWkgbbrjy3+aEcJKFdWJiK2rGJTr/tewnTojwUwTrdrLobARKTGLVfOox6Aj2sM
-         vbIdjkj1xAodWF4/m9PpFmrjUHGSKtn3p8YuPJhXCQR4p/ZSHQFbrh2Yz2SMD+Waqenj
-         VK2w==
-X-Gm-Message-State: APjAAAWHxbrPG3yju3F/04X+EfBGmo5F0PNaVUVvgAqfKuDrFET35565
-        AfCottFn+PNyWHMigePqPg==
-X-Google-Smtp-Source: APXvYqwnyU36jjBCPs3lGB+ujZ9geaCsahZP028XU/TWYqFvFZtwklN3E7FkUeJyL4g2H8dTgny28g==
-X-Received: by 2002:aca:889:: with SMTP id 131mr9140897oii.3.1575582990359;
-        Thu, 05 Dec 2019 13:56:30 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o2sm4026571oih.19.2019.12.05.13.56.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 13:56:29 -0800 (PST)
-Date:   Thu, 5 Dec 2019 15:56:29 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
+        id S1727975AbfLEWat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 17:30:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727595AbfLEWas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 17:30:48 -0500
+Received: from localhost (mobile-166-170-221-197.mycingular.net [166.170.221.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 84F6520707;
+        Thu,  5 Dec 2019 22:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575585047;
+        bh=rwc2W/J/V58JZoKOWg2doRruK6KWPbQgM5Sb2F/Ai60=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=cliOZcUxDWzGZ1UQTKJkPsD++s/EPrjyE7H/snJuA3uqE7NURH520sOnVje6nd0Ts
+         Td38CmfeZyMBlRyr+Rypsepv/EG8hoAOa7B7sJiJzOVgMDkiBquX3yxdZnHzKOkS/c
+         BBv+wew7DxEj2QDNBsIebdp/nYnu0CS5l8OPwMaM=
+Date:   Thu, 5 Dec 2019 16:30:44 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     andrew.murray@arm.com, maz@kernel.org,
         linux-kernel@vger.kernel.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH] dt-bindings: net: ti: cpsw-switch: update to fix comments
-Message-ID: <20191205215629.GA32427@bogus>
-References: <20191127155526.22746-1-grygorii.strashko@ti.com>
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Emilio =?iso-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Moni Shoua <monis@mellanox.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        james.quinlan@broadcom.com, mbrugger@suse.com,
+        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
+        jeremy.linton@arm.com, linux-pci@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        Robin Murphy <robin.murphy@arm.con>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kexec@lists.infradead.org,
+        linux-nfs@vger.kernel.org
+Subject: Re: [PATCH v4 7/8] linux/log2.h: Fix 64bit calculations in
+ roundup/down_pow_two()
+Message-ID: <20191205223044.GA250573@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191127155526.22746-1-grygorii.strashko@ti.com>
+In-Reply-To: <20191203114743.1294-8-nsaenzjulienne@suse.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Nov 2019 17:55:26 +0200, Grygorii Strashko wrote:
-> After original patch was merged there were additional comments/requests
-> provided by Rob Herring [1]. Mostly they are related to json-schema usage,
-> and this patch fixes them. Also SPDX-License-Identifier has been changed to
-> (GPL-2.0-only OR BSD-2-Clause) as requested.
-> 
-> [1] https://lkml.org/lkml/2019/11/21/875
-> Fixes: ef63fe72f698 ("dt-bindings: net: ti: add new cpsw switch driver bindings")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> ---
->  .../bindings/net/ti,cpsw-switch.yaml          | 20 +++++++------------
->  1 file changed, 7 insertions(+), 13 deletions(-)
-> 
+You got the "n" on "down" in the subject, but still missing "of" ;)
 
-Applied, thanks.
+On Tue, Dec 03, 2019 at 12:47:40PM +0100, Nicolas Saenz Julienne wrote:
+> Some users need to make sure their rounding function accepts and returns
+> 64bit long variables regardless of the architecture. Sadly
+> roundup/rounddown_pow_two() takes and returns unsigned longs. It turns
+> out ilog2() already handles 32/64bit calculations properly, and being
+> the building block to the round functions we can rework them as a
+> wrapper around it.
 
-Rob
+Missing "of" in the function names here.
+s/a wrapper/wrappers/
+
+IIUC the point of this is that roundup_pow_of_two() returned
+"unsigned long", which can be either 32 or 64 bits (worth pointing
+out, I think), and many callers need something that returns
+"unsigned long long" (always 64 bits).
+
+It's a nice simplification to remove the "__" variants.  Just as a
+casual reader of this commit message, I'd like to know why we had both
+the roundup and the __roundup versions in the first place, and why we
+no longer need both.
+
+> -#define roundup_pow_of_two(n)			\
+> -(						\
+> -	__builtin_constant_p(n) ? (		\
+> -		(n == 1) ? 1 :			\
+> -		(1UL << (ilog2((n) - 1) + 1))	\
+> -				   ) :		\
+> -	__roundup_pow_of_two(n)			\
+> - )
+> +#define roundup_pow_of_two(n)			  \
+> +(						  \
+> +	(__builtin_constant_p(n) && ((n) == 1)) ? \
+> +	1 : (1ULL << (ilog2((n) - 1) + 1))        \
+> +)
+
+Should the resulting type of this expression always be a ULL, even
+when n==1, i.e., should it be this?
+
+  1ULL : (1ULL << (ilog2((n) - 1) + 1))        \
+
+Or maybe there's no case where that makes a difference?
+
+Bjorn
