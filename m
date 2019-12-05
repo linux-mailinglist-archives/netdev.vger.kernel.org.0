@@ -2,112 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 612F8113A67
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:33:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F921113A8C
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728746AbfLEDdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 22:33:08 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:33204 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728449AbfLEDdI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Dec 2019 22:33:08 -0500
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id DE3947BFDDC33748EF97;
-        Thu,  5 Dec 2019 11:33:05 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Thu, 5 Dec 2019
- 11:33:01 +0800
-Subject: =?UTF-8?B?UmU6IOetlOWkjTog562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSN?=
- =?UTF-8?Q?:_[PATCH]_page=5fpool:_mark_unbound_node_page_as_reusable_pages?=
-To:     "Li,Rongqing" <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>
-References: <1575454465-15386-1-git-send-email-lirongqing@baidu.com>
- <d7836d35-ba21-69ab-8aba-457b2da6ffa1@huawei.com>
- <656e11b6605740b18ac7bb8e3b67ed93@baidu.com>
- <f52fe7e8-2b6f-5e67-aa4b-38277478a7d1@huawei.com>
- <68135c0148894aa3b26db19120fb7bac@baidu.com>
- <3e3b1e0c-e7e0-eea2-b1b5-20bf2b8fc34b@huawei.com>
- <cd63eccb89bb406ca6edea46aee60e3a@baidu.com>
- <cc336ff3-b729-539e-59f7-67c6c37663d9@huawei.com>
- <504bf0958f424a2c9add3a84543c45c6@baidu.com>
- <0c5b19c3-b639-b990-73a1-a1300d417221@huawei.com>
- <3a0d273cb57146d3b2f5c849569fb244@baidu.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <bb1daad7-d5a9-0c36-e218-710b3f15b5a1@huawei.com>
-Date:   Thu, 5 Dec 2019 11:33:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1728522AbfLEDmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 22:42:00 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:40304 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728098AbfLEDmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 22:42:00 -0500
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id B21A241F84;
+        Thu,  5 Dec 2019 11:41:38 +0800 (CST)
+Subject: Re: Bad performance for VF outgoing in offloaded mode
+To:     Roi Dayan <roid@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <20191119.163923.660983355933809356.davem@davemloft.net>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
+ <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
+ <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+ <fc909cd7-3e82-89a6-9fe8-8eba546686d8@ucloud.cn>
+ <ee1a369f-58c7-1fd4-f0fe-09b2a9900931@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <2474fa1b-c69f-22e8-3358-937457667262@ucloud.cn>
+Date:   Thu, 5 Dec 2019 11:41:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <3a0d273cb57146d3b2f5c849569fb244@baidu.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <ee1a369f-58c7-1fd4-f0fe-09b2a9900931@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEJKS0tLSk5KTUhPSUlZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6KzI6ASo4Ezg0H0saDCI9ESwR
+        QklPCx5VSlVKTkxOTkpMSUJDQk9NVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBQ0xKQjcG
+X-HM-Tid: 0a6ed42620872086kuqyb21a241f84
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/12/5 11:18, Li,Rongqing wrote:
-> 
->>>> [1] https://lore.kernel.org/patchwork/patch/1125789/
->>>
->>>
->>> What is status of this patch? I think you should fix your firmware or
->>> bios
->>
->> Have not reached a conclusion yet.
-> 
-> I think it will never be accepted
-> 
->>
->>>
->>> Consider the below condition:
->>>
->>> there is two numa node, and NIC sites on node 2, but NUMA_NO_NODE is
->>> used, recycle will fail due to page_to_nid(page) == numa_mem_id(), and
->> reallocated pages maybe always from node 1, then the recycle will never
->> success.
->>
->> For page pool:
->>
->> 1. if the pool->p.nid != NUMA_NO_NODE, the recycle is always decided by
->> checking page_to_nid(page) == pool->p.nid.
->>
->> 2. only when the pool->p.nid == NUMA_NO_NODE, the numa_mem_id() is
->> checked
->>    to decide the recycle.
->>
->> Yes, If pool->p.nid == NUMA_NO_NODE, and the cpu that is doing recycling is
->> changing each time, the recycle may never success, but it is not common, 
-> 
-> Why can we ignore this condition, and accept your hardware with abnormal node
-> information
-> 
->> and
->> have its own performance penalty when changing the recycling cpu so often.
-> 
-> I have said if hardware takes care of numa node, it should be assign when page pool
-> Is created, not depends on recycle.
-> 
-> If you insist your idea, you can submit you patch after this one
 
-I am just arguing that rx recycle the page pool is doing should be consistent
-with other driver that does its own recycle.
-
-If the driver that does its own recycle begin to support the page pool,
-then there may be different behavior when they are not consistent.
-
-> 
-> -RongQing
-> 
+On 12/4/2019 9:50 PM, Roi Dayan wrote:
+>
+> On 2019-11-28 7:03 AM, wenxu wrote:
+>> Hi mellanox team,
 >>
 >>
->>>
->>> -RongQing
->>>
->>>
-> 
+>> I did a performance test for tc offload with upstream kernel:
+>>
+>> I setup a vm with a VF as eth0
+>>
+>> In the vm:
+>>
+>> ifconfig eth0 10.0.0.75/24 up
+>>
+>>
+>> On the host the mlx_p0 is the pf representor and mlx_pf0vf0 is the vf representor
+>>
+>> The device in the switchdev mode
+>>
+>> # grep -ri "" /sys/class/net/*/phys_* 2>/dev/null
+>> /sys/class/net/mlx_p0/phys_port_name:p0
+>> /sys/class/net/mlx_p0/phys_switch_id:34ebc100034b6b50
+>> /sys/class/net/mlx_pf0vf0/phys_port_name:pf0vf0
+>> /sys/class/net/mlx_pf0vf0/phys_switch_id:34ebc100034b6b50
+>> /sys/class/net/mlx_pf0vf1/phys_port_name:pf0vf1
+>> /sys/class/net/mlx_pf0vf1/phys_switch_id:34ebc100034b6b50
+>>
+>>
+>> The tc filter as following: just forward ip/arp packets  in mlx_p0 and mlx_pf0vf0 each other
+>>
+>> tc qdisc add dev mlx_p0 ingress
+>> tc qdisc add dev mlx_pf0vf0 ingress
+>>
+>> tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower skip_sw action mirred egress redirect dev mlx_p0
+>> tc filter add dev mlx_p0 pref 2 ingress  protocol ip flower skip_sw action mirred egress redirect dev mlx_pf0vf0
+>>
+>> tc filter add dev mlx_pf0vf0 pref 1 ingress  protocol arp flower skip_sw action mirred egress redirect dev mlx_p0
+>> tc filter add dev mlx_p0 pref 1 ingress  protocol arp flower skip_sw action mirred egress redirect dev mlx_pf0vf0
+>>
+>>
+>> The remote server device eth0:
+>>
+>> ifconfig eth0 10.0.0.241/24
+>>
+>>
+>> test case 1:   tcp recieve from VF to PF
+>>
+>> In the vm: iperf -s
+>>
+>> On the remote server:
+>>
+>> iperf -c 10.0.0.75 -t 10 -i 2
+>> ------------------------------------------------------------
+>> Client connecting to 10.0.0.75, TCP port 5001
+>> TCP window size: 85.0 KByte (default)
+>> ------------------------------------------------------------
+>> [  3] local 10.0.0.241 port 59708 connected with 10.0.0.75 port 5001
+>> [ ID] Interval       Transfer     Bandwidth
+>> [  3]  0.0- 2.0 sec  5.40 GBytes  23.2 Gbits/sec
+>> [  3]  2.0- 4.0 sec  5.35 GBytes  23.0 Gbits/sec
+>> [  3]  4.0- 6.0 sec  5.46 GBytes  23.5 Gbits/sec
+>> [  3]  6.0- 8.0 sec  5.10 GBytes  21.9 Gbits/sec
+>> [  3]  8.0-10.0 sec  5.36 GBytes  23.0 Gbits/sec
+>> [  3]  0.0-10.0 sec  26.7 GBytes  22.9 Gbits/sec
+>>
+>>
+>> Good performance with offload.
+>>
+>> # tc -s filter ls dev mlx_p0 ingress
+>> filter protocol arp pref 1 flower chain 0
+>> filter protocol arp pref 1 flower chain 0 handle 0x1
+>>   eth_type arp
+>>   skip_sw
+>>   in_hw in_hw_count 1
+>>     action order 1: mirred (Egress Redirect to device mlx_pf0vf0) stolen
+>>      index 4 ref 1 bind 1 installed 971 sec used 82 sec
+>>      Action statistics:
+>>     Sent 420 bytes 7 pkt (dropped 0, overlimits 0 requeues 0)
+>>     Sent software 0 bytes 0 pkt
+>>     Sent hardware 420 bytes 7 pkt
+>>     backlog 0b 0p requeues 0
+>>
+>> filter protocol ip pref 2 flower chain 0
+>> filter protocol ip pref 2 flower chain 0 handle 0x1
+>>   eth_type ipv4
+>>   skip_sw
+>>   in_hw in_hw_count 1
+>>     action order 1: mirred (Egress Redirect to device mlx_pf0vf0) stolen
+>>      index 2 ref 1 bind 1 installed 972 sec used 67 sec
+>>      Action statistics:
+>>     Sent 79272204362 bytes 91511261 pkt (dropped 0, overlimits 0 requeues 0)
+>>     Sent software 0 bytes 0 pkt
+>>     Sent hardware 79272204362 bytes 91511261 pkt
+>>     backlog 0b 0p requeues 0
+>>
+>> #  tc -s filter ls dev mlx_pf0vf0 ingress
+>> filter protocol arp pref 1 flower chain 0
+>> filter protocol arp pref 1 flower chain 0 handle 0x1
+>>   eth_type arp
+>>   skip_sw
+>>   in_hw in_hw_count 1
+>>     action order 1: mirred (Egress Redirect to device mlx_p0) stolen
+>>      index 3 ref 1 bind 1 installed 978 sec used 88 sec
+>>      Action statistics:
+>>     Sent 600 bytes 10 pkt (dropped 0, overlimits 0 requeues 0)
+>>     Sent software 0 bytes 0 pkt
+>>     Sent hardware 600 bytes 10 pkt
+>>     backlog 0b 0p requeues 0
+>>
+>> filter protocol ip pref 2 flower chain 0
+>> filter protocol ip pref 2 flower chain 0 handle 0x1
+>>   eth_type ipv4
+>>   skip_sw
+>>   in_hw in_hw_count 1
+>>     action order 1: mirred (Egress Redirect to device mlx_p0) stolen
+>>      index 1 ref 1 bind 1 installed 978 sec used 73 sec
+>>      Action statistics:
+>>     Sent 71556027574 bytes 47805525 pkt (dropped 0, overlimits 0 requeues 0)
+>>     Sent software 0 bytes 0 pkt
+>>     Sent hardware 71556027574 bytes 47805525 pkt
+>>     backlog 0b 0p requeues 0
+>>
+>>
+>>
+>> test case 2:  tcp send from VF to PF
+>>
+>> On the reomte server: iperf -s
+>>
+>> in the vm:
+>>
+>> # iperf -c 10.0.0.241 -t 10 -i 2
+>>
+>> ------------------------------------------------------------
+>> Client connecting to 10.0.0.241, TCP port 5001
+>> TCP window size:  230 KByte (default)
+>> ------------------------------------------------------------
+>> [  3] local 10.0.0.75 port 53166 connected with 10.0.0.241 port 5001
+>> [ ID] Interval       Transfer     Bandwidth
+>> [  3]  0.0- 2.0 sec   939 MBytes  3.94 Gbits/sec
+>> [  3]  2.0- 4.0 sec   944 MBytes  3.96 Gbits/sec
+>> [  3]  4.0- 6.0 sec  1.01 GBytes  4.34 Gbits/sec
+>> [  3]  6.0- 8.0 sec  1.03 GBytes  4.44 Gbits/sec
+>> [  3]  8.0-10.0 sec  1.02 GBytes  4.39 Gbits/sec
+>> [  3]  0.0-10.0 sec  4.90 GBytes  4.21 Gbits/sec
+>>
+>>
+>> Bad performance with offload.  All the packet are offloaded. 
+>>
+>> It is the offload problem in the hardware?
+>>
+>>
+>> BR
+>>
+>> wenxu
+>>
+>>
+> Hi Wenxu,
+>
+> We didn't notice this behavior.
+> Could it be your VM doesn't have enough resources to generate the traffic?
+> As a listener it's only sending the acks.
 
+Sorry, I found it is the problem of remote 10.0.0.241 server.
+
+>
+> Thanks,
+> Roi
