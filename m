@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 196C711452A
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 17:52:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EED8811454F
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730019AbfLEQv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 11:51:59 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:37599 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729497AbfLEQv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 11:51:58 -0500
-Received: by mail-oi1-f194.google.com with SMTP id x195so3364256oix.4;
-        Thu, 05 Dec 2019 08:51:57 -0800 (PST)
+        id S1729793AbfLERDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 12:03:55 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41423 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbfLERDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 12:03:54 -0500
+Received: by mail-wr1-f66.google.com with SMTP id c9so4509726wrw.8
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 09:03:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=r42H/4xnyZ9H1hWkpv67TGHgq2sSx9vk59yx3z+dWmg=;
+        b=F5r5csE18g0GpeNGhBLLwfqGjW573TzuDCor0GTkMCG3L76Zlp+9srDECst/ULL1mi
+         7mMwtbu0L4V0QfClctOzXFh/U2H55bGBpewrmANb0zH8Ar6nnP+pLQ1JhnfQWLOGzi68
+         o45WfT66rx3FliGZXXxOqDBw0XWKULvz44o0g5WZRE9HNnt4HlnKTZ6UpxmG69dR68ft
+         mLDubVCNx6PPZaRh9ohgVtCflcp7uFJa1ZkPyaQ6I6vR1hMIIolxSFP7eyXkvKNjLqMb
+         k8nkwKBi5Sok6T80sHKUCEFe3TtOSo+Icf70+/c9myGZ/XIKfvjHoPri/13jk+HmV0cq
+         vfIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=V5CClDsvvWShXeom5UYJJ6CQjYP00jyKXyF2U0f40Bk=;
-        b=Q/BPet+BUYV+d6QRJq+97JfxO+clb3gUyCh4yWUrwWrSvGoKLIqrGlFuCfN1ez9Swj
-         XrEkCQ6+medZNTQTYl4NPqFKGoYE4ygbLbiqIdTV4jU0fddFhajIe9sUwOwpvI1dmQEM
-         CpOfdPOCnZ7mOobPBo7VWdRV6/6YCOMWbvJ9O4obulpEGkopyTOOAugeO4xjk/HlAVAK
-         oxP234p9KWhPq4/pNQk4GYMxXQ+TdD0Z67pxuMqd+fGh5RrUuG0VBz7nGIvLKpL6yqlt
-         XAU+h4g942EybQlLOB44it86Nv0brLR20jMK+xe2MCeS/RaCwhVW/kV9EDfuZi3AuUd5
-         0Qwg==
-X-Gm-Message-State: APjAAAUtqXGvg9Ac9tpftFQ5AS/KvkWyzhJfxESKBzDbZtR2SAV3Ka5o
-        Y2HGZR++scd8aF0Ajt+7uQ==
-X-Google-Smtp-Source: APXvYqxBvsot0cyZ13VBy4GxyGsUKNxaQpkizOPoH/p84X7Bq9kEEbQ3hWUc0e1BHvhCJ+k4DJ1VnQ==
-X-Received: by 2002:aca:aa0d:: with SMTP id t13mr8146299oie.18.1575564717419;
-        Thu, 05 Dec 2019 08:51:57 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id e21sm3723982oib.16.2019.12.05.08.51.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 08:51:56 -0800 (PST)
-Date:   Thu, 5 Dec 2019 10:51:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH 1/2] DTS: bindings: wl1251: mark ti,power-gpio as optional
-Message-ID: <20191205165155.GA613@bogus>
-References: <cover.1574591746.git.hns@goldelico.com>
- <c95e814deed075352a05c392147e9458b0d1a447.1574591746.git.hns@goldelico.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c95e814deed075352a05c392147e9458b0d1a447.1574591746.git.hns@goldelico.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=r42H/4xnyZ9H1hWkpv67TGHgq2sSx9vk59yx3z+dWmg=;
+        b=VXPlS/jor9of95rXc0P2Ec5MR6NXRADLqYvkvd9oQKOypjh83HTQOvAljib7CAwcTu
+         FJ8Frmeo7+wWAZs4D2v2AEGKXvdjMz4l6ynEp3QsxwzOZvNYpvrs8ELvNujRLWWnHuVB
+         94GgUkdscb6n0xU/0jAiUjxwxQGAVe3/7Fa0z9JDRF//Yg0jiwAZegwF6E4+OoU1JA18
+         5iQvxDEcT3TvDT9sEYpWQWqROX5M74ZBz/KQeyEAfv8OKyj/rSlBzsaYYjbwBC4GqGHx
+         JKCZtr7UzfK7SESlSdS405efD25FhcSeXofSrX1Uyr+pLxJCl8YEyEB0wPGWHNRJaAKf
+         Bqzg==
+X-Gm-Message-State: APjAAAVhLZXeHMnfnJPhU8xoB8hh8FNPPDfctLD/HkXHK5QFx1HKDHll
+        mdJjxT9fWLlnfgYn+SdNEFqusq1q+ZC+4RKGkf8Czy17JzG1KRcb+ye6HArz4JHE3tk8KVINRN+
+        MLI4MVXiV5plPIemL8EWuMAsWx7QED5gKyDbGQwEtinHXDyM/yyFRq/Enj0fQ0XbG0xIsNI5XKg
+        ==
+X-Google-Smtp-Source: APXvYqy/UTApjp/GhyRZwORZSrWBJ9oAoDjGsmgSj0BgikRqnJI4dr3r5HmQ8+AYybZ9lbKSbIVK+A==
+X-Received: by 2002:adf:fa0b:: with SMTP id m11mr11145426wrr.98.1575565432522;
+        Thu, 05 Dec 2019 09:03:52 -0800 (PST)
+Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
+        by smtp.gmail.com with ESMTPSA id b2sm13004971wrr.76.2019.12.05.09.03.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 05 Dec 2019 09:03:51 -0800 (PST)
+From:   John Hurley <john.hurley@netronome.com>
+To:     netdev@vger.kernel.org
+Cc:     simon.horman@netronome.com, jakub.kicinski@netronome.com,
+        oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
+Subject: [PATCH net 0/2] Ensure egress un/bind are relayed with indirect blocks
+Date:   Thu,  5 Dec 2019 17:03:33 +0000
+Message-Id: <1575565415-22942-1-git-send-email-john.hurley@netronome.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Nov 2019 11:35:45 +0100, "H. Nikolaus Schaller" wrote:
-> It is now only useful for SPI interface.
-> Power control of SDIO mode is done through mmc core.
-> 
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+On register and unregister for indirect blocks, a command is called that
+sends a bind/unbind event to the registering driver. This command assumes
+that the bind to indirect block will be on ingress. However, drivers such
+as NFP have allowed binding to clsact qdiscs as well as ingress qdiscs
+from mainline Linux 5.2. A clsact qdisc binds to an ingress and an egress
+block.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Rather than assuming that an indirect bind is always ingress, modify the
+function names to remove the ingress tag (patch 1). In cls_api, which is
+used by NFP to offload TC flower, generate bind/unbind message for both
+ingress and egress blocks on the event of indirectly
+registering/unregistering from that block. Doing so mimics the behaviour
+of both ingress and clsact qdiscs on initialise and destroy.
+
+This now ensures that drivers such as NFP receive the correct binder type
+for the indirect block registration.
+
+John Hurley (2):
+  net: core: rename indirect block ingress cb function
+  net: sched: allow indirect blocks to bind to clsact in TC
+
+ include/net/flow_offload.h        | 15 ++++++-----
+ net/core/flow_offload.c           | 45 +++++++++++++++++----------------
+ net/netfilter/nf_tables_offload.c |  6 ++---
+ net/sched/cls_api.c               | 52 +++++++++++++++++++++++++--------------
+ 4 files changed, 65 insertions(+), 53 deletions(-)
+
+-- 
+2.7.4
+
