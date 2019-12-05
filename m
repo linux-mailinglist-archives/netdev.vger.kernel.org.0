@@ -2,168 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 733E811489E
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 22:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EC91148B1
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 22:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729598AbfLEV0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 16:26:55 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:37163 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbfLEV0z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 16:26:55 -0500
-Received: by mail-yw1-f65.google.com with SMTP id 4so1835071ywx.4
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 13:26:54 -0800 (PST)
+        id S1730206AbfLEVal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 16:30:41 -0500
+Received: from mail-lf1-f52.google.com ([209.85.167.52]:40003 "EHLO
+        mail-lf1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727236AbfLEVal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 16:30:41 -0500
+Received: by mail-lf1-f52.google.com with SMTP id y5so3620180lfy.7
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 13:30:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=gT1ClJrzlicYHNnv+GE3TcH0cs8/Jr/m+AGF+oufN9g=;
-        b=SUz/4ExNWxtOEv7we2Vo0pS6UW+Sb9Enu/Wvb3u5aLbJUm/zSQMNcjZK3Tb1mt3BMU
-         HkCXtN9ZIcSVfyvPe/61CyGcsurAKs92zacPWZ/BOxlM2tz2zn6/6qToOCtUeGbzV7Ex
-         MCi6ebiMfr/UWN++SqkSKYDPeiNkE0ww0hJsLO4dBdxrqqkjpEoa2Sj3T8CcsJgETYp4
-         oR5moE+naiQ+KaFj96+WoDDZWv/a9aXcmGuBy5MtsZYKWA0+N+xW1Z7C8Zz0aUdOzXAq
-         r2MiFcJkaax1UFkybfI6qhVGKtnurdH+SSqwf9Z16QQL9R2prxUCfh9aPd9z4iOnobt2
-         fjIg==
+         :cc;
+        bh=1sSGB3BokYfq4U4Y44YwKEXD8ScM4ZmN9h2uBGm5v6k=;
+        b=sZM7CadPieZxnFSOoePtK2HQ3mve39aAcrI70Qis9s8uam8hrLUkWukjh1AWAYfWPn
+         AcAtVRR8hrDHynsx6w4YNWc6yMtkxZdTIge6V+tkUfYrK2XXmUkrMVJIVlL9mOSWCk5y
+         fTS6MDT62Eg4u/Xtjld+ucMhH2dFa3uVyU/qkQiFpnEZ9B4uYhdJ54D+ivqfTQuJhLvd
+         DW69pwqrIBrlSz1Pwk9fNJ5GAhJfydldJScWGTjA3/ZXTTbWGjLxW1hcInq1jpPIJfJJ
+         TCW00LOuonh4rt/iZYC5GUA1jOtZYRZ5HUPIZDoOJjRKDS3J0K3RvSzVm2UNxp1S0Dr3
+         gHiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gT1ClJrzlicYHNnv+GE3TcH0cs8/Jr/m+AGF+oufN9g=;
-        b=rCJzGRpDDtjGB5oilnUFi12f6KB0KoO4aJq9e7HesojjYMWCBOVZPGQXZn75MJw+K/
-         B35PIr9hmxpX8u3+1yTbMJlCnKw5swzAR1YY1eZ/TjZmE2cPV+hpibwWC+HGnYJt6Woq
-         XppeZvhXx21TunNdq7stQgGI/G6a3VoD3a0TEB+4H1IUzJrOpNUrMTro7Tin3jD5kaSQ
-         IVTIKXyFYmkOoGRQo7dXI2bS4ahbZYzkIJvxaAcRHbWQESzOt+BIF0bqTYqgnsOS7vM5
-         jAgX5qtZOg9OG5t7uIq5GrsAWQ4rN7d2oQ+0YREdQ57UOtQXs4K8YFBABys3DCsZhRP1
-         f8RQ==
-X-Gm-Message-State: APjAAAVRGVr3ma0Wgp4Uc74kkQur19wipNuyjbnj1kDlRMToVdCBeMxH
-        tkvJceqDZDAJ49ZxOHGXfjavxg5Y
-X-Google-Smtp-Source: APXvYqy34jdb0vad1d1VMtekeRcSc3qxGLRkfCm0ZZkNzQplNGLD9z7jTn0O/G2WzXVdI1G9XQfJLw==
-X-Received: by 2002:a0d:e3c5:: with SMTP id m188mr7014736ywe.184.1575581212650;
-        Thu, 05 Dec 2019 13:26:52 -0800 (PST)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id n18sm5256090ywd.50.2019.12.05.13.26.51
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 13:26:51 -0800 (PST)
-Received: by mail-yw1-f49.google.com with SMTP id l14so1846350ywh.1
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 13:26:51 -0800 (PST)
-X-Received: by 2002:a0d:e886:: with SMTP id r128mr7567719ywe.357.1575581210643;
- Thu, 05 Dec 2019 13:26:50 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=1sSGB3BokYfq4U4Y44YwKEXD8ScM4ZmN9h2uBGm5v6k=;
+        b=Ahen7Kwz1C6fAItTCQ9FxMwk5pLMiNDwm4DJWoJ3IRQklskEts2k6ifTvMRLwCCOhM
+         h5YgWo+gWrlVXguPZQib1XM1OjlYE4C9+8Ys7pBoDSEcBSjlZp97MJAr7WKlrw0jxUyB
+         +tb7j+RbgasunEHyEmGxe+45IIQKZXmk7ZBgS5wwK64y/yKe6exYCOcegzeLfKqGYz4/
+         zqO9VQCdP7obKvwNZoJbX7loh0Ak6egW7HlXAfbGTEByEgOqeGSSS/7cTJaeQtRe8c5r
+         msbNhxKRjiWuC8lJkGor6ZOqLwhDpFv8ytfxbJj9HhcAZMboPDgze/h57CbU4MHm2sd1
+         2A+Q==
+X-Gm-Message-State: APjAAAWCX7apRdxZAWBc02F2M0pZ8JdvHFhOPA+JjlyIIxZZolbZSqSv
+        vmHKytEaiFU4nH5bCDwa+ES3PJbvDBVYf0Yc378OGg==
+X-Google-Smtp-Source: APXvYqz75N9cSfNovMnb5Gjt4c3CIhuirUXTTbN6MaBRdlS7q12D7dyidxhIvLeWYKfttuSrZdjK69Ny8CdjMekvPWk=
+X-Received: by 2002:ac2:4c82:: with SMTP id d2mr6550952lfl.62.1575581439582;
+ Thu, 05 Dec 2019 13:30:39 -0800 (PST)
 MIME-Version: 1.0
-References: <20191204.165528.1483577978366613524.davem@davemloft.net>
- <20191205064118.8299-1-vvidic@valentin-vidic.from.hr> <20191205113411.5e672807@cakuba.netronome.com>
- <CA+FuTSe=GSP41GG+QYKEmQ0eDUEoFeQ+oGAsgGJEZTe=hJq4Tw@mail.gmail.com> <20191205204343.GA20116@valentin-vidic.from.hr>
-In-Reply-To: <20191205204343.GA20116@valentin-vidic.from.hr>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 5 Dec 2019 16:26:14 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeu-ouuT37d9r40o62=_PcGBUmE_HaOAr9EsNPzpTw=ag@mail.gmail.com>
-Message-ID: <CA+FuTSeu-ouuT37d9r40o62=_PcGBUmE_HaOAr9EsNPzpTw=ag@mail.gmail.com>
-Subject: Re: [PATCH v3] net/tls: Fix return values to avoid ENOTSUPP
-To:     =?UTF-8?Q?Valentin_Vidi=C4=87?= <vvidic@valentin-vidic.from.hr>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
+In-Reply-To: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
+From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Date:   Thu, 5 Dec 2019 13:30:28 -0800
+Message-ID: <CALzJLG-z18R+uPi2W3Wam7GKkxzayJDfyDyTmO+_W7Z1V0CaQg@mail.gmail.com>
+Subject: Re: mlx5 support tc accept action
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Mark Bloch <markb@mellanox.com>,
+        Ariel Levkovich <lariel@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 5, 2019 at 3:44 PM Valentin Vidi=C4=87
-<vvidic@valentin-vidic.from.hr> wrote:
+On Wed, Dec 4, 2019 at 10:41 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 >
-> On Thu, Dec 05, 2019 at 03:06:55PM -0500, Willem de Bruijn wrote:
-> > On Thu, Dec 5, 2019 at 2:34 PM Jakub Kicinski
-> > <jakub.kicinski@netronome.com> wrote:
-> > >
-> > > On Thu,  5 Dec 2019 07:41:18 +0100, Valentin Vidic wrote:
-> > > > ENOTSUPP is not available in userspace, for example:
-> > > >
-> > > >   setsockopt failed, 524, Unknown error 524
-> > > >
-> > > > Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
-> > >
-> > > > diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> > > > index 0683788bbef0..cd91ad812291 100644
-> > > > --- a/net/tls/tls_device.c
-> > > > +++ b/net/tls/tls_device.c
-> > > > @@ -429,7 +429,7 @@ static int tls_push_data(struct sock *sk,
-> > > >
-> > > >       if (flags &
-> > > >           ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL | MSG_SENDPAGE_N=
-OTLAST))
-> > > > -             return -ENOTSUPP;
-> > > > +             return -EOPNOTSUPP;
-> > > >
-> > > >       if (unlikely(sk->sk_err))
-> > > >               return -sk->sk_err;
-> > > > @@ -571,7 +571,7 @@ int tls_device_sendpage(struct sock *sk, struct=
- page *page,
-> > > >       lock_sock(sk);
-> > > >
-> > > >       if (flags & MSG_OOB) {
-> > > > -             rc =3D -ENOTSUPP;
-> > > > +             rc =3D -EOPNOTSUPP;
-> > >
-> > > Perhaps the flag checks should return EINVAL? Willem any opinions?
-> >
-> > No strong opinion. Judging from do_tcp_sendpages MSG_OOB is a
-> > supported flag in general for sendpage, so signaling that the TLS
-> > variant cannot support that otherwise valid request sounds fine to me.
+> Hi Roi, Saeed
+> In one cause, we want the "accept" action: the IP of VF will be
+> "accept", and others
+> packets will be done with other actions(e.g. hairpin rule to other VF).
 >
-> I based these on the description from the sendmsg manpage, but you decide=
-:
+> For example:
 >
-> EOPNOTSUPP
->     Some bit in the flags argument is inappropriate for the socket type.
-
-Interesting. That is a narrower interpretation than asm-generic/errno.h
-
-  #define EOPNOTSUPP      95      /* Operation not supported on
-transport endpoint */
-
-which is also the string that strerror() generates.
-
+> PF0=enp130s0f0
+> VF0_REP=enp130s0f0_0
+> VF0=p4p1_0
+> VF1=p4p2_0 # belong to PF1
+> VF0_IP=3.3.3.200
 >
-> > > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> > > > index bdca31ffe6da..5830b8e02a36 100644
-> > > > --- a/net/tls/tls_main.c
-> > > > +++ b/net/tls/tls_main.c
-> > > > @@ -496,7 +496,7 @@ static int do_tls_setsockopt_conf(struct sock *=
-sk, char __user *optval,
-> > > >       /* check version */
-> > > >       if (crypto_info->version !=3D TLS_1_2_VERSION &&
-> > > >           crypto_info->version !=3D TLS_1_3_VERSION) {
-> > > > -             rc =3D -ENOTSUPP;
-> > > > +             rc =3D -EINVAL;
-> > >
-> > > This one I think Willem asked to be EOPNOTSUPP OTOH.
-> >
-> > Indeed (assuming no one disagrees). Based on the same rationale: the
-> > request may be valid, it just cannot be accommodated (yet).
+> ethtool -K $PF0 hw-tc-offload on
+> ethtool -K $VF0 hw-tc-offload on
+> tc qdisc add dev $PF0 ingress
+> tc qdisc add dev $VF0 ingress
+> tc filter add dev $PF0 protocol all parent ffff: prio 10 handle 1
+> flower skip_sw action mirred egress redirect dev $VF0_REP
+> tc filter add dev $VF0 protocol ip parent ffff: prio 1 handle 3 flower
+> skip_sw dst_ip $VF0_IP action pass
+> tc filter add dev $VF0 protocol all parent ffff: prio 10 handle 2
+> flower skip_sw action mirred egress redirect dev $VF1
 >
-> In this case other checks in the same function like crypto_info->cipher_t=
-ype
-> return EINVAL, so I used the same here.
+> When I change the driver, the rule which action "action pass", can be
+> offloaded, but it didn't work.
+> +               case FLOW_ACTION_ACCEPT:
+> +                   action |= MLX5_FLOW_CONTEXT_ACTION_ALLOW;
+> +                   break;
+>
+>
+> How can we support it, this function is import for us.
 
-That makes sense.
+Hi Tonghao,
+where did you add the above code to ?
+parse_tc_fdb_actions() ? or parse_tc_nic_actions() ?
+in your use case you need to add it to parse_tc_nic_actions(),
 
-I think there is a fundamental difference between, say, passing an
-argument of incorrect length (optlen < sizeof(..)) and asking for a
-possibly unsupported cipher mode. But consistency trumps that.
+currently in mlx5 we don't support ALLOW/pass actions.
+it might be a little more complicated than what you did in order to
+support this,
+as a work around you can use action: FLOW_ACTION_MARK in the tc
+command line rule without any change in the driver.
+or change your code to do MLX5_FLOW_CONTEXT_ACTION_FWD_DEST instead of
+MLX5_FLOW_CONTEXT_ACTION_ALLOW
 
-I don't mean to drag this out by bike-shedding.
+Adding Mark and Ariel, they might have better feedback than mine
 
-Happy to defer to maintainers on whether the errno on published code
-can and should be changed, which is the more fundamental issue than
-the exact errno.
-
-FWIW, I also did not see existing openssl and gnutls callers test the
-specific errno. The calls just fail on any setsockopt return value -1.
+Thanks,
+Saeed/
