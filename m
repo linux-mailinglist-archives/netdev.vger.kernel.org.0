@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7942F1149A1
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 00:03:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425F21149A5
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 00:05:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726097AbfLEXDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 18:03:49 -0500
-Received: from mta-p6.oit.umn.edu ([134.84.196.206]:41532 "EHLO
+        id S1726233AbfLEXE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 18:04:58 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:43870 "EHLO
         mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725927AbfLEXDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 18:03:49 -0500
+        with ESMTP id S1725926AbfLEXE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 18:04:58 -0500
 Received: from localhost (unknown [127.0.0.1])
-        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47TWVX4dRHz9vBr7
-        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 23:03:48 +0000 (UTC)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47TWWs13wWz9vBt9
+        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 23:04:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at umn.edu
 Received: from mta-p6.oit.umn.edu ([127.0.0.1])
         by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9aaAV6OUjBOL for <netdev@vger.kernel.org>;
-        Thu,  5 Dec 2019 17:03:48 -0600 (CST)
-Received: from mail-yw1-f69.google.com (mail-yw1-f69.google.com [209.85.161.69])
+        with ESMTP id Sy2jpBia1WE0 for <netdev@vger.kernel.org>;
+        Thu,  5 Dec 2019 17:04:57 -0600 (CST)
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com [209.85.219.198])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47TWVX3fYXz9vDw5
-        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 17:03:48 -0600 (CST)
-Received: by mail-yw1-f69.google.com with SMTP id 16so3800353ywz.5
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 15:03:48 -0800 (PST)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47TWWr6y4yz9vJyQ
+        for <netdev@vger.kernel.org>; Thu,  5 Dec 2019 17:04:56 -0600 (CST)
+Received: by mail-yb1-f198.google.com with SMTP id d191so1076939ybc.17
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 15:04:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=umn.edu; s=google;
         h=from:to:cc:subject:date:message-id;
         bh=MO10ke4bfA3Py2gapxPNJKqGZHjnWV9jw2bft4Kl1Hw=;
-        b=o8kq/FV8cXLWxcKrmWwqxkUDv66DAT2G+5F8dgPlPsK2l/4v0bLFuw/zZ4WkoJUOra
-         j7d1rGmVPr1XObXlyoBCxoAbInrvrXSEM+7T9Q6Q4wgxzS7JLdnQIFeulqvLZr2ONMBT
-         TQ2P7rIP4szjGmrDnCCMZetziNAYCEtGnPREfJkkooWoZHwtYH+3xSHusomUuPG9t9b0
-         WbcwXT+JPAdQ6v9lbTR4jO0+1jSajHx1OrXCBdBxb89fUIU4Ur+cp8tZj2C0IaJCyjof
-         T4l7YuRus+ot8Yy0JmZ2SL6gXNSwFPkD4g02BZEI4gWsjd1C4KNwlHVfdqQ5q4n35Xr2
-         RuxA==
+        b=B7gtMaEsF7Gm1FvHzVvdDonAn4mJJufpl+R6jt6JwtloKhiJ2BTcl4HXrVKOWhaX2J
+         RzhOI9pXAhvHTojPFUzsuiN38kaBDjGpVWv0cM91qOpGlpDBXSIQIQv5VM2gsWDwplyH
+         5V9wlLATp57c4WRZa4Etk8ylhUTa4US0bNXyCTdGaXNB65jnlXyhMJz5EryAVeLUWPZk
+         h35YybOW4aeq+/fTPr5nh9es/lP2e8uxTEW+Fs4VSlKkVw7Em6tWWMoZeoc1NhAtXEwk
+         Lx0OUm3R3zm7rCYIUWXpch7UOaBj6MWZdomcE59iPm8mi4rQYhzHsnQ8/nUcnrkiM/qo
+         8Ccw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
         bh=MO10ke4bfA3Py2gapxPNJKqGZHjnWV9jw2bft4Kl1Hw=;
-        b=EyCwronPmif5GAV3PzjzRyY3ZxwrfhhlrES8yfoE/xu24GAr2Ok9UWrMJk8Urqiamp
-         7VB8nKkQK6c/t4ChVjSY0uw7r9OGNGtw1t3CRBD6iT7ZYtGqi+PYRGEKoCUVpFpE6Irp
-         qzx/lWBNNIzD+Lm02x3bjWQYY6ZVOiNZnh15tIjca21QkGu0DitTlzRxTTIj9XUOw8e3
-         wJoivT9Kj1vIxHTWQqq6/ivyVkP0ejxDsV93bZMwRq77jqj4yfVPN62C+CWeTiaIEb1r
-         3gXnDd2P0Cmi+Lz10wDtQSbzmN61yNn2QyOATpwb49VKhNjWhkcPQVluhvuCseTwfv1C
-         /tWQ==
-X-Gm-Message-State: APjAAAW/d71QdGnD6RhFGqXOejqEwZF4ibKQAzwk/ESEbGe6Fy/qdzof
-        JoVE8Bw0PWUfxshTbivZhXKOrTzg/XhTbAtFar6chSqy5ce6aCRvm0XthvnRMZE85y53oNoEfmv
-        KaZ+XrRS8YjXJwBkUOlcY
-X-Received: by 2002:a25:d14f:: with SMTP id i76mr7709787ybg.247.1575587027810;
-        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwkEHr8jIGy9mRSBGOgEGBohtY9oZQx2HZqcHGHp7PRlziWpgnmiW+FCdEbCYBPqiawfQdx7A==
-X-Received: by 2002:a25:d14f:: with SMTP id i76mr7709757ybg.247.1575587027551;
-        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
+        b=T641GJJEmRAx4x5CM7KoRoR5BvHgMn8WHYC/Yfc9OYnjzmOTFPGHeV9Sdd63IrsddW
+         x0KaszPpyoXvc4WUBLfs73KtJFVE4Kc03afC2CNqKyB9I1DSeBkHVngMQzr94WP42zaC
+         ElJlh1+jCKK3BsD17r6VIFi3Wh1ECZMQhKPuRA/Vt10+OHFy9UwU3teufUZ+sJpE+hrG
+         aKVZ+mm8hrAFkQPGkK/qmc8cypQfP5tsOm8soDTzO5+dQVd3MfRyRdOy2cV3BBjPMG+r
+         rn5IlLJdhTjKL7JHLEeF254kjgOZclwj0y5AfAsO4FMlhKmnobNSAwuauimoKduxpPyz
+         JdXQ==
+X-Gm-Message-State: APjAAAWejU5isGh2XH5Sn66wkSJJnsnOIj/J3EynGgwbaRD6b4Y0XiYb
+        07gAML43A65jPy4G73XDlX+AJUTpbDNlNcZxpYji9TmoHQ738xa4vt3HIRqprjVGdXWv75F/JAC
+        /8Z+NQ4M+XxxWt5YWFUSf
+X-Received: by 2002:a81:9243:: with SMTP id j64mr8238805ywg.513.1575587096448;
+        Thu, 05 Dec 2019 15:04:56 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwg4ZN3+3krbx0S3IP2LY3Snyl3L4I6iUCuEMzgHmgR9YsTyF09HdZ2EYtDKvwy4ASNs5xVfQ==
+X-Received: by 2002:a81:9243:: with SMTP id j64mr8238786ywg.513.1575587096210;
+        Thu, 05 Dec 2019 15:04:56 -0800 (PST)
 Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
-        by smtp.gmail.com with ESMTPSA id y17sm5373245ywd.23.2019.12.05.15.03.46
+        by smtp.gmail.com with ESMTPSA id u136sm5057802ywf.101.2019.12.05.15.04.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 15:03:47 -0800 (PST)
+        Thu, 05 Dec 2019 15:04:55 -0800 (PST)
 From:   Aditya Pakki <pakki001@umn.edu>
 To:     pakki001@umn.edu
-Cc:     klju@umn.edu, Michal Ostrowski <mostrows@earthlink.net>,
+Cc:     kjlu@umn.edu, Michal Ostrowski <mostrows@earthlink.net>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: [PATCH] pppoe: remove redundant BUG_ON() check in pppoe_pernet
-Date:   Thu,  5 Dec 2019 17:03:42 -0600
-Message-Id: <20191205230342.8548-1-pakki001@umn.edu>
+Date:   Thu,  5 Dec 2019 17:04:49 -0600
+Message-Id: <20191205230450.8614-1-pakki001@umn.edu>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
