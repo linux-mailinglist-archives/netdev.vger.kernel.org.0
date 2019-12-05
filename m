@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3473D114410
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 16:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9FF114417
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 16:51:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729885AbfLEPvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 10:51:18 -0500
-Received: from mail-eopbgr40074.outbound.protection.outlook.com ([40.107.4.74]:63710
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        id S1729910AbfLEPvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 10:51:24 -0500
+Received: from mail-eopbgr130085.outbound.protection.outlook.com ([40.107.13.85]:36854
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726257AbfLEPvR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 10:51:17 -0500
+        id S1729830AbfLEPvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 10:51:23 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NTTZLKH+4Ab3NHchLqR/ZjUhOCYfclJQz5oxuljRVAcqUTW+3jiZ3frqUt1dUQoKrmqqxLXFAle+fLIKymvQfud4n/GG3Axthx5kax9MZ7aRQu8YDjVv+0lnI1VjdKoGK9pvsevgNIBxca8A46NbgfeXDLHP+pemfhzvz1a5Ll7GKmeo+quJI6waNbdKPvlynAwPKR9mls0HicZ/e3dMf+uExkBwTjnQsayBTX65KHtK+CPduI2jIeXG8qCyeJDPcxgae9tkmee8yvHn9lLX0SShcyKMYsImrauFFeOmnPReOSyQ/J9G9JaFOYr/67F1mJoCH/CqiVUsUpAqrdFXtQ==
+ b=Kp4MESk5GOn1KfMT/a2bb2LLWGA+m9AJeleKH/HZoAtw8M0iDKKIW5muVYFIHW+za1ckC9r31ekh2RiSPsPMGiKEbKRegTxAuLA4uwzv6AmdmeWjDGPX293iuhDNp6xQVIe4W7ldfWhqHHZE9Cjy+VTLz7JDuR43RVS5frUMGHasWgSQDoJeIbbZ+qVFnjJWRko+KhaygrhxLLPBeHx7qpx83GfwDUzmOASZCIZiwcz9wTj5CwPdlcvrcOtsL0EVn8EQYgsbgoJPTEdtZhll9zJG/e+S6VMGG7OxbC8zWmvmKE298OOkLEnwNDTFBk37741NwrVedWgSOLTSXjXWVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iPwa8YClzj1sBR/jhGOwNKtEuYJvVUvidqysfE2SDXQ=;
- b=FElDCioXwMwom+YDJvu8nw8G+HkLhO4knQop8BrAdZhmalxkbEvIju1f9nPDniWCXpeLFZDhqAh8s0Wt5wUd6eZOYfP92jVCbd69aEHUtAJYWkLP8TGcwEygF9Yviss+xfIbXH4nR9WWCDI39Bt5Okv4k9IU2oGnt/aiKMf/jp7Y3UP8Q9Uz2/ur68jcjzZhMH6ErdNiFEnj7HeKJJnZR7F5eW8X94GA5kjQFjJqsrvn8CgSOua1JXDExIEnUjm7/XzLdQJ6wFQlp4J4SVRe+1/8Ze1T0TKeHJdSl/icTiM7WY179OUTUKGIV5u2HdBfev+ig071YEvMYiInMiyoNg==
+ bh=rRuwKOFMmYSodP+B1zZ0c4GlihNPibah6waj40tnEb0=;
+ b=A/cICxH5SRxMdW61RJYgMezRbN90HCEMT88yub2h6djsCzAOqHK4EXg8y5iN/nLqtvqMDmXJ3sMTtWkOEs9RmJ2JzV9fZ/PKabS3/sO8PPMFfZ3lXNsk7r/iDuOlCcXHVidmzhZ5PtQMi1BMjRQ4qQAhqYdbVWrcQVwCAJhtRmLwOtFeXXkFGYq7Bl7A5LPQfyHTjksxQIhAoODfLL7jNKtnmbTqPrFZlJmn8sM3WSknbV/BUmie5hXJrBK2H0wWt7Gan2pEgCMkI/ZRGKceipm/ErG1jZeCD7WtmLeiBRpqOe7+grq6JVQsxPXVrgtHHdFMNCmZB5LVlGrmJkWy3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iPwa8YClzj1sBR/jhGOwNKtEuYJvVUvidqysfE2SDXQ=;
- b=BzFuKsFqW4MeHjgf2dS1ma5aa2IVazhuBlAGkHtiuKWBTMGTLD2DgKvPKBsjaE7Vg90+Nohr7ZlkQPeZsy73LzimjgXIKlGU3DEb5+qHIBw162jshsHFJ4nfE16wL4z+tAqGdt+nniNABizeQaWPmjjKLyr6PpXU5s5AJM+C9sU=
+ bh=rRuwKOFMmYSodP+B1zZ0c4GlihNPibah6waj40tnEb0=;
+ b=QJyhFQl8TsatcmWEdrywazg62DTZnLv8TMNI0ladoUhjIXmrgsV/Hu77dgVe5udZfoUgy+ZGZ4qF9M/f3s2FJUNjDBqV1pIrDlwNzIcJkCjpnogUvBb8HtuB2q1CFYsVa11DiyzNyjDIvrz2LVXpmNjZx8pM3bLvVUFk8y0o9zU=
 Received: from AM0PR05MB5875.eurprd05.prod.outlook.com (20.178.119.159) by
- AM0PR05MB4851.eurprd05.prod.outlook.com (20.176.214.222) with Microsoft SMTP
+ AM0PR05MB5988.eurprd05.prod.outlook.com (20.178.117.78) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.22; Thu, 5 Dec 2019 15:51:12 +0000
+ 15.20.2495.18; Thu, 5 Dec 2019 15:51:14 +0000
 Received: from AM0PR05MB5875.eurprd05.prod.outlook.com
  ([fe80::dca5:7e63:8242:685e]) by AM0PR05MB5875.eurprd05.prod.outlook.com
  ([fe80::dca5:7e63:8242:685e%7]) with mapi id 15.20.2516.013; Thu, 5 Dec 2019
- 15:51:12 +0000
+ 15:51:14 +0000
 From:   Maxim Mikityanskiy <maximmi@mellanox.com>
 To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -51,11 +51,13 @@ CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: [PATCH bpf 1/4] xsk: Add rcu_read_lock around the XSK wakeup
-Thread-Topic: [PATCH bpf 1/4] xsk: Add rcu_read_lock around the XSK wakeup
-Thread-Index: AQHVq4PRxDWEP0FUaEaxvK9Arnl1rw==
-Date:   Thu, 5 Dec 2019 15:51:12 +0000
-Message-ID: <20191205155028.28854-2-maximmi@mellanox.com>
+Subject: [PATCH bpf 2/4] net/mlx5e: Fix concurrency issues between config flow
+ and XSK
+Thread-Topic: [PATCH bpf 2/4] net/mlx5e: Fix concurrency issues between config
+ flow and XSK
+Thread-Index: AQHVq4PS6Uynt1LTbkm/KSdAo9x1xA==
+Date:   Thu, 5 Dec 2019 15:51:13 +0000
+Message-ID: <20191205155028.28854-3-maximmi@mellanox.com>
 References: <20191205155028.28854-1-maximmi@mellanox.com>
 In-Reply-To: <20191205155028.28854-1-maximmi@mellanox.com>
 Accept-Language: en-US
@@ -72,69 +74,209 @@ x-mailer: git-send-email 2.20.1
 x-originating-ip: [94.188.199.18]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 33c4aa0e-6b6c-458d-365f-08d7799af41b
-x-ms-traffictypediagnostic: AM0PR05MB4851:|AM0PR05MB4851:
+x-ms-office365-filtering-correlation-id: 446d4fbf-445e-4bb1-a5f4-08d7799af4f8
+x-ms-traffictypediagnostic: AM0PR05MB5988:|AM0PR05MB5988:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4851FE6E415FCCB333C490DAD15C0@AM0PR05MB4851.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-microsoft-antispam-prvs: <AM0PR05MB598816DED076585640780F0ED15C0@AM0PR05MB5988.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:538;
 x-forefront-prvs: 02426D11FE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(136003)(346002)(366004)(189003)(199004)(6506007)(50226002)(6512007)(316002)(2906002)(81156014)(8936002)(102836004)(99286004)(8676002)(4326008)(76176011)(86362001)(305945005)(25786009)(64756008)(11346002)(2616005)(186003)(7416002)(54906003)(71190400001)(36756003)(478600001)(52116002)(14454004)(81166006)(5660300002)(14444005)(66476007)(71200400001)(66946007)(6486002)(66556008)(107886003)(1076003)(110136005)(66446008)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4851;H:AM0PR05MB5875.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(366004)(136003)(39860400002)(396003)(199004)(189003)(71200400001)(71190400001)(52116002)(305945005)(7416002)(186003)(66476007)(54906003)(99286004)(110136005)(14444005)(26005)(316002)(4326008)(6512007)(8676002)(6506007)(1076003)(8936002)(6486002)(102836004)(76176011)(107886003)(50226002)(14454004)(81166006)(2616005)(36756003)(11346002)(25786009)(81156014)(5660300002)(66946007)(66446008)(64756008)(66556008)(2906002)(478600001)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5988;H:AM0PR05MB5875.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GOI8bGnHmHESvwR8y7ITBz/0ob+8vygSKBg/XxIA0Spniy0UcxCfJ6D1hNxeUhNgO/HzzaKeoBgwfzhLa4ZdiVnPlua+L4v5ct2yvfqaWCMr0skShEq9keg9O8thF2dXMs7+bTJ0sAgJ6eSO16GY3Xa6rTy5kKO39lN/Nlsw72lAkzG2ImhwcE6v8V+bBXEwcqUE1ZpYpxjOeuxohTY5bPSaWt/nvaWPIPfF3prRDd8PKbg2+bO7Y/rByonkku5VhLXcAjlvcs41p0HFJ5+ciaGZoK7UgX9fOGlUaaCSIqu20dMtFyZVKV1sdH/u0Sdo2dIQjUFTFu+dN0mPiivfjUVgVg0a7gR6sFVhlzb8+2KKPcjf8hhw4Wscl7UsibnVso6Vf2iNW3c0y5IJYBtEwkh15vOXbXl4W8KZpftafJ2gSmVJybQ7Cfl406C7mAhu
+x-microsoft-antispam-message-info: goAXb1whxJ1vdgdwYGt2dKefcIi0A4k+qb9QOinbQYN5TuZOlVkmNcLnjMUlfNOkF2IVHf1dPFEePPNe5xr+1LCJ8hzepe5pr1Rx0UhBuGCZ8PbSfgXNbTMEncBQAHV3i6q3HvDVBkYFXfTd4vj6Z+uHId013IjtiqeFEUveYhknOizuRFiYXkAPnMHV9mWfymsiKdiXhpJd27T5oIK0EdQA3mG/l3f+IPMOrcniVsA4h+Nxhq/fBN2ec504GfRYCKXPVFPzg4/+9MwfmF6dsqSWbxogENjSWpahUB2yV5aWK0r2gTUg+dZMIfYB86mStY+fHKCxLbgMRvxljiRZczmnxP5tPLBMIrVrixqs3tvVj6fNcQjWU6Npul2e2wrQRZMXzp3jkDjbyf0wkybJCQbyQ/rdfVtRuyBGnt43TODFqMD1GVd3dffmlInNc+Js
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33c4aa0e-6b6c-458d-365f-08d7799af41b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2019 15:51:12.5492
+X-MS-Exchange-CrossTenant-Network-Message-Id: 446d4fbf-445e-4bb1-a5f4-08d7799af4f8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2019 15:51:13.9784
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hyS4cLf6ah4qdp+QPCXZA+LT2A7s+rVle+AKojoR/LPza3ou74kBzW4cRhluFA7u7ZcgB5PjwrEgDz5eW2IHgw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4851
+X-MS-Exchange-CrossTenant-userprincipalname: ksd4x5EI+7pvKm3HdNcriNOSKQa5wmQF9LDD+gnniQZXfNWmNz62udBOl8zJGYUu1Bje9tTwDVq18N09sBvLxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5988
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The XSK wakeup callback in drivers makes some sanity checks before
-triggering NAPI. However, some configuration changes may occur during
-this function that affect the result of those checks. For example, the
-interface can go down, and all the resources will be destroyed after the
-checks in the wakeup function, but before it attempts to use these
-resources. Wrap this callback in rcu_read_lock to allow driver to
-synchronize_rcu before actually destroying the resources.
+After disabling resources necessary for XSK (the XDP program, channels,
+XSK queues), use synchronize_rcu to wait until the XSK wakeup function
+finishes, before freeing the resources.
+
+Suspend XSK wakeups during switching channels. If the XDP program is
+being removed, synchronize_rcu before closing the old channels to allow
+XSK wakeup to complete.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 ---
- net/xdp/xsk.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  | 22 ++++++++-----------
+ .../mellanox/mlx5/core/en/xsk/setup.c         |  1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 19 +---------------
+ 5 files changed, 13 insertions(+), 33 deletions(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 956793893c9d..d2261c90f03a 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -337,9 +337,13 @@ EXPORT_SYMBOL(xsk_umem_consume_tx);
- static int xsk_zc_xmit(struct xdp_sock *xs)
- {
- 	struct net_device *dev =3D xs->dev;
-+	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/eth=
+ernet/mellanox/mlx5/core/en.h
+index f1a7bc46f1c0..61084c3744ba 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -760,7 +760,7 @@ enum {
+ 	MLX5E_STATE_OPENED,
+ 	MLX5E_STATE_DESTROYING,
+ 	MLX5E_STATE_XDP_TX_ENABLED,
+-	MLX5E_STATE_XDP_OPEN,
++	MLX5E_STATE_XDP_ACTIVE,
+ };
 =20
--	return dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id,
--					       XDP_WAKEUP_TX);
-+	rcu_read_lock();
-+	err =3D dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, XDP_WAKEUP_TX)=
-;
-+	rcu_read_unlock();
+ struct mlx5e_rqt {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net=
+/ethernet/mellanox/mlx5/core/en/xdp.h
+index 36ac1e3816b9..d7587f40ecae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+@@ -75,12 +75,18 @@ int mlx5e_xdp_xmit(struct net_device *dev, int n, struc=
+t xdp_frame **frames,
+ static inline void mlx5e_xdp_tx_enable(struct mlx5e_priv *priv)
+ {
+ 	set_bit(MLX5E_STATE_XDP_TX_ENABLED, &priv->state);
 +
-+	return err;
++	if (priv->channels.params.xdp_prog)
++		set_bit(MLX5E_STATE_XDP_ACTIVE, &priv->state);
  }
 =20
- static void xsk_destruct_skb(struct sk_buff *skb)
+ static inline void mlx5e_xdp_tx_disable(struct mlx5e_priv *priv)
+ {
++	if (priv->channels.params.xdp_prog)
++		clear_bit(MLX5E_STATE_XDP_ACTIVE, &priv->state);
++
+ 	clear_bit(MLX5E_STATE_XDP_TX_ENABLED, &priv->state);
+-	/* let other device's napi(s) see our new state */
++	/* Let other device's napi(s) and XSK wakeups see our new state. */
+ 	synchronize_rcu();
+ }
+=20
+@@ -89,19 +95,9 @@ static inline bool mlx5e_xdp_tx_is_enabled(struct mlx5e_=
+priv *priv)
+ 	return test_bit(MLX5E_STATE_XDP_TX_ENABLED, &priv->state);
+ }
+=20
+-static inline void mlx5e_xdp_set_open(struct mlx5e_priv *priv)
+-{
+-	set_bit(MLX5E_STATE_XDP_OPEN, &priv->state);
+-}
+-
+-static inline void mlx5e_xdp_set_closed(struct mlx5e_priv *priv)
+-{
+-	clear_bit(MLX5E_STATE_XDP_OPEN, &priv->state);
+-}
+-
+-static inline bool mlx5e_xdp_is_open(struct mlx5e_priv *priv)
++static inline bool mlx5e_xdp_is_active(struct mlx5e_priv *priv)
+ {
+-	return test_bit(MLX5E_STATE_XDP_OPEN, &priv->state);
++	return test_bit(MLX5E_STATE_XDP_ACTIVE, &priv->state);
+ }
+=20
+ static inline void mlx5e_xmit_xdp_doorbell(struct mlx5e_xdpsq *sq)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drive=
+rs/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+index 631af8dee517..c28cbae42331 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
+@@ -144,6 +144,7 @@ void mlx5e_close_xsk(struct mlx5e_channel *c)
+ {
+ 	clear_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
+ 	napi_synchronize(&c->napi);
++	synchronize_rcu(); /* Sync with the XSK wakeup. */
+=20
+ 	mlx5e_close_rq(&c->xskrq);
+ 	mlx5e_close_cq(&c->xskrq.cq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/=
+net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
+index 87827477d38c..fe2d596cb361 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
+@@ -14,7 +14,7 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32=
+ flags)
+ 	struct mlx5e_channel *c;
+ 	u16 ix;
+=20
+-	if (unlikely(!mlx5e_xdp_is_open(priv)))
++	if (unlikely(!mlx5e_xdp_is_active(priv)))
+ 		return -ENETDOWN;
+=20
+ 	if (unlikely(!mlx5e_qid_get_ch_if_in_group(params, qid, MLX5E_RQ_GROUP_XS=
+K, &ix)))
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en_main.c
+index 09ed7f5f688b..fe1a42fa214b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3006,12 +3006,9 @@ void mlx5e_timestamp_init(struct mlx5e_priv *priv)
+ int mlx5e_open_locked(struct net_device *netdev)
+ {
+ 	struct mlx5e_priv *priv =3D netdev_priv(netdev);
+-	bool is_xdp =3D priv->channels.params.xdp_prog;
+ 	int err;
+=20
+ 	set_bit(MLX5E_STATE_OPENED, &priv->state);
+-	if (is_xdp)
+-		mlx5e_xdp_set_open(priv);
+=20
+ 	err =3D mlx5e_open_channels(priv, &priv->channels);
+ 	if (err)
+@@ -3026,8 +3023,6 @@ int mlx5e_open_locked(struct net_device *netdev)
+ 	return 0;
+=20
+ err_clear_state_opened_flag:
+-	if (is_xdp)
+-		mlx5e_xdp_set_closed(priv);
+ 	clear_bit(MLX5E_STATE_OPENED, &priv->state);
+ 	return err;
+ }
+@@ -3059,8 +3054,6 @@ int mlx5e_close_locked(struct net_device *netdev)
+ 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
+ 		return 0;
+=20
+-	if (priv->channels.params.xdp_prog)
+-		mlx5e_xdp_set_closed(priv);
+ 	clear_bit(MLX5E_STATE_OPENED, &priv->state);
+=20
+ 	netif_carrier_off(priv->netdev);
+@@ -4377,16 +4370,6 @@ static int mlx5e_xdp_allowed(struct mlx5e_priv *priv=
+, struct bpf_prog *prog)
+ 	return 0;
+ }
+=20
+-static int mlx5e_xdp_update_state(struct mlx5e_priv *priv)
+-{
+-	if (priv->channels.params.xdp_prog)
+-		mlx5e_xdp_set_open(priv);
+-	else
+-		mlx5e_xdp_set_closed(priv);
+-
+-	return 0;
+-}
+-
+ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
+ {
+ 	struct mlx5e_priv *priv =3D netdev_priv(netdev);
+@@ -4421,7 +4404,7 @@ static int mlx5e_xdp_set(struct net_device *netdev, s=
+truct bpf_prog *prog)
+ 		mlx5e_set_rq_type(priv->mdev, &new_channels.params);
+ 		old_prog =3D priv->channels.params.xdp_prog;
+=20
+-		err =3D mlx5e_safe_switch_channels(priv, &new_channels, mlx5e_xdp_update=
+_state);
++		err =3D mlx5e_safe_switch_channels(priv, &new_channels, NULL);
+ 		if (err)
+ 			goto unlock;
+ 	} else {
 --=20
 2.20.1
 
