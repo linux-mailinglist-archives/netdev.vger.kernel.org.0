@@ -2,123 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7604811465A
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B48E114666
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 18:59:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730243AbfLER4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 12:56:19 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:40236 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729711AbfLER4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 12:56:19 -0500
-Received: by mail-lj1-f195.google.com with SMTP id s22so4599571ljs.7
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 09:56:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ragnatech-se.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=c4t/2lH9ADnhGOla0nH+1fkWqSg9AnmdrIjfqIOk9Mk=;
-        b=CyujlaIgveuIQDkTmHRARroODnsP0l8ebNnlLr/WwEPrOwxoaZlQ5YdC3DgODinCQJ
-         1C8ddc4GaR6+7eqhAuEXg31uUCj25Cxi0wVoB+sGU9GWG6wDSgSPbUZI+ByIP4ah6M08
-         UZhP+FgJwszIcvqzSztw0pERIUaFw5kVqyK1SxUgitraUbWqETN9gfFeO4R7pBmdfvBK
-         Gjl0aBteS2rtODUFNnWnYJFZ/2h7lCzFTOn+6Gownz6WOFkDJU9zI9P2bwuYyGRjSXAs
-         VJJNHdAVLJ2tt/NlY8AYKOJXaW9cQU/S0+4N/3eDBgO3XytmNMZ1JhAufPh5Mj88hiH5
-         lZEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=c4t/2lH9ADnhGOla0nH+1fkWqSg9AnmdrIjfqIOk9Mk=;
-        b=n5MxZEPcY9qpV/HuyinOsz5FNPwOaOaf9SBxGi6vDaWe65a9xiM7uzwyGDDYtLjL+7
-         3v4NNaFY1E8elJO/bceWcoUm5zxjS+vDqKagId857AjoqLb6n/LRk1I6gVel/GVd/Zmr
-         IM6lHVOA0FGLd/rromw726T9Eijyy7egtcyyaTm4ccTK1nFEsOaN1kVdsPkPUFkpJvXp
-         E30EEF0Szw0XCBCW/r7DuuCZKKkmxBvQlRFQpCfqAYqlPOtfNw59mt6UezrmJn92tfeZ
-         W62bBfiiGxsfSYqDjcDJq8xFZqAMt3yoIvb83MlA/jY/rHwGtamgaujIraiFFQQamiXX
-         oWgA==
-X-Gm-Message-State: APjAAAW/mXpp1guttbFd5EmqUq/5G00W+qcucuPbzDOUZn/N2PmwWJb/
-        TGvGVzpYLqYgztcLvN8fzrflYg==
-X-Google-Smtp-Source: APXvYqztueSe84EvxOgy/5oWqGBVCnt1FjjfsdvaYI9RZmrsOXFgNBejQD6MS3BEIRTsJ7T1F5v8wg==
-X-Received: by 2002:a05:651c:204f:: with SMTP id t15mr6593009ljo.240.1575568576925;
-        Thu, 05 Dec 2019 09:56:16 -0800 (PST)
-Received: from localhost (h-93-159.A463.priv.bahnhof.se. [46.59.93.159])
-        by smtp.gmail.com with ESMTPSA id z13sm5332330ljh.21.2019.12.05.09.56.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 09:56:16 -0800 (PST)
-Date:   Thu, 5 Dec 2019 18:56:15 +0100
-From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: ravb: Document r8a77961 support
-Message-ID: <20191205175615.GG28879@bigcity.dyn.berto.se>
-References: <20191205134504.6533-1-geert+renesas@glider.be>
+        id S1730258AbfLER7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 12:59:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50698 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730220AbfLER7R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 12:59:17 -0500
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D779224652;
+        Thu,  5 Dec 2019 17:59:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575568757;
+        bh=qVMCWZ7EusUgM1R6oC6oHHiHcIw/i2qTfp8xvH8m0UA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xMyAnC/+gC29B7/vl9p4PepbUckp0NEWdUSvAyXvcNFi4tCl2s+/HIv+XLOu5eCJF
+         s+nXxrmxdiqQMyi9XgAhcSUvg90KDM1NBH9tv299ogPI1PeuYEgOev3vX9Zhp3Lafk
+         FAPAiISPTJ2GrjL4vfwPHOAaXxkbrG0T0y92GKzU=
+Received: by mail-qt1-f169.google.com with SMTP id q8so4349265qtr.10;
+        Thu, 05 Dec 2019 09:59:16 -0800 (PST)
+X-Gm-Message-State: APjAAAUuBc/SzrB73/yZNIKH1e05RlOa7UZ9wB4OFkr4fopTM4H0J9KY
+        jOL+nFyMz0u/F/ookxrvnYjalJYt75wtdPLcmg==
+X-Google-Smtp-Source: APXvYqy+xiTb+SVZTsD+gIM5Zp+s5G1KvyND6C+q9ugLlAusZepqXnQoudEMJX/P5+snxqgcFfANKH0gbous/zPt/50=
+X-Received: by 2002:ac8:5513:: with SMTP id j19mr8837734qtq.143.1575568755943;
+ Thu, 05 Dec 2019 09:59:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191205134504.6533-1-geert+renesas@glider.be>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191127153928.22408-1-grygorii.strashko@ti.com>
+In-Reply-To: <20191127153928.22408-1-grygorii.strashko@ti.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 5 Dec 2019 11:59:04 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+viKkF4FFgpMhTjKCMLeGOX1o9Uq-StU6xwFuTcpCL2Q@mail.gmail.com>
+Message-ID: <CAL_Jsq+viKkF4FFgpMhTjKCMLeGOX1o9Uq-StU6xwFuTcpCL2Q@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: mdio: use non vendor specific
+ compatible string in example
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Simon Horman <simon.horman@netronome.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
-
-Thanks for your work.
-
-On 2019-12-05 14:45:04 +0100, Geert Uytterhoeven wrote:
-> Document support for the Ethernet AVB interface in the Renesas R-Car
-> M3-W+ (R8A77961) SoC.
-> 
-> Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
-> avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
-> 
-> No driver update is needed.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-
+On Wed, Nov 27, 2019 at 9:39 AM Grygorii Strashko
+<grygorii.strashko@ti.com> wrote:
+>
+> Use non vendor specific compatible string in example, otherwise DT YAML
+> schemas validation may trigger warnings specific to TI ti,davinci_mdio
+> and not to the generic MDIO example.
+>
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 > ---
->  Documentation/devicetree/bindings/net/renesas,ravb.txt | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> index 5df4aa7f681154ee..87dad2dd8ca0cd6c 100644
-> --- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> +++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> @@ -21,7 +21,8 @@ Required properties:
->        - "renesas,etheravb-r8a774b1" for the R8A774B1 SoC.
->        - "renesas,etheravb-r8a774c0" for the R8A774C0 SoC.
->        - "renesas,etheravb-r8a7795" for the R8A7795 SoC.
-> -      - "renesas,etheravb-r8a7796" for the R8A7796 SoC.
-> +      - "renesas,etheravb-r8a7796" for the R8A77960 SoC.
-> +      - "renesas,etheravb-r8a77961" for the R8A77961 SoC.
->        - "renesas,etheravb-r8a77965" for the R8A77965 SoC.
->        - "renesas,etheravb-r8a77970" for the R8A77970 SoC.
->        - "renesas,etheravb-r8a77980" for the R8A77980 SoC.
-> @@ -37,8 +38,8 @@ Required properties:
->  - reg: Offset and length of (1) the register block and (2) the stream buffer.
->         The region for the register block is mandatory.
->         The region for the stream buffer is optional, as it is only present on
-> -       R-Car Gen2 and RZ/G1 SoCs, and on R-Car H3 (R8A7795), M3-W (R8A7796),
-> -       and M3-N (R8A77965).
-> +       R-Car Gen2 and RZ/G1 SoCs, and on R-Car H3 (R8A7795), M3-W (R8A77960),
-> +       M3-W+ (R8A77961), and M3-N (R8A77965).
->  - interrupts: A list of interrupt-specifiers, one for each entry in
->  	      interrupt-names.
->  	      If interrupt-names is not present, an interrupt specifier
-> -- 
-> 2.17.1
-> 
+>  Documentation/devicetree/bindings/net/mdio.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+> index 5d08d2ffd4eb..524f062c6973 100644
+> --- a/Documentation/devicetree/bindings/net/mdio.yaml
+> +++ b/Documentation/devicetree/bindings/net/mdio.yaml
+> @@ -56,7 +56,7 @@ patternProperties:
+>  examples:
+>    - |
+>      davinci_mdio: mdio@5c030000 {
+> -        compatible = "ti,davinci_mdio";
+> +        compatible = "vendor,mdio";
 
--- 
-Regards,
-Niklas Söderlund
+The problem with this is eventually 'vendor,mdio' will get flagged as
+an undocumented compatible. We're a ways off from being able to enable
+that until we have a majority of bindings converted. Though maybe
+examples can be enabled sooner rather than later.
+
+>          reg = <0x5c030000 0x1000>;
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> --
+> 2.17.1
+>
