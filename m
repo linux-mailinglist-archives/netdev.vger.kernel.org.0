@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B216E114806
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 21:23:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4EFC114807
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 21:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729632AbfLEUXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 15:23:06 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:34997 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729240AbfLEUXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 15:23:06 -0500
-Received: by mail-pj1-f65.google.com with SMTP id w23so1746105pjd.2
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 12:23:05 -0800 (PST)
+        id S1729632AbfLEUYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 15:24:42 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37703 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729154AbfLEUYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 15:24:41 -0500
+Received: by mail-pf1-f196.google.com with SMTP id s18so2139886pfm.4
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 12:24:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jRayL2fPl6QXTU1X2IWavTR7Yo2eBg/CqXK33XYBy24=;
-        b=ipIsPEHW5UTXPYiz3f6QtrmZgRxejUQdh7nqa7uCLrBiB1pCIUwQLjKY+Hx3W8tpoG
-         4JZH2HQj0kzSPqYsqUvaQY7ExySSj+PnYoqpRE0lr5b+1x5913Xotg9pssTMfbRZZGGH
-         5pgKb163uie0tO5bmMpj/imErYbNd+oMzjpV0=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JdRS2TwiEoZAY0ywvlQZY49TkkZY2yHjS45p5y6BmPc=;
+        b=Zy3Itpm6GYpgP+S6bJTbwiWQdNlXExjpVTOahmiWjB76lLludwPiNrS+ZzPodlZC7C
+         mv6DHpAjxkXB2RcaVujszc6CjBD5r9ClfX7yxdrHB5U0FfpVEioxmZ7Lli2jKyF99/X3
+         aflWnKMiKMvmU3nOJoWGEltumM79o1MuyT1SsI130X3NQYlAm7LVpYWTvGiNCAxeFkOb
+         G5tH/WYB94cDYBKhEl56teG2U6MascUmEauL330rNSeCpxPlZtVRrRuKlTiu7Pb0vyJI
+         dxBridcK2hSHQaOK2zuVDnJi+JJOFkQpm6N5mlGQLqFQnXMvP/csqV6/equIdH2FSBkq
+         v5hQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jRayL2fPl6QXTU1X2IWavTR7Yo2eBg/CqXK33XYBy24=;
-        b=UkdzZMokxoVoFRx+Vy4oDfOIZ826UkC6dZW6tG/4GxsWP3C3hG4TyyVr3ufaimWdJz
-         sKA4x3EYt/dHoOFWNBz6uXl/DzKiKP1WS+MzQrUMTZ83UHoIzb1lm1hTJYRnU9lSEUi2
-         a3zTcrb/MLWxpxKLcbGtOE+yXTeXlseGTtfD+Iovh2VJMcuzfv0OzKfiP57UU6K7QBeB
-         re810H/uI2XP+BbdiQPnnOZuz3zeCgaJXKZUXT44q6s+ataD0k0BNfImJhdmD7t1PPoZ
-         CVrat9lPhqU+K35rWpW0NpH0fPGXfwLiMMKulPkS/y/Fvqkwng7DMrdrhMlFU9JEfKHB
-         QP2Q==
-X-Gm-Message-State: APjAAAXAyM2mBPMdCxutyWihtWCvKGY9q9QuTg5jslctWoAds2OGCRTQ
-        NbzpagWzoVA3hmTUD/oXiXohuw==
-X-Google-Smtp-Source: APXvYqyhuW24FCLFzDv7K5KLFR+I/VPosr2uRJN/oZqO0hNSV+b/CSnMTJFLXtEYNnOjNboxSKC8AQ==
-X-Received: by 2002:a17:90a:d344:: with SMTP id i4mr11653491pjx.42.1575577385316;
-        Thu, 05 Dec 2019 12:23:05 -0800 (PST)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id o12sm560691pjf.19.2019.12.05.12.23.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 12:23:04 -0800 (PST)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>, devicetree@vger.kernel.org,
-        Rocky Liao <rjliao@codeaurora.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Harish Bandi <c-hbandi@codeaurora.org>,
-        Balakrishna Godavarthi <bgodavar@codeaurora.org>
-Subject: [PATCH] dt-bindings: net: bluetooth: Add compatible string for WCN3991
-Date:   Thu,  5 Dec 2019 12:22:59 -0800
-Message-Id: <20191205122241.1.I6c86a40ce133428b6fab21f24f6ff6fec7e74e62@changeid>
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JdRS2TwiEoZAY0ywvlQZY49TkkZY2yHjS45p5y6BmPc=;
+        b=HQa9LqE+xRPKg/Wo+q82xRCpwxedpcp092864diy/eGiDyLG7l86DXF0rgw09hnWo0
+         Y3DuI0y/8jWAVGZiC1M1iyWbdK+T3QDJqPfQzSWHjrC7mJJr5M1DrrXVKHGbz3Q/nPjU
+         SDaqz3GXX8unx9FtlcsmlrfX4w5eqcgPE/7vZDcGsZBrpDbjstw282WNjM82+asLM3K4
+         ZI7I/1sWL4wpG2Aezd462C7RN1AnKwKBWHbIhsn4wbZAUN+xdIjHZy9n0YQBKE5pedHt
+         OCBlOM8bwlFbb0ZCWaUUBLMVnTQfvmxBtL7uX2g/FiGFh37FGPEdSZ1GeSqcRZ4ZtM1q
+         0zjQ==
+X-Gm-Message-State: APjAAAUhKTKqcb6i2KEVDilcRVsT1dkVL0PxIPFbhzXXpPL9NfLPJGdj
+        bDQR8Oaio2bONnrs/RN1tmIduA==
+X-Google-Smtp-Source: APXvYqwJ6fmKCyqn4zfIEURtP78yZL7gK6g1PWAKZ78EF9XapZJs8SPEYnFe4xeux1iewvcNz3kQTw==
+X-Received: by 2002:aa7:820d:: with SMTP id k13mr11185096pfi.10.1575577481207;
+        Thu, 05 Dec 2019 12:24:41 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q67sm578987pjb.4.2019.12.05.12.24.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2019 12:24:40 -0800 (PST)
+Date:   Thu, 5 Dec 2019 12:24:32 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Maciej Zenczykowski <maze@google.com>, netdev@vger.kernel.org,
+        Leslie Monis <lesliemonis@gmail.com>
+Subject: Re: [PATCH iproute2 v2] tc: fix warning in tc/q_pie.c
+Message-ID: <20191205122432.2bf71a7f@hermes.lan>
+In-Reply-To: <20191204213203.163073-1-brianvv@google.com>
+References: <20191204213203.163073-1-brianvv@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7d250a062f75 ("Bluetooth: hci_qca: Add support for Qualcomm
-Bluetooth SoC WCN3991") added the compatible string 'qcom,wcn3991-bt'
-to the Qualcomm Bluetooth driver, however the string is not listed
-in the binding. Add the 'qcom,wcn3991-bt' to the supported compatible
-strings.
+On Wed,  4 Dec 2019 13:32:03 -0800
+Brian Vazquez <brianvv@google.com> wrote:
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
+> Warning was:
+> q_pie.c:202:22: error: implicit conversion from 'unsigned long' to
+> 'double'
+> 
+> Fixes: 492ec9558b30 ("tc: pie: change maximum integer value of tc_pie_xstats->prob")
+> Cc: Leslie Monis <lesliemonis@gmail.com>
+> Signed-off-by: Brian Vazquez <brianvv@google.com>
+> ---
 
- Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-index 68b67d9db63a3..999aceadb9853 100644
---- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-@@ -11,6 +11,7 @@ Required properties:
-  - compatible: should contain one of the following:
-    * "qcom,qca6174-bt"
-    * "qcom,wcn3990-bt"
-+   * "qcom,wcn3991-bt"
-    * "qcom,wcn3998-bt"
- 
- Optional properties for compatible string qcom,qca6174-bt:
--- 
-2.24.0.393.g34dc348eaf-goog
-
+Applied
