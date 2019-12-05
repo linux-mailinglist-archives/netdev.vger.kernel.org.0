@@ -2,126 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47790113948
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 02:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFA7113967
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 02:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbfLEBZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 20:25:31 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34201 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728100AbfLEBZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 20:25:30 -0500
-Received: by mail-pg1-f195.google.com with SMTP id r11so771201pgf.1;
-        Wed, 04 Dec 2019 17:25:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wXoUdUAHKBaISydzla24j9JfZxsUNvCsquV32FT8FOQ=;
-        b=phmsT3F4dF0M14EPNcg1am1sOwSFkUyx2bfTW7oyKgyBs6tMSSUqmQybaTa+SxoT8l
-         4R7XUIrwJohdQmYQsh0vmaFM1ddr0vjA2GinZKjqo8H2LshXlCu7S6RFyds0WDMO0d1g
-         z/+OlyBHFg5S7gyP932sjS2IOw/LCWfFvWNuV8p+BIJDXXUjiPOhSTOGbeneW4bhk/es
-         dvMFkLXqByYlBcuhwT7w8dIRrfyd/mpgGc6f6gfgzhtW0Ukscvu/KvTq82qV1VBQ+5VI
-         uO15mPsEf9USZPfc+63kqOnecNcfz9WZoeIEgHz+N9keViErJuJwSU5IE7Ej4lYHF1z7
-         PAJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wXoUdUAHKBaISydzla24j9JfZxsUNvCsquV32FT8FOQ=;
-        b=dZVZgrGDEzjxfYYQo2xML8zb+ixwy9jzjr+fKFTO0JZMCKR0+RprKNpLLIXuVbguru
-         eAz/Km0VQqS8NGkqkrLN62NevfFXI3VkUfst1AQFDyIdbxKfK8yPOgL70Poxvll2As6r
-         eCbKNaJw0fF/NNdb9N4t38E8wrn3ArP0PZJmab6IX0kThHhhe6u2XZ0XxGtRSTjM1s0l
-         dscO598TYACn8sLi96gEEk3NLKMWrqLHlvQZ7NisO8v4Zch6ge5gVofRqm3fQOA2VIln
-         CI6N0QzdnYKrOuozOLo4TWxJvCpXItYJT3et0MSHAAKsQ9Pz4HU2kVUxUaFREL9DDLKd
-         y07A==
-X-Gm-Message-State: APjAAAW5t1GztWdmepr/qQdfw2rLMzqdAZg86Cv+tflelY3Nsa7JXnXH
-        IiOcFnnZWPcjSd7zi7Id7Ik=
-X-Google-Smtp-Source: APXvYqzmIQuYJ2DE6q81jtTR+ElGMC0qA/OyVhOQZZGU/rOaWupztTcnh3V+XBhGZqkkjdMUYLQDwQ==
-X-Received: by 2002:a63:5657:: with SMTP id g23mr6554594pgm.452.1575509129665;
-        Wed, 04 Dec 2019 17:25:29 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::f9fe])
-        by smtp.gmail.com with ESMTPSA id c68sm9907694pfc.156.2019.12.04.17.25.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 04 Dec 2019 17:25:28 -0800 (PST)
-Date:   Wed, 4 Dec 2019 17:25:26 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrii.nakryiko@gmail.com, toke@redhat.com, jolsa@kernel.org,
-        acme@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, mingo@kernel.org,
-        namhyung@kernel.org, alexander.shishkin@linux.intel.com,
-        a.p.zijlstra@chello.nl, mpetlan@redhat.com, brouer@redhat.com,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, quentin.monnet@netronome.com
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
-Message-ID: <20191205012525.lpp5ilieupftpqrd@ast-mbp.dhcp.thefacebook.com>
-References: <20191204135405.3ffb9ad6@cakuba.netronome.com>
- <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
- <20191204162348.49be5f1b@cakuba.netronome.com>
- <20191204.162929.2216543178968689201.davem@davemloft.net>
+        id S1728419AbfLEBn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 20:43:57 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:46968 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728098AbfLEBn4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 4 Dec 2019 20:43:56 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 7F8D21C0E8F140E5CEEF;
+        Thu,  5 Dec 2019 09:43:54 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Thu, 5 Dec 2019
+ 09:43:53 +0800
+Subject: =?UTF-8?Q?Re:_=e7=ad=94=e5=a4=8d:_[PATCH]_page=5fpool:_mark_unbound?=
+ =?UTF-8?Q?_node_page_as_reusable_pages?=
+To:     "Li,Rongqing" <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>
+References: <1575454465-15386-1-git-send-email-lirongqing@baidu.com>
+ <d7836d35-ba21-69ab-8aba-457b2da6ffa1@huawei.com>
+ <656e11b6605740b18ac7bb8e3b67ed93@baidu.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <f52fe7e8-2b6f-5e67-aa4b-38277478a7d1@huawei.com>
+Date:   Thu, 5 Dec 2019 09:43:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191204.162929.2216543178968689201.davem@davemloft.net>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <656e11b6605740b18ac7bb8e3b67ed93@baidu.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 04, 2019 at 04:29:29PM -0800, David Miller wrote:
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Date: Wed, 4 Dec 2019 16:23:48 -0800
+On 2019/12/5 9:08, Li,Rongqing wrote:
 > 
-> > Jokes aside, you may need to provide some reasoning on this one..
-> > The recommendation for packaging libbpf from GitHub never had any 
-> > clear justification either AFAICR.
-> > 
-> > I honestly don't see why location matters. bpftool started out on GitHub
-> > but we moved it into the tree for... ease of packaging/distribution(?!)
-> > Now it's handy to have it in the tree to reuse the uapi headers.
-> > 
-> > As much as I don't care if we move it (back) out of the tree - having
-> > two copies makes no sense to me. As does having it in the libbpf repo.
-> > The sync effort is not warranted. User confusion is not warranted.
 > 
-> Part of this story has to do with how bug fixes propagate via bpf-next
-> instead of the bpf tree, as I understand it.
+>> -----邮件原件-----
+>> 发件人: Yunsheng Lin [mailto:linyunsheng@huawei.com]
+>> 发送时间: 2019年12月5日 8:55
+>> 收件人: Li,Rongqing <lirongqing@baidu.com>; netdev@vger.kernel.org;
+>> saeedm@mellanox.com
+>> 主题: Re: [PATCH] page_pool: mark unbound node page as reusable pages
+>>
+>> On 2019/12/4 18:14, Li RongQing wrote:
+>>> some drivers uses page pool, but not require to allocate page from
+>>> bound node, so pool.p.nid is NUMA_NO_NODE, and this fixed patch will
+>>> block this kind of driver to recycle
+>>>
+>>> Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
+>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+>>> Cc: Saeed Mahameed <saeedm@mellanox.com>
+>>> ---
+>>>  net/core/page_pool.c | 4 +++-
+>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c index
+>>> a6aefe989043..4054db683178 100644
+>>> --- a/net/core/page_pool.c
+>>> +++ b/net/core/page_pool.c
+>>> @@ -317,7 +317,9 @@ static bool __page_pool_recycle_direct(struct page
+>> *page,
+>>>   */
+>>>  static bool pool_page_reusable(struct page_pool *pool, struct page
+>>> *page)  {
+>>> -	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
+>>> +	return !page_is_pfmemalloc(page) &&
+>>> +		(page_to_nid(page) == pool->p.nid ||
+>>> +		 pool->p.nid == NUMA_NO_NODE);
+>>
+>> If I understand it correctly, you are allowing recycling when
+>> pool->p.nid is NUMA_NO_NODE, which does not seems match the commit
+>> log: "this fixed patch will block this kind of driver to recycle".
+>>
+>> Maybe you mean "commit d5394610b1ba" by this fixed patch?
 > 
-> But yeah it would be nice to have a clear documentation on all of the
-> reasoning.
+> yes
 > 
-> On the distro side, people seem to not want to use the separate repo.
-> If you're supporting enterprise customers you don't just sync with
-> upstream, you cherry pick.  When cherry picking gets too painful, you
-> sync with upstream possibly eliding upstream new features you don't
-> want to appear in your supported product yet.
+>>
+>> Also, maybe it is better to allow recycling if the below condition is matched:
+>>
+>> 	pool->p.nid == NUMA_NO_NODE && page_to_nid(page) ==
+>> numa_mem_id()
 > 
-> I agree with tying bpftool and libbpf into the _resulting_ binary
-> distro package, but I'm not totally convinced about separating them
-> out of the kernel source tree.
+> If driver uses NUMA_NO_NODE, it does not care numa node, and maybe its platform
+> Only has a node, so not need to compare like "page_to_nid(page) ==  numa_mem_id()"
 
-Looks like there is a confusion here.
-I'm not proposing to move bpftool out of kernel tree.
-The kernel+libbpf+bpftool+selftests already come as single patch set.
-bpftool has to stay in the kernel tree otherwise things like skeleton
-patchset won't be possible to accomplish without a lot of coordination
-between different trees and propagation delays.
+Normally, driver does not care if the node of a device is NUMA_NO_NODE or not, it
+just uses the node that returns from dev_to_node().
 
-I'm proposing to tweak github/libbpf sync script to sync bpftool
-sources from kernel into github, so both libbpf and bpftool can be
-tested and packaged together.
-People are working on adding proper CI to github/libbpf.
-bpftool testing will automatically get more mileage out of that effort.
+Even for multi node system, the node of a device may be NUMA_NO_NODE when
+BIOS/FW has not specified it through ACPI/DT, see [1].
 
-github/libbpf is self contained. It should be built and tested
-on many different kernels and build environments (like any user
-space package should be). That's an important goal of CI.
-When bpftool is part of github/libbpf it will get the same treatment.
-I see only advantages and not a single disadvantage of building,
-testing, packaging bpftool out of github/libbpf.
 
-To support stable libbpf+bpftool releases we can branch in github and push
-fixes into branches. Same CI can test master and stable branches.
+[1] https://lore.kernel.org/patchwork/patch/1141952/
+
+> 
+> 
+> -RongQing
+> 
+> 
+>>
+>>>  }
+>>>
+>>>  void __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>>
+> 
 
