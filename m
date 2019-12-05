@@ -2,62 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B98AD11411B
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:59:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A72A11412A
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 14:04:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729487AbfLEM7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 07:59:08 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38052 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729099AbfLEM7I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:59:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/0aTrAYFDCdx3wtof9edhAMQ2FL2u0uO/LRSKah6g6c=; b=OQmnRFj/HL0ufNSTVpFIwkQTn5
-        eHCSUAzOxu/tzYVrw0M3m2yw8wfi3m3/cNrUnAGMDjZQP8zx3/ebo8dMj6YLDIV7k1wOEWgXStnnW
-        kE31rgT1+SdAUFe35ZryhR3Y2MLRKiprxeNWyaU+pacjxrZR6d4FwCsIIR+uDikppE3Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1icqim-0007PD-Pq; Thu, 05 Dec 2019 13:59:04 +0100
-Date:   Thu, 5 Dec 2019 13:59:04 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mian Yousaf Kaukab <ykaukab@suse.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, tharvey@gateworks.com,
-        davem@davemloft.net, rric@kernel.org, sgoutham@cavium.com,
-        sergei.shtylyov@cogentembedded.com
-Subject: Re: [PATCH net v2] net: thunderx: start phy before starting
- autonegotiation
-Message-ID: <20191205125904.GB28269@lunn.ch>
-References: <20191205094116.4904-1-ykaukab@suse.de>
+        id S1729417AbfLENEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 08:04:15 -0500
+Received: from www62.your-server.de ([213.133.104.62]:59854 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729146AbfLENEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 08:04:14 -0500
+Received: from 29.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.29] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1icqni-0007Pf-Bq; Thu, 05 Dec 2019 14:04:11 +0100
+Date:   Thu, 5 Dec 2019 14:04:09 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Alexander Lobakin <alobakin@dlink.ru>
+Cc:     Paul Burton <paul.burton@mips.com>,
+        Hassan Naveed <hnaveed@wavecomp.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: MIPS eBPF JIT support on pre-32R2
+Message-ID: <20191205130409.GC29780@localhost.localdomain>
+References: <09d713a59665d745e21d021deeaebe0a@dlink.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191205094116.4904-1-ykaukab@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <09d713a59665d745e21d021deeaebe0a@dlink.ru>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25654/Thu Dec  5 10:46:25 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 10:41:16AM +0100, Mian Yousaf Kaukab wrote:
-> Since commit 2b3e88ea6528 ("net: phy: improve phy state checking")
-> phy_start_aneg() expects phy state to be >= PHY_UP. Call phy_start()
-> before calling phy_start_aneg() during probe so that autonegotiation
-> is initiated.
+On Thu, Dec 05, 2019 at 03:45:27PM +0300, Alexander Lobakin wrote:
+> Hey all,
 > 
-> As phy_start() takes care of calling phy_start_aneg(), drop the explicit
-> call to phy_start_aneg().
+> I'm writing about lines arch/mips/net/ebpf_jit.c:1806-1807:
 > 
-> Network fails without this patch on Octeon TX.
+> 	if (!prog->jit_requested || MIPS_ISA_REV < 2)
+> 		return prog;
 > 
-> Fixes: 2b3e88ea6528 ("net: phy: improve phy state checking")
-> Signed-off-by: Mian Yousaf Kaukab <ykaukab@suse.de>
+> Do pre-32R2 architectures (32R1, maybe even R3000-like) actually support
+> this eBPF JIT code? If they do, then the condition 'MIPS_ISA_REV < 2'
+> should be removed as it is always true for them and tells CC to remove
+> JIT completely.
+> 
+> If they don't support instructions from this JIT, then the line
+> arch/mips/Kconfig:50:
+> 
+> 	select HAVE_EBPF_JIT if (!CPU_MICROMIPS)
+> 
+> should be changed to something like:
+> 
+> 	select HAVE_EBPF_JIT if !CPU_MICROMIPS && TARGET_ISA_REV >= 2
+> 
+> (and then the mentioned 'if' condition would become redundant)
+> 
+> At the moment it is possible to build a kernel without both JIT and
+> interpreter, but with CONFIG_BPF_SYSCALL=y (what should not be allowed
+> I suppose?) within the following configuration:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Cannot comment on the MIPS ISA question above, but it would definiely be
+a bug to build a kernel with neither JIT nor interpreter. If a JIT is not
+available, then there /must/ be the interpreter as fallback to be able to
+run BPF programs.
 
-    Andrew
+> - select any pre-32R2 CPU (e.g. CONFIG_CPU_MIPS32_R1);
+> - enable CONFIG_BPF_JIT (CONFIG_MIPS_EBPF_JIT will be autoselected);
+> - enable CONFIG_BPF_JIT_ALWAYS_ON (this removes BPF interpreter from
+>   the system).
+> 
+> I may prepare a proper patch by myself if needed (after clarification).
+> Thanks.
+> 
+> Regards,
+> ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
