@@ -2,112 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EC91148B1
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 22:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 190021148F2
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 22:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730206AbfLEVal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 16:30:41 -0500
-Received: from mail-lf1-f52.google.com ([209.85.167.52]:40003 "EHLO
-        mail-lf1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727236AbfLEVal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 16:30:41 -0500
-Received: by mail-lf1-f52.google.com with SMTP id y5so3620180lfy.7
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 13:30:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1sSGB3BokYfq4U4Y44YwKEXD8ScM4ZmN9h2uBGm5v6k=;
-        b=sZM7CadPieZxnFSOoePtK2HQ3mve39aAcrI70Qis9s8uam8hrLUkWukjh1AWAYfWPn
-         AcAtVRR8hrDHynsx6w4YNWc6yMtkxZdTIge6V+tkUfYrK2XXmUkrMVJIVlL9mOSWCk5y
-         fTS6MDT62Eg4u/Xtjld+ucMhH2dFa3uVyU/qkQiFpnEZ9B4uYhdJ54D+ivqfTQuJhLvd
-         DW69pwqrIBrlSz1Pwk9fNJ5GAhJfydldJScWGTjA3/ZXTTbWGjLxW1hcInq1jpPIJfJJ
-         TCW00LOuonh4rt/iZYC5GUA1jOtZYRZ5HUPIZDoOJjRKDS3J0K3RvSzVm2UNxp1S0Dr3
-         gHiw==
+        id S1729796AbfLEV4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 16:56:31 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:35390 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbfLEV4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 16:56:31 -0500
+Received: by mail-oi1-f193.google.com with SMTP id k196so4270106oib.2;
+        Thu, 05 Dec 2019 13:56:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1sSGB3BokYfq4U4Y44YwKEXD8ScM4ZmN9h2uBGm5v6k=;
-        b=Ahen7Kwz1C6fAItTCQ9FxMwk5pLMiNDwm4DJWoJ3IRQklskEts2k6ifTvMRLwCCOhM
-         h5YgWo+gWrlVXguPZQib1XM1OjlYE4C9+8Ys7pBoDSEcBSjlZp97MJAr7WKlrw0jxUyB
-         +tb7j+RbgasunEHyEmGxe+45IIQKZXmk7ZBgS5wwK64y/yKe6exYCOcegzeLfKqGYz4/
-         zqO9VQCdP7obKvwNZoJbX7loh0Ak6egW7HlXAfbGTEByEgOqeGSSS/7cTJaeQtRe8c5r
-         msbNhxKRjiWuC8lJkGor6ZOqLwhDpFv8ytfxbJj9HhcAZMboPDgze/h57CbU4MHm2sd1
-         2A+Q==
-X-Gm-Message-State: APjAAAWCX7apRdxZAWBc02F2M0pZ8JdvHFhOPA+JjlyIIxZZolbZSqSv
-        vmHKytEaiFU4nH5bCDwa+ES3PJbvDBVYf0Yc378OGg==
-X-Google-Smtp-Source: APXvYqz75N9cSfNovMnb5Gjt4c3CIhuirUXTTbN6MaBRdlS7q12D7dyidxhIvLeWYKfttuSrZdjK69Ny8CdjMekvPWk=
-X-Received: by 2002:ac2:4c82:: with SMTP id d2mr6550952lfl.62.1575581439582;
- Thu, 05 Dec 2019 13:30:39 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+4jN+XaXHwrYJI+muu2FvEZSPfGj9LIVkbxEwDHYMas=;
+        b=BD6GPwcMe0BLBUvudzCr/chkM/YfW+yRM2U+Jxya9K7lPf4ThUT7+8Umyz5e/ucNFA
+         MtC+iCzrzM1tsp/0DuoPaKbrxkmtSyWkRtxvpEqtozMVRDqiIf7uLYKgY9aIJSEeBjA2
+         XsB16DcxxiqhMDCYWJ6GB5cTyqT9KGFNkLNyBZcaxNEejmO8nv1k7DyO28rKxLJYLuzg
+         GQUJlAWkgbbrjy3+aEcJKFdWJiK2rGJTr/tewnTojwUwTrdrLobARKTGLVfOox6Aj2sM
+         vbIdjkj1xAodWF4/m9PpFmrjUHGSKtn3p8YuPJhXCQR4p/ZSHQFbrh2Yz2SMD+Waqenj
+         VK2w==
+X-Gm-Message-State: APjAAAWHxbrPG3yju3F/04X+EfBGmo5F0PNaVUVvgAqfKuDrFET35565
+        AfCottFn+PNyWHMigePqPg==
+X-Google-Smtp-Source: APXvYqwnyU36jjBCPs3lGB+ujZ9geaCsahZP028XU/TWYqFvFZtwklN3E7FkUeJyL4g2H8dTgny28g==
+X-Received: by 2002:aca:889:: with SMTP id 131mr9140897oii.3.1575582990359;
+        Thu, 05 Dec 2019 13:56:30 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id o2sm4026571oih.19.2019.12.05.13.56.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2019 13:56:29 -0800 (PST)
+Date:   Thu, 5 Dec 2019 15:56:29 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
+        linux-kernel@vger.kernel.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Re: [PATCH] dt-bindings: net: ti: cpsw-switch: update to fix comments
+Message-ID: <20191205215629.GA32427@bogus>
+References: <20191127155526.22746-1-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-References: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
-In-Reply-To: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Thu, 5 Dec 2019 13:30:28 -0800
-Message-ID: <CALzJLG-z18R+uPi2W3Wam7GKkxzayJDfyDyTmO+_W7Z1V0CaQg@mail.gmail.com>
-Subject: Re: mlx5 support tc accept action
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Ariel Levkovich <lariel@mellanox.com>
-Cc:     Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191127155526.22746-1-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 4, 2019 at 10:41 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> Hi Roi, Saeed
-> In one cause, we want the "accept" action: the IP of VF will be
-> "accept", and others
-> packets will be done with other actions(e.g. hairpin rule to other VF).
->
-> For example:
->
-> PF0=enp130s0f0
-> VF0_REP=enp130s0f0_0
-> VF0=p4p1_0
-> VF1=p4p2_0 # belong to PF1
-> VF0_IP=3.3.3.200
->
-> ethtool -K $PF0 hw-tc-offload on
-> ethtool -K $VF0 hw-tc-offload on
-> tc qdisc add dev $PF0 ingress
-> tc qdisc add dev $VF0 ingress
-> tc filter add dev $PF0 protocol all parent ffff: prio 10 handle 1
-> flower skip_sw action mirred egress redirect dev $VF0_REP
-> tc filter add dev $VF0 protocol ip parent ffff: prio 1 handle 3 flower
-> skip_sw dst_ip $VF0_IP action pass
-> tc filter add dev $VF0 protocol all parent ffff: prio 10 handle 2
-> flower skip_sw action mirred egress redirect dev $VF1
->
-> When I change the driver, the rule which action "action pass", can be
-> offloaded, but it didn't work.
-> +               case FLOW_ACTION_ACCEPT:
-> +                   action |= MLX5_FLOW_CONTEXT_ACTION_ALLOW;
-> +                   break;
->
->
-> How can we support it, this function is import for us.
+On Wed, 27 Nov 2019 17:55:26 +0200, Grygorii Strashko wrote:
+> After original patch was merged there were additional comments/requests
+> provided by Rob Herring [1]. Mostly they are related to json-schema usage,
+> and this patch fixes them. Also SPDX-License-Identifier has been changed to
+> (GPL-2.0-only OR BSD-2-Clause) as requested.
+> 
+> [1] https://lkml.org/lkml/2019/11/21/875
+> Fixes: ef63fe72f698 ("dt-bindings: net: ti: add new cpsw switch driver bindings")
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>  .../bindings/net/ti,cpsw-switch.yaml          | 20 +++++++------------
+>  1 file changed, 7 insertions(+), 13 deletions(-)
+> 
 
-Hi Tonghao,
-where did you add the above code to ?
-parse_tc_fdb_actions() ? or parse_tc_nic_actions() ?
-in your use case you need to add it to parse_tc_nic_actions(),
+Applied, thanks.
 
-currently in mlx5 we don't support ALLOW/pass actions.
-it might be a little more complicated than what you did in order to
-support this,
-as a work around you can use action: FLOW_ACTION_MARK in the tc
-command line rule without any change in the driver.
-or change your code to do MLX5_FLOW_CONTEXT_ACTION_FWD_DEST instead of
-MLX5_FLOW_CONTEXT_ACTION_ALLOW
-
-Adding Mark and Ariel, they might have better feedback than mine
-
-Thanks,
-Saeed/
+Rob
