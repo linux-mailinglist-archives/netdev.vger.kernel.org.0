@@ -2,184 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 367F9113BBB
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 07:35:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9BC113BDB
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 07:40:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbfLEGfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 01:35:08 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:52910 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfLEGfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 01:35:07 -0500
-Received: by mail-io1-f71.google.com with SMTP id e124so1708833iof.19
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 22:35:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=sWlaImi5B4uVh73w3PHyR9//P49nAec4x6mydwyswqI=;
-        b=mldoN1clOsjawQiuzw780Q3MwOTe4DkrWS59RVv9vwp7+WN7QNGB9iLtIsj7byo3d0
-         Qtt27M7E6Dyd/+DgoY/A3n0CFi4Y4aNXdLfIg5G/hkVYeQutxB3ZLEALqpHCRSGSf8Dz
-         lbe95HAAnMqSYeXy/1Ot86wIJ1pAeMXpguRGz1bmwi9YySCBcqqKTWVuXLWAnVD9N9Oo
-         xwOOEPoDyGMbMhPFBuhwaxGpeIrczltQcivuWTGgV+YMi9hRCtHzEVnK1lHV3iQxZ0cW
-         TdZSNQwbi3bKKGjzRaV6RpBCH+F0ppEDh9aZltoR5UN7U9MiUBS86Np9XfG4KxIPbZjv
-         M1vg==
-X-Gm-Message-State: APjAAAVxoZv2y/h/W+v8qmgKhP8vP3qxOV3Bvfc8wEHfXwL3EkJ6btRw
-        89B79R0AMLd3ZbKQTZCCxDe6F1gu+VPXKe/OaeGWpzVl0V4C
-X-Google-Smtp-Source: APXvYqyTtejw80rTQ+CvFHMjZ29IKsVykf637q7u88PD0v7dSr0tMfseJhNiwYx/dKnjCd9NiH1jHxoe84au5O7n2k3Y1oufRx2G
+        id S1726082AbfLEGkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 01:40:53 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:55970 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726007AbfLEGkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 01:40:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575528050;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/J6KCYE9jeJZfzKbxa345PuEniQRQjk1Uf3CJ5cJfng=;
+        b=ME79YasNMlzdiZ+VK1imKNYSiE7AOKX+ZTgsKOdQtW81llR2DqA4+jrItlSY/4tiY95K3f
+        myP88tV8MlQL18VazHu+E6f0/lD2RAqFx2drKH7yf1Vlal9s/bg/Wz+yG9Fgps26OWbx8W
+        3bg/IHXu+2JalgTldenKMFdY089eIxY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-150-8SOlyITkPfqygQAmfmuEgg-1; Thu, 05 Dec 2019 01:40:46 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6467D800D54;
+        Thu,  5 Dec 2019 06:40:45 +0000 (UTC)
+Received: from [10.72.12.247] (ovpn-12-247.pek2.redhat.com [10.72.12.247])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC13B5DA32;
+        Thu,  5 Dec 2019 06:40:37 +0000 (UTC)
+Subject: Re: [PATCH 0/6] VFIO mdev aggregated resources handling
+To:     Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Parav Pandit <parav@mellanox.com>
+Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "kevin.tian@intel.com" <kevin.tian@intel.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+References: <20191024050829.4517-1-zhenyuw@linux.intel.com>
+ <AM0PR05MB4866CA9B70A8BEC1868AF8C8D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108081925.GH4196@zhen-hp.sh.intel.com>
+ <AM0PR05MB4866757033043CC007B5C9CBD15D0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191205060618.GD4196@zhen-hp.sh.intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b15ae698-cd5e-dfb9-0478-b865cc0c2262@redhat.com>
+Date:   Thu, 5 Dec 2019 14:40:35 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5a13:: with SMTP id o19mr5063163iob.120.1575527706944;
- Wed, 04 Dec 2019 22:35:06 -0800 (PST)
-Date:   Wed, 04 Dec 2019 22:35:06 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004e6eed0598ef2184@google.com>
-Subject: KASAN: slab-out-of-bounds Write in decode_data
-From:   syzbot <syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com>
-To:     ajk@comnets.uni-bremen.de, davem@davemloft.net,
-        linux-hams@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20191205060618.GD4196@zhen-hp.sh.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: 8SOlyITkPfqygQAmfmuEgg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
-
-HEAD commit:    63de3747 Merge tag 'tag-chrome-platform-for-v5.5' of git:/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=165a7c82e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1d189d07c6717979
-dashboard link: https://syzkaller.appspot.com/bug?extid=fc8cd9a673d4577fb2e4
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15379c2ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=133cf97ee00000
-
-Bisection is inconclusive: the bug happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=150e2861e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=170e2861e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=130e2861e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+fc8cd9a673d4577fb2e4@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in decode_data.part.0+0x23b/0x270  
-drivers/net/hamradio/6pack.c:843
-Write of size 1 at addr ffff8880993bd04e by task kworker/u4:2/25
-
-CPU: 1 PID: 25 Comm: kworker/u4:2 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events_unbound flush_to_ldisc
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:638
-  __asan_report_store1_noabort+0x17/0x20 mm/kasan/generic_report.c:137
-  decode_data.part.0+0x23b/0x270 drivers/net/hamradio/6pack.c:843
-  decode_data drivers/net/hamradio/6pack.c:965 [inline]
-  sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
-  sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
-  sixpack_receive_buf+0xde4/0x1420 drivers/net/hamradio/6pack.c:435
-  tty_ldisc_receive_buf+0x15f/0x1c0 drivers/tty/tty_buffer.c:465
-  tty_port_default_receive_buf+0x7d/0xb0 drivers/tty/tty_port.c:38
-  receive_buf drivers/tty/tty_buffer.c:481 [inline]
-  flush_to_ldisc+0x222/0x390 drivers/tty/tty_buffer.c:533
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2264
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2410
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 8864:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_kmalloc mm/kasan/common.c:512 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:485
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:526
-  __do_kmalloc_node mm/slab.c:3616 [inline]
-  __kmalloc_node+0x4e/0x70 mm/slab.c:3623
-  kmalloc_node include/linux/slab.h:579 [inline]
-  kvmalloc_node+0x68/0x100 mm/util.c:574
-  kvmalloc include/linux/mm.h:655 [inline]
-  kvzalloc include/linux/mm.h:663 [inline]
-  alloc_netdev_mqs+0x98/0xde0 net/core/dev.c:9730
-  sixpack_open+0x104/0xaaf drivers/net/hamradio/6pack.c:563
-  tty_ldisc_open.isra.0+0xa3/0x110 drivers/tty/tty_ldisc.c:464
-  tty_set_ldisc+0x30e/0x6b0 drivers/tty/tty_ldisc.c:591
-  tiocsetd drivers/tty/tty_io.c:2337 [inline]
-  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2597
-  vfs_ioctl fs/ioctl.c:47 [inline]
-  file_ioctl fs/ioctl.c:545 [inline]
-  do_vfs_ioctl+0x977/0x14e0 fs/ioctl.c:732
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:749
-  __do_sys_ioctl fs/ioctl.c:756 [inline]
-  __se_sys_ioctl fs/ioctl.c:754 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:754
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 8605:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  kasan_set_free_info mm/kasan/common.c:334 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:473
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:482
-  __cache_free mm/slab.c:3426 [inline]
-  kfree+0x10a/0x2c0 mm/slab.c:3757
-  skb_free_head+0x93/0xb0 net/core/skbuff.c:591
-  skb_release_data+0x551/0x8d0 net/core/skbuff.c:611
-  skb_release_all+0x4d/0x60 net/core/skbuff.c:665
-  __kfree_skb net/core/skbuff.c:679 [inline]
-  consume_skb net/core/skbuff.c:838 [inline]
-  consume_skb+0xfb/0x410 net/core/skbuff.c:832
-  skb_free_datagram+0x1b/0x100 net/core/datagram.c:328
-  netlink_recvmsg+0x6c6/0xf50 net/netlink/af_netlink.c:1996
-  sock_recvmsg_nosec net/socket.c:873 [inline]
-  sock_recvmsg net/socket.c:891 [inline]
-  sock_recvmsg+0xce/0x110 net/socket.c:887
-  ____sys_recvmsg+0x236/0x550 net/socket.c:2562
-  ___sys_recvmsg+0xff/0x190 net/socket.c:2603
-  __sys_recvmsg+0x102/0x1d0 net/socket.c:2650
-  __do_sys_recvmsg net/socket.c:2660 [inline]
-  __se_sys_recvmsg net/socket.c:2657 [inline]
-  __x64_sys_recvmsg+0x78/0xb0 net/socket.c:2657
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff8880993bc000
-  which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 78 bytes to the right of
-  4096-byte region [ffff8880993bc000, ffff8880993bd000)
-The buggy address belongs to the page:
-page:ffffea000264ef00 refcount:1 mapcount:0 mapping:ffff8880aa402000  
-index:0x0 compound_mapcount: 0
-raw: 00fffe0000010200 ffffea000262c288 ffffea00029bc908 ffff8880aa402000
-raw: 0000000000000000 ffff8880993bc000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8880993bcf00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff8880993bcf80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> ffff8880993bd000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                               ^
-  ffff8880993bd080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff8880993bd100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
+On 2019/12/5 =E4=B8=8B=E5=8D=882:06, Zhenyu Wang wrote:
+> On 2019.12.04 17:36:12 +0000, Parav Pandit wrote:
+>> + Jiri + Netdev since you mentioned netdev queue.
+>>
+>> + Jason Wang and Michael as we had similar discussion in vdpa discussion=
+ thread.
+>>
+>>> From: Zhenyu Wang <zhenyuw@linux.intel.com>
+>>> Sent: Friday, November 8, 2019 2:19 AM
+>>> To: Parav Pandit <parav@mellanox.com>
+>>>
+>> My apologies to reply late.
+>> Something bad with my email client, due to which I found this patch unde=
+r spam folder today.
+>> More comments below.
+>>
+>>> On 2019.11.07 20:37:49 +0000, Parav Pandit wrote:
+>>>> Hi,
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org> On
+>>>>> Behalf Of Zhenyu Wang
+>>>>> Sent: Thursday, October 24, 2019 12:08 AM
+>>>>> To: kvm@vger.kernel.org
+>>>>> Cc: alex.williamson@redhat.com; kwankhede@nvidia.com;
+>>>>> kevin.tian@intel.com; cohuck@redhat.com
+>>>>> Subject: [PATCH 0/6] VFIO mdev aggregated resources handling
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> This is a refresh for previous send of this series. I got impression
+>>>>> that some SIOV drivers would still deploy their own create and
+>>>>> config method so stopped effort on this. But seems this would still
+>>>>> be useful for some other SIOV driver which may simply want
+>>>>> capability to aggregate resources. So here's refreshed series.
+>>>>>
+>>>>> Current mdev device create interface depends on fixed mdev type,
+>>>>> which get uuid from user to create instance of mdev device. If user
+>>>>> wants to use customized number of resource for mdev device, then
+>>>>> only can create new
+>>>> Can you please give an example of 'resource'?
+>>>> When I grep [1], [2] and [3], I couldn't find anything related to ' ag=
+gregate'.
+>>> The resource is vendor device specific, in SIOV spec there's ADI (Assig=
+nable
+>>> Device Interface) definition which could be e.g queue for net device, c=
+ontext
+>>> for gpu, etc. I just named this interface as 'aggregate'
+>>> for aggregation purpose, it's not used in spec doc.
+>>>
+>> Some 'unknown/undefined' vendor specific resource just doesn't work.
+>> Orchestration tool doesn't know which resource and what/how to configure=
+ for which vendor.
+>> It has to be well defined.
+>>
+>> You can also find such discussion in recent lgpu DRM cgroup patches seri=
+es v4.
+>>
+>> Exposing networking resource configuration in non-net namespace aware md=
+ev sysfs at PCI device level is no-go.
+>> Adding per file NET_ADMIN or other checks is not the approach we follow =
+in kernel.
+>>
+>> devlink has been a subsystem though under net, that has very rich interf=
+ace for syscaller, device health, resource management and many more.
+>> Even though it is used by net driver today, its written for generic devi=
+ce management at bus/device level.
+>>
+>> Yuval has posted patches to manage PCI sub-devices [1] and updated versi=
+on will be posted soon which addresses comments.
+>>
+>> For any device slice resource management of mdev, sub-function etc, we s=
+hould be using single kernel interface as devlink [2], [3].
+>>
+>> [1] https://lore.kernel.org/netdev/1573229926-30040-1-git-send-email-yuv=
+alav@mellanox.com/
+>> [2] http://man7.org/linux/man-pages/man8/devlink-dev.8.html
+>> [3] http://man7.org/linux/man-pages/man8/devlink-resource.8.html
+>>
+>> Most modern device configuration that I am aware of is usually done via =
+well defined ioctl() of the subsystem (vhost, virtio, vfio, rdma, nvme and =
+more) or via netlink commands (net, devlink, rdma and more) not via sysfs.
+>>
+> Current vfio/mdev configuration is via documented sysfs ABI instead of
+> other ways. So this adhere to that way to introduce more configurable
+> method on mdev device for standard, it's optional and not actually
+> vendor specific e.g vfio-ap.
+>
+> I'm not sure how many devices support devlink now, or if really make
+> sense to utilize devlink for other devices except net, or if really make
+> sense to take mdev resource configuration from there...
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+It may make sense to allow other types of API to manage mdev other than=20
+sysfs. But I'm not sure whether or not it will be a challenge for=20
+orchestration.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks
+
+
+>>>>> mdev type for that which may not be flexible. This requirement comes
+>>>>> not only from to be able to allocate flexible resources for KVMGT,
+>>>>> but also from Intel scalable IO virtualization which would use
+>>>>> vfio/mdev to be able to allocate arbitrary resources on mdev instance=
+.
+>>> More info on [1] [2] [3].
+>>>>> To allow to create user defined resources for mdev, it trys to
+>>>>> extend mdev create interface by adding new "aggregate=3Dxxx" paramete=
+r
+>>>>> following UUID, for target mdev type if aggregation is supported, it
+>>>>> can create new mdev device which contains resources combined by
+>>>>> number of instances, e.g
+>>>>>
+>>>>>      echo "<uuid>,aggregate=3D10" > create
+>>>>>
+>>>>> VM manager e.g libvirt can check mdev type with "aggregation"
+>>>>> attribute which can support this setting. If no "aggregation"
+>>>>> attribute found for mdev type, previous behavior is still kept for
+>>>>> one instance allocation. And new sysfs attribute
+>>>>> "aggregated_instances" is created for each mdev device to show alloca=
+ted
+>>> number.
+>>>>> References:
+>>>>> [1]
+>>>>> https://software.intel.com/en-us/download/intel-virtualization-techn
+>>>>> ology- for-directed-io-architecture-specification
+>>>>> [2]
+>>>>> https://software.intel.com/en-us/download/intel-scalable-io-virtuali
+>>>>> zation-
+>>>>> technical-specification
+>>>>> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+>>>>>
+>>>>> Zhenyu Wang (6):
+>>>>>    vfio/mdev: Add new "aggregate" parameter for mdev create
+>>>>>    vfio/mdev: Add "aggregation" attribute for supported mdev type
+>>>>>    vfio/mdev: Add "aggregated_instances" attribute for supported mdev
+>>>>>      device
+>>>>>    Documentation/driver-api/vfio-mediated-device.rst: Update for
+>>>>>      vfio/mdev aggregation support
+>>>>>    Documentation/ABI/testing/sysfs-bus-vfio-mdev: Update for vfio/mde=
+v
+>>>>>      aggregation support
+>>>>>    drm/i915/gvt: Add new type with aggregation support
+>>>>>
+>>>>>   Documentation/ABI/testing/sysfs-bus-vfio-mdev | 24 ++++++
+>>>>>   .../driver-api/vfio-mediated-device.rst       | 23 ++++++
+>>>>>   drivers/gpu/drm/i915/gvt/gvt.c                |  4 +-
+>>>>>   drivers/gpu/drm/i915/gvt/gvt.h                | 11 ++-
+>>>>>   drivers/gpu/drm/i915/gvt/kvmgt.c              | 53 ++++++++++++-
+>>>>>   drivers/gpu/drm/i915/gvt/vgpu.c               | 56 ++++++++++++-
+>>>>>   drivers/vfio/mdev/mdev_core.c                 | 36 ++++++++-
+>>>>>   drivers/vfio/mdev/mdev_private.h              |  6 +-
+>>>>>   drivers/vfio/mdev/mdev_sysfs.c                | 79 ++++++++++++++++=
+++-
+>>>>>   include/linux/mdev.h                          | 19 +++++
+>>>>>   10 files changed, 294 insertions(+), 17 deletions(-)
+>>>>>
+>>>>> --
+>>>>> 2.24.0.rc0
+>>> --
+>>> Open Source Technology Center, Intel ltd.
+>>>
+>>> $gpg --keyserver wwwkeys.pgp.net --recv-keys 4D781827
+
