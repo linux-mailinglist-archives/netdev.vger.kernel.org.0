@@ -2,83 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 060D4113A2F
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC95E113A36
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728832AbfLEDDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 22:03:38 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:6753 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728459AbfLEDDi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 4 Dec 2019 22:03:38 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 782588F9F0C6E6745370;
-        Thu,  5 Dec 2019 11:03:36 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Thu, 5 Dec 2019
- 11:03:32 +0800
-Subject: =?UTF-8?B?UmU6IOetlOWkjTog562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENI?=
- =?UTF-8?Q?]_page=5fpool:_mark_unbound_node_page_as_reusable_pages?=
-To:     "Li,Rongqing" <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>
-References: <1575454465-15386-1-git-send-email-lirongqing@baidu.com>
- <d7836d35-ba21-69ab-8aba-457b2da6ffa1@huawei.com>
- <656e11b6605740b18ac7bb8e3b67ed93@baidu.com>
- <f52fe7e8-2b6f-5e67-aa4b-38277478a7d1@huawei.com>
- <68135c0148894aa3b26db19120fb7bac@baidu.com>
- <3e3b1e0c-e7e0-eea2-b1b5-20bf2b8fc34b@huawei.com>
- <cd63eccb89bb406ca6edea46aee60e3a@baidu.com>
- <cc336ff3-b729-539e-59f7-67c6c37663d9@huawei.com>
- <504bf0958f424a2c9add3a84543c45c6@baidu.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <0c5b19c3-b639-b990-73a1-a1300d417221@huawei.com>
-Date:   Thu, 5 Dec 2019 11:03:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1728539AbfLEDIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 22:08:52 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41008 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728132AbfLEDIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 22:08:51 -0500
+Received: by mail-pf1-f194.google.com with SMTP id s18so861451pfd.8
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 19:08:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bChhO4OU147A4lNiHygrOQOHfsld5u+2i6MQ4feNf3w=;
+        b=KbQaeKWKsSbMI2OWmxT35SPKmhoJCVR7Dox22tFW1QmmzbEIbPCbIFt+0WM+bC7pLl
+         QbZNonL1DgSo/sa5gy7gDoTA7TicUpE5a+z696sI+Ay4NxtE6O3KIEK37IX+Qpkqivmt
+         RN1CSrd0tkiTP+D0qYDWs3Sd0UaekCpuUMbj/HzNjjzvDffkz7PRZpUEIqHQopfFh4a+
+         MzHTHgPQjPsVmgEaAQvFRHUqFTmjqsm0cNwSf/QMt0Shj7wCIl8Z3bgGwFFeerBISuXI
+         yu20NtvNH0VeeEXApGBdJBHa3JPwmZhXjVNLM+ZK5JsFHuf7MASjHH8Hbo5jbpzSamKd
+         Tsgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bChhO4OU147A4lNiHygrOQOHfsld5u+2i6MQ4feNf3w=;
+        b=SdGRMgOlMHGiqlHpWrAke1w01NrYZ5kYevkqtLtP0FuL7SCbRH8V5/q5dtFLPSZupr
+         booQJsIY2l7ZlU/rVqkbgn+axcal7Wh5tH8eqp+2nXlYA080pgoMmtNT3UT12s9uByGR
+         bBhCREMZ4TFqn7vDNHwjmzSyG983Shidkr1MZn+E0fQqqIR8Fn71JsCxUEjcv/IIh8qC
+         toPUWHQ3Z1RvzOdd0Swf4IIrXUyYhQL3NsB1oBIygThY4UrKBGuPY42YxtkIunxp4nvu
+         A7biEnkIG6w8ramCRHBpJukXTE3LYnH4Z9q0gP0NBHKKehBvugVPFORZN0LWvZnqu8zn
+         SLkQ==
+X-Gm-Message-State: APjAAAWmjH8Bl5ZbwZqme8BHeGygR0SR6wJ70eMcoxjUiTnK01owym+C
+        5X6NOnH5nJ6U0Oq2XNeiSYg=
+X-Google-Smtp-Source: APXvYqwzCxnF2yPATe30TeRSgX18WekMXwGomMJWqwH8zofZH6HGj5ecC6yokeEfrrYVi6LzXTxfsQ==
+X-Received: by 2002:a63:d551:: with SMTP id v17mr7178680pgi.365.1575515331062;
+        Wed, 04 Dec 2019 19:08:51 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id o23sm9099605pgj.90.2019.12.04.19.08.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Dec 2019 19:08:50 -0800 (PST)
+Subject: Re: [PATCH net v2 2/2] tcp: tighten acceptance of ACKs not matching a
+ child socket
+To:     Guillaume Nault <gnault@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
+References: <cover.1575503545.git.gnault@redhat.com>
+ <1d7e9bc77fb68706d955e4089a801ace0df5d771.1575503545.git.gnault@redhat.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <80ffa7b6-bbaf-ce52-606f-d10e45644bcd@gmail.com>
+Date:   Wed, 4 Dec 2019 19:08:49 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <504bf0958f424a2c9add3a84543c45c6@baidu.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <1d7e9bc77fb68706d955e4089a801ace0df5d771.1575503545.git.gnault@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/12/5 10:47, Li,Rongqing wrote:
->>
->> [1] https://lore.kernel.org/patchwork/patch/1125789/
+
+
+On 12/4/19 4:59 PM, Guillaume Nault wrote:
+> When no synflood occurs, the synflood timestamp isn't updated.
+> Therefore it can be so old that time_after32() can consider it to be
+> in the future.
 > 
+> That's a problem for tcp_synq_no_recent_overflow() as it may report
+> that a recent overflow occurred while, in fact, it's just that jiffies
+> has grown past 'last_overflow' + TCP_SYNCOOKIE_VALID + 2^31.
 > 
-> What is status of this patch? I think you should fix your firmware or bios
-
-Have not reached a conclusion yet.
-
+> Spurious detection of recent overflows lead to extra syncookie
+> verification in cookie_v[46]_check(). At that point, the verification
+> should fail and the packet dropped. But we should have dropped the
+> packet earlier as we didn't even send a syncookie.
 > 
-> Consider the below condition:
+> Let's refine tcp_synq_no_recent_overflow() to report a recent overflow
+> only if jiffies is within the
+> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval. This
+> way, no spurious recent overflow is reported when jiffies wraps and
+> 'last_overflow' becomes in the future from the point of view of
+> time_after32().
 > 
-> there is two numa node, and NIC sites on node 2, but NUMA_NO_NODE is used, recycle will fail due to page_to_nid(page) == numa_mem_id(), 
-> and reallocated pages maybe always from node 1, then the recycle will never success.
-
-For page pool:
-
-1. if the pool->p.nid != NUMA_NO_NODE, the recycle is always decided by
-checking page_to_nid(page) == pool->p.nid.
-
-2. only when the pool->p.nid == NUMA_NO_NODE, the numa_mem_id() is checked
-   to decide the recycle.
-
-Yes, If pool->p.nid == NUMA_NO_NODE, and the cpu that is doing recycling
-is changing each time, the recycle may never success, but it is not common,
-and have its own performance penalty when changing the recycling cpu so
-often.
-
-
+> However, if jiffies wraps and enters the
+> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval (with
+> 'last_overflow' being a stale synflood timestamp), then
+> tcp_synq_no_recent_overflow() still erroneously reports an
+> overflow. In such cases, we have to rely on syncookie verification
+> to drop the packet. We unfortunately have no way to differentiate
+> between a fresh and a stale syncookie timestamp.
 > 
-> -RongQing
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  include/net/tcp.h | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> 
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index f0eae83ee555..005d4c691543 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -520,12 +520,14 @@ static inline bool tcp_synq_no_recent_overflow(const struct sock *sk)
+>  		if (likely(reuse)) {
+>  			last_overflow = READ_ONCE(reuse->synq_overflow_ts);
+>  			return time_after32(now, last_overflow +
+> -					    TCP_SYNCOOKIE_VALID);
+> +					    TCP_SYNCOOKIE_VALID) ||
+> +				time_before32(now, last_overflow);
+>  		}
+>  	}
+>  
+>  	last_overflow = tcp_sk(sk)->rx_opt.ts_recent_stamp;
+> -	return time_after32(now, last_overflow + TCP_SYNCOOKIE_VALID);
+> +	return time_after32(now, last_overflow + TCP_SYNCOOKIE_VALID) ||
+> +		time_before32(now, last_overflow);
+>  }
+
+
+There is a race I believe here.
+
+CPU1                                 CPU2
+ 
+now = jiffies.
+    ...
+                                     jiffies++
+                                     ...
+                                     SYN received, last_overflow is updated to the new jiffies.
+
+
+CPU1 
+ timer_before32(now, last_overflow) is true, because last_overflow was set to now+1
+
+
+I suggest some cushion here.
+
+Also we TCP uses between() macro, we might add a time_between32(a, b, c) macro
+to ease code review.
+
+->
+  return !time_between32(last_overflow - HZ, now, last_overflow + TCP_SYNCOOKIE_VALID);
+
 
