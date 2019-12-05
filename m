@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E719F114765
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 19:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9979111476B
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 20:02:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729968AbfLES7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 13:59:42 -0500
-Received: from mail-eopbgr40078.outbound.protection.outlook.com ([40.107.4.78]:14413
+        id S1730043AbfLETCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 14:02:19 -0500
+Received: from mail-eopbgr40040.outbound.protection.outlook.com ([40.107.4.40]:36161
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729417AbfLES7l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 13:59:41 -0500
+        id S1726589AbfLETCT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 14:02:19 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QVQ5KXfK7eApNxWXD/hVzWXOPb9sEmEG8ZNaRKFrCJdOqpikFspIBdCIolpUiILeXyY0eyJw8wXk8CHESH8Vqhx9BC/aGnufPZHhkgIiLnyXEFBNNzVz2X6zfvfx9Ndu8BdpK3zxlFu1DEZRQovNui5TuLnpiUHOHztnCB8l3kMzuq1gSdHp59PFzk+aqZrqwzYuwdxoF98dFcCkQDvY9F0ZlCCDqZzeXxsVbQE3ZezznXJIykFF7mCqXQYHHR88I7NthjpqS5lV0fcCVt/oAU7iIYLLWavQqQau/9st7DyjjikNl3OZYLjMlNwpDz8YSrcPXeR18E7BQjSmE95O5w==
+ b=W3B37UPwNi9u9u2QWNStgOnxWQAbUMkyBel+d7PcTY4y2Yz1vg8pVqj4DN/hTbHSQ4ep7D7Ovb+6UlonrjcX6lqsTDj8mPQ3DKilvGfioX8IKUEDYbxCysAFrb76DHquf3XHBLOQxphqkqMnYohO8FlGWid+/8zJ6yVnRcW0Nx5lMKTg1iRmU2RPMa3NxlOtPJIpKNohDGxYfEA+XWZt0VanLedJvgmOWDfL8kvIqb9pl68yBAvW9DeTLDQiH04UA7SJZyhtFiQgtAwTXdGgef9E4DNp3DWI518wFxtVUSRxABSRUAORsejjHwNAJNd+1S7Aq0TEuVXAzzqMHwxWGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fmOI+3jJ4JjEBsE+KWczx2X+oteuC5X3jE04rPyGqkI=;
- b=lWfqElbf07znwfKy9lIfECPnV/43KDWB2ogdHbnyQJsbvPcoPhBd+o9teK3OeVio3kLt6k4Oh4YuzE70oHr2lRzlC2mc1OftG64l8qM7ojOkC7gB/FWn/jDjE1xMaM+dWfeANBSEZRV5uOj22qk2ASEXcawNRfA67NndUwWd/lhw5AOyYx7CW+E/ckG+SFcBAmDkZTMtVlFYiPE7JGbGF4UDdXTNcK4G1hnc/SuDaAlprlQlffnrQuKWGcnmyHldKvI/yCim6Qcq5b+gcZLW2RTOCXAWCfAWKNJfU7gfREMEMJd8dqJPbRQm0kuaGL/3IfbD3r8kWKbqPufvsl4rPw==
+ bh=bTAyymT77vkUN+uT6Cbu8b+GhzL0B4A8bVOIA7X/6Ms=;
+ b=GvU5IOTQnEsJXK8iDjWp28bpWx3EybxY6c/z3AwrBGJyEBvoqOhY2nDhcAJz2ZmMAOTDfSwERuzmpIBm5W6FEPzs5vf6MLtW4kpWxTBxtgt6Gbhp4ZaYdf51LqottHj5YY4mnbL6iOxosWwKb4976jBBMKfBI4nNY0Hf9f/xw7UCtliQr2t2KhCWwI35/x5ezbxvD5lLQOBqR4atMtY7xY17FSXeJ67ON/WE02cZJkvalkwbIkXSpltEnQVTCBh1jiFavGfxKR7UEfSyR3xA2lCNSqs7PoW4AFsLRWIIc4R2Sis5XaKsdCajr7uWIyuVbLwGysihQ8iZC7mDXDOyQg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fmOI+3jJ4JjEBsE+KWczx2X+oteuC5X3jE04rPyGqkI=;
- b=Lx/o9k/BFoRg8VaCPbOKdvPfYrV9nUZKRKGi/Fi4SyYEdoTxFWALeNn6aG9BFxHJ+TFpmSDdrUCOPe3GYy/+L5+IB/7RGFCfbF4l5q0HuQCLJbQ5aN1C92QCIO0waofHp9IcP9/7Erw3ezjyHaWJHuhhxbt0eAwkTKq+fM2aHOk=
+ bh=bTAyymT77vkUN+uT6Cbu8b+GhzL0B4A8bVOIA7X/6Ms=;
+ b=AqMG5mG4CY4WWHMG6PvijynbaC41xbbCILPhFLSNMfypsCkWvEfRXiBUOLV+qaEGi0jM45N7H5xoGHjZA89XYW94zOSm+4VvFGVsdqsEemlOP6ETAkpmsGMP7TWNYklgJ9UjttBcagnRqYwXMwe2vg7qx2dRhTfUkoPSnqP1bZ8=
 Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
  AM0PR05MB6516.eurprd05.prod.outlook.com (20.179.35.84) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.14; Thu, 5 Dec 2019 18:59:36 +0000
+ 15.20.2516.14; Thu, 5 Dec 2019 19:02:13 +0000
 Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
  ([fe80::16:9951:5a4b:9ec6]) by AM0PR05MB4866.eurprd05.prod.outlook.com
  ([fe80::16:9951:5a4b:9ec6%7]) with mapi id 15.20.2516.014; Thu, 5 Dec 2019
- 18:59:36 +0000
+ 19:02:13 +0000
 From:   Parav Pandit <parav@mellanox.com>
-To:     Zhenyu Wang <zhenyuw@linux.intel.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>
 CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
         "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
@@ -44,19 +45,19 @@ CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "cohuck@redhat.com" <cohuck@redhat.com>,
         Jiri Pirko <jiri@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>
 Subject: RE: [PATCH 0/6] VFIO mdev aggregated resources handling
 Thread-Topic: [PATCH 0/6] VFIO mdev aggregated resources handling
-Thread-Index: AQHViikX93ntAS7QxEa+ZUX9CByqKKeAQaYwgADEfoCAKW0u8IAA3JMAgADWE0A=
-Date:   Thu, 5 Dec 2019 18:59:36 +0000
-Message-ID: <AM0PR05MB4866C265B6C9D521A201609DD15C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Thread-Index: AQHViikX93ntAS7QxEa+ZUX9CByqKKeAQaYwgADEfoCAKW0u8IAA3JMAgAAJlICAAM59kA==
+Date:   Thu, 5 Dec 2019 19:02:13 +0000
+Message-ID: <AM0PR05MB48669DBAFD6AD3565544AC36D15C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
 References: <20191024050829.4517-1-zhenyuw@linux.intel.com>
  <AM0PR05MB4866CA9B70A8BEC1868AF8C8D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
  <20191108081925.GH4196@zhen-hp.sh.intel.com>
  <AM0PR05MB4866757033043CC007B5C9CBD15D0@AM0PR05MB4866.eurprd05.prod.outlook.com>
  <20191205060618.GD4196@zhen-hp.sh.intel.com>
-In-Reply-To: <20191205060618.GD4196@zhen-hp.sh.intel.com>
+ <b15ae698-cd5e-dfb9-0478-b865cc0c2262@redhat.com>
+In-Reply-To: <b15ae698-cd5e-dfb9-0478-b865cc0c2262@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -66,242 +67,170 @@ authentication-results: spf=none (sender IP is )
 x-originating-ip: [208.176.44.194]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 15cb0892-87de-4ba2-dd57-08d779b5462c
+x-ms-office365-filtering-correlation-id: fddd1636-4840-4e8a-347f-08d779b5a3b1
 x-ms-traffictypediagnostic: AM0PR05MB6516:|AM0PR05MB6516:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6516FA542A76118B4C0BC140D15C0@AM0PR05MB6516.eurprd05.prod.outlook.com>
+x-microsoft-antispam-prvs: <AM0PR05MB6516416D872C89C1C0945994D15C0@AM0PR05MB6516.eurprd05.prod.outlook.com>
 x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 02426D11FE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(366004)(39860400002)(13464003)(189003)(199004)(25786009)(7696005)(99286004)(76176011)(11346002)(54906003)(186003)(316002)(4326008)(14444005)(478600001)(71190400001)(53546011)(71200400001)(14454004)(966005)(102836004)(6506007)(81156014)(66556008)(76116006)(66476007)(66946007)(66446008)(64756008)(8936002)(74316002)(33656002)(5660300002)(229853002)(55016002)(81166006)(9686003)(52536014)(8676002)(2906002)(305945005)(26005)(6916009)(86362001)(21314003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6516;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(366004)(39860400002)(13464003)(189003)(199004)(25786009)(7696005)(99286004)(76176011)(11346002)(54906003)(186003)(316002)(110136005)(4326008)(14444005)(478600001)(71190400001)(53546011)(71200400001)(14454004)(966005)(102836004)(6506007)(81156014)(66556008)(76116006)(66476007)(66946007)(66446008)(64756008)(8936002)(74316002)(33656002)(5660300002)(229853002)(55016002)(81166006)(9686003)(52536014)(8676002)(2906002)(305945005)(26005)(86362001)(21314003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6516;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dH8yGtEujExlENdPuahQ1ZmEBYvKt4PEH1dBc9nGjcYlpcHafKdO6oX85y2qsCQk77+mO0vj5juUgCxM3ogpniEGYStMOmrB91jALcq9WOKJTN0kttJD5ccCCzEAR8cB8q0YXK8TKEsevgQV6P0cc50qJwyk7xHjipoWTGq+kXaJ3lpoLTFkB4YhXosuK9jwr0xuoHBE70T3LVXyML5LqJc7eYIjW2cSlX2Mc5Uh0tpnS51feHqDeJooXcwhZlJs/9Wadui5TwmZ6MGwNWeBpJ4kEt7RXJULc2iTYZjkJ6KQ0KEIKa3DmEdEFuZ+YAyujhz61dJ+VzCGdXdcv7Yk8TaFMbtb7xsfnemraqfonHf8TbVIIFTr6yPizouxLnmVH1js0TKG3lg57YXUzIBU/fPn3jOuURvbbl9Sil01fIHs7322hIrtGKa+1TYAEeK5owb1AtzufWfqNwhKNyCXdclS/goeB0U0lDQ8FOPlFDJxme+GCXu+UsN4nCqeRqQRZbJt/ZEVKVfovcb1r9HORN5GR+wot7g1P1xQ5KUfJUU=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: ymue+VBwOmDgTLloCceyGgU4VnbCN9CrpMSe7qVKJJu7YfpUy8Zy56O/1cKuWXpc7zs6TqMxQnOc25eOvzoaOCIVSXO6wuKP6om11NEchHTE/OWpnwwdchBaXVQzLLvtXO/6gfHjE010C8SfVvONlH+74f9u/QaJ6xi8ZoIpDD/hBcn3y43wF0G+GcyyQg0BPfJ6qRRhoOP5E9Zo8YXzj3WY3lUfdyljp2KvZX8pFUkxMgZul0Ubk/QxMPOW7p5BFUj7yak8GplNPuMAnPA1VoTrh05xFEkdRiLeagAH2mkUpKrXKMa+TRK3JxRStc6ljqC1n6TNzJnmc34cpyxzSYUMOE3Tjd58LPpWTKWRENw9o9U1Ybbs9nFOIty1WoqSSemExIM37YabOQHKziFmY39fHRTN6etfQ9UkjFVL70q2r3oehl/xR0F2K1+7Y5WwwCQ8zN/5ozwnquQ74ySi09oR7X1TwNmNP85TG4EQ8386y7vr1ZSyroCfE2TskzUxZZtuIl0gC9gBcBb9g3R/Nbai7N3A1zBSbnyRMiNB+gU=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15cb0892-87de-4ba2-dd57-08d779b5462c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2019 18:59:36.5583
+X-MS-Exchange-CrossTenant-Network-Message-Id: fddd1636-4840-4e8a-347f-08d779b5a3b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2019 19:02:13.6776
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +MQAQ0LEN+O7Q1NVoBoOWOgkif0mSw98wwWbtXNYwo+X7zaiiH/enIs77lZBx64L1NCAp2OJ/oHkRhflwsLxPw==
+X-MS-Exchange-CrossTenant-userprincipalname: zQfpxXXDiSrLKk5lD5FhLktURTyMk1u6sDZ1iu22U3TRjWga8TCjFioQAb9fxSTB6oLiVoFfMLBQB9g6a2nKFg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6516
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> From: Zhenyu Wang <zhenyuw@linux.intel.com>
-> Sent: Thursday, December 5, 2019 12:06 AM
-> To: Parav Pandit <parav@mellanox.com>
->=20
-> On 2019.12.04 17:36:12 +0000, Parav Pandit wrote:
-> > + Jiri + Netdev since you mentioned netdev queue.
-> >
-> > + Jason Wang and Michael as we had similar discussion in vdpa discussio=
-n
-> thread.
-> >
-> > > From: Zhenyu Wang <zhenyuw@linux.intel.com>
-> > > Sent: Friday, November 8, 2019 2:19 AM
-> > > To: Parav Pandit <parav@mellanox.com>
-> > >
-> >
-> > My apologies to reply late.
-> > Something bad with my email client, due to which I found this patch und=
-er
-> spam folder today.
-> > More comments below.
-> >
-> > > On 2019.11.07 20:37:49 +0000, Parav Pandit wrote:
-> > > > Hi,
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org> On
-> > > > > Behalf Of Zhenyu Wang
-> > > > > Sent: Thursday, October 24, 2019 12:08 AM
-> > > > > To: kvm@vger.kernel.org
-> > > > > Cc: alex.williamson@redhat.com; kwankhede@nvidia.com;
-> > > > > kevin.tian@intel.com; cohuck@redhat.com
-> > > > > Subject: [PATCH 0/6] VFIO mdev aggregated resources handling
-> > > > >
-> > > > > Hi,
-> > > > >
-> > > > > This is a refresh for previous send of this series. I got
-> > > > > impression that some SIOV drivers would still deploy their own
-> > > > > create and config method so stopped effort on this. But seems
-> > > > > this would still be useful for some other SIOV driver which may
-> > > > > simply want capability to aggregate resources. So here's refreshe=
-d
-> series.
-> > > > >
-> > > > > Current mdev device create interface depends on fixed mdev type,
-> > > > > which get uuid from user to create instance of mdev device. If
-> > > > > user wants to use customized number of resource for mdev device,
-> > > > > then only can create new
-> > > > Can you please give an example of 'resource'?
-> > > > When I grep [1], [2] and [3], I couldn't find anything related to '
-> aggregate'.
-> > >
-> > > The resource is vendor device specific, in SIOV spec there's ADI
-> > > (Assignable Device Interface) definition which could be e.g queue
-> > > for net device, context for gpu, etc. I just named this interface as
-> 'aggregate'
-> > > for aggregation purpose, it's not used in spec doc.
-> > >
-> >
-> > Some 'unknown/undefined' vendor specific resource just doesn't work.
-> > Orchestration tool doesn't know which resource and what/how to configur=
-e
-> for which vendor.
-> > It has to be well defined.
-> >
-> > You can also find such discussion in recent lgpu DRM cgroup patches ser=
-ies
-> v4.
-> >
-> > Exposing networking resource configuration in non-net namespace aware
-> mdev sysfs at PCI device level is no-go.
-> > Adding per file NET_ADMIN or other checks is not the approach we follow=
- in
-> kernel.
-> >
-> > devlink has been a subsystem though under net, that has very rich inter=
-face
-> for syscaller, device health, resource management and many more.
-> > Even though it is used by net driver today, its written for generic dev=
-ice
-> management at bus/device level.
-> >
-> > Yuval has posted patches to manage PCI sub-devices [1] and updated vers=
-ion
-> will be posted soon which addresses comments.
-> >
-> > For any device slice resource management of mdev, sub-function etc, we
-> should be using single kernel interface as devlink [2], [3].
-> >
-> > [1]
-> > https://lore.kernel.org/netdev/1573229926-30040-1-git-send-email-yuval
-> > av@mellanox.com/ [2]
-> > http://man7.org/linux/man-pages/man8/devlink-dev.8.html
-> > [3] http://man7.org/linux/man-pages/man8/devlink-resource.8.html
-> >
-> > Most modern device configuration that I am aware of is usually done via=
- well
-> defined ioctl() of the subsystem (vhost, virtio, vfio, rdma, nvme and mor=
-e) or
-> via netlink commands (net, devlink, rdma and more) not via sysfs.
-> >
->=20
-> Current vfio/mdev configuration is via documented sysfs ABI instead of ot=
-her
-> ways. So this adhere to that way to introduce more configurable method on
-> mdev device for standard, it's optional and not actually vendor specific =
-e.g vfio-
-> ap.
->=20
-Some unknown/undefined resource as 'aggregate' is just not an ABI.
-It has to be well defined, as 'hardware_address', 'num_netdev_sqs' or somet=
-hing similar appropriate to that mdev device class.
-If user wants to set a parameter for a mdev regardless of vendor, they must=
- have single way to do so.
-
-> I'm not sure how many devices support devlink now, or if really make sens=
-e to
-> utilize devlink for other devices except net, or if really make sense to =
-take
-> mdev resource configuration from there...
->=20
-This is about adding new knobs not the existing one.
-It has to be well defined. 'aggregate' is not the word that describes it.
-If this is something very device specific, it should be prefixed with 'misc=
-_' something.. or it should be misc_X ioctl().
-Miscellaneous not so well defined class of devices are usually registered u=
-sing misc_register().
-Similarly attributes has to be well defined, otherwise, it should fall unde=
-r misc category specially when you are pointing to 3 well defined specifica=
-tions.
-
-> > >
-> > > >
-> > > > > mdev type for that which may not be flexible. This requirement
-> > > > > comes not only from to be able to allocate flexible resources
-> > > > > for KVMGT, but also from Intel scalable IO virtualization which
-> > > > > would use vfio/mdev to be able to allocate arbitrary resources on=
- mdev
-> instance.
-> > > More info on [1] [2] [3].
-> > > > >
-> > > > > To allow to create user defined resources for mdev, it trys to
-> > > > > extend mdev create interface by adding new "aggregate=3Dxxx"
-> > > > > parameter following UUID, for target mdev type if aggregation is
-> > > > > supported, it can create new mdev device which contains
-> > > > > resources combined by number of instances, e.g
-> > > > >
-> > > > >     echo "<uuid>,aggregate=3D10" > create
-> > > > >
-> > > > > VM manager e.g libvirt can check mdev type with "aggregation"
-> > > > > attribute which can support this setting. If no "aggregation"
-> > > > > attribute found for mdev type, previous behavior is still kept
-> > > > > for one instance allocation. And new sysfs attribute
-> > > > > "aggregated_instances" is created for each mdev device to show
-> > > > > allocated
-> > > number.
-> > > > >
-> > > > > References:
-> > > > > [1]
-> > > > > https://software.intel.com/en-us/download/intel-virtualization-t
-> > > > > echn
-> > > > > ology- for-directed-io-architecture-specification
-> > > > > [2]
-> > > > > https://software.intel.com/en-us/download/intel-scalable-io-virt
-> > > > > uali
-> > > > > zation-
-> > > > > technical-specification
-> > > > > [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-> > > > >
-> > > > > Zhenyu Wang (6):
-> > > > >   vfio/mdev: Add new "aggregate" parameter for mdev create
-> > > > >   vfio/mdev: Add "aggregation" attribute for supported mdev type
-> > > > >   vfio/mdev: Add "aggregated_instances" attribute for supported m=
-dev
-> > > > >     device
-> > > > >   Documentation/driver-api/vfio-mediated-device.rst: Update for
-> > > > >     vfio/mdev aggregation support
-> > > > >   Documentation/ABI/testing/sysfs-bus-vfio-mdev: Update for vfio/=
-mdev
-> > > > >     aggregation support
-> > > > >   drm/i915/gvt: Add new type with aggregation support
-> > > > >
-> > > > >  Documentation/ABI/testing/sysfs-bus-vfio-mdev | 24 ++++++
-> > > > >  .../driver-api/vfio-mediated-device.rst       | 23 ++++++
-> > > > >  drivers/gpu/drm/i915/gvt/gvt.c                |  4 +-
-> > > > >  drivers/gpu/drm/i915/gvt/gvt.h                | 11 ++-
-> > > > >  drivers/gpu/drm/i915/gvt/kvmgt.c              | 53 ++++++++++++-
-> > > > >  drivers/gpu/drm/i915/gvt/vgpu.c               | 56 ++++++++++++-
-> > > > >  drivers/vfio/mdev/mdev_core.c                 | 36 ++++++++-
-> > > > >  drivers/vfio/mdev/mdev_private.h              |  6 +-
-> > > > >  drivers/vfio/mdev/mdev_sysfs.c                | 79 +++++++++++++=
-+++++-
-> > > > >  include/linux/mdev.h                          | 19 +++++
-> > > > >  10 files changed, 294 insertions(+), 17 deletions(-)
-> > > > >
-> > > > > --
-> > > > > 2.24.0.rc0
-> > > >
-> > >
-> > > --
-> > > Open Source Technology Center, Intel ltd.
-> > >
-> > > $gpg --keyserver wwwkeys.pgp.net --recv-keys 4D781827
->=20
-> --
-> Open Source Technology Center, Intel ltd.
->=20
-> $gpg --keyserver wwwkeys.pgp.net --recv-keys 4D781827
+SGkgSmFzb24sDQoNCj4gRnJvbTogSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4g
+U2VudDogVGh1cnNkYXksIERlY2VtYmVyIDUsIDIwMTkgMTI6NDEgQU0NCj4gDQo+IA0KPiBPbiAy
+MDE5LzEyLzUg5LiL5Y2IMjowNiwgWmhlbnl1IFdhbmcgd3JvdGU6DQo+ID4gT24gMjAxOS4xMi4w
+NCAxNzozNjoxMiArMDAwMCwgUGFyYXYgUGFuZGl0IHdyb3RlOg0KPiA+PiArIEppcmkgKyBOZXRk
+ZXYgc2luY2UgeW91IG1lbnRpb25lZCBuZXRkZXYgcXVldWUuDQo+ID4+DQo+ID4+ICsgSmFzb24g
+V2FuZyBhbmQgTWljaGFlbCBhcyB3ZSBoYWQgc2ltaWxhciBkaXNjdXNzaW9uIGluIHZkcGEgZGlz
+Y3Vzc2lvbg0KPiB0aHJlYWQuDQo+ID4+DQo+ID4+PiBGcm9tOiBaaGVueXUgV2FuZyA8emhlbnl1
+d0BsaW51eC5pbnRlbC5jb20+DQo+ID4+PiBTZW50OiBGcmlkYXksIE5vdmVtYmVyIDgsIDIwMTkg
+MjoxOSBBTQ0KPiA+Pj4gVG86IFBhcmF2IFBhbmRpdCA8cGFyYXZAbWVsbGFub3guY29tPg0KPiA+
+Pj4NCj4gPj4gTXkgYXBvbG9naWVzIHRvIHJlcGx5IGxhdGUuDQo+ID4+IFNvbWV0aGluZyBiYWQg
+d2l0aCBteSBlbWFpbCBjbGllbnQsIGR1ZSB0byB3aGljaCBJIGZvdW5kIHRoaXMgcGF0Y2ggdW5k
+ZXINCj4gc3BhbSBmb2xkZXIgdG9kYXkuDQo+ID4+IE1vcmUgY29tbWVudHMgYmVsb3cuDQo+ID4+
+DQo+ID4+PiBPbiAyMDE5LjExLjA3IDIwOjM3OjQ5ICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6
+DQo+ID4+Pj4gSGksDQo+ID4+Pj4NCj4gPj4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+Cj4gPj4+Pj4gRnJvbToga3ZtLW93bmVyQHZnZXIua2VybmVsLm9yZyA8a3ZtLW93bmVyQHZnZXIu
+a2VybmVsLm9yZz4gT24NCj4gPj4+Pj4gQmVoYWxmIE9mIFpoZW55dSBXYW5nDQo+ID4+Pj4+IFNl
+bnQ6IFRodXJzZGF5LCBPY3RvYmVyIDI0LCAyMDE5IDEyOjA4IEFNDQo+ID4+Pj4+IFRvOiBrdm1A
+dmdlci5rZXJuZWwub3JnDQo+ID4+Pj4+IENjOiBhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbTsg
+a3dhbmtoZWRlQG52aWRpYS5jb207DQo+ID4+Pj4+IGtldmluLnRpYW5AaW50ZWwuY29tOyBjb2h1
+Y2tAcmVkaGF0LmNvbQ0KPiA+Pj4+PiBTdWJqZWN0OiBbUEFUQ0ggMC82XSBWRklPIG1kZXYgYWdn
+cmVnYXRlZCByZXNvdXJjZXMgaGFuZGxpbmcNCj4gPj4+Pj4NCj4gPj4+Pj4gSGksDQo+ID4+Pj4+
+DQo+ID4+Pj4+IFRoaXMgaXMgYSByZWZyZXNoIGZvciBwcmV2aW91cyBzZW5kIG9mIHRoaXMgc2Vy
+aWVzLiBJIGdvdA0KPiA+Pj4+PiBpbXByZXNzaW9uIHRoYXQgc29tZSBTSU9WIGRyaXZlcnMgd291
+bGQgc3RpbGwgZGVwbG95IHRoZWlyIG93bg0KPiA+Pj4+PiBjcmVhdGUgYW5kIGNvbmZpZyBtZXRo
+b2Qgc28gc3RvcHBlZCBlZmZvcnQgb24gdGhpcy4gQnV0IHNlZW1zIHRoaXMNCj4gPj4+Pj4gd291
+bGQgc3RpbGwgYmUgdXNlZnVsIGZvciBzb21lIG90aGVyIFNJT1YgZHJpdmVyIHdoaWNoIG1heSBz
+aW1wbHkNCj4gPj4+Pj4gd2FudCBjYXBhYmlsaXR5IHRvIGFnZ3JlZ2F0ZSByZXNvdXJjZXMuIFNv
+IGhlcmUncyByZWZyZXNoZWQgc2VyaWVzLg0KPiA+Pj4+Pg0KPiA+Pj4+PiBDdXJyZW50IG1kZXYg
+ZGV2aWNlIGNyZWF0ZSBpbnRlcmZhY2UgZGVwZW5kcyBvbiBmaXhlZCBtZGV2IHR5cGUsDQo+ID4+
+Pj4+IHdoaWNoIGdldCB1dWlkIGZyb20gdXNlciB0byBjcmVhdGUgaW5zdGFuY2Ugb2YgbWRldiBk
+ZXZpY2UuIElmDQo+ID4+Pj4+IHVzZXIgd2FudHMgdG8gdXNlIGN1c3RvbWl6ZWQgbnVtYmVyIG9m
+IHJlc291cmNlIGZvciBtZGV2IGRldmljZSwNCj4gPj4+Pj4gdGhlbiBvbmx5IGNhbiBjcmVhdGUg
+bmV3DQo+ID4+Pj4gQ2FuIHlvdSBwbGVhc2UgZ2l2ZSBhbiBleGFtcGxlIG9mICdyZXNvdXJjZSc/
+DQo+ID4+Pj4gV2hlbiBJIGdyZXAgWzFdLCBbMl0gYW5kIFszXSwgSSBjb3VsZG4ndCBmaW5kIGFu
+eXRoaW5nIHJlbGF0ZWQgdG8gJw0KPiBhZ2dyZWdhdGUnLg0KPiA+Pj4gVGhlIHJlc291cmNlIGlz
+IHZlbmRvciBkZXZpY2Ugc3BlY2lmaWMsIGluIFNJT1Ygc3BlYyB0aGVyZSdzIEFESQ0KPiA+Pj4g
+KEFzc2lnbmFibGUgRGV2aWNlIEludGVyZmFjZSkgZGVmaW5pdGlvbiB3aGljaCBjb3VsZCBiZSBl
+LmcgcXVldWUNCj4gPj4+IGZvciBuZXQgZGV2aWNlLCBjb250ZXh0IGZvciBncHUsIGV0Yy4gSSBq
+dXN0IG5hbWVkIHRoaXMgaW50ZXJmYWNlIGFzDQo+ICdhZ2dyZWdhdGUnDQo+ID4+PiBmb3IgYWdn
+cmVnYXRpb24gcHVycG9zZSwgaXQncyBub3QgdXNlZCBpbiBzcGVjIGRvYy4NCj4gPj4+DQo+ID4+
+IFNvbWUgJ3Vua25vd24vdW5kZWZpbmVkJyB2ZW5kb3Igc3BlY2lmaWMgcmVzb3VyY2UganVzdCBk
+b2Vzbid0IHdvcmsuDQo+ID4+IE9yY2hlc3RyYXRpb24gdG9vbCBkb2Vzbid0IGtub3cgd2hpY2gg
+cmVzb3VyY2UgYW5kIHdoYXQvaG93IHRvIGNvbmZpZ3VyZQ0KPiBmb3Igd2hpY2ggdmVuZG9yLg0K
+PiA+PiBJdCBoYXMgdG8gYmUgd2VsbCBkZWZpbmVkLg0KPiA+Pg0KPiA+PiBZb3UgY2FuIGFsc28g
+ZmluZCBzdWNoIGRpc2N1c3Npb24gaW4gcmVjZW50IGxncHUgRFJNIGNncm91cCBwYXRjaGVzIHNl
+cmllcw0KPiB2NC4NCj4gPj4NCj4gPj4gRXhwb3NpbmcgbmV0d29ya2luZyByZXNvdXJjZSBjb25m
+aWd1cmF0aW9uIGluIG5vbi1uZXQgbmFtZXNwYWNlIGF3YXJlDQo+IG1kZXYgc3lzZnMgYXQgUENJ
+IGRldmljZSBsZXZlbCBpcyBuby1nby4NCj4gPj4gQWRkaW5nIHBlciBmaWxlIE5FVF9BRE1JTiBv
+ciBvdGhlciBjaGVja3MgaXMgbm90IHRoZSBhcHByb2FjaCB3ZSBmb2xsb3cgaW4NCj4ga2VybmVs
+Lg0KPiA+Pg0KPiA+PiBkZXZsaW5rIGhhcyBiZWVuIGEgc3Vic3lzdGVtIHRob3VnaCB1bmRlciBu
+ZXQsIHRoYXQgaGFzIHZlcnkgcmljaCBpbnRlcmZhY2UNCj4gZm9yIHN5c2NhbGxlciwgZGV2aWNl
+IGhlYWx0aCwgcmVzb3VyY2UgbWFuYWdlbWVudCBhbmQgbWFueSBtb3JlLg0KPiA+PiBFdmVuIHRo
+b3VnaCBpdCBpcyB1c2VkIGJ5IG5ldCBkcml2ZXIgdG9kYXksIGl0cyB3cml0dGVuIGZvciBnZW5l
+cmljIGRldmljZQ0KPiBtYW5hZ2VtZW50IGF0IGJ1cy9kZXZpY2UgbGV2ZWwuDQo+ID4+DQo+ID4+
+IFl1dmFsIGhhcyBwb3N0ZWQgcGF0Y2hlcyB0byBtYW5hZ2UgUENJIHN1Yi1kZXZpY2VzIFsxXSBh
+bmQgdXBkYXRlZCB2ZXJzaW9uDQo+IHdpbGwgYmUgcG9zdGVkIHNvb24gd2hpY2ggYWRkcmVzc2Vz
+IGNvbW1lbnRzLg0KPiA+Pg0KPiA+PiBGb3IgYW55IGRldmljZSBzbGljZSByZXNvdXJjZSBtYW5h
+Z2VtZW50IG9mIG1kZXYsIHN1Yi1mdW5jdGlvbiBldGMsIHdlDQo+IHNob3VsZCBiZSB1c2luZyBz
+aW5nbGUga2VybmVsIGludGVyZmFjZSBhcyBkZXZsaW5rIFsyXSwgWzNdLg0KPiA+Pg0KPiA+PiBb
+MV0NCj4gPj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbmV0ZGV2LzE1NzMyMjk5MjYtMzAwNDAt
+MS1naXQtc2VuZC1lbWFpbC15dXZhDQo+ID4+IGxhdkBtZWxsYW5veC5jb20vIFsyXQ0KPiA+PiBo
+dHRwOi8vbWFuNy5vcmcvbGludXgvbWFuLXBhZ2VzL21hbjgvZGV2bGluay1kZXYuOC5odG1sDQo+
+ID4+IFszXSBodHRwOi8vbWFuNy5vcmcvbGludXgvbWFuLXBhZ2VzL21hbjgvZGV2bGluay1yZXNv
+dXJjZS44Lmh0bWwNCj4gPj4NCj4gPj4gTW9zdCBtb2Rlcm4gZGV2aWNlIGNvbmZpZ3VyYXRpb24g
+dGhhdCBJIGFtIGF3YXJlIG9mIGlzIHVzdWFsbHkgZG9uZSB2aWENCj4gd2VsbCBkZWZpbmVkIGlv
+Y3RsKCkgb2YgdGhlIHN1YnN5c3RlbSAodmhvc3QsIHZpcnRpbywgdmZpbywgcmRtYSwgbnZtZSBh
+bmQgbW9yZSkNCj4gb3IgdmlhIG5ldGxpbmsgY29tbWFuZHMgKG5ldCwgZGV2bGluaywgcmRtYSBh
+bmQgbW9yZSkgbm90IHZpYSBzeXNmcy4NCj4gPj4NCj4gPiBDdXJyZW50IHZmaW8vbWRldiBjb25m
+aWd1cmF0aW9uIGlzIHZpYSBkb2N1bWVudGVkIHN5c2ZzIEFCSSBpbnN0ZWFkIG9mDQo+ID4gb3Ro
+ZXIgd2F5cy4gU28gdGhpcyBhZGhlcmUgdG8gdGhhdCB3YXkgdG8gaW50cm9kdWNlIG1vcmUgY29u
+ZmlndXJhYmxlDQo+ID4gbWV0aG9kIG9uIG1kZXYgZGV2aWNlIGZvciBzdGFuZGFyZCwgaXQncyBv
+cHRpb25hbCBhbmQgbm90IGFjdHVhbGx5DQo+ID4gdmVuZG9yIHNwZWNpZmljIGUuZyB2ZmlvLWFw
+Lg0KPiA+DQo+ID4gSSdtIG5vdCBzdXJlIGhvdyBtYW55IGRldmljZXMgc3VwcG9ydCBkZXZsaW5r
+IG5vdywgb3IgaWYgcmVhbGx5IG1ha2UNCj4gPiBzZW5zZSB0byB1dGlsaXplIGRldmxpbmsgZm9y
+IG90aGVyIGRldmljZXMgZXhjZXB0IG5ldCwgb3IgaWYgcmVhbGx5DQo+ID4gbWFrZSBzZW5zZSB0
+byB0YWtlIG1kZXYgcmVzb3VyY2UgY29uZmlndXJhdGlvbiBmcm9tIHRoZXJlLi4uDQo+IA0KPiAN
+Cj4gSXQgbWF5IG1ha2Ugc2Vuc2UgdG8gYWxsb3cgb3RoZXIgdHlwZXMgb2YgQVBJIHRvIG1hbmFn
+ZSBtZGV2IG90aGVyIHRoYW4NCj4gc3lzZnMuIEJ1dCBJJ20gbm90IHN1cmUgd2hldGhlciBvciBu
+b3QgaXQgd2lsbCBiZSBhIGNoYWxsZW5nZSBmb3Igb3JjaGVzdHJhdGlvbi4NCj4gDQoNClRoZXJl
+IGFyZSB0d28gcGFydHMuDQoxLiBIb3cgeW91IHNwZWNpZnkgcmVzb3VyY2UgY29uZmlnIChzeXNm
+cy9uZXRsaW5rL2RldmxpbmsvaW9jdGwgZXRjKQ0KMi4gZGVmaW5pdGlvbiBvZiB0aGUgcmVzb3Vy
+Y2UgaXRzZWxmLiBJdCBoYXMgdG8gYmUgd2VsbCBkZWZpbmVkLiBPciBpdCBzaG91bGQgYmUgY2F0
+ZWdvcml6ZWQgYXMgbWlzY2VsbGFuZW91cy4NCkl0IGNhbm5vdCBiZSBzb21lIHVuZGVmaW5lZC92
+YWd1ZSBuYW1lIGFzICdhZ2dyZWdhdGUnLg0KIA0KPiBUaGFua3MNCj4gDQo+IA0KPiA+Pj4+PiBt
+ZGV2IHR5cGUgZm9yIHRoYXQgd2hpY2ggbWF5IG5vdCBiZSBmbGV4aWJsZS4gVGhpcyByZXF1aXJl
+bWVudA0KPiA+Pj4+PiBjb21lcyBub3Qgb25seSBmcm9tIHRvIGJlIGFibGUgdG8gYWxsb2NhdGUg
+ZmxleGlibGUgcmVzb3VyY2VzIGZvcg0KPiA+Pj4+PiBLVk1HVCwgYnV0IGFsc28gZnJvbSBJbnRl
+bCBzY2FsYWJsZSBJTyB2aXJ0dWFsaXphdGlvbiB3aGljaCB3b3VsZA0KPiA+Pj4+PiB1c2UgdmZp
+by9tZGV2IHRvIGJlIGFibGUgdG8gYWxsb2NhdGUgYXJiaXRyYXJ5IHJlc291cmNlcyBvbiBtZGV2
+DQo+IGluc3RhbmNlLg0KPiA+Pj4gTW9yZSBpbmZvIG9uIFsxXSBbMl0gWzNdLg0KPiA+Pj4+PiBU
+byBhbGxvdyB0byBjcmVhdGUgdXNlciBkZWZpbmVkIHJlc291cmNlcyBmb3IgbWRldiwgaXQgdHJ5
+cyB0bw0KPiA+Pj4+PiBleHRlbmQgbWRldiBjcmVhdGUgaW50ZXJmYWNlIGJ5IGFkZGluZyBuZXcg
+ImFnZ3JlZ2F0ZT14eHgiDQo+ID4+Pj4+IHBhcmFtZXRlciBmb2xsb3dpbmcgVVVJRCwgZm9yIHRh
+cmdldCBtZGV2IHR5cGUgaWYgYWdncmVnYXRpb24gaXMNCj4gPj4+Pj4gc3VwcG9ydGVkLCBpdCBj
+YW4gY3JlYXRlIG5ldyBtZGV2IGRldmljZSB3aGljaCBjb250YWlucyByZXNvdXJjZXMNCj4gPj4+
+Pj4gY29tYmluZWQgYnkgbnVtYmVyIG9mIGluc3RhbmNlcywgZS5nDQo+ID4+Pj4+DQo+ID4+Pj4+
+ICAgICAgZWNobyAiPHV1aWQ+LGFnZ3JlZ2F0ZT0xMCIgPiBjcmVhdGUNCj4gPj4+Pj4NCj4gPj4+
+Pj4gVk0gbWFuYWdlciBlLmcgbGlidmlydCBjYW4gY2hlY2sgbWRldiB0eXBlIHdpdGggImFnZ3Jl
+Z2F0aW9uIg0KPiA+Pj4+PiBhdHRyaWJ1dGUgd2hpY2ggY2FuIHN1cHBvcnQgdGhpcyBzZXR0aW5n
+LiBJZiBubyAiYWdncmVnYXRpb24iDQo+ID4+Pj4+IGF0dHJpYnV0ZSBmb3VuZCBmb3IgbWRldiB0
+eXBlLCBwcmV2aW91cyBiZWhhdmlvciBpcyBzdGlsbCBrZXB0IGZvcg0KPiA+Pj4+PiBvbmUgaW5z
+dGFuY2UgYWxsb2NhdGlvbi4gQW5kIG5ldyBzeXNmcyBhdHRyaWJ1dGUNCj4gPj4+Pj4gImFnZ3Jl
+Z2F0ZWRfaW5zdGFuY2VzIiBpcyBjcmVhdGVkIGZvciBlYWNoIG1kZXYgZGV2aWNlIHRvIHNob3cN
+Cj4gPj4+Pj4gYWxsb2NhdGVkDQo+ID4+PiBudW1iZXIuDQo+ID4+Pj4+IFJlZmVyZW5jZXM6DQo+
+ID4+Pj4+IFsxXQ0KPiA+Pj4+PiBodHRwczovL3NvZnR3YXJlLmludGVsLmNvbS9lbi11cy9kb3du
+bG9hZC9pbnRlbC12aXJ0dWFsaXphdGlvbi10ZWMNCj4gPj4+Pj4gaG4NCj4gPj4+Pj4gb2xvZ3kt
+IGZvci1kaXJlY3RlZC1pby1hcmNoaXRlY3R1cmUtc3BlY2lmaWNhdGlvbg0KPiA+Pj4+PiBbMl0N
+Cj4gPj4+Pj4gaHR0cHM6Ly9zb2Z0d2FyZS5pbnRlbC5jb20vZW4tdXMvZG93bmxvYWQvaW50ZWwt
+c2NhbGFibGUtaW8tdmlydHVhDQo+ID4+Pj4+IGxpDQo+ID4+Pj4+IHphdGlvbi0NCj4gPj4+Pj4g
+dGVjaG5pY2FsLXNwZWNpZmljYXRpb24NCj4gPj4+Pj4gWzNdIGh0dHBzOi8vc2NoZC53cy9ob3N0
+ZWRfZmlsZXMvbGMzMjAxOC8wMC9MQzMtU0lPVi1maW5hbC5wZGYNCj4gPj4+Pj4NCj4gPj4+Pj4g
+Wmhlbnl1IFdhbmcgKDYpOg0KPiA+Pj4+PiAgICB2ZmlvL21kZXY6IEFkZCBuZXcgImFnZ3JlZ2F0
+ZSIgcGFyYW1ldGVyIGZvciBtZGV2IGNyZWF0ZQ0KPiA+Pj4+PiAgICB2ZmlvL21kZXY6IEFkZCAi
+YWdncmVnYXRpb24iIGF0dHJpYnV0ZSBmb3Igc3VwcG9ydGVkIG1kZXYgdHlwZQ0KPiA+Pj4+PiAg
+ICB2ZmlvL21kZXY6IEFkZCAiYWdncmVnYXRlZF9pbnN0YW5jZXMiIGF0dHJpYnV0ZSBmb3Igc3Vw
+cG9ydGVkIG1kZXYNCj4gPj4+Pj4gICAgICBkZXZpY2UNCj4gPj4+Pj4gICAgRG9jdW1lbnRhdGlv
+bi9kcml2ZXItYXBpL3ZmaW8tbWVkaWF0ZWQtZGV2aWNlLnJzdDogVXBkYXRlIGZvcg0KPiA+Pj4+
+PiAgICAgIHZmaW8vbWRldiBhZ2dyZWdhdGlvbiBzdXBwb3J0DQo+ID4+Pj4+ICAgIERvY3VtZW50
+YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLXZmaW8tbWRldjogVXBkYXRlIGZvciB2ZmlvL21k
+ZXYNCj4gPj4+Pj4gICAgICBhZ2dyZWdhdGlvbiBzdXBwb3J0DQo+ID4+Pj4+ICAgIGRybS9pOTE1
+L2d2dDogQWRkIG5ldyB0eXBlIHdpdGggYWdncmVnYXRpb24gc3VwcG9ydA0KPiA+Pj4+Pg0KPiA+
+Pj4+PiAgIERvY3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLXZmaW8tbWRldiB8IDI0
+ICsrKysrKw0KPiA+Pj4+PiAgIC4uLi9kcml2ZXItYXBpL3ZmaW8tbWVkaWF0ZWQtZGV2aWNlLnJz
+dCAgICAgICB8IDIzICsrKysrKw0KPiA+Pj4+PiAgIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2d2dC9n
+dnQuYyAgICAgICAgICAgICAgICB8ICA0ICstDQo+ID4+Pj4+ICAgZHJpdmVycy9ncHUvZHJtL2k5
+MTUvZ3Z0L2d2dC5oICAgICAgICAgICAgICAgIHwgMTEgKystDQo+ID4+Pj4+ICAgZHJpdmVycy9n
+cHUvZHJtL2k5MTUvZ3Z0L2t2bWd0LmMgICAgICAgICAgICAgIHwgNTMgKysrKysrKysrKysrLQ0K
+PiA+Pj4+PiAgIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2d2dC92Z3B1LmMgICAgICAgICAgICAgICB8
+IDU2ICsrKysrKysrKysrKy0NCj4gPj4+Pj4gICBkcml2ZXJzL3ZmaW8vbWRldi9tZGV2X2NvcmUu
+YyAgICAgICAgICAgICAgICAgfCAzNiArKysrKysrKy0NCj4gPj4+Pj4gICBkcml2ZXJzL3ZmaW8v
+bWRldi9tZGV2X3ByaXZhdGUuaCAgICAgICAgICAgICAgfCAgNiArLQ0KPiA+Pj4+PiAgIGRyaXZl
+cnMvdmZpby9tZGV2L21kZXZfc3lzZnMuYyAgICAgICAgICAgICAgICB8IDc5ICsrKysrKysrKysr
+KysrKysrKy0NCj4gPj4+Pj4gICBpbmNsdWRlL2xpbnV4L21kZXYuaCAgICAgICAgICAgICAgICAg
+ICAgICAgICAgfCAxOSArKysrKw0KPiA+Pj4+PiAgIDEwIGZpbGVzIGNoYW5nZWQsIDI5NCBpbnNl
+cnRpb25zKCspLCAxNyBkZWxldGlvbnMoLSkNCj4gPj4+Pj4NCj4gPj4+Pj4gLS0NCj4gPj4+Pj4g
+Mi4yNC4wLnJjMA0KPiA+Pj4gLS0NCj4gPj4+IE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2VudGVy
+LCBJbnRlbCBsdGQuDQo+ID4+Pg0KPiA+Pj4gJGdwZyAtLWtleXNlcnZlciB3d3drZXlzLnBncC5u
+ZXQgLS1yZWN2LWtleXMgNEQ3ODE4MjcNCg0K
