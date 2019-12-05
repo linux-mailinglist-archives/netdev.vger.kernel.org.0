@@ -2,104 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC29114027
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 12:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6359F11408B
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbfLELca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 06:32:30 -0500
-Received: from first.geanix.com ([116.203.34.67]:36216 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729018AbfLELca (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 5 Dec 2019 06:32:30 -0500
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id BA429378;
-        Thu,  5 Dec 2019 11:32:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1575545546; bh=wMxZmNxsosLnmhaJ4IotGzJVo81drt1nz897yLHZcag=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Pr//vjJHUaATVEBS7brHtlkbwZQrMrbk2QuA9rHoAy0ezps/PktgE1+eFkdMH6FOA
-         MV4T+0paXPqoOaFDfZPH84677t92+f0YoSbNnBKFIjjTjGK4yN4Gaepjw5fPBmwEec
-         Qfy5Cf5nB99T5CRY9HfIF0PLd20JfN9vQwBCwa/zhKoBXTD8eCM7A8xRUnAgCtm4Qo
-         fjZ6u2RxVFT1zhhk2PV/nhywYJH6o0XeaHMm1rpNGkfjXdNk/eCUhsrm70kGgwZYSE
-         E4R+qx0n4O+D7SDTOJXmZ/LP62aqGRM0JK6jV9v32hv4yN1NRvxhiS/jjsuBhR49xH
-         h91ZEFfD1ejUA==
-Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
- stage
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
- <20191127055334.1476-3-qiangqing.zhang@nxp.com>
- <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
- <DB7PR04MB46180C5F1EAC7C4A69A45E0CE65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <d68b2b79-34ec-eb4c-cf4b-047b5157d5e3@pengutronix.de>
- <a1ded645-9e12-d939-7920-8e79983b02a0@geanix.com>
- <DB7PR04MB46184164EAC5719BDCF3822CE65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
- <e7bef254-9762-0b77-1ace-2040113982ec@geanix.com>
- <DB7PR04MB461820120FF61E08B8B5B0B5E65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <3a4102bc-8a86-3425-e227-590c005df044@geanix.com>
-Date:   Thu, 5 Dec 2019 12:32:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1729398AbfLEMJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 07:09:13 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58704 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729096AbfLEMJM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 07:09:12 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A6C63AB87;
+        Thu,  5 Dec 2019 12:09:10 +0000 (UTC)
+Date:   Thu, 5 Dec 2019 12:09:05 +0000
+From:   Michal Rostecki <mrostecki@opensuse.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        Laura Abbott <labbott@redhat.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191205120905.GA5127@wotan.suse.de>
+References: <20191202131847.30837-1-jolsa@kernel.org>
+ <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+ <87wobepgy0.fsf@toke.dk>
+ <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+ <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
+ <20191204135405.3ffb9ad6@cakuba.netronome.com>
+ <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
+ <20191205093548.6eee1449@carbon>
 MIME-Version: 1.0
-In-Reply-To: <DB7PR04MB461820120FF61E08B8B5B0B5E65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8b5b6f358cc9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191205093548.6eee1449@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 05/12/2019 12.19, Joakim Zhang wrote:
+On Thu, Dec 05, 2019 at 09:35:48AM +0100, Jesper Dangaard Brouer wrote:
+> I don't think that is a good idea.  You are creating double work and
+> wasting distro developers time.  Let me explain: 
 > 
->> -----Original Message-----
->> From: Sean Nyekjaer <sean@geanix.com>
->> Sent: 2019年12月5日 19:12
->> To: Joakim Zhang <qiangqing.zhang@nxp.com>; Marc Kleine-Budde
->> <mkl@pengutronix.de>; linux-can@vger.kernel.org
->> Cc: dl-linux-imx <linux-imx@nxp.com>; netdev@vger.kernel.org
->> Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
->> stage
->>
->>
->>
->> On 05/12/2019 12.04, Joakim Zhang wrote:
->>> Hi Sean,
->>>
->>> At my side, both Power-On-Reset and reboot from console can get CAN-IP out
->> of stop mode, HW is i.MX7D-SDB/i.MX8QXP-mek.
->>> I think HW design could make difference.
->>>
->>> We more care about how does CAN-IP stuck in stop mode, could you please
->> explain in details? We want figure out the root cause.
->>
->> When running only with the first stop mode commit:
->> de3578c198c6 ("can: flexcan: add self wakeup support") And there is incoming
->> traffic on both CAN lines.
->> I happens when going into suspend.
->> Then the CAN-IP is stuck in stop mode..
+> 1. First of all, GitHub libbpf does not have a stable branches (which
+> makes sense, given this is a read-only clone of kernel tree). Thus,
+> distro developers have to maintain that themselves, in their internal
+> package tree (that is based on GitHub libbpf).
 > 
-> That means with below patch then CAN-IP could not been stuck in stop mode, right?
-> 	can: flexcan: fix deadlock when using self wakeup
-Yes :)
+> 2. Kernel BPF changes usually require updates to libbpf, as selftests
+> uses libbpf.  Thus, the distro kernel backporter is already required to
+> backport libbpf parts.
 > 
-> If yes, I think we don't need check stop mode in probe stage, since issue has disappeared automatically.
+> This is double work, the code changes to libbpf are now maintained in
+> two places for the distro.
 
-If one have devices deployed where:
-"can: flexcan: fix deadlock when using self wakeup" isn't applied.
-They could have devices stuck in stop-mode.
+I totally agree with Jesper here.
 
-That's what i meant by this patch doesn't do any harm to have the check 
-included.
+I don't know how the situatiom with packaging libbpf and bpftool looks
+like in Fedora/Centos/RHEL now, but in openSUSE we would like to build
+both of them from the kernel source - use kernel-source package as a
+requirement and use the kernel tree from /usr/src/linux to build those.
+We do that for bpftool and perf currently.
 
-/Sean
+So far we are building bpftool and perf without libbpf being dynamically
+linked, so there is no dependency between those packages, although we
+would like to change it as soon as we find a consensus on this series of
+patches.
+
+> The disadvantage for distros to package libbpf (+ bpftool and perf) off
+> their distro kernel tree is that a fix to libbpf, requires rolling a
+> new kernel minor release.  The solution to that is simply that distro
+> package for libbpf have a separate (RPM) spec file, with own
+> versioning, which sources points to distro kernel tree.
+
+That's a great idea. So far, we are using the same version for kernel,
+bfptool and perf, but all of these have separate RPM specs, so we can do
+that.
+
+Michal
