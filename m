@@ -2,150 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC95E113A36
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB069113A48
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 04:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728539AbfLEDIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 22:08:52 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41008 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728132AbfLEDIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 22:08:51 -0500
-Received: by mail-pf1-f194.google.com with SMTP id s18so861451pfd.8
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 19:08:51 -0800 (PST)
+        id S1728807AbfLEDRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 22:17:25 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42082 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728374AbfLEDRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 22:17:25 -0500
+Received: by mail-pl1-f194.google.com with SMTP id x13so604941plr.9;
+        Wed, 04 Dec 2019 19:17:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bChhO4OU147A4lNiHygrOQOHfsld5u+2i6MQ4feNf3w=;
-        b=KbQaeKWKsSbMI2OWmxT35SPKmhoJCVR7Dox22tFW1QmmzbEIbPCbIFt+0WM+bC7pLl
-         QbZNonL1DgSo/sa5gy7gDoTA7TicUpE5a+z696sI+Ay4NxtE6O3KIEK37IX+Qpkqivmt
-         RN1CSrd0tkiTP+D0qYDWs3Sd0UaekCpuUMbj/HzNjjzvDffkz7PRZpUEIqHQopfFh4a+
-         MzHTHgPQjPsVmgEaAQvFRHUqFTmjqsm0cNwSf/QMt0Shj7wCIl8Z3bgGwFFeerBISuXI
-         yu20NtvNH0VeeEXApGBdJBHa3JPwmZhXjVNLM+ZK5JsFHuf7MASjHH8Hbo5jbpzSamKd
-         Tsgg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zLpHyfDlF7oQvCvT4lYlP0xSLBE9XB3er9Iyz3kTfxs=;
+        b=fWnVCCFOkDeBoEPZ4BsVcKyU4UgXHt+5LD09GawCHJ+CpHS2M8OqoXDHqH48slnSMQ
+         AcXyOuR/f2qRCdXcVoDDQJjChjZ6kn187QJXKpUb47nkGO9UwfvmGHG4efEOf8dZpwZV
+         Vu719TqWqWvPZiVyB/pHimURNPG5EZFgxg9InXNchwcNFTrc6DpW+1Aw/lorprKli7yo
+         32sS8P/hy4Bln43s2hBTlpIAGWntvzZX9b6+UpYzEVsiDhyvZUKaF20FITVlNV0BRDLQ
+         XVtSlx/+bbwgucaTj0Xvr9/2FSlpgpRr654jdcXwWOsl1ZBjbRxiRH/c7ZRegdMyAdwM
+         KDjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bChhO4OU147A4lNiHygrOQOHfsld5u+2i6MQ4feNf3w=;
-        b=SdGRMgOlMHGiqlHpWrAke1w01NrYZ5kYevkqtLtP0FuL7SCbRH8V5/q5dtFLPSZupr
-         booQJsIY2l7ZlU/rVqkbgn+axcal7Wh5tH8eqp+2nXlYA080pgoMmtNT3UT12s9uByGR
-         bBhCREMZ4TFqn7vDNHwjmzSyG983Shidkr1MZn+E0fQqqIR8Fn71JsCxUEjcv/IIh8qC
-         toPUWHQ3Z1RvzOdd0Swf4IIrXUyYhQL3NsB1oBIygThY4UrKBGuPY42YxtkIunxp4nvu
-         A7biEnkIG6w8ramCRHBpJukXTE3LYnH4Z9q0gP0NBHKKehBvugVPFORZN0LWvZnqu8zn
-         SLkQ==
-X-Gm-Message-State: APjAAAWmjH8Bl5ZbwZqme8BHeGygR0SR6wJ70eMcoxjUiTnK01owym+C
-        5X6NOnH5nJ6U0Oq2XNeiSYg=
-X-Google-Smtp-Source: APXvYqwzCxnF2yPATe30TeRSgX18WekMXwGomMJWqwH8zofZH6HGj5ecC6yokeEfrrYVi6LzXTxfsQ==
-X-Received: by 2002:a63:d551:: with SMTP id v17mr7178680pgi.365.1575515331062;
-        Wed, 04 Dec 2019 19:08:51 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id o23sm9099605pgj.90.2019.12.04.19.08.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2019 19:08:50 -0800 (PST)
-Subject: Re: [PATCH net v2 2/2] tcp: tighten acceptance of ACKs not matching a
- child socket
-To:     Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-References: <cover.1575503545.git.gnault@redhat.com>
- <1d7e9bc77fb68706d955e4089a801ace0df5d771.1575503545.git.gnault@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <80ffa7b6-bbaf-ce52-606f-d10e45644bcd@gmail.com>
-Date:   Wed, 4 Dec 2019 19:08:49 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zLpHyfDlF7oQvCvT4lYlP0xSLBE9XB3er9Iyz3kTfxs=;
+        b=Ehkw65bxj8NJTSlIF7chzJ0CAwitE4LAhvjPyHdfG4FQnrZP80QmbewsN4F9ju+tCw
+         7klyfvUEmZMkoPea3bx48qVOJv9Bcx4L+TITdPmwr1Sk/lnCOoSv0s02DVR0h1HMqmtK
+         5duTOHZTGGNp6ud/UTIY4JEU1rTu6hnh6Rqb+EIPeaP1+O5REfgk8SdynvjLcM5OhKSK
+         tWBJ0ikyRWu25K2xhFAz3SRk3JuzbrS0mL2vDIBDVNeN3J28qdIqg+Yr7NFGuL8dLtYM
+         FLnSzz7PBwxew09HQ0ZA4nBTzRAayUNd00F7wX/02BkNDwefv22FDSnr08uBl6chnXac
+         hgeg==
+X-Gm-Message-State: APjAAAUU0Cui/+vztDpvsK/jaJ+pI7xp/8GqGmy9pxMyA76M9cGlAyyu
+        fy+Tj9uywwgJM74FAjHuFOw=
+X-Google-Smtp-Source: APXvYqzmJ9DBP5chyXAdhaajV8T/LkxZLnhB5DjwpqMtcFnQ/T53yodnmDxLbLnHHjcTU1sHLLEyqg==
+X-Received: by 2002:a17:902:b70e:: with SMTP id d14mr6402427pls.51.1575515843852;
+        Wed, 04 Dec 2019 19:17:23 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::f9fe])
+        by smtp.gmail.com with ESMTPSA id b16sm9209616pfo.64.2019.12.04.19.17.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 04 Dec 2019 19:17:23 -0800 (PST)
+Date:   Wed, 4 Dec 2019 19:17:20 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
+Message-ID: <20191205031718.ax46kfv55zauuopt@ast-mbp.dhcp.thefacebook.com>
+References: <20191202131847.30837-1-jolsa@kernel.org>
+ <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
+ <87wobepgy0.fsf@toke.dk>
+ <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
+ <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
+ <20191204135405.3ffb9ad6@cakuba.netronome.com>
+ <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
+ <20191204162348.49be5f1b@cakuba.netronome.com>
+ <20191205010930.izft6kv5xlnejgog@ast-mbp.dhcp.thefacebook.com>
+ <20191204181028.6cdb40d4@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <1d7e9bc77fb68706d955e4089a801ace0df5d771.1575503545.git.gnault@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191204181028.6cdb40d4@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/4/19 4:59 PM, Guillaume Nault wrote:
-> When no synflood occurs, the synflood timestamp isn't updated.
-> Therefore it can be so old that time_after32() can consider it to be
-> in the future.
+On Wed, Dec 04, 2019 at 06:10:28PM -0800, Jakub Kicinski wrote:
+> On Wed, 4 Dec 2019 17:09:32 -0800, Alexei Starovoitov wrote:
+> > On Wed, Dec 04, 2019 at 04:23:48PM -0800, Jakub Kicinski wrote:
+> > > On Wed, 4 Dec 2019 15:39:49 -0800, Alexei Starovoitov wrote:  
+> > > > > Agreed. Having libbpf on GH is definitely useful today, but one can hope
+> > > > > a day will come when distroes will get up to speed on packaging libbpf,
+> > > > > and perhaps we can retire it? Maybe 2, 3 years from now? Putting
+> > > > > bpftool in the same boat is just more baggage.    
+> > > > 
+> > > > Distros should be packaging libbpf and bpftool from single repo on github.
+> > > > Kernel tree is for packaging kernel.  
+> > > 
+> > > Okay, single repo on GitHub:
+> > > 
+> > > https://github.com/torvalds/linux  
+> > 
+> > and how will you git submodule only libbpf part of kernel github into bcc
+> > and other projects?
 > 
-> That's a problem for tcp_synq_no_recent_overflow() as it may report
-> that a recent overflow occurred while, in fact, it's just that jiffies
-> has grown past 'last_overflow' + TCP_SYNCOOKIE_VALID + 2^31.
+> Why does bcc have to submodule libbpf? Is it in a "special
+> relationship" with libbpf as well? 
 > 
-> Spurious detection of recent overflows lead to extra syncookie
-> verification in cookie_v[46]_check(). At that point, the verification
-> should fail and the packet dropped. But we should have dropped the
-> packet earlier as we didn't even send a syncookie.
+> dnf/apt install libbpf
 > 
-> Let's refine tcp_synq_no_recent_overflow() to report a recent overflow
-> only if jiffies is within the
-> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval. This
-> way, no spurious recent overflow is reported when jiffies wraps and
-> 'last_overflow' becomes in the future from the point of view of
-> time_after32().
+> Or rather:
 > 
-> However, if jiffies wraps and enters the
-> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval (with
-> 'last_overflow' being a stale synflood timestamp), then
-> tcp_synq_no_recent_overflow() still erroneously reports an
-> overflow. In such cases, we have to rely on syncookie verification
-> to drop the packet. We unfortunately have no way to differentiate
-> between a fresh and a stale syncookie timestamp.
+> dnf/apt install bcc
 > 
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> ---
->  include/net/tcp.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> since BCC's user doesn't care about dependencies. The day distroes
+> started packaging libbpf and bpftool the game has changed.
+
+have you ever built bcc ? or bpftrace?
+I'm not sure how to answer such 'suggestion'.
+
+> Please accept iproute2 as an example of a user space toolset closely
+> related to the kernel. If kernel release model and process made no
+> sense in user space, why do iproute2s developers continue to follow it
+> for years? 
+
+imo iproute2 is an example how things should not be run.
+But that's a very different topic.
+
+> > Packaging is different.
 > 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index f0eae83ee555..005d4c691543 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -520,12 +520,14 @@ static inline bool tcp_synq_no_recent_overflow(const struct sock *sk)
->  		if (likely(reuse)) {
->  			last_overflow = READ_ONCE(reuse->synq_overflow_ts);
->  			return time_after32(now, last_overflow +
-> -					    TCP_SYNCOOKIE_VALID);
-> +					    TCP_SYNCOOKIE_VALID) ||
-> +				time_before32(now, last_overflow);
->  		}
->  	}
->  
->  	last_overflow = tcp_sk(sk)->rx_opt.ts_recent_stamp;
-> -	return time_after32(now, last_overflow + TCP_SYNCOOKIE_VALID);
-> +	return time_after32(now, last_overflow + TCP_SYNCOOKIE_VALID) ||
-> +		time_before32(now, last_overflow);
->  }
+> There are mostly disadvantages, but the process should be well known.
+> perf has been packaged for years.
 
+perf was initially seen as something that should match kernel one to one.
+yet it diverged over years. I think it's a counter example.
 
-There is a race I believe here.
+> What do you mean? I've sure as hell sent patches to net with Fixes tags
 
-CPU1                                 CPU2
- 
-now = jiffies.
-    ...
-                                     jiffies++
-                                     ...
-                                     SYN received, last_overflow is updated to the new jiffies.
+which was complete waste of time for people who were sending these
+patches, for maintainers who applied them and for all stables folks
+who carried them into kernel stable releases.
+Not a single libbpf build was made out of those sources.
 
+> S-o-B and all that jazz for libbpf and bpftool.
 
-CPU1 
- timer_before32(now, last_overflow) is true, because last_overflow was set to now+1
+Many open source projects use SOB. It's not kernel specific.
 
+> 
+> > Even coding style is different.
+> 
+> Is it? You mean the damn underscores people are making fun of? :/
 
-I suggest some cushion here.
+Are you trolling? Do you understand why __ is there?
 
-Also we TCP uses between() macro, we might add a time_between32(a, b, c) macro
-to ease code review.
+> libbpf doesn't have a roadmap either, 
 
-->
-  return !time_between32(last_overflow - HZ, now, last_overflow + TCP_SYNCOOKIE_VALID);
+I think you're contrasting that with kernel and saying
+that kernel has a roadmap ? What is kernel roadmap?
 
+> it's not really a full-on project
+> on its own. What's 0.1.0 gonna be?
+
+whenever this bpf community decides to call it 0.1.0.
+
+> Besides stuff lands in libbpf before it hits a major kernel release.
+> So how are you gonna make libbpf releases independently from kernel
+> ones? What if a feature gets a last minute revert in the kernel and it's
+> in libbpf's ABI?
+
+You mean when kernel gets new feature, then libbpf gets new feature, then
+libbpf is released, but then kernel feature is reverted? Obviously we should
+avoid making a libbpf release that relies on kernel features that didn't reach
+the mainline. Yet there could be plenty of reasons why making libbpf release in
+the middle of kernel development cycle makes perfect sense.
+
+Also reaching Linus's tree in rc1 is also not a guarantee of non-revert. Yet we
+release libbpf around rc1 because everyone expects bug-fixes after rc1. So it's
+an exception that solidifies the rule.
+
+> > libbpf has to run on all kernels. Newer and older. How do you support
+> > that if libbpf is tied with the kernel?
+> 
+> Say I have built N kernels UM or for a VM, and we have some test
+> suite: I pull libbpf, build it, run its tests. The only difference
+> between in tree and out of tree is that "pull libbpf" means pulling
+> smaller or larger repo. Doesn't matter that match, it's a low --depth
+> local clone.
+
+The expected CI is:
+1. pull-req proposed.
+2. CI picks it up, builds, run tests.
+3. humans see results and land or reject pull-req.
+Now try to think through how CI on top of full kernel tree will
+be able to pick just the right commits to start build/test cycle.
+Is it going to cherry-pick from patchworks? That would be awesome.
+Yet intel 0bot results show that it's easier said than done.
+I'm not saying it's not possible. Just complex.
+If you have cycles to integrate *-next into kernelci.org, please go ahead.
 
