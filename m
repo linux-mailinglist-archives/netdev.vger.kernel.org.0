@@ -2,266 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A65114386
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 16:28:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48AE211440D
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 16:51:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729780AbfLEP2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 10:28:33 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:39676 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbfLEP2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 10:28:32 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1ict3M-0005Rk-1A; Thu, 05 Dec 2019 15:28:28 +0000
-To:     David Ahern <dsahern@gmail.com>, Shuah Khan <shuah@kernel.org>,
+        id S1729744AbfLEPvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 10:51:16 -0500
+Received: from mail-eopbgr40074.outbound.protection.outlook.com ([40.107.4.74]:63710
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726028AbfLEPvP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 10:51:15 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JPQrDLF+ky7q1Gbp34UTfDy+6+NdbA4zULZjZSxZG+EEL7+J472FXfhiFH2gpO9KrLbRSJHVHRA5v2HQXGtUR0hIc3TqpBOQ2SPeony3+EOkIjYb35YS9PM0gE5X4wZOIjwWs+/PbqVCkqROi1nowLjaSRuwm78My0qF0A62YNCQobDr0HtUjAfIn0KSuWurOHfS+F6MKEijvsLLhShZua9Q71R/K3YnbXEv6RbjVtU7hFS/3Yqc1GKoB4rBKUSubiyyglgrqHnap+XHrR3Ya0oFzmSWMP97uyGiWzb5eA7rhreKCoi6lsS470Lai5fvdzhoOSrlV/ypi2JWNHlBOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5CAbgoCJG24d4hiUsC8MIzEGwR5LXcRnty/R9MPx4/Q=;
+ b=LlXzZ9WnSJCpWUzE6yIKo4UhjSfJuj/2J3tgGnolcFDeU6OCE6AzXbt/FZZoSrETSEEPHaAdZg5PBSZqC8D0p3taIK5e2OjOGOmZHqSYSqYJJcqF0l5ZeYfyGOaXB7YUIMvEI9r5fMqIzl6RHldKABkdVlqr4k1thXJ8UE1PptJthonKdnKeQ5vMN165uORvj1mHtQhFqImo52xywaZaguwiXAQ0W75nACEKhKZIc4AUQjV23LjOGYlE3HZSD9dn1QmiOrToiyTJwpVvLWJs3czP+WT1sodgJq+r6bGcYfMCfJzpnvO83OkOSQXt2Rl0Nv6z+/TP7c+c0jLxTp9PgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5CAbgoCJG24d4hiUsC8MIzEGwR5LXcRnty/R9MPx4/Q=;
+ b=F/jiw1RPuBXcMKhM2KoIvZ04dZMQUOpntYbqTD6zlQSO58iJNbqobElFerECwygG9HY7VPDYNshGoQr9/t0yxJnKeVsioiSc26wBuxHtF+OoHLJ8eTuvHhUJCudNdMJmE3sgsBWIaMvGVFlmDvl776cm22QLZlmzhUJgCMpQzww=
+Received: from AM0PR05MB5875.eurprd05.prod.outlook.com (20.178.119.159) by
+ AM0PR05MB4851.eurprd05.prod.outlook.com (20.176.214.222) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.22; Thu, 5 Dec 2019 15:51:11 +0000
+Received: from AM0PR05MB5875.eurprd05.prod.outlook.com
+ ([fe80::dca5:7e63:8242:685e]) by AM0PR05MB5875.eurprd05.prod.outlook.com
+ ([fe80::dca5:7e63:8242:685e%7]) with mapi id 15.20.2516.013; Thu, 5 Dec 2019
+ 15:51:11 +0000
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Seth Forshee <seth.forshee@canonical.com>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: selftests: l2tp tests
-Message-ID: <450f5abb-5fe8-158d-d267-4334e15f8e58@canonical.com>
-Date:   Thu, 5 Dec 2019 15:28:27 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: [PATCH bpf 0/4] Fix concurrency issues between XSK wakeup and control
+ path using RCU
+Thread-Topic: [PATCH bpf 0/4] Fix concurrency issues between XSK wakeup and
+ control path using RCU
+Thread-Index: AQHVq4PQ1sBcYCUWVkK5Ac3BLPjO3g==
+Date:   Thu, 5 Dec 2019 15:51:11 +0000
+Message-ID: <20191205155028.28854-1-maximmi@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR06CA0044.eurprd06.prod.outlook.com
+ (2603:10a6:208:aa::21) To AM0PR05MB5875.eurprd05.prod.outlook.com
+ (2603:10a6:208:12d::31)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=maximmi@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [94.188.199.18]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 8a9fa294-290b-4847-9f20-08d7799af346
+x-ms-traffictypediagnostic: AM0PR05MB4851:|AM0PR05MB4851:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB4851C003B948E889250F382CD15C0@AM0PR05MB4851.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 02426D11FE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(136003)(346002)(366004)(189003)(199004)(6506007)(50226002)(6512007)(316002)(2906002)(81156014)(8936002)(102836004)(99286004)(8676002)(4326008)(86362001)(305945005)(25786009)(64756008)(2616005)(186003)(7416002)(54906003)(71190400001)(36756003)(478600001)(52116002)(14454004)(81166006)(5660300002)(14444005)(66476007)(71200400001)(66946007)(6486002)(66556008)(107886003)(1076003)(110136005)(66446008)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4851;H:AM0PR05MB5875.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0Nr1BjLZK1APFBHSrwHn66d5X5d4FnSWqR/HqDTrBdmfHLQG2OcH18/4rQ1zIoBLELS7wCffPTPPl23MfuKvPFMJoxwasmBBgRSuGb6XBjX5sVWeG80FngWkUI8Sai22vnaCvfUMddQlFl6bfyhFIqxoZp8xshR0cY2yUdOZrSwwi6+/Hno/gyrUxMx+Y5u+yh+mXVlCGvNObKr7ieaXUtLLLDD9JPpcnVe183BdIeozenwVcLwuGhMttmkRvfgAnUQFriR6xsVyEMTNwehb1SaoJadv0hwaiZU0IsCClZSUFX9qu71AYYUQKmrYDWjnLpCkhuVRstZy0WlDA2XHK3bmSsy/ukIa1QO2NOGsH1cUOwScm2d5SH04RnFfTqIBzrQXs7/7zLoJel/6viFR/CAfVm/TlZLRfM9aubgDNbWgZalaEt+BJ/NaQesYg8Bu
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a9fa294-290b-4847-9f20-08d7799af346
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Dec 2019 15:51:11.1359
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LQwnaYHkk0tRRoa8wT9riqXHTHzriGGqgMmGH3/b/L8VT3uKIxtxjPBHGHVrm8UvHAjAs2R3uE64q75g4hxOUw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4851
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This series addresses the issue described in the commit message of the
+first patch: lack of synchronization between XSK wakeup and destroying
+the resources used by XSK wakeup. The idea is similar to
+napi_synchronize. The series contains fixes for the drivers that
+implement XSK. I haven't tested the changes to Intel's drivers, so,
+Intel guys, please review them.
 
-While testing linux 5.4 with the l2tp test I discovered two kernel
-issues when running this test:
+Maxim Mikityanskiy (4):
+  xsk: Add rcu_read_lock around the XSK wakeup
+  net/mlx5e: Fix concurrency issues between config flow and XSK
+  net/i40e: Fix concurrency issues between config flow and XSK
+  net/ixgbe: Fix concurrency issues between config flow and XSK
 
-1. About 10+ seconds after completing the test one can observe periodic
-kernel log messages from  netdev_wait_allrefs (in net/core/dev.c) in the
-form:
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  7 ++++--
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  4 ++++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  6 ++++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  8 +++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  | 22 ++++++++-----------
+ .../mellanox/mlx5/core/en/xsk/setup.c         |  1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 19 +---------------
+ net/xdp/xsk.c                                 |  8 +++++--
+ 10 files changed, 39 insertions(+), 40 deletions(-)
 
-"unregister_netdevice: waiting for eth0 to become free. Usage count = 1"
+--=20
+2.20.1
 
-2. Our regression tests that ran stress-ng after this test picked up
-another issue that causes socket() to hang indefinitely.  I've managed
-to get this down to a simple reproducer as follows:
-
-sudo modprobe l2tp_core
-sudo ./linux/tools/testing/selftests/net/l2tp.sh
-sleep 5
-./close
-
-Where ./close is an executable compiled from:
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <stdio.h>
-
-int main()
-{
-        int fd;
-
-        printf("calling socket..\n");
-        fd = socket(AF_APPLETALK, SOCK_STREAM, 0);
-        printf("socket returned: %d\n", fd);
-}
-
-The code will hang on the socket() call and won't ever get to the final
-print statement.
-
-If one runs the reproducer on earlier kernels we get:
-
-4.6.7 crash (see dmesg below)
-4.7.10 crash in xfrm6_dst_ifdown
-4.8.17 crash in xfrm6_dst_ifdown
-4.12.14 crash (see dmesg below)
-4.13.16 reports "unregister_netdevice: waiting for eth0 to become free.
-Usage count = 2"
-4.14.157 reports "unregister_netdevice: waiting for eth0 to become free.
-Usage count = 2""
-4.15.18 .. 5.4 hangs on socket() call
-
-Note: functionality for the l2tp test is not available for pre-4.6 kernels.
-
-The crashes I get for older kernels are:
-
-4.6.7:
-[ 34.457967] BUG: scheduling while atomic: kworker/u8:0/6/0x00000200
-[ 34.458021] Modules linked in: esp6 xfrm6_mode_transport drbg
-ansi_cprng seqiv esp4 xfrm4_mode_transport xfrm_user xfrm_algo l2tp_ip6
-l2tp_eth l2tp_ip l2tp_netlink veth l2tp_core ip6_udp_tunnel udp_tunnel
-squashfs binfmt_misc dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua
-ppdev kvm_intel kvm irqbypass joydev input_leds snd_hda_codec_generic
-serio_raw snd_hda_intel snd_hda_codec parport_pc 8250_fintek parport
-snd_hda_core qemu_fw_cfg snd_hwdep snd_pcm snd_timer mac_hid snd
-soundcore sch_fq_codel virtio_rng ip_tables x_tables autofs4 btrfs
-raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor
-async_tx xor hid_generic usbhid hid raid6_pq libcrc32c raid1 raid0
-multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel qxl
-ttm drm_kms_helper syscopyarea sysfillrect aesni_intel sysimgblt
-[ 34.458086] fb_sys_fops aes_x86_64 lrw gf128mul glue_helper ablk_helper
-cryptd i2c_piix4 drm psmouse pata_acpi floppy
-[ 34.458100] CPU: 1 PID: 6 Comm: kworker/u8:0 Not tainted
-4.6.7-040607-generic #201608160432
-[ 34.458103] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.12.0-1 04/01/2014
-[ 34.458131] Workqueue: netns cleanup_net
-[ 34.458135] 0000000000000286 000000002fa171e7 ffff88007c8e7ab8
-ffffffff813f7594
-[ 34.458139] ffff88007fc96b80 7fffffffffffffff ffff88007c8e7ac8
-ffffffff810a8f6b
-[ 34.458143] ffff88007c8e7b18 ffffffff8184905b 00ff88007c8e7ae8
-ffffffff8106463e
-[ 34.458147] Call Trace:
-[ 34.458161] [<ffffffff813f7594>] dump_stack+0x63/0x8f
-[ 34.458166] [<ffffffff810a8f6b>] __schedule_bug+0x4b/0x60
-[ 34.458185] [<ffffffff8184905b>] __schedule+0x5eb/0x7a0
-[ 34.458191] [<ffffffff8106463e>] ? kvm_sched_clock_read+0x1e/0x30
-[ 34.458195] [<ffffffff81849245>] schedule+0x35/0x80
-[ 34.458203] [<ffffffff8184c402>] schedule_timeout+0x1b2/0x270
-[ 34.458207] [<ffffffff81848d74>] ? __schedule+0x304/0x7a0
-[ 34.458212] [<ffffffff81849ca3>] wait_for_completion+0xb3/0x140
-[ 34.458217] [<ffffffff810aeed0>] ? wake_up_q+0x70/0x70
-[ 34.458226] [<ffffffff810e7f68>] __wait_rcu_gp+0xc8/0xf0
-[ 34.458231] [<ffffffff810e9fd8>] synchronize_sched.part.58+0x38/0x50
-[ 34.458235] [<ffffffff810ec570>] ? call_rcu_bh+0x20/0x20
-[ 34.458239] [<ffffffff810e7e80>] ?
-trace_raw_output_rcu_utilization+0x60/0x60
-[ 34.458244] [<ffffffff810ec643>] synchronize_sched+0x33/0x40
-[ 34.458251] [<ffffffffc0510f71>] __l2tp_session_unhash+0xd1/0xe0
-[l2tp_core]
-[ 34.458256] [<ffffffffc051101e>] l2tp_tunnel_closeall+0x9e/0x140
-[l2tp_core]
-[ 34.458261] [<ffffffffc0511219>] l2tp_tunnel_delete+0x19/0x70 [l2tp_core]
-[ 34.458265] [<ffffffffc05112bb>] l2tp_exit_net+0x4b/0x80 [l2tp_core]
-[ 34.458269] [<ffffffff81732188>] ops_exit_list.isra.4+0x38/0x60
-[ 34.458273] [<ffffffff817331e4>] cleanup_net+0x1c4/0x2a0
-[ 34.458281] [<ffffffff8109ccfc>] process_one_work+0x1fc/0x490
-[ 34.458285] [<ffffffff8109cfdb>] worker_thread+0x4b/0x500
-[ 34.458290] [<ffffffff8109cf90>] ? process_one_work+0x490/0x490
-[ 34.458293] [<ffffffff810a37c8>] kthread+0xd8/0xf0
-[ 34.458298] [<ffffffff8184d522>] ret_from_fork+0x22/0x40
-[ 34.458302] [<ffffffff810a36f0>] ? kthread_create_on_node+0x1b0/0x1b0
-[ 34.514067] ------------[ cut here ]------------
-
-4.12.14:
-[ 20.760253] ------------[ cut here ]------------
-[ 20.760256] kernel BUG at
-/home/kernel/COD/linux/net/ipv6/xfrm6_policy.c:265!
-[ 20.760299] invalid opcode: 0000 [#1] SMP
-[ 20.760320] Modules linked in: appletalk psnap llc esp6
-xfrm6_mode_transport esp4 xfrm4_mode_transport xfrm_user xfrm_algo
-l2tp_ip6 l2tp_eth l2tp_ip l2tp_netlink veth l2tp_core ip6_udp_tunnel
-udp_tunnel binfmt_misc dm_multipath scsi_dh_rdac scsi_dh_emc
-scsi_dh_alua joydev ppdev snd_hda_codec_generic kvm_intel kvm irqbypass
-snd_hda_intel snd_hda_codec snd_hda_core input_leds snd_hwdep serio_raw
-snd_pcm snd_timer hid_generic snd soundcore parport_pc parport mac_hid
-qemu_fw_cfg sch_fq_codel virtio_rng ip_tables x_tables autofs4 usbhid
-hid btrfs raid10 raid456 async_raid6_recov async_memcpy async_pq
-async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear
-crct10dif_pclmul crc32_pclmul ghash_clmulni_intel pcbc aesni_intel
-aes_x86_64 crypto_simd qxl glue_helper ttm cryptd drm_kms_helper psmouse
-[ 20.760677] syscopyarea sysfillrect virtio_blk sysimgblt fb_sys_fops
-drm floppy virtio_net i2c_piix4 pata_acpi
-[ 20.760731] CPU: 3 PID: 49 Comm: kworker/u8:1 Not tainted
-4.12.14-041214-generic #201709200843
-[ 20.760772] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.12.0-1 04/01/2014
-[ 20.760814] Workqueue: netns cleanup_net
-[ 20.760836] task: ffff8aa4bcbbad00 task.stack: ffff9dc5804c0000
-[ 20.760867] RIP: 0010:xfrm6_dst_ifdown+0xa0/0xb0
-[ 20.760890] RSP: 0018:ffff9dc5804c3be0 EFLAGS: 00010246
-[ 20.760916] RAX: ffff8aa4b6e6a000 RBX: ffff8aa4bc1b3500 RCX:
-0000000000000000
-[ 20.760950] RDX: 0000000000000001 RSI: ffff8aa4b6f39000 RDI:
-ffff8aa4bc1b3500
-[ 20.760984] RBP: ffff9dc5804c3c08 R08: 0000000000000000 R09:
-ffffffffb49fd7a0
-[ 20.761017] R10: ffff9dc5804c3c70 R11: 0000000000000000 R12:
-ffff8aa4b6f39000
-[ 20.761050] R13: ffff8aa4b6f39000 R14: ffff8aa4bc1b3500 R15:
-0000000000000000
-[ 20.761085] FS: 0000000000000000(0000) GS:ffff8aa4bfd80000(0000)
-knlGS:0000000000000000
-[ 20.761123] CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 20.761150] CR2: 00007fa5cd126718 CR3: 000000007c382000 CR4:
-00000000001406e0
-[ 20.761189] Call Trace:
-[ 20.761207] dst_ifdown+0x26/0x80
-[ 20.761226] dst_dev_event+0x5c/0x170
-[ 20.761247] notifier_call_chain+0x4a/0x70
-[ 20.761269] raw_notifier_call_chain+0x16/0x20
-[ 20.761293] call_netdevice_notifiers_info+0x35/0x60
-[ 20.761318] netdev_run_todo+0xcf/0x300
-[ 20.761340] rtnl_unlock+0xe/0x10
-[ 20.761359] default_device_exit_batch+0x153/0x180
-[ 20.761385] ? do_wait_intr_irq+0x90/0x90
-[ 20.761408] ops_exit_list.isra.6+0x52/0x60
-[ 20.761430] cleanup_net+0x1ca/0x2b0
-[ 20.761451] process_one_work+0x1e7/0x410
-[ 20.761472] worker_thread+0x4a/0x410
-[ 20.761492] kthread+0x125/0x140
-[ 20.761511] ? process_one_work+0x410/0x410
-[ 20.761532] ? kthread_create_on_node+0x70/0x70
-[ 20.761556] ret_from_fork+0x25/0x30
-[ 20.761575] Code: f0 00 00 00 75 05 e8 10 6f 00 00 4c 89 bb 58 01 00 00
-f0 41 ff 04 24 48 8b 5b 10 48 83 7b 48 00 75 d4 f0 41 ff 0c 24 eb 8e f3
-c3 <0f> 0b 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 55 b9 06 00 00
-[ 20.761695] RIP: xfrm6_dst_ifdown+0xa0/0xb0 RSP: ffff9dc5804c3be0
-[ 20.762104] ---[ end trace b22472ed4abae541 ]---
-
-So all in all, the test is great for finding bugs. I thought I should
-flag these issues up.
-
-Regards,
-
-Colin
