@@ -2,266 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2A0113AC7
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 05:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9402F113ADE
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 05:35:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728671AbfLEE1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 Dec 2019 23:27:06 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39083 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728132AbfLEE1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 23:27:06 -0500
-Received: by mail-lj1-f194.google.com with SMTP id e10so1875247ljj.6
-        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 20:27:04 -0800 (PST)
+        id S1728932AbfLEEf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 Dec 2019 23:35:26 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:37508 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728883AbfLEEf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 Dec 2019 23:35:26 -0500
+Received: by mail-pl1-f196.google.com with SMTP id bb5so692764plb.4
+        for <netdev@vger.kernel.org>; Wed, 04 Dec 2019 20:35:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=IkVfhW3J2Ojg/cQ1sCp3mgS439i6j3OWnwWO8MYbCxw=;
-        b=NSsYEUAt7gTMqN1+NXjsIlxafwjK69m5mS0tNpnoWfy0UadHmm8CX1gfyuOz7v2Yxz
-         kbTNICGwY198z4xMarvH/6E3qlLNzPt0M3bLWDc36QSEXnyzvRmvUS9GbtdwCSNCUwKB
-         LqwNK4QR0XMrix+tuXNRqP7+Xlfwq6p6T7TVHRVvBbc9d8jBp2FsbfohKyc8J+6SLqEx
-         ipNT+xdBuLAZhFvi762ck9XdKMorIXUMkNKbYT0hTOESKGZD+gW+Kr6o0DDT//sUiEBG
-         K9mvLW6W7mAEhzaGPzN8TrezyiZIsFhJB8/GaaQwfj+atxTduv7WgKkc/rcNAuXF0HeI
-         u5kA==
+        d=axtens.net; s=google;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=s6emKmGGeuSq3wtIVxjBKVR6ZpCN8AX3rs92e/sQ08s=;
+        b=HTnzmMsSBoONgPFSO6kOgPwH5zOZehEChmShYIuAo0k4JTBQNF3A5wgx2GKkGvWf0/
+         S8wIIqluaiR7t7sEd8vDlFYt+v+8pBRbWU2LvgNKERIMYCO/15zH23xUkm5+HaCbsXdi
+         KrdfsJfxfqTl+g3UG1SnUBAB4DY29MLiQVxfc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=IkVfhW3J2Ojg/cQ1sCp3mgS439i6j3OWnwWO8MYbCxw=;
-        b=uFjhKvI4Pfg+r4/0R+1XXAEvhFZqM2FGSodsiYUKgBG+I0EMrh3sHQDlfdGcJmDMxn
-         DaFb/qdrKqNzrPApBmJtJlLC0UvdPHlPkkNTMabUS4iKoPQpeG7FRxyWLXwQx8DNvT1A
-         P+HB4+KjpGHGwtfDaptQaMQthXtmVeHThxWdg5Wctyqz+7UPPgRtlyDhe+NVyyl6Ohm0
-         OMHCSDfpteFf6kDWxTljdIsm/wWi66gqe3wrPJKeRra4dlIkX7pfJuKP4wo3daL1JOs3
-         JcKAPfActiUzPVzhftc9vMEwRkpnRVbBklpNIF7h+s+ewWnKQkY0fAxbk4mN8j7GzpRo
-         +p7A==
-X-Gm-Message-State: APjAAAUpFQBVusGNP9fx09ygNOWBK1C8LIWMAsqOsSQZFu2NgvpDWGsZ
-        VBpftw3k06G9n4FPsFGdvi3pxA==
-X-Google-Smtp-Source: APXvYqzYoC5e23Lvp57sngoz6hCJxFrnVW1oTzolrTDsnPYZcS0A9POyeQOteXLbSOwjOa9MJqsfdA==
-X-Received: by 2002:a2e:9741:: with SMTP id f1mr3881806ljj.123.1575520023206;
-        Wed, 04 Dec 2019 20:27:03 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c12sm4251857ljk.77.2019.12.04.20.26.58
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=s6emKmGGeuSq3wtIVxjBKVR6ZpCN8AX3rs92e/sQ08s=;
+        b=JjlMIbz/y5g4ckjrX0INvlWLNgIp67Ka5H3WRkkhZVywkgHfWzGgpvZnKkFZcZ8/eJ
+         Qz4dUb/kC8aHJ484J0K8D6wa9nOxEmE2z8hbLx3BNlPjszBkf8fnzPdz03X1nPZYtg30
+         qQjxPhpm/TzSvRHhoCdKY/MXE4gDEIQtANkDExZm3ZoMUyjOXg8w5NRbk/SRV/8vjTxG
+         uj4P9dhdJaUqjjzQSVp7TI9q4nithEpri0WIehh9FvWkxNnlmSzaw9mJH7TdNZ3HsVXK
+         II2ohuU0qwToONh6esJ0t/NCa1pmHtKC0OFeCOiKvVCqrpI4jHBa2eEwfUM/9UBJEZlD
+         3NyA==
+X-Gm-Message-State: APjAAAWcerQ8VUP1vyvcBlXJsVyx6qVjyN8A5YEGoKdJhlesz1bGuqEg
+        34Zs2/ge9DeiW2j3dvvsEfyn4w==
+X-Google-Smtp-Source: APXvYqxCZmeC4c8H+1S3gozzuwiEdfr5IAET6UGkXj4FIbbXUkTX+Q/yZHHnB0KOldDQ9QcNbSYcCw==
+X-Received: by 2002:a17:90a:bb0b:: with SMTP id u11mr7305972pjr.12.1575520525179;
+        Wed, 04 Dec 2019 20:35:25 -0800 (PST)
+Received: from localhost (2001-44b8-1113-6700-7daa-d2ea-7edb-cfe8.static.ipv6.internode.on.net. [2001:44b8:1113:6700:7daa:d2ea:7edb:cfe8])
+        by smtp.gmail.com with ESMTPSA id c184sm10147599pfa.39.2019.12.04.20.35.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Dec 2019 20:27:02 -0800 (PST)
-Date:   Wed, 4 Dec 2019 20:26:38 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Wed, 04 Dec 2019 20:35:24 -0800 (PST)
+From:   Daniel Axtens <dja@axtens.net>
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCHv4 0/6] perf/bpftool: Allow to link libbpf dynamically
-Message-ID: <20191204202638.3b0b0c8c@cakuba.netronome.com>
-In-Reply-To: <20191205031718.ax46kfv55zauuopt@ast-mbp.dhcp.thefacebook.com>
-References: <20191202131847.30837-1-jolsa@kernel.org>
-        <CAEf4BzY_D9JHjuU6K=ciS70NSy2UvSm_uf1NfN_tmFz1445Jiw@mail.gmail.com>
-        <87wobepgy0.fsf@toke.dk>
-        <CAADnVQK-arrrNrgtu48_f--WCwR5ki2KGaX=mN2qmW_AcRyb=w@mail.gmail.com>
-        <CAEf4BzZ+0XpH_zJ0P78vjzmFAH3kGZ21w3-LcSEG=B=+ZQWJ=w@mail.gmail.com>
-        <20191204135405.3ffb9ad6@cakuba.netronome.com>
-        <20191204233948.opvlopjkxe5o66lr@ast-mbp.dhcp.thefacebook.com>
-        <20191204162348.49be5f1b@cakuba.netronome.com>
-        <20191205010930.izft6kv5xlnejgog@ast-mbp.dhcp.thefacebook.com>
-        <20191204181028.6cdb40d4@cakuba.netronome.com>
-        <20191205031718.ax46kfv55zauuopt@ast-mbp.dhcp.thefacebook.com>
-Organization: Netronome Systems, Ltd.
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>
+Subject: Re: BUG: unable to handle kernel paging request in pcpu_alloc
+In-Reply-To: <CACT4Y+ZTXKP0MAT3ivr5HO-skZOjSVdz7RbDoyc522_Nbk8nKQ@mail.gmail.com>
+References: <000000000000314c120598dc69bd@google.com> <CACT4Y+ZTXKP0MAT3ivr5HO-skZOjSVdz7RbDoyc522_Nbk8nKQ@mail.gmail.com>
+Date:   Thu, 05 Dec 2019 15:35:21 +1100
+Message-ID: <877e3be6eu.fsf@dja-thinkpad.axtens.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 4 Dec 2019 19:17:20 -0800, Alexei Starovoitov wrote:
-> On Wed, Dec 04, 2019 at 06:10:28PM -0800, Jakub Kicinski wrote:
-> > On Wed, 4 Dec 2019 17:09:32 -0800, Alexei Starovoitov wrote: =20
-> > > On Wed, Dec 04, 2019 at 04:23:48PM -0800, Jakub Kicinski wrote: =20
-> > > > On Wed, 4 Dec 2019 15:39:49 -0800, Alexei Starovoitov wrote:   =20
-> > > > > > Agreed. Having libbpf on GH is definitely useful today, but one=
- can hope
-> > > > > > a day will come when distroes will get up to speed on packaging=
- libbpf,
-> > > > > > and perhaps we can retire it? Maybe 2, 3 years from now? Putting
-> > > > > > bpftool in the same boat is just more baggage.     =20
-> > > > >=20
-> > > > > Distros should be packaging libbpf and bpftool from single repo o=
-n github.
-> > > > > Kernel tree is for packaging kernel.   =20
-> > > >=20
-> > > > Okay, single repo on GitHub:
-> > > >=20
-> > > > https://github.com/torvalds/linux   =20
-> > >=20
-> > > and how will you git submodule only libbpf part of kernel github into=
- bcc
-> > > and other projects? =20
-> >=20
-> > Why does bcc have to submodule libbpf? Is it in a "special
-> > relationship" with libbpf as well?=20
-> >=20
-> > dnf/apt install libbpf
-> >=20
-> > Or rather:
-> >=20
-> > dnf/apt install bcc
-> >=20
-> > since BCC's user doesn't care about dependencies. The day distroes
-> > started packaging libbpf and bpftool the game has changed. =20
->=20
-> have you ever built bcc ? or bpftrace?
-> I'm not sure how to answer such 'suggestion'.
-
-Perhaps someone else has more patience to explain it - why bcc can't
-just use binary libbpf distribution (static lib + headers) and link
-against it like it links against other libraries?
-
-> > Please accept iproute2 as an example of a user space toolset closely
-> > related to the kernel. If kernel release model and process made no
-> > sense in user space, why do iproute2s developers continue to follow it
-> > for years?  =20
->=20
-> imo iproute2 is an example how things should not be run.
-> But that's a very different topic.
-
-Please explain, the topic is how to maintain user space closely related
-to the kernel.
-
-Share with us what you dislike about iproute2 so we can fix it. Instead
-of adding parts of it to bpftool and then pretending that the API added
-to libbpf to facilitate that duplication is some internal bpftool-only
-magic which then prevents us from dynamic linking..... =F0=9F=98=A0
-
-> > > Packaging is different. =20
-> >=20
-> > There are mostly disadvantages, but the process should be well known.
-> > perf has been packaged for years. =20
->=20
-> perf was initially seen as something that should match kernel one to one.
-> yet it diverged over years. I think it's a counter example.
->=20
-> > What do you mean? I've sure as hell sent patches to net with Fixes tags=
- =20
->=20
-> which was complete waste of time for people who were sending these
-> patches, for maintainers who applied them and for all stables folks
-> who carried them into kernel stable releases.
-> Not a single libbpf build was made out of those sources.
-
-Because libbpf just now entered the distroes, and you suggested the
-distroes use the GH repo, so sure now it's wasted work.
-
-IIRC there were bpftool crash fixes which landed in Fedora via stable.
-
-> > > Even coding style is different. =20
-> >=20
-> > Is it? You mean the damn underscores people are making fun of? :/ =20
->=20
-> Are you trolling? Do you understand why __ is there?
-
-Not the point. Tell me how the coding style is different. The
-underscores is the only thing I could think of that's not common=20
-in the kernel.
-
-> > libbpf doesn't have a roadmap either,  =20
->=20
-> I think you're contrasting that with kernel and saying
-> that kernel has a roadmap ? What is kernel roadmap?
-
-Kernel road map is the same as libbpf's road map.
-
-> > it's not really a full-on project
-> > on its own. What's 0.1.0 gonna be? =20
->=20
-> whenever this bpf community decides to call it 0.1.0.
+>> HEAD commit:    1ab75b2e Add linux-next specific files for 20191203
+>> git tree:       linux-next
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=10edf2eae00000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=de1505c727f0ec20
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=82e323920b78d54aaed5
+>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156ef061e00000
+>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11641edae00000
+>>
+>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+>> Reported-by: syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com
 >
-> > Besides stuff lands in libbpf before it hits a major kernel release.
-> > So how are you gonna make libbpf releases independently from kernel
-> > ones? What if a feature gets a last minute revert in the kernel and it's
-> > in libbpf's ABI? =20
->=20
-> You mean when kernel gets new feature, then libbpf gets new feature, then
-> libbpf is released, but then kernel feature is reverted? Obviously we sho=
-uld
-> avoid making a libbpf release that relies on kernel features that didn't =
-reach
-> the mainline. Yet there could be plenty of reasons why making libbpf rele=
-ase in
-> the middle of kernel development cycle makes perfect sense.
+> +Daniel, is it the same as:
+> https://syzkaller.appspot.com/bug?id=f6450554481c55c131cc23d581fbd8ea42e63e18
+> If so, is it possible to make KASAN detect this consistently with the
+> same crash type so that syzbot does not report duplicates?
 
-But master of libbpf must have all features to test the kernel with,
-right? So how do we branch of a release in the middle? That's only
-possible if kernel cycle happens to not have had any features that
-required libbpf yet?
+It looks like both of these occur immediately after failure injection. I
+think my assumption that I could ignore the chance of failures in the
+per-cpu allocation path will have to be revisited. That's annoying.
 
-Or are you thinking 3 tier branching where we'd branch off libbpf
-release, say 2.6.0 that corresponds to kernel X, but it wouldn't be a
-stable-only release, and we can still backport features added in kernel
-X + 1 cycle, features which don't require kernel support, and release
-libbpf 2.7.0?
+I'll try to spin something today but Andrey feel free to pip me at the
+post again :)
 
-Could work but it'd get tricky, cause if we want to break ABI we'd
-actually need 4 tiers. ABI compat, kernel version, feature version,
-stable version.
+I'm not 100% confident to call them dups just yet, but I'm about 80%
+confident that they are.
 
-> Also reaching Linus's tree in rc1 is also not a guarantee of non-revert. =
-Yet we
-> release libbpf around rc1 because everyone expects bug-fixes after rc1.=20
-
-I consider current process to be broken. Hopefully we can improve it.
-
-> So it's an exception that solidifies the rule.
+Regards,
+Daniel
 >
-> > > libbpf has to run on all kernels. Newer and older. How do you support
-> > > that if libbpf is tied with the kernel? =20
-> >=20
-> > Say I have built N kernels UM or for a VM, and we have some test
-> > suite: I pull libbpf, build it, run its tests. The only difference
-> > between in tree and out of tree is that "pull libbpf" means pulling
-> > smaller or larger repo. Doesn't matter that match, it's a low --depth
-> > local clone. =20
->=20
-> The expected CI is:
-> 1. pull-req proposed.
-> 2. CI picks it up, builds, run tests.
-> 3. humans see results and land or reject pull-req.
-> Now try to think through how CI on top of full kernel tree will
-> be able to pick just the right commits to start build/test cycle.
-> Is it going to cherry-pick from patchworks? That would be awesome.
-> Yet intel 0bot results show that it's easier said than done.
-> I'm not saying it's not possible. Just complex.
-> If you have cycles to integrate *-next into kernelci.org, please go ahead.
-
-Yes, it is very complex, I know. I've been hacking on something along
-those lines for the last few weeks. Hopefully I'll have results at some
-point..
-
-First stab is just doing build testing, checkpatch, verify tags etc.
-Uploading to patchwork, and sending an email if there were failures.
-
-Even that's not easy as a weekend/evening task :( And it requires a lot
-of manual inspection upfront before it's unleashed on the ML, because it
-will catch a lot of stupid little stuff and a lot of people will get
-grumpy.
-
-We need to modernize the process across the board. I don't think having
-zombie read-only repos on GitHub will give contributors confidence so
-it's not a step in right direction. We should start from the hard
-problem, that is the CI itself.
-
-The problem of correlating user space and kernel patches will have to=20
-be solved for netdev, because netdev tests depend on iproute2.
+>> RDX: 000000000000003c RSI: 0000000020000080 RDI: 0c00000000000000
+>> RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000018
+>> R13: 0000000000000004 R14: 0000000000000005 R15: 0000000000000000
+>> BUG: unable to handle page fault for address: fffff91ffff00000
+>> #PF: supervisor read access in kernel mode
+>> #PF: error_code(0x0000) - not-present page
+>> PGD 21ffe6067 P4D 21ffe6067 PUD aa56c067 PMD aa56d067 PTE 0
+>> Oops: 0000 [#1] PREEMPT SMP KASAN
+>> CPU: 1 PID: 8999 Comm: syz-executor865 Not tainted
+>> 5.4.0-next-20191203-syzkaller #0
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+>> Google 01/01/2011
+>> RIP: 0010:memory_is_nonzero mm/kasan/generic.c:121 [inline]
+>> RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:135 [inline]
+>> RIP: 0010:memory_is_poisoned mm/kasan/generic.c:166 [inline]
+>> RIP: 0010:check_memory_region_inline mm/kasan/generic.c:182 [inline]
+>> RIP: 0010:check_memory_region+0x9c/0x1a0 mm/kasan/generic.c:192
+>> Code: c9 4d 0f 49 c1 49 c1 f8 03 45 85 c0 0f 84 10 01 00 00 41 83 e8 01 4e
+>> 8d 44 c0 08 eb 0d 48 83 c0 08 4c 39 c0 0f 84 a7 00 00 00 <48> 83 38 00 74
+>> ed 4c 8d 40 08 eb 09 48 83 c0 01 49 39 c0 74 53 80
+>> RSP: 0018:ffffc90001f67a80 EFLAGS: 00010216
+>> RAX: fffff91ffff00000 RBX: fffff91ffff01000 RCX: ffffffff819e1589
+>> RDX: 0000000000000001 RSI: 0000000000008000 RDI: ffffe8ffff800000
+>> RBP: ffffc90001f67a98 R08: fffff91ffff01000 R09: 0000000000001000
+>> R10: fffff91ffff00fff R11: ffffe8ffff807fff R12: fffff91ffff00000
+>> R13: 0000000000008000 R14: 0000000000000000 R15: ffff88821fffd100
+>> FS:  00000000011a7880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> CR2: fffff91ffff00000 CR3: 00000000a94ad000 CR4: 00000000001406e0
+>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>> Call Trace:
+>>   memset+0x24/0x40 mm/kasan/common.c:107
+>>   memset include/linux/string.h:410 [inline]
+>>   pcpu_alloc+0x589/0x1380 mm/percpu.c:1734
+>>   __alloc_percpu_gfp+0x28/0x30 mm/percpu.c:1783
+>>   bpf_array_alloc_percpu kernel/bpf/arraymap.c:35 [inline]
+>>   array_map_alloc+0x698/0x7d0 kernel/bpf/arraymap.c:159
+>>   find_and_alloc_map kernel/bpf/syscall.c:123 [inline]
+>>   map_create kernel/bpf/syscall.c:654 [inline]
+>>   __do_sys_bpf+0x478/0x3810 kernel/bpf/syscall.c:3012
+>>   __se_sys_bpf kernel/bpf/syscall.c:2989 [inline]
+>>   __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2989
+>>   do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+>>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+>> RIP: 0033:0x442f99
+>> Code: e8 ec 09 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7
+>> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
+>> ff 0f 83 cb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+>> RSP: 002b:00007ffc8aa156d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+>> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000442f99
+>> RDX: 000000000000003c RSI: 0000000020000080 RDI: 0c00000000000000
+>> RBP: 0000000000000000 R08: 0000000000000002 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000018
+>> R13: 0000000000000004 R14: 0000000000000005 R15: 0000000000000000
+>> Modules linked in:
+>> CR2: fffff91ffff00000
+>> ---[ end trace 449f8b43dad6ffb8 ]---
+>> RIP: 0010:memory_is_nonzero mm/kasan/generic.c:121 [inline]
+>> RIP: 0010:memory_is_poisoned_n mm/kasan/generic.c:135 [inline]
+>> RIP: 0010:memory_is_poisoned mm/kasan/generic.c:166 [inline]
+>> RIP: 0010:check_memory_region_inline mm/kasan/generic.c:182 [inline]
+>> RIP: 0010:check_memory_region+0x9c/0x1a0 mm/kasan/generic.c:192
+>> Code: c9 4d 0f 49 c1 49 c1 f8 03 45 85 c0 0f 84 10 01 00 00 41 83 e8 01 4e
+>> 8d 44 c0 08 eb 0d 48 83 c0 08 4c 39 c0 0f 84 a7 00 00 00 <48> 83 38 00 74
+>> ed 4c 8d 40 08 eb 09 48 83 c0 01 49 39 c0 74 53 80
+>> RSP: 0018:ffffc90001f67a80 EFLAGS: 00010216
+>> RAX: fffff91ffff00000 RBX: fffff91ffff01000 RCX: ffffffff819e1589
+>> RDX: 0000000000000001 RSI: 0000000000008000 RDI: ffffe8ffff800000
+>> RBP: ffffc90001f67a98 R08: fffff91ffff01000 R09: 0000000000001000
+>> R10: fffff91ffff00fff R11: ffffe8ffff807fff R12: fffff91ffff00000
+>> R13: 0000000000008000 R14: 0000000000000000 R15: ffff88821fffd100
+>> FS:  00000000011a7880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> CR2: fffff91ffff00000 CR3: 00000000a94ad000 CR4: 00000000001406e0
+>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>
+>>
+>> ---
+>> This bug is generated by a bot. It may contain errors.
+>> See https://goo.gl/tpsmEJ for more information about syzbot.
+>> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>>
+>> syzbot will keep track of this bug report. See:
+>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>> syzbot can test patches for this bug, for details see:
+>> https://goo.gl/tpsmEJ#testing-patches
+>>
+>> --
+>> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+>> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000314c120598dc69bd%40google.com.
