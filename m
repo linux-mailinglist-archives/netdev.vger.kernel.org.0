@@ -2,84 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C6611411D
-	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B98AD11411B
+	for <lists+netdev@lfdr.de>; Thu,  5 Dec 2019 13:59:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729513AbfLEM7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 07:59:13 -0500
-Received: from www62.your-server.de ([213.133.104.62]:58488 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729503AbfLEM7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 07:59:12 -0500
-Received: from 29.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.29] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1icqii-00073e-Qh; Thu, 05 Dec 2019 13:59:02 +0100
-Date:   Thu, 5 Dec 2019 13:59:00 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Daniel Axtens <dja@axtens.net>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>
-Subject: Re: BUG: unable to handle kernel paging request in pcpu_alloc
-Message-ID: <20191205125900.GB29780@localhost.localdomain>
-References: <000000000000314c120598dc69bd@google.com>
- <CACT4Y+ZTXKP0MAT3ivr5HO-skZOjSVdz7RbDoyc522_Nbk8nKQ@mail.gmail.com>
- <877e3be6eu.fsf@dja-thinkpad.axtens.net>
+        id S1729487AbfLEM7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 07:59:08 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38052 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729099AbfLEM7I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 5 Dec 2019 07:59:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/0aTrAYFDCdx3wtof9edhAMQ2FL2u0uO/LRSKah6g6c=; b=OQmnRFj/HL0ufNSTVpFIwkQTn5
+        eHCSUAzOxu/tzYVrw0M3m2yw8wfi3m3/cNrUnAGMDjZQP8zx3/ebo8dMj6YLDIV7k1wOEWgXStnnW
+        kE31rgT1+SdAUFe35ZryhR3Y2MLRKiprxeNWyaU+pacjxrZR6d4FwCsIIR+uDikppE3Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1icqim-0007PD-Pq; Thu, 05 Dec 2019 13:59:04 +0100
+Date:   Thu, 5 Dec 2019 13:59:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mian Yousaf Kaukab <ykaukab@suse.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, tharvey@gateworks.com,
+        davem@davemloft.net, rric@kernel.org, sgoutham@cavium.com,
+        sergei.shtylyov@cogentembedded.com
+Subject: Re: [PATCH net v2] net: thunderx: start phy before starting
+ autonegotiation
+Message-ID: <20191205125904.GB28269@lunn.ch>
+References: <20191205094116.4904-1-ykaukab@suse.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <877e3be6eu.fsf@dja-thinkpad.axtens.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25654/Thu Dec  5 10:46:25 2019)
+In-Reply-To: <20191205094116.4904-1-ykaukab@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 03:35:21PM +1100, Daniel Axtens wrote:
-> >> HEAD commit:    1ab75b2e Add linux-next specific files for 20191203
-> >> git tree:       linux-next
-> >> console output: https://syzkaller.appspot.com/x/log.txt?x=10edf2eae00000
-> >> kernel config:  https://syzkaller.appspot.com/x/.config?x=de1505c727f0ec20
-> >> dashboard link: https://syzkaller.appspot.com/bug?extid=82e323920b78d54aaed5
-> >> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156ef061e00000
-> >> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11641edae00000
-> >>
-> >> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> >> Reported-by: syzbot+82e323920b78d54aaed5@syzkaller.appspotmail.com
-> >
-> > +Daniel, is it the same as:
-> > https://syzkaller.appspot.com/bug?id=f6450554481c55c131cc23d581fbd8ea42e63e18
-> > If so, is it possible to make KASAN detect this consistently with the
-> > same crash type so that syzbot does not report duplicates?
+On Thu, Dec 05, 2019 at 10:41:16AM +0100, Mian Yousaf Kaukab wrote:
+> Since commit 2b3e88ea6528 ("net: phy: improve phy state checking")
+> phy_start_aneg() expects phy state to be >= PHY_UP. Call phy_start()
+> before calling phy_start_aneg() during probe so that autonegotiation
+> is initiated.
 > 
-> It looks like both of these occur immediately after failure injection. I
-> think my assumption that I could ignore the chance of failures in the
-> per-cpu allocation path will have to be revisited. That's annoying.
+> As phy_start() takes care of calling phy_start_aneg(), drop the explicit
+> call to phy_start_aneg().
 > 
-> I'll try to spin something today but Andrey feel free to pip me at the
-> post again :)
+> Network fails without this patch on Octeon TX.
 > 
-> I'm not 100% confident to call them dups just yet, but I'm about 80%
-> confident that they are.
+> Fixes: 2b3e88ea6528 ("net: phy: improve phy state checking")
+> Signed-off-by: Mian Yousaf Kaukab <ykaukab@suse.de>
 
-Ok. Double checked BPF side yesterday night, but looks sane to me and the
-fault also hints into pcpu_alloc() rather than BPF code. Daniel, from your
-above reply, I read that you are aware of how the bisected commit would
-have caused the fault?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Thanks,
-Daniel
+    Andrew
