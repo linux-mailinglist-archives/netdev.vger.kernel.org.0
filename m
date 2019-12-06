@@ -2,79 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1311158A7
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 22:30:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D10F1158C9
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 22:49:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbfLFVao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 16:30:44 -0500
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:35981 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbfLFVao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 16:30:44 -0500
-Received: by mail-lj1-f169.google.com with SMTP id r19so9195118ljg.3
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 13:30:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k0AxtQz+D7li61OwD0X5pV6PAQ8uw+d579qmg3IG/Sc=;
-        b=mAfmmdqYYPI+241u23YkLT5FNXAd6Us6oAhyOkFeeaChfuL8HUY/KL/aRPeC98uOjB
-         jBRgJGVuaY5rSYOEiVnLD0huIwsk1PmN72pR4DaeFr6S/isdPi7syuc31sNbHp/s7iTC
-         oAuG1/6vwNvlvB8iyfZgu/hd6hwR5cl5xev52EZ6lhICVdpMvQD28ICIKiVa9buPcQNo
-         Sn3C+NK50zWpLU0kAZSY020jw9rqfutmkug6FQB440KyYK8ADpqOC68gnj1MYlGa+uAf
-         1jbC956B7ggVWt2RP9xQJkFx7yLDkuYl5riRLDm7WgqIYVQ/MUlal1CQUtu3KLdbjdB7
-         0KxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k0AxtQz+D7li61OwD0X5pV6PAQ8uw+d579qmg3IG/Sc=;
-        b=j3qM0BbsbtTQ5OvwJC9zMAxFu3W20kLc3baHzH1J2zZywOD6yP/mXi5hnUZ1vvPk5D
-         3fc2oum9Ntt0xmtZ6nIZkFOHO2L8MQqLyiDg4BPcqz+/xT4TmRd0EL+F30cHBE9GQW4c
-         4aJaaszHMDBLgYPhetCDEYrKGx2uhScpeQ+iYjX+22z4fBSB//5ozqh4gPIHABKCvqSr
-         qJdHyP20WTLlpN93EfA5+Qu7xP9O5xoQ2JKDdUPMbyBpvvzdJr5um+2oh8y5kdItWbUt
-         PS3OAc8PWjlKYpuGyDJM6J8xD3ABVeQrYUZwOFyfucLPWIh7cnh4ICDaIpfrVeEbcYiy
-         H6YA==
-X-Gm-Message-State: APjAAAVXxik6zOuHChydjJ6l19gk0XydkUc3JLlPgBx8hSvri24nMuZU
-        Oh2kVXpzbAU9Q6neXhiyGePZl7MhxDe06kE/kgXJ
-X-Google-Smtp-Source: APXvYqyZoE3a2k8tZCPJpj4lF4MwO9mGx9MdBNu06QbG8u9mHXKSYb/POTKAfMu4sAUc1UjlBg8/cUDFd3qgiyCR00Y=
-X-Received: by 2002:a2e:4704:: with SMTP id u4mr9986759lja.117.1575667841756;
- Fri, 06 Dec 2019 13:30:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20191205102552.19407-1-jolsa@kernel.org> <CAHC9VhTWnNvfMAPz-WhD9Wqv6UZZDBdMxF9VuS3UeTLHLtfhHw@mail.gmail.com>
- <20191206212746.GA30691@krava>
-In-Reply-To: <20191206212746.GA30691@krava>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 6 Dec 2019 16:30:30 -0500
-Message-ID: <CAHC9VhRv8dTXt0e9L16KXdCTs8E-fFym5tWq8y0dqPT0ghgKgw@mail.gmail.com>
-Subject: Re: [PATCHv2] bpf: Emit audit messages upon successful prog load and unload
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-audit@redhat.com,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
+        id S1726386AbfLFVts convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Dec 2019 16:49:48 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55593 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726371AbfLFVts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 16:49:48 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-247-p2pW0NpkOc2jkmcpH0K9QQ-1; Fri, 06 Dec 2019 16:49:43 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 68E5D800D4C;
+        Fri,  6 Dec 2019 21:49:41 +0000 (UTC)
+Received: from krava.redhat.com (ovpn-204-89.brq.redhat.com [10.40.204.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 24A1A5D9E1;
+        Fri,  6 Dec 2019 21:49:34 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-audit@redhat.com, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Steve Grubb <sgrubb@redhat.com>,
         David Miller <davem@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCHv3] bpf: Emit audit messages upon successful prog load and unload
+Date:   Fri,  6 Dec 2019 22:49:34 +0100
+Message-Id: <20191206214934.11319-1-jolsa@kernel.org>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: p2pW0NpkOc2jkmcpH0K9QQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 6, 2019 at 4:28 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> On Fri, Dec 06, 2019 at 04:11:13PM -0500, Paul Moore wrote:
-> > Other than that, this looks good to me, and I see Steve has already
-> > given the userspace portion a thumbs-up.  Have you started on the
-> > audit-testsuite test for this yet?
->
-> yep, it's ready.. waiting for kernel change ;-)
-> https://github.com/olsajiri/audit-testsuite/commit/16888ea7f14fa0269feef623d2a96f15f9ea71c9
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-Seeing tests for new features always makes me happy :)
+Allow for audit messages to be emitted upon BPF program load and
+unload for having a timeline of events. The load itself is in
+syscall context, so additional info about the process initiating
+the BPF prog creation can be logged and later directly correlated
+to the unload event.
 
+The only info really needed from BPF side is the globally unique
+prog ID where then audit user space tooling can query / dump all
+info needed about the specific BPF program right upon load event
+and enrich the record, thus these changes needed here can be kept
+small and non-intrusive to the core.
+
+Raw example output:
+
+  # auditctl -D
+  # auditctl -a always,exit -F arch=x86_64 -S bpf
+  # ausearch --start recent -m 1334
+  ...
+  ----
+  time->Wed Nov 27 16:04:13 2019
+  type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
+  type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
+    success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
+    pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
+    egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
+    exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
+    subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
+  type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
+  ----
+  time->Wed Nov 27 16:04:13 2019
+  type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
+  ...
+
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Co-developed-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ include/uapi/linux/audit.h |  1 +
+ kernel/bpf/syscall.c       | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
+
+diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+index c89c6495983d..32a5db900f47 100644
+--- a/include/uapi/linux/audit.h
++++ b/include/uapi/linux/audit.h
+@@ -116,6 +116,7 @@
+ #define AUDIT_FANOTIFY		1331	/* Fanotify access decision */
+ #define AUDIT_TIME_INJOFFSET	1332	/* Timekeeping offset injected */
+ #define AUDIT_TIME_ADJNTPVAL	1333	/* NTP value adjustment */
++#define AUDIT_BPF		1334	/* BPF subsystem */
+ 
+ #define AUDIT_AVC		1400	/* SE Linux avc denial or grant */
+ #define AUDIT_SELINUX_ERR	1401	/* Internal SE Linux Errors */
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e3461ec59570..66b90eaf99fe 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -23,6 +23,7 @@
+ #include <linux/timekeeping.h>
+ #include <linux/ctype.h>
+ #include <linux/nospec.h>
++#include <linux/audit.h>
+ #include <uapi/linux/btf.h>
+ 
+ #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+@@ -1306,6 +1307,36 @@ static int find_prog_type(enum bpf_prog_type type, struct bpf_prog *prog)
+ 	return 0;
+ }
+ 
++enum bpf_audit {
++	BPF_AUDIT_LOAD,
++	BPF_AUDIT_UNLOAD,
++	BPF_AUDIT_MAX,
++};
++
++static const char * const bpf_audit_str[BPF_AUDIT_MAX] = {
++	[BPF_AUDIT_LOAD]   = "LOAD",
++	[BPF_AUDIT_UNLOAD] = "UNLOAD",
++};
++
++static void bpf_audit_prog(const struct bpf_prog *prog, unsigned int op)
++{
++	struct audit_context *ctx = NULL;
++	struct audit_buffer *ab;
++
++	if (WARN_ON_ONCE(op >= BPF_AUDIT_MAX))
++		return;
++	if (audit_enabled == AUDIT_OFF)
++		return;
++	if (op == BPF_AUDIT_LOAD)
++		ctx = audit_context();
++	ab = audit_log_start(ctx, GFP_ATOMIC, AUDIT_BPF);
++	if (unlikely(!ab))
++		return;
++	audit_log_format(ab, "prog-id=%u op=%s",
++			 prog->aux->id, bpf_audit_str[op]);
++	audit_log_end(ab);
++}
++
+ int __bpf_prog_charge(struct user_struct *user, u32 pages)
+ {
+ 	unsigned long memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+@@ -1421,6 +1452,7 @@ static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
+ {
+ 	if (atomic64_dec_and_test(&prog->aux->refcnt)) {
+ 		perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
++		bpf_audit_prog(prog, BPF_AUDIT_UNLOAD);
+ 		/* bpf_prog_free_id() must be called first */
+ 		bpf_prog_free_id(prog, do_idr_lock);
+ 		__bpf_prog_put_noref(prog, true);
+@@ -1830,6 +1862,7 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	 */
+ 	bpf_prog_kallsyms_add(prog);
+ 	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
++	bpf_audit_prog(prog, BPF_AUDIT_LOAD);
+ 
+ 	err = bpf_prog_new_fd(prog);
+ 	if (err < 0)
 -- 
-paul moore
-www.paul-moore.com
+2.21.0
+
