@@ -2,244 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1341611507A
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FFD115080
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbfLFMer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 07:34:47 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:35414 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726128AbfLFMeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:34:46 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6CYgNA111821;
-        Fri, 6 Dec 2019 06:34:42 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575635682;
-        bh=joFDrNzOhUT60RGFjuqlc1nHUBu1/PZDn/gsZd/GAtY=;
-        h=From:To:CC:Subject:Date;
-        b=PKS/nzTlAIId1Z2NLvXR8X0a1f/JdhGQcneLhJyEGTudo7hFSQIV7nrT23hsboIO1
-         Y3Bu9b5kauvS6vH/34So+WQUN65Y+iCDYmthy88LPcw8sP0dJ40jx2xEMI5MvXPvaE
-         qX+4PqH6ji1bF0hZ15PG15ug7yPOAbzwWvEcHx28=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB6CYgvT078274
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 Dec 2019 06:34:42 -0600
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 6 Dec
- 2019 06:34:42 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 6 Dec 2019 06:34:42 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6CYetl121397;
-        Fri, 6 Dec 2019 06:34:41 -0600
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH v2] net: phy: dp83867: fix hfs boot in rgmii mode
-Date:   Fri, 6 Dec 2019 14:34:32 +0200
-Message-ID: <20191206123432.25257-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726284AbfLFMlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 07:41:31 -0500
+Received: from mout.kundenserver.de ([212.227.17.13]:52039 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfLFMlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:41:31 -0500
+Received: from mail-qv1-f45.google.com ([209.85.219.45]) by
+ mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MDQmW-1iUzRm1YNK-00AZju; Fri, 06 Dec 2019 13:41:28 +0100
+Received: by mail-qv1-f45.google.com with SMTP id t9so2560697qvh.13;
+        Fri, 06 Dec 2019 04:41:27 -0800 (PST)
+X-Gm-Message-State: APjAAAXoNSix/KtbNPZh9axPa0rUvY0q1ZcHRSTIgCB9HJVLV+qdgx9z
+        SltK+1qBc4+fySBn9z+Y2UqzxNsgAWKdKlbwCkA=
+X-Google-Smtp-Source: APXvYqy7ap13X+QMNi1EkaLaeRWQmO6croMS+S+3y40SVzPbC+qRetyU3cHdC1YvxS7S5h1SRXGEfaYrvkLAf4Zsb2c=
+X-Received: by 2002:ad4:4021:: with SMTP id q1mr7657501qvp.211.1575636086881;
+ Fri, 06 Dec 2019 04:41:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <0000000000009bd693059905b445@google.com>
+In-Reply-To: <0000000000009bd693059905b445@google.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 6 Dec 2019 13:41:10 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com>
+Message-ID: <CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com>
+Subject: Re: KASAN: null-ptr-deref Write in x25_connect
+To:     syzbot <syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com>
+Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-x25@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Willem de Bruijn <willemb@google.com>,
+        Kevin Curtis <kevin.curtis@farsite.com>,
+        "R.J.Dunlop" <bob.dunlop@farsite.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:yr0FgwtAObQ8Na98weqsj1XByoWH54uq7O3KrsNtih/L2HW2mk8
+ YcnJvjDUkuflX5ZIYMCpDq1NRsakL063MTycJ6YMiGaCYC+FbqSNC2retvWLUULRI9Vh653
+ PbnyUClFzKswMSUF2jL+Xest8+1GOCoUsN18CJEnOIHoVRtRtIvGqbCTLQcJzDdEqLtwhw2
+ bDmO2/BM32T18oTLz5Ovw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iKI8J8k/nT0=:9D7YJX/eMuCJakbmXGNmFQ
+ xw6dPXAenJ9O54x7DKnGnRIgRegS5ezKlnpxxsnSv6BTE+XCyqElb9V5GjEXiH6nDATxxNT0b
+ Ss1rUY3FYfIVusVlrX9s1myrIDvYQsoRCED5cUGKiFvj71eIUl+H6TeTULOGYWwhEg8u0LHcH
+ ykJEgi7LoQvqVIztRaO2SpX7NCX0/xV97FS0BdUzmlVnPtOq7W28GK7J6fo5lUnyoG4Qp6O8t
+ 7wGxwWrCPn1EzEsm5SE6wP5X/JujUfIUqRbswQ2oC+Gs2D+Kas7++h4WDhxibTc2j23svCLFN
+ /jX6nikuMeG0TGYGohFy6SuDotcUfIw8Zq5ufTVT/F643kwuto3i4o8eY3hZwmE1VTLYNBgmd
+ 6TxTsjivj84RiagZzdjQEFDebcw8m5SEYDuNoyBgSjWQE/andyWZO0X1dqpMDs6zIU+wu6hb3
+ 4+L2Mg9712ZN2hzjMmDTSpGKdcjaQOQqalPHBl2Ytfh24C9iG+l1wfxjFcJLzlPTh4AQZhvQe
+ 91zptXmHASWWHKYhcH0maBZ1Q6IbPrddZOXloteZCgUxepUCSqJ5dPKulw3DK3+fMBNgiavy2
+ K1f7+KEcsG2OcxOms6gZhiUu7AH4xlLgpecSWa9k5WSHq/ceLU72VipOKVoLHWbgEnzopzOZo
+ 7YAL04t4irfu2d7xRaOKwTVwkWionZLI03tjkPmo3t8oRksq5gP23Yxp1EF1TiVzBf+AxqYMm
+ dF8BPE35tM2ldr1Xeczf8Io1oFcUAQIQ3syvk/Vp3jWDC1d+JAMxQUQhAWpDNRCnWeFoh6i8Q
+ UichQ7qFZzLvpkLKsG/IwOuatTNBt2EhhERceHH9SN8Q+vuzAdk2yTBGQ9xLhZXnAclO/ewTi
+ zbUFqzwip4BxJT5BXlKw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit ef87f7da6b28 ("net: phy: dp83867: move dt parsing to probe")
-causes regression on TI dra71x-evm and dra72x-evm, where DP83867 PHY is
-used in "rgmii-id" mode - the networking stops working.
-Unfortunately, it's not enough to just move DT parsing code to .probe() as
-it depends on phydev->interface value, which is set to correct value abter
-the .probe() is completed and before calling .config_init(). So, RGMII
-configuration can't be loaded from DT.
+On Fri, Dec 6, 2019 at 10:31 AM syzbot
+<syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    9bd19c63 net: emulex: benet: indent a Kconfig depends cont..
 
-To fix and issue
-- move RGMII validation code to .config_init()
-- parse RGMII parameters in dp83867_of_init(), but consider them as
-optional.
+This is a whitespace change, so clearly not the root cause.
 
-Fixes: ef87f7da6b28 ("net: phy: dp83867: move dt parsing to probe")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
-v2:
- - fixed comments in code
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14b858eae00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=333b76551307b2a0
+> dashboard link: https://syzkaller.appspot.com/bug?extid=429c200ffc8772bfe070
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>
+> Unfortunately, I don't have any reproducer for this crash yet.
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com
+>
+> ==================================================================
+> BUG: KASAN: null-ptr-deref in atomic_fetch_sub
+> include/asm-generic/atomic-instrumented.h:199 [inline]
+> BUG: KASAN: null-ptr-deref in refcount_sub_and_test
+> include/linux/refcount.h:253 [inline]
+> BUG: KASAN: null-ptr-deref in refcount_dec_and_test
+> include/linux/refcount.h:281 [inline]
+> BUG: KASAN: null-ptr-deref in x25_neigh_put include/net/x25.h:252 [inline]
+> BUG: KASAN: null-ptr-deref in x25_connect+0x974/0x1020 net/x25/af_x25.c:820
+> Write of size 4 at addr 00000000000000c8 by task syz-executor.5/32400
+>
+> CPU: 1 PID: 32400 Comm: syz-executor.5 Not tainted 5.4.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> Call Trace:
+>   __dump_stack lib/dump_stack.c:77 [inline]
+>   dump_stack+0x197/0x210 lib/dump_stack.c:118
+>   __kasan_report.cold+0x5/0x41 mm/kasan/report.c:510
+>   kasan_report+0x12/0x20 mm/kasan/common.c:634
+>   check_memory_region_inline mm/kasan/generic.c:185 [inline]
+>   check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+>   __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
+>   atomic_fetch_sub include/asm-generic/atomic-instrumented.h:199 [inline]
+>   refcount_sub_and_test include/linux/refcount.h:253 [inline]
+>   refcount_dec_and_test include/linux/refcount.h:281 [inline]
+>   x25_neigh_put include/net/x25.h:252 [inline]
+>   x25_connect+0x974/0x1020 net/x25/af_x25.c:820
+>   __sys_connect_file+0x25d/0x2e0 net/socket.c:1847
+>   __sys_connect+0x51/0x90 net/socket.c:1860
+>   __do_sys_connect net/socket.c:1871 [inline]
+>   __se_sys_connect net/socket.c:1868 [inline]
+>   __x64_sys_connect+0x73/0xb0 net/socket.c:1868
+>   do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> RIP: 0033:0x45a679
+> Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7
+> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
+> ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007fa58a10ec78 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a679
+> RDX: 0000000000000012 RSI: 0000000020000000 RDI: 0000000000000004
+> RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007fa58a10f6d4
+> R13: 00000000004c0f1c R14: 00000000004d4088 R15: 00000000ffffffff
+> ==================================================================
 
- drivers/net/phy/dp83867.c | 119 +++++++++++++++++++++++---------------
- 1 file changed, 71 insertions(+), 48 deletions(-)
+Eric Dumazet fixed a related bug in commit 95d6ebd53c79 ("net/x25: fix
+use-after-free
+in x25_device_event()"):
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 0b95e7a2e273..9cd9dcee4eb2 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -101,8 +101,11 @@
- /* RGMIIDCTL bits */
- #define DP83867_RGMII_TX_CLK_DELAY_MAX		0xf
- #define DP83867_RGMII_TX_CLK_DELAY_SHIFT	4
-+#define DP83867_RGMII_TX_CLK_DELAY_INV	(DP83867_RGMII_TX_CLK_DELAY_MAX + 1)
- #define DP83867_RGMII_RX_CLK_DELAY_MAX		0xf
- #define DP83867_RGMII_RX_CLK_DELAY_SHIFT	0
-+#define DP83867_RGMII_RX_CLK_DELAY_INV	(DP83867_RGMII_RX_CLK_DELAY_MAX + 1)
-+
- 
- /* IO_MUX_CFG bits */
- #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK	0x1f
-@@ -294,6 +297,48 @@ static int dp83867_config_port_mirroring(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
-+{
-+	struct dp83867_private *dp83867 = phydev->priv;
-+
-+	/* Existing behavior was to use default pin strapping delay in rgmii
-+	 * mode, but rgmii should have meant no delay.  Warn existing users.
-+	 */
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
-+		const u16 val = phy_read_mmd(phydev, DP83867_DEVADDR,
-+					     DP83867_STRAP_STS2);
-+		const u16 txskew = (val & DP83867_STRAP_STS2_CLK_SKEW_TX_MASK) >>
-+				   DP83867_STRAP_STS2_CLK_SKEW_TX_SHIFT;
-+		const u16 rxskew = (val & DP83867_STRAP_STS2_CLK_SKEW_RX_MASK) >>
-+				   DP83867_STRAP_STS2_CLK_SKEW_RX_SHIFT;
-+
-+		if (txskew != DP83867_STRAP_STS2_CLK_SKEW_NONE ||
-+		    rxskew != DP83867_STRAP_STS2_CLK_SKEW_NONE)
-+			phydev_warn(phydev,
-+				    "PHY has delays via pin strapping, but phy-mode = 'rgmii'\n"
-+				    "Should be 'rgmii-id' to use internal delays txskew:%x rxskew:%x\n",
-+				    txskew, rxskew);
-+	}
-+
-+	/* RX delay *must* be specified if internal delay of RX is used. */
-+	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	     phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) &&
-+	     dp83867->rx_id_delay == DP83867_RGMII_RX_CLK_DELAY_INV) {
-+		phydev_err(phydev, "ti,rx-internal-delay must be specified\n");
-+		return -EINVAL;
-+	}
-+
-+	/* TX delay *must* be specified if internal delay of TX is used. */
-+	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	     phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) &&
-+	     dp83867->tx_id_delay == DP83867_RGMII_TX_CLK_DELAY_INV) {
-+		phydev_err(phydev, "ti,tx-internal-delay must be specified\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- #ifdef CONFIG_OF_MDIO
- static int dp83867_of_init(struct phy_device *phydev)
- {
-@@ -335,55 +380,25 @@ static int dp83867_of_init(struct phy_device *phydev)
- 	dp83867->sgmii_ref_clk_en = of_property_read_bool(of_node,
- 					"ti,sgmii-ref-clock-output-enable");
- 
--	/* Existing behavior was to use default pin strapping delay in rgmii
--	 * mode, but rgmii should have meant no delay.  Warn existing users.
--	 */
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
--		const u16 val = phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_STRAP_STS2);
--		const u16 txskew = (val & DP83867_STRAP_STS2_CLK_SKEW_TX_MASK) >>
--				   DP83867_STRAP_STS2_CLK_SKEW_TX_SHIFT;
--		const u16 rxskew = (val & DP83867_STRAP_STS2_CLK_SKEW_RX_MASK) >>
--				   DP83867_STRAP_STS2_CLK_SKEW_RX_SHIFT;
- 
--		if (txskew != DP83867_STRAP_STS2_CLK_SKEW_NONE ||
--		    rxskew != DP83867_STRAP_STS2_CLK_SKEW_NONE)
--			phydev_warn(phydev,
--				    "PHY has delays via pin strapping, but phy-mode = 'rgmii'\n"
--				    "Should be 'rgmii-id' to use internal delays\n");
--	}
--
--	/* RX delay *must* be specified if internal delay of RX is used. */
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
--		ret = of_property_read_u32(of_node, "ti,rx-internal-delay",
--					   &dp83867->rx_id_delay);
--		if (ret) {
--			phydev_err(phydev, "ti,rx-internal-delay must be specified\n");
--			return ret;
--		}
--		if (dp83867->rx_id_delay > DP83867_RGMII_RX_CLK_DELAY_MAX) {
--			phydev_err(phydev,
--				   "ti,rx-internal-delay value of %u out of range\n",
--				   dp83867->rx_id_delay);
--			return -EINVAL;
--		}
-+	dp83867->rx_id_delay = DP83867_RGMII_RX_CLK_DELAY_INV;
-+	ret = of_property_read_u32(of_node, "ti,rx-internal-delay",
-+				   &dp83867->rx_id_delay);
-+	if (!ret && dp83867->rx_id_delay > DP83867_RGMII_RX_CLK_DELAY_MAX) {
-+		phydev_err(phydev,
-+			   "ti,rx-internal-delay value of %u out of range\n",
-+			   dp83867->rx_id_delay);
-+		return -EINVAL;
- 	}
- 
--	/* TX delay *must* be specified if internal delay of RX is used. */
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
--		ret = of_property_read_u32(of_node, "ti,tx-internal-delay",
--					   &dp83867->tx_id_delay);
--		if (ret) {
--			phydev_err(phydev, "ti,tx-internal-delay must be specified\n");
--			return ret;
--		}
--		if (dp83867->tx_id_delay > DP83867_RGMII_TX_CLK_DELAY_MAX) {
--			phydev_err(phydev,
--				   "ti,tx-internal-delay value of %u out of range\n",
--				   dp83867->tx_id_delay);
--			return -EINVAL;
--		}
-+	dp83867->tx_id_delay = DP83867_RGMII_TX_CLK_DELAY_INV;
-+	ret = of_property_read_u32(of_node, "ti,tx-internal-delay",
-+				   &dp83867->tx_id_delay);
-+	if (!ret && dp83867->tx_id_delay > DP83867_RGMII_TX_CLK_DELAY_MAX) {
-+		phydev_err(phydev,
-+			   "ti,tx-internal-delay value of %u out of range\n",
-+			   dp83867->tx_id_delay);
-+		return -EINVAL;
- 	}
- 
- 	if (of_property_read_bool(of_node, "enet-phy-lane-swap"))
-@@ -434,6 +449,10 @@ static int dp83867_config_init(struct phy_device *phydev)
- 	int ret, val, bs;
- 	u16 delay;
- 
-+	ret = dp83867_verify_rgmii_cfg(phydev);
-+	if (ret)
-+		return ret;
-+
- 	/* RX_DV/RX_CTRL strapped in mode 1 or mode 2 workaround */
- 	if (dp83867->rxctrl_strap_quirk)
- 		phy_clear_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
-@@ -485,8 +504,12 @@ static int dp83867_config_init(struct phy_device *phydev)
- 
- 		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIICTL, val);
- 
--		delay = (dp83867->rx_id_delay |
--			(dp83867->tx_id_delay << DP83867_RGMII_TX_CLK_DELAY_SHIFT));
-+		delay = 0;
-+		if (dp83867->rx_id_delay != DP83867_RGMII_RX_CLK_DELAY_INV)
-+			delay |= dp83867->rx_id_delay;
-+		if (dp83867->tx_id_delay != DP83867_RGMII_TX_CLK_DELAY_INV)
-+			delay |= dp83867->tx_id_delay <<
-+				 DP83867_RGMII_TX_CLK_DELAY_SHIFT;
- 
- 		phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RGMIIDCTL,
- 			      delay);
--- 
-2.17.1
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -820,8 +820,12 @@ static int x25_connect(struct socket *sock,
+struct sockaddr *uaddr,
+        sock->state = SS_CONNECTED;
+        rc = 0;
+ out_put_neigh:
+-       if (rc)
++       if (rc) {
++               read_lock_bh(&x25_list_lock);
+                x25_neigh_put(x25->neighbour);
++               x25->neighbour = NULL;
++               read_unlock_bh(&x25_list_lock);
++       }
+ out_put_route:
+        x25_route_put(rt);
+ out:
 
+The most likely explanation I see is that we have two concurrent calls
+to x25_connect racing in this code, so x25->neighbour is set to NULL
+in one thread while another thread calls x25_neigh_put() on that pointer.
+
+Given that all the x25 patches of the past years that are not global cleanups
+tend to fix user-triggered oopses, is it time to just retire the subsystem?
+
+I looked a bit closer and found:
+
+- we used to support x25 hardware in linux, but with WAN_ROUTER
+  removed in linux-3.9 and isdn4linux removed in 5.3, there is only
+  hdlc, ethernet and the N_X25 tty ldisc left. Out of these, only
+  HDLC_X25 made it beyond the experimental stage, so this is
+  probably what everyone uses if there are users at all.
+
+- The only common hdlc hardware that people seem to be using are
+  the "farsync" PCIe and USB adapters. Linux only has drivers for
+  the older PCI devices from that series, but no hardware that works
+  on modern systems.
+
+- The manufacturer still updates their own kernel drivers and provides
+  support, but ships that with a fork or rewrite of the subsystem code now.
+  Kevin Curtis is also listed as maintainer, but appears to have given
+  up in 2013 after [1].
+
+- The most popular software implementation appears to be X25 over TCP
+  (XOT), which is supported by Farsite and other out-of-tree stacks
+  but never had an implementation in mainline.
+
+- The subsystem is listed as "odd fixes", but the last reply on the netdev
+  mailing list from the maintainer was also in 2013[2].
+
+      Arnd
+
+[1] https://lore.kernel.org/netdev/E603DC592C92B54A89CEF6B0919A0B1CAAAA787DA4@SOLO.hq.farsitecommunications.com/
+[2] https://lore.kernel.org/netdev/CADo0ohh7jZhc_WJFkrYYxoYza8ZeSEadzwgwabJWwQ1TucdCcg@mail.gmail.com/
