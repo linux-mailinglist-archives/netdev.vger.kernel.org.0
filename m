@@ -2,184 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13CF91155B5
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 17:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6CC115627
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 18:09:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbfLFQr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 11:47:27 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:57204 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfLFQr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 11:47:26 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6GlMio016593;
-        Fri, 6 Dec 2019 10:47:22 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575650842;
-        bh=YM3VwWjblZ+96a50E5Kk0PHMfn6mkHDwsOR8RbqQotE=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=CnFFcQlCv2DuqyT7CPjsraExT648eCgs8MnYMK9qN3UGo6GTIdfkwK9NiPFLnqfCa
-         Cd7mVwjBSQVIxZCvUXXI4YmRFVfDBXOEMH+L0djc7HRlvJjcJkVsSuXSz5O92dfL4P
-         K/cwRPiNuuRTRWVt480X1N/F5anyjNboA0USxqQI=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB6GlMf6046460
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 Dec 2019 10:47:22 -0600
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 6 Dec
- 2019 10:47:21 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 6 Dec 2019 10:47:21 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6GlLF6062776;
-        Fri, 6 Dec 2019 10:47:21 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <bunk@kernel.org>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <grygorii.strashko@ti.com>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH 2/2] net: phy: dp83867: Add rx-fifo-depth and tx-fifo-depth
-Date:   Fri, 6 Dec 2019 10:45:16 -0600
-Message-ID: <20191206164516.2702-2-dmurphy@ti.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191206164516.2702-1-dmurphy@ti.com>
-References: <20191206164516.2702-1-dmurphy@ti.com>
+        id S1726330AbfLFRJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 12:09:22 -0500
+Received: from mail-qk1-f169.google.com ([209.85.222.169]:36471 "EHLO
+        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbfLFRJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 12:09:22 -0500
+Received: by mail-qk1-f169.google.com with SMTP id s25so2126372qks.3
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 09:09:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8LJVr1VmjslLqmOTXhGTSstIvwi0XtIfpztOHpjoQcI=;
+        b=ifiACubAK5p+PPSoIWaSFNdGYssBpL11sQGqGwJbSRKvK8oAUTloevwxoB2G6XR2le
+         nBtKbjvj8aFM8djt09jvJqvmU+R8pC3OL1hYiaugCWjp4hFAOwU0sl3oXmQCuD63UO7X
+         OYUoOXGIT9x8Vut1n14B8/cxbZoQe3Oe0Q/ZwZWbZ46VZupMwxiYms3/VA0MjcEnSN4y
+         9Bp58qtzhzx6hXA8MDUz2lTiHuXSOIwBq90FKsL+If/cazv9z4mB9VDdp0RqBHAXV2rY
+         eXMFV8OlC3Wjam+FqgweO9FMS0v8R++sLa7QS285egLNvnZbAwETL9iLL470H0ZYYJW9
+         5UsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8LJVr1VmjslLqmOTXhGTSstIvwi0XtIfpztOHpjoQcI=;
+        b=i6Vp88xCR13NNnfa9HgCc+fqwhZi9KvLZvi+ThyiqYgBr9Kv0Zi+5r7wYn1z2fPA8l
+         Uzof0/si9BtQDTOqKFhp/5nTRE6OXTknKZS6MiAqobBCbZjwBB0eSadojz6WzrhfD+A8
+         vP/Aj9UQ9hJW1bmGGkhCZJU/XJlSezAIReBn2V4oS6UQE+tguqV3fnwNyngCKutNQ2ta
+         6FaMbjziIkVeEsyuV0bI4TfuYjgqrgqVd4Xe2V8fzMpzkKSgpjU62YMt5/CzFhXYSTZ9
+         E0qU5ANf4DmcP6IMCT+1heX/B4l8B7qVQbKrFTVRLv7y8+CWSVZ/gxTB+wgoD20trtdR
+         qvtA==
+X-Gm-Message-State: APjAAAUAAApPRIhB25/uE3lTNz7ZJpWwtAr+C1jDiUpyqgA6UxZEhG4S
+        0CDwwR2PM4WBXjbBdFuzXEYOMG56B9QkS7Ui0Wo=
+X-Google-Smtp-Source: APXvYqycFax2ilw4kyuNCH6HbO9tO+UxIaDuuDqsL2LeB4P6KP0Hji2K0m7rfe31sG2da9qqDrE3Yf4su7o7r9EmBYw=
+X-Received: by 2002:a37:9acb:: with SMTP id c194mr14430807qke.291.1575652161080;
+ Fri, 06 Dec 2019 09:09:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20191206033902.19638-1-xiyou.wangcong@gmail.com> <CAJ0CqmW8TYO4jasC4UVXALWHkvaU+S7Uu0V=TDojwZwiJV2TxA@mail.gmail.com>
+In-Reply-To: <CAJ0CqmW8TYO4jasC4UVXALWHkvaU+S7Uu0V=TDojwZwiJV2TxA@mail.gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Fri, 6 Dec 2019 09:08:44 -0800
+Message-ID: <CALDO+SbGB2DmSQ-FzLCvNvU+nvHmbxpoNeyZHOwJbgbha6EZwg@mail.gmail.com>
+Subject: Re: [Patch net] gre: refetch erspan header from skb->data after pskb_may_pull()
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code changes the TI specific ti,fifo-depth to the common
-tx-fifo-depth property.  The tx depth is applicable for both RGMII and
-SGMII modes of operation.
+On Fri, Dec 6, 2019 at 3:50 AM Lorenzo Bianconi
+<lorenzo.bianconi@redhat.com> wrote:
+>
+> >
+> > After pskb_may_pull() we should always refetch the header
+> > pointers from the skb->data in case it got reallocated.
+> >
+> > In gre_parse_header(), the erspan header is still fetched
+> > from the 'options' pointer which is fetched before
+> > pskb_may_pull().
+> >
+> > Found this during code review of a KMSAN bug report.
+> >
+> > Fixes: cb73ee40b1b3 ("net: ip_gre: use erspan key field for tunnel lookup")
+> > Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+>
+> Acked-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+>
 
-rx-fifo-depth was added as well but this is only applicable for SGMII
-mode.
+LGTM.
+Acked-by: William Tu <u9012063@gmail.com>
 
-So in summary
-if RGMII mode write tx fifo depth only
-if SGMII mode write both rx and tx fifo depths
-
-If the property is not populated in the device tree then set the value
-to the default values.
-
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Reported-by: Adrian Bunk <bunk@kernel.org>
----
- drivers/net/phy/dp83867.c | 62 +++++++++++++++++++++++++++++++--------
- 1 file changed, 49 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 1f1ecee0ee2f..93649ebc87b5 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -72,9 +72,11 @@
- #define DP83867_STRAP_STS2_CLK_SKEW_NONE	BIT(2)
- 
- /* PHY CTRL bits */
--#define DP83867_PHYCR_FIFO_DEPTH_SHIFT		14
-+#define DP83867_PHYCR_TX_FIFO_DEPTH_SHIFT	14
-+#define DP83867_PHYCR_RX_FIFO_DEPTH_SHIFT	12
- #define DP83867_PHYCR_FIFO_DEPTH_MAX		0x03
--#define DP83867_PHYCR_FIFO_DEPTH_MASK		GENMASK(15, 14)
-+#define DP83867_PHYCR_TX_FIFO_DEPTH_MASK	GENMASK(15, 14)
-+#define DP83867_PHYCR_RX_FIFO_DEPTH_MASK	GENMASK(13, 12)
- #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
- 
- /* RGMIIDCTL bits */
-@@ -103,7 +105,8 @@ enum {
- struct dp83867_private {
- 	u32 rx_id_delay;
- 	u32 tx_id_delay;
--	u32 fifo_depth;
-+	u32 tx_fifo_depth;
-+	u32 rx_fifo_depth;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -255,18 +258,32 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		dp83867->port_mirroring = DP83867_PORT_MIRROING_DIS;
- 
- 	ret = of_property_read_u32(of_node, "ti,fifo-depth",
--				   &dp83867->fifo_depth);
-+				   &dp83867->tx_fifo_depth);
- 	if (ret) {
--		phydev_err(phydev,
--			   "ti,fifo-depth property is required\n");
--		return ret;
-+		ret = of_property_read_u32(of_node, "tx-fifo-depth",
-+					   &dp83867->tx_fifo_depth);
-+		if (ret)
-+			dp83867->tx_fifo_depth =
-+					DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
- 	}
--	if (dp83867->fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
--		phydev_err(phydev,
--			   "ti,fifo-depth value %u out of range\n",
--			   dp83867->fifo_depth);
-+
-+	if (dp83867->tx_fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
-+		phydev_err(phydev, "tx-fifo-depth value %u out of range\n",
-+			   dp83867->tx_fifo_depth);
- 		return -EINVAL;
- 	}
-+
-+	ret = of_property_read_u32(of_node, "rx-fifo-depth",
-+				   &dp83867->rx_fifo_depth);
-+	if (ret)
-+		dp83867->rx_fifo_depth = DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
-+
-+	if (dp83867->rx_fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
-+		phydev_err(phydev, "rx-fifo-depth value %u out of range\n",
-+			   dp83867->rx_fifo_depth);
-+		return -EINVAL;
-+	}
-+
- 	return 0;
- }
- #else
-@@ -305,12 +322,31 @@ static int dp83867_config_init(struct phy_device *phydev)
- 		phy_clear_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
- 				   BIT(7));
- 
-+	if (phy_interface_is_rgmii(phydev) ||
-+	    phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		val = phy_read(phydev, MII_DP83867_PHYCTRL);
-+		if (val < 0)
-+			return val;
-+
-+		val &= ~DP83867_PHYCR_TX_FIFO_DEPTH_MASK;
-+		val |= (dp83867->tx_fifo_depth <<
-+			DP83867_PHYCR_TX_FIFO_DEPTH_SHIFT);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+			val &= ~DP83867_PHYCR_RX_FIFO_DEPTH_MASK;
-+			val |= (dp83867->rx_fifo_depth <<
-+				DP83867_PHYCR_RX_FIFO_DEPTH_SHIFT);
-+		}
-+
-+		ret = phy_write(phydev, MII_DP83867_PHYCTRL, val);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	if (phy_interface_is_rgmii(phydev)) {
- 		val = phy_read(phydev, MII_DP83867_PHYCTRL);
- 		if (val < 0)
- 			return val;
--		val &= ~DP83867_PHYCR_FIFO_DEPTH_MASK;
--		val |= (dp83867->fifo_depth << DP83867_PHYCR_FIFO_DEPTH_SHIFT);
- 
- 		/* The code below checks if "port mirroring" N/A MODE4 has been
- 		 * enabled during power on bootstrap.
--- 
-2.23.0
-
+From the  spec, ERSPAN has fixed size GRE header, so  I think
+WCCPv2 should not exist in ERSPAN.
