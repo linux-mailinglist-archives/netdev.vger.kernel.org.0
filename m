@@ -2,166 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D477B1153DC
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:06:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C691153EA
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbfLFPG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 10:06:27 -0500
-Received: from fd.dlink.ru ([178.170.168.18]:43908 "EHLO fd.dlink.ru"
+        id S1726313AbfLFPJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 10:09:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32928 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726244AbfLFPG0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Dec 2019 10:06:26 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 46DE61B214D6; Fri,  6 Dec 2019 18:06:22 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 46DE61B214D6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1575644783; bh=TNURWtYg5VbgmOVt3Zu3a5GrkMmxUJgdKkf+0OlgfLQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=lHbMNkR+fWnv0r2T339Yr8QNbkjw+56435jESnAW0VZswNTpRQnSVj+ZlsqIe6Qd2
-         HFxFiBh+Odu+eYudoZNs+eXtT3GqmfNsm5+yv+vgUEx//zGosjtjUPM2YGryvMuBxR
-         bXMODReAz4v6JrvN0JHsgxpD9ugyYCAPg4RyeQGQ=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 00AD41B21308;
-        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 00AD41B21308
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 8D5981B20228;
-        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
+        id S1726222AbfLFPJZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 10:09:25 -0500
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D2DFF24659;
+        Fri,  6 Dec 2019 15:09:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575644965;
+        bh=BFgPiLAZWvknC+JyivIc5BNJUYK/zA0hfsGfey3+1eA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=1apToggpiF4ucp39uITnJH1BPT41klTpiaNDPSHP1+N8HWxX2HYZjWBO8eYyiDet1
+         VzWkFrMZalU+SBzGh00HQCcRj/f7UBadzHvyny/QwlK6m3R/YtuI0iz0e9aTnq0KAr
+         YTttoosiUtIVhI7o2JhQSzuuL6RUcMG9J1ezc8Bs=
+Received: by mail-qt1-f181.google.com with SMTP id t17so775951qtr.7;
+        Fri, 06 Dec 2019 07:09:24 -0800 (PST)
+X-Gm-Message-State: APjAAAUaXoOJkpv+KhMnCtdDp6nxn2P8pUKywBfRvqjvzNZn8bzBMQd8
+        /3Ow054VFOBcoZZDxdkvfu29X2Hq2j9wc4Mtcg==
+X-Google-Smtp-Source: APXvYqwq9pG0UVtzn65MnG3xeNSXBTwYw4qRbEzG5O3WKdV3l1dEtcig39I7Btu70v3sqx6/ux9LOuqnTBElx71Ar/E=
+X-Received: by 2002:ac8:6747:: with SMTP id n7mr12994057qtp.224.1575644964042;
+ Fri, 06 Dec 2019 07:09:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 06 Dec 2019 18:06:09 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Muciri Gatimu <muciri@openmesh.com>,
-        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
-        John Crispin <john@phrozen.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
-In-Reply-To: <5d3d0907-4f99-ccda-82f4-12e514c5edb2@gmail.com>
-References: <20191205100235.14195-1-alobakin@dlink.ru>
- <5d3d0907-4f99-ccda-82f4-12e514c5edb2@gmail.com>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <71305dd0f15bd065f9b1eedd4f61123e@dlink.ru>
-X-Sender: alobakin@dlink.ru
+References: <20191127153928.22408-1-grygorii.strashko@ti.com>
+ <CAL_Jsq+viKkF4FFgpMhTjKCMLeGOX1o9Uq-StU6xwFuTcpCL2Q@mail.gmail.com> <eb3cb685-5ddc-8e06-1e26-0f6bc43b294c@ti.com>
+In-Reply-To: <eb3cb685-5ddc-8e06-1e26-0f6bc43b294c@ti.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 6 Dec 2019 09:09:12 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKZ5qexJMSm5MZYQp5LutyHHHObbfA3r2_XQa7E6kjqpg@mail.gmail.com>
+Message-ID: <CAL_JsqKZ5qexJMSm5MZYQp5LutyHHHObbfA3r2_XQa7E6kjqpg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: mdio: use non vendor specific
+ compatible string in example
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Simon Horman <simon.horman@netronome.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Fainelli wrote 06.12.2019 06:28:
-> On 12/5/2019 2:02 AM, Alexander Lobakin wrote:
->> Commit 43e665287f93 ("net-next: dsa: fix flow dissection") added an
->> ability to override protocol and network offset during flow dissection
->> for DSA-enabled devices (i.e. controllers shipped as switch CPU ports)
->> in order to fix skb hashing for RPS on Rx path.
->> 
->> However, skb_hash() and added part of code can be invoked not only on
->> Rx, but also on Tx path if we have a multi-queued device and:
->>  - kernel is running on UP system or
->>  - XPS is not configured.
->> 
->> The call stack in this two cases will be like: dev_queue_xmit() ->
->> __dev_queue_xmit() -> netdev_core_pick_tx() -> netdev_pick_tx() ->
->> skb_tx_hash() -> skb_get_hash().
->> 
->> The problem is that skbs queued for Tx have both network offset and
->> correct protocol already set up even after inserting a CPU tag by DSA
->> tagger, so calling tag_ops->flow_dissect() on this path actually only
->> breaks flow dissection and hashing.
->> 
->> This can be observed by adding debug prints just before and right 
->> after
->> tag_ops->flow_dissect() call to the related block of code:
->> 
->> Before the patch:
->> 
->> Rx path (RPS):
->> 
->> [   19.240001] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   19.244271] tag_ops->flow_dissect()
->> [   19.247811] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
->> 
->> [   19.215435] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   19.219746] tag_ops->flow_dissect()
->> [   19.223241] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
->> 
->> [   18.654057] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   18.658332] tag_ops->flow_dissect()
->> [   18.661826] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
->> 
->> Tx path (UP system):
->> 
->> [   18.759560] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
->> [   18.763933] tag_ops->flow_dissect()
->> [   18.767485] Tx: proto: 0x920b, nhoff: 34	/* junk */
->> 
->> [   22.800020] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
->> [   22.804392] tag_ops->flow_dissect()
->> [   22.807921] Tx: proto: 0x920b, nhoff: 34	/* junk */
->> 
->> [   16.898342] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
->> [   16.902705] tag_ops->flow_dissect()
->> [   16.906227] Tx: proto: 0x920b, nhoff: 34	/* junk */
->> 
->> After:
->> 
->> Rx path (RPS):
->> 
->> [   16.520993] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   16.525260] tag_ops->flow_dissect()
->> [   16.528808] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
->> 
->> [   15.484807] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   15.490417] tag_ops->flow_dissect()
->> [   15.495223] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
->> 
->> [   17.134621] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
->> [   17.138895] tag_ops->flow_dissect()
->> [   17.142388] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
->> 
->> Tx path (UP system):
->> 
->> [   15.499558] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
->> 
->> [   20.664689] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
->> 
->> [   18.565782] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
->> 
->> In order to fix that we can add the check 'proto == htons(ETH_P_XDSA)'
->> to prevent code from calling tag_ops->flow_dissect() on Tx.
->> I also decided to initialize 'offset' variable so tagger callbacks can
->> now safely leave it untouched without provoking a chaos.
->> 
->> Fixes: 43e665287f93 ("net-next: dsa: fix flow dissection")
->> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+On Fri, Dec 6, 2019 at 5:14 AM Grygorii Strashko
+<grygorii.strashko@ti.com> wrote:
+>
+>
+>
+> On 05/12/2019 19:59, Rob Herring wrote:
+> > On Wed, Nov 27, 2019 at 9:39 AM Grygorii Strashko
+> > <grygorii.strashko@ti.com> wrote:
+> >>
+> >> Use non vendor specific compatible string in example, otherwise DT YAML
+> >> schemas validation may trigger warnings specific to TI ti,davinci_mdio
+> >> and not to the generic MDIO example.
+> >>
+> >> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> >> ---
+> >>   Documentation/devicetree/bindings/net/mdio.yaml | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+> >> index 5d08d2ffd4eb..524f062c6973 100644
+> >> --- a/Documentation/devicetree/bindings/net/mdio.yaml
+> >> +++ b/Documentation/devicetree/bindings/net/mdio.yaml
+> >> @@ -56,7 +56,7 @@ patternProperties:
+> >>   examples:
+> >>     - |
+> >>       davinci_mdio: mdio@5c030000 {
+> >> -        compatible = "ti,davinci_mdio";
+> >> +        compatible = "vendor,mdio";
+> >
+> > The problem with this is eventually 'vendor,mdio' will get flagged as
+> > an undocumented compatible. We're a ways off from being able to enable
+> > that until we have a majority of bindings converted. Though maybe
+> > examples can be enabled sooner rather than later.
+> >
+>
+> May be some generic compatible string be used for all examples,
+> like: "vendor,example-ip". What do you think?
 
-So Dave, you can pick it up into your fixes tree if I understand
-correctly.
+I'm still not clear what problem you are trying to solve. 'may trigger
+warnings' doesn't sound like an actual problem.
 
-There will be further work on DSA Rx path, but it's a subject for
-next Linux release cycles essentially.
+Either make the example complete enough to pass validation or just
+remove it because common bindings aren't a complete binding on their
+own. I'm sure there will be plenty of other MDIO binding examples.
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+Rob
