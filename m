@@ -2,202 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA74B115305
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 15:21:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B69D5115317
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 15:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726322AbfLFOVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 09:21:35 -0500
-Received: from mail-pg1-f180.google.com ([209.85.215.180]:34896 "EHLO
-        mail-pg1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726214AbfLFOVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 09:21:35 -0500
-Received: by mail-pg1-f180.google.com with SMTP id l24so3393178pgk.2;
-        Fri, 06 Dec 2019 06:21:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=m9FvOToT/3pDAr+KR5PpVtiNMReb8JhZS+HVbFTxzeU=;
-        b=BhnQJYqXp3dCFKpMyPzbHjs06rzt4rVlEh2Lf1ZtZu2sEmECc8cMTy87Zx3w56I4sF
-         9ifFvm/GqXsPtaUgeR9r86tJ/fTUZ54zJaoCMlhXV8/Cj+pIJvAII0A+9+SdCM4I293D
-         flTMV580meB0rZHEmBdKxYifYmRvLolcg1ePYqoOJNXRTogZtNR1kCKrCMlOW82Oic9x
-         8VipAqPe1ppXeF1eBekFdJQur66u/ruhZxaptIxcNVtJT6B3dwyy2xpbrP0cEvZRyj0S
-         4gPhzdYXo6+z5dwx5E7V6sGDTYA7sDJpBk1re0s7xxFal3C64j1iwr2iS0Iz+KY2bR6e
-         45bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=m9FvOToT/3pDAr+KR5PpVtiNMReb8JhZS+HVbFTxzeU=;
-        b=HL5z4yhFFjsdcEAh/DCEevcgj9MzfSB9cevhm9gTuzFXN4h9rHdRNZ8IeAd05WlLd+
-         Xe9Mqvr4yyIndSL43wzGaSzwbuaJ8JSJM4Mdo3J3ejrXoFgKe/OTGYrORtDWe78XRCiW
-         n7M5GzbHkHfsGjk6ZH41bUGd9g5Pq8Bqec02d3RHBjszTmvpo6nJ6l3wOUThjG7NJJuO
-         UiRyMtbAmumz0zWpt+nzsJPOrp8/Po6BtnZ/KnbDSqQsbz53DoJFs1cnZLsyTOx9Tf2m
-         oOYtNjIhDZmeqhZvAFq5avV246SNOiLEWz7YnUxlo6yM1Ijkkh+7U75revVibfs6P9Be
-         tDMw==
-X-Gm-Message-State: APjAAAWzyVo5N429VnprCuyJD7GwBl/j4Vl3yf8SABdDnI/N52TyIbFJ
-        tuTTxm1Pe0Fj4FkyIGBIqG5Mmuvz
-X-Google-Smtp-Source: APXvYqw2hLHXA/50bzABkNKq4dEOWcAl1WjfkRPVm7jOaj4G5w9/nnJjRCPoHEaGnG/U3KAryQikrg==
-X-Received: by 2002:a63:d406:: with SMTP id a6mr3782454pgh.264.1575642094177;
-        Fri, 06 Dec 2019 06:21:34 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 23sm6986433pfj.148.2019.12.06.06.21.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Dec 2019 06:21:33 -0800 (PST)
-Subject: Re: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
-To:     David Laight <David.Laight@ACULAB.COM>,
-        network dev <netdev@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <23db23416d3148fa86e54dccc6152266@AcuMS.aculab.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <dc10298d-4280-b9b4-9203-be4000e85c42@gmail.com>
-Date:   Fri, 6 Dec 2019 06:21:31 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <23db23416d3148fa86e54dccc6152266@AcuMS.aculab.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726262AbfLFO1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 09:27:08 -0500
+Received: from mail-eopbgr750051.outbound.protection.outlook.com ([40.107.75.51]:42447
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726195AbfLFO1I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 09:27:08 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Llptcj6IRsLajPR/NOQ5gRYcpR4bX6dL6ltB0cvmp5KAmgvQX6xYGaifCJgNZfO237D3jFC5l3a0wPVKDg5SKlK2vxH14hkLpaBuOTuAvti6GVxQo/dbgjok+9xRpB2Wp+Oq++tP51FMppzJw0fC0LHcG893SMSdKs0w7+fMyyQrSO3tt8qCYZ6vBQCsmJ9IfeQoZM7TOPB7+qafJGJFeF3Iepq8rWyga86Fv1nOmh5vvHlVLxdbGa7G5xz1GHTwbCe1Sjo10/bg8GZO3mQYla/1XzrEAJagMD03q4XSgrkxlBtZBOqXjeSSH1sDSl0fYM/Siu8N4HJafAGLlMYBjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Ox+7lNUFP/FSPe/d7UrFzJHfObx/6qY8pF+FcwHLnM=;
+ b=NAg7wNBSKpz0dHgEmCv9hASXY/g8FUrJwjy6Ordr5NhXlh2uQ42EXGjgv4yV52CTXmSFLdHzoiVnBhoZZWb+Jx8r9SOh71DIvZwYuvnV98tzEq5NWu/1cLsrAcBfZ4/77TDc2DOLHo0r56Ay4Pv38dWLC8HTIYiluRTbDuuD6heUx0pV4G6b7AP/3LiPCJtOF5Ttz9kS/vudQj+Ugl0j7/8lX6oXDjr+R9AtPT2yW+gxlZb8+87Oyc7yREwcZ6bQkgPrRb+QvFFV7NZay92KOwf2jLgMRR3O5pPn9S/9A3TEMY7s30VNXxg5ZyOqoSOVmVhqX4nbcBVhMwDWsx0aHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ericsson.com; dmarc=pass action=none header.from=ericsson.com;
+ dkim=pass header.d=ericsson.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ericsson.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+Ox+7lNUFP/FSPe/d7UrFzJHfObx/6qY8pF+FcwHLnM=;
+ b=KgbxLXBwJ0jfzj21C4pso3HGXoODZze5nUNn91vv7AJGD1vrjyy1ORCK0Fyiiua2Q94h5MYgdWJ81t/VwlT1q0p4F7Ydt4TyIp4LaIYWnAiCEh1p5kmae7vcW1ZzUGH634T4BWymXrgJn+6e0hk2qgIIAeelFVEbIg0Qrj/Rdl8=
+Received: from CY4PR15MB1317.namprd15.prod.outlook.com (10.172.178.136) by
+ CY4PR15MB1302.namprd15.prod.outlook.com (10.172.181.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.22; Fri, 6 Dec 2019 14:27:00 +0000
+Received: from CY4PR15MB1317.namprd15.prod.outlook.com
+ ([fe80::2964:799:8d01:7abb]) by CY4PR15MB1317.namprd15.prod.outlook.com
+ ([fe80::2964:799:8d01:7abb%4]) with mapi id 15.20.2516.017; Fri, 6 Dec 2019
+ 14:27:00 +0000
+From:   Jon Maloy <jon.maloy@ericsson.com>
+To:     Taehee Yoo <ap420073@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 net] tipc: fix ordering of tipc module init and exit
+ routine
+Thread-Topic: [PATCH v2 net] tipc: fix ordering of tipc module init and exit
+ routine
+Thread-Index: AQHVq/W2ed5wy4evDk+C8GYUu9jh46etKmpQ
+Date:   Fri, 6 Dec 2019 14:26:59 +0000
+Message-ID: <CY4PR15MB13175171E1AC8ED00101A1DC9A5F0@CY4PR15MB1317.namprd15.prod.outlook.com>
+References: <20191206052548.14693-1-ap420073@gmail.com>
+In-Reply-To: <20191206052548.14693-1-ap420073@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jon.maloy@ericsson.com; 
+x-originating-ip: [66.187.232.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f9625da2-831b-4ea6-f193-08d77a585b3e
+x-ms-traffictypediagnostic: CY4PR15MB1302:
+x-microsoft-antispam-prvs: <CY4PR15MB13023F866EC8443477D4399C9A5F0@CY4PR15MB1302.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0243E5FD68
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(189003)(199004)(13464003)(8676002)(229853002)(66556008)(2906002)(7696005)(66476007)(8936002)(81166006)(55016002)(99286004)(64756008)(81156014)(66446008)(66946007)(33656002)(44832011)(9686003)(478600001)(316002)(26005)(74316002)(76116006)(86362001)(52536014)(5660300002)(71200400001)(53546011)(305945005)(102836004)(6506007)(110136005)(76176011)(186003)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR15MB1302;H:CY4PR15MB1317.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: ericsson.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U46FvtSrY1E8TzFhHpEgEqhX+wN56qoB1wIcQ51a53QBkYQx73G3yQOKXi8ZcGA5a5odR2k16m3R0BX2o/RA0Eh+T+NtqO7MnW7U5NhuPNyVX28ErMTxhMIx8o2QEIEt6OXc/QeGfIl/DW3IV8toGCek6ep9A88laPqDgmLmpjwGD1VLebeSegL0owW+6hOBgt0bPinMuds3ni1+j2xLVzsJ0aA2HQdhzhkN+fjhIcXnsDvPgOLjlYu5vufeszci+fhGpc9gWZI0iuDfpRFAqIzb/blxNgx1cKep3TlfUkwAzD6mUBP1c5nl1EvjNZNH0bxPS//jcsYHhBE9vMmlOdsWmH97glY+sFbesb8eHNycp66IXkq9RSqw13IgyTOZg2yMzZT8vOhSchKLd9EE/ZeKvNosCsDWm8Y2x9rvJqylhlmJW5BFChrvtj12nBl7DfmBe6GH40t5jlAGGnnOIhPdFwYZSlclQugUGdcKAFWV0c9zHf59LlTdDfirN6KF
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: ericsson.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9625da2-831b-4ea6-f193-08d77a585b3e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2019 14:27:00.0398
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 92e84ceb-fbfd-47ab-be52-080c6b87953f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZEVri9jp5zSYAHMymNkphGeYaShrwWSs191U7cdXEBiu4d6Tge5d+jONIiCn3peZ4G72OenXLc3eLn4CgEGWKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1302
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/6/19 5:39 AM, David Laight wrote:
-> Some tests I've done seem to show that recvmsg() is much slower that recvfrom()
-> even though most of what they do is the same.
-
-Not really.
-
-> One thought is that the difference is all the extra copy_from_user() needed by
-> recvmsg. CONFIG_HARDENED_USERCOPY can add a significant cost.
-> 
-> I've built rebuilt my 5.4-rc7 kernel with all the copy_to/from_user() in net/socket.c
-> replaced with the '_' prefixed versions (that don't call check_object()).
-> And also changed rw_copy_check_uvector() in fs/read_write.c.
-> 
-> Schedviz then showed the time spent by the application thread that calls
-> recvmsg() (about) 225 times being reduced from 0.9ms to 0.75ms.
-> 
-> I've now instrumented the actual recv calls. It show some differences,
-> but now enough to explain the 20% difference above.
-> (This is all made more difficult because my Ivy Bridge i7-3770 refuses
-> to run at a fixed frequency.)
-> 
-> Anyway using PERF_COUNT_HW_CPU_CYCLES I've got the following
-> histograms for the number of cycles in each recv call.
-> There are about the same number (2.8M) in each column over
-> an elapsed time of 20 seconds.
-> There are 450 active UDP sockets, each receives 1 message every 20ms.
-> Every 10ms a RT thread that is pinned to a cpu reads all the pending messages.
-> This is a 4 core hyperthreading (8 cpu) system.
-> During these tests 5 other threads are also busy.
-> There are no sends (on those sockets).
-> 
->          |       recvfrom      |       recvmsg
->  cycles  |   unhard  |    hard |   unhard  |    hard
-> -----------------------------------------------------
->    1472:         29          1          0          0
->    1600:       8980       4887          3          0
->    1728:     112540     159518       5393       2895
->    1856:     174555     270148     119054     111230
->    1984:     126007     168383     152310     195288
->    2112:      80249      87045     118941     168801
->    2240:      61570      54790      81847     110561
->    2368:      95088      61796      57496      71732
->    2496:     193633     155870      54020      54801
->    2624:     274997     284921     102465      74626
->    2752:     276661     295715     160492     119498
->    2880:     248751     264174     206327     186028
->    3008:     207532     213067     230704     229232
->    3136:     167976     164804     226493     238555
->    3264:     133708     124857     202639     220574
->    3392:     107859      95696     172949     189475
->    3520:      88599      75943     141056     153524
->    3648:      74290      61586     115873     120994
->    3776:      62253      50891      96061      95040
->    3904:      52213      42482      81113      76577
->    4032:      42920      34632      69077      63131
->    4160:      35472      28327      60074      53631
->    4288:      28787      22603      51345      46620
->    4416:      24072      18496      44006      40325
->    4544:      20107      14886      37185      34516
->    4672:      16759      12206      31408      29031
->    4800:      14195       9991      26843      24396
->    4928:      12356       8167      22775      20165
->    5056:      10387       6931      19404      16591
->    5184:       9284       5916      16817      13743
->    5312:       7994       5116      14737      11452
->    5440:       7152       4495      12592       9607
->    5568:       6300       3969      11117       8592
->    5696:       5445       3421       9988       7237
->    5824:       4683       2829       8839       6368
->    5952:       3959       2643       7652       5652
->    6080:       3454       2377       6442       4814
->    6208:       3041       2219       5735       4170
->    6336:       2840       2060       5059       3615
->    6464:       2428       1975       4433       3201
->    6592:       2109       1794       4078       2823
->    6720:       1871       1382       3549       2558
->    6848:       1706       1262       3110       2328
->    6976:       1567       1001       2733       1991
->    7104:       1436        873       2436       1819
->    7232:       1417        860       2102       1652
->    7360:       1414        741       1823       1429
->    7488:       1372        814       1663       1239
->    7616:       1201        896       1430       1152
->    7744:       1275       1008       1364       1049
->    7872:       1382       1120       1367        925
->    8000:       1316       1282       1253        815
->    8128:       1264       1266       1313        792
->   8256+:      19252      19450      34703      30228
-> ----------------------------------------------------
->   Total:    2847707    2863582    2853688    2877088
-> 
-> This does show a few interesting things:
-> 1) The 'hardened' kernel is slower, especially for recvmsg.
-> 2) The difference for recvfrom isn't enough for the 20% reduction I saw.
-> 3) There are two peaks at the top a 'not insubstantial' number are a lot
->    faster than the main peak.
-> 4) There is second peak way down at 8000 cycles.
->    This is repeatable.
-> 
-> Any idea what is actually going on??
-> 
-
-Real question is : Do you actually need to use recvmsg() instead of recvfrom() ?
-
-If recvmsg() provides additional cmsg, this is not surprising it is more expensive.
-
-recvmsg() also uses an indirect call, so CONFIG_RETPOLINE=y is probably hurting.
-
-err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys, flags);
-
-Maybe a INDIRECT_CALL annotation could help, or rewriting this to not let gcc
-use an indirect call.
-
-
-diff --git a/net/socket.c b/net/socket.c
-index ea28cbb9e2e7a7180ee63de2d09a81aacb001ab7..752714281026dab6db850ec7fa75b7aa6240661f 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2559,7 +2559,10 @@ static int ____sys_recvmsg(struct socket *sock, struct msghdr *msg_sys,
- 
-        if (sock->file->f_flags & O_NONBLOCK)
-                flags |= MSG_DONTWAIT;
--       err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys, flags);
-+       if (nosec)
-+               err = sock_recvmsg_nosec(sock, msg_sys, flags);
-+       else
-+               err = sock_recvmsg(sock, msg_sys, flags);
-        if (err < 0)
-                goto out;
-        len = err;
-
-
-
+QWNrZWQtYnk6IEpvbiBNYWxveSA8am9uLm1hbG95QGVyaWNzc29uLmNvbT4NCg0KPiAtLS0tLU9y
+aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBUYWVoZWUgWW9vIDxhcDQyMDA3M0BnbWFpbC5j
+b20+DQo+IFNlbnQ6IDYtRGVjLTE5IDAwOjI2DQo+IFRvOiBkYXZlbUBkYXZlbWxvZnQubmV0OyBK
+b24gTWFsb3kgPGpvbi5tYWxveUBlcmljc3Nvbi5jb20+OyB5aW5nLnh1ZUB3aW5kcml2ZXIuY29t
+Ow0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiBhcDQyMDA3M0BnbWFpbC5jb20NCj4g
+U3ViamVjdDogW1BBVENIIHYyIG5ldF0gdGlwYzogZml4IG9yZGVyaW5nIG9mIHRpcGMgbW9kdWxl
+IGluaXQgYW5kIGV4aXQgcm91dGluZQ0KPiANCj4gSW4gb3JkZXIgdG8gc2V0L2dldC9kdW1wLCB0
+aGUgdGlwYyB1c2VzIHRoZSBnZW5lcmljIG5ldGxpbmsNCj4gaW5mcmFzdHJ1Y3R1cmUuIFNvLCB3
+aGVuIHRpcGMgbW9kdWxlIGlzIGluc2VydGVkLCBpbml0IGZ1bmN0aW9uDQo+IGNhbGxzIGdlbmxf
+cmVnaXN0ZXJfZmFtaWx5KCkuDQo+IEFmdGVyIGdlbmxfcmVnaXN0ZXJfZmFtaWx5KCksIHNldC9n
+ZXQvZHVtcCBjb21tYW5kcyBhcmUgaW1tZWRpYXRlbHkNCj4gYWxsb3dlZCBhbmQgdGhlc2UgY2Fs
+bGJhY2tzIGludGVybmFsbHkgdXNlIHRoZSBuZXRfZ2VuZXJpYy4NCj4gbmV0X2dlbmVyaWMgaXMg
+YWxsb2NhdGVkIGJ5IHJlZ2lzdGVyX3Blcm5ldF9kZXZpY2UoKSBidXQgdGhpcw0KPiBpcyBjYWxs
+ZWQgYWZ0ZXIgZ2VubF9yZWdpc3Rlcl9mYW1pbHkoKSBpbiB0aGUgX19pbml0IGZ1bmN0aW9uLg0K
+PiBTbywgdGhlc2UgY2FsbGJhY2tzIHdvdWxkIHVzZSB1bi1pbml0aWFsaXplZCBuZXRfZ2VuZXJp
+Yy4NCj4gDQo+IFRlc3QgY29tbWFuZHM6DQo+ICAgICAjU0hFTEwxDQo+ICAgICB3aGlsZSA6DQo+
+ICAgICBkbw0KPiAgICAgICAgIG1vZHByb2JlIHRpcGMNCj4gICAgICAgICBtb2Rwcm9iZSAtcnYg
+dGlwYw0KPiAgICAgZG9uZQ0KPiANCj4gICAgICNTSEVMTDINCj4gICAgIHdoaWxlIDoNCj4gICAg
+IGRvDQo+ICAgICAgICAgdGlwYyBsaW5rIGxpc3QNCj4gICAgIGRvbmUNCj4gDQo+IFNwbGF0IGxv
+b2tzIGxpa2U6DQo+IFsgICA1OS42MTYzMjJdWyBUMjc4OF0ga2FzYW46IENPTkZJR19LQVNBTl9J
+TkxJTkUgZW5hYmxlZA0KPiBbICAgNTkuNjE3MjM0XVsgVDI3ODhdIGthc2FuOiBHUEYgY291bGQg
+YmUgY2F1c2VkIGJ5IE5VTEwtcHRyIGRlcmVmIG9yIHVzZXIgbWVtb3J5IGFjY2Vzcw0KPiBbICAg
+NTkuNjE4Mzk4XVsgVDI3ODhdIGdlbmVyYWwgcHJvdGVjdGlvbiBmYXVsdDogMDAwMCBbIzFdIFNN
+UCBERUJVR19QQUdFQUxMT0MgS0FTQU4gUFRJDQo+IFsgICA1OS42MTkzODldWyBUMjc4OF0gQ1BV
+OiAzIFBJRDogMjc4OCBDb21tOiB0aXBjIE5vdCB0YWludGVkIDUuNC4wKyAjMTk0DQo+IFsgICA1
+OS42MjAyMzFdWyBUMjc4OF0gSGFyZHdhcmUgbmFtZTogaW5ub3RlayBHbWJIIFZpcnR1YWxCb3gv
+VmlydHVhbEJveCwgQklPUyBWaXJ0dWFsQm94DQo+IDEyLzAxLzIwMDYNCj4gWyAgIDU5LjYyMTQy
+OF1bIFQyNzg4XSBSSVA6IDAwMTA6dGlwY19iY2FzdF9nZXRfYnJvYWRjYXN0X21vZGUrMHgxMzEv
+MHgzMTAgW3RpcGNdDQo+IFsgICA1OS42MjIzNzldWyBUMjc4OF0gQ29kZTogYzcgYzYgZWYgOGIg
+MzggYzAgNjUgZmYgMGQgODQgODMgYzkgM2YgZTggZDcgYTUgZjIgZTMgNDggOGQgYmIgMzggMTEg
+MDAgMDAgNDgNCj4gYjggMDAgMDAgMDAgMDANCj4gWyAgIDU5LjYyMjU1MF1bIFQyNzgwXSBORVQ6
+IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDMwDQo+IFsgICA1OS42MjQ2MjddWyBUMjc4OF0g
+UlNQOiAwMDE4OmZmZmY4ODgwNGIwOWY1NzggRUZMQUdTOiAwMDAxMDIwMg0KPiBbICAgNTkuNjI0
+NjMwXVsgVDI3ODhdIFJBWDogZGZmZmZjMDAwMDAwMDAwMCBSQlg6IDAwMDAwMDAwMDAwMDAwMTEg
+UkNYOiAwMDAwMDAwMDhiYzY2OTA3DQo+IFsgICA1OS42MjQ2MzFdWyBUMjc4OF0gUkRYOiAwMDAw
+MDAwMDAwMDAwMjI5IFJTSTogMDAwMDAwMDA0YjNjZjRjYyBSREk6IDAwMDAwMDAwMDAwMDExNDkN
+Cj4gWyAgIDU5LjYyNDYzM11bIFQyNzg4XSBSQlA6IGZmZmY4ODgwNGIwOWY1ODggUjA4OiAwMDAw
+MDAwMDAwMDAwMDAzIFIwOTogZmZmZmZiZmZmNGZiM2RmMQ0KPiBbICAgNTkuNjI0NjM1XVsgVDI3
+ODhdIFIxMDogZmZmZmZiZmZmNTAzMThmOCBSMTE6IGZmZmY4ODgwNjZjYWRjMTggUjEyOiBmZmZm
+ZmZmZmE2Y2MyZjQwDQo+IFsgICA1OS42MjQ2MzddWyBUMjc4OF0gUjEzOiAxZmZmZjExMDA5NjEz
+ZWJhIFIxNDogZmZmZjg4ODA2NjJlOTMyOCBSMTU6IGZmZmY4ODgwNjYyZTkzMjgNCj4gWyAgIDU5
+LjYyNDYzOV1bIFQyNzg4XSBGUzogIDAwMDA3ZjU3ZDhmN2I3NDAoMDAwMCkgR1M6ZmZmZjg4ODA2
+Y2MwMDAwMCgwMDAwKQ0KPiBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQo+IFsgICA1OS42MjQ2NDVd
+WyBUMjc4OF0gQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAz
+Mw0KPiBbICAgNTkuNjI1ODc1XVsgVDI3ODBdIHRpcGM6IFN0YXJ0ZWQgaW4gc2luZ2xlIG5vZGUg
+bW9kZQ0KPiBbICAgNTkuNjI2MTI4XVsgVDI3ODhdIENSMjogMDAwMDdmNTdkODg3YThjMCBDUjM6
+IDAwMDAwMDAwNGIxNDAwMDIgQ1I0OiAwMDAwMDAwMDAwMDYwNmUwDQo+IFsgICA1OS42MzM5OTFd
+WyBUMjc4OF0gRFIwOiAwMDAwMDAwMDAwMDAwMDAwIERSMTogMDAwMDAwMDAwMDAwMDAwMCBEUjI6
+IDAwMDAwMDAwMDAwMDAwMDANCj4gWyAgIDU5LjYzNTE5NV1bIFQyNzg4XSBEUjM6IDAwMDAwMDAw
+MDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmUwZmYwIERSNzogMDAwMDAwMDAwMDAwMDQwMA0KPiBb
+ICAgNTkuNjM2NDc4XVsgVDI3ODhdIENhbGwgVHJhY2U6DQo+IFsgICA1OS42MzcwMjVdWyBUMjc4
+OF0gIHRpcGNfbmxfYWRkX2JjX2xpbmsrMHgxNzkvMHgxNDcwIFt0aXBjXQ0KPiBbICAgNTkuNjM4
+MjE5XVsgVDI3ODhdICA/IGxvY2tfZG93bmdyYWRlKzB4NmUwLzB4NmUwDQo+IFsgICA1OS42Mzg5
+MjNdWyBUMjc4OF0gID8gX190aXBjX25sX2FkZF9saW5rKzB4ZjkwLzB4ZjkwIFt0aXBjXQ0KPiBb
+ICAgNTkuNjM5NTMzXVsgVDI3ODhdICA/IHRpcGNfbmxfbm9kZV9kdW1wX2xpbmsrMHgzMTgvMHhh
+NTAgW3RpcGNdDQo+IFsgICA1OS42NDAxNjBdWyBUMjc4OF0gID8gbXV0ZXhfbG9ja19pb19uZXN0
+ZWQrMHgxMzgwLzB4MTM4MA0KPiBbICAgNTkuNjQwNzQ2XVsgVDI3ODhdICB0aXBjX25sX25vZGVf
+ZHVtcF9saW5rKzB4NGZkLzB4YTUwIFt0aXBjXQ0KPiBbICAgNTkuNjQxMzU2XVsgVDI3ODhdICA/
+IHRpcGNfbmxfbm9kZV9yZXNldF9saW5rX3N0YXRzKzB4MzQwLzB4MzQwIFt0aXBjXQ0KPiBbICAg
+NTkuNjQyMDg4XVsgVDI3ODhdICA/IF9fc2tiX2V4dF9kZWwrMHgyNzAvMHgyNzANCj4gWyAgIDU5
+LjY0MjU5NF1bIFQyNzg4XSAgZ2VubF9sb2NrX2R1bXBpdCsweDg1LzB4YjANCj4gWyAgIDU5LjY0
+MzA1MF1bIFQyNzg4XSAgbmV0bGlua19kdW1wKzB4NDljLzB4ZWQwDQo+IFsgICA1OS42NDM1Mjld
+WyBUMjc4OF0gID8gX19uZXRsaW5rX3NlbmRza2IrMHhjMC8weGMwDQo+IFsgICA1OS42NDQwNDRd
+WyBUMjc4OF0gID8gX19uZXRsaW5rX2R1bXBfc3RhcnQrMHgxOTAvMHg4MDANCj4gWyAgIDU5LjY0
+NDYxN11bIFQyNzg4XSAgPyBfX211dGV4X3VubG9ja19zbG93cGF0aCsweGQwLzB4NjcwDQo+IFsg
+ICA1OS42NDUxNzddWyBUMjc4OF0gIF9fbmV0bGlua19kdW1wX3N0YXJ0KzB4NWEwLzB4ODAwDQo+
+IFsgICA1OS42NDU2OTJdWyBUMjc4OF0gIGdlbmxfcmN2X21zZysweGE3NS8weGU5MA0KPiBbICAg
+NTkuNjQ2MTQ0XVsgVDI3ODhdICA/IF9fbG9ja19hY3F1aXJlKzB4ZGZlLzB4M2RlMA0KPiBbICAg
+NTkuNjQ2NjkyXVsgVDI3ODhdICA/IGdlbmxfZmFtaWx5X3Jjdl9tc2dfYXR0cnNfcGFyc2UrMHgz
+MjAvMHgzMjANCj4gWyAgIDU5LjY0NzM0MF1bIFQyNzg4XSAgPyBnZW5sX2xvY2tfZHVtcGl0KzB4
+YjAvMHhiMA0KPiBbICAgNTkuNjQ3ODIxXVsgVDI3ODhdICA/IGdlbmxfdW5sb2NrKzB4MjAvMHgy
+MA0KPiBbICAgNTkuNjQ4MjkwXVsgVDI3ODhdICA/IGdlbmxfcGFyYWxsZWxfZG9uZSsweGUwLzB4
+ZTANCj4gWyAgIDU5LjY0ODc4N11bIFQyNzg4XSAgPyBmaW5kX2hlbGRfbG9jaysweDM5LzB4MWQw
+DQo+IFsgICA1OS42NDkyNzZdWyBUMjc4OF0gID8gZ2VubF9yY3YrMHgxNS8weDQwDQo+IFsgICA1
+OS42NDk3MjJdWyBUMjc4OF0gID8gbG9ja19jb250ZW5kZWQrMHhjZDAvMHhjZDANCj4gWyAgIDU5
+LjY1MDI5Nl1bIFQyNzg4XSAgbmV0bGlua19yY3Zfc2tiKzB4MTIxLzB4MzUwDQo+IFsgICA1OS42
+NTA4MjhdWyBUMjc4OF0gID8gZ2VubF9mYW1pbHlfcmN2X21zZ19hdHRyc19wYXJzZSsweDMyMC8w
+eDMyMA0KPiBbICAgNTkuNjUxNDkxXVsgVDI3ODhdICA/IG5ldGxpbmtfYWNrKzB4OTQwLzB4OTQw
+DQo+IFsgICA1OS42NTE5NTNdWyBUMjc4OF0gID8gbG9ja19hY3F1aXJlKzB4MTY0LzB4M2IwDQo+
+IFsgICA1OS42NTI0NDldWyBUMjc4OF0gIGdlbmxfcmN2KzB4MjQvMHg0MA0KPiBbICAgNTkuNjUy
+ODQxXVsgVDI3ODhdICBuZXRsaW5rX3VuaWNhc3QrMHg0MjEvMHg2MDANCj4gWyAuLi4gXQ0KPiAN
+Cj4gRml4ZXM6IDdlNDM2OTA1NzgwNiAoInRpcGM6IGZpeCBhIHNsYWIgb2JqZWN0IGxlYWsiKQ0K
+PiBGaXhlczogYTYyZmJjY2VjZDYyICgidGlwYzogbWFrZSBzdWJzY3JpYmVyIHNlcnZlciBzdXBw
+b3J0IG5ldCBuYW1lc3BhY2UiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBUYWVoZWUgWW9vIDxhcDQyMDA3
+M0BnbWFpbC5jb20+DQo+IC0tLQ0KPiANCj4gdjEgLT4gdjIgOiBtb3ZlIHRpcGNfbmV0bGlua19j
+b21wYXRfc3RvcCgpIHRvbw0KPiANCj4gIG5ldC90aXBjL2NvcmUuYyB8IDI5ICsrKysrKysrKysr
+KysrKy0tLS0tLS0tLS0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygrKSwg
+MTQgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvbmV0L3RpcGMvY29yZS5jIGIvbmV0
+L3RpcGMvY29yZS5jDQo+IGluZGV4IDc1MzJhMDBhYzczZC4uNGY2ZGM3NGFkZjQ1IDEwMDY0NA0K
+PiAtLS0gYS9uZXQvdGlwYy9jb3JlLmMNCj4gKysrIGIvbmV0L3RpcGMvY29yZS5jDQo+IEBAIC0x
+NDgsMTQgKzE0OCw2IEBAIHN0YXRpYyBpbnQgX19pbml0IHRpcGNfaW5pdCh2b2lkKQ0KPiAgCXN5
+c2N0bF90aXBjX3JtZW1bMV0gPSBSQ1ZCVUZfREVGOw0KPiAgCXN5c2N0bF90aXBjX3JtZW1bMl0g
+PSBSQ1ZCVUZfTUFYOw0KPiANCj4gLQllcnIgPSB0aXBjX25ldGxpbmtfc3RhcnQoKTsNCj4gLQlp
+ZiAoZXJyKQ0KPiAtCQlnb3RvIG91dF9uZXRsaW5rOw0KPiAtDQo+IC0JZXJyID0gdGlwY19uZXRs
+aW5rX2NvbXBhdF9zdGFydCgpOw0KPiAtCWlmIChlcnIpDQo+IC0JCWdvdG8gb3V0X25ldGxpbmtf
+Y29tcGF0Ow0KPiAtDQo+ICAJZXJyID0gdGlwY19yZWdpc3Rlcl9zeXNjdGwoKTsNCj4gIAlpZiAo
+ZXJyKQ0KPiAgCQlnb3RvIG91dF9zeXNjdGw7DQo+IEBAIC0xODAsOCArMTcyLDIxIEBAIHN0YXRp
+YyBpbnQgX19pbml0IHRpcGNfaW5pdCh2b2lkKQ0KPiAgCWlmIChlcnIpDQo+ICAJCWdvdG8gb3V0
+X2JlYXJlcjsNCj4gDQo+ICsJZXJyID0gdGlwY19uZXRsaW5rX3N0YXJ0KCk7DQo+ICsJaWYgKGVy
+cikNCj4gKwkJZ290byBvdXRfbmV0bGluazsNCj4gKw0KPiArCWVyciA9IHRpcGNfbmV0bGlua19j
+b21wYXRfc3RhcnQoKTsNCj4gKwlpZiAoZXJyKQ0KPiArCQlnb3RvIG91dF9uZXRsaW5rX2NvbXBh
+dDsNCj4gKw0KPiAgCXByX2luZm8oIlN0YXJ0ZWQgaW4gc2luZ2xlIG5vZGUgbW9kZVxuIik7DQo+
+ICAJcmV0dXJuIDA7DQo+ICsNCj4gK291dF9uZXRsaW5rX2NvbXBhdDoNCj4gKwl0aXBjX25ldGxp
+bmtfc3RvcCgpOw0KPiArb3V0X25ldGxpbms6DQo+ICsJdGlwY19iZWFyZXJfY2xlYW51cCgpOw0K
+PiAgb3V0X2JlYXJlcjoNCj4gIAl1bnJlZ2lzdGVyX3Blcm5ldF9zdWJzeXMoJnRpcGNfcGVybmV0
+X3ByZV9leGl0X29wcyk7DQo+ICBvdXRfcmVnaXN0ZXJfcGVybmV0X3N1YnN5czoNCj4gQEAgLTE5
+MywyMyArMTk4LDE5IEBAIHN0YXRpYyBpbnQgX19pbml0IHRpcGNfaW5pdCh2b2lkKQ0KPiAgb3V0
+X3Blcm5ldDoNCj4gIAl0aXBjX3VucmVnaXN0ZXJfc3lzY3RsKCk7DQo+ICBvdXRfc3lzY3RsOg0K
+PiAtCXRpcGNfbmV0bGlua19jb21wYXRfc3RvcCgpOw0KPiAtb3V0X25ldGxpbmtfY29tcGF0Og0K
+PiAtCXRpcGNfbmV0bGlua19zdG9wKCk7DQo+IC1vdXRfbmV0bGluazoNCj4gIAlwcl9lcnIoIlVu
+YWJsZSB0byBzdGFydCBpbiBzaW5nbGUgbm9kZSBtb2RlXG4iKTsNCj4gIAlyZXR1cm4gZXJyOw0K
+PiAgfQ0KPiANCj4gIHN0YXRpYyB2b2lkIF9fZXhpdCB0aXBjX2V4aXQodm9pZCkNCj4gIHsNCj4g
+Kwl0aXBjX25ldGxpbmtfY29tcGF0X3N0b3AoKTsNCj4gKwl0aXBjX25ldGxpbmtfc3RvcCgpOw0K
+PiAgCXRpcGNfYmVhcmVyX2NsZWFudXAoKTsNCj4gIAl1bnJlZ2lzdGVyX3Blcm5ldF9zdWJzeXMo
+JnRpcGNfcGVybmV0X3ByZV9leGl0X29wcyk7DQo+ICAJdW5yZWdpc3Rlcl9wZXJuZXRfZGV2aWNl
+KCZ0aXBjX3RvcHNydl9uZXRfb3BzKTsNCj4gIAl0aXBjX3NvY2tldF9zdG9wKCk7DQo+ICAJdW5y
+ZWdpc3Rlcl9wZXJuZXRfZGV2aWNlKCZ0aXBjX25ldF9vcHMpOw0KPiAtCXRpcGNfbmV0bGlua19z
+dG9wKCk7DQo+IC0JdGlwY19uZXRsaW5rX2NvbXBhdF9zdG9wKCk7DQo+ICAJdGlwY191bnJlZ2lz
+dGVyX3N5c2N0bCgpOw0KPiANCj4gIAlwcl9pbmZvKCJEZWFjdGl2YXRlZFxuIik7DQo+IC0tDQo+
+IDIuMTcuMQ0KDQo=
