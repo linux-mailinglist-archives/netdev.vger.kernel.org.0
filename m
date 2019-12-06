@@ -2,82 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6CC115627
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 18:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 083BC115631
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 18:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726330AbfLFRJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 12:09:22 -0500
-Received: from mail-qk1-f169.google.com ([209.85.222.169]:36471 "EHLO
-        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfLFRJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 12:09:22 -0500
-Received: by mail-qk1-f169.google.com with SMTP id s25so2126372qks.3
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 09:09:21 -0800 (PST)
+        id S1726418AbfLFRLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 12:11:08 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46980 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbfLFRLH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 12:11:07 -0500
+Received: by mail-qt1-f195.google.com with SMTP id 38so7741858qtb.13;
+        Fri, 06 Dec 2019 09:11:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8LJVr1VmjslLqmOTXhGTSstIvwi0XtIfpztOHpjoQcI=;
-        b=ifiACubAK5p+PPSoIWaSFNdGYssBpL11sQGqGwJbSRKvK8oAUTloevwxoB2G6XR2le
-         nBtKbjvj8aFM8djt09jvJqvmU+R8pC3OL1hYiaugCWjp4hFAOwU0sl3oXmQCuD63UO7X
-         OYUoOXGIT9x8Vut1n14B8/cxbZoQe3Oe0Q/ZwZWbZ46VZupMwxiYms3/VA0MjcEnSN4y
-         9Bp58qtzhzx6hXA8MDUz2lTiHuXSOIwBq90FKsL+If/cazv9z4mB9VDdp0RqBHAXV2rY
-         eXMFV8OlC3Wjam+FqgweO9FMS0v8R++sLa7QS285egLNvnZbAwETL9iLL470H0ZYYJW9
-         5UsQ==
+        bh=DI7p9OTIgrgEnPGEh+lJXFr4UIv6maYDRk9V3SIdLFo=;
+        b=R7quL+pPGjwkAiTw9/ofD5HZu8wpN+/ZBKG8uQsn7UMRrLtxiX2E/ye0hDpk0K30Js
+         9VxaqscccQZprqW/ny0kDZKUTrf4i3vP4WVrpC6UHJSbas9LR3ZFMAOrkAzxCrxnnXmM
+         g1zTRF681PI6bTIl3Iy8NrqFD1TkPOgjxfc3FIBaib8d7rujrBTet4fo3bqd6K+u6P1d
+         yRD7JbUgjBmnLSDCD+YNm4eaZl5A+kakOHxui5X/ilNIRIMCbpbkIDqCd7BN8XkpVxPQ
+         /pqslJXMM7pucPEUeYrS4/zMQ7piR4rk/mGI+z3KGHRtOtkPArs527wbylr7adXCoYsA
+         CAOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8LJVr1VmjslLqmOTXhGTSstIvwi0XtIfpztOHpjoQcI=;
-        b=i6Vp88xCR13NNnfa9HgCc+fqwhZi9KvLZvi+ThyiqYgBr9Kv0Zi+5r7wYn1z2fPA8l
-         Uzof0/si9BtQDTOqKFhp/5nTRE6OXTknKZS6MiAqobBCbZjwBB0eSadojz6WzrhfD+A8
-         vP/Aj9UQ9hJW1bmGGkhCZJU/XJlSezAIReBn2V4oS6UQE+tguqV3fnwNyngCKutNQ2ta
-         6FaMbjziIkVeEsyuV0bI4TfuYjgqrgqVd4Xe2V8fzMpzkKSgpjU62YMt5/CzFhXYSTZ9
-         E0qU5ANf4DmcP6IMCT+1heX/B4l8B7qVQbKrFTVRLv7y8+CWSVZ/gxTB+wgoD20trtdR
-         qvtA==
-X-Gm-Message-State: APjAAAUAAApPRIhB25/uE3lTNz7ZJpWwtAr+C1jDiUpyqgA6UxZEhG4S
-        0CDwwR2PM4WBXjbBdFuzXEYOMG56B9QkS7Ui0Wo=
-X-Google-Smtp-Source: APXvYqycFax2ilw4kyuNCH6HbO9tO+UxIaDuuDqsL2LeB4P6KP0Hji2K0m7rfe31sG2da9qqDrE3Yf4su7o7r9EmBYw=
-X-Received: by 2002:a37:9acb:: with SMTP id c194mr14430807qke.291.1575652161080;
- Fri, 06 Dec 2019 09:09:21 -0800 (PST)
+        bh=DI7p9OTIgrgEnPGEh+lJXFr4UIv6maYDRk9V3SIdLFo=;
+        b=I8qNJ5TH76b9nXo4rOOk+0L8PmhlLQ8RtePbvjO1jKcCLZHIpfgbutUuS66rfX74xU
+         kqKblGYNQkRZ+OBxk5uu9GUSy5vuZOnyqGTvShrDIMWsad1Pjremekr19e6u8Y6BRgJH
+         RtQ++MRAGsqUXyHwS+3GJBm90z/EgmLbTc4+C83j1eMSo2QHf2xk/5+fmTbCyAl/hIyd
+         Ys6iaTuxyuMyCCnkgltXrf5WtDR5g54/ZYKNOIqlDfsapLctPh7KaBxJ3cMStvlSFVX1
+         II6q/9+v6phYNqhZ/tNXhTG2MF04SCqbuJK7VWL5EwX+EQffTM19SDCr2p4pTSMNGj4e
+         tCug==
+X-Gm-Message-State: APjAAAWBB1oovvClUUQMfzc4P7sLpTDyUN+fHpSQYcndoSqwvkpjAgPg
+        P0dMx042CaRSXGjgnCYpCkq8WX0y72lPxhwml98=
+X-Google-Smtp-Source: APXvYqyC/FGP5JOPFRRbXpu2MsJ6ADyHnA7+CWiirrS+6v68+WGimIVw/C2bXr0v+wRB+PrkaRl7bfM2yu5tyDGyYQo=
+X-Received: by 2002:ac8:1385:: with SMTP id h5mr13442494qtj.59.1575652266670;
+ Fri, 06 Dec 2019 09:11:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20191206033902.19638-1-xiyou.wangcong@gmail.com> <CAJ0CqmW8TYO4jasC4UVXALWHkvaU+S7Uu0V=TDojwZwiJV2TxA@mail.gmail.com>
-In-Reply-To: <CAJ0CqmW8TYO4jasC4UVXALWHkvaU+S7Uu0V=TDojwZwiJV2TxA@mail.gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Fri, 6 Dec 2019 09:08:44 -0800
-Message-ID: <CALDO+SbGB2DmSQ-FzLCvNvU+nvHmbxpoNeyZHOwJbgbha6EZwg@mail.gmail.com>
-Subject: Re: [Patch net] gre: refetch erspan header from skb->data after pskb_may_pull()
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
+References: <20191206001226.67825-1-dxu@dxuuu.xyz>
+In-Reply-To: <20191206001226.67825-1-dxu@dxuuu.xyz>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 Dec 2019 09:10:48 -0800
+Message-ID: <CAEf4BzY-ahRm5HPrqRWF5seOjGM+PJs+J+DTbuws3r=jd_PArg@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Add LBR data to BPF_PROG_TYPE_PERF_EVENT prog context
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 6, 2019 at 3:50 AM Lorenzo Bianconi
-<lorenzo.bianconi@redhat.com> wrote:
+On Thu, Dec 5, 2019 at 4:13 PM Daniel Xu <dxu@dxuuu.xyz> wrote:
 >
-> >
-> > After pskb_may_pull() we should always refetch the header
-> > pointers from the skb->data in case it got reallocated.
-> >
-> > In gre_parse_header(), the erspan header is still fetched
-> > from the 'options' pointer which is fetched before
-> > pskb_may_pull().
-> >
-> > Found this during code review of a KMSAN bug report.
-> >
-> > Fixes: cb73ee40b1b3 ("net: ip_gre: use erspan key field for tunnel lookup")
-> > Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> Last-branch-record is an intel CPU feature that can be configured to
+> record certain branches that are taken during code execution. This data
+> is particularly interesting for profile guided optimizations. perf has
+> had LBR support for a while but the data collection can be a bit coarse
+> grained.
 >
-> Acked-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+> We (Facebook) have recently run a lot of experiments with feeding
+> filtered LBR data to various PGO pipelines. We've seen really good
+> results (+2.5% throughput with lower cpu util and lower latency) by
+> feeding high request latency LBR branches to the compiler on a
+> request-oriented service. We used bpf to read a special request context
+> ID (which is how we associate branches with latency) from a fixed
+> userspace address. Reading from the fixed address is why bpf support is
+> useful.
+>
+> Aside from this particular use case, having LBR data available to bpf
+> progs can be useful to get stack traces out of userspace applications
+> that omit frame pointers.
+>
+> This patch adds support for LBR data to bpf perf progs.
+>
+> Some notes:
+> * We use `__u64 entries[BPF_MAX_LBR_ENTRIES * 3]` instead of
+>   `struct perf_branch_entry[BPF_MAX_LBR_ENTRIES]` because checkpatch.pl
+>   warns about including a uapi header from another uapi header
+>
+> * We define BPF_MAX_LBR_ENTRIES as 32 (instead of using the value from
+>   arch/x86/events/perf_events.h) because including arch specific headers
+>   seems wrong and could introduce circular header includes.
+>
+> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+> ---
+>  include/uapi/linux/bpf_perf_event.h |  5 ++++
+>  kernel/trace/bpf_trace.c            | 39 +++++++++++++++++++++++++++++
+>  2 files changed, 44 insertions(+)
+>
+> diff --git a/include/uapi/linux/bpf_perf_event.h b/include/uapi/linux/bpf_perf_event.h
+> index eb1b9d21250c..dc87e3d50390 100644
+> --- a/include/uapi/linux/bpf_perf_event.h
+> +++ b/include/uapi/linux/bpf_perf_event.h
+> @@ -10,10 +10,15 @@
+>
+>  #include <asm/bpf_perf_event.h>
+>
+> +#define BPF_MAX_LBR_ENTRIES 32
+> +
+>  struct bpf_perf_event_data {
+>         bpf_user_pt_regs_t regs;
+>         __u64 sample_period;
+>         __u64 addr;
+> +       __u64 nr_lbr;
+> +       /* Cast to struct perf_branch_entry* before using */
+> +       __u64 entries[BPF_MAX_LBR_ENTRIES * 3];
+>  };
 >
 
-LGTM.
-Acked-by: William Tu <u9012063@gmail.com>
+I wonder if instead of hard-coding this in bpf_perf_event_data, could
+we achieve this and perhaps even more flexibility by letting users
+access underlying bpf_perf_event_data_kern and use CO-RE to read
+whatever needs to be read from perf_sample_data, perf_event, etc?
+Would that work?
 
-From the  spec, ERSPAN has fixed size GRE header, so  I think
-WCCPv2 should not exist in ERSPAN.
+>  #endif /* _UAPI__LINUX_BPF_PERF_EVENT_H__ */
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index ffc91d4935ac..96ba7995b3d7 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+
+[...]
