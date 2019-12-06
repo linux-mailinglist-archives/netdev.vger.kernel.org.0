@@ -2,138 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35EBD115830
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 21:29:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC76C115870
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 22:11:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbfLFU27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 15:28:59 -0500
-Received: from mail-eopbgr10089.outbound.protection.outlook.com ([40.107.1.89]:8190
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726332AbfLFU27 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Dec 2019 15:28:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nZJAvazrPy4t3IcnAXHLvtUZYBaeFcd+6xdTIdmjJB6MU//j5Paj0s9Kq+as0ZyqhKKtScZuRpZI4Qrenc0GHkx1d3TqXVBW6dtg6/JjuzVWQHwkSUNviveRAE1C5JJnbZ8VybOi6LWYqdAwd4wFNzztyESYic9W5qx6U+1KMm0RiA6mcZInQYKGjKZcIqxewNzTvuDOYGu0skIq3v5x9j76iG7djd1aRV1afH6wckHtmy/C3I8sr1Awqb723eaP/2bspmGp+6Rus2kFEcVVDFjhK9MBOr1TIdcyjdQ+kvDKDzGe1vBax7JqjDA/qWutucaMysL8wQ32j9TMDTHk2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PCunSC8UNT+PTvNGbFKwskV/iXiKGaO18jhgkrsKWu0=;
- b=LPMavgNiJTzs/+mfEjeUChQtNEeOaQpnMLzl3KS4noL9ax614ZPlmbBpjlxtZCq9ViwEVTCxQMXXjot0QvDjiYU6GN3WIeb/kpDKuXrsiGMRnAjq2CLgQ3AOcO+4VUP5luXEPy3e6r+2TIYCIeEV/jUr0X4FBRGu2YyG4axR1UcxIOnH/cRuEuD3PSdhPDMJjTj4YcRO98idSnXueA2CSiClHLZXEzEuwpD57aaL48H/MQWn4RmH8oIl+bej2PjNw/+3NmtZDZNHvzoZJIpCziOJhVpjfgj6lOiYUJAMs0ndJPPySmZ5cL91N8+KRkFV75ELXa+72j0SueOmxHyXig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PCunSC8UNT+PTvNGbFKwskV/iXiKGaO18jhgkrsKWu0=;
- b=rh89ieB5B505hBTL4hVsU4ZW9pyJupb6vBpMs4ZF59loTDUtu/9EZ0tf58CTaZl0gXwvx7l29TixKN/gq9Cm7PJMy6yuSe5bAPl/ZprruXFIeICqlIcKi7n6grbqfSdoyFW1h09Q6DsdPzhVJnLNMhdD60fnr6hkU3J31oeDv+o=
-Received: from VI1PR05MB3342.eurprd05.prod.outlook.com (10.170.238.143) by
- VI1PR05MB4863.eurprd05.prod.outlook.com (20.177.48.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.13; Fri, 6 Dec 2019 20:28:10 +0000
-Received: from VI1PR05MB3342.eurprd05.prod.outlook.com
- ([fe80::40d4:350c:cce1:6224]) by VI1PR05MB3342.eurprd05.prod.outlook.com
- ([fe80::40d4:350c:cce1:6224%5]) with mapi id 15.20.2516.017; Fri, 6 Dec 2019
- 20:28:10 +0000
-From:   Mark Bloch <markb@mellanox.com>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Saeed Mahameed <saeedm@dev.mellanox.co.il>
-CC:     Ariel Levkovich <lariel@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: mlx5 support tc accept action
-Thread-Topic: mlx5 support tc accept action
-Thread-Index: AQHVqzcQ8CXkvWMO3kyn/TgzzK1xkqesD/4AgACtZICAANN9AA==
-Date:   Fri, 6 Dec 2019 20:28:10 +0000
-Message-ID: <0d2335a2-5472-c3ea-d4a7-eb99bbb0116d@mellanox.com>
-References: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
- <CALzJLG-z18R+uPi2W3Wam7GKkxzayJDfyDyTmO+_W7Z1V0CaQg@mail.gmail.com>
- <CAMDZJNU0TD+ckuf9XnoRAq3mKjLARYbq8CCgCUM4BfRY33pEmw@mail.gmail.com>
-In-Reply-To: <CAMDZJNU0TD+ckuf9XnoRAq3mKjLARYbq8CCgCUM4BfRY33pEmw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR21CA0010.namprd21.prod.outlook.com
- (2603:10b6:a03:114::20) To VI1PR05MB3342.eurprd05.prod.outlook.com
- (2603:10a6:802:1d::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=markb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [104.156.100.52]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cb22a28a-08b3-4686-0eb0-08d77a8acf8a
-x-ms-traffictypediagnostic: VI1PR05MB4863:|VI1PR05MB4863:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB4863C2F7775B338F1C77667CD25F0@VI1PR05MB4863.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0243E5FD68
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(136003)(366004)(396003)(376002)(189003)(199004)(6506007)(6512007)(2906002)(53546011)(229853002)(305945005)(31686004)(36756003)(81156014)(8676002)(2616005)(81166006)(110136005)(54906003)(478600001)(8936002)(4326008)(66556008)(66446008)(71200400001)(99286004)(316002)(66476007)(102836004)(5660300002)(66946007)(26005)(86362001)(64756008)(52116002)(186003)(6486002)(31696002)(76176011)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4863;H:VI1PR05MB3342.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: m3H/gSPYpKysAtzjMK4jC65dNM+AqpFA3cBcfylO6aDCpRbyovPxFFPrwiDkDT2S0IWMLeanKN73NNJw/JHX8ENvuDjt0XUiLJE1I+46uX/cB9iytXarMyUKxUFCasqzHn+orSFdY8ahiIP2DJmhvVkHIuDdXvKE6VTfcS9eqkQxTYcQP+xWhKHO6iNrRs4qh2w0b9XaDW40qJsDbs2kocq8gOJnK+g62D9d7eXwnQP0E2GKR25Vpx9m2RaNGF7jvztZl1gwka91VWiCq1Z3KIlsbaZFzXyCL9z5ud0So6omXcatcQwAQd2bzw9pZlXXDIOhj2n7fobBYGPtcriB4AhV/lFQ13uWxEdqMaXORPHcRbb33Apho6Nrub3W4OcUFF2hU9W02Ga3/wGOyUwjvjk+HClz0nEImMlITpuVRU+m5n5+6G/qpEeYwoqY4ZGv
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <599728D69F754F4EA5D5BA75E1C56A62@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726377AbfLFVL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 16:11:28 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42677 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbfLFVL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 16:11:27 -0500
+Received: by mail-lj1-f194.google.com with SMTP id e28so9089507ljo.9
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 13:11:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DcswDcKmSJyRQPJcgySZXuflqUPk7eZxT2PzLNE9GK4=;
+        b=JtQOlrwql30oDmwlAc2rnFU7v4rBy5XkWHDPXhKogi11H96M/hyW96LMNrBwW7s2vD
+         kKU7SVAXtx0RZKeKRRjFytbOOk0dc1of+NRJ9cs+91xzXtHGjHuS1jI7R31IxVt8iqH0
+         T59gaJZS6Qewx2PpgAKRWaPLTG4MmO0VtNW1JWz6DRnl2ejsfcGmhjG2xgmtTSeY3A56
+         T1IfbtXl++A7Rhr+5aPNvGmHaiFi3EaTwT0+aNeEr4FVgyWer1cMlJgbfaD5Cz4k0j8Z
+         n9HNu6SGHONqOW9YxN8HwD1iQSyJsunCLVFQZ9BCzZJtkn+/FcJgLMR4fB19tLM/BI95
+         XB/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DcswDcKmSJyRQPJcgySZXuflqUPk7eZxT2PzLNE9GK4=;
+        b=DoVSEl6gXxivVh3JAc2keJ9hjujVRicflWT1y6CxliUcBint/eAA5hSEqd6SZXuI4n
+         LMDcF1oe40o5gYC0VzONZvzoiJmjj7QuFaZja/jzHG3b0LU8ZXicfFyrztfDyq4Uqszq
+         taX6abtWeGdpjMTCUI5/xmWDwMe+cW0zDlQn26MBbtSal7porRVDQ4FvFvSEbZ4ek8ax
+         Th/Q5LCURX+8PYBFyiGKp97zEfJGKYLsKmrHSmlgKeVO8zPiTnfyQA+to6zkV/w4DZjG
+         4kUUAWjLRN/rxOmsb2l946FMvbWrFIbTdkvM2pzIRDOfs34qqnPBpF08//6VLeBLbKm/
+         a/+A==
+X-Gm-Message-State: APjAAAWG1aF+nAWsUB4k4rvzKIXFDBCxEZwd28Be79Rw/nKMYlOos/F7
+        auKWbSobpvy+/k4JAzvlzYijA+eYcuXskpmas/Sz
+X-Google-Smtp-Source: APXvYqzILr1spmyw4/Oebtijvj5znSLSPO2cXZu0/HOjsfYWmq8Uhm0oa2QneWLTlf5JKMACZvEWWvbzE0Ys5lczSiQ=
+X-Received: by 2002:a2e:85d5:: with SMTP id h21mr9726075ljj.243.1575666684955;
+ Fri, 06 Dec 2019 13:11:24 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb22a28a-08b3-4686-0eb0-08d77a8acf8a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2019 20:28:10.5229
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ik7AVpvgMacI8m60ThLAw/fh6xxP6eTYsPSA8HcmfkvQTmZEdoneV/IMKdh48AY9nzVkvr2oz+rBr8eMU5eN1g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4863
+References: <20191205102552.19407-1-jolsa@kernel.org>
+In-Reply-To: <20191205102552.19407-1-jolsa@kernel.org>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 6 Dec 2019 16:11:13 -0500
+Message-ID: <CAHC9VhTWnNvfMAPz-WhD9Wqv6UZZDBdMxF9VuS3UeTLHLtfhHw@mail.gmail.com>
+Subject: Re: [PATCHv2] bpf: Emit audit messages upon successful prog load and unload
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-audit@redhat.com,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steve Grubb <sgrubb@redhat.com>,
+        David Miller <davem@redhat.com>,
+        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzUvMjAxOSAyMzo1MSwgVG9uZ2hhbyBaaGFuZyB3cm90ZToNCj4gT24gRnJpLCBE
-ZWMgNiwgMjAxOSBhdCA1OjMwIEFNIFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AZGV2Lm1lbGxhbm94
-LmNvLmlsPiB3cm90ZToNCj4+DQo+PiBPbiBXZWQsIERlYyA0LCAyMDE5IGF0IDEwOjQxIFBNIFRv
-bmdoYW8gWmhhbmcgPHhpYW5neGlhLm0ueXVlQGdtYWlsLmNvbT4gd3JvdGU6DQo+Pj4NCj4+PiBI
-aSBSb2ksIFNhZWVkDQo+Pj4gSW4gb25lIGNhdXNlLCB3ZSB3YW50IHRoZSAiYWNjZXB0IiBhY3Rp
-b246IHRoZSBJUCBvZiBWRiB3aWxsIGJlDQo+Pj4gImFjY2VwdCIsIGFuZCBvdGhlcnMNCj4+PiBw
-YWNrZXRzIHdpbGwgYmUgZG9uZSB3aXRoIG90aGVyIGFjdGlvbnMoZS5nLiBoYWlycGluIHJ1bGUg
-dG8gb3RoZXIgVkYpLg0KPj4+DQo+Pj4gRm9yIGV4YW1wbGU6DQo+Pj4NCj4+PiBQRjA9ZW5wMTMw
-czBmMA0KPj4+IFZGMF9SRVA9ZW5wMTMwczBmMF8wDQo+Pj4gVkYwPXA0cDFfMA0KPj4+IFZGMT1w
-NHAyXzAgIyBiZWxvbmcgdG8gUEYxDQo+Pj4gVkYwX0lQPTMuMy4zLjIwMA0KPj4+DQo+Pj4gZXRo
-dG9vbCAtSyAkUEYwIGh3LXRjLW9mZmxvYWQgb24NCj4+PiBldGh0b29sIC1LICRWRjAgaHctdGMt
-b2ZmbG9hZCBvbg0KPj4+IHRjIHFkaXNjIGFkZCBkZXYgJFBGMCBpbmdyZXNzDQo+Pj4gdGMgcWRp
-c2MgYWRkIGRldiAkVkYwIGluZ3Jlc3MNCj4+PiB0YyBmaWx0ZXIgYWRkIGRldiAkUEYwIHByb3Rv
-Y29sIGFsbCBwYXJlbnQgZmZmZjogcHJpbyAxMCBoYW5kbGUgMQ0KPj4+IGZsb3dlciBza2lwX3N3
-IGFjdGlvbiBtaXJyZWQgZWdyZXNzIHJlZGlyZWN0IGRldiAkVkYwX1JFUA0KPj4+IHRjIGZpbHRl
-ciBhZGQgZGV2ICRWRjAgcHJvdG9jb2wgaXAgcGFyZW50IGZmZmY6IHByaW8gMSBoYW5kbGUgMyBm
-bG93ZXINCj4+PiBza2lwX3N3IGRzdF9pcCAkVkYwX0lQIGFjdGlvbiBwYXNzDQo+Pj4gdGMgZmls
-dGVyIGFkZCBkZXYgJFZGMCBwcm90b2NvbCBhbGwgcGFyZW50IGZmZmY6IHByaW8gMTAgaGFuZGxl
-IDINCj4+PiBmbG93ZXIgc2tpcF9zdyBhY3Rpb24gbWlycmVkIGVncmVzcyByZWRpcmVjdCBkZXYg
-JFZGMQ0KPj4+DQo+Pj4gV2hlbiBJIGNoYW5nZSB0aGUgZHJpdmVyLCB0aGUgcnVsZSB3aGljaCBh
-Y3Rpb24gImFjdGlvbiBwYXNzIiwgY2FuIGJlDQo+Pj4gb2ZmbG9hZGVkLCBidXQgaXQgZGlkbid0
-IHdvcmsuDQo+Pj4gKyAgICAgICAgICAgICAgIGNhc2UgRkxPV19BQ1RJT05fQUNDRVBUOg0KPj4+
-ICsgICAgICAgICAgICAgICAgICAgYWN0aW9uIHw9IE1MWDVfRkxPV19DT05URVhUX0FDVElPTl9B
-TExPVzsNCj4+PiArICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPj4+DQo+Pj4NCj4+PiBIb3cg
-Y2FuIHdlIHN1cHBvcnQgaXQsIHRoaXMgZnVuY3Rpb24gaXMgaW1wb3J0IGZvciB1cy4NCj4+DQo+
-PiBIaSBUb25naGFvLA0KPj4gd2hlcmUgZGlkIHlvdSBhZGQgdGhlIGFib3ZlIGNvZGUgdG8gPw0K
-Pj4gcGFyc2VfdGNfZmRiX2FjdGlvbnMoKSA/IG9yIHBhcnNlX3RjX25pY19hY3Rpb25zKCkgPw0K
-Pj4gaW4geW91ciB1c2UgY2FzZSB5b3UgbmVlZCB0byBhZGQgaXQgdG8gcGFyc2VfdGNfbmljX2Fj
-dGlvbnMoKSwNCj4+DQo+PiBjdXJyZW50bHkgaW4gbWx4NSB3ZSBkb24ndCBzdXBwb3J0IEFMTE9X
-L3Bhc3MgYWN0aW9ucy4NCj4+IGl0IG1pZ2h0IGJlIGEgbGl0dGxlIG1vcmUgY29tcGxpY2F0ZWQg
-dGhhbiB3aGF0IHlvdSBkaWQgaW4gb3JkZXIgdG8NCj4+IHN1cHBvcnQgdGhpcywNCg0KWWVwLCBm
-cm9tIGEgcXVpY2sgbG9vayBhdCB0aGUgY29kZSB3ZSBkb24ndCBzdXBwb3J0IEFMTE9XICsgY291
-bnRlciBzbyBhIGNoYW5nZQ0Kd2lsbCBiZSBoYXZlIHRvIG1hZGUgaW4gY291bnRlcl9pc192YWxp
-ZCgpIGFuZCB0aGVuIGFjY291bnQgZm9yIHRoYXQgb24gZGVsZXRpb24gaW4NCmRlbF9zd19od19y
-dWxlKCkuDQoNCkRvZXNuJ3QgbG9vayB0b28gY29tcGxpY2F0ZWQgdG8gYWRkIGlmIG5lZWRlZCAo
-SXQgd2FzIGp1c3QgbmV2ZXIgcmVxdWVzdGVkL25lZWRlZCkuDQoNCj4+IGFzIGEgd29yayBhcm91
-bmQgeW91IGNhbiB1c2UgYWN0aW9uOiBGTE9XX0FDVElPTl9NQVJLIGluIHRoZSB0Yw0KPj4gY29t
-bWFuZCBsaW5lIHJ1bGUgd2l0aG91dCBhbnkgY2hhbmdlIGluIHRoZSBkcml2ZXIuDQo+PiBvciBj
-aGFuZ2UgeW91ciBjb2RlIHRvIGRvIE1MWDVfRkxPV19DT05URVhUX0FDVElPTl9GV0RfREVTVCBp
-bnN0ZWFkIG9mDQo+PiBNTFg1X0ZMT1dfQ09OVEVYVF9BQ1RJT05fQUxMT1cNCj4gSGkgU2FlZWQs
-IEZMT1dfQUNUSU9OX01BUksgd29ya3MgZmluZSBmb3IgdXMuIFRoYW5rcy4NCg0KR3JlYXQuDQoN
-Ck1hcmsNCg0KPiANCj4+IEFkZGluZyBNYXJrIGFuZCBBcmllbCwgdGhleSBtaWdodCBoYXZlIGJl
-dHRlciBmZWVkYmFjayB0aGFuIG1pbmUNCj4+DQo+PiBUaGFua3MsDQo+PiBTYWVlZC8NCg==
+On Thu, Dec 5, 2019 at 5:26 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> From: Daniel Borkmann <daniel@iogearbox.net>
+>
+> Allow for audit messages to be emitted upon BPF program load and
+> unload for having a timeline of events. The load itself is in
+> syscall context, so additional info about the process initiating
+> the BPF prog creation can be logged and later directly correlated
+> to the unload event.
+>
+> The only info really needed from BPF side is the globally unique
+> prog ID where then audit user space tooling can query / dump all
+> info needed about the specific BPF program right upon load event
+> and enrich the record, thus these changes needed here can be kept
+> small and non-intrusive to the core.
+>
+> Raw example output:
+>
+>   # auditctl -D
+>   # auditctl -a always,exit -F arch=x86_64 -S bpf
+>   # ausearch --start recent -m 1334
+>   ...
+>   ----
+>   time->Wed Nov 27 16:04:13 2019
+>   type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
+>   type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
+>     success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
+>     pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
+>     egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
+>     exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
+>     subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
+>   type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
+>   ----
+>   time->Wed Nov 27 16:04:13 2019
+>   type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
+>   ...
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/uapi/linux/audit.h |  1 +
+>  kernel/bpf/syscall.c       | 33 +++++++++++++++++++++++++++++++++
+>  2 files changed, 34 insertions(+)
+>
+> v2 changes:
+>   addressed Paul's comments from audit side:
+>     - change 'event' field to 'op'
+>     - change audit context passing
+>     - check on 'op' value is within the limit
+>
+> diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+> index c89c6495983d..32a5db900f47 100644
+> --- a/include/uapi/linux/audit.h
+> +++ b/include/uapi/linux/audit.h
+> @@ -116,6 +116,7 @@
+>  #define AUDIT_FANOTIFY         1331    /* Fanotify access decision */
+>  #define AUDIT_TIME_INJOFFSET   1332    /* Timekeeping offset injected */
+>  #define AUDIT_TIME_ADJNTPVAL   1333    /* NTP value adjustment */
+> +#define AUDIT_BPF              1334    /* BPF subsystem */
+>
+>  #define AUDIT_AVC              1400    /* SE Linux avc denial or grant */
+>  #define AUDIT_SELINUX_ERR      1401    /* Internal SE Linux Errors */
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index e3461ec59570..6536665f562c 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/timekeeping.h>
+>  #include <linux/ctype.h>
+>  #include <linux/nospec.h>
+> +#include <linux/audit.h>
+>  #include <uapi/linux/btf.h>
+>
+>  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+> @@ -1306,6 +1307,36 @@ static int find_prog_type(enum bpf_prog_type type, struct bpf_prog *prog)
+>         return 0;
+>  }
+>
+> +enum bpf_audit {
+> +       BPF_AUDIT_LOAD,
+> +       BPF_AUDIT_UNLOAD,
+> +       BPF_AUDIT_MAX,
+> +};
+> +
+> +static const char * const bpf_audit_str[BPF_AUDIT_MAX] = {
+> +       [BPF_AUDIT_LOAD]   = "LOAD",
+> +       [BPF_AUDIT_UNLOAD] = "UNLOAD",
+> +};
+> +
+> +static void bpf_audit_prog(const struct bpf_prog *prog, unsigned int op)
+> +{
+> +       struct audit_context *ctx = NULL;
+> +       struct audit_buffer *ab;
+> +
+> +       if (audit_enabled == AUDIT_OFF)
+> +               return;
+> +       if (WARN_ON_ONCE(op >= BPF_AUDIT_MAX))
+> +               return;
+
+I feel bad saying this given the number of revisions we are at with
+this patch, but since we aren't even at -rc1 yet (although it will be
+here soon), I'm going to mention it anyway ;)
+
+... if we move the "op >= BPF_AUDIT_MAX" above the audit_enabled check
+we will catch problems sooner in development, which is a very good
+thing as far as I'm concerned.
+
+Other than that, this looks good to me, and I see Steve has already
+given the userspace portion a thumbs-up.  Have you started on the
+audit-testsuite test for this yet?
+
+> +       if (op == BPF_AUDIT_LOAD)
+> +               ctx = audit_context();
+> +       ab = audit_log_start(ctx, GFP_ATOMIC, AUDIT_BPF);
+> +       if (unlikely(!ab))
+> +               return;
+> +       audit_log_format(ab, "prog-id=%u op=%s",
+> +                        prog->aux->id, bpf_audit_str[op]);
+> +       audit_log_end(ab);
+> +}
+> +
+>  int __bpf_prog_charge(struct user_struct *user, u32 pages)
+>  {
+>         unsigned long memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> @@ -1421,6 +1452,7 @@ static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
+>  {
+>         if (atomic64_dec_and_test(&prog->aux->refcnt)) {
+>                 perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
+> +               bpf_audit_prog(prog, BPF_AUDIT_UNLOAD);
+>                 /* bpf_prog_free_id() must be called first */
+>                 bpf_prog_free_id(prog, do_idr_lock);
+>                 __bpf_prog_put_noref(prog, true);
+> @@ -1830,6 +1862,7 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+>          */
+>         bpf_prog_kallsyms_add(prog);
+>         perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
+> +       bpf_audit_prog(prog, BPF_AUDIT_LOAD);
+>
+>         err = bpf_prog_new_fd(prog);
+>         if (err < 0)
+> --
+> 2.21.0
+
+-- 
+paul moore
+www.paul-moore.com
