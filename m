@@ -2,127 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0663115714
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 19:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3C09115715
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 19:20:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfLFSUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 13:20:21 -0500
-Received: from mail-yb1-f201.google.com ([209.85.219.201]:45418 "EHLO
-        mail-yb1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfLFSUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 13:20:21 -0500
-Received: by mail-yb1-f201.google.com with SMTP id e11so5834983ybn.12
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 10:20:20 -0800 (PST)
+        id S1726423AbfLFSU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 13:20:27 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45658 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbfLFSU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 13:20:27 -0500
+Received: by mail-lf1-f66.google.com with SMTP id 203so5924712lfa.12
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 10:20:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=h3doiQ6jnOTBdPQIr0JbngwOXKSG9/1I9MWow1YzCz0=;
-        b=r8LCpsgs4idJQ2Pn4wj2++ZTB5vul0ZwbhDP9dCVok2Hrz6NA72gv8+CaKIhWEuo1X
-         OtZEl6Qk8kQnJ85tZMsZOknNh5S99wZOOlJEUY4b6+NChY69SegtckUqLU1VN4GaqlrT
-         QMwhIMOeczkEy9W1YrZOeKoxkdG7Lsw1HVGayfVoRbRuG3gFtRNhch4G66NH/Lsun52a
-         CfGNU+Pqc6SXkDW1t6VuNUdeVHryNGxWNxDE8pvOqHJuxKDO41IYwCsY8s1tWy9kc8xd
-         me0BGYOuPbQNu2rP+Z0N74xMmI9dkWTfAu8aFpxXALYQSZ4NxXs20F0gOqWhIVvK1vC+
-         WG3A==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NWA7Hm1QCINXEdmEGTShA6DEHthN8DWdmaUCREKAGzs=;
+        b=i1ucLhfVARra0gv/V9NArvgGqFWH0KxmGAJgpo9f1R9pmrgtUsVlSQkuh2Yu3mrBR7
+         chpKnqclRfeq9+yUAIQzjlKj0WS5OWUERwaP/18n+k2qvn2/oBsUIBEBqZsLTDoKYAtz
+         kThR/iIt0bwoydldyuuaxFQxI4U0Vz7hqN6nWlfwR8EpcWbZwHq2mRus4mAXhtf7xQUa
+         PFRnb/BIuOkhQ4h2LmSOe8pSg8NBs2HZ4gg6+FIaqgWChKB9JTAdUmCIZ5xGgj+aGXBu
+         7dsF0HHrByhvZ7qeqcwDrIY0RL75QlN5qofknw1OpMAu2iDzQtVSoeWvBFD5CVxnzE/9
+         qjQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=h3doiQ6jnOTBdPQIr0JbngwOXKSG9/1I9MWow1YzCz0=;
-        b=b8AGHgI+7ncCrUwC4rf0cH4JezwMdYQr9G8hrBUSncwCJQPpgPjNS/6Z1jPhJ67T8K
-         QNohiqQTXIPoFnC74ot1JaROFu5EbpRdEfdbJ0UPZ4SW0QAmalmxrkHac7bEHytxflG9
-         LUkpqb54n7ZrlNuYQxz0K5MsaLJTEWT+BWkqmc9J+jYfpIi/LgKxWgHEL35qBvUyd4y1
-         hRt4pDnH8fLZLnFpy/JlLMJin8M7+6YR0Nub6mW6DoQhx5PNOhv7h3Ettn1k+33wB1wC
-         dlqFwKgIeWETFIR1+hdS4PFCvLgtRW2y1JKGDto5UN1tUFOCd+1SIN8GPkH4ToJ4Tg6R
-         x1pQ==
-X-Gm-Message-State: APjAAAWjVOYtW+Ig2SnN/75Q4Bm9KtNYxD4aNA1sH+BWbpLqc3LLO4D9
-        IBPz8AL3Lm+lR3X7Hj9/ve+E3uZ+WFnchg==
-X-Google-Smtp-Source: APXvYqxH1c6ctR0TlKtA/dq+OdFXeJht7I9n4uNxNSeT99IufffWu4ty3X36UtASmbtMKl2iMIaqs8MYO0W7rg==
-X-Received: by 2002:a0d:e003:: with SMTP id j3mr10175209ywe.322.1575656420306;
- Fri, 06 Dec 2019 10:20:20 -0800 (PST)
-Date:   Fri,  6 Dec 2019 10:20:16 -0800
-Message-Id: <20191206182016.137529-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
-Subject: [PATCH v4.14] tcp: exit if nothing to retransmit on RTO timeout
-From:   Eric Dumazet <edumazet@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=NWA7Hm1QCINXEdmEGTShA6DEHthN8DWdmaUCREKAGzs=;
+        b=dwKN4tTiOpdByBgsjt2/YJLcmBopZrmaSuG/sEUMXBEuuv5tl5/8aEHpbFr8d6sLph
+         fcpKmGcZfeltLgbn4WHvTqs4fRZGx5uolPc9l4IIh+NZwMT/SRMkGERrlZw0eezTRJpf
+         99n4ujZ+xOv+6VAcN3eorVui9Wywy1ly9/LGjlQ9hqR75TqEB3pryXsBKmZt684zQZAk
+         rC5U60Vw5q/dyhejPNZvGXjYg2Kde6KsDGHrAPNc1IZj3fP2lzwcTsnymaEBMaMvRdnI
+         fACuvHl2fzH+pQZuwe2K+ihrBBx5IqgD8fyOEsUx0l+4V+jUbvGS09vNz6wlqM9cNTY9
+         t0HQ==
+X-Gm-Message-State: APjAAAV+DFIQrdrZ3uoxoJ6gYh1ISJvkd/Foisis2ckwW9kcma6FQW5B
+        +cT1kseWbJaW5BOHeVvIhKwKdwC79cY=
+X-Google-Smtp-Source: APXvYqzYkVyqcTZ0NIjD2ipMsRXWnliOt9ETaM/AMtM0RLbpqN42IfDXo9jC/roCjckmAKczvP6Isw==
+X-Received: by 2002:ac2:599c:: with SMTP id w28mr8831541lfn.78.1575656424879;
+        Fri, 06 Dec 2019 10:20:24 -0800 (PST)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:4291:257c:a228:1c89:88a1:5b3b])
+        by smtp.gmail.com with ESMTPSA id a21sm6948315ljn.76.2019.12.06.10.20.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Dec 2019 10:20:24 -0800 (PST)
+Subject: Re: [PATCH net] net: netlink: Fix uninit-value in netlink_recvmsg()
+To:     =?UTF-8?Q?H=c3=a5kon_Bugge?= <haakon.bugge@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20191206134923.2771651-1-haakon.bugge@oracle.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <13b4ccb1-2dec-fc4d-b9da-0957240f7fd7@cogentembedded.com>
+Date:   Fri, 6 Dec 2019 21:20:22 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
+MIME-Version: 1.0
+In-Reply-To: <20191206134923.2771651-1-haakon.bugge@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two upstream commits squashed together for v4.14 stable :
+Hello!
 
- commit 88f8598d0a302a08380eadefd09b9f5cb1c4c428 upstream.
+On 12/06/2019 04:49 PM, Håkon Bugge wrote:
 
-  Previously TCP only warns if its RTO timer fires and the
-  retransmission queue is empty, but it'll cause null pointer
-  reference later on. It's better to avoid such catastrophic failure
-  and simply exit with a warning.
+> If skb_recv_datagram() returns NULL, netlink_recvmsg() will return an
+> arbitrarily value.
 
-Squashed with "tcp: refactor tcp_retransmit_timer()" :
+   Arbitrary?
 
- commit 0d580fbd2db084a5c96ee9c00492236a279d5e0f upstream.
+> Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
+> ---
+>  net/netlink/af_netlink.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index 90b2ab9dd449..bb7276f9c9f8 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -1936,6 +1936,7 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>  		return -EOPNOTSUPP;
+>  
+>  	copied = 0;
+> +	err = 0;
+>  
+>  	skb = skb_recv_datagram(sk, flags, noblock, &err);
+>  	if (skb == NULL)
 
-  It appears linux-4.14 stable needs a backport of commit
-  88f8598d0a30 ("tcp: exit if nothing to retransmit on RTO timeout")
-
-  Since tcp_rtx_queue_empty() is not in pre 4.15 kernels,
-  let's refactor tcp_retransmit_timer() to only use tcp_rtx_queue_head()
-
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
----
- net/ipv4/tcp_timer.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 592d6e9967a916076ffcab37857d703c1567d7df..95dca02f8c4fc0154016b8bc5ee027fcc19e1061 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -413,6 +413,7 @@ void tcp_retransmit_timer(struct sock *sk)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct net *net = sock_net(sk);
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct sk_buff *skb;
- 
- 	if (tp->fastopen_rsk) {
- 		WARN_ON_ONCE(sk->sk_state != TCP_SYN_RECV &&
-@@ -423,10 +424,13 @@ void tcp_retransmit_timer(struct sock *sk)
- 		 */
- 		return;
- 	}
-+
- 	if (!tp->packets_out)
--		goto out;
-+		return;
- 
--	WARN_ON(tcp_write_queue_empty(sk));
-+	skb = tcp_rtx_queue_head(sk);
-+	if (WARN_ON_ONCE(!skb))
-+		return;
- 
- 	tp->tlp_high_seq = 0;
- 
-@@ -459,7 +463,7 @@ void tcp_retransmit_timer(struct sock *sk)
- 			goto out;
- 		}
- 		tcp_enter_loss(sk);
--		tcp_retransmit_skb(sk, tcp_write_queue_head(sk), 1);
-+		tcp_retransmit_skb(sk, skb, 1);
- 		__sk_dst_reset(sk);
- 		goto out_reset_timer;
- 	}
--- 
-2.24.0.393.g34dc348eaf-goog
-
+MBR, Sergei
