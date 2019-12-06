@@ -2,192 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D6E114CB6
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 08:39:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71C5114CE6
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 08:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726464AbfLFHje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 02:39:34 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:45597 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725858AbfLFHjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 02:39:32 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1id8Ct-00024f-Ix; Fri, 06 Dec 2019 08:39:19 +0100
-Received: from [IPv6:2001:67c:670:202:c1c2:3766:121d:8496] (unknown [IPv6:2001:67c:670:202:c1c2:3766:121d:8496])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B49B448A4E3;
-        Fri,  6 Dec 2019 07:39:15 +0000 (UTC)
-Subject: Re: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
-To:     Dan Murphy <dmurphy@ti.com>,
-        Pankaj Sharma <pankj.sharma@samsung.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     wg@grandegger.com, davem@davemloft.net, rcsekar@samsung.com,
-        pankaj.dubey@samsung.com
-References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
- <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
- <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <a967e70e-456d-7855-6bb1-2e2285ce6f9b@pengutronix.de>
-Date:   Fri, 6 Dec 2019 08:39:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726375AbfLFHvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 02:51:41 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:35881 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726184AbfLFHvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 02:51:40 -0500
+Received: by mail-ot1-f68.google.com with SMTP id i4so5087209otr.3
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 23:51:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=14yQKTS2bkZayFIOaG4dU26GgogZjkLuIxu5Aij+s2k=;
+        b=IkJDovEwGP1m4LlTdP39D5FfIsDqVnDrh22o6+FcbUz4WPI6FsJxp77QYu6fX2yg4R
+         XmtNvlR+yvwRp1hmKnMP5OpgFSQipp/wsyXcYlo4Q8EZe65426/dbh7YMZk4gEc8TETu
+         WSRnzVxdwaTCmJg60lCvBN2XyfPYUq1Le2+S3cBNQrAl8GtS222P9zUv6gJ7tyPelnew
+         Wi+iA5kQ2dRiTuWlUr0O5KJPQjOBifhRLWhEguRPChMha6NYfKngOJngAk9pix65a2Sz
+         OANWujV5Fwllltg+B8qfnpixELv0vHpofTtciFMFpPM3gPxeglhqdX5P7oL4gNuW9fbK
+         ty1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=14yQKTS2bkZayFIOaG4dU26GgogZjkLuIxu5Aij+s2k=;
+        b=br5q5gpWH4kEkMqdbbQ2jS0qL93ekEuY3x62x1z8TUuz7qj22JDQBGP5yzGLdWFzq/
+         s/rndZg86TfX3/JZiO6ILjjTYBsE3gw3onQjIxA7LmFRkk18SHulW6utw9szkqMAygoa
+         jXzuIn640gtE2en3XTgAAyDRrPAGGEuLT5hA8x+ldpPMc9vpuMBUlW3WD0R0iyorC0m1
+         CvNKIvyZf7sFfDG3m4/zi6TkJazUIZm051dFbMDSzyd4KK+gPaBo/N7c6NOS2kaM8ETB
+         E32vTj8DcV2lDaWEtbL2W+1OKD0V1l8Oa5Ng+wjE6USIkma7vOF0GLPVP/FS13N8W/A0
+         3ReQ==
+X-Gm-Message-State: APjAAAXMAme1YiDqTnmt/ZCeSNVG5G0MQl/rS1yq7Sv+Ds0o/lNHS+1p
+        kCdrSC4RyNDmoh4N2/CWX6CnmH1DJSSHwzkQNFeFZt8DzTc=
+X-Google-Smtp-Source: APXvYqycHKdCDPjryrdLCRajZr7HWlqs7eQsorT7p5Wjr5PsY79VCnrCMepm1ZCRgsW69eDZ8Canb24EOTfQFx7Fp8c=
+X-Received: by 2002:a9d:7393:: with SMTP id j19mr9690741otk.336.1575618699839;
+ Thu, 05 Dec 2019 23:51:39 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <CAMDZJNXcya=6VsXitukS5MmZ36oPCUVNMncBJKrWmzwK62LeUg@mail.gmail.com>
+ <CALzJLG-z18R+uPi2W3Wam7GKkxzayJDfyDyTmO+_W7Z1V0CaQg@mail.gmail.com>
+In-Reply-To: <CALzJLG-z18R+uPi2W3Wam7GKkxzayJDfyDyTmO+_W7Z1V0CaQg@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Fri, 6 Dec 2019 15:51:03 +0800
+Message-ID: <CAMDZJNU0TD+ckuf9XnoRAq3mKjLARYbq8CCgCUM4BfRY33pEmw@mail.gmail.com>
+Subject: Re: mlx5 support tc accept action
+To:     Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Cc:     Mark Bloch <markb@mellanox.com>,
+        Ariel Levkovich <lariel@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS
-Content-Type: multipart/mixed; boundary="R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Dan Murphy <dmurphy@ti.com>, Pankaj Sharma <pankj.sharma@samsung.com>,
- linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: wg@grandegger.com, davem@davemloft.net, rcsekar@samsung.com,
- pankaj.dubey@samsung.com
-Message-ID: <a967e70e-456d-7855-6bb1-2e2285ce6f9b@pengutronix.de>
-Subject: Re: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
-References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
- <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
- <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
-In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+On Fri, Dec 6, 2019 at 5:30 AM Saeed Mahameed <saeedm@dev.mellanox.co.il> wrote:
+>
+> On Wed, Dec 4, 2019 at 10:41 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > Hi Roi, Saeed
+> > In one cause, we want the "accept" action: the IP of VF will be
+> > "accept", and others
+> > packets will be done with other actions(e.g. hairpin rule to other VF).
+> >
+> > For example:
+> >
+> > PF0=enp130s0f0
+> > VF0_REP=enp130s0f0_0
+> > VF0=p4p1_0
+> > VF1=p4p2_0 # belong to PF1
+> > VF0_IP=3.3.3.200
+> >
+> > ethtool -K $PF0 hw-tc-offload on
+> > ethtool -K $VF0 hw-tc-offload on
+> > tc qdisc add dev $PF0 ingress
+> > tc qdisc add dev $VF0 ingress
+> > tc filter add dev $PF0 protocol all parent ffff: prio 10 handle 1
+> > flower skip_sw action mirred egress redirect dev $VF0_REP
+> > tc filter add dev $VF0 protocol ip parent ffff: prio 1 handle 3 flower
+> > skip_sw dst_ip $VF0_IP action pass
+> > tc filter add dev $VF0 protocol all parent ffff: prio 10 handle 2
+> > flower skip_sw action mirred egress redirect dev $VF1
+> >
+> > When I change the driver, the rule which action "action pass", can be
+> > offloaded, but it didn't work.
+> > +               case FLOW_ACTION_ACCEPT:
+> > +                   action |= MLX5_FLOW_CONTEXT_ACTION_ALLOW;
+> > +                   break;
+> >
+> >
+> > How can we support it, this function is import for us.
+>
+> Hi Tonghao,
+> where did you add the above code to ?
+> parse_tc_fdb_actions() ? or parse_tc_nic_actions() ?
+> in your use case you need to add it to parse_tc_nic_actions(),
+>
+> currently in mlx5 we don't support ALLOW/pass actions.
+> it might be a little more complicated than what you did in order to
+> support this,
+> as a work around you can use action: FLOW_ACTION_MARK in the tc
+> command line rule without any change in the driver.
+> or change your code to do MLX5_FLOW_CONTEXT_ACTION_FWD_DEST instead of
+> MLX5_FLOW_CONTEXT_ACTION_ALLOW
+Hi Saeed, FLOW_ACTION_MARK works fine for us. Thanks.
 
---R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 12/5/19 9:57 PM, Dan Murphy wrote:
-> Pankaj
->=20
-> On 11/19/19 4:20 AM, Pankaj Sharma wrote:
->> The current code is failing while clock prepare enable because of not
->> getting proper clock from platform device.
->> A device driver for CAN controller hardware registers itself with the
->> Linux network layer as a network device. So, the driver data for m_can=
-
->> should ideally be of type net_device.
->>
->> Further even when passing the proper net device in probe function the
->> code was hanging because of the function m_can_runtime_resume() gettin=
-g
->> recursively called from m_can_class_resume().
->>
->> Pankaj Sharma (2):
->>    can: m_can_platform: set net_device structure as driver data
->>    can: m_can_platform: remove unnecessary m_can_class_resume() call
->=20
-> Did you CC: linux-stable for these?=C2=A0 We are probably going to have=
-=20
-> customers picking up 5.4 LTS and would need these bug fixes.
-
-Both patches made it into the v5.4 release. So no need for stable.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV--
-
---J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3qBZYACgkQWsYho5Hk
-nSAGuAgAp5+CFD1N0dWgqU7yjdFbAf6OalnacbP2rmsjsvwt/qyQZQbagbBkYOE6
-0feJAdi+qoOaWSwzWRR7C0C8iMui7BgoNxSVruj9sbuOU1EovwCleeGXOBGV/CJH
-8qO729v18hVFQeV/vT+f5ZrKVmxB/Uf2Ub6jb4E+vyaaLd/X3iMsYpmsaJTcISTA
-nZYSOBX2atcQsJizcr4eSnLNhvMof92L+swrtOcA5epMG7fXJ+cZxgLwT0xOlz6a
-fMzrfDkKi83duGa0R3N5WRaWrCCPyG5uy9C4JJ8uuyZKcI9hGe85V3WyN+c7yOL2
-w2rPULjEMM5EIRE+mK2ZhJAKoxHcgQ==
-=D87v
------END PGP SIGNATURE-----
-
---J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS--
+> Adding Mark and Ariel, they might have better feedback than mine
+>
+> Thanks,
+> Saeed/
