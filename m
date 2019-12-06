@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE03A1153B0
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 15:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5591153CE
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:04:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726262AbfLFO40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 09:56:26 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:31967 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726234AbfLFO4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 09:56:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575644184;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pZiMi9GA37xMLOFTmxZhVvHZSfLZNfqkbCgqTYdRzFY=;
-        b=ean+9Ue5jI6X1H2ZdbVMZfGH1BIZoyFq8wG4HlGDzj1Q0yrW6j+9INT12196kf78c115+X
-        81F1OoOi/AUOGWZTDLbNNVsorqYSTN05Sw10360sbQf/VnvqmMXsxpWEsp5Fmu1ANJukDB
-        Ornm6oQ28daLgao4wOTcJQhhG0hBG/M=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-340-7hqB8XEbMKeEXUK8BaexAA-1; Fri, 06 Dec 2019 09:56:23 -0500
-Received: by mail-wr1-f69.google.com with SMTP id r2so3251052wrp.7
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 06:56:22 -0800 (PST)
+        id S1726328AbfLFPEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 10:04:07 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54915 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726246AbfLFPEH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 10:04:07 -0500
+Received: by mail-wm1-f67.google.com with SMTP id b11so8139722wmj.4
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 07:04:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tuvOGUuphJljqsnwDIlOzeJI6mW7RcXZeFFjeM8e4r4=;
+        b=QmwNLtFATd48WBCWkzfXF2PUktVrnW2JvtHyzc/RNtl9DFNqFi4hCRG0KZ1TlnezIE
+         Bqhee/Y+nuqH8Knr/vrtZ9QrOkT0kZxA9fMYm/5m0JLnhZGc+ycod3790AlCs+w2n244
+         F+lA597OKPY8EtH6U670qA51RId8krDH6wykGmpGh5fTG5C5mhV7FLT8RK644aGsAxBE
+         E7HqskV8fC1fuJ+nUPHKO0Qg1F62RRm1vzyfh1NcXwY8+NXeNw0NcLj5qi7GEpOniYHT
+         LeLrp0Qw7v4b/9XNHJR0cBmnnSW2bPO+J1sPYWvK9D5yXC9rTeKiuZgVY+KlRzxW/vJ8
+         rTEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TKbuZUAf1dCKq8jnpQSBCg+axcK4Bo/Qt06gTAOaFYo=;
-        b=Ng7kYUCFojvN7KMlRsa088afq+ujBehZs26Yf5RoX/wkLEME8+ZEjylP5PISdEE7CI
-         afTrcw0lqY4KhbdhBhVcwg+pvTo6TIgDfXFXL3bnnbx8jcO27urobzRYrsbjjn/wkHnJ
-         nALVf61APDq5ZZKNHT3smGu9NeqWas2Nn0Vj6fMpXeG8g7pAkUK+0arYuEqOyV9yDWjj
-         FUdDti0/7/bYBAIk9EGaEbpHKEDRPq4k8p4z6iMPkXuaCZiw4mG95coxPkaApZPXJmf6
-         v+pVOpVKHk8+10149MwBVU53Rm6fXmxqYPlF3o9FW+V7bu/2PoZGX2nE0I6GBzARaK9U
-         kETg==
-X-Gm-Message-State: APjAAAWFtuhQlxKJQ7PH83M4e+JRMR55HnqF1xEZRFUx5mhVkNbpY9z/
-        QZqG8NJoQf86wGAIes6yhjwZc5q7OGIG9/VaN/oZyWkzUhzEaoHQN06T+AUn7RWQ2C6ilGSLaIJ
-        wRUvOMeR0dP8g0DDk
-X-Received: by 2002:adf:b64e:: with SMTP id i14mr15788166wre.332.1575644181994;
-        Fri, 06 Dec 2019 06:56:21 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyaVmms+HbzDV1KRBndmLQS8NM9mEPWrhOpX+hnkWl6jR7C0hNyGAx2B3bhw8bgSaKH9RTz/A==
-X-Received: by 2002:adf:b64e:: with SMTP id i14mr15788150wre.332.1575644181828;
-        Fri, 06 Dec 2019 06:56:21 -0800 (PST)
-Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
-        by smtp.gmail.com with ESMTPSA id k20sm3385389wmj.10.2019.12.06.06.56.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Dec 2019 06:56:21 -0800 (PST)
-Date:   Fri, 6 Dec 2019 15:56:19 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Aditya Pakki <pakki001@umn.edu>
-Cc:     klju@umn.edu, Michal Ostrowski <mostrows@earthlink.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pppoe: remove redundant BUG_ON() check in pppoe_pernet
-Message-ID: <20191206145619.GA3930@linux.home>
-References: <20191205230342.8548-1-pakki001@umn.edu>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tuvOGUuphJljqsnwDIlOzeJI6mW7RcXZeFFjeM8e4r4=;
+        b=dfU0i/rPRNMxeY3uQ0C+TDFunIdQ7esGFB7U4OZ08HTPuMEACRbIBRTQ9505y5pNwE
+         kSlhzfI7FrFsgjrNTaug7oqq4qiQqeQI/2LnWkfy4OyKLNNdJYjqfqMoPupqfVEyzSvp
+         UZjQJFSIOiefDLPwHHKBtmhadsgZC8fMWDr9NHgPPz25US59/n6dDefWEiITx+Z2cJpx
+         YzOe525tRbhGO4dQjO7Y/xSH8rVB68WqOMafVZfInOWCaq7imwnxCoVDwylvISmAczXn
+         +7NCzU/Evdo8f+iG7QyyeE6UnZhaNqtqIIJxCxQj10xw/heS0a+DM+cXqG4wR+zdBz6/
+         FmRQ==
+X-Gm-Message-State: APjAAAXJ5jG2ct4e8q7E+47ZnGkKi9b6Tss5PzBJm9A3mnCwAswUdu51
+        OFdiqmEKL3uBTy7Kc3Z8AwFqNZXHe1fmfnu+QMazJbgA
+X-Google-Smtp-Source: APXvYqzyRHenQtcqmgVOdsiZMeMYc3m+ZfRoSUkn34CcLrOmFqsJ6v073EcfdvFiQPQgEL+2bk/Hk1H0lLozmaZlOAs=
+X-Received: by 2002:a1c:4004:: with SMTP id n4mr10318722wma.153.1575644645067;
+ Fri, 06 Dec 2019 07:04:05 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191205230342.8548-1-pakki001@umn.edu>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-MC-Unique: 7hqB8XEbMKeEXUK8BaexAA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+References: <20191205181015.169651-1-edumazet@google.com> <CADVnQy=xkpckodjF16YF=tZ34bMB2QLQ=BTJeGyaidcPaTiAGQ@mail.gmail.com>
+In-Reply-To: <CADVnQy=xkpckodjF16YF=tZ34bMB2QLQ=BTJeGyaidcPaTiAGQ@mail.gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Fri, 6 Dec 2019 10:03:27 -0500
+Message-ID: <CACSApvb7Yz5xZjS=Qf8Sw1ftWGBU1Xn0+w8vrH1qjruv+PF-+Q@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: md5: fix potential overestimation of TCP option space
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 05:03:42PM -0600, Aditya Pakki wrote:
-> Passing NULL to pppoe_pernet causes a crash via BUG_ON.
-> Dereferencing net in net_generici() also has the same effect. This patch
-> removes the redundant BUG_ON check on the same parameter.
->=20
-> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
-> ---
->  drivers/net/ppp/pppoe.c | 2 --
->  1 file changed, 2 deletions(-)
->=20
-> diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
-> index a44dd3c8af63..d760a36db28c 100644
-> --- a/drivers/net/ppp/pppoe.c
-> +++ b/drivers/net/ppp/pppoe.c
-> @@ -119,8 +119,6 @@ static inline bool stage_session(__be16 sid)
-> =20
->  static inline struct pppoe_net *pppoe_pernet(struct net *net)
->  {
-> -=09BUG_ON(!net);
-> -
->  =09return net_generic(net, pppoe_net_id);
->  }
-> =20
-Looks like a net-next patch, but net-next is currently closed (take a
-look Documentation/networking/netdev-FAQ.rst for details).
+On Fri, Dec 6, 2019 at 9:49 AM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Thu, Dec 5, 2019 at 1:10 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > Back in 2008, Adam Langley fixed the corner case of packets for flows
+> > having all of the following options : MD5 TS SACK
+> >
+> > Since MD5 needs 20 bytes, and TS needs 12 bytes, no sack block
+> > can be cooked from the remaining 8 bytes.
+> >
+> > tcp_established_options() correctly sets opts->num_sack_blocks
+> > to zero, but returns 36 instead of 32.
+> >
+> > This means TCP cooks packets with 4 extra bytes at the end
+> > of options, containing unitialized bytes.
+> >
+> > Fixes: 33ad798c924b ("tcp: options clean up")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > ---
+>
+> Acked-by: Neal Cardwell <ncardwell@google.com>
 
-You can add my ack when you repost:
-Acked-by: Guillaume Nault <gnault@redhat.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
+Thanks for the fix!
+
+> Thanks, Eric!
+>
+> neal
