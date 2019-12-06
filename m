@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8F8114E33
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 10:33:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE266114E7C
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 10:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726284AbfLFJdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 04:33:00 -0500
-Received: from mx134-tc.baidu.com ([61.135.168.134]:28261 "EHLO
-        tc-sys-mailedm01.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726065AbfLFJdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 04:33:00 -0500
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm01.tc.baidu.com (Postfix) with ESMTP id D02D82040041;
-        Fri,  6 Dec 2019 17:32:47 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org, saeedm@mellanox.com, linyunsheng@huawei.com
-Subject: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE condition
-Date:   Fri,  6 Dec 2019 17:32:47 +0800
-Message-Id: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1726298AbfLFJyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 04:54:17 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:51260 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726070AbfLFJyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 04:54:16 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 509A4201663;
+        Fri,  6 Dec 2019 10:54:15 +0100 (CET)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2D2E9200595;
+        Fri,  6 Dec 2019 10:54:13 +0100 (CET)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 706DE402F7;
+        Fri,  6 Dec 2019 17:54:10 +0800 (SGT)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org, Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>
+Subject: [PATCH] enetc: disable EEE autoneg by default
+Date:   Fri,  6 Dec 2019 17:53:35 +0800
+Message-Id: <20191206095335.7450-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-some drivers uses page pool, but not require to allocate
-pages from bound node, or simply assign pool.p.nid to
-NUMA_NO_NODE, and the commit d5394610b1ba ("page_pool:
-Don't recycle non-reusable pages") will block this kind
-of driver to recycle
+The EEE support has not been enabled on ENETC, but it may connect
+to a PHY which supports EEE and advertises EEE by default, while
+its link partner also advertises EEE. If this happens, the PHY enters
+low power mode when the traffic rate is low and causes packet loss.
+This patch disables EEE advertisement by default for any PHY that
+ENETC connects to, to prevent the above unwanted outcome.
 
-so take page as reusable when page belongs to current
-memory node if nid is NUMA_NO_NODE
-
-v1-->v2: add check with numa_mem_id from Yunsheng
-
-Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Suggested-by: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Saeed Mahameed <saeedm@mellanox.com>
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
- net/core/page_pool.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index a6aefe989043..3c8b51ccd1c1 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -312,12 +312,17 @@ static bool __page_pool_recycle_direct(struct page *page,
- /* page is NOT reusable when:
-  * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
-  * 2) belongs to a different NUMA node than pool->p.nid.
-+ * 3) belongs to a different memory node than current context
-+ * if pool->p.nid is NUMA_NO_NODE
-  *
-  * To update pool->p.nid users must call page_pool_update_nid.
-  */
- static bool pool_page_reusable(struct page_pool *pool, struct page *page)
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 9db1b96..1773990 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -1332,6 +1332,7 @@ static int enetc_phy_connect(struct net_device *ndev)
  {
--	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
-+	return !page_is_pfmemalloc(page) &&
-+		(page_to_nid(page) == pool->p.nid ||
-+		(pool->p.nid == NUMA_NO_NODE &&
-+		page_to_nid(page) == numa_mem_id()));
+ 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 	struct phy_device *phydev;
++	struct ethtool_eee edata;
+ 
+ 	if (!priv->phy_node)
+ 		return 0; /* phy-less mode */
+@@ -1345,6 +1346,10 @@ static int enetc_phy_connect(struct net_device *ndev)
+ 
+ 	phy_attached_info(phydev);
+ 
++	/* disable EEE autoneg, until ENETC driver supports it */
++	memset(&edata, 0, sizeof(struct ethtool_eee));
++	phy_ethtool_set_eee(phydev, &edata);
++
+ 	return 0;
  }
  
- void __page_pool_put_page(struct page_pool *pool, struct page *page,
 -- 
-2.16.2
+2.7.4
 
