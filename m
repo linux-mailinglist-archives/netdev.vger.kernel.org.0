@@ -2,179 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E98114CAE
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 08:37:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D6E114CB6
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 08:39:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726421AbfLFHhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 02:37:47 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:42090 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726184AbfLFHhq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 6 Dec 2019 02:37:46 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 050001B214D2; Fri,  6 Dec 2019 10:37:43 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 050001B214D2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1575617864; bh=Au2fc/AWkb3xBjkPZdnApOwUFi8kXkwwYCBQ06Wg7qc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=rnQoWc4b7+17JT9/ugB67EsYY1h3IRiasuPuddiWtUUMu9RZr94qT1E8BVtXe2jDs
-         ghjo1e4W2s9s1xhEQfNJvXRJLPDQed2FxPwwItF5YHdfghffojDCWMUZNuy9RPXbKi
-         8PFtvT0vYM70QRSQTb7SxEI/RkvjdIahLN1eRhzA=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 585151B20144;
-        Fri,  6 Dec 2019 10:37:27 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 585151B20144
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id CD9B41B22974;
-        Fri,  6 Dec 2019 10:37:26 +0300 (MSK)
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Fri,  6 Dec 2019 10:37:26 +0300 (MSK)
+        id S1726464AbfLFHje (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 02:39:34 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:45597 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725858AbfLFHjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 02:39:32 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1id8Ct-00024f-Ix; Fri, 06 Dec 2019 08:39:19 +0100
+Received: from [IPv6:2001:67c:670:202:c1c2:3766:121d:8496] (unknown [IPv6:2001:67c:670:202:c1c2:3766:121d:8496])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B49B448A4E3;
+        Fri,  6 Dec 2019 07:39:15 +0000 (UTC)
+Subject: Re: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
+To:     Dan Murphy <dmurphy@ti.com>,
+        Pankaj Sharma <pankj.sharma@samsung.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, davem@davemloft.net, rcsekar@samsung.com,
+        pankaj.dubey@samsung.com
+References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
+ <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
+ <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <a967e70e-456d-7855-6bb1-2e2285ce6f9b@pengutronix.de>
+Date:   Fri, 6 Dec 2019 08:39:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 06 Dec 2019 10:37:26 +0300
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Muciri Gatimu <muciri@openmesh.com>,
-        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
-        John Crispin <john@phrozen.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
-In-Reply-To: <3cc7a0c3-4eeb-52d5-1777-f646329a9303@gmail.com>
-References: <20191205100235.14195-1-alobakin@dlink.ru>
- <20191205125827.GA28269@lunn.ch> <2e03b82a8ec999fade26253ff35077c6@dlink.ru>
- <20191205140132.GD28269@lunn.ch> <72a21c5f03abdc3d2d1c1bb85fd4489d@dlink.ru>
- <3cc7a0c3-4eeb-52d5-1777-f646329a9303@gmail.com>
-User-Agent: Roundcube Webmail/1.4.0
-Message-ID: <5e108291220110b10fdf0c88f8894fdb@dlink.ru>
-X-Sender: alobakin@dlink.ru
+In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Fainelli wrote 06.12.2019 06:32:
-> On 12/5/2019 6:58 AM, Alexander Lobakin wrote:
->> Andrew Lunn wrote 05.12.2019 17:01:
->>>> Hi,
->>>> 
->>>> > What i'm missing here is an explanation why the flow dissector is
->>>> > called here if the protocol is already set? It suggests there is a
->>>> > case when the protocol is not correctly set, and we do need to look
->>>> > into the frame?
->>>> 
->>>> If we have a device with multiple Tx queues, but XPS is not 
->>>> configured
->>>> or system is running on uniprocessor system, then networking core 
->>>> code
->>>> selects Tx queue depending on the flow to utilize as much Tx queues 
->>>> as
->>>> possible but without breaking frames order.
->>>> This selection happens in net/core/dev.c:skb_tx_hash() as:
->>>> 
->>>> reciprocal_scale(skb_get_hash(skb), qcount)
->>>> 
->>>> where 'qcount' is the total number of Tx queues on the network 
->>>> device.
->>>> 
->>>> If skb has not been hashed prior to this line, then skb_get_hash() 
->>>> will
->>>> call flow dissector to generate a new hash. That's why flow 
->>>> dissection
->>>> can occur on Tx path.
->>> 
->>> 
->>> Hi Alexander
->>> 
->>> So it looks like you are now skipping this hash. Which in your
->>> testing, give better results, because the protocol is already set
->>> correctly. But are there cases when the protocol is not set 
->>> correctly?
->>> We really do need to look into the frame?
->> 
->> Actually no, I'm not skipping the entire hashing, I'm only skipping
->> tag_ops->flow_dissect() (helper that only alters network offset and
->> replaces fake ETH_P_XDSA with the actual protocol) call on Tx path,
->> because this only breaks flow dissection logics. All skbs are still
->> processed and hashed by the generic code that goes after that call.
->> 
->>> How about when an outer header has just been removed? The frame was
->>> received on a GRE tunnel, the GRE header has just been removed, and
->>> now the frame is on its way out? Is the protocol still GRE, and we
->>> should look into the frame to determine if it is IPv4, ARP etc?
->>> 
->>> Your patch looks to improve things for the cases you have tested, but
->>> i'm wondering if there are other use cases where we really do need to
->>> look into the frame? In which case, your fix is doing the wrong 
->>> thing.
->>> Should we be extending the tagger to handle the TX case as well as 
->>> the
->>> RX case?
->> 
->> We really have two options: don't call tag_ops->flow_dissect() on Tx
->> (this patch), or extend tagger callbacks to handle Tx path too. I was
->> using both of this for several months each and couldn't detect cases
->> where the first one was worse than the second.
->> I mean, there _might_ be such cases in theory, and if they will appear
->> we should extend our taggers. But for now I don't see the necessity to
->> do this as generic flow dissection logics works as expected after this
->> patch and is completely broken without it.
->> And remember that we have the reverse logic on Tx and all skbs are
->> firstly queued on slave netdevice and only then on master/CPU port.
->> 
->> It would be nice to see what other people think about it anyways.
-> 
-> Your patch seems appropriate to me and quite frankly I am not sure why
-> flow dissection on RX is done at the DSA master device level, where we
-> have not parsed the DSA tag yet, instead of being done at the DSA slave
-> network device level. It seems to me that if the DSA master has N RX
-> queues, we should be creating the DSA slave devices with the same 
-> amount
-> of RX queues and perform RPS there against a standard Ethernet frame
-> (sans DSA tag).
-> 
-> For TX the story is a little different because we can have multiqueue
-> DSA slave network devices in order to steer traffic towards particular
-> switch queues and we could do XPS there that way.
-> 
-> What do you think?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS
+Content-Type: multipart/mixed; boundary="R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Dan Murphy <dmurphy@ti.com>, Pankaj Sharma <pankj.sharma@samsung.com>,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: wg@grandegger.com, davem@davemloft.net, rcsekar@samsung.com,
+ pankaj.dubey@samsung.com
+Message-ID: <a967e70e-456d-7855-6bb1-2e2285ce6f9b@pengutronix.de>
+Subject: Re: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
+References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
+ <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
+ <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
 
-Hi Florian,
+--R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-First of all, thank you for the "Reviewed-by"!
+On 12/5/19 9:57 PM, Dan Murphy wrote:
+> Pankaj
+>=20
+> On 11/19/19 4:20 AM, Pankaj Sharma wrote:
+>> The current code is failing while clock prepare enable because of not
+>> getting proper clock from platform device.
+>> A device driver for CAN controller hardware registers itself with the
+>> Linux network layer as a network device. So, the driver data for m_can=
 
-I agree with you that all the network stack processing should be
-performed on standard frames without CPU tags and on corresponding
-slave netdevices. So I think we really should think about extending
-DSA core code to create slaves with at least as many Rx queues as
-master device have. With this done we could remove .flow_dissect()
-callback from DSA taggers entirely and simplify traffic flow.
+>> should ideally be of type net_device.
+>>
+>> Further even when passing the proper net device in probe function the
+>> code was hanging because of the function m_can_runtime_resume() gettin=
+g
+>> recursively called from m_can_class_resume().
+>>
+>> Pankaj Sharma (2):
+>>    can: m_can_platform: set net_device structure as driver data
+>>    can: m_can_platform: remove unnecessary m_can_class_resume() call
+>=20
+> Did you CC: linux-stable for these?=C2=A0 We are probably going to have=
+=20
+> customers picking up 5.4 LTS and would need these bug fixes.
 
-Also, if we get back to Tx processing, number of Tx queues on slaves
-should be equal to number of queues on switch inself in ideal case.
-Maybe we should then apply this rule to Rx queues too, i.e. create
-slaves with the number of Rx queues that switch has?
+Both patches made it into the v5.4 release. So no need for stable.
 
-(for example, I'm currently working with the switches that have 8 Rxqs
-and 8 Txqs, but their Ethernet controlers / CPU ports have only 4/4)
+Marc
 
-Regards,
-ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--R6Lpc9rHMptUxg3wRCeFA8vNFLQfkt4PV--
+
+--J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3qBZYACgkQWsYho5Hk
+nSAGuAgAp5+CFD1N0dWgqU7yjdFbAf6OalnacbP2rmsjsvwt/qyQZQbagbBkYOE6
+0feJAdi+qoOaWSwzWRR7C0C8iMui7BgoNxSVruj9sbuOU1EovwCleeGXOBGV/CJH
+8qO729v18hVFQeV/vT+f5ZrKVmxB/Uf2Ub6jb4E+vyaaLd/X3iMsYpmsaJTcISTA
+nZYSOBX2atcQsJizcr4eSnLNhvMof92L+swrtOcA5epMG7fXJ+cZxgLwT0xOlz6a
+fMzrfDkKi83duGa0R3N5WRaWrCCPyG5uy9C4JJ8uuyZKcI9hGe85V3WyN+c7yOL2
+w2rPULjEMM5EIRE+mK2ZhJAKoxHcgQ==
+=D87v
+-----END PGP SIGNATURE-----
+
+--J7PAfLCnD6GAAUfn5Afj7StQLBgIq7dkS--
