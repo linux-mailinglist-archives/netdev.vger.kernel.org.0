@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEB9114B7C
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 04:45:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85404114B80
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 04:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726243AbfLFDpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 22:45:50 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44676 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbfLFDpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 22:45:50 -0500
-Received: by mail-pg1-f193.google.com with SMTP id x7so2579494pgl.11
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 19:45:50 -0800 (PST)
+        id S1726245AbfLFDul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 22:50:41 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38710 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbfLFDul (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 22:50:41 -0500
+Received: by mail-pf1-f195.google.com with SMTP id x185so2629247pfc.5
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 19:50:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3ur4KnnYJ0yU+4DjjGCvcvzWXhKbPRugUgOebRpcWe4=;
-        b=rJs7BvzrlyeG1DQatisVAwI01N2nJ9yqq3ctS8bXqRFsa/PokgcufH7tlE0gdxRxUn
-         +q/ALg8GxxePdYYjR2f5Nko/YisKe7gSjmTEnb9XReJCV4IjwWEETMlj6OjfCYYLdS/k
-         B0G6Zj3sb2pCbay5No7w20RLGz3Xji5rMfkupz1OWWft+Jyi69GTXDIBnFgcHpyv1eEh
-         Qx7W010wtgZrqaWcpANqp1vkNehWEB+gKW9vnmu/q2V/Pz71jmSr4yc6Ixlfaf/9Xia7
-         cPnmpyKTHlSsYtow6Q/yq8BtiXKGiBgOdI51Qn/2YV50qCoYY4p+Xx/tcOIFGiLyTIMN
-         SdmA==
+        bh=uV+1XBD6BJSPspyjSaABwF1kONPP1IZSCF+Qrd/s9Ig=;
+        b=nLyAtT5uG3U1yciG3ITt2Ptl15ulMiAL9IZo6uBq7pnU7OJRAK8m0r3ar/YDtqPI4a
+         Yj+RrV3T+/6kWx8QJsXkCe8ERKazQnpoaGuM4+5Gy7nfTELUTPmk8zCTW/Eww6PVr8JI
+         y7Bkn8axi6T60jLeB4yf8igJ/abEGYMxVvEhIe7QYsrl//spkkmMGVYsdDhEgEb7q28m
+         NTk6R3UBJm41h/1FYG12JR59BF7r8Ke47K9VAcDm08W6gx6GdCt26mxdRGeO6/oSsa7E
+         FkjWoCaw50IkCLWua+ClkIePaQsIcAacg57cKvAIM0gL1fzQIyEQAJJnQtJFTFTwP82Y
+         Tshg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=3ur4KnnYJ0yU+4DjjGCvcvzWXhKbPRugUgOebRpcWe4=;
-        b=eYsoU5C+PLcIDC56NBuHpdu4iLJRYmwUr8fJY07o0HuC/vUAlyYnuunVNGBuaTFhG1
-         fXNwrxbE6xQ9JaxFFaj6Ey1f7u6o/hcAaBhkEkMlMVNf7Nywt62uZ1osSbOg/Ernf6OL
-         TXD4AW2FtPAUt6CrjVV1YXArOjd2oNyKHtU7LPGplwnBsC4KHmjnicdV7BgKAP8UULQc
-         mtmSzmgU/5To23waii0boHoduNvJ4Ns5w1FbFQPebDA8+I6YV0nNpVPpsDFiZytAC9Yi
-         5kSG4K2gyMkfMSyYwC8Dd/3hrxS25cxTZ5DrURQSeqbvb4EVEjURGEA4EBtjkLv0Va51
-         yTaw==
-X-Gm-Message-State: APjAAAVP/CbyIY22zGrfuZLCyeiC+fY6kkT+4Lglk4hB7UFp0jhWP2s8
-        uJ3vWw8+84rECYeYGJN0t4g=
-X-Google-Smtp-Source: APXvYqyTSrIHuqXAYkLjh9NuqvkcbYlBy1HmzLTyqiVXmMaTLfp5AFpsLoPsxn5mPk6INENCX3FY1g==
-X-Received: by 2002:a62:2687:: with SMTP id m129mr319557pfm.173.1575603949746;
-        Thu, 05 Dec 2019 19:45:49 -0800 (PST)
+        bh=uV+1XBD6BJSPspyjSaABwF1kONPP1IZSCF+Qrd/s9Ig=;
+        b=r4FqUgcm3tPI1GO57YxeZE7wrCdGNa9X9vUAMHdg7mxSHCCQexuw57jmj61QnQFHVX
+         qTDlofbX0ieaQRnFvnM9Ir8ll/3l0EAUayiFn4x8v4oLl9B88Ts/o2g3Sk/DbCNk2df+
+         7fgZMqhboQrIkU3DWyjucDkTb9r5RyzwvcEIWk7ReSUUQA33rO/Thtoxv6oohDRtVRgC
+         bv04pQ1tixIWrK4GfT8LEcoI12DFDElMI0pVwgp8M0cTL+jXE/LYdhLd7SVqd7Zo6RY7
+         Jp5zu1xyAX0e4hcmTxX1QtrAWE0NPaJI0MztY/p3Pqe+1dmjagNKj2mtSS5+NfhseACQ
+         pVkg==
+X-Gm-Message-State: APjAAAWdtiiyy3MhtFWa3UWig4RzOxcJ75nGOBnOx5+5spYVNgCgQWzs
+        0ZklKFLxULKNBjO8lho9dqY=
+X-Google-Smtp-Source: APXvYqyMbE4qAhsKixh4pGFGj26OrtM7rWUjkcEY9+QKPw59xHmNFWghEBcTgyXzAoUnkb9S7reFhQ==
+X-Received: by 2002:a65:6842:: with SMTP id q2mr1216815pgt.345.1575604240967;
+        Thu, 05 Dec 2019 19:50:40 -0800 (PST)
 Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id b16sm13175996pfo.64.2019.12.05.19.45.48
+        by smtp.gmail.com with ESMTPSA id n12sm12459908pgb.32.2019.12.05.19.50.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 19:45:49 -0800 (PST)
-Subject: Re: [PATCH net v3 2/3] tcp: tighten acceptance of ACKs not matching a
- child socket
+        Thu, 05 Dec 2019 19:50:40 -0800 (PST)
+Subject: Re: [PATCH net v3 3/3] tcp: Protect accesses to .ts_recent_stamp with
+ {READ,WRITE}_ONCE()
 To:     Guillaume Nault <gnault@redhat.com>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>
 Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
 References: <cover.1575595670.git.gnault@redhat.com>
- <05f412281ffe11a603260c849851df39c0e8c952.1575595670.git.gnault@redhat.com>
+ <6473f122f953f6b0bf350ace584a721d0ae02ef6.1575595670.git.gnault@redhat.com>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <f68c51a4-6c25-dcf8-3bb3-7d8511164f67@gmail.com>
-Date:   Thu, 5 Dec 2019 19:45:48 -0800
+Message-ID: <27c9579d-634d-99c9-689c-65e3f4a2b296@gmail.com>
+Date:   Thu, 5 Dec 2019 19:50:39 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <05f412281ffe11a603260c849851df39c0e8c952.1575595670.git.gnault@redhat.com>
+In-Reply-To: <6473f122f953f6b0bf350ace584a721d0ae02ef6.1575595670.git.gnault@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,49 +70,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/5/19 5:49 PM, Guillaume Nault wrote:
-> When no synflood occurs, the synflood timestamp isn't updated.
-> Therefore it can be so old that time_after32() can consider it to be
-> in the future.
+On 12/5/19 5:50 PM, Guillaume Nault wrote:
+> Syncookies borrow the ->rx_opt.ts_recent_stamp field to store the
+> timestamp of the last synflood. Protect them with READ_ONCE() and
+> WRITE_ONCE() since reads and writes aren't serialised.
 > 
-> That's a problem for tcp_synq_no_recent_overflow() as it may report
-> that a recent overflow occurred while, in fact, it's just that jiffies
-> has grown past 'last_overflow' + TCP_SYNCOOKIE_VALID + 2^31.
-> 
-> Spurious detection of recent overflows lead to extra syncookie
-> verification in cookie_v[46]_check(). At that point, the verification
-> should fail and the packet dropped. But we should have dropped the
-> packet earlier as we didn't even send a syncookie.
-> 
-> Let's refine tcp_synq_no_recent_overflow() to report a recent overflow
-> only if jiffies is within the
-> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval. This
-> way, no spurious recent overflow is reported when jiffies wraps and
-> 'last_overflow' becomes in the future from the point of view of
-> time_after32().
-> 
-> However, if jiffies wraps and enters the
-> [last_overflow, last_overflow + TCP_SYNCOOKIE_VALID] interval (with
-> 'last_overflow' being a stale synflood timestamp), then
-> tcp_synq_no_recent_overflow() still erroneously reports an
-> overflow. In such cases, we have to rely on syncookie verification
-> to drop the packet. We unfortunately have no way to differentiate
-> between a fresh and a stale syncookie timestamp.
-> 
-> In practice, using last_overflow as lower bound is problematic.
-> If the synflood timestamp is concurrently updated between the time
-> we read jiffies and the moment we store the timestamp in
-> 'last_overflow', then 'now' becomes smaller than 'last_overflow' and
-> tcp_synq_no_recent_overflow() returns true, potentially dropping a
-> valid syncookie.
-> 
-> Reading jiffies after loading the timestamp could fix the problem,
-> but that'd require a memory barrier. Let's just accommodate for
-> potential timestamp growth instead and extend the interval using
-> 'last_overflow - HZ' as lower bound.
-> 
-> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Fixes: 264ea103a747 ("tcp: syncookies: extend validity range")
 > Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 
+To be fair, bug was there before the patch mentioned in the Fixes: tag,
+but we probably do not care enough to backport this to very old kernels.
