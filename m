@@ -2,113 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 320A2114A9F
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 02:50:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB877114ADE
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 03:23:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbfLFBuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 20:50:10 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56974 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725988AbfLFBuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 20:50:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575597008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x1yLQFubkP51wDk7aBhauhhcs2CAnUyn5Rt31hm1/FU=;
-        b=FxOI9WXdLZGB2F8fKeAL7Oyfrt7rhfmTVAnAeaeNmCuQCcoBaDyR6H2mEfAVupQe7hKRyT
-        gx2D7Sl/fGHP4ezIPSszXY4GkAX2KFqXiKQg2ZRUbXbDtuPP8k/4AiWQUVWIDU/vuGoXEs
-        +Bat0QqLdIrrACc8bzcupx2bnlMVDgc=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-108-Zg9VudZSNoWM81FDAEJyZQ-1; Thu, 05 Dec 2019 20:50:05 -0500
-Received: by mail-wr1-f71.google.com with SMTP id l20so2425458wrc.13
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 17:50:04 -0800 (PST)
+        id S1726109AbfLFCX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 21:23:29 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41014 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbfLFCX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 21:23:28 -0500
+Received: by mail-pg1-f195.google.com with SMTP id x8so2497847pgk.8
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 18:23:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=wY17/pcKHb0BDe6YGhh2KXvf1injn7RzqVNMJfXcpiY=;
+        b=O8a8D+8obYH25hp9Mn8J75T8B2U3Hv4YNAIFEqoeLOTkHPNBws5/rrE7v3oKhrxugF
+         TMVPzLP50j2o2oc7LohhMA6XKJPJulU1V07SClfrP/jL3/L/0sbuhcAfYFmvtgb8yWCk
+         Z4T5DIJtqVqEcSIhTPoR61r3U1rVxSm9h5YuB4We2KzFpYJZW7lOL7R1tgX6LHAFKnSv
+         I0JHqMfFzg+FxHXBsT5X3uBYNgpdJV1zb+tMYxV5G9SfpmBCyM/k+mQGqRpShkIDyyDo
+         HyxSEH4AtJTIzIDr8zLldVGi8JF8cS/wqaispOdFXQeTh1bq2NUUIh1zWlbvzwakkkWA
+         nsCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gzKQUsnUwWY1eE5rB99ZCMGW3EnErOaFcBv7Q4utu2Y=;
-        b=FhbUY6huKxcXmaC/RDWoec8DFHVSjDCiQihtObLIuB+wBwJjFX6yJ/BjRS1lvsBavA
-         oWBFQtUZFRvMFWA5At3sYknwDKYJQ3frhJv0PjOzvWXgdN3Pb8/fHUrJAnRHtaqoUZic
-         Beej3IxXWirDjtoh+N3p/N217ey+Sm4wlMIzDcJGG7J4+g6zXPTzTxla9Wk80thj/Zic
-         e0Lc6zqNZXyV4+2uohNOTYQqYti2ppaVACUmCjA5KgKuUjCi4PxR8Gdcr511Wh8BBiTI
-         vj0XPEYlG+VCD7xkOfnmhSlwWXLeR9CFtuAkobRMapYUgDadBGzhhXowMIMSmdnG7co/
-         OA0w==
-X-Gm-Message-State: APjAAAVCLmh8hbe/tme1JpcCWYh0Hq5AuFHj0XFwVanpUmI8fP6lYQPg
-        +zkcJ8weXK6gT590x/h79VASzetNNU9rbagt6GcxpR9THsq6456zVH2+D7V/q4b8kuNAw4Fk457
-        kGTtB3iRx8EFD47+Z
-X-Received: by 2002:adf:f091:: with SMTP id n17mr13135616wro.387.1575597003919;
-        Thu, 05 Dec 2019 17:50:03 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy29jIA/eyu7Wms1DZPbbkD54LU3PLxjAaeCox9vWeVWKT5W+Ojjnuq+gxsXOW7L/at5BQ/Tg==
-X-Received: by 2002:adf:f091:: with SMTP id n17mr13135607wro.387.1575597003759;
-        Thu, 05 Dec 2019 17:50:03 -0800 (PST)
-Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
-        by smtp.gmail.com with ESMTPSA id t12sm14553311wrs.96.2019.12.05.17.50.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 17:50:03 -0800 (PST)
-Date:   Fri, 6 Dec 2019 02:50:01 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net v3 3/3] tcp: Protect accesses to .ts_recent_stamp with
- {READ,WRITE}_ONCE()
-Message-ID: <6473f122f953f6b0bf350ace584a721d0ae02ef6.1575595670.git.gnault@redhat.com>
-References: <cover.1575595670.git.gnault@redhat.com>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=wY17/pcKHb0BDe6YGhh2KXvf1injn7RzqVNMJfXcpiY=;
+        b=PUO9IyBkbOau99kOdmj5G+y3Pt6B57BF/7uFpjymsjUpb9ZBEqbWOFtVg07vHmxzhL
+         3nRdtb6BQViY1e9VHvGPz4OU6nyyTG+HD7ve6b+NdFN5x2/1WGR1OHB/PeqgqiI49pUl
+         ekNZgtSWro8qHdiGk3j+v8+HCdwvHY/w9vluL8TBVWo30DYBZK4shttw2YAR69s5ByG2
+         whoIPYeU3aWPptHcHKsqase0umAeVOBZh68birY+HsOnBpgmHPK6jKdIAtZkgiNkZTfU
+         OmxzA1KdZaKZb4IgC2Efp/0aWP9la8OAxqunzUgbThO3WpsgG8ceRpy28EQLwHFTELHy
+         9QjA==
+X-Gm-Message-State: APjAAAXoTUjcQlf1dYxiXfLT3JLPKbqq7DcUFPumNdug5gylI5sZvetw
+        6O7OT/FMKV2a5CIP4AQ9SjA59paqaEYamA==
+X-Google-Smtp-Source: APXvYqwqPU6X/AEaCBNbyAMPZp9/DogGXDrIH3CbbnovjFOzzm0K8NN3LMyPTzykUNmYVJc1YzNwIA==
+X-Received: by 2002:a63:fe0a:: with SMTP id p10mr905866pgh.96.1575599007430;
+        Thu, 05 Dec 2019 18:23:27 -0800 (PST)
+Received: from [192.168.1.188] ([66.219.217.145])
+        by smtp.gmail.com with ESMTPSA id j7sm13987156pgn.0.2019.12.05.18.23.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Dec 2019 18:23:26 -0800 (PST)
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+From:   Jens Axboe <axboe@kernel.dk>
+Subject: [GIT PULL] Block/io_uring fixes and changes for 5.5-rc1
+Message-ID: <01d2e4de-c834-dd52-e28d-3ff75ca5cd34@kernel.dk>
+Date:   Thu, 5 Dec 2019 19:23:25 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <cover.1575595670.git.gnault@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-MC-Unique: Zg9VudZSNoWM81FDAEJyZQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syncookies borrow the ->rx_opt.ts_recent_stamp field to store the
-timestamp of the last synflood. Protect them with READ_ONCE() and
-WRITE_ONCE() since reads and writes aren't serialised.
+Hi Linus,
 
-Fixes: 264ea103a747 ("tcp: syncookies: extend validity range")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- include/net/tcp.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Wasn't expecting this to be so big, and if I was, I would have used
+separate branches for this. Going forward I'll be doing separate
+branches for the current tree, just like for the next kernel version
+tree. In any case, this pull request contains:
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 43e04e14c41e..86b9a8766648 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -501,9 +501,9 @@ static inline void tcp_synq_overflow(const struct sock =
-*sk)
- =09=09}
- =09}
-=20
--=09last_overflow =3D tcp_sk(sk)->rx_opt.ts_recent_stamp;
-+=09last_overflow =3D READ_ONCE(tcp_sk(sk)->rx_opt.ts_recent_stamp);
- =09if (!time_between32(now, last_overflow, last_overflow + HZ))
--=09=09tcp_sk(sk)->rx_opt.ts_recent_stamp =3D now;
-+=09=09WRITE_ONCE(tcp_sk(sk)->rx_opt.ts_recent_stamp, now);
- }
-=20
- /* syncookies: no recent synqueue overflow on this listening socket? */
-@@ -524,7 +524,7 @@ static inline bool tcp_synq_no_recent_overflow(const st=
-ruct sock *sk)
- =09=09}
- =09}
-=20
--=09last_overflow =3D tcp_sk(sk)->rx_opt.ts_recent_stamp;
-+=09last_overflow =3D READ_ONCE(tcp_sk(sk)->rx_opt.ts_recent_stamp);
-=20
- =09/* If last_overflow <=3D jiffies <=3D last_overflow + TCP_SYNCOOKIE_VAL=
-ID,
- =09 * then we're under synflood. However, we have to use
---=20
-2.21.0
+- Series from Christoph that fixes an inherent race condition with zoned
+  devices and revalidation.
+
+- null_blk zone size fix (Damien)
+
+- Fix for a regression in this merge window that caused busy spins by
+  sending empty disk uevents (Eric)
+
+- Fix for a regression in this merge window for bfq stats (Hou)
+
+- Fix for io_uring creds allocation failure handling (me)
+
+- io_uring -ERESTARTSYS send/recvmsg fix (me)
+
+- Series that fixes the need for applications to retain state across
+  async request punts for io_uring. This one is a bit larger than I
+  would have hoped, but I think it's important we get this fixed for
+  5.5.
+
+- connect(2) improvement for io_uring, handling EINPROGRESS instead of
+  having applications needing to poll for it (me)
+
+- Have io_uring use a hash for poll requests instead of an rbtree. This
+  turned out to work much better in practice, so I think we should make
+  the switch now. For some workloads, even with a fair amount of
+  cancellations, the insertion sort is just too expensive. (me)
+
+- Various little io_uring fixes (me, Jackie, Pavel, LimingWu)
+
+- Fix for brd unaligned IO, and a warning for the future (Ming)
+
+- Fix for a bio integrity data leak (Justin)
+
+- bvec_iter_advance() improvement (Pavel)
+
+- Xen blkback page unmap fix (SeongJae)
+
+The major items in here are all well tested, and on the liburing side we
+continue to add regression and feature test cases. We're up to 50 topic
+cases now, each with anywhere from 1 to more than 10 cases in each.
+
+Please pull!
+
+
+  git://git.kernel.dk/linux-block.git tags/for-linus-20191205
+
+
+----------------------------------------------------------------
+Christoph Hellwig (7):
+      null_blk: cleanup null_gendisk_register
+      block: remove the empty line at the end of blk-zoned.c
+      block: simplify blkdev_nr_zones
+      block: replace seq_zones_bitmap with conv_zones_bitmap
+      block: allocate the zone bitmaps lazily
+      block: don't handle bio based drivers in blk_revalidate_disk_zones
+      block: set the zone size in blk_revalidate_disk_zones atomically
+
+Damien Le Moal (1):
+      null_blk: fix zone size paramter check
+
+Eric Biggers (1):
+      block: don't send uevent for empty disk when not invalidating
+
+Hou Tao (1):
+      bfq-iosched: Ensure bio->bi_blkg is valid before using it
+
+Jackie Liu (2):
+      io_uring: remove parameter ctx of io_submit_state_start
+      io_uring: remove io_wq_current_is_worker
+
+Jens Axboe (14):
+      io_uring: use current task creds instead of allocating a new one
+      io_uring: transform send/recvmsg() -ERESTARTSYS to -EINTR
+      io_uring: add general async offload context
+      io_uring: ensure async punted read/write requests copy iovec
+      io_uring: ensure async punted sendmsg/recvmsg requests copy data
+      io_uring: ensure async punted connect requests copy data
+      io_uring: mark us with IORING_FEAT_SUBMIT_STABLE
+      io_uring: handle connect -EINPROGRESS like -EAGAIN
+      null_blk: remove unused variable warning on !CONFIG_BLK_DEV_ZONED
+      io_uring: allow IO_SQE_* flags on IORING_OP_TIMEOUT
+      io_uring: ensure deferred timeouts copy necessary data
+      io-wq: clear node->next on list deletion
+      io_uring: use hash table for poll command lookups
+      Merge branch 'io_uring-5.5' into for-linus
+
+Justin Tee (1):
+      block: fix memleak of bio integrity data
+
+LimingWu (1):
+      io_uring: fix a typo in a comment
+
+Ming Lei (2):
+      brd: remove max_hw_sectors queue limit
+      brd: warn on un-aligned buffer
+
+Pavel Begunkov (3):
+      block: optimise bvec_iter_advance()
+      io_uring: fix error handling in io_queue_link_head
+      io_uring: hook all linked requests via link_list
+
+SeongJae Park (1):
+      xen/blkback: Avoid unmapping unmapped grant pages
+
+ block/bfq-cgroup.c                  |   3 +
+ block/bio-integrity.c               |   2 +-
+ block/bio.c                         |   3 +
+ block/blk-zoned.c                   | 149 ++++----
+ block/blk.h                         |   4 +
+ block/ioctl.c                       |   2 +-
+ drivers/block/brd.c                 |   5 +-
+ drivers/block/null_blk_main.c       |  40 ++-
+ drivers/block/xen-blkback/blkback.c |   2 +
+ drivers/md/dm-table.c               |  12 +-
+ drivers/md/dm-zoned-target.c        |   2 +-
+ drivers/scsi/sd_zbc.c               |   2 -
+ fs/block_dev.c                      |   2 +-
+ fs/io-wq.c                          |   2 +-
+ fs/io-wq.h                          |  11 +-
+ fs/io_uring.c                       | 694 +++++++++++++++++++++++++-----------
+ include/linux/blkdev.h              |  24 +-
+ include/linux/bvec.h                |  22 +-
+ include/linux/socket.h              |  20 +-
+ include/uapi/linux/io_uring.h       |   1 +
+ net/socket.c                        |  76 ++--
+ 21 files changed, 672 insertions(+), 406 deletions(-)
+
+-- 
+Jens Axboe
 
