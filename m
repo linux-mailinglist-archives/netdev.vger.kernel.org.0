@@ -2,122 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3D7114C53
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:19:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A19B114C56
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726193AbfLFGTC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Dec 2019 01:19:02 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31322 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726104AbfLFGTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:19:02 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xB66EqN6016367
-        for <netdev@vger.kernel.org>; Thu, 5 Dec 2019 22:19:00 -0800
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2wpywy4w82-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 22:19:00 -0800
-Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 5 Dec 2019 22:18:58 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 6286F760AFF; Thu,  5 Dec 2019 22:18:57 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: pull-request: bpf 2019-12-05
-Date:   Thu, 5 Dec 2019 22:18:57 -0800
-Message-ID: <20191206061857.3660737-1-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
+        id S1726184AbfLFGZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 01:25:39 -0500
+Received: from mga09.intel.com ([134.134.136.24]:35040 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726076AbfLFGZj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 01:25:39 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Dec 2019 22:25:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,283,1571727600"; 
+   d="scan'208";a="209361713"
+Received: from amahmed2-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.32.245])
+  by fmsmga008.fm.intel.com with ESMTP; 05 Dec 2019 22:25:36 -0800
+Subject: Re: Possible race condition on xsk_socket__create/xsk_bind
+To:     William Tu <u9012063@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>
+References: <CALDO+Sbd82Eqb27PezcUxTOhrD-YEsVw8cGW-abraZCLZ3fEAg@mail.gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <851ad28e-dc8b-da7c-66fa-ef88d684d7d2@intel.com>
+Date:   Fri, 6 Dec 2019 07:25:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-06_01:2019-12-04,2019-12-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 mlxscore=0
- suspectscore=1 priorityscore=1501 clxscore=1015 mlxlogscore=999
- phishscore=0 malwarescore=0 bulkscore=0 impostorscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912060054
-X-FB-Internal: deliver
+In-Reply-To: <CALDO+Sbd82Eqb27PezcUxTOhrD-YEsVw8cGW-abraZCLZ3fEAg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On 2019-12-06 00:21, William Tu wrote:
+> Hi,
+> 
+> While testing XSK using OVS, we hit an issue when create xsk,
+> destroy xsk, create xsk in a short time window.
+> The call to xsk_socket__create returns EBUSY due to
+>    xsk_bind
+>      xdp_umem_assign_dev
+>        xdp_get_umem_from_qid --> return EBUSY
+> 
+> I found that when everything works, the sequence is
+>    <ovs creates xsk>
+>    xsk_bind
+>      xdp_umem_assign_dev
+>    <ovs destroy xsk> ...
+>    xsk_release
+>    xsk_destruct
+>      xdp_umem_release_deferred
+>        xdp_umem_release
+>          xdp_umem_clear_dev --> avoid the error above
+> 
+> But sometimes xsk_destruct has not yet called, the
+> next call to xsk_bind shows up, ex:
+> 
+>    <ovs creates xsk>
+>    xsk_bind
+>      xdp_umem_assign_dev
+>    <ovs destroy xsk> ...
+>    xsk_release
+>    xsk_bind
+>      xdp_umem_assign_dev
+>        xdp_get_umem_from_qid (failed!)
+>    ....
+>    xsk_destruct
+> 
+> Is there a way to make sure the previous xsk is fully cleanup,
+> so we can safely call xsk_socket__create()?
+>
 
-The following pull-request contains BPF updates for your *net* tree.
+Yes, the async cleanup is annoying. I *think* it can be done 
+synchronous, since the map doesn't linger on a sockref anymore -- 
+0402acd683c6 ("xsk: remove AF_XDP socket from map when the socket is 
+released").
 
-We've added 6 non-merge commits during the last 1 day(s) which contain
-a total of 14 files changed, 116 insertions(+), 37 deletions(-).
+So, it's not a race, it just asynch. :-(
 
-The main changes are:
+I'll take a stab at fixing this!
 
-1) three selftests fixes, from Stanislav.
 
-2) one samples fix, from Jesper.
+Cheers,
+Björn
 
-3) one verifier fix, from Yonghong.
 
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Eelco Chaudron, Toke Høiland-Jørgensen
-
-----------------------------------------------------------------
-
-The following changes since commit 099ffd7eddfe03b9b5b43e1f4ffece99121dd7ba:
-
-  NFC: NCI: use new `delay` structure for SPI transfer delays (2019-12-04 17:00:58 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 8f9081c92523328aa569d09051add79a6c0ae9ff:
-
-  selftests/bpf: Add a fexit/bpf2bpf test with target bpf prog no callees (2019-12-04 21:34:42 -0800)
-
-----------------------------------------------------------------
-Jesper Dangaard Brouer (1):
-      samples/bpf: Fix broken xdp_rxq_info due to map order assumptions
-
-Stanislav Fomichev (3):
-      selftests/bpf: Don't hard-code root cgroup id
-      selftests/bpf: Bring back c++ include/link test
-      selftests/bpf: De-flake test_tcpbpf
-
-Yonghong Song (2):
-      bpf: Fix a bug when getting subprog 0 jited image in check_attach_btf_id
-      selftests/bpf: Add a fexit/bpf2bpf test with target bpf prog no callees
-
- kernel/bpf/verifier.c                              |  5 +-
- samples/bpf/xdp_rxq_info_user.c                    |  6 +-
- tools/lib/bpf/.gitignore                           |  1 -
- tools/lib/bpf/Makefile                             |  5 +-
- tools/testing/selftests/bpf/.gitignore             |  1 +
- tools/testing/selftests/bpf/Makefile               |  6 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 70 ++++++++++++++++------
- .../selftests/bpf/progs/fexit_bpf2bpf_simple.c     | 26 ++++++++
- .../selftests/bpf/progs/test_pkt_md_access.c       |  4 +-
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |  1 +
- .../selftests/bpf/test_cpp.cpp}                    |  0
- .../selftests/bpf/test_skb_cgroup_id_user.c        |  2 +-
- tools/testing/selftests/bpf/test_tcpbpf.h          |  1 +
- tools/testing/selftests/bpf/test_tcpbpf_user.c     | 25 +++++---
- 14 files changed, 116 insertions(+), 37 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
- rename tools/{lib/bpf/test_libbpf.c => testing/selftests/bpf/test_cpp.cpp} (100%)
+> The error is reproduced by OVS using:
+> ovs-vsctl -- set interface afxdp-p0 options:n_rxq=1 type="afxdp" 
+> options:xdp-mode=native
+> ovs-vsctl -- set interface afxdp-p0 options:n_rxq=1 type="afxdp" 
+> options:xdp-mode=generic
+> ovs-vsctl -- set interface afxdp-p0 options:n_rxq=1 type="afxdp" 
+> options:xdp-mode=native
+> This just keeps create and destroy xsk on the same device.
+> 
+> Thanks
+> William
