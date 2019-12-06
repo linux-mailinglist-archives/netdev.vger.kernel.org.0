@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9762111569D
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 18:38:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E66B1156DD
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 18:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbfLFRil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 12:38:41 -0500
-Received: from mail-pj1-f73.google.com ([209.85.216.73]:43317 "EHLO
-        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfLFRil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 12:38:41 -0500
-Received: by mail-pj1-f73.google.com with SMTP id b23so3978668pjz.10
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 09:38:41 -0800 (PST)
+        id S1726287AbfLFR6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 12:58:53 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:44542 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbfLFR6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 12:58:52 -0500
+Received: by mail-lf1-f68.google.com with SMTP id v201so5884503lfa.11
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 09:58:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Vd5KbYjsiE1EtZVMNSeHzigBzJq8TAQZuGFlb+8G3b8=;
-        b=OZMDl0dUbNauHdvrfwR2yLtAP+z7tlBcQot4LIPI+YLtbcnyAF2LnvofuehMpRxZly
-         4e6e+kbWST8hgfl9TRAJx7sTrUDnRBv96/ES4htzD5NfkLKOFFZOHKwsE3j0JfYwvqrH
-         VtsRKPsSp+i7bg6wWzAO58h4vT9iHHF4lYxTPRrgt+8wH3ADe44gicez0DL99GqWb6s1
-         vx+SzJHezyRrFbLheJ6yhpLhD2VBgj01ov2X8CkIPe3fPhXSi7kmJixIzOQB1PdW9YTy
-         Z5pLOSR1JJAflfMfGsFamFiGXjmen7HSm4sbAIUS52jTCMoUUWugXPSDVfMqKIQCXkVs
-         03Rw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=7NoV/MZ+gAAoZ3Ywqfb6WiDTdgr5NlWMlKnaR0k7Lzk=;
+        b=xPIWUQdV5LzJHwy1Das6+ElrkvtWT59j1TuYG5c0CnFe8LLvlFSbV1AtTFeH0eWFXm
+         2HnkXvu4+LhaB/Yyc6Ebd3e9DMzQ73EOBA1BaGU3IKNO1wb/NW4fMm1QBsghglhTDEsh
+         aXfN2NpslfWhdWrWWlqkiLSCx3qcUFW4tLvoU2mPH8fARaN/V9jIpo9b7v4OnPr5RxMY
+         Kd7JixMDVB6cbCQF91N8w16hdQxNpvwTU7Aq9EhAY4NyuLPEXBLiEWN7kTZ0ZZaTyRpE
+         fh+15LYfm2UTLuQdzbkGChhYwzZWsUZHpcmFNXb8TTHSPsKoU4uMeGzaLsOW6cZNteyT
+         A7iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Vd5KbYjsiE1EtZVMNSeHzigBzJq8TAQZuGFlb+8G3b8=;
-        b=LuoPSXNvjSwU7chc5r04H0UMuEImXsEecH9nAGYRDAiTKvNLWyw8TL3JpZLP2qEgdA
-         pGMaBxUgerlRiMmZRS/6ToEl1kz+cN4rgtw+cRky96spS5W8ZKH9faX5Tph8FAvzJeCA
-         dRxtQaGz+Kg6OTF52MttrXDCcrWlItLQwH7ZqxT2gHJqb4nv5D9OsUg4I4Mh2EGK0nN1
-         XLYxsUNiDHM78WioMHWlADDP01ClJeRmXF0jujB9wfvEtNEfb9r/hnP9lR2M9S/b6yEp
-         3TQMNs6FVXHEyoax/sCljiCKLJWAtkvcciJHyvijD6ZAjzvXz4qU8YC/y7Ay0dztCVyT
-         cTpQ==
-X-Gm-Message-State: APjAAAVQWACydWIHDcItjedGilkVf+RjYypiazK/5dVmAWXinuI5m0tg
-        yZKpGOJ2eSLc2SUw0/xsB8xusu6L3Qhn0w==
-X-Google-Smtp-Source: APXvYqwb6gPjfb8TQu/jBy/TXXOXj1+RJfxa9d4Xm6wW0E1H7DZCH+GR2erbctEfBrZKOO5jae46zCaxpb5etg==
-X-Received: by 2002:a63:fd0a:: with SMTP id d10mr4548283pgh.197.1575653920241;
- Fri, 06 Dec 2019 09:38:40 -0800 (PST)
-Date:   Fri,  6 Dec 2019 09:38:36 -0800
-Message-Id: <20191206173836.34294-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
-Subject: [PATCH net] net: avoid an indirect call in ____sys_recvmsg()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Laight <David.Laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=7NoV/MZ+gAAoZ3Ywqfb6WiDTdgr5NlWMlKnaR0k7Lzk=;
+        b=Y6bI2exaHXobSXkaalTqv6hJlZO1rS1WmSZsCY6aFbtdnkczYB9+7nqO93xTjCBCEi
+         r4bsm4YigxGy2cHqg/OqhqScmhC+SDQGBXwI+MF0XeMS/dHMyfolszLq9l9GsAA/PWAi
+         cz9inepI4VICToeF+05/bCEU1klfRcobAUWSAUHS5OPBjoFmZOu4LRXlinPCs2l7exh2
+         2AJB3VKrtuqVGlLYiRBAcguknnapZzHFBuZFF1hmu8kxdd/FQ8wT6QNRvFF/r1e1c5wZ
+         LbNU/zCBULTzRd5h7XsoApmEyMFsNVTd6c2VAd2YT5jB9F09rP0sQzm8aulLcJW4Ue8u
+         ahWw==
+X-Gm-Message-State: APjAAAXI/eO0IQu6WMHcT9GHVo9FGLJUVKxL0LHKIHfvWke8oUE1js5E
+        OM3snZyFupimJQusIzL4WNR8oA==
+X-Google-Smtp-Source: APXvYqxjLx+wuStYVrUdLvIoHiJhniLWG67QUZ6v3B2GX1ZIkBURojsq0dmiv9FisfdZMreI2xy4vw==
+X-Received: by 2002:a19:84d:: with SMTP id 74mr8623455lfi.122.1575655130609;
+        Fri, 06 Dec 2019 09:58:50 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id c9sm5959949ljd.28.2019.12.06.09.58.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Dec 2019 09:58:50 -0800 (PST)
+Date:   Fri, 6 Dec 2019 09:58:39 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     syzbot <syzbot+5013d47539cdd43e7098@syzkaller.appspotmail.com>
+Cc:     ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
+        davem@davemloft.net, dirk.vandermerwe@netronome.com,
+        edumazet@google.com, eranbe@mellanox.com, eric.dumazet@gmail.com,
+        john.fastabend@gmail.com, kafai@fb.com, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Subject: Re: kernel BUG at include/linux/mm.h:LINE! (5)
+Message-ID: <20191206095839.29d2024c@cakuba.netronome.com>
+In-Reply-To: <000000000000fdad650599064dc5@google.com>
+References: <00000000000054cc6d05834c33d7@google.com>
+        <000000000000fdad650599064dc5@google.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CONFIG_RETPOLINE=y made indirect calls expensive.
+On Fri, 06 Dec 2019 02:14:00 -0800, syzbot wrote:
+> syzbot suspects this bug was fixed by commit:
+> 
+> commit 9354544cbccf68da1b047f8fb7b47630e3c8a59d
+> Author: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+> Date:   Mon Jun 24 04:26:58 2019 +0000
+> 
+>      net/tls: fix page double free on TX cleanup
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12ebd77ae00000
+> start commit:   9e9322e5 selftest/net: Remove duplicate header
+> git tree:       net-next
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=47f2db597668ac40
+> dashboard link: https://syzkaller.appspot.com/bug?extid=5013d47539cdd43e7098
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=148763eb200000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1416ff3d200000
+> 
+> If the result looks correct, please mark the bug fixed by replying with:
+> 
+> #syz fix: net/tls: fix page double free on TX cleanup
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-gcc seems to add an indirect call in ____sys_recvmsg().
-
-Rewriting the code slightly makes sure to avoid this indirection.
-
-Alternative would be to not call sock_recvmsg() and instead
-use security_socket_recvmsg() and sock_recvmsg_nosec(),
-but this is less readable IMO.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: David Laight <David.Laight@aculab.com>
----
- net/socket.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/net/socket.c b/net/socket.c
-index ea28cbb9e2e7a7180ee63de2d09a81aacb001ab7..5af84d71cbc2f731def460b70aa7f68533a90b16 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2559,7 +2559,12 @@ static int ____sys_recvmsg(struct socket *sock, struct msghdr *msg_sys,
- 
- 	if (sock->file->f_flags & O_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
--	err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys, flags);
-+
-+	if (unlikely(nosec))
-+		err = sock_recvmsg_nosec(sock, msg_sys, flags);
-+	else
-+		err = sock_recvmsg(sock, msg_sys, flags);
-+
- 	if (err < 0)
- 		goto out;
- 	len = err;
--- 
-2.24.0.393.g34dc348eaf-goog
-
+#syz fix: net/tls: fix page double free on TX cleanup
