@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8516111502B
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:10:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5CA1115020
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:01:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbfLFMKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 07:10:44 -0500
-Received: from lgeamrelo12.lge.com ([156.147.23.52]:42552 "EHLO
-        lgeamrelo11.lge.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726116AbfLFMKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:10:44 -0500
-Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
-        by 156.147.23.52 with ESMTP; 6 Dec 2019 20:40:41 +0900
-X-Original-SENDERIP: 156.147.1.121
-X-Original-MAILFROM: neidhard.kim@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.178.32.48)
-        by 156.147.1.121 with ESMTP; 6 Dec 2019 20:40:41 +0900
-X-Original-SENDERIP: 10.178.32.48
-X-Original-MAILFROM: neidhard.kim@lge.com
-From:   Jongsung Kim <neidhard.kim@lge.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, davem@davemloft.net,
-        joabreu@synopsys.com, alexandre.torgue@st.com,
-        peppe.cavallaro@st.com, Jongsung Kim <neidhard.kim@lge.com>
-Subject: [PATCH] net: stmmac: reset Tx desc base address before restarting Tx
-Date:   Fri,  6 Dec 2019 20:40:00 +0900
-Message-Id: <20191206114000.27283-1-neidhard.kim@lge.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726237AbfLFMBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 07:01:07 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34015 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfLFMBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:01:06 -0500
+Received: by mail-wm1-f68.google.com with SMTP id f4so9628741wmj.1
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 04:01:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=XsEd9Nv1AeqU19tKr7PslEXD3w/51iBx3qBKIaqWrTs=;
+        b=qZ/ttOuI6dsqX3Kclr+UB91lLxnxY6MTnyO38gEzIpQJkE6o5ysejxvEj824Z4QGeb
+         frYrsWXIe77CzMbys7LNGr5yxELA+MI9BFvEqil5/j/4Kp6tm/6HczEVaXMAbRwxr5VY
+         c4ryEHpOiaNUYkzS3U3mvkAJrjo318dRJRnQRXrt4pC9OGBHFFpQ/FdiNYbgyO/OcxsK
+         Wo4ZOZ6Jw01EKE5MzfvRolzWPf7PIx9qb09MQrl0gQgK2abf7lD1GD1iouiSaILdqJML
+         ClN1RoQ/GkFqXvUyUfLl8dWxBg7m4eHfrdn7c/7XGCVewoEWUozX7+abOphlpp+YTjOr
+         s9BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=XsEd9Nv1AeqU19tKr7PslEXD3w/51iBx3qBKIaqWrTs=;
+        b=EpYj61+S6iPGFwzw6pFR0nbi+zuhr7mY86lX9RpBGEPP9P3pfZp+2xnJziDshfr1+E
+         BNYHhIf1ig9KCtKVTolMKbh10oJ3U7tUfEfQC4GyPW5WYw2dcGav8osS+zA3GOeRlDvc
+         6eyOrCLSu0hIL7jquu5WC0LyDwIkX2PRLNvhRspsmpAOWDVu5TdkNTPeQy7Dh9y1njsZ
+         T3C5RVeYJ5+B2OqKtnkLVy4XMyLsyzoEZRzrub7QIlU5hOsrTfXR2kyCry5DjTnQTAkj
+         C76uv+ihaxIGoGRvQUpeC92tcypg4r5bQF2bQSze016Ko8kzxcoGbTL6awE30jZhxciM
+         pYIw==
+X-Gm-Message-State: APjAAAXBUepTsxHeio5pyqlUrVwy7OMCSTW1FXjgoGdPY17gNvyTh9/v
+        geeqQ4M8eZKzKPoUh8ATJWiKuGsPKQWND2IQbAM=
+X-Google-Smtp-Source: APXvYqz/6o8uG7XJ7t7oFtxU1Ep1jzyiDuuCFMXJGei0iaAXTPgMVgMEAizMAFmR6loEm1vrPgqpfMSN2l+0xON9BPk=
+X-Received: by 2002:a7b:c7d3:: with SMTP id z19mr10276437wmk.116.1575633664915;
+ Fri, 06 Dec 2019 04:01:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a1c:e303:0:0:0:0:0 with HTTP; Fri, 6 Dec 2019 04:01:04 -0800 (PST)
+Reply-To: mis.mariam.maalouf3@gmail.com
+From:   Mis Mariam Maalouf <douglasmarkfrank355@gmail.com>
+Date:   Fri, 6 Dec 2019 13:01:04 +0100
+Message-ID: <CAHJWG19qp96GQRJWMPhWiqqW=Mb32_APO26FYEYp4kxRHprXfg@mail.gmail.com>
+Subject: =?UTF-8?B?6Kaq5oSb44Gq44KL5Y+L5Lq644G444Gu5oyo5ou244CB?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refer to the databook of DesignWare Cores Ethernet MAC Universal:
-
-6.2.1.5 Register 4 (Transmit Descriptor List Address Register
-
-If this register is not changed when the ST bit is set to 0, then
-the DMA takes the descriptor address where it was stopped earlier.
-
-The stmmac_tx_err() does zero indices to Tx descriptors, but does
-not reset HW current Tx descriptor address. To fix inconsistency,
-the base address of the Tx descriptors should be rewritten before
-restarting Tx.
-
-Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 644cb5d1fd4f..bbc65bd332a8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2009,6 +2009,8 @@ static void stmmac_tx_err(struct stmmac_priv *priv, u32 chan)
- 	tx_q->cur_tx = 0;
- 	tx_q->mss = 0;
- 	netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, chan));
-+	stmmac_init_tx_chan(priv, priv->ioaddr, priv->plat->dma_cfg,
-+			    tx_q->dma_tx_phy, chan);
- 	stmmac_start_tx_dma(priv, chan);
- 
- 	priv->dev->stats.tx_errors++;
--- 
-2.20.1
-
+6Kaq5oSb44Gq44KL5Y+L5Lq644G444Gu5oyo5ou244CBDQoNCuengeOBruWQjeWJjeOBr+ODnuOD
+quOCouODoOODu+ODnuOCouODreODleOBp+OBmeOAgua2meOCkua1geOBl+OBquOBjOOCieOBk+OB
+ruODoeODg+OCu+ODvOOCuOOCkuabuOOBhOOBpuOBhOOBvuOBmeOAguengeOBruWbveOBp+mAsuih
+jOS4reOBruWGheaIpuOCt+ODquOCouOBr+engeOBruS6uueUn+OBq+Wkp+OBjeOBquW9semfv+OC
+kuS4juOBiOOBvuOBl+OBn+OAguWOu+W5tOWutuaXj+OCkuWkseOBhOOBvuOBl+OBn+OAgueItuOB
+r+S6oeOBj+OBquOCi+WJjeOBr+mHkeaMgeOBoeOBp+OAgeefs+ayueOBqOOCrOOCueOBruODk+OC
+uOODjeOCueOCkuOBl+OBpuOBhOOBpuOAgemHkeOBruODk+OCuOODjeOCueOCguOBl+OBpuOBhOOB
+n+OAguW9vOOBr+Wkp+mHkeOCkueovOOBhOOBoO+8iDI1MDDkuIczMDAw44OJ44Or77yJ44K344Oq
+44Ki44Gn44Gu5oim5LqJ44Go5q665a6z44CCDQoNCuengeOBjOeXheawl+OBi+OCieWbnuW+qeOB
+l+OAgeOBguOBquOBn+OBq+S8muOBhOOBq+adpeOCi+OBvuOBp+OAgeengeOBr+OBguOBquOBn+OB
+jOengeOBjOOBiumHkeOCkuWPl+OBkeWPluOCi+OBruOCkuaJi+S8neOBhuW/heimgeOBjOOBguOC
+iuOBvuOBmeOAgg0KDQrnp4Hjga/kuqHjgY3niLbjga7jg5Pjgrjjg43jgrnjg5Hjg7zjg4jjg4rj
+g7zjgajjgZfjgabjgYLjgarjgZ/jgpLku7vlkb3jgZfjgZ/jgYTjgajmgJ3jgYTjgb7jgZnjgILj
+gYrph5HjgpLpoJDjgZHjgovjgZ/jgoHjga7jgZnjgbnjgabjga7mm7jpoZ7jgajmg4XloLHjgpLj
+gYrpgIHjgorjgZfjgb7jgZnjgIINCg0K44GC44Gq44Gf44GM56eB44Gu44Gf44KB44Gr44GT44KM
+44KS6KGM44GG44GT44Go44GM44Gn44GN44KL44GL44Gp44GG44GL56eB44Gr55+l44KJ44Gb44Gm
+44GP44Gg44GV44GE44CB44GT44KM44Gv56eB44Gu5pys5b2T44Gu6Kmx44Gn44GZ44CB56eB44Gv
+44GC44Gq44Gf44Gu5Yqp44GR44GM5b+F6KaB44Gn44GZDQoNCuOBguOBquOBn+OBr+engeOBruOD
+oeODvOODq++8iG1pcy5tYXJpYW0ubWFhbG91ZjJAZ21haWwuY29t77yJ44Gn56eB44Gr6YCj57Wh
+44GZ44KL44GT44Go44GM44Gn44GN44G+44GZDQoNCuaVrOWFt+OAgQ0KDQpNaXMgTWFyaWFtIE1h
+YWxvdWYNCg==
