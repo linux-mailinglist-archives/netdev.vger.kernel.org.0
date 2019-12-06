@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D78114B69
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 04:28:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBA0114B70
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 04:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfLFD2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 22:28:38 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34200 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbfLFD2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 22:28:38 -0500
-Received: by mail-pg1-f193.google.com with SMTP id r11so2586022pgf.1;
-        Thu, 05 Dec 2019 19:28:38 -0800 (PST)
+        id S1726480AbfLFDcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 22:32:43 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34869 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbfLFDcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 22:32:42 -0500
+Received: by mail-pf1-f194.google.com with SMTP id b19so2617869pfo.2;
+        Thu, 05 Dec 2019 19:32:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=g7BCeZW0eolz9mWYsM2Q9t0SlTAX6lptP6pm+0Vxcs8=;
-        b=fDzeh5ehTw0M3ztiABA4jATIwp0MVhQmyDl6Q2TBPc+domKJvbjT4U65uaHkNbJXZS
-         s+NKpsh+esuL6WVcDGh+XGQAN/mh+Z8E51/MEUsro5dPRA998pOAr2eUXhfZc5p80hoa
-         oYs4MaMPwcifZ7tWvXdr3BuQuVB7BaLB2itv/MmhT6fLf/RM1LeXl01gXxBU1EAKyUK2
-         3CxGMriJMDY6jZCASUPwTDVqceXS1PZSG02N3vvC05TefQVWxd5wWKNiEq+BZucqXa2C
-         KvDJWK/yWytMmKJeL1E7nxyjBZkijFKc/KlXlbOzZKLC5GuiI7heu8xVgnvyGWwgMqIx
-         zaqw==
+        bh=wXs99blA+i0iIjqGzFrum27cREDNDIw0rigJd8VFl5o=;
+        b=M9Fp9gtNyHznskp8psxkRLbdb38v3LOZrSnsogcZmut1afyJcvuBYJCmd/o/nG+bQk
+         GThJ/IlJIGqZx2pwmEbXZtYMSakznMKhbDA4TeHDD4PngLq+vU7BHlAjEA8dTBAXPoZg
+         AEjup6rZoWgoMmmZnsHxnbFwjm8LJB4CByhjAe6pwU8DGY4Sa0HOaNIMpD9n1RKFrzi6
+         qd53bwAICkOaE0VgMbUsm8f0dJEFivT3FjKnhU9ZSEj+9wpO9pTY/0Qn+tjeo/L11HXw
+         VJhh7ceYDEuzie5gxisNsXdGgMJB90T36jzTQl5nb2eb8lfaMQRvZY2DmEH/002dYl6b
+         QKjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=g7BCeZW0eolz9mWYsM2Q9t0SlTAX6lptP6pm+0Vxcs8=;
-        b=TkFXytnbNzyu86+/aaiE4T0cn+FMmUxWM3ZJQyNK0C6syPXY/fytMkYpx23ywyJOKp
-         gaX0vVJr17iDIGCKPlhTSI4uLgijfOVLLyxCfhvJDY16jo5bP+37eWqFL0Zgdon+7vxi
-         4kwSOegAt9Am6tP8P6e+apYnKxOxMebcRuvAr28bGK/u+F7GmoIG3KRk3F44+v0+Nddk
-         ukWS8hlJEdw9NZHi4e9nykpwbJ/Z6zNmu0X2/Smk3xFiWi2k7sewlT5NoGtLZT1u4uhu
-         AgJ/o5lYLdnj/61WSiaZ9m5cvP/UV0TN1I85A9IjRhDozjga9sxEGQurcu1eBa2SGjZY
-         1uOw==
-X-Gm-Message-State: APjAAAUdQAT3e1Re2zswi99STtg3+F4lDk2anxSy62yqAHqvAYn1kJC5
-        qD2KdJh9KEZIXcyqLdfzZKb+ck/J
-X-Google-Smtp-Source: APXvYqyk/nqNluKyrK647I+ClZ58nNnLGPJ9B8OC2lyoF6nFm2dhR9HS4p9Xf5AC1zBvch2u06Ig9g==
-X-Received: by 2002:a63:d551:: with SMTP id v17mr1134830pgi.365.1575602917284;
-        Thu, 05 Dec 2019 19:28:37 -0800 (PST)
+        bh=wXs99blA+i0iIjqGzFrum27cREDNDIw0rigJd8VFl5o=;
+        b=VhvmtTGwVSTX6zgQrD+WxrzL3XBYTkIm46Uf4s21rIQd6lc7LTlCZvpO63gi41hmVt
+         I6Iv6QfKr+ZNK1qSrbfM4TI/azGf/E8Pq/t37YT9uyaucQm6tSvmpDNcxprxHVs0jwOt
+         FF9gaqllPae1dY1SbzjhcdZLH8pqJ/kTLhVwfy9WZzHlALRiXetoeu/rCBY744hUF045
+         HhlZmcdv4Ncz5NzPiF1gcSoDgcwtzH/oZxBlIueffhdjcTUHzmumMh5TWTfKIPhD47gw
+         Gi3AfOup9dFPDmC4je+qxnI6x2CWpynV/WvjQuC6rTsuDMdiWKPT2hc44bgUoInSYKbg
+         Kqcg==
+X-Gm-Message-State: APjAAAUaV0bGa1/RiXR5dkbonEr0nHRGN32GzhzVfLRTy7XhYQyr5vZa
+        +Zg21cQ+wQY0po5ZQpfKnvgpB90d
+X-Google-Smtp-Source: APXvYqzlB1q8GggXzb2/lHaJDpOeKk2cyQUQynuRuMhdD09rX48XB72KriB2C9G2Ih1mAMHlNNDSgQ==
+X-Received: by 2002:a63:5a5c:: with SMTP id k28mr1114657pgm.183.1575603161506;
+        Thu, 05 Dec 2019 19:32:41 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id x186sm13378911pfx.105.2019.12.05.19.28.35
+        by smtp.gmail.com with ESMTPSA id s130sm13034750pgc.82.2019.12.05.19.32.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 19:28:36 -0800 (PST)
+        Thu, 05 Dec 2019 19:32:40 -0800 (PST)
 Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
-To:     Alexander Lobakin <alobakin@dlink.ru>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Muciri Gatimu <muciri@openmesh.com>,
+To:     Alexander Lobakin <alobakin@dlink.ru>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Muciri Gatimu <muciri@openmesh.com>,
         Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
-        John Crispin <john@phrozen.org>, Andrew Lunn <andrew@lunn.ch>,
+        John Crispin <john@phrozen.org>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Stanislav Fomichev <sdf@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -63,6 +63,8 @@ Cc:     Muciri Gatimu <muciri@openmesh.com>,
         Yoshiki Komachi <komachi.yoshiki@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20191205100235.14195-1-alobakin@dlink.ru>
+ <20191205125827.GA28269@lunn.ch> <2e03b82a8ec999fade26253ff35077c6@dlink.ru>
+ <20191205140132.GD28269@lunn.ch> <72a21c5f03abdc3d2d1c1bb85fd4489d@dlink.ru>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -118,15 +120,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <5d3d0907-4f99-ccda-82f4-12e514c5edb2@gmail.com>
-Date:   Thu, 5 Dec 2019 19:28:32 -0800
+Message-ID: <3cc7a0c3-4eeb-52d5-1777-f646329a9303@gmail.com>
+Date:   Thu, 5 Dec 2019 19:32:38 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191205100235.14195-1-alobakin@dlink.ru>
+In-Reply-To: <72a21c5f03abdc3d2d1c1bb85fd4489d@dlink.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -134,91 +136,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/5/2019 2:02 AM, Alexander Lobakin wrote:
-> Commit 43e665287f93 ("net-next: dsa: fix flow dissection") added an
-> ability to override protocol and network offset during flow dissection
-> for DSA-enabled devices (i.e. controllers shipped as switch CPU ports)
-> in order to fix skb hashing for RPS on Rx path.
+On 12/5/2019 6:58 AM, Alexander Lobakin wrote:
+> Andrew Lunn wrote 05.12.2019 17:01:
+>>> Hi,
+>>>
+>>> > What i'm missing here is an explanation why the flow dissector is
+>>> > called here if the protocol is already set? It suggests there is a
+>>> > case when the protocol is not correctly set, and we do need to look
+>>> > into the frame?
+>>>
+>>> If we have a device with multiple Tx queues, but XPS is not configured
+>>> or system is running on uniprocessor system, then networking core code
+>>> selects Tx queue depending on the flow to utilize as much Tx queues as
+>>> possible but without breaking frames order.
+>>> This selection happens in net/core/dev.c:skb_tx_hash() as:
+>>>
+>>> reciprocal_scale(skb_get_hash(skb), qcount)
+>>>
+>>> where 'qcount' is the total number of Tx queues on the network device.
+>>>
+>>> If skb has not been hashed prior to this line, then skb_get_hash() will
+>>> call flow dissector to generate a new hash. That's why flow dissection
+>>> can occur on Tx path.
+>>
+>>
+>> Hi Alexander
+>>
+>> So it looks like you are now skipping this hash. Which in your
+>> testing, give better results, because the protocol is already set
+>> correctly. But are there cases when the protocol is not set correctly?
+>> We really do need to look into the frame?
 > 
-> However, skb_hash() and added part of code can be invoked not only on
-> Rx, but also on Tx path if we have a multi-queued device and:
->  - kernel is running on UP system or
->  - XPS is not configured.
+> Actually no, I'm not skipping the entire hashing, I'm only skipping
+> tag_ops->flow_dissect() (helper that only alters network offset and
+> replaces fake ETH_P_XDSA with the actual protocol) call on Tx path,
+> because this only breaks flow dissection logics. All skbs are still
+> processed and hashed by the generic code that goes after that call.
 > 
-> The call stack in this two cases will be like: dev_queue_xmit() ->
-> __dev_queue_xmit() -> netdev_core_pick_tx() -> netdev_pick_tx() ->
-> skb_tx_hash() -> skb_get_hash().
+>> How about when an outer header has just been removed? The frame was
+>> received on a GRE tunnel, the GRE header has just been removed, and
+>> now the frame is on its way out? Is the protocol still GRE, and we
+>> should look into the frame to determine if it is IPv4, ARP etc?
+>>
+>> Your patch looks to improve things for the cases you have tested, but
+>> i'm wondering if there are other use cases where we really do need to
+>> look into the frame? In which case, your fix is doing the wrong thing.
+>> Should we be extending the tagger to handle the TX case as well as the
+>> RX case?
 > 
-> The problem is that skbs queued for Tx have both network offset and
-> correct protocol already set up even after inserting a CPU tag by DSA
-> tagger, so calling tag_ops->flow_dissect() on this path actually only
-> breaks flow dissection and hashing.
+> We really have two options: don't call tag_ops->flow_dissect() on Tx
+> (this patch), or extend tagger callbacks to handle Tx path too. I was
+> using both of this for several months each and couldn't detect cases
+> where the first one was worse than the second.
+> I mean, there _might_ be such cases in theory, and if they will appear
+> we should extend our taggers. But for now I don't see the necessity to
+> do this as generic flow dissection logics works as expected after this
+> patch and is completely broken without it.
+> And remember that we have the reverse logic on Tx and all skbs are
+> firstly queued on slave netdevice and only then on master/CPU port.
 > 
-> This can be observed by adding debug prints just before and right after
-> tag_ops->flow_dissect() call to the related block of code:
-> 
-> Before the patch:
-> 
-> Rx path (RPS):
-> 
-> [   19.240001] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   19.244271] tag_ops->flow_dissect()
-> [   19.247811] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
-> 
-> [   19.215435] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   19.219746] tag_ops->flow_dissect()
-> [   19.223241] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
-> 
-> [   18.654057] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   18.658332] tag_ops->flow_dissect()
-> [   18.661826] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
-> 
-> Tx path (UP system):
-> 
-> [   18.759560] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
-> [   18.763933] tag_ops->flow_dissect()
-> [   18.767485] Tx: proto: 0x920b, nhoff: 34	/* junk */
-> 
-> [   22.800020] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
-> [   22.804392] tag_ops->flow_dissect()
-> [   22.807921] Tx: proto: 0x920b, nhoff: 34	/* junk */
-> 
-> [   16.898342] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
-> [   16.902705] tag_ops->flow_dissect()
-> [   16.906227] Tx: proto: 0x920b, nhoff: 34	/* junk */
-> 
-> After:
-> 
-> Rx path (RPS):
-> 
-> [   16.520993] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   16.525260] tag_ops->flow_dissect()
-> [   16.528808] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
-> 
-> [   15.484807] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   15.490417] tag_ops->flow_dissect()
-> [   15.495223] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
-> 
-> [   17.134621] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
-> [   17.138895] tag_ops->flow_dissect()
-> [   17.142388] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
-> 
-> Tx path (UP system):
-> 
-> [   15.499558] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
-> 
-> [   20.664689] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
-> 
-> [   18.565782] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
-> 
-> In order to fix that we can add the check 'proto == htons(ETH_P_XDSA)'
-> to prevent code from calling tag_ops->flow_dissect() on Tx.
-> I also decided to initialize 'offset' variable so tagger callbacks can
-> now safely leave it untouched without provoking a chaos.
-> 
-> Fixes: 43e665287f93 ("net-next: dsa: fix flow dissection")
-> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+> It would be nice to see what other people think about it anyways.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Your patch seems appropriate to me and quite frankly I am not sure why
+flow dissection on RX is done at the DSA master device level, where we
+have not parsed the DSA tag yet, instead of being done at the DSA slave
+network device level. It seems to me that if the DSA master has N RX
+queues, we should be creating the DSA slave devices with the same amount
+of RX queues and perform RPS there against a standard Ethernet frame
+(sans DSA tag).
+
+For TX the story is a little different because we can have multiqueue
+DSA slave network devices in order to steer traffic towards particular
+switch queues and we could do XPS there that way.
+
+What do you think?
 -- 
 Florian
