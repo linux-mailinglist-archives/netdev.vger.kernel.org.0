@@ -2,86 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F38361157AF
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 20:19:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E744D1157C2
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 20:25:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbfLFTSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 14:18:51 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44119 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfLFTSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 14:18:49 -0500
-Received: by mail-pf1-f193.google.com with SMTP id d199so3804720pfd.11;
-        Fri, 06 Dec 2019 11:18:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:to:cc:cc:cc:subject
-         :references:in-reply-to;
-        bh=gv9fsA6Ao/pebDnTI1hmSbmmPR6XS0w88Vxh8VJ2D7U=;
-        b=RpTaUzRZvghYPxU0ZAERA+PqOQ5ObyBJk5E4gvl76rNbfS4L7RyCU/9y/5G7NxsXxh
-         w0YNElLtCdza4X+tgG0RbVJMHAQHlZERO1P0mDvVWrgJF9Yy2uI+ULqmvmiXqYNgqraV
-         i1E/VbUeyydz5WEUNrapWI/NxrqxyvgA/lc6GsqOhdh/VakTN2v4BnuxYXzNOI2vMFN+
-         /BFyu7OTZIxFMffR3f5x09QGtIEuES1n2QjlSvL9QpW9KyV6mwGFlLBMOargsNTIskkE
-         JoX8eYU1Xb9txqRdsXuWkpAwGXUFyIPmhIF6bL/Fbu61GIvIDYVUadJnIIl6v+twzkVO
-         ziiA==
-X-Gm-Message-State: APjAAAXVZqxZPfn671wg30zsC3OnWQk0g/9PyYJagqykgMB63+V5wPAR
-        1OIlzzRotTdkW7WWo4Bmqqk=
-X-Google-Smtp-Source: APXvYqyvoLWWIxFLFCrxMQlx3rIouun1f9/M6m8GVOeFSgwMyLKkc5DixpR+L8+xuyX/dZYgb0ZBHg==
-X-Received: by 2002:a63:4b52:: with SMTP id k18mr5207178pgl.371.1575659928396;
-        Fri, 06 Dec 2019 11:18:48 -0800 (PST)
-Received: from localhost (MIPS-TECHNO.ear1.SanJose1.Level3.net. [4.15.122.74])
-        by smtp.gmail.com with ESMTPSA id z26sm15634408pgu.80.2019.12.06.11.18.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Dec 2019 11:18:47 -0800 (PST)
-Message-ID: <5deaa997.1c69fb81.4d5ed.a377@mx.google.com>
-Date:   Fri, 06 Dec 2019 11:18:47 -0800
-From:   Paul Burton <paulburton@kernel.org>
-To:     Alexander Lobakin <alobakin@dlink.ru>
-CC:     Paul Burton <paulburton@kernel.org>
-CC:     Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Hassan Naveed <hnaveed@wavecomp.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, stable@vger.kernel.org
-CC:     linux-mips@vger.kernel.org
-Subject: Re: [PATCH mips-fixes] MIPS: BPF: eBPF JIT: check for MIPS ISA compliance  in Kconfig
-References:  <20191206080741.12306-1-alobakin@dlink.ru>
-In-Reply-To:  <20191206080741.12306-1-alobakin@dlink.ru>
+        id S1726795AbfLFTZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 14:25:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54426 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726780AbfLFTZe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 14:25:34 -0500
+Subject: Re: [GIT PULL] Block/io_uring fixes and changes for 5.5-rc1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575660334;
+        bh=I4tPPkfvhLshAyjTJeBy4FJCRBGCykaQm0xegKYnRlE=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=VBeVJwhBqkLvleMiRc8bfsqXDh6/a6mKFFYY4wkJWzx7myUi4KT/HLSgLiVyGEzQ6
+         LOjQisO09T9bUaxEstk9l463xDk/4IgiEUtSj0G+RT7g5cyL13NDOOgcH+fP0Vur6r
+         WHK3HmQQwruGpGMh+tczW7J1O0xrApvoi6hvDsbI=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <01d2e4de-c834-dd52-e28d-3ff75ca5cd34@kernel.dk>
+References: <01d2e4de-c834-dd52-e28d-3ff75ca5cd34@kernel.dk>
+X-PR-Tracked-List-Id: <linux-block.vger.kernel.org>
+X-PR-Tracked-Message-Id: <01d2e4de-c834-dd52-e28d-3ff75ca5cd34@kernel.dk>
+X-PR-Tracked-Remote: git://git.kernel.dk/linux-block.git
+ tags/for-linus-20191205
+X-PR-Tracked-Commit-Id: 8539429917c48c994d2e2cafa02ab06587b3b42c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9feb1af97e7366b512ecb9e4dd61d3252074cda3
+Message-Id: <157566033397.16317.17317159585012617980.pr-tracker-bot@kernel.org>
+Date:   Fri, 06 Dec 2019 19:25:33 +0000
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        io-uring <io-uring@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The pull request you sent on Thu, 5 Dec 2019 19:23:25 -0700:
 
-Alexander Lobakin wrote:
-> It is completely wrong to check for compile-time MIPS ISA revision in
-> the body of bpf_int_jit_compile() as it may lead to get MIPS JIT fully
-> omitted by the CC while the rest system will think that the JIT is
-> actually present and works [1].
-> We can check if the selected CPU really supports MIPS eBPF JIT at
-> configure time and avoid such situations when kernel can be built
-> without both JIT and interpreter, but with CONFIG_BPF_SYSCALL=y.
-> 
-> [1] https://lore.kernel.org/linux-mips/09d713a59665d745e21d021deeaebe0a@dlink.ru/
+> git://git.kernel.dk/linux-block.git tags/for-linus-20191205
 
-Applied to mips-fixes.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9feb1af97e7366b512ecb9e4dd61d3252074cda3
 
-> commit 3721376d7d02
-> https://git.kernel.org/mips/c/3721376d7d02
-> 
-> Fixes: 716850ab104d ("MIPS: eBPF: Initial eBPF support for MIPS32 architecture.")
-> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-> Signed-off-by: Paul Burton <paulburton@kernel.org>
+Thank you!
 
-Thanks,
-    Paul
-
-[ This message was auto-generated; if you believe anything is incorrect
-  then please email paulburton@kernel.org to report it. ]
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
