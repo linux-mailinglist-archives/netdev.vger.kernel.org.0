@@ -2,212 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79289114C0C
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 06:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3D7114C53
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbfLFFZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 00:25:57 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37618 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfLFFZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 00:25:56 -0500
-Received: by mail-pf1-f196.google.com with SMTP id s18so2743646pfm.4
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 21:25:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YKcJynY5f8hLkNubR0Zc5eAvOlkd3z4NDQze/y/1Ipw=;
-        b=HQFFdTGGN+QsLSFlUiWjMaTDErLvW0oqVq6kpP2g1kGsGhgByyN+JFCvgSBtckM5zC
-         oz56CTMspRPcYIDveslJT5jlrwfuGZnnXzcn8RPv2REmKzPQOfESf9xLtf1zD9KA+csK
-         yeHz+jWc91d8MnQHME4V1uKCnOhe6lk1udiB7Uv14rv7ztulhKjh7IWA0M3IMR47KbnU
-         4XCRn4ZfaThyaX4rDNPYpv6ffaohoDKu6d7lidpX+liwHSq72m+obGzWSi/sdg8NTuh0
-         Xvt05tpsqUd8T11eMaPZ4RpS6clSS3IdpzovtR2vBcqJ8rOuFGrCqSivbGndrxNh19sj
-         Jh4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YKcJynY5f8hLkNubR0Zc5eAvOlkd3z4NDQze/y/1Ipw=;
-        b=cQBVON+ubsFEXmCH7HNsPabQEJrzOpoOuRFnbItVwSok2CVMT7vBRrU86/sRXIsBNw
-         fccSjzBYplwyYEgtw2swyFWwD7FuU0biQDF7QEwUfIV22wZUe0p7NeCh0Ie4+3v/x7Xl
-         b8NKjIJnY6TQ7O3rBkVYuoRRqAFjLO4X6DIqrgY9LDUeNKLUzyVL+K09C7f5jXmKJYo5
-         hYhb+Zj5whA7NFykgrFHL6mR6XFC0GdSAOnGeoBs+gVTNI7JeAYjikyK5rn6GO0Mgbd7
-         FCbs/6I2d7OUrTGoqNuDDv4D3moRNcI67pWZGgoVdcOngNdURKhHs4kWbeoLrboTKoeX
-         xs5A==
-X-Gm-Message-State: APjAAAUWKHGh37wKNyCCi+gbsQZzgrASoEjYGaBICC2fUd8dNUSb97p0
-        In3+rJDaMk/SQFEiCDsNqCA=
-X-Google-Smtp-Source: APXvYqxYSKE5TNdfV/uCPE89jyFslUXXkVS2a5/+uHAIMpXzFd0YgUqjcAnviDZ+vGBgPRILteFkAw==
-X-Received: by 2002:a63:5243:: with SMTP id s3mr1458265pgl.449.1575609955916;
-        Thu, 05 Dec 2019 21:25:55 -0800 (PST)
-Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id s1sm13865658pgk.9.2019.12.05.21.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 21:25:55 -0800 (PST)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, jon.maloy@ericsson.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH v2 net] tipc: fix ordering of tipc module init and exit routine
-Date:   Fri,  6 Dec 2019 05:25:48 +0000
-Message-Id: <20191206052548.14693-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726193AbfLFGTC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 6 Dec 2019 01:19:02 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31322 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726104AbfLFGTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:19:02 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xB66EqN6016367
+        for <netdev@vger.kernel.org>; Thu, 5 Dec 2019 22:19:00 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0089730.ppops.net with ESMTP id 2wpywy4w82-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 22:19:00 -0800
+Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 5 Dec 2019 22:18:58 -0800
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 6286F760AFF; Thu,  5 Dec 2019 22:18:57 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: pull-request: bpf 2019-12-05
+Date:   Thu, 5 Dec 2019 22:18:57 -0800
+Message-ID: <20191206061857.3660737-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-06_01:2019-12-04,2019-12-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 mlxscore=0
+ suspectscore=1 priorityscore=1501 clxscore=1015 mlxlogscore=999
+ phishscore=0 malwarescore=0 bulkscore=0 impostorscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912060054
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to set/get/dump, the tipc uses the generic netlink
-infrastructure. So, when tipc module is inserted, init function
-calls genl_register_family().
-After genl_register_family(), set/get/dump commands are immediately
-allowed and these callbacks internally use the net_generic.
-net_generic is allocated by register_pernet_device() but this
-is called after genl_register_family() in the __init function.
-So, these callbacks would use un-initialized net_generic.
+Hi David,
 
-Test commands:
-    #SHELL1
-    while :
-    do
-        modprobe tipc
-        modprobe -rv tipc
-    done
+The following pull-request contains BPF updates for your *net* tree.
 
-    #SHELL2
-    while :
-    do
-        tipc link list
-    done
+We've added 6 non-merge commits during the last 1 day(s) which contain
+a total of 14 files changed, 116 insertions(+), 37 deletions(-).
 
-Splat looks like:
-[   59.616322][ T2788] kasan: CONFIG_KASAN_INLINE enabled
-[   59.617234][ T2788] kasan: GPF could be caused by NULL-ptr deref or user memory access
-[   59.618398][ T2788] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
-[   59.619389][ T2788] CPU: 3 PID: 2788 Comm: tipc Not tainted 5.4.0+ #194
-[   59.620231][ T2788] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[   59.621428][ T2788] RIP: 0010:tipc_bcast_get_broadcast_mode+0x131/0x310 [tipc]
-[   59.622379][ T2788] Code: c7 c6 ef 8b 38 c0 65 ff 0d 84 83 c9 3f e8 d7 a5 f2 e3 48 8d bb 38 11 00 00 48 b8 00 00 00 00
-[   59.622550][ T2780] NET: Registered protocol family 30
-[   59.624627][ T2788] RSP: 0018:ffff88804b09f578 EFLAGS: 00010202
-[   59.624630][ T2788] RAX: dffffc0000000000 RBX: 0000000000000011 RCX: 000000008bc66907
-[   59.624631][ T2788] RDX: 0000000000000229 RSI: 000000004b3cf4cc RDI: 0000000000001149
-[   59.624633][ T2788] RBP: ffff88804b09f588 R08: 0000000000000003 R09: fffffbfff4fb3df1
-[   59.624635][ T2788] R10: fffffbfff50318f8 R11: ffff888066cadc18 R12: ffffffffa6cc2f40
-[   59.624637][ T2788] R13: 1ffff11009613eba R14: ffff8880662e9328 R15: ffff8880662e9328
-[   59.624639][ T2788] FS:  00007f57d8f7b740(0000) GS:ffff88806cc00000(0000) knlGS:0000000000000000
-[   59.624645][ T2788] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   59.625875][ T2780] tipc: Started in single node mode
-[   59.626128][ T2788] CR2: 00007f57d887a8c0 CR3: 000000004b140002 CR4: 00000000000606e0
-[   59.633991][ T2788] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   59.635195][ T2788] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   59.636478][ T2788] Call Trace:
-[   59.637025][ T2788]  tipc_nl_add_bc_link+0x179/0x1470 [tipc]
-[   59.638219][ T2788]  ? lock_downgrade+0x6e0/0x6e0
-[   59.638923][ T2788]  ? __tipc_nl_add_link+0xf90/0xf90 [tipc]
-[   59.639533][ T2788]  ? tipc_nl_node_dump_link+0x318/0xa50 [tipc]
-[   59.640160][ T2788]  ? mutex_lock_io_nested+0x1380/0x1380
-[   59.640746][ T2788]  tipc_nl_node_dump_link+0x4fd/0xa50 [tipc]
-[   59.641356][ T2788]  ? tipc_nl_node_reset_link_stats+0x340/0x340 [tipc]
-[   59.642088][ T2788]  ? __skb_ext_del+0x270/0x270
-[   59.642594][ T2788]  genl_lock_dumpit+0x85/0xb0
-[   59.643050][ T2788]  netlink_dump+0x49c/0xed0
-[   59.643529][ T2788]  ? __netlink_sendskb+0xc0/0xc0
-[   59.644044][ T2788]  ? __netlink_dump_start+0x190/0x800
-[   59.644617][ T2788]  ? __mutex_unlock_slowpath+0xd0/0x670
-[   59.645177][ T2788]  __netlink_dump_start+0x5a0/0x800
-[   59.645692][ T2788]  genl_rcv_msg+0xa75/0xe90
-[   59.646144][ T2788]  ? __lock_acquire+0xdfe/0x3de0
-[   59.646692][ T2788]  ? genl_family_rcv_msg_attrs_parse+0x320/0x320
-[   59.647340][ T2788]  ? genl_lock_dumpit+0xb0/0xb0
-[   59.647821][ T2788]  ? genl_unlock+0x20/0x20
-[   59.648290][ T2788]  ? genl_parallel_done+0xe0/0xe0
-[   59.648787][ T2788]  ? find_held_lock+0x39/0x1d0
-[   59.649276][ T2788]  ? genl_rcv+0x15/0x40
-[   59.649722][ T2788]  ? lock_contended+0xcd0/0xcd0
-[   59.650296][ T2788]  netlink_rcv_skb+0x121/0x350
-[   59.650828][ T2788]  ? genl_family_rcv_msg_attrs_parse+0x320/0x320
-[   59.651491][ T2788]  ? netlink_ack+0x940/0x940
-[   59.651953][ T2788]  ? lock_acquire+0x164/0x3b0
-[   59.652449][ T2788]  genl_rcv+0x24/0x40
-[   59.652841][ T2788]  netlink_unicast+0x421/0x600
-[ ... ]
+The main changes are:
 
-Fixes: 7e4369057806 ("tipc: fix a slab object leak")
-Fixes: a62fbccecd62 ("tipc: make subscriber server support net namespace")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
+1) three selftests fixes, from Stanislav.
 
-v1 -> v2 : move tipc_netlink_compat_stop() too
+2) one samples fix, from Jesper.
 
- net/tipc/core.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+3) one verifier fix, from Yonghong.
 
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index 7532a00ac73d..4f6dc74adf45 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -148,14 +148,6 @@ static int __init tipc_init(void)
- 	sysctl_tipc_rmem[1] = RCVBUF_DEF;
- 	sysctl_tipc_rmem[2] = RCVBUF_MAX;
- 
--	err = tipc_netlink_start();
--	if (err)
--		goto out_netlink;
--
--	err = tipc_netlink_compat_start();
--	if (err)
--		goto out_netlink_compat;
--
- 	err = tipc_register_sysctl();
- 	if (err)
- 		goto out_sysctl;
-@@ -180,8 +172,21 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_bearer;
- 
-+	err = tipc_netlink_start();
-+	if (err)
-+		goto out_netlink;
-+
-+	err = tipc_netlink_compat_start();
-+	if (err)
-+		goto out_netlink_compat;
-+
- 	pr_info("Started in single node mode\n");
- 	return 0;
-+
-+out_netlink_compat:
-+	tipc_netlink_stop();
-+out_netlink:
-+	tipc_bearer_cleanup();
- out_bearer:
- 	unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
- out_register_pernet_subsys:
-@@ -193,23 +198,19 @@ static int __init tipc_init(void)
- out_pernet:
- 	tipc_unregister_sysctl();
- out_sysctl:
--	tipc_netlink_compat_stop();
--out_netlink_compat:
--	tipc_netlink_stop();
--out_netlink:
- 	pr_err("Unable to start in single node mode\n");
- 	return err;
- }
- 
- static void __exit tipc_exit(void)
- {
-+	tipc_netlink_compat_stop();
-+	tipc_netlink_stop();
- 	tipc_bearer_cleanup();
- 	unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
- 	unregister_pernet_device(&tipc_topsrv_net_ops);
- 	tipc_socket_stop();
- 	unregister_pernet_device(&tipc_net_ops);
--	tipc_netlink_stop();
--	tipc_netlink_compat_stop();
- 	tipc_unregister_sysctl();
- 
- 	pr_info("Deactivated\n");
--- 
-2.17.1
+Please consider pulling these changes from:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Eelco Chaudron, Toke Høiland-Jørgensen
+
+----------------------------------------------------------------
+
+The following changes since commit 099ffd7eddfe03b9b5b43e1f4ffece99121dd7ba:
+
+  NFC: NCI: use new `delay` structure for SPI transfer delays (2019-12-04 17:00:58 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 8f9081c92523328aa569d09051add79a6c0ae9ff:
+
+  selftests/bpf: Add a fexit/bpf2bpf test with target bpf prog no callees (2019-12-04 21:34:42 -0800)
+
+----------------------------------------------------------------
+Jesper Dangaard Brouer (1):
+      samples/bpf: Fix broken xdp_rxq_info due to map order assumptions
+
+Stanislav Fomichev (3):
+      selftests/bpf: Don't hard-code root cgroup id
+      selftests/bpf: Bring back c++ include/link test
+      selftests/bpf: De-flake test_tcpbpf
+
+Yonghong Song (2):
+      bpf: Fix a bug when getting subprog 0 jited image in check_attach_btf_id
+      selftests/bpf: Add a fexit/bpf2bpf test with target bpf prog no callees
+
+ kernel/bpf/verifier.c                              |  5 +-
+ samples/bpf/xdp_rxq_info_user.c                    |  6 +-
+ tools/lib/bpf/.gitignore                           |  1 -
+ tools/lib/bpf/Makefile                             |  5 +-
+ tools/testing/selftests/bpf/.gitignore             |  1 +
+ tools/testing/selftests/bpf/Makefile               |  6 +-
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 70 ++++++++++++++++------
+ .../selftests/bpf/progs/fexit_bpf2bpf_simple.c     | 26 ++++++++
+ .../selftests/bpf/progs/test_pkt_md_access.c       |  4 +-
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |  1 +
+ .../selftests/bpf/test_cpp.cpp}                    |  0
+ .../selftests/bpf/test_skb_cgroup_id_user.c        |  2 +-
+ tools/testing/selftests/bpf/test_tcpbpf.h          |  1 +
+ tools/testing/selftests/bpf/test_tcpbpf_user.c     | 25 +++++---
+ 14 files changed, 116 insertions(+), 37 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
+ rename tools/{lib/bpf/test_libbpf.c => testing/selftests/bpf/test_cpp.cpp} (100%)
