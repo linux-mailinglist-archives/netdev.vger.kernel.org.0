@@ -2,170 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 016B5114C65
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C547E114C74
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbfLFGjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 01:39:48 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:45078 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbfLFGjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:39:48 -0500
-Received: by mail-pl1-f194.google.com with SMTP id w7so2285162plz.12;
-        Thu, 05 Dec 2019 22:39:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PnshtQ+DzSYB1m1s28YhSp8Zch6aeX4Qzf6E+sbGNmo=;
-        b=V0CATjTs5ss1fAXSo5bWATeALS7lPYJIkaR9pZK7xjv+dw92RFc5wl4BIfvRvJKzTp
-         nUwC8e0mWh2IHlvV677ssfj8jHS1T0LvIG42N41uPRsiiKkowuPhGanjXnwzXeUK/iMT
-         fKvNFyUaU4s+tmKbWIEWCM63VzHMPaOuB3UU94F2TiqBtxHpaO2GZkFChsqt8Do86aJC
-         TiYi+gMoQYh8XJ5SfeA7GIVeqbMizBF1Jh19ZCjDqP7g706aeWeLvDrgCSFxb4/poJwe
-         WMQcZYLKn4UoZGErZaB6ZvYtsu1uCQUVQOjyVjAYtfxeK2y4/wdMG17jem5QALz8SdOG
-         MFxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PnshtQ+DzSYB1m1s28YhSp8Zch6aeX4Qzf6E+sbGNmo=;
-        b=NcIy6Da+9ZgY77H7k42caUhLEY77GWmfLIKr2lAvMYKkviCgWLs8F5lMByQma12WKq
-         80cjcaSrtgo/pRJWxK4zSnbeLU0La4M+Pr7oHbVdVNKq/rfEtUV60Cd+ua08wUf45Fna
-         XUB2Rb228mtGpPvywE+9IkJAgXMh3NXJEQDduYFW34VwZ8lnxpIr2XOeg8MiS9PoTjom
-         PLyrQ0l/oafAt/lL/oisaONb/AICplTlfC/cEb+DislqfDzTAmKr26a9T2IIYk0PY1jj
-         cnGhmVYzbwdOmLHpQf8YkYG+0AEW0rcLRC42Fh1L0tHeUDzefiBef9AX/a8mVeXSO1kp
-         PCoQ==
-X-Gm-Message-State: APjAAAW/zFJ5tqNOgM1PbBQOyDabsQY3mod2hApg2vR36KUEYnWKhJ08
-        AEkZ+UM6eG5jWmLv/a8jBystQYHV
-X-Google-Smtp-Source: APXvYqxIDjbtlEDF9USGivZjgPtRtUc5jVe6auF3YFJtnwos7C2FzEiVwPRfq3vgfXYVNHaDrIzbkQ==
-X-Received: by 2002:a17:90a:9f85:: with SMTP id o5mr2442419pjp.0.1575614387092;
-        Thu, 05 Dec 2019 22:39:47 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::3f95])
-        by smtp.gmail.com with ESMTPSA id v29sm13336847pgl.88.2019.12.05.22.39.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 05 Dec 2019 22:39:46 -0800 (PST)
-Date:   Thu, 5 Dec 2019 22:39:44 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, peterz@infradead.org, mingo@redhat.com,
-        acme@kernel.org, linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf] bpf: Add LBR data to BPF_PROG_TYPE_PERF_EVENT prog
- context
-Message-ID: <20191206063942.5qd6opj6dfgqyxyx@ast-mbp.dhcp.thefacebook.com>
-References: <20191206001226.67825-1-dxu@dxuuu.xyz>
+        id S1726413AbfLFGxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 01:53:19 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:24179 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbfLFGxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:53:19 -0500
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20191206065316epoutp02e4ed5bd725a43c23cbaff5551cc20fbd~dtaxSSN2S3137431374epoutp02f
+        for <netdev@vger.kernel.org>; Fri,  6 Dec 2019 06:53:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20191206065316epoutp02e4ed5bd725a43c23cbaff5551cc20fbd~dtaxSSN2S3137431374epoutp02f
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1575615196;
+        bh=6q2km7P8W0ptCfUIkh6mVjoU06ki9p4x8jz4+H3ttQo=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=SRwIwQRP14k5Dg6/N0cUEM279O6m/r/AW2nN11q0rtFP5jlwmlZONjjdAyBCcu0PI
+         YDY0+55eDGbhTvoU+toHHVBCN1Y2dQ71MrTp7eWrtTFkfd5PsR6mnUVoB6xH0GTKDZ
+         hdWSUjghf5MBDO7/vMhEqHTBWJOrQf8MGH3d2l/c=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20191206065315epcas5p2180d84f4c9ea4632e3757033938b176e~dtaw3J-zS0235302353epcas5p2p;
+        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        55.0C.19726.BDAF9ED5; Fri,  6 Dec 2019 15:53:15 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20191206065315epcas5p31cea423889a39b4fc4b350fc0681fe7c~dtawYrgE12908629086epcas5p3H;
+        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20191206065315epsmtrp2b5dbafa8b0166cec4130e1416ceb3532~dtawX8Pkf3273732737epsmtrp2Z;
+        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
+X-AuditID: b6c32a49-7c1ff70000014d0e-30-5de9fadbd8d7
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A9.C1.06569.BDAF9ED5; Fri,  6 Dec 2019 15:53:15 +0900 (KST)
+Received: from pankjsharma02 (unknown [107.111.85.32]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20191206065313epsmtip143ccef58c0711e68d79f29240247ee72~dtavAIJ0r1340813408epsmtip1Q;
+        Fri,  6 Dec 2019 06:53:13 +0000 (GMT)
+From:   "pankj.sharma" <pankj.sharma@samsung.com>
+To:     "'Dan Murphy'" <dmurphy@ti.com>
+Cc:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <rcsekar@samsung.com>, <pankaj.dubey@samsung.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+Subject: RE: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
+Date:   Fri, 6 Dec 2019 12:23:11 +0530
+Message-ID: <021d01d5ac01$d55f1220$801d3660$@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191206001226.67825-1-dxu@dxuuu.xyz>
-User-Agent: NeoMutt/20180223
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-us
+Thread-Index: AQE7rWdEBMvebVKOOOKqXHxmn9mClwHtd6OFAaMRhhWoxCE6wA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOKsWRmVeSWpSXmKPExsWy7bCmlu7tXy9jDaYtN7GYc76FxaL79BZW
+        i1XfpzJbXN41h81i/aIpLBbHFohZLNr6hd1i1oUdrBZL7+1kdeD02LLyJpPHx0u3GT36/xp4
+        9G1Zxehx/MZ2Jo/Pm+QC2KK4bFJSczLLUov07RK4Mp7tOc9S8JS74vem96wNjB1cXYycHBIC
+        JhIvd2xn7GLk4hAS2M0o8eP7SxYI5xOjRM+NZ0wQzjdGiXmn1zPCtKx41sEGkdjLKLHn2252
+        COc1o8SHW0fZQKrYBPQlpjT9ZQGxRQSUJVY1nALrYBa4wihxeuoLsFGcAlYSfasWgRUJC3hK
+        rG9ey9rFyMHBIqAi0XBODsTkFbCUOPJDFaSCV0BQ4uTMJ2DVzALaEssWvmaGOEhB4ufTZawQ
+        cXGJl0ePsEOsdZI4f+oVK8haCYH/bBI3Zu5jAZkpIeAiMeFSAkSvsMSr41vYIWwpic/v9rJB
+        2NkSC3f3Q5VXSLTNEIYI20scuDIHLMwsoCmxfpc+xFY+id7fT5ggqnklOtqEIKrVJKY+fQcN
+        NRmJO482Qw33kJi84ADLBEbFWUj+moXkr1lIfpmFsGwBI8sqRsnUguLc9NRi0wLDvNRyveLE
+        3OLSvHS95PzcTYzg5KTluYNx1jmfQ4wCHIxKPLwzPr+IFWJNLCuuzD3EKMHBrCTCm873MlaI
+        NyWxsiq1KD++qDQntfgQozQHi5I47yTWqzFCAumJJanZqakFqUUwWSYOTqkGxszj7+e9Vtmp
+        zFXzqYDJ+dSzc1djeT210l7JMs09kH/w0F1z/0InRfa7wh/CZrjds2W1+3H2/KNHSvxfcsUj
+        Tb0P2By5sie5y/ZswknDLSVSvTll7/WCeiYedKt5UnpW9sLm2l23dr6Zv8Yh/WOzp83kC3oz
+        qqS4jR/G71B8q8WWsNHfZJWcthJLcUaioRZzUXEiANj0qoBKAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprNIsWRmVeSWpSXmKPExsWy7bCSnO7tXy9jDU7OFraYc76FxaL79BZW
+        i1XfpzJbXN41h81i/aIpLBbHFohZLNr6hd1i1oUdrBZL7+1kdeD02LLyJpPHx0u3GT36/xp4
+        9G1Zxehx/MZ2Jo/Pm+QC2KK4bFJSczLLUov07RK4Mh73eBS846q4P+8bYwPjDY4uRk4OCQET
+        iRXPOti6GLk4hAR2M0p8fbmDpYuRAyghI7H4czVEjbDEyn/P2SFqXjJKrL/6mxEkwSagLzGl
+        6S8LiC0ioCyxquEU2CBmgTuMEstPfoaaepxR4s6Df8wgVZwCVhJ9qxaBdQgLeEqsb17LCrKN
+        RUBFouGcHIjJK2ApceSHKkgFr4CgxMmZT8CqmQW0JZ7efApnL1v4mhniOAWJn0+XsULExSVe
+        Hj3CDnGPk8T5U69YJzAKz0IyahaSUbOQjJqFpH0BI8sqRsnUguLc9NxiwwKjvNRyveLE3OLS
+        vHS95PzcTYzgKNPS2sF44kT8IUYBDkYlHt4Zn1/ECrEmlhVX5h5ilOBgVhLhTed7GSvEm5JY
+        WZValB9fVJqTWnyIUZqDRUmcVz7/WKSQQHpiSWp2ampBahFMlomDU6qB0WOGT6B/UYJBnLa+
+        27I3Egt6m+4oaeiVbKp8+2dLgmLvztsv39u0qmjtYehbcfRkqSsve31rBJPpZIaZh+TeVXbf
+        fR9r1syjnr/C6foSzarLcy52i2378Yy/uOinz83LLJWHFyiYMIYHaPlt/LJEsiO9/kn9z8yo
+        5xu8HtU96n2qe1OyYfVhJZbijERDLeai4kQAEzTZGq4CAAA=
+X-CMS-MailID: 20191206065315epcas5p31cea423889a39b4fc4b350fc0681fe7c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5
+References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
+        <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
+        <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 04:12:26PM -0800, Daniel Xu wrote:
-> Last-branch-record is an intel CPU feature that can be configured to
-> record certain branches that are taken during code execution. This data
-> is particularly interesting for profile guided optimizations. perf has
-> had LBR support for a while but the data collection can be a bit coarse
-> grained.
-> 
-> We (Facebook) have recently run a lot of experiments with feeding
-> filtered LBR data to various PGO pipelines. We've seen really good
-> results (+2.5% throughput with lower cpu util and lower latency) by
-> feeding high request latency LBR branches to the compiler on a
-> request-oriented service. We used bpf to read a special request context
-> ID (which is how we associate branches with latency) from a fixed
-> userspace address. Reading from the fixed address is why bpf support is
-> useful.
-> 
-> Aside from this particular use case, having LBR data available to bpf
-> progs can be useful to get stack traces out of userspace applications
-> that omit frame pointers.
-> 
-> This patch adds support for LBR data to bpf perf progs.
-> 
-> Some notes:
-> * We use `__u64 entries[BPF_MAX_LBR_ENTRIES * 3]` instead of
->   `struct perf_branch_entry[BPF_MAX_LBR_ENTRIES]` because checkpatch.pl
->   warns about including a uapi header from another uapi header
-> 
-> * We define BPF_MAX_LBR_ENTRIES as 32 (instead of using the value from
->   arch/x86/events/perf_events.h) because including arch specific headers
->   seems wrong and could introduce circular header includes.
-> 
-> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-> ---
->  include/uapi/linux/bpf_perf_event.h |  5 ++++
->  kernel/trace/bpf_trace.c            | 39 +++++++++++++++++++++++++++++
->  2 files changed, 44 insertions(+)
-> 
-> diff --git a/include/uapi/linux/bpf_perf_event.h b/include/uapi/linux/bpf_perf_event.h
-> index eb1b9d21250c..dc87e3d50390 100644
-> --- a/include/uapi/linux/bpf_perf_event.h
-> +++ b/include/uapi/linux/bpf_perf_event.h
-> @@ -10,10 +10,15 @@
->  
->  #include <asm/bpf_perf_event.h>
->  
-> +#define BPF_MAX_LBR_ENTRIES 32
-> +
->  struct bpf_perf_event_data {
->  	bpf_user_pt_regs_t regs;
->  	__u64 sample_period;
->  	__u64 addr;
-> +	__u64 nr_lbr;
-> +	/* Cast to struct perf_branch_entry* before using */
-> +	__u64 entries[BPF_MAX_LBR_ENTRIES * 3];
->  };
->  
->  #endif /* _UAPI__LINUX_BPF_PERF_EVENT_H__ */
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index ffc91d4935ac..96ba7995b3d7 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1259,6 +1259,14 @@ static bool pe_prog_is_valid_access(int off, int size, enum bpf_access_type type
->  		if (!bpf_ctx_narrow_access_ok(off, size, size_u64))
->  			return false;
->  		break;
-> +	case bpf_ctx_range(struct bpf_perf_event_data, nr_lbr):
-> +		bpf_ctx_record_field_size(info, size_u64);
-> +		if (!bpf_ctx_narrow_access_ok(off, size, size_u64))
-> +			return false;
-> +		break;
-> +	case bpf_ctx_range(struct bpf_perf_event_data, entries):
-> +		/* No narrow loads */
-> +		break;
->  	default:
->  		if (size != sizeof(long))
->  			return false;
-> @@ -1273,6 +1281,7 @@ static u32 pe_prog_convert_ctx_access(enum bpf_access_type type,
->  				      struct bpf_prog *prog, u32 *target_size)
->  {
->  	struct bpf_insn *insn = insn_buf;
-> +	int off;
->  
->  	switch (si->off) {
->  	case offsetof(struct bpf_perf_event_data, sample_period):
-> @@ -1291,6 +1300,36 @@ static u32 pe_prog_convert_ctx_access(enum bpf_access_type type,
->  				      bpf_target_off(struct perf_sample_data, addr, 8,
->  						     target_size));
->  		break;
-> +	case offsetof(struct bpf_perf_event_data, nr_lbr):
-> +		/* Load struct perf_sample_data* */
-> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_perf_event_data_kern,
-> +						       data), si->dst_reg, si->src_reg,
-> +				      offsetof(struct bpf_perf_event_data_kern, data));
-> +		/* Load struct perf_branch_stack* */
-> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct perf_sample_data, br_stack),
-> +				      si->dst_reg, si->dst_reg,
-> +				      offsetof(struct perf_sample_data, br_stack));
 
-br_stack can be NULL.
-if != NULL check has to be emitted too.
 
-Otherwise looks good.
-Please add a selftest and resubmit when bpf-next reopens next week.
-
+> From: Dan Murphy <dmurphy=40ti.com>
+> Subject: Re: =5BPATCH 0/2=5D can: m_can_platform: Bug fix of kernel panic=
+ for
+>=20
+> Pankaj
+>=20
+> On 11/19/19 4:20 AM, Pankaj Sharma wrote:
+> > The current code is failing while clock prepare enable because of not
+> > getting proper clock from platform device.
+> > A device driver for CAN controller hardware registers itself with the
+> > Linux network layer as a network device. So, the driver data for m_can
+> > should ideally be of type net_device.
+> >
+> > Further even when passing the proper net device in probe function the
+> > code was hanging because of the function m_can_runtime_resume()
+> > getting recursively called from m_can_class_resume().
+> >
+> > Pankaj Sharma (2):
+> >    can: m_can_platform: set net_device structure as driver data
+> >    can: m_can_platform: remove unnecessary m_can_class_resume() call
+>=20
+> Did you CC: linux-stable for these?  We are probably going to have custom=
+ers
+> picking up 5.4 LTS and would need these bug fixes.
+Hello Dan,=20
+I haven=E2=80=99t=20copied=20to=20linux-stable,=20but=20the=20patches=20are=
+=20already=20in=20linux-stable=20branch.=20=0D=0AYou=20can=20check=20in=20f=
+ollowing=20link.=0D=0Ahttps://git.kernel.org/pub/scm/linux/kernel/git/stabl=
+e/linux.git/log/?h=3Dlinux-5.4.y=0D=0A=0D=0APankaj=0D=0A=0D=0A>=20=0D=0A>=
+=20Or=20at=20the=20very=20least=20see=20if=20the=20stable=20automation=20wi=
+ll=20pick=20these=20up.=0D=0A>=20=0D=0A>=20Dan=0D=0A>=20=0D=0A=0D=0A=0D=0A
