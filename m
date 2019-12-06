@@ -2,126 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF68C115137
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 14:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC980115151
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 14:49:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbfLFNlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 08:41:04 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33763 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbfLFNlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 08:41:04 -0500
-Received: by mail-pg1-f193.google.com with SMTP id 6so3352177pgk.0;
-        Fri, 06 Dec 2019 05:41:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3EFCJeRV2jMf+iQ+j1NhNnzIhn47IDN/JAAO+nGlAGU=;
-        b=rn0r9y4MNjQb5vsu88mzLjNm0oUlpl/NY+ttecEbHb2mr82tElxKnFHiEE49UMuLFu
-         2GDmEqj7H+Z/pNuhLTQzgpzB1xoQ3LseCus1xviES7APeu2ZPo/piNpI70zRsqe8jYI4
-         n9lxAtkegvvyEBBZk4Tyk2RA6FpoC1ExcvjEhFnAmHWJdz558NEYdaackd3r6HQmbfDF
-         KZRF4RTuB0zhQ8uP3bmAFrKd2GSdxq5cxrmqinmkjOSmGNzRoW6S1RD1b2xpPXBDBmJL
-         X7NHGhNHXMELfqLJSSxwEikYAF97tpZD8svdq3TCzvPna+21CSwqgWUALGjWX6DcITNq
-         NZ1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3EFCJeRV2jMf+iQ+j1NhNnzIhn47IDN/JAAO+nGlAGU=;
-        b=FCbCzRpFvFZ2UyV8fe1kRc316Eemcs3wZuQUrOH5sb2oCrHfxe1ADOh3eHv/PYgcJc
-         7ROBvMqbolwX6Mg75pAToF+M6arEltKDfip4dIjVUBvxQoE5y4F+aAJtMXlgwHYQ/Mlx
-         e6rmOpSeLxbBOnMzlHRpBPqroRRV29O8aiVuqrLwKm9l1Z3b5R+q4hzguj0Ym8A+iJ+k
-         YW/Cp02yFXuTEtRQFuWywo0cE1KqGWlaZzvW5phtXKV36eTDdgzP6qhkMlBZQUIb62aD
-         mu0mAlGs4K2cCqcHw1dsiH9v2v3c17Mzj/ePn0u2VfaR9nvls3vCOT6EdlWg8jPMswNk
-         W18Q==
-X-Gm-Message-State: APjAAAUzSla3A49oNY0dENjHdW03fNbrIQnScPx67jNnkbJFZp4t4K+U
-        gF7Ou8E+Y1FJcI/ydStRs8k=
-X-Google-Smtp-Source: APXvYqy+STqdn3H3r8DJnP94GB2uQbw7gMpPHzPAmc32MRNlyiXZJqgSHJ+AG0RxOsAQuQNQp/BUIQ==
-X-Received: by 2002:a62:ea19:: with SMTP id t25mr14534879pfh.74.1575639663699;
-        Fri, 06 Dec 2019 05:41:03 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f24sm3398977pjp.12.2019.12.06.05.41.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Dec 2019 05:41:02 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH] selftests: net: ip_defrag: increase netdev_max_backlog
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        posk@google.com
-References: <20191204195321.406365-1-cascardo@canonical.com>
- <483097a3-92ec-aedd-60d9-ab7f58b9708d@gmail.com>
- <20191206121707.GC5083@calabresa>
-Message-ID: <d2dddb34-f126-81f8-cbf7-04635f04795a@gmail.com>
-Date:   Fri, 6 Dec 2019 05:41:01 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726264AbfLFNtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 08:49:40 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:38832 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726171AbfLFNtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 08:49:40 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xB6DiQHg186594;
+        Fri, 6 Dec 2019 13:49:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=corp-2019-08-05;
+ bh=t/WR3JWAIKf0txQrPrU6Lz69CufYIFeTrvhqCTSD0iM=;
+ b=GpnqiQ7el6BT5HMB1VY/a8zmKxM5N6ovy+WBf7IEARM/CU1/Zq7zlNBJ1ewzOkhgCpij
+ JTzVGrMkWhEJ3DDghIlaVrsl7RroAkFf9ojKlHxHS8/nG8hlJtGcPwL5yVjOAXaq43gT
+ lS1XoWe6E4EsvcYRPt1a787UrKuLDu7JzZFzSHAwQ9lA1vKHBS+RIQcHcWj0zFey1+jt
+ OhTbdLpNmG46hiz7Fqf+H/vSMFVeR/j9zVmXv08N2YjeXkqIJAqnpmSAkZXrNE9SbvoS
+ xsjuM1cH2gPYVdiALb0jzVX01nQyT8n388rnHNu2lJQRRwb/Q88UrmZVy2KQmrZ2FgFL sA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2wkgcqv66h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 06 Dec 2019 13:49:34 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xB6Dn2tq068682;
+        Fri, 6 Dec 2019 13:49:33 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 2wqcbc8k3f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 06 Dec 2019 13:49:33 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xB6DnWBP011252;
+        Fri, 6 Dec 2019 13:49:33 GMT
+Received: from lab02.no.oracle.com (/10.172.144.56)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 06 Dec 2019 05:49:32 -0800
+From:   =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net: netlink: Fix uninit-value in netlink_recvmsg()
+Date:   Fri,  6 Dec 2019 14:49:23 +0100
+Message-Id: <20191206134923.2771651-1-haakon.bugge@oracle.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20191206121707.GC5083@calabresa>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9462 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=891
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1912060119
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9462 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=974 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-1912060119
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If skb_recv_datagram() returns NULL, netlink_recvmsg() will return an
+arbitrarily value.
 
+Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
+---
+ net/netlink/af_netlink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 12/6/19 4:17 AM, Thadeu Lima de Souza Cascardo wrote:
-> On Wed, Dec 04, 2019 at 12:03:57PM -0800, Eric Dumazet wrote:
->>
->>
->> On 12/4/19 11:53 AM, Thadeu Lima de Souza Cascardo wrote:
->>> When using fragments with size 8 and payload larger than 8000, the backlog
->>> might fill up and packets will be dropped, causing the test to fail. This
->>> happens often enough when conntrack is on during the IPv6 test.
->>>
->>> As the larger payload in the test is 10000, using a backlog of 1250 allow
->>> the test to run repeatedly without failure. At least a 1000 runs were
->>> possible with no failures, when usually less than 50 runs were good enough
->>> for showing a failure.
->>>
->>> As netdev_max_backlog is not a pernet setting, this sets the backlog to
->>> 1000 during exit to prevent disturbing following tests.
->>>
->>
->> Hmmm... I would prefer not changing a global setting like that.
->> This is going to be flaky since we often run tests in parallel (using different netns)
->>
->> What about adding a small delay after each sent packet ?
->>
->> diff --git a/tools/testing/selftests/net/ip_defrag.c b/tools/testing/selftests/net/ip_defrag.c
->> index c0c9ecb891e1d78585e0db95fd8783be31bc563a..24d0723d2e7e9b94c3e365ee2ee30e9445deafa8 100644
->> --- a/tools/testing/selftests/net/ip_defrag.c
->> +++ b/tools/testing/selftests/net/ip_defrag.c
->> @@ -198,6 +198,7 @@ static void send_fragment(int fd_raw, struct sockaddr *addr, socklen_t alen,
->>                 error(1, 0, "send_fragment: %d vs %d", res, frag_len);
->>  
->>         frag_counter++;
->> +       usleep(1000);
->>  }
->>  
->>  static void send_udp_frags(int fd_raw, struct sockaddr *addr,
->>
-> 
-> That won't work because the issue only shows when we using conntrack, as the
-> packet will be reassembled on output, then fragmented again. When this happens,
-> the fragmentation code is transmitting the fragments in a tight loop, which
-> floods the backlog.
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 90b2ab9dd449..bb7276f9c9f8 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1936,6 +1936,7 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		return -EOPNOTSUPP;
+ 
+ 	copied = 0;
++	err = 0;
+ 
+ 	skb = skb_recv_datagram(sk, flags, noblock, &err);
+ 	if (skb == NULL)
+-- 
+2.20.1
 
-Interesting !
-
-So it looks like the test is correct, and exposed a long standing problem in this code.
-
-We should not adjust the test to some kernel-of-the-day-constraints, and instead fix the kernel bug ;)
-
-Where is this tight loop exactly ?
-
-If this is feeding/bursting ~1000 skbs via netif_rx() in a BH context, maybe we need to call a variant
-that allows immediate processing instead of (ab)using the softnet backlog.
-
-Thanks !
