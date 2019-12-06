@@ -2,133 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C547E114C74
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C24114C79
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 07:55:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726413AbfLFGxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 01:53:19 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:24179 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbfLFGxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:53:19 -0500
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20191206065316epoutp02e4ed5bd725a43c23cbaff5551cc20fbd~dtaxSSN2S3137431374epoutp02f
-        for <netdev@vger.kernel.org>; Fri,  6 Dec 2019 06:53:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20191206065316epoutp02e4ed5bd725a43c23cbaff5551cc20fbd~dtaxSSN2S3137431374epoutp02f
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1575615196;
-        bh=6q2km7P8W0ptCfUIkh6mVjoU06ki9p4x8jz4+H3ttQo=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=SRwIwQRP14k5Dg6/N0cUEM279O6m/r/AW2nN11q0rtFP5jlwmlZONjjdAyBCcu0PI
-         YDY0+55eDGbhTvoU+toHHVBCN1Y2dQ71MrTp7eWrtTFkfd5PsR6mnUVoB6xH0GTKDZ
-         hdWSUjghf5MBDO7/vMhEqHTBWJOrQf8MGH3d2l/c=
-Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20191206065315epcas5p2180d84f4c9ea4632e3757033938b176e~dtaw3J-zS0235302353epcas5p2p;
-        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        55.0C.19726.BDAF9ED5; Fri,  6 Dec 2019 15:53:15 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20191206065315epcas5p31cea423889a39b4fc4b350fc0681fe7c~dtawYrgE12908629086epcas5p3H;
-        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20191206065315epsmtrp2b5dbafa8b0166cec4130e1416ceb3532~dtawX8Pkf3273732737epsmtrp2Z;
-        Fri,  6 Dec 2019 06:53:15 +0000 (GMT)
-X-AuditID: b6c32a49-7c1ff70000014d0e-30-5de9fadbd8d7
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A9.C1.06569.BDAF9ED5; Fri,  6 Dec 2019 15:53:15 +0900 (KST)
-Received: from pankjsharma02 (unknown [107.111.85.32]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20191206065313epsmtip143ccef58c0711e68d79f29240247ee72~dtavAIJ0r1340813408epsmtip1Q;
-        Fri,  6 Dec 2019 06:53:13 +0000 (GMT)
-From:   "pankj.sharma" <pankj.sharma@samsung.com>
-To:     "'Dan Murphy'" <dmurphy@ti.com>
-Cc:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
-        <rcsekar@samsung.com>, <pankaj.dubey@samsung.com>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-In-Reply-To: <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
-Subject: RE: [PATCH 0/2] can: m_can_platform: Bug fix of kernel panic for
-Date:   Fri, 6 Dec 2019 12:23:11 +0530
-Message-ID: <021d01d5ac01$d55f1220$801d3660$@samsung.com>
-MIME-Version: 1.0
+        id S1726371AbfLFGzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 01:55:39 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63828 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726216AbfLFGzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 01:55:39 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB66tAb0017743;
+        Thu, 5 Dec 2019 22:55:12 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=Y55UDsezzaZvKIAgdJFkTgMIrP9jqbtTUZmRemsyT6A=;
+ b=K0dKJ3ifY6/rd/MEgd/HMEmU6VYPM0IFiWxAFG6Bt5NXE2At9HxZTE4S62hmy/hVvHKC
+ 1jt/I5JWJgmCDrRp/DhUMCIecl4vMmXmyQODtYVEDFUM3HtaU2sIeaIxnsN4ZHBisSOs
+ cDDxfRYKN40efv/I4Rkpc2M5TQQdNKHDFU0= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wq3vyv0sa-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 05 Dec 2019 22:55:12 -0800
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Thu, 5 Dec 2019 22:55:07 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Thu, 5 Dec 2019 22:55:06 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G0ZNIk3GYEcCRbc979wt89YLgSOGIsNwkypNMuTkAkUwBSMkO5zl1sv3MdAz6O5QxqrROFpSztk5PNattYGLdISQC/2v7TB/bWW9Oxpio9awWPCrS8ETEHEkO+E0vlyxESZUlhFiD9b5pSjJq3wxjboXqMIqRo7cmk2IcQTrKRFqyyWhsPxEsU8NupDocDS1cd0ArTXh53fKqdBNUZhW4Y0Bb8CN2G+392ac9aG1Z6/2/6bAqWE/2lcoG9oMnF0M+R+K3chqTjnFM7X7FWNwEyWBfCMfeE9G3oKsht5Pwo+n+aq7SGAZiWoEEvW6SBtwwjmxQIveFV+Ly24up57rjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y55UDsezzaZvKIAgdJFkTgMIrP9jqbtTUZmRemsyT6A=;
+ b=Jye6q2GJ/82ooNFD58qi+6NpchQA6VjpKz8VVpDYcEULwVrxu4m5LU5bbZxzo06Vv6I9Al3lLgdDPv39OQ9+Tx8X9UWNmBsTN2pKgZcZhKC14UhFg34qbonchxAERDXo/Ke5CH4pIILkhmJM3q6QpSIKNXUioiqRRbWONpTcdg1sAPdoxPpUX2UkZr664BO388yHTCmnAGkM4DL6/5/2cgJrJyLCZujdcXqetb+WT+OXiArsauV8UxP8H+QtRXWDHshZMGm2YfpKzz1+iZoQYETRb5kondbe5XK769b2oQEBgIv1CQBj0LK3xAeUpnys0hZvuKLD+GDuyPKFdvdvNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y55UDsezzaZvKIAgdJFkTgMIrP9jqbtTUZmRemsyT6A=;
+ b=gzyNrOHVQYGR+mf3RcB15AlyfVlCFshBi28KvzZBuOj5+Nyti9TdY/Bj/JMIe9rjgON6HO9W6SebSEVdWt5JuKYIUF6/rfa7m/isYWzxBTrsCpHShIwUWPNwcodFokkDwUchOdD3VeVOlapKIx96xqLzYSxpkAqjwmDaI0uoXqE=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2605.namprd15.prod.outlook.com (20.179.145.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.14; Fri, 6 Dec 2019 06:55:05 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::ec0d:4e55:4da9:904c]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::ec0d:4e55:4da9:904c%7]) with mapi id 15.20.2495.026; Fri, 6 Dec 2019
+ 06:55:05 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Daniel Xu <dxu@dxuuu.xyz>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf] bpf: Add LBR data to BPF_PROG_TYPE_PERF_EVENT prog
+ context
+Thread-Topic: [PATCH bpf] bpf: Add LBR data to BPF_PROG_TYPE_PERF_EVENT prog
+ context
+Thread-Index: AQHVq8n1PpTs4XsEb0SDfCAf1CVgp6esrI4A
+Date:   Fri, 6 Dec 2019 06:55:05 +0000
+Message-ID: <20191206065456.6pqjxdvldxiab6t5@kafai-mbp>
+References: <20191206001226.67825-1-dxu@dxuuu.xyz>
+In-Reply-To: <20191206001226.67825-1-dxu@dxuuu.xyz>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR07CA0065.namprd07.prod.outlook.com (2603:10b6:100::33)
+ To MN2PR15MB3213.namprd15.prod.outlook.com (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1dcf]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b260ee35-5329-45a0-e5e1-08d77a193921
+x-ms-traffictypediagnostic: MN2PR15MB2605:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR15MB2605855620ABBDFE2371E0FFD55F0@MN2PR15MB2605.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0243E5FD68
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(396003)(39860400002)(376002)(346002)(366004)(136003)(189003)(199004)(86362001)(11346002)(25786009)(6916009)(305945005)(66556008)(6506007)(9686003)(6512007)(186003)(102836004)(1076003)(66446008)(66476007)(5660300002)(14444005)(66946007)(8936002)(478600001)(81166006)(81156014)(6486002)(8676002)(64756008)(71190400001)(33716001)(2906002)(71200400001)(4326008)(316002)(229853002)(76176011)(14454004)(99286004)(52116002)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2605;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bI89zEhBhw5WZAxR1Cq85F9Di7TjsVjpOs5Mg9PRLEB7G/5Ri8DnrTHziPco5Kwg0UY5aVNPiYn/AQ9MAeQYXbOhl5Iida0xEo/ENd3gfhIAZkNDZUGgfvGzR1GMPyhqsZq5Vnn4nG3Jx3Nf7pFrheVtzVdNAW2JFe/5jMWktH5YHGhccQhKJmjWTUT14c9iyJPRxglK/y3mB5Mv9aVYBPd3EY+8oabD7KKsCWKAhzZn6iM6kp6Qhi6zshutqukT5H41+tSNylAdaY4c14pZ55of6bW+Hobx5izQnnGRHdb1h1BECHpKmZ86pIxzrWGgEgFzjCtkosIElGErpXuH4vWTnZYjAtNS014Nb0+AfPmQvtSUHEzPUKI2mpeU8BFCdhcuTzn5oZKX60c7sj7JPuzsAXm+Txbs6+iHvMaCE6zod6nXNH4r+NFER33/D6+E
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DCB73F34274B38479D385E9FF4C6B1DF@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-us
-Thread-Index: AQE7rWdEBMvebVKOOOKqXHxmn9mClwHtd6OFAaMRhhWoxCE6wA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOKsWRmVeSWpSXmKPExsWy7bCmlu7tXy9jDaYtN7GYc76FxaL79BZW
-        i1XfpzJbXN41h81i/aIpLBbHFohZLNr6hd1i1oUdrBZL7+1kdeD02LLyJpPHx0u3GT36/xp4
-        9G1Zxehx/MZ2Jo/Pm+QC2KK4bFJSczLLUov07RK4Mp7tOc9S8JS74vem96wNjB1cXYycHBIC
-        JhIvd2xn7GLk4hAS2M0o8eP7SxYI5xOjRM+NZ0wQzjdGiXmn1zPCtKx41sEGkdjLKLHn2252
-        COc1o8SHW0fZQKrYBPQlpjT9ZQGxRQSUJVY1nALrYBa4wihxeuoLsFGcAlYSfasWgRUJC3hK
-        rG9ey9rFyMHBIqAi0XBODsTkFbCUOPJDFaSCV0BQ4uTMJ2DVzALaEssWvmaGOEhB4ufTZawQ
-        cXGJl0ePsEOsdZI4f+oVK8haCYH/bBI3Zu5jAZkpIeAiMeFSAkSvsMSr41vYIWwpic/v9rJB
-        2NkSC3f3Q5VXSLTNEIYI20scuDIHLMwsoCmxfpc+xFY+id7fT5ggqnklOtqEIKrVJKY+fQcN
-        NRmJO482Qw33kJi84ADLBEbFWUj+moXkr1lIfpmFsGwBI8sqRsnUguLc9NRi0wLDvNRyveLE
-        3OLSvHS95PzcTYzg5KTluYNx1jmfQ4wCHIxKPLwzPr+IFWJNLCuuzD3EKMHBrCTCm873MlaI
-        NyWxsiq1KD++qDQntfgQozQHi5I47yTWqzFCAumJJanZqakFqUUwWSYOTqkGxszj7+e9Vtmp
-        zFXzqYDJ+dSzc1djeT210l7JMs09kH/w0F1z/0InRfa7wh/CZrjds2W1+3H2/KNHSvxfcsUj
-        Tb0P2By5sie5y/ZswknDLSVSvTll7/WCeiYedKt5UnpW9sLm2l23dr6Zv8Yh/WOzp83kC3oz
-        qqS4jR/G71B8q8WWsNHfZJWcthJLcUaioRZzUXEiANj0qoBKAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprNIsWRmVeSWpSXmKPExsWy7bCSnO7tXy9jDU7OFraYc76FxaL79BZW
-        i1XfpzJbXN41h81i/aIpLBbHFohZLNr6hd1i1oUdrBZL7+1kdeD02LLyJpPHx0u3GT36/xp4
-        9G1Zxehx/MZ2Jo/Pm+QC2KK4bFJSczLLUov07RK4Mh73eBS846q4P+8bYwPjDY4uRk4OCQET
-        iRXPOti6GLk4hAR2M0p8fbmDpYuRAyghI7H4czVEjbDEyn/P2SFqXjJKrL/6mxEkwSagLzGl
-        6S8LiC0ioCyxquEU2CBmgTuMEstPfoaaepxR4s6Df8wgVZwCVhJ9qxaBdQgLeEqsb17LCrKN
-        RUBFouGcHIjJK2ApceSHKkgFr4CgxMmZT8CqmQW0JZ7efApnL1v4mhniOAWJn0+XsULExSVe
-        Hj3CDnGPk8T5U69YJzAKz0IyahaSUbOQjJqFpH0BI8sqRsnUguLc9NxiwwKjvNRyveLE3OLS
-        vHS95PzcTYzgKNPS2sF44kT8IUYBDkYlHt4Zn1/ECrEmlhVX5h5ilOBgVhLhTed7GSvEm5JY
-        WZValB9fVJqTWnyIUZqDRUmcVz7/WKSQQHpiSWp2ampBahFMlomDU6qB0WOGT6B/UYJBnLa+
-        27I3Egt6m+4oaeiVbKp8+2dLgmLvztsv39u0qmjtYehbcfRkqSsve31rBJPpZIaZh+TeVXbf
-        fR9r1syjnr/C6foSzarLcy52i2378Yy/uOinz83LLJWHFyiYMIYHaPlt/LJEsiO9/kn9z8yo
-        5xu8HtU96n2qe1OyYfVhJZbijERDLeai4kQAEzTZGq4CAAA=
-X-CMS-MailID: 20191206065315epcas5p31cea423889a39b4fc4b350fc0681fe7c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5
-References: <CGME20191119102134epcas5p4d3c1b18203e2001c189b9fa7a0e3aab5@epcas5p4.samsung.com>
-        <1574158838-4616-1-git-send-email-pankj.sharma@samsung.com>
-        <f0550b0b-6681-75a3-c58a-28f5b7ca0821@ti.com>
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: b260ee35-5329-45a0-e5e1-08d77a193921
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2019 06:55:05.1016
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tLEnHYq4Wf9DoND6x6Hh7yyPv5Uk8RS6razaX0EDReNSQn+WKyrTDmUNt8cA6cx+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2605
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-06_01:2019-12-04,2019-12-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=900 spamscore=0 mlxscore=0 phishscore=0 clxscore=1011
+ bulkscore=0 impostorscore=0 priorityscore=1501 suspectscore=0
+ lowpriorityscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912060059
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> From: Dan Murphy <dmurphy=40ti.com>
-> Subject: Re: =5BPATCH 0/2=5D can: m_can_platform: Bug fix of kernel panic=
- for
+On Thu, Dec 05, 2019 at 04:12:26PM -0800, Daniel Xu wrote:
+> Last-branch-record is an intel CPU feature that can be configured to
+> record certain branches that are taken during code execution. This data
+> is particularly interesting for profile guided optimizations. perf has
+> had LBR support for a while but the data collection can be a bit coarse
+> grained.
 >=20
-> Pankaj
+> We (Facebook) have recently run a lot of experiments with feeding
+> filtered LBR data to various PGO pipelines. We've seen really good
+> results (+2.5% throughput with lower cpu util and lower latency) by
+> feeding high request latency LBR branches to the compiler on a
+> request-oriented service. We used bpf to read a special request context
+> ID (which is how we associate branches with latency) from a fixed
+> userspace address. Reading from the fixed address is why bpf support is
+> useful.
 >=20
-> On 11/19/19 4:20 AM, Pankaj Sharma wrote:
-> > The current code is failing while clock prepare enable because of not
-> > getting proper clock from platform device.
-> > A device driver for CAN controller hardware registers itself with the
-> > Linux network layer as a network device. So, the driver data for m_can
-> > should ideally be of type net_device.
-> >
-> > Further even when passing the proper net device in probe function the
-> > code was hanging because of the function m_can_runtime_resume()
-> > getting recursively called from m_can_class_resume().
-> >
-> > Pankaj Sharma (2):
-> >    can: m_can_platform: set net_device structure as driver data
-> >    can: m_can_platform: remove unnecessary m_can_class_resume() call
+> Aside from this particular use case, having LBR data available to bpf
+> progs can be useful to get stack traces out of userspace applications
+> that omit frame pointers.
 >=20
-> Did you CC: linux-stable for these?  We are probably going to have custom=
-ers
-> picking up 5.4 LTS and would need these bug fixes.
-Hello Dan,=20
-I haven=E2=80=99t=20copied=20to=20linux-stable,=20but=20the=20patches=20are=
-=20already=20in=20linux-stable=20branch.=20=0D=0AYou=20can=20check=20in=20f=
-ollowing=20link.=0D=0Ahttps://git.kernel.org/pub/scm/linux/kernel/git/stabl=
-e/linux.git/log/?h=3Dlinux-5.4.y=0D=0A=0D=0APankaj=0D=0A=0D=0A>=20=0D=0A>=
-=20Or=20at=20the=20very=20least=20see=20if=20the=20stable=20automation=20wi=
-ll=20pick=20these=20up.=0D=0A>=20=0D=0A>=20Dan=0D=0A>=20=0D=0A=0D=0A=0D=0A
+> This patch adds support for LBR data to bpf perf progs.
+Please re-submit when bpf-next opens.
