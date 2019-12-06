@@ -2,97 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE24115764
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 19:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28FF0115778
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 19:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfLFSr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 13:47:58 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:39492 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfLFSr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 13:47:58 -0500
-Received: by mail-pj1-f68.google.com with SMTP id v93so3101405pjb.6
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 10:47:58 -0800 (PST)
+        id S1726336AbfLFS5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 13:57:13 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:42346 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfLFS5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 13:57:13 -0500
+Received: by mail-lj1-f195.google.com with SMTP id e28so8718234ljo.9
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 10:57:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c4JvAfJlkT3WqL5tIHTwhG9SXvORZr0g25AJ4d/DZL8=;
-        b=IH2oqwpzBvDPa5+MapOrEr6XUqYbEwJBkJwX01Vac3sjJPIUjsxQxAEZ9pvsT5iTEq
-         dmvp6gZZRo6xEAgEhwG6EaQDS3HWm6KS/H3+vdVeVcHTM6kWe9SO0C0Cl1jfIbkpSZaT
-         7jGuN9y2yJQbaD9YqwGqgZFZCFTqOpx8buOiAfIwFTOsf3jxtNlBRh5Yi3in0Lq+3eW2
-         YWw+WBS/25V3dyb7k0Lx8cWhWmhTFLjnfIXRmyVWFN1wdoSZTvW7ys7Y80NeoUqvg5nd
-         uLL5qyb0uHFEbEvNy7cku6iiwToKZH/Zm/jHUc1HPMfbRi7Y5ToZxWVrvgWf0+EYV0VY
-         Ackg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=c4JvAfJlkT3WqL5tIHTwhG9SXvORZr0g25AJ4d/DZL8=;
-        b=Ry13msHbd+aWTnJg6THttTl39bcySjsnBiM/YGeQ6IgKzZ6vaIsu7SwE1joTDcLvbw
-         o1kjCE/nhMFQhUfOkwZPwM9epfMEWc25Mqg+oP9L8Q51juleRtiDQG3QN5uDW9uCQtGf
-         wla9SLiyoiTWgzB4b69JyIEcdMDzXx0gT4jczTzJESRcr/HXex3hOWiz4pURNixpVNYe
-         DffsCfbGkDAcopt1mI97RYgTHu+leDE5iuGNyjkQiwp4LLJn3FweeWLHTbus4LYEPFIe
-         kYHTnhTsvvR6yJnW1ZYWEQtWKrUWPIjNo2EJAc7vwOceYbMM8k6xqwzjnsLDSr4JrqC7
-         1NDQ==
-X-Gm-Message-State: APjAAAWsxsE7v0fBHmimssQS8TX1x7BN4PEds5ED8/E0uWE6TFJsApwR
-        Cd9na5KY9OyYwJ+VwT+XIm+EPWy8
-X-Google-Smtp-Source: APXvYqzCR+LP9F9hQoJwEuC7RvWP5v4KqUIhbPAsV1TTrLm/FsAoKiYdxJCnFVWkZiej8DbSdxANhA==
-X-Received: by 2002:a17:902:6b0c:: with SMTP id o12mr16239658plk.284.1575658077357;
-        Fri, 06 Dec 2019 10:47:57 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id 129sm17513122pfw.71.2019.12.06.10.47.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Dec 2019 10:47:56 -0800 (PST)
+        bh=MZzVEDKw0xJ1LdZWdLyqF1kAetxtXHX7iNSp25BcsYM=;
+        b=SUteSPlq//TtrFZYEjyYZEfNGuxGqmxOjFEVlXgaz5K1Qwn4QYiSuDSCqYTZeGzz2j
+         q1A8l8vziiDjmPn27aYu0xSWYIlXzoFnz5DhfCOwQ8hfHNGj7RF7puaMSM1tHoZfMUlj
+         u612zQAhF5W0kL7/rPbuyhvTpmD4oNIBmvn6n2eGp8F5/Nfh9C6hjRnbY9VHE/QermLJ
+         LsDGXXLyJmhmE2XYgHk1I/v45HSDjeoVO6QaaKRX3SYLeI9QQW2Ahi5UwTF3OGTYi++G
+         cPHK9gSdGH+YCdsHz4U3tBdaTL5uTp8WVxcCa/xkItBcdsrbmb5jbd1d4T9/qewq21b+
+         IjTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=MZzVEDKw0xJ1LdZWdLyqF1kAetxtXHX7iNSp25BcsYM=;
+        b=FCOJzQ1WSxJ2ZxatWnNx95Ea3lu4OKJLPqOFAq/TBlbhhp4SFowuMTk0MLfwmQ0bKy
+         d0BxYq66Qi9Oi9Kj2RScnc50UNt3kkGUBVhmy+iCi5/g6e7EMk/IkbZKD9+bR6yzxf4M
+         JaTfKwAUQNyEaYpLOKbAKqu37UjTg19CCYLPtOtD5u3/tpgqOKSlkkUV1fd26R42OPJv
+         WcJGt95avyrUqh2YRxFTuAsntuxLCrYwPAycxu0q+t9Fo5MajEeKfyQH62ncoTvRVKK3
+         gH8qv/FIdZnJsvcKs6knpCq3QW3UrAXS8o4nru2ljzb7bGWTogWkf0h3qe/SFaKn0TI9
+         Jdvw==
+X-Gm-Message-State: APjAAAWlP2MCGPdMU2Qy3U5shkbWW+Xhinxo65X03Qcv0Q6ebUggSu00
+        yZl5bzS2334ymnXWpsrTrpCMNkv/N9s=
+X-Google-Smtp-Source: APXvYqyUjf9C/RfOj0319esZ9p5iFtsQU5Q9qrxOEL/Ri6qEHBc1tD2EzfbYW13xAMe3+q5rVLmU2Q==
+X-Received: by 2002:a2e:9356:: with SMTP id m22mr9735123ljh.160.1575658631283;
+        Fri, 06 Dec 2019 10:57:11 -0800 (PST)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:4291:257c:a228:1c89:88a1:5b3b])
+        by smtp.gmail.com with ESMTPSA id x29sm8078381lfg.45.2019.12.06.10.57.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 06 Dec 2019 10:57:10 -0800 (PST)
 Subject: Re: [PATCH net] net: netlink: Fix uninit-value in netlink_recvmsg()
-To:     =?UTF-8?Q?H=c3=a5kon_Bugge?= <haakon.bugge@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
+To:     =?UTF-8?Q?H=c3=a5kon_Bugge?= <haakon.bugge@oracle.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191206134923.2771651-1-haakon.bugge@oracle.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c24c48d2-fc5e-6aca-27b8-7ea98ecd3ecc@gmail.com>
-Date:   Fri, 6 Dec 2019 10:47:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ <13b4ccb1-2dec-fc4d-b9da-0957240f7fd7@cogentembedded.com>
+ <6255CC20-05DA-41C1-A46D-FE7F6C4A64BD@oracle.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <e24313a2-22c9-18da-4475-733157399975@cogentembedded.com>
+Date:   Fri, 6 Dec 2019 21:57:09 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-In-Reply-To: <20191206134923.2771651-1-haakon.bugge@oracle.com>
+In-Reply-To: <6255CC20-05DA-41C1-A46D-FE7F6C4A64BD@oracle.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: en-MW
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 12/06/2019 09:45 PM, Håkon Bugge wrote:
 
-
-On 12/6/19 5:49 AM, Håkon Bugge wrote:
-> If skb_recv_datagram() returns NULL, netlink_recvmsg() will return an
-> arbitrarily value.
+>>> If skb_recv_datagram() returns NULL, netlink_recvmsg() will return an
+>>> arbitrarily value.
+>>
+>>   Arbitrary?
 > 
-> Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
-> ---
->  net/netlink/af_netlink.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index 90b2ab9dd449..bb7276f9c9f8 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -1936,6 +1936,7 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->  		return -EOPNOTSUPP;
->  
->  	copied = 0;
-> +	err = 0;
->  
->  	skb = skb_recv_datagram(sk, flags, noblock, &err);
->  	if (skb == NULL)
-> 
+> is an adjective.
 
-Please provide a Fixes: tag
+   Yes. And it goes with the "value" noun.
 
-By doing the research, you probably would find there is no bug.
+> Since I described the verb *return*, I assumed the adverb,
+> arbitrarily, is correct,
 
-err is set in skb_recv_datagram() when there is no packet to read.
+   In that case, it's misplaced, it should go before the verb.
+
+> But english is not my native language.
+
+   Not mine as well. :-)
+
+> Thxs, Håkon
+
+MBR, Sergei
 
