@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C42B311506C
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC1E811506E
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 13:29:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfLFM22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 07:28:28 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34736 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfLFM22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:28:28 -0500
+        id S1726365AbfLFM3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 07:29:00 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:55850 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfLFM27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 07:28:59 -0500
 Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSPWI110437;
-        Fri, 6 Dec 2019 06:28:25 -0600
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSvjM074655;
+        Fri, 6 Dec 2019 06:28:57 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575635305;
-        bh=/lJcAFcF9KWiWdZKdHMRLJPlsxaW7YekXHf7BHvietU=;
-        h=From:To:CC:Subject:Date;
-        b=rddULQX7OOBe7RTS02TYdLicJY3wH4bxNPzErtdNMBUNytCn3cxtqlNQ9v604lgRa
-         iSmmNRY79xxJskMNKRkcG7WkvozzdjPFBSEzgLhoZghlxELMQTxPSaSb59EIPMEAmC
-         IQUVphVeb+qk71+9WxSDaQYwGH2itqsyU7PwOiDI=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSPWX030943;
-        Fri, 6 Dec 2019 06:28:25 -0600
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+        s=ti-com-17Q1; t=1575635337;
+        bh=M1+Y8KSGNeNG5arLgGnMLbnCLyRMTkpFUDsspvDH0Wc=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=XGhTLXlJfSIK4KNQwdok0tpOOdDmYDXTmKY73MAvrErEEFObq2iAepNPejt1lZsRd
+         jpJpvADN1wD+CpEKyf8iSCAEqQZWyjJWlMxFLf7sxHFY0r1C7SbXBwv63V56l1yQJ+
+         iaAjzYesivdA/zZuleRPXqJdVjyC7p3zytFUuChA=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSvUO031203;
+        Fri, 6 Dec 2019 06:28:57 -0600
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 6 Dec
- 2019 06:28:25 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ 2019 06:28:56 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 6 Dec 2019 06:28:25 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSOPU119391;
-        Fri, 6 Dec 2019 06:28:25 -0600
+ Frontend Transport; Fri, 6 Dec 2019 06:28:56 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6CSscJ119732;
+        Fri, 6 Dec 2019 06:28:55 -0600
+Subject: Re: [PATCH] net: ethernet: ti: cpsw: fix extra rx interrupt
+To:     David Miller <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>
+References: <20191205151817.1076-1-grygorii.strashko@ti.com>
+ <20191205.124225.1227757906747730493.davem@davemloft.net>
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH v2] net: ethernet: ti: cpsw: fix extra rx interrupt
-Date:   Fri, 6 Dec 2019 14:28:20 +0200
-Message-ID: <20191206122820.24811-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+Message-ID: <6f133a89-7ed9-85a6-9c4a-6249346d26b0@ti.com>
+Date:   Fri, 6 Dec 2019 14:28:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191205.124225.1227757906747730493.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now RX interrupt is triggered twice every time, because in
-cpsw_rx_interrupt() it is asked first and then disabled. So there will be
-pending interrupt always, when RX interrupt is enabled again in NAPI
-handler.
 
-Fix it by first disabling IRQ and then do ask.
 
-Fixes: 870915feabdc ("drivers: net: cpsw: remove disable_irq/enable_irq as irq can be masked from cpsw itself")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
-Hi
+On 05/12/2019 22:42, David Miller wrote:
+> From: Grygorii Strashko <grygorii.strashko@ti.com>
+> Date: Thu, 5 Dec 2019 17:18:17 +0200
+> 
+>> This is an old issue, but I can't specify Fixes tag.
+> 
+> This is never true, there is always an appropriate Fixes: tag
+> even it means specifying the tag that created Linus's GIT repo.
+> 
+>> And, unfortunatelly,
+>> it can't be backported as is even in v5.4.
+> 
+> This I always don't understand.
+> 
+> You must elaborate and specify a Fixes: tag.
+> 
 
-It requires manual backporting if selected for stable.
-I can prepare separate patch for 5.4 if needed. 
+Thank you for comments I've sent v2
 
- drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index b833cc1d188c..707d5eb480ce 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -100,8 +100,8 @@ irqreturn_t cpsw_rx_interrupt(int irq, void *dev_id)
- {
- 	struct cpsw_common *cpsw = dev_id;
- 
--	cpdma_ctlr_eoi(cpsw->dma, CPDMA_EOI_RX);
- 	writel(0, &cpsw->wr_regs->rx_en);
-+	cpdma_ctlr_eoi(cpsw->dma, CPDMA_EOI_RX);
- 
- 	if (cpsw->quirk_irq) {
- 		disable_irq_nosync(cpsw->irqs_table[0]);
 -- 
-2.17.1
-
+Best regards,
+grygorii
