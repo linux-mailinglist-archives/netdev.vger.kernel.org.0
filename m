@@ -2,156 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0352B11549E
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B501154DA
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 17:09:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfLFPuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 10:50:54 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:48949 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbfLFPuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 10:50:54 -0500
-Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=calabresa)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <cascardo@canonical.com>)
-        id 1idFsY-0007xZ-QH; Fri, 06 Dec 2019 15:50:51 +0000
-Date:   Fri, 6 Dec 2019 12:50:46 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        posk@google.com
-Subject: Re: [PATCH] selftests: net: ip_defrag: increase netdev_max_backlog
-Message-ID: <20191206155046.GF5083@calabresa>
-References: <20191204195321.406365-1-cascardo@canonical.com>
- <483097a3-92ec-aedd-60d9-ab7f58b9708d@gmail.com>
- <20191206121707.GC5083@calabresa>
- <d2dddb34-f126-81f8-cbf7-04635f04795a@gmail.com>
- <20191206145010.GE5083@calabresa>
+        id S1726480AbfLFQJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 11:09:42 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:42474 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726371AbfLFQJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 11:09:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575648580;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0Jg46z79WbtpUiP67474Qtl5e+X8n+Hw5qvI5wiIAV8=;
+        b=L0UYYa5FdLcYHYY5tuXLP7jOnc9dHBVt6C/OienmQa/qlpiUVJdgXoYndbJenaHaqGSJxE
+        7dEzVjaJLAOCiHkP5m+N4BFbqU/k0rOJ216mX32+8hICZeAnph8X/RExYM60Fae26cwmmP
+        88U7J7BWqo6IZBHVK0Da8dJl9AO3wa0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-225-0LKdRZs3OiGykGWfDKQFvg-1; Fri, 06 Dec 2019 11:09:39 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B5F6190D347;
+        Fri,  6 Dec 2019 16:09:38 +0000 (UTC)
+Received: from ovpn-117-234.ams2.redhat.com (ovpn-117-234.ams2.redhat.com [10.36.117.234])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B14C810016EB;
+        Fri,  6 Dec 2019 16:09:36 +0000 (UTC)
+Message-ID: <8b8a3cc1c3341912e0db5c55cd0e504dd4371588.camel@redhat.com>
+Subject: Re: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        network dev <netdev@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Fri, 06 Dec 2019 17:09:35 +0100
+In-Reply-To: <dc10298d-4280-b9b4-9203-be4000e85c42@gmail.com>
+References: <23db23416d3148fa86e54dccc6152266@AcuMS.aculab.com>
+         <dc10298d-4280-b9b4-9203-be4000e85c42@gmail.com>
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191206145010.GE5083@calabresa>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: 0LKdRZs3OiGykGWfDKQFvg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 06, 2019 at 11:50:15AM -0300, Thadeu Lima de Souza Cascardo wrote:
-> On Fri, Dec 06, 2019 at 05:41:01AM -0800, Eric Dumazet wrote:
+On Fri, 2019-12-06 at 06:21 -0800, Eric Dumazet wrote:
+> 
+> On 12/6/19 5:39 AM, David Laight wrote:
+> > Some tests I've done seem to show that recvmsg() is much slower that recvfrom()
+> > even though most of what they do is the same.
+> 
+> Not really.
+> 
+> > One thought is that the difference is all the extra copy_from_user() needed by
+> > recvmsg. CONFIG_HARDENED_USERCOPY can add a significant cost.
 > > 
+> > I've built rebuilt my 5.4-rc7 kernel with all the copy_to/from_user() in net/socket.c
+> > replaced with the '_' prefixed versions (that don't call check_object()).
+> > And also changed rw_copy_check_uvector() in fs/read_write.c.
 > > 
-> > On 12/6/19 4:17 AM, Thadeu Lima de Souza Cascardo wrote:
-> > > On Wed, Dec 04, 2019 at 12:03:57PM -0800, Eric Dumazet wrote:
-> > >>
-> > >>
-> > >> On 12/4/19 11:53 AM, Thadeu Lima de Souza Cascardo wrote:
-> > >>> When using fragments with size 8 and payload larger than 8000, the backlog
-> > >>> might fill up and packets will be dropped, causing the test to fail. This
-> > >>> happens often enough when conntrack is on during the IPv6 test.
-> > >>>
-> > >>> As the larger payload in the test is 10000, using a backlog of 1250 allow
-> > >>> the test to run repeatedly without failure. At least a 1000 runs were
-> > >>> possible with no failures, when usually less than 50 runs were good enough
-> > >>> for showing a failure.
-> > >>>
-> > >>> As netdev_max_backlog is not a pernet setting, this sets the backlog to
-> > >>> 1000 during exit to prevent disturbing following tests.
-> > >>>
-> > >>
-> > >> Hmmm... I would prefer not changing a global setting like that.
-> > >> This is going to be flaky since we often run tests in parallel (using different netns)
-> > >>
-> > >> What about adding a small delay after each sent packet ?
-> > >>
-> > >> diff --git a/tools/testing/selftests/net/ip_defrag.c b/tools/testing/selftests/net/ip_defrag.c
-> > >> index c0c9ecb891e1d78585e0db95fd8783be31bc563a..24d0723d2e7e9b94c3e365ee2ee30e9445deafa8 100644
-> > >> --- a/tools/testing/selftests/net/ip_defrag.c
-> > >> +++ b/tools/testing/selftests/net/ip_defrag.c
-> > >> @@ -198,6 +198,7 @@ static void send_fragment(int fd_raw, struct sockaddr *addr, socklen_t alen,
-> > >>                 error(1, 0, "send_fragment: %d vs %d", res, frag_len);
-> > >>  
-> > >>         frag_counter++;
-> > >> +       usleep(1000);
-> > >>  }
-> > >>  
-> > >>  static void send_udp_frags(int fd_raw, struct sockaddr *addr,
-> > >>
-> > > 
-> > > That won't work because the issue only shows when we using conntrack, as the
-> > > packet will be reassembled on output, then fragmented again. When this happens,
-> > > the fragmentation code is transmitting the fragments in a tight loop, which
-> > > floods the backlog.
+> > Schedviz then showed the time spent by the application thread that calls
+> > recvmsg() (about) 225 times being reduced from 0.9ms to 0.75ms.
 > > 
-> > Interesting !
+> > I've now instrumented the actual recv calls. It show some differences,
+> > but now enough to explain the 20% difference above.
+> > (This is all made more difficult because my Ivy Bridge i7-3770 refuses
+> > to run at a fixed frequency.)
 > > 
-> > So it looks like the test is correct, and exposed a long standing problem in this code.
+> > Anyway using PERF_COUNT_HW_CPU_CYCLES I've got the following
+> > histograms for the number of cycles in each recv call.
+> > There are about the same number (2.8M) in each column over
+> > an elapsed time of 20 seconds.
+> > There are 450 active UDP sockets, each receives 1 message every 20ms.
+> > Every 10ms a RT thread that is pinned to a cpu reads all the pending messages.
+> > This is a 4 core hyperthreading (8 cpu) system.
+> > During these tests 5 other threads are also busy.
+> > There are no sends (on those sockets).
 > > 
-> > We should not adjust the test to some kernel-of-the-day-constraints, and instead fix the kernel bug ;)
+> >          |       recvfrom      |       recvmsg
+> >  cycles  |   unhard  |    hard |   unhard  |    hard
+> > -----------------------------------------------------
+> >    1472:         29          1          0          0
+> >    1600:       8980       4887          3          0
+> >    1728:     112540     159518       5393       2895
+> >    1856:     174555     270148     119054     111230
+> >    1984:     126007     168383     152310     195288
+> >    2112:      80249      87045     118941     168801
+> >    2240:      61570      54790      81847     110561
+> >    2368:      95088      61796      57496      71732
+> >    2496:     193633     155870      54020      54801
+> >    2624:     274997     284921     102465      74626
+> >    2752:     276661     295715     160492     119498
+> >    2880:     248751     264174     206327     186028
+> >    3008:     207532     213067     230704     229232
+> >    3136:     167976     164804     226493     238555
+> >    3264:     133708     124857     202639     220574
+> >    3392:     107859      95696     172949     189475
+> >    3520:      88599      75943     141056     153524
+> >    3648:      74290      61586     115873     120994
+> >    3776:      62253      50891      96061      95040
+> >    3904:      52213      42482      81113      76577
+> >    4032:      42920      34632      69077      63131
+> >    4160:      35472      28327      60074      53631
+> >    4288:      28787      22603      51345      46620
+> >    4416:      24072      18496      44006      40325
+> >    4544:      20107      14886      37185      34516
+> >    4672:      16759      12206      31408      29031
+> >    4800:      14195       9991      26843      24396
+> >    4928:      12356       8167      22775      20165
+> >    5056:      10387       6931      19404      16591
+> >    5184:       9284       5916      16817      13743
+> >    5312:       7994       5116      14737      11452
+> >    5440:       7152       4495      12592       9607
+> >    5568:       6300       3969      11117       8592
+> >    5696:       5445       3421       9988       7237
+> >    5824:       4683       2829       8839       6368
+> >    5952:       3959       2643       7652       5652
+> >    6080:       3454       2377       6442       4814
+> >    6208:       3041       2219       5735       4170
+> >    6336:       2840       2060       5059       3615
+> >    6464:       2428       1975       4433       3201
+> >    6592:       2109       1794       4078       2823
+> >    6720:       1871       1382       3549       2558
+> >    6848:       1706       1262       3110       2328
+> >    6976:       1567       1001       2733       1991
+> >    7104:       1436        873       2436       1819
+> >    7232:       1417        860       2102       1652
+> >    7360:       1414        741       1823       1429
+> >    7488:       1372        814       1663       1239
+> >    7616:       1201        896       1430       1152
+> >    7744:       1275       1008       1364       1049
+> >    7872:       1382       1120       1367        925
+> >    8000:       1316       1282       1253        815
+> >    8128:       1264       1266       1313        792
+> >   8256+:      19252      19450      34703      30228
+> > ----------------------------------------------------
+> >   Total:    2847707    2863582    2853688    2877088
 > > 
-> > Where is this tight loop exactly ?
+> > This does show a few interesting things:
+> > 1) The 'hardened' kernel is slower, especially for recvmsg.
+> > 2) The difference for recvfrom isn't enough for the 20% reduction I saw.
+> > 3) There are two peaks at the top a 'not insubstantial' number are a lot
+> >    faster than the main peak.
+> > 4) There is second peak way down at 8000 cycles.
+> >    This is repeatable.
 > > 
-> > If this is feeding/bursting ~1000 skbs via netif_rx() in a BH context, maybe we need to call a variant
-> > that allows immediate processing instead of (ab)using the softnet backlog.
+> > Any idea what is actually going on??
 > > 
-> > Thanks !
 > 
-> This is the loopback interface, so its xmit calls netif_rx. I suppose we would
-> have the same problem with veth, for example.
+> Real question is : Do you actually need to use recvmsg() instead of recvfrom() ?
 > 
-> So net/ipv6/ip6_output.c:ip6_fragment has this:
+> If recvmsg() provides additional cmsg, this is not surprising it is more expensive.
 > 
-> 		for (;;) {
-> 			/* Prepare header of the next frame,
-> 			 * before previous one went down. */
-> 			if (iter.frag)
-> 				ip6_fraglist_prepare(skb, &iter);
+> recvmsg() also uses an indirect call, so CONFIG_RETPOLINE=y is probably hurting.
 > 
-> 			skb->tstamp = tstamp;
-> 			err = output(net, sk, skb);
-> 			if (!err)
-> 				IP6_INC_STATS(net, ip6_dst_idev(&rt->dst),
-> 					      IPSTATS_MIB_FRAGCREATES);
+> err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys, flags);
 > 
-> 			if (err || !iter.frag)
-> 				break;
+> Maybe a INDIRECT_CALL annotation could help, or rewriting this to not let gcc
+> use an indirect call.
 > 
-> 			skb = ip6_fraglist_next(&iter);
-> 		}
 > 
-> output is ip6_finish_output2, which will call neigh_output, which ends up
-> calling dev_queue_xmit.
-> 
-> In this case, ip6_fragment is being called probably from rawv6_send_hdrinc ->
-> dst_output -> ip6_output -> ip6_finish_output -> __ip6_finish_output ->
-> ip6_fragment.
-> 
-> dst_output at rawv6_send_hdrinc is being called after netfilter
-> NF_INET_LOCAL_OUT hook. That one is gathering the fragments and only accepting
-> that last, reassembled skb, which causes ip6_fragment enter that loop.
-> 
-> So, basically, the easiest way to reproduce this is using this test with
-> loopback and netfilter doing the reassembly during conntrack. I see some BH
-> locks here and there, but I think this is just filling up the backlog too fast
-> to give any chance for softirq to kick in.
-> 
-> I will see if I can reproduce this using routed veths.
-> 
+> diff --git a/net/socket.c b/net/socket.c
+> index ea28cbb9e2e7a7180ee63de2d09a81aacb001ab7..752714281026dab6db850ec7fa75b7aa6240661f 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -2559,7 +2559,10 @@ static int ____sys_recvmsg(struct socket *sock, struct msghdr *msg_sys,
+>  
+>         if (sock->file->f_flags & O_NONBLOCK)
+>                 flags |= MSG_DONTWAIT;
+> -       err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys, flags);
+> +       if (nosec)
+> +               err = sock_recvmsg_nosec(sock, msg_sys, flags);
+> +       else
+> +               err = sock_recvmsg(sock, msg_sys, flags);
+>         if (err < 0)
+>                 goto out;
+>         len = err;
 
-Confirmed that the same happens when using veth.
+Oh, nice! I though the compiler was smart enough to avoid the indirect
+call with the current code, but it looks like that least gcc 9.2.1 is
+not.
 
-vethX (nsX) <-> veth1 (router) forwards through veth2 (router) <-> vethY (nsY)
+Thanks for pointing that out!
 
-With such a setup, when I send those fragments from nsX to nsY, they get
-through, until I setup that same conntrack rule on the router. Then, increasing
-netdev_max_backlog allows those fragments to go through again.
+In this specific scenario I think the code you propose above is better
+than INDIRECT_CALL.
 
-That at least seems to be a plausible scenario that we would like to fix, as
-you said, instead of only making a test pass.
+Would you submit the patch formally?
 
-Next Monday, I may test anything you come up with.
+Thank you!
 
-Thanks.
-Cascardo.
+Paolo
+
