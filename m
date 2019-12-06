@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DFAA114F98
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 12:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C458E114F9F
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 12:09:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbfLFLFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 06:05:17 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:54604 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbfLFLFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 06:05:16 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6B53Gf086517;
-        Fri, 6 Dec 2019 05:05:03 -0600
+        id S1726312AbfLFLJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 06:09:24 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:33142 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726128AbfLFLJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 06:09:24 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB6B7KYf043909;
+        Fri, 6 Dec 2019 05:07:20 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575630303;
-        bh=NQj04N73Ko2XwRvN2MeTWE69+YfdYaANdf4+pxQ7yuI=;
+        s=ti-com-17Q1; t=1575630440;
+        bh=43MIP2YvtyQu/1M9KI8G6euH8OqvsdbRq2rXQEnRmok=;
         h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=DTExk/liU/hLK3PCPl+jiR4CEifmVjk9YGsGxnG1ubPwWPqJO/UYTvuBPMmryeK4k
-         XT5ZTgOxx7kP3pgaKocroEETq9kFwJRfHf64azx/y9VzgH1XqU8uAp8rCYIgun4RnM
-         72aw1OYvyFRuYqNgWzUYXww+PjzdHmLwa1YQH18Y=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB6B53Fm016763
+        b=knuVRvKuQDjE3s9nYvvgOMREZYWNbUjRSPfExtHOZpisBBmwmOOjcszBBjQha9AYG
+         FTTUIdRMF62rKvJrz3+v75vQq4Guic5BUFeAr8NKaZ7xAI0svA86A0RZIFwfiDaVKz
+         7oLuXgy1uPsbhweAGJfuz6VO2arceAbez1W0T5gc=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xB6B7KKp094692
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 Dec 2019 05:05:03 -0600
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 6 Dec 2019 05:07:20 -0600
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 6 Dec
- 2019 05:05:03 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ 2019 05:07:20 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 6 Dec 2019 05:05:03 -0600
+ Frontend Transport; Fri, 6 Dec 2019 05:07:20 -0600
 Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6B50TX117761;
-        Fri, 6 Dec 2019 05:05:01 -0600
-Subject: Re: [PATCH 0/2] net: ethernet: ti: cpsw_switchdev: fix unmet direct
- dependencies detected for NET_SWITCHDEV
-To:     David Miller <davem@davemloft.net>
-CC:     <rdunlap@infradead.org>, <netdev@vger.kernel.org>,
-        <tony@atomide.com>, <nsekhar@ti.com>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB6B7HjZ112203;
+        Fri, 6 Dec 2019 05:07:18 -0600
+Subject: Re: [PATCH 2/2] arm: omap2plus_defconfig: enable NET_SWITCHDEV
+To:     Tony Lindgren <tony@atomide.com>
+CC:     Randy Dunlap <rdunlap@infradead.org>, <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>
 References: <20191204174533.32207-1-grygorii.strashko@ti.com>
- <20191205.143944.1644239054512253859.davem@davemloft.net>
+ <20191204174533.32207-3-grygorii.strashko@ti.com>
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <393acd95-7556-3d68-4e44-b940a7e9bfc8@ti.com>
-Date:   Fri, 6 Dec 2019 13:04:58 +0200
+Message-ID: <c8058866-2be9-831c-19f6-31d17decb6f1@ti.com>
+Date:   Fri, 6 Dec 2019 13:07:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191205.143944.1644239054512253859.davem@davemloft.net>
+In-Reply-To: <20191204174533.32207-3-grygorii.strashko@ti.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -60,22 +60,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Tony,
 
+On 04/12/2019 19:45, Grygorii Strashko wrote:
+> The TI_CPSW_SWITCHDEV definition in Kconfig was changed from "select
+> NET_SWITCHDEV" to "depends on NET_SWITCHDEV", and therefore it is required
+> to explicitelly enable NET_SWITCHDEV config option in omap2plus_defconfig.
+> 
+> Fixes: 3727d259ddaf ("arm: omap2plus_defconfig: enable new cpsw switchdev driver")
+> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> ---
+>   arch/arm/configs/omap2plus_defconfig | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/configs/omap2plus_defconfig b/arch/arm/configs/omap2plus_defconfig
+> index 89cce8d4bc6b..7bbef86a4e76 100644
+> --- a/arch/arm/configs/omap2plus_defconfig
+> +++ b/arch/arm/configs/omap2plus_defconfig
+> @@ -92,6 +92,7 @@ CONFIG_IP_PNP_BOOTP=y
+>   CONFIG_IP_PNP_RARP=y
+>   CONFIG_NETFILTER=y
+>   CONFIG_PHONET=m
+> +CONFIG_NET_SWITCHDEV=y
+>   CONFIG_CAN=m
+>   CONFIG_CAN_C_CAN=m
+>   CONFIG_CAN_C_CAN_PLATFORM=m
+> @@ -182,6 +183,7 @@ CONFIG_SMSC911X=y
+>   # CONFIG_NET_VENDOR_STMICRO is not set
+>   CONFIG_TI_DAVINCI_EMAC=y
+>   CONFIG_TI_CPSW=y
+> +CONFIG_TI_CPSW_SWITCHDEV=y
+>   CONFIG_TI_CPTS=y
+>   # CONFIG_NET_VENDOR_VIA is not set
+>   # CONFIG_NET_VENDOR_WIZNET is not set
+> @@ -554,4 +556,3 @@ CONFIG_DEBUG_INFO_DWARF4=y
+>   CONFIG_MAGIC_SYSRQ=y
+>   CONFIG_SCHEDSTATS=y
+>   # CONFIG_DEBUG_BUGVERBOSE is not set
+> -CONFIG_TI_CPSW_SWITCHDEV=y
+> 
 
-On 06/12/2019 00:39, David Miller wrote:
-> From: Grygorii Strashko <grygorii.strashko@ti.com>
-> Date: Wed, 4 Dec 2019 19:45:31 +0200
-> 
->> This series fixes Kconfig warning with CONFIG_COMPILE_TEST=y reported by
->> Randy Dunlap <rdunlap@infradead.org> [1]
->>
->> [1] https://lkml.org/lkml/2019/12/3/1373
-> 
-> I applied patch #1 to the networking tree, the defconfig update has to be routed via
-> the appropriate architecture tree.
-  
-Thank you.
-  
+Could it be applied as fix, as without it cpsw switch driver will not be built,
+so no networking on am571x-idk
 
 -- 
 Best regards,
