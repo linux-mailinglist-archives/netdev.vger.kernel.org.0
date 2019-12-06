@@ -2,235 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9B9114BB9
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 05:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB0E1114BC7
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 05:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfLFEnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 23:43:50 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:36618 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfLFEnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 23:43:50 -0500
-Received: by mail-pg1-f202.google.com with SMTP id v10so3099360pgg.3
-        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 20:43:49 -0800 (PST)
+        id S1726069AbfLFE6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 23:58:49 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37424 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726009AbfLFE6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 23:58:49 -0500
+Received: by mail-lj1-f193.google.com with SMTP id u17so6212211lja.4
+        for <netdev@vger.kernel.org>; Thu, 05 Dec 2019 20:58:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=c4wxxLpZCdzxQqxDEf2LNiPu22HLAj3SqehdoFkQDqw=;
-        b=v3rh/x/XSVHkkcSDCiRWNOoD8D1PrtnbjjzF45vb0bK5b/cZtxzJXkh70j2rnfHSMV
-         EYwIrdrkDbrNtbsWSE3PvYxwgLjnENPmWwgBlh2rU1G+HRRGBEj5a1QW/mQZPejRkQLi
-         y/WAElQ8AUR3XSiJmHD2km0thA2bBM5F9aO0PuecWf35SKS5jxEXS6obbD5trPREVDP9
-         b1SG5ke16jrKq2X4WIdI9sh0VTa+haX3HSSqOxgfPF0rm2WbRYfpst3ddKOAXakfhwnc
-         2ziNDLvX/84/o9KMQL6tWbt+XIQzKcmz3dkY3vRJd3CAq7SbgwDaEknoPw65H7foDrv4
-         3HNA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9RCKXWAYMi7T/KCr5e/l+vHB/SEuKvUyX32dA7z48pU=;
+        b=kpoU7LEYtTzWxg0tkDtr76nbzrCRlDE/9QyYkzJWl/FigILZ7PSTFmfYXMcnKOIXv2
+         34EEZhr7PcsFseEoslHJ9i8aGOZ0EZoxQN59yRwHLJfLzfeBJF/r/wTOMUjRviZ/SZiJ
+         2B2kTxkfE2SKyuyk4t9scEuVRQYa/nztA0u7HSpG5r9ITI6c1aRCDYvHcQZM36apNHxt
+         0HndnzlIVN/D2QtiHCjYfG9SbWWYcHNlO48857SiehpWR26TUcoevEY7jJfrOPAazrkx
+         +rNfdWbNlbisR8a3C2wHpLET7V2Coyp2nDUINlmon4MI4WANQTdatUWy2J3le+70VIaM
+         PClg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=c4wxxLpZCdzxQqxDEf2LNiPu22HLAj3SqehdoFkQDqw=;
-        b=VL68gGOvfxZADQKRQ4brVw8eT7n12N2bx4HDdLU6vEwsKkYPOKeZycnTnEPMKGCuB8
-         Z4qgj3bw93Q79Id8BwyMTGyyJQTlLRoUbKOcTs0/sqkShBfUR1Z5LK2Xh9V7r9DLturP
-         kl1COBhJoqKvLHAeanNv2oMaGppYmec8dlSmoIpJuwEP/pQH0TMTg4wbZYG6xlzKep1K
-         kmqZcRxxDSyEeOe8GsUvdcGZyGPzssr7JMdK+IQlPc7tzRgemRRKqDj7Wqgcnt8ltdtr
-         vHHmuUjDSscQkh8uCEMz5PCR4daXNEURi5bXZc2GQv0nduVtrDoEfJtA+6bLfhk5Q4LT
-         OSPw==
-X-Gm-Message-State: APjAAAWRfCtlVl0gbhlsvu2OMymyrQ092zhFlSgA1UI6B4II4f3come+
-        V+1gwo+1iyuz9iMCN0XA0yrU9j8r+7NW4Q==
-X-Google-Smtp-Source: APXvYqzhLKlv1JojtrbPd7EOhEj0Mk2PJ6WWiXlgPXZJsoJzj4s1PSTxN+Z295TzxtX04xkzZURaqqWAeXU5Sw==
-X-Received: by 2002:a63:3104:: with SMTP id x4mr1348403pgx.369.1575607429239;
- Thu, 05 Dec 2019 20:43:49 -0800 (PST)
-Date:   Thu,  5 Dec 2019 20:43:46 -0800
-Message-Id: <20191206044346.155271-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
-Subject: [PATCH net] inet: protect against too small mtu values.
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9RCKXWAYMi7T/KCr5e/l+vHB/SEuKvUyX32dA7z48pU=;
+        b=a8Lv1LxyUWPhW2v05YQOR4MEtjisIWjnODkcwcwMz+iSzV7D6wmadCXnjUo/LdNSD4
+         T/WtQ8Af5C+zM/Io5mYaq/7xwnEfMwDwkuTIYPr7eT7I36jZXEmqK0afPOWk7qrQFs/N
+         HlZKce/Mgc/pBG/Kz/fcin/d8VlCFAvZz8CocXj8wI8iQsCp/vguNDMaEXAxi7VMy29Y
+         5iCjgbkmZ814oe2JCavvVYp8giBVJip+fwDny+3e1uW5jky+iHmavVESm9kOsmxR+iOy
+         LsfvLlz98WiMZjRIB7SNyWQ8NZ+ZwUi461+bP5/Nxd9AYIx6N7dd7EW/WYRsr7+I85Vw
+         jtsQ==
+X-Gm-Message-State: APjAAAVmFPm/+P+iRNIJothAwsQp2I8GsDDm+scmg+fWwiOaj1TRk6Jo
+        9q5oLwTUrVnkr9zgjqFqxdT4ZjnXy0GBr2QoPkk=
+X-Google-Smtp-Source: APXvYqwlWu2MiZUnOp30XBRY8mWe8zjSfjQs1aQoIJhPxOsh4s2vzx0+ZZUcoeKPnp1St7QjpWZ1g2GL1t3hS0iap9E=
+X-Received: by 2002:a2e:88c5:: with SMTP id a5mr7631995ljk.201.1575608326299;
+ Thu, 05 Dec 2019 20:58:46 -0800 (PST)
+MIME-Version: 1.0
+References: <20191205163704.11800-1-ap420073@gmail.com> <CY4PR15MB1317AE9CF20E139CED8EEA959A5C0@CY4PR15MB1317.namprd15.prod.outlook.com>
+In-Reply-To: <CY4PR15MB1317AE9CF20E139CED8EEA959A5C0@CY4PR15MB1317.namprd15.prod.outlook.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Fri, 6 Dec 2019 13:58:34 +0900
+Message-ID: <CAMArcTV3CDz=M_Z3Z25yG8tkyc5r8+FeM9DCPav2rdrPwpMQ+g@mail.gmail.com>
+Subject: Re: [PATCH net] tipc: fix ordering of tipc module init and exit routine
+To:     Jon Maloy <jon.maloy@ericsson.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot was once again able to crash a host by setting a very small mtu
-on loopback device.
+On Fri, 6 Dec 2019 at 06:11, Jon Maloy <jon.maloy@ericsson.com> wrote:
+>
 
-Let's make inetdev_valid_mtu() available in include/net/ip.h,
-and use it in ip_setup_cork(), so that we protect both ip_append_page()
-and __ip_append_data()
+Hi Jon,
+Thank you for your review!
 
-Also add a READ_ONCE() when the device mtu is read.
+> Hi Taehee,
+> Why didn't you move netlink_compat_stop() too?
+>
 
-Pairs this lockless read with one WRITE_ONCE() in __dev_set_mtu(),
-even if other code paths might write over this field.
+This is my mistake.
+netlink_compat_sopt() should be moved too.
+I will send a v2 patch.
 
-Add a big comment in include/linux/netdevice.h about dev->mtu
-needing READ_ONCE()/WRITE_ONCE() annotations.
+Thank you!
+Taehee Yoo
 
-Hopefully we will add the missing ones in followup patches.
-
-[1]
-
-refcount_t: saturated; leaking memory.
-WARNING: CPU: 0 PID: 9464 at lib/refcount.c:22 refcount_warn_saturate+0x138/0x1f0 lib/refcount.c:22
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 9464 Comm: syz-executor850 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x3e kernel/panic.c:582
- report_bug+0x289/0x300 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:174 [inline]
- fixup_bug arch/x86/kernel/traps.c:169 [inline]
- do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
- do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:refcount_warn_saturate+0x138/0x1f0 lib/refcount.c:22
-Code: 06 31 ff 89 de e8 c8 f5 e6 fd 84 db 0f 85 6f ff ff ff e8 7b f4 e6 fd 48 c7 c7 e0 71 4f 88 c6 05 56 a6 a4 06 01 e8 c7 a8 b7 fd <0f> 0b e9 50 ff ff ff e8 5c f4 e6 fd 0f b6 1d 3d a6 a4 06 31 ff 89
-RSP: 0018:ffff88809689f550 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815e4336 RDI: ffffed1012d13e9c
-RBP: ffff88809689f560 R08: ffff88809c50a3c0 R09: fffffbfff15d31b1
-R10: fffffbfff15d31b0 R11: ffffffff8ae98d87 R12: 0000000000000001
-R13: 0000000000040100 R14: ffff888099041104 R15: ffff888218d96e40
- refcount_add include/linux/refcount.h:193 [inline]
- skb_set_owner_w+0x2b6/0x410 net/core/sock.c:1999
- sock_wmalloc+0xf1/0x120 net/core/sock.c:2096
- ip_append_page+0x7ef/0x1190 net/ipv4/ip_output.c:1383
- udp_sendpage+0x1c7/0x480 net/ipv4/udp.c:1276
- inet_sendpage+0xdb/0x150 net/ipv4/af_inet.c:821
- kernel_sendpage+0x92/0xf0 net/socket.c:3794
- sock_sendpage+0x8b/0xc0 net/socket.c:936
- pipe_to_sendpage+0x2da/0x3c0 fs/splice.c:458
- splice_from_pipe_feed fs/splice.c:512 [inline]
- __splice_from_pipe+0x3ee/0x7c0 fs/splice.c:636
- splice_from_pipe+0x108/0x170 fs/splice.c:671
- generic_splice_sendpage+0x3c/0x50 fs/splice.c:842
- do_splice_from fs/splice.c:861 [inline]
- direct_splice_actor+0x123/0x190 fs/splice.c:1035
- splice_direct_to_actor+0x3b4/0xa30 fs/splice.c:990
- do_splice_direct+0x1da/0x2a0 fs/splice.c:1078
- do_sendfile+0x597/0xd00 fs/read_write.c:1464
- __do_sys_sendfile64 fs/read_write.c:1525 [inline]
- __se_sys_sendfile64 fs/read_write.c:1511 [inline]
- __x64_sys_sendfile64+0x1dd/0x220 fs/read_write.c:1511
- do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x441409
-Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffb64c4f78 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441409
-RDX: 0000000000000000 RSI: 0000000000000006 RDI: 0000000000000005
-RBP: 0000000000073b8a R08: 0000000000000010 R09: 0000000000000010
-R10: 0000000000010001 R11: 0000000000000246 R12: 0000000000402180
-R13: 0000000000402210 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-Fixes: 1470ddf7f8ce ("inet: Remove explicit write references to sk/inet in ip_append_data")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- include/linux/netdevice.h |  5 +++++
- include/net/ip.h          |  5 +++++
- net/core/dev.c            |  3 ++-
- net/ipv4/devinet.c        |  5 -----
- net/ipv4/ip_output.c      | 13 ++++++++-----
- 5 files changed, 20 insertions(+), 11 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index cf0923579af4f50f60b1daa2aece483787e260cd..9ef20389622d7bbefbf5ab30a2897ba8b2290cb1 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1881,6 +1881,11 @@ struct net_device {
- 	unsigned char		if_port;
- 	unsigned char		dma;
- 
-+	/* Note : dev->mtu is often read without holding a lock.
-+	 * Writers usually hold RTNL.
-+	 * It is recommended to use READ_ONCE() to annotate the reads,
-+	 * and to use WRITE_ONCE() to annotate the writes.
-+	 */
- 	unsigned int		mtu;
- 	unsigned int		min_mtu;
- 	unsigned int		max_mtu;
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 02d68e346f6729ddd5fb019ff70cdad6a46983a5..5b317c9f4470a93abae9cbe8e7dfd3e919aa8851 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -760,4 +760,9 @@ int ip_misc_proc_init(void);
- int rtm_getroute_parse_ip_proto(struct nlattr *attr, u8 *ip_proto, u8 family,
- 				struct netlink_ext_ack *extack);
- 
-+static inline bool inetdev_valid_mtu(unsigned int mtu)
-+{
-+	return likely(mtu >= IPV4_MIN_MTU);
-+}
-+
- #endif	/* _IP_H */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index e7c027fb48084f4ff32a7d5b4d69100716ddabd9..2c277b8aba38bf348093967a0fe7dd1d0aca4796 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8188,7 +8188,8 @@ int __dev_set_mtu(struct net_device *dev, int new_mtu)
- 	if (ops->ndo_change_mtu)
- 		return ops->ndo_change_mtu(dev, new_mtu);
- 
--	dev->mtu = new_mtu;
-+	/* Pairs with all the lockless reads of dev->mtu in the stack */
-+	WRITE_ONCE(dev->mtu, new_mtu);
- 	return 0;
- }
- EXPORT_SYMBOL(__dev_set_mtu);
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index a4b5bd4d2c89e0ce9574199a467d53ee8504876c..e4632bd2026d8ee9d4e4618fbbf3117648080fa4 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -1496,11 +1496,6 @@ static void inetdev_changename(struct net_device *dev, struct in_device *in_dev)
- 	}
- }
- 
--static bool inetdev_valid_mtu(unsigned int mtu)
--{
--	return mtu >= IPV4_MIN_MTU;
--}
--
- static void inetdev_send_gratuitous_arp(struct net_device *dev,
- 					struct in_device *in_dev)
- 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 9d83cb320dcb77d803554b950adce0d655c043ae..14db1e0b8a6e120a9410669dd635c32b77637818 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1258,15 +1258,18 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
- 		cork->addr = ipc->addr;
- 	}
- 
--	/*
--	 * We steal reference to this route, caller should not release it
--	 */
--	*rtp = NULL;
- 	cork->fragsize = ip_sk_use_pmtu(sk) ?
--			 dst_mtu(&rt->dst) : rt->dst.dev->mtu;
-+			 dst_mtu(&rt->dst) : READ_ONCE(rt->dst.dev->mtu);
-+
-+	if (!inetdev_valid_mtu(cork->fragsize))
-+		return -ENETUNREACH;
- 
- 	cork->gso_size = ipc->gso_size;
-+
- 	cork->dst = &rt->dst;
-+	/* We stole this route, caller should not release it. */
-+	*rtp = NULL;
-+
- 	cork->length = 0;
- 	cork->ttl = ipc->ttl;
- 	cork->tos = ipc->tos;
--- 
-2.24.0.393.g34dc348eaf-goog
-
+> ///jon
+>
+>
+> > -----Original Message-----
+> > From: Taehee Yoo <ap420073@gmail.com>
+> > Sent: 5-Dec-19 11:37
+> > To: davem@davemloft.net; Jon Maloy <jon.maloy@ericsson.com>; ying.xue@windriver.com;
+> > netdev@vger.kernel.org
+> > Cc: ap420073@gmail.com
+> > Subject: [PATCH net] tipc: fix ordering of tipc module init and exit routine
+> >
+> > In order to set/get/dump, the tipc uses the generic netlink
+> > infrastructure. So, when tipc module is inserted, init function
+> > calls genl_register_family().
+> > After genl_register_family(), set/get/dump commands are immediately
+> > allowed and these callbacks internally use the net_generic.
+> > net_generic is allocated by register_pernet_device() but this
+> > is called after genl_register_family() in the __init function.
+> > So, these callbacks would use un-initialized net_generic.
+> >
+> > Test commands:
+> >     #SHELL1
+> >     while :
+> >     do
+> >         modprobe tipc
+> >       modprobe -rv tipc
+> >     done
+> >
+> >     #SHELL2
+> >     while :
+> >     do
+> >         tipc link list
+> >     done
+> >
+> > Splat looks like:
+> > [   59.616322][ T2788] kasan: CONFIG_KASAN_INLINE enabled
+> > [   59.617234][ T2788] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> > [   59.618398][ T2788] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+> > [   59.619389][ T2788] CPU: 3 PID: 2788 Comm: tipc Not tainted 5.4.0+ #194
+> > [   59.620231][ T2788] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox
+> > 12/01/2006
+> > [   59.621428][ T2788] RIP: 0010:tipc_bcast_get_broadcast_mode+0x131/0x310 [tipc]
+> > [   59.622379][ T2788] Code: c7 c6 ef 8b 38 c0 65 ff 0d 84 83 c9 3f e8 d7 a5 f2 e3 48 8d bb 38 11 00 00 48
+> > b8 00 00 00 00
+> > [   59.622550][ T2780] NET: Registered protocol family 30
+> > [   59.624627][ T2788] RSP: 0018:ffff88804b09f578 EFLAGS: 00010202
+> > [   59.624630][ T2788] RAX: dffffc0000000000 RBX: 0000000000000011 RCX: 000000008bc66907
+> > [   59.624631][ T2788] RDX: 0000000000000229 RSI: 000000004b3cf4cc RDI: 0000000000001149
+> > [   59.624633][ T2788] RBP: ffff88804b09f588 R08: 0000000000000003 R09: fffffbfff4fb3df1
+> > [   59.624635][ T2788] R10: fffffbfff50318f8 R11: ffff888066cadc18 R12: ffffffffa6cc2f40
+> > [   59.624637][ T2788] R13: 1ffff11009613eba R14: ffff8880662e9328 R15: ffff8880662e9328
+> > [   59.624639][ T2788] FS:  00007f57d8f7b740(0000) GS:ffff88806cc00000(0000)
+> > knlGS:0000000000000000
+> > [   59.624645][ T2788] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   59.625875][ T2780] tipc: Started in single node mode
+> > [   59.626128][ T2788] CR2: 00007f57d887a8c0 CR3: 000000004b140002 CR4: 00000000000606e0
+> > [   59.633991][ T2788] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [   59.635195][ T2788] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > [   59.636478][ T2788] Call Trace:
+> > [   59.637025][ T2788]  tipc_nl_add_bc_link+0x179/0x1470 [tipc]
+> > [   59.638219][ T2788]  ? lock_downgrade+0x6e0/0x6e0
+> > [   59.638923][ T2788]  ? __tipc_nl_add_link+0xf90/0xf90 [tipc]
+> > [   59.639533][ T2788]  ? tipc_nl_node_dump_link+0x318/0xa50 [tipc]
+> > [   59.640160][ T2788]  ? mutex_lock_io_nested+0x1380/0x1380
+> > [   59.640746][ T2788]  tipc_nl_node_dump_link+0x4fd/0xa50 [tipc]
+> > [   59.641356][ T2788]  ? tipc_nl_node_reset_link_stats+0x340/0x340 [tipc]
+> > [   59.642088][ T2788]  ? __skb_ext_del+0x270/0x270
+> > [   59.642594][ T2788]  genl_lock_dumpit+0x85/0xb0
+> > [   59.643050][ T2788]  netlink_dump+0x49c/0xed0
+> > [   59.643529][ T2788]  ? __netlink_sendskb+0xc0/0xc0
+> > [   59.644044][ T2788]  ? __netlink_dump_start+0x190/0x800
+> > [   59.644617][ T2788]  ? __mutex_unlock_slowpath+0xd0/0x670
+> > [   59.645177][ T2788]  __netlink_dump_start+0x5a0/0x800
+> > [   59.645692][ T2788]  genl_rcv_msg+0xa75/0xe90
+> > [   59.646144][ T2788]  ? __lock_acquire+0xdfe/0x3de0
+> > [   59.646692][ T2788]  ? genl_family_rcv_msg_attrs_parse+0x320/0x320
+> > [   59.647340][ T2788]  ? genl_lock_dumpit+0xb0/0xb0
+> > [   59.647821][ T2788]  ? genl_unlock+0x20/0x20
+> > [   59.648290][ T2788]  ? genl_parallel_done+0xe0/0xe0
+> > [   59.648787][ T2788]  ? find_held_lock+0x39/0x1d0
+> > [   59.649276][ T2788]  ? genl_rcv+0x15/0x40
+> > [   59.649722][ T2788]  ? lock_contended+0xcd0/0xcd0
+> > [   59.650296][ T2788]  netlink_rcv_skb+0x121/0x350
+> > [   59.650828][ T2788]  ? genl_family_rcv_msg_attrs_parse+0x320/0x320
+> > [   59.651491][ T2788]  ? netlink_ack+0x940/0x940
+> > [   59.651953][ T2788]  ? lock_acquire+0x164/0x3b0
+> > [   59.652449][ T2788]  genl_rcv+0x24/0x40
+> > [   59.652841][ T2788]  netlink_unicast+0x421/0x600
+> > [ ... ]
+> >
+> > Fixes: 7e4369057806 ("tipc: fix a slab object leak")
+> > Fixes: a62fbccecd62 ("tipc: make subscriber server support net namespace")
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >  net/tipc/core.c | 27 ++++++++++++++-------------
+> >  1 file changed, 14 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/net/tipc/core.c b/net/tipc/core.c
+> > index 7532a00ac73d..f5a55c225742 100644
+> > --- a/net/tipc/core.c
+> > +++ b/net/tipc/core.c
+> > @@ -148,14 +148,6 @@ static int __init tipc_init(void)
+> >       sysctl_tipc_rmem[1] = RCVBUF_DEF;
+> >       sysctl_tipc_rmem[2] = RCVBUF_MAX;
+> >
+> > -     err = tipc_netlink_start();
+> > -     if (err)
+> > -             goto out_netlink;
+> > -
+> > -     err = tipc_netlink_compat_start();
+> > -     if (err)
+> > -             goto out_netlink_compat;
+> > -
+> >       err = tipc_register_sysctl();
+> >       if (err)
+> >               goto out_sysctl;
+> > @@ -180,8 +172,21 @@ static int __init tipc_init(void)
+> >       if (err)
+> >               goto out_bearer;
+> >
+> > +     err = tipc_netlink_start();
+> > +     if (err)
+> > +             goto out_netlink;
+> > +
+> > +     err = tipc_netlink_compat_start();
+> > +     if (err)
+> > +             goto out_netlink_compat;
+> > +
+> >       pr_info("Started in single node mode\n");
+> >       return 0;
+> > +
+> > +out_netlink_compat:
+> > +     tipc_netlink_stop();
+> > +out_netlink:
+> > +     tipc_bearer_cleanup();
+> >  out_bearer:
+> >       unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
+> >  out_register_pernet_subsys:
+> > @@ -193,22 +198,18 @@ static int __init tipc_init(void)
+> >  out_pernet:
+> >       tipc_unregister_sysctl();
+> >  out_sysctl:
+> > -     tipc_netlink_compat_stop();
+> > -out_netlink_compat:
+> > -     tipc_netlink_stop();
+> > -out_netlink:
+> >       pr_err("Unable to start in single node mode\n");
+> >       return err;
+> >  }
+> >
+> >  static void __exit tipc_exit(void)
+> >  {
+> > +     tipc_netlink_stop();
+> >       tipc_bearer_cleanup();
+> >       unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
+> >       unregister_pernet_device(&tipc_topsrv_net_ops);
+> >       tipc_socket_stop();
+> >       unregister_pernet_device(&tipc_net_ops);
+> > -     tipc_netlink_stop();
+> >       tipc_netlink_compat_stop();
+> >       tipc_unregister_sysctl();
+> >
+> > --
+> > 2.17.1
+>
