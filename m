@@ -2,88 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B8F114A18
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 01:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB00114A26
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 01:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbfLFAEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 Dec 2019 19:04:33 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:39711 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfLFAEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 19:04:32 -0500
-Received: by mail-wm1-f66.google.com with SMTP id s14so5628050wmh.4;
-        Thu, 05 Dec 2019 16:04:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=SB4mGJSmMgtRXiCcPnqkbQ0iDAYtS0GIndUtNNEVoic=;
-        b=lXWvRvmoHhihEyfM5qUUTLXG5+izV2RcrtH8EoqSpDtFcqkqVHy9rT6gMd54n1Nd34
-         B71gWLpjasyd3bSA36X4tplDflwp44leVD8HvDze21Ngh1JwWNDap8Ei0nGBVbD0PtQr
-         +tBAduf6wnElmxxFItEEh7AUFz7b+x0A6nkqTrT8RWc9rcIGJUcSMahYPAsB+PESLWqK
-         qv9CUsrK92xf+2P+3o/AmeYOhDAylDs4qPSjC2sVQp/wGUZfBN8E+pNhOIyYiAQD6oLE
-         mSgbEMtBavvl1mtnAD5YzcfCdVEZs0b09qDm/xs8cMSikjX+XsXcfqU5Oo6weV+0sO3j
-         imuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SB4mGJSmMgtRXiCcPnqkbQ0iDAYtS0GIndUtNNEVoic=;
-        b=c2bS+D50VYHxqawDTubAf8ahhmnP/zC19hq2r4rAGpMDDmKh9fBevGcJYSYBgC9u+k
-         J6m7nhUZCqsN+cyRsZwEgbprqni2zP9fDOohfLrquOUX6Wjyi11DQIUzYGcAy0s2uLT6
-         uGkmRYb/Zcriz1rqqDJh+/TLIgDnIQNadaQJubkLdeP7nB5I0mYvHL5QCPTLJ+9Bzzaz
-         X1OB8JR9hwXRZXTEUyw38R3TLKCjX7m6Qh5zf1gPglUG2uwT+3wQpsQh7MWudhk3W5OF
-         QMuISA+L40548ArLJQLwYe0m8ICv20+xdGoi8pOnZlNbPBk6U0jZkxm5czjCXuZwNjsc
-         KNiw==
-X-Gm-Message-State: APjAAAWypQRt1/Cxe54pPuBbqHEvj2RDHL+QtEKh7arQOPSkWr1q0XW9
-        6Lf25msxhJ8OzsSZ5fn9sF6jAHju
-X-Google-Smtp-Source: APXvYqySUxIMqETb+4GU/9BLZSHkc0katccRcNlcK1X8zN/xqi6vAeqzCbP4mIxycL2w83FnlIxzRg==
-X-Received: by 2002:a7b:ce81:: with SMTP id q1mr7872343wmj.47.1575590669898;
-        Thu, 05 Dec 2019 16:04:29 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h17sm14695710wrs.18.2019.12.05.16.04.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Dec 2019 16:04:29 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-arm-kernel@vger.kernel.org
-Cc:     grygorii.strashko@ti.com, simon.horman@netronome.com,
-        robh+dt@kernel.org, rafal@milecki.pl, davem@davemloft.net,
-        andrew@lunn.ch, mark.rutland@arm.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH] ARM: dts: BCM5301X: Fix MDIO node address/size cells
-Date:   Thu,  5 Dec 2019 16:04:21 -0800
-Message-Id: <20191206000421.12541-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726073AbfLFAND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 Dec 2019 19:13:03 -0500
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:51985 "EHLO
+        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725926AbfLFAND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 Dec 2019 19:13:03 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id 02D8E86B;
+        Thu,  5 Dec 2019 19:12:59 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 05 Dec 2019 19:13:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm2; bh=fz1pVXQGQqPw7fMZqdwqo5yGT8
+        GE1PKnAQW+yVWgJV0=; b=q1u3F8rYdcY9H5WwJeAzUeAIOnOQdgJnFD1/QsYJtl
+        RRe7oN6YkdxYmKhApiArgPy7VrHHnNarfFFCOPqr9xKBqICMtgwmbEfxs3wLRjXr
+        QTfKgBGkX02Ez1hBmUnoxwIdOMGv+b/h/t8NaACHxc8KGUBf76tNaNlNTV02gBDl
+        Wr7xLsaFMbmRG35K0//M1oVAPuNlLfPPU/JG1yRn6pVgRaFEIjGE0ovq8hxwTktU
+        UVrt6tqjzavkxgsLOfMVpv4huPgxd4nApRtpbMAsO9K1CBPyHfqIYIrIRGmYGHk0
+        ZOp+rn6byY2oyvPkYieaYEMfRFu1oKz7Xrp2P4/J47fg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=fz1pVXQGQqPw7fMZq
+        dwqo5yGT8GE1PKnAQW+yVWgJV0=; b=OIfCWXxtwLG8CHraktq8HVxWmHQ/5w+1b
+        4kDvQIpauZDx7PBkBB9uYhdg8zqh6Paw3VYzzoMJ9FbAErWjQ1qoG2TV/XrsY1Sb
+        ZmdCedq9BVr1NTiu2QzUhxVOD5jxp3vQItiF7M45IRot+4kgLbWu6wIKsWGAyhOD
+        tnUiQr7IOg7grDfNQLgfQFEExYiyKqs+7bah0WHMGSpbTdKop50A0Jgt89idoAJK
+        MvfZ0KOveVpyNVu8vyr0A/ZLbIdunfGhhEM3O8s5tY0c3cXQcbGDXMVUL12DLO5U
+        3s0WqSAnPcqupVXEbFvQ32JWDB7y7jsCkLfqxj26wUR+MmqGuf6wg==
+X-ME-Sender: <xms:Cp3pXSB3GFN0nGQV23psR1i7PmDGZfYp7d5-8qrsOq8SLrnjprrfNQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudekuddgudekfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
+    fvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeffrghnihgvlhcuighuuceougig
+    uhesugiguhhuuhdrgiihiieqnecukfhppeejfedrleefrddvgeejrddufeegnecurfgrrh
+    grmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiiinecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:Cp3pXULxqOWGFrErZbggpanLYLVoGbBQ7vtjpUcFLIgZsiYnJI_bOQ>
+    <xmx:Cp3pXVwMUUxTaJXi0fbjUIAG_1RyldRUxwhtOCW4aPYzOP0RXXNNCQ>
+    <xmx:Cp3pXYzQLuNzgMnkwhVjbKqzeD058bielN2rtsqPA-STQ3x0vdiWVA>
+    <xmx:C53pXX7WjExU2RyRdGAcOCp3yy4rM2zesO_T3lICaLJGOzkjcPRvyRxrKg4>
+Received: from localhost.localdomain (c-73-93-247-134.hsd1.ca.comcast.net [73.93.247.134])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 12F6180065;
+        Thu,  5 Dec 2019 19:12:56 -0500 (EST)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf] bpf: Add LBR data to BPF_PROG_TYPE_PERF_EVENT prog context
+Date:   Thu,  5 Dec 2019 16:12:26 -0800
+Message-Id: <20191206001226.67825-1-dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.24.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO node on BCM5301X had an reversed #address-cells and
- #size-cells properties, correct those, silencing checker warnings:
+Last-branch-record is an intel CPU feature that can be configured to
+record certain branches that are taken during code execution. This data
+is particularly interesting for profile guided optimizations. perf has
+had LBR support for a while but the data collection can be a bit coarse
+grained.
 
-.../linux/arch/arm/boot/dts/bcm4708-asus-rt-ac56u.dt.yaml: mdio@18003000: #address-cells:0:0: 1 was expected
+We (Facebook) have recently run a lot of experiments with feeding
+filtered LBR data to various PGO pipelines. We've seen really good
+results (+2.5% throughput with lower cpu util and lower latency) by
+feeding high request latency LBR branches to the compiler on a
+request-oriented service. We used bpf to read a special request context
+ID (which is how we associate branches with latency) from a fixed
+userspace address. Reading from the fixed address is why bpf support is
+useful.
 
-Reported-by: Simon Horman <simon.horman@netronome.com>
-Fixes: 23f1eca6d59b ("ARM: dts: BCM5301X: Specify MDIO bus in the DT")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Aside from this particular use case, having LBR data available to bpf
+progs can be useful to get stack traces out of userspace applications
+that omit frame pointers.
+
+This patch adds support for LBR data to bpf perf progs.
+
+Some notes:
+* We use `__u64 entries[BPF_MAX_LBR_ENTRIES * 3]` instead of
+  `struct perf_branch_entry[BPF_MAX_LBR_ENTRIES]` because checkpatch.pl
+  warns about including a uapi header from another uapi header
+
+* We define BPF_MAX_LBR_ENTRIES as 32 (instead of using the value from
+  arch/x86/events/perf_events.h) because including arch specific headers
+  seems wrong and could introduce circular header includes.
+
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- arch/arm/boot/dts/bcm5301x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/uapi/linux/bpf_perf_event.h |  5 ++++
+ kernel/trace/bpf_trace.c            | 39 +++++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm5301x.dtsi b/arch/arm/boot/dts/bcm5301x.dtsi
-index 372dc1eb88a0..2d9b4dd05830 100644
---- a/arch/arm/boot/dts/bcm5301x.dtsi
-+++ b/arch/arm/boot/dts/bcm5301x.dtsi
-@@ -353,8 +353,8 @@
- 	mdio: mdio@18003000 {
- 		compatible = "brcm,iproc-mdio";
- 		reg = <0x18003000 0x8>;
--		#size-cells = <1>;
--		#address-cells = <0>;
-+		#size-cells = <0>;
-+		#address-cells = <1>;
- 	};
+diff --git a/include/uapi/linux/bpf_perf_event.h b/include/uapi/linux/bpf_perf_event.h
+index eb1b9d21250c..dc87e3d50390 100644
+--- a/include/uapi/linux/bpf_perf_event.h
++++ b/include/uapi/linux/bpf_perf_event.h
+@@ -10,10 +10,15 @@
  
- 	mdio-bus-mux@18003000 {
+ #include <asm/bpf_perf_event.h>
+ 
++#define BPF_MAX_LBR_ENTRIES 32
++
+ struct bpf_perf_event_data {
+ 	bpf_user_pt_regs_t regs;
+ 	__u64 sample_period;
+ 	__u64 addr;
++	__u64 nr_lbr;
++	/* Cast to struct perf_branch_entry* before using */
++	__u64 entries[BPF_MAX_LBR_ENTRIES * 3];
+ };
+ 
+ #endif /* _UAPI__LINUX_BPF_PERF_EVENT_H__ */
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index ffc91d4935ac..96ba7995b3d7 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1259,6 +1259,14 @@ static bool pe_prog_is_valid_access(int off, int size, enum bpf_access_type type
+ 		if (!bpf_ctx_narrow_access_ok(off, size, size_u64))
+ 			return false;
+ 		break;
++	case bpf_ctx_range(struct bpf_perf_event_data, nr_lbr):
++		bpf_ctx_record_field_size(info, size_u64);
++		if (!bpf_ctx_narrow_access_ok(off, size, size_u64))
++			return false;
++		break;
++	case bpf_ctx_range(struct bpf_perf_event_data, entries):
++		/* No narrow loads */
++		break;
+ 	default:
+ 		if (size != sizeof(long))
+ 			return false;
+@@ -1273,6 +1281,7 @@ static u32 pe_prog_convert_ctx_access(enum bpf_access_type type,
+ 				      struct bpf_prog *prog, u32 *target_size)
+ {
+ 	struct bpf_insn *insn = insn_buf;
++	int off;
+ 
+ 	switch (si->off) {
+ 	case offsetof(struct bpf_perf_event_data, sample_period):
+@@ -1291,6 +1300,36 @@ static u32 pe_prog_convert_ctx_access(enum bpf_access_type type,
+ 				      bpf_target_off(struct perf_sample_data, addr, 8,
+ 						     target_size));
+ 		break;
++	case offsetof(struct bpf_perf_event_data, nr_lbr):
++		/* Load struct perf_sample_data* */
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_perf_event_data_kern,
++						       data), si->dst_reg, si->src_reg,
++				      offsetof(struct bpf_perf_event_data_kern, data));
++		/* Load struct perf_branch_stack* */
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct perf_sample_data, br_stack),
++				      si->dst_reg, si->dst_reg,
++				      offsetof(struct perf_sample_data, br_stack));
++		/* Load nr */
++		*insn++ = BPF_LDX_MEM(BPF_DW, si->dst_reg, si->dst_reg,
++				      bpf_target_off(struct perf_branch_stack, nr, 8,
++						     target_size));
++		break;
++	case bpf_ctx_range(struct bpf_perf_event_data, entries):
++		off = si->off;
++		off -= offsetof(struct bpf_perf_event_data, entries);
++
++		/* Load struct perf_sample_data* */
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_perf_event_data_kern,
++						       data), si->dst_reg, si->src_reg,
++				      offsetof(struct bpf_perf_event_data_kern, data));
++		/* Load struct perf_branch_stack* */
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct perf_sample_data, br_stack),
++				      si->dst_reg, si->dst_reg,
++				      offsetof(struct perf_sample_data, br_stack));
++		/* Load requested memory */
++		*insn++ = BPF_LDX_MEM(BPF_SIZE(si->code), si->dst_reg, si->dst_reg,
++				      offsetof(struct perf_branch_stack, entries) + off);
++		break;
+ 	default:
+ 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct bpf_perf_event_data_kern,
+ 						       regs), si->dst_reg, si->src_reg,
 -- 
-2.17.1
+2.24.0
 
