@@ -2,91 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5591153CE
-	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D477B1153DC
+	for <lists+netdev@lfdr.de>; Fri,  6 Dec 2019 16:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbfLFPEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 10:04:07 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54915 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726246AbfLFPEH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 10:04:07 -0500
-Received: by mail-wm1-f67.google.com with SMTP id b11so8139722wmj.4
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 07:04:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tuvOGUuphJljqsnwDIlOzeJI6mW7RcXZeFFjeM8e4r4=;
-        b=QmwNLtFATd48WBCWkzfXF2PUktVrnW2JvtHyzc/RNtl9DFNqFi4hCRG0KZ1TlnezIE
-         Bqhee/Y+nuqH8Knr/vrtZ9QrOkT0kZxA9fMYm/5m0JLnhZGc+ycod3790AlCs+w2n244
-         F+lA597OKPY8EtH6U670qA51RId8krDH6wykGmpGh5fTG5C5mhV7FLT8RK644aGsAxBE
-         E7HqskV8fC1fuJ+nUPHKO0Qg1F62RRm1vzyfh1NcXwY8+NXeNw0NcLj5qi7GEpOniYHT
-         LeLrp0Qw7v4b/9XNHJR0cBmnnSW2bPO+J1sPYWvK9D5yXC9rTeKiuZgVY+KlRzxW/vJ8
-         rTEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tuvOGUuphJljqsnwDIlOzeJI6mW7RcXZeFFjeM8e4r4=;
-        b=dfU0i/rPRNMxeY3uQ0C+TDFunIdQ7esGFB7U4OZ08HTPuMEACRbIBRTQ9505y5pNwE
-         kSlhzfI7FrFsgjrNTaug7oqq4qiQqeQI/2LnWkfy4OyKLNNdJYjqfqMoPupqfVEyzSvp
-         UZjQJFSIOiefDLPwHHKBtmhadsgZC8fMWDr9NHgPPz25US59/n6dDefWEiITx+Z2cJpx
-         YzOe525tRbhGO4dQjO7Y/xSH8rVB68WqOMafVZfInOWCaq7imwnxCoVDwylvISmAczXn
-         +7NCzU/Evdo8f+iG7QyyeE6UnZhaNqtqIIJxCxQj10xw/heS0a+DM+cXqG4wR+zdBz6/
-         FmRQ==
-X-Gm-Message-State: APjAAAXJ5jG2ct4e8q7E+47ZnGkKi9b6Tss5PzBJm9A3mnCwAswUdu51
-        OFdiqmEKL3uBTy7Kc3Z8AwFqNZXHe1fmfnu+QMazJbgA
-X-Google-Smtp-Source: APXvYqzyRHenQtcqmgVOdsiZMeMYc3m+ZfRoSUkn34CcLrOmFqsJ6v073EcfdvFiQPQgEL+2bk/Hk1H0lLozmaZlOAs=
-X-Received: by 2002:a1c:4004:: with SMTP id n4mr10318722wma.153.1575644645067;
- Fri, 06 Dec 2019 07:04:05 -0800 (PST)
+        id S1726465AbfLFPG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 10:06:27 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:43908 "EHLO fd.dlink.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726244AbfLFPG0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 6 Dec 2019 10:06:26 -0500
+Received: by fd.dlink.ru (Postfix, from userid 5000)
+        id 46DE61B214D6; Fri,  6 Dec 2019 18:06:22 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 46DE61B214D6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
+        t=1575644783; bh=TNURWtYg5VbgmOVt3Zu3a5GrkMmxUJgdKkf+0OlgfLQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References;
+        b=lHbMNkR+fWnv0r2T339Yr8QNbkjw+56435jESnAW0VZswNTpRQnSVj+ZlsqIe6Qd2
+         HFxFiBh+Odu+eYudoZNs+eXtT3GqmfNsm5+yv+vgUEx//zGosjtjUPM2YGryvMuBxR
+         bXMODReAz4v6JrvN0JHsgxpD9ugyYCAPg4RyeQGQ=
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
+X-Spam-Level: 
+X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
+        USER_IN_WHITELIST autolearn=disabled version=3.4.2
+Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
+        by fd.dlink.ru (Postfix) with ESMTP id 00AD41B21308;
+        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 00AD41B21308
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 8D5981B20228;
+        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
+Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
+        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
+        Fri,  6 Dec 2019 18:06:09 +0300 (MSK)
 MIME-Version: 1.0
-References: <20191205181015.169651-1-edumazet@google.com> <CADVnQy=xkpckodjF16YF=tZ34bMB2QLQ=BTJeGyaidcPaTiAGQ@mail.gmail.com>
-In-Reply-To: <CADVnQy=xkpckodjF16YF=tZ34bMB2QLQ=BTJeGyaidcPaTiAGQ@mail.gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Fri, 6 Dec 2019 10:03:27 -0500
-Message-ID: <CACSApvb7Yz5xZjS=Qf8Sw1ftWGBU1Xn0+w8vrH1qjruv+PF-+Q@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: md5: fix potential overestimation of TCP option space
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Fri, 06 Dec 2019 18:06:09 +0300
+From:   Alexander Lobakin <alobakin@dlink.ru>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Muciri Gatimu <muciri@openmesh.com>,
+        Shashidhar Lakkavalli <shashidhar.lakkavalli@openmesh.com>,
+        John Crispin <john@phrozen.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: fix flow dissection on Tx path
+In-Reply-To: <5d3d0907-4f99-ccda-82f4-12e514c5edb2@gmail.com>
+References: <20191205100235.14195-1-alobakin@dlink.ru>
+ <5d3d0907-4f99-ccda-82f4-12e514c5edb2@gmail.com>
+User-Agent: Roundcube Webmail/1.4.0
+Message-ID: <71305dd0f15bd065f9b1eedd4f61123e@dlink.ru>
+X-Sender: alobakin@dlink.ru
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 6, 2019 at 9:49 AM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Thu, Dec 5, 2019 at 1:10 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > Back in 2008, Adam Langley fixed the corner case of packets for flows
-> > having all of the following options : MD5 TS SACK
-> >
-> > Since MD5 needs 20 bytes, and TS needs 12 bytes, no sack block
-> > can be cooked from the remaining 8 bytes.
-> >
-> > tcp_established_options() correctly sets opts->num_sack_blocks
-> > to zero, but returns 36 instead of 32.
-> >
-> > This means TCP cooks packets with 4 extra bytes at the end
-> > of options, containing unitialized bytes.
-> >
-> > Fixes: 33ad798c924b ("tcp: options clean up")
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > ---
->
-> Acked-by: Neal Cardwell <ncardwell@google.com>
+Florian Fainelli wrote 06.12.2019 06:28:
+> On 12/5/2019 2:02 AM, Alexander Lobakin wrote:
+>> Commit 43e665287f93 ("net-next: dsa: fix flow dissection") added an
+>> ability to override protocol and network offset during flow dissection
+>> for DSA-enabled devices (i.e. controllers shipped as switch CPU ports)
+>> in order to fix skb hashing for RPS on Rx path.
+>> 
+>> However, skb_hash() and added part of code can be invoked not only on
+>> Rx, but also on Tx path if we have a multi-queued device and:
+>>  - kernel is running on UP system or
+>>  - XPS is not configured.
+>> 
+>> The call stack in this two cases will be like: dev_queue_xmit() ->
+>> __dev_queue_xmit() -> netdev_core_pick_tx() -> netdev_pick_tx() ->
+>> skb_tx_hash() -> skb_get_hash().
+>> 
+>> The problem is that skbs queued for Tx have both network offset and
+>> correct protocol already set up even after inserting a CPU tag by DSA
+>> tagger, so calling tag_ops->flow_dissect() on this path actually only
+>> breaks flow dissection and hashing.
+>> 
+>> This can be observed by adding debug prints just before and right 
+>> after
+>> tag_ops->flow_dissect() call to the related block of code:
+>> 
+>> Before the patch:
+>> 
+>> Rx path (RPS):
+>> 
+>> [   19.240001] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   19.244271] tag_ops->flow_dissect()
+>> [   19.247811] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
+>> 
+>> [   19.215435] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   19.219746] tag_ops->flow_dissect()
+>> [   19.223241] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
+>> 
+>> [   18.654057] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   18.658332] tag_ops->flow_dissect()
+>> [   18.661826] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
+>> 
+>> Tx path (UP system):
+>> 
+>> [   18.759560] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
+>> [   18.763933] tag_ops->flow_dissect()
+>> [   18.767485] Tx: proto: 0x920b, nhoff: 34	/* junk */
+>> 
+>> [   22.800020] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
+>> [   22.804392] tag_ops->flow_dissect()
+>> [   22.807921] Tx: proto: 0x920b, nhoff: 34	/* junk */
+>> 
+>> [   16.898342] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
+>> [   16.902705] tag_ops->flow_dissect()
+>> [   16.906227] Tx: proto: 0x920b, nhoff: 34	/* junk */
+>> 
+>> After:
+>> 
+>> Rx path (RPS):
+>> 
+>> [   16.520993] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   16.525260] tag_ops->flow_dissect()
+>> [   16.528808] Rx: proto: 0x0800, nhoff: 8	/* ETH_P_IP */
+>> 
+>> [   15.484807] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   15.490417] tag_ops->flow_dissect()
+>> [   15.495223] Rx: proto: 0x0806, nhoff: 8	/* ETH_P_ARP */
+>> 
+>> [   17.134621] Rx: proto: 0x00f8, nhoff: 0	/* ETH_P_XDSA */
+>> [   17.138895] tag_ops->flow_dissect()
+>> [   17.142388] Rx: proto: 0x8100, nhoff: 8	/* ETH_P_8021Q */
+>> 
+>> Tx path (UP system):
+>> 
+>> [   15.499558] Tx: proto: 0x0800, nhoff: 26	/* ETH_P_IP */
+>> 
+>> [   20.664689] Tx: proto: 0x0806, nhoff: 26	/* ETH_P_ARP */
+>> 
+>> [   18.565782] Tx: proto: 0x86dd, nhoff: 26	/* ETH_P_IPV6 */
+>> 
+>> In order to fix that we can add the check 'proto == htons(ETH_P_XDSA)'
+>> to prevent code from calling tag_ops->flow_dissect() on Tx.
+>> I also decided to initialize 'offset' variable so tagger callbacks can
+>> now safely leave it untouched without provoking a chaos.
+>> 
+>> Fixes: 43e665287f93 ("net-next: dsa: fix flow dissection")
+>> Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+So Dave, you can pick it up into your fixes tree if I understand
+correctly.
 
-Thanks for the fix!
+There will be further work on DSA Rx path, but it's a subject for
+next Linux release cycles essentially.
 
-> Thanks, Eric!
->
-> neal
+Regards,
+ᚷ ᛖ ᚢ ᚦ ᚠ ᚱ
