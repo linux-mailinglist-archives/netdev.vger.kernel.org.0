@@ -2,91 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14AE8115EED
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 23:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4645B115EE2
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 23:10:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfLGWWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Dec 2019 17:22:00 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51108 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726378AbfLGWWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 17:22:00 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so11635449wmg.0
-        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 14:21:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=9eN0UlcceLB+02/NR1bfFO3qLnGIg50B9s9GenSzY2w=;
-        b=QJC+xAuQ7884+wQyIiocnJGLDtpRCT5F4iJf6m382urf7PWc2J/aORttHzKVWYXyvt
-         P3z7y3vMNXTvCS2tPfy+S0C4FO39ZXF8vvB8ZPBCFRnRxHxAPw7YfqRV4AXi/uWfHVd0
-         c8dCiGn2TvZFgZyRH04wDbj29w89p+AdEIkBXsKKjBZmW+wW2VFbO05vIq9VRIBytKY0
-         Q1W7Dg5BV7bC0dhC6Cz7/3TfQIf4PNshKENvuB0Kdb/UtEGJnWfIXFJdB9bZzJ061xa7
-         +iH7q6NXZXP0TPb6iYbYDVaMlJgGCu8FjYzlp/TmNWFrRwm3yg8dhgxLklv2dPRGdcHe
-         rZyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=9eN0UlcceLB+02/NR1bfFO3qLnGIg50B9s9GenSzY2w=;
-        b=hDHiInVTgDzCZqd6ml6pIUEPWgUmGC1DgL0r/bcHkeU7xcUh/p/cT+AMJlNGjvR+vZ
-         UyDKSASYQ278iJ8Nzrs3MT9airAn3eHzISZCOPN2vm4A0pEfhE9OUtS74V9Ro/4G7/cM
-         OWzEry7u1zgrNf3Mm+uxIUj5T/eJMaOnbXLhsxhp2IQpvXBHE8o9udiw5yApAQN5wmAl
-         F69UZGFN8zGl21Hqv2O4V5Tm1XsI+YV2ou3cyCekd2RtYbh/CAc90SHL27QMX2IMj495
-         g8OLNV8lOyGC+RjbzWjojDzmFutexIJPKDtO4+8JgaRfWS4+SNNXFiooemyL8GDKlU3G
-         RJ5A==
-X-Gm-Message-State: APjAAAVIdVyhTY4zI81p28iYdHMZZVgodiJ8B/PnjHQku2ggplnrBtLW
-        s4ttlCKZIiud+xy0DFIKRJprCc5v
-X-Google-Smtp-Source: APXvYqzYW/J3aubOxWLPOSxn4RpwS9lzbpt5kNfDteLJ6pABWkyz5UF4kBkQSa8XlBG4Zv8nlJHehg==
-X-Received: by 2002:a05:600c:2207:: with SMTP id z7mr16629617wml.138.1575757317424;
-        Sat, 07 Dec 2019 14:21:57 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f4a:6300:4590:2172:4cf5:2ac? (p200300EA8F4A6300459021724CF502AC.dip0.t-ipconnect.de. [2003:ea:8f4a:6300:4590:2172:4cf5:2ac])
-        by smtp.googlemail.com with ESMTPSA id h97sm22682554wrh.56.2019.12.07.14.21.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 07 Dec 2019 14:21:56 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v2 net] r8169: fix rtl_hw_jumbo_disable for RTL8168evl
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <32cb0ca8-3a90-1b95-b928-af00c603876f@gmail.com>
-Date:   Sat, 7 Dec 2019 22:21:52 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1726427AbfLGWJ6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 7 Dec 2019 17:09:58 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55375 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfLGWJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 17:09:58 -0500
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1idiGw-0003FK-1o; Sat, 07 Dec 2019 22:09:54 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 674576C567; Sat,  7 Dec 2019 14:09:52 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 5F07CAC1CC;
+        Sat,  7 Dec 2019 14:09:52 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Mahesh Bandewar <maheshb@google.com>
+cc:     Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH net] bonding: fix active-backup transition after link failure
+In-reply-to: <20191206234455.213159-1-maheshb@google.com>
+References: <20191206234455.213159-1-maheshb@google.com>
+Comments: In-reply-to Mahesh Bandewar <maheshb@google.com>
+   message dated "Fri, 06 Dec 2019 15:44:55 -0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10901.1575756592.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Sat, 07 Dec 2019 14:09:52 -0800
+Message-ID: <10902.1575756592@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In referenced fix we removed the RTL8168e-specific jumbo config for
-RTL8168evl in rtl_hw_jumbo_enable(). We have to do the same in
-rtl_hw_jumbo_disable().
+Mahesh Bandewar <maheshb@google.com> wrote:
 
-v2: fix referenced commit id
+>After the recent fix 1899bb325149 ("bonding: fix state transition
+>issue in link monitoring"), the active-backup mode with miimon
+>initially come-up fine but after a link-failure, both members
+>transition into backup state.
+>
+>Following steps to reproduce the scenario (eth1 and eth2 are the
+>slaves of the bond):
+>
+>    ip link set eth1 up
+>    ip link set eth2 down
+>    sleep 1
+>    ip link set eth2 up
+>    ip link set eth1 down
+>    cat /sys/class/net/eth1/bonding_slave/state
+>    cat /sys/class/net/eth2/bonding_slave/state
+>
+>Fixes: 1899bb325149 ("bonding: fix state transition issue in link monitoring")
+>CC: Jay Vosburgh <jay.vosburgh@canonical.com>
+>Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+>---
+> drivers/net/bonding/bond_main.c | 3 ---
+> 1 file changed, 3 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index fcb7c2f7f001..ad9906c102b4 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -2272,9 +2272,6 @@ static void bond_miimon_commit(struct bonding *bond)
+> 			} else if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP) {
+> 				/* make it immediately active */
+> 				bond_set_active_slave(slave);
+>-			} else if (slave != primary) {
+>-				/* prevent it from being the active one */
+>-				bond_set_backup_slave(slave);
 
-Fixes: 14012c9f3bb9 ("r8169: fix jumbo configuration for RTL8168evl")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+	How does this fix things?  Doesn't bond_select_active_slave() ->
+bond_change_active_slave() set the backup flag correctly via a call to
+bond_set_slave_active_flags() when it sets a slave to be the active
+slave?  If this change resolves the problem, I'm not sure how this ever
+worked correctly, even prior to 1899bb325149.
+
+	-J
+
+> 			}
+> 
+> 			slave_info(bond->dev, slave->dev, "link status definitely up, %u Mbps %s duplex\n",
+>-- 
+>2.24.0.393.g34dc348eaf-goog
+>
+
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 38d212686..46a492229 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3896,7 +3896,7 @@ static void rtl_hw_jumbo_disable(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_27 ... RTL_GIGA_MAC_VER_28:
- 		r8168dp_hw_jumbo_disable(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_34:
-+	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_33:
- 		r8168e_hw_jumbo_disable(tp);
- 		break;
- 	default:
--- 
-2.24.0
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
