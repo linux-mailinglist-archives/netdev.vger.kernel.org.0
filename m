@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A331115E43
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 20:45:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEE6115E4A
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 20:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbfLGTpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Dec 2019 14:45:01 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:45708 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726528AbfLGTpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 14:45:01 -0500
-Received: by mail-io1-f70.google.com with SMTP id m18so7488340ioj.12
-        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 11:45:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=wS16iwY4SHAgS9TQBNqZiLR/a6ESQzbpzGaub4GpqpA=;
-        b=JTf5Ej+BNRlOm6VjbssSTQR8HeeSAY/RVWZ3nW89qoPpnz3QDfpSoJwbs9bJjNmUV8
-         ekmbZnSu1ikJB4zr4k/y6xUgxxLMgb7ekxrBWfKLE6j202Mp0WoUzQU/kXi4obxt1b7Q
-         oiGoowM3ZTmXq1R3X4Iros+KXNt5nerfgyoV5Pa4S1JrnUcphy9LZKgNqwJxIlpdZefi
-         PgVnicRpweTqQwR4DfPFvrJ2oWnIuT4RoPwlE8Msga8BHkEOCn2Xa5INQ8J6+w7NRZXp
-         7YimiMTToVcwsJcyflcU09Z0mySCOIbO/VhlCztnjciOymCuAls2DL/df9SQr1JpDyKb
-         Ef4Q==
-X-Gm-Message-State: APjAAAVqvDY0qnTGIPAdVYX+WGjt5gHqqkAmNexmSrOYb1xX8PJxQD7j
-        Pd+frmYE3GBSwj7bGMUCQuwN8ZDAF0yMhz7vJDRhFAQu5al/
-X-Google-Smtp-Source: APXvYqxMOz34v4xow1dYjI+bbaCYsdOSN0ZdxyIPBJDZ8r/SQQJ0i2OUsyFKZ5sPLHCufzkzxsAmqoemLoiPMD9bsX8FJt+NfxS0
-MIME-Version: 1.0
-X-Received: by 2002:a6b:f60e:: with SMTP id n14mr14826689ioh.147.1575747900539;
- Sat, 07 Dec 2019 11:45:00 -0800 (PST)
-Date:   Sat, 07 Dec 2019 11:45:00 -0800
-In-Reply-To: <000000000000f665a30570885589@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000de09e70599226583@google.com>
-Subject: Re: KASAN: use-after-free Read in __queue_work (2)
-From:   syzbot <syzbot+1c9db6a163a4000d0765@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net,
-        dominique.martinet@cea.fr, ericvh@gmail.com, jiangyiwen@huwei.com,
-        linux-kernel@vger.kernel.org, lucho@ionkov.net,
-        netdev@vger.kernel.org, rminnich@sandia.gov,
-        syzkaller-bugs@googlegroups.com, tomasbortoli@gmail.com,
-        v9fs-developer@lists.sourceforge.net, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1726787AbfLGTuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Dec 2019 14:50:39 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42728 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726489AbfLGTui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 14:50:38 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DD65515413555;
+        Sat,  7 Dec 2019 11:50:37 -0800 (PST)
+Date:   Sat, 07 Dec 2019 11:50:34 -0800 (PST)
+Message-Id: <20191207.115034.1743579700466281633.davem@davemloft.net>
+To:     ivan.khoronzhuk@linaro.org
+Cc:     grygorii.strashko@ti.com, netdev@vger.kernel.org, nsekhar@ti.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ethernet: ti: davinci_cpdma: fix warning
+ "device driver frees DMA memory with different size"
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191207120238.GB2798@khorivan>
+References: <0c6b88b2-31b1-11f0-7baa-1ecd5f4b6644@ti.com>
+        <20191207114419.GA2798@khorivan>
+        <20191207120238.GB2798@khorivan>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 07 Dec 2019 11:50:38 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Date: Sat, 7 Dec 2019 14:02:39 +0200
 
-commit 430ac66eb4c5b5c4eb846b78ebf65747510b30f1
-Author: Tomas Bortoli <tomasbortoli@gmail.com>
-Date:   Fri Jul 20 09:27:30 2018 +0000
+> @@ -1046,7 +1045,6 @@ static int cpdma_chan_submit_si(struct
+> submit_info *si)
+>        if (si->data_dma) {
+>                buffer = si->data_dma;
+>                dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
+> -               swlen |= CPDMA_DMA_EXT_MAP;
+>        } else {
+>                buffer = dma_map_single(ctlr->dev, si->data_virt, len, chan->dir);
+>                ret = dma_mapping_error(ctlr->dev, buffer);
+> @@ -1065,7 +1063,7 @@ static int cpdma_chan_submit_si(struct
+> submit_info *si)
+>        writel_relaxed(mode | len, &desc->hw_mode);
+>        writel_relaxed((uintptr_t)si->token, &desc->sw_token);
+>        writel_relaxed(buffer, &desc->sw_buffer);
+> -       writel_relaxed(swlen, &desc->sw_len);
+> + writel_relaxed(si->data_dma ? len | CPDMA_DMA_EXT_MAP : len,
+> &desc->sw_len);
+>        desc_read(desc, sw_len);
+> 
+>        __cpdma_chan_submit(chan, desc);
+> 
+> But it's branched twice then.
 
-     net/9p/trans_fd.c: fix race-condition by flushing workqueue before the  
-kfree()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15661282e00000
-start commit:   ca04b3cc Merge tag 'armsoc-fixes' of git://git.kernel.org/..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2ca6c7a31d407f86
-dashboard link: https://syzkaller.appspot.com/bug?extid=1c9db6a163a4000d0765
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1473a452400000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14087748400000
-
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: net/9p/trans_fd.c: fix race-condition by flushing workqueue  
-before the kfree()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+It's a conditional move rather than a branch....
