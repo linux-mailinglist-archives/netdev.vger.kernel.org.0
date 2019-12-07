@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F87C115A6D
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 01:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D00A9115AAB
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 02:49:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfLGAyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 Dec 2019 19:54:31 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:42607 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbfLGAyb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 19:54:31 -0500
-Received: by mail-wr1-f66.google.com with SMTP id a15so9642643wrf.9
-        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 16:54:29 -0800 (PST)
+        id S1726400AbfLGBty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 Dec 2019 20:49:54 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46858 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726371AbfLGBty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 Dec 2019 20:49:54 -0500
+Received: by mail-pf1-f194.google.com with SMTP id y14so4244129pfm.13
+        for <netdev@vger.kernel.org>; Fri, 06 Dec 2019 17:49:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YyHqnh3RgU+jkragtEYCmywD+W1GeJPYa5pDIp3hGtA=;
-        b=FcTHjpXtuWKl1ktGy/jvKmj2CEIxaOGf7WtJh22SSUSCoRnxI007b1epPMs2yzPAU6
-         8XKVC+aUUW4HrvmDIskh7Faxk/Hkh/OBnV3BQ53u77XgaJZ944tnynobm08sy3X5HTGy
-         p9ox1+HGbfpaQpNgvjmcoidglRxGol+snYZog=
+        bh=UcfzSMiZCigKmCFWt0Cef+VTb2tSXYkjOImyoVgyFqE=;
+        b=LkxAqheH/EycG3F9sGD4UFYPV0YkMH/p/BL46gZQNgiZcJQLNzM+X6hVgNk8T+if3f
+         FztxHoqQYOiRLmf8G7mc2svEgPsfOHzX/yAhVRaDjdfa2av1kIfX+htjdR/PaytJSXuK
+         90hg7juetHVt1J4sdof+c/OeJP7mDWxLpoJduB/+ihbKt9a0lROaJZ4xklBtxFM3UHuT
+         CCXm4N66jo7KU2d6d9ogFrkU7Obn1WwtxWjVIB4KLWcLMZQsd+PCuMoMntwFs1+ChYKu
+         ueHNZ8MIRs+fC2JYK4wpJTyOyXLC9dJ4MCNvr/wN8bckDpFRkxXEAhrQZ+qfL+M5x+tx
+         K4Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=YyHqnh3RgU+jkragtEYCmywD+W1GeJPYa5pDIp3hGtA=;
-        b=tQmNHW6P4rx+5qqCFyoWJKuNS5IBvep18HtdI1H5gDrnnxz+OfV+P9Rk6bodue+0fq
-         Ctr7l1qbgOZvL6df+akoOPPcOJQcUvMrgSuywu9NEoGi9n7wBhJjQmSyzbhH7+LWdJUL
-         /PNu0vHlz947nbqi4qadEaZ1QBueTTfcxJfkwcuIY7cXMmrhKTt3UZQPcNkVqhEST1gi
-         tbAFd+OR7AySJPqlBqSOtSyc1bEWPtwt4WH8gDt6Ea9RdaNNiFIkmHUedN1DCz6Lx1h5
-         48MB6i1p//9i1SKZo/Jx+GXywV7k+YIkZeK/N+Dn8XLb/NbYJOViWgRKPv4RsH8rD701
-         WMCg==
-X-Gm-Message-State: APjAAAXmWCc3aRljwhgpxqXjXusAcDMSo9iMBeRszpPqLSBnroVjbN71
-        yWZ8381OvS/lgapoGHWhAXS4yQ==
-X-Google-Smtp-Source: APXvYqycLhNIOEqhQ1FJre7Q/J/PU8EfKeYG6wG58YToIgr2m9pkiKsbRjmM2iUnZ/GXddXke7yIhQ==
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr17461759wrv.86.1575680069042;
-        Fri, 06 Dec 2019 16:54:29 -0800 (PST)
-Received: from rj-aorus.ric.broadcom.com ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id h97sm19347000wrh.56.2019.12.06.16.54.24
+        bh=UcfzSMiZCigKmCFWt0Cef+VTb2tSXYkjOImyoVgyFqE=;
+        b=XLq+zZQpLuS72Akp0Oj3uDiOnpVQJziNm8e0tBY7lLke19L5s7lao4DU9s8KyBRHuM
+         sKhgZxY0BOTVcrYlRMqBJsCpwVNZ/OWmlOQji1FEeHZAAKA66f5eo9Bg2IWTEPi+g2Sr
+         s9fxp4x/e92GgamWkuPjPa0sQfO15zjr/zdZ9KJS+f4vuR7cEfJXrm1EeSN5ESeLDX8Y
+         wa/P2m7KEoKMVXusUKp9stf6IiZcY1Wvx8wn43vsSELeigh6/nyUe/8WF7631BzuiwH+
+         g0v6OyIvbEoYGGQhkEg0W89kblGfeLghkgC7xnpnlAXzLU+dVe385Rr+uNEjEb7Gms6N
+         U0+g==
+X-Gm-Message-State: APjAAAVRuSfLKFMKif3e5jgf+pnXVK/xPgnk/jr6W+KvfJin6H21T1mi
+        a+P8zYqqd91o/uuzUh9Y6lnCFbLQ
+X-Google-Smtp-Source: APXvYqx/RThS7Kj0TcTNSbb8psscZtBk0tfbEHL6TdyIHaTXY62bQ1rlGSBwO1IgwGSmul68m2POMQ==
+X-Received: by 2002:a63:7d8:: with SMTP id 207mr6939215pgh.154.1575683393673;
+        Fri, 06 Dec 2019 17:49:53 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id m34sm16241002pgb.26.2019.12.06.17.49.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Dec 2019 16:54:28 -0800 (PST)
-Subject: Re: [PATCH] ARM: dts: Cygnus: Fix MDIO node address/size cells
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     grygorii.strashko@ti.com, simon.horman@netronome.com,
-        robh+dt@kernel.org, rafal@milecki.pl, davem@davemloft.net,
-        andrew@lunn.ch, mark.rutland@arm.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Eric Anholt <eric@anholt.net>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20191206181909.10962-1-f.fainelli@gmail.com>
-From:   Ray Jui <ray.jui@broadcom.com>
-Message-ID: <86e8fbec-f9e5-28d8-cc58-c12ce53a18e9@broadcom.com>
-Date:   Fri, 6 Dec 2019 16:54:22 -0800
+        Fri, 06 Dec 2019 17:49:52 -0800 (PST)
+Subject: Re: [PATCH net v4 1/3] tcp: fix rejected syncookies due to stale
+ timestamps
+To:     Guillaume Nault <gnault@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <cover.1575631229.git.gnault@redhat.com>
+ <b1e80e43ba300a37ac5ea70088769fbe8ac5bf01.1575631229.git.gnault@redhat.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <3eaa158d-32e6-d541-d0fc-d1b79738f84f@gmail.com>
+Date:   Fri, 6 Dec 2019 17:49:51 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191206181909.10962-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <b1e80e43ba300a37ac5ea70088769fbe8ac5bf01.1575631229.git.gnault@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,34 +73,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/6/19 10:19 AM, Florian Fainelli wrote:
-> The MDIO node on Cygnus had an reversed #address-cells and
->   #size-cells properties, correct those.
+On 12/6/19 3:38 AM, Guillaume Nault wrote:
+> If no synflood happens for a long enough period of time, then the
+> synflood timestamp isn't refreshed and jiffies can advance so much
+> that time_after32() can't accurately compare them any more.
+...
 > 
-> Fixes: 40c26d3af60a ("ARM: dts: Cygnus: Add the ethernet switch and ethernet PHY")
-> Reported-by: Simon Horman <simon.horman@netronome.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->   arch/arm/boot/dts/bcm-cygnus.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/bcm-cygnus.dtsi b/arch/arm/boot/dts/bcm-cygnus.dtsi
-> index 2dac3efc7640..1bc45cfd5453 100644
-> --- a/arch/arm/boot/dts/bcm-cygnus.dtsi
-> +++ b/arch/arm/boot/dts/bcm-cygnus.dtsi
-> @@ -174,8 +174,8 @@
->   		mdio: mdio@18002000 {
->   			compatible = "brcm,iproc-mdio";
->   			reg = <0x18002000 0x8>;
-> -			#size-cells = <1>;
-> -			#address-cells = <0>;
-> +			#size-cells = <0>;
-> +			#address-cells = <1>;
->   			status = "disabled";
->   
->   			gphy0: ethernet-phy@0 {
-> 
+> Fixes: cca9bab1b72c ("tcp: use monotonic timestamps for PAWS")
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-Looks good! Thanks!
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
