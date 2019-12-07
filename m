@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC82115E14
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 19:57:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62748115E33
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 20:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbfLGS5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Dec 2019 13:57:32 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35708 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726464AbfLGS5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 13:57:32 -0500
-Received: by mail-pl1-f193.google.com with SMTP id s10so4097885plp.2
-        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 10:57:31 -0800 (PST)
+        id S1726720AbfLGTcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Dec 2019 14:32:19 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43395 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726489AbfLGTcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 14:32:19 -0500
+Received: by mail-pg1-f193.google.com with SMTP id b1so5015209pgq.10
+        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 11:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XKy+XX4GYCABGBbFJLACLqmcw44M8JXKiURp4lg4W1o=;
-        b=tWGwFAQTQnmJJWJVMPmxFOC/nCVsVKcWnksCrV4Mf4REVw0tBrgWAk03NT2ycEbCLO
-         euZhOd7RopjsFRlkKJalvfYHcWWYCm2M2xGGVcz4vHpnGhNucnm70tRvaWL3E9YqYFTZ
-         JpQV55sKFfRV0pNSQs4KJmI5p1fGpdenCUnF4sFPpLq60COWF1jwwsqGkLRxGiWFRywO
-         /QEbPBRoWC2Zq3TqcdOV7a8CMp5nEh6u+gQKEMmEhpRyAuL2FCYr5rck/yQ4qMJzgcZI
-         r+bQq+DB39JSL0tltoeT4jtl+GQXH5mEFelWYgCrO86RqV2I4XE5QlwnlCB1w2aDPlWt
-         CODg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aYT4eNPW+FgJqxLzRimbTqK4xRhGxyqZeRppps0EzNk=;
+        b=VZceZKtTzhjt7RIArZsztyh2SPbTkNjeG+g3yNqJJJO2Dz7wzkyur3Tr15eQWH3W6I
+         xYgmKYM7zslacM++wc050qsD9cPUoE245zgpr0Sbw8jO7juoZEWQCUm5pzwtgisqD2Bl
+         EJCOpUiLo4amvOwdbwvv9BSsqDY9M4CRHqH6s8KPMHKl+eTD3xxW9UXvKCdWFWrSGYPY
+         U9VTmB20mg9Czr5nSJF/gHv/3lhRpp5Kx+Zv8fA4DLVJtbKWYGdLnxxzQEu+6VCblueA
+         seQEl1HlGsAt9FFrwP8JcELJ7byGC+jD/DUhdKO7nvs4J3jBW+tahBdQZERFy08rOOD5
+         alHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XKy+XX4GYCABGBbFJLACLqmcw44M8JXKiURp4lg4W1o=;
-        b=WQQlCQRPOvQlU+OuoJno2t/nSG5Cj3wgfOHmpShxfNKlALCLbNtAVwt1/LyFqx9Fai
-         0PoqbdiawvFjJC7tj5duYnP3Ufj6nJy+X4OuE2fPXdMjy3ilOC++F2IZ3RbqspOQwqzm
-         6BWuKCRMcU1StJfVjSLrov1qInzxYsCJ9FnlVqvPpAnYT/LVqDIYvVCgXFRBCsbe52H2
-         kWuKLDoOtPfvKRdYl55lPam/lfs83Rq5s6n4JitT262D/YtrDCO++r1+taCp9JXinYc9
-         mfSReX+qrhljCl/eVWZaz9Ts+tUh3tlMtdmWwU2BiJXR5R25a7uAlNJ1kwoUdDS7tvLE
-         6vbQ==
-X-Gm-Message-State: APjAAAVTvyQpvVvxg4Nfzqcjd+5pYfSl5IURnF/7BUEw3dWu4awfe6AE
-        byKZY20Nd2X43WfInI7F9MIzNsEpDvyN8+AloxA=
-X-Google-Smtp-Source: APXvYqzsvuBzMK74M5/jjpjkKep3vOrhBuWgTXW7Q0d80WQaRoVOfFTbk/NcSzTQTU89lIxxJvHtM7xSYV6zPyYXrLg=
-X-Received: by 2002:a17:90a:200d:: with SMTP id n13mr23488696pjc.16.1575745051491;
- Sat, 07 Dec 2019 10:57:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20191207184930.130132-1-edumazet@google.com>
-In-Reply-To: <20191207184930.130132-1-edumazet@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 7 Dec 2019 10:57:20 -0800
-Message-ID: <CAM_iQpVE5-59QPiP3Od7p-Fkjwjcm5QYrncN0LofWEC+TPTZUw@mail.gmail.com>
-Subject: Re: [PATCH net] net_sched: validate TCA_KIND attribute in tc_chain_tmplt_add()
-To:     Eric Dumazet <edumazet@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aYT4eNPW+FgJqxLzRimbTqK4xRhGxyqZeRppps0EzNk=;
+        b=Z0t/Z4dc0Op1YM9PVlbn/HoiUGSd6M1le52B5/YxTBVxbOtPVVodNOby02BmY35tov
+         ADM72A/1uh8lgE/EuO9bNPgLcwo/tb9toJMWERBLf8Jmgihf+OfwG0qKIPWWAyZIfH7O
+         2e3T5LbZP0KlkYTIopm0olfs/jz62wvRE75il2G1ddMc1rWfDvLDOG7NVF3FmDJ8EHK8
+         Ouuxn8BHtLjX4ogMT/2y/TsNsRrVpqLjoCxDqar+SzkZKkze4uCBjUWOvC4eYTFJ0Qst
+         8EOaOwaVHIyHfxfKD/3IBHxSITW8JRU9tM2Qj2nwroAqAYwMwOQrNGCFX0qOUYAMeTfo
+         lluw==
+X-Gm-Message-State: APjAAAWpT1xTuh4xaULk6eigo3wcG6WbWGa2+7i/Gg1j4LGEmkK2A1N+
+        fIikgCk6wK+45uB5rE8mazHEQJkT
+X-Google-Smtp-Source: APXvYqxJ0IgZ25p843ai5i71Av3lEFcr7YzDiwQcfxViYzKhDK6/Fc3uh9cLh1Ypfa7ttsIQ2P5MAQ==
+X-Received: by 2002:a63:ea4b:: with SMTP id l11mr10392167pgk.357.1575747138777;
+        Sat, 07 Dec 2019 11:32:18 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id d7sm22560739pfc.180.2019.12.07.11.32.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Dec 2019 11:32:17 -0800 (PST)
+Subject: Re: [PATCH net] net_sched: validate TCA_KIND attribute in
+ tc_chain_tmplt_add()
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Eric Dumazet <eric.dumazet@gmail.com>,
@@ -55,28 +56,44 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+References: <20191207184930.130132-1-edumazet@google.com>
+ <CAM_iQpVE5-59QPiP3Od7p-Fkjwjcm5QYrncN0LofWEC+TPTZUw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <be2b2219-75a7-0724-51b4-2a057936cd37@gmail.com>
+Date:   Sat, 7 Dec 2019 11:32:16 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <CAM_iQpVE5-59QPiP3Od7p-Fkjwjcm5QYrncN0LofWEC+TPTZUw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 7, 2019 at 10:49 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> Use the new tcf_proto_check_kind() helper to make sure user
-> provided value is well formed.
-...
-> Fixes: 6f96c3c6904c ("net_sched: fix backward compatibility for TCA_KIND")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-Just a nit: the extack message should be for a chain template, not
-for a TC filter.
+On 12/7/19 10:57 AM, Cong Wang wrote:
+> On Sat, Dec 7, 2019 at 10:49 AM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> Use the new tcf_proto_check_kind() helper to make sure user
+>> provided value is well formed.
+> ...
+>> Fixes: 6f96c3c6904c ("net_sched: fix backward compatibility for TCA_KIND")
+>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> Reported-by: syzbot <syzkaller@googlegroups.com>
+>> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+>> Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+>> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+>> Cc: Jiri Pirko <jiri@resnulli.us>
+> 
+> Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+> 
+> Just a nit: the extack message should be for a chain template, not
+> for a TC filter.
 
-Thanks.
+Thanks, I will send a V2 with an updated message.
+
+
