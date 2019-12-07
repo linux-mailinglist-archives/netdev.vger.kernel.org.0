@@ -2,54 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24595115E4D
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 20:54:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30630115E4E
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 20:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbfLGTyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Dec 2019 14:54:22 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42776 "EHLO
+        id S1726637AbfLGTzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Dec 2019 14:55:44 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42786 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726489AbfLGTyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 14:54:22 -0500
+        with ESMTP id S1726489AbfLGTzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 14:55:44 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9882615421AC6;
-        Sat,  7 Dec 2019 11:54:21 -0800 (PST)
-Date:   Sat, 07 Dec 2019 11:54:20 -0800 (PST)
-Message-Id: <20191207.115420.167629527884039167.davem@davemloft.net>
-To:     xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com
-Subject: Re: [Patch net] gre: refetch erspan header from skb->data after
- pskb_may_pull()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C0B4E15421AD8;
+        Sat,  7 Dec 2019 11:55:43 -0800 (PST)
+Date:   Sat, 07 Dec 2019 11:55:43 -0800 (PST)
+Message-Id: <20191207.115543.1000946398725521110.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        syzkaller@googlegroups.com
+Subject: Re: [PATCH net] inet: protect against too small mtu values.
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191206033902.19638-1-xiyou.wangcong@gmail.com>
-References: <20191206033902.19638-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20191206044346.155271-1-edumazet@google.com>
+References: <20191206044346.155271-1-edumazet@google.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 07 Dec 2019 11:54:21 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 07 Dec 2019 11:55:43 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
-Date: Thu,  5 Dec 2019 19:39:02 -0800
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu,  5 Dec 2019 20:43:46 -0800
 
-> After pskb_may_pull() we should always refetch the header
-> pointers from the skb->data in case it got reallocated.
+> syzbot was once again able to crash a host by setting a very small mtu
+> on loopback device.
 > 
-> In gre_parse_header(), the erspan header is still fetched
-> from the 'options' pointer which is fetched before
-> pskb_may_pull().
+> Let's make inetdev_valid_mtu() available in include/net/ip.h,
+> and use it in ip_setup_cork(), so that we protect both ip_append_page()
+> and __ip_append_data()
 > 
-> Found this during code review of a KMSAN bug report.
+> Also add a READ_ONCE() when the device mtu is read.
 > 
-> Fixes: cb73ee40b1b3 ("net: ip_gre: use erspan key field for tunnel lookup")
-> Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> Pairs this lockless read with one WRITE_ONCE() in __dev_set_mtu(),
+> even if other code paths might write over this field.
+> 
+> Add a big comment in include/linux/netdevice.h about dev->mtu
+> needing READ_ONCE()/WRITE_ONCE() annotations.
+> 
+> Hopefully we will add the missing ones in followup patches.
+ ...
+> Fixes: 1470ddf7f8ce ("inet: Remove explicit write references to sk/inet in ip_append_data")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
 Applied and queued up for -stable, thanks.
