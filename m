@@ -2,205 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C70F6115C23
-	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 13:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0FC115C4F
+	for <lists+netdev@lfdr.de>; Sat,  7 Dec 2019 14:05:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726409AbfLGMCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 Dec 2019 07:02:45 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:35087 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbfLGMCp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 07:02:45 -0500
-Received: by mail-lf1-f66.google.com with SMTP id 15so7300707lfr.2
-        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 04:02:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WCHftxVyszB2Wm7Mx9nwVJT5KwAoHKsTgufbG3ZvSE0=;
-        b=ytbBU3WGJ0ZQjaUeGfDOGl3u4A5i8tgrxA0IewP25ocFnCwA1+3oTAyMV69GqIGkXL
-         NGotBHGibozbI7wv7KFb5d9JbZux3LyufzbW1NznboOPwhfW7JdKsPCsvOURwBmZHK5h
-         cV1xLr8ML2hyWZ4bsH8RrKbCOUaTWijO3wL+MJHl8bXJx35eFwBAC4uMgLcvVwz/TwkH
-         WIhaRgR5+9aXLw3VJ1XU5hzQbE8F3/mwTTVkTFB+0EdX7PAp8BlG/47YvSLdEg7WS8TU
-         EpLGTMe03jOVW9kRiKaFsGWNfu4UR5aoauIt1FIrN4d+U24nlQRb4G5+LFkvlcT/sqi7
-         KXrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mail-followup-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WCHftxVyszB2Wm7Mx9nwVJT5KwAoHKsTgufbG3ZvSE0=;
-        b=VdNse1HkS9+9Z31lfMR9nPpZm4hobx+fzqAVtid0OKGyDTE+OPxQQWilpDlkmHpIAP
-         1qfUaosZAaIc0ePynDzVh2vmQs232PlM1LBV6et0hEKBH5zyIRJV6Ee5Sw60XE6ImLU8
-         DbdYTTP0HYXmyhA1/Bay44p9yace90+JIssweyi7U9NKt9brqUsYP+Ar823CD3OrDeLZ
-         X/eVZLbbVHh+84R7FiA8CK4oCIkGpHW4u+j/VmwhviDUjN4BQljiwIKojOYXGbyESiD4
-         pMZSZe5trUKiFi3z2zMDZG+c+m23LlZZvXDX2HmSJvH65vc8/B7YAJOxnrB9/TlyVrGE
-         Yn8A==
-X-Gm-Message-State: APjAAAU9U+pkll6fAi2MJ8dQwK5aCsSLH/dEFVVGaTgPGZU9QZUbrvha
-        1xpVirMecy63EoZXrHrc1uttBQ==
-X-Google-Smtp-Source: APXvYqwOD/d+/DkXfUkGc3KyoTi79Bdx7cgJRxrgmIbl7SG4d3y3GDgiWqZvNP75SSDTmNeFCYLtmw==
-X-Received: by 2002:ac2:4c2b:: with SMTP id u11mr10809676lfq.46.1575720162331;
-        Sat, 07 Dec 2019 04:02:42 -0800 (PST)
-Received: from khorivan (57-201-94-178.pool.ukrtel.net. [178.94.201.57])
-        by smtp.gmail.com with ESMTPSA id p12sm2553575lfc.43.2019.12.07.04.02.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Dec 2019 04:02:41 -0800 (PST)
-Date:   Sat, 7 Dec 2019 14:02:39 +0200
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        nsekhar@ti.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: ethernet: ti: davinci_cpdma: fix warning "device
- driver frees DMA memory with different size"
-Message-ID: <20191207120238.GB2798@khorivan>
-Mail-Followup-To: Grygorii Strashko <grygorii.strashko@ti.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        nsekhar@ti.com, linux-kernel@vger.kernel.org
-References: <20191204165029.9264-1-grygorii.strashko@ti.com>
- <20191204.123718.1152659362924451799.davem@davemloft.net>
- <0c6b88b2-31b1-11f0-7baa-1ecd5f4b6644@ti.com>
- <20191207114419.GA2798@khorivan>
+        id S1726420AbfLGNFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 Dec 2019 08:05:43 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55317 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbfLGNFm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 Dec 2019 08:05:42 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1idZmF-0004ob-3l; Sat, 07 Dec 2019 14:05:39 +0100
+Received: from [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400] (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 855DA48AF56;
+        Sat,  7 Dec 2019 13:05:36 +0000 (UTC)
+Subject: Re: [PATCH v1] can: j1939: j1939_sk_bind(): take priv after lock is
+ held
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        dev.kurt@vandijck-laurijssen.be, wg@grandegger.com
+Cc:     syzbot+99e9e1b200a1e363237d@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20191206141835.20557-1-o.rempel@pengutronix.de>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <45a5246e-8bf2-3312-5931-18e525d78f4b@pengutronix.de>
+Date:   Sat, 7 Dec 2019 14:05:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20191207114419.GA2798@khorivan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191206141835.20557-1-o.rempel@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="zK88azG4d9z8EORMOzhEmBFJhkgfPcvUO"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 07, 2019 at 01:44:20PM +0200, Ivan Khoronzhuk wrote:
->On Thu, Dec 05, 2019 at 12:48:46PM +0200, Grygorii Strashko wrote:
->>
->>
->>On 04/12/2019 22:37, David Miller wrote:
->>>From: Grygorii Strashko <grygorii.strashko@ti.com>
->>>Date: Wed, 4 Dec 2019 18:50:29 +0200
->>>
->>>>@@ -1018,7 +1018,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->>>> 	struct cpdma_chan		*chan = si->chan;
->>>> 	struct cpdma_ctlr		*ctlr = chan->ctlr;
->>>> 	int				len = si->len;
->>>>-	int				swlen = len;
->>>>+	int				swlen;
->>>> 	struct cpdma_desc __iomem	*desc;
->>>> 	dma_addr_t			buffer;
->>>> 	u32				mode;
->>>>@@ -1040,6 +1040,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->>>> 		chan->stats.runt_transmit_buff++;
->>>> 	}
->>>>+	swlen = len;
->>>> 	mode = CPDMA_DESC_OWNER | CPDMA_DESC_SOP | CPDMA_DESC_EOP;
->>>> 	cpdma_desc_to_port(chan, mode, si->directed);
->>>>-- 
->>>>2.17.1
->>>>
->>>
->>>Now there is no reason to keep a separate swlen variable.
->>>
->>>The integral value is always consumed as the length before the descriptor bits
->>>are added to it.
->>>
->>>Therefore you can just use 'len' everywhere in this function now.
->>>
->>
->>Sry, but seems i can't, at least i can't just drop swlen.
->>
->>Below in this function:
->>	writel_relaxed(0, &desc->hw_next);
->>	writel_relaxed(buffer, &desc->hw_buffer);
->>	writel_relaxed(len, &desc->hw_len);
->>	writel_relaxed(mode | len, &desc->hw_mode);
->>^^ here the "len" should be use
->>
->>	writel_relaxed((uintptr_t)si->token, &desc->sw_token);
->>	writel_relaxed(buffer, &desc->sw_buffer);
->>	writel_relaxed(swlen, &desc->sw_len);
->>^^ and here "len"|CPDMA_DMA_EXT_MAP if (si->data_dma) [1]
->>
->>	desc_read(desc, sw_len);
->>
->>so additional if statement has to be added at [1] if "swlen" is dropped
->>
->>-- 
->>Best regards,
->>grygorii
->
->Seems like yes,
->
->And the "swlen" can be avoided like this:
->
->--- a/drivers/net/ethernet/ti/davinci_cpdma.c
->+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
->@@ -1018,7 +1018,6 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->       struct cpdma_chan               *chan = si->chan;
->       struct cpdma_ctlr               *ctlr = chan->ctlr;
->       int                             len = si->len;
->-       int                             swlen = len;
->       struct cpdma_desc __iomem       *desc;
->       dma_addr_t                      buffer;
->       u32                             mode;
->@@ -1046,7 +1045,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->       if (si->data_dma) {
->               buffer = si->data_dma;
->               dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
->-               swlen |= CPDMA_DMA_EXT_MAP;
->+               writel_relaxed(len | CPDMA_DMA_EXT_MAP, &desc->sw_len);
->       } else {
->               buffer = dma_map_single(ctlr->dev, si->data_virt, len, chan->dir);
->               ret = dma_mapping_error(ctlr->dev, buffer);
->@@ -1054,6 +1053,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->                       cpdma_desc_free(ctlr->pool, desc, 1);
->                       return -EINVAL;
->               }
->+               writel_relaxed(len, &desc->sw_len);
->       }
->
->       /* Relaxed IO accessors can be used here as there is read barrier
->@@ -1065,7 +1065,6 @@ static int cpdma_chan_submit_si(struct submit_info *si)
->       writel_relaxed(mode | len, &desc->hw_mode);
->       writel_relaxed((uintptr_t)si->token, &desc->sw_token);
->       writel_relaxed(buffer, &desc->sw_buffer);
->-       writel_relaxed(swlen, &desc->sw_len);
->       desc_read(desc, sw_len);
->
->       __cpdma_chan_submit(chan, desc);
->
->But not sure what is better.
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--zK88azG4d9z8EORMOzhEmBFJhkgfPcvUO
+Content-Type: multipart/mixed; boundary="uuoC5PUj9c5LTGrBHp3YYnFeNlNDpw7XZ";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oleksij Rempel <o.rempel@pengutronix.de>,
+ dev.kurt@vandijck-laurijssen.be, wg@grandegger.com
+Cc: syzbot+99e9e1b200a1e363237d@syzkaller.appspotmail.com,
+ kernel@pengutronix.de, linux-can@vger.kernel.org, netdev@vger.kernel.org
+Message-ID: <45a5246e-8bf2-3312-5931-18e525d78f4b@pengutronix.de>
+Subject: Re: [PATCH v1] can: j1939: j1939_sk_bind(): take priv after lock is
+ held
+References: <20191206141835.20557-1-o.rempel@pengutronix.de>
+In-Reply-To: <20191206141835.20557-1-o.rempel@pengutronix.de>
 
-Or like this:
+--uuoC5PUj9c5LTGrBHp3YYnFeNlNDpw7XZ
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
---- a/drivers/net/ethernet/ti/davinci_cpdma.c
-+++ b/drivers/net/ethernet/ti/davinci_cpdma.c
-@@ -1018,7 +1018,6 @@ static int cpdma_chan_submit_si(struct submit_info *si)
-        struct cpdma_chan               *chan = si->chan;
-        struct cpdma_ctlr               *ctlr = chan->ctlr;
-        int                             len = si->len;
--       int                             swlen = len;
-        struct cpdma_desc __iomem       *desc;
-        dma_addr_t                      buffer;
-        u32                             mode;
-@@ -1046,7 +1045,6 @@ static int cpdma_chan_submit_si(struct submit_info *si)
-        if (si->data_dma) {
-                buffer = si->data_dma;
-                dma_sync_single_for_device(ctlr->dev, buffer, len, chan->dir);
--               swlen |= CPDMA_DMA_EXT_MAP;
-        } else {
-                buffer = dma_map_single(ctlr->dev, si->data_virt, len, chan->dir);
-                ret = dma_mapping_error(ctlr->dev, buffer);
-@@ -1065,7 +1063,7 @@ static int cpdma_chan_submit_si(struct submit_info *si)
-        writel_relaxed(mode | len, &desc->hw_mode);
-        writel_relaxed((uintptr_t)si->token, &desc->sw_token);
-        writel_relaxed(buffer, &desc->sw_buffer);
--       writel_relaxed(swlen, &desc->sw_len);
-+       writel_relaxed(si->data_dma ? len | CPDMA_DMA_EXT_MAP : len, &desc->sw_len);
-        desc_read(desc, sw_len);
+On 12/6/19 3:18 PM, Oleksij Rempel wrote:
+> syzbot reproduced following crash:
 
-        __cpdma_chan_submit(chan, desc);
+applied to linux-can.
 
-But it's branched twice then.
+Tnx,
+Marc
 
--- 
-Regards,
-Ivan Khoronzhuk
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--uuoC5PUj9c5LTGrBHp3YYnFeNlNDpw7XZ--
+
+--zK88azG4d9z8EORMOzhEmBFJhkgfPcvUO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3ro50ACgkQWsYho5Hk
+nSC6dQf/Wsll9DQlJcLCgcrNOJQBdo5t9PP+M0YBPqFWw7Lf4a9VlyGZNRUw8Y9M
+4LRvCnEthSUNNHY6Yu4goCKs9HoumXFQwQZeEih/rEM84LsT8KFvgy8aTCqeiQcl
+yv8cCyCDT1DyOYsY50sjypduPWct1JjYT/WD7DGm2nR2tUFVws2qn9kcnK8EV5jF
+BixcCDdYs+pXb0mWd+aLopyRYRysl5hlD79+FGtuXaZRuxNdUBxZwEEk5AC7yZg4
+exYwzVCi1R4PTu7XtzjxF2D6td1lgY/ms2ws7/QRCyRKZK9V4M/g18+CisbVQYuY
+Ax2rsRMLDHvlWwh1kdA9aaMZeCbuvQ==
+=FI+m
+-----END PGP SIGNATURE-----
+
+--zK88azG4d9z8EORMOzhEmBFJhkgfPcvUO--
