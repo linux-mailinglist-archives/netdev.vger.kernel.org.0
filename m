@@ -2,90 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8550111626D
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 15:46:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFE7F116298
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 16:00:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbfLHOcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 09:32:13 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37497 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726378AbfLHOcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 09:32:13 -0500
-Received: by mail-pg1-f195.google.com with SMTP id q127so5745072pga.4
-        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 06:32:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=UGkMwhNrzg0G5Sg3aOYCNrL8WQaNG3IAsZb51Z5iri0=;
-        b=JPHEPQ+coER1a3ZCUrrQF3rHTEnMVOae7D7CRtLZJaumcOdjjVa1M71Far9TsPRwlj
-         j2L7cobSFg8ZmROSWzEiNTC4+MrZPOYWLp6VKyFUdzZwYbKztNrzoLlwWthxXaj03JXV
-         zjDHjWPoNf/6RdTbpuslY1RuZj4IzAbGjyKxtXisOrw1V9CMavzMrY8I6daGga2sKDM6
-         vYnMSQrIsfEjjg144c8eSo+sxUqqoUSv1JzvjllsQIL55IhOWpYnjKlkOw2PhW074b/v
-         0BQJCCoN9cZ2TQHZuTAIqP8tufZE7dT4tgA7holg/UONwVDIu4y3AeU8BNItF+r1SrnO
-         /PrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=UGkMwhNrzg0G5Sg3aOYCNrL8WQaNG3IAsZb51Z5iri0=;
-        b=EIZ8tduNixU6PR/qSl+FXKDn2HB6jcZdV4r1agksXe6LRVjqLD675i0p9OzBy8c9+Q
-         sbiR7OgvwhL6Yipd5FMt7WvE0KR2mA7F7lUTWVxUSiFbe5v85M/hlILUnPCXnafoQlo2
-         fOqkMFR6ZGR8+kL0sAWVo9CLfK5fsV5K826AC3yNtXlh0FpTsarGMhQJt8p1IOSOA8r0
-         b04zuf0jO33B7xz4j9ZmAEdsjIYfS65xzVuFXNQtdJlzIL7jUmy1CdkIK0EdXtTueIKp
-         Htb9vNqQLbYgHEAgUipfGaf0SZbXZNFU4seLmde/s14No3FeKVa9k5etuGAq6NDY5tXQ
-         Jxiw==
-X-Gm-Message-State: APjAAAWU7Jo34AzgTC9i1x1CauNmKf8xlJUnHWYc7jVH43fIwBmJba9i
-        VFyNoWKFj0u8LgiEBQ+57w==
-X-Google-Smtp-Source: APXvYqzE4wglfjnY6SKv1KMgA8al70GbbPmXn3WgbF/GXy5LuGPlwkzD8YQypdyAUbLtCkP49RaroQ==
-X-Received: by 2002:a63:d94b:: with SMTP id e11mr14013183pgj.79.1575815532961;
-        Sun, 08 Dec 2019 06:32:12 -0800 (PST)
-Received: from ip-10-0-0-90.ap-northeast-1.compute.internal (ec2-52-194-225-234.ap-northeast-1.compute.amazonaws.com. [52.194.225.234])
-        by smtp.gmail.com with ESMTPSA id 2sm21436743pgo.79.2019.12.08.06.32.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 08 Dec 2019 06:32:11 -0800 (PST)
-From:   kuni1840@gmail.com
-X-Google-Original-From: kuni1840+alias@gmail.com
-To:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, kuniyu@amazon.co.jp,
-        Kuniyuki Iwashima <kuni1840@gmail.com>
-Subject: [PATCH] net/ipv4/tcp.c: cleanup duplicate initialization of sk->sk_state in tcp_init_sock()
-Date:   Sun,  8 Dec 2019 14:31:27 +0000
-Message-Id: <20191208143127.10972-1-kuni1840+alias@gmail.com>
-X-Mailer: git-send-email 2.17.2
+        id S1726864AbfLHO66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 09:58:58 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:36884 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726812AbfLHO64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 09:58:56 -0500
+Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tip-bot2@linutronix.de>)
+        id 1idy16-0000SQ-Pb; Sun, 08 Dec 2019 15:58:36 +0100
+Received: from [127.0.1.1] (localhost [IPv6:::1])
+        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 6C3241C2886;
+        Sun,  8 Dec 2019 15:58:31 +0100 (CET)
+Date:   Sun, 08 Dec 2019 14:58:31 -0000
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/urgent] sched/rt, net: Use CONFIG_PREEMPTION.patch
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
+        Ingo Molnar <mingo@kernel.org>, x86 <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+In-Reply-To: <20191015191821.11479-22-bigeasy@linutronix.de>
+References: <20191015191821.11479-22-bigeasy@linutronix.de>
+MIME-Version: 1.0
+Message-ID: <157581711130.21853.7992733685547761795.tip-bot2@tip-bot2>
+X-Mailer: tip-git-log-daemon
+Robot-ID: <tip-bot2.linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuni1840@gmail.com>
+The following commit has been merged into the sched/urgent branch of tip:
 
-When a TCP socket is created, sk->sk_state is initialized twice as
-TCP_CLOSE in sock_init_data() and tcp_init_sock(). The tcp_init_sock() is
-always called after the sock_init_data(), so it is not necessary to update
-sk->sk_state in the tcp_init_sock().
+Commit-ID:     2da2b32fd9346009e9acdb68c570ca8d3966aba7
+Gitweb:        https://git.kernel.org/tip/2da2b32fd9346009e9acdb68c570ca8d3966aba7
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Tue, 15 Oct 2019 21:18:08 +02:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Sun, 08 Dec 2019 14:37:35 +01:00
 
-Before v2.1.8, the code of the two functions was in the inet_create(). In
-the patch of v2.1.8, the tcp_v4/v6_init_sock() were added and the code of
-initialization of sk->state was duplicated.
+sched/rt, net: Use CONFIG_PREEMPTION.patch
 
-Signed-off-by: Kuniyuki Iwashima <kuni1840@gmail.com>
+CONFIG_PREEMPTION is selected by CONFIG_PREEMPT and by CONFIG_PREEMPT_RT.
+Both PREEMPT and PREEMPT_RT require the same functionality which today
+depends on CONFIG_PREEMPT.
+
+Update the comment to use CONFIG_PREEMPTION.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: David S. Miller <davem@davemloft.net>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/20191015191821.11479-22-bigeasy@linutronix.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
 ---
- net/ipv4/tcp.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 8a39ee794891..09e2cae92956 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -443,8 +443,6 @@ void tcp_init_sock(struct sock *sk)
- 	tp->tsoffset = 0;
- 	tp->rack.reo_wnd_steps = 1;
- 
--	sk->sk_state = TCP_CLOSE;
--
- 	sk->sk_write_space = sk_stream_write_space;
- 	sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
- 
--- 
-2.17.2
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 46580b2..de5f14b 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -928,7 +928,7 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
+  *
+  *	The use of raw_seqcount_begin() and cond_resched() before
+  *	retrying is required as we want to give the writers a chance
+- *	to complete when CONFIG_PREEMPT is not set.
++ *	to complete when CONFIG_PREEMPTION is not set.
+  */
+ int netdev_get_name(struct net *net, char *name, int ifindex)
+ {
