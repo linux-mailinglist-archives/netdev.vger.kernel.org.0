@@ -2,77 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44ED81163A7
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 20:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BBA1163E0
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 22:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbfLHTxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 14:53:42 -0500
-Received: from zeniv.linux.org.uk ([195.92.253.2]:39206 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbfLHTxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 14:53:42 -0500
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ie2ce-00081I-Ck; Sun, 08 Dec 2019 19:53:40 +0000
-Date:   Sun, 8 Dec 2019 19:53:40 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Vladis Dronov <vdronov@redhat.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fs: fix use-after-free in __fput() when a chardev is
- removed but a file is still open
-Message-ID: <20191208195340.GX4203@ZenIV.linux.org.uk>
-References: <20191125125342.6189-1-vdronov@redhat.com>
- <20191208194907.GW4203@ZenIV.linux.org.uk>
+        id S1726761AbfLHVf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 16:35:29 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:43466 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726661AbfLHVf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 16:35:28 -0500
+Received: by mail-lj1-f196.google.com with SMTP id a13so13326837ljm.10
+        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 13:35:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uSATXKDDmvR07T7kUi8rHi7RN+bAfLLpofRbY4BLnYc=;
+        b=QDp02WtOAAN8JLUWqKZ1RMBdvq52AFxQlA60k5ue1vPtqtI974JZyKwoY75VqFwxG5
+         wUDgZAaIsmJW7fwWatKJDfq6JFa//u0FMI769Ck5v6nuPBk6RQObsYioypzjwB8qy/O7
+         ieejU5X44533UrSnW+Luvu+jyOKat8deoXhas=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uSATXKDDmvR07T7kUi8rHi7RN+bAfLLpofRbY4BLnYc=;
+        b=FVYHGOrm+Ze1TbWG1pfbF5xzSPJ1zVVD1m9mEJ9Kfev0ElS4kIgBFQzh2cFrcZ2/VG
+         6f1xzDuYzMOSWiv7tk7EGHDZsNjiJEc67Y2KZDlwgeJ/TXPsaLDprfn9E5W6sq+JjklH
+         8SwkjR9OLAFeSC2S+o24mqd/UjTbaCHvpMM+g1yfRhZaO/7xNSscjDXOklA9lrXcEdW/
+         cy2zkTKQngDtITkGAAjGV3vrXbaTPNUubXeRjuURivEe1/B6PHK4VNGJLtwqRU7qma/D
+         y1M5Jni2/c5aE1ZdlU4aAv4V5whtYhQEYsPknTCai+1QkKfBJDSXiwQ975QHot1WAlHq
+         PmaA==
+X-Gm-Message-State: APjAAAVWr5r/7h/b1bdw2dfmpKb25WfIh/QhmkzPfSFsQi0UJy1paedv
+        /WZj78/MuwfTvAW3pGHD4jwtoyDBNQg=
+X-Google-Smtp-Source: APXvYqzwRpnc8Q1InT645lynN24wDUvaEzrmWaDWrf4Gh2csQFeCuiKiv9Gf37fBq3Cdj6Qofbbu/w==
+X-Received: by 2002:a2e:3c1a:: with SMTP id j26mr14565964lja.79.1575840926167;
+        Sun, 08 Dec 2019 13:35:26 -0800 (PST)
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
+        by smtp.gmail.com with ESMTPSA id i19sm5759442lfj.17.2019.12.08.13.35.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Dec 2019 13:35:25 -0800 (PST)
+Received: by mail-lj1-f176.google.com with SMTP id e10so13339748ljj.6
+        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 13:35:24 -0800 (PST)
+X-Received: by 2002:a2e:86c4:: with SMTP id n4mr10154411ljj.97.1575840924390;
+ Sun, 08 Dec 2019 13:35:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191208194907.GW4203@ZenIV.linux.org.uk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191208.012032.1258816267132319518.davem@redhat.com>
+In-Reply-To: <20191208.012032.1258816267132319518.davem@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 8 Dec 2019 13:35:08 -0800
+X-Gmail-Original-Message-ID: <CAHk-=widRc30Mcec8EwqxuMFr+dAFpM4gJjdVOKWJog4T60qKA@mail.gmail.com>
+Message-ID: <CAHk-=widRc30Mcec8EwqxuMFr+dAFpM4gJjdVOKWJog4T60qKA@mail.gmail.com>
+Subject: Re: [GIT] Networking
+To:     David Miller <davem@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 08, 2019 at 07:49:07PM +0000, Al Viro wrote:
-> On Mon, Nov 25, 2019 at 01:53:42PM +0100, Vladis Dronov wrote:
-> > In a case when a chardev file (like /dev/ptp0) is open but an underlying
-> > device is removed, closing this file leads to a use-after-free. This
-> > reproduces easily in a KVM virtual machine:
-> > 
-> > # cat openptp0.c
-> > int main() { ... fp = fopen("/dev/ptp0", "r"); ... sleep(10); }
-> 
-> > static void __fput(struct file *file)
-> > {   ...
-> >     if (file->f_op->release)
-> >         file->f_op->release(inode, file); <<< cdev is kfree'd here
-> 
-> >     if (unlikely(S_ISCHR(inode->i_mode) && inode->i_cdev != NULL &&
-> >              !(mode & FMODE_PATH))) {
-> >         cdev_put(inode->i_cdev); <<< cdev fields are accessed here
-> > 
-> > because of:
-> > 
-> > __fput()
-> >   posix_clock_release()
-> >     kref_put(&clk->kref, delete_clock) <<< the last reference
-> >       delete_clock()
-> >         delete_ptp_clock()
-> >           kfree(ptp) <<< cdev is embedded in ptp
-> >   cdev_put
-> >     module_put(p->owner) <<< *p is kfree'd
-> > 
-> > The fix is to call cdev_put() before file->f_op->release(). This fix the
-> > class of bugs when a chardev device is removed when its file is open, for
-> > example:
-> 
-> And what's to prevent rmmod coming and freeing ->release code right as you
-> are executing it?
+On Sun, Dec 8, 2019 at 1:20 AM David Miller <davem@redhat.com> wrote:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
 
-FWIW, the bug here seems to be that the lifetime rules of cdev are fucked -
-if it can get freed while its ->kobj is still alive, we have something
-very wrong there.  IOW, you have ptp lifetime controlled by *TWO*
-refcounts - that of clk and that of of cdev->kobj.  That's doesn't work.
-Replace that kfree() with dropping a kobject reference, perhaps, so
-that freeing would've been done by its release callback?
+Grr,
+
+This introduces a new warning for me:
+
+    drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c: In function
+=E2=80=98mlx5e_tc_tun_create_header_ipv6=E2=80=99:
+    drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:332:20:
+warning: =E2=80=98n=E2=80=99 may be used uninitialized in this function
+[-Wmaybe-uninitialized]
+      332 |  struct neighbour *n;
+          |                    ^
+
+which is very annoying.
+
+The cause is commit 6c8991f41546 ("net: ipv6_stub: use
+ip6_dst_lookup_flow instead of ip6_dst_lookup") which changed
+mlx5e_route_lookup_ipv6() to use ipv6_dst_lookup_flow() which returns
+an error pointer, so it then does
+
+        if (IS_ERR(dst))
+                return PTR_ERR(dst);
+
+instead of
+
+        if (ret < 0)
+                return ret;
+
+in the old code.
+
+And that then means that the caller, which does
+
+        err =3D mlx5e_route_lookup_ipv6(priv, mirred_dev, &out_dev, &route_=
+dev,
+                                      &fl6, &n, &ttl);
+        if (err)
+                return err;
+
+and now gcc no longer sees that 'n' is always initialized when 'err'
+is zero. Because gcc apparently thinks that the
+
+        if (IS_ERR(dst))
+                return PTR_ERR(dst);
+
+thing can result in a zero return value (I guess the cast from a
+64-bit pointer to an 'int' is where it thinks "ok, that cast might
+lose high bits and become zero even when the original was tested to
+have a range where that will not happen).
+
+Anyway - the code is not buggy, but the new warning is simply not
+acceptable. We keep the build warning free even if it's gcc not being
+clever enough to see that "if it's uninitialized, we never get to the
+location where it's used".
+
+I don't know what the networking pattern for this is, but I did this
+in the merge
+
+--      struct neighbour *n;
+++      struct neighbour *n =3D NULL;
+
+and I'm not happy about having gotten a pull request that has this
+kind of shit in it, especially since it was _known_ shit.
+
+It could have been that people had compilers that didn't see this
+problem. But no.
+
+I see that Stephen Rothwell reported it four days ago, and David seems
+to have even answered it.
+
+And yet that warning was still there in the pull request.
+
+WTF?
+
+David, this is not acceptable.  You don't introduce new warnings in the tre=
+e.
+
+It doesn't matter one whit whether the warning is a false positive. A
+false positive warning will then be the cause of ignoring subsequent
+real warnings, which makes false positive warnings completely
+unacceptable.
+
+Fix your mindset, and stop sending me garbage.
+
+                   Linus
