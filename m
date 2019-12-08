@@ -2,35 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D3A711616E
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 11:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D64116173
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 11:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfLHKse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 05:48:34 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:36829 "EHLO
+        id S1726387AbfLHK4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 05:56:38 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:45835 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726163AbfLHKse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 05:48:34 -0500
+        with ESMTP id S1726163AbfLHK4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 05:56:38 -0500
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1idu73-0003B5-71; Sun, 08 Dec 2019 11:48:29 +0100
+        id 1iduEs-0003mK-Ip; Sun, 08 Dec 2019 11:56:34 +0100
 Received: from [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400] (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3C01848B469;
-        Sun,  8 Dec 2019 10:48:26 +0000 (UTC)
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, dvyukov@google.com
-Cc:     syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com,
-        glider@google.com, syzkaller-bugs@googlegroups.com,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de,
-        eric.dumazet@gmail.com
-References: <20191207183418.28868-1-socketcan@hartkopp.net>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 19C6048B470;
+        Sun,  8 Dec 2019 10:56:32 +0000 (UTC)
+Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
+To:     Sean Nyekjaer <sean@geanix.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
+ <DB7PR04MB46180C5F1EAC7C4A69A45E0CE65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <d68b2b79-34ec-eb4c-cf4b-047b5157d5e3@pengutronix.de>
+ <a1ded645-9e12-d939-7920-8e79983b02a0@geanix.com>
+ <DB7PR04MB46184164EAC5719BDCF3822CE65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <e7bef254-9762-0b77-1ace-2040113982ec@geanix.com>
+ <DB7PR04MB461820120FF61E08B8B5B0B5E65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <3a4102bc-8a86-3425-e227-590c005df044@geanix.com>
+ <2c8f83aa-e7e6-ba15-1e42-2cb834da1c48@pengutronix.de>
+ <cdf11f66-92f5-7431-9e76-6a5c92eb4d91@geanix.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -93,17 +105,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Subject: Re: [PATCH] can: ensure an initialized headroom in outgoing CAN
- sk_buffs
-Message-ID: <cc102c3b-d9d3-6447-7581-a36795259cc2@pengutronix.de>
-Date:   Sun, 8 Dec 2019 11:48:14 +0100
+Message-ID: <01039df6-8e38-cd04-6da1-35c1014bee0f@pengutronix.de>
+Date:   Sun, 8 Dec 2019 11:56:26 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191207183418.28868-1-socketcan@hartkopp.net>
+In-Reply-To: <cdf11f66-92f5-7431-9e76-6a5c92eb4d91@geanix.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="sPZNIYWNvq8CiKiMEosT6oyoeWVyH2LXo"
+ boundary="1GeyrOEprw0YVtGNDAxNVnNwZcRcRABuY"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -114,129 +124,62 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sPZNIYWNvq8CiKiMEosT6oyoeWVyH2LXo
-Content-Type: multipart/mixed; boundary="R0Hs5YjYhTQdBp8AtdaEg1JaEOCSSqjQk";
+--1GeyrOEprw0YVtGNDAxNVnNwZcRcRABuY
+Content-Type: multipart/mixed; boundary="NM6vI8sWWYfrEQGYANM1JlnsgTooQGD0a";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>, linux-can@vger.kernel.org,
- dvyukov@google.com
-Cc: syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com, glider@google.com,
- syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
- o.rempel@pengutronix.de, eric.dumazet@gmail.com
-Message-ID: <cc102c3b-d9d3-6447-7581-a36795259cc2@pengutronix.de>
-Subject: Re: [PATCH] can: ensure an initialized headroom in outgoing CAN
- sk_buffs
-References: <20191207183418.28868-1-socketcan@hartkopp.net>
-In-Reply-To: <20191207183418.28868-1-socketcan@hartkopp.net>
+To: Sean Nyekjaer <sean@geanix.com>, Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc: dl-linux-imx <linux-imx@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <01039df6-8e38-cd04-6da1-35c1014bee0f@pengutronix.de>
+Subject: Re: [PATCH V2 2/4] can: flexcan: try to exit stop mode during probe
+ stage
+References: <20191127055334.1476-1-qiangqing.zhang@nxp.com>
+ <20191127055334.1476-3-qiangqing.zhang@nxp.com>
+ <ad7e7b15-26f3-daa1-02d2-782ff548756d@pengutronix.de>
+ <DB7PR04MB46180C5F1EAC7C4A69A45E0CE65D0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <d68b2b79-34ec-eb4c-cf4b-047b5157d5e3@pengutronix.de>
+ <a1ded645-9e12-d939-7920-8e79983b02a0@geanix.com>
+ <DB7PR04MB46184164EAC5719BDCF3822CE65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <e7bef254-9762-0b77-1ace-2040113982ec@geanix.com>
+ <DB7PR04MB461820120FF61E08B8B5B0B5E65C0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <3a4102bc-8a86-3425-e227-590c005df044@geanix.com>
+ <2c8f83aa-e7e6-ba15-1e42-2cb834da1c48@pengutronix.de>
+ <cdf11f66-92f5-7431-9e76-6a5c92eb4d91@geanix.com>
+In-Reply-To: <cdf11f66-92f5-7431-9e76-6a5c92eb4d91@geanix.com>
 
---R0Hs5YjYhTQdBp8AtdaEg1JaEOCSSqjQk
+--NM6vI8sWWYfrEQGYANM1JlnsgTooQGD0a
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 12/7/19 7:34 PM, Oliver Hartkopp wrote:
-> KMSAN sysbot detected a read access to an untinitialized value in the h=
-eadroom
-> of an outgoing CAN related sk_buff. When using CAN sockets this area is=
- filled
-> appropriately - but when using a packet socket this initialization is m=
-issing.
+On 12/8/19 11:47 AM, Sean Nyekjaer wrote:
+>> But both patches:
+>>
+>>      can: flexcan: fix deadlock when using self wakeup
+>>      can: flexcan: try to exit stop mode during probe stage
+>>
+>> are not yet mainline, so if "can: flexcan: fix deadlock when using sel=
+f
+>> wakeup" fixes the problem and goes into stable we don't need "can:
+>> flexcan: try to exit stop mode during probe stage", right?
+>>
+>>> That's what i meant by this patch doesn't do any harm to have the che=
+ck
+>>> included.
+>>
+>> I don't want to have code in the driver that serves no purpose.
 >=20
-> The problematic read access occurs in the CAN receive path which can on=
-ly be
-> triggered when the sk_buff is sent through a (virtual) CAN interface. S=
-o we
-> check in the sending path whether we need to perform the missing
-> initializations.
->=20
-> Fixes: d3b58c47d330d ("can: replace timestamp as unique skb attribute")=
+> Fine with me, I'm continuing to have the patch included in my tree unti=
+l=20
+> all devices are upgraded with:
+> 	can: flexcan: fix deadlock when using self wakeup
 
-> Reported-by: syzbot+b02ff0707a97e4e79ebb@syzkaller.appspotmail.com
-> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-> ---
->  include/linux/can/dev.h | 35 +++++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->=20
-> diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-> index 9b3c720a31b1..8f86e7a1f8e9 100644
-> --- a/include/linux/can/dev.h
-> +++ b/include/linux/can/dev.h
-> @@ -18,6 +18,7 @@
->  #include <linux/can/error.h>
->  #include <linux/can/led.h>
->  #include <linux/can/netlink.h>
-> +#include <linux/can/skb.h>
->  #include <linux/netdevice.h>
-> =20
->  /*
-> @@ -91,6 +92,37 @@ struct can_priv {
->  #define get_can_dlc(i)		(min_t(__u8, (i), CAN_MAX_DLC))
->  #define get_canfd_dlc(i)	(min_t(__u8, (i), CANFD_MAX_DLC))
-> =20
-> +/* Check for outgoing skbs that have not been created by the CAN subsy=
-stem */
-> +static inline bool can_check_skb_headroom(struct net_device *dev,
-> +					  struct sk_buff *skb)
+That makes sende in your usecase, as you already have "can: flexcan: try
+to exit stop mode during probe stage" in your tree.
 
-Do we want to have such a big function as a static inline?
-
-> +{
-> +	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */=
-
-> +	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
-> +		return true;
-> +
-> +	/* af_packet does not apply CAN skb specific settings */
-> +	if (skb->ip_summed =3D=3D CHECKSUM_NONE) {
-
-Is it possible to set the ip_summed via the packet socket or is it
-always 0 (=3D=3D CHECKSUM_NONE)?
-
-> +
-
-Please remove that empty line.
-
-> +		/* init headroom */
-> +		can_skb_prv(skb)->ifindex =3D dev->ifindex;
-> +		can_skb_prv(skb)->skbcnt =3D 0;
-> +
-> +		skb->ip_summed =3D CHECKSUM_UNNECESSARY;
-> +
-> +		/* preform proper loopback on capable devices */
-> +		if (dev->flags & IFF_ECHO)
-> +			skb->pkt_type =3D PACKET_LOOPBACK;
-> +		else
-> +			skb->pkt_type =3D PACKET_HOST;
-> +
-> +		skb_reset_mac_header(skb);
-> +		skb_reset_network_header(skb);
-> +		skb_reset_transport_header(skb);
-> +	}
-> +
-> +	return false;
-> +}
-> +
->  /* Drop a given socketbuffer if it does not contain a valid CAN frame.=
- */
->  static inline bool can_dropped_invalid_skb(struct net_device *dev,
->  					  struct sk_buff *skb)
-> @@ -108,6 +140,9 @@ static inline bool can_dropped_invalid_skb(struct n=
-et_device *dev,
->  	} else
->  		goto inval_skb;
-> =20
-> +	if (can_check_skb_headroom(dev, skb))
-
-Can you rename the function, so that it's clear that returning false
-means it's an invalid skb?
-
-> +		goto inval_skb;
-> +
->  	return false;
-> =20
->  inval_skb:
->=20
-
+regards,
 Marc
 
 --=20
@@ -246,23 +189,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---R0Hs5YjYhTQdBp8AtdaEg1JaEOCSSqjQk--
+--NM6vI8sWWYfrEQGYANM1JlnsgTooQGD0a--
 
---sPZNIYWNvq8CiKiMEosT6oyoeWVyH2LXo
+--1GeyrOEprw0YVtGNDAxNVnNwZcRcRABuY
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3s1PEACgkQWsYho5Hk
-nSCKdAf/bjw9kubsVxu3iOzE16IWBVIZOJwWSBrP2fdB8BbQtFKsxJJaqWVqbTIe
-TIILQbIkLy+W0KZGSPvBCc7ECHP/cP61vrwbwNE15Twt5y/m2idB6Aq3n0l4olRt
-hzVLPDnw9lVuiEF4k6F9W7Zo8nscl/RGp/PaeaFjILptg4utjmiH6rP7UdlXu2kT
-5zx1sqDnxPfCHYhIaIi0ix1nWFuwQekF9Iv80cVMqbuf9tpPHNZ/rg8q4LStEaRG
-1z/dqKF20OgZ/dKHulWsNbBQwcHdcBf2akLeqBR7uiynK/gVYRjrth9fDtMgbYNh
-DVuR87FtHtpmrP4EkXlIEHQeYL8gCQ==
-=TZxU
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3s1toACgkQWsYho5Hk
+nSB3jwf+OcC5PHpmSVaRCCLnD8oWB3syQApc1hdy96T9/2/F6agAF8cKoxhLIgQQ
+PDShvn6bfCkv+LUEyKfiA0CFFxTWVJEhBvaMz+Kr3xhCGYzxc7Uq1nTdXuAIyyud
+oOCC/Q+EYNlu5g56IzGY3oK3hwtWxE2C+56GSIJf4WD2nnIteM4b+tKhML39GTbj
+cw6podzwDyNPGvxBK6WDzbVYj0T+Ps7jhH7uh+kp+I+uBzXEJhqH7BAfLUiOvuwr
+dk9IhVXw79vCreZPMzKiFeOjV7vNUhANYGtBeUXZUs0RZpjdWQzse4t2adHLEZU+
+ZkxvFgZOLoX/wEklL/DkHSdXDwUywg==
+=aKmy
 -----END PGP SIGNATURE-----
 
---sPZNIYWNvq8CiKiMEosT6oyoeWVyH2LXo--
+--1GeyrOEprw0YVtGNDAxNVnNwZcRcRABuY--
