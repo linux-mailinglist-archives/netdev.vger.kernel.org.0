@@ -2,74 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD40B116070
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 06:03:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE11A1160BB
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 06:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726425AbfLHFDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 00:03:01 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:49242 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbfLHFDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 00:03:01 -0500
-Received: by mail-il1-f199.google.com with SMTP id t13so8852219ilk.16
-        for <netdev@vger.kernel.org>; Sat, 07 Dec 2019 21:03:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=qxR8n/MO9nUojwz4mikH1ALZdXQUJxV8vd4w04E6/Ac=;
-        b=K9jWDrM2iw9afeM9fd34EKAFMTueJK6Dr+3EMp6LwXt39H2uU7pSp2Jxy4EnIy+JZw
-         z6PJ15qCE1wMxcYkIhwqdTgnGJZjwXKfgmm+jo+QmAYmMlJjUj0kQ7YSUql1ZQkrmJOs
-         xhQ94qkGGyMS1dSqDy/TJgrhLmkVtyUwv8dDRto3rcDA7A+t4diBWR5wC2YD8MwC0bOx
-         Pv5DkT+L+S/WhQUyoGoMVSD02tIrlAT+7rj5UyBlLiTBlcafQ9uSUhwXFfx4AtM0BWgB
-         WikoeqzqrbirFVS7RHKf8ZEHfy66EncnkVHeKK+MFPjq8A9wO1vCH5SQGkepC9Vn6yPI
-         pngA==
-X-Gm-Message-State: APjAAAUt+vNRfN9KKgCHYbSaw1NZOtETjO2yse3g2mqU512mr0wLUFU5
-        5NYGYMcnaOeZGgVO8NLQ9Pr17vwxwL7UVUITrxdBOs75Z9Mp
-X-Google-Smtp-Source: APXvYqwhYun6FRgcqHHP72qU2fze8Qfccpac/MDOfTBslHGmFtbVnfIYVfHJILMkuRSGVKPU9YNFZlZopc4zcKxXx7fBNK5x0SmW
-MIME-Version: 1.0
-X-Received: by 2002:a5d:9c52:: with SMTP id 18mr15554232iof.180.1575781380427;
- Sat, 07 Dec 2019 21:03:00 -0800 (PST)
-Date:   Sat, 07 Dec 2019 21:03:00 -0800
-In-Reply-To: <000000000000734545058bb27ebb@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006c96bd05992a318e@google.com>
-Subject: Re: WARNING in perf_reg_value
-From:   syzbot <syzbot+10189b9b0f8c4664badd@syzkaller.appspotmail.com>
-To:     acme@kernel.org, acme@redhat.com,
-        alexander.shishkin@linux.intel.com, arvid.brodin@alten.se,
-        bp@alien8.de, davem@davemloft.net, eranian@google.com,
-        hpa@zytor.com, jolsa@kernel.org, jolsa@redhat.com,
-        kan.liang@linux.intel.com, linux-kernel@vger.kernel.org,
-        mingo@kernel.org, mingo@redhat.com, netdev@vger.kernel.org,
-        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, torvalds@linux-foundation.org,
-        vincent.weaver@maine.edu, x86@kernel.org, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1725832AbfLHFkk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 8 Dec 2019 00:40:40 -0500
+Received: from c.mail.sonic.net ([64.142.111.80]:49980 "EHLO c.mail.sonic.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbfLHFkk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Dec 2019 00:40:40 -0500
+X-Greylist: delayed 652 seconds by postgrey-1.27 at vger.kernel.org; Sun, 08 Dec 2019 00:40:40 EST
+Received: from [192.168.42.66] (173-228-4-7.dsl.dynamic.fusionbroadband.com [173.228.4.7])
+        (authenticated bits=0)
+        by c.mail.sonic.net (8.15.1/8.15.1) with ESMTPSA id xB85TkBK005092
+        (version=TLSv1.2 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 7 Dec 2019 21:29:46 -0800
+From:   Guy Harris <guy@alum.mit.edu>
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Should TPACKET_ALIGNMENT be defined as 16U rather than just 16, to
+ avoid undefined behavior warnings?
+Message-Id: <E6234DB1-C99F-48EC-8D33-3285BD8BD496@alum.mit.edu>
+Date:   Sat, 7 Dec 2019 21:29:45 -0800
+To:     netdev <netdev@vger.kernel.org>
+X-Mailer: Apple Mail (2.3445.104.11)
+X-Sonic-CAuth: UmFuZG9tSVYzUXSinkcRyjU/hit4FzvmC1y/DLKAnO2MgQwSyt8zTcWccppDlqjaRT1s4Zn7BcG2TBNuGIKMhOssJ96rOkBg
+X-Sonic-ID: C;hJ3BvnsZ6hGdbP7Ubmlb6w== M;jp0lv3sZ6hGdbP7Ubmlb6w==
+X-Spam-Flag: No
+X-Sonic-Spam-Details: 0.0/5.0 by cerberusd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+if_packet.h defines:
 
-commit 311633b604063a8a5d3fbc74d0565b42df721f68
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed Jul 10 06:24:54 2019 +0000
+	#define TPACKET_ALIGNMENT	16
+	#define TPACKET_ALIGN(x)	(((x)+TPACKET_ALIGNMENT-1)&~(TPACKET_ALIGNMENT-1))
 
-     hsr: switch ->dellink() to ->ndo_uninit()
+Some compilers may, if TPACKET_ALIGN() is passed an unsigned value, give a warning that the result of converting ~(TPACKET_ALIGNMENT-1) to an unsigned int is undefined, as ~(TPACKET_ALIGNMENT-1) evaluates to -16 (0xFFFFFFF0), and C doesn't specify the behavior when converting negative values to an unsigned type.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13e241dae00000
-start commit:   e01e060f Merge tag 'platform-drivers-x86-v5.2-3' of git://..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
-dashboard link: https://syzkaller.appspot.com/bug?extid=10189b9b0f8c4664badd
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16615caea00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14a222aea00000
+In *practice*, with all the compilers we're likely to see, it just converts it to 4294967280U (0xFFFFFFF0), which is the desired behavior, but it might be cleaner (and produce fewer warnings when compiling code using TPACKET_ALIGN() or any of the macros using it) if TPACKET_ALIGNMENT were defined as 16U, rather than 16, as the entire computation will be done with unsigned integers.
 
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: hsr: switch ->dellink() to ->ndo_uninit()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+netlink.h was changed to define NLMSG_ALIGNTO as 4U rather than 4, perhaps for the same reason.
