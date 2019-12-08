@@ -2,409 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C8511613B
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 10:20:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00134116144
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 10:39:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbfLHJUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 04:20:43 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:40347 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725860AbfLHJUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 04:20:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575796841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gS0OjyPW9rQzMNlZF5QFlZm/SX6xtTdxqzEl1pscpMA=;
-        b=e/Q0wu2RhceQl0CqK6OtmiXq+ELYoN9ZqInzeOIWNj38Oy0WYfx6hKhQxb2oXBsrVQD5v+
-        QIqacqD7gAr6EC7Cc1NpOeVVGIq85tV8iOoK9UKCLVl3d2/3eeW4AZr/CJ2enpQfB/5H0F
-        EWxKJnWxA5bxWQJo2H+jPPWadEj9RXc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-bDzlBOfnNXuTX75D-PmzBQ-1; Sun, 08 Dec 2019 04:20:38 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 07AF8183B713;
-        Sun,  8 Dec 2019 09:20:37 +0000 (UTC)
-Received: from localhost (ovpn-112-43.rdu2.redhat.com [10.10.112.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E87C60476;
-        Sun,  8 Dec 2019 09:20:33 +0000 (UTC)
-Date:   Sun, 08 Dec 2019 01:20:32 -0800 (PST)
-Message-Id: <20191208.012032.1258816267132319518.davem@redhat.com>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@redhat.com>
-Mime-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: bDzlBOfnNXuTX75D-PmzBQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        id S1726001AbfLHJjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 04:39:17 -0500
+Received: from mail-eopbgr70044.outbound.protection.outlook.com ([40.107.7.44]:60863
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725832AbfLHJjR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Dec 2019 04:39:17 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZZC3jt9q0MM5EDhPFXJmiJmErVJlfP3n/hPAIS+Cm/k8yrDYiCqaS4o4w1UtkT2DU6z2cT5/VBvsNuuVIPEshJN7PPWgS/QbPWcEqMFkxgf+GION4mEjdV6axyw4T+5VB1kYj8fo92vnCQBiPn74267fgxNOfbY58GTmFOanU4f8LUpMrWhCFrBJhkE2bys5hb5HU2TjL71J4vHy7XiQor7w/k8oZ25sSjdu5u65f7F13x3nHW/+0FDaxis7q8BlvKm+Dwumev7/q3fTJL+V/z5zBz1x2WzcXtgZ6m7xJptH3zCElwLtYDEBIXVkDauFS0GdmLvv/usRsO63ECgOSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c4/kFNVVHEy2dseHlJuNNpRA+UodJk57YYDmc33uwM8=;
+ b=GocJ9N+V+4JithfZCgA3bdynPH2xSNTY917byQeIYNhbACNa+GbTptAioAqVp1aMxzUdc/VJnZq35pTsMd1ST2J1wAvaTWzj3V5gfzKVyAV35/QsdHge0hpH+4XBO+0LFZMccvRyPlO+2aV2gSNo1Pzq6/c/rE18HI3PAFqVuP8Qwc+KDWthikkG0Ju8B53yYx7It5x6J1sFnjQkokG71H5GkZon3jhZEiSwmZVtiL0dGaQmO8CXqnVpUKablw9paiodLC05xAgqKMaAgqAmSWGsLq+oKoNQ6ii1kJm30eU+Grp2bTshuH7VVOKdfUzrY45wWNoKqycJFRmUWxcB8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c4/kFNVVHEy2dseHlJuNNpRA+UodJk57YYDmc33uwM8=;
+ b=mUzVNiPvExUH+R/rlZGHWOL30yB2vSR2dEab44wucSKK9PymlXDh+siynCrmP8FrBtWj8xFI783Pswlj/251M4KirpjwOHoO514Gp9K/E9oqAuWYjxlxqN5KrhA3F04yU1NRsFGFPivcl9Kly3Mrv9qk/W2wOJ3qCon1T7lAIes=
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
+ AM4PR05MB3332.eurprd05.prod.outlook.com (10.171.187.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.12; Sun, 8 Dec 2019 09:39:10 +0000
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::2cc0:1303:718d:2e9c]) by AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::2cc0:1303:718d:2e9c%7]) with mapi id 15.20.2516.018; Sun, 8 Dec 2019
+ 09:39:10 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     wenxu <wenxu@ucloud.cn>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Question about flow table offload in mlx5e
+Thread-Topic: Question about flow table offload in mlx5e
+Thread-Index: AQHVoD2I/ci1XqDAS0+ihzjR81tg26eVO/4ggAAO9ACAAAbLAIAAPhcAgAAIURCAASLYAIADSReAgAMfuQCAAc3QAIAABvEAgAAPNICAACQZgP//5amAgAcxiYCABXq1AIAEWG8A
+Date:   Sun, 8 Dec 2019 09:39:10 +0000
+Message-ID: <052c1c18-89cb-53ed-344c-decd4d296db3@mellanox.com>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <2a08a1aa-6aa8-c361-f825-458d234d975f@ucloud.cn>
+ <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
+ <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
+ <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+ <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
+ <057b0ab1-5ce3-61f0-a59e-1c316e414c84@mellanox.com>
+ <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
+ <5ce27064-97ee-a36d-8f20-10a0afe739cf@ucloud.cn>
+ <c06ff5a3-e099-9476-7085-1cd72a9ffc56@ucloud.cn>
+ <e8fadfa2-0145-097b-9779-b5263ff3d7b7@mellanox.com>
+In-Reply-To: <e8fadfa2-0145-097b-9779-b5263ff3d7b7@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM4PR0101CA0046.eurprd01.prod.exchangelabs.com
+ (2603:10a6:200:41::14) To AM4PR05MB3411.eurprd05.prod.outlook.com
+ (2603:10a6:205:b::30)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9400610e-8240-4762-7008-08d77bc27a77
+x-ms-traffictypediagnostic: AM4PR05MB3332:
+x-microsoft-antispam-prvs: <AM4PR05MB33324C0124050851511B5D42CF590@AM4PR05MB3332.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2657;
+x-forefront-prvs: 0245702D7B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(39850400004)(136003)(396003)(346002)(199004)(189003)(99286004)(52116002)(71200400001)(76176011)(71190400001)(2906002)(316002)(6512007)(66556008)(66446008)(64756008)(66476007)(229853002)(6486002)(66946007)(6916009)(4326008)(8936002)(102836004)(478600001)(305945005)(2616005)(5660300002)(31686004)(53546011)(36756003)(86362001)(6506007)(31696002)(81166006)(81156014)(26005)(186003)(8676002)(32563001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3332;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: G1oVvNQI1vsieByMGHihgpwz5U373ei/wVU0NfHokEXOF4wPR8mvFubfg8SxoTr6qgc9viDAl8qJzYpXoKxZIC9yxAR99uH/6ZPA9tbICXdUWQWMUn5ljuPpkQ5E93cC9MvHedjXE9LKyAkR8dOYX3GeJezfZWF98feGMdvOsfPoE/QIx7pxGZh7P3DKfxGPABuPOn6lJ962KEfUnDUMhWWxB1P9s8b5sVDvsj7TzgJLh5sviHHK8C8FiBw6UONWtCQehVGNSZjTp/zsp2Pp730ykC300XREhHSqfT44gf5V1jZntWcFzOnKmvIdhPLAWoQy1ItYGNcOE8YRz+MCOwp313NQp0zIyjCR7IGL7s1St72CGqCin9AHL2sptHof48oxjkJEO1yoJXQI9xpgcMGY1PtwtXI05mWN2GXzd5KwOOvKIEsnXxqlV7kMK3FOXyRzeeeStg50L3lRVWHr9NmUmvkiC9JJIvsDrlfRuNuJgvb8uGX9Bnl5qo+VyaFH
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7086A8D61AAE754FA22CE4AFA7AC8D6E@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9400610e-8240-4762-7008-08d77bc27a77
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Dec 2019 09:39:10.6912
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ez9u/Lw5w1D0K+OL+FkSdGIsDUP+Fc9+mDmvc5PXWZHntTHVC9Ld6LiHiUnz4GztetceeGi+EQXIdxBQDznwFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3332
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-1) More jumbo frame fixes in r8169, from Heiner Kallweit.
-
-2) Fix bpf build in minimal configuration, from Alexei Starovoitov.
-
-3) Use after free in slcan driver, from Jouni Hogander.
-
-4) Flower classifier port ranges don't work properly in the HW
-   offload case, from Yoshiki Komachi.
-
-5) Use after free in hns3_nic_maybe_stop_tx(), from Yunsheng Lin.
-
-6) Out of bounds access in mqprio_dump(), from Vladyslav Tarasiuk.
-
-7) Fix flow dissection in dsa TX path, from Alexander Lobakin.
-
-8) Stale syncookie timestampe fixes from Guillaume Nault.
-
-Please pull, thanks a lot!
-
-The following changes since commit 596cf45cbf6e4fa7bcb0df33e373a7d062b644b5:
-
-  Merge branch 'akpm' (patches from Andrew) (2019-12-01 20:36:41 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to 0fc75219fe9a3c90631453e9870e4f6d956f0ebc:
-
-  r8169: fix rtl_hw_jumbo_disable for RTL8168evl (2019-12-07 14:23:06 -0800)
-
-----------------------------------------------------------------
-Aaron Conole (2):
-      openvswitch: support asymmetric conntrack
-      act_ct: support asymmetric conntrack
-
-Aditya Pakki (1):
-      pppoe: remove redundant BUG_ON() check in pppoe_pernet
-
-Alexander Lobakin (1):
-      net: dsa: fix flow dissection on Tx path
-
-Alexandru Ardelean (1):
-      NFC: NCI: use new `delay` structure for SPI transfer delays
-
-Alexei Starovoitov (3):
-      bpf: Fix static checker warning
-      libbpf: Fix sym->st_value print on 32-bit arches
-      bpf: Fix build in minimal configurations
-
-Andrii Nakryiko (2):
-      libbpf: Fix Makefile' libbpf symbol mismatch diagnostic
-      libbpf: Fix global variable relocation
-
-Appana Durga Kedareswara rao (1):
-      MAINTAINERS: add fragment for xilinx CAN driver
-
-Arnaldo Carvalho de Melo (1):
-      libbpf: Fix up generation of bpf_helper_defs.h
-
-Aurelien Jarno (1):
-      libbpf: Fix readelf output parsing on powerpc with recent binutils
-
-Aya Levin (2):
-      net/mlx5e: Fix translation of link mode into speed
-      net/mlx5e: ethtool, Fix analysis of speed setting
-
-Bruno Carneiro da Cunha (1):
-      lpc_eth: kernel BUG on remove
-
-Chuhong Yuan (1):
-      phy: mdio-thunder: add missed pci_release_regions in remove
-
-Cong Wang (1):
-      gre: refetch erspan header from skb->data after pskb_may_pull()
-
-Dan Carpenter (1):
-      net: fix a leak in register_netdevice()
-
-Daniel Borkmann (1):
-      bpf: Avoid setting bpf insns pages read-only when prog is jited
-
-Danit Goldberg (1):
-      net/core: Populate VF index in struct ifla_vf_guid
-
-David S. Miller (9):
-      Merge git://git.kernel.org/.../bpf/bpf
-      Merge tag 'linux-can-fixes-for-5.5-20191203' of git://git.kernel.org/.../mkl/linux-can
-      Merge branch 'net-convert-ipv6_stub-to-ip6_dst_lookup_flow'
-      Merge branch 's390-fixes'
-      Merge branch 'hns3-fixes'
-      Merge git://git.kernel.org/.../bpf/bpf
-      Merge branch 'net-tc-indirect-block-relay'
-      Merge tag 'mlx5-fixes-2019-12-05' of git://git.kernel.org/.../saeed/linux
-      Merge branch 'tcp-fix-handling-of-stale-syncookies-timestamps'
-
-Dust Li (1):
-      net: sched: fix dump qlen for sch_mq/sch_mqprio with NOLOCK subqueues
-
-Eran Ben Elisha (2):
-      net/mlx5e: Fix TXQ indices to be sequential
-      net/mlx5e: Fix SFF 8472 eeprom length
-
-Eric Biggers (1):
-      ppp: fix out-of-bounds access in bpf_prog_create()
-
-Eric Dumazet (5):
-      tcp: refactor tcp_retransmit_timer()
-      net: avoid an indirect call in ____sys_recvmsg()
-      tcp: md5: fix potential overestimation of TCP option space
-      inet: protect against too small mtu values.
-      net_sched: validate TCA_KIND attribute in tc_chain_tmplt_add()
-
-Grygorii Strashko (3):
-      net: ethernet: ti: cpsw_switchdev: fix unmet direct dependencies detected for NET_SWITCHDEV
-      net: ethernet: ti: cpsw: fix extra rx interrupt
-      net: phy: dp83867: fix hfs boot in rgmii mode
-
-Guillaume Nault (3):
-      tcp: fix rejected syncookies due to stale timestamps
-      tcp: tighten acceptance of ACKs not matching a child socket
-      tcp: Protect accesses to .ts_recent_stamp with {READ,WRITE}_ONCE()
-
-Heiner Kallweit (2):
-      r8169: add missing RX enabling for WoL on RTL8125
-      r8169: fix rtl_hw_jumbo_disable for RTL8168evl
-
-Huy Nguyen (1):
-      net/mlx5e: Query global pause state before setting prio2buffer
-
-Jesper Dangaard Brouer (1):
-      samples/bpf: Fix broken xdp_rxq_info due to map order assumptions
-
-Jian Shen (1):
-      net: hns3: fix VF ID issue for setting VF VLAN
-
-Johan Hovold (1):
-      can: ucan: fix non-atomic allocation in completion handler
-
-John Hurley (2):
-      net: core: rename indirect block ingress cb function
-      net: sched: allow indirect blocks to bind to clsact in TC
-
-Jonathan Lemon (1):
-      xdp: obtain the mem_id mutex before trying to remove an entry.
-
-Jongsung Kim (1):
-      net: stmmac: reset Tx desc base address before restarting Tx
-
-Jouni Hogander (2):
-      can: slcan: Fix use-after-free Read in slcan_open
-      net-sysfs: Call dev_hold always in netdev_queue_add_kobject
-
-Julian Wiedmann (3):
-      s390/qeth: guard against runt packets
-      s390/qeth: ensure linear access to packet headers
-      s390/qeth: fix dangling IO buffers after halt/clear
-
-Martin Varghese (2):
-      Fixed updating of ethertype in function skb_mpls_pop
-      net: Fixed updating of ethertype in skb_mpls_push()
-
-Mian Yousaf Kaukab (1):
-      net: thunderx: start phy before starting autonegotiation
-
-Nikolay Aleksandrov (1):
-      net: bridge: deny dev_set_mac_address() when unregistering
-
-Parav Pandit (1):
-      net/mlx5e: E-switch, Fix Ingress ACL groups in switchdev mode for prio tag
-
-Roi Dayan (2):
-      net/mlx5e: Fix freeing flow with kfree() and not kvfree()
-      net/mlx5e: Fix free peer_flow when refcount is 0
-
-Russell King (2):
-      net: sfp: fix unbind
-      net: sfp: fix hwmon
-
-Sabrina Dubroca (2):
-      net: ipv6: add net argument to ip6_dst_lookup_flow
-      net: ipv6_stub: use ip6_dst_lookup_flow instead of ip6_dst_lookup
-
-Shannon Nelson (1):
-      ionic: keep users rss hash across lif reset
-
-Srinivas Neeli (1):
-      can: xilinx_can: Fix usage of skb memory
-
-Sriram Dash (1):
-      MAINTAINERS: add myself as maintainer of MCAN MMIO device driver
-
-Stanislav Fomichev (5):
-      bpf: Support pre-2.25-binutils objcopy for vmlinux BTF
-      bpf: Force .BTF section start to zero when dumping from vmlinux
-      selftests/bpf: Don't hard-code root cgroup id
-      selftests/bpf: Bring back c++ include/link test
-      selftests/bpf: De-flake test_tcpbpf
-
-Stefano Garzarella (1):
-      vhost/vsock: accept only packets with the right dst_cid
-
-Taehee Yoo (2):
-      hsr: fix a NULL pointer dereference in hsr_dev_xmit()
-      tipc: fix ordering of tipc module init and exit routine
-
-Valentin Vidic (1):
-      net/tls: Fix return values to avoid ENOTSUPP
-
-Venkatesh Yadav Abbarapu (1):
-      can: xilinx_can: skip error message on deferred probe
-
-Victorien Molle (1):
-      sch_cake: Add missing NLA policy entry TCA_CAKE_SPLIT_GSO
-
-Vladimir Oltean (1):
-      net: mscc: ocelot: unregister the PTP clock on deinit
-
-Vladyslav Tarasiuk (1):
-      mqprio: Fix out-of-bounds access in mqprio_dump
-
-Yangbo Lu (1):
-      enetc: disable EEE autoneg by default
-
-Yonghong Song (2):
-      bpf: Fix a bug when getting subprog 0 jited image in check_attach_btf_id
-      selftests/bpf: Add a fexit/bpf2bpf test with target bpf prog no callees
-
-Yoshiki Komachi (1):
-      cls_flower: Fix the behavior using port ranges with hw-offload
-
-Yunsheng Lin (2):
-      net: hns3: fix for TX queue not restarted problem
-      net: hns3: fix a use after free problem in hns3_nic_maybe_stop_tx()
-
- MAINTAINERS                                         |  17 +++
- drivers/infiniband/core/addr.c                      |   7 +-
- drivers/infiniband/sw/rxe/rxe_net.c                 |   8 +-
- drivers/net/can/slcan.c                             |   1 +
- drivers/net/can/usb/ucan.c                          |   2 +-
- drivers/net/can/xilinx_can.c                        |  28 ++--
- drivers/net/ethernet/cavium/thunder/thunder_bgx.c   |   2 +-
- drivers/net/ethernet/freescale/enetc/enetc.c        |   5 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c     |  50 +++----
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |  18 +--
- drivers/net/ethernet/mellanox/mlx5/core/en.h        |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/port.c   |   1 +
- .../ethernet/mellanox/mlx5/core/en/port_buffer.c    |  27 +++-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c |   8 +-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c    |  15 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   |  31 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c  |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c     |   7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c     |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h   |   9 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c  | 122 +++++++++++-----
- drivers/net/ethernet/mscc/ocelot.c                  |  14 +-
- drivers/net/ethernet/nxp/lpc_eth.c                  |   2 -
- drivers/net/ethernet/pensando/ionic/ionic_lif.c     |  16 ++-
- drivers/net/ethernet/realtek/r8169_main.c           |   4 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c   |   2 +
- drivers/net/ethernet/ti/Kconfig                     |   2 +-
- drivers/net/ethernet/ti/cpsw_priv.c                 |   2 +-
- drivers/net/geneve.c                                |   4 +-
- drivers/net/phy/dp83867.c                           | 119 +++++++++-------
- drivers/net/phy/mdio-thunder.c                      |   1 +
- drivers/net/phy/sfp.c                               |  17 ++-
- drivers/net/ppp/ppp_generic.c                       |   5 +-
- drivers/net/ppp/pppoe.c                             |   2 -
- drivers/net/vxlan.c                                 |   8 +-
- drivers/s390/net/qeth_core.h                        |   4 +
- drivers/s390/net/qeth_core_main.c                   | 158 +++++++++++++--------
- drivers/s390/net/qeth_core_mpc.h                    |  14 --
- drivers/s390/net/qeth_ethtool.c                     |   1 +
- drivers/s390/net/qeth_l2_main.c                     |  12 +-
- drivers/s390/net/qeth_l3_main.c                     |  13 +-
- drivers/vhost/vsock.c                               |   4 +-
- include/linux/filter.h                              |   8 +-
- include/linux/netdevice.h                           |   5 +
- include/linux/skbuff.h                              |   5 +-
- include/linux/time.h                                |  13 ++
- include/net/flow_dissector.h                        |   1 +
- include/net/flow_offload.h                          |  15 +-
- include/net/ip.h                                    |   5 +
- include/net/ipv6.h                                  |   2 +-
- include/net/ipv6_stubs.h                            |   6 +-
- include/net/tcp.h                                   |  27 ++--
- kernel/bpf/btf.c                                    |   5 +-
- kernel/bpf/verifier.c                               |   5 +-
- net/bridge/br_device.c                              |   6 +
- net/core/dev.c                                      |   9 +-
- net/core/flow_dissector.c                           |  42 ++++--
- net/core/flow_offload.c                             |  45 +++---
- net/core/lwt_bpf.c                                  |   4 +-
- net/core/net-sysfs.c                                |   7 +-
- net/core/rtnetlink.c                                |   4 +-
- net/core/skbuff.c                                   |  10 +-
- net/core/xdp.c                                      |   8 +-
- net/dccp/ipv6.c                                     |   6 +-
- net/hsr/hsr_device.c                                |   9 +-
- net/ipv4/devinet.c                                  |   5 -
- net/ipv4/gre_demux.c                                |   2 +-
- net/ipv4/ip_output.c                                |  13 +-
- net/ipv4/tcp_output.c                               |   5 +-
- net/ipv4/tcp_timer.c                                |  10 +-
- net/ipv6/addrconf_core.c                            |  11 +-
- net/ipv6/af_inet6.c                                 |   4 +-
- net/ipv6/datagram.c                                 |   2 +-
- net/ipv6/inet6_connection_sock.c                    |   4 +-
- net/ipv6/ip6_output.c                               |   8 +-
- net/ipv6/raw.c                                      |   2 +-
- net/ipv6/syncookies.c                               |   2 +-
- net/ipv6/tcp_ipv6.c                                 |   4 +-
- net/l2tp/l2tp_ip6.c                                 |   2 +-
- net/mpls/af_mpls.c                                  |   7 +-
- net/netfilter/nf_tables_offload.c                   |   6 +-
- net/nfc/nci/spi.c                                   |   6 +-
- net/openvswitch/actions.c                           |   6 +-
- net/openvswitch/conntrack.c                         |  11 ++
- net/sched/act_ct.c                                  |  13 +-
- net/sched/act_mpls.c                                |   7 +-
- net/sched/cls_api.c                                 |  60 +++++---
- net/sched/cls_flower.c                              | 118 ++++++++-------
- net/sched/sch_cake.c                                |   1 +
- net/sched/sch_mq.c                                  |   1 +
- net/sched/sch_mqprio.c                              |   3 +-
- net/sctp/ipv6.c                                     |   4 +-
- net/socket.c                                        |   7 +-
- net/tipc/core.c                                     |  29 ++--
- net/tipc/udp_media.c                                |   9 +-
- net/tls/tls_device.c                                |   8 +-
- net/tls/tls_main.c                                  |   4 +-
- net/tls/tls_sw.c                                    |   8 +-
- samples/bpf/xdp_rxq_info_user.c                     |   6 +-
- scripts/link-vmlinux.sh                             |   8 +-
- tools/lib/bpf/.gitignore                            |   1 -
- tools/lib/bpf/Makefile                              |  15 +-
- tools/lib/bpf/libbpf.c                              |  45 +++---
- tools/perf/MANIFEST                                 |   1 +
- tools/testing/selftests/bpf/.gitignore              |   1 +
- tools/testing/selftests/bpf/Makefile                |   6 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c        |  70 ++++++---
- tools/testing/selftests/bpf/progs/fentry_test.c     |  12 +-
- tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c   |   6 +-
- .../selftests/bpf/progs/fexit_bpf2bpf_simple.c      |  26 ++++
- tools/testing/selftests/bpf/progs/fexit_test.c      |  12 +-
- tools/testing/selftests/bpf/progs/test_mmap.c       |   4 +-
- .../selftests/bpf/progs/test_pkt_md_access.c        |   4 +-
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c  |   1 +
- .../selftests/bpf/test_cpp.cpp}                     |   0
- .../testing/selftests/bpf/test_skb_cgroup_id_user.c |   2 +-
- tools/testing/selftests/bpf/test_tcpbpf.h           |   1 +
- tools/testing/selftests/bpf/test_tcpbpf_user.c      |  25 +++-
- tools/testing/selftests/net/tls.c                   |   8 +-
- 119 files changed, 1024 insertions(+), 627 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
- rename tools/{lib/bpf/test_libbpf.c => testing/selftests/bpf/test_cpp.cpp} (100%)
-
+SGVyZSdzIHRoZSB0ZW1wIGZpeDoNCg0KDQpUaGUgcHJvYmxlbSBpcyBUQyArIEZUIG9mZmxvYWQs
+IGFuZCB0aGlzIHJldmVhbGVkIGEgYnVnIGluIHRoZSBkcml2ZXIuDQoNCkZvciB0aGUgdHVubmVs
+IHRlc3QsIHdlIGNoYW5nZWQgdGMgYmxvY2sgb2ZmbG9hZCB0byBmdCBjYWxsYmFjaywgYW5kIA0K
+ZGlkbid0IGNoYW5nZSB0aGUgaW5kciBibG9jayBvZmZsb2FkLg0KDQpTbyB0aGUgdHVubmVsIHVu
+c2V0IHJ1bGUgaXMgb2ZmbG9hZGVkIGZyb20gaW5kciB0YyBjYWxsYmFjayAoaXQncyANCmluZGly
+ZWN0IGJlY2F1c2UgaXQncyBvbiB0dW4xIGRldmljZSk6DQoNCm1seDVlX3JlcF9pbmRyX3NldHVw
+X2Jsb2NrX2NiDQoNCnRoaXMgb2ZmbG9hZGVkIHRoZSBydWxlIHRvIGhhcmR3YXJlIGluIHRoZSBU
+QyBkb21haW4uDQoNCk5vdyB0aGUgdHVubmVsIHNldCAoZW5jYXApIHJ1bGUgd2FzIG9mZmxvYWRl
+ZCB0byBGVCBkb21haW4uDQoNCg0KU2luY2UgVEMgY29tZXMgYmVmb3JlIEZUIGluIHNvZnR3YXJl
+LCB3ZSBzaG91bGQgaGF2ZSBjb25uZWN0ZWQgdGhlIG1pc3MgDQpvbiBUQyBkb21haW4gdG8gRlQg
+ZG9tYWluLA0KDQpidXQgdGhpcyBkaWRuJ3Qgd29yay4NCg0KVGhlIGJlbG93IGZpeCBzaG91bGQg
+Zml4IHRoYXQgY29ubmVjdGlvbjoNCg0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0NCg0KDQotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZnNfY29yZS5jDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZnNfY29yZS5jDQpAQCAtNzYzLDkgKzc2Myw2IEBAIHN0YXRpYyBzdHJ1Y3QgbWx4NV9m
+bG93X3RhYmxlIA0KKmZpbmRfY2xvc2VzdF9mdF9yZWN1cnNpdmUoc3RydWN0IGZzX25vZGXCoCAq
+cm9vdCwNCiDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgZnNfbm9kZSAqaXRlciA9IGxpc3RfZW50cnko
+c3RhcnQsIHN0cnVjdCBmc19ub2RlLCBsaXN0KTsNCiDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgbWx4
+NV9mbG93X3RhYmxlICpmdCA9IE5VTEw7DQoNCi3CoMKgwqDCoMKgwqAgaWYgKCFyb290IHx8IHJv
+b3QtPnR5cGUgPT0gRlNfVFlQRV9QUklPX0NIQUlOUykNCi3CoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHJldHVybiBOVUxMOw0KLQ0KIMKgwqDCoMKgwqDCoMKgIGxpc3RfZm9yX2VhY2hfYWR2
+YW5jZV9jb250aW51ZShpdGVyLCAmcm9vdC0+Y2hpbGRyZW4sIHJldmVyc2UpIHsNCiDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKGl0ZXItPnR5cGUgPT0gRlNfVFlQRV9GTE9XX1RB
+QkxFKSB7DQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBm
+c19nZXRfb2JqKGZ0LCBpdGVyKTsNCkBAIC03OTIsNyArNzg5LDEwIEBAIHN0YXRpYyBzdHJ1Y3Qg
+bWx4NV9mbG93X3RhYmxlIA0KKmZpbmRfY2xvc2VzdF9mdChzdHJ1Y3QgZnNfcHJpbyAqcHJpbywg
+Ym9vbCByZXZlcnMNCiDCoMKgwqDCoMKgwqDCoCBwYXJlbnQgPSBwcmlvLT5ub2RlLnBhcmVudDsN
+CiDCoMKgwqDCoMKgwqDCoCBjdXJyX25vZGUgPSAmcHJpby0+bm9kZTsNCiDCoMKgwqDCoMKgwqDC
+oCB3aGlsZSAoIWZ0ICYmIHBhcmVudCkgew0KLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+ZnQgPSBmaW5kX2Nsb3Nlc3RfZnRfcmVjdXJzaXZlKHBhcmVudCwgJmN1cnJfbm9kZS0+bGlzdCwg
+DQpyZXZlcnNlKTsNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChwYXJlbnQtPnR5
+cGUgIT0gRlNfVFlQRV9QUklPX0NIQUlOUykNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBmdCA9IGZpbmRfY2xvc2VzdF9mdF9yZWN1cnNpdmUocGFyZW50LA0K
+KyAmY3Vycl9ub2RlLT5saXN0LA0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgcmV2ZXJzZSk7DQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IGN1cnJfbm9kZSA9IHBhcmVudDsNCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcGFy
+ZW50ID0gY3Vycl9ub2RlLT5wYXJlbnQ7DQogwqDCoMKgwqDCoMKgwqAgfQ0KDQoNCi0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KDQoNCkkgd2lsbCBkbyB0aGlzIHBh
+dGNoIGZvciB1cHN0cmVhbSBpZiBuZWVkZWQgYWZ0ZXIgb3VyIGxhc3QgcGF0Y2hzZXQgdGhhdCAN
+CmFsc28gdG91Y2hlZCB0aGlzIGFyZWEuDQoNClRoYW5rcywNCg0KUGF1bC4NCg0KDQoNCg0KT24g
+MTIvNS8yMDE5IDU6MTcgUE0sIFBhdWwgQmxha2V5IHdyb3RlOg0KPiBPbiAxMi8yLzIwMTkgNToz
+NyBBTSwgd2VueHUgd3JvdGU6DQo+DQo+PiBIaSBQYXVsLA0KPj4NCj4+DQo+PiBTb3JyeSBmb3Ig
+dHJvdWJsZSB5b3UgYWdhaW4uIEkgdGhpbmsgaXQgaXMgYSBwcm9ibGVtIGluIGZ0IGNhbGxiYWNr
+Lg0KPj4NCj4+IENhbiB5b3VyIGhlbHAgbWUgZml4IGl0LiBUaHghDQo+Pg0KPj4gSSBkaWQgdGhl
+IHRlc3QgbGlrZSB5b3Ugd2l0aCByb3V0ZSB0YyBydWxlcyB0byBmdCBjYWxsYmFjay4NCj4+DQo+
+PiAjIGlmY29uZmlnIG1seF9wMCAxNzIuMTY4LjE1Mi43NS8yNCB1cA0KPj4gIyBpcCBuIHIgMTcy
+LjE2LjE1Mi4yNDEgbGxhZGRyIGZhOmZhOmZmOmZmOmZmOmZmIGRldiBtbHhfcDANCj4+DQo+PiAj
+IGlwIGwgYWRkIGRldiB0dW4xIHR5cGUgZ3JldGFwIGV4dGVybmFsDQo+PiAjIHRjIHFkaXNjIGFk
+ZCBkZXYgdHVuMSBpbmdyZXNzDQo+PiAjIHRjIHFkaXNjIGFkZCBkZXYgbWx4X3BmMHZmMCBpbmdy
+ZXNzDQo+Pg0KPj4gIyB0YyBmaWx0ZXIgYWRkIGRldiBtbHhfcGYwdmYwIHByZWYgMiBpbmdyZXNz
+wqAgcHJvdG9jb2wgaXAgZmxvd2VyIA0KPj4gc2tpcF9zd8KgIGFjdGlvbiB0dW5uZWxfa2V5IHNl
+dCBkc3RfaXAgMTcyLjE2OC4xNTIuMjQxIHNyY19pcCAwIGlkIA0KPj4gMTAwMCBub2NzdW0gcGlw
+ZSBhY3Rpb24gbWlycmVkIGVncmVzcyByZWRpcmVjdCBkZXYgdHVuMQ0KPj4NCj4+DQo+PiBJbiBU
+aGUgdm06DQo+PiAjIGlmY29uZmlnIGV0aDAgMTAuMC4wLjc1LzI0IHVwDQo+PiAjIGlwIG4gciAx
+MC4wLjAuNzcgbGxhZGRyIGZhOmZmOmZmOmZmOmZmOmZmIGRldiBldGgwDQo+Pg0KPj4gIyBpcGVy
+ZiAtYyAxMC4wLjAuNzcgLXQgMTAwIC1pIDINCj4+DQo+PiBUaGUgc3luIHBhY2tldHMgY2FuIGJl
+IG9mZmxvYWRlZCBzdWNjZXNzZnVsbHkuDQo+Pg0KPj4gIyAjIHRjIC1zIGZpbHRlciBscyBkZXYg
+bWx4X3BmMHZmMCBpbmdyZXNzDQo+PiBmaWx0ZXIgcHJvdG9jb2wgaXAgcHJlZiAyIGZsb3dlciBj
+aGFpbiAwDQo+PiBmaWx0ZXIgcHJvdG9jb2wgaXAgcHJlZiAyIGZsb3dlciBjaGFpbiAwIGhhbmRs
+ZSAweDENCj4+IMKgwqAgZXRoX3R5cGUgaXB2NA0KPj4gwqDCoCBza2lwX3N3DQo+PiDCoMKgIGlu
+X2h3IGluX2h3X2NvdW50IDENCj4+IMKgwqDCoMKgYWN0aW9uIG9yZGVyIDE6IHR1bm5lbF9rZXnC
+oCBzZXQNCj4+IMKgwqDCoMKgc3JjX2lwIDAuMC4wLjANCj4+IMKgwqDCoMKgZHN0X2lwIDE3Mi4x
+NjguMTUyLjI0MQ0KPj4gwqDCoMKgwqBrZXlfaWQgMTAwMA0KPj4gwqDCoMKgwqBub2NzdW0gcGlw
+ZQ0KPj4gwqDCoMKgwqAgaW5kZXggMSByZWYgMSBiaW5kIDEgaW5zdGFsbGVkIDI1MiBzZWMgdXNl
+ZCAyNTIgc2VjDQo+PiDCoMKgwqDCoEFjdGlvbiBzdGF0aXN0aWNzOg0KPj4gwqDCoMKgwqBTZW50
+IDAgYnl0ZXMgMCBwa3QgKGRyb3BwZWQgMCwgb3ZlcmxpbWl0cyAwIHJlcXVldWVzIDApDQo+PiDC
+oMKgwqDCoGJhY2tsb2cgMGIgMHAgcmVxdWV1ZXMgMA0KPj4NCj4+IMKgwqDCoMKgYWN0aW9uIG9y
+ZGVyIDI6IG1pcnJlZCAoRWdyZXNzIFJlZGlyZWN0IHRvIGRldmljZSB0dW4xKSBzdG9sZW4NCj4+
+IMKgwqDCoMKgwqAgaW5kZXggMSByZWYgMSBiaW5kIDEgaW5zdGFsbGVkIDI1MiBzZWMgdXNlZCAx
+MTAgc2VjDQo+PiDCoMKgwqDCoMKgIEFjdGlvbiBzdGF0aXN0aWNzOg0KPj4gwqDCoMKgwqBTZW50
+IDM0MjAgYnl0ZXMgMTEgcGt0IChkcm9wcGVkIDAsIG92ZXJsaW1pdHMgMCByZXF1ZXVlcyAwKQ0K
+Pj4gwqDCoMKgwqBTZW50IHNvZnR3YXJlIDAgYnl0ZXMgMCBwa3QNCj4+IMKgwqDCoMKgU2VudCBo
+YXJkd2FyZSAzNDIwIGJ5dGVzIDExIHBrdA0KPj4gwqDCoMKgwqBiYWNrbG9nIDBiIDBwIHJlcXVl
+dWVzIDANCj4+DQo+PiBCdXQgVGhlbiBJIGFkZCBhbm90aGVyIGRlY2FwIGZpbHRlciBvbiB0dW4x
+Og0KPj4NCj4+IHRjIGZpbHRlciBhZGQgZGV2IHR1bjEgcHJlZiAyIGluZ3Jlc3MgcHJvdG9jb2wg
+aXAgZmxvd2VyIGVuY19rZXlfaWQgDQo+PiAxMDAwIGVuY19zcmNfaXAgMTcyLjE2OC4xNTIuMjQx
+IGFjdGlvbiB0dW5uZWxfa2V5IHVuc2V0IHBpcGUgYWN0aW9uIA0KPj4gbWlycmVkIGVncmVzcyBy
+ZWRpcmVjdCBkZXYgbWx4X3BmMHZmMA0KPj4NCj4+ICMgaXBlcmYgLWMgMTAuMC4wLjc3IC10IDEw
+MCAtaSAyDQo+Pg0KPj4gVGhlIHN5biBwYWNrZXRzIGNhbid0IGJlIG9mZmxvYWRlZC4gVGhlIHRj
+IGZpbHRlciBjb3VudGVyIGlzIGFsc28gbm90IA0KPj4gaW5jcmVhc2UuDQo+Pg0KPj4NCj4+ICMg
+dGMgLXMgZmlsdGVyIGxzIGRldiBtbHhfcGYwdmYwIGluZ3Jlc3MNCj4+IGZpbHRlciBwcm90b2Nv
+bCBpcCBwcmVmIDIgZmxvd2VyIGNoYWluIDANCj4+IGZpbHRlciBwcm90b2NvbCBpcCBwcmVmIDIg
+Zmxvd2VyIGNoYWluIDAgaGFuZGxlIDB4MQ0KPj4gwqDCoCBldGhfdHlwZSBpcHY0DQo+PiDCoMKg
+IHNraXBfc3cNCj4+IMKgwqAgaW5faHcgaW5faHdfY291bnQgMQ0KPj4gwqDCoMKgwqBhY3Rpb24g
+b3JkZXIgMTogdHVubmVsX2tlecKgIHNldA0KPj4gwqDCoMKgwqBzcmNfaXAgMC4wLjAuMA0KPj4g
+wqDCoMKgwqBkc3RfaXAgMTcyLjE2OC4xNTIuMjQxDQo+PiDCoMKgwqDCoGtleV9pZCAxMDAwDQo+
+PiDCoMKgwqDCoG5vY3N1bSBwaXBlDQo+PiDCoMKgwqDCoCBpbmRleCAxIHJlZiAxIGJpbmQgMSBp
+bnN0YWxsZWQgMzIwIHNlYyB1c2VkIDMyMCBzZWMNCj4+IMKgwqDCoMKgQWN0aW9uIHN0YXRpc3Rp
+Y3M6DQo+PiDCoMKgwqDCoFNlbnQgMCBieXRlcyAwIHBrdCAoZHJvcHBlZCAwLCBvdmVybGltaXRz
+IDAgcmVxdWV1ZXMgMCkNCj4+IMKgwqDCoMKgYmFja2xvZyAwYiAwcCByZXF1ZXVlcyAwDQo+Pg0K
+Pj4gwqDCoMKgwqBhY3Rpb24gb3JkZXIgMjogbWlycmVkIChFZ3Jlc3MgUmVkaXJlY3QgdG8gZGV2
+aWNlIHR1bjEpIHN0b2xlbg0KPj4gwqDCoMKgwqDCoCBpbmRleCAxIHJlZiAxIGJpbmQgMSBpbnN0
+YWxsZWQgMzIwIHNlYyB1c2VkIDE3OCBzZWMNCj4+IMKgwqDCoMKgwqAgQWN0aW9uIHN0YXRpc3Rp
+Y3M6DQo+PiDCoMKgwqDCoFNlbnQgMzQyMCBieXRlcyAxMSBwa3QgKGRyb3BwZWQgMCwgb3Zlcmxp
+bWl0cyAwIHJlcXVldWVzIDApDQo+PiDCoMKgwqDCoFNlbnQgc29mdHdhcmUgMCBieXRlcyAwIHBr
+dA0KPj4gwqDCoMKgwqBTZW50IGhhcmR3YXJlIDM0MjAgYnl0ZXMgMTEgcGt0DQo+PiDCoMKgwqDC
+oGJhY2tsb2cgMGIgMHAgcmVxdWV1ZXMgMA0KPj4NCj4+ICMgdGMgLXMgZmlsdGVyIGxzIGRldiB0
+dW4xIGluZ3Jlc3MNCj4+IGZpbHRlciBwcm90b2NvbCBpcCBwcmVmIDIgZmxvd2VyIGNoYWluIDAN
+Cj4+IGZpbHRlciBwcm90b2NvbCBpcCBwcmVmIDIgZmxvd2VyIGNoYWluIDAgaGFuZGxlIDB4MQ0K
+Pj4gwqDCoCBldGhfdHlwZSBpcHY0DQo+PiDCoMKgIGVuY19zcmNfaXAgMTcyLjE2OC4xNTIuMjQx
+DQo+PiDCoMKgIGVuY19rZXlfaWQgMTAwMA0KPj4gwqDCoCBpbl9odyBpbl9od19jb3VudCAxDQo+
+PiDCoMKgwqDCoGFjdGlvbiBvcmRlciAxOiB0dW5uZWxfa2V5wqAgdW5zZXQgcGlwZQ0KPj4gwqDC
+oMKgwqAgaW5kZXggMiByZWYgMSBiaW5kIDEgaW5zdGFsbGVkIDM5MSBzZWMgdXNlZCAzOTEgc2Vj
+DQo+PiDCoMKgwqDCoEFjdGlvbiBzdGF0aXN0aWNzOg0KPj4gwqDCoMKgwqBTZW50IDAgYnl0ZXMg
+MCBwa3QgKGRyb3BwZWQgMCwgb3ZlcmxpbWl0cyAwIHJlcXVldWVzIDApDQo+PiDCoMKgwqDCoGJh
+Y2tsb2cgMGIgMHAgcmVxdWV1ZXMgMA0KPj4NCj4+IMKgwqDCoMKgYWN0aW9uIG9yZGVyIDI6IG1p
+cnJlZCAoRWdyZXNzIFJlZGlyZWN0IHRvIGRldmljZSBtbHhfcGYwdmYwKSBzdG9sZW4NCj4+IMKg
+wqDCoMKgwqAgaW5kZXggMiByZWYgMSBiaW5kIDEgaW5zdGFsbGVkIDM5MSBzZWMgdXNlZCAzOTEg
+c2VjDQo+PiDCoMKgwqDCoMKgIEFjdGlvbiBzdGF0aXN0aWNzOg0KPj4gwqDCoMKgwqBTZW50IDAg
+Ynl0ZXMgMCBwa3QgKGRyb3BwZWQgMCwgb3ZlcmxpbWl0cyAwIHJlcXVldWVzIDApDQo+PiDCoMKg
+wqDCoGJhY2tsb2cgMGIgMHAgcmVxdWV1ZXMgMA0KPj4NCj4+DQo+PiBTbyB0aGVyZSBtYXliZSBz
+b21lIHByb2JsZW0gZm9yIGZ0IGNhbGxiYWNrIHNldHVwLiBXaGVuIHRoZXJlIGlzIA0KPj4gYW5v
+dGhlciByZXZlcnNlDQo+PiBkZWNhcCBydWxlIGFkZCBpbiB0dW5uZWwgZGV2aWNlLCBUaGUgZW5j
+YXAgcnVsZSB3aWxsIG5vdCBvZmZsb2FkZWQgDQo+PiB0aGUgcGFja2V0cy4NCj4+DQo+PiBFeHBl
+Y3QgeW91ciBoZWxwIFRoeCENCj4+DQo+Pg0KPj4gQlINCj4+IHdlbnh1DQo+Pg0KPj4NCj4+DQo+
+Pg0KPj4NCj4+DQo+IEhpIEkgcmVwcm9kdWNlZCBpdC4NCj4NCj4gSSdsbCBmaW5kIHRoZSByZWFz
+b24gYW5kIGZpeCBmb3IgaXQgYW5kIGdldCBiYWNrIHRvIHlvdSBzb29uLg0KPg0KPiBXZSBhcmUg
+cGxhbmluZyBvbiBleHBhbmRpbmcgb3VyIGNoYWluIGFuZCBwcmlvIHN1cHBvcnRlZCByYW5nZSwg
+YW5kIGluIA0KPiB0aGF0IHdlIGFsc28gbW92ZSB0aGUgRlQgb2ZmbG9hZCBjb2RlIGEgYml0Lg0K
+Pg0KPiBJZiB3aGF0IEkgdGhpbmsgaGFwcGVucyBoYXBwZW5lZCBpdCB3b3VsZCBmaXggaXQgYW55
+d2F5Lg0KPg0KPiBUaGFua3MuDQo+DQo=
