@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFBC116335
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 18:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B082A116338
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 18:34:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbfLHRav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 12:30:51 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:63106 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbfLHRau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 12:30:50 -0500
+        id S1726491AbfLHReh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 12:34:37 -0500
+Received: from mail-io1-f49.google.com ([209.85.166.49]:39552 "EHLO
+        mail-io1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726474AbfLHReg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 12:34:36 -0500
+Received: by mail-io1-f49.google.com with SMTP id c16so12289539ioh.6
+        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 09:34:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1575826250; x=1607362250;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=amnTVPLpG+g5d7QhSVBfr6lXN7L+K57j1m3v+yHMVnE=;
-  b=FzOQQRkFUEaQBGeqd1wqMDkUpa24skE/phqYCmZz3r8q/VUAjZx2MZgG
-   h2znfYvH3bdK2ZGkyl61A5yaCW3fTNNsee9fqmRee4iLZkJWnAh9GFMJw
-   IppvECCx9uKx0KoygAEms40faeN3Sc0G5YUZhMqWvX3l2ZkmjjuEwE6lw
-   o=;
-IronPort-SDR: EHjVOLbQmRttrxinP1JXKhr6cSO1cqO4MsAH5a6SqsrhhWkUG72/xHaALBlj0XyuoHfjH3LDr3
- o10N3cLH/DSw==
-X-IronPort-AV: E=Sophos;i="5.69,292,1571702400"; 
-   d="scan'208";a="6677531"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 08 Dec 2019 17:30:45 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id 2E1B2A253F;
-        Sun,  8 Dec 2019 17:30:44 +0000 (UTC)
-Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 8 Dec 2019 17:30:43 +0000
-Received: from EX13MTAUEE001.ant.amazon.com (10.43.62.200) by
- EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 8 Dec 2019 17:30:43 +0000
-Received: from dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (172.19.37.7)
- by mail-relay.amazon.com (10.43.62.226) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Sun, 8 Dec 2019 17:30:43 +0000
-Received: by dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (Postfix, from userid 3129586)
-        id 2B7E4193; Sun,  8 Dec 2019 17:30:42 +0000 (UTC)
-From:   Netanel Belgazal <netanel@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Netanel Belgazal <netanel@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
-        <akiyano@amazon.com>
-Subject: [PATCH V1 net] net: ena: fix napi handler misbehavior when the napi budget is zero
-Date:   Sun, 8 Dec 2019 17:30:26 +0000
-Message-ID: <20191208173026.25745-1-netanel@amazon.com>
-X-Mailer: git-send-email 2.17.2
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=1PVpFjMg2fLBQP40RWVTCOez99/FevTs3HxT851d66A=;
+        b=Ywr/bCGH8qQTt4azNEjodYwJgaD4Si0jjWxX4oCsNPXc2GYdubiPfoC8+MsTBWaAZb
+         mflHTkcIPU28hkFayZTMdJK/uhDyVQd+2ofSz2hUQDvTz0ViU97oO/cRxi71bGKusJBF
+         CGNQWYDJSkD26id1ITD6A4IVWkYrbFaELwPyuuee7T5Z70+sbkzVlbejAaXil/OYtd67
+         U+fgVRPDclMi6hJjJjx2rF0GPyrGRhVbwhcmIx3nhb9px/cs8hdQb23V1nNHRtfk3rgz
+         qCMDkjPQGaj4saX0QRgbLmcvSmsbZPRfIvoHLHntwE2RUaFCChFSmOExrgY95crAl7CM
+         pc4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1PVpFjMg2fLBQP40RWVTCOez99/FevTs3HxT851d66A=;
+        b=UB8Q8zYgOX7YhwUuQMq1CtFtGnIj1gGNvZN8OU/WMJSt3cQ7dITWyAMX98+YbLjCvl
+         9ADJmrikheESVaOU8Zq4xnmKfy7G/12WGRwwRg+KzMns5FaTD+rZqcsf55yPY9iLkDq1
+         9Pk2xrDXtd/YR8Rw7HxtV2dqojqVp9o6NsRI+EbVsgcbXb9UCa7FvQMw1PdDYaTUdwcZ
+         SA3IBq4Kt6WlLtRc4+caIFYaRGi3CC9MHTBf1Efi3mr54fqshcRBf7zyc7Di3OZ6n0aD
+         41qDSBzfZwwLGuKePeHyu5cE3rzxMjodz6xcmDxBxFUoDsBeGCzqO9n7e/5cG5NvkJgd
+         vH6g==
+X-Gm-Message-State: APjAAAWvoMe28AY8/LoBARIuK2MeFdpE47iEes+j5ZrGJidwZIiBMD2v
+        YC3YMaJjlS8+ouUEdnZan3Ts/X6Q
+X-Google-Smtp-Source: APXvYqzi9XAr5MIgMBSr/AIWS0gvxLf3rggmZFWiDFUWTRoZr4v2Na+Kn5iBainRw0iPMMjvjD9hWw==
+X-Received: by 2002:a02:85e8:: with SMTP id d95mr23757619jai.92.1575826475817;
+        Sun, 08 Dec 2019 09:34:35 -0800 (PST)
+Received: from ?IPv6:2601:284:8202:10b0:f4b6:617:457d:720b? ([2601:284:8202:10b0:f4b6:617:457d:720b])
+        by smtp.googlemail.com with ESMTPSA id p21sm1066392iol.3.2019.12.08.09.34.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Dec 2019 09:34:35 -0800 (PST)
+Subject: Re: how udp source address gets selected when default gateway is
+ configured with multipath-routing
+To:     Mohan R <mohan43u@gmail.com>, netdev@vger.kernel.org
+References: <CAFYqD2pjwCBd5TxNP0wXxKvwYLnr20cYDjK3S0rHM=Fx6si6-Q@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <84230a27-69b8-0aba-216c-997bc9a8192f@gmail.com>
+Date:   Sun, 8 Dec 2019 10:34:33 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAFYqD2pjwCBd5TxNP0wXxKvwYLnr20cYDjK3S0rHM=Fx6si6-Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In netpoll the napi handler could be called with budget equal to zero.
-Current ENA napi handler doesn't take that into consideration.
+On 11/21/19 11:37 PM, Mohan R wrote:
+> Hi,
+> 
+> I have a simple multipath-routing setup,
+> 
+> default
+>         nexthop via 192.168.15.1 dev enp4s0 weight 1
+>         nexthop via 10.0.1.1 dev wlp2s0 weight 1
+> 10.0.1.0/24 dev wlp2s0 proto kernel scope link src 10.0.1.251
+> 10.0.3.0/24 dev wlp0s29u1u2 proto kernel scope link src 10.0.3.1
+> 10.3.1.0/24 dev wg9000 proto kernel scope link src 10.3.1.2
+> 192.168.0.0/16 dev enp4s0 proto kernel scope link src 192.168.15.251
+> 
+> here enp4s0 (192.168.0.0/16) and wlp2s0 (10.0.1.0/24) are connected to
+> two different ISPs.
+> 
+> DNS works fine when I access internet through my internal subnet
+> (10.0.3.0/24), but  when I try 'ping google.com' in this machine, the
+> DNS request to 1.1.1.1 (which is my nameserver in resolv.conf) to
+> resolve 'google.com' is sent through enp4s0 interface but the source
+> address in that DNS request contains 10.0.1.251 (wlp2s0's local ip
+> address).
+> 
+> If I have single nexthop in default route, everything works fine.
+> 
+> How can I make sure that kernel picks the correct source ip for the dns request?
+> 
 
-The napi handler handles Rx packets in a do-while loop.
-Currently, the budget check happens only after decrementing the
-budget, therefore the napi handler, in rare cases, could run over
-MAX_INT packets.
-
-In addition to that, this moves all budget related variables to int
-calculation and stop mixing u32 to avoid ambiguity
-
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index c487d2a7d6dd..b4a145220aba 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1238,8 +1238,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
- 	struct ena_ring *tx_ring, *rx_ring;
- 
--	u32 tx_work_done;
--	u32 rx_work_done;
-+	int tx_work_done;
-+	int rx_work_done = 0;
- 	int tx_budget;
- 	int napi_comp_call = 0;
- 	int ret;
-@@ -1256,7 +1256,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	}
- 
- 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
--	rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
-+	/* On netpoll the budget is zero and the handler should only clean the
-+	 * tx completions.
-+	 */
-+	if (likely(budget))
-+		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
- 
- 	/* If the device is about to reset or down, avoid unmask
- 	 * the interrupt and return 0 so NAPI won't reschedule
--- 
-2.17.2
-
+This is a known problem. A route lookup is done to set the source
+address and then a second lookup is done to route the packet. The
+lookups will have different hash values (since saddr == 0 in the first)
+and can land on different legs of the multipath route.
