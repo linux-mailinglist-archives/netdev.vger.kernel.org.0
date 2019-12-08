@@ -2,92 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE7F116298
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 16:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E9C1162E6
+	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 16:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbfLHO66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 09:58:58 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:36884 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfLHO64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 09:58:56 -0500
-Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tip-bot2@linutronix.de>)
-        id 1idy16-0000SQ-Pb; Sun, 08 Dec 2019 15:58:36 +0100
-Received: from [127.0.1.1] (localhost [IPv6:::1])
-        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id 6C3241C2886;
-        Sun,  8 Dec 2019 15:58:31 +0100 (CET)
-Date:   Sun, 08 Dec 2019 14:58:31 -0000
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] sched/rt, net: Use CONFIG_PREEMPTION.patch
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>, x86 <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-In-Reply-To: <20191015191821.11479-22-bigeasy@linutronix.de>
-References: <20191015191821.11479-22-bigeasy@linutronix.de>
+        id S1726465AbfLHPnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 10:43:33 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:45849 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbfLHPnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 10:43:33 -0500
+Received: by mail-il1-f195.google.com with SMTP id p8so10461444iln.12
+        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 07:43:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=qUQSE1PdYMUkjqn5S3a08pQ43qTh8SIHEmG+o19Czxg=;
+        b=biWUnOrMXliAT4xDqL9RTkmmxzx4i/9HJtRhGbpAX83RNKXVFZlRJX7ud0+dQOy6yP
+         4Axnu/HXhNPD6it0bqsmeMDHo/McUSMXi5AJQGYhHeE06FxxeQMSwhkJlt5/v5HyoT/l
+         ALdfJ86NDCNTXVqn/vjND5eIj/ilUI+djDQ3NrFpoR7TKs/Pfbuphv9U2GDZnfwQJt+H
+         45xWkfiZHj+CMpkUol9LmbDzdKiyQHvtXieSbuuwvKWYcOJXyLuxL8eQtXAEfOFuWWj1
+         qcTVPp+4LUEX8K4KGA4LUfo2p0FlX5hF9AFbD3Ilqvu80eRsIPB7OT3B/4qGif1QRN4J
+         DA7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=qUQSE1PdYMUkjqn5S3a08pQ43qTh8SIHEmG+o19Czxg=;
+        b=S/0vS59jojFOJcb/jC8maggS+uXZGS2dW3rF7CInD7gC6+gWXWM/3cduj827R50ZeW
+         IauDPWIwPDIQMEPqXWxFqsM2+zDZ436A6qDWMoj8eA1B2jgtcTJPrxy/qVBAxISChMTO
+         jFzyCw5f/WH1F7Aj0iakR/n/DyTwmCLJ42dDNm8BVgTP6H1JMK80BWvgfX6YpG8aLqBq
+         YC9Re8l/VhGbqt3ZArXl0dkcPjJwUFve9Lq6DbfICBdX+43CjlzwM5qTuRJmnuEjMARf
+         UAW/ro0pfhlLQk7vS7WTPVt9iGylTUm8Ri74HModSiAK0UuqxAPQ5aGJVvRhfsiIVi2e
+         VPjQ==
+X-Gm-Message-State: APjAAAWWr/H0m9XV7MiGOmhaTRx+gslBxqliDEkkdNTGZyhcJvjGvGZu
+        b86aLzgG+vHjAZjpIuWS9s9veZDz0nv7IRQ5tVY=
+X-Google-Smtp-Source: APXvYqw32lOTX/JuXOPTQ63Whqquy0Jm9wH9Xdh/gsPYXViW5r2CA+wXbT4qrtkHhbvAe+MpbhoEMKakdlmseDA/mA8=
+X-Received: by 2002:a92:af08:: with SMTP id n8mr23427804ili.217.1575819812448;
+ Sun, 08 Dec 2019 07:43:32 -0800 (PST)
 MIME-Version: 1.0
-Message-ID: <157581711130.21853.7992733685547761795.tip-bot2@tip-bot2>
-X-Mailer: tip-git-log-daemon
-Robot-ID: <tip-bot2.linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Reply-To: yusufosman0142@gmail.com
+Received: by 2002:a92:8e01:0:0:0:0:0 with HTTP; Sun, 8 Dec 2019 07:43:31 -0800 (PST)
+From:   yusuf osman <yusufosman1042@gmail.com>
+Date:   Sun, 8 Dec 2019 07:43:31 -0800
+X-Google-Sender-Auth: 7dNR42xbcFg0UwY0QFWTttumx2E
+Message-ID: <CAMBjJ6J7ScqzReV90_yUEnv1xR27rWGxRDXghs8JPgnS01BrUg@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+Good day, Please it's very important we speak and discuss my proposal,
+regards the letter have sent to you before. try and get back to me,
+thanks
 
-Commit-ID:     2da2b32fd9346009e9acdb68c570ca8d3966aba7
-Gitweb:        https://git.kernel.org/tip/2da2b32fd9346009e9acdb68c570ca8d3966aba7
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Tue, 15 Oct 2019 21:18:08 +02:00
-Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Sun, 08 Dec 2019 14:37:35 +01:00
-
-sched/rt, net: Use CONFIG_PREEMPTION.patch
-
-CONFIG_PREEMPTION is selected by CONFIG_PREEMPT and by CONFIG_PREEMPT_RT.
-Both PREEMPT and PREEMPT_RT require the same functionality which today
-depends on CONFIG_PREEMPT.
-
-Update the comment to use CONFIG_PREEMPTION.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: David S. Miller <davem@davemloft.net>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/20191015191821.11479-22-bigeasy@linutronix.de
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 46580b2..de5f14b 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -928,7 +928,7 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
-  *
-  *	The use of raw_seqcount_begin() and cond_resched() before
-  *	retrying is required as we want to give the writers a chance
-- *	to complete when CONFIG_PREEMPT is not set.
-+ *	to complete when CONFIG_PREEMPTION is not set.
-  */
- int netdev_get_name(struct net *net, char *name, int ifindex)
- {
+Yusuf.
