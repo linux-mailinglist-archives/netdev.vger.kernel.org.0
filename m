@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E2DD1163E7
-	for <lists+netdev@lfdr.de>; Sun,  8 Dec 2019 22:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A8E116410
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 00:12:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727015AbfLHVkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 16:40:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57534 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726983AbfLHVkb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Dec 2019 16:40:31 -0500
+        id S1726828AbfLHXMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 18:12:00 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:53018 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbfLHXMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 18:12:00 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0748815396DF6;
+        Sun,  8 Dec 2019 15:11:59 -0800 (PST)
+Date:   Sun, 08 Dec 2019 15:11:57 -0800 (PST)
+Message-Id: <20191208.151157.1507660154216668008.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575841230;
-        bh=Vh+GHB7iBE8UpmI2vtnLLcBJcO6gDTjsLLsxwAQWEfo=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=KGdRCYRu1oRM3GXjWw1FQHIdcMnmAPFDDlMtRYnsS6vgKIL8A404SAW7+dnWG8eyf
-         Rx/8HCHxF4xL4FsozZ5FXm5Zc+q7Iqs5R94flEEFIn9DtizfH4VBLPD5qK/Wfum+jc
-         0em1DtERbbewM22k9YPSlbZPbLfW9o+IPl/QxYSw=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20191208.012032.1258816267132319518.davem@redhat.com>
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CAHk-=widRc30Mcec8EwqxuMFr+dAFpM4gJjdVOKWJog4T60qKA@mail.gmail.com>
 References: <20191208.012032.1258816267132319518.davem@redhat.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191208.012032.1258816267132319518.davem@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: 0fc75219fe9a3c90631453e9870e4f6d956f0ebc
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 95e6ba5133163f8241c9ea2439369cec0452fec6
-Message-Id: <157584123092.22418.18372587348625646538.pr-tracker-bot@kernel.org>
-Date:   Sun, 08 Dec 2019 21:40:30 +0000
-To:     David Miller <davem@redhat.com>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        <CAHk-=widRc30Mcec8EwqxuMFr+dAFpM4gJjdVOKWJog4T60qKA@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 08 Dec 2019 15:12:00 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Sun, 08 Dec 2019 01:20:32 -0800 (PST):
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 8 Dec 2019 13:35:08 -0800
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+> Fix your mindset, and stop sending me garbage.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/95e6ba5133163f8241c9ea2439369cec0452fec6
+Sorry.
 
-Thank you!
+I was still brainstorming how to fix this properly.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+
