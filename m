@@ -2,145 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DCB8116E9E
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06007116ECA
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:14:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727859AbfLIOIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 09:08:20 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34392 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727388AbfLIOIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 09:08:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZExqbcLQm37N62W50D9jnodCLZh3tujGOFvVc6/9xRw=; b=iQm0r3tgheF9etDlKQrh7/DqRS
-        iYJMp259o4YCxHSrtpODl9CM+NeFx67uGyp9SvWTqueQE6P719JxZQ2aAf6so+pOIxq7rcHZBBoOy
-        WMiqXyYOGb8FJZ86Q6kSeDW/k+xpWJlm6QOnruPOnnYhb2UVgqxgIqS2xCgEOuxzUdrzkGT73QHoH
-        G2i1ProjSlUS0SLmF09pmv7DqnRZA4Lm1WN8QQyttePZ2NeKPhGhic6xVrbPa2Y/7GgD1xcjYAMgA
-        0ZNuB0lXCN6Q9LyJHDknaO0NEInybvaB3g/U8oDslvLvc1BRJ8bxeoPmyYQKFdUzniTUfVwfffnPB
-        JAp8U2Lg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54432 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieJhc-0003RK-UU; Mon, 09 Dec 2019 14:07:57 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieJhZ-0004Pq-H8; Mon, 09 Dec 2019 14:07:53 +0000
-In-Reply-To: <20191209140258.GI25745@shell.armlinux.org.uk>
-References: <20191209140258.GI25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 14/14] net: sfp: add support for Clause 45 PHYs
+        id S1727865AbfLIOOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 09:14:34 -0500
+Received: from mx01-fr.bfs.de ([193.174.231.67]:35326 "EHLO mx01-fr.bfs.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726687AbfLIOOd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 09:14:33 -0500
+Received: from mail-fr.bfs.de (mail-fr.bfs.de [10.177.18.200])
+        by mx01-fr.bfs.de (Postfix) with ESMTPS id AA9D5201F4;
+        Mon,  9 Dec 2019 15:14:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
+        t=1575900866; h=from:from:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VV/fphlTsj7XOOXxkDOSVDjI40GPzBonnX8fbQjETRM=;
+        b=tpgCOf8YgWJE3uVLYXbARPc0s/DmmpdpdIAU0uvDC878YwwYn3J2FT/R+fnrwwblqMFGoN
+        ZCoDnLmZzkG8u96tnhI5NuNOX7sV6V/FJ7lkDi7svSaS5kMMatyJXAVpMT2OZBSuSZaaRS
+        MjZbPLQob5d0TwYzdHmH0apJt4wfRDSHF+h9QEs7n8+FtTjSPEHH0M+5SaQ5dPe6SpjVWr
+        UHF+6liYzaFxVOMGSFMc7yYVVgL+jM1gKLDiSks0BLdT16DRoKQcELUBUF0Ln42brVRwBK
+        Mec3wW97M/79PKtt9nfGlV82oQ8kujT3EQCDZ00fRBukaNn9B/k+Hsr2Va+INw==
+Received: from [134.92.181.33] (unknown [134.92.181.33])
+        by mail-fr.bfs.de (Postfix) with ESMTPS id 37CC4BEEBD;
+        Mon,  9 Dec 2019 15:14:24 +0100 (CET)
+Message-ID: <5DEE56BF.5000102@bfs.de>
+Date:   Mon, 09 Dec 2019 15:14:23 +0100
+From:   walter harms <wharms@bfs.de>
+Reply-To: wharms@bfs.de
+User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; de; rv:1.9.1.16) Gecko/20101125 SUSE/3.0.11 Thunderbird/3.0.11
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ieJhZ-0004Pq-H8@rmk-PC.armlinux.org.uk>
-Date:   Mon, 09 Dec 2019 14:07:53 +0000
+To:     Mao Wenan <maowenan@huawei.com>
+CC:     davem@davemloft.net, loke.chetan@gmail.com, willemb@google.com,
+        edumazet@google.com, maximmi@mellanox.com, nhorman@tuxdriver.com,
+        pabeni@redhat.com, yuehaibing@huawei.com, tglx@linutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Xiao Jiangfeng <xiaojiangfeng@huawei.com>
+Subject: Re: [PATCH net] af_packet: set defaule value for tmo
+References: <20191209133125.59093-1-maowenan@huawei.com>
+In-Reply-To: <20191209133125.59093-1-maowenan@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.10
+Authentication-Results: mx01-fr.bfs.de
+X-Spamd-Result: default: False [-3.10 / 7.00];
+         ARC_NA(0.00)[];
+         HAS_REPLYTO(0.00)[wharms@bfs.de];
+         BAYES_HAM(-3.00)[100.00%];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         REPLYTO_ADDR_EQ_FROM(0.00)[];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_TWELVE(0.00)[14];
+         NEURAL_HAM(-0.00)[-0.999,0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         RCVD_COUNT_TWO(0.00)[2];
+         MID_RHS_MATCH_FROM(0.00)[];
+         RCVD_TLS_ALL(0.00)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some SFP+ modules have a Clause 45 PHY onboard, which is accessible via
-the normal I2C address.  Detect 10G BASE-T PHYs which may have an
-accessible PHY and probe for it.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 44 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 40 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d7d2c797c89c..bfe268028154 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1402,12 +1402,12 @@ static void sfp_sm_phy_detach(struct sfp *sfp)
- 	sfp->mod_phy = NULL;
- }
- 
--static void sfp_sm_probe_phy(struct sfp *sfp)
-+static void sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
- {
- 	struct phy_device *phy;
- 	int err;
- 
--	phy = mdiobus_scan(sfp->i2c_mii, SFP_PHY_ADDR);
-+	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
- 	if (phy == ERR_PTR(-ENODEV)) {
- 		dev_info(sfp->dev, "no PHY detected\n");
- 		return;
-@@ -1417,6 +1417,13 @@ static void sfp_sm_probe_phy(struct sfp *sfp)
- 		return;
- 	}
- 
-+	err = phy_device_register(phy);
-+	if (err) {
-+		phy_device_free(phy);
-+		dev_err(sfp->dev, "phy_device_register failed: %d\n", err);
-+		return;
-+	}
-+
- 	err = sfp_add_phy(sfp->sfp_bus, phy);
- 	if (err) {
- 		phy_device_remove(phy);
-@@ -1487,10 +1494,32 @@ static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
- 	}
- }
- 
-+/* Probe a SFP for a PHY device if the module supports copper - the PHY
-+ * normally sits at I2C bus address 0x56, and may either be a clause 22
-+ * or clause 45 PHY.
-+ *
-+ * Clause 22 copper SFP modules normally operate in Cisco SGMII mode with
-+ * negotiation enabled, but some may be in 1000base-X - which is for the
-+ * PHY driver to determine.
-+ *
-+ * Clause 45 copper SFP+ modules (10G) appear to switch their interface
-+ * mode according to the negotiated line speed.
-+ */
- static void sfp_sm_probe_for_phy(struct sfp *sfp)
- {
--	if (sfp->id.base.e1000_base_t)
--		sfp_sm_probe_phy(sfp);
-+	switch (sfp->id.base.extended_cc) {
-+	case SFF8024_ECC_10GBASE_T_SFI:
-+	case SFF8024_ECC_10GBASE_T_SR:
-+	case SFF8024_ECC_5GBASE_T:
-+	case SFF8024_ECC_2_5GBASE_T:
-+		sfp_sm_probe_phy(sfp, true);
-+		break;
-+
-+	default:
-+		if (sfp->id.base.e1000_base_t)
-+			sfp_sm_probe_phy(sfp, false);
-+		break;
-+	}
- }
- 
- static int sfp_module_parse_power(struct sfp *sfp)
-@@ -1550,6 +1579,13 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- 		return -EAGAIN;
- 	}
- 
-+	/* DM7052 reports as a high power module, responds to reads (with
-+	 * all bytes 0xff) at 0x51 but does not accept writes.  In any case,
-+	 * if the bit is already set, we're already in high power mode.
-+	 */
-+	if (!!(val & BIT(0)) == enable)
-+		return 0;
-+
- 	if (enable)
- 		val |= BIT(0);
- 	else
--- 
-2.20.1
+Am 09.12.2019 14:31, schrieb Mao Wenan:
+> There is softlockup when using TPACKET_V3:
+> ...
+> NMI watchdog: BUG: soft lockup - CPU#2 stuck for 60010ms!
+> (__irq_svc) from [<c0558a0c>] (_raw_spin_unlock_irqrestore+0x44/0x54)
+> (_raw_spin_unlock_irqrestore) from [<c027b7e8>] (mod_timer+0x210/0x25c)
+> (mod_timer) from [<c0549c30>]
+> (prb_retire_rx_blk_timer_expired+0x68/0x11c)
+> (prb_retire_rx_blk_timer_expired) from [<c027a7ac>]
+> (call_timer_fn+0x90/0x17c)
+> (call_timer_fn) from [<c027ab6c>] (run_timer_softirq+0x2d4/0x2fc)
+> (run_timer_softirq) from [<c021eaf4>] (__do_softirq+0x218/0x318)
+> (__do_softirq) from [<c021eea0>] (irq_exit+0x88/0xac)
+> (irq_exit) from [<c0240130>] (msa_irq_exit+0x11c/0x1d4)
+> (msa_irq_exit) from [<c0209cf0>] (handle_IPI+0x650/0x7f4)
+> (handle_IPI) from [<c02015bc>] (gic_handle_irq+0x108/0x118)
+> (gic_handle_irq) from [<c0558ee4>] (__irq_usr+0x44/0x5c)
+> ...
+> 
+> If __ethtool_get_link_ksettings() is failed in
+> prb_calc_retire_blk_tmo(), msec and tmo will be zero, so tov_in_jiffies
+> is zero and the timer expire for retire_blk_timer is turn to
+> mod_timer(&pkc->retire_blk_timer, jiffies + 0),
+> which will trigger cpu usage of softirq is 100%.
+> 
+> Fixes: f6fb8f100b80 ("af-packet: TPACKET_V3 flexible buffer implementation.")
+> Tested-by: Xiao Jiangfeng <xiaojiangfeng@huawei.com>
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>  net/packet/af_packet.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 53c1d41fb1c9..118cd66b7516 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -544,7 +544,8 @@ static int prb_calc_retire_blk_tmo(struct packet_sock *po,
+>  			msec = 1;
+>  			div = ecmd.base.speed / 1000;
+>  		}
+> -	}
+> +	} else
+> +		return DEFAULT_PRB_RETIRE_TOV;
+>  
+>  	mbits = (blk_size_in_bytes * 8) / (1024 * 1024);
+>  
+
+With some litrle refactoring you can save one indent
+and make it more readable.
+
+err = __ethtool_get_settings(dev, &ecmd);
+
+if (err)
+     return DEFAULT_PRB_RETIRE_TOV;
+
+speed = ethtool_cmd_speed(&ecmd);
+
+if (speed < SPEED_1000 || speed == SPEED_UNKNOWN)
+      return DEFAULT_PRB_RETIRE_TOV;
+
+msec = 1;  // never changes - needed at all ??
+div = speed / 1000;
+
+jm2c
+
+re,
+ wh
+
 
