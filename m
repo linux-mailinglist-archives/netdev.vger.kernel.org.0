@@ -2,3093 +2,988 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7982117009
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:13:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4471311700D
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726787AbfLIPNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:13:16 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:50617 "EHLO
+        id S1726897AbfLIPNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:13:24 -0500
+Received: from mout.kundenserver.de ([212.227.17.10]:59003 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfLIPNP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:13:15 -0500
+        with ESMTP id S1726265AbfLIPNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:13:22 -0500
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MyseC-1hrTUD2zas-00vxFZ; Mon, 09 Dec 2019 16:13:03 +0100
+ 1MsI0K-1hkrko1pne-00tmSX; Mon, 09 Dec 2019 16:13:04 +0100
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Krzysztof Halasa <khc@pm.waw.pl>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] [net-next] wan: remove old frame relay driver
-Date:   Mon,  9 Dec 2019 16:12:55 +0100
-Message-Id: <20191209151256.2497534-3-arnd@arndb.de>
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        Eric Biggers <ebiggers@kernel.org>,
+        Andrew Hendry <andrew.hendry@gmail.com>,
+        linux-x25@vger.kernel.org, Kevin Curtis <kevin.curtis@farsite.com>,
+        "R.J.Dunlop" <bob.dunlop@farsite.com>,
+        Zhao Qiang <qiang.zhao@nxp.com>,
+        syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com,
+        syzbot+eec0c87f31a7c3b66f7b@syzkaller.appspotmail.com
+Subject: [PATCH 4/4] [RFC] staging/net: move AF_X25 into drivers/staging
+Date:   Mon,  9 Dec 2019 16:12:56 +0100
+Message-Id: <20191209151256.2497534-4-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20191209151256.2497534-1-arnd@arndb.de>
 References: <20191209151256.2497534-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:pi8Jt5VZUE7gSd6ufATNcmia/LUkwFX+rJrBc92JZjn9DAzvOb9
- 2Ra8i2ckFezSlxRF55+CjaK5n8TGRWTe94AS8WThTQmhiU83G1pfsPVefysK4+LT2X8c0v8
- L8Jua5JqoLWgP2t9Uv1gKVxiudCiws7iGhCv6EwZUQxlEZWXic1rs+6XpGU/rjBaT5ySJDX
- 89DabXs1fl4lwKko3S1QQ==
+X-Provags-ID: V03:K1:axqQdPSgl83A4LQAeLmE7KNfPfPliwry7FdaQPchJD58gpeh1U3
+ 6A9wUy/UB95zkMQKB6U6a0D0fDHQmgCPZGdf7wllVR0ZZ75pvVxWAGXAgUBeTjOhFcqhO53
+ fjn81/AswbI32ZP2V7kAnyimkYqoNlHGHyc6TFghgfAS0vSS+R5IudprdlowFmBfXjwD62u
+ ekn4hihPiYJMmKLeW1xdA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+0Sx6RvI25I=:aFcfbweKZagrWRiUUC7bO+
- oR+6XftZt46nummztbb18riL1h0EMPOL19FV2Q4EhFEujM4/iuH0Ui5dUxD7pOjQu1Nr5sR/F
- dtsFoTDu2f4JoKURd1jthtyLRjYXYmCQovMOpQ2FbDpQRi9yDBLHzU45xGD8HGso77KiwHSps
- 8LBWK49IPV96tCo2IvIndLaiSww3HQijLRvrRKeYZ6snQSWLqsYR9ANjh/4+L6mq1MINjG89M
- MeDCvsK+l9GJV8dl3FSVBoEJlXAOl8S9UR0Eq5GRmXq17VEm1vfUMrBMSjaeawKZ6scNHBELO
- PpYpcpdUX9fazacrYBToPaZrZZqpHcZBRF+cyrrFrOIWBvb46o5eePmP9k9Lk5nIUSPK/TSI+
- 4/b9lYZVgTxikL92+l0y9KaPHYBxMh7ZHnp/9u/Opxl4oj0dbtipIw4SUp/TM1Ra5qmav8oBP
- x6kx1nejVZfLjmHqucCi0yTHY+jMIw7x2jINoCHB6ifau9uLVKvb4hwVnsFkoAYkhVhdUmE28
- PQ8NMVgQub9xY7mBN/t95TYiaXSXiRe+gu1s5W5yVhYNmGz86/nJVdvuAqt9B35AeM7RwKLQq
- EcD5ZTi1QRe7IZhRPK//bpjjFNbk7gHvG5LG6Hytd43ktHTfQo2XaKn9YOgkCw3gYeDFglHNx
- blAfrk5Fmx/lVE3Derg/4ae1I2wDrB6BGKEfsyPnO9vYcMDfKEM/QIL0TB2noYCEh0W28VeA0
- ftJ5CSadmj5KuuNvSuwmgoUemX7esOJEtSCnpVQumsC6f0GI+zmRLMZtgHQk0a/Haq3XIYLHj
- 7s1iN4a3Ab3AvS+UEglgh25kASICi+7Odkzmb0f641KhQO1ngGpdQlJ82rzVbS/qnsAMjkevU
- LrJZRezVWT2LTh77TlbA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aPRwnT+S5Ik=:fbrPcaDEFeOzu3kQC9V6Pm
+ wGEnsFVpdz9CcV8ZS/cDjjEAzk9lP4ZmqlQ0urXEBwuE4e3IGGp5IxGEytVqI38mGyDQamO38
+ 2lq3dwt8yyAz6MA52q5OzXuVhX9VlPyoFuDcKy58ipo3liJ+kFkN740yh3qXoiJQt+Pc0cYFi
+ bjRfDeVMy1k6f5nEipu3jb30PBONml5DaRSqFDc3T0dB2cwa97JdbvSNtTKW5stSlwrbFsQKV
+ kV856sNOee4jTwTdchcUqzLjohQ66XZVhjX+qO+muyVrUEbR5jrreqlRCTx9HY7JB+05aaXBN
+ uKVkwFaRCYq/TktU9mm6BfB8xM/bmqN6EfZd15WzUOpBHrhX/RbYSQIQ3noSlVgbSJGjL35U4
+ 0+fW6wNdy1ojAfeTp60psFMzyaodE6oDu0oE10rKLyw9/OpOWhg7Tvnkb9MhYXzYqRUEYwr/n
+ IFeLjm4+FMHuZajzf3pCjxmsx+RaAk9MuAsg9iX5w8Gn1kWoN1NxzR/ppAYV1SHKh8F7gqc2g
+ 1T6heSIWIDjdcDXj7h8iq4orGw+pOtpRgapiVA2GbUdj8hwqE3URNHOcMuaDlfLlQv5aDJWWa
+ OayDfUEahq/gIIGD9Mz5x46POdB5KfQuw5J7YvbQyFCGLOx3xTFKM+grxmNbSZdd9biF2F9/s
+ krTTIjuJg3FT+pEPKo3MZLuKuY/th3luETI89e3cinuTytjMjExbfVTTPu1/vr6EiF+OBai54
+ BCwstXkK4+yAqfSDLfUdU9JrarEi8MBI6AF6rRDEXkMjdW/Q+sDcmvk8HydbgL7CS+Cfx5x+1
+ GqaBNuAWFOaWihI3wSLafI4BGXLZjEoGfREv6wLkBLB535NRnyR7iuMvpgRB8Wg5xdrjD46FY
+ IaeEdzPxfNHqqqEiScjQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DLCI framework and SDLA driver are as obsolete as it gets,
-this is an ISA add-on card from the mid-1990s that has only
-seen sporadic cleanups.
+syzbot keeps finding issues in the X.25 implementation that nobody is
+interested in fixing.  Given that all the x25 patches of the past years
+that are not global cleanups tend to fix user-triggered oopses, is it
+time to just retire the subsystem?
 
-The website listed for downloading the user space tools has dropped
-off the internet at some point around 2010, but Debian already
-dropped the packages ten years earlier when they no longer built
-correctly.
+I looked a bit closer and found:
 
+- we used to support x25 hardware in linux, but with WAN_ROUTER
+  removed in linux-3.9 and isdn4linux removed in 5.3, there is only hdlc,
+  ethernet and the N_X25 tty ldisc left. Out of these, only HDLC_X25 made
+  it beyond the experimental stage, so this is probably what everyone
+  uses if there are users at all.
+
+- The most common hdlc hardware that people seem to be using are
+  the "farsync" PCIe and USB adapters. Linux only has drivers for the
+  older PCI devices from that series, but no hardware that works on
+  modern systems.
+
+- The manufacturer still updates their own kernel drivers and provides
+  support, but ships that with a fork or rewrite of the subsystem
+  code now.  Kevin Curtis is also listed as maintainer, but appears to
+  have given up in 2013 after [1].
+
+- The most popular software implementation appears to be X25 over TCP
+  (XOT), which is supported by Farsite and other out-of-tree stacks but
+  never had an implementation in mainline.
+
+- Most other supported HDLC hardware that we supoprt is for the ISA or
+  PCI buses. There are newer PCIe or USB devices, but those all require
+  a custom device driver and often a custom subsystem, none of which got
+  submitted for mainline inclusion. This includes hardware from Microgate
+  (SyncLink), Comtrol (RocketPort Express) and Sealevel (SeaMAC).
+
+- The X.25 subsystem is listed as "odd fixes", but the last reply on
+  the netdev mailing list from the maintainer was also in 2013[2].
+
+- The HDLC subsystem itself is listed as maintained by Krzysztof Halasa,
+  and there were new drivers merged for SoC based devices as late as
+  2016 by Zhao Qiang: Freescale/NXP QUICC Engine and Maxim ds26522.
+  There has not been much work on HDLC or drivers/net/wan recently,
+  but both developers are still responsive on the mailing list and
+  work on other parts of the kernel.
+
+Based on the above, I would conclude that X.25 can probably get moved
+to staging as keeping it in the kernel seems to do more harm than good,
+but HDLC below it should probably stay as there it seems there are still
+users of a small subset of the mainline drivers.
+
+Move all of X.25 into drivers/staging for now, with a projected removal
+date set for Linux-5.8.
+
+Cc: Eric Biggers <ebiggers@kernel.org>
+Cc: Andrew Hendry <andrew.hendry@gmail.com>
+Cc: linux-x25@vger.kernel.org
+Cc: Kevin Curtis <kevin.curtis@farsite.com>
+Cc: "R.J.Dunlop" <bob.dunlop@farsite.com>
+Cc: Zhao Qiang <qiang.zhao@nxp.com>
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Reported-by: syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com
+Reported-by: syzbot+eec0c87f31a7c3b66f7b@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=5b0ecf0386f56be7fe7210a14d0f62df765c0c39
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- Documentation/networking/framerelay.txt |   39 -
- MAINTAINERS                             |    6 -
- drivers/net/wan/Kconfig                 |   45 -
- drivers/net/wan/Makefile                |    2 -
- drivers/net/wan/dlci.c                  |  542 --------
- drivers/net/wan/sdla.c                  | 1655 -----------------------
- include/Kbuild                          |    1 -
- include/linux/if_frad.h                 |   92 --
- include/linux/sdla.h                    |  240 ----
- include/uapi/linux/if_frad.h            |  123 --
- include/uapi/linux/sdla.h               |  117 --
- net/socket.c                            |   25 -
- 12 files changed, 2887 deletions(-)
- delete mode 100644 Documentation/networking/framerelay.txt
- delete mode 100644 drivers/net/wan/dlci.c
- delete mode 100644 drivers/net/wan/sdla.c
- delete mode 100644 include/linux/if_frad.h
- delete mode 100644 include/linux/sdla.h
- delete mode 100644 include/uapi/linux/if_frad.h
- delete mode 100644 include/uapi/linux/sdla.h
+----
 
-diff --git a/Documentation/networking/framerelay.txt b/Documentation/networking/framerelay.txt
-deleted file mode 100644
-index 1a0b720440dd..000000000000
---- a/Documentation/networking/framerelay.txt
-+++ /dev/null
-@@ -1,39 +0,0 @@
--Frame Relay (FR) support for linux is built into a two tiered system of device 
--drivers.  The upper layer implements RFC1490 FR specification, and uses the
--Data Link Connection Identifier (DLCI) as its hardware address.  Usually these
--are assigned by your network supplier, they give you the number/numbers of
--the Virtual Connections (VC) assigned to you.
--
--Each DLCI is a point-to-point link between your machine and a remote one.
--As such, a separate device is needed to accommodate the routing.  Within the
--net-tools archives is 'dlcicfg'.  This program will communicate with the
--base "DLCI" device, and create new net devices named 'dlci00', 'dlci01'... 
--The configuration script will ask you how many DLCIs you need, as well as
--how many DLCIs you want to assign to each Frame Relay Access Device (FRAD).
--
--The DLCI uses a number of function calls to communicate with the FRAD, all
--of which are stored in the FRAD's private data area.  assoc/deassoc, 
--activate/deactivate and dlci_config.  The DLCI supplies a receive function
--to the FRAD to accept incoming packets.
--
--With this initial offering, only 1 FRAD driver is available.  With many thanks
--to Sangoma Technologies, David Mandelstam & Gene Kozin, the S502A, S502E & 
--S508 are supported.  This driver is currently set up for only FR, but as 
--Sangoma makes more firmware modules available, it can be updated to provide
--them as well.
--
--Configuration of the FRAD makes use of another net-tools program, 'fradcfg'.
--This program makes use of a configuration file (which dlcicfg can also read)
--to specify the types of boards to be configured as FRADs, as well as perform
--any board specific configuration.  The Sangoma module of fradcfg loads the
--FR firmware into the card, sets the irq/port/memory information, and provides
--an initial configuration.
--
--Additional FRAD device drivers can be added as hardware is available.
--
--At this time, the dlcicfg and fradcfg programs have not been incorporated into
--the net-tools distribution.  They can be found at ftp.invlogic.com, in 
--/pub/linux.  Note that with OS/2 FTPD, you end up in /pub by default, so just
--use 'cd linux'.  v0.10 is for use on pre-2.0.3 and earlier, v0.15 is for 
--pre-2.0.4 and later.
--
+If anyone has different views or additional information, let us know.
+
+If you agree with the above, please Ack.
+---
+ MAINTAINERS                                   |  8 +-
+ drivers/net/wan/Kconfig                       | 43 --------
+ drivers/net/wan/Makefile                      |  3 -
+ drivers/staging/Kconfig                       |  2 +
+ drivers/staging/Makefile                      |  2 +
+ .../x25/Documentation}/lapb-module.txt        |  0
+ .../staging/x25/Documentation}/x25-iface.txt  |  0
+ .../staging/x25/Documentation}/x25.txt        |  0
+ drivers/staging/x25/Kconfig                   | 97 +++++++++++++++++++
+ {net => drivers/staging}/x25/Makefile         |  8 ++
+ drivers/staging/x25/TODO                      | 15 +++
+ {net => drivers/staging}/x25/af_x25.c         |  2 +-
+ drivers/{net/wan => staging/x25}/hdlc_x25.c   |  2 +-
+ {include/net => drivers/staging/x25}/lapb.h   |  2 +-
+ .../lapb => drivers/staging/x25}/lapb_iface.c |  2 +-
+ {net/lapb => drivers/staging/x25}/lapb_in.c   |  2 +-
+ {net/lapb => drivers/staging/x25}/lapb_out.c  |  2 +-
+ {net/lapb => drivers/staging/x25}/lapb_subr.c |  2 +-
+ .../lapb => drivers/staging/x25}/lapb_timer.c |  2 +-
+ drivers/{net/wan => staging/x25}/lapbether.c  |  2 +-
+ .../staging/x25/linux-lapb.h                  |  0
+ {net => drivers/staging}/x25/sysctl_net_x25.c |  2 +-
+ .../x25.h => drivers/staging/x25/uapi-x25.h   |  0
+ {include/net => drivers/staging/x25}/x25.h    |  2 +-
+ drivers/{net/wan => staging/x25}/x25_asy.c    |  2 +-
+ drivers/{net/wan => staging/x25}/x25_asy.h    |  0
+ {net => drivers/staging}/x25/x25_dev.c        |  2 +-
+ {net => drivers/staging}/x25/x25_facilities.c |  2 +-
+ {net => drivers/staging}/x25/x25_forward.c    |  2 +-
+ {net => drivers/staging}/x25/x25_in.c         |  2 +-
+ {net => drivers/staging}/x25/x25_link.c       |  2 +-
+ {net => drivers/staging}/x25/x25_out.c        |  2 +-
+ {net => drivers/staging}/x25/x25_proc.c       |  2 +-
+ {net => drivers/staging}/x25/x25_route.c      |  2 +-
+ {net => drivers/staging}/x25/x25_subr.c       |  2 +-
+ {net => drivers/staging}/x25/x25_timer.c      |  2 +-
+ include/Kbuild                                |  2 -
+ net/Kconfig                                   |  2 -
+ net/Makefile                                  |  2 -
+ net/lapb/Kconfig                              | 22 -----
+ net/lapb/Makefile                             |  8 --
+ net/x25/Kconfig                               | 34 -------
+ 42 files changed, 148 insertions(+), 144 deletions(-)
+ rename {Documentation/networking => drivers/staging/x25/Documentation}/lapb-module.txt (100%)
+ rename {Documentation/networking => drivers/staging/x25/Documentation}/x25-iface.txt (100%)
+ rename {Documentation/networking => drivers/staging/x25/Documentation}/x25.txt (100%)
+ create mode 100644 drivers/staging/x25/Kconfig
+ rename {net => drivers/staging}/x25/Makefile (58%)
+ create mode 100644 drivers/staging/x25/TODO
+ rename {net => drivers/staging}/x25/af_x25.c (99%)
+ rename drivers/{net/wan => staging/x25}/hdlc_x25.c (99%)
+ rename {include/net => drivers/staging/x25}/lapb.h (99%)
+ rename {net/lapb => drivers/staging/x25}/lapb_iface.c (99%)
+ rename {net/lapb => drivers/staging/x25}/lapb_in.c (99%)
+ rename {net/lapb => drivers/staging/x25}/lapb_out.c (99%)
+ rename {net/lapb => drivers/staging/x25}/lapb_subr.c (99%)
+ rename {net/lapb => drivers/staging/x25}/lapb_timer.c (99%)
+ rename drivers/{net/wan => staging/x25}/lapbether.c (99%)
+ rename include/linux/lapb.h => drivers/staging/x25/linux-lapb.h (100%)
+ rename {net => drivers/staging}/x25/sysctl_net_x25.c (98%)
+ rename include/uapi/linux/x25.h => drivers/staging/x25/uapi-x25.h (100%)
+ rename {include/net => drivers/staging/x25}/x25.h (99%)
+ rename drivers/{net/wan => staging/x25}/x25_asy.c (99%)
+ rename drivers/{net/wan => staging/x25}/x25_asy.h (100%)
+ rename {net => drivers/staging}/x25/x25_dev.c (99%)
+ rename {net => drivers/staging}/x25/x25_facilities.c (99%)
+ rename {net => drivers/staging}/x25/x25_forward.c (99%)
+ rename {net => drivers/staging}/x25/x25_in.c (99%)
+ rename {net => drivers/staging}/x25/x25_link.c (99%)
+ rename {net => drivers/staging}/x25/x25_out.c (99%)
+ rename {net => drivers/staging}/x25/x25_proc.c (99%)
+ rename {net => drivers/staging}/x25/x25_route.c (99%)
+ rename {net => drivers/staging}/x25/x25_subr.c (99%)
+ rename {net => drivers/staging}/x25/x25_timer.c (99%)
+ delete mode 100644 net/lapb/Kconfig
+ delete mode 100644 net/lapb/Makefile
+ delete mode 100644 net/x25/Kconfig
+
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 0a996ac26047..32fab6fbd301 100644
+index 32fab6fbd301..5f0786bd8e22 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -6436,12 +6436,6 @@ W:	http://floatingpoint.sourceforge.net/emulator/index.html
- S:	Maintained
- F:	arch/x86/math-emu/
+@@ -9155,9 +9155,7 @@ F:	drivers/soc/lantiq
+ LAPB module
+ L:	linux-x25@vger.kernel.org
+ S:	Orphan
+-F:	Documentation/networking/lapb-module.txt
+-F:	include/*/lapb.h
+-F:	net/lapb/
++F:	drivers/staging/x25/
  
--FRAME RELAY DLCI/FRAD (Sangoma drivers too)
--L:	netdev@vger.kernel.org
--S:	Orphan
--F:	drivers/net/wan/dlci.c
--F:	drivers/net/wan/sdla.c
--
- FRAMEBUFFER LAYER
- M:	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
- L:	dri-devel@lists.freedesktop.org
+ LASI 53c700 driver for PARISC
+ M:	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+@@ -17645,9 +17643,7 @@ X.25 NETWORK LAYER
+ M:	Andrew Hendry <andrew.hendry@gmail.com>
+ L:	linux-x25@vger.kernel.org
+ S:	Odd Fixes
+-F:	Documentation/networking/x25*
+-F:	include/net/x25*
+-F:	net/x25/
++F:	drivers/staging/x25/
+ 
+ X86 ARCHITECTURE (32-BIT AND 64-BIT)
+ M:	Thomas Gleixner <tglx@linutronix.de>
 diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index e9ad63115144..74f2bd639b07 100644
+index 74f2bd639b07..931457129b3b 100644
 --- a/drivers/net/wan/Kconfig
 +++ b/drivers/net/wan/Kconfig
-@@ -297,51 +297,6 @@ config IXP4XX_HSS
+@@ -156,17 +156,6 @@ config HDLC_PPP
+ 
+ 	  If unsure, say N.
+ 
+-config HDLC_X25
+-	tristate "X.25 protocol support"
+-	depends on HDLC && (LAPB=m && HDLC=m || LAPB=y)
+-	help
+-	  Generic HDLC driver supporting X.25 over WAN connections.
+-
+-	  If unsure, say N.
+-
+-comment "X.25/LAPB support is disabled"
+-	depends on HDLC && (LAPB!=m || HDLC!=m) && LAPB!=y
+-
+ config PCI200SYN
+ 	tristate "Goramo PCI200SYN support"
+ 	depends on HDLC && PCI
+@@ -297,36 +286,4 @@ config IXP4XX_HSS
  	  Say Y here if you want to use built-in HSS ports
  	  on IXP4xx processor.
  
--config DLCI
--	tristate "Frame Relay DLCI support"
+-# X.25 network drivers
+-config LAPBETHER
+-	tristate "LAPB over Ethernet driver"
+-	depends on LAPB && X25
 -	---help---
--	  Support for the Frame Relay protocol.
+-	  Driver for a pseudo device (typically called /dev/lapb0) which allows
+-	  you to open an LAPB point-to-point connection to some other computer
+-	  on your Ethernet network.
 -
--	  Frame Relay is a fast low-cost way to connect to a remote Internet
--	  access provider or to form a private wide area network. The one
--	  physical line from your box to the local "switch" (i.e. the entry
--	  point to the Frame Relay network, usually at the phone company) can
--	  carry several logical point-to-point connections to other computers
--	  connected to the Frame Relay network. For a general explanation of
--	  the protocol, check out <http://www.mplsforum.org/>.
--
--	  To use frame relay, you need supporting hardware (called FRAD) and
--	  certain programs from the net-tools package as explained in
--	  <file:Documentation/networking/framerelay.txt>.
+-	  In order to do this, you need to say Y or M to the driver for your
+-	  Ethernet card as well as to "LAPB Data Link Driver".
 -
 -	  To compile this driver as a module, choose M here: the
--	  module will be called dlci.
+-	  module will be called lapbether.
 -
--config DLCI_MAX
--	int "Max DLCI per device"
--	depends on DLCI
--	default "8"
--	help
--	  How many logical point-to-point frame relay connections (the
--	  identifiers of which are called DCLIs) should be handled by each
--	  of your hardware frame relay access devices.
+-	  If unsure, say N.
 -
--	  Go with the default.
+-config X25_ASY
+-	tristate "X.25 async driver"
+-	depends on LAPB && X25 && TTY
+-	---help---
+-	  Send and receive X.25 frames over regular asynchronous serial
+-	  lines such as telephone lines equipped with ordinary modems.
 -
--config SDLA
--	tristate "SDLA (Sangoma S502/S508) support"
--	depends on DLCI && ISA
--	help
--	  Driver for the Sangoma S502A, S502E, and S508 Frame Relay Access
--	  Devices.
--
--	  These are multi-protocol cards, but only Frame Relay is supported
--	  by the driver at this time. Please read
--	  <file:Documentation/networking/framerelay.txt>.
+-	  Experts should note that this driver doesn't currently comply with
+-	  the asynchronous HDLS framing protocols in CCITT recommendation X.25.
 -
 -	  To compile this driver as a module, choose M here: the
--	  module will be called sdla.
+-	  module will be called x25_asy.
 -
- # X.25 network drivers
- config LAPBETHER
- 	tristate "LAPB over Ethernet driver"
+-	  If unsure, say N.
+-
+ endif # WAN
 diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
-index 3059b9a279b3..4438a0c4a272 100644
+index 4438a0c4a272..1eb30941a445 100644
 --- a/drivers/net/wan/Makefile
 +++ b/drivers/net/wan/Makefile
-@@ -22,8 +22,6 @@ obj-$(CONFIG_X25_ASY)		+= x25_asy.o
+@@ -12,17 +12,14 @@ obj-$(CONFIG_HDLC_RAW_ETH)	+= hdlc_raw_eth.o
+ obj-$(CONFIG_HDLC_CISCO)	+= hdlc_cisco.o
+ obj-$(CONFIG_HDLC_FR)		+= hdlc_fr.o
+ obj-$(CONFIG_HDLC_PPP)		+= hdlc_ppp.o
+-obj-$(CONFIG_HDLC_X25)		+= hdlc_x25.o
+ 
+ obj-$(CONFIG_HOSTESS_SV11)	+= z85230.o	hostess_sv11.o
+ obj-$(CONFIG_SEALEVEL_4021)	+= z85230.o	sealevel.o
+ obj-$(CONFIG_COSA)		+= cosa.o
+ obj-$(CONFIG_FARSYNC)		+= farsync.o
+-obj-$(CONFIG_X25_ASY)		+= x25_asy.o
  
  obj-$(CONFIG_LANMEDIA)		+= lmc/
  
--obj-$(CONFIG_DLCI)		+= dlci.o 
--obj-$(CONFIG_SDLA)		+= sdla.o
- obj-$(CONFIG_LAPBETHER)		+= lapbether.o
+-obj-$(CONFIG_LAPBETHER)		+= lapbether.o
  obj-$(CONFIG_N2)		+= n2.o
  obj-$(CONFIG_C101)		+= c101.o
-diff --git a/drivers/net/wan/dlci.c b/drivers/net/wan/dlci.c
-deleted file mode 100644
-index 7bcee41905cf..000000000000
---- a/drivers/net/wan/dlci.c
-+++ /dev/null
-@@ -1,542 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * DLCI		Implementation of Frame Relay protocol for Linux, according to
-- *		RFC 1490.  This generic device provides en/decapsulation for an
-- *		underlying hardware driver.  Routes & IPs are assigned to these
-- *		interfaces.  Requires 'dlcicfg' program to create usable 
-- *		interfaces, the initial one, 'dlci' is for IOCTL use only.
-- *
-- * Version:	@(#)dlci.c	0.35	4 Jan 1997
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *
-- *		0.15	Mike Mclagan	Packet freeing, bug in kmalloc call
-- *					DLCI_RET handling
-- *		0.20	Mike McLagan	More conservative on which packets
-- *					are returned for retry and which are
-- *					are dropped.  If DLCI_RET_DROP is
-- *					returned from the FRAD, the packet is
-- *				 	sent back to Linux for re-transmission
-- *		0.25	Mike McLagan	Converted to use SIOC IOCTL calls
-- *		0.30	Jim Freeman	Fixed to allow IPX traffic
-- *		0.35	Michael Elizabeth	Fixed incorrect memcpy_fromfs
-- */
--
--#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
--
--#include <linux/module.h>
--#include <linux/kernel.h>
--#include <linux/types.h>
--#include <linux/fcntl.h>
--#include <linux/interrupt.h>
--#include <linux/ptrace.h>
--#include <linux/ioport.h>
--#include <linux/in.h>
--#include <linux/init.h>
--#include <linux/slab.h>
--#include <linux/string.h>
--#include <linux/errno.h>
--#include <linux/netdevice.h>
--#include <linux/skbuff.h>
--#include <linux/if_arp.h>
--#include <linux/if_frad.h>
--#include <linux/bitops.h>
--
--#include <net/sock.h>
--
--#include <asm/io.h>
--#include <asm/dma.h>
--#include <linux/uaccess.h>
--
--static const char version[] = "DLCI driver v0.35, 4 Jan 1997, mike.mclagan@linux.org";
--
--static LIST_HEAD(dlci_devs);
--
--static void dlci_setup(struct net_device *);
--
--/* 
-- * these encapsulate the RFC 1490 requirements as well as 
-- * deal with packet transmission and reception, working with
-- * the upper network layers 
-- */
--
--static int dlci_header(struct sk_buff *skb, struct net_device *dev, 
--		       unsigned short type, const void *daddr,
--		       const void *saddr, unsigned len)
--{
--	struct frhdr		hdr;
--	unsigned int		hlen;
--	char			*dest;
--
--	hdr.control = FRAD_I_UI;
--	switch (type)
--	{
--		case ETH_P_IP:
--			hdr.IP_NLPID = FRAD_P_IP;
--			hlen = sizeof(hdr.control) + sizeof(hdr.IP_NLPID);
--			break;
--
--		/* feel free to add other types, if necessary */
--
--		default:
--			hdr.pad = FRAD_P_PADDING;
--			hdr.NLPID = FRAD_P_SNAP;
--			memset(hdr.OUI, 0, sizeof(hdr.OUI));
--			hdr.PID = htons(type);
--			hlen = sizeof(hdr);
--			break;
--	}
--
--	dest = skb_push(skb, hlen);
--	if (!dest)
--		return 0;
--
--	memcpy(dest, &hdr, hlen);
--
--	return hlen;
--}
--
--static void dlci_receive(struct sk_buff *skb, struct net_device *dev)
--{
--	struct frhdr		*hdr;
--	int					process, header;
--
--	if (!pskb_may_pull(skb, sizeof(*hdr))) {
--		netdev_notice(dev, "invalid data no header\n");
--		dev->stats.rx_errors++;
--		kfree_skb(skb);
--		return;
--	}
--
--	hdr = (struct frhdr *) skb->data;
--	process = 0;
--	header = 0;
--	skb->dev = dev;
--
--	if (hdr->control != FRAD_I_UI)
--	{
--		netdev_notice(dev, "Invalid header flag 0x%02X\n",
--			      hdr->control);
--		dev->stats.rx_errors++;
--	}
--	else
--		switch (hdr->IP_NLPID)
--		{
--			case FRAD_P_PADDING:
--				if (hdr->NLPID != FRAD_P_SNAP)
--				{
--					netdev_notice(dev, "Unsupported NLPID 0x%02X\n",
--						      hdr->NLPID);
--					dev->stats.rx_errors++;
--					break;
--				}
--	 
--				if (hdr->OUI[0] + hdr->OUI[1] + hdr->OUI[2] != 0)
--				{
--					netdev_notice(dev, "Unsupported organizationally unique identifier 0x%02X-%02X-%02X\n",
--						      hdr->OUI[0],
--						      hdr->OUI[1],
--						      hdr->OUI[2]);
--					dev->stats.rx_errors++;
--					break;
--				}
--
--				/* at this point, it's an EtherType frame */
--				header = sizeof(struct frhdr);
--				/* Already in network order ! */
--				skb->protocol = hdr->PID;
--				process = 1;
--				break;
--
--			case FRAD_P_IP:
--				header = sizeof(hdr->control) + sizeof(hdr->IP_NLPID);
--				skb->protocol = htons(ETH_P_IP);
--				process = 1;
--				break;
--
--			case FRAD_P_SNAP:
--			case FRAD_P_Q933:
--			case FRAD_P_CLNP:
--				netdev_notice(dev, "Unsupported NLPID 0x%02X\n",
--					      hdr->pad);
--				dev->stats.rx_errors++;
--				break;
--
--			default:
--				netdev_notice(dev, "Invalid pad byte 0x%02X\n",
--					      hdr->pad);
--				dev->stats.rx_errors++;
--				break;				
--		}
--
--	if (process)
--	{
--		/* we've set up the protocol, so discard the header */
--		skb_reset_mac_header(skb);
--		skb_pull(skb, header);
--		dev->stats.rx_bytes += skb->len;
--		netif_rx(skb);
--		dev->stats.rx_packets++;
--	}
--	else
--		dev_kfree_skb(skb);
--}
--
--static netdev_tx_t dlci_transmit(struct sk_buff *skb, struct net_device *dev)
--{
--	struct dlci_local *dlp = netdev_priv(dev);
--
--	if (skb) {
--		struct netdev_queue *txq = skb_get_tx_queue(dev, skb);
--		netdev_start_xmit(skb, dlp->slave, txq, false);
--	}
--	return NETDEV_TX_OK;
--}
--
--static int dlci_config(struct net_device *dev, struct dlci_conf __user *conf, int get)
--{
--	struct dlci_conf	config;
--	struct dlci_local	*dlp;
--	struct frad_local	*flp;
--	int			err;
--
--	dlp = netdev_priv(dev);
--
--	flp = netdev_priv(dlp->slave);
--
--	if (!get)
--	{
--		if (copy_from_user(&config, conf, sizeof(struct dlci_conf)))
--			return -EFAULT;
--		if (config.flags & ~DLCI_VALID_FLAGS)
--			return -EINVAL;
--		memcpy(&dlp->config, &config, sizeof(struct dlci_conf));
--		dlp->configured = 1;
--	}
--
--	err = (*flp->dlci_conf)(dlp->slave, dev, get);
--	if (err)
--		return err;
--
--	if (get)
--	{
--		if (copy_to_user(conf, &dlp->config, sizeof(struct dlci_conf)))
--			return -EFAULT;
--	}
--
--	return 0;
--}
--
--static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
--{
--	struct dlci_local *dlp;
--
--	if (!capable(CAP_NET_ADMIN))
--		return -EPERM;
--
--	dlp = netdev_priv(dev);
--
--	switch (cmd)
--	{
--		case DLCI_GET_SLAVE:
--			if (!*(short *)(dev->dev_addr))
--				return -EINVAL;
--
--			strncpy(ifr->ifr_slave, dlp->slave->name, sizeof(ifr->ifr_slave));
--			break;
--
--		case DLCI_GET_CONF:
--		case DLCI_SET_CONF:
--			if (!*(short *)(dev->dev_addr))
--				return -EINVAL;
--
--			return dlci_config(dev, ifr->ifr_data, cmd == DLCI_GET_CONF);
--
--		default: 
--			return -EOPNOTSUPP;
--	}
--	return 0;
--}
--
--static int dlci_change_mtu(struct net_device *dev, int new_mtu)
--{
--	struct dlci_local *dlp = netdev_priv(dev);
--
--	return dev_set_mtu(dlp->slave, new_mtu);
--}
--
--static int dlci_open(struct net_device *dev)
--{
--	struct dlci_local	*dlp;
--	struct frad_local	*flp;
--	int			err;
--
--	dlp = netdev_priv(dev);
--
--	if (!*(short *)(dev->dev_addr))
--		return -EINVAL;
--
--	if (!netif_running(dlp->slave))
--		return -ENOTCONN;
--
--	flp = netdev_priv(dlp->slave);
--	err = (*flp->activate)(dlp->slave, dev);
--	if (err)
--		return err;
--
--	netif_start_queue(dev);
--
--	return 0;
--}
--
--static int dlci_close(struct net_device *dev)
--{
--	struct dlci_local	*dlp;
--	struct frad_local	*flp;
--	int			err;
--
--	netif_stop_queue(dev);
--
--	dlp = netdev_priv(dev);
--
--	flp = netdev_priv(dlp->slave);
--	err = (*flp->deactivate)(dlp->slave, dev);
--
--	return 0;
--}
--
--static int dlci_add(struct dlci_add *dlci)
--{
--	struct net_device	*master, *slave;
--	struct dlci_local	*dlp;
--	struct frad_local	*flp;
--	int			err = -EINVAL;
--
--
--	/* validate slave device */
--	slave = dev_get_by_name(&init_net, dlci->devname);
--	if (!slave)
--		return -ENODEV;
--
--	if (slave->type != ARPHRD_FRAD || netdev_priv(slave) == NULL)
--		goto err1;
--
--	/* create device name */
--	master = alloc_netdev(sizeof(struct dlci_local), "dlci%d",
--			      NET_NAME_UNKNOWN, dlci_setup);
--	if (!master) {
--		err = -ENOMEM;
--		goto err1;
--	}
--
--	/* make sure same slave not already registered */
--	rtnl_lock();
--	list_for_each_entry(dlp, &dlci_devs, list) {
--		if (dlp->slave == slave) {
--			err = -EBUSY;
--			goto err2;
--		}
--	}
--
--	*(short *)(master->dev_addr) = dlci->dlci;
--
--	dlp = netdev_priv(master);
--	dlp->slave = slave;
--	dlp->master = master;
--
--	flp = netdev_priv(slave);
--	err = (*flp->assoc)(slave, master);
--	if (err < 0)
--		goto err2;
--
--	err = register_netdevice(master);
--	if (err < 0) 
--		goto err2;
--
--	strcpy(dlci->devname, master->name);
--
--	list_add(&dlp->list, &dlci_devs);
--	rtnl_unlock();
--
--	return 0;
--
-- err2:
--	rtnl_unlock();
--	free_netdev(master);
-- err1:
--	dev_put(slave);
--	return err;
--}
--
--static int dlci_del(struct dlci_add *dlci)
--{
--	struct dlci_local	*dlp;
--	struct frad_local	*flp;
--	struct net_device	*master, *slave;
--	int			err;
--	bool			found = false;
--
--	rtnl_lock();
--
--	/* validate slave device */
--	master = __dev_get_by_name(&init_net, dlci->devname);
--	if (!master) {
--		err = -ENODEV;
--		goto out;
--	}
--
--	list_for_each_entry(dlp, &dlci_devs, list) {
--		if (dlp->master == master) {
--			found = true;
--			break;
--		}
--	}
--	if (!found) {
--		err = -ENODEV;
--		goto out;
--	}
--
--	if (netif_running(master)) {
--		err = -EBUSY;
--		goto out;
--	}
--
--	dlp = netdev_priv(master);
--	slave = dlp->slave;
--	flp = netdev_priv(slave);
--
--	err = (*flp->deassoc)(slave, master);
--	if (!err) {
--		list_del(&dlp->list);
--
--		unregister_netdevice(master);
--
--		dev_put(slave);
--	}
--out:
--	rtnl_unlock();
--	return err;
--}
--
--static int dlci_ioctl(unsigned int cmd, void __user *arg)
--{
--	struct dlci_add add;
--	int err;
--	
--	if (!capable(CAP_NET_ADMIN))
--		return -EPERM;
--
--	if (copy_from_user(&add, arg, sizeof(struct dlci_add)))
--		return -EFAULT;
--
--	switch (cmd)
--	{
--		case SIOCADDDLCI:
--			err = dlci_add(&add);
--
--			if (!err)
--				if (copy_to_user(arg, &add, sizeof(struct dlci_add)))
--					return -EFAULT;
--			break;
--
--		case SIOCDELDLCI:
--			err = dlci_del(&add);
--			break;
--
--		default:
--			err = -EINVAL;
--	}
--
--	return err;
--}
--
--static const struct header_ops dlci_header_ops = {
--	.create	= dlci_header,
--};
--
--static const struct net_device_ops dlci_netdev_ops = {
--	.ndo_open	= dlci_open,
--	.ndo_stop	= dlci_close,
--	.ndo_do_ioctl	= dlci_dev_ioctl,
--	.ndo_start_xmit	= dlci_transmit,
--	.ndo_change_mtu	= dlci_change_mtu,
--};
--
--static void dlci_setup(struct net_device *dev)
--{
--	struct dlci_local *dlp = netdev_priv(dev);
--
--	dev->flags		= 0;
--	dev->header_ops		= &dlci_header_ops;
--	dev->netdev_ops		= &dlci_netdev_ops;
--	dev->needs_free_netdev	= true;
--
--	dlp->receive		= dlci_receive;
--
--	dev->type		= ARPHRD_DLCI;
--	dev->hard_header_len	= sizeof(struct frhdr);
--	dev->addr_len		= sizeof(short);
--
--}
--
--/* if slave is unregistering, then cleanup master */
--static int dlci_dev_event(struct notifier_block *unused,
--			  unsigned long event, void *ptr)
--{
--	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
--
--	if (dev_net(dev) != &init_net)
--		return NOTIFY_DONE;
--
--	if (event == NETDEV_UNREGISTER) {
--		struct dlci_local *dlp;
--
--		list_for_each_entry(dlp, &dlci_devs, list) {
--			if (dlp->slave == dev) {
--				list_del(&dlp->list);
--				unregister_netdevice(dlp->master);
--				dev_put(dlp->slave);
--				break;
--			}
--		}
--	}
--	return NOTIFY_DONE;
--}
--
--static struct notifier_block dlci_notifier = {
--	.notifier_call = dlci_dev_event,
--};
--
--static int __init init_dlci(void)
--{
--	dlci_ioctl_set(dlci_ioctl);
--	register_netdevice_notifier(&dlci_notifier);
--
--	printk("%s.\n", version);
--
--	return 0;
--}
--
--static void __exit dlci_exit(void)
--{
--	struct dlci_local	*dlp, *nxt;
--	
--	dlci_ioctl_set(NULL);
--	unregister_netdevice_notifier(&dlci_notifier);
--
--	rtnl_lock();
--	list_for_each_entry_safe(dlp, nxt, &dlci_devs, list) {
--		unregister_netdevice(dlp->master);
--		dev_put(dlp->slave);
--	}
--	rtnl_unlock();
--}
--
--module_init(init_dlci);
--module_exit(dlci_exit);
--
--MODULE_AUTHOR("Mike McLagan");
--MODULE_DESCRIPTION("Frame Relay DLCI layer");
--MODULE_LICENSE("GPL");
-diff --git a/drivers/net/wan/sdla.c b/drivers/net/wan/sdla.c
-deleted file mode 100644
-index e2e679a01b65..000000000000
---- a/drivers/net/wan/sdla.c
-+++ /dev/null
-@@ -1,1655 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * SDLA		An implementation of a driver for the Sangoma S502/S508 series
-- *		multi-protocol PC interface card.  Initial offering is with 
-- *		the DLCI driver, providing Frame Relay support for linux.
-- *
-- *		Global definitions for the Frame relay interface.
-- *
-- * Version:	@(#)sdla.c   0.30	12 Sep 1996
-- *
-- * Credits:	Sangoma Technologies, for the use of 2 cards for an extended
-- *			period of time.
-- *		David Mandelstam <dm@sangoma.com> for getting me started on 
-- *			this project, and incentive to complete it.
-- *		Gene Kozen <74604.152@compuserve.com> for providing me with
-- *			important information about the cards.
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *		0.15	Mike McLagan	Improved error handling, packet dropping
-- *		0.20	Mike McLagan	New transmit/receive flags for config
-- *					If in FR mode, don't accept packets from
-- *					non DLCI devices.
-- *		0.25	Mike McLagan	Fixed problem with rejecting packets
-- *					from non DLCI devices.
-- *		0.30	Mike McLagan	Fixed kernel panic when used with modified
-- *					ifconfig
-- */
--
--#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
--
--#include <linux/module.h>
--#include <linux/kernel.h>
--#include <linux/types.h>
--#include <linux/fcntl.h>
--#include <linux/interrupt.h>
--#include <linux/ptrace.h>
--#include <linux/ioport.h>
--#include <linux/in.h>
--#include <linux/slab.h>
--#include <linux/string.h>
--#include <linux/timer.h>
--#include <linux/errno.h>
--#include <linux/init.h>
--#include <linux/netdevice.h>
--#include <linux/skbuff.h>
--#include <linux/if_arp.h>
--#include <linux/if_frad.h>
--#include <linux/sdla.h>
--#include <linux/bitops.h>
--
--#include <asm/io.h>
--#include <asm/dma.h>
--#include <linux/uaccess.h>
--
--static const char* version = "SDLA driver v0.30, 12 Sep 1996, mike.mclagan@linux.org";
--
--static unsigned int valid_port[] = { 0x250, 0x270, 0x280, 0x300, 0x350, 0x360, 0x380, 0x390};
--
--static unsigned int valid_mem[] = {
--				    0xA0000, 0xA2000, 0xA4000, 0xA6000, 0xA8000, 0xAA000, 0xAC000, 0xAE000, 
--                                    0xB0000, 0xB2000, 0xB4000, 0xB6000, 0xB8000, 0xBA000, 0xBC000, 0xBE000,
--                                    0xC0000, 0xC2000, 0xC4000, 0xC6000, 0xC8000, 0xCA000, 0xCC000, 0xCE000,
--                                    0xD0000, 0xD2000, 0xD4000, 0xD6000, 0xD8000, 0xDA000, 0xDC000, 0xDE000,
--                                    0xE0000, 0xE2000, 0xE4000, 0xE6000, 0xE8000, 0xEA000, 0xEC000, 0xEE000}; 
--
--static DEFINE_SPINLOCK(sdla_lock);
--
--/*********************************************************
-- *
-- * these are the core routines that access the card itself 
-- *
-- *********************************************************/
--
--#define SDLA_WINDOW(dev,addr) outb((((addr) >> 13) & 0x1F), (dev)->base_addr + SDLA_REG_Z80_WINDOW)
--
--static void __sdla_read(struct net_device *dev, int addr, void *buf, short len)
--{
--	char          *temp;
--	const void    *base;
--	int           offset, bytes;
--
--	temp = buf;
--	while(len)
--	{	
--		offset = addr & SDLA_ADDR_MASK;
--		bytes = offset + len > SDLA_WINDOW_SIZE ? SDLA_WINDOW_SIZE - offset : len;
--		base = (const void *) (dev->mem_start + offset);
--
--		SDLA_WINDOW(dev, addr);
--		memcpy(temp, base, bytes);
--
--		addr += bytes;
--		temp += bytes;
--		len  -= bytes;
--	}  
--}
--
--static void sdla_read(struct net_device *dev, int addr, void *buf, short len)
--{
--	unsigned long flags;
--	spin_lock_irqsave(&sdla_lock, flags);
--	__sdla_read(dev, addr, buf, len);
--	spin_unlock_irqrestore(&sdla_lock, flags);
--}
--
--static void __sdla_write(struct net_device *dev, int addr, 
--			 const void *buf, short len)
--{
--	const char    *temp;
--	void 	      *base;
--	int           offset, bytes;
--
--	temp = buf;
--	while(len)
--	{
--		offset = addr & SDLA_ADDR_MASK;
--		bytes = offset + len > SDLA_WINDOW_SIZE ? SDLA_WINDOW_SIZE - offset : len;
--		base = (void *) (dev->mem_start + offset);
--
--		SDLA_WINDOW(dev, addr);
--		memcpy(base, temp, bytes);
--
--		addr += bytes;
--		temp += bytes;
--		len  -= bytes;
--	}
--}
--
--static void sdla_write(struct net_device *dev, int addr, 
--		       const void *buf, short len)
--{
--	unsigned long flags;
--
--	spin_lock_irqsave(&sdla_lock, flags);
--	__sdla_write(dev, addr, buf, len);
--	spin_unlock_irqrestore(&sdla_lock, flags);
--}
--
--
--static void sdla_clear(struct net_device *dev)
--{
--	unsigned long flags;
--	char          *base;
--	int           len, addr, bytes;
--
--	len = 65536;	
--	addr = 0;
--	bytes = SDLA_WINDOW_SIZE;
--	base = (void *) dev->mem_start;
--
--	spin_lock_irqsave(&sdla_lock, flags);
--	while(len)
--	{
--		SDLA_WINDOW(dev, addr);
--		memset(base, 0, bytes);
--
--		addr += bytes;
--		len  -= bytes;
--	}
--	spin_unlock_irqrestore(&sdla_lock, flags);
--
--}
--
--static char sdla_byte(struct net_device *dev, int addr)
--{
--	unsigned long flags;
--	char          byte, *temp;
--
--	temp = (void *) (dev->mem_start + (addr & SDLA_ADDR_MASK));
--
--	spin_lock_irqsave(&sdla_lock, flags);
--	SDLA_WINDOW(dev, addr);
--	byte = *temp;
--	spin_unlock_irqrestore(&sdla_lock, flags);
--
--	return byte;
--}
--
--static void sdla_stop(struct net_device *dev)
--{
--	struct frad_local *flp;
--
--	flp = netdev_priv(dev);
--	switch(flp->type)
--	{
--		case SDLA_S502A:
--			outb(SDLA_S502A_HALT, dev->base_addr + SDLA_REG_CONTROL);
--			flp->state = SDLA_HALT;
--			break;
--		case SDLA_S502E:
--			outb(SDLA_HALT, dev->base_addr + SDLA_REG_Z80_CONTROL);
--			outb(SDLA_S502E_ENABLE, dev->base_addr + SDLA_REG_CONTROL);
--			flp->state = SDLA_S502E_ENABLE;
--			break;
--		case SDLA_S507:
--			flp->state &= ~SDLA_CPUEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--		case SDLA_S508:
--			flp->state &= ~SDLA_CPUEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--	}
--}
--
--static void sdla_start(struct net_device *dev)
--{
--	struct frad_local *flp;
--
--	flp = netdev_priv(dev);
--	switch(flp->type)
--	{
--		case SDLA_S502A:
--			outb(SDLA_S502A_NMI, dev->base_addr + SDLA_REG_CONTROL);
--			outb(SDLA_S502A_START, dev->base_addr + SDLA_REG_CONTROL);
--			flp->state = SDLA_S502A_START;
--			break;
--		case SDLA_S502E:
--			outb(SDLA_S502E_CPUEN, dev->base_addr + SDLA_REG_Z80_CONTROL);
--			outb(0x00, dev->base_addr + SDLA_REG_CONTROL);
--			flp->state = 0;
--			break;
--		case SDLA_S507:
--			flp->state |= SDLA_CPUEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--		case SDLA_S508:
--			flp->state |= SDLA_CPUEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--	}
--}
--
--/****************************************************
-- *
-- * this is used for the S502A/E cards to determine
-- * the speed of the onboard CPU.  Calibration is
-- * necessary for the Frame Relay code uploaded 
-- * later.  Incorrect results cause timing problems
-- * with link checks & status messages
-- *
-- ***************************************************/
--
--static int sdla_z80_poll(struct net_device *dev, int z80_addr, int jiffs, char resp1, char resp2)
--{
--	unsigned long start, done, now;
--	char          resp, *temp;
--
--	start = now = jiffies;
--	done = jiffies + jiffs;
--
--	temp = (void *)dev->mem_start;
--	temp += z80_addr & SDLA_ADDR_MASK;
--	
--	resp = ~resp1;
--	while (time_before(jiffies, done) && (resp != resp1) && (!resp2 || (resp != resp2)))
--	{
--		if (jiffies != now)
--		{
--			SDLA_WINDOW(dev, z80_addr);
--			now = jiffies;
--			resp = *temp;
--		}
--	}
--	return time_before(jiffies, done) ? jiffies - start : -1;
--}
--
--/* constants for Z80 CPU speed */
--#define Z80_READY 		'1'	/* Z80 is ready to begin */
--#define LOADER_READY 		'2'	/* driver is ready to begin */
--#define Z80_SCC_OK 		'3'	/* SCC is on board */
--#define Z80_SCC_BAD	 	'4'	/* SCC was not found */
--
--static int sdla_cpuspeed(struct net_device *dev, struct ifreq *ifr)
--{
--	int  jiffs;
--	char data;
--
--	sdla_start(dev);
--	if (sdla_z80_poll(dev, 0, 3*HZ, Z80_READY, 0) < 0)
--		return -EIO;
--
--	data = LOADER_READY;
--	sdla_write(dev, 0, &data, 1);
--
--	if ((jiffs = sdla_z80_poll(dev, 0, 8*HZ, Z80_SCC_OK, Z80_SCC_BAD)) < 0)
--		return -EIO;
--
--	sdla_stop(dev);
--	sdla_read(dev, 0, &data, 1);
--
--	if (data == Z80_SCC_BAD)
--	{
--		printk("%s: SCC bad\n", dev->name);
--		return -EIO;
--	}
--
--	if (data != Z80_SCC_OK)
--		return -EINVAL;
--
--	if (jiffs < 165)
--		ifr->ifr_mtu = SDLA_CPU_16M;
--	else if (jiffs < 220)
--		ifr->ifr_mtu = SDLA_CPU_10M;
--	else if (jiffs < 258)
--		ifr->ifr_mtu = SDLA_CPU_8M;
--	else if (jiffs < 357)
--		ifr->ifr_mtu = SDLA_CPU_7M;
--	else if (jiffs < 467)
--		ifr->ifr_mtu = SDLA_CPU_5M;
--	else
--		ifr->ifr_mtu = SDLA_CPU_3M;
-- 
--	return 0;
--}
--
--/************************************************
-- *
-- *  Direct interaction with the Frame Relay code 
-- *  starts here.
-- *
-- ************************************************/
--
--struct _dlci_stat 
--{
--	short dlci;
--	char  flags;
--} __packed;
--
--struct _frad_stat 
--{
--	char    flags;
--	struct _dlci_stat dlcis[SDLA_MAX_DLCI];
--};
--
--static void sdla_errors(struct net_device *dev, int cmd, int dlci, int ret, int len, void *data) 
--{
--	struct _dlci_stat *pstatus;
--	short             *pdlci;
--	int               i;
--	char              *state, line[30];
--
--	switch (ret)
--	{
--		case SDLA_RET_MODEM:
--			state = data;
--			if (*state & SDLA_MODEM_DCD_LOW)
--				netdev_info(dev, "Modem DCD unexpectedly low!\n");
--			if (*state & SDLA_MODEM_CTS_LOW)
--				netdev_info(dev, "Modem CTS unexpectedly low!\n");
--			/* I should probably do something about this! */
--			break;
--
--		case SDLA_RET_CHANNEL_OFF:
--			netdev_info(dev, "Channel became inoperative!\n");
--			/* same here */
--			break;
--
--		case SDLA_RET_CHANNEL_ON:
--			netdev_info(dev, "Channel became operative!\n");
--			/* same here */
--			break;
--
--		case SDLA_RET_DLCI_STATUS:
--			netdev_info(dev, "Status change reported by Access Node\n");
--			len /= sizeof(struct _dlci_stat);
--			for(pstatus = data, i=0;i < len;i++,pstatus++)
--			{
--				if (pstatus->flags & SDLA_DLCI_NEW)
--					state = "new";
--				else if (pstatus->flags & SDLA_DLCI_DELETED)
--					state = "deleted";
--				else if (pstatus->flags & SDLA_DLCI_ACTIVE)
--					state = "active";
--				else
--				{
--					sprintf(line, "unknown status: %02X", pstatus->flags);
--					state = line;
--				}
--				netdev_info(dev, "DLCI %i: %s\n",
--					    pstatus->dlci, state);
--				/* same here */
--			}
--			break;
--
--		case SDLA_RET_DLCI_UNKNOWN:
--			netdev_info(dev, "Received unknown DLCIs:");
--			len /= sizeof(short);
--			for(pdlci = data,i=0;i < len;i++,pdlci++)
--				pr_cont(" %i", *pdlci);
--			pr_cont("\n");
--			break;
--
--		case SDLA_RET_TIMEOUT:
--			netdev_err(dev, "Command timed out!\n");
--			break;
--
--		case SDLA_RET_BUF_OVERSIZE:
--			netdev_info(dev, "Bc/CIR overflow, acceptable size is %i\n",
--				    len);
--			break;
--
--		case SDLA_RET_BUF_TOO_BIG:
--			netdev_info(dev, "Buffer size over specified max of %i\n",
--				    len);
--			break;
--
--		case SDLA_RET_CHANNEL_INACTIVE:
--		case SDLA_RET_DLCI_INACTIVE:
--		case SDLA_RET_CIR_OVERFLOW:
--		case SDLA_RET_NO_BUFS:
--			if (cmd == SDLA_INFORMATION_WRITE)
--				break;
--			/* Else, fall through */
--
--		default: 
--			netdev_dbg(dev, "Cmd 0x%02X generated return code 0x%02X\n",
--				   cmd, ret);
--			/* Further processing could be done here */
--			break;
--	}
--}
--
--static int sdla_cmd(struct net_device *dev, int cmd, short dlci, short flags, 
--                        void *inbuf, short inlen, void *outbuf, short *outlen)
--{
--	static struct _frad_stat status;
--	struct frad_local        *flp;
--	struct sdla_cmd          *cmd_buf;
--	unsigned long            pflags;
--	unsigned long		 jiffs;
--	int                      ret, waiting, len;
--	long                     window;
--
--	flp = netdev_priv(dev);
--	window = flp->type == SDLA_S508 ? SDLA_508_CMD_BUF : SDLA_502_CMD_BUF;
--	cmd_buf = (struct sdla_cmd *)(dev->mem_start + (window & SDLA_ADDR_MASK));
--	ret = 0;
--	len = 0;
--	jiffs = jiffies + HZ;  /* 1 second is plenty */
--
--	spin_lock_irqsave(&sdla_lock, pflags);
--	SDLA_WINDOW(dev, window);
--	cmd_buf->cmd = cmd;
--	cmd_buf->dlci = dlci;
--	cmd_buf->flags = flags;
--
--	if (inbuf)
--		memcpy(cmd_buf->data, inbuf, inlen);
--
--	cmd_buf->length = inlen;
--
--	cmd_buf->opp_flag = 1;
--	spin_unlock_irqrestore(&sdla_lock, pflags);
--
--	waiting = 1;
--	len = 0;
--	while (waiting && time_before_eq(jiffies, jiffs))
--	{
--		if (waiting++ % 3) 
--		{
--			spin_lock_irqsave(&sdla_lock, pflags);
--			SDLA_WINDOW(dev, window);
--			waiting = ((volatile int)(cmd_buf->opp_flag));
--			spin_unlock_irqrestore(&sdla_lock, pflags);
--		}
--	}
--	
--	if (!waiting)
--	{
--
--		spin_lock_irqsave(&sdla_lock, pflags);
--		SDLA_WINDOW(dev, window);
--		ret = cmd_buf->retval;
--		len = cmd_buf->length;
--		if (outbuf && outlen)
--		{
--			*outlen = *outlen >= len ? len : *outlen;
--
--			if (*outlen)
--				memcpy(outbuf, cmd_buf->data, *outlen);
--		}
--
--		/* This is a local copy that's used for error handling */
--		if (ret)
--			memcpy(&status, cmd_buf->data, len > sizeof(status) ? sizeof(status) : len);
--
--		spin_unlock_irqrestore(&sdla_lock, pflags);
--	}
--	else
--		ret = SDLA_RET_TIMEOUT;
--
--	if (ret != SDLA_RET_OK)
--	   	sdla_errors(dev, cmd, dlci, ret, len, &status);
--
--	return ret;
--}
--
--/***********************************************
-- *
-- * these functions are called by the DLCI driver 
-- *
-- ***********************************************/
--
--static int sdla_reconfig(struct net_device *dev);
--
--static int sdla_activate(struct net_device *slave, struct net_device *master)
--{
--	struct frad_local *flp;
--	int i;
--
--	flp = netdev_priv(slave);
--
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->master[i] == master)
--			break;
--
--	if (i == CONFIG_DLCI_MAX)
--		return -ENODEV;
--
--	flp->dlci[i] = abs(flp->dlci[i]);
--
--	if (netif_running(slave) && (flp->config.station == FRAD_STATION_NODE))
--		sdla_cmd(slave, SDLA_ACTIVATE_DLCI, 0, 0, &flp->dlci[i], sizeof(short), NULL, NULL);
--
--	return 0;
--}
--
--static int sdla_deactivate(struct net_device *slave, struct net_device *master)
--{
--	struct frad_local *flp;
--	int               i;
--
--	flp = netdev_priv(slave);
--
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->master[i] == master)
--			break;
--
--	if (i == CONFIG_DLCI_MAX)
--		return -ENODEV;
--
--	flp->dlci[i] = -abs(flp->dlci[i]);
--
--	if (netif_running(slave) && (flp->config.station == FRAD_STATION_NODE))
--		sdla_cmd(slave, SDLA_DEACTIVATE_DLCI, 0, 0, &flp->dlci[i], sizeof(short), NULL, NULL);
--
--	return 0;
--}
--
--static int sdla_assoc(struct net_device *slave, struct net_device *master)
--{
--	struct frad_local *flp;
--	int               i;
--
--	if (master->type != ARPHRD_DLCI)
--		return -EINVAL;
--
--	flp = netdev_priv(slave);
--
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--	{
--		if (!flp->master[i])
--			break;
--		if (abs(flp->dlci[i]) == *(short *)(master->dev_addr))
--			return -EADDRINUSE;
--	} 
--
--	if (i == CONFIG_DLCI_MAX)
--		return -EMLINK;  /* #### Alan: Comments on this ?? */
--
--
--	flp->master[i] = master;
--	flp->dlci[i] = -*(short *)(master->dev_addr);
--	master->mtu = slave->mtu;
--
--	if (netif_running(slave)) {
--		if (flp->config.station == FRAD_STATION_CPE)
--			sdla_reconfig(slave);
--		else
--			sdla_cmd(slave, SDLA_ADD_DLCI, 0, 0, master->dev_addr, sizeof(short), NULL, NULL);
--	}
--
--	return 0;
--}
--
--static int sdla_deassoc(struct net_device *slave, struct net_device *master)
--{
--	struct frad_local *flp;
--	int               i;
--
--	flp = netdev_priv(slave);
--
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->master[i] == master)
--			break;
--
--	if (i == CONFIG_DLCI_MAX)
--		return -ENODEV;
--
--	flp->master[i] = NULL;
--	flp->dlci[i] = 0;
--
--
--	if (netif_running(slave)) {
--		if (flp->config.station == FRAD_STATION_CPE)
--			sdla_reconfig(slave);
--		else
--			sdla_cmd(slave, SDLA_DELETE_DLCI, 0, 0, master->dev_addr, sizeof(short), NULL, NULL);
--	}
--
--	return 0;
--}
--
--static int sdla_dlci_conf(struct net_device *slave, struct net_device *master, int get)
--{
--	struct frad_local *flp;
--	struct dlci_local *dlp;
--	int               i;
--	short             len, ret;
--
--	flp = netdev_priv(slave);
--
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->master[i] == master)
--			break;
--
--	if (i == CONFIG_DLCI_MAX)
--		return -ENODEV;
--
--	dlp = netdev_priv(master);
--
--	ret = SDLA_RET_OK;
--	len = sizeof(struct dlci_conf);
--	if (netif_running(slave)) {
--		if (get)
--			ret = sdla_cmd(slave, SDLA_READ_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0,  
--			            NULL, 0, &dlp->config, &len);
--		else
--			ret = sdla_cmd(slave, SDLA_SET_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0,  
--			            &dlp->config, sizeof(struct dlci_conf) - 4 * sizeof(short), NULL, NULL);
--	}
--
--	return ret == SDLA_RET_OK ? 0 : -EIO;
--}
--
--/**************************
-- *
-- * now for the Linux driver 
-- *
-- **************************/
--
--/* NOTE: the DLCI driver deals with freeing the SKB!! */
--static netdev_tx_t sdla_transmit(struct sk_buff *skb,
--				 struct net_device *dev)
--{
--	struct frad_local *flp;
--	int               ret, addr, accept, i;
--	short             size;
--	unsigned long     flags;
--	struct buf_entry  *pbuf;
--
--	flp = netdev_priv(dev);
--	ret = 0;
--	accept = 1;
--
--	netif_stop_queue(dev);
--
--	/*
--	 * stupid GateD insists on setting up the multicast router thru us
--	 * and we're ill equipped to handle a non Frame Relay packet at this
--	 * time!
--	 */
--
--	accept = 1;
--	switch (dev->type)
--	{
--		case ARPHRD_FRAD:
--			if (skb->dev->type != ARPHRD_DLCI)
--			{
--				netdev_warn(dev, "Non DLCI device, type %i, tried to send on FRAD module\n",
--					    skb->dev->type);
--				accept = 0;
--			}
--			break;
--		default:
--			netdev_warn(dev, "unknown firmware type 0x%04X\n",
--				    dev->type);
--			accept = 0;
--			break;
--	}
--	if (accept)
--	{
--		/* this is frame specific, but till there's a PPP module, it's the default */
--		switch (flp->type)
--		{
--			case SDLA_S502A:
--			case SDLA_S502E:
--				ret = sdla_cmd(dev, SDLA_INFORMATION_WRITE, *(short *)(skb->dev->dev_addr), 0, skb->data, skb->len, NULL, NULL);
--				break;
--				case SDLA_S508:
--				size = sizeof(addr);
--				ret = sdla_cmd(dev, SDLA_INFORMATION_WRITE, *(short *)(skb->dev->dev_addr), 0, NULL, skb->len, &addr, &size);
--				if (ret == SDLA_RET_OK)
--				{
--
--					spin_lock_irqsave(&sdla_lock, flags);
--					SDLA_WINDOW(dev, addr);
--					pbuf = (void *)(((int) dev->mem_start) + (addr & SDLA_ADDR_MASK));
--					__sdla_write(dev, pbuf->buf_addr, skb->data, skb->len);
--					SDLA_WINDOW(dev, addr);
--					pbuf->opp_flag = 1;
--					spin_unlock_irqrestore(&sdla_lock, flags);
--				}
--				break;
--		}
--
--		switch (ret)
--		{
--			case SDLA_RET_OK:
--				dev->stats.tx_packets++;
--				break;
--
--			case SDLA_RET_CIR_OVERFLOW:
--			case SDLA_RET_BUF_OVERSIZE:
--			case SDLA_RET_NO_BUFS:
--				dev->stats.tx_dropped++;
--				break;
--
--			default:
--				dev->stats.tx_errors++;
--				break;
--		}
--	}
--	netif_wake_queue(dev);
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--	{
--		if(flp->master[i]!=NULL)
--			netif_wake_queue(flp->master[i]);
--	}		
--
--	dev_kfree_skb(skb);
--	return NETDEV_TX_OK;
--}
--
--static void sdla_receive(struct net_device *dev)
--{
--	struct net_device	  *master;
--	struct frad_local *flp;
--	struct dlci_local *dlp;
--	struct sk_buff	 *skb;
--
--	struct sdla_cmd	*cmd;
--	struct buf_info	*pbufi;
--	struct buf_entry  *pbuf;
--
--	unsigned long	  flags;
--	int               i=0, received, success, addr, buf_base, buf_top;
--	short             dlci, len, len2, split;
--
--	flp = netdev_priv(dev);
--	success = 1;
--	received = addr = buf_top = buf_base = 0;
--	len = dlci = 0;
--	skb = NULL;
--	master = NULL;
--	cmd = NULL;
--	pbufi = NULL;
--	pbuf = NULL;
--
--	spin_lock_irqsave(&sdla_lock, flags);
--
--	switch (flp->type)
--	{
--		case SDLA_S502A:
--		case SDLA_S502E:
--			cmd = (void *) (dev->mem_start + (SDLA_502_RCV_BUF & SDLA_ADDR_MASK));
--			SDLA_WINDOW(dev, SDLA_502_RCV_BUF);
--			success = cmd->opp_flag;
--			if (!success)
--				break;
--
--			dlci = cmd->dlci;
--			len = cmd->length;
--			break;
--
--		case SDLA_S508:
--			pbufi = (void *) (dev->mem_start + (SDLA_508_RXBUF_INFO & SDLA_ADDR_MASK));
--			SDLA_WINDOW(dev, SDLA_508_RXBUF_INFO);
--			pbuf = (void *) (dev->mem_start + ((pbufi->rse_base + flp->buffer * sizeof(struct buf_entry)) & SDLA_ADDR_MASK));
--			success = pbuf->opp_flag;
--			if (!success)
--				break;
--
--			buf_top = pbufi->buf_top;
--			buf_base = pbufi->buf_base;
--			dlci = pbuf->dlci;
--			len = pbuf->length;
--			addr = pbuf->buf_addr;
--			break;
--	}
--
--	/* common code, find the DLCI and get the SKB */
--	if (success)
--	{
--		for (i=0;i<CONFIG_DLCI_MAX;i++)
--			if (flp->dlci[i] == dlci)
--				break;
--
--		if (i == CONFIG_DLCI_MAX)
--		{
--			netdev_notice(dev, "Received packet from invalid DLCI %i, ignoring\n",
--				      dlci);
--			dev->stats.rx_errors++;
--			success = 0;
--		}
--	}
--
--	if (success)
--	{
--		master = flp->master[i];
--		skb = dev_alloc_skb(len + sizeof(struct frhdr));
--		if (skb == NULL) 
--		{
--			netdev_notice(dev, "Memory squeeze, dropping packet\n");
--			dev->stats.rx_dropped++;
--			success = 0;
--		}
--		else
--			skb_reserve(skb, sizeof(struct frhdr));
--	}
--
--	/* pick up the data */
--	switch (flp->type)
--	{
--		case SDLA_S502A:
--		case SDLA_S502E:
--			if (success)
--				__sdla_read(dev, SDLA_502_RCV_BUF + SDLA_502_DATA_OFS, skb_put(skb,len), len);
--
--			SDLA_WINDOW(dev, SDLA_502_RCV_BUF);
--			cmd->opp_flag = 0;
--			break;
--
--		case SDLA_S508:
--			if (success)
--			{
--				/* is this buffer split off the end of the internal ring buffer */
--				split = addr + len > buf_top + 1 ? len - (buf_top - addr + 1) : 0;
--				len2 = len - split;
--
--				__sdla_read(dev, addr, skb_put(skb, len2), len2);
--				if (split)
--					__sdla_read(dev, buf_base, skb_put(skb, split), split);
--			}
--
--			/* increment the buffer we're looking at */
--			SDLA_WINDOW(dev, SDLA_508_RXBUF_INFO);
--			flp->buffer = (flp->buffer + 1) % pbufi->rse_num;
--			pbuf->opp_flag = 0;
--			break;
--	}
--
--	if (success)
--	{
--		dev->stats.rx_packets++;
--		dlp = netdev_priv(master);
--		(*dlp->receive)(skb, master);
--	}
--
--	spin_unlock_irqrestore(&sdla_lock, flags);
--}
--
--static irqreturn_t sdla_isr(int dummy, void *dev_id)
--{
--	struct net_device     *dev;
--	struct frad_local *flp;
--	char              byte;
--
--	dev = dev_id;
--
--	flp = netdev_priv(dev);
--
--	if (!flp->initialized)
--	{
--		netdev_warn(dev, "irq %d for uninitialized device\n", dev->irq);
--		return IRQ_NONE;
--	}
--
--	byte = sdla_byte(dev, flp->type == SDLA_S508 ? SDLA_508_IRQ_INTERFACE : SDLA_502_IRQ_INTERFACE);
--	switch (byte)
--	{
--		case SDLA_INTR_RX:
--			sdla_receive(dev);
--			break;
--
--		/* the command will get an error return, which is processed above */
--		case SDLA_INTR_MODEM:
--		case SDLA_INTR_STATUS:
--			sdla_cmd(dev, SDLA_READ_DLC_STATUS, 0, 0, NULL, 0, NULL, NULL);
--			break;
--
--		case SDLA_INTR_TX:
--		case SDLA_INTR_COMPLETE:
--		case SDLA_INTR_TIMER:
--			netdev_warn(dev, "invalid irq flag 0x%02X\n", byte);
--			break;
--	}
--
--	/* the S502E requires a manual acknowledgement of the interrupt */ 
--	if (flp->type == SDLA_S502E)
--	{
--		flp->state &= ~SDLA_S502E_INTACK;
--		outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--		flp->state |= SDLA_S502E_INTACK;
--		outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--	}
--
--	/* this clears the byte, informing the Z80 we're done */
--	byte = 0;
--	sdla_write(dev, flp->type == SDLA_S508 ? SDLA_508_IRQ_INTERFACE : SDLA_502_IRQ_INTERFACE, &byte, sizeof(byte));
--	return IRQ_HANDLED;
--}
--
--static void sdla_poll(struct timer_list *t)
--{
--	struct frad_local *flp = from_timer(flp, t, timer);
--	struct net_device *dev = flp->dev;
--
--	if (sdla_byte(dev, SDLA_502_RCV_BUF))
--		sdla_receive(dev);
--
--	flp->timer.expires = 1;
--	add_timer(&flp->timer);
--}
--
--static int sdla_close(struct net_device *dev)
--{
--	struct frad_local *flp;
--	struct intr_info  intr;
--	int               len, i;
--	short             dlcis[CONFIG_DLCI_MAX];
--
--	flp = netdev_priv(dev);
--
--	len = 0;
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->dlci[i])
--			dlcis[len++] = abs(flp->dlci[i]);
--	len *= 2;
--
--	if (flp->config.station == FRAD_STATION_NODE)
--	{
--		for(i=0;i<CONFIG_DLCI_MAX;i++)
--			if (flp->dlci[i] > 0) 
--				sdla_cmd(dev, SDLA_DEACTIVATE_DLCI, 0, 0, dlcis, len, NULL, NULL);
--		sdla_cmd(dev, SDLA_DELETE_DLCI, 0, 0, &flp->dlci[i], sizeof(flp->dlci[i]), NULL, NULL);
--	}
--
--	memset(&intr, 0, sizeof(intr));
--	/* let's start up the reception */
--	switch(flp->type)
--	{
--		case SDLA_S502A:
--			del_timer(&flp->timer); 
--			break;
--
--		case SDLA_S502E:
--			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(char) + sizeof(short), NULL, NULL);
--			flp->state &= ~SDLA_S502E_INTACK;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--
--		case SDLA_S507:
--			break;
--
--		case SDLA_S508:
--			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(struct intr_info), NULL, NULL);
--			flp->state &= ~SDLA_S508_INTEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			break;
--	}
--
--	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
--
--	netif_stop_queue(dev);
--	
--	return 0;
--}
--
--struct conf_data {
--	struct frad_conf config;
--	short            dlci[CONFIG_DLCI_MAX];
--};
--
--static int sdla_open(struct net_device *dev)
--{
--	struct frad_local *flp;
--	struct dlci_local *dlp;
--	struct conf_data  data;
--	struct intr_info  intr;
--	int               len, i;
--	char              byte;
--
--	flp = netdev_priv(dev);
--
--	if (!flp->initialized)
--		return -EPERM;
--
--	if (!flp->configured)
--		return -EPERM;
--
--	/* time to send in the configuration */
--	len = 0;
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->dlci[i])
--			data.dlci[len++] = abs(flp->dlci[i]);
--	len *= 2;
--
--	memcpy(&data.config, &flp->config, sizeof(struct frad_conf));
--	len += sizeof(struct frad_conf);
--
--	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
--	sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, 0, 0, &data, len, NULL, NULL);
--
--	if (flp->type == SDLA_S508)
--		flp->buffer = 0;
--
--	sdla_cmd(dev, SDLA_ENABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
--
--	/* let's start up the reception */
--	memset(&intr, 0, sizeof(intr));
--	switch(flp->type)
--	{
--		case SDLA_S502A:
--			flp->timer.expires = 1;
--			add_timer(&flp->timer);
--			break;
--
--		case SDLA_S502E:
--			flp->state |= SDLA_S502E_ENABLE;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			flp->state |= SDLA_S502E_INTACK;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			byte = 0;
--			sdla_write(dev, SDLA_502_IRQ_INTERFACE, &byte, sizeof(byte));
--			intr.flags = SDLA_INTR_RX | SDLA_INTR_STATUS | SDLA_INTR_MODEM;
--			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(char) + sizeof(short), NULL, NULL);
--			break;
--
--		case SDLA_S507:
--			break;
--
--		case SDLA_S508:
--			flp->state |= SDLA_S508_INTEN;
--			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
--			byte = 0;
--			sdla_write(dev, SDLA_508_IRQ_INTERFACE, &byte, sizeof(byte));
--			intr.flags = SDLA_INTR_RX | SDLA_INTR_STATUS | SDLA_INTR_MODEM;
--			intr.irq = dev->irq;
--			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(struct intr_info), NULL, NULL);
--			break;
--	}
--
--	if (flp->config.station == FRAD_STATION_CPE)
--	{
--		byte = SDLA_ICS_STATUS_ENQ;
--		sdla_cmd(dev, SDLA_ISSUE_IN_CHANNEL_SIGNAL, 0, 0, &byte, sizeof(byte), NULL, NULL);
--	}
--	else
--	{
--		sdla_cmd(dev, SDLA_ADD_DLCI, 0, 0, data.dlci, len - sizeof(struct frad_conf), NULL, NULL);
--		for(i=0;i<CONFIG_DLCI_MAX;i++)
--			if (flp->dlci[i] > 0)
--				sdla_cmd(dev, SDLA_ACTIVATE_DLCI, 0, 0, &flp->dlci[i], 2*sizeof(flp->dlci[i]), NULL, NULL);
--	}
--
--	/* configure any specific DLCI settings */
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->dlci[i])
--		{
--			dlp = netdev_priv(flp->master[i]);
--			if (dlp->configured)
--				sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0, &dlp->config, sizeof(struct dlci_conf), NULL, NULL);
--		}
--
--	netif_start_queue(dev);
--	
--	return 0;
--}
--
--static int sdla_config(struct net_device *dev, struct frad_conf __user *conf, int get)
--{
--	struct frad_local *flp;
--	struct conf_data  data;
--	int               i;
--	short             size;
--
--	if (dev->type == 0xFFFF)
--		return -EUNATCH;
--
--	flp = netdev_priv(dev);
--
--	if (!get)
--	{
--		if (netif_running(dev))
--			return -EBUSY;
--
--		if(copy_from_user(&data.config, conf, sizeof(struct frad_conf)))
--			return -EFAULT;
--
--		if (data.config.station & ~FRAD_STATION_NODE)
--			return -EINVAL;
--
--		if (data.config.flags & ~FRAD_VALID_FLAGS)
--			return -EINVAL;
--
--		if ((data.config.kbaud < 0) || 
--			 ((data.config.kbaud > 128) && (flp->type != SDLA_S508)))
--			return -EINVAL;
--
--		if (data.config.clocking & ~(FRAD_CLOCK_INT | SDLA_S508_PORT_RS232))
--			return -EINVAL;
--
--		if ((data.config.mtu < 0) || (data.config.mtu > SDLA_MAX_MTU))
--			return -EINVAL;
--
--		if ((data.config.T391 < 5) || (data.config.T391 > 30))
--			return -EINVAL;
--
--		if ((data.config.T392 < 5) || (data.config.T392 > 30))
--			return -EINVAL;
--
--		if ((data.config.N391 < 1) || (data.config.N391 > 255))
--			return -EINVAL;
--
--		if ((data.config.N392 < 1) || (data.config.N392 > 10))
--			return -EINVAL;
--
--		if ((data.config.N393 < 1) || (data.config.N393 > 10))
--			return -EINVAL;
--
--		memcpy(&flp->config, &data.config, sizeof(struct frad_conf));
--		flp->config.flags |= SDLA_DIRECT_RECV;
--
--		if (flp->type == SDLA_S508)
--			flp->config.flags |= SDLA_TX70_RX30;
--
--		if (dev->mtu != flp->config.mtu)
--		{
--			/* this is required to change the MTU */
--			dev->mtu = flp->config.mtu;
--			for(i=0;i<CONFIG_DLCI_MAX;i++)
--				if (flp->master[i])
--					flp->master[i]->mtu = flp->config.mtu;
--		}
--
--		flp->config.mtu += sizeof(struct frhdr);
--
--		/* off to the races! */
--		if (!flp->configured)
--			sdla_start(dev);
--
--		flp->configured = 1;
--	}
--	else
--	{
--		/* no sense reading if the CPU isn't started */
--		if (netif_running(dev))
--		{
--			size = sizeof(data);
--			if (sdla_cmd(dev, SDLA_READ_DLCI_CONFIGURATION, 0, 0, NULL, 0, &data, &size) != SDLA_RET_OK)
--				return -EIO;
--		}
--		else
--			if (flp->configured)
--				memcpy(&data.config, &flp->config, sizeof(struct frad_conf));
--			else
--				memset(&data.config, 0, sizeof(struct frad_conf));
--
--		memcpy(&flp->config, &data.config, sizeof(struct frad_conf));
--		data.config.flags &= FRAD_VALID_FLAGS;
--		data.config.mtu -= data.config.mtu > sizeof(struct frhdr) ? sizeof(struct frhdr) : data.config.mtu;
--		return copy_to_user(conf, &data.config, sizeof(struct frad_conf))?-EFAULT:0;
--	}
--
--	return 0;
--}
--
--static int sdla_xfer(struct net_device *dev, struct sdla_mem __user *info, int read)
--{
--	struct sdla_mem mem;
--	char	*temp;
--
--	if(copy_from_user(&mem, info, sizeof(mem)))
--		return -EFAULT;
--		
--	if (read)
--	{	
--		temp = kzalloc(mem.len, GFP_KERNEL);
--		if (!temp)
--			return -ENOMEM;
--		sdla_read(dev, mem.addr, temp, mem.len);
--		if(copy_to_user(mem.data, temp, mem.len))
--		{
--			kfree(temp);
--			return -EFAULT;
--		}
--		kfree(temp);
--	}
--	else
--	{
--		temp = memdup_user(mem.data, mem.len);
--		if (IS_ERR(temp))
--			return PTR_ERR(temp);
--		sdla_write(dev, mem.addr, temp, mem.len);
--		kfree(temp);
--	}
--	return 0;
--}
--
--static int sdla_reconfig(struct net_device *dev)
--{
--	struct frad_local *flp;
--	struct conf_data  data;
--	int               i, len;
--
--	flp = netdev_priv(dev);
--
--	len = 0;
--	for(i=0;i<CONFIG_DLCI_MAX;i++)
--		if (flp->dlci[i])
--			data.dlci[len++] = flp->dlci[i];
--	len *= 2;
--
--	memcpy(&data, &flp->config, sizeof(struct frad_conf));
--	len += sizeof(struct frad_conf);
--
--	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
--	sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, 0, 0, &data, len, NULL, NULL);
--	sdla_cmd(dev, SDLA_ENABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
--
--	return 0;
--}
--
--static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
--{
--	struct frad_local *flp;
--
--	if(!capable(CAP_NET_ADMIN))
--		return -EPERM;
--		
--	flp = netdev_priv(dev);
--
--	if (!flp->initialized)
--		return -EINVAL;
--
--	switch (cmd)
--	{
--		case FRAD_GET_CONF:
--		case FRAD_SET_CONF:
--			return sdla_config(dev, ifr->ifr_data, cmd == FRAD_GET_CONF);
--
--		case SDLA_IDENTIFY:
--			ifr->ifr_flags = flp->type;
--			break;
--
--		case SDLA_CPUSPEED:
--			return sdla_cpuspeed(dev, ifr);
--
--/* ==========================================================
--NOTE:  This is rather a useless action right now, as the
--       current driver does not support protocols other than
--       FR.  However, Sangoma has modules for a number of
--       other protocols in the works.
--============================================================*/
--		case SDLA_PROTOCOL:
--			if (flp->configured)
--				return -EALREADY;
--
--			switch (ifr->ifr_flags)
--			{
--				case ARPHRD_FRAD:
--					dev->type = ifr->ifr_flags;
--					break;
--				default:
--					return -ENOPROTOOPT;
--			}
--			break;
--
--		case SDLA_CLEARMEM:
--			sdla_clear(dev);
--			break;
--
--		case SDLA_WRITEMEM:
--		case SDLA_READMEM:
--			if(!capable(CAP_SYS_RAWIO))
--				return -EPERM;
--			return sdla_xfer(dev, ifr->ifr_data, cmd == SDLA_READMEM);
--
--		case SDLA_START:
--			sdla_start(dev);
--			break;
--
--		case SDLA_STOP:
--			sdla_stop(dev);
--			break;
--
--		default:
--			return -EOPNOTSUPP;
--	}
--	return 0;
--}
--
--static int sdla_change_mtu(struct net_device *dev, int new_mtu)
--{
--	if (netif_running(dev))
--		return -EBUSY;
--
--	/* for now, you can't change the MTU! */
--	return -EOPNOTSUPP;
--}
--
--static int sdla_set_config(struct net_device *dev, struct ifmap *map)
--{
--	struct frad_local *flp;
--	int               i;
--	char              byte;
--	unsigned base;
--	int err = -EINVAL;
--
--	flp = netdev_priv(dev);
--
--	if (flp->initialized)
--		return -EINVAL;
--
--	for(i=0; i < ARRAY_SIZE(valid_port); i++)
--		if (valid_port[i] == map->base_addr)
--			break;   
--
--	if (i == ARRAY_SIZE(valid_port))
--		return -EINVAL;
--
--	if (!request_region(map->base_addr, SDLA_IO_EXTENTS, dev->name)){
--		pr_warn("io-port 0x%04lx in use\n", dev->base_addr);
--		return -EINVAL;
--	}
--	base = map->base_addr;
--
--	/* test for card types, S502A, S502E, S507, S508                 */
--	/* these tests shut down the card completely, so clear the state */
--	flp->type = SDLA_UNKNOWN;
--	flp->state = 0;
--   
--	for(i=1;i<SDLA_IO_EXTENTS;i++)
--		if (inb(base + i) != 0xFF)
--			break;
--
--	if (i == SDLA_IO_EXTENTS) {   
--		outb(SDLA_HALT, base + SDLA_REG_Z80_CONTROL);
--		if ((inb(base + SDLA_S502_STS) & 0x0F) == 0x08) {
--			outb(SDLA_S502E_INTACK, base + SDLA_REG_CONTROL);
--			if ((inb(base + SDLA_S502_STS) & 0x0F) == 0x0C) {
--				outb(SDLA_HALT, base + SDLA_REG_CONTROL);
--				flp->type = SDLA_S502E;
--				goto got_type;
--			}
--		}
--	}
--
--	for(byte=inb(base),i=0;i<SDLA_IO_EXTENTS;i++)
--		if (inb(base + i) != byte)
--			break;
--
--	if (i == SDLA_IO_EXTENTS) {
--		outb(SDLA_HALT, base + SDLA_REG_CONTROL);
--		if ((inb(base + SDLA_S502_STS) & 0x7E) == 0x30) {
--			outb(SDLA_S507_ENABLE, base + SDLA_REG_CONTROL);
--			if ((inb(base + SDLA_S502_STS) & 0x7E) == 0x32) {
--				outb(SDLA_HALT, base + SDLA_REG_CONTROL);
--				flp->type = SDLA_S507;
--				goto got_type;
--			}
--		}
--	}
--
--	outb(SDLA_HALT, base + SDLA_REG_CONTROL);
--	if ((inb(base + SDLA_S508_STS) & 0x3F) == 0x00) {
--		outb(SDLA_S508_INTEN, base + SDLA_REG_CONTROL);
--		if ((inb(base + SDLA_S508_STS) & 0x3F) == 0x10) {
--			outb(SDLA_HALT, base + SDLA_REG_CONTROL);
--			flp->type = SDLA_S508;
--			goto got_type;
--		}
--	}
--
--	outb(SDLA_S502A_HALT, base + SDLA_REG_CONTROL);
--	if (inb(base + SDLA_S502_STS) == 0x40) {
--		outb(SDLA_S502A_START, base + SDLA_REG_CONTROL);
--		if (inb(base + SDLA_S502_STS) == 0x40) {
--			outb(SDLA_S502A_INTEN, base + SDLA_REG_CONTROL);
--			if (inb(base + SDLA_S502_STS) == 0x44) {
--				outb(SDLA_S502A_START, base + SDLA_REG_CONTROL);
--				flp->type = SDLA_S502A;
--				goto got_type;
--			}
--		}
--	}
--
--	netdev_notice(dev, "Unknown card type\n");
--	err = -ENODEV;
--	goto fail;
--
--got_type:
--	switch(base) {
--		case 0x270:
--		case 0x280:
--		case 0x380: 
--		case 0x390:
--			if (flp->type != SDLA_S508 && flp->type != SDLA_S507)
--				goto fail;
--	}
--
--	switch (map->irq) {
--		case 2:
--			if (flp->type != SDLA_S502E)
--				goto fail;
--			break;
--
--		case 10:
--		case 11:
--		case 12:
--		case 15:
--		case 4:
--			if (flp->type != SDLA_S508 && flp->type != SDLA_S507)
--				goto fail;
--			break;
--		case 3:
--		case 5:
--		case 7:
--			if (flp->type == SDLA_S502A)
--				goto fail;
--			break;
--
--		default:
--			goto fail;
--	}
--
--	err = -EAGAIN;
--	if (request_irq(dev->irq, sdla_isr, 0, dev->name, dev)) 
--		goto fail;
--
--	if (flp->type == SDLA_S507) {
--		switch(dev->irq) {
--			case 3:
--				flp->state = SDLA_S507_IRQ3;
--				break;
--			case 4:
--				flp->state = SDLA_S507_IRQ4;
--				break;
--			case 5:
--				flp->state = SDLA_S507_IRQ5;
--				break;
--			case 7:
--				flp->state = SDLA_S507_IRQ7;
--				break;
--			case 10:
--				flp->state = SDLA_S507_IRQ10;
--				break;
--			case 11:
--				flp->state = SDLA_S507_IRQ11;
--				break;
--			case 12:
--				flp->state = SDLA_S507_IRQ12;
--				break;
--			case 15:
--				flp->state = SDLA_S507_IRQ15;
--				break;
--		}
--	}
--
--	for(i=0; i < ARRAY_SIZE(valid_mem); i++)
--		if (valid_mem[i] == map->mem_start)
--			break;   
--
--	err = -EINVAL;
--	if (i == ARRAY_SIZE(valid_mem))
--		goto fail2;
--
--	if (flp->type == SDLA_S502A && (map->mem_start & 0xF000) >> 12 == 0x0E)
--		goto fail2;
--
--	if (flp->type != SDLA_S507 && map->mem_start >> 16 == 0x0B)
--		goto fail2;
--
--	if (flp->type == SDLA_S507 && map->mem_start >> 16 == 0x0D)
--		goto fail2;
--
--	byte = flp->type != SDLA_S508 ? SDLA_8K_WINDOW : 0;
--	byte |= (map->mem_start & 0xF000) >> (12 + (flp->type == SDLA_S508 ? 1 : 0));
--	switch(flp->type) {
--		case SDLA_S502A:
--		case SDLA_S502E:
--			switch (map->mem_start >> 16) {
--				case 0x0A:
--					byte |= SDLA_S502_SEG_A;
--					break;
--				case 0x0C:
--					byte |= SDLA_S502_SEG_C;
--					break;
--				case 0x0D:
--					byte |= SDLA_S502_SEG_D;
--					break;
--				case 0x0E:
--					byte |= SDLA_S502_SEG_E;
--					break;
--			}
--			break;
--		case SDLA_S507:
--			switch (map->mem_start >> 16) {
--				case 0x0A:
--					byte |= SDLA_S507_SEG_A;
--					break;
--				case 0x0B:
--					byte |= SDLA_S507_SEG_B;
--					break;
--				case 0x0C:
--					byte |= SDLA_S507_SEG_C;
--					break;
--				case 0x0E:
--					byte |= SDLA_S507_SEG_E;
--					break;
--			}
--			break;
--		case SDLA_S508:
--			switch (map->mem_start >> 16) {
--				case 0x0A:
--					byte |= SDLA_S508_SEG_A;
--					break;
--				case 0x0C:
--					byte |= SDLA_S508_SEG_C;
--					break;
--				case 0x0D:
--					byte |= SDLA_S508_SEG_D;
--					break;
--				case 0x0E:
--					byte |= SDLA_S508_SEG_E;
--					break;
--			}
--			break;
--	}
--
--	/* set the memory bits, and enable access */
--	outb(byte, base + SDLA_REG_PC_WINDOW);
--
--	switch(flp->type)
--	{
--		case SDLA_S502E:
--			flp->state = SDLA_S502E_ENABLE;
--			break;
--		case SDLA_S507:
--			flp->state |= SDLA_MEMEN;
--			break;
--		case SDLA_S508:
--			flp->state = SDLA_MEMEN;
--			break;
--	}
--	outb(flp->state, base + SDLA_REG_CONTROL);
--
--	dev->irq = map->irq;
--	dev->base_addr = base;
--	dev->mem_start = map->mem_start;
--	dev->mem_end = dev->mem_start + 0x2000;
--	flp->initialized = 1;
--	return 0;
--
--fail2:
--	free_irq(map->irq, dev);
--fail:
--	release_region(base, SDLA_IO_EXTENTS);
--	return err;
--}
-- 
--static const struct net_device_ops sdla_netdev_ops = {
--	.ndo_open	= sdla_open,
--	.ndo_stop	= sdla_close,
--	.ndo_do_ioctl	= sdla_ioctl,
--	.ndo_set_config	= sdla_set_config,
--	.ndo_start_xmit	= sdla_transmit,
--	.ndo_change_mtu	= sdla_change_mtu,
--};
--
--static void setup_sdla(struct net_device *dev)
--{
--	struct frad_local *flp = netdev_priv(dev);
--
--	netdev_boot_setup_check(dev);
--
--	dev->netdev_ops		= &sdla_netdev_ops;
--	dev->flags		= 0;
--	dev->type		= 0xFFFF;
--	dev->hard_header_len	= 0;
--	dev->addr_len		= 0;
--	dev->mtu		= SDLA_MAX_MTU;
--
--	flp->activate		= sdla_activate;
--	flp->deactivate		= sdla_deactivate;
--	flp->assoc		= sdla_assoc;
--	flp->deassoc		= sdla_deassoc;
--	flp->dlci_conf		= sdla_dlci_conf;
--	flp->dev		= dev;
--
--	timer_setup(&flp->timer, sdla_poll, 0);
--	flp->timer.expires	= 1;
--}
--
--static struct net_device *sdla;
--
--static int __init init_sdla(void)
--{
--	int err;
--
--	printk("%s.\n", version);
--
--	sdla = alloc_netdev(sizeof(struct frad_local), "sdla0",
--			    NET_NAME_UNKNOWN, setup_sdla);
--	if (!sdla) 
--		return -ENOMEM;
--
--	err = register_netdev(sdla);
--	if (err) 
--		free_netdev(sdla);
--
--	return err;
--}
--
--static void __exit exit_sdla(void)
--{
--	struct frad_local *flp = netdev_priv(sdla);
--
--	unregister_netdev(sdla);
--	if (flp->initialized) {
--		free_irq(sdla->irq, sdla);
--		release_region(sdla->base_addr, SDLA_IO_EXTENTS);
--	}
--	del_timer_sync(&flp->timer);
--	free_netdev(sdla);
--}
--
--MODULE_LICENSE("GPL");
--
--module_init(init_sdla);
--module_exit(exit_sdla);
+ obj-$(CONFIG_WANXL)		+= wanxl.o
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index ab83326f4b7e..e2edb29ccb42 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -123,4 +123,6 @@ source "drivers/staging/exfat/Kconfig"
+ 
+ source "drivers/staging/qlge/Kconfig"
+ 
++source "drivers/staging/x25/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index dfddb9864b2e..0576784f1f11 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -52,3 +52,5 @@ obj-$(CONFIG_UWB)		+= uwb/
+ obj-$(CONFIG_USB_WUSB)		+= wusbcore/
+ obj-$(CONFIG_EXFAT_FS)		+= exfat/
+ obj-$(CONFIG_QLGE)		+= qlge/
++obj-$(CONFIG_X25)		+= x25/
++obj-$(CONFIG_LAPB)		+= x25/
+diff --git a/Documentation/networking/lapb-module.txt b/drivers/staging/x25/Documentation/lapb-module.txt
+similarity index 100%
+rename from Documentation/networking/lapb-module.txt
+rename to drivers/staging/x25/Documentation/lapb-module.txt
+diff --git a/Documentation/networking/x25-iface.txt b/drivers/staging/x25/Documentation/x25-iface.txt
+similarity index 100%
+rename from Documentation/networking/x25-iface.txt
+rename to drivers/staging/x25/Documentation/x25-iface.txt
+diff --git a/Documentation/networking/x25.txt b/drivers/staging/x25/Documentation/x25.txt
+similarity index 100%
+rename from Documentation/networking/x25.txt
+rename to drivers/staging/x25/Documentation/x25.txt
+diff --git a/drivers/staging/x25/Kconfig b/drivers/staging/x25/Kconfig
+new file mode 100644
+index 000000000000..18724b747a9e
+--- /dev/null
++++ b/drivers/staging/x25/Kconfig
+@@ -0,0 +1,97 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# CCITT X.25 Packet Layer
++#
++
++config X25
++	tristate "CCITT X.25 Packet Layer"
++	depends on NET
++	---help---
++	  X.25 is a set of standardized network protocols, similar in scope to
++	  frame relay; the one physical line from your box to the X.25 network
++	  entry point can carry several logical point-to-point connections
++	  (called "virtual circuits") to other computers connected to the X.25
++	  network. Governments, banks, and other organizations tend to use it
++	  to connect to each other or to form Wide Area Networks (WANs). Many
++	  countries have public X.25 networks. X.25 consists of two
++	  protocols: the higher level Packet Layer Protocol (PLP) (say Y here
++	  if you want that) and the lower level data link layer protocol LAPB
++	  (say Y to "LAPB Data Link Driver" below if you want that).
++
++	  You can read more about X.25 at <http://www.sangoma.com/tutorials/x25/> and
++	  <http://docwiki.cisco.com/wiki/X.25>.
++	  Information about X.25 for Linux is contained in the files
++	  <file:Documentation/networking/x25.txt> and
++	  <file:Documentation/networking/x25-iface.txt>.
++
++	  One connects to an X.25 network either with a dedicated network card
++	  using the X.21 protocol (not yet supported by Linux) or one can do
++	  X.25 over a standard telephone line using an ordinary modem (say Y
++	  to "X.25 async driver" below) or over Ethernet using an ordinary
++	  Ethernet card and the LAPB over Ethernet (say Y to "LAPB Data Link
++	  Driver" and "LAPB over Ethernet driver" below).
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called x25. If unsure, say N.
++
++config LAPB
++	tristate "LAPB  Data Link Driver"
++	depends on NET
++	---help---
++	  Link Access Procedure, Balanced (LAPB) is the data link layer (i.e.
++	  the lower) part of the X.25 protocol. It offers a reliable
++	  connection service to exchange data frames with one other host, and
++	  it is used to transport higher level protocols (mostly X.25 Packet
++	  Layer, the higher part of X.25, but others are possible as well).
++	  Usually, LAPB is used with specialized X.21 network cards, but Linux
++	  currently supports LAPB only over Ethernet connections. If you want
++	  to use LAPB connections over Ethernet, say Y here and to "LAPB over
++	  Ethernet driver" below. Read
++	  <file:Documentation/networking/lapb-module.txt> for technical
++	  details.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called lapb.  If unsure, say N.
++
++config HDLC_X25
++	tristate "X.25 protocol support"
++	depends on HDLC && (LAPB=m && HDLC=m || LAPB=y)
++	help
++	  Generic HDLC driver supporting X.25 over WAN connections.
++
++	  If unsure, say N.
++
++comment "X.25/LAPB support is disabled"
++	depends on HDLC && (LAPB!=m || HDLC!=m) && LAPB!=y
++
++# X.25 network drivers
++config LAPBETHER
++	tristate "LAPB over Ethernet driver"
++	depends on LAPB && X25
++	---help---
++	  Driver for a pseudo device (typically called /dev/lapb0) which allows
++	  you to open an LAPB point-to-point connection to some other computer
++	  on your Ethernet network.
++
++	  In order to do this, you need to say Y or M to the driver for your
++	  Ethernet card as well as to "LAPB Data Link Driver".
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called lapbether.
++
++	  If unsure, say N.
++
++config X25_ASY
++	tristate "X.25 async driver"
++	depends on LAPB && X25 && TTY
++	---help---
++	  Send and receive X.25 frames over regular asynchronous serial
++	  lines such as telephone lines equipped with ordinary modems.
++
++	  Experts should note that this driver doesn't currently comply with
++	  the asynchronous HDLS framing protocols in CCITT recommendation X.25.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called x25_asy.
++
++	  If unsure, say N.
+diff --git a/net/x25/Makefile b/drivers/staging/x25/Makefile
+similarity index 58%
+rename from net/x25/Makefile
+rename to drivers/staging/x25/Makefile
+index 5dd544a231f2..d8235ac6b015 100644
+--- a/net/x25/Makefile
++++ b/drivers/staging/x25/Makefile
+@@ -9,3 +9,11 @@ x25-y			:= af_x25.o x25_dev.o x25_facilities.o x25_in.o \
+ 			   x25_link.o x25_out.o x25_route.o x25_subr.o \
+ 			   x25_timer.o x25_proc.o x25_forward.o
+ x25-$(CONFIG_SYSCTL)	+= sysctl_net_x25.o
++
++obj-$(CONFIG_LAPB) += lapb.o
++
++lapb-y := lapb_in.o lapb_out.o lapb_subr.o lapb_timer.o lapb_iface.o
++
++obj-$(CONFIG_HDLC_X25)		+= hdlc_x25.o
++obj-$(CONFIG_X25_ASY)		+= x25_asy.o
++obj-$(CONFIG_LAPBETHER)		+= lapbether.o
+diff --git a/drivers/staging/x25/TODO b/drivers/staging/x25/TODO
+new file mode 100644
+index 000000000000..bb42cf474ca1
+--- /dev/null
++++ b/drivers/staging/x25/TODO
+@@ -0,0 +1,15 @@
++Staging out of X.25
++===================
++
++It appears that the X.25 socket family is not used any more with the
++mainline kernel, and the git log shows a series of user-triggerable
++Oopses.
++
++https://www.farsite.com/ still makes hardware that is being used in the
++field, but that uses a custom out of tree protocol stack in place of
++the kernel's AF_X25.
++
++If there are remaining users of this code that I missed, it can be moved
++out back out of staging, otherwise it will be removed in linux-5.8.
++
++    Arnd Bergmann <arnd@arndb.de>
+diff --git a/net/x25/af_x25.c b/drivers/staging/x25/af_x25.c
+similarity index 99%
+rename from net/x25/af_x25.c
+rename to drivers/staging/x25/af_x25.c
+index 6aee9f5e8e71..be950682209d 100644
+--- a/net/x25/af_x25.c
++++ b/drivers/staging/x25/af_x25.c
+@@ -54,7 +54,7 @@
+ #include <linux/compat.h>
+ #include <linux/ctype.h>
+ 
+-#include <net/x25.h>
++#include "x25.h"
+ #include <net/compat.h>
+ 
+ int sysctl_x25_restart_request_timeout = X25_DEFAULT_T20;
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/staging/x25/hdlc_x25.c
+similarity index 99%
+rename from drivers/net/wan/hdlc_x25.c
+rename to drivers/staging/x25/hdlc_x25.c
+index 5643675ff724..32ccf0c8e040 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/staging/x25/hdlc_x25.c
+@@ -13,7 +13,7 @@
+ #include <linux/inetdevice.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+-#include <linux/lapb.h>
++#include "linux-lapb.h"
+ #include <linux/module.h>
+ #include <linux/pkt_sched.h>
+ #include <linux/poll.h>
+diff --git a/include/net/lapb.h b/drivers/staging/x25/lapb.h
+similarity index 99%
+rename from include/net/lapb.h
+rename to drivers/staging/x25/lapb.h
+index ccc3d1f020b0..2abab6266caf 100644
+--- a/include/net/lapb.h
++++ b/drivers/staging/x25/lapb.h
+@@ -1,8 +1,8 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #ifndef _LAPB_H
+ #define _LAPB_H 
+-#include <linux/lapb.h>
+ #include <linux/refcount.h>
++#include "linux-lapb.h"
+ 
+ #define	LAPB_HEADER_LEN	20		/* LAPB over Ethernet + a bit more */
+ 
+diff --git a/net/lapb/lapb_iface.c b/drivers/staging/x25/lapb_iface.c
+similarity index 99%
+rename from net/lapb/lapb_iface.c
+rename to drivers/staging/x25/lapb_iface.c
+index 3c03f6512c5f..1231ae28ec64 100644
+--- a/net/lapb/lapb_iface.c
++++ b/drivers/staging/x25/lapb_iface.c
+@@ -34,7 +34,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/stat.h>
+ #include <linux/init.h>
+-#include <net/lapb.h>
++#include "lapb.h"
+ 
+ static LIST_HEAD(lapb_list);
+ static DEFINE_RWLOCK(lapb_list_lock);
+diff --git a/net/lapb/lapb_in.c b/drivers/staging/x25/lapb_in.c
+similarity index 99%
+rename from net/lapb/lapb_in.c
+rename to drivers/staging/x25/lapb_in.c
+index 38ae23c09e83..210f8c743b39 100644
+--- a/net/lapb/lapb_in.c
++++ b/drivers/staging/x25/lapb_in.c
+@@ -30,7 +30,7 @@
+ #include <linux/fcntl.h>
+ #include <linux/mm.h>
+ #include <linux/interrupt.h>
+-#include <net/lapb.h>
++#include "lapb.h"
+ 
+ /*
+  *	State machine for state 0, Disconnected State.
+diff --git a/net/lapb/lapb_out.c b/drivers/staging/x25/lapb_out.c
+similarity index 99%
+rename from net/lapb/lapb_out.c
+rename to drivers/staging/x25/lapb_out.c
+index 7a4d0715d1c3..d4ba7a5ebd33 100644
+--- a/net/lapb/lapb_out.c
++++ b/drivers/staging/x25/lapb_out.c
+@@ -28,7 +28,7 @@
+ #include <linux/fcntl.h>
+ #include <linux/mm.h>
+ #include <linux/interrupt.h>
+-#include <net/lapb.h>
++#include "lapb.h"
+ 
+ /*
+  *  This procedure is passed a buffer descriptor for an iframe. It builds
+diff --git a/net/lapb/lapb_subr.c b/drivers/staging/x25/lapb_subr.c
+similarity index 99%
+rename from net/lapb/lapb_subr.c
+rename to drivers/staging/x25/lapb_subr.c
+index 592a22d86a97..f5ec7868c5a4 100644
+--- a/net/lapb/lapb_subr.c
++++ b/drivers/staging/x25/lapb_subr.c
+@@ -27,7 +27,7 @@
+ #include <linux/fcntl.h>
+ #include <linux/mm.h>
+ #include <linux/interrupt.h>
+-#include <net/lapb.h>
++#include "lapb.h"
+ 
+ /*
+  *	This routine purges all the queues of frames.
+diff --git a/net/lapb/lapb_timer.c b/drivers/staging/x25/lapb_timer.c
+similarity index 99%
+rename from net/lapb/lapb_timer.c
+rename to drivers/staging/x25/lapb_timer.c
+index 8f5b17001a07..0b46163593e5 100644
+--- a/net/lapb/lapb_timer.c
++++ b/drivers/staging/x25/lapb_timer.c
+@@ -28,7 +28,7 @@
+ #include <linux/fcntl.h>
+ #include <linux/mm.h>
+ #include <linux/interrupt.h>
+-#include <net/lapb.h>
++#include "lapb.h"
+ 
+ static void lapb_t1timer_expiry(struct timer_list *);
+ static void lapb_t2timer_expiry(struct timer_list *);
+diff --git a/drivers/net/wan/lapbether.c b/drivers/staging/x25/lapbether.c
+similarity index 99%
+rename from drivers/net/wan/lapbether.c
+rename to drivers/staging/x25/lapbether.c
+index 0f1217b506ad..6ff971705dca 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/staging/x25/lapbether.c
+@@ -36,7 +36,7 @@
+ #include <linux/notifier.h>
+ #include <linux/stat.h>
+ #include <linux/module.h>
+-#include <linux/lapb.h>
++#include "linux-lapb.h"
+ #include <linux/init.h>
+ 
+ #include <net/x25device.h>
+diff --git a/include/linux/lapb.h b/drivers/staging/x25/linux-lapb.h
+similarity index 100%
+rename from include/linux/lapb.h
+rename to drivers/staging/x25/linux-lapb.h
+diff --git a/net/x25/sysctl_net_x25.c b/drivers/staging/x25/sysctl_net_x25.c
+similarity index 98%
+rename from net/x25/sysctl_net_x25.c
+rename to drivers/staging/x25/sysctl_net_x25.c
+index e9802afa43d0..e8530a4e4856 100644
+--- a/net/x25/sysctl_net_x25.c
++++ b/drivers/staging/x25/sysctl_net_x25.c
+@@ -11,7 +11,7 @@
+ #include <linux/socket.h>
+ #include <linux/netdevice.h>
+ #include <linux/init.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ static int min_timer[] = {   1 * HZ };
+ static int max_timer[] = { 300 * HZ };
+diff --git a/include/uapi/linux/x25.h b/drivers/staging/x25/uapi-x25.h
+similarity index 100%
+rename from include/uapi/linux/x25.h
+rename to drivers/staging/x25/uapi-x25.h
+diff --git a/include/net/x25.h b/drivers/staging/x25/x25.h
+similarity index 99%
+rename from include/net/x25.h
+rename to drivers/staging/x25/x25.h
+index ed1acc3044ac..dfbc0188e47d 100644
+--- a/include/net/x25.h
++++ b/drivers/staging/x25/x25.h
+@@ -10,10 +10,10 @@
+ 
+ #ifndef _X25_H
+ #define _X25_H 
+-#include <linux/x25.h>
+ #include <linux/slab.h>
+ #include <linux/refcount.h>
+ #include <net/sock.h>
++#include "uapi-x25.h"
+ 
+ #define	X25_ADDR_LEN			16
+ 
+diff --git a/drivers/net/wan/x25_asy.c b/drivers/staging/x25/x25_asy.c
+similarity index 99%
+rename from drivers/net/wan/x25_asy.c
+rename to drivers/staging/x25/x25_asy.c
+index 914be5847386..3986a1160fc1 100644
+--- a/drivers/net/wan/x25_asy.c
++++ b/drivers/staging/x25/x25_asy.c
+@@ -31,7 +31,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include <linux/if_arp.h>
+-#include <linux/lapb.h>
++#include "linux-lapb.h"
+ #include <linux/init.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/slab.h>
+diff --git a/drivers/net/wan/x25_asy.h b/drivers/staging/x25/x25_asy.h
+similarity index 100%
+rename from drivers/net/wan/x25_asy.h
+rename to drivers/staging/x25/x25_asy.h
+diff --git a/net/x25/x25_dev.c b/drivers/staging/x25/x25_dev.c
+similarity index 99%
+rename from net/x25/x25_dev.c
+rename to drivers/staging/x25/x25_dev.c
+index 00e782335cb0..dbdce9c62abd 100644
+--- a/net/x25/x25_dev.c
++++ b/drivers/staging/x25/x25_dev.c
+@@ -20,7 +20,7 @@
+ #include <linux/slab.h>
+ #include <net/sock.h>
+ #include <linux/if_arp.h>
+-#include <net/x25.h>
++#include "x25.h"
+ #include <net/x25device.h>
+ 
+ static int x25_receive_data(struct sk_buff *skb, struct x25_neigh *nb)
+diff --git a/net/x25/x25_facilities.c b/drivers/staging/x25/x25_facilities.c
+similarity index 99%
+rename from net/x25/x25_facilities.c
+rename to drivers/staging/x25/x25_facilities.c
+index 7fb327632272..17e41049cb2b 100644
+--- a/net/x25/x25_facilities.c
++++ b/drivers/staging/x25/x25_facilities.c
+@@ -22,7 +22,7 @@
+ #include <linux/string.h>
+ #include <linux/skbuff.h>
+ #include <net/sock.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ /**
+  * x25_parse_facilities - Parse facilities from skb into the facilities structs
+diff --git a/net/x25/x25_forward.c b/drivers/staging/x25/x25_forward.c
+similarity index 99%
+rename from net/x25/x25_forward.c
+rename to drivers/staging/x25/x25_forward.c
+index c82999941d3f..4328f0e31482 100644
+--- a/net/x25/x25_forward.c
++++ b/drivers/staging/x25/x25_forward.c
+@@ -9,7 +9,7 @@
+ #include <linux/if_arp.h>
+ #include <linux/init.h>
+ #include <linux/slab.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ LIST_HEAD(x25_forward_list);
+ DEFINE_RWLOCK(x25_forward_list_lock);
+diff --git a/net/x25/x25_in.c b/drivers/staging/x25/x25_in.c
+similarity index 99%
+rename from net/x25/x25_in.c
+rename to drivers/staging/x25/x25_in.c
+index f97c43344e95..e0c1f1484d8c 100644
+--- a/net/x25/x25_in.c
++++ b/drivers/staging/x25/x25_in.c
+@@ -27,7 +27,7 @@
+ #include <linux/skbuff.h>
+ #include <net/sock.h>
+ #include <net/tcp_states.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
+ {
+diff --git a/net/x25/x25_link.c b/drivers/staging/x25/x25_link.c
+similarity index 99%
+rename from net/x25/x25_link.c
+rename to drivers/staging/x25/x25_link.c
+index 7d02532aad0d..5c07143e557d 100644
+--- a/net/x25/x25_link.c
++++ b/drivers/staging/x25/x25_link.c
+@@ -26,7 +26,7 @@
+ #include <linux/skbuff.h>
+ #include <linux/uaccess.h>
+ #include <linux/init.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ LIST_HEAD(x25_neigh_list);
+ DEFINE_RWLOCK(x25_neigh_list_lock);
+diff --git a/net/x25/x25_out.c b/drivers/staging/x25/x25_out.c
+similarity index 99%
+rename from net/x25/x25_out.c
+rename to drivers/staging/x25/x25_out.c
+index dbc0940bf35f..8f4d55e378ee 100644
+--- a/net/x25/x25_out.c
++++ b/drivers/staging/x25/x25_out.c
+@@ -23,7 +23,7 @@
+ #include <linux/string.h>
+ #include <linux/skbuff.h>
+ #include <net/sock.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ static int x25_pacsize_to_bytes(unsigned int pacsize)
+ {
+diff --git a/net/x25/x25_proc.c b/drivers/staging/x25/x25_proc.c
+similarity index 99%
+rename from net/x25/x25_proc.c
+rename to drivers/staging/x25/x25_proc.c
+index 3bddcbdf2e40..4c36e64a719a 100644
+--- a/net/x25/x25_proc.c
++++ b/drivers/staging/x25/x25_proc.c
+@@ -18,7 +18,7 @@
+ #include <linux/export.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ #ifdef CONFIG_PROC_FS
+ 
+diff --git a/net/x25/x25_route.c b/drivers/staging/x25/x25_route.c
+similarity index 99%
+rename from net/x25/x25_route.c
+rename to drivers/staging/x25/x25_route.c
+index b8e94d58d0f1..60f18964be0f 100644
+--- a/net/x25/x25_route.c
++++ b/drivers/staging/x25/x25_route.c
+@@ -15,7 +15,7 @@
+ #include <linux/if_arp.h>
+ #include <linux/init.h>
+ #include <linux/slab.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ LIST_HEAD(x25_route_list);
+ DEFINE_RWLOCK(x25_route_list_lock);
+diff --git a/net/x25/x25_subr.c b/drivers/staging/x25/x25_subr.c
+similarity index 99%
+rename from net/x25/x25_subr.c
+rename to drivers/staging/x25/x25_subr.c
+index 8aa415a38814..7004ee53a6b0 100644
+--- a/net/x25/x25_subr.c
++++ b/drivers/staging/x25/x25_subr.c
+@@ -26,7 +26,7 @@
+ #include <linux/skbuff.h>
+ #include <net/sock.h>
+ #include <net/tcp_states.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ /*
+  *	This routine purges all of the queues of frames.
+diff --git a/net/x25/x25_timer.c b/drivers/staging/x25/x25_timer.c
+similarity index 99%
+rename from net/x25/x25_timer.c
+rename to drivers/staging/x25/x25_timer.c
+index 9376365cdcc9..3edcae15f897 100644
+--- a/net/x25/x25_timer.c
++++ b/drivers/staging/x25/x25_timer.c
+@@ -19,7 +19,7 @@
+ #include <linux/timer.h>
+ #include <net/sock.h>
+ #include <net/tcp_states.h>
+-#include <net/x25.h>
++#include "x25.h"
+ 
+ static void x25_heartbeat_expiry(struct timer_list *t);
+ static void x25_timer_expiry(struct timer_list *t);
 diff --git a/include/Kbuild b/include/Kbuild
-index ffba79483cc5..64ab3aac7379 100644
+index 64ab3aac7379..e26750d6ec96 100644
 --- a/include/Kbuild
 +++ b/include/Kbuild
-@@ -205,7 +205,6 @@ header-test-			+= linux/i3c/master.h
- header-test-			+= linux/i8042.h
- header-test-			+= linux/ide.h
- header-test-			+= linux/idle_inject.h
--header-test-			+= linux/if_frad.h
- header-test-			+= linux/if_rmnet.h
- header-test-			+= linux/if_tap.h
- header-test-			+= linux/iio/accel/kxcjk_1013.h
-diff --git a/include/linux/if_frad.h b/include/linux/if_frad.h
+@@ -276,7 +276,6 @@ header-test-			+= linux/kvm_host.h
+ header-test-			+= linux/kvm_irqfd.h
+ header-test-			+= linux/kvm_para.h
+ header-test-			+= linux/lantiq.h
+-header-test-			+= linux/lapb.h
+ header-test-			+= linux/latencytop.h
+ header-test-			+= linux/led-lm3530.h
+ header-test-			+= linux/leds-bd2802.h
+@@ -835,7 +834,6 @@ header-test-			+= net/ipcomp.h
+ header-test-			+= net/ipconfig.h
+ header-test-			+= net/iucv/af_iucv.h
+ header-test-			+= net/iucv/iucv.h
+-header-test-			+= net/lapb.h
+ header-test-			+= net/llc_c_ac.h
+ header-test-			+= net/llc_c_st.h
+ header-test-			+= net/llc_s_ac.h
+diff --git a/net/Kconfig b/net/Kconfig
+index 3101bfcbdd7a..50681046ec03 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -220,8 +220,6 @@ source "net/8021q/Kconfig"
+ source "net/decnet/Kconfig"
+ source "net/llc/Kconfig"
+ source "drivers/net/appletalk/Kconfig"
+-source "net/x25/Kconfig"
+-source "net/lapb/Kconfig"
+ source "net/phonet/Kconfig"
+ source "net/6lowpan/Kconfig"
+ source "net/ieee802154/Kconfig"
+diff --git a/net/Makefile b/net/Makefile
+index 449fc0b221f8..3473e68e7abe 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -26,8 +26,6 @@ obj-$(CONFIG_NET_KEY)		+= key/
+ obj-$(CONFIG_BRIDGE)		+= bridge/
+ obj-$(CONFIG_NET_DSA)		+= dsa/
+ obj-$(CONFIG_ATALK)		+= appletalk/
+-obj-$(CONFIG_X25)		+= x25/
+-obj-$(CONFIG_LAPB)		+= lapb/
+ obj-$(CONFIG_NETROM)		+= netrom/
+ obj-$(CONFIG_ROSE)		+= rose/
+ obj-$(CONFIG_AX25)		+= ax25/
+diff --git a/net/lapb/Kconfig b/net/lapb/Kconfig
 deleted file mode 100644
-index 52224de798aa..000000000000
---- a/include/linux/if_frad.h
+index 6acfc999c952..000000000000
+--- a/net/lapb/Kconfig
 +++ /dev/null
-@@ -1,92 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
--/*
-- * DLCI/FRAD	Definitions for Frame Relay Access Devices.  DLCI devices are
-- *		created for each DLCI associated with a FRAD.  The FRAD driver
-- *		is not truly a network device, but the lower level device
-- *		handler.  This allows other FRAD manufacturers to use the DLCI
-- *		code, including its RFC1490 encapsulation alongside the current
-- *		implementation for the Sangoma cards.
-- *
-- * Version:	@(#)if_ifrad.h	0.15	31 Mar 96
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *		0.15	Mike McLagan	changed structure defs (packed)
-- *					re-arranged flags
-- *					added DLCI_RET vars
-- */
--#ifndef _FRAD_H_
--#define _FRAD_H_
+@@ -1,22 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-#
+-# LAPB Data Link Drive
+-#
 -
--#include <uapi/linux/if_frad.h>
+-config LAPB
+-	tristate "LAPB Data Link Driver"
+-	---help---
+-	  Link Access Procedure, Balanced (LAPB) is the data link layer (i.e.
+-	  the lower) part of the X.25 protocol. It offers a reliable
+-	  connection service to exchange data frames with one other host, and
+-	  it is used to transport higher level protocols (mostly X.25 Packet
+-	  Layer, the higher part of X.25, but others are possible as well).
+-	  Usually, LAPB is used with specialized X.21 network cards, but Linux
+-	  currently supports LAPB only over Ethernet connections. If you want
+-	  to use LAPB connections over Ethernet, say Y here and to "LAPB over
+-	  Ethernet driver" below. Read
+-	  <file:Documentation/networking/lapb-module.txt> for technical
+-	  details.
 -
--
--#if defined(CONFIG_DLCI) || defined(CONFIG_DLCI_MODULE)
--
--/* these are the fields of an RFC 1490 header */
--struct frhdr
--{
--   unsigned char  control;
--
--   /* for IP packets, this can be the NLPID */
--   unsigned char  pad;
--
--   unsigned char  NLPID;
--   unsigned char  OUI[3];
--   __be16 PID;
--
--#define IP_NLPID pad 
--} __packed;
--
--/* see RFC 1490 for the definition of the following */
--#define FRAD_I_UI		0x03
--
--#define FRAD_P_PADDING		0x00
--#define FRAD_P_Q933		0x08
--#define FRAD_P_SNAP		0x80
--#define FRAD_P_CLNP		0x81
--#define FRAD_P_IP		0xCC
--
--struct dlci_local
--{
--   struct net_device      *master;
--   struct net_device      *slave;
--   struct dlci_conf       config;
--   int                    configured;
--   struct list_head	  list;
--
--   /* callback function */
--   void              (*receive)(struct sk_buff *skb, struct net_device *);
--};
--
--struct frad_local
--{
--   /* devices which this FRAD is slaved to */
--   struct net_device     *master[CONFIG_DLCI_MAX];
--   short             dlci[CONFIG_DLCI_MAX];
--
--   struct frad_conf  config;
--   int               configured;	/* has this device been configured */
--   int               initialized;	/* mem_start, port, irq set ? */
--
--   /* callback functions */
--   int               (*activate)(struct net_device *, struct net_device *);
--   int               (*deactivate)(struct net_device *, struct net_device *);
--   int               (*assoc)(struct net_device *, struct net_device *);
--   int               (*deassoc)(struct net_device *, struct net_device *);
--   int               (*dlci_conf)(struct net_device *, struct net_device *, int get);
--
--   /* fields that are used by the Sangoma SDLA cards */
--   struct timer_list timer;
--   struct net_device *dev;
--   int               type;		/* adapter type */
--   int               state;		/* state of the S502/8 control latch */
--   int               buffer;		/* current buffer for S508 firmware */
--};
--
--#endif /* CONFIG_DLCI || CONFIG_DLCI_MODULE */
--
--extern void dlci_ioctl_set(int (*hook)(unsigned int, void __user *));
--
--#endif
-diff --git a/include/linux/sdla.h b/include/linux/sdla.h
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called lapb.  If unsure, say N.
+diff --git a/net/lapb/Makefile b/net/lapb/Makefile
 deleted file mode 100644
-index 00e8b3b614f0..000000000000
---- a/include/linux/sdla.h
+index 7be91b4c0ca0..000000000000
+--- a/net/lapb/Makefile
 +++ /dev/null
-@@ -1,240 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
--/*
-- * INET		An implementation of the TCP/IP protocol suite for the LINUX
-- *		operating system.  INET is implemented using the  BSD Socket
-- *		interface as the means of communication with the user level.
-- *
-- *		Global definitions for the Frame relay interface.
-- *
-- * Version:	@(#)if_ifrad.h	0.20	13 Apr 96
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *		0.15	Mike McLagan	Structure packing
-- *
-- *		0.20	Mike McLagan	New flags for S508 buffer handling
-- */
--#ifndef SDLA_H
--#define SDLA_H
+@@ -1,8 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-#
+-# Makefile for the Linux LAPB layer.
+-#
 -
--#include <uapi/linux/sdla.h>
+-obj-$(CONFIG_LAPB) += lapb.o
 -
--
--/* important Z80 window addresses */
--#define SDLA_CONTROL_WND		0xE000
--
--#define SDLA_502_CMD_BUF		0xEF60
--#define SDLA_502_RCV_BUF		0xA900
--#define	SDLA_502_TXN_AVAIL		0xFFF1
--#define SDLA_502_RCV_AVAIL		0xFFF2
--#define SDLA_502_EVENT_FLAGS		0xFFF3
--#define SDLA_502_MDM_STATUS		0xFFF4
--#define SDLA_502_IRQ_INTERFACE		0xFFFD
--#define SDLA_502_IRQ_PERMISSION		0xFFFE
--#define SDLA_502_DATA_OFS		0x0010
--
--#define SDLA_508_CMD_BUF		0xE000
--#define SDLA_508_TXBUF_INFO		0xF100
--#define SDLA_508_RXBUF_INFO		0xF120
--#define SDLA_508_EVENT_FLAGS		0xF003
--#define SDLA_508_MDM_STATUS		0xF004
--#define SDLA_508_IRQ_INTERFACE		0xF010
--#define SDLA_508_IRQ_PERMISSION		0xF011
--#define SDLA_508_TSE_OFFSET		0xF012
--
--/* Event flags */
--#define SDLA_EVENT_STATUS		0x01
--#define SDLA_EVENT_DLCI_STATUS		0x02
--#define SDLA_EVENT_BAD_DLCI		0x04
--#define SDLA_EVENT_LINK_DOWN		0x40
--
--/* IRQ Trigger flags */
--#define SDLA_INTR_RX			0x01
--#define SDLA_INTR_TX			0x02
--#define SDLA_INTR_MODEM			0x04
--#define SDLA_INTR_COMPLETE		0x08
--#define SDLA_INTR_STATUS		0x10
--#define SDLA_INTR_TIMER			0x20
--
--/* DLCI status bits */
--#define SDLA_DLCI_DELETED		0x01
--#define SDLA_DLCI_ACTIVE		0x02
--#define SDLA_DLCI_WAITING		0x04
--#define SDLA_DLCI_NEW			0x08
--#define SDLA_DLCI_INCLUDED		0x40
--
--/* valid command codes */
--#define	SDLA_INFORMATION_WRITE		0x01
--#define	SDLA_INFORMATION_READ		0x02
--#define SDLA_ISSUE_IN_CHANNEL_SIGNAL	0x03
--#define	SDLA_SET_DLCI_CONFIGURATION	0x10
--#define	SDLA_READ_DLCI_CONFIGURATION	0x11
--#define	SDLA_DISABLE_COMMUNICATIONS	0x12
--#define	SDLA_ENABLE_COMMUNICATIONS	0x13
--#define	SDLA_READ_DLC_STATUS		0x14
--#define	SDLA_READ_DLC_STATISTICS	0x15
--#define	SDLA_FLUSH_DLC_STATISTICS	0x16
--#define	SDLA_LIST_ACTIVE_DLCI		0x17
--#define	SDLA_FLUSH_INFORMATION_BUFFERS	0x18
--#define	SDLA_ADD_DLCI			0x20
--#define	SDLA_DELETE_DLCI		0x21
--#define	SDLA_ACTIVATE_DLCI		0x22
--#define	SDLA_DEACTIVATE_DLCI		0x23
--#define	SDLA_READ_MODEM_STATUS		0x30
--#define	SDLA_SET_MODEM_STATUS		0x31
--#define	SDLA_READ_COMMS_ERR_STATS	0x32
--#define SDLA_FLUSH_COMMS_ERR_STATS	0x33
--#define	SDLA_READ_CODE_VERSION		0x40
--#define SDLA_SET_IRQ_TRIGGER		0x50
--#define SDLA_GET_IRQ_TRIGGER		0x51
--
--/* In channel signal types */
--#define SDLA_ICS_LINK_VERIFY		0x02
--#define SDLA_ICS_STATUS_ENQ		0x03
--
--/* modem status flags */
--#define SDLA_MODEM_DTR_HIGH		0x01
--#define SDLA_MODEM_RTS_HIGH		0x02
--#define SDLA_MODEM_DCD_HIGH		0x08
--#define SDLA_MODEM_CTS_HIGH		0x20
--
--/* used for RET_MODEM interpretation */
--#define SDLA_MODEM_DCD_LOW		0x01
--#define SDLA_MODEM_CTS_LOW		0x02
--
--/* return codes */
--#define SDLA_RET_OK			0x00
--#define SDLA_RET_COMMUNICATIONS		0x01
--#define SDLA_RET_CHANNEL_INACTIVE	0x02
--#define SDLA_RET_DLCI_INACTIVE		0x03
--#define SDLA_RET_DLCI_CONFIG		0x04
--#define SDLA_RET_BUF_TOO_BIG		0x05
--#define SDLA_RET_NO_DATA		0x05
--#define SDLA_RET_BUF_OVERSIZE		0x06
--#define SDLA_RET_CIR_OVERFLOW		0x07
--#define SDLA_RET_NO_BUFS		0x08
--#define SDLA_RET_TIMEOUT		0x0A
--#define SDLA_RET_MODEM			0x10
--#define SDLA_RET_CHANNEL_OFF		0x11
--#define SDLA_RET_CHANNEL_ON		0x12
--#define SDLA_RET_DLCI_STATUS		0x13
--#define SDLA_RET_DLCI_UNKNOWN       	0x14
--#define SDLA_RET_COMMAND_INVALID    	0x1F
--
--/* Configuration flags */
--#define SDLA_DIRECT_RECV		0x0080
--#define SDLA_TX_NO_EXCEPT		0x0020
--#define SDLA_NO_ICF_MSGS		0x1000
--#define SDLA_TX50_RX50			0x0000
--#define SDLA_TX70_RX30			0x2000
--#define SDLA_TX30_RX70			0x4000
--
--/* IRQ selection flags */
--#define SDLA_IRQ_RECEIVE		0x01
--#define SDLA_IRQ_TRANSMIT		0x02
--#define SDLA_IRQ_MODEM_STAT		0x04
--#define SDLA_IRQ_COMMAND		0x08
--#define SDLA_IRQ_CHANNEL		0x10
--#define SDLA_IRQ_TIMER			0x20
--
--/* definitions for PC memory mapping */
--#define SDLA_8K_WINDOW			0x01
--#define SDLA_S502_SEG_A			0x10
--#define SDLA_S502_SEG_C			0x20
--#define SDLA_S502_SEG_D			0x00
--#define SDLA_S502_SEG_E			0x30
--#define SDLA_S507_SEG_A			0x00
--#define SDLA_S507_SEG_B			0x40
--#define SDLA_S507_SEG_C			0x80
--#define SDLA_S507_SEG_E			0xC0
--#define SDLA_S508_SEG_A			0x00
--#define SDLA_S508_SEG_C			0x10
--#define SDLA_S508_SEG_D			0x08
--#define SDLA_S508_SEG_E			0x18
--
--/* SDLA adapter port constants */
--#define SDLA_IO_EXTENTS			0x04
--	
--#define SDLA_REG_CONTROL		0x00
--#define SDLA_REG_PC_WINDOW		0x01	/* offset for PC window select latch */
--#define SDLA_REG_Z80_WINDOW 		0x02	/* offset for Z80 window select latch */
--#define SDLA_REG_Z80_CONTROL		0x03	/* offset for Z80 control latch */
--	
--#define SDLA_S502_STS			0x00	/* status reg for 502, 502E, 507 */
--#define SDLA_S508_GNRL			0x00	/* general purp. reg for 508 */
--#define SDLA_S508_STS			0x01	/* status reg for 508 */
--#define SDLA_S508_IDR			0x02	/* ID reg for 508 */
--	
--/* control register flags */
--#define SDLA_S502A_START		0x00	/* start the CPU */
--#define SDLA_S502A_INTREQ		0x02
--#define SDLA_S502A_INTEN		0x04
--#define SDLA_S502A_HALT			0x08	/* halt the CPU */	
--#define SDLA_S502A_NMI			0x10	/* issue an NMI to the CPU */
--
--#define SDLA_S502E_CPUEN		0x01
--#define SDLA_S502E_ENABLE		0x02
--#define SDLA_S502E_INTACK		0x04
--	
--#define SDLA_S507_ENABLE		0x01
--#define SDLA_S507_IRQ3			0x00
--#define SDLA_S507_IRQ4			0x20
--#define SDLA_S507_IRQ5			0x40
--#define SDLA_S507_IRQ7			0x60
--#define SDLA_S507_IRQ10			0x80
--#define SDLA_S507_IRQ11			0xA0
--#define SDLA_S507_IRQ12			0xC0
--#define SDLA_S507_IRQ15			0xE0
--	
--#define SDLA_HALT			0x00
--#define SDLA_CPUEN			0x02
--#define SDLA_MEMEN			0x04
--#define SDLA_S507_EPROMWR		0x08
--#define SDLA_S507_EPROMCLK		0x10
--#define SDLA_S508_INTRQ			0x08
--#define SDLA_S508_INTEN			0x10
--
--struct sdla_cmd {
--   char  opp_flag;
--   char  cmd;
--   short length;
--   char  retval;
--   short dlci;
--   char  flags;
--   short rxlost_int;
--   long  rxlost_app;
--   char  reserve[2];
--   char  data[SDLA_MAX_DATA];	/* transfer data buffer */
--} __attribute__((packed));
--
--struct intr_info {
--   char  flags;
--   short txlen;
--   char  irq;
--   char  flags2;
--   short timeout;
--} __attribute__((packed));
--
--/* found in the 508's control window at RXBUF_INFO */
--struct buf_info {
--   unsigned short rse_num;
--   unsigned long  rse_base;
--   unsigned long  rse_next;
--   unsigned long  buf_base;
--   unsigned short reserved;
--   unsigned long  buf_top;
--} __attribute__((packed));
--
--/* structure pointed to by rse_base in RXBUF_INFO struct */
--struct buf_entry {
--   char  opp_flag;
--   short length;
--   short dlci;
--   char  flags;
--   short timestamp;
--   short reserved[2];
--   long  buf_addr;
--} __attribute__((packed));
--
--#endif
-diff --git a/include/uapi/linux/if_frad.h b/include/uapi/linux/if_frad.h
+-lapb-y := lapb_in.o lapb_out.o lapb_subr.o lapb_timer.o lapb_iface.o
+diff --git a/net/x25/Kconfig b/net/x25/Kconfig
 deleted file mode 100644
-index 3c6ee85f6262..000000000000
---- a/include/uapi/linux/if_frad.h
+index 2ecb2e5e241e..000000000000
+--- a/net/x25/Kconfig
 +++ /dev/null
-@@ -1,123 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
--/*
-- * DLCI/FRAD	Definitions for Frame Relay Access Devices.  DLCI devices are
-- *		created for each DLCI associated with a FRAD.  The FRAD driver
-- *		is not truly a network device, but the lower level device
-- *		handler.  This allows other FRAD manufacturers to use the DLCI
-- *		code, including its RFC1490 encapsulation alongside the current
-- *		implementation for the Sangoma cards.
-- *
-- * Version:	@(#)if_ifrad.h	0.15	31 Mar 96
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *		0.15	Mike McLagan	changed structure defs (packed)
-- *					re-arranged flags
-- *					added DLCI_RET vars
-- *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- */
+@@ -1,34 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-#
+-# CCITT X.25 Packet Layer
+-#
 -
--#ifndef _UAPI_FRAD_H_
--#define _UAPI_FRAD_H_
+-config X25
+-	tristate "CCITT X.25 Packet Layer"
+-	---help---
+-	  X.25 is a set of standardized network protocols, similar in scope to
+-	  frame relay; the one physical line from your box to the X.25 network
+-	  entry point can carry several logical point-to-point connections
+-	  (called "virtual circuits") to other computers connected to the X.25
+-	  network. Governments, banks, and other organizations tend to use it
+-	  to connect to each other or to form Wide Area Networks (WANs). Many
+-	  countries have public X.25 networks. X.25 consists of two
+-	  protocols: the higher level Packet Layer Protocol (PLP) (say Y here
+-	  if you want that) and the lower level data link layer protocol LAPB
+-	  (say Y to "LAPB Data Link Driver" below if you want that).
 -
--#include <linux/if.h>
+-	  You can read more about X.25 at <http://www.sangoma.com/tutorials/x25/> and
+-	  <http://docwiki.cisco.com/wiki/X.25>.
+-	  Information about X.25 for Linux is contained in the files
+-	  <file:Documentation/networking/x25.txt> and
+-	  <file:Documentation/networking/x25-iface.txt>.
 -
--/* Structures and constants associated with the DLCI device driver */
+-	  One connects to an X.25 network either with a dedicated network card
+-	  using the X.21 protocol (not yet supported by Linux) or one can do
+-	  X.25 over a standard telephone line using an ordinary modem (say Y
+-	  to "X.25 async driver" below) or over Ethernet using an ordinary
+-	  Ethernet card and the LAPB over Ethernet (say Y to "LAPB Data Link
+-	  Driver" and "LAPB over Ethernet driver" below).
 -
--struct dlci_add
--{
--   char  devname[IFNAMSIZ];
--   short dlci;
--};
--
--#define DLCI_GET_CONF	(SIOCDEVPRIVATE + 2)
--#define DLCI_SET_CONF	(SIOCDEVPRIVATE + 3)
--
--/* 
-- * These are related to the Sangoma SDLA and should remain in order. 
-- * Code within the SDLA module is based on the specifics of this 
-- * structure.  Change at your own peril.
-- */
--struct dlci_conf {
--   short flags;
--   short CIR_fwd;
--   short Bc_fwd;
--   short Be_fwd;
--   short CIR_bwd;
--   short Bc_bwd;
--   short Be_bwd; 
--
--/* these are part of the status read */
--   short Tc_fwd;
--   short Tc_bwd;
--   short Tf_max;
--   short Tb_max;
--
--/* add any new fields here above is a mirror of sdla_dlci_conf */
--};
--
--#define DLCI_GET_SLAVE	(SIOCDEVPRIVATE + 4)
--
--/* configuration flags for DLCI */
--#define DLCI_IGNORE_CIR_OUT	0x0001
--#define DLCI_ACCOUNT_CIR_IN	0x0002
--#define DLCI_BUFFER_IF		0x0008
--
--#define DLCI_VALID_FLAGS	0x000B
--
--/* defines for the actual Frame Relay hardware */
--#define FRAD_GET_CONF	(SIOCDEVPRIVATE)
--#define FRAD_SET_CONF	(SIOCDEVPRIVATE + 1)
--
--#define FRAD_LAST_IOCTL	FRAD_SET_CONF
--
--/*
-- * Based on the setup for the Sangoma SDLA.  If changes are 
-- * necessary to this structure, a routine will need to be 
-- * added to that module to copy fields.
-- */
--struct frad_conf 
--{
--   short station;
--   short flags;
--   short kbaud;
--   short clocking;
--   short mtu;
--   short T391;
--   short T392;
--   short N391;
--   short N392;
--   short N393;
--   short CIR_fwd;
--   short Bc_fwd;
--   short Be_fwd;
--   short CIR_bwd;
--   short Bc_bwd;
--   short Be_bwd;
--
--/* Add new fields here, above is a mirror of the sdla_conf */
--
--};
--
--#define FRAD_STATION_CPE	0x0000
--#define FRAD_STATION_NODE	0x0001
--
--#define FRAD_TX_IGNORE_CIR	0x0001
--#define FRAD_RX_ACCOUNT_CIR	0x0002
--#define FRAD_DROP_ABORTED	0x0004
--#define FRAD_BUFFERIF		0x0008
--#define FRAD_STATS		0x0010
--#define FRAD_MCI		0x0100
--#define FRAD_AUTODLCI		0x8000
--#define FRAD_VALID_FLAGS	0x811F
--
--#define FRAD_CLOCK_INT		0x0001
--#define FRAD_CLOCK_EXT		0x0000
--
--
--#endif /* _UAPI_FRAD_H_ */
-diff --git a/include/uapi/linux/sdla.h b/include/uapi/linux/sdla.h
-deleted file mode 100644
-index 1e3735be6511..000000000000
---- a/include/uapi/linux/sdla.h
-+++ /dev/null
-@@ -1,117 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
--/*
-- * INET		An implementation of the TCP/IP protocol suite for the LINUX
-- *		operating system.  INET is implemented using the  BSD Socket
-- *		interface as the means of communication with the user level.
-- *
-- *		Global definitions for the Frame relay interface.
-- *
-- * Version:	@(#)if_ifrad.h	0.20	13 Apr 96
-- *
-- * Author:	Mike McLagan <mike.mclagan@linux.org>
-- *
-- * Changes:
-- *		0.15	Mike McLagan	Structure packing
-- *
-- *		0.20	Mike McLagan	New flags for S508 buffer handling
-- *
-- *		This program is free software; you can redistribute it and/or
-- *		modify it under the terms of the GNU General Public License
-- *		as published by the Free Software Foundation; either version
-- *		2 of the License, or (at your option) any later version.
-- */
--
--#ifndef _UAPISDLA_H
--#define _UAPISDLA_H
--
--/* adapter type */
--#define SDLA_TYPES
--#define SDLA_S502A			5020
--#define SDLA_S502E			5021
--#define SDLA_S503			5030
--#define SDLA_S507			5070
--#define SDLA_S508			5080
--#define SDLA_S509			5090
--#define SDLA_UNKNOWN			-1
--
--/* port selection flags for the S508 */
--#define SDLA_S508_PORT_V35		0x00
--#define SDLA_S508_PORT_RS232		0x02
--
--/* Z80 CPU speeds */
--#define SDLA_CPU_3M			0x00
--#define SDLA_CPU_5M			0x01
--#define SDLA_CPU_7M			0x02
--#define SDLA_CPU_8M			0x03
--#define SDLA_CPU_10M			0x04
--#define SDLA_CPU_16M			0x05
--#define SDLA_CPU_12M			0x06
--
--/* some private IOCTLs */
--#define SDLA_IDENTIFY			(FRAD_LAST_IOCTL + 1)
--#define SDLA_CPUSPEED			(FRAD_LAST_IOCTL + 2)
--#define SDLA_PROTOCOL			(FRAD_LAST_IOCTL + 3)
--
--#define SDLA_CLEARMEM			(FRAD_LAST_IOCTL + 4)
--#define SDLA_WRITEMEM			(FRAD_LAST_IOCTL + 5)
--#define SDLA_READMEM			(FRAD_LAST_IOCTL + 6)
--
--struct sdla_mem {
--   int  addr;
--   int  len;
--   void __user *data;
--};
--
--#define SDLA_START			(FRAD_LAST_IOCTL + 7)
--#define SDLA_STOP			(FRAD_LAST_IOCTL + 8)
--
--/* some offsets in the Z80's memory space */
--#define SDLA_NMIADDR			0x0000
--#define SDLA_CONF_ADDR			0x0010
--#define SDLA_S502A_NMIADDR		0x0066
--#define SDLA_CODE_BASEADDR		0x0100
--#define SDLA_WINDOW_SIZE		0x2000
--#define SDLA_ADDR_MASK			0x1FFF
--
--/* largest handleable block of data */
--#define SDLA_MAX_DATA			4080
--#define SDLA_MAX_MTU			4072	/* MAX_DATA - sizeof(fradhdr) */
--#define SDLA_MAX_DLCI			24
--
--/* this should be the same as frad_conf */
--struct sdla_conf {
--   short station;
--   short config;
--   short kbaud;
--   short clocking;
--   short max_frm;
--   short T391;
--   short T392;
--   short N391;
--   short N392;
--   short N393;
--   short CIR_fwd;
--   short Bc_fwd;
--   short Be_fwd;
--   short CIR_bwd;
--   short Bc_bwd;
--   short Be_bwd;
--};
--
--/* this should be the same as dlci_conf */
--struct sdla_dlci_conf {
--   short config;
--   short CIR_fwd;
--   short Bc_fwd;
--   short Be_fwd;
--   short CIR_bwd;
--   short Bc_bwd;
--   short Be_bwd; 
--   short Tc_fwd;
--   short Tc_bwd;
--   short Tf_max;
--   short Tb_max;
--};
--
--
--#endif /* _UAPISDLA_H */
-diff --git a/net/socket.c b/net/socket.c
-index 250dda239a15..ac3ad20953c4 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -64,7 +64,6 @@
- #include <linux/seq_file.h>
- #include <linux/mutex.h>
- #include <linux/if_bridge.h>
--#include <linux/if_frad.h>
- #include <linux/if_vlan.h>
- #include <linux/ptp_classify.h>
- #include <linux/init.h>
-@@ -1019,17 +1018,6 @@ void vlan_ioctl_set(int (*hook) (struct net *, void __user *))
- }
- EXPORT_SYMBOL(vlan_ioctl_set);
- 
--static DEFINE_MUTEX(dlci_ioctl_mutex);
--static int (*dlci_ioctl_hook) (unsigned int, void __user *);
--
--void dlci_ioctl_set(int (*hook) (unsigned int, void __user *))
--{
--	mutex_lock(&dlci_ioctl_mutex);
--	dlci_ioctl_hook = hook;
--	mutex_unlock(&dlci_ioctl_mutex);
--}
--EXPORT_SYMBOL(dlci_ioctl_set);
--
- static long sock_do_ioctl(struct net *net, struct socket *sock,
- 			  unsigned int cmd, unsigned long arg)
- {
-@@ -1148,17 +1136,6 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
- 				err = vlan_ioctl_hook(net, argp);
- 			mutex_unlock(&vlan_ioctl_mutex);
- 			break;
--		case SIOCADDDLCI:
--		case SIOCDELDLCI:
--			err = -ENOPKG;
--			if (!dlci_ioctl_hook)
--				request_module("dlci");
--
--			mutex_lock(&dlci_ioctl_mutex);
--			if (dlci_ioctl_hook)
--				err = dlci_ioctl_hook(cmd, argp);
--			mutex_unlock(&dlci_ioctl_mutex);
--			break;
- 		case SIOCGSKNS:
- 			err = -EPERM;
- 			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-@@ -3403,8 +3380,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 	case SIOCBRDELBR:
- 	case SIOCGIFVLAN:
- 	case SIOCSIFVLAN:
--	case SIOCADDDLCI:
--	case SIOCDELDLCI:
- 	case SIOCGSKNS:
- 	case SIOCGSTAMP_NEW:
- 	case SIOCGSTAMPNS_NEW:
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called x25. If unsure, say N.
 -- 
 2.20.0
 
