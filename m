@@ -2,82 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE06117100
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:01:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF2211711E
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbfLIQBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 11:01:43 -0500
-Received: from mail.toke.dk ([45.145.95.4]:59815 "EHLO mail.toke.dk"
+        id S1726668AbfLIQEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 11:04:35 -0500
+Received: from correo.us.es ([193.147.175.20]:52890 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726290AbfLIQBn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 11:01:43 -0500
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1575907301; bh=NraEdSdmsvgNaRPHVYtyMr8NW/WE9oChAqBR+CFL2UA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=JBF82fVA8spExcXgZ1B/AJSG+SveqdtENFg491FU+rQAmkRWaYRGgveRDwJqBMfeI
-         bZIt9MNk3J3s3qt05aIaacyx13oSbuVn74iYKrRj4UmNmNEIXq2TipgDkQk3KcGyD7
-         Be0jOMIChfUOqudRZvGyZC4aOPy4EqfHbV5yaxCZMHgdR4MfyE41YCQTDx0+knG6do
-         XpICGEUxpyNvyXWWb1slRWRs1tVTeqrMwGrRG0fvNBwlU1QPkY7JAxsXFrOdIhhEEb
-         EUX/raM+zwFzzT7vjzJ51u134N4F5pmB+EREdOk+LhyyjmhGSe5kXfr99GWJD9dvWl
-         WfnuB7Hfla40w==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: organization of wireguard linux kernel repos moving forward
-In-Reply-To: <CAHmME9oUfp_1udMFNMpeXPeoa7aacdNp9Q31eKvoTBpu+G5rpQ@mail.gmail.com>
-References: <CAHmME9p1-5hQXv5QNqqHT+OBjn-vf16uAU2HtYcmwKMtLhnsTA@mail.gmail.com> <87d0cxlldu.fsf@toke.dk> <CAHmME9oUfp_1udMFNMpeXPeoa7aacdNp9Q31eKvoTBpu+G5rpQ@mail.gmail.com>
-Date:   Mon, 09 Dec 2019 17:01:41 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87blshij2y.fsf@toke.dk>
+        id S1726379AbfLIQEf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 11:04:35 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 70526A4183
+        for <netdev@vger.kernel.org>; Mon,  9 Dec 2019 17:04:32 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 62327DA707
+        for <netdev@vger.kernel.org>; Mon,  9 Dec 2019 17:04:32 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4CB1EDA710; Mon,  9 Dec 2019 17:04:32 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2CACADA70C;
+        Mon,  9 Dec 2019 17:04:30 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 09 Dec 2019 17:04:30 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 072524265A5A;
+        Mon,  9 Dec 2019 17:04:29 +0100 (CET)
+Date:   Mon, 9 Dec 2019 17:04:30 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        geert@linux-m68k.org, jiri@mellanox.com
+Subject: Re: [PATCH net] net: flow_dissector: fix tcp flags dissection on
+ big-endian
+Message-ID: <20191209160430.owxiyydj57mnjw2l@salvia>
+References: <20191209155530.3050-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209155530.3050-1-pablo@netfilter.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+Hi,
 
-> On Mon, Dec 9, 2019 at 1:43 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@tok=
-e.dk> wrote:
->>
->> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
->>
->> > 2) wireguard-tools.git will have the userspace utilities and scripts,
->> > such as wg(8) and wg-quick(8), and be easily packageable by distros.
->> > This repo won't be live until we get a bit closer to the 5.6 release,
->> > but when it is live, it will live at:
->> > https://git.zx2c4.com/wireguard-tools/ [currently 404s]
->> > https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-tools.=
-git/
->> > [currently 404s]
->>
->> Any plans for integrating this further with iproute2? One could imagine
->> either teaching 'ip' about the wireguard-specific config (keys etc), or
->> even just moving the 'wg' binary wholesale into iproute2?
->
-> I'd definitely be interested in this. Back in 2015, that was the plan.
-> Then it took a long time to get to where we are now, and since then
-> wg(8) has really evolved into its own useful thing. The easiest thing
-> would be to move wg(8) wholesale into iproute2 like you suggested;
-> that'd allow people to continue using their infrastructure and whatnot
-> they've used for a long time now. A more nuanced approach would be
-> coming up with a _parallel_ iproute2 tool with mostly the same syntax
-> as wg(8) but as a subcommand of ip(8). Originally the latter appealed
-> to me, but at this point maybe the former is better after all. I
-> suppose something to consider is that wg(8) is actually a
-> cross-platform tool now, with a unified syntax across a whole bunch of
-> operating systems.
+Please, withdraw this patch.
 
-Hmm, I don't really have any opinion about which approach makes the most
-sense; I'm primarily concerned with getting the support into iproute2 so
-that it is possible to set up and configure a wireguard tunnel "out of
-the box". Both approaches would achieve that, I think...
+I can fix this by using TCPHDR_* definitions.
 
-> But it's also just boring C.
+Thanks.
 
-Well, we could always rewrite it in Rust or something? ;)
-
--Toke
+On Mon, Dec 09, 2019 at 04:55:30PM +0100, Pablo Neira Ayuso wrote:
+>     net/netfilter/nf_flow_table_offload.c: In function 'nf_flow_rule_match':
+>     net/netfilter/nf_flow_table_offload.c:80:21: warning: unsigned conversion from 'int' to '__be16' {aka 'short unsigned int'} changes value from '327680' to '0' [-Woverflow]
+>        80 |   mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
+>           |                     ^~~~~~~~~~~~
+> 
+> Fixes: ac4bb5de2701 ("net: flow_dissector: add support for dissection of tcp flags")
+> Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> ---
+> @Geert: I have removed the pad field and included the nitpick fix on the
+>         comment, given I have slightly updated this patch, I would prefer
+>         if you can provide a fresh Reviewed-by tag. Thanks.
+> 
+>  include/net/flow_dissector.h          | 8 ++++++--
+>  net/core/flow_dissector.c             | 2 +-
+>  net/netfilter/nf_flow_table_offload.c | 4 ++--
+>  3 files changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+> index b8c20e9f343e..9ff8dac9d5ec 100644
+> --- a/include/net/flow_dissector.h
+> +++ b/include/net/flow_dissector.h
+> @@ -189,10 +189,14 @@ struct flow_dissector_key_eth_addrs {
+>  
+>  /**
+>   * struct flow_dissector_key_tcp:
+> - * @flags: flags
+> + * @flags: TCP flags, including the initial Data offset field bits (16-bits)
+> + * @flag_word: Data offset + reserved bits + TCP flags + window (32-bits)
+>   */
+>  struct flow_dissector_key_tcp {
+> -	__be16 flags;
+> +	union {
+> +		__be16 flags;
+> +		__be32 flag_word;
+> +	};
+>  };
+>  
+>  /**
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index ca871657a4c4..83af4633f306 100644
+> --- a/net/core/flow_dissector.c
+> +++ b/net/core/flow_dissector.c
+> @@ -756,7 +756,7 @@ __skb_flow_dissect_tcp(const struct sk_buff *skb,
+>  	key_tcp = skb_flow_dissector_target(flow_dissector,
+>  					    FLOW_DISSECTOR_KEY_TCP,
+>  					    target_container);
+> -	key_tcp->flags = (*(__be16 *) &tcp_flag_word(th) & htons(0x0FFF));
+> +	key_tcp->flag_word = tcp_flag_word(th);
+>  }
+>  
+>  static void
+> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+> index c94ebad78c5c..30205d57226d 100644
+> --- a/net/netfilter/nf_flow_table_offload.c
+> +++ b/net/netfilter/nf_flow_table_offload.c
+> @@ -87,8 +87,8 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+>  
+>  	switch (tuple->l4proto) {
+>  	case IPPROTO_TCP:
+> -		key->tcp.flags = 0;
+> -		mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
+> +		key->tcp.flag_word = 0;
+> +		mask->tcp.flag_word = TCP_FLAG_RST | TCP_FLAG_FIN;
+>  		match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_TCP);
+>  		break;
+>  	case IPPROTO_UDP:
+> -- 
+> 2.11.0
+> 
