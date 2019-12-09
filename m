@@ -2,136 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C571175FB
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C67117645
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbfLITeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 14:34:44 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39024 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfLITen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:34:43 -0500
-Received: by mail-ot1-f67.google.com with SMTP id 77so13275655oty.6;
-        Mon, 09 Dec 2019 11:34:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PFE1nWxTiyfBRgn/J6q9Y8I6dNPJrpPO2zwkS+e8TbI=;
-        b=l57bR7j5YoTdsraECl+v5XCXZ2L9yCiOQaei6qnxTgzBKu6DHPdEP2L91+oIkroRMl
-         dBW16Yn7M2d5zqpGrKHHu9zqC1Iwdbrm/Bior7UUkbmS7Dzt7c2vA1rIVGXy7w1Xq7jI
-         7cTqZ73LSKdFPLYOPe9dsTyCkkvaHQTmaqpczWxscNNewc8+95w6VQ25TW+OJnEExH9R
-         TrA/R3/6pFOehNsWxcSaOGZ1Crp1aSlN3xuRW9HZitoMTe6QRU4p/4G7m3uVAmI3K8+1
-         St0Rh2zNQH94IiQoZhUthkIOMFEG13Y9CSu0Mg3X/4ibfQ9xRUJCsmdzpZFts0nuLUJE
-         Je0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PFE1nWxTiyfBRgn/J6q9Y8I6dNPJrpPO2zwkS+e8TbI=;
-        b=UdUmEu1Kl8uHkcS6c/u/GFnAv22Rs0oSfyd/St7MQsf3TR/FtHw+cU8S+dJKylpOEw
-         1R4cVWM4J5liRRJxTJMRgIX7YjLxqkisSOlQfShaP7teSwqiJEPIUHt/xrAH6GmRMz5B
-         NLm6igUGZwhxprsscCExYyTtp2M789I8BMZFBxtyBYxYIxkJD8gUngeLwr6nFP5v5TjN
-         PjwVQcFZV6NdMVoy/H9AVH+t+sdTkdttWg8OkLChRIK93u2q8G2XvH+rGSLvKgPivSrf
-         /U856LyWEm3ZCBuVja92gBXHu//yzsEjzYUQ82fCQ8Cm64POEatIJmR8Xlt5eDInoKI9
-         p6rg==
-X-Gm-Message-State: APjAAAU8R5vUAZonjbdqI4xS3OZUtWGch9rgqLsM+V/WmrDyK2+V0EPD
-        Tpd45f6jnu6S8Lt5RhknpP0=
-X-Google-Smtp-Source: APXvYqxSnopGKPKS40Fp2UWWVvhccgBBkC3FGIBGVtKql552IcLIhIyHMgbgNBjN89Vl/gf2tP5iZg==
-X-Received: by 2002:a9d:6a92:: with SMTP id l18mr23312145otq.37.1575920082851;
-        Mon, 09 Dec 2019 11:34:42 -0800 (PST)
-Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id x16sm296462oto.41.2019.12.09.11.34.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 09 Dec 2019 11:34:42 -0800 (PST)
-Date:   Mon, 9 Dec 2019 12:34:40 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Julio Faracco <jcfaracco@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, dnmendes76@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Martin Habets <mhabets@solarflare.com>,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH net-next v9 1/3] netdev: pass the stuck queue to the
- timeout handler
-Message-ID: <20191209193440.GA15189@ubuntu-m2-xlarge-x86>
-References: <20191209162727.10113-1-mst@redhat.com>
- <20191209162727.10113-2-mst@redhat.com>
+        id S1726856AbfLITuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 14:50:24 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:53104 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726824AbfLITuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:50:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1575921021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fixsa2GR2xD9eCWdL7rHvmJlthlJ+BIkVBQqT5TO8Yg=;
+        b=AxKYyYiF6jCkPOb1eQETfYCcr1udrN7GQ9bkl0Q3zlcKNxJKxvvsSz7N78to1rYXKB9z4G
+        La7ukmNrQimBClE636b9bFh5kRjZvbzAzFId3kAE6Dq+f27NGoFQguzQSR8qlrR4SFaBAU
+        42rWEfgs1OYG9W4SFnExnWKi9Lh4c80=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-202-WAsPPC5fPqG8EemL2rsMhQ-1; Mon, 09 Dec 2019 14:50:20 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89846107ACC4;
+        Mon,  9 Dec 2019 19:50:18 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5475B6E412;
+        Mon,  9 Dec 2019 19:50:12 +0000 (UTC)
+Date:   Mon, 9 Dec 2019 20:50:10 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
+        <thoiland@redhat.com>, Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next v3 0/6] Introduce the BPF dispatcher
+Message-ID: <20191209205010.153a9060@carbon>
+In-Reply-To: <CAJ+HfNhikfpdAi3wC_s72Z-S8iMYUe7=hOBP_jNFQz++jrPgzg@mail.gmail.com>
+References: <20191209135522.16576-1-bjorn.topel@gmail.com>
+        <20191209180008.72c98c53@carbon>
+        <CAJ+HfNhikfpdAi3wC_s72Z-S8iMYUe7=hOBP_jNFQz++jrPgzg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209162727.10113-2-mst@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: WAsPPC5fPqG8EemL2rsMhQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+On Mon, 9 Dec 2019 18:45:12 +0100
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
 
-On Mon, Dec 09, 2019 at 11:29:03AM -0500, Michael S. Tsirkin wrote:
-> This allows incrementing the correct timeout statistic without any mess.
-> Down the road, devices can learn to reset just the specific queue.
-> 
-> The patch was generated with the following script:
-> 
-<snip>
-> 
-> where the list of files and functions is simply from:
-> 
-> git grep ndo_tx_timeout, with manual addition of headers
-> in the rare cases where the function is from a header,
-> then manually changing the few places which actually
-> call ndo_tx_timeout.
-> 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Acked-by: Shannon Nelson <snelson@pensando.io>
-> Reviewed-by: Martin Habets <mhabets@solarflare.com>
-> 
-> changes from v8:
-> 	fix up a missing direct call to timeout
-> 	rebased on net-next
-> changes from v7:
-> 	fixup leftovers from v3 change
-> changes from v6:
-> 	fix typo in rtl driver
-> changes from v5:
-> 	add missing files (allow any net device argument name)
-> changes from v4:
-> 	add a missing driver header
-> changes from v3:
->         change queue # to unsigned
-> Changes from v2:
->         added headers
-> Changes from v1:
->         Fix errors found by kbuild:
->         generalize the pattern a bit, to pick up
->         a couple of instances missed by the previous
->         version.
-> ---
-<snip>
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index 6a9d12dad5d9..ad0ecebb1b34 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -288,7 +288,7 @@ static int dpaa_stop(struct net_device *net_dev)
->  	return err;
->  }
->  
-> -static void dpaa_tx_timeout(struct net_device *net_dev)
-> +static void dpaa_tx_timeout(struct net_device *net_dev, int txqueue)
+> On Mon, 9 Dec 2019 at 18:00, Jesper Dangaard Brouer <brouer@redhat.com> w=
+rote:
+> >
+> > On Mon,  9 Dec 2019 14:55:16 +0100
+> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+> > =20
+> > > Performance
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > >
+> > > The tests were performed using the xdp_rxq_info sample program with
+> > > the following command-line:
+> > >
+> > > 1. XDP_DRV:
+> > >   # xdp_rxq_info --dev eth0 --action XDP_DROP
+> > > 2. XDP_SKB:
+> > >   # xdp_rxq_info --dev eth0 -S --action XDP_DROP
+> > > 3. xdp-perf, from selftests/bpf:
+> > >   # test_progs -v -t xdp_perf
+> > >
+> > >
+> > > Run with mitigations=3Dauto
+> > > -------------------------
+> > >
+> > > Baseline:
+> > > 1. 22.0 Mpps
+> > > 2. 3.8 Mpps
+> > > 3. 15 ns
+> > >
+> > > Dispatcher:
+> > > 1. 29.4 Mpps (+34%)
+> > > 2. 4.0 Mpps  (+5%)
+> > > 3. 5 ns      (+66%) =20
+> >
+> > Thanks for providing these extra measurement points.  This is good
+> > work.  I just want to remind people that when working at these high
+> > speeds, it is easy to get amazed by a +34% improvement, but we have to
+> > be careful to understand that this is saving approx 10 ns time or
+> > cycles.
+> >
+> > In reality cycles or time saved in #2 (3.8 Mpps -> 4.0 Mpps) is larger
+> > (1/3.8-1/4)*1000 =3D 13.15 ns.  Than #1 (22.0 Mpps -> 29.4 Mpps)
+> > (1/22-1/29.4)*1000 =3D 11.44 ns. Test #3 keeps us honest 15 ns -> 5 ns =
+=3D
+> > 10 ns.  The 10 ns improvement is a big deal in XDP context, and also
+> > correspond to my own experience with retpoline (approx 12 ns overhead).
+> > =20
+>=20
+> Ok, good! :-)
+>=20
+> > To Bj=C3=B8rn, I would appreciate more digits on your Mpps numbers, so =
+I get
+> > more accuracy on my checks-and-balances I described above.  I suspect
+> > the 3.8 Mpps -> 4.0 Mpps will be closer to the other numbers when we
+> > get more accuracy.
+> > =20
+>=20
+> Ok! Let me re-run them.=20
 
-This needs to be unsigned int, otherwise there is a build error:
+Well, I don't think you should waste your time re-running these...
 
-../drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2622:20: error: incompatible pointer types initializing 'void (*)(struct net_device *, unsigned int)' with an expression of type 'void (struct net_device *, int)' [-Werror,-Wincompatible-pointer-types]
-        .ndo_tx_timeout = dpaa_tx_timeout,
-                          ^~~~~~~~~~~~~~~
-1 error generated.
+It clearly shows a significant improvement.  I'm just complaining that
+I didn't have enough digits to do accurate checks-and-balances, they
+are close enough that I believe them.
 
-Cheers,
-Nathan
+
+> If you have some spare cycles, yt would be
+> great if you could try it out as well on your Mellanox setup.
+
+I'll add it to my TODO list... but no promises.
+
+
+> Historically you've always been able to get more stable numbers than
+> I. :-)
+>=20
+> > =20
+> > > Dispatcher (full; walk all entries, and fallback):
+> > > 1. 20.4 Mpps (-7%)
+> > > 2. 3.8 Mpps
+> > > 3. 18 ns     (-20%)
+> > >
+> > > Run with mitigations=3Doff
+> > > ------------------------
+> > >
+> > > Baseline:
+> > > 1. 29.6 Mpps
+> > > 2. 4.1 Mpps
+> > > 3. 5 ns
+> > >
+> > > Dispatcher:
+> > > 1. 30.7 Mpps (+4%)
+> > > 2. 4.1 Mpps
+> > > 3. 5 ns =20
+> >
+> > While +4% sounds good, but could be measurement noise ;-)
+> >
+> >  (1/29.6-1/30.7)*1000 =3D 1.21 ns
+> >
+> > As both #3 says 5 ns.
+> > =20
+>=20
+> True. Maybe that simply hints that we shouldn't use the dispatcher here?
+
+No. I actually think it is worth exposing this code as much as
+possible. And if it really is 1.2 ns improvement, then I'll gladly take
+that as well ;-)
+
+
+I think this is awesome work! -- thanks for doing this!!!
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
