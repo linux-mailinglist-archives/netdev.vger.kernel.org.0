@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2D7116E84
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:05:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEE5116E87
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:06:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbfLIOFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 09:05:03 -0500
-Received: from www62.your-server.de ([213.133.104.62]:54858 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727268AbfLIOFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 09:05:03 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ieJem-0006rq-UW; Mon, 09 Dec 2019 15:05:01 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, will@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf-next] bpf, x86, arm64: enable jit by default when not built as always-on
-Date:   Mon,  9 Dec 2019 15:04:42 +0100
-Message-Id: <b869ada979120dbb3463bdb363f6ab463aa38086.1575899698.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1727684AbfLIOGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 09:06:52 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:34240 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbfLIOGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 09:06:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=shbtuvf8tn/7bQPfQ0S85b8rkHI5BoP51CbFF6hBUxU=; b=b4vzlEbOEBqnC6Ng6ks3r1gXWh
+        /hIkzB8gVyf+M+Q3oA3EEVXe9tvUSFahiE47DnMgXF+/XIRtS9zd2A6ETOrBwrJG0r1P6kL3Xb36O
+        8STlKNfIpyPVbA0W+pGtk/Y/qq5R/9jAPFUAdy0B/pMD1mbU08NriC5biUXhnDipr5AuLEEu7svJr
+        SVko9l3Aif9gkGJENIqWGdrHrs32UA5TX/960W47/gEij35TTqDouJ8Eqow3BVdVUrWDo00m9dBqV
+        pfRXXT2+gMGYZLc2CVLQwmvpTCDoBn7BsmfuQdvMje7s+6XjsJZHkvnmaJC16+CkQo2VfdA68gYkK
+        nMX5Jf8w==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:37974 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1ieJgT-0003PQ-Tz; Mon, 09 Dec 2019 14:06:46 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1ieJgT-0004O9-Ce; Mon, 09 Dec 2019 14:06:45 +0000
+In-Reply-To: <20191209140258.GI25745@shell.armlinux.org.uk>
+References: <20191209140258.GI25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 01/14] net: sfp: remove incomplete 100BASE-FX and
+ 100BASE-LX support
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25658/Mon Dec  9 10:47:26 2019)
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1ieJgT-0004O9-Ce@rmk-PC.armlinux.org.uk>
+Date:   Mon, 09 Dec 2019 14:06:45 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After Spectre 2 fix via 290af86629b2 ("bpf: introduce BPF_JIT_ALWAYS_ON
-config") most major distros use BPF_JIT_ALWAYS_ON configuration these days
-which compiles out the BPF interpreter entirely and always enables the
-JIT. Also given recent fix in e1608f3fa857 ("bpf: Avoid setting bpf insns
-pages read-only when prog is jited"), we additionally avoid fragmenting
-the direct map for the BPF insns pages sitting in the general data heap
-since they are not used during execution. Latter is only needed when run
-through the interpreter.
+The 100BASE-FX and 100BASE-LX support assumes a PHY is present; this
+is probably an incorrect assumption. In any case, sfp_parse_support()
+will fail such a module. Let's stop pretending we support these
+modules.
 
-Since both x86 and arm64 JITs have seen a lot of exposure over the years,
-are generally most up to date and maintained, there is more downside in
-!BPF_JIT_ALWAYS_ON configurations to have the interpreter enabled by default
-rather than the JIT. Add a ARCH_WANT_DEFAULT_BPF_JIT config which archs can
-use to set the bpf_jit_{enable,kallsyms} to 1. Back in the days the
-bpf_jit_kallsyms knob was set to 0 by default since major distros still
-had /proc/kallsyms addresses exposed to unprivileged user space which is
-not the case anymore. Hence both knobs are set via BPF_JIT_DEFAULT_ON which
-is set to 'y' in case of BPF_JIT_ALWAYS_ON or ARCH_WANT_DEFAULT_BPF_JIT.
-
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- [ Follow-up from https://lore.kernel.org/bpf/20191202200947.GA14353@pc-9.home/,
-   applies to both bpf and bpf-next, but I think going via bpf-next is more
-   appropriate. ]
+ drivers/net/phy/sfp-bus.c |  4 +---
+ drivers/net/phy/sfp.c     | 13 +------------
+ 2 files changed, 2 insertions(+), 15 deletions(-)
 
- arch/arm64/Kconfig | 1 +
- arch/x86/Kconfig   | 1 +
- init/Kconfig       | 6 ++++++
- kernel/bpf/core.c  | 4 ++--
- 4 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b1b4476ddb83..29d03459de20 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -69,6 +69,7 @@ config ARM64
- 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128 && (GCC_VERSION >= 50000 || CC_IS_CLANG)
- 	select ARCH_SUPPORTS_NUMA_BALANCING
- 	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
-+	select ARCH_WANT_DEFAULT_BPF_JIT
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
- 	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_WANT_HUGE_PMD_SHARE if ARM64_4K_PAGES || (ARM64_16K_PAGES && !ARM64_VA_BITS_36)
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 5e8949953660..1f6a0388a65f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -93,6 +93,7 @@ config X86
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_USE_QUEUED_SPINLOCKS
- 	select ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH
-+	select ARCH_WANT_DEFAULT_BPF_JIT	if X86_64
- 	select ARCH_WANTS_DYNAMIC_TASK_STRUCT
- 	select ARCH_WANT_HUGE_PMD_SHARE
- 	select ARCH_WANTS_THP_SWAP		if X86_64
-diff --git a/init/Kconfig b/init/Kconfig
-index a34064a031a5..957a5e758e6d 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1604,6 +1604,9 @@ config BPF_SYSCALL
- 	  Enable the bpf() system call that allows to manipulate eBPF
- 	  programs and maps via file descriptors.
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 5a72093ab6e7..02ab07624c89 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -342,9 +342,7 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
+ 	if (phylink_test(link_modes, 2500baseX_Full))
+ 		return PHY_INTERFACE_MODE_2500BASEX;
  
-+config ARCH_WANT_DEFAULT_BPF_JIT
-+	bool
-+
- config BPF_JIT_ALWAYS_ON
- 	bool "Permanently enable BPF JIT and remove BPF interpreter"
- 	depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
-@@ -1611,6 +1614,9 @@ config BPF_JIT_ALWAYS_ON
- 	  Enables BPF JIT and removes BPF interpreter to avoid
- 	  speculative execution of BPF instructions by the interpreter
+-	if (id->base.e1000_base_t ||
+-	    id->base.e100_base_lx ||
+-	    id->base.e100_base_fx)
++	if (id->base.e1000_base_t)
+ 		return PHY_INTERFACE_MODE_SGMII;
  
-+config BPF_JIT_DEFAULT_ON
-+	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
-+
- config USERFAULTFD
- 	bool "Enable userfaultfd() system call"
- 	depends on MMU
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 49e32acad7d8..2ff01a716128 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -520,9 +520,9 @@ void bpf_prog_kallsyms_del_all(struct bpf_prog *fp)
+ 	if (phylink_test(link_modes, 1000baseX_Full))
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 27360d1840b2..ae6a52a19458 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1489,18 +1489,7 @@ static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
  
- #ifdef CONFIG_BPF_JIT
- /* All BPF JIT sysctl knobs here. */
--int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_ALWAYS_ON);
-+int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
-+int bpf_jit_kallsyms __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
- int bpf_jit_harden   __read_mostly;
--int bpf_jit_kallsyms __read_mostly;
- long bpf_jit_limit   __read_mostly;
+ static void sfp_sm_probe_for_phy(struct sfp *sfp)
+ {
+-	/* Setting the serdes link mode is guesswork: there's no
+-	 * field in the EEPROM which indicates what mode should
+-	 * be used.
+-	 *
+-	 * If it's a gigabit-only fiber module, it probably does
+-	 * not have a PHY, so switch to 802.3z negotiation mode.
+-	 * Otherwise, switch to SGMII mode (which is required to
+-	 * support non-gigabit speeds) and probe for a PHY.
+-	 */
+-	if (sfp->id.base.e1000_base_t ||
+-	    sfp->id.base.e100_base_lx ||
+-	    sfp->id.base.e100_base_fx)
++	if (sfp->id.base.e1000_base_t)
+ 		sfp_sm_probe_phy(sfp);
+ }
  
- static __always_inline void
 -- 
-2.21.0
+2.20.1
 
