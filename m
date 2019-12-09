@@ -2,129 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C371179A3
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A3F1179A1
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbfLIWqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 17:46:07 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8302 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726925AbfLIWqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 17:46:07 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB9MjoZP021179;
-        Mon, 9 Dec 2019 14:45:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=cqf56TMBRmeeQ7BtOTMrWyuglaxDDtUQct1vSkwaAzg=;
- b=GTPiNmGIjwjL0sM7vKaLGSW/ZMIKutotwDbqozBJLVOGP7rtAQVA/mVx0bRMpKihVXcG
- galT4J04teoinn6CP83RX3WGMII6Z4VnAQPBHUp7w4AcBIkC49mBOUHsuncAhX4vwC9D
- p/GUyRBq32munYenLV7YbcOyPmMsFdsQVE0= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wsu71989q-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 09 Dec 2019 14:45:54 -0800
-Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 9 Dec 2019 14:45:16 -0800
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 9 Dec 2019 14:45:16 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 9 Dec 2019 14:45:15 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jM2wGN5nyV4GYTTj5fjYiRPdvMrm8b8KEYUeVmGnbbnIrdkmF0osC8iEfSs90D1zrmHT2BRKl1H7DRfPt/40EEXcl3uzoffQxSFZGUiRKLkig0Vu8RJilH1CpHmE+xrvFeqPZ5nY37j6A10gpZ9ZFKgAccIoab4cGz7TKMxtD1DduQxUmd/awfqOQDxaOf4foHZUCNb6VqDa644dx7tHxmLCSM5IYJF9Q48oypXrP2qjkNKLk+VmFwU5hoi2KtUeyprADXDtA9oHeOMWFyZg1JTldXUwABHYz7b0JyFkNXSkRA2tWzyCfPTSZrQ0v9Qs9KWq20+ZzTnVrf1i9A6u8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cqf56TMBRmeeQ7BtOTMrWyuglaxDDtUQct1vSkwaAzg=;
- b=H8SnLMjYhyn3UfGcd/CnkxvxhjYHwjMl3dMj3Y2844d/r7mbnb6j/vB9YELAEoCrlmOmfyxbxPQ4bUkEtC14/yqgyelX2C01e25W4uezcT9o/oGwXt8M2NTN6RGqZORoYKLkMbRUOb+el/WCtBs1mBe9fhNbj/bpfl9z5Fvk9ENcmi6UF7d3q6WWdow6Qc/UGP+6LUxtbqUiuxVMexfitAK4ugodk8YAn+nNatjNH2SvXEiRuk/RaRXANggZy7BtDj/ss6QoF4L6edmo4QxvMcoDtskjXPO/Svt1yFC+ZFZG6qbCeX29VfAIfUXlMHjlsIwoXeh6GJ317jsEDCy89A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cqf56TMBRmeeQ7BtOTMrWyuglaxDDtUQct1vSkwaAzg=;
- b=kpfgRx0SFNOJI5g2NrloiBY+QCrq7E8Snjui9n+ZVoOviDdg+fLRPcZXt+imReQftw0Xd9hFiaK9k8SvOJcZoB3Lfll7BlP1S9OifmCzwWlnA3zkElhf8SAT61e9LniAAAApVczOmV4XjI+EU0XwQvzHvEq3GDSTeXstDUfPl1I=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3582.namprd15.prod.outlook.com (52.132.172.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.12; Mon, 9 Dec 2019 22:45:14 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Mon, 9 Dec 2019
- 22:45:14 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [Potential Spoof] [PATCH bpf] libbpf: Bump libpf current version
- to v0.0.7
-Thread-Topic: [Potential Spoof] [PATCH bpf] libbpf: Bump libpf current version
- to v0.0.7
-Thread-Index: AQHVruG2F0yBBAb5TUCd37CPIGDdFaeyZtsA
-Date:   Mon, 9 Dec 2019 22:45:14 +0000
-Message-ID: <20191209224510.ca4glg42tvy2ivrx@kafai-mbp>
-References: <20191209224022.3544519-1-andriin@fb.com>
-In-Reply-To: <20191209224022.3544519-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR22CA0061.namprd22.prod.outlook.com
- (2603:10b6:300:12a::23) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:ba63]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 481df342-abf5-47d2-0de3-08d77cf97481
-x-ms-traffictypediagnostic: MN2PR15MB3582:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB35828D9DEFEB7D084F8CEDF6D5580@MN2PR15MB3582.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
-x-forefront-prvs: 02462830BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(39860400002)(366004)(346002)(136003)(396003)(376002)(199004)(189003)(6862004)(6512007)(54906003)(52116002)(2906002)(71200400001)(71190400001)(9686003)(316002)(33716001)(6486002)(66476007)(4326008)(66946007)(66556008)(66446008)(64756008)(229853002)(6636002)(305945005)(8936002)(478600001)(5660300002)(86362001)(6506007)(81166006)(81156014)(1076003)(558084003)(186003)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3582;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: s9z6ZuJLR8leuDywhe/+c0jUF4sviLhiTbKd0hdSBRIeBhQychzYEndagys+y/U8s5eie5zjlbC6fGcectdF3bsejDe9cL2HlEz+nqUzElJtXsMbSRpyCMw79YBTbfx6wj7u9HTqnNeTeVqSvJcTvqJoENg11NGb3W6ePEQYyIRm9P2km0BjPHFZS6nE4lpegxG+KfCvFUQ7dZfDAqqTWUVISthx3J+IlXni1JSSkdkEVjUDOIou0WE3HvBJ7Zo0r2HYLSw/Ks5a7c6gQC6+IQejYdZuVEZwrgID7zpUdQfTJEvhsSlTyMHKgLj/Q16P8KMUaSYqp2L6VnvD6JoMRyINsYFJvcjVskpje5pfcKZiLeP/Qi/e+fxd5vIMe4XjUIR20PDaORn1rTpDq5+WqCKigyubnuGF8rGVULUlsGiBxs6/tFCkYEbZu1HOjPte
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <95404BEB0CDCE94CB2630A1C629D4A3A@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726970AbfLIWpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 17:45:44 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38262 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726207AbfLIWpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 17:45:44 -0500
+Received: by mail-pf1-f196.google.com with SMTP id x185so7981630pfc.5;
+        Mon, 09 Dec 2019 14:45:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=G+YCwOYu4hMdi/F+7FErfeWtNww/IVPjI+lxDi7fRJk=;
+        b=g69ha8UZoZw9wz7rFUo2t43IQg1/+ANKfe3JwO4uoXTpMuFn9O+K/K4HPRuRk92u9I
+         jKQN56QH7MRUslEdvcoelQl7LetVSGjrW1scPM3j6dDJA3oc/IJd4WC/W08LOWgAcyJh
+         HoVRFJKy1PP/CbCg0z4oQsYdlhSljVyUMAmLaj9bd48vZB3WV4/absqvk9L6gk/41dnb
+         nEdjRQs/v8akCyKuw4e/hOYkTZ+q261cIfjF9qY6oaE8rWUDhWKiyrNgBbrWb+ckUKUj
+         uXSX0Y4QDxXfbXLza41m0z965Lr200KbXL+ZZaufZRJFvjCOm6FUXcMu9RKwXHw85kYh
+         RQLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G+YCwOYu4hMdi/F+7FErfeWtNww/IVPjI+lxDi7fRJk=;
+        b=HFGua2zCoQ+lJBokEdBoR2GT44NZoR+w+clZYvfvxrvgXxvoBwD1OqrOI18Np4FTgA
+         ReAYm+rZahQz6LFSDyH0kDG+6A5JTrPdZ6gXlDRd7xuY4n0fA6b8h2oeFl4ClNixHIXN
+         awW0H7H/xXRS/DdVoRH5g8ItQIAiQXLl0sKMYh8EjO4vyRCwAmpOWM11TitvULtBqN3N
+         ru5Buyd+eZIUhbhlLCRNkDLYEBIj7Cfjd4HhyIPmsKH5QV9b75PWvWLQIDCy6Rb8ZdBz
+         AHBcX6y+kp2Op5bABr1IEXmnwVY26KN7Zl3o54CzDYJEVgwc5Nf16Uk9Mc00gsdYG/7j
+         pcTQ==
+X-Gm-Message-State: APjAAAVjOf5CXvzCHepWehYnBwWljg9w1caFP2F7GwlqGJnuGE11LuY5
+        yKpAURbsEa+zuj6sObv9l6Q=
+X-Google-Smtp-Source: APXvYqz7kvdy+KdoA7rtaZJAxy8KR/mrzYuX1ZGHwEPSvXvm6R2+oHU0gSnkkkAFyOSXYNe7y8xnBw==
+X-Received: by 2002:a63:b005:: with SMTP id h5mr20644949pgf.67.1575931543079;
+        Mon, 09 Dec 2019 14:45:43 -0800 (PST)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id d6sm375186pju.8.2019.12.09.14.45.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 14:45:42 -0800 (PST)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
+Date:   Mon,  9 Dec 2019 14:45:30 -0800
+Message-Id: <20191209224530.156283-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.24.0.393.g34dc348eaf-goog
+In-Reply-To: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
+References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 481df342-abf5-47d2-0de3-08d77cf97481
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2019 22:45:14.0719
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: H/8P/iLcZStmO1bXyMZKDkfwv31yRBApCOF4snfktKJJk1eMBkH9KU8SxerwZw+K
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3582
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-09_05:2019-12-09,2019-12-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
- clxscore=1015 phishscore=0 suspectscore=0 priorityscore=1501
- impostorscore=0 mlxlogscore=622 spamscore=0 bulkscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912090178
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 02:40:22PM -0800, Andrii Nakryiko wrote:
-> New development cycles starts, bump to v0.0.7 proactively.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+From: Maciej Żenczykowski <maze@google.com>
+
+and associated inet_is_local_unbindable_port() helper function:
+use it to make explicitly binding to an unbindable port return
+-EPERM 'Operation not permitted'.
+
+Autobind doesn't honour this new sysctl since:
+  (a) you can simply set both if that's the behaviour you desire
+  (b) there could be a use for preventing explicit while allowing auto
+  (c) it's faster in the relatively critical path of doing port selection
+      during connect() to only check one bitmap instead of both
+
+Various ports may have special use cases which are not suitable for
+use by general userspace applications. Currently, ports specified in
+ip_local_reserved_ports sysctl will not be returned only in case of
+automatic port assignment, but nothing prevents you from explicitly
+binding to them - even from an entirely unprivileged process.
+
+In certain cases it is desirable to prevent the host from assigning the
+ports even in case of explicit binds, even from superuser processes.
+
+Example use cases might be:
+ - a port being stolen by the nic for remote serial console, remote
+   power management or some other sort of debugging functionality
+   (crash collection, gdb, direct access to some other microcontroller
+   on the nic or motherboard, remote management of the nic itself).
+ - a transparent proxy where packets are being redirected: in case
+   a socket matches this connection, packets from this application
+   would be incorrectly sent to one of the endpoints.
+
+Initially I wanted to solve this problem via the simple one line:
+
+static inline bool inet_port_requires_bind_service(struct net *net, unsigned short port) {
+-       return port < net->ipv4.sysctl_ip_prot_sock;
++       return port < net->ipv4.sysctl_ip_prot_sock || inet_is_local_reserved_port(net, port);
+}
+
+However, this doesn't work for two reasons:
+  (a) it changes userspace visible behaviour of the existing local
+      reserved ports sysctl, and there appears to be enough documentation
+      on the internet talking about setting it to make this a bad idea
+  (b) it doesn't prevent privileged apps from using these ports,
+      CAP_BIND_SERVICE is relatively likely to be available to, for example,
+      a recursive DNS server so it can listed on port 53, which also needs
+      to do src port randomization for outgoing queries due to security
+      reasons (and it thus does manual port binding).
+
+If we *know* that certain ports are simply unusable, then it's better
+nothing even gets the opportunity to try to use them.  This way we at
+least get a quick failure, instead of some sort of timeout (or possibly
+even corruption of the data stream of the non-kernel based use case).
+
+Test:
+  vm:~# cat /proc/sys/net/ipv4/ip_local_unbindable_ports
+
+  vm:~# python -c 'import socket; s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0); s.bind(("::", 3967))'
+  vm:~# python -c 'import socket; s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0); s.bind(("::", 3967))'
+  vm:~# echo 3967 > /proc/sys/net/ipv4/ip_local_unbindable_ports
+  vm:~# cat /proc/sys/net/ipv4/ip_local_unbindable_ports
+  3967
+  vm:~# python -c 'import socket; s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0); s.bind(("::", 3967))'
+  socket.error: (1, 'Operation not permitted')
+  vm:~# python -c 'import socket; s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0); s.bind(("::", 3967))'
+  socket.error: (1, 'Operation not permitted')
+
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc: Sean Tranchetti <stranche@codeaurora.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Linux SCTP <linux-sctp@vger.kernel.org>
+Reviewed-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ Documentation/networking/ip-sysctl.txt | 13 +++++++++++++
+ include/net/ip.h                       | 12 ++++++++++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/af_inet.c                     |  4 ++++
+ net/ipv4/sysctl_net_ipv4.c             | 18 ++++++++++++++++--
+ net/ipv6/af_inet6.c                    |  2 ++
+ net/sctp/socket.c                      |  5 +++++
+ 7 files changed, 53 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index fd26788e8c96..7129646a18bd 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -940,6 +940,19 @@ ip_local_reserved_ports - list of comma separated ranges
+ 
+ 	Default: Empty
+ 
++ip_local_unbindable_ports - list of comma separated ranges
++	Specify the ports which are not directly bind()able.
++
++	Usually you would use this to block the use of ports which
++	are invalid due to something outside of the control of the
++	kernel.  For example a port stolen by the nic for serial
++	console, remote power management or debugging.
++
++	There's a relatively high chance you will also want to list
++	these ports in 'ip_local_reserved_ports' to prevent autobinding.
++
++	Default: Empty
++
+ ip_unprivileged_port_start - INTEGER
+ 	This is a per-namespace sysctl.  It defines the first
+ 	unprivileged port in the network namespace.  Privileged ports
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 5b317c9f4470..045432e6d18e 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -346,6 +346,13 @@ static inline bool inet_is_local_reserved_port(struct net *net, unsigned short p
+ 	return test_bit(port, net->ipv4.sysctl_local_reserved_ports);
+ }
+ 
++static inline bool inet_is_local_unbindable_port(struct net *net, unsigned short port)
++{
++	if (!net->ipv4.sysctl_local_unbindable_ports)
++		return false;
++	return test_bit(port, net->ipv4.sysctl_local_unbindable_ports);
++}
++
+ static inline bool sysctl_dev_name_is_allowed(const char *name)
+ {
+ 	return strcmp(name, "default") != 0  && strcmp(name, "all") != 0;
+@@ -362,6 +369,11 @@ static inline bool inet_is_local_reserved_port(struct net *net, unsigned short p
+ 	return false;
+ }
+ 
++static inline bool inet_is_local_unbindable_port(struct net *net, unsigned short port)
++{
++	return false;
++}
++
+ static inline bool inet_port_requires_bind_service(struct net *net, unsigned short port)
+ {
+ 	return port < PROT_SOCK;
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index c0c0791b1912..6a235651925d 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -197,6 +197,7 @@ struct netns_ipv4 {
+ 
+ #ifdef CONFIG_SYSCTL
+ 	unsigned long *sysctl_local_reserved_ports;
++	unsigned long *sysctl_local_unbindable_ports;
+ 	int sysctl_ip_prot_sock;
+ #endif
+ 
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 2fe295432c24..b26046431612 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -494,6 +494,10 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 		goto out;
+ 
+ 	snum = ntohs(addr->sin_port);
++	err = -EPERM;
++	if (snum && inet_is_local_unbindable_port(net, snum))
++		goto out;
++
+ 	err = -EACCES;
+ 	if (snum && inet_port_requires_bind_service(net, snum) &&
+ 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index fcb2cd167f64..fd363b57a653 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -745,6 +745,13 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_do_large_bitmap,
+ 	},
++	{
++		.procname	= "ip_local_unbindable_ports",
++		.data		= &init_net.ipv4.sysctl_local_unbindable_ports,
++		.maxlen		= 65536,
++		.mode		= 0644,
++		.proc_handler	= proc_do_large_bitmap,
++	},
+ 	{
+ 		.procname	= "ip_no_pmtu_disc",
+ 		.data		= &init_net.ipv4.sysctl_ip_no_pmtu_disc,
+@@ -1353,11 +1360,17 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
+ 
+ 	net->ipv4.sysctl_local_reserved_ports = kzalloc(65536 / 8, GFP_KERNEL);
+ 	if (!net->ipv4.sysctl_local_reserved_ports)
+-		goto err_ports;
++		goto err_reserved_ports;
++
++	net->ipv4.sysctl_local_unbindable_ports = kzalloc(65536 / 8, GFP_KERNEL);
++	if (!net->ipv4.sysctl_local_unbindable_ports)
++		goto err_unbindable_ports;
+ 
+ 	return 0;
+ 
+-err_ports:
++err_unbindable_ports:
++	kfree(net->ipv4.sysctl_local_reserved_ports);
++err_reserved_ports:
+ 	unregister_net_sysctl_table(net->ipv4.ipv4_hdr);
+ err_reg:
+ 	if (!net_eq(net, &init_net))
+@@ -1370,6 +1383,7 @@ static __net_exit void ipv4_sysctl_exit_net(struct net *net)
+ {
+ 	struct ctl_table *table;
+ 
++	kfree(net->ipv4.sysctl_local_unbindable_ports);
+ 	kfree(net->ipv4.sysctl_local_reserved_ports);
+ 	table = net->ipv4.ipv4_hdr->ctl_table_arg;
+ 	unregister_net_sysctl_table(net->ipv4.ipv4_hdr);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index d727c3b41495..41f453906f2f 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -292,6 +292,8 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 		return -EINVAL;
+ 
+ 	snum = ntohs(addr->sin6_port);
++	if (snum && inet_is_local_unbindable_port(net, snum))
++		return -EPERM;
+ 	if (snum && inet_port_requires_bind_service(net, snum) &&
+ 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+ 		return -EACCES;
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 0b485952a71c..d1c93542419d 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -384,6 +384,9 @@ static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
+ 		}
+ 	}
+ 
++	if (snum && inet_is_local_unbindable_port(net, snum))
++		return -EPERM;
++
+ 	if (snum && inet_port_requires_bind_service(net, snum) &&
+ 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+ 		return -EACCES;
+@@ -1061,6 +1064,8 @@ static int sctp_connect_new_asoc(struct sctp_endpoint *ep,
+ 		if (sctp_autobind(sk))
+ 			return -EAGAIN;
+ 	} else {
++		if (inet_is_local_unbindable_port(net, ep->base.bind_addr.port))
++			return -EPERM;
+ 		if (inet_port_requires_bind_service(net, ep->base.bind_addr.port) &&
+ 		    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+ 			return -EACCES;
+-- 
+2.24.0.393.g34dc348eaf-goog
+
