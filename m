@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3C611702F
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E175117031
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:19:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbfLIPSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:18:55 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35458 "EHLO
+        id S1726824AbfLIPTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:19:01 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35470 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbfLIPSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:18:55 -0500
+        with ESMTP id S1726816AbfLIPTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:19:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gHDDCO4pR2psGyN6LkoA/FVbIJza3uq12Dy+w5GLUjo=; b=u01WIzyIM1N3uHtg8MsdLqmDv1
-        bIZtXnx8U13pNCIV6GCGFS+Tz/67JF+yy9RYB3KKrxNY5MR4v/8V9WlA1iLVd2oQo0/8mRh42cJaf
-        doC4PUDaL5ICmVeYKMG92aw6Gzen2xn+qRH54HDyAmS7bJjxzs+4YxuxnFxyNn+dot5AN7VPkb1tv
-        d4BjCsl3f0ez/UIv06PEaatV9sYBQtrzjBL2tZNKaBRfv2/kiLKQiaDrcKIfk7clm0+8s+VNGQN5u
-        XOiQVlnPIYVCX+oWzyHEXs1lM51zdoJag0MaAYUkpmB3tED0OctCD1wX9Mj7iLMQ2xwp3W+jIMKZb
-        awjzMvBQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:38176 helo=rmk-PC.armlinux.org.uk)
+        bh=zaumEGDEb2XRyUu3uWRqkfAEeTTFXeW5ZBfJBP8ZDkE=; b=DTyjnAd/B3NdLMlwJgsxGVtCpc
+        Qs2MP0MCszf9Cvg/lcXGHGNV5DuiPkLo/ta63MhnMh+BmctBcfEKyLaZaKnvmjAMV4N4d/WT2EZEu
+        y0DqGlK0KXpeI33P4CC+fHDHmC2U742Lbk47bDuvmKk8jjskd79eBKQqkJujmF7eY00/GjFDXCPd8
+        jeIqugDRG+NmDen0JmRBJY/cOW4iHje3eokfSE7ffoZnSD+CwI0nbCg2gJrZY564E1F2NtHtUVa/D
+        HsZ0pzMjO0d+Giy6wNeI3hN/I0wLzgxusqg8iDNkxomoZh0IFCyCWyR3435AeJCcyr1hmf8DVSOSr
+        qGtXlZ3w==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54608 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKoA-0003qG-UA; Mon, 09 Dec 2019 15:18:47 +0000
+        id 1ieKoG-0003qP-DE; Mon, 09 Dec 2019 15:18:52 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKo8-0004uu-Uh; Mon, 09 Dec 2019 15:18:45 +0000
+        id 1ieKoE-0004v1-Af; Mon, 09 Dec 2019 15:18:50 +0000
 In-Reply-To: <20191209151553.GP25745@shell.armlinux.org.uk>
 References: <20191209151553.GP25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,152 +38,90 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 04/14] net: sfp: add module start/stop upstream
- notifications
+Subject: [PATCH net-next v2 05/14] net: sfp: move phy_start()/phy_stop() to
+ phylink
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ieKo8-0004uu-Uh@rmk-PC.armlinux.org.uk>
-Date:   Mon, 09 Dec 2019 15:18:44 +0000
+Message-Id: <E1ieKoE-0004v1-Af@rmk-PC.armlinux.org.uk>
+Date:   Mon, 09 Dec 2019 15:18:50 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When dealing with some copper modules, we can't positively know the
-module capabilities are until we have probed the PHY. Without the full
-capabilities, we may end up failing a module that we could otherwise
-drive with a restricted set of capabilities.
-
-An example of this would be a module with a NBASE-T PHY plugged into
-a host that supports phy interface modes 2500BASE-X and SGMII. The
-PHY supports 10GBASE-R, 5000BASE-X, 2500BASE-X, SGMII interface modes,
-which means a subset of the capabilities are compatible with the host.
-
-However, reading the module EEPROM leads us to believe that the module
-only supports ethtool link mode 10GBASE-T, which is incompatible with
-the host - and thus results in the module being rejected.
-
-This patch adds an extra notification which are triggered after the
-SFP module's PHY probe, and a corresponding notification just before
-the PHY is removed.
+Move phy_start() and phy_stop() into the module_start and module_stop
+notifications in phylink, rather than having them in the SFP code.
+This gives phylink responsibility for controlling the PHY, rather
+than having SFP start and stop the PHY state machine.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp-bus.c | 21 +++++++++++++++++++++
- drivers/net/phy/sfp.c     |  8 ++++++++
- drivers/net/phy/sfp.h     |  2 ++
- include/linux/sfp.h       |  4 ++++
- 4 files changed, 35 insertions(+)
+ drivers/net/phy/phylink.c | 22 ++++++++++++++++++++++
+ drivers/net/phy/sfp.c     |  2 --
+ 2 files changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c6627f1e5d68..eabc9e3f0a9e 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -712,6 +712,27 @@ void sfp_module_remove(struct sfp_bus *bus)
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index d02eb83ed151..8c3fafebe667 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1770,6 +1770,26 @@ static int phylink_sfp_module_insert(void *upstream,
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(sfp_module_remove);
  
-+int sfp_module_start(struct sfp_bus *bus)
++static int phylink_sfp_module_start(void *upstream)
 +{
-+	const struct sfp_upstream_ops *ops = sfp_get_upstream_ops(bus);
-+	int ret = 0;
++	struct phylink *pl = upstream;
 +
-+	if (ops && ops->module_start)
-+		ret = ops->module_start(bus->upstream);
++	/* If this SFP module has a PHY, start the PHY now. */
++	if (pl->phydev)
++		phy_start(pl->phydev);
 +
-+	return ret;
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(sfp_module_start);
 +
-+void sfp_module_stop(struct sfp_bus *bus)
++static void phylink_sfp_module_stop(void *upstream)
 +{
-+	const struct sfp_upstream_ops *ops = sfp_get_upstream_ops(bus);
++	struct phylink *pl = upstream;
 +
-+	if (ops && ops->module_stop)
-+		ops->module_stop(bus->upstream);
++	/* If this SFP module has a PHY, stop it. */
++	if (pl->phydev)
++		phy_stop(pl->phydev);
 +}
-+EXPORT_SYMBOL_GPL(sfp_module_stop);
 +
- static void sfp_socket_clear(struct sfp_bus *bus)
+ static void phylink_sfp_link_down(void *upstream)
  {
- 	bus->sfp_dev = NULL;
+ 	struct phylink *pl = upstream;
+@@ -1805,6 +1825,8 @@ static const struct sfp_upstream_ops sfp_phylink_ops = {
+ 	.attach = phylink_sfp_attach,
+ 	.detach = phylink_sfp_detach,
+ 	.module_insert = phylink_sfp_module_insert,
++	.module_start = phylink_sfp_module_start,
++	.module_stop = phylink_sfp_module_stop,
+ 	.link_up = phylink_sfp_link_up,
+ 	.link_down = phylink_sfp_link_down,
+ 	.connect_phy = phylink_sfp_connect_phy,
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index ad3808307dba..23f30dac0f17 100644
+index 23f30dac0f17..d7d2c797c89c 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -59,6 +59,7 @@ enum {
- 	SFP_DEV_UP,
+@@ -1396,7 +1396,6 @@ static void sfp_sm_mod_next(struct sfp *sfp, unsigned int state,
  
- 	SFP_S_DOWN = 0,
-+	SFP_S_FAIL,
- 	SFP_S_WAIT,
- 	SFP_S_INIT,
- 	SFP_S_INIT_TX_FAULT,
-@@ -122,6 +123,7 @@ static const char *event_to_str(unsigned short event)
+ static void sfp_sm_phy_detach(struct sfp *sfp)
+ {
+-	phy_stop(sfp->mod_phy);
+ 	sfp_remove_phy(sfp->sfp_bus);
+ 	phy_device_remove(sfp->mod_phy);
+ 	phy_device_free(sfp->mod_phy);
+@@ -1427,7 +1426,6 @@ static void sfp_sm_probe_phy(struct sfp *sfp)
+ 	}
  
- static const char * const sm_state_strings[] = {
- 	[SFP_S_DOWN] = "down",
-+	[SFP_S_FAIL] = "fail",
- 	[SFP_S_WAIT] = "wait",
- 	[SFP_S_INIT] = "init",
- 	[SFP_S_INIT_TX_FAULT] = "init_tx_fault",
-@@ -1826,6 +1828,8 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 		if (sfp->sm_state == SFP_S_LINK_UP &&
- 		    sfp->sm_dev_state == SFP_DEV_UP)
- 			sfp_sm_link_down(sfp);
-+		if (sfp->sm_state > SFP_S_INIT)
-+			sfp_module_stop(sfp->sfp_bus);
- 		if (sfp->mod_phy)
- 			sfp_sm_phy_detach(sfp);
- 		sfp_module_tx_disable(sfp);
-@@ -1893,6 +1897,10 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 			 * clear.  Probe for the PHY and check the LOS state.
- 			 */
- 			sfp_sm_probe_for_phy(sfp);
-+			if (sfp_module_start(sfp->sfp_bus)) {
-+				sfp_sm_next(sfp, SFP_S_FAIL, 0);
-+				break;
-+			}
- 			sfp_sm_link_check_los(sfp);
+ 	sfp->mod_phy = phy;
+-	phy_start(phy);
+ }
  
- 			/* Reset the fault retry count */
-diff --git a/drivers/net/phy/sfp.h b/drivers/net/phy/sfp.h
-index 64f54b0bbd8c..b83f70526270 100644
---- a/drivers/net/phy/sfp.h
-+++ b/drivers/net/phy/sfp.h
-@@ -22,6 +22,8 @@ void sfp_link_up(struct sfp_bus *bus);
- void sfp_link_down(struct sfp_bus *bus);
- int sfp_module_insert(struct sfp_bus *bus, const struct sfp_eeprom_id *id);
- void sfp_module_remove(struct sfp_bus *bus);
-+int sfp_module_start(struct sfp_bus *bus);
-+void sfp_module_stop(struct sfp_bus *bus);
- int sfp_link_configure(struct sfp_bus *bus, const struct sfp_eeprom_id *id);
- struct sfp_bus *sfp_register_socket(struct device *dev, struct sfp *sfp,
- 				    const struct sfp_socket_ops *ops);
-diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 373d8b67ea86..66a56396e8e3 100644
---- a/include/linux/sfp.h
-+++ b/include/linux/sfp.h
-@@ -507,6 +507,8 @@ struct sfp_bus;
-  * @module_insert: called after a module has been detected to determine
-  *   whether the module is supported for the upstream device.
-  * @module_remove: called after the module has been removed.
-+ * @module_start: called after the PHY probe step
-+ * @module_stop: called before the PHY is removed
-  * @link_down: called when the link is non-operational for whatever
-  *   reason.
-  * @link_up: called when the link is operational.
-@@ -520,6 +522,8 @@ struct sfp_upstream_ops {
- 	void (*detach)(void *priv, struct sfp_bus *bus);
- 	int (*module_insert)(void *priv, const struct sfp_eeprom_id *id);
- 	void (*module_remove)(void *priv);
-+	int (*module_start)(void *priv);
-+	void (*module_stop)(void *priv);
- 	void (*link_down)(void *priv);
- 	void (*link_up)(void *priv);
- 	int (*connect_phy)(void *priv, struct phy_device *);
+ static void sfp_sm_link_up(struct sfp *sfp)
 -- 
 2.20.1
 
