@@ -2,50 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B504D116B87
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 11:54:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F39E116BA0
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 12:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbfLIKyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 05:54:51 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:55482 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727347AbfLIKyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 05:54:50 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ieGgi-00FN4j-L6; Mon, 09 Dec 2019 11:54:48 +0100
-Message-ID: <db33800253f071a1cfbb91f413af59e73faa6775.camel@sipsolutions.net>
-Subject: Re: [PATCH] virtio: Work around frames incorrectly marked as gso
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     anton.ivanov@cambridgegreys.com, netdev@vger.kernel.org
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-um@lists.infradead.org, mst@redhat.com
-Date:   Mon, 09 Dec 2019 11:54:46 +0100
-In-Reply-To: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
-References: <20191209104824.17059-1-anton.ivanov@cambridgegreys.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1727391AbfLILBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 06:01:39 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:23648 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727163AbfLILBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 06:01:36 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-195-oi3zS5NyMcuX2OLZVzunJg-1; Mon, 09 Dec 2019 11:01:31 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 9 Dec 2019 11:01:30 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 9 Dec 2019 11:01:30 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
+Thread-Topic: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
+Thread-Index: AdWsNynavvs+VRwOQ6mSStk+IzVA6AACUqqAAI3fO8A=
+Date:   Mon, 9 Dec 2019 11:01:30 +0000
+Message-ID: <efffc167eff1475f94f745f733171d59@AcuMS.aculab.com>
+References: <23db23416d3148fa86e54dccc6152266@AcuMS.aculab.com>
+ <dc10298d-4280-b9b4-9203-be4000e85c42@gmail.com>
+In-Reply-To: <dc10298d-4280-b9b4-9203-be4000e85c42@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MC-Unique: oi3zS5NyMcuX2OLZVzunJg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
->  		else if (sinfo->gso_type & SKB_GSO_TCPV6)
->  			hdr->gso_type = VIRTIO_NET_HDR_GSO_TCPV6;
-> -		else
-> -			return -EINVAL;
-> +		else {
-> +			if (skb->data_len == 0)
-> +				hdr->gso_type = VIRTIO_NET_HDR_GSO_NONE;
-
-
-maybe use "else if" like in the before? yes, it's a different type of
-condition, but braces look a bit unnatural here to me at least
-
-johannes
-
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDA2IERlY2VtYmVyIDIwMTkgMTQ6MjINCi4uLg0K
+PiBSZWFsIHF1ZXN0aW9uIGlzIDogRG8geW91IGFjdHVhbGx5IG5lZWQgdG8gdXNlIHJlY3Ztc2co
+KSBpbnN0ZWFkIG9mIHJlY3Zmcm9tKCkgPw0KPiBJZiByZWN2bXNnKCkgcHJvdmlkZXMgYWRkaXRp
+b25hbCBjbXNnLCB0aGlzIGlzIG5vdCBzdXJwcmlzaW5nIGl0IGlzIG1vcmUgZXhwZW5zaXZlLg0K
+DQpFeGNlcHQgSSdtIG5vdCBwYXNzaW5nIGluIGEgYnVmZmVyIGZvciBpdC4NClRoZSByZWFzb24g
+SSdtIGxvb2tpbmcgYXQgcmVjdm1zZyBpcyB0aGF0IEknZCBsaWtlIHRvIHVzZSByZWN2bW1zZyBp
+dCBvcmRlciB0bw0KcmVhZCBvdXQgbW9yZSB0aGFuIG9uZSBtZXNzYWdlIGZyb20gYSBzb2NrZXQg
+d2l0aG91dCBkb2luZyBhbiBleHRyYSBwb2xsKCkuDQpOb3RlIHRoYXQgSSBkb24ndCBleHBlY3Qg
+dGhlcmUgdG8gYmUgYSBzZWNvbmQgbWVzc2FnZSBtb3N0IG9mIHRoZSB0aW1lIGFuZA0KYWxtb3N0
+IG5ldmVyIGEgdGhpcmQgb25lLg0KDQpBbHRob3VnaCBJIHRoaW5rIHRoYXQgd2lsbCBvbmx5IGV2
+ZXIgJ3dpbicgaWYgcmVjdm1tc2coKSBjYWxsZWQgdmZzX3BvbGwoKSB0byBmaW5kDQppZiB0aGVy
+ZSB3YXMgbW9yZSBkYXRhIHRvIHJlYWQgYmVmb3JlIGRvaW5nIGFueSBvZiB0aGUgY29weV9mcm9t
+X3VzZXIoKSBldGMuDQoNCj4gcmVjdm1zZygpIGFsc28gdXNlcyBhbiBpbmRpcmVjdCBjYWxsLCBz
+byBDT05GSUdfUkVUUE9MSU5FPXkgaXMgcHJvYmFibHkgaHVydGluZy4NCg0KSSBkb24ndCBoYXZl
+IENPTkZJR19SRVRQT0xJTkUgZW5hYmxlZCwgdGhlIGNvbXBpbGVyIEknbSB1c2luZyBpcyB0b28g
+b2xkLg0KKGdjYyA0LjcuMykuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFr
+ZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwg
+VUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
