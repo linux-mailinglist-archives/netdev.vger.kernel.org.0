@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C62DA1167D2
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 08:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7121167CA
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 08:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727323AbfLIH51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 02:57:27 -0500
+        id S1727300AbfLIH5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 02:57:20 -0500
 Received: from mga05.intel.com ([192.55.52.43]:35353 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727261AbfLIH5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 02:57:17 -0500
+        id S1727281AbfLIH5S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 02:57:18 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Dec 2019 23:57:08 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Dec 2019 23:57:11 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,294,1571727600"; 
-   d="scan'208";a="362846928"
+   d="scan'208";a="362846937"
 Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.249.32.126])
-  by orsmga004.jf.intel.com with ESMTP; 08 Dec 2019 23:57:04 -0800
+  by orsmga004.jf.intel.com with ESMTP; 08 Dec 2019 23:57:08 -0800
 From:   Magnus Karlsson <magnus.karlsson@intel.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -27,9 +27,9 @@ To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
 Cc:     bpf@vger.kernel.org, saeedm@mellanox.com,
         jeffrey.t.kirsher@intel.com, maciej.fijalkowski@intel.com,
         maciejromanfijalkowski@gmail.com
-Subject: [PATCH bpf-next 07/12] xsk: simplify the consumer ring access functions
-Date:   Mon,  9 Dec 2019 08:56:24 +0100
-Message-Id: <1575878189-31860-8-git-send-email-magnus.karlsson@intel.com>
+Subject: [PATCH bpf-next 08/12] xsk: change names of validation functions
+Date:   Mon,  9 Dec 2019 08:56:25 +0100
+Message-Id: <1575878189-31860-9-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
 References: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
@@ -38,318 +38,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify and refactor consumer ring functions. The consumer first
-"peeks" to find descriptors or addresses that are available to
-read from the ring, then reads them and finally "releases" these
-descriptors once it is done. The two local variables cons_tail
-and cons_head are turned into one single variable called
-cached_cons. cached_tail referred to the cached value of the
-global consumer pointer and will be stored in cached_cons. For
-cached_head, we just use cached_prod instead as it was not used
-for a consumer queue before. It also better reflects what it
-really is now: a cached copy of the producer pointer.
+Change the names of the validation functions to better reflect what
+they are doing. The uppermost ones are reading entries from the rings
+and only the bottom ones validate entries. So xskq_cons_read_ is a
+better prefix name.
 
-The names of the functions are also renamed in the same manner as
-the producer functions. The new functions are called xskq_cons_
-followed by what it does.
+Also change the xskq_cons_read_ functions to return a bool
+as the the descriptor or address is already returned by reference
+in the parameters. Everyone is using the return value as a bool
+anyway.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- net/xdp/xsk.c       |  22 ++++++------
- net/xdp/xsk_queue.h | 102 ++++++++++++++++++++++++----------------------------
- 2 files changed, 57 insertions(+), 67 deletions(-)
+ include/net/xdp_sock.h |  4 ++--
+ net/xdp/xsk.c          |  4 ++--
+ net/xdp/xsk_queue.h    | 59 ++++++++++++++++++++++++++------------------------
+ 3 files changed, 35 insertions(+), 32 deletions(-)
 
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index e3780e4..0742aa9 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -119,7 +119,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
+ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
+ /* Used from netdev driver */
+ bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
+-u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
++bool xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
+ void xsk_umem_discard_addr(struct xdp_umem *umem);
+ void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
+ bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc);
+@@ -199,7 +199,7 @@ static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
+ 	return xsk_umem_has_addrs(umem, cnt - rq->length);
+ }
+ 
+-static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
++static inline bool xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
+ {
+ 	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
+ 
 diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index dbeb4e4..fb13b64 100644
+index fb13b64..62e27a4 100644
 --- a/net/xdp/xsk.c
 +++ b/net/xdp/xsk.c
-@@ -39,19 +39,19 @@ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
- 
- bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
- {
--	return xskq_has_addrs(umem->fq, cnt);
-+	return xskq_cons_has_entries(umem->fq, cnt);
+@@ -43,7 +43,7 @@ bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
  }
  EXPORT_SYMBOL(xsk_umem_has_addrs);
  
- u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
+-u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
++bool xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
  {
--	return xskq_peek_addr(umem->fq, addr, umem);
-+	return xskq_cons_peek_addr(umem->fq, addr, umem);
+ 	return xskq_cons_peek_addr(umem->fq, addr, umem);
  }
- EXPORT_SYMBOL(xsk_umem_peek_addr);
+@@ -124,7 +124,7 @@ static void __xsk_rcv_memcpy(struct xdp_umem *umem, u64 addr, void *from_buf,
+ 	void *to_buf = xdp_umem_get_data(umem, addr);
  
- void xsk_umem_discard_addr(struct xdp_umem *umem)
- {
--	xskq_discard_addr(umem->fq);
-+	xskq_cons_release(umem->fq);
- }
- EXPORT_SYMBOL(xsk_umem_discard_addr);
- 
-@@ -146,7 +146,7 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
- 	u32 metalen;
- 	int err;
- 
--	if (!xskq_peek_addr(xs->umem->fq, &addr, xs->umem) ||
-+	if (!xskq_cons_peek_addr(xs->umem->fq, &addr, xs->umem) ||
- 	    len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
- 		xs->rx_dropped++;
- 		return -ENOSPC;
-@@ -167,7 +167,7 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
- 	addr = xsk_umem_adjust_offset(xs->umem, addr, offset);
- 	err = xskq_prod_reserve_desc(xs->rx, addr, len);
- 	if (!err) {
--		xskq_discard_addr(xs->umem->fq);
-+		xskq_cons_release(xs->umem->fq);
- 		xdp_return_buff(xdp);
- 		return 0;
- 	}
-@@ -234,7 +234,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 		goto out_unlock;
- 	}
- 
--	if (!xskq_peek_addr(xs->umem->fq, &addr, xs->umem) ||
-+	if (!xskq_cons_peek_addr(xs->umem->fq, &addr, xs->umem) ||
- 	    len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
- 		err = -ENOSPC;
- 		goto out_drop;
-@@ -249,7 +249,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	if (err)
- 		goto out_drop;
- 
--	xskq_discard_addr(xs->umem->fq);
-+	xskq_cons_release(xs->umem->fq);
- 	xskq_prod_submit(xs->rx);
- 
- 	spin_unlock_bh(&xs->rx_lock);
-@@ -317,13 +317,13 @@ bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc)
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
--		if (!xskq_peek_desc(xs->tx, desc, umem))
-+		if (!xskq_cons_peek_desc(xs->tx, desc, umem))
- 			continue;
- 
- 		if (xskq_prod_reserve_addr(umem->cq, desc->addr))
- 			goto out;
- 
--		xskq_discard_desc(xs->tx);
-+		xskq_cons_release(xs->tx);
- 		rcu_read_unlock();
- 		return true;
- 	}
-@@ -369,7 +369,7 @@ static int xsk_generic_xmit(struct sock *sk)
- 	if (xs->queue_id >= xs->dev->real_num_tx_queues)
- 		goto out;
- 
--	while (xskq_peek_desc(xs->tx, &desc, xs->umem)) {
-+	while (xskq_cons_peek_desc(xs->tx, &desc, xs->umem)) {
- 		char *buffer;
- 		u64 addr;
- 		u32 len;
-@@ -402,7 +402,7 @@ static int xsk_generic_xmit(struct sock *sk)
- 		skb->destructor = xsk_destruct_skb;
- 
- 		err = dev_direct_xmit(skb, xs->queue_id);
--		xskq_discard_desc(xs->tx);
-+		xskq_cons_release(xs->tx);
- 		/* Ignore NET_XMIT_CN as packet might have been sent */
- 		if (err == NET_XMIT_DROP || err == NETDEV_TX_BUSY) {
- 			/* SKB completed but not sent */
+ 	addr = xsk_umem_add_offset_to_addr(addr);
+-	if (xskq_crosses_non_contig_pg(umem, addr, len + metalen)) {
++	if (xskq_cons_crosses_non_contig_pg(umem, addr, len + metalen)) {
+ 		void *next_pg_addr = umem->pages[(addr >> PAGE_SHIFT) + 1].addr;
+ 		u64 page_start = addr & ~(PAGE_SIZE - 1);
+ 		u64 first_len = PAGE_SIZE - (addr - page_start);
 diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index deda03c..588bdc5 100644
+index 588bdc5..7566f64 100644
 --- a/net/xdp/xsk_queue.h
 +++ b/net/xdp/xsk_queue.h
-@@ -34,8 +34,7 @@ struct xsk_queue {
- 	u32 ring_mask;
- 	u32 nentries;
- 	u32 cached_prod;
--	u32 cons_head;
--	u32 cons_tail;
-+	u32 cached_cons;
- 	struct xdp_ring *ring;
- 	u64 invalid_descs;
- };
-@@ -89,43 +88,48 @@ static inline u64 xskq_nb_invalid_descs(struct xsk_queue *q)
- 	return q ? q->invalid_descs : 0;
+@@ -136,8 +136,9 @@ static inline bool xskq_cons_has_entries(struct xsk_queue *q, u32 cnt)
+ 
+ /* UMEM queue */
+ 
+-static inline bool xskq_crosses_non_contig_pg(struct xdp_umem *umem, u64 addr,
+-					      u64 length)
++static inline bool xskq_cons_crosses_non_contig_pg(struct xdp_umem *umem,
++						   u64 addr,
++						   u64 length)
+ {
+ 	bool cross_pg = (addr & (PAGE_SIZE - 1)) + length > PAGE_SIZE;
+ 	bool next_pg_contig =
+@@ -147,7 +148,7 @@ static inline bool xskq_crosses_non_contig_pg(struct xdp_umem *umem, u64 addr,
+ 	return cross_pg && !next_pg_contig;
  }
  
--static inline u32 xskq_nb_avail(struct xsk_queue *q)
-+static inline void __xskq_cons_release(struct xsk_queue *q)
+-static inline bool xskq_is_valid_addr(struct xsk_queue *q, u64 addr)
++static inline bool xskq_cons_is_valid_addr(struct xsk_queue *q, u64 addr)
  {
--	u32 entries = q->cached_prod - q->cons_tail;
-+	smp_mb(); /* D, matches A */
-+	WRITE_ONCE(q->ring->consumer, q->cached_cons);
-+}
- 
--	if (entries == 0) {
--		/* Refresh the local pointer */
--		q->cached_prod = READ_ONCE(q->ring->producer);
--		entries = q->cached_prod - q->cons_tail;
--	}
-+static inline void __xskq_cons_peek(struct xsk_queue *q)
-+{
-+	/* Refresh the local pointer */
-+	q->cached_prod = READ_ONCE(q->ring->producer);
-+	smp_rmb(); /* C, matches B */
-+}
- 
--	return entries;
-+static inline void xskq_cons_get_entries(struct xsk_queue *q)
-+{
-+	__xskq_cons_release(q);
-+	__xskq_cons_peek(q);
+ 	if (addr >= q->size) {
+ 		q->invalid_descs++;
+@@ -157,7 +158,8 @@ static inline bool xskq_is_valid_addr(struct xsk_queue *q, u64 addr)
+ 	return true;
  }
  
- static inline bool xskq_prod_is_full(struct xsk_queue *q)
+-static inline bool xskq_is_valid_addr_unaligned(struct xsk_queue *q, u64 addr,
++static inline bool xskq_cons_is_valid_unaligned(struct xsk_queue *q,
++						u64 addr,
+ 						u64 length,
+ 						struct xdp_umem *umem)
  {
--	u32 free_entries = q->nentries - (q->cached_prod - q->cons_tail);
-+	u32 free_entries = q->nentries - (q->cached_prod - q->cached_cons);
+@@ -165,7 +167,7 @@ static inline bool xskq_is_valid_addr_unaligned(struct xsk_queue *q, u64 addr,
  
- 	if (free_entries)
+ 	addr = xsk_umem_add_offset_to_addr(addr);
+ 	if (base_addr >= q->size || addr >= q->size ||
+-	    xskq_crosses_non_contig_pg(umem, addr, length)) {
++	    xskq_cons_crosses_non_contig_pg(umem, addr, length)) {
+ 		q->invalid_descs++;
  		return false;
- 
- 	/* Refresh the local tail pointer */
--	q->cons_tail = READ_ONCE(q->ring->consumer);
--	free_entries = q->nentries - (q->cached_prod - q->cons_tail);
-+	q->cached_cons = READ_ONCE(q->ring->consumer);
-+	free_entries = q->nentries - (q->cached_prod - q->cached_cons);
- 
- 	return !free_entries;
- }
- 
--static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
-+static inline bool xskq_cons_has_entries(struct xsk_queue *q, u32 cnt)
- {
--	u32 entries = q->cached_prod - q->cons_tail;
-+	u32 entries = q->cached_prod - q->cached_cons;
- 
- 	if (entries >= cnt)
- 		return true;
- 
--	/* Refresh the local pointer. */
--	q->cached_prod = READ_ONCE(q->ring->producer);
--	entries = q->cached_prod - q->cons_tail;
-+	__xskq_cons_peek(q);
-+	entries = q->cached_prod - q->cached_cons;
- 
- 	return entries >= cnt;
- }
-@@ -172,9 +176,10 @@ static inline bool xskq_is_valid_addr_unaligned(struct xsk_queue *q, u64 addr,
- static inline u64 *xskq_validate_addr(struct xsk_queue *q, u64 *addr,
- 				      struct xdp_umem *umem)
- {
--	while (q->cons_tail != q->cons_head) {
--		struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
--		unsigned int idx = q->cons_tail & q->ring_mask;
-+	struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
-+
-+	while (q->cached_cons != q->cached_prod) {
-+		u32 idx = q->cached_cons & q->ring_mask;
- 
- 		*addr = READ_ONCE(ring->desc[idx]) & q->chunk_mask;
- 
-@@ -190,30 +195,27 @@ static inline u64 *xskq_validate_addr(struct xsk_queue *q, u64 *addr,
- 			return addr;
- 
- out:
--		q->cons_tail++;
-+		q->cached_cons++;
  	}
- 
- 	return NULL;
+@@ -173,8 +175,8 @@ static inline bool xskq_is_valid_addr_unaligned(struct xsk_queue *q, u64 addr,
+ 	return true;
  }
  
--static inline u64 *xskq_peek_addr(struct xsk_queue *q, u64 *addr,
--				  struct xdp_umem *umem)
-+static inline u64 *xskq_cons_peek_addr(struct xsk_queue *q, u64 *addr,
+-static inline u64 *xskq_validate_addr(struct xsk_queue *q, u64 *addr,
+-				      struct xdp_umem *umem)
++static inline bool xskq_cons_read_addr(struct xsk_queue *q, u64 *addr,
 +				       struct xdp_umem *umem)
  {
--	if (q->cons_tail == q->cons_head) {
--		smp_mb(); /* D, matches A */
--		WRITE_ONCE(q->ring->consumer, q->cons_tail);
--		q->cons_head = q->cons_tail + xskq_nb_avail(q);
--
--		/* Order consumer and data */
--		smp_rmb();
--	}
--
-+	if (q->cached_prod == q->cached_cons)
-+		xskq_cons_get_entries(q);
- 	return xskq_validate_addr(q, addr, umem);
- }
+ 	struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
  
--static inline void xskq_discard_addr(struct xsk_queue *q)
-+static inline void xskq_cons_release(struct xsk_queue *q)
- {
--	q->cons_tail++;
-+	/* To improve performance, only update local state here.
-+	 * Do the actual release operation when we get new entries
-+	 * from the ring in xskq_cons_get_entries() instead.
-+	 */
-+	q->cached_cons++;
- }
+@@ -184,29 +186,29 @@ static inline u64 *xskq_validate_addr(struct xsk_queue *q, u64 *addr,
+ 		*addr = READ_ONCE(ring->desc[idx]) & q->chunk_mask;
  
- static inline int xskq_prod_reserve(struct xsk_queue *q)
-@@ -299,41 +301,29 @@ static inline struct xdp_desc *xskq_validate_desc(struct xsk_queue *q,
- 						  struct xdp_desc *desc,
- 						  struct xdp_umem *umem)
- {
--	while (q->cons_tail != q->cons_head) {
-+	while (q->cached_cons != q->cached_prod) {
- 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
--		unsigned int idx = q->cons_tail & q->ring_mask;
-+		u32 idx = q->cached_cons & q->ring_mask;
+ 		if (umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG) {
+-			if (xskq_is_valid_addr_unaligned(q, *addr,
++			if (xskq_cons_is_valid_unaligned(q, *addr,
+ 							 umem->chunk_size_nohr,
+ 							 umem))
+-				return addr;
++				return true;
+ 			goto out;
+ 		}
  
- 		*desc = READ_ONCE(ring->desc[idx]);
- 		if (xskq_is_valid_desc(q, desc, umem))
- 			return desc;
+-		if (xskq_is_valid_addr(q, *addr))
+-			return addr;
++		if (xskq_cons_is_valid_addr(q, *addr))
++			return true;
  
--		q->cons_tail++;
-+		q->cached_cons++;
+ out:
+ 		q->cached_cons++;
  	}
  
- 	return NULL;
+-	return NULL;
++	return false;
  }
  
--static inline struct xdp_desc *xskq_peek_desc(struct xsk_queue *q,
--					      struct xdp_desc *desc,
--					      struct xdp_umem *umem)
-+static inline struct xdp_desc *xskq_cons_peek_desc(struct xsk_queue *q,
-+						   struct xdp_desc *desc,
-+						   struct xdp_umem *umem)
+-static inline u64 *xskq_cons_peek_addr(struct xsk_queue *q, u64 *addr,
++static inline bool xskq_cons_peek_addr(struct xsk_queue *q, u64 *addr,
+ 				       struct xdp_umem *umem)
  {
--	if (q->cons_tail == q->cons_head) {
--		smp_mb(); /* D, matches A */
--		WRITE_ONCE(q->ring->consumer, q->cons_tail);
--		q->cons_head = q->cons_tail + xskq_nb_avail(q);
--
--		/* Order consumer and data */
--		smp_rmb(); /* C, matches B */
--	}
--
-+	if (q->cached_prod == q->cached_cons)
-+		xskq_cons_get_entries(q);
- 	return xskq_validate_desc(q, desc, umem);
+ 	if (q->cached_prod == q->cached_cons)
+ 		xskq_cons_get_entries(q);
+-	return xskq_validate_addr(q, addr, umem);
++	return xskq_cons_read_addr(q, addr, umem);
  }
  
--static inline void xskq_discard_desc(struct xsk_queue *q)
--{
--	q->cons_tail++;
--}
--
+ static inline void xskq_cons_release(struct xsk_queue *q)
+@@ -270,11 +272,12 @@ static inline void xskq_prod_submit_n(struct xsk_queue *q, u32 nb_entries)
+ 
+ /* Rx/Tx queue */
+ 
+-static inline bool xskq_is_valid_desc(struct xsk_queue *q, struct xdp_desc *d,
+-				      struct xdp_umem *umem)
++static inline bool xskq_cons_is_valid_desc(struct xsk_queue *q,
++					   struct xdp_desc *d,
++					   struct xdp_umem *umem)
+ {
+ 	if (umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG) {
+-		if (!xskq_is_valid_addr_unaligned(q, d->addr, d->len, umem))
++		if (!xskq_cons_is_valid_unaligned(q, d->addr, d->len, umem))
+ 			return false;
+ 
+ 		if (d->len > umem->chunk_size_nohr || d->options) {
+@@ -285,7 +288,7 @@ static inline bool xskq_is_valid_desc(struct xsk_queue *q, struct xdp_desc *d,
+ 		return true;
+ 	}
+ 
+-	if (!xskq_is_valid_addr(q, d->addr))
++	if (!xskq_cons_is_valid_addr(q, d->addr))
+ 		return false;
+ 
+ 	if (((d->addr + d->len) & q->chunk_mask) != (d->addr & q->chunk_mask) ||
+@@ -297,31 +300,31 @@ static inline bool xskq_is_valid_desc(struct xsk_queue *q, struct xdp_desc *d,
+ 	return true;
+ }
+ 
+-static inline struct xdp_desc *xskq_validate_desc(struct xsk_queue *q,
+-						  struct xdp_desc *desc,
+-						  struct xdp_umem *umem)
++static inline bool xskq_cons_read_desc(struct xsk_queue *q,
++				       struct xdp_desc *desc,
++				       struct xdp_umem *umem)
+ {
+ 	while (q->cached_cons != q->cached_prod) {
+ 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+ 		u32 idx = q->cached_cons & q->ring_mask;
+ 
+ 		*desc = READ_ONCE(ring->desc[idx]);
+-		if (xskq_is_valid_desc(q, desc, umem))
+-			return desc;
++		if (xskq_cons_is_valid_desc(q, desc, umem))
++			return true;
+ 
+ 		q->cached_cons++;
+ 	}
+ 
+-	return NULL;
++	return false;
+ }
+ 
+-static inline struct xdp_desc *xskq_cons_peek_desc(struct xsk_queue *q,
+-						   struct xdp_desc *desc,
+-						   struct xdp_umem *umem)
++static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
++				       struct xdp_desc *desc,
++				       struct xdp_umem *umem)
+ {
+ 	if (q->cached_prod == q->cached_cons)
+ 		xskq_cons_get_entries(q);
+-	return xskq_validate_desc(q, desc, umem);
++	return xskq_cons_read_desc(q, desc, umem);
+ }
+ 
  static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
- 					 u64 addr, u32 len)
- {
-@@ -354,7 +344,7 @@ static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
- static inline bool xskq_cons_is_full(struct xsk_queue *q)
- {
- 	/* No barriers needed since data is not accessed */
--	return READ_ONCE(q->ring->producer) - q->cons_tail == q->nentries;
-+	return READ_ONCE(q->ring->producer) - q->cached_cons == q->nentries;
- }
- 
- static inline bool xskq_prod_is_empty(struct xsk_queue *q)
 -- 
 2.7.4
 
