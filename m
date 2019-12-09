@@ -2,121 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1241170EA
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:55:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D58731170F6
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:58:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfLIPzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:55:42 -0500
-Received: from correo.us.es ([193.147.175.20]:47576 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726080AbfLIPzl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 10:55:41 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 81570C04FD
-        for <netdev@vger.kernel.org>; Mon,  9 Dec 2019 16:55:38 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 728D2DA70F
-        for <netdev@vger.kernel.org>; Mon,  9 Dec 2019 16:55:38 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 67D8FDA70B; Mon,  9 Dec 2019 16:55:38 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 36755DA709;
-        Mon,  9 Dec 2019 16:55:36 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 09 Dec 2019 16:55:36 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id E76544265A5A;
-        Mon,  9 Dec 2019 16:55:35 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        geert@linux-m68k.org, jiri@mellanox.com
-Subject: [PATCH net] net: flow_dissector: fix tcp flags dissection on big-endian
-Date:   Mon,  9 Dec 2019 16:55:30 +0100
-Message-Id: <20191209155530.3050-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726769AbfLIP6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:58:03 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:38442 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726080AbfLIP6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:58:02 -0500
+Received: by mail-io1-f70.google.com with SMTP id l25so2335379ioh.5
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 07:58:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=haSirlvjghAy8O+UGZZ1CIdjmlMMpGQNnbPGRDREiuo=;
+        b=KAXBeppmU5d49kMNXyxOkutPbYJOOJO0DAyHrnoGOP6baC65IWZ0hm5WRI12jt3zqQ
+         DKkaCgvJhTOuCql9P32O/Ltvqtqnf+KMkTyEYQxrMnScTSBdvg8fjhFuArAWF+ktvFk+
+         tMHa0ATXalhzz0hKkCzVVGoP8bGr5alho/b1hhOQbqoOZOj+2oXXXEBiIN7Yq11EeCQj
+         BBDjTTpHf5WjjNQ7z1bDfbAUSuSfxW+uJHyUc9fe2Sf7CVWwsfqoqGFF50rLdYuHH2wq
+         TAqIm5DcqYXHBlFAJLJS74gpjzw6efkK144L3hltR2pSwIJIBKcsDJdh6iVKL5mU18iB
+         a6sA==
+X-Gm-Message-State: APjAAAU5knflYPR1uVvF17bhE/iNKwN4CeNdYIGCmiuoxOmqH+WjTkA+
+        k4PxRZcFLHFAeC8dtIqMWEQcoCfiIiBYGC9iyhMxNYFF4O3g
+X-Google-Smtp-Source: APXvYqy7SHoywomGmpRRGQOfRHAlD50ocSW6nQ6ugt5VWZKCvCo8SfnyYovVgE3ZOkflrPwPuNULbNVTBJdi5Engji2jZ7ttDdZV
+MIME-Version: 1.0
+X-Received: by 2002:a92:45d2:: with SMTP id z79mr28552816ilj.76.1575907081960;
+ Mon, 09 Dec 2019 07:58:01 -0800 (PST)
+Date:   Mon, 09 Dec 2019 07:58:01 -0800
+In-Reply-To: <00000000000000ffab05992442a7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d1c7150599477511@google.com>
+Subject: Re: KASAN: global-out-of-bounds Read in fb_pad_aligned_buffer
+From:   syzbot <syzbot+0568d05e486eee0a1ba2@syzkaller.appspotmail.com>
+To:     b.zolnierkie@samsung.com, coreteam@netfilter.org,
+        daniel.vetter@ffwll.ch, davem@davemloft.net,
+        dri-devel@lists.freedesktop.org, gwshan@linux.vnet.ibm.com,
+        kaber@trash.net, kadlec@blackhole.kfki.hu, kraxel@redhat.com,
+        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maarten.lankhorst@linux.intel.com, mpe@ellerman.id.au,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, peda@axentia.se, ruscur@russell.cc,
+        sam@ravnborg.org, stewart@linux.vnet.ibm.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    net/netfilter/nf_flow_table_offload.c: In function 'nf_flow_rule_match':
-    net/netfilter/nf_flow_table_offload.c:80:21: warning: unsigned conversion from 'int' to '__be16' {aka 'short unsigned int'} changes value from '327680' to '0' [-Woverflow]
-       80 |   mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
-          |                     ^~~~~~~~~~~~
+syzbot has bisected this bug to:
 
-Fixes: ac4bb5de2701 ("net: flow_dissector: add support for dissection of tcp flags")
-Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-@Geert: I have removed the pad field and included the nitpick fix on the
-        comment, given I have slightly updated this patch, I would prefer
-        if you can provide a fresh Reviewed-by tag. Thanks.
+commit 2de50e9674fc4ca3c6174b04477f69eb26b4ee31
+Author: Russell Currey <ruscur@russell.cc>
+Date:   Mon Feb 8 04:08:20 2016 +0000
 
- include/net/flow_dissector.h          | 8 ++++++--
- net/core/flow_dissector.c             | 2 +-
- net/netfilter/nf_flow_table_offload.c | 4 ++--
- 3 files changed, 9 insertions(+), 5 deletions(-)
+     powerpc/powernv: Remove support for p5ioc2
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index b8c20e9f343e..9ff8dac9d5ec 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -189,10 +189,14 @@ struct flow_dissector_key_eth_addrs {
- 
- /**
-  * struct flow_dissector_key_tcp:
-- * @flags: flags
-+ * @flags: TCP flags, including the initial Data offset field bits (16-bits)
-+ * @flag_word: Data offset + reserved bits + TCP flags + window (32-bits)
-  */
- struct flow_dissector_key_tcp {
--	__be16 flags;
-+	union {
-+		__be16 flags;
-+		__be32 flag_word;
-+	};
- };
- 
- /**
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index ca871657a4c4..83af4633f306 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -756,7 +756,7 @@ __skb_flow_dissect_tcp(const struct sk_buff *skb,
- 	key_tcp = skb_flow_dissector_target(flow_dissector,
- 					    FLOW_DISSECTOR_KEY_TCP,
- 					    target_container);
--	key_tcp->flags = (*(__be16 *) &tcp_flag_word(th) & htons(0x0FFF));
-+	key_tcp->flag_word = tcp_flag_word(th);
- }
- 
- static void
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index c94ebad78c5c..30205d57226d 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -87,8 +87,8 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
- 
- 	switch (tuple->l4proto) {
- 	case IPPROTO_TCP:
--		key->tcp.flags = 0;
--		mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
-+		key->tcp.flag_word = 0;
-+		mask->tcp.flag_word = TCP_FLAG_RST | TCP_FLAG_FIN;
- 		match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_TCP);
- 		break;
- 	case IPPROTO_UDP:
--- 
-2.11.0
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13ea0aeae00000
+start commit:   9455d25f Merge tag 'ntb-5.5' of git://github.com/jonmason/..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=101a0aeae00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17ea0aeae00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7a3b8f5088d4043a
+dashboard link: https://syzkaller.appspot.com/bug?extid=0568d05e486eee0a1ba2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15ddeca6e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16df9e41e00000
 
+Reported-by: syzbot+0568d05e486eee0a1ba2@syzkaller.appspotmail.com
+Fixes: 2de50e9674fc ("powerpc/powernv: Remove support for p5ioc2")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
