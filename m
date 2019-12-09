@@ -2,133 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41998117477
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 19:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C361174B2
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 19:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbfLISlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 13:41:46 -0500
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:33938 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfLISlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 13:41:46 -0500
-Received: by mail-yb1-f194.google.com with SMTP id k17so6537272ybp.1
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 10:41:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zQ3aMk+oK75ql5g/SjLbPqsxxFSBaQXOeD7LuZbE4Gc=;
-        b=JPGKUXeyFqKvK8qf6hee9JW0NIc2KxScSRdtRPwWxanOBNa5QaYvU5uRVJr5b2/T9P
-         yDmXrS5iEUrZEWOo3ECWN81HIeZBWeTHEVavYVTGqYhS59IKzy80FZOJREK4HShAr2r7
-         qrE1QrtNfewp66csddgduB9z+xU4XcMY6zE1K4HsQ15PPnh4oNcHft0VYVdnkTADXaqT
-         YDMh+W5F1kmXklWvwiz0k8bO1wpVyWibs1aKSg021cJBFvC8o1wMHfSBhTC7i9/Bw3tZ
-         3mTEQsBpHeVA7Wquz27SYSf9j3xPedMezzVLYAMEEFbHJcJXq48sRPm6RthBjrphXBkL
-         mdGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zQ3aMk+oK75ql5g/SjLbPqsxxFSBaQXOeD7LuZbE4Gc=;
-        b=I4bZMtIuI+qxcxpvd8wl3u0hJMUqEUfP5MVTrbLg/k9sim4rmf2LvabcbBI6KoNCKZ
-         8I06nOyP476mGjQxPpWUn2rjwDTA3dDZXMWW3MZDlPDQU/iYEy5KCerRboe3oDVUUD/7
-         QDraHtpnEJ9Yc0PXVnYpYkgCZDJiqStlBqReb/65qbMab8QNBUKKpSbtCsW4WWvjAn1G
-         vpkQ2rQ6XZQCZ/khflt3r29qyEZcofn6+Om8BP2ZP18UIBhhSEfUd0M6d+Rsue6WZFN2
-         X/qEbMqdrPQTyKaLzP3xR8xbgCYWyjG+AFlcALEPLPMwMqt7p2YogZe2gCANt/UqpFOm
-         DEug==
-X-Gm-Message-State: APjAAAXb8jYk+ougYxPJyJPhq+dL8YfdaJgeZrd4cV8k4siDTNeVgBYx
-        ATtovLX/r5MpmpMSL4KnC+k6eBCRHi300GymMoEtRQ==
-X-Google-Smtp-Source: APXvYqwc3HbTOPq2aozpp25ccRCbf4ILZqRQ5haw0uMV0vlfB2/z7Jgb+yy3xO/moFYS16Ap1F/WbBhciyG7oCX3U6Y=
-X-Received: by 2002:a25:c887:: with SMTP id y129mr22417785ybf.335.1575916904201;
- Mon, 09 Dec 2019 10:41:44 -0800 (PST)
+        id S1727133AbfLISnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 13:43:42 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26022 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727120AbfLISnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 13:43:42 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB9Ie2iS030254;
+        Mon, 9 Dec 2019 10:42:36 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=xRLvkCk8Q7E8xLj9KY+tfBOK0VjDUbUqo7zVqZsoYWo=;
+ b=muC5x5sHtuuI99IzB3qNF27kKZ895xAZN0BYxrxsbUbNpCKUstjswrjQBGaVBwK0izOD
+ w0J6XCq8AXwUz6t7F3GMQByspvvFCpEFmFY8H5+3gG+Wt3IliXE3y88w47DQfEk8SANP
+ 0jxw2qTQQ6vTqBmKxHh4DW0eRjjIf3Qxqv0= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wrc269u9n-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 09 Dec 2019 10:42:36 -0800
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 9 Dec 2019 10:42:26 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 9 Dec 2019 10:42:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MF0p4dyCCtLkNsANTIRgL8V4R2AWDnS7K7BTgZPcTRkkgwo8HlAUD51GbKXC9ynY1GGzwkt6N/peKmZqipE2vPIt+Pa4MRf0k2DbW7Sz3wVEZAcAiXg0qlrpp82jwKVJCQWN1QXY6xK8di6X+VVBISvTMPHWVsf6NJein+8evcAAdWYQB3YTiwqotegUwgfFtB1rigGK3GCZhjJVQQ9fLjq8087Ad4lJV6T8NHQ7VF/10c40reRLG0Uv1oPiOU6bu+Of/+7BEzgqiZXQ6FSL6n99gNwKvLhLOvoXFG96FrrXrkyVduly/Jnr9qBOz0xw1llPy9pNthzxEq/gjmakVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xRLvkCk8Q7E8xLj9KY+tfBOK0VjDUbUqo7zVqZsoYWo=;
+ b=nI0pV4RzJEGy5iq5ZI5gqQN0Hgvp4Qoic44bQ/5kFHY+wNCPkr0Eocecy4LpLbZLXXdnJc92+cBuhtVygfdDXVPqDAS9u9FKnJD8y1XA68f3+/t5Jwq+3wxVLiAZYx09an3g/PrjKV8NF533hFxAB9uw8tf81rk9ZWc4yyFbrr0vn3Y9db1YGGy7aaycgi7JohIQA3uwxeLPkLSOuKzfbA5yEC6rCtaOkzDtf3HkJMHF8lNIq3ANPX49UtDKbGDlkwD9+Ntv38a6Nfi6K/PB9kGFDDyGuUHIUfH2rp/Gx3ezGoCdZtgsVUY+xhMys85vJlKWZX6wXMUPaANVhf6ChQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xRLvkCk8Q7E8xLj9KY+tfBOK0VjDUbUqo7zVqZsoYWo=;
+ b=ciYhHbHKWNwLY0Cd0C9zma1siqygL9JHY1hYI7YLd/LabZnTQpZUL1Xci00xuoLp4s2YS7yI5YgpdrZtt+nvYA+C09TgBNIZaoUJh38s0N0eK4LEv/GoHgdoL2lwntMT9u2VDmB8Dju46JIRMF8otZf1L00L2J12WeUimkbu5qo=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3373.namprd15.prod.outlook.com (20.179.20.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.14; Mon, 9 Dec 2019 18:42:25 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Mon, 9 Dec 2019
+ 18:42:25 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Kernel Team" <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf 0/3] bpf: Make BPF trampoline friendly to ftrace
+Thread-Topic: [PATCH bpf 0/3] bpf: Make BPF trampoline friendly to ftrace
+Thread-Index: AQHVriPKlxpSO96taE6u8ud7YGSL6aeyJICA
+Date:   Mon, 9 Dec 2019 18:42:25 +0000
+Message-ID: <20191209184221.loxqkxlagbmpr5km@kafai-mbp>
+References: <20191209000114.1876138-1-ast@kernel.org>
+In-Reply-To: <20191209000114.1876138-1-ast@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR2201CA0039.namprd22.prod.outlook.com
+ (2603:10b6:301:16::13) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:b5df]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 99bd45df-0994-471e-98c7-08d77cd788a7
+x-ms-traffictypediagnostic: MN2PR15MB3373:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR15MB33730F8DB3510E691EE0E2ADD5580@MN2PR15MB3373.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 02462830BE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(136003)(376002)(39860400002)(396003)(346002)(199004)(189003)(305945005)(81166006)(81156014)(71200400001)(71190400001)(4744005)(33716001)(8936002)(186003)(66446008)(66556008)(86362001)(6506007)(6916009)(64756008)(66476007)(66946007)(5660300002)(54906003)(8676002)(316002)(52116002)(478600001)(6512007)(9686003)(6486002)(4326008)(1076003)(229853002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3373;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zzQwvUOaNweABduK5Y55fYpv/Z/9XWW1yMlW8+3c6gyLoaIr47f1gJF5uvvrQkWbjQoOPTOPEq/kN2eiiuZdMbGciZ7PA4La7gZz2K6/PCaGgKsdI1yC3swmAq53wzpeMeAer3Bq/yeYcR8sXjgews90J0vcGULtn5HQA1WYQ7nYf4igmwwHR9w6Y3SD+sCm/3GA7SkTXxmSkY4bIsaqHgTq29Vi4TeFaLO8SUyFQ/aXK9Xw6Lul9DuETVPWcpB/wWfZpVtXlpwnApDeCx/Yxagxs7GgTDEwGzWPkH+I6oP7QF0wsc8wDSmzPBrTEehCa4XWm9rVQX60MKDeAemuVLtNla8IL70ebl9gCTRp/WrJzIFtmgef2Nm1pF/uSqc6yN2EKulZ3TrxexuFzF5Omi3WUEbjD8YtnSgRkgam7Vhgkrp3oIDtUPTINscNEJG3
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DB5C1C20E43C3D48AE1182FBBEB9DB6E@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20191206234455.213159-1-maheshb@google.com> <10902.1575756592@famine>
-In-Reply-To: <10902.1575756592@famine>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Mon, 9 Dec 2019 10:41:28 -0800
-Message-ID: <CAF2d9jgjeky0eMgwFZKHO_RLTBNstH1gCq4hn1FfO=TtrMP1ow@mail.gmail.com>
-Subject: Re: [PATCH net] bonding: fix active-backup transition after link failure
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99bd45df-0994-471e-98c7-08d77cd788a7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2019 18:42:25.0831
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hVWH+MMSagjub5M4JPa1N4lNHXoDeM0wiWWfOUiThgoQZrVeL9A63XpiiFd3nbQp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3373
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-09_04:2019-12-09,2019-12-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ lowpriorityscore=0 bulkscore=0 malwarescore=0 mlxlogscore=244
+ suspectscore=0 mlxscore=0 phishscore=0 clxscore=1015 spamscore=0
+ adultscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912090150
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 7, 2019 at 2:09 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->
-> Mahesh Bandewar <maheshb@google.com> wrote:
->
-> >After the recent fix 1899bb325149 ("bonding: fix state transition
-> >issue in link monitoring"), the active-backup mode with miimon
-> >initially come-up fine but after a link-failure, both members
-> >transition into backup state.
-> >
-> >Following steps to reproduce the scenario (eth1 and eth2 are the
-> >slaves of the bond):
-> >
-> >    ip link set eth1 up
-> >    ip link set eth2 down
-> >    sleep 1
-> >    ip link set eth2 up
-> >    ip link set eth1 down
-> >    cat /sys/class/net/eth1/bonding_slave/state
-> >    cat /sys/class/net/eth2/bonding_slave/state
-> >
-> >Fixes: 1899bb325149 ("bonding: fix state transition issue in link monitoring")
-> >CC: Jay Vosburgh <jay.vosburgh@canonical.com>
-> >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> >---
-> > drivers/net/bonding/bond_main.c | 3 ---
-> > 1 file changed, 3 deletions(-)
-> >
-> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> >index fcb7c2f7f001..ad9906c102b4 100644
-> >--- a/drivers/net/bonding/bond_main.c
-> >+++ b/drivers/net/bonding/bond_main.c
-> >@@ -2272,9 +2272,6 @@ static void bond_miimon_commit(struct bonding *bond)
-> >                       } else if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP) {
-> >                               /* make it immediately active */
-> >                               bond_set_active_slave(slave);
-> >-                      } else if (slave != primary) {
-> >-                              /* prevent it from being the active one */
-> >-                              bond_set_backup_slave(slave);
->
->         How does this fix things?  Doesn't bond_select_active_slave() ->
-> bond_change_active_slave() set the backup flag correctly via a call to
-> bond_set_slave_active_flags() when it sets a slave to be the active
-> slave?  If this change resolves the problem, I'm not sure how this ever
-> worked correctly, even prior to 1899bb325149.
->
-Hi Jay, I used kprobes to figure out the brokenness this patch fixes.
-Prior to your patch this call would not happen but with the patch,
-this extra call will put the master into the backup mode erroneously
-(in fact both members would be in backup state). The mechanics you
-have mentioned works correctly except that in the prior case, the
-switch statement was using new_link which was not same as
-link_new_state. The miimon_inspect will update new_link which is what
-was used in miimon_commit code. The link_new_state was used only to
-mitigate the rtnl-lock issue which would update the "link". Hence in
-the prior code, this path would never get executed.
-
-The steps to reproduce this issue is straightforward and happens 100%
-of the time (I used two mlx interfaces but that shouldn't matter).
-
-thanks,
---mahesh..
->         -J
->
-> >                       }
-> >
-> >                       slave_info(bond->dev, slave->dev, "link status definitely up, %u Mbps %s duplex\n",
-> >--
-> >2.24.0.393.g34dc348eaf-goog
-> >
->
-> ---
->         -Jay Vosburgh, jay.vosburgh@canonical.com
+On Sun, Dec 08, 2019 at 04:01:11PM -0800, Alexei Starovoitov wrote:
+> Patch 1 - fix crash function_graph tracer encounters BPF trampoline
+> Patch 2 - use register_ftrace_direct() API to attach BPF trampoline
+> Patch 3 - simple test
+>=20
+> Alexei Starovoitov (3):
+>   ftrace: Fix function_graph tracer interaction with BPF trampoline
+>   bpf: Make BPF trampoline use register_ftrace_direct() API
+>   selftests/bpf: test function_graph tracer and bpf trampoline together
+Acked-by: Martin KaFai Lau <kafai@fb.com>
