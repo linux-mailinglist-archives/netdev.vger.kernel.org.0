@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18845116DB1
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 14:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A1A2116DC5
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 14:16:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727659AbfLINJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 08:09:46 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40224 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727595AbfLINJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 08:09:45 -0500
-Received: by mail-qt1-f194.google.com with SMTP id t17so8821172qtr.7
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 05:09:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=u1bbrioTwxooO/VsuJjFcFYOpYHh1hahKzAbDFd93vA=;
-        b=Rs48GNbLZeS1qbPRrsA/Ujeko8YVEOLIMBPYg9a+/pL9x5M12qy3R5PpF+/YdBCBTO
-         nmKqWilLQs/auffmDXOyWe8zR5Nit5JuUu1ZQBMHZRqQo8y8uTuIQnGO2Oyx9pTWKCnr
-         MakN0MLXswCSY+JCYg5tgr3ilwDVXd4dw3Jq9fd7BWgaf3475p5qprjIuP8QwiCsWHA+
-         kzvenpx/RlBuzgJ5OsNy4a9/A3dg0GpRQJoiByLLPI4obWE7J0x9ZBrMzk7g0/7Ntu06
-         Hx7mIJaTnKtjNhMn9ig0PnTSCQ9FHlA1x55zJsozYyIzHMDo6Vrb/UBJNNNScdzBt8Im
-         aqSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=u1bbrioTwxooO/VsuJjFcFYOpYHh1hahKzAbDFd93vA=;
-        b=GnMq6aTlwtr1TfJh5OG2WONdyECjzKC9PhxAkwRWzoR0FQFY0MTCHEEbieQVP7gFUw
-         jxGvMH4rFv5r1N9ZjdH6sDTQ1YGUOELCa7E19AW1+TpQO9w1TcoDIvLxKrgya1F0k4/V
-         fF3kGej924jUbAjxTuHlO30pnMwCRmrASzpZzKWtsdBy6hd8jZI9bFm/SFn19RMfaR7s
-         PNjMMasTkelUR3EU2arBSrJDHQOZZgqL5bA3iobqrLe88Lc7fe+wN9kC2TmfyafQ9SMp
-         hUcRw3UmMph6mYXFfo09smzySYqiP0Zg2EfCgqFTdBcNIl7a+nxic7tqr3uZ0Vq3+Gtz
-         k3GA==
-X-Gm-Message-State: APjAAAW8aAJKDtU4EP9BGvNw2jfeIi3z7xSu4ysp8wkZoQZ+ZX1PxUnJ
-        VLjHdB/fSR1RIsIhREdbl9wGHQrMGMhANfUBmpY=
-X-Google-Smtp-Source: APXvYqz9jbaisBUXTCvknEd6lEyr9l/9ozc7OXSS1nkAxt95xdm43cnabJFi0a1CMkGkhPqgMdi7d3jEIaznidRpI7Q=
-X-Received: by 2002:aed:304e:: with SMTP id 72mr24551322qte.113.1575896984702;
- Mon, 09 Dec 2019 05:09:44 -0800 (PST)
+        id S1727638AbfLINQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 08:16:12 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:44717 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbfLINQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 08:16:12 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ieItU-0000ib-8M; Mon, 09 Dec 2019 13:16:08 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][V2][RESEND] qed: remove redundant assignments to rc
+Date:   Mon,  9 Dec 2019 13:16:07 +0000
+Message-Id: <20191209131607.71580-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Received: by 2002:a05:6214:1413:0:0:0:0 with HTTP; Mon, 9 Dec 2019 05:09:43
- -0800 (PST)
-Reply-To: mlalduhzuala@aol.com
-From:   "Mr. G.S.Meena Lalduhzuala" <mrali.abun@gmail.com>
-Date:   Mon, 9 Dec 2019 14:09:43 +0100
-Message-ID: <CAPWv7SwzE96r7c6FVpucb2O6e1j=mZyu0GeHtcorr9C+v051NA@mail.gmail.com>
-Subject: very very urgent
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+From: Colin Ian King <colin.king@canonical.com>
 
-I Am Mr. G.S.Meena Lalduhzuala, chairman and chief operating officer with the
-Bank of Africa, and I want you to know that the amount of $ 18.6
-million will be transferred to your name as a foreign partner of our
-deceased client.
+The variable rc is assigned with a value that is never read and
+it is re-assigned a new value later on.  The assignment is redundant
+and can be removed.  Clean up multiple occurrances of this pattern.
 
-I need your help to get this fund to be transfer out from here to your
-account, and we share at a ratio of 50% for me, while 50% is for you
-in any assistance that you may require to give during the transferring
-process of this fund into your account. You will receive this amount
-by bank transfer.
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_sp_commands.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Please send your full name and your directly phone numbers, and
-address, and I will details you about this transaction. You have to
-contact me through my private e-mail at {mlalduhzuala@aol.com}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+index 7e0b795230b2..900bc603e30a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
+@@ -331,8 +331,8 @@ int qed_sp_pf_start(struct qed_hwfn *p_hwfn,
+ 	u8 sb_index = p_hwfn->p_eq->eq_sb_index;
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EINVAL;
+ 	u8 page_cnt, i;
++	int rc;
+ 
+ 	/* update initial eq producer */
+ 	qed_eq_prod_update(p_hwfn,
+@@ -447,7 +447,7 @@ int qed_sp_pf_update(struct qed_hwfn *p_hwfn)
+ {
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EINVAL;
++	int rc;
+ 
+ 	/* Get SPQ entry */
+ 	memset(&init_data, 0, sizeof(init_data));
+@@ -471,7 +471,7 @@ int qed_sp_pf_update_ufp(struct qed_hwfn *p_hwfn)
+ {
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EOPNOTSUPP;
++	int rc;
+ 
+ 	if (p_hwfn->ufp_info.pri_type == QED_UFP_PRI_UNKNOWN) {
+ 		DP_INFO(p_hwfn, "Invalid priority type %d\n",
+@@ -509,7 +509,7 @@ int qed_sp_pf_update_tunn_cfg(struct qed_hwfn *p_hwfn,
+ {
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EINVAL;
++	int rc;
+ 
+ 	if (IS_VF(p_hwfn->cdev))
+ 		return qed_vf_pf_tunnel_param_update(p_hwfn, p_tunn);
+@@ -546,7 +546,7 @@ int qed_sp_pf_stop(struct qed_hwfn *p_hwfn)
+ {
+ 	struct qed_spq_entry *p_ent = NULL;
+ 	struct qed_sp_init_data init_data;
+-	int rc = -EINVAL;
++	int rc;
+ 
+ 	/* Get SPQ entry */
+ 	memset(&init_data, 0, sizeof(init_data));
+-- 
+2.24.0
 
-Your prompt reply will be highly appreciated.
-
-Sincerely,
-CONTACTS ME THROUGH MY INFORMATION
-Bank Of Africa (A.D.B)
-Ouagadougou Burkina Faso,
-West Africa
-Contact: E-Mail :{mlalduhzuala@aol.com}
-Contact: E-Mail :{mr.g.s.meena@outlook.com}
-Mr. G.S.Meena Lalduhzuala:
-
-Sorry if you received this letter in your spam, is due to recent
-connection error here in the country.
