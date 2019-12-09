@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FC09116494
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 01:50:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5738116496
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 01:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbfLIAum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 19:50:42 -0500
-Received: from rishabapparel.com ([108.160.151.148]:57506 "EHLO
+        id S1726793AbfLIAvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 19:51:00 -0500
+Received: from rishabapparel.com ([108.160.151.148]:35641 "EHLO
         rishabapparel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbfLIAum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 19:50:42 -0500
+        with ESMTP id S1726677AbfLIAvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 19:51:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=rishabapparel.com; s=default; h=Message-ID:Reply-To:Subject:To:From:Date:
         Content-Type:MIME-Version:Sender:Cc:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=O2HIYenV6RSz14j2hfdksjiHAgxQIyhuXPsjhU6xqKs=; b=Ujih2CSxr1XXPCE1JZJgsTvhAm
-        /ZPY6Fg1xXDBiPwiOeM9TbB+5eAMymJxBy6eDND7atONl2F6aTDwQBqTgS1HYmDYFKyChKa9gic3R
-        2WX0sIfPcb9Gr8Lt6lB7ji1VR7X0vEXq0IZH5Ylm6M92FkgWZTp3oW28v/GtgIUOdmZaQGSA5erhd
-        bxac3QTDr5IxHj3ttVISjtIF2tM4S4qF79dZKH/koNLWS4O07UIT4bLj86H/mb+jtJTXqF1l4dy/P
-        yzVX+bChdxmp68FopZ35fdzHhttuQA2zROK9ZZOMsava4X2xX34+CUS/xmBn9YRGPKF6fpsd4HFj4
-        gLS5rosA==;
-Received: from [::1] (port=46366 helo=s2.ssaspl.net)
+        bh=LPQCUYSIfKpzLYGugg88chbNPO21BdNh0kmFVUF8QBM=; b=nFWldWnvHKvDMayqTROdTDDXYV
+        7d+klAjU9QON+jSwU1OpyRhtvkyW6ZnePmNtPG0r3mwSnD9y+wJnLxv2lVKDDgj8WKZMhm3iC69MN
+        knxn2MroGaLc7LGOeh8neAzX9LIAgBb1FQ23XCeaf1K0t7dKHM3lHM3sqe7HnhVrfHxS1pQp5OL+p
+        tjZjY2FM20vdibOQvwtOqkqdQlB3hj/SYiGs/opN9KtyJFnbvyR/lBY5hmZkRPgx7DH2aVigXBDYv
+        Wy4IL7nvHULUPtJKzbf5jcm4yBHUNg/ESwDsPmbZxFApwIP2my7HSD7zTjbna85Luqh+gC6xZ18Tq
+        fUA+2QLw==;
+Received: from [::1] (port=46536 helo=s2.ssaspl.net)
         by s2.ssaspl.net with esmtpa (Exim 4.92)
         (envelope-from <lisa.benedict@evusa.com>)
-        id 1ie7CW-00008W-SY; Mon, 09 Dec 2019 06:17:00 +0530
+        id 1ie7Cx-0000I2-7k; Mon, 09 Dec 2019 06:17:27 +0530
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="=_62ad80b195e2a258e347123ef17b4249"
-Date:   Mon, 09 Dec 2019 06:17:00 +0530
+ boundary="=_9a771966da8e2b873f96a85ff2b42aa3"
+Date:   Mon, 09 Dec 2019 06:17:26 +0530
 From:   Lisa Benedict <lisa.benedict@evusa.com>
 To:     paul.lucas@because.ae, anicee.sedaghat@because.us,
         andres.garrido@because.it, elysa.chiarovano@because.ge
 Subject: REMITC TT PAYMENT
 Reply-To: lisa.benedict@evusa.com
 Mail-Reply-To: lisa.benedict@evusa.com
-Message-ID: <7e399fbde0ee0bac14666fd0f3437e24@evusa.com>
+Message-ID: <1afd5a38585010418f0825bf63073c42@evusa.com>
 X-Sender: lisa.benedict@evusa.com
 User-Agent: Roundcube Webmail/1.3.8
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
@@ -55,7 +55,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=_62ad80b195e2a258e347123ef17b4249
+--=_9a771966da8e2b873f96a85ff2b42aa3
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset=UTF-8;
  format=flowed
@@ -66,7 +66,7 @@ please find enclosed the T/T payment. 
 Kindly confirm the receipt, thanks.  
 
 With best regards
---=_62ad80b195e2a258e347123ef17b4249
+--=_9a771966da8e2b873f96a85ff2b42aa3
 Content-Transfer-Encoding: base64
 Content-Type: application/zip;
  name="REMITC TT.zip"
@@ -8353,4 +8353,4 @@ auWdy9vXIkCiUrs4crBXeW9t46HyTql2bkctIp3bqO68t1TbGX1kfCSyU6psXSnX9ldMfkAsEtHE
 14DBldJ2rexkiojc4yGNEv0eS/b779FKgPf771FKfZ94Y3+/fwxqCdzON0Ps/P4//v4XUEsBAhQA
 FAAAAAgATLWITwwvHY28MgcAAFIJAA0AAAAAAAAAAAAgAAAAAAAAAFJFTUlUQyBUVC5leGVQSwUG
 AAAAAAEAAQA7AAAA5zIHAAAA
---=_62ad80b195e2a258e347123ef17b4249--
+--=_9a771966da8e2b873f96a85ff2b42aa3--
