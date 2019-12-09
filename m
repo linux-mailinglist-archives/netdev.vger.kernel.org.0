@@ -2,161 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AE31167D6
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 08:58:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D108116819
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 09:28:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727160AbfLIH6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 02:58:12 -0500
-Received: from mail-eopbgr70111.outbound.protection.outlook.com ([40.107.7.111]:42310
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1727163AbfLII2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 03:28:23 -0500
+Received: from mail-eopbgr10048.outbound.protection.outlook.com ([40.107.1.48]:4224
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727329AbfLIH6M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 02:58:12 -0500
+        id S1726377AbfLII2W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 03:28:22 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ikoRh7GTzH9bZGsa3WMc+O+8p6CttGLGnXGTu4lHuxYTuQpwn9hWy6/mjM0vfaPyA7b/VGExb9HraMIvUAtNEgB+/Q5GqwzBZzEQ7T5QMNQyDX39uPLMc6AxRBxb+M2jGMfn+yRuoGTlRulWUe/dALtHheT8MtRx0BMxYezvVDV1vYDco2rk4nMcVqmSJFl6sK9bY1+NYBM373khDpEtyawF9RNMS5yD5+lynrdDw71pOxzNPZL2q0M9oaP5uNPz94UW5ChiPyCgfiH/giqRCbd7KVxRiBUidrEpIUOZiiJ7klmPqW677KHTHH3T2g7giqh+ge3JHFpcqLQEGnTIZQ==
+ b=YXzMFLXYiTMmCwBU0nswfzRmk5+IeXlYUtYlyNvvprs+Cr+CWJZI88t43H5VaC7om1DejKWakpMvt2LenolP8pXBCRTbAeK77FHmmKEaNM8Ksc+5BqnJLIn8k9E+DfZSEzZkVL/BXEsflZVoeYLSMmFkX6oDNKxOtIiwD6ciNlXHyDYmIn5B8dFGdw0eP/nSFN01VlEjJZgO+AZRox6zgWNvUeP349ce2vifWXDG5NPLfVMoCRMPmbJOKSnBAAj5KTpg52aWakt8Mx0xGOii5QtSZkGMj1BapY/kNUp7aFlwah7H+5J6F1eUhifC4yGA5ukZvo459YX01tVfkfKJ7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CVKCW3Iw4ZfwYsnR9fSmHSC/6RSX5DXMJPkNgogmuOQ=;
- b=n1C0HSekyOrY3Gz/1oW4nUrKW5VtwF+X0WxNK0ueY0D3EWF0vJpDSppa4z8upFYo9gPXw5glwFqtsAErhBYUQinjYAsah7Xp4wNZgHzybjlsmVUyx3YLgtfZb0enyHXvKSH6b+V+jnBjCGMHp7zA1B1fS2TMgv8VDBBnAci3Se/quYQ4vZY6kK4etgycooaToVvzQqKRQP/lftSSgQ2mxGjrwq5cxzeajC/W3VsJx2ByWSNOldJ4nDQyDqu7ydI+MuahYMU1omb+W+5mLkWNFhPZH9/MjpTtowJXs4UluKL70EKWPNP+PzLO0f2CthoY0zjxG+KrR+yMmifZfuOptA==
+ bh=3kyj5a5B2Yb7rZNXU3/sIiam4fdGgZErfKE2n4CDrzA=;
+ b=QOR7Vzrc4H1MBMfy5TIEKhTrLssY443Ol41UQPH8FJfNtnnnw1piZyRteaGNgQOONV4LSzwD3dJwLKI3ZBAK7lO1FdRBFwH/m89uRiBqfI3/7QO8nbzO7yJNhzwczFG0lcsuKhyBYJCZT4wCY3/yt1XNC3pA9QGqkit/KTzYTn6Hz/qST460vQzFrqa09BKLLrxj4nVE1NOB+a5OjADWE5Ful/hj+MBGHzvlhMFx2x4ogpa05dwDrh6I/XLKdWB3s58CbGPERKC6WXzLew5nGTvN6tJb9F1HjdTTv3Cv1rzv5jTEJmO8umK4ZjYHV+yM+ZsNxDtsSZyT6hi/rGv47Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=televic.com; dmarc=pass action=none header.from=televic.com;
- dkim=pass header.d=televic.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=televic.com;
- s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CVKCW3Iw4ZfwYsnR9fSmHSC/6RSX5DXMJPkNgogmuOQ=;
- b=CyFY+2cDhI2KXPpq9iFZBvO8ktHrjGxx2u7rTwazSlaTfrG5m5XrUcTi2P3O8I5an+4kkkva1NGApl0rGsd7ltt1gGTnE9tkJk+JT/HhV+6Hf4q6nNSK0+qI4b0VvrwMEY3yOYwGeaSzY626Xt9mkQhZ2FfZF4Z45689K4BwEPM=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=J.Lambrecht@TELEVIC.com; 
-Received: from VI1PR07MB5085.eurprd07.prod.outlook.com (20.177.203.77) by
- VI1PR07MB5360.eurprd07.prod.outlook.com (20.178.11.160) with Microsoft SMTP
+ bh=3kyj5a5B2Yb7rZNXU3/sIiam4fdGgZErfKE2n4CDrzA=;
+ b=UE4FKp4yn73TypicwwMmMjLvlRDVLm+yL2k6D4QBtpCvcKoi5obCO4Kfrt8ngILmQHbms2BYBNv9iEcIIB0drKzYLGDYbFC8b/2fwQsPrfcDmBHcYj6WywGfB1JGnurT9Pfqm1gaiDbg0AMpKgXIXouGqTbX8SB+sFbMBFdaLVo=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5561.eurprd04.prod.outlook.com (20.178.104.18) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.6; Mon, 9 Dec 2019 07:57:26 +0000
-Received: from VI1PR07MB5085.eurprd07.prod.outlook.com
- ([fe80::780c:216f:7598:e572]) by VI1PR07MB5085.eurprd07.prod.outlook.com
- ([fe80::780c:216f:7598:e572%6]) with mapi id 15.20.2538.012; Mon, 9 Dec 2019
- 07:57:25 +0000
-Subject: Re: net: dsa: mv88e6xxx: error parsing ethernet node from dts
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        rasmus.villemoes@prevas.dk,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        vivien.didelot@gmail.com,
-        =?UTF-8?Q?Antoine_T=c3=a9nart?= <antoine.tenart@bootlin.com>
-References: <27f65072-f3a1-7a3c-5e9e-0cc86d25ab51@televic.com>
- <20191204153804.GD21904@lunn.ch>
- <ccf9c80e-83e5-d207-8d09-1819cfb1cf35@televic.com>
- <20191204171336.GF21904@lunn.ch>
-From:   =?UTF-8?Q?J=c3=bcrgen_Lambrecht?= <j.lambrecht@televic.com>
-Message-ID: <5851b137-2a3f-f8b3-cd0a-6efc2b7df67d@televic.com>
-Date:   Mon, 9 Dec 2019 08:57:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-In-Reply-To: <20191204171336.GF21904@lunn.ch>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+ 15.20.2516.12; Mon, 9 Dec 2019 08:28:17 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.018; Mon, 9 Dec 2019
+ 08:28:17 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH V3 0/6] can: flexcan: fixes for stop mode
+Thread-Topic: [PATCH V3 0/6] can: flexcan: fixes for stop mode
+Thread-Index: AQHVqpcC9+9ZZuOr5E+r+rwXW/eLZKeuuxgAgALENZA=
+Date:   Mon, 9 Dec 2019 08:28:17 +0000
+Message-ID: <DB7PR04MB4618328FDC7BC5B4DA3953A2E6580@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20191204113249.3381-1-qiangqing.zhang@nxp.com>
+ <67da1a42-f3d3-6ac1-e5f9-211d2da00ba3@pengutronix.de>
+In-Reply-To: <67da1a42-f3d3-6ac1-e5f9-211d2da00ba3@pengutronix.de>
+Accept-Language: en-US
 Content-Language: en-US
-X-ClientProxiedBy: AM0PR0402CA0010.eurprd04.prod.outlook.com
- (2603:10a6:208:15::23) To VI1PR07MB5085.eurprd07.prod.outlook.com
- (2603:10a6:803:9d::13)
-MIME-Version: 1.0
-Received: from [10.40.216.140] (84.199.255.188) by AM0PR0402CA0010.eurprd04.prod.outlook.com (2603:10a6:208:15::23) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Mon, 9 Dec 2019 07:57:25 +0000
-X-Originating-IP: [84.199.255.188]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 908f3501-e85a-4666-312a-08d77c7d6e28
-X-MS-TrafficTypeDiagnostic: VI1PR07MB5360:
-X-Microsoft-Antispam-PRVS: <VI1PR07MB5360CD5174E3C582BBEFE1AFFF580@VI1PR07MB5360.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 02462830BE
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(39840400004)(346002)(376002)(136003)(366004)(189003)(199004)(305945005)(8676002)(81166006)(81156014)(50466002)(66556008)(66476007)(66946007)(5660300002)(65956001)(36756003)(2870700001)(2906002)(6486002)(31686004)(478600001)(6916009)(229853002)(66574012)(316002)(86362001)(52116002)(53546011)(956004)(186003)(58126008)(16526019)(2616005)(54906003)(31696002)(16576012)(4326008)(26005)(8936002)(76176011);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB5360;H:VI1PR07MB5085.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-Received-SPF: None (protection.outlook.com: TELEVIC.com does not designate
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: de18e58f-c313-44e0-e56d-08d77c81bdfc
+x-ms-traffictypediagnostic: DB7PR04MB5561:|DB7PR04MB5561:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB5561920A425BCDB2DAB933A0E6580@DB7PR04MB5561.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 02462830BE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(136003)(376002)(366004)(396003)(13464003)(189003)(199004)(74316002)(316002)(52536014)(2906002)(55016002)(9686003)(8936002)(305945005)(33656002)(99286004)(4326008)(81166006)(81156014)(6506007)(8676002)(186003)(53546011)(76116006)(66446008)(64756008)(66556008)(66946007)(66476007)(102836004)(966005)(478600001)(54906003)(229853002)(110136005)(26005)(86362001)(76176011)(7696005)(71200400001)(71190400001)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5561;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tJtSYmjM7MXHRVUOV9BrkyAlIWAvyWUIrDNKdMLk00LhE56FLkSZ2YAv6oFFE5CNPC1Mk6oY3wdQ1OXekZNDqVtyExCQ4MkQWmM/Lx6FQMju9ue6lPUX8jryjhRB2U8MpL7IYVBqRGIiCkBpBQsBtcoz/QgVgJCAEOsSMzgsb+ydW6/VtSM7KQyztNm6dVr2JsdSnmNW3Qfwkpt5s45rvfMlWSzBQAIqlimi/QI/Nhjd4eP0ql8J8njV+4i+K7si6MeAvT10pnlA8v7uWnw7lmbHXzOZyz3R6atzFS9WSDxk1FLJkEnP6Y1bIZN4E4UDZFic8nrBZLC6OBUAaaoY2SRI5tAqgJZDqinM9vzxyhLKJN+TTq7PhyJlMe92pA6Amb928KL80ZNhQBOonw0Cb3itFr2rn8M2HBiiaIs8HTzhYA0auY4ZTZevcmgYRjiu
-X-OriginatorOrg: televic.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 908f3501-e85a-4666-312a-08d77c7d6e28
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2019 07:57:25.9057
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JUJOODAbjvmbqw0QaGVECG8Tl8ROoJeupx0faEPEiSm97qjgiQLDzjlx1E895f/HdrSJa5h+9nwAJdZgjjjdI7uofUkR3rWMOxb40i1Vjb2VU1ks7XE10dfXgec+RfytTYonyR8IL9u9nvmTKXiRwjtIgN+Gisc0h5knk4Ay3uy468vcPYIqIrMYMoANEeAvCM/J70mj8tREBkTMgCAcw4ULtKYHCtG8h3RGSXq07U1eiEJ1AK564q608SRrtqE9qa2sRdFdUJ1vRLT9LsITRLOCOGCaIvHJS+Mj91MyLt7K7pFKy/uGpu0RbguqMjROFTV9r5QebLzIzULNi7IMiPkjsC5qpY88Fozp9BHrET6hzNRGMNxbNVWoVvCn7RJ5Te1QMAqk5Qi8Bbid28qdlDclPc/P7JMECLOT5JqF17bUXN00kDRMAdHmK6eCXvbsd09TPscYszKtNz+dgG1vobMznW8FuMZvR6YpbKHeqiGqXhwOwHmF0nXdGR5uiFdmcbnJzE2i6lrO4XwyZWmJSJCFBVrqtmp4mf1yWYV3dTc=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: de18e58f-c313-44e0-e56d-08d77c81bdfc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2019 08:28:17.3998
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 68a8593e-d1fc-4a6a-b782-1bdcb0633231
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tzStYYqEZqlA+wY8OGWVvd48J8/nH0XiY9xRjvwhl+UIzOMXViyJZGCbzyLgqpd03meOylkudyItBlctuVoY/g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB5360
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SbkHhaXcTPRgxdInMcFpXuhwnSa/iFHBA+/RQitSRYPS5iB9gwpMhmQt05IVxOx3Ow3e+AmthBSA6lfzaOWnWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5561
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/19 6:13 PM, Andrew Lunn wrote:
-> CAUTION: This Email originated from outside Televic. Do not click links or open attachments unless you recognize the sender and know the content is safe.
->
->
-> On Wed, Dec 04, 2019 at 05:20:04PM +0100, Jürgen Lambrecht wrote:
->> On 12/4/19 4:38 PM, Andrew Lunn wrote:
->>>> Here parts of dmesg (no error reported):
->>>>
->>>> [    1.992342] libphy: Fixed MDIO Bus: probed
->>>> [    2.009532] pps pps0: new PPS source ptp0
->>>> [    2.014387] libphy: fec_enet_mii_bus: probed
->>>> [    2.017159] mv88e6085 2188000.ethernet-1:00: switch 0x710 detected: Marvell 88E6071, revision 5
->>>> [    2.125616] libphy: mv88e6xxx SMI: probed
->>>> [    2.134450] fec 2188000.ethernet eth0: registered PHC device 0
->>>> ...
->>>> [   11.366359] Generic PHY fixed-0:00: attached PHY driver [Generic PHY] (mii_bus:phy_addr=fixed-0:00, irq=POLL)
->>>> [   11.366722] fec 2188000.ethernet eth0: Link is Up - 100Mbps/Full - flow control off
->>>>
->>>> When I enable debugging in the source code, I see that mv88e6xxx_probe() fails, because *'of_find_net_device_by_node(ethernet);'* fails. But why?,
->>> That always happens the first time. There is a chicken/egg
->>> problem. The MDIO bus is registered by the FEC driver, the switch is
->>> probed, and the DSA core looks for the ethernet interface. But the FEC
->>> driver has not yet registered the interface, it is still busy
->>> registering the MDIO bus. So you get an EPRODE_DEFFER from the switch
->>> probe. The FEC then completes its probe, registering the
->>> interface. Sometime later Linux retries the switch probe, and this
->>> time it works.
->>>
->>> What you are seeing here is the first attempt. There should be a
->>> second go later in the log.
->>>
->>>        Andrew
->> Indeed, but that also fails because this second time, reading the
->> switch ID (macreg 3 at addr 8) fails, it returns 0x0000!??
-> So this is the real problem.
->
-> Try removing the reset GPIO line from DT. If there is an EEPROM, and
-> the EEPROM contains a lot of instructions, we have seen it take a long
-> time to reset, load the EEPROM, and then start responding on the MDIO
-> bus. If you take away the GPIO, it will only do a software reset,
-> which is much faster. Even if you don't have an EEPROM, it is worth a
-> try.
-No didn't help
->
-> But returning 0x0000 is odd. Normally, if an MDIO device does not
-> respond, you read 0xffff, because of the pull up resistor on the bus.
-Indeed
->
-> The fact you find it once means it is something like this, some minor
-> configuration problem, power management, etc.
->
->          Andrew
-
-Thanks. I will have to look further in that direction. There must be sth obvious that I don't see.
-
-A strange thing to me however is why - in my dts and in vf610-zii-ssmb-spu3.dts - there is 2 times a 'fixed-link' declaration? Moreover, when I omit the first declaration, the kernel crashes (oops).
-
-I have the impression the first 'fixed-link' is used at the end of booting (at 11s, see first email) to configure the kernel in a fixed-phy configuration without a switch in between - and maybe that is the obvious that I don't see: why that fixed-phy config happens there, and even more, why does the kernel crash if it cannot config when I omit the info from dts?
-
-I checked the kernel menuconfig, and there are fixed-phy configs enabled, but I cannot disable them, because they are selected by the DSA and freescale configs:
-
-FIXED_PHY <= OF_MDIO [=y] && OF [=y] && PHYLIB [=y]
-  PHYLIB <= FEC ... & ARCH_MXC
-         <= PHYLINK && NETDEVICES
-              PHYLINK <= NET_DSA && NET && HAVE_NET_DSA
-
-Kind regards,
-
-Jürgen
-
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMTnlubQxMuaciDfml6UgMjI6MTENCj4g
+VG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBzZWFuQGdlYW5peC5j
+b207DQo+IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGlu
+dXgtaW14QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggVjMgMC82XSBjYW46IGZsZXhjYW46IGZpeGVzIGZvciBzdG9wIG1vZGUNCj4gDQo+IE9u
+IDEyLzQvMTkgMTI6MzYgUE0sIEpvYWtpbSBaaGFuZyB3cm90ZToNCj4gPiBIaSBNYXJjLA0KPiA+
+DQo+ID4gICAgSSByZW1vdmVkIHRoZSBwYXRjaCAoY2FuOiBmbGV4Y2FuOiB0cnkgdG8gZXhpdCBz
+dG9wIG1vZGUgZHVyaW5nDQo+ID4gcHJvYmUgc3RhZ2UpIG91dCBvZiB0aGlzIHBhdGNoIHNldCBm
+b3Igbm93LiBUaGlzIHBhdGNoIHNob3VsZCBmdXJ0aGVyDQo+ID4gZGlzY3VzcyB3aXRoIFNlYW4g
+YW5kIEkgd2lsbCBwcmVwYXJlIGl0IGFjY29yZGluZyB0byBmaW5hbCBjb25jbHVzaW9uLiBUaGFu
+a3MuDQo+ID4NCj4gPiBSZWdhcmRzLA0KPiA+IEpvYWtpbSBaaGFuZw0KPiA+DQo+ID4gSm9ha2lt
+IFpoYW5nICg1KToNCj4gPiAgIGNhbjogZmxleGNhbjogQWNrIHdha2V1cCBpbnRlcnJ1cHQgc2Vw
+YXJhdGVseQ0KPiA+ICAgY2FuOiBmbGV4Y2FuOiBhZGQgbG93IHBvd2VyIGVudGVyL2V4aXQgYWNr
+bm93bGVkZ21lbnQgaGVscGVyDQo+ID4gICBjYW46IGZsZXhjYW46IGNoYW5nZSB0aGUgd2F5IG9m
+IHN0b3AgbW9kZSBhY2tub3dsZWRnbWVudA0KPiANCj4gQWJvdmUgMyBhcHBsaWVkIHRvIGxpbnV4
+LWNhbi4NCkhpIE1hcmMsDQoNCkZyb20gYmVsb3cgbGluaywgSSBoYXZlIG5vdCBmb3VuZCB0aGUg
+cGF0Y2g6IGNhbjogZmxleGNhbjogQWNrIHdha2V1cCBpbnRlcnJ1cHQgc2VwYXJhdGVseQ0KaHR0
+cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbWtsL2xpbnV4LWNh
+bi5naXQvbG9nLz9oPWxpbnV4LWNhbi1maXhlcy1mb3ItNS41LTIwMTkxMjA4DQoNCj4gPiAgIGNh
+bjogZmxleGNhbjogcHJvcGFnYXRlIGVycm9yIHZhbHVlIG9mIGZsZXhjYW5fY2hpcF9zdG9wKCkN
+Cj4gPiAgIGNhbjogZmxleGNhbjogYWRkIExQU1IgbW9kZSBzdXBwb3J0DQo+IA0KPiBBYm92ZSAy
+IGFwcGxpZWQgdG8gbGludXgtY2FuLW5leHQNCg0KSSBhbHNvIGhhdmUgbm90IGZvdW5kIHRoZXNl
+IHR3byBwYXRjaCBvbiBsaW51eC1jYW4tbmV4dCwgd2hpY2ggYnJhbmNoIGhhcyB5b3UgcHVzaGVk
+Pw0KDQpUaGFua3MuDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KPiBNYXJjDQo+IC0t
+DQo+IFBlbmd1dHJvbml4IGUuSy4gICAgICAgICAgICAgICAgIHwgTWFyYyBLbGVpbmUtQnVkZGUg
+ICAgICAgICAgIHwNCj4gRW1iZWRkZWQgTGludXggICAgICAgICAgICAgICAgICAgfCBodHRwczov
+L3d3dy5wZW5ndXRyb25peC5kZSAgfA0KPiBWZXJ0cmV0dW5nIFdlc3QvRG9ydG11bmQgICAgICAg
+ICB8IFBob25lOiArNDktMjMxLTI4MjYtOTI0ICAgICB8DQo+IEFtdHNnZXJpY2h0IEhpbGRlc2hl
+aW0sIEhSQSAyNjg2IHwgRmF4OiAgICs0OS01MTIxLTIwNjkxNy01NTU1IHwNCg0K
