@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED14116737
+	by mail.lfdr.de (Postfix) with ESMTP id DE9C8116738
 	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 07:58:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727224AbfLIG4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 01:56:17 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:58407 "EHLO
+        id S1727187AbfLIG5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 01:57:05 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:47531 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726927AbfLIG4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:56:16 -0500
+        by vger.kernel.org with ESMTP id S1726014AbfLIG5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:57:04 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 10801229DC;
-        Mon,  9 Dec 2019 01:56:16 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id CA5A02236D;
+        Mon,  9 Dec 2019 01:57:03 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 09 Dec 2019 01:56:16 -0500
+  by compute3.internal (MEProxy); Mon, 09 Dec 2019 01:57:03 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=h0l8AN5u6Jpu/Fpss
-        yMYxRGh10mpV6vi68Gza9wsFJ0=; b=prsknA7kSCueFwXJFQpZrwTBsHKWb22Do
-        OrM8k3GcwBZQn8+IFPnd9ggc9hXeiTEnoAbu8twLdgia+mvweCNyRlDw5V9wW9df
-        JjJHtiU2AfTErDiz0RhoS+UD5njcBN1nnu3k5/OwH0/OMZoR+hvnXpzfOcx6FxhL
-        1bRhUEab9xZvI5UutAuVs8ztcVQveSmeeCZB5emnoW8g9gNu+NGJ3v8xwKLXGpnn
-        jOH64YO6GHFVvTcbKiSUr9uhHau4GW7VYnNqdl+4Bm4HNBYNiuNxe+v8RWXvmfhh
-        uh6/hcber3vfy/5YW/Gniq1IZw/uuhmwHyU2K5b42w2pnrOLtYovA==
-X-ME-Sender: <xms:D_DtXcw1n2aPwkKEO4qWU1PUdZ1OOw2J8l3J67LfiLFlwzf_kx1FSA>
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=btHcwHj1r71CM4Npr
+        ekTpsT3iXZKUAaqASxedWWK4Yc=; b=RbMDv2YbvgQJRmPKnS7/ngW6Hg0tL4QlH
+        Epn4nLKZFmYR7d0pLRKwdN93ksBxV3KKywPo3Q+p0bobLD2Txx3gEYbXWakMRUOX
+        8dfYo40H7zJqaYZOjUeVgkjLKP3K7STlwZ+nFWyZwraDKImV0ydKmIoOg4iB0Hxe
+        Ayrc/wqq/nfk0+UhKC/hFId/SKi6ypHWY2Kgrb9BHjZub8L2YpuW96Gl61yUJtUo
+        /5Wr0pYFkd+Dt+GCDvfTgf/2tyNqodRJGlFR3s3tcICdbDj35ZM+AOIqA1FQFX0F
+        7QsXf/RrJWGBXQyDOdzcoXjLIRxknQ196ZPYGlUmju3LtMpHVAxFg==
+X-ME-Sender: <xms:P_DtXQHM66wUNPDvFGt4VNE305AQnAjxo_EKUqm58Wj3FaDLL0rl8w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudekledgleejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
     dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
     hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
     hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
-    iigvpedt
-X-ME-Proxy: <xmx:D_DtXTuOEHFQeWkxNVmRx4RdxTDF2liH6-ghDq3VEOCO_WIWQCHsOQ>
-    <xmx:D_DtXaltDOrGjY50aIg1SBcA0DPXFhxh-4DS1SSxaCV8dMFG0V7SYg>
-    <xmx:D_DtXTg26lyeGCJ3PHkAevKPDYEDL0ytvW8S5psC1P_16pqFJiM0GA>
-    <xmx:EPDtXdrHxIvLtxWlYlWa1UUo56fO0uynMddvNirOU4s_L44Y1UpgWg>
+    iigvpedu
+X-ME-Proxy: <xmx:P_DtXZCXIp822F-oCfP3rl9f8V5HYISG1GmYVGk9Bai_hEx_Nw-_OQ>
+    <xmx:P_DtXU8ugMHgqGzILWpdUogOB4E0bEvjCNFaQqZoxDczdm2J4UsoDw>
+    <xmx:P_DtXUhtU94efjVfTANZbSoXPTbqvxdLLfVecS5MC0K08PqbuP5Wjg>
+    <xmx:P_DtXRWB2-EEAlzadAV5DY4r2HVX8q2RblBjHmDS1vKeIbCBxxyyKA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C360230600AB;
-        Mon,  9 Dec 2019 01:56:14 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id B455B30600A8;
+        Mon,  9 Dec 2019 01:57:02 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: spectrum_router: Remove unlikely user-triggerable warning
-Date:   Mon,  9 Dec 2019 08:55:20 +0200
-Message-Id: <20191209065520.337136-1-idosch@idosch.org>
+Subject: [PATCH net] selftests: forwarding: Delete IPv6 address at the end
+Date:   Mon,  9 Dec 2019 08:56:34 +0200
+Message-Id: <20191209065634.337316-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -58,39 +58,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-In case the driver vetoes the addition of an IPv6 multipath route, the
-IPv6 stack will emit delete notifications for the sibling routes that
-were already added to the FIB trie. Since these siblings are not present
-in hardware, a warning will be generated.
+When creating the second host in h2_create(), two addresses are assigned
+to the interface, but only one is deleted. When running the test twice
+in a row the following error is observed:
 
-Have the driver ignore notifications for routes it does not have.
+$ ./router_bridge_vlan.sh
+TEST: ping                                                          [ OK ]
+TEST: ping6                                                         [ OK ]
+TEST: vlan                                                          [ OK ]
+$ ./router_bridge_vlan.sh
+RTNETLINK answers: File exists
+TEST: ping                                                          [ OK ]
+TEST: ping6                                                         [ OK ]
+TEST: vlan                                                          [ OK ]
 
-Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add / replace")
+Fix this by deleting the address during cleanup.
+
+Fixes: 5b1e7f9ebd56 ("selftests: forwarding: Test routed bridge interface")
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/forwarding/router_bridge_vlan.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 30bfe3880faf..08b7e9f964da 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5742,8 +5742,13 @@ static void mlxsw_sp_router_fib6_del(struct mlxsw_sp *mlxsw_sp,
- 	if (mlxsw_sp_fib6_rt_should_ignore(rt))
- 		return;
+diff --git a/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh b/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
+index fef88eb4b873..fa6a88c50750 100755
+--- a/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
++++ b/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
+@@ -36,7 +36,7 @@ h2_destroy()
+ {
+ 	ip -6 route del 2001:db8:1::/64 vrf v$h2
+ 	ip -4 route del 192.0.2.0/28 vrf v$h2
+-	simple_if_fini $h2 192.0.2.130/28
++	simple_if_fini $h2 192.0.2.130/28 2001:db8:2::2/64
+ }
  
-+	/* Multipath routes are first added to the FIB trie and only then
-+	 * notified. If we vetoed the addition, we will get a delete
-+	 * notification for a route we do not have. Therefore, do not warn if
-+	 * route was not found.
-+	 */
- 	fib6_entry = mlxsw_sp_fib6_entry_lookup(mlxsw_sp, rt);
--	if (WARN_ON(!fib6_entry))
-+	if (!fib6_entry)
- 		return;
- 
- 	/* If not all the nexthops are deleted, then only reduce the nexthop
+ router_create()
 -- 
 2.23.0
 
