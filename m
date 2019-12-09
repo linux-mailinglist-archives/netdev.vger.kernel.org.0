@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 183BC117B39
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 00:09:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF27B117B4C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 00:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727075AbfLIXIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 18:08:48 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:51516 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726362AbfLIXIs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 18:08:48 -0500
-Received: from ip5f5a6266.dynamic.kabel-deutschland.de ([95.90.98.102] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <heiko@sntech.de>)
-        id 1ieS8r-0003WX-Uy; Tue, 10 Dec 2019 00:08:37 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Soeren Moch <smoch@web.de>
-Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 8/8] arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
-Date:   Tue, 10 Dec 2019 00:08:37 +0100
-Message-ID: <2668270.pdtvSLGib8@diego>
-In-Reply-To: <20191209223822.27236-8-smoch@web.de>
-References: <20191209223822.27236-1-smoch@web.de> <20191209223822.27236-8-smoch@web.de>
+        id S1727078AbfLIXPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 18:15:50 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39316 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfLIXPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 18:15:49 -0500
+Received: by mail-qt1-f195.google.com with SMTP id g1so926183qtj.6
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 15:15:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=c98cUptVmJxE5gRFF2lQKZ85lSUZABTYRlTJayTa7PU=;
+        b=YTeVouU4/q9oN7V71uXAknPNxVcrKdeLiadmUfvC7R1ASQTSCrq+Pr81B2gfXGypD1
+         zXYjYZoWD2EYMGFNl0KWPG+93X+2ERGhoESqyBCXQIx/f9vQhccpfNqWvz73GCeEZeRM
+         S8NJQwqRpQdm9ZKK8yuqcx/9NeuyYHyfrAnQvVobl8yWvweJg7zAd+6JTna32uoo3QP5
+         XaN+X+rWzLzIqSyw+dc1io9te6PAfdjL813YFZcXQSDnttbHyOcVRND/DG5BRabxuAmX
+         92Tp3FqR1GSAvRnEOw0azh3nM488Eem7uqoOub0QJmUzOpxDv3kLqbN5/oBCfhkGAf64
+         nKSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=c98cUptVmJxE5gRFF2lQKZ85lSUZABTYRlTJayTa7PU=;
+        b=PQ0HlDNNL3y8KvWBa0+zvOm9Ea1bnyT8VDeK4Axf9NvUmBd21c8PHBEAwPyDuHep1q
+         uzIMiqvuMlR2QTGUdAoleqm5P2/Ql95iCr5HM/lHrh4yPz/UNjlQD7zBYqqc5RPFiEvX
+         RlDbJHPJhfUncV/k6S+7h13TFyItMmqU9nOpSFh6XiO0bM+vJjKEO0UBFE+HZDhHk3bL
+         YlTNPzpNzzgfzh7dvIz/sn7G0CXNvuxggIP2A+0luKYqX4CwxbXzE5m5ktSS1tGeyvui
+         w7A6FXYU9KTAzMHDwycIaPxjQkqJd233CvW8pUUzYZ0qug9UOQkr3dESiw0zZYPliSzt
+         Y7tw==
+X-Gm-Message-State: APjAAAWTjWSzIlHicFb8ChwzkZGYbOUQqf7zPklbxIAR8OgsO9dXa36d
+        0C2WgqQ/cSpSGpGd96PBuKaN/j0hUCw=
+X-Google-Smtp-Source: APXvYqx87azaFPi5Z71WjpcRREL+sPda6Ebwe2n8koNLtli8Ibd7oYhajwkSAFOe8Q6VRBz0YyNwSQ==
+X-Received: by 2002:aed:3c5b:: with SMTP id u27mr27822071qte.287.1575933348984;
+        Mon, 09 Dec 2019 15:15:48 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id h28sm339600qkk.48.2019.12.09.15.15.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 15:15:47 -0800 (PST)
+Date:   Mon, 9 Dec 2019 18:15:47 -0500
+Message-ID: <20191209181547.GB1256102@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH iproute2] iplink: add support for STP xstats
+In-Reply-To: <20191209143423.7acb2f4b@hermes.lan>
+References: <20191209211841.1239497-1-vivien.didelot@gmail.com>
+ <20191209211841.1239497-2-vivien.didelot@gmail.com>
+ <20191209143423.7acb2f4b@hermes.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Soeren,
-
-Am Montag, 9. Dezember 2019, 23:38:22 CET schrieb Soeren Moch:
-> RockPro64 supports an Ampak AP6359SA based wifi/bt combo module.
-> The BCM4359/9 wifi controller in this module is connected to sdio0,
-> enable this interface.
+On Mon, 9 Dec 2019 14:34:23 -0800, Stephen Hemminger <stephen@networkplumber.org> wrote:
+> On Mon,  9 Dec 2019 16:18:41 -0500
+> Vivien Didelot <vivien.didelot@gmail.com> wrote:
 > 
-> Signed-off-by: Soeren Moch <smoch@web.de>
-> ---
-> Not sure where to place exactly the sdio0 node in the dts because
-> existing sd nodes are not sorted alphabetically.
+> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+> > index 31fc51bd..e7f2bb78 100644
+> > --- a/include/uapi/linux/if_bridge.h
+> > +++ b/include/uapi/linux/if_bridge.h
 > 
-> This last patch in this brcmfmac patch series probably should be picked
-> up by Heiko independently of the rest of this series. It was sent together
-> to show how this brcmfmac extension for 4359-sdio support with RSDB is
-> used and tested.
+> These headers are semi-automatically updated from the kernel.
+> Do not make changes here.
 
-node placement looks good so I can apply it, just a general questions
-I only got patch 8/8 are patches 1-7 relevant for this one and what are they?
+OK, I respin the series with only the minimal changes required for iproute2
+to compile correctly.
 
-Thanks
-Heiko
-
-
-> 
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: brcm80211-dev-list.pdl@broadcom.com
-> Cc: brcm80211-dev-list@cypress.com
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-rockchip@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  .../boot/dts/rockchip/rk3399-rockpro64.dts    | 21 ++++++++++++-------
->  1 file changed, 14 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> index 7f4b2eba31d4..9fa92790d6e0 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> @@ -71,13 +71,6 @@
->  		clock-names = "ext_clock";
->  		pinctrl-names = "default";
->  		pinctrl-0 = <&wifi_enable_h>;
-> -
-> -		/*
-> -		 * On the module itself this is one of these (depending
-> -		 * on the actual card populated):
-> -		 * - SDIO_RESET_L_WL_REG_ON
-> -		 * - PDN (power down when low)
-> -		 */
->  		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
->  	};
-> 
-> @@ -650,6 +643,20 @@
->  	status = "okay";
->  };
-> 
-> +&sdio0 {
-> +	bus-width = <4>;
-> +	cap-sd-highspeed;
-> +	cap-sdio-irq;
-> +	disable-wp;
-> +	keep-power-in-suspend;
-> +	mmc-pwrseq = <&sdio_pwrseq>;
-> +	non-removable;
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
-> +	sd-uhs-sdr104;
-> +	status = "okay";
-> +};
-> +
->  &sdmmc {
->  	bus-width = <4>;
->  	cap-sd-highspeed;
-> --
-> 2.17.1
-> 
-
-
-
-
+Thank you,
+Vivien
