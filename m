@@ -2,277 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4F5116548
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 04:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8236111659B
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 04:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbfLIDTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 22:19:07 -0500
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:30767 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726748AbfLIDTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 22:19:06 -0500
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 094654193C;
-        Mon,  9 Dec 2019 11:19:03 +0800 (CST)
-Subject: Re: Question about flow table offload in mlx5e
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
- <AM4PR05MB3411591D31D7B22EE96BC6C3CF4E0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <f0552f13-ae5d-7082-9f68-0358d560c073@ucloud.cn>
- <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
- <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
- <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
- <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
- <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
- <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
- <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
- <057b0ab1-5ce3-61f0-a59e-1c316e414c84@mellanox.com>
- <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
- <5ce27064-97ee-a36d-8f20-10a0afe739cf@ucloud.cn>
- <c06ff5a3-e099-9476-7085-1cd72a9ffc56@ucloud.cn>
- <e8fadfa2-0145-097b-9779-b5263ff3d7b7@mellanox.com>
- <052c1c18-89cb-53ed-344c-decd4d296db3@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <c042b39b-3db8-3a61-841d-da930a912a79@ucloud.cn>
-Date:   Mon, 9 Dec 2019 11:18:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727091AbfLIDsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 22:48:05 -0500
+Received: from mx21.baidu.com ([220.181.3.85]:52006 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726748AbfLIDsF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 8 Dec 2019 22:48:05 -0500
+Received: from Bc-Mail-Ex13.internal.baidu.com (unknown [172.31.51.53])
+        by Forcepoint Email with ESMTPS id 4BFA4A7F9363A;
+        Mon,  9 Dec 2019 11:47:49 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ Bc-Mail-Ex13.internal.baidu.com (172.31.51.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1531.3; Mon, 9 Dec 2019 11:47:50 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1713.004; Mon, 9 Dec 2019 11:47:50 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>
+CC:     "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3YyXSBwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJl?=
+ =?utf-8?B?Y3ljbGUgZm9yIE5VTUFfTk9fTk9ERSBjb25kaXRpb24=?=
+Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Thread-Index: AQHVrBgioGDhH/MP9UuNcNvu7zNf3aeuC1gAgAJ3DgCAAKla4A==
+Date:   Mon, 9 Dec 2019 03:47:50 +0000
+Message-ID: <96bc5e8351a54adc8f00c18a61e2555d@baidu.com>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <e724cb64-776d-176e-f55b-3c328d7c5298@huawei.com>
+In-Reply-To: <e724cb64-776d-176e-f55b-3c328d7c5298@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.19]
+x-baidu-bdmsfe-datecheck: 1_Bc-Mail-Ex13_2019-12-09 11:47:50:477
+x-baidu-bdmsfe-viruscheck: Bc-Mail-Ex13_GRAY_Inside_WithoutAtta_2019-12-09
+ 11:47:50:446
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <052c1c18-89cb-53ed-344c-decd4d296db3@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEJOS0tLSktLSkhOQ1lXWShZQU
-        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PzY6ARw5ATgwLUocKyFMODBR
-        E1YKC01VSlVKTkxOQ01KTk9ISkNOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBSktITEw3Bg++
-X-HM-Tid: 0a6ee8aae0b12086kuqy094654193c
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi  Paul,
-
-
-Thanks for your fix, I will test it.
-
-On 12/8/2019 5:39 PM, Paul Blakey wrote:
-> Here's the temp fix:
->
->
-> The problem is TC + FT offload, and this revealed a bug in the driver.
->
-> For the tunnel test, we changed tc block offload to ft callback, and 
-> didn't change the indr block offload.
->
-> So the tunnel unset rule is offloaded from indr tc callback (it's 
-> indirect because it's on tun1 device):
->
-> mlx5e_rep_indr_setup_block_cb
-
-Maybe It should add a "mlx5e_rep_indr_setup_ft_cb" makes the FT offload can support the indr setup?
-
-Or all indr setup through TC offload?
-
->
-> this offloaded the rule to hardware in the TC domain.
->
-> Now the tunnel set (encap) rule was offloaded to FT domain.
->
->
-> Since TC comes before FT in software, we should have connected the miss 
-> on TC domain to FT domain,
->
-> but this didn't work.
->
-> The below fix should fix that connection:
->
->
-> ------------------------------------------
->
->
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-> @@ -763,9 +763,6 @@ static struct mlx5_flow_table 
-> *find_closest_ft_recursive(struct fs_node  *root,
->          struct fs_node *iter = list_entry(start, struct fs_node, list);
->          struct mlx5_flow_table *ft = NULL;
->
-> -       if (!root || root->type == FS_TYPE_PRIO_CHAINS)
-> -               return NULL;
-> -
->          list_for_each_advance_continue(iter, &root->children, reverse) {
->                  if (iter->type == FS_TYPE_FLOW_TABLE) {
->                          fs_get_obj(ft, iter);
-> @@ -792,7 +789,10 @@ static struct mlx5_flow_table 
-> *find_closest_ft(struct fs_prio *prio, bool revers
->          parent = prio->node.parent;
->          curr_node = &prio->node;
->          while (!ft && parent) {
-> -               ft = find_closest_ft_recursive(parent, &curr_node->list, 
-> reverse);
-> +               if (parent->type != FS_TYPE_PRIO_CHAINS)
-> +                       ft = find_closest_ft_recursive(parent,
-> + &curr_node->list,
-> +                                                      reverse);
->                  curr_node = parent;
->                  parent = curr_node->parent;
->          }
->
->
-> ------------------------------------------
->
->
-> I will do this patch for upstream if needed after our last patchset that 
-> also touched this area.
->
-> Thanks,
->
-> Paul.
->
->
->
->
-> On 12/5/2019 5:17 PM, Paul Blakey wrote:
->> On 12/2/2019 5:37 AM, wenxu wrote:
->>
->>> Hi Paul,
->>>
->>>
->>> Sorry for trouble you again. I think it is a problem in ft callback.
->>>
->>> Can your help me fix it. Thx!
->>>
->>> I did the test like you with route tc rules to ft callback.
->>>
->>> # ifconfig mlx_p0 172.168.152.75/24 up
->>> # ip n r 172.16.152.241 lladdr fa:fa:ff:ff:ff:ff dev mlx_p0
->>>
->>> # ip l add dev tun1 type gretap external
->>> # tc qdisc add dev tun1 ingress
->>> # tc qdisc add dev mlx_pf0vf0 ingress
->>>
->>> # tc filter add dev mlx_pf0vf0 pref 2 ingress  protocol ip flower 
->>> skip_sw  action tunnel_key set dst_ip 172.168.152.241 src_ip 0 id 
->>> 1000 nocsum pipe action mirred egress redirect dev tun1
->>>
->>>
->>> In The vm:
->>> # ifconfig eth0 10.0.0.75/24 up
->>> # ip n r 10.0.0.77 lladdr fa:ff:ff:ff:ff:ff dev eth0
->>>
->>> # iperf -c 10.0.0.77 -t 100 -i 2
->>>
->>> The syn packets can be offloaded successfully.
->>>
->>> # # tc -s filter ls dev mlx_pf0vf0 ingress
->>> filter protocol ip pref 2 flower chain 0
->>> filter protocol ip pref 2 flower chain 0 handle 0x1
->>>    eth_type ipv4
->>>    skip_sw
->>>    in_hw in_hw_count 1
->>>     action order 1: tunnel_key  set
->>>     src_ip 0.0.0.0
->>>     dst_ip 172.168.152.241
->>>     key_id 1000
->>>     nocsum pipe
->>>      index 1 ref 1 bind 1 installed 252 sec used 252 sec
->>>     Action statistics:
->>>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->>>     backlog 0b 0p requeues 0
->>>
->>>     action order 2: mirred (Egress Redirect to device tun1) stolen
->>>       index 1 ref 1 bind 1 installed 252 sec used 110 sec
->>>       Action statistics:
->>>     Sent 3420 bytes 11 pkt (dropped 0, overlimits 0 requeues 0)
->>>     Sent software 0 bytes 0 pkt
->>>     Sent hardware 3420 bytes 11 pkt
->>>     backlog 0b 0p requeues 0
->>>
->>> But Then I add another decap filter on tun1:
->>>
->>> tc filter add dev tun1 pref 2 ingress protocol ip flower enc_key_id 
->>> 1000 enc_src_ip 172.168.152.241 action tunnel_key unset pipe action 
->>> mirred egress redirect dev mlx_pf0vf0
->>>
->>> # iperf -c 10.0.0.77 -t 100 -i 2
->>>
->>> The syn packets can't be offloaded. The tc filter counter is also not 
->>> increase.
->>>
->>>
->>> # tc -s filter ls dev mlx_pf0vf0 ingress
->>> filter protocol ip pref 2 flower chain 0
->>> filter protocol ip pref 2 flower chain 0 handle 0x1
->>>    eth_type ipv4
->>>    skip_sw
->>>    in_hw in_hw_count 1
->>>     action order 1: tunnel_key  set
->>>     src_ip 0.0.0.0
->>>     dst_ip 172.168.152.241
->>>     key_id 1000
->>>     nocsum pipe
->>>      index 1 ref 1 bind 1 installed 320 sec used 320 sec
->>>     Action statistics:
->>>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->>>     backlog 0b 0p requeues 0
->>>
->>>     action order 2: mirred (Egress Redirect to device tun1) stolen
->>>       index 1 ref 1 bind 1 installed 320 sec used 178 sec
->>>       Action statistics:
->>>     Sent 3420 bytes 11 pkt (dropped 0, overlimits 0 requeues 0)
->>>     Sent software 0 bytes 0 pkt
->>>     Sent hardware 3420 bytes 11 pkt
->>>     backlog 0b 0p requeues 0
->>>
->>> # tc -s filter ls dev tun1 ingress
->>> filter protocol ip pref 2 flower chain 0
->>> filter protocol ip pref 2 flower chain 0 handle 0x1
->>>    eth_type ipv4
->>>    enc_src_ip 172.168.152.241
->>>    enc_key_id 1000
->>>    in_hw in_hw_count 1
->>>     action order 1: tunnel_key  unset pipe
->>>      index 2 ref 1 bind 1 installed 391 sec used 391 sec
->>>     Action statistics:
->>>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->>>     backlog 0b 0p requeues 0
->>>
->>>     action order 2: mirred (Egress Redirect to device mlx_pf0vf0) stolen
->>>       index 2 ref 1 bind 1 installed 391 sec used 391 sec
->>>       Action statistics:
->>>     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->>>     backlog 0b 0p requeues 0
->>>
->>>
->>> So there maybe some problem for ft callback setup. When there is 
->>> another reverse
->>> decap rule add in tunnel device, The encap rule will not offloaded 
->>> the packets.
->>>
->>> Expect your help Thx!
->>>
->>>
->>> BR
->>> wenxu
->>>
->>>
->>>
->>>
->>>
->>>
->> Hi I reproduced it.
->>
->> I'll find the reason and fix for it and get back to you soon.
->>
->> We are planing on expanding our chain and prio supported range, and in 
->> that we also move the FT offload code a bit.
->>
->> If what I think happens happened it would fix it anyway.
->>
->> Thanks.
->>
+Q2M6IEdyeWdvcmlpIFN0cmFzaGtvICBJdmFuIEtob3JvbnpodWsNCg0KSSBzZWUgdGhhdCBjcHN3
+IGlzIHVzaW5nIE5VTUFfTk9fTk9ERSB3aGVuIGluaXQgcGFnZSBwb29sDQoNCj4gT24gMjAxOS8x
+Mi83IDExOjUyLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToNCj4gPiBPbiBGcmksIDIwMTktMTItMDYg
+YXQgMTc6MzIgKzA4MDAsIExpIFJvbmdRaW5nIHdyb3RlOg0KPiA+PiBzb21lIGRyaXZlcnMgdXNl
+cyBwYWdlIHBvb2wsIGJ1dCBub3QgcmVxdWlyZSB0byBhbGxvY2F0ZSBwYWdlcyBmcm9tDQo+ID4+
+IGJvdW5kIG5vZGUsIG9yIHNpbXBseSBhc3NpZ24gcG9vbC5wLm5pZCB0byBOVU1BX05PX05PREUs
+IGFuZCB0aGUNCj4gPj4gY29tbWl0IGQ1Mzk0NjEwYjFiYSAoInBhZ2VfcG9vbDoNCj4gPj4gRG9u
+J3QgcmVjeWNsZSBub24tcmV1c2FibGUgcGFnZXMiKSB3aWxsIGJsb2NrIHRoaXMga2luZCBvZiBk
+cml2ZXIgdG8NCj4gPj4gcmVjeWNsZQ0KPiA+Pg0KPiA+PiBzbyB0YWtlIHBhZ2UgYXMgcmV1c2Fi
+bGUgd2hlbiBwYWdlIGJlbG9uZ3MgdG8gY3VycmVudCBtZW1vcnkgbm9kZSBpZg0KPiA+PiBuaWQg
+aXMgTlVNQV9OT19OT0RFDQo+ID4+DQo+ID4+IHYxLS0+djI6IGFkZCBjaGVjayB3aXRoIG51bWFf
+bWVtX2lkIGZyb20gWXVuc2hlbmcNCj4gPj4NCj4gPj4gRml4ZXM6IGQ1Mzk0NjEwYjFiYSAoInBh
+Z2VfcG9vbDogRG9uJ3QgcmVjeWNsZSBub24tcmV1c2FibGUgcGFnZXMiKQ0KPiA+PiBTaWduZWQt
+b2ZmLWJ5OiBMaSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4+IFN1Z2dlc3Rl
+ZC1ieTogWXVuc2hlbmcgTGluIDxsaW55dW5zaGVuZ0BodWF3ZWkuY29tPg0KPiA+PiBDYzogU2Fl
+ZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4+IC0tLQ0KPiA+PiAgbmV0L2Nv
+cmUvcGFnZV9wb29sLmMgfCA3ICsrKysrKy0NCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2Vy
+dGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gPj4NCj4gPj4gZGlmZiAtLWdpdCBhL25ldC9jb3Jl
+L3BhZ2VfcG9vbC5jIGIvbmV0L2NvcmUvcGFnZV9wb29sLmMgaW5kZXgNCj4gPj4gYTZhZWZlOTg5
+MDQzLi4zYzhiNTFjY2QxYzEgMTAwNjQ0DQo+ID4+IC0tLSBhL25ldC9jb3JlL3BhZ2VfcG9vbC5j
+DQo+ID4+ICsrKyBiL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQo+ID4+IEBAIC0zMTIsMTIgKzMxMiwx
+NyBAQCBzdGF0aWMgYm9vbCBfX3BhZ2VfcG9vbF9yZWN5Y2xlX2RpcmVjdChzdHJ1Y3QNCj4gPj4g
+cGFnZSAqcGFnZSwNCj4gPj4gIC8qIHBhZ2UgaXMgTk9UIHJldXNhYmxlIHdoZW46DQo+ID4+ICAg
+KiAxKSBhbGxvY2F0ZWQgd2hlbiBzeXN0ZW0gaXMgdW5kZXIgc29tZSBwcmVzc3VyZS4NCj4gPj4g
+KHBhZ2VfaXNfcGZtZW1hbGxvYykNCj4gPj4gICAqIDIpIGJlbG9uZ3MgdG8gYSBkaWZmZXJlbnQg
+TlVNQSBub2RlIHRoYW4gcG9vbC0+cC5uaWQuDQo+ID4+ICsgKiAzKSBiZWxvbmdzIHRvIGEgZGlm
+ZmVyZW50IG1lbW9yeSBub2RlIHRoYW4gY3VycmVudCBjb250ZXh0DQo+ID4+ICsgKiBpZiBwb29s
+LT5wLm5pZCBpcyBOVU1BX05PX05PREUNCj4gPj4gICAqDQo+ID4+ICAgKiBUbyB1cGRhdGUgcG9v
+bC0+cC5uaWQgdXNlcnMgbXVzdCBjYWxsIHBhZ2VfcG9vbF91cGRhdGVfbmlkLg0KPiA+PiAgICov
+DQo+ID4+ICBzdGF0aWMgYm9vbCBwb29sX3BhZ2VfcmV1c2FibGUoc3RydWN0IHBhZ2VfcG9vbCAq
+cG9vbCwgc3RydWN0IHBhZ2UNCj4gPj4gKnBhZ2UpDQo+ID4+ICB7DQo+ID4+IC0JcmV0dXJuICFw
+YWdlX2lzX3BmbWVtYWxsb2MocGFnZSkgJiYgcGFnZV90b19uaWQocGFnZSkgPT0gcG9vbC0NCj4g
+Pj4+IHAubmlkOw0KPiA+PiArCXJldHVybiAhcGFnZV9pc19wZm1lbWFsbG9jKHBhZ2UpICYmDQo+
+ID4+ICsJCShwYWdlX3RvX25pZChwYWdlKSA9PSBwb29sLT5wLm5pZCB8fA0KPiA+PiArCQkocG9v
+bC0+cC5uaWQgPT0gTlVNQV9OT19OT0RFICYmDQo+ID4+ICsJCXBhZ2VfdG9fbmlkKHBhZ2UpID09
+IG51bWFfbWVtX2lkKCkpKTsNCj4gPj4gIH0NCj4gPj4NCj4gPg0KPiA+IENjJ2VkIEplc3Blciwg
+SWxpYXMgJiBKb25hdGhhbi4NCj4gPg0KPiA+IEkgZG9uJ3QgdGhpbmsgaXQgaXMgY29ycmVjdCB0
+byBjaGVjayB0aGF0IHRoZSBwYWdlIG5pZCBpcyBzYW1lIGFzDQo+ID4gbnVtYV9tZW1faWQoKSBp
+ZiBwb29sIGlzIE5VTUFfTk9fTk9ERS4gSW4gc3VjaCBjYXNlIHdlIHNob3VsZCBhbGxvdw0KPiA+
+IGFsbCBwYWdlcyB0byByZWN5Y2xlLCBiZWNhdXNlIHlvdSBjYW4ndCBhc3N1bWUgd2hlcmUgcGFn
+ZXMgYXJlDQo+ID4gYWxsb2NhdGVkIGZyb20gYW5kIHdoZXJlIHRoZXkgYXJlIGJlaW5nIGhhbmRs
+ZWQuDQo+ID4NCj4gPiBJIHN1Z2dlc3QgdGhlIGZvbGxvd2luZzoNCj4gPg0KPiA+IHJldHVybiAh
+cGFnZV9wZm1lbWFsbG9jKCkgJiYNCj4gPiAoIHBhZ2VfdG9fbmlkKHBhZ2UpID09IHBvb2wtPnAu
+bmlkIHx8IHBvb2wtPnAubmlkID09IE5VTUFfTk9fTk9ERSApOw0KPiA+DQo+ID4gMSkgbmV2ZXIg
+cmVjeWNsZSBlbWVyZ2VuY3kgcGFnZXMsIHJlZ2FyZGxlc3Mgb2YgcG9vbCBuaWQuDQo+ID4gMikg
+YWx3YXlzIHJlY3ljbGUgaWYgcG9vbCBpcyBOVU1BX05PX05PREUuDQo+IA0KPiBBcyBJIGNhbiBz
+ZWUsIGJlbG93IGFyZSB0aGUgY2FzZXMgdGhhdCB0aGUgcG9vbC0+cC5uaWQgY291bGQgYmUNCj4g
+TlVNQV9OT19OT0RFOg0KPiANCj4gMS4ga2VybmVsIGJ1aWx0IHdpdGggdGhlIENPTkZJR19OVU1B
+IGJlaW5nIG9mZi4NCj4gDQo+IDIuIGtlcm5lbCBidWlsdCB3aXRoIHRoZSBDT05GSUdfTlVNQSBi
+ZWluZyBvbiwgYnV0IEZXL0JJT1MgZG9zZSBub3QgcHJvdmlkZQ0KPiAgICBhIHZhbGlkIG5vZGUg
+aWQgdGhyb3VnaCBBQ1BJL0RULCBhbmQgaXQgaGFzIHRoZSBiZWxvdyBjYXNlczoNCj4gDQo+ICAg
+IGEpLiB0aGUgaGFyZHdhcmUgaXRzZWxmIGlzIHNpbmdsZSBudW1hIG5vZGUgc3lzdGVtLCBzbyBt
+YXliZSBpdCBpcyB2YWxpZA0KPiAgICAgICAgdG8gbm90IHByb3ZpZGUgYSB2YWxpZCBub2RlIGZv
+ciB0aGUgZGV2aWNlLg0KPiAgICBiKS4gdGhlIGhhcmR3YXJlIGl0c2VsZiBpcyBtdWx0aSBudW1h
+IG5vZGVzIHN5c3RlbSwgYW5kIHRoZSBGVy9CSU9TIGlzDQo+ICAgICAgICBicm9rZW4gdGhhdCBp
+dCBkb2VzIG5vdCBwcm92aWRlIGEgdmFsaWQgb25lLg0KPiANCj4gMy4ga2VybmVsIGJ1aWx0IHdp
+dGggdGhlIENPTkZJR19OVU1BIGJlaW5nIG9uLCBhbmQgRlcvQklPUyBkb3NlIHByb3ZpZGUgYQ0K
+PiAgICB2YWxpZCBub2RlIGlkIHRocm91Z2ggQUNQSS9EVCwgYnV0IHRoZSBkcml2ZXIgZG9lcyBu
+b3QgcGFzcyB0aGUgdmFsaWQNCj4gICAgbm9kZSBpZCB3aGVuIGNhbGxpbmcgcGFnZV9wb29sX2lu
+aXQoKS4NCj4gDQo+IEkgYW0gbm90IHN1cmUgd2hpY2ggY2FzZSB0aGlzIHBhdGNoIGlzIHRyeWlu
+ZyB0byBmaXgsIG1heWJlIFJvbmdxaW5nIGNhbiBoZWxwIHRvDQo+IGNsYXJpZnkuDQo+IA0KPiBG
+b3IgY2FzZSAxIGFuZCBjYXNlIDIgKGEpLCBJIHN1cHBvc2UgY2hlY2tpbmcgcG9vbC0+cC5uaWQg
+YmVpbmcNCj4gTlVNQV9OT19OT0RFIGlzIGVub3VnaC4NCj4gDQo+IEZvciBjYXNlIDIgKGIpLCBU
+aGVyZSBtYXkgYmUgYXJndW1lbnQgdGhhdCBpdCBzaG91bGQgYmUgZml4ZWQgaW4gdGhlIEJJT1Mv
+RlcsDQo+IEJ1dCBpdCBhbHNvIGNhbiBiZSBhcmd1ZWQgdGhhdCB0aGUgbnVtYV9tZW1faWQoKSBj
+aGVja2luZyBoYXMgYmVlbiBkb25lIGluDQo+IHRoZSBkcml2ZXIgdGhhdCBoYXMgbm90IHVzaW5n
+IHBhZ2UgcG9vbCB5ZXQgd2hlbiBkZWNpZGluZyB3aGV0aGVyIHRvIGRvDQo+IHJlY3ljbGluZywg
+c2VlIFsxXS4gSWYgSSB1bmRlcnN0YW5kaW5nIGNvcnJlY3RseSwgcmVjeWNsaW5nIGlzIG5vcm1h
+bGx5IGRvbmUgYXQgdGhlDQo+IE5BUEkgcG9vbGluZywgd2hpY2ggaGFzIHRoZSBzYW1lIGFmZmlu
+aXR5IGFzIHRoZSByeCBpbnRlcnJ1cHQsIGFuZCByeCBpbnRlcnJ1cHQgaXMNCj4gbm90IGNoYW5n
+ZWQgdmVyeSBvZnRlbi4gSWYgaXQgZG9lcyBjaGFuZ2UgdG8gZGlmZmVyZW50IG1lbW9yeSBub2Rl
+LCBtYXliZSBpdA0KPiBtYWtlcyBzZW5zZSBub3QgdG8gcmVjeWNsZSB0aGUgb2xkIHBhZ2UgYmVs
+b25ncyB0byBvbGQgbm9kZT8NCj4gDQo+IA0KPiBGb3IgY2FzZSAzLCBJIGFtIG5vdCBzdXJlIGlm
+IGFueSBkcml2ZXIgaXMgZG9pbmcgdGhhdCwgYW5kIGlmIHRoZSBwYWdlIHBvb2wgQVBJDQo+IGV2
+ZW4gYWxsb3cgdGhhdD8NCj4gDQoNCkkgdGhpbmsgcG9vbF9wYWdlX3JldXNhYmxlIHNob3VsZCBz
+dXBwb3J0IE5VTUFfTk9fTk9ERSBubyBtYXR0ZXIgd2hpY2ggY2FzZXMNCg0KDQpBbmQgcmVjeWNs
+aW5nIGlzIG5vcm1hbGx5IGRvbmUgYXQgdGhlIE5BUEkgcG9vbGluZywgTlVNQV9OT19OT0RFIGhp
+bnQgdG8gdXNlIHRoZQ0KbG9jYWwgbm9kZSwgZXhjZXB0IG1lbW9yeSB1c2FnZSBpcyB1bmJhbGFu
+Y2UsIHNvIEkgYWRkIHRoZSBjaGVjayB0aGF0IHRoZSBwYWdlIG5pZCBpcw0Kc2FtZSBhcyBudW1h
+X21lbV9pZCgpIGlmIHBvb2wgaXMgTlVNQV9OT19OT0RFDQoNCi1MaQ0KDQoNCj4gWzFdIGh0dHBz
+Oi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L2xhdGVzdC9pZGVudC9udW1hX21lbV9pZA0KPiAN
+Cj4gPg0KPiA+IHRoZSBhYm92ZSBjaGFuZ2Ugc2hvdWxkIG5vdCBhZGQgYW55IG92ZXJoZWFkLCBh
+IG1vZGVzdCBicmFuY2gNCj4gPiBwcmVkaWN0b3Igd2lsbCBoYW5kbGUgdGhpcyB3aXRoIG5vIGVm
+Zm9ydC4NCj4gPg0KPiA+IEplc3BlciBldCBhbC4gd2hhdCBkbyB5b3UgdGhpbms/DQo+ID4NCj4g
+PiAtU2FlZWQuDQo+ID4NCg0K
