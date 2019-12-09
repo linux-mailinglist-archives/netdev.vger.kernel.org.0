@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD0A116D4E
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 13:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F156D116D92
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 14:07:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727610AbfLIMte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 07:49:34 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:52231 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727403AbfLIMtd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 07:49:33 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 714504b5
-        for <netdev@vger.kernel.org>;
-        Mon, 9 Dec 2019 11:54:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type:content-transfer-encoding; s=mail; bh=xUqq53kk40Pa
-        RW6u1XxXI0JPgYk=; b=qQQss+BzxNG6IujtnBRLVBMx2UfVXXeNkMoAZUmUmSDH
-        gBQswu+tiZioSDUWD/rq2N7FoQc++Ruop5b7W30yRLFHdKFdk+jrVuzpKVgVzF3W
-        W2SrZVWc+z20iIZQaUs2xouAuvTx+urbWhh0011OhZUZnoVa1I6ZIyZ5ClVcizS+
-        RfV4zgzE7gHAOWW/3mbMJIPE7B0urOVRUBiyP2q4+NliKqKixmfac1yz07M0BNFu
-        KjCBrY2nhc6pJYcY/zoP8qK0EOEwOcaJMmrJtjh7BcDAv/KTDBAlWAXsmD2GhRFD
-        H5mdM3sA+EIlrkolV580okANkw46OoQJFa4cCXjSUg==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9b3621b6 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 9 Dec 2019 11:54:08 +0000 (UTC)
-Received: by mail-oi1-f180.google.com with SMTP id b8so6180502oiy.5
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 04:49:32 -0800 (PST)
-X-Gm-Message-State: APjAAAVTAjVUV0FKvs30PlszY5mhZIFBsmo2430t7ne2YS1ZC+1romRf
-        CIOtNLVmJlVTaFcl1kn62wg6UBNpOSQcVT38i3g=
-X-Google-Smtp-Source: APXvYqwOzIdO7q1spvx3hUouA9yi+b9gMiJTQ7zsvN5FAvPerpV3NOoXuWjh3/dEq0IxWyqOCiJ0elBZC3i7KlTDbcE=
-X-Received: by 2002:aca:2109:: with SMTP id 9mr8317760oiz.119.1575895771647;
- Mon, 09 Dec 2019 04:49:31 -0800 (PST)
+        id S1727567AbfLINHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 08:07:19 -0500
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:44686 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727074AbfLINHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 08:07:18 -0500
+Received: by mail-vs1-f66.google.com with SMTP id p6so10146474vsj.11;
+        Mon, 09 Dec 2019 05:07:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/vybDmWWZt0m6v/jmvE3pAWJT8MUyCcD69ScwFHht4g=;
+        b=kycNNEVqK94LnIpOC4QjHxsGSZd5BiL0JBbzIqDaYhGAU+1FpbvEx4xfi3uYLbefk4
+         EtE4Ne1pqrULsKWkkgPW3oECFUS9CjFfIARzE08iEyRlb6nSnfPbgPpZCI//HgQBF/Ov
+         jf9tQWvIdcnXI3LvWuV+8ciS+6p6KoxPrplVaYXqfyNRZ0wW3klPAeBU/vQO1cME8myV
+         GqBBsSWJ5BepqxIPaEpl/XWfj5Eul62021NsJXQeK21BPI36NYBsN4au0sH9tnyhuMHM
+         lwMisqCZBcN/RNtozASaLt6m4JElFz0cwM4xqg4sDgpm2GHBYthONL9ff7CIP66mXnuV
+         xiVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/vybDmWWZt0m6v/jmvE3pAWJT8MUyCcD69ScwFHht4g=;
+        b=YeOzDcoPtGyRktqvb2NHiySIQY75HQZIPDIAPThNwwJIvvPt9batg5JY9EfjhWNGQN
+         5v2xf2/t+GNPgF0qhALKxIItzXAwHT18if7BOWTlFABEg0TrXuvnhndT3hjeh6CrXaQn
+         U2amkFr/WsGDQw38kUiZF7eAqCawHQBkw6M1WbW4PC6P8aVqyjRk+gWlzzP/wL8UMtth
+         bzgZxTsPgveJ5sB3b/BEIDCwogi83AfIjRo1IpLVr7WNDJAksG0oyNMJeJbx+ipLHMS2
+         /FmwCPERxSkD37n57qEcZNlHwjwZcWzLtwLQcVQQegQJV7ZaTusv+LQcaKcRZUER99To
+         YlfQ==
+X-Gm-Message-State: APjAAAWgPOdYUXLN9r7KZrfdGGw3T0AjonU+U8FnlsdPK80LL7DNAm1M
+        UmngOXVQLIy+y+0g1SGdj8vYwrkZFxBYp4MKjwE=
+X-Google-Smtp-Source: APXvYqwre667574Qva3LM57Gmp8o/Yepc8XF9SXzyu8P1nOBy3Beg7CqTLewa+NoHSMIDA/6AV5FbaaILSR+lmEsOsk=
+X-Received: by 2002:a67:2c50:: with SMTP id s77mr15841458vss.222.1575896837810;
+ Mon, 09 Dec 2019 05:07:17 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHmME9p1-5hQXv5QNqqHT+OBjn-vf16uAU2HtYcmwKMtLhnsTA@mail.gmail.com>
- <87d0cxlldu.fsf@toke.dk>
-In-Reply-To: <87d0cxlldu.fsf@toke.dk>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 9 Dec 2019 13:49:20 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oUfp_1udMFNMpeXPeoa7aacdNp9Q31eKvoTBpu+G5rpQ@mail.gmail.com>
-Message-ID: <CAHmME9oUfp_1udMFNMpeXPeoa7aacdNp9Q31eKvoTBpu+G5rpQ@mail.gmail.com>
-Subject: Re: organization of wireguard linux kernel repos moving forward
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>
+References: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
+ <1575878189-31860-6-git-send-email-magnus.karlsson@intel.com> <8e243b69-0642-962e-41b4-8d0107b960c6@cogentembedded.com>
+In-Reply-To: <8e243b69-0642-962e-41b4-8d0107b960c6@cogentembedded.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 9 Dec 2019 14:07:06 +0100
+Message-ID: <CAJ8uoz18h8qrd-w6eakW1k+ZNW=erB7wLqO9+H50iZ4J3cXg5A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 05/12] xsk: eliminate the RX batch size
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Saeed Mahameed <saeedm@mellanox.com>,
+        jeffrey.t.kirsher@intel.com,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 1:43 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.=
-dk> wrote:
+On Mon, Dec 9, 2019 at 11:17 AM Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
 >
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+> Hello!
 >
-> > 2) wireguard-tools.git will have the userspace utilities and scripts,
-> > such as wg(8) and wg-quick(8), and be easily packageable by distros.
-> > This repo won't be live until we get a bit closer to the 5.6 release,
-> > but when it is live, it will live at:
-> > https://git.zx2c4.com/wireguard-tools/ [currently 404s]
-> > https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-tools.g=
-it/
-> > [currently 404s]
+> On 09.12.2019 10:56, Magnus Karlsson wrote:
 >
-> Any plans for integrating this further with iproute2? One could imagine
-> either teaching 'ip' about the wireguard-specific config (keys etc), or
-> even just moving the 'wg' binary wholesale into iproute2?
+> > In the xsk consumer ring code there is a variable call RX_BATCH_SIZE
+>
+>     Called?
 
-I'd definitely be interested in this. Back in 2015, that was the plan.
-Then it took a long time to get to where we are now, and since then
-wg(8) has really evolved into its own useful thing. The easiest thing
-would be to move wg(8) wholesale into iproute2 like you suggested;
-that'd allow people to continue using their infrastructure and whatnot
-they've used for a long time now. A more nuanced approach would be
-coming up with a _parallel_ iproute2 tool with mostly the same syntax
-as wg(8) but as a subcommand of ip(8). Originally the latter appealed
-to me, but at this point maybe the former is better after all. I
-suppose something to consider is that wg(8) is actually a
-cross-platform tool now, with a unified syntax across a whole bunch of
-operating systems. But it's also just boring C.
+Yes, definitely. Will fix.
+
+Thanks: Magnus
+
+> > that dictates the minimum number of entries that we try to grab from
+> > the fill and Tx rings. In fact, the code always try to grab the
+>    ^^^^^^^^^^^^^^^^^^^^^ hm, are you sure there's no typo here?
+>
+> > maximum amount of entries from these rings. The only thing this
+> > variable does is to throw an error if there is less than 16 (as it is
+> > defined) entries on the ring. There is no reason to do this and it
+> > will just lead to weird behavior from user space's point of view. So
+> > eliminate this variable.
+> >
+> > With this change, we will be able to simplify the xskq_nb_free and
+> > xskq_nb_avail code in the next commit.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> [...]
+>
+> MBR, Sergei
+>
