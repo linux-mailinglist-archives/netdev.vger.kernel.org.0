@@ -2,84 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CAA117B98
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 00:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1F4117BBC
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 00:46:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727282AbfLIXmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 18:42:21 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:43577 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbfLIXmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 18:42:20 -0500
-Received: by mail-pj1-f65.google.com with SMTP id g4so6562570pjs.10
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 15:42:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=V+QMhx7ddpbkcSbPVKvyp45lyXMPmAo/pgMKOqAodfE=;
-        b=fSf1ZGmSL3/xD1sMkMysZYFQFkGtn4G49qvt9u4+83SppEPRq/o5shJLAh1xxMujyM
-         VC8EVKvtCCF5tXdXKNzmki+xLo2g7WdS2UrLud6KSRM2ReK0TNZDd+c8F46NbwYLI2vx
-         hek5iKYcDWlYOAAR0OSqHN7uIbTW27q7zhQSIGmLub8HR+sjnlIoMrleANj4pX3f7/LS
-         M/YbmE76H8VqGGw6nUDGNeHMc5bQDCTZymYFmg4cFyHlPsDIsXN+VSW/W/YA93pUJAme
-         c4lOGrIhofDpQupdRbBxJo5Z19M7z5rFb3rGDldu2L/4gXoSmlatMo8R7D47iILS8lzr
-         DUSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=V+QMhx7ddpbkcSbPVKvyp45lyXMPmAo/pgMKOqAodfE=;
-        b=Ci9DZ/JEUwzcPDzhCXbdNgejqqO5zCzmDY56TNeP/oBPyhPu0XbMRx3RFxD20yAvCF
-         KEx6i/qCs+QHP5wL+Ej8Kj4mXc1+S7MaShbEDbJ+lu89snEF5V0fD3SwJUFBYcT1wdP7
-         bYXaxPHmHKXjcqKchY/IeJp/X1r3Gg3PMzgmYnla+HgtNOGN2LEPWZ9eQYcITBA7pWzo
-         Qj/UCmjjuA91g9u3coonJIC/mX9SWjiEY8zSTWHBxmPMtD1xBR/eyFGZaBNnLYtIfM1f
-         QuTyPed9wRjdq0jlMzn0Kj3wySZHGwQMg08W92+/EphRNc31SMt6uLQnZcxRVEbhkns7
-         I7gA==
-X-Gm-Message-State: APjAAAU043pku6MC5S/kIQoIX0jSb8WhepNOLsUvXDX+BUxf74onbD46
-        aYdeuWTHhqg69RKFGg3mZphnTQ==
-X-Google-Smtp-Source: APXvYqyfZb7MEcnxbUPQl2yGD5rqMg8NC6Pf7z6qDPwFCvFdZjlSfWs3Vqyy3mFRXwiM+UpLFcbzCg==
-X-Received: by 2002:a17:902:820f:: with SMTP id x15mr32558307pln.125.1575934940114;
-        Mon, 09 Dec 2019 15:42:20 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id w3sm552243pfd.161.2019.12.09.15.42.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2019 15:42:19 -0800 (PST)
-Date:   Mon, 9 Dec 2019 15:42:16 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>
-Cc:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
+        id S1727421AbfLIXqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 18:46:37 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:3964 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfLIXqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 18:46:36 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5deedcd50000>; Mon, 09 Dec 2019 15:46:29 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 09 Dec 2019 15:46:35 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 09 Dec 2019 15:46:35 -0800
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 9 Dec
+ 2019 23:46:34 +0000
+Received: from [10.110.48.28] (10.124.1.5) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 9 Dec 2019
+ 23:46:34 +0000
+Subject: Re: [PATCH v8 20/26] powerpc: book3s64: convert to pin_user_pages()
+ and put_user_page()
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
         "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
-Message-ID: <20191209154216.7e19e0c0@cakuba.netronome.com>
-In-Reply-To: <20191209224530.156283-1-zenczykowski@gmail.com>
-References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
-        <20191209224530.156283-1-zenczykowski@gmail.com>
-Organization: Netronome Systems, Ltd.
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191209225344.99740-1-jhubbard@nvidia.com>
+ <20191209225344.99740-21-jhubbard@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <08f5d716-8b31-b016-4994-19fbe829dc28@nvidia.com>
+Date:   Mon, 9 Dec 2019 15:46:33 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191209225344.99740-21-jhubbard@nvidia.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1575935189; bh=F+Jj+I6m5b/J9KOGS4UgD+CyKLIIOUmRatgjOS3uz0Y=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=Ihr9PvOrf4hppHWZcETbUAQh9t9Aev3oHDGCoIypSp3n/NX/AuC/Td0gE6AmeDIUE
+         2+DT2NTLT9eP7U1PFgWavm5zzTvPlCDL5cWWUpkrpD60HT7XF7/5PaBcDrqebNpuex
+         CI+QS4g3QKJbV4WzqLe9+cTj1E1lVYuR0ZJtmRhZpYLLoZW9GXVF72aUROzLtSMDuT
+         v0HaolI7qQoROQScZaDiu3CN2mz+32WCjaJtRJLPhJNY7eBr0NjQYl2fNOij0hv+9K
+         AR+SKxG6MA/CqvylD8YhPmC/JAQ+Ecqay7f94R+oer9y3owEi11v6+bX3P3xFoNI7R
+         rN6yFpWqkjcOQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 Dec 2019 14:45:30 -0800, Maciej =C5=BBenczykowski wrote:
-> Example use cases might be:
->  - a port being stolen by the nic for remote serial console, remote
->    power management or some other sort of debugging functionality
->    (crash collection, gdb, direct access to some other microcontroller
->    on the nic or motherboard, remote management of the nic itself).
+On 12/9/19 2:53 PM, John Hubbard wrote:
+...
+> @@ -212,10 +211,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
+>  		if (!page)
+>  			continue;
+>  
+> -		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
+> -			SetPageDirty(page);
+> +		put_user_pages_dirty_lock(&page, 1,
+> +				mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
+>  
+> -		put_page(page);
 
-This use case makes me a little uncomfortable.
 
-Could you elaborate what protocols and products are in need of this
-functionality?
+Correction: this is somehow missing the fixes that resulted from Jan Kara's review (he
+noted that we can't take a page lock in this context). I must have picked up the 
+wrong version of it, when I rebased for -rc1.
 
-Why can't the NIC just get its own IP like it usually does with NCSI?
+Will fix in the next version (including the commit description). Here's what the
+corrected hunk will look like:
+
+@@ -215,7 +214,8 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
+                if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
+                        SetPageDirty(page);
+ 
+-               put_page(page);
++               put_user_page(page);
++
+                mem->hpas[i] = 0;
+        }
+ }
+
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
