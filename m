@@ -2,122 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0F011797F
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A62A2117982
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbfLIWio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 17:38:44 -0500
-Received: from mout.web.de ([212.227.15.4]:59763 "EHLO mout.web.de"
+        id S1727222AbfLIWiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 17:38:50 -0500
+Received: from mout.web.de ([212.227.15.14]:57057 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727168AbfLIWin (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 17:38:43 -0500
+        id S1727168AbfLIWis (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 17:38:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1575931115;
-        bh=SSeAMdCB1BI0vkLB1ST1678SOkLJZQ2JmPrRyeRBBYc=;
+        s=dbaedf251592; t=1575931116;
+        bh=iIcwtGZ7q6+1IJH8HBswoh2M79f+M/HgGj3GZwWb4cU=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=JBqoF1NY8KbCvHeRBd7aa1W4xBStxE6LbZPWng5vycoBbLoHUv0kPZyte5F+U3xQ0
-         7PUCkm8ByPmlCV9mo3dNc9IDGcULYX6HMb690G92+egAEvRO80bXiRDQT0c0gMXypO
-         3h+NWQhBte154UPkdf/PGY1H+pScE55xQaIyQNAM=
+        b=dXkT1kvsdkuwRbOxQScIQBPCRrzbGwdWzLu4BQCSuuEj0kG8RHK0rIZWCiDspQd5M
+         9amJoQ4CO5o7MG1TqhSYNwStoZZaHhMfqf0uvPjX5XoLlHJHLLDT2eQt3yi4GDBgEL
+         kBbqE8GEr5gRE6W7jq5qBAxRSxnzotqcIuYJsxEs=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from localhost.localdomain ([89.204.137.56]) by smtp.web.de
  (mrweb004 [213.165.67.108]) with ESMTPSA (Nemesis) id
- 0MEIQq-1iXt9n0pUe-00FTnj; Mon, 09 Dec 2019 23:38:35 +0100
+ 0MhOpG-1iQe9W21cg-00MaZJ; Mon, 09 Dec 2019 23:38:36 +0100
 From:   Soeren Moch <smoch@web.de>
 To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Soeren Moch <smoch@web.de>, Wright Feng <wright.feng@cypress.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+Cc:     Soeren Moch <smoch@web.de>, Heiko Stuebner <heiko@sntech.de>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 7/8] brcmfmac: not set mbss in vif if firmware does not support MBSS
-Date:   Mon,  9 Dec 2019 23:38:21 +0100
-Message-Id: <20191209223822.27236-7-smoch@web.de>
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 8/8] arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
+Date:   Mon,  9 Dec 2019 23:38:22 +0100
+Message-Id: <20191209223822.27236-8-smoch@web.de>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191209223822.27236-1-smoch@web.de>
 References: <20191209223822.27236-1-smoch@web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:6++YHmrTlcLgclZZagPILW3aNmSthZq6p58mEA5GH9f4DaqT0Rn
- p5kid7pqxc18d7WLWHprDHWEGzQXEUI3eFfXmpfrzqx5xmqA4KmM1JiUYPCKHFOf0iInnkE
- mgx38oZ9otELobLVHZkQHDP4fBwfvN+slStAWaH8JjV6+nDXp8S3omcZfMKJv+holEvA0Mj
- HSMjJjHm8pdg+zsxIWCRA==
+X-Provags-ID: V03:K1:JKaU5d2nwpiRHKBLzQOON+w/GWu5jnq3s0cFpfDnyxfLY+ReLv/
+ t12RKSkr3wPF+ZXfo6jgBaaUs/Sr54X1V8eD6PJaFVY+DgTx6VMLMd7g5I7Hayx91AKGzYd
+ k5/EMQWsoV/viwnF71yh4jM1+SfgE876IVxnXgsSOJm4pDiJ4rGfqvo34S7gD5Dz5PhDPdm
+ O10Y1Wx3Kr3rFf+Er7VvQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:PpPtRcmL2Dk=:ZxRx6iZ+89cT/TEvSSrbyC
- kdcHHvouNJ+4QThb/cU6xXEGhulP2X8j3VN3dLCmPcQ7dI/OGha7lWuBWFZsIqWAFokl+TX1w
- ns2mdTrdcbpia41YU43F3mliYwpMWqpxXqZzTtvu5/+WGnXVVm/Eq80mW//DPqL058NTsOONl
- fN1BsocRYLCBzvUpBrBTtLfaiT8nG5wIVFWDh+YyGOmFRwpp/NkkUXHtNmRTDlMvxVe1uSQcH
- zQrsjE77kY6ZKrSAgvlDRBnuVKX2YbkoNre+/POOSnC/9SCvniZJXe2W5hywoRVaEdoBakKVD
- GoZ5nwQAwYwViKKlKlKgVD4sLObmqdpqd7o8Y0in5yb7vaVMN4C2ZU7ZUHDvX83sjqnSlaHG0
- bv17Zrsro+woqoH+QXTcFtsIxUNZnV30yD5skNY5Hfu8Vqufi2iSMq9obR65C/ajyFieRESyz
- bhbUxErjqLBVA5dzq/VopQ27kcS7Z9UgHu726Oha0Gf/X94MZ1wbcFMpCvqWG7AkqvaJY6tpm
- l+X3TZ2B1LdZ8J95uWtDSxlDHXGomjv6fqIu2wnLCy9vrEYws6IsjlU9bvvLlUBFjpMIrcNGH
- lr6N3gp30ZPzhiFzgrRhnAlGm7NqhP2Rzc1wxEkbuVEBaGslr3yR494XO6rYQS/NKhHaPmUFd
- 3v5VyogWCwXOreg/M/zjsXebk9cjHKGfK2BoQHRgAhnpGTj1AErMpXKNHC89GbquF8MDcBkb0
- 80f5JQk+e7p1zmRHC3j2CQ75ILZz33XTqdm1kzIRC32/twPN/HwGuQa5zMGf9ZazgRrY8Ck2I
- y7m0CCY5ffQMFjteiGryoh/srNsPbDhgX2io1/dGX66XujH4FCpWUUnYNilFtYYwjE0agZAD9
- y275EANsY567Oy8k2ncmNUc7aypkCbPYPqbbAenLYMUvRvrz5ERQvrf57QZDqMHq9hUEp0yc7
- o33UsTkNgNN1u4saJG05Pfi7NzmtNpeA5QVvOg+bXWBFTWCKKTVvf40ffsiKkZID5+/B5ptP2
- 9teLY7Q7Kx5+AGeYlD1zTMmMCvzP4o6ENV3BufqsBlTdgegQ82xReWvIHyvxMpFmy+7uLpecD
- N+V3hOrA4Qt6CfxjfpQHX27WQmrYztGuAeHLZ+SW4D5QVj3YDRUB36UhMSPYx/1YF+hs4fopL
- vi5nAxIYKzOE8Sot5uOgaAmDEHMsdxpo8ADy3Dpcwn22YIv/4rV3j84nImPidl1oF6PLQoScz
- D73qSg4WnqOs4thD1rKRPMHwchZ1eCgB1VgP8Bw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0gjPZqsxZ3Y=:xsl37Z8u/T3zQJLs0iGiK/
+ StbtdO1MulGqkOI+0tC3R05+D2BpUsATmsbUwYvMTdMJ3OpzKLHfRDd68+QV3PPw2PgMwxOMQ
+ VpBEc4yTRu71nhJLg1dVBwXFQKswD++aPVZhORWRtZJVzyTlFbMoSj0esJ/iZbsqUYZi7wfIY
+ awg05E6yD76DgI1dWcu8OJpCiBzEaAEw+RnKQ5Xpf5AA9ej53O0JN2HEg2b6U45PBW3lbO6Ld
+ zvq/bDtAcgnIZWEHx9AGXTGCsg70Rmy/+3Qg+wFhKx6jUDZPfoS6G3Dkffhedq/KZPF8nK7iG
+ eomxsBW5LqiZjeiWZ8g5RP4GYJs3pDo3c5+wZSkHcBbKn6MV/2ho41pbe7wBQsau0fxnx5zv1
+ 6Lv3jRNvabGS9On3sGpkBLqoAF6Z/mHjLQFoMJBo4YSbAIFyFCeNEXqFbaGdkK5romGqZtMnx
+ G7t+nZERHayx5lS9jwBxfDjSfrsCRmPCiif7i+7LCvm8yXr0Xg6PVN7vckZ3As7TUSn6MK4ws
+ XLlY7Pxi7yL39FL5e0T4DMS8iQm07ItTBluliHakdLdY9uVnd5kNJK3w/9rdFMo0yeGuGDgxg
+ 7y4KDtPKk6CA5Y4lJaeuQnIAwwqX2eRCZMv6ybx01MK/VJTALX4Gq+yacxQF0ugsgEOOM227D
+ jWiLxIeaxUJ3uNIME4qiGPQsbre8UoL4ktZzkrqhmda3AQXQMRhB1utmVP5I55YJWB6FQ1BfR
+ Mr5iI1kkSe8S90bv1BYE+RLxrcyW15NuOPGvjA6rILHH7iespmAjLPpZuWX9UbQPPEABU/l+b
+ 5t6txaPL48St70RlCaXyt7hZTvBW7zqM0m97OM2TkTG9y7GhdvZlDEdKZCTlsBt90P/4b3+K5
+ zV8Hj/s8t3J8Qwgcbjl0hzuZrSqySpjqixTY+UChyQCn5mWzv9XbbeSAim3v/pr0dUvUh6A9W
+ ke1lp7aR6krzNhehMW425OFITdJLWWRuNxuJZ5W6Y5BqCdtk0N3eD6mxMrfY1E4iLL2uIFMI6
+ xkRoqTp4UpoTsXLD7uuaLOZtv7VBPFaeAqhgNX9U57R1HKY2gqEtzc5v8QvODnm4tqkCbJbUe
+ x7LcBmKEXxNOayGev5jeN0fv/PdgLlSuzuF7/uSs+LkiMuoa81CQHIGEth1eoBf1hqhQgQtZf
+ Nov8rQce8IcauTPloExst3Jp5mukVxxMTCBUioixs79KP1H3m+8rsf2p07s9mkEvvhVNyS/DA
+ S0zQ1hJ9bCHz3dLOuyHMO/ZL6CGjuHij7UNTIMA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wright Feng <wright.feng@cypress.com>
+RockPro64 supports an Ampak AP6359SA based wifi/bt combo module.
+The BCM4359/9 wifi controller in this module is connected to sdio0,
+enable this interface.
 
-With RSDB mode, FMAC and firmware are able to create 2 or more AP,
-so we should not set mbss in vif structure if firmware does not
-support MBSS feature.
-
-Signed-off-by: Wright Feng <wright.feng@cypress.com>
+Signed-off-by: Soeren Moch <smoch@web.de>
 =2D--
+Not sure where to place exactly the sdio0 node in the dts because
+existing sd nodes are not sorted alphabetically.
+
+This last patch in this brcmfmac patch series probably should be picked
+up by Heiko independently of the rest of this series. It was sent together
+to show how this brcmfmac extension for 4359-sdio support with RSDB is
+used and tested.
+
+Cc: Heiko Stuebner <heiko@sntech.de>
 Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
-Cc: Wright Feng <wright.feng@cypress.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: brcm80211-dev-list.pdl@broadcom.com
 Cc: brcm80211-dev-list@cypress.com
 Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-rockchip@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 =2D--
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../boot/dts/rockchip/rk3399-rockpro64.dts    | 21 ++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b=
-/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index 9d9dc9195e9e..6eb3064c3721 100644
-=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -5363,6 +5363,7 @@ struct brcmf_cfg80211_vif *brcmf_alloc_vif(struct br=
-cmf_cfg80211_info *cfg,
- 	struct brcmf_cfg80211_vif *vif_walk;
- 	struct brcmf_cfg80211_vif *vif;
- 	bool mbss;
-+	struct brcmf_if *ifp =3D brcmf_get_ifp(cfg->pub, 0);
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts b/arch/arm6=
+4/boot/dts/rockchip/rk3399-rockpro64.dts
+index 7f4b2eba31d4..9fa92790d6e0 100644
+=2D-- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
+@@ -71,13 +71,6 @@
+ 		clock-names =3D "ext_clock";
+ 		pinctrl-names =3D "default";
+ 		pinctrl-0 =3D <&wifi_enable_h>;
+-
+-		/*
+-		 * On the module itself this is one of these (depending
+-		 * on the actual card populated):
+-		 * - SDIO_RESET_L_WL_REG_ON
+-		 * - PDN (power down when low)
+-		 */
+ 		reset-gpios =3D <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
+ 	};
 
- 	brcmf_dbg(TRACE, "allocating virtual interface (size=3D%zu)\n",
- 		  sizeof(*vif));
-@@ -5375,7 +5376,8 @@ struct brcmf_cfg80211_vif *brcmf_alloc_vif(struct br=
-cmf_cfg80211_info *cfg,
+@@ -650,6 +643,20 @@
+ 	status =3D "okay";
+ };
 
- 	brcmf_init_prof(&vif->profile);
-
--	if (type =3D=3D NL80211_IFTYPE_AP) {
-+	if (type =3D=3D NL80211_IFTYPE_AP &&
-+	    brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MBSS)) {
- 		mbss =3D false;
- 		list_for_each_entry(vif_walk, &cfg->vif_list, list) {
- 			if (vif_walk->wdev.iftype =3D=3D NL80211_IFTYPE_AP) {
++&sdio0 {
++	bus-width =3D <4>;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	disable-wp;
++	keep-power-in-suspend;
++	mmc-pwrseq =3D <&sdio_pwrseq>;
++	non-removable;
++	pinctrl-names =3D "default";
++	pinctrl-0 =3D <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
++	sd-uhs-sdr104;
++	status =3D "okay";
++};
++
+ &sdmmc {
+ 	bus-width =3D <4>;
+ 	cap-sd-highspeed;
 =2D-
 2.17.1
 
