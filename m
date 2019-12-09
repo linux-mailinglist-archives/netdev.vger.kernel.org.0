@@ -2,72 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 035BF117826
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 22:15:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C45D8117834
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 22:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbfLIVPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 16:15:39 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:37136 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbfLIVPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 16:15:39 -0500
-Received: by mail-il1-f193.google.com with SMTP id t9so14106581iln.4
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 13:15:39 -0800 (PST)
+        id S1726901AbfLIVQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 16:16:31 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:38202 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfLIVQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 16:16:31 -0500
+Received: by mail-ot1-f66.google.com with SMTP id h20so13566359otn.5;
+        Mon, 09 Dec 2019 13:16:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs.washington.edu; s=goo201206;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LG/614BqKYeqqzAMuAmVs1XZZYF0k1xuurp2HXiCCmY=;
-        b=A9Stev5AqloQC1ZtkUVGdq1AP5/fTv2T3N7Xi4NHhqF1zHE7T4Q2XZfauwQ9I71iF6
-         AwQBJiBS7lEI16cRnzmpgw6z5pgvGu7XV91StpMMLN4bDmn4u2nNc+1uF3CHYMA+0EYH
-         pX5iK+1xGouBTNKH8TYrgYGx58J2PbWJqx0n8=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FPQYv1CbF5PEoyV5DeRvhLdH9ApHt5XdOf0DWTue2HU=;
+        b=QjS6ZYwgFxpo/3EKAkWOHJQjgc3+lg/XGoY+/I0Fb+FfiFr9BN3a7x+9JjDJAqlSGj
+         1AEfquUPPfsAvU2H6JH7duI5fFp/GMuv1aJZ4w+CcTVsypB8MAYJRHp5yx+FluqLWuec
+         iyloOOlIL5YfchuaJZ+LGklRyH+zn94xCCk0r9Np0shNXcHAAM2ZGR5sOIZz9Kem2OaZ
+         H7QTzOM5jIwjU2c6n0CdSHPx+FZn5nrjr8dVkUKksd+ZxgfbLR5NaLIzKFlg5pobnDGG
+         /FEinY/2W+/4wjxKj2d6PNz5/EosBGCaCcXTcy/P1TJTjejXocp/zBAKx88v1Jav47E+
+         Bq/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LG/614BqKYeqqzAMuAmVs1XZZYF0k1xuurp2HXiCCmY=;
-        b=jBK992hP1Xr9rpd5JAWYN3q3/QbTuP3NfxIBkMLjRMGltiwaw/SUYZCMo6Sf+lUGUb
-         f5xf9GXw3VaYQxNNiz5RtxDF1VKBCwUNqFTI6aSuLdHmc7cPLsi5ukmFs1P9y+I2cBJW
-         STJCMIIFtHahNYmE/0wmUygDUrL+Ed0JyDIVzoHaTjwIbQnnlCc7ljAiqykoT54AR8kz
-         BbUDsef1oJ9JbkdAhO8NXhemt+gQn4hz8fD0Klk3gNWUlxv8ZeQVAW8ZeHzZJbpjYQ7Y
-         4+42fIA1VocHBVAKPkLkNN5BEcs+E+lYeNUCVNIJFMkVB4p6GfRz+qsjzUIvPqxgJHLi
-         F1pA==
-X-Gm-Message-State: APjAAAXfoojBgw3ZMf9AXkTQN7fu7M1vMxHuyfz09OW/xrW2HX9hH84f
-        mfzyBQUFCLLvov8Zs5W04uCY75bnq3bQAnWWv4xC1g==
-X-Google-Smtp-Source: APXvYqzh3UZWMUWlmFjctjV2C7aY8p4vEvt7LDAOemPKOAaaoVKi0COose4couisqD9FDRyrjewRb57JFJeMDI0UDEs=
-X-Received: by 2002:a92:1b41:: with SMTP id b62mr30148546ilb.251.1575926138783;
- Mon, 09 Dec 2019 13:15:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FPQYv1CbF5PEoyV5DeRvhLdH9ApHt5XdOf0DWTue2HU=;
+        b=UuN5h1g5/D29As4QOIeCXFKkEeqJH5x6PJJtZ1r1pd6igJudoGYPza3k+Bl93hV20W
+         p+6MreDcSdupnYnA6tTOEkODNBHSFejOYgg8zaZQDEDIK+4PvAksNiGoBTPMq0wM4jfo
+         IRS0YrNCz3Kj+bnxsg7cgp7wXKTLdq2V6O7bSPBKzt+vG2XdlC5gcxSDGLlOcZ3cT6Z6
+         3qvidBYG1JCaSGK3jpP1HYZqPwBg5Q0/Jfs0dEqR1RrAWvke1VkAC5CjJILFUcfcKBLT
+         7/FmBNv5LPDt5sVVBzsVzkoC76AlnaKEnUWUvf3qEMaQPQfb88ypUVLdAiQ3CmoxMKzC
+         NwJA==
+X-Gm-Message-State: APjAAAXcK0R1XoPhImJA5N8cpL6/oXOQQx4A+O5+lzeZUV8f1+zo7zEl
+        tL2KacQ4WSBaaAYA2PaBe7XpdguzL7A=
+X-Google-Smtp-Source: APXvYqy1MfB4bbMMrkLP5JgBCVwn6uHSi2l3IRpKKB9OtqFyxx7T73FbSy1fHrbn7gBsMT4+ZKAchw==
+X-Received: by 2002:a9d:74d8:: with SMTP id a24mr24272190otl.100.1575926190314;
+        Mon, 09 Dec 2019 13:16:30 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id 11sm461647otz.3.2019.12.09.13.16.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 13:16:29 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] net: tulip: Adjust indentation in {dmfe,uli526x}_init_module
+Date:   Mon,  9 Dec 2019 14:16:23 -0700
+Message-Id: <20191209211623.44166-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20191209173136.29615-1-bjorn.topel@gmail.com> <20191209173136.29615-4-bjorn.topel@gmail.com>
-In-Reply-To: <20191209173136.29615-4-bjorn.topel@gmail.com>
-From:   Luke Nelson <lukenels@cs.washington.edu>
-Date:   Mon, 9 Dec 2019 13:15:16 -0800
-Message-ID: <CADasFoA5iMv0Atakw_Jr7XP__K+--a735Qb2U-eNfJEzCXQRNQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/8] riscv, bpf: add support for far jumps and exits
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        bpf <bpf@vger.kernel.org>, Xi Wang <xi.wang@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 9:32 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com=
-> wrote:
->
-> This commit add support for far (offset > 21b) jumps and exits.
->
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+Clang warns:
 
-Similar to the other patch for far branching, we also used our tool
-to formally verify this patch for far jumps:
+../drivers/net/ethernet/dec/tulip/uli526x.c:1812:3: warning: misleading
+indentation; statement is not part of the previous 'if'
+[-Wmisleading-indentation]
+        switch (mode) {
+        ^
+../drivers/net/ethernet/dec/tulip/uli526x.c:1809:2: note: previous
+statement is here
+        if (cr6set)
+        ^
+1 warning generated.
 
-https://github.com/uw-unsat/bpf-jit-verif/tree/far-jump-review
+../drivers/net/ethernet/dec/tulip/dmfe.c:2217:3: warning: misleading
+indentation; statement is not part of the previous 'if'
+[-Wmisleading-indentation]
+        switch(mode) {
+        ^
+../drivers/net/ethernet/dec/tulip/dmfe.c:2214:2: note: previous
+statement is here
+        if (cr6set)
+        ^
+1 warning generated.
 
+This warning occurs because there is a space before the tab on these
+lines. Remove them so that the indentation is consistent with the Linux
+kernel coding style and clang no longer warns.
 
-Reviewed-by: Luke Nelson <lukenels@cs.washington.edu>
-Cc: Xi Wang <xi.wang@gmail.com>
+While we are here, adjust the default block in dmfe_init_module to have
+a proper break between the label and assignment and add a space between
+the switch and opening parentheses to avoid a checkpatch warning.
+
+Fixes: e1c3e5014040 ("[PATCH] initialisation cleanup for ULI526x-net-driver")
+Link: https://github.com/ClangBuiltLinux/linux/issues/795
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/ethernet/dec/tulip/dmfe.c    | 7 ++++---
+ drivers/net/ethernet/dec/tulip/uli526x.c | 4 ++--
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
+index 0efdbd1a4a6f..32d470d4122a 100644
+--- a/drivers/net/ethernet/dec/tulip/dmfe.c
++++ b/drivers/net/ethernet/dec/tulip/dmfe.c
+@@ -2214,15 +2214,16 @@ static int __init dmfe_init_module(void)
+ 	if (cr6set)
+ 		dmfe_cr6_user_set = cr6set;
+ 
+- 	switch(mode) {
+-   	case DMFE_10MHF:
++	switch (mode) {
++	case DMFE_10MHF:
+ 	case DMFE_100MHF:
+ 	case DMFE_10MFD:
+ 	case DMFE_100MFD:
+ 	case DMFE_1M_HPNA:
+ 		dmfe_media_mode = mode;
+ 		break;
+-	default:dmfe_media_mode = DMFE_AUTO;
++	default:
++		dmfe_media_mode = DMFE_AUTO;
+ 		break;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/dec/tulip/uli526x.c b/drivers/net/ethernet/dec/tulip/uli526x.c
+index b1f30b194300..117ffe08800d 100644
+--- a/drivers/net/ethernet/dec/tulip/uli526x.c
++++ b/drivers/net/ethernet/dec/tulip/uli526x.c
+@@ -1809,8 +1809,8 @@ static int __init uli526x_init_module(void)
+ 	if (cr6set)
+ 		uli526x_cr6_user_set = cr6set;
+ 
+- 	switch (mode) {
+-   	case ULI526X_10MHF:
++	switch (mode) {
++	case ULI526X_10MHF:
+ 	case ULI526X_100MHF:
+ 	case ULI526X_10MFD:
+ 	case ULI526X_100MFD:
+-- 
+2.24.0
+
