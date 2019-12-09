@@ -2,186 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06578117718
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 21:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C480117731
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 21:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbfLIUMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 15:12:40 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:44118 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbfLIUMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 15:12:39 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xB9KCZDC105074;
-        Mon, 9 Dec 2019 14:12:35 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1575922355;
-        bh=K73i2A06lZvHt7deIfjAwzkt10QlY5pzARFgQ0l9uxY=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=y1v7YC2DtWoB826dea8TLAKX+UvKDzavn2K+xBW+xBYDHx0G+OjwJcO18DynIeOs+
-         sqUOdCMLTWMfzSHWFDBjRgU9Y0x+tg8xxGj72I5gDJgPJf5RkpHVZtKzEEsb6MwlfR
-         H3kiQ5zECjnrC5jrR+Kk+OCa7lPK8yE6b2CCo7eU=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB9KCYlR094055;
-        Mon, 9 Dec 2019 14:12:34 -0600
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 9 Dec
- 2019 14:12:34 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 9 Dec 2019 14:12:34 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id xB9KCYqZ022378;
-        Mon, 9 Dec 2019 14:12:34 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <bunk@kernel.org>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <grygorii.strashko@ti.com>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v3 2/2] net: phy: dp83867: Add rx-fifo-depth and tx-fifo-depth
-Date:   Mon, 9 Dec 2019 14:10:25 -0600
-Message-ID: <20191209201025.5757-3-dmurphy@ti.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191209201025.5757-1-dmurphy@ti.com>
-References: <20191209201025.5757-1-dmurphy@ti.com>
+        id S1726818AbfLIUPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 15:15:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43196 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726366AbfLIUPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 15:15:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=T5Yi+OIGx+pBIZwjkRO4oHqWr7IP5W/5NxupEGz/i88=; b=xCVk3hwrbtcEnyJTg9bOSB0nCf
+        4GwmAlsCChLcd/z5Mt/hyrYYgkzMAgMZA3nG6ZP2rDF+DJEfKbTNt0RqPVZepesUfkABNzv/XNOGk
+        mMfP4o7ovmEhoOMSGiqiY0el6h3nXz21GZjN4X2jwzmBIjVAavS8lXUTXG/acUwrXiGE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iePR1-0007ni-IQ; Mon, 09 Dec 2019 21:15:11 +0100
+Date:   Mon, 9 Dec 2019 21:15:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 5/5] ethtool: provide link mode names as a
+ string set
+Message-ID: <20191209201511.GL9099@lunn.ch>
+References: <cover.1575920565.git.mkubecek@suse.cz>
+ <0c239334df943c3f5f4ca74a2509754e08eda9e3.1575920565.git.mkubecek@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c239334df943c3f5f4ca74a2509754e08eda9e3.1575920565.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code changes the TI specific ti,fifo-depth to the common
-tx-fifo-depth property.  The tx depth is applicable for both RGMII and
-SGMII modes of operation.
+On Mon, Dec 09, 2019 at 08:55:45PM +0100, Michal Kubecek wrote:
+> Unlike e.g. netdev features, the ethtool ioctl interface requires link mode
+> table to be in sync between kernel and userspace for userspace to be able
+> to display and set all link modes supported by kernel. The way arbitrary
+> length bitsets are implemented in netlink interface, this will be no longer
+> needed.
+> 
+> To allow userspace to access all link modes running kernel supports, add
+> table of ethernet link mode names and make it available as a string set to
+> userspace GET_STRSET requests. Add build time check to make sure names
+> are defined for all modes declared in enum ethtool_link_mode_bit_indices.
 
-rx-fifo-depth was added as well but this is only applicable for SGMII
-mode.
+Hi Michal
 
-So in summary
-if RGMII mode write tx fifo depth only
-if SGMII mode write both rx and tx fifo depths
+Having a build time check is a good idea. However, i don't see it in
+the code. Please could you point it out.
+> 
+> Once the string set is available, make it also accessible via ioctl.
+> 
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> ---
+>  include/linux/ethtool.h      |  4 ++
+>  include/uapi/linux/ethtool.h |  2 +
+>  net/ethtool/common.c         | 86 ++++++++++++++++++++++++++++++++++++
+>  net/ethtool/common.h         |  2 +
+>  net/ethtool/ioctl.c          |  5 +++
+>  5 files changed, 99 insertions(+)
+> 
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index 95991e4300bf..5caef65d93d6 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -102,6 +102,10 @@ static inline u32 ethtool_rxfh_indir_default(u32 index, u32 n_rx_rings)
+>  #define __ETHTOOL_DECLARE_LINK_MODE_MASK(name)		\
+>  	DECLARE_BITMAP(name, __ETHTOOL_LINK_MODE_MASK_NBITS)
+>  
+> +/* compose link mode index from speed, type and duplex */
+> +#define ETHTOOL_LINK_MODE(speed, type, duplex) \
+> +	ETHTOOL_LINK_MODE_ ## speed ## base ## type ## _ ## duplex ## _BIT
+> +
+>  /* drivers must ignore base.cmd and base.link_mode_masks_nwords
+>   * fields, but they are allowed to overwrite them (will be ignored).
+>   */
+> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> index d4591792f0b4..f44155840b07 100644
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -593,6 +593,7 @@ struct ethtool_pauseparam {
+>   * @ETH_SS_RSS_HASH_FUNCS: RSS hush function names
+>   * @ETH_SS_PHY_STATS: Statistic names, for use with %ETHTOOL_GPHYSTATS
+>   * @ETH_SS_PHY_TUNABLES: PHY tunable names
+> + * @ETH_SS_LINK_MODES: link mode names
+>   */
+>  enum ethtool_stringset {
+>  	ETH_SS_TEST		= 0,
+> @@ -604,6 +605,7 @@ enum ethtool_stringset {
+>  	ETH_SS_TUNABLES,
+>  	ETH_SS_PHY_STATS,
+>  	ETH_SS_PHY_TUNABLES,
+> +	ETH_SS_LINK_MODES,
+>  };
+>  
+>  /**
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index 220d6b539180..be1b26970eb1 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -83,3 +83,89 @@ phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+>  	[ETHTOOL_PHY_FAST_LINK_DOWN] = "phy-fast-link-down",
+>  	[ETHTOOL_PHY_EDPD]	= "phy-energy-detect-power-down",
+>  };
+> +
+> +#define __LINK_MODE_NAME(speed, type, duplex) \
+> +	#speed "base" #type "/" #duplex
+> +#define __DEFINE_LINK_MODE_NAME(speed, type, duplex) \
+> +	[ETHTOOL_LINK_MODE(speed, type, duplex)] = \
+> +	__LINK_MODE_NAME(speed, type, duplex)
+> +#define __DEFINE_SPECIAL_MODE_NAME(_mode, _name) \
+> +	[ETHTOOL_LINK_MODE_ ## _mode ## _BIT] = _name
+> +
+> +const char
+> +link_mode_names[__ETHTOOL_LINK_MODE_MASK_NBITS][ETH_GSTRING_LEN] = {
+> +	__DEFINE_LINK_MODE_NAME(10, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(10, T, Full),
+> +	__DEFINE_LINK_MODE_NAME(100, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(100, T, Full),
+> +	__DEFINE_LINK_MODE_NAME(1000, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(1000, T, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Autoneg, "Autoneg"),
+> +	__DEFINE_SPECIAL_MODE_NAME(TP, "TP"),
+> +	__DEFINE_SPECIAL_MODE_NAME(AUI, "AUI"),
+> +	__DEFINE_SPECIAL_MODE_NAME(MII, "MII"),
+> +	__DEFINE_SPECIAL_MODE_NAME(FIBRE, "FIBRE"),
+> +	__DEFINE_SPECIAL_MODE_NAME(BNC, "BNC"),
+> +	__DEFINE_LINK_MODE_NAME(10000, T, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Pause, "Pause"),
+> +	__DEFINE_SPECIAL_MODE_NAME(Asym_Pause, "Asym_Pause"),
+> +	__DEFINE_LINK_MODE_NAME(2500, X, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Backplane, "Backplane"),
+> +	__DEFINE_LINK_MODE_NAME(1000, KX, Full),
+> +	__DEFINE_LINK_MODE_NAME(10000, KX4, Full),
+> +	__DEFINE_LINK_MODE_NAME(10000, KR, Full),
+> +	[ETHTOOL_LINK_MODE_10000baseR_FEC_BIT] = "10000baseR_FEC",
 
-If the property is not populated in the device tree then set the value
-to the default values.
+Would
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Reported-by: Adrian Bunk <bunk@kernel.org>
----
-v3 - No changes
-v2 - Rebase on linux-net next as the patch would not apply
+__DEFINE_SPECIAL_MODE_NAME(10000baseR_FEC, 10000baseR_FEC),
 
- drivers/net/phy/dp83867.c | 62 +++++++++++++++++++++++++++++++--------
- 1 file changed, 49 insertions(+), 13 deletions(-)
+work here?
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 9cd9dcee4eb2..adda0d0eab80 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -93,9 +93,11 @@
- #define DP83867_STRAP_STS2_CLK_SKEW_NONE	BIT(2)
- 
- /* PHY CTRL bits */
--#define DP83867_PHYCR_FIFO_DEPTH_SHIFT		14
-+#define DP83867_PHYCR_TX_FIFO_DEPTH_SHIFT	14
-+#define DP83867_PHYCR_RX_FIFO_DEPTH_SHIFT	12
- #define DP83867_PHYCR_FIFO_DEPTH_MAX		0x03
--#define DP83867_PHYCR_FIFO_DEPTH_MASK		GENMASK(15, 14)
-+#define DP83867_PHYCR_TX_FIFO_DEPTH_MASK	GENMASK(15, 14)
-+#define DP83867_PHYCR_RX_FIFO_DEPTH_MASK	GENMASK(13, 12)
- #define DP83867_PHYCR_RESERVED_MASK		BIT(11)
- 
- /* RGMIIDCTL bits */
-@@ -131,7 +133,8 @@ enum {
- struct dp83867_private {
- 	u32 rx_id_delay;
- 	u32 tx_id_delay;
--	u32 fifo_depth;
-+	u32 tx_fifo_depth;
-+	u32 rx_fifo_depth;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -408,18 +411,32 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		dp83867->port_mirroring = DP83867_PORT_MIRROING_DIS;
- 
- 	ret = of_property_read_u32(of_node, "ti,fifo-depth",
--				   &dp83867->fifo_depth);
-+				   &dp83867->tx_fifo_depth);
- 	if (ret) {
--		phydev_err(phydev,
--			   "ti,fifo-depth property is required\n");
--		return ret;
-+		ret = of_property_read_u32(of_node, "tx-fifo-depth",
-+					   &dp83867->tx_fifo_depth);
-+		if (ret)
-+			dp83867->tx_fifo_depth =
-+					DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
- 	}
--	if (dp83867->fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
--		phydev_err(phydev,
--			   "ti,fifo-depth value %u out of range\n",
--			   dp83867->fifo_depth);
-+
-+	if (dp83867->tx_fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
-+		phydev_err(phydev, "tx-fifo-depth value %u out of range\n",
-+			   dp83867->tx_fifo_depth);
-+		return -EINVAL;
-+	}
-+
-+	ret = of_property_read_u32(of_node, "rx-fifo-depth",
-+				   &dp83867->rx_fifo_depth);
-+	if (ret)
-+		dp83867->rx_fifo_depth = DP83867_PHYCR_FIFO_DEPTH_4_B_NIB;
-+
-+	if (dp83867->rx_fifo_depth > DP83867_PHYCR_FIFO_DEPTH_MAX) {
-+		phydev_err(phydev, "rx-fifo-depth value %u out of range\n",
-+			   dp83867->rx_fifo_depth);
- 		return -EINVAL;
- 	}
-+
- 	return 0;
- }
- #else
-@@ -458,12 +475,31 @@ static int dp83867_config_init(struct phy_device *phydev)
- 		phy_clear_bits_mmd(phydev, DP83867_DEVADDR, DP83867_CFG4,
- 				   BIT(7));
- 
-+	if (phy_interface_is_rgmii(phydev) ||
-+	    phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		val = phy_read(phydev, MII_DP83867_PHYCTRL);
-+		if (val < 0)
-+			return val;
-+
-+		val &= ~DP83867_PHYCR_TX_FIFO_DEPTH_MASK;
-+		val |= (dp83867->tx_fifo_depth <<
-+			DP83867_PHYCR_TX_FIFO_DEPTH_SHIFT);
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+			val &= ~DP83867_PHYCR_RX_FIFO_DEPTH_MASK;
-+			val |= (dp83867->rx_fifo_depth <<
-+				DP83867_PHYCR_RX_FIFO_DEPTH_SHIFT);
-+		}
-+
-+		ret = phy_write(phydev, MII_DP83867_PHYCTRL, val);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	if (phy_interface_is_rgmii(phydev)) {
- 		val = phy_read(phydev, MII_DP83867_PHYCTRL);
- 		if (val < 0)
- 			return val;
--		val &= ~DP83867_PHYCR_FIFO_DEPTH_MASK;
--		val |= (dp83867->fifo_depth << DP83867_PHYCR_FIFO_DEPTH_SHIFT);
- 
- 		/* The code below checks if "port mirroring" N/A MODE4 has been
- 		 * enabled during power on bootstrap.
--- 
-2.23.0
-
+     Andrew
