@@ -2,96 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5FD3116AB8
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 11:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51691116AC6
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 11:19:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727165AbfLIKQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 05:16:55 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:45246 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbfLIKQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 05:16:54 -0500
-Received: by mail-lf1-f65.google.com with SMTP id 203so10194284lfa.12
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 02:16:53 -0800 (PST)
+        id S1727188AbfLIKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 05:19:22 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:39762 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbfLIKTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 05:19:22 -0500
+Received: by mail-yw1-f68.google.com with SMTP id h126so5581545ywc.6;
+        Mon, 09 Dec 2019 02:19:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qOKG0+zt5rwTj67LJxDX/qCimE6XOpAXlc+hx+8G88c=;
-        b=mxPOdgo3h5IcRezHEIpYv72O7EeJPO7m6ruRm+zfckYMOe9GiFe9eOIc8c6/PD+D/6
-         5b3lRFmdmVu4VZfg7EphJWq6xzbFZm6otThp2/Pkf+ENTfxfBxf2yOrw10OHn8pJsMWC
-         vgYpPuXwppbs0ZdKbgI7sTU4fzjFyr+z78WS6ZNyx3SUxs+V+JcT2Wueo2KBLzJfvTPl
-         xrtqWJFYgba/t8z1V207cxyKyfcRcKNXChzX/jVq3Q/FEvFjCx4baBa1lBV1oEBGGD95
-         jvLbugQ06JC/N4e0FgiiNsK/w+Uw5mMfIvsmYB2NBCRAC3IyFYglhlNxRNvyc1ecHkud
-         ceFA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kfJJcbBCtP2J5q6yO63evUfynsnsxLvvCJ773MPUEuA=;
+        b=Ma3N+JtK7nruXZYsUdJNld9kFQdW2aBkcD1kjYbGBX9hAa2s7I+IUzxdCECHUvYuGF
+         zGpp/tU4+99lnfPkh34QEDnvnCFUxEgiLR6y805/D4WZF9OWa6InE9G2wEjoPmFZfO4m
+         mlUu7oC7sv3HtH7XDJl9eyL8N2Ueek0EBBEhk1/Uh/bsvkIRseP/PK4V9QlvS7x0r92R
+         7tUfFGLzdq3ERnzyVE/9QhH6wPByphkk/ZPxCYEl7xMY0jAO9AazE+PZLK+TFAnVS2F8
+         Op2HpFBJP0oh+v37w0IdOfio2G+AEHz+s2Kn46jjl2T3zHu+b/wvA5ZKE6OyxGLEIIOM
+         kQlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qOKG0+zt5rwTj67LJxDX/qCimE6XOpAXlc+hx+8G88c=;
-        b=E77iBa2bhaU1LoiFD3J/21gTz6HC2iZC3PyOV+SM2nTdKsvzM6+ri+vGj6mPrDVspD
-         bfFrQB/SVueoeLsL16veZ1e33tI/6cygL01Ch0blkaQu7tgCKhnOP8K7iLMbd7vdh5l3
-         K2u/BAbcEYC+HHU66glCV8OgDVyTB9HAh3cs6QpoduvMXOTucfGWWKyj1wCqxKqlgxSg
-         Cc16HxrkbUzitjIwR2JCpWh0tqSoqL0Dj8KKD8K+UzykpWShATtBoCAL2WZhjVoAz1al
-         sf1O7QmfV9INKnm6f93axJtHjuYZ5di/X2TEmb1q1YULl2s5totW0uYKtL8Skpp0AOFC
-         yB5g==
-X-Gm-Message-State: APjAAAU7vDdlXeYA+fG4QvI2H75ZWrhepk0HC80eHdROysqVKJ1POmkP
-        RtM9XqNjQdVNZnk3QfFMWi7Iaw==
-X-Google-Smtp-Source: APXvYqzIxHKDdajLv/CInotTsm7OvAkaV83/NqqCG8MySSY6kGzvwI8OxUHuWx46aTKIpBRjjiuYrQ==
-X-Received: by 2002:ac2:4adc:: with SMTP id m28mr14629166lfp.26.1575886612650;
-        Mon, 09 Dec 2019 02:16:52 -0800 (PST)
-Received: from ?IPv6:2a00:1fa0:8d7:7661:9091:2bdc:ea2:564d? ([2a00:1fa0:8d7:7661:9091:2bdc:ea2:564d])
-        by smtp.gmail.com with ESMTPSA id t2sm7171945ljj.11.2019.12.09.02.16.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 09 Dec 2019 02:16:52 -0800 (PST)
-Subject: Re: [PATCH bpf-next 05/12] xsk: eliminate the RX batch size
-To:     Magnus Karlsson <magnus.karlsson@intel.com>, bjorn.topel@intel.com,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, saeedm@mellanox.com,
-        jeffrey.t.kirsher@intel.com, maciej.fijalkowski@intel.com,
-        maciejromanfijalkowski@gmail.com
-References: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
- <1575878189-31860-6-git-send-email-magnus.karlsson@intel.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <8e243b69-0642-962e-41b4-8d0107b960c6@cogentembedded.com>
-Date:   Mon, 9 Dec 2019 13:16:32 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        bh=kfJJcbBCtP2J5q6yO63evUfynsnsxLvvCJ773MPUEuA=;
+        b=B9qZk2sbX64LYUhhojLvZfCrDs0k2Rs5q6ZYGC7ApV2TNb1/xJLY62Zo8PSXHHJHVg
+         BWemom+NnIypFt8q+AuMJuol2iqUejg5ErwfDxBKL+v2bzjGSl3EhECRmLepMekwd5af
+         BzRPjMymLtgB4VPiXRkGz8POHcXyVcU+aV7v25OU6wAut9FOz7dDPWKZ3K3vkONXyIOy
+         v5hUCrvpxD91AcPHEaJjjbwdLSIKE4RvDLb30xzrHnSWUYxhFvgd3QnA0vOTefLErtGc
+         jiiDz1Pc2PCIJKMB3T9ZI4sv169iIGnY4TXZdx0C+RS+0ugwbKMBwqrPtHbc2GKpyAwe
+         gR4Q==
+X-Gm-Message-State: APjAAAVoYySIJuklMVrnP3mVAgQNF6zO/qgsYb6c8hhIDNDyPYFwesfm
+        I369NCqhQtd1zhcjuYj9mVN4qlrc6i/k7g==
+X-Google-Smtp-Source: APXvYqybZF5QzKydT/LE1jUr5ytCmmr6NJnb7T7X1akDgzfB6NIg7H27WuB42i7MMYoUAhlqt7QAQA==
+X-Received: by 2002:a0d:db49:: with SMTP id d70mr19255094ywe.370.1575886760637;
+        Mon, 09 Dec 2019 02:19:20 -0800 (PST)
+Received: from karen ([2604:2d80:d68c:d900:c4d5:fc84:cce:f8b4])
+        by smtp.gmail.com with ESMTPSA id p133sm2400557ywb.71.2019.12.09.02.19.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 02:19:20 -0800 (PST)
+From:   Scott Schafer <schaferjscott@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Scott Schafer <schaferjscott@gmail.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: Fix CamelCase in qlge.h and qlge_dbg.c
+Date:   Mon,  9 Dec 2019 04:19:08 -0600
+Message-Id: <20191209101908.23878-1-schaferjscott@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <1575878189-31860-6-git-send-email-magnus.karlsson@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+This patch addresses CamelCase warnings in qlge.h under struct
+mpi_coredump_global_header and mpi_coredump_segment_header. As
+well ass addresses CamelCase warnings in qlge_dbg.c when the
+structs are used.
 
-On 09.12.2019 10:56, Magnus Karlsson wrote:
+Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
+---
+ drivers/staging/qlge/qlge.h     | 14 +++++++-------
+ drivers/staging/qlge/qlge_dbg.c | 20 ++++++++++----------
+ 2 files changed, 17 insertions(+), 17 deletions(-)
 
-> In the xsk consumer ring code there is a variable call RX_BATCH_SIZE
-
-    Called?
-
-> that dictates the minimum number of entries that we try to grab from
-> the fill and Tx rings. In fact, the code always try to grab the
-   ^^^^^^^^^^^^^^^^^^^^^ hm, are you sure there's no typo here?
-
-> maximum amount of entries from these rings. The only thing this
-> variable does is to throw an error if there is less than 16 (as it is
-> defined) entries on the ring. There is no reason to do this and it
-> will just lead to weird behavior from user space's point of view. So
-> eliminate this variable.
-> 
-> With this change, we will be able to simplify the xskq_nb_free and
-> xskq_nb_avail code in the next commit.
-> 
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-[...]
-
-MBR, Sergei
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index 6ec7e3ce3863..57884aac308f 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -1627,18 +1627,18 @@ enum {
+ #define MPI_COREDUMP_COOKIE 0x5555aaaa
+ struct mpi_coredump_global_header {
+ 	u32	cookie;
+-	u8	idString[16];
+-	u32	timeLo;
+-	u32	timeHi;
+-	u32	imageSize;
+-	u32	headerSize;
++	u8	id_string[16];
++	u32	time_lo;
++	u32	time_hi;
++	u32	image_size;
++	u32	header_size;
+ 	u8	info[220];
+ };
+ 
+ struct mpi_coredump_segment_header {
+ 	u32	cookie;
+-	u32	segNum;
+-	u32	segSize;
++	u32	seg_num;
++	u32	seg_size;
+ 	u32	extra;
+ 	u8	description[16];
+ };
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index 83f34ca43aa4..aac20db565fa 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -702,8 +702,8 @@ static void ql_build_coredump_seg_header(
+ {
+ 	memset(seg_hdr, 0, sizeof(struct mpi_coredump_segment_header));
+ 	seg_hdr->cookie = MPI_COREDUMP_COOKIE;
+-	seg_hdr->segNum = seg_number;
+-	seg_hdr->segSize = seg_size;
++	seg_hdr->seg_num = seg_number;
++	seg_hdr->seg_size = seg_size;
+ 	strncpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
+ }
+ 
+@@ -741,12 +741,12 @@ int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump)
+ 	memset(&(mpi_coredump->mpi_global_header), 0,
+ 	       sizeof(struct mpi_coredump_global_header));
+ 	mpi_coredump->mpi_global_header.cookie = MPI_COREDUMP_COOKIE;
+-	mpi_coredump->mpi_global_header.headerSize =
++	mpi_coredump->mpi_global_header.header_size =
+ 		sizeof(struct mpi_coredump_global_header);
+-	mpi_coredump->mpi_global_header.imageSize =
++	mpi_coredump->mpi_global_header.image_size =
+ 		sizeof(struct ql_mpi_coredump);
+-	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+-		sizeof(mpi_coredump->mpi_global_header.idString));
++	strncpy(mpi_coredump->mpi_global_header.id_string, "MPI Coredump",
++		sizeof(mpi_coredump->mpi_global_header.id_string));
+ 
+ 	/* Get generic NIC reg dump */
+ 	ql_build_coredump_seg_header(&mpi_coredump->nic_regs_seg_hdr,
+@@ -1231,12 +1231,12 @@ static void ql_gen_reg_dump(struct ql_adapter *qdev,
+ 	memset(&(mpi_coredump->mpi_global_header), 0,
+ 	       sizeof(struct mpi_coredump_global_header));
+ 	mpi_coredump->mpi_global_header.cookie = MPI_COREDUMP_COOKIE;
+-	mpi_coredump->mpi_global_header.headerSize =
++	mpi_coredump->mpi_global_header.header_size =
+ 		sizeof(struct mpi_coredump_global_header);
+-	mpi_coredump->mpi_global_header.imageSize =
++	mpi_coredump->mpi_global_header.image_size =
+ 		sizeof(struct ql_reg_dump);
+-	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+-		sizeof(mpi_coredump->mpi_global_header.idString));
++	strncpy(mpi_coredump->mpi_global_header.id_string, "MPI Coredump",
++		sizeof(mpi_coredump->mpi_global_header.id_string));
+ 
+ 
+ 	/* segment 16 */
+-- 
+2.20.1
 
