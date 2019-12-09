@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DFD116442
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 01:01:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3C0116455
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 01:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfLIABY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 8 Dec 2019 19:01:24 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49682 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726956AbfLIABX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 19:01:23 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB8Nw01F031006
-        for <netdev@vger.kernel.org>; Sun, 8 Dec 2019 16:01:22 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wrc265vcv-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 08 Dec 2019 16:01:22 -0800
-Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 8 Dec 2019 16:01:21 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 9F59B760CCB; Sun,  8 Dec 2019 16:01:20 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <rostedt@goodmis.org>, <x86@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf 3/3] selftests/bpf: test function_graph tracer and bpf trampoline together
-Date:   Sun, 8 Dec 2019 16:01:14 -0800
-Message-ID: <20191209000114.1876138-4-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191209000114.1876138-1-ast@kernel.org>
-References: <20191209000114.1876138-1-ast@kernel.org>
+        id S1726669AbfLIAZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 19:25:32 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41942 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726422AbfLIAZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 19:25:32 -0500
+Received: by mail-pg1-f196.google.com with SMTP id x8so6210943pgk.8;
+        Sun, 08 Dec 2019 16:25:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=54pMROPZSZfXX7jRTCLEYndLEfmz7nGR8IgouL3KZTc=;
+        b=BSJaBm2ePbXg4/8QJEoez2M+93ZFU9CFwMm/wY/y3fH5J2FICxXg8f4R5L+w9xefYo
+         PTGQ5sPuVVu1AV7xJKYeCg6mPH6PVz6KvEF8AbZ9eS+0NQxwvSeZoSJ0gsdnjh5e3mZd
+         4OV2ibZ7dlTjDdmWZs9VKt9th1QoncUz5eCiV15AFzTuuUzDIycxQz83ZjnnSyOHTLvG
+         gNhSKdu3VCuezUFhphqXSBBClXUtu5jz8Eox0dKJp7rCb00Jjm9tpLfrC1ESWJfUKiB3
+         fcljUfI7jtssvTxptrRqIjOtU4i3FJLBvy518UbNZPY3iY5ZWRC+AEUvH9qqTosHGlXb
+         ywvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=54pMROPZSZfXX7jRTCLEYndLEfmz7nGR8IgouL3KZTc=;
+        b=M4qZJMGBLAnZK3DV3sxFcCNkkGHLtwOUI2pW5dT88oJ/mcxRL3STrtzhlLNcbFxUMl
+         CSYCkbDmlPeOKl/IO/y9Auj0C4RRMNWu2I1tsvtCCwqWn+mL6Ko/vBExFF4CI+94RpL6
+         ueEPeTFt6nkO+3286CfZFIJ/+5V1Pv9RR2mBqduo14u9a7mfJLdA87fmYjK0+uzNT8sO
+         ajpC5PVGnlnYIfWsf1tsOzJ/fg1aTIj4GqJKQXAxLzsAa5g54zHJ2hy7ri6P2RqP60TZ
+         w3Ac9iHulHyHd+ytTEC2GHt6RvH2JExSQH1vQHkrWXNkAirnxieIrelut9PJMNPn1UNu
+         P9jQ==
+X-Gm-Message-State: APjAAAX5l3MCJV7agHSWhnMyp/xJluuxgCHqzQc3ANa3LRRSeQm0Dmz0
+        ssa+pcmvF/lYX0uvXVjRyJ1JhzHG
+X-Google-Smtp-Source: APXvYqyLOx/NbgYchmoB1mb0Ueb/tUuLtaKFry8cwej7RBw1g78+6E329FnE4TSyZJDGD6IMKOF7vQ==
+X-Received: by 2002:a62:6381:: with SMTP id x123mr26519913pfb.75.1575851131060;
+        Sun, 08 Dec 2019 16:25:31 -0800 (PST)
+Received: from [172.20.20.156] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id o3sm9802750pju.13.2019.12.08.16.25.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Dec 2019 16:25:30 -0800 (PST)
+Subject: Re: [RFC net-next 07/18] tun: set offloaded xdp program
+To:     Jason Wang <jasowang@redhat.com>, David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        qemu-devel@nongnu.org, kvm@vger.kernel.org
+References: <20191126100744.5083-1-prashantbhole.linux@gmail.com>
+ <20191126100744.5083-8-prashantbhole.linux@gmail.com>
+ <3ff23a11-c979-32ed-b55d-9213c2c64bc4@gmail.com>
+ <8d575940-ba31-8780-ae4d-6edbe1b2b15a@redhat.com>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <ba0c0d5f-fbb4-ff92-c7d8-403dbb757758@gmail.com>
+Date:   Mon, 9 Dec 2019 09:24:34 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-08_07:2019-12-05,2019-12-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- lowpriorityscore=0 bulkscore=0 malwarescore=0 mlxlogscore=401
- suspectscore=1 mlxscore=0 phishscore=0 clxscore=1015 spamscore=0
- adultscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912080207
-X-FB-Internal: deliver
+In-Reply-To: <8d575940-ba31-8780-ae4d-6edbe1b2b15a@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add simple test script to execute funciton graph tracer while BPF trampoline
-attaches and detaches from the functions being graph traced.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/test_ftrace.sh | 39 ++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100755 tools/testing/selftests/bpf/test_ftrace.sh
 
-diff --git a/tools/testing/selftests/bpf/test_ftrace.sh b/tools/testing/selftests/bpf/test_ftrace.sh
-new file mode 100755
-index 000000000000..20de7bb873bc
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_ftrace.sh
-@@ -0,0 +1,39 @@
-+#!/bin/bash
-+
-+TR=/sys/kernel/debug/tracing/
-+clear_trace() { # reset trace output
-+    echo > $TR/trace
-+}
-+
-+disable_tracing() { # stop trace recording
-+    echo 0 > $TR/tracing_on
-+}
-+
-+enable_tracing() { # start trace recording
-+    echo 1 > $TR/tracing_on
-+}
-+
-+reset_tracer() { # reset the current tracer
-+    echo nop > $TR/current_tracer
-+}
-+
-+disable_tracing
-+clear_trace
-+
-+echo "" > $TR/set_ftrace_filter
-+echo '*printk* *console* *wake* *serial* *lock*' > $TR/set_ftrace_notrace
-+
-+echo "bpf_prog_test*" > $TR/set_graph_function
-+echo "" > $TR/set_graph_notrace
-+
-+echo function_graph > $TR/current_tracer
-+
-+enable_tracing
-+./test_progs -t fentry
-+./test_progs -t fexit
-+disable_tracing
-+clear_trace
-+
-+reset_tracer
-+
-+exit 0
--- 
-2.23.0
+On 12/2/19 11:47 AM, Jason Wang wrote:
+> 
+> On 2019/12/2 上午12:45, David Ahern wrote:
+>> On 11/26/19 4:07 AM, Prashant Bhole wrote:
+>>> From: Jason Wang <jasowang@redhat.com>
+>>>
+>>> This patch introduces an ioctl way to set an offloaded XDP program
+>>> to tun driver. This ioctl will be used by qemu to offload XDP program
+>>> from virtio_net in the guest.
+>>>
+>> Seems like you need to set / reset the SOCK_XDP flag on tfile->sk since
+>> this is an XDP program.
+>>
+>> Also, why not add this program using netlink instead of ioctl? e.g., as
+>> part of a generic XDP in the egress path like I am looking into for the
+>> host side.
+> 
+> 
+> Maybe both, otherwise, qemu may need netlink as a dependency.
+> 
+> Thanks
+> 
 
+Thank you all for reviewing. We will continue to improve this set.
+
+If we split this work, Tx path XDP is one of the necessary part
+which can be developed first. As suggested by David Ahern it will be
+a netlink way but we will still need ioctl way for tap. I will try
+to come up with Tx path XDP set next time.
+
+Thanks.
