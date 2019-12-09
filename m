@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25B3E117380
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 19:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8250F117383
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 19:11:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbfLISKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 13:10:07 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:33672 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbfLISKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 13:10:07 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 772711543992E;
-        Mon,  9 Dec 2019 10:10:06 -0800 (PST)
-Date:   Mon, 09 Dec 2019 10:10:05 -0800 (PST)
-Message-Id: <20191209.101005.1980841296607612612.davem@davemloft.net>
-To:     dmurphy@ti.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        bunk@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        grygorii.strashko@ti.com
-Subject: Re: [PATCH net-next v2 0/2] Rebase of patches
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191209175943.23110-1-dmurphy@ti.com>
-References: <20191209175943.23110-1-dmurphy@ti.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Dec 2019 10:10:06 -0800 (PST)
+        id S1726495AbfLISLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 13:11:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54202 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726265AbfLISLc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 13:11:32 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BF0C2206D3;
+        Mon,  9 Dec 2019 18:11:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575915092;
+        bh=tIdFcsEoS0tQukUPS2khU4DomKCIfvwgUfYDrYhh6e4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SdOcoU29HB0wEELPzrUQD+TcZ+ihJglsEwzvsE83J4Vl/2Yjeml/k4ehX+bhLR/He
+         PdtDR1hO8bNx+PwFCQpyYNQV4QJA5YxoTwBnePdhUpeQ7Tji0UuX/C5D+gEsSOMHwP
+         XkF1wBc+w3EFgt7Dk/NFL7gpHGydFgFfa2Wz3ZqQ=
+Date:   Mon, 9 Dec 2019 19:11:29 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     stable@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH stable v4.19 0/4] xfrm: Fixes for v4.19
+Message-ID: <20191209181129.GA1456904@kroah.com>
+References: <20191209083045.20657-1-steffen.klassert@secunet.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209083045.20657-1-steffen.klassert@secunet.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Murphy <dmurphy@ti.com>
-Date: Mon, 9 Dec 2019 11:59:41 -0600
+On Mon, Dec 09, 2019 at 09:30:41AM +0100, Steffen Klassert wrote:
+> This patchset has some fixes for the xfrm interfaces
+> that are needed but did not make it into the stable
+> tree so far.
+> 
+> 1) Fix a memory leak when creating xfrm interfaces.
+> 
+> 2) Fix a xfrm interface corruptinon on changelink.
+> 
+> 3) Fix a list corruption when changing network namespaces.
+> 
+> 4) Fix unregistation of the underying phydev, otherwise
+>    the phydev cannot be removed.
 
-> This is a rebase of the dp83867 patches on top of the net-next tree
+Thanks for these, all now queued up.
 
-That's not what this patch series does.
-
-The introductory posting is where you describe, at a high level, what the
-whole patch series is doing as a unit, how it is doing it, and why it is
-doing it that way.
-
-It also serves as the single email I can respond to when I want to let you
-know that I've applied the patch series.
-
-Please read the documentation under Documentation/ if you still are unsure
-what this introductory posting is all about and how you should compose one.
-
-Thank you.
+greg k-h
