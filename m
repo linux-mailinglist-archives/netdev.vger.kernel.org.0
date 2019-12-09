@@ -2,226 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA057117668
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A45F9117670
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:57:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbfLITzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 14:55:49 -0500
-Received: from mx2.suse.de ([195.135.220.15]:43550 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726991AbfLITzt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 14:55:49 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 62CCEAFCC;
-        Mon,  9 Dec 2019 19:55:45 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 0F7A1E0321; Mon,  9 Dec 2019 20:55:45 +0100 (CET)
-Message-Id: <0c239334df943c3f5f4ca74a2509754e08eda9e3.1575920565.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1575920565.git.mkubecek@suse.cz>
-References: <cover.1575920565.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 5/5] ethtool: provide link mode names as a string set
-To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Date:   Mon,  9 Dec 2019 20:55:45 +0100 (CET)
+        id S1726631AbfLIT5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 14:57:40 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:41487 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbfLIT5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:57:39 -0500
+Received: by mail-qk1-f195.google.com with SMTP id l124so2293101qkf.8;
+        Mon, 09 Dec 2019 11:57:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NcB44n0iXRJVyFpixK4empk1pnmKscPpRBnS5swbmcI=;
+        b=b7Fn5KWLzyCLQ5HJCVpwQc6UYQrZJaUDJRuoy8MN5DipxjybCfdNYpizUQxWkHPXwR
+         m/LlDVfRnUorgrJnSS1Kg5XrYGdOg0WLLloWBnqDIXA8XkZ5Ea7Bwsa1VUGv7NH2KPKL
+         yemnVVjPiD5c9VW0j96royNb4sN9fqrZ222Lo4Tk4sELcTCfiPV2d7S8q57bA0Zdb6rS
+         yre3yMJrZDStkg8c1dRL+Iz/sF+xM8yRBpkPKncCnaa8uu9UDUUJsOMVybN3CdJLKgOA
+         ysn+jxXaAvolex6sn6S7IiAiL8tCp5PCOm6Th0OAazOG6lKdV1EvAyRg2hAeiA7JL/JH
+         KTHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NcB44n0iXRJVyFpixK4empk1pnmKscPpRBnS5swbmcI=;
+        b=mNkA5pyQdR3zkJ+gLUhUaLaWPbSHsY3ny+GmnqWVBG6ELENwqpn3Le3ueTpeQUleny
+         21mJM//kXxcRz+s8QQsfBcgLDlzLvFbcO5NKwkoCJRYtRC7IINxpuROF9+IkeGNR/68e
+         kCckkyZw80jDeHz+0E/7UuLe/1+YIi9j3c6aUIqCt3zQ67U6R6bWHMeRBE7ad1z86fgz
+         OFiO/VVSNcQYqRYPPQbJrwBOaa4UaokKPs+gN5bYX2+Pj0OobLWqIWJaMuBHCbamnW4S
+         AIcX1iJlu/ZFXwKq8i9RALjLCMMaupPsf7/BoDuNPXNnsy09oIRqXRVHskuZdT+WsLOH
+         xUcg==
+X-Gm-Message-State: APjAAAXr6avMvACmouNX///nS3Ns5i05PfTYExwbl/JFnvXEVq0XS7rj
+        LHyW8ICzvSEcZV1erEie+42Jk9hPPSJ0WF8GzbQ=
+X-Google-Smtp-Source: APXvYqwAlJqjuD/MqL1qjgVFkbXmT4iYKjEEkPJy9RQD9uKvk9LAmDD51ilqG6Q8iLAGCGYrPSkmTDbNo15EjqDtrk4=
+X-Received: by 2002:a37:9c0f:: with SMTP id f15mr29427659qke.297.1575921458257;
+ Mon, 09 Dec 2019 11:57:38 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1575916815.git.paul.chaignon@gmail.com> <966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com>
+In-Reply-To: <966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 9 Dec 2019 20:57:27 +0100
+Message-ID: <CAJ+HfNgFo8viKn3KzNfbmniPNUpjOv_QM4ua_V0RFLBpWCOBYw@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] bpf, riscv: limit to 33 tail calls
+To:     Paul Chaignon <paul.chaignon@orange.com>
+Cc:     Paul Burton <paulburton@kernel.org>,
+        Mahshid Khezri <khezri.mahshid@gmail.com>,
+        paul.chaignon@gmail.com, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike e.g. netdev features, the ethtool ioctl interface requires link mode
-table to be in sync between kernel and userspace for userspace to be able
-to display and set all link modes supported by kernel. The way arbitrary
-length bitsets are implemented in netlink interface, this will be no longer
-needed.
+On Mon, 9 Dec 2019 at 19:52, Paul Chaignon <paul.chaignon@orange.com> wrote=
+:
+>
+> All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
+> limit at runtime.  In addition, a test was recently added, in tailcalls2,
+> to check this limit.
+>
+> This patch updates the tail call limit in RISC-V's JIT compiler to allow
+> 33 tail calls.  I tested it using the above selftest on an emulated
+> RISCV64.
+>
 
-To allow userspace to access all link modes running kernel supports, add
-table of ethernet link mode names and make it available as a string set to
-userspace GET_STRSET requests. Add build time check to make sure names
-are defined for all modes declared in enum ethtool_link_mode_bit_indices.
+33! ICK! ;-) Thanks for finding this!
 
-Once the string set is available, make it also accessible via ioctl.
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- include/linux/ethtool.h      |  4 ++
- include/uapi/linux/ethtool.h |  2 +
- net/ethtool/common.c         | 86 ++++++++++++++++++++++++++++++++++++
- net/ethtool/common.h         |  2 +
- net/ethtool/ioctl.c          |  5 +++
- 5 files changed, 99 insertions(+)
-
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 95991e4300bf..5caef65d93d6 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -102,6 +102,10 @@ static inline u32 ethtool_rxfh_indir_default(u32 index, u32 n_rx_rings)
- #define __ETHTOOL_DECLARE_LINK_MODE_MASK(name)		\
- 	DECLARE_BITMAP(name, __ETHTOOL_LINK_MODE_MASK_NBITS)
- 
-+/* compose link mode index from speed, type and duplex */
-+#define ETHTOOL_LINK_MODE(speed, type, duplex) \
-+	ETHTOOL_LINK_MODE_ ## speed ## base ## type ## _ ## duplex ## _BIT
-+
- /* drivers must ignore base.cmd and base.link_mode_masks_nwords
-  * fields, but they are allowed to overwrite them (will be ignored).
-  */
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index d4591792f0b4..f44155840b07 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -593,6 +593,7 @@ struct ethtool_pauseparam {
-  * @ETH_SS_RSS_HASH_FUNCS: RSS hush function names
-  * @ETH_SS_PHY_STATS: Statistic names, for use with %ETHTOOL_GPHYSTATS
-  * @ETH_SS_PHY_TUNABLES: PHY tunable names
-+ * @ETH_SS_LINK_MODES: link mode names
-  */
- enum ethtool_stringset {
- 	ETH_SS_TEST		= 0,
-@@ -604,6 +605,7 @@ enum ethtool_stringset {
- 	ETH_SS_TUNABLES,
- 	ETH_SS_PHY_STATS,
- 	ETH_SS_PHY_TUNABLES,
-+	ETH_SS_LINK_MODES,
- };
- 
- /**
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 220d6b539180..be1b26970eb1 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -83,3 +83,89 @@ phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
- 	[ETHTOOL_PHY_FAST_LINK_DOWN] = "phy-fast-link-down",
- 	[ETHTOOL_PHY_EDPD]	= "phy-energy-detect-power-down",
- };
-+
-+#define __LINK_MODE_NAME(speed, type, duplex) \
-+	#speed "base" #type "/" #duplex
-+#define __DEFINE_LINK_MODE_NAME(speed, type, duplex) \
-+	[ETHTOOL_LINK_MODE(speed, type, duplex)] = \
-+	__LINK_MODE_NAME(speed, type, duplex)
-+#define __DEFINE_SPECIAL_MODE_NAME(_mode, _name) \
-+	[ETHTOOL_LINK_MODE_ ## _mode ## _BIT] = _name
-+
-+const char
-+link_mode_names[__ETHTOOL_LINK_MODE_MASK_NBITS][ETH_GSTRING_LEN] = {
-+	__DEFINE_LINK_MODE_NAME(10, T, Half),
-+	__DEFINE_LINK_MODE_NAME(10, T, Full),
-+	__DEFINE_LINK_MODE_NAME(100, T, Half),
-+	__DEFINE_LINK_MODE_NAME(100, T, Full),
-+	__DEFINE_LINK_MODE_NAME(1000, T, Half),
-+	__DEFINE_LINK_MODE_NAME(1000, T, Full),
-+	__DEFINE_SPECIAL_MODE_NAME(Autoneg, "Autoneg"),
-+	__DEFINE_SPECIAL_MODE_NAME(TP, "TP"),
-+	__DEFINE_SPECIAL_MODE_NAME(AUI, "AUI"),
-+	__DEFINE_SPECIAL_MODE_NAME(MII, "MII"),
-+	__DEFINE_SPECIAL_MODE_NAME(FIBRE, "FIBRE"),
-+	__DEFINE_SPECIAL_MODE_NAME(BNC, "BNC"),
-+	__DEFINE_LINK_MODE_NAME(10000, T, Full),
-+	__DEFINE_SPECIAL_MODE_NAME(Pause, "Pause"),
-+	__DEFINE_SPECIAL_MODE_NAME(Asym_Pause, "Asym_Pause"),
-+	__DEFINE_LINK_MODE_NAME(2500, X, Full),
-+	__DEFINE_SPECIAL_MODE_NAME(Backplane, "Backplane"),
-+	__DEFINE_LINK_MODE_NAME(1000, KX, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, KX4, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, KR, Full),
-+	[ETHTOOL_LINK_MODE_10000baseR_FEC_BIT] = "10000baseR_FEC",
-+	__DEFINE_LINK_MODE_NAME(20000, MLD2, Full),
-+	__DEFINE_LINK_MODE_NAME(20000, KR2, Full),
-+	__DEFINE_LINK_MODE_NAME(40000, KR4, Full),
-+	__DEFINE_LINK_MODE_NAME(40000, CR4, Full),
-+	__DEFINE_LINK_MODE_NAME(40000, SR4, Full),
-+	__DEFINE_LINK_MODE_NAME(40000, LR4, Full),
-+	__DEFINE_LINK_MODE_NAME(56000, KR4, Full),
-+	__DEFINE_LINK_MODE_NAME(56000, CR4, Full),
-+	__DEFINE_LINK_MODE_NAME(56000, SR4, Full),
-+	__DEFINE_LINK_MODE_NAME(56000, LR4, Full),
-+	__DEFINE_LINK_MODE_NAME(25000, CR, Full),
-+	__DEFINE_LINK_MODE_NAME(25000, KR, Full),
-+	__DEFINE_LINK_MODE_NAME(25000, SR, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, CR2, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, KR2, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, KR4, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, SR4, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, CR4, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, LR4_ER4, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, SR2, Full),
-+	__DEFINE_LINK_MODE_NAME(1000, X, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, CR, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, SR, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, LR, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, LRM, Full),
-+	__DEFINE_LINK_MODE_NAME(10000, ER, Full),
-+	__DEFINE_LINK_MODE_NAME(2500, T, Full),
-+	__DEFINE_LINK_MODE_NAME(5000, T, Full),
-+	__DEFINE_SPECIAL_MODE_NAME(FEC_NONE, "None"),
-+	__DEFINE_SPECIAL_MODE_NAME(FEC_RS, "RS"),
-+	__DEFINE_SPECIAL_MODE_NAME(FEC_BASER, "BASER"),
-+	__DEFINE_LINK_MODE_NAME(50000, KR, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, SR, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, CR, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, LR_ER_FR, Full),
-+	__DEFINE_LINK_MODE_NAME(50000, DR, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, KR2, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, SR2, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, CR2, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, LR2_ER2_FR2, Full),
-+	__DEFINE_LINK_MODE_NAME(100000, DR2, Full),
-+	__DEFINE_LINK_MODE_NAME(200000, KR4, Full),
-+	__DEFINE_LINK_MODE_NAME(200000, SR4, Full),
-+	__DEFINE_LINK_MODE_NAME(200000, LR4_ER4_FR4, Full),
-+	__DEFINE_LINK_MODE_NAME(200000, DR4, Full),
-+	__DEFINE_LINK_MODE_NAME(200000, CR4, Full),
-+	__DEFINE_LINK_MODE_NAME(100, T1, Full),
-+	__DEFINE_LINK_MODE_NAME(1000, T1, Full),
-+	__DEFINE_LINK_MODE_NAME(400000, KR8, Full),
-+	__DEFINE_LINK_MODE_NAME(400000, SR8, Full),
-+	__DEFINE_LINK_MODE_NAME(400000, LR8_ER8_FR8, Full),
-+	__DEFINE_LINK_MODE_NAME(400000, DR8, Full),
-+	__DEFINE_LINK_MODE_NAME(400000, CR8, Full),
-+};
-diff --git a/net/ethtool/common.h b/net/ethtool/common.h
-index 41b2efc1e4e1..351e019b8d85 100644
---- a/net/ethtool/common.h
-+++ b/net/ethtool/common.h
-@@ -13,5 +13,7 @@ extern const char
- tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN];
- extern const char
- phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN];
-+extern const char
-+link_mode_names[__ETHTOOL_LINK_MODE_MASK_NBITS][ETH_GSTRING_LEN];
- 
- #endif /* _ETHTOOL_COMMON_H */
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index b262db5a1d91..9274d70c496b 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -154,6 +154,9 @@ static int __ethtool_get_sset_count(struct net_device *dev, int sset)
- 	    !ops->get_ethtool_phy_stats)
- 		return phy_ethtool_get_sset_count(dev->phydev);
- 
-+	if (sset == ETH_SS_LINK_MODES)
-+		return __ETHTOOL_LINK_MODE_MASK_NBITS;
-+
- 	if (ops->get_sset_count && ops->get_strings)
- 		return ops->get_sset_count(dev, sset);
- 	else
-@@ -178,6 +181,8 @@ static void __ethtool_get_strings(struct net_device *dev,
- 	else if (stringset == ETH_SS_PHY_STATS && dev->phydev &&
- 		 !ops->get_ethtool_phy_stats)
- 		phy_ethtool_get_strings(dev->phydev, data);
-+	else if (stringset == ETH_SS_LINK_MODES)
-+		memcpy(data, link_mode_names, sizeof(link_mode_names));
- 	else
- 		/* ops->get_strings is valid because checked earlier */
- 		ops->get_strings(dev, stringset, data);
--- 
-2.24.0
-
+> Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+> Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
+> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+> ---
+>  arch/riscv/net/bpf_jit_comp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.=
+c
+> index 5451ef3845f2..7fbf56aab661 100644
+> --- a/arch/riscv/net/bpf_jit_comp.c
+> +++ b/arch/riscv/net/bpf_jit_comp.c
+> @@ -631,14 +631,14 @@ static int emit_bpf_tail_call(int insn, struct rv_j=
+it_context *ctx)
+>                 return -1;
+>         emit(rv_bgeu(RV_REG_A2, RV_REG_T1, off >> 1), ctx);
+>
+> -       /* if (--TCC < 0)
+> +       /* if (TCC-- < 0)
+>          *     goto out;
+>          */
+>         emit(rv_addi(RV_REG_T1, tcc, -1), ctx);
+>         off =3D (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
+>         if (is_13b_check(off, insn))
+>                 return -1;
+> -       emit(rv_blt(RV_REG_T1, RV_REG_ZERO, off >> 1), ctx);
+> +       emit(rv_blt(tcc, RV_REG_ZERO, off >> 1), ctx);
+>
+>         /* prog =3D array->ptrs[index];
+>          * if (!prog)
+> --
+> 2.17.1
+>
