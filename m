@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF23A117987
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0F011797F
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbfLIWjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 17:39:15 -0500
-Received: from mout.web.de ([212.227.15.3]:44983 "EHLO mout.web.de"
+        id S1727195AbfLIWio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 17:38:44 -0500
+Received: from mout.web.de ([212.227.15.4]:59763 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726230AbfLIWij (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 17:38:39 -0500
+        id S1727168AbfLIWin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 17:38:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1575931114;
-        bh=pwhCYI/XZUvd1PCjnnSsB3espHwYSHG9Tey+eI79854=;
+        s=dbaedf251592; t=1575931115;
+        bh=SSeAMdCB1BI0vkLB1ST1678SOkLJZQ2JmPrRyeRBBYc=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=bZ+QlWgZoi3c/kSudFVvxWFNcPW7p3hss+qxmf9p4CtRLBgBIF4qttCCQDt4eXYzM
-         HchF9dl96S03mSr+Dp5SwjG4uSLEzBHG3rFqRlEsDow7APQ6hXRPhmndPkWAvHVgsv
-         vzo1Yq+JJFSJpYY1t8sXhcoste5K4hKDhQxvkpv0=
+        b=JBqoF1NY8KbCvHeRBd7aa1W4xBStxE6LbZPWng5vycoBbLoHUv0kPZyte5F+U3xQ0
+         7PUCkm8ByPmlCV9mo3dNc9IDGcULYX6HMb690G92+egAEvRO80bXiRDQT0c0gMXypO
+         3h+NWQhBte154UPkdf/PGY1H+pScE55xQaIyQNAM=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from localhost.localdomain ([89.204.137.56]) by smtp.web.de
  (mrweb004 [213.165.67.108]) with ESMTPSA (Nemesis) id
- 0MhOpG-1iQe9Q025K-00MaZJ; Mon, 09 Dec 2019 23:38:34 +0100
+ 0MEIQq-1iXt9n0pUe-00FTnj; Mon, 09 Dec 2019 23:38:35 +0100
 From:   Soeren Moch <smoch@web.de>
 To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     Soeren Moch <smoch@web.de>, Wright Feng <wright.feng@cypress.com>,
@@ -33,38 +33,38 @@ Cc:     Soeren Moch <smoch@web.de>, Wright Feng <wright.feng@cypress.com>,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 6/8] brcmfmac: add RSDB condition when setting interface combinations
-Date:   Mon,  9 Dec 2019 23:38:20 +0100
-Message-Id: <20191209223822.27236-6-smoch@web.de>
+Subject: [PATCH 7/8] brcmfmac: not set mbss in vif if firmware does not support MBSS
+Date:   Mon,  9 Dec 2019 23:38:21 +0100
+Message-Id: <20191209223822.27236-7-smoch@web.de>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191209223822.27236-1-smoch@web.de>
 References: <20191209223822.27236-1-smoch@web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Ki9Ind9oIDd4Wyya3GAiQC8qQwjW/Q1A4tin9SB8ThC99hwPL3e
- hnncUekk38EIjbtIWV80GiH/Qk0X5ex6LlHeaXBl5jsL2bLNoQN8mf0E3ISUs0Njt9/AODP
- 0opcuoQ8grEpP0rU+bDfi0J9xa7DAeLem7HeRBMaZxFoF8AqETsJGV5eGJBTayglu+GqWtR
- 3R9cbRX0zUXPBMWKfjqQw==
+X-Provags-ID: V03:K1:6++YHmrTlcLgclZZagPILW3aNmSthZq6p58mEA5GH9f4DaqT0Rn
+ p5kid7pqxc18d7WLWHprDHWEGzQXEUI3eFfXmpfrzqx5xmqA4KmM1JiUYPCKHFOf0iInnkE
+ mgx38oZ9otELobLVHZkQHDP4fBwfvN+slStAWaH8JjV6+nDXp8S3omcZfMKJv+holEvA0Mj
+ HSMjJjHm8pdg+zsxIWCRA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MfcGgLzc754=:gc/tQd7+NKr1wOVGNhtXIK
- jbcUpInQwItLTRKolJJI1JlcLBScBvvwD6iwzobbX6IWVYn1qX2zEK+KIe2iLcRsz7R2b768b
- dWmMdT6k4uJzAOztqHCwxyRLF2zgVALBfxc1mV3gMRMz7GECpD0ceWGZfsslGoiNqyiuAJ9aU
- P3reCK2XJvWDu0u8fS3f+379Tk5dTSTYtn0ZVa07CgRDPuPsIzcKl1gGTawN2bMtJW4WZOaYl
- bYSfDeV2+dVmmFa+0ydP7zLGA3l5JEzpsqwynF3aPtMH79eLK8z5JRT+NBvz0DozNLmtc/h51
- CkZGj+fYuTcsec6o/EtAvAahwgBfgNRULobb9pM4QmJHY062m+5QuBOQ/vTkA4iSu6aGrKdNF
- rNHoVvjChc8N1nJfNnF2yN0Gx3ChkiV8JbG/DiRkkBJgj3lQJmF/1d9GHxVr5w8Qa0YAlzRCC
- r2pHQ8uIBepZTxmtzImaLM6aGCjbJdmySpjnLfqMbpXTN+dNauXzl6qOHT2BwptrxeXNh7ZFT
- 59KBM/VgwDNnRXCpN73KDyMcnEg/ZwNbHqjKCHfQ+7lGbLR9oNS4/lFiRx6dpBUYIiyBegitX
- REBhO4tBV9LtNUwcgNiFOLjIS52shomJgWjiScNdzgJAuhfbx9wVu1Yb0uxG6vuxQTT/tgBAK
- +9Ksm9fpZ1c/A3vzxKowvfUsoXLx6ASr4LNMTuTZGyOZZFKC590zON4kTW4H2IxZNudE+UAxZ
- +C1UIVrKXLDWlShtAhgvp00FPFWAwqqHO4oEsHTkk/zsvP+LeUfxg7BR1DgeWWuUXVpIBS2E3
- 1zM1LammOitfRBlZmsY89041KtU9j3W4yyTOhS6shdUrf2bZFe5FfUibva+k2ab0jV0oI6fAF
- pWWzTjZjQozL6dfMdAWQXPeAFmUMXZUhYanoe1vnVv3j9r0fVln/y91188OymC4tta2RhR5Uw
- 89RKfcV364Xj+xABIroz4Y10FaATcWr8vXapRlniS773K3CzYBs4j+igv8D+KTQhDkijdiJ5q
- oMG1hPq5c4Cv5jAlgQTEuVaT1+ZocuhKgTVGVSY7M6akAzl+88Gx42+p4TxXbaxh71eMyQLGN
- Hlu9RpCfLFDjjsiDrlXrQXgdYYP4jEOVZ37KeWiF8ZEZQU59mFkgYqXSNPxNoaK8V14ZyUouD
- c9vsvt08mUGff6kzy5fs5CHOzA1WoglJlbvyXzPadMHoxt2oOyUMko62svjo5EhgeJXuzcphK
- aCDPf0Yt57WFUFjLPCckzwCzb9kn0SIN16m+vXg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PpPtRcmL2Dk=:ZxRx6iZ+89cT/TEvSSrbyC
+ kdcHHvouNJ+4QThb/cU6xXEGhulP2X8j3VN3dLCmPcQ7dI/OGha7lWuBWFZsIqWAFokl+TX1w
+ ns2mdTrdcbpia41YU43F3mliYwpMWqpxXqZzTtvu5/+WGnXVVm/Eq80mW//DPqL058NTsOONl
+ fN1BsocRYLCBzvUpBrBTtLfaiT8nG5wIVFWDh+YyGOmFRwpp/NkkUXHtNmRTDlMvxVe1uSQcH
+ zQrsjE77kY6ZKrSAgvlDRBnuVKX2YbkoNre+/POOSnC/9SCvniZJXe2W5hywoRVaEdoBakKVD
+ GoZ5nwQAwYwViKKlKlKgVD4sLObmqdpqd7o8Y0in5yb7vaVMN4C2ZU7ZUHDvX83sjqnSlaHG0
+ bv17Zrsro+woqoH+QXTcFtsIxUNZnV30yD5skNY5Hfu8Vqufi2iSMq9obR65C/ajyFieRESyz
+ bhbUxErjqLBVA5dzq/VopQ27kcS7Z9UgHu726Oha0Gf/X94MZ1wbcFMpCvqWG7AkqvaJY6tpm
+ l+X3TZ2B1LdZ8J95uWtDSxlDHXGomjv6fqIu2wnLCy9vrEYws6IsjlU9bvvLlUBFjpMIrcNGH
+ lr6N3gp30ZPzhiFzgrRhnAlGm7NqhP2Rzc1wxEkbuVEBaGslr3yR494XO6rYQS/NKhHaPmUFd
+ 3v5VyogWCwXOreg/M/zjsXebk9cjHKGfK2BoQHRgAhnpGTj1AErMpXKNHC89GbquF8MDcBkb0
+ 80f5JQk+e7p1zmRHC3j2CQ75ILZz33XTqdm1kzIRC32/twPN/HwGuQa5zMGf9ZazgRrY8Ck2I
+ y7m0CCY5ffQMFjteiGryoh/srNsPbDhgX2io1/dGX66XujH4FCpWUUnYNilFtYYwjE0agZAD9
+ y275EANsY567Oy8k2ncmNUc7aypkCbPYPqbbAenLYMUvRvrz5ERQvrf57QZDqMHq9hUEp0yc7
+ o33UsTkNgNN1u4saJG05Pfi7NzmtNpeA5QVvOg+bXWBFTWCKKTVvf40ffsiKkZID5+/B5ptP2
+ 9teLY7Q7Kx5+AGeYlD1zTMmMCvzP4o6ENV3BufqsBlTdgegQ82xReWvIHyvxMpFmy+7uLpecD
+ N+V3hOrA4Qt6CfxjfpQHX27WQmrYztGuAeHLZ+SW4D5QVj3YDRUB36UhMSPYx/1YF+hs4fopL
+ vi5nAxIYKzOE8Sot5uOgaAmDEHMsdxpo8ADy3Dpcwn22YIv/4rV3j84nImPidl1oF6PLQoScz
+ D73qSg4WnqOs4thD1rKRPMHwchZ1eCgB1VgP8Bw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -72,11 +72,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wright Feng <wright.feng@cypress.com>
 
-With firmware RSDB feature
-1. The maximum support interface is four.
-2. The maximum difference channel is two.
-3. The maximum interfaces of {station/p2p client/AP} are two.
-4. The maximum interface of p2p device is one.
+With RSDB mode, FMAC and firmware are able to create 2 or more AP,
+so we should not set mbss in vif structure if firmware does not
+support MBSS feature.
 
 Signed-off-by: Wright Feng <wright.feng@cypress.com>
 =2D--
@@ -92,128 +90,34 @@ Cc: brcm80211-dev-list@cypress.com
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 =2D--
- .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 54 ++++++++++++++++---
- 1 file changed, 46 insertions(+), 8 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b=
 /drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index 0cf13cea1dbe..9d9dc9195e9e 100644
+index 9d9dc9195e9e..6eb3064c3721 100644
 =2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -6520,6 +6520,9 @@ brcmf_txrx_stypes[NUM_NL80211_IFTYPES] =3D {
-  *	#STA <=3D 1, #AP <=3D 1, channels =3D 1, 2 total
-  *	#AP <=3D 4, matching BI, channels =3D 1, 4 total
-  *
-+ * no p2p and rsdb:
-+ *	#STA <=3D 2, #AP <=3D 2, channels =3D 2, 4 total
-+ *
-  * p2p, no mchan, and mbss:
-  *
-  *	#STA <=3D 1, #P2P-DEV <=3D 1, #{P2P-CL, P2P-GO} <=3D 1, channels =3D 1=
-, 3 total
-@@ -6531,6 +6534,10 @@ brcmf_txrx_stypes[NUM_NL80211_IFTYPES] =3D {
-  *	#STA <=3D 1, #P2P-DEV <=3D 1, #{P2P-CL, P2P-GO} <=3D 1, channels =3D 2=
-, 3 total
-  *	#STA <=3D 1, #P2P-DEV <=3D 1, #AP <=3D 1, #P2P-CL <=3D 1, channels =3D=
- 1, 4 total
-  *	#AP <=3D 4, matching BI, channels =3D 1, 4 total
-+ *
-+ * p2p, rsdb, and no mbss:
-+ *	#STA <=3D 2, #P2P-DEV <=3D 1, #{P2P-CL, P2P-GO} <=3D 2, AP <=3D 2,
-+ *	 channels =3D 2, 4 total
-  */
- static int brcmf_setup_ifmodes(struct wiphy *wiphy, struct brcmf_if *ifp)
- {
-@@ -6538,13 +6545,14 @@ static int brcmf_setup_ifmodes(struct wiphy *wiphy=
-, struct brcmf_if *ifp)
- 	struct ieee80211_iface_limit *c0_limits =3D NULL;
- 	struct ieee80211_iface_limit *p2p_limits =3D NULL;
- 	struct ieee80211_iface_limit *mbss_limits =3D NULL;
--	bool mbss, p2p;
-+	bool mbss, p2p, rsdb;
- 	int i, c, n_combos;
+@@ -5363,6 +5363,7 @@ struct brcmf_cfg80211_vif *brcmf_alloc_vif(struct br=
+cmf_cfg80211_info *cfg,
+ 	struct brcmf_cfg80211_vif *vif_walk;
+ 	struct brcmf_cfg80211_vif *vif;
+ 	bool mbss;
++	struct brcmf_if *ifp =3D brcmf_get_ifp(cfg->pub, 0);
 
- 	mbss =3D brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MBSS);
- 	p2p =3D brcmf_feat_is_enabled(ifp, BRCMF_FEAT_P2P);
-+	rsdb =3D brcmf_feat_is_enabled(ifp, BRCMF_FEAT_RSDB);
+ 	brcmf_dbg(TRACE, "allocating virtual interface (size=3D%zu)\n",
+ 		  sizeof(*vif));
+@@ -5375,7 +5376,8 @@ struct brcmf_cfg80211_vif *brcmf_alloc_vif(struct br=
+cmf_cfg80211_info *cfg,
 
--	n_combos =3D 1 + !!p2p + !!mbss;
-+	n_combos =3D 1 + !!(p2p && !rsdb) + !!mbss;
- 	combo =3D kcalloc(n_combos, sizeof(*combo), GFP_KERNEL);
- 	if (!combo)
- 		goto err;
-@@ -6555,16 +6563,36 @@ static int brcmf_setup_ifmodes(struct wiphy *wiphy=
-, struct brcmf_if *ifp)
+ 	brcmf_init_prof(&vif->profile);
 
- 	c =3D 0;
- 	i =3D 0;
--	c0_limits =3D kcalloc(p2p ? 3 : 2, sizeof(*c0_limits), GFP_KERNEL);
-+	if (p2p && rsdb)
-+		c0_limits =3D kcalloc(4, sizeof(*c0_limits), GFP_KERNEL);
-+	else if (p2p)
-+		c0_limits =3D kcalloc(3, sizeof(*c0_limits), GFP_KERNEL);
-+	else
-+		c0_limits =3D kcalloc(2, sizeof(*c0_limits), GFP_KERNEL);
- 	if (!c0_limits)
- 		goto err;
--	c0_limits[i].max =3D 1;
--	c0_limits[i++].types =3D BIT(NL80211_IFTYPE_STATION);
--	if (p2p) {
-+	if (p2p && rsdb) {
-+		combo[c].num_different_channels =3D 2;
-+		wiphy->interface_modes |=3D BIT(NL80211_IFTYPE_P2P_CLIENT) |
-+					  BIT(NL80211_IFTYPE_P2P_GO) |
-+					  BIT(NL80211_IFTYPE_P2P_DEVICE);
-+		c0_limits[i].max =3D 2;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_STATION);
-+		c0_limits[i].max =3D 1;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_P2P_DEVICE);
-+		c0_limits[i].max =3D 2;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_P2P_CLIENT) |
-+				       BIT(NL80211_IFTYPE_P2P_GO);
-+		c0_limits[i].max =3D 2;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_AP);
-+		combo[c].max_interfaces =3D 5;
-+	} else if (p2p) {
- 		if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MCHAN))
- 			combo[c].num_different_channels =3D 2;
- 		else
- 			combo[c].num_different_channels =3D 1;
-+		c0_limits[i].max =3D 1;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_STATION);
- 		wiphy->interface_modes |=3D BIT(NL80211_IFTYPE_P2P_CLIENT) |
- 					  BIT(NL80211_IFTYPE_P2P_GO) |
- 					  BIT(NL80211_IFTYPE_P2P_DEVICE);
-@@ -6573,16 +6601,26 @@ static int brcmf_setup_ifmodes(struct wiphy *wiphy=
-, struct brcmf_if *ifp)
- 		c0_limits[i].max =3D 1;
- 		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_P2P_CLIENT) |
- 				       BIT(NL80211_IFTYPE_P2P_GO);
-+		combo[c].max_interfaces =3D i;
-+	} else if (rsdb) {
-+		combo[c].num_different_channels =3D 2;
-+		c0_limits[i].max =3D 2;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_STATION);
-+		c0_limits[i].max =3D 2;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_AP);
-+		combo[c].max_interfaces =3D 3;
- 	} else {
- 		combo[c].num_different_channels =3D 1;
- 		c0_limits[i].max =3D 1;
-+		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_STATION);
-+		c0_limits[i].max =3D 1;
- 		c0_limits[i++].types =3D BIT(NL80211_IFTYPE_AP);
-+		combo[c].max_interfaces =3D i;
- 	}
--	combo[c].max_interfaces =3D i;
- 	combo[c].n_limits =3D i;
- 	combo[c].limits =3D c0_limits;
-
--	if (p2p) {
-+	if (p2p && !rsdb) {
- 		c++;
- 		i =3D 0;
- 		p2p_limits =3D kcalloc(4, sizeof(*p2p_limits), GFP_KERNEL);
+-	if (type =3D=3D NL80211_IFTYPE_AP) {
++	if (type =3D=3D NL80211_IFTYPE_AP &&
++	    brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MBSS)) {
+ 		mbss =3D false;
+ 		list_for_each_entry(vif_walk, &cfg->vif_list, list) {
+ 			if (vif_walk->wdev.iftype =3D=3D NL80211_IFTYPE_AP) {
 =2D-
 2.17.1
 
