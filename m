@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 054D21171E0
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D294A1171D7
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbfLIQdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 11:33:47 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47281 "EHLO
+        id S1727053AbfLIQdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 11:33:36 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50831 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbfLIQdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:03 -0500
+        with ESMTP id S1726532AbfLIQdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:04 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1ieLy2-0001up-7r; Mon, 09 Dec 2019 17:33:02 +0100
+        id 1ieLy2-0001up-Q1; Mon, 09 Dec 2019 17:33:02 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Srinivas Neeli <srinivas.neeli@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        kernel@pengutronix.de, Sean Nyekjaer <sean@geanix.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
         linux-stable <stable@vger.kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 05/13] can: xilinx_can: Fix missing Rx can packets on CANFD2.0
-Date:   Mon,  9 Dec 2019 17:32:48 +0100
-Message-Id: <20191209163256.12000-6-mkl@pengutronix.de>
+Subject: [PATCH 06/13] can: flexcan: fix possible deadlock and out-of-order reception after wakeup
+Date:   Mon,  9 Dec 2019 17:32:49 +0100
+Message-Id: <20191209163256.12000-7-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191209163256.12000-1-mkl@pengutronix.de>
 References: <20191209163256.12000-1-mkl@pengutronix.de>
@@ -40,50 +39,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+From: Sean Nyekjaer <sean@geanix.com>
 
-CANFD2.0 core uses BRAM for storing acceptance filter ID(AFID) and MASK
-(AFMASK)registers. So by default AFID and AFMASK registers contain random
-data. Due to random data, we are not able to receive all CAN ids.
+When suspending, and there is still CAN traffic on the interfaces the
+flexcan immediately wakes the platform again. As it should :-). But it
+throws this error msg:
 
-Initializing AFID and AFMASK registers with Zero before enabling
-acceptance filter to receive all packets irrespective of ID and Mask.
+[ 3169.378661] PM: noirq suspend of devices failed
 
-Fixes: 0db9071353a0 ("can: xilinx: add can 2.0 support")
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-Reviewed-by: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
+On the way down to suspend the interface that throws the error message
+calls flexcan_suspend() but fails to call flexcan_noirq_suspend(). That
+means flexcan_enter_stop_mode() is called, but on the way out of suspend
+the driver only calls flexcan_resume() and skips flexcan_noirq_resume(),
+thus it doesn't call flexcan_exit_stop_mode(). This leaves the flexcan
+in stop mode, and with the current driver it can't recover from this
+even with a soft reboot, it requires a hard reboot.
+
+This patch fixes the deadlock when using self wakeup, by calling
+flexcan_exit_stop_mode() from flexcan_resume() instead of
+flexcan_noirq_resume().
+
+This also fixes another issue: CAN frames are received out-of-order in
+first IRQ handler run after wakeup.
+
+The problem is that the wakeup latency from frame reception to the IRQ
+handler (where the CAN frames are sorted by timestamp) is much bigger
+than the time stamp counter wrap around time. This means it's
+impossible to sort the CAN frames by timestamp.
+
+The reason is that the controller exits stop mode during noirq resume,
+which means it receives frames immediately, but interrupt handling is
+still not possible.
+
+So exit stop mode during resume stage instead of noirq resume fixes this
+issue.
+
+Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Tested-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 Cc: linux-stable <stable@vger.kernel.org> # >= v5.0
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/xilinx_can.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/can/flexcan.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 464af939cd8a..c1dbab8c896d 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -60,6 +60,8 @@ enum xcan_reg {
- 	XCAN_TXMSG_BASE_OFFSET	= 0x0100, /* TX Message Space */
- 	XCAN_RXMSG_BASE_OFFSET	= 0x1100, /* RX Message Space */
- 	XCAN_RXMSG_2_BASE_OFFSET	= 0x2100, /* RX Message Space */
-+	XCAN_AFR_2_MASK_OFFSET	= 0x0A00, /* Acceptance Filter MASK */
-+	XCAN_AFR_2_ID_OFFSET	= 0x0A04, /* Acceptance Filter ID */
- };
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index a929cdda9ab2..b6f675a5e2d9 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1722,6 +1722,9 @@ static int __maybe_unused flexcan_resume(struct device *device)
+ 		netif_start_queue(dev);
+ 		if (device_may_wakeup(device)) {
+ 			disable_irq_wake(dev->irq);
++			err = flexcan_exit_stop_mode(priv);
++			if (err)
++				return err;
+ 		} else {
+ 			err = pm_runtime_force_resume(device);
+ 			if (err)
+@@ -1767,14 +1770,9 @@ static int __maybe_unused flexcan_noirq_resume(struct device *device)
+ {
+ 	struct net_device *dev = dev_get_drvdata(device);
+ 	struct flexcan_priv *priv = netdev_priv(dev);
+-	int err;
  
- #define XCAN_FRAME_ID_OFFSET(frame_base)	((frame_base) + 0x00)
-@@ -1809,6 +1811,11 @@ static int xcan_probe(struct platform_device *pdev)
+-	if (netif_running(dev) && device_may_wakeup(device)) {
++	if (netif_running(dev) && device_may_wakeup(device))
+ 		flexcan_enable_wakeup_irq(priv, false);
+-		err = flexcan_exit_stop_mode(priv);
+-		if (err)
+-			return err;
+-	}
  
- 	pm_runtime_put(&pdev->dev);
- 
-+	if (priv->devtype.flags & XCAN_FLAG_CANFD_2) {
-+		priv->write_reg(priv, XCAN_AFR_2_ID_OFFSET, 0x00000000);
-+		priv->write_reg(priv, XCAN_AFR_2_MASK_OFFSET, 0x00000000);
-+	}
-+
- 	netdev_dbg(ndev, "reg_base=0x%p irq=%d clock=%d, tx buffers: actual %d, using %d\n",
- 		   priv->reg_base, ndev->irq, priv->can.clock.freq,
- 		   hw_tx_max, priv->tx_max);
+ 	return 0;
+ }
 -- 
 2.24.0
 
