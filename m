@@ -2,158 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CB5111785B
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 22:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88D66117879
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 22:27:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfLIVW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 16:22:59 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:38536 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726646AbfLIVW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 16:22:59 -0500
-Received: by mail-pj1-f68.google.com with SMTP id l4so6424078pjt.5
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 13:22:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZYKN4XMxSrLNdiW1K9zMIVb1AY7QEckrYyQGFO3gO7U=;
-        b=tIfUwUlu/aebwlAJY5I4wiUV+hL2zrAKrAhhFztgRjVtv2G7CznBy3/+nHdkAd9mFg
-         eUi6wvK36wARtJVvf95GdIo4aA7revKeWc0izcsqcLvXLgfJW+injVOYMpEEVQBnr1kr
-         Hq2nD5kyOsjq7ysmRBMqsg9lC5uPzecPpKZaV0IykkwR7l7ulnya8cXpm/niOgqUoNl9
-         9ZnW3wcUeRkuaL398+LUn72CTffQClXItu4v7VGcUKLAiNAr8KUWgn0TxA1PAQL9k/AI
-         JDzi6aMZwe5u/p+9jdrOj/2XWEMtv+xc4rYuovd51SEiB2zhTyY4QOIozi4MXy+t7t28
-         D+xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZYKN4XMxSrLNdiW1K9zMIVb1AY7QEckrYyQGFO3gO7U=;
-        b=honX+rnnqcZLlovHoGB4xPq9CAuZYxj0UxZWYksZ8mpWvtRae0/nbIrfqjpswHp4SD
-         yWqjOA8fPUQa8Gk6dmp43duuTHNdp8GCRQFgO+XOrponUTLorqzx/o5BnLzGc8hkjCj9
-         FYykgHSLq2jV5mL1ygFy8kTzVoKOyrd08pBQeCeWGxkO9d4LCMtRQT8vM2GZOqji/ND+
-         CKiP42RW4Q7P5aVpV+Z7ZCXwP9T37D4AfUg+vXQY8aUybVx0A5Zmsm1rY+74+We21GFW
-         8pEIool3L9ngZvLAl+eJoZ2dZ8L9pwmcfA7sXCLGyFCg+s0k4eMQ4yx0YN2kVagEizH7
-         FOUw==
-X-Gm-Message-State: APjAAAU4Er+28i96nOtgx9IXeeEKCF3DZOuY/nmhPg6rn2acN5gh12Mz
-        1B2ICwkU14ECIhSnY8PcJkMHoYat53HZU3PPmVAzN4UuBFmUXQ==
-X-Google-Smtp-Source: APXvYqxLyJ84N4sB7y2gm9HTU5F0NX0yt0sS6W9FapviadhzzQ2uydjnauwEeo2bWU2j0dESyGplK2ODB74G0M/HMSI=
-X-Received: by 2002:a17:902:8b86:: with SMTP id ay6mr18228675plb.223.1575926577921;
- Mon, 09 Dec 2019 13:22:57 -0800 (PST)
+        id S1726822AbfLIV1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 16:27:34 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52316 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbfLIV1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 16:27:34 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ieQYz-0005UU-5g; Mon, 09 Dec 2019 22:27:29 +0100
+Received: from [178.197.249.52] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ieQYy-000RvL-Qi; Mon, 09 Dec 2019 22:27:28 +0100
+Subject: Re: [PATCH bpf-next 2/8] riscv, bpf: add support for far branching
+To:     Luke Nelson <lukenels@cs.washington.edu>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
+        bpf <bpf@vger.kernel.org>, Xi Wang <xi.wang@gmail.com>
+References: <20191209173136.29615-1-bjorn.topel@gmail.com>
+ <20191209173136.29615-3-bjorn.topel@gmail.com>
+ <CADasFoDOyJA0nDVCyA6EY78dHSSxxV+EXS=xUyLDW4_VhJvBkQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2d5d1f2d-d4ab-2449-37c6-e5b319a778d6@iogearbox.net>
+Date:   Mon, 9 Dec 2019 22:27:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20191209211623.44166-1-natechancellor@gmail.com>
-In-Reply-To: <20191209211623.44166-1-natechancellor@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 9 Dec 2019 13:22:46 -0800
-Message-ID: <CAKwvOd=UgY8+w9MVjJa-xpZ-08K9zrn79226otp2=TOCFT6MnQ@mail.gmail.com>
-Subject: Re: [PATCH] net: tulip: Adjust indentation in {dmfe,uli526x}_init_module
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-parisc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CADasFoDOyJA0nDVCyA6EY78dHSSxxV+EXS=xUyLDW4_VhJvBkQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25658/Mon Dec  9 10:47:26 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 1:16 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
->
-> Clang warns:
->
-> ../drivers/net/ethernet/dec/tulip/uli526x.c:1812:3: warning: misleading
-> indentation; statement is not part of the previous 'if'
-> [-Wmisleading-indentation]
->         switch (mode) {
->         ^
-> ../drivers/net/ethernet/dec/tulip/uli526x.c:1809:2: note: previous
-> statement is here
->         if (cr6set)
->         ^
-> 1 warning generated.
->
-> ../drivers/net/ethernet/dec/tulip/dmfe.c:2217:3: warning: misleading
-> indentation; statement is not part of the previous 'if'
-> [-Wmisleading-indentation]
->         switch(mode) {
->         ^
-> ../drivers/net/ethernet/dec/tulip/dmfe.c:2214:2: note: previous
-> statement is here
->         if (cr6set)
->         ^
-> 1 warning generated.
->
-> This warning occurs because there is a space before the tab on these
-> lines. Remove them so that the indentation is consistent with the Linux
-> kernel coding style and clang no longer warns.
->
-> While we are here, adjust the default block in dmfe_init_module to have
-> a proper break between the label and assignment and add a space between
-> the switch and opening parentheses to avoid a checkpatch warning.
->
-> Fixes: e1c3e5014040 ("[PATCH] initialisation cleanup for ULI526x-net-driver")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/795
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+On 12/9/19 10:08 PM, Luke Nelson wrote:
+[...]
+> We have been developing a formal verification tool for BPF JIT
+> compilers, which we have used in the past to find bugs in the RV64
+> and x32 BPF JITs:
+> 
+> https://unsat.cs.washington.edu/projects/serval/
+> 
+> Recently I added support for verifying the JIT for branch and jump
+> instructions, and thought it a good opportunity to verify these
+> patches that add support for far jumps and branching.
+> 
+> I ported these patches to our tool and ran verification, which
+> didn't find any bugs according to our specification of BPF and
+> RISC-V.
+> 
+> The tool and code are publicly available, and you can read a more
+> detailed writeup of the results here:
+> 
+> https://github.com/uw-unsat/bpf-jit-verif/tree/far-jump-review
+> 
+> Currently the tool works on a manually translated version of the
+> JIT from C to Rosette, but we are experimenting with ways of making
+> this process more automated.
 
-/^ \t
-in vim turns up a few more cases that I think should be fixed (in both files)
+This is awesome work! Did you also check for other architectures aside
+from riscv and x86-32, e.g. x86-64 or arm64?
 
-> ---
->  drivers/net/ethernet/dec/tulip/dmfe.c    | 7 ++++---
->  drivers/net/ethernet/dec/tulip/uli526x.c | 4 ++--
->  2 files changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
-> index 0efdbd1a4a6f..32d470d4122a 100644
-> --- a/drivers/net/ethernet/dec/tulip/dmfe.c
-> +++ b/drivers/net/ethernet/dec/tulip/dmfe.c
-> @@ -2214,15 +2214,16 @@ static int __init dmfe_init_module(void)
->         if (cr6set)
->                 dmfe_cr6_user_set = cr6set;
->
-> -       switch(mode) {
-> -       case DMFE_10MHF:
-> +       switch (mode) {
-> +       case DMFE_10MHF:
->         case DMFE_100MHF:
->         case DMFE_10MFD:
->         case DMFE_100MFD:
->         case DMFE_1M_HPNA:
->                 dmfe_media_mode = mode;
->                 break;
-> -       default:dmfe_media_mode = DMFE_AUTO;
-> +       default:
-> +               dmfe_media_mode = DMFE_AUTO;
->                 break;
->         }
->
-> diff --git a/drivers/net/ethernet/dec/tulip/uli526x.c b/drivers/net/ethernet/dec/tulip/uli526x.c
-> index b1f30b194300..117ffe08800d 100644
-> --- a/drivers/net/ethernet/dec/tulip/uli526x.c
-> +++ b/drivers/net/ethernet/dec/tulip/uli526x.c
-> @@ -1809,8 +1809,8 @@ static int __init uli526x_init_module(void)
->         if (cr6set)
->                 uli526x_cr6_user_set = cr6set;
->
-> -       switch (mode) {
-> -       case ULI526X_10MHF:
-> +       switch (mode) {
-> +       case ULI526X_10MHF:
->         case ULI526X_100MHF:
->         case ULI526X_10MFD:
->         case ULI526X_100MFD:
-> --
-> 2.24.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20191209211623.44166-1-natechancellor%40gmail.com.
+It would be great if we could add such verification tool under tools/bpf/
+which would then take the in-tree JIT-code as-is for its analysis and
+potentially even trigger a run out of BPF selftests. Any thoughts whether
+such path would be feasible wrt serval?
 
+> Reviewed-by: Luke Nelson <lukenels@cs.washington.edu>
+> Cc: Xi Wang <xi.wang@gmail.com>
 
-
--- 
 Thanks,
-~Nick Desaulniers
+Daniel
