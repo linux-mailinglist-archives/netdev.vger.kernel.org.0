@@ -2,61 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E0E117285
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 18:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE48117293
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 18:15:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbfLIRLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 12:11:30 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:32928 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726408AbfLIRLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 12:11:30 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 587FC15433951;
-        Mon,  9 Dec 2019 09:11:29 -0800 (PST)
-Date:   Mon, 09 Dec 2019 09:11:26 -0800 (PST)
-Message-Id: <20191209.091126.397853146180657876.davem@davemloft.net>
-To:     gregkh@linuxfoundation.org
-Cc:     arnd@arndb.de, devel@driverdev.osuosl.org, johan.hedberg@gmail.com,
-        netdev@vger.kernel.org, marcel@holtmann.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        isdn4linux@listserv.isdn4linux.de
-Subject: Re: [PATCH 1/2] staging: remove isdn capi drivers
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191209153743.GA1284708@kroah.com>
-References: <20191209151114.2410762-1-arnd@arndb.de>
-        <20191209153743.GA1284708@kroah.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Dec 2019 09:11:29 -0800 (PST)
+        id S1726614AbfLIRPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 12:15:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42672 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726483AbfLIRPL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 12:15:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=yDkXn8c2FrkGfy+U0MRLuXrzEaNV8CpIo/QaRFz2xmk=; b=EGDMJAMzVzZqYHI5GtOsZe0vDx
+        tq8tD6m0jNbrFCUTpJbj/4Q8jHLyi8GIWgNxrZFofOGSyH4vg6mJF5LvyTMJ6XF/mmlL1xiiKgPKd
+        LVAHbKb2+yDoAQvdWqny4t+JS45zWGe18sLJa+z1g2gsUBblNbqfm8XM6no+X5BudnFc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ieMcm-0006d0-NV; Mon, 09 Dec 2019 18:15:08 +0100
+Date:   Mon, 9 Dec 2019 18:15:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        kernel@pengutronix.de, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v1] ARM i.MX6q: make sure PHY fixup for KSZ9031 is
+ applied only on one board
+Message-ID: <20191209171508.GD9099@lunn.ch>
+References: <20191209084430.11107-1-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209084430.11107-1-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Mon, 9 Dec 2019 16:37:43 +0100
+Hi Oleksij
 
-> On Mon, Dec 09, 2019 at 04:11:13PM +0100, Arnd Bergmann wrote:
->> As described in drivers/staging/isdn/TODO, the drivers are all
->> assumed to be unmaintained and unused now, with gigaset being the
->> last one to stop being maintained after Paul Bolle lost access
->> to an ISDN network.
->> 
->> The CAPI subsystem remains for now, as it is still required by
->> bluetooth/cmtp.
->> 
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Nice!  You beat me to it :)
-> 
-> I'll go queue this up soon.
-> 
-> David, any objection for me taking patch 2/2 here as well?
+> This patch changes the MICREL KSZ9031 fixup, which was introduced for
+> the "Data Modul eDM-QMX6" board in following patch, to be only activated
+> for this specific board.
 
-No objections.
+...
+
+>  static void __init imx6q_enet_phy_init(void)
+>  {
+> +	/* Warning: please do not extend this fixup list. This fixups are
+> +	 * applied even on boards where related PHY is not directly connected
+> +	 * to the ethernet controller. For example with switch in the middle.
+> +	 */
+>  	if (IS_BUILTIN(CONFIG_PHYLIB)) {
+>  		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
+>  				ksz9021rn_phy_fixup);
+> -		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
+> -				ksz9031rn_phy_fixup);
+> +
+> +		if (of_machine_is_compatible("dmo,imx6q-edmqmx6"))
+> +			phy_register_fixup_for_uid(PHY_ID_KSZ9031,
+> +						   MICREL_PHY_ID_MASK,
+> +						   ksz9031rn_phy_fixup);
+> +
+>  		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
+>  				ar8031_phy_fixup);
+>  		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,
+
+What about the other 3 fixups? Are they not also equally broken,
+applied for all boards, not specific boards?
+
+	Andrew
