@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA17117986
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F048111798E
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727194AbfLIWjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 17:39:07 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:33901 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726665AbfLIWjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 17:39:05 -0500
-Received: by mail-ot1-f68.google.com with SMTP id a15so13788214otf.1;
-        Mon, 09 Dec 2019 14:39:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vck/uz8o9EPjsxRkE6GQtWk8nbm1J4z1jJPNcEvOqWg=;
-        b=a8YU+qS++2knEHMlOc+nw3NJtqut3I8pGET8GO21Ff2xdG8dWyfqtbWNmgNw8NoKLb
-         nkrDfz5QgDLNYrvX3ONFX1LUfLHjiRtyF2IDMdlfz7ZlChFKT8ukVP7bn+5N9IWAg3Tj
-         bthKywChcRNJyUqMx3RfUmSyip5B2uwN2XkA+zU6NahPqvigsNNFIgtKl7O5DMRhk105
-         M6cPxt37Mb3q/fWqLbA10wakNOxe5nQGXzmHRlJfss4qN4DUpyFgA+X0ZpGA1SNnWeC5
-         BKYPnS7rAwobuaRvSPEm7HX1zNm6Hb/auGvFtexVEV4jAXcYBQ9Rnbxs+HYNN9dDv0ZX
-         vQZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vck/uz8o9EPjsxRkE6GQtWk8nbm1J4z1jJPNcEvOqWg=;
-        b=pPUo7VWV/xOOR2Xgism8CyRYGv0giRYLzWOzeEg0D8SstykeowTQZagCIvH5U5XIT0
-         8ENsemv9rRiUl1Tc5cBlpilkLkb9YTWnoinRjRBai0jEf6e03D/ijQEP819UaLbJlI6/
-         /+6mBLhfV5weW5N5rXHxyuh5hgbIX7lX6FYoZxSly1VPpW4lSrAU2X3zYsv9IvjYpaJk
-         0buusNbxiRb6j4GJycMY+hfdoQaU5YzRtQ0kMiYb8/j6lz9+wvGNLwKAgCm/bJ1QaV1m
-         4CoHpkJJEIzx55D1pWZkChZnO4Ij99uYhGSSThZNADlCIVNNwjawHk7CC9rzvlmy4uoO
-         1wRQ==
-X-Gm-Message-State: APjAAAX6AagO53mU+c+gtVS4tRpy39+QFNno9e2qHPSUryRQpQOebl9m
-        GC4IEj0oZftmwikie6PgAuQ=
-X-Google-Smtp-Source: APXvYqxh+Djr3wCr0RmQULGU3DV8YZikbsk/kXIuHXrcFJE9DOzbqaYQkElg7aLDkyEGoXTZBlPnzw==
-X-Received: by 2002:a9d:68ca:: with SMTP id i10mr22651207oto.178.1575931144149;
-        Mon, 09 Dec 2019 14:39:04 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id w8sm504104ote.80.2019.12.09.14.39.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2019 14:39:03 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] ppp: Adjust indentation into ppp_async_input
-Date:   Mon,  9 Dec 2019 15:38:59 -0700
-Message-Id: <20191209223859.19013-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S1726970AbfLIWk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 17:40:29 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:61284 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726230AbfLIWk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 17:40:29 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB9MSRi5021551
+        for <netdev@vger.kernel.org>; Mon, 9 Dec 2019 14:40:27 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=5KndjY6T0rVtMxNfxZjvXm0MPE0jySiCpTiD5kH+QaY=;
+ b=L5dFef6QCgJZnS3sPA94iznk2PcGQVwSFaDDOu9KxGvSsBmJi8i/6A2CZ2IGZCcgNl9a
+ uyA2cai3N9LKBtpMLMxvjcm3ITXB/+e3fR7HiEdhAVNDF7HAPWuQ1zG1uv82j6bd8xHM
+ 9U3xHMmiCvG7zkI0be/cEOLes9Rth1cThsQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wsu7197nv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 14:40:27 -0800
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 9 Dec 2019 14:40:26 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 5BC7E2EC1D03; Mon,  9 Dec 2019 14:40:23 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] libbpf: Bump libpf current version to v0.0.7
+Date:   Mon, 9 Dec 2019 14:40:22 -0800
+Message-ID: <20191209224022.3544519-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-09_05:2019-12-09,2019-12-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
+ clxscore=1015 phishscore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 mlxlogscore=789 spamscore=0 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912090178
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+New development cycles starts, bump to v0.0.7 proactively.
 
-../drivers/net/ppp/ppp_async.c:877:6: warning: misleading indentation;
-statement is not part of the previous 'if' [-Wmisleading-indentation]
-                                ap->rpkt = skb;
-                                ^
-../drivers/net/ppp/ppp_async.c:875:5: note: previous statement is here
-                                if (!skb)
-                                ^
-1 warning generated.
-
-This warning occurs because there is a space before the tab on this
-line. Clean up this entire block's indentation so that it is consistent
-with the Linux kernel coding style and clang no longer warns.
-
-Fixes: 6722e78c9005 ("[PPP]: handle misaligned accesses")
-Link: https://github.com/ClangBuiltLinux/linux/issues/800
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/ppp/ppp_async.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ tools/lib/bpf/libbpf.map | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
-index a7b9cf3269bf..29a0917a81e6 100644
---- a/drivers/net/ppp/ppp_async.c
-+++ b/drivers/net/ppp/ppp_async.c
-@@ -874,15 +874,15 @@ ppp_async_input(struct asyncppp *ap, const unsigned char *buf,
- 				skb = dev_alloc_skb(ap->mru + PPP_HDRLEN + 2);
- 				if (!skb)
- 					goto nomem;
-- 				ap->rpkt = skb;
-- 			}
-- 			if (skb->len == 0) {
-- 				/* Try to get the payload 4-byte aligned.
-- 				 * This should match the
-- 				 * PPP_ALLSTATIONS/PPP_UI/compressed tests in
-- 				 * process_input_packet, but we do not have
-- 				 * enough chars here to test buf[1] and buf[2].
-- 				 */
-+				ap->rpkt = skb;
-+			}
-+			if (skb->len == 0) {
-+				/* Try to get the payload 4-byte aligned.
-+				 * This should match the
-+				 * PPP_ALLSTATIONS/PPP_UI/compressed tests in
-+				 * process_input_packet, but we do not have
-+				 * enough chars here to test buf[1] and buf[2].
-+				 */
- 				if (buf[0] != PPP_ALLSTATIONS)
- 					skb_reserve(skb, 2 + (buf[0] & 1));
- 			}
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 8ddc2c40e482..495df575f87f 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -208,3 +208,6 @@ LIBBPF_0.0.6 {
+ 		btf__find_by_name_kind;
+ 		libbpf_find_vmlinux_btf_id;
+ } LIBBPF_0.0.5;
++
++LIBBPF_0.0.7 {
++} LIBBPF_0.0.6;
 -- 
-2.24.0
+2.17.1
 
