@@ -2,1951 +2,3093 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 565A311700B
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7982117009
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfLIPNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:13:23 -0500
-Received: from mout.kundenserver.de ([217.72.192.74]:36535 "EHLO
+        id S1726787AbfLIPNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:13:16 -0500
+Received: from mout.kundenserver.de ([212.227.17.13]:50617 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbfLIPNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:13:19 -0500
+        with ESMTP id S1726265AbfLIPNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:13:15 -0500
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MGQax-1iWteM1SzF-00Goys; Mon, 09 Dec 2019 16:13:03 +0100
+ 1MyseC-1hrTUD2zas-00vxFZ; Mon, 09 Dec 2019 16:13:03 +0100
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Krzysztof Halasa <khc@pm.waw.pl>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         devel@driverdev.osuosl.org, netdev@vger.kernel.org,
         Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] [net-next] wan: remove sbni/granch driver
-Date:   Mon,  9 Dec 2019 16:12:54 +0100
-Message-Id: <20191209151256.2497534-2-arnd@arndb.de>
+Subject: [PATCH 3/4] [net-next] wan: remove old frame relay driver
+Date:   Mon,  9 Dec 2019 16:12:55 +0100
+Message-Id: <20191209151256.2497534-3-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20191209151256.2497534-1-arnd@arndb.de>
 References: <20191209151256.2497534-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:2duUSfGG8rtV2eiPn2Zq1e0EmF+sVp1t4mJMydBsW6O3qXbOBhb
- XDY3drW0YilQzIugGj0iAhA1dLhpXbXq2tR3dxfZCdrB3kAExGhlXSUyvfhuDwI2UF+MhVh
- L/7nwC23WXyc+VSOE+FVR3x2KaQVVCkM556ho5uI5T79jGjQtZ6iA7yFOzi4lVlgxpIBrpH
- ndxiyp9XfCg217jPUdqRA==
+X-Provags-ID: V03:K1:pi8Jt5VZUE7gSd6ufATNcmia/LUkwFX+rJrBc92JZjn9DAzvOb9
+ 2Ra8i2ckFezSlxRF55+CjaK5n8TGRWTe94AS8WThTQmhiU83G1pfsPVefysK4+LT2X8c0v8
+ L8Jua5JqoLWgP2t9Uv1gKVxiudCiws7iGhCv6EwZUQxlEZWXic1rs+6XpGU/rjBaT5ySJDX
+ 89DabXs1fl4lwKko3S1QQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QBU+a+VlDDs=:4g0iHma8jrI1cIDuYEJCAN
- 6YhY8C2MOYsWUeXutuwVrRaaolGN6sRP6B4VXrQiexMY2G3bibCAKRUr17QvC1gJJNVjIOOow
- Dpfs+088FtO/gdWfrwJyonCbUqJ4Tdbzb+UhUAge8TGE4H9HOQa7qi0SPcyF2YvX+/+X4b2C+
- gZeOe3rj/nLSHNQXxfsk0vNBNcgZpGxIqaInzAkKNseIVJAZztQXiqhhZr15BPZt7mK6QqZkm
- EzKG9PqXy2fpcP9Zlovmd3b8SguRtFiF9bOt+7zlD6Jc5b6kXWIPtLeZVLQd+LqFPU6/S3EvO
- TmwUmB9sS7Tv/ivu1s9ve1YaqcbtIN3Ol3eIUFCQKHq5yZKlMMFLTOkWeobO2h3mCzTNG6XWU
- WRrOZ32Zwkf4cRnvcjCl7DBUKYUIBtGjJccCU3UyoM4VEEpis7SPl6T4YeUJmabxwZVRJSzgZ
- RdDt2TfAgro7a95a2/jhkRtNRpWd/CziVdqeD8szadEy44dnkfu1uVf3J9T70dPpo4y9u3K4A
- owFoIERSABRJfP2G/StDYPjwvbhgP8uh39bpmgxtK02gkMAOLXbKxCEAURjgkaMPQNY58JM8S
- NmrTY9nNyGiQBPe+jczUDa97rEWOVPQEMYlBWF/YvZCs21vzljWNbFc6Y+L/cnRFXPeihFtwA
- WubJxnYuISNo0OVsc7jB+xkqzY/PlhqdIn/e2FEvwF4Y8mxGGrgbQKOOTlSoox3dxLjxvB7Ho
- 1S4NveIbuInEY7dsZPFLV3nJQYdmDT/qGmhBbZAqnjTIwZUPbrnekfQFZ2fuWLD9swVGta6IY
- jVBXcadbVX4dei6RR/fJqiX3En1Gv+OSFgo1W8kTN4ro71OGBJzk7SsXUzyWbPcxeqx+TOsND
- x4D3o1ZJ9OODswUnukrQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+0Sx6RvI25I=:aFcfbweKZagrWRiUUC7bO+
+ oR+6XftZt46nummztbb18riL1h0EMPOL19FV2Q4EhFEujM4/iuH0Ui5dUxD7pOjQu1Nr5sR/F
+ dtsFoTDu2f4JoKURd1jthtyLRjYXYmCQovMOpQ2FbDpQRi9yDBLHzU45xGD8HGso77KiwHSps
+ 8LBWK49IPV96tCo2IvIndLaiSww3HQijLRvrRKeYZ6snQSWLqsYR9ANjh/4+L6mq1MINjG89M
+ MeDCvsK+l9GJV8dl3FSVBoEJlXAOl8S9UR0Eq5GRmXq17VEm1vfUMrBMSjaeawKZ6scNHBELO
+ PpYpcpdUX9fazacrYBToPaZrZZqpHcZBRF+cyrrFrOIWBvb46o5eePmP9k9Lk5nIUSPK/TSI+
+ 4/b9lYZVgTxikL92+l0y9KaPHYBxMh7ZHnp/9u/Opxl4oj0dbtipIw4SUp/TM1Ra5qmav8oBP
+ x6kx1nejVZfLjmHqucCi0yTHY+jMIw7x2jINoCHB6ifau9uLVKvb4hwVnsFkoAYkhVhdUmE28
+ PQ8NMVgQub9xY7mBN/t95TYiaXSXiRe+gu1s5W5yVhYNmGz86/nJVdvuAqt9B35AeM7RwKLQq
+ EcD5ZTi1QRe7IZhRPK//bpjjFNbk7gHvG5LG6Hytd43ktHTfQo2XaKn9YOgkCw3gYeDFglHNx
+ blAfrk5Fmx/lVE3Derg/4ae1I2wDrB6BGKEfsyPnO9vYcMDfKEM/QIL0TB2noYCEh0W28VeA0
+ ftJ5CSadmj5KuuNvSuwmgoUemX7esOJEtSCnpVQumsC6f0GI+zmRLMZtgHQk0a/Haq3XIYLHj
+ 7s1iN4a3Ab3AvS+UEglgh25kASICi+7Odkzmb0f641KhQO1ngGpdQlJ82rzVbS/qnsAMjkevU
+ LrJZRezVWT2LTh77TlbA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver was merged in 1999 and has only ever seen treewide cleanups
-since then, with no indication whatsoever that anyone has actually
-had access to hardware for testing the patches.
+The DLCI framework and SDLA driver are as obsolete as it gets,
+this is an ISA add-on card from the mid-1990s that has only
+seen sporadic cleanups.
 
-From the information in the link below, it appears that the hardware
-is for some leased line system in Russia that has since been
-discontinued.
+The website listed for downloading the user space tools has dropped
+off the internet at some point around 2010, but Debian already
+dropped the packages ten years earlier when they no longer built
+correctly.
 
-As the driver still feels like a Linux-2.2 era artifact today, it
-appears that the best way forward is to just delete it.
-
-Link: https://www.tms.ru/%D0%90%D0%B4%D0%B0%D0%BF%D1%82%D0%B5%D1%80_%D0%B4%D0%BB%D1%8F_%D0%B2%D1%8B%D0%B4%D0%B5%D0%BB%D0%B5%D0%BD%D0%BD%D1%8B%D1%85_%D0%BB%D0%B8%D0%BD%D0%B8%D0%B9_Granch_SBNI12-10
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- .../admin-guide/kernel-parameters.txt         |    2 -
- drivers/net/Space.c                           |    4 -
- drivers/net/wan/Kconfig                       |   28 -
- drivers/net/wan/Makefile                      |    1 -
- drivers/net/wan/sbni.c                        | 1623 -----------------
- drivers/net/wan/sbni.h                        |  147 --
- include/net/Space.h                           |    3 -
- 7 files changed, 1808 deletions(-)
- delete mode 100644 drivers/net/wan/sbni.c
- delete mode 100644 drivers/net/wan/sbni.h
+ Documentation/networking/framerelay.txt |   39 -
+ MAINTAINERS                             |    6 -
+ drivers/net/wan/Kconfig                 |   45 -
+ drivers/net/wan/Makefile                |    2 -
+ drivers/net/wan/dlci.c                  |  542 --------
+ drivers/net/wan/sdla.c                  | 1655 -----------------------
+ include/Kbuild                          |    1 -
+ include/linux/if_frad.h                 |   92 --
+ include/linux/sdla.h                    |  240 ----
+ include/uapi/linux/if_frad.h            |  123 --
+ include/uapi/linux/sdla.h               |  117 --
+ net/socket.c                            |   25 -
+ 12 files changed, 2887 deletions(-)
+ delete mode 100644 Documentation/networking/framerelay.txt
+ delete mode 100644 drivers/net/wan/dlci.c
+ delete mode 100644 drivers/net/wan/sdla.c
+ delete mode 100644 include/linux/if_frad.h
+ delete mode 100644 include/linux/sdla.h
+ delete mode 100644 include/uapi/linux/if_frad.h
+ delete mode 100644 include/uapi/linux/sdla.h
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a84a83f8881e..2161e4f93e17 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4264,8 +4264,6 @@
- 	sa1100ir	[NET]
- 			See drivers/net/irda/sa1100_ir.c.
- 
--	sbni=		[NET] Granch SBNI12 leased line adapter
+diff --git a/Documentation/networking/framerelay.txt b/Documentation/networking/framerelay.txt
+deleted file mode 100644
+index 1a0b720440dd..000000000000
+--- a/Documentation/networking/framerelay.txt
++++ /dev/null
+@@ -1,39 +0,0 @@
+-Frame Relay (FR) support for linux is built into a two tiered system of device 
+-drivers.  The upper layer implements RFC1490 FR specification, and uses the
+-Data Link Connection Identifier (DLCI) as its hardware address.  Usually these
+-are assigned by your network supplier, they give you the number/numbers of
+-the Virtual Connections (VC) assigned to you.
 -
- 	sched_debug	[KNL] Enables verbose scheduler debug messages.
+-Each DLCI is a point-to-point link between your machine and a remote one.
+-As such, a separate device is needed to accommodate the routing.  Within the
+-net-tools archives is 'dlcicfg'.  This program will communicate with the
+-base "DLCI" device, and create new net devices named 'dlci00', 'dlci01'... 
+-The configuration script will ask you how many DLCIs you need, as well as
+-how many DLCIs you want to assign to each Frame Relay Access Device (FRAD).
+-
+-The DLCI uses a number of function calls to communicate with the FRAD, all
+-of which are stored in the FRAD's private data area.  assoc/deassoc, 
+-activate/deactivate and dlci_config.  The DLCI supplies a receive function
+-to the FRAD to accept incoming packets.
+-
+-With this initial offering, only 1 FRAD driver is available.  With many thanks
+-to Sangoma Technologies, David Mandelstam & Gene Kozin, the S502A, S502E & 
+-S508 are supported.  This driver is currently set up for only FR, but as 
+-Sangoma makes more firmware modules available, it can be updated to provide
+-them as well.
+-
+-Configuration of the FRAD makes use of another net-tools program, 'fradcfg'.
+-This program makes use of a configuration file (which dlcicfg can also read)
+-to specify the types of boards to be configured as FRADs, as well as perform
+-any board specific configuration.  The Sangoma module of fradcfg loads the
+-FR firmware into the card, sets the irq/port/memory information, and provides
+-an initial configuration.
+-
+-Additional FRAD device drivers can be added as hardware is available.
+-
+-At this time, the dlcicfg and fradcfg programs have not been incorporated into
+-the net-tools distribution.  They can be found at ftp.invlogic.com, in 
+-/pub/linux.  Note that with OS/2 FTPD, you end up in /pub by default, so just
+-use 'cd linux'.  v0.10 is for use on pre-2.0.3 and earlier, v0.15 is for 
+-pre-2.0.4 and later.
+-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0a996ac26047..32fab6fbd301 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6436,12 +6436,6 @@ W:	http://floatingpoint.sourceforge.net/emulator/index.html
+ S:	Maintained
+ F:	arch/x86/math-emu/
  
- 	schedstats=	[KNL,X86] Enable or disable scheduled statistics.
-diff --git a/drivers/net/Space.c b/drivers/net/Space.c
-index 890c86e11bcc..7bb699d7c422 100644
---- a/drivers/net/Space.c
-+++ b/drivers/net/Space.c
-@@ -133,10 +133,6 @@ static int __init net_olddevs_init(void)
- {
- 	int num;
- 
--#ifdef CONFIG_SBNI
--	for (num = 0; num < 8; ++num)
--		sbni_probe(num);
--#endif
- 	for (num = 0; num < 8; ++num)
- 		ethif_probe2(num);
- 
+-FRAME RELAY DLCI/FRAD (Sangoma drivers too)
+-L:	netdev@vger.kernel.org
+-S:	Orphan
+-F:	drivers/net/wan/dlci.c
+-F:	drivers/net/wan/sdla.c
+-
+ FRAMEBUFFER LAYER
+ M:	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+ L:	dri-devel@lists.freedesktop.org
 diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index 59b25d7e13e8..e9ad63115144 100644
+index e9ad63115144..74f2bd639b07 100644
 --- a/drivers/net/wan/Kconfig
 +++ b/drivers/net/wan/Kconfig
-@@ -374,32 +374,4 @@ config X25_ASY
+@@ -297,51 +297,6 @@ config IXP4XX_HSS
+ 	  Say Y here if you want to use built-in HSS ports
+ 	  on IXP4xx processor.
  
- 	  If unsure, say N.
- 
--config SBNI
--	tristate "Granch SBNI12 Leased Line adapter support"
--	depends on X86
+-config DLCI
+-	tristate "Frame Relay DLCI support"
 -	---help---
--	  Driver for ISA SBNI12-xx cards which are low cost alternatives to
--	  leased line modems.
+-	  Support for the Frame Relay protocol.
 -
--	  You can find more information and last versions of drivers and
--	  utilities at <http://www.granch.ru/>. If you have any question you
--	  can send email to <sbni@granch.ru>.
+-	  Frame Relay is a fast low-cost way to connect to a remote Internet
+-	  access provider or to form a private wide area network. The one
+-	  physical line from your box to the local "switch" (i.e. the entry
+-	  point to the Frame Relay network, usually at the phone company) can
+-	  carry several logical point-to-point connections to other computers
+-	  connected to the Frame Relay network. For a general explanation of
+-	  the protocol, check out <http://www.mplsforum.org/>.
+-
+-	  To use frame relay, you need supporting hardware (called FRAD) and
+-	  certain programs from the net-tools package as explained in
+-	  <file:Documentation/networking/framerelay.txt>.
 -
 -	  To compile this driver as a module, choose M here: the
--	  module will be called sbni.
+-	  module will be called dlci.
 -
--	  If unsure, say N.
--
--config SBNI_MULTILINE
--	bool "Multiple line feature support"
--	depends on SBNI
+-config DLCI_MAX
+-	int "Max DLCI per device"
+-	depends on DLCI
+-	default "8"
 -	help
--	  Schedule traffic for some parallel lines, via SBNI12 adapters.
+-	  How many logical point-to-point frame relay connections (the
+-	  identifiers of which are called DCLIs) should be handled by each
+-	  of your hardware frame relay access devices.
 -
--	  If you have two computers connected with two parallel lines it's
--	  possible to increase transfer rate nearly twice. You should have
--	  a program named 'sbniconfig' to configure adapters.
+-	  Go with the default.
 -
--	  If unsure, say N.
+-config SDLA
+-	tristate "SDLA (Sangoma S502/S508) support"
+-	depends on DLCI && ISA
+-	help
+-	  Driver for the Sangoma S502A, S502E, and S508 Frame Relay Access
+-	  Devices.
 -
- endif # WAN
+-	  These are multi-protocol cards, but only Frame Relay is supported
+-	  by the driver at this time. Please read
+-	  <file:Documentation/networking/framerelay.txt>.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called sdla.
+-
+ # X.25 network drivers
+ config LAPBETHER
+ 	tristate "LAPB over Ethernet driver"
 diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
-index 701f5d2fe3b6..3059b9a279b3 100644
+index 3059b9a279b3..4438a0c4a272 100644
 --- a/drivers/net/wan/Makefile
 +++ b/drivers/net/wan/Makefile
-@@ -25,7 +25,6 @@ obj-$(CONFIG_LANMEDIA)		+= lmc/
- obj-$(CONFIG_DLCI)		+= dlci.o 
- obj-$(CONFIG_SDLA)		+= sdla.o
+@@ -22,8 +22,6 @@ obj-$(CONFIG_X25_ASY)		+= x25_asy.o
+ 
+ obj-$(CONFIG_LANMEDIA)		+= lmc/
+ 
+-obj-$(CONFIG_DLCI)		+= dlci.o 
+-obj-$(CONFIG_SDLA)		+= sdla.o
  obj-$(CONFIG_LAPBETHER)		+= lapbether.o
--obj-$(CONFIG_SBNI)		+= sbni.o
  obj-$(CONFIG_N2)		+= n2.o
  obj-$(CONFIG_C101)		+= c101.o
- obj-$(CONFIG_WANXL)		+= wanxl.o
-diff --git a/drivers/net/wan/sbni.c b/drivers/net/wan/sbni.c
+diff --git a/drivers/net/wan/dlci.c b/drivers/net/wan/dlci.c
 deleted file mode 100644
-index 40c04ea1200a..000000000000
---- a/drivers/net/wan/sbni.c
+index 7bcee41905cf..000000000000
+--- a/drivers/net/wan/dlci.c
 +++ /dev/null
-@@ -1,1623 +0,0 @@
--/* sbni.c:  Granch SBNI12 leased line adapters driver for linux
+@@ -1,542 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- * DLCI		Implementation of Frame Relay protocol for Linux, according to
+- *		RFC 1490.  This generic device provides en/decapsulation for an
+- *		underlying hardware driver.  Routes & IPs are assigned to these
+- *		interfaces.  Requires 'dlcicfg' program to create usable 
+- *		interfaces, the initial one, 'dlci' is for IOCTL use only.
 - *
-- *	Written 2001 by Denis I.Timofeev (timofeev@granch.ru)
+- * Version:	@(#)dlci.c	0.35	4 Jan 1997
 - *
-- *	Previous versions were written by Yaroslav Polyakov,
-- *	Alexey Zverev and Max Khon.
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
 - *
-- *	Driver supports SBNI12-02,-04,-05,-10,-11 cards, single and
-- *	double-channel, PCI and ISA modifications.
-- *	More info and useful utilities to work with SBNI12 cards you can find
-- *	at http://www.granch.com (English) or http://www.granch.ru (Russian)
+- * Changes:
 - *
-- *	This software may be used and distributed according to the terms
-- *	of the GNU General Public License.
-- *
-- *
-- *  5.0.1	Jun 22 2001
-- *	  - Fixed bug in probe
-- *  5.0.0	Jun 06 2001
-- *	  - Driver was completely redesigned by Denis I.Timofeev,
-- *	  - now PCI/Dual, ISA/Dual (with single interrupt line) models are
-- *	  - supported
-- *  3.3.0	Thu Feb 24 21:30:28 NOVT 2000 
-- *        - PCI cards support
-- *  3.2.0	Mon Dec 13 22:26:53 NOVT 1999
-- * 	  - Completely rebuilt all the packet storage system
-- * 	  -    to work in Ethernet-like style.
-- *  3.1.1	just fixed some bugs (5 aug 1999)
-- *  3.1.0	added balancing feature	(26 apr 1999)
-- *  3.0.1	just fixed some bugs (14 apr 1999).
-- *  3.0.0	Initial Revision, Yaroslav Polyakov (24 Feb 1999)
-- *        - added pre-calculation for CRC, fixed bug with "len-2" frames, 
-- *        - removed outbound fragmentation (MTU=1000), written CRC-calculation 
-- *        - on asm, added work with hard_headers and now we have our own cache 
-- *        - for them, optionally supported word-interchange on some chipsets,
-- * 
-- *	Known problem: this driver wasn't tested on multiprocessor machine.
+- *		0.15	Mike Mclagan	Packet freeing, bug in kmalloc call
+- *					DLCI_RET handling
+- *		0.20	Mike McLagan	More conservative on which packets
+- *					are returned for retry and which are
+- *					are dropped.  If DLCI_RET_DROP is
+- *					returned from the FRAD, the packet is
+- *				 	sent back to Linux for re-transmission
+- *		0.25	Mike McLagan	Converted to use SIOC IOCTL calls
+- *		0.30	Jim Freeman	Fixed to allow IPX traffic
+- *		0.35	Michael Elizabeth	Fixed incorrect memcpy_fromfs
 - */
 -
 -#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 -
 -#include <linux/module.h>
 -#include <linux/kernel.h>
--#include <linux/ptrace.h>
+-#include <linux/types.h>
 -#include <linux/fcntl.h>
--#include <linux/ioport.h>
 -#include <linux/interrupt.h>
+-#include <linux/ptrace.h>
+-#include <linux/ioport.h>
+-#include <linux/in.h>
+-#include <linux/init.h>
+-#include <linux/slab.h>
 -#include <linux/string.h>
 -#include <linux/errno.h>
 -#include <linux/netdevice.h>
--#include <linux/etherdevice.h>
--#include <linux/pci.h>
 -#include <linux/skbuff.h>
--#include <linux/timer.h>
--#include <linux/init.h>
--#include <linux/delay.h>
+-#include <linux/if_arp.h>
+-#include <linux/if_frad.h>
+-#include <linux/bitops.h>
 -
--#include <net/net_namespace.h>
--#include <net/arp.h>
--#include <net/Space.h>
+-#include <net/sock.h>
 -
 -#include <asm/io.h>
--#include <asm/types.h>
--#include <asm/byteorder.h>
--#include <asm/irq.h>
+-#include <asm/dma.h>
 -#include <linux/uaccess.h>
 -
--#include "sbni.h"
+-static const char version[] = "DLCI driver v0.35, 4 Jan 1997, mike.mclagan@linux.org";
 -
--/* device private data */
+-static LIST_HEAD(dlci_devs);
 -
--struct net_local {
--	struct timer_list	watchdog;
--	struct net_device	*watchdog_dev;
+-static void dlci_setup(struct net_device *);
 -
--	spinlock_t	lock;
--	struct sk_buff  *rx_buf_p;		/* receive buffer ptr */
--	struct sk_buff  *tx_buf_p;		/* transmit buffer ptr */
--	
--	unsigned int	framelen;		/* current frame length */
--	unsigned int	maxframe;		/* maximum valid frame length */
--	unsigned int	state;
--	unsigned int	inppos, outpos;		/* positions in rx/tx buffers */
--
--	/* transmitting frame number - from frames qty to 1 */
--	unsigned int	tx_frameno;
--
--	/* expected number of next receiving frame */
--	unsigned int	wait_frameno;
--
--	/* count of failed attempts to frame send - 32 attempts do before
--	   error - while receiver tunes on opposite side of wire */
--	unsigned int	trans_errors;
--
--	/* idle time; send pong when limit exceeded */
--	unsigned int	timer_ticks;
--
--	/* fields used for receive level autoselection */
--	int	delta_rxl;
--	unsigned int	cur_rxl_index, timeout_rxl;
--	unsigned long	cur_rxl_rcvd, prev_rxl_rcvd;
--
--	struct sbni_csr1	csr1;		/* current value of CSR1 */
--	struct sbni_in_stats	in_stats; 	/* internal statistics */ 
--
--	struct net_device		*second;	/* for ISA/dual cards */
--
--#ifdef CONFIG_SBNI_MULTILINE
--	struct net_device		*master;
--	struct net_device		*link;
--#endif
--};
--
--
--static int  sbni_card_probe( unsigned long );
--static int  sbni_pci_probe( struct net_device  * );
--static struct net_device  *sbni_probe1(struct net_device *, unsigned long, int);
--static int  sbni_open( struct net_device * );
--static int  sbni_close( struct net_device * );
--static netdev_tx_t sbni_start_xmit(struct sk_buff *,
--					 struct net_device * );
--static int  sbni_ioctl( struct net_device *, struct ifreq *, int );
--static void  set_multicast_list( struct net_device * );
--
--static irqreturn_t sbni_interrupt( int, void * );
--static void  handle_channel( struct net_device * );
--static int   recv_frame( struct net_device * );
--static void  send_frame( struct net_device * );
--static int   upload_data( struct net_device *,
--			  unsigned, unsigned, unsigned, u32 );
--static void  download_data( struct net_device *, u32 * );
--static void  sbni_watchdog(struct timer_list *);
--static void  interpret_ack( struct net_device *, unsigned );
--static int   append_frame_to_pkt( struct net_device *, unsigned, u32 );
--static void  indicate_pkt( struct net_device * );
--static void  card_start( struct net_device * );
--static void  prepare_to_send( struct sk_buff *, struct net_device * );
--static void  drop_xmit_queue( struct net_device * );
--static void  send_frame_header( struct net_device *, u32 * );
--static int   skip_tail( unsigned int, unsigned int, u32 );
--static int   check_fhdr( u32, u32 *, u32 *, u32 *, u32 *, u32 * );
--static void  change_level( struct net_device * );
--static void  timeout_change_level( struct net_device * );
--static u32   calc_crc32( u32, u8 *, u32 );
--static struct sk_buff *  get_rx_buf( struct net_device * );
--static int  sbni_init( struct net_device * );
--
--#ifdef CONFIG_SBNI_MULTILINE
--static int  enslave( struct net_device *, struct net_device * );
--static int  emancipate( struct net_device * );
--#endif
--
--static const char  version[] =
--	"Granch SBNI12 driver ver 5.0.1  Jun 22 2001  Denis I.Timofeev.\n";
--
--static bool skip_pci_probe	__initdata = false;
--static int  scandone	__initdata = 0;
--static int  num		__initdata = 0;
--
--static unsigned char  rxl_tab[];
--static u32  crc32tab[];
--
--/* A list of all installed devices, for removing the driver module. */
--static struct net_device  *sbni_cards[ SBNI_MAX_NUM_CARDS ];
--
--/* Lists of device's parameters */
--static u32	io[   SBNI_MAX_NUM_CARDS ] __initdata =
--	{ [0 ... SBNI_MAX_NUM_CARDS-1] = -1 };
--static u32	irq[  SBNI_MAX_NUM_CARDS ] __initdata;
--static u32	baud[ SBNI_MAX_NUM_CARDS ] __initdata;
--static u32	rxl[  SBNI_MAX_NUM_CARDS ] __initdata =
--	{ [0 ... SBNI_MAX_NUM_CARDS-1] = -1 };
--static u32	mac[  SBNI_MAX_NUM_CARDS ] __initdata;
--
--#ifndef MODULE
--typedef u32  iarr[];
--static iarr *dest[5] __initdata = { &io, &irq, &baud, &rxl, &mac };
--#endif
--
--/* A zero-terminated list of I/O addresses to be probed on ISA bus */
--static unsigned int  netcard_portlist[ ] __initdata = { 
--	0x210, 0x214, 0x220, 0x224, 0x230, 0x234, 0x240, 0x244, 0x250, 0x254,
--	0x260, 0x264, 0x270, 0x274, 0x280, 0x284, 0x290, 0x294, 0x2a0, 0x2a4,
--	0x2b0, 0x2b4, 0x2c0, 0x2c4, 0x2d0, 0x2d4, 0x2e0, 0x2e4, 0x2f0, 0x2f4,
--	0 };
--
--#define NET_LOCAL_LOCK(dev) (((struct net_local *)netdev_priv(dev))->lock)
--
--/*
-- * Look for SBNI card which addr stored in dev->base_addr, if nonzero.
-- * Otherwise, look through PCI bus. If none PCI-card was found, scan ISA.
+-/* 
+- * these encapsulate the RFC 1490 requirements as well as 
+- * deal with packet transmission and reception, working with
+- * the upper network layers 
 - */
 -
--static inline int __init
--sbni_isa_probe( struct net_device  *dev )
+-static int dlci_header(struct sk_buff *skb, struct net_device *dev, 
+-		       unsigned short type, const void *daddr,
+-		       const void *saddr, unsigned len)
 -{
--	if( dev->base_addr > 0x1ff &&
--	    request_region( dev->base_addr, SBNI_IO_EXTENT, dev->name ) &&
--	    sbni_probe1( dev, dev->base_addr, dev->irq ) )
+-	struct frhdr		hdr;
+-	unsigned int		hlen;
+-	char			*dest;
 -
--		return  0;
--	else {
--		pr_err("base address 0x%lx is busy, or adapter is malfunctional!\n",
--		       dev->base_addr);
--		return  -ENODEV;
+-	hdr.control = FRAD_I_UI;
+-	switch (type)
+-	{
+-		case ETH_P_IP:
+-			hdr.IP_NLPID = FRAD_P_IP;
+-			hlen = sizeof(hdr.control) + sizeof(hdr.IP_NLPID);
+-			break;
+-
+-		/* feel free to add other types, if necessary */
+-
+-		default:
+-			hdr.pad = FRAD_P_PADDING;
+-			hdr.NLPID = FRAD_P_SNAP;
+-			memset(hdr.OUI, 0, sizeof(hdr.OUI));
+-			hdr.PID = htons(type);
+-			hlen = sizeof(hdr);
+-			break;
 -	}
+-
+-	dest = skb_push(skb, hlen);
+-	if (!dest)
+-		return 0;
+-
+-	memcpy(dest, &hdr, hlen);
+-
+-	return hlen;
 -}
 -
--static const struct net_device_ops sbni_netdev_ops = {
--	.ndo_open		= sbni_open,
--	.ndo_stop		= sbni_close,
--	.ndo_start_xmit		= sbni_start_xmit,
--	.ndo_set_rx_mode	= set_multicast_list,
--	.ndo_do_ioctl		= sbni_ioctl,
--	.ndo_set_mac_address 	= eth_mac_addr,
--	.ndo_validate_addr	= eth_validate_addr,
--};
--
--static void __init sbni_devsetup(struct net_device *dev)
+-static void dlci_receive(struct sk_buff *skb, struct net_device *dev)
 -{
--	ether_setup( dev );
--	dev->netdev_ops = &sbni_netdev_ops;
--}
+-	struct frhdr		*hdr;
+-	int					process, header;
 -
--int __init sbni_probe(int unit)
--{
--	struct net_device *dev;
--	int err;
--
--	dev = alloc_netdev(sizeof(struct net_local), "sbni",
--			   NET_NAME_UNKNOWN, sbni_devsetup);
--	if (!dev)
--		return -ENOMEM;
--
--	dev->netdev_ops = &sbni_netdev_ops;
--
--	sprintf(dev->name, "sbni%d", unit);
--	netdev_boot_setup_check(dev);
--
--	err = sbni_init(dev);
--	if (err) {
--		free_netdev(dev);
--		return err;
+-	if (!pskb_may_pull(skb, sizeof(*hdr))) {
+-		netdev_notice(dev, "invalid data no header\n");
+-		dev->stats.rx_errors++;
+-		kfree_skb(skb);
+-		return;
 -	}
 -
--	err = register_netdev(dev);
--	if (err) {
--		release_region( dev->base_addr, SBNI_IO_EXTENT );
--		free_netdev(dev);
--		return err;
+-	hdr = (struct frhdr *) skb->data;
+-	process = 0;
+-	header = 0;
+-	skb->dev = dev;
+-
+-	if (hdr->control != FRAD_I_UI)
+-	{
+-		netdev_notice(dev, "Invalid header flag 0x%02X\n",
+-			      hdr->control);
+-		dev->stats.rx_errors++;
 -	}
--	pr_info_once("%s", version);
--	return 0;
--}
--
--static int __init sbni_init(struct net_device *dev)
--{
--	int  i;
--	if( dev->base_addr )
--		return  sbni_isa_probe( dev );
--	/* otherwise we have to perform search our adapter */
--
--	if( io[ num ] != -1 )
--		dev->base_addr	= io[ num ],
--		dev->irq	= irq[ num ];
--	else if( scandone  ||  io[ 0 ] != -1 )
--		return  -ENODEV;
--
--	/* if io[ num ] contains non-zero address, then that is on ISA bus */
--	if( dev->base_addr )
--		return  sbni_isa_probe( dev );
--
--	/* ...otherwise - scan PCI first */
--	if( !skip_pci_probe  &&  !sbni_pci_probe( dev ) )
--		return  0;
--
--	if( io[ num ] == -1 ) {
--		/* Auto-scan will be stopped when first ISA card were found */
--		scandone = 1;
--		if( num > 0 )
--			return  -ENODEV;
--	}
--
--	for( i = 0;  netcard_portlist[ i ];  ++i ) {
--		int  ioaddr = netcard_portlist[ i ];
--		if( request_region( ioaddr, SBNI_IO_EXTENT, dev->name ) &&
--		    sbni_probe1( dev, ioaddr, 0 ))
--			return 0;
--	}
--
--	return  -ENODEV;
--}
--
--
--static int __init
--sbni_pci_probe( struct net_device  *dev )
--{
--	struct pci_dev  *pdev = NULL;
--
--	while( (pdev = pci_get_class( PCI_CLASS_NETWORK_OTHER << 8, pdev ))
--	       != NULL ) {
--		int  pci_irq_line;
--		unsigned long  pci_ioaddr;
--
--		if( pdev->vendor != SBNI_PCI_VENDOR &&
--		    pdev->device != SBNI_PCI_DEVICE )
--			continue;
--
--		pci_ioaddr = pci_resource_start( pdev, 0 );
--		pci_irq_line = pdev->irq;
--
--		/* Avoid already found cards from previous calls */
--		if( !request_region( pci_ioaddr, SBNI_IO_EXTENT, dev->name ) ) {
--			if (pdev->subsystem_device != 2)
--				continue;
--
--			/* Dual adapter is present */
--			if (!request_region(pci_ioaddr += 4, SBNI_IO_EXTENT,
--							dev->name ) )
--				continue;
--		}
--
--		if (pci_irq_line <= 0 || pci_irq_line >= nr_irqs)
--			pr_warn(
--"WARNING: The PCI BIOS assigned this PCI card to IRQ %d, which is unlikely to work!.\n"
--"You should use the PCI BIOS setup to assign a valid IRQ line.\n",
--				pci_irq_line );
--
--		/* avoiding re-enable dual adapters */
--		if( (pci_ioaddr & 7) == 0  &&  pci_enable_device( pdev ) ) {
--			release_region( pci_ioaddr, SBNI_IO_EXTENT );
--			pci_dev_put( pdev );
--			return  -EIO;
--		}
--		if( sbni_probe1( dev, pci_ioaddr, pci_irq_line ) ) {
--			SET_NETDEV_DEV(dev, &pdev->dev);
--			/* not the best thing to do, but this is all messed up 
--			   for hotplug systems anyway... */
--			pci_dev_put( pdev );
--			return  0;
--		}
--	}
--	return  -ENODEV;
--}
--
--
--static struct net_device * __init
--sbni_probe1( struct net_device  *dev,  unsigned long  ioaddr,  int  irq )
--{
--	struct net_local  *nl;
--
--	if( sbni_card_probe( ioaddr ) ) {
--		release_region( ioaddr, SBNI_IO_EXTENT );
--		return NULL;
--	}
--
--	outb( 0, ioaddr + CSR0 );
--
--	if( irq < 2 ) {
--		unsigned long irq_mask;
--
--		irq_mask = probe_irq_on();
--		outb( EN_INT | TR_REQ, ioaddr + CSR0 );
--		outb( PR_RES, ioaddr + CSR1 );
--		mdelay(50);
--		irq = probe_irq_off(irq_mask);
--		outb( 0, ioaddr + CSR0 );
--
--		if( !irq ) {
--			pr_err("%s: can't detect device irq!\n", dev->name);
--			release_region( ioaddr, SBNI_IO_EXTENT );
--			return NULL;
--		}
--	} else if( irq == 2 )
--		irq = 9;
--
--	dev->irq = irq;
--	dev->base_addr = ioaddr;
--
--	/* Fill in sbni-specific dev fields. */
--	nl = netdev_priv(dev);
--	if( !nl ) {
--		pr_err("%s: unable to get memory!\n", dev->name);
--		release_region( ioaddr, SBNI_IO_EXTENT );
--		return NULL;
--	}
--
--	memset( nl, 0, sizeof(struct net_local) );
--	spin_lock_init( &nl->lock );
--
--	/* store MAC address (generate if that isn't known) */
--	*(__be16 *)dev->dev_addr = htons( 0x00ff );
--	*(__be32 *)(dev->dev_addr + 2) = htonl( 0x01000000 |
--		((mac[num] ?
--		mac[num] :
--		(u32)((long)netdev_priv(dev))) & 0x00ffffff));
--
--	/* store link settings (speed, receive level ) */
--	nl->maxframe  = DEFAULT_FRAME_LEN;
--	nl->csr1.rate = baud[ num ];
--
--	if( (nl->cur_rxl_index = rxl[ num ]) == -1 )
--		/* autotune rxl */
--		nl->cur_rxl_index = DEF_RXL,
--		nl->delta_rxl = DEF_RXL_DELTA;
 -	else
--		nl->delta_rxl = 0;
--	nl->csr1.rxl  = rxl_tab[ nl->cur_rxl_index ];
--	if( inb( ioaddr + CSR0 ) & 0x01 )
--		nl->state |= FL_SLOW_MODE;
+-		switch (hdr->IP_NLPID)
+-		{
+-			case FRAD_P_PADDING:
+-				if (hdr->NLPID != FRAD_P_SNAP)
+-				{
+-					netdev_notice(dev, "Unsupported NLPID 0x%02X\n",
+-						      hdr->NLPID);
+-					dev->stats.rx_errors++;
+-					break;
+-				}
+-	 
+-				if (hdr->OUI[0] + hdr->OUI[1] + hdr->OUI[2] != 0)
+-				{
+-					netdev_notice(dev, "Unsupported organizationally unique identifier 0x%02X-%02X-%02X\n",
+-						      hdr->OUI[0],
+-						      hdr->OUI[1],
+-						      hdr->OUI[2]);
+-					dev->stats.rx_errors++;
+-					break;
+-				}
 -
--	pr_notice("%s: ioaddr %#lx, irq %d, MAC: 00:ff:01:%02x:%02x:%02x\n",
--		  dev->name, dev->base_addr, dev->irq,
--		  ((u8 *)dev->dev_addr)[3],
--		  ((u8 *)dev->dev_addr)[4],
--		  ((u8 *)dev->dev_addr)[5]);
+-				/* at this point, it's an EtherType frame */
+-				header = sizeof(struct frhdr);
+-				/* Already in network order ! */
+-				skb->protocol = hdr->PID;
+-				process = 1;
+-				break;
 -
--	pr_notice("%s: speed %d",
--		  dev->name,
--		  ((nl->state & FL_SLOW_MODE) ? 500000 : 2000000)
--		  / (1 << nl->csr1.rate));
+-			case FRAD_P_IP:
+-				header = sizeof(hdr->control) + sizeof(hdr->IP_NLPID);
+-				skb->protocol = htons(ETH_P_IP);
+-				process = 1;
+-				break;
 -
--	if( nl->delta_rxl == 0 )
--		pr_cont(", receive level 0x%x (fixed)\n", nl->cur_rxl_index);
--	else
--		pr_cont(", receive level (auto)\n");
+-			case FRAD_P_SNAP:
+-			case FRAD_P_Q933:
+-			case FRAD_P_CLNP:
+-				netdev_notice(dev, "Unsupported NLPID 0x%02X\n",
+-					      hdr->pad);
+-				dev->stats.rx_errors++;
+-				break;
 -
--#ifdef CONFIG_SBNI_MULTILINE
--	nl->master = dev;
--	nl->link   = NULL;
--#endif
--   
--	sbni_cards[ num++ ] = dev;
--	return  dev;
--}
--
--/* -------------------------------------------------------------------------- */
--
--#ifdef CONFIG_SBNI_MULTILINE
--
--static netdev_tx_t
--sbni_start_xmit( struct sk_buff  *skb,  struct net_device  *dev )
--{
--	struct net_device  *p;
--
--	netif_stop_queue( dev );
--
--	/* Looking for idle device in the list */
--	for( p = dev;  p; ) {
--		struct net_local  *nl = netdev_priv(p);
--		spin_lock( &nl->lock );
--		if( nl->tx_buf_p  ||  (nl->state & FL_LINE_DOWN) ) {
--			p = nl->link;
--			spin_unlock( &nl->lock );
--		} else {
--			/* Idle dev is found */
--			prepare_to_send( skb, p );
--			spin_unlock( &nl->lock );
--			netif_start_queue( dev );
--			return NETDEV_TX_OK;
+-			default:
+-				netdev_notice(dev, "Invalid pad byte 0x%02X\n",
+-					      hdr->pad);
+-				dev->stats.rx_errors++;
+-				break;				
 -		}
--	}
 -
--	return NETDEV_TX_BUSY;
+-	if (process)
+-	{
+-		/* we've set up the protocol, so discard the header */
+-		skb_reset_mac_header(skb);
+-		skb_pull(skb, header);
+-		dev->stats.rx_bytes += skb->len;
+-		netif_rx(skb);
+-		dev->stats.rx_packets++;
+-	}
+-	else
+-		dev_kfree_skb(skb);
 -}
 -
--#else	/* CONFIG_SBNI_MULTILINE */
--
--static netdev_tx_t
--sbni_start_xmit( struct sk_buff  *skb,  struct net_device  *dev )
+-static netdev_tx_t dlci_transmit(struct sk_buff *skb, struct net_device *dev)
 -{
--	struct net_local  *nl  = netdev_priv(dev);
+-	struct dlci_local *dlp = netdev_priv(dev);
 -
--	netif_stop_queue( dev );
--	spin_lock( &nl->lock );
--
--	prepare_to_send( skb, dev );
--
--	spin_unlock( &nl->lock );
+-	if (skb) {
+-		struct netdev_queue *txq = skb_get_tx_queue(dev, skb);
+-		netdev_start_xmit(skb, dlp->slave, txq, false);
+-	}
 -	return NETDEV_TX_OK;
 -}
 -
--#endif	/* CONFIG_SBNI_MULTILINE */
--
--/* -------------------------------------------------------------------------- */
--
--/* interrupt handler */
--
--/*
-- * 	SBNI12D-10, -11/ISA boards within "common interrupt" mode could not
-- * be looked as two independent single-channel devices. Every channel seems
-- * as Ethernet interface but interrupt handler must be common. Really, first
-- * channel ("master") driver only registers the handler. In its struct net_local
-- * it has got pointer to "slave" channel's struct net_local and handles that's
-- * interrupts too.
-- *	dev of successfully attached ISA SBNI boards is linked to list.
-- * While next board driver is initialized, it scans this list. If one
-- * has found dev with same irq and ioaddr different by 4 then it assumes
-- * this board to be "master".
-- */ 
--
--static irqreturn_t
--sbni_interrupt( int  irq,  void  *dev_id )
+-static int dlci_config(struct net_device *dev, struct dlci_conf __user *conf, int get)
 -{
--	struct net_device	  *dev = dev_id;
--	struct net_local  *nl  = netdev_priv(dev);
--	int	repeat;
+-	struct dlci_conf	config;
+-	struct dlci_local	*dlp;
+-	struct frad_local	*flp;
+-	int			err;
 -
--	spin_lock( &nl->lock );
--	if( nl->second )
--		spin_lock(&NET_LOCAL_LOCK(nl->second));
+-	dlp = netdev_priv(dev);
 -
--	do {
--		repeat = 0;
--		if( inb( dev->base_addr + CSR0 ) & (RC_RDY | TR_RDY) )
--			handle_channel( dev ),
--			repeat = 1;
--		if( nl->second  && 	/* second channel present */
--		    (inb( nl->second->base_addr+CSR0 ) & (RC_RDY | TR_RDY)) )
--			handle_channel( nl->second ),
--			repeat = 1;
--	} while( repeat );
+-	flp = netdev_priv(dlp->slave);
 -
--	if( nl->second )
--		spin_unlock(&NET_LOCAL_LOCK(nl->second));
--	spin_unlock( &nl->lock );
+-	if (!get)
+-	{
+-		if (copy_from_user(&config, conf, sizeof(struct dlci_conf)))
+-			return -EFAULT;
+-		if (config.flags & ~DLCI_VALID_FLAGS)
+-			return -EINVAL;
+-		memcpy(&dlp->config, &config, sizeof(struct dlci_conf));
+-		dlp->configured = 1;
+-	}
+-
+-	err = (*flp->dlci_conf)(dlp->slave, dev, get);
+-	if (err)
+-		return err;
+-
+-	if (get)
+-	{
+-		if (copy_to_user(conf, &dlp->config, sizeof(struct dlci_conf)))
+-			return -EFAULT;
+-	}
+-
+-	return 0;
+-}
+-
+-static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+-{
+-	struct dlci_local *dlp;
+-
+-	if (!capable(CAP_NET_ADMIN))
+-		return -EPERM;
+-
+-	dlp = netdev_priv(dev);
+-
+-	switch (cmd)
+-	{
+-		case DLCI_GET_SLAVE:
+-			if (!*(short *)(dev->dev_addr))
+-				return -EINVAL;
+-
+-			strncpy(ifr->ifr_slave, dlp->slave->name, sizeof(ifr->ifr_slave));
+-			break;
+-
+-		case DLCI_GET_CONF:
+-		case DLCI_SET_CONF:
+-			if (!*(short *)(dev->dev_addr))
+-				return -EINVAL;
+-
+-			return dlci_config(dev, ifr->ifr_data, cmd == DLCI_GET_CONF);
+-
+-		default: 
+-			return -EOPNOTSUPP;
+-	}
+-	return 0;
+-}
+-
+-static int dlci_change_mtu(struct net_device *dev, int new_mtu)
+-{
+-	struct dlci_local *dlp = netdev_priv(dev);
+-
+-	return dev_set_mtu(dlp->slave, new_mtu);
+-}
+-
+-static int dlci_open(struct net_device *dev)
+-{
+-	struct dlci_local	*dlp;
+-	struct frad_local	*flp;
+-	int			err;
+-
+-	dlp = netdev_priv(dev);
+-
+-	if (!*(short *)(dev->dev_addr))
+-		return -EINVAL;
+-
+-	if (!netif_running(dlp->slave))
+-		return -ENOTCONN;
+-
+-	flp = netdev_priv(dlp->slave);
+-	err = (*flp->activate)(dlp->slave, dev);
+-	if (err)
+-		return err;
+-
+-	netif_start_queue(dev);
+-
+-	return 0;
+-}
+-
+-static int dlci_close(struct net_device *dev)
+-{
+-	struct dlci_local	*dlp;
+-	struct frad_local	*flp;
+-	int			err;
+-
+-	netif_stop_queue(dev);
+-
+-	dlp = netdev_priv(dev);
+-
+-	flp = netdev_priv(dlp->slave);
+-	err = (*flp->deactivate)(dlp->slave, dev);
+-
+-	return 0;
+-}
+-
+-static int dlci_add(struct dlci_add *dlci)
+-{
+-	struct net_device	*master, *slave;
+-	struct dlci_local	*dlp;
+-	struct frad_local	*flp;
+-	int			err = -EINVAL;
+-
+-
+-	/* validate slave device */
+-	slave = dev_get_by_name(&init_net, dlci->devname);
+-	if (!slave)
+-		return -ENODEV;
+-
+-	if (slave->type != ARPHRD_FRAD || netdev_priv(slave) == NULL)
+-		goto err1;
+-
+-	/* create device name */
+-	master = alloc_netdev(sizeof(struct dlci_local), "dlci%d",
+-			      NET_NAME_UNKNOWN, dlci_setup);
+-	if (!master) {
+-		err = -ENOMEM;
+-		goto err1;
+-	}
+-
+-	/* make sure same slave not already registered */
+-	rtnl_lock();
+-	list_for_each_entry(dlp, &dlci_devs, list) {
+-		if (dlp->slave == slave) {
+-			err = -EBUSY;
+-			goto err2;
+-		}
+-	}
+-
+-	*(short *)(master->dev_addr) = dlci->dlci;
+-
+-	dlp = netdev_priv(master);
+-	dlp->slave = slave;
+-	dlp->master = master;
+-
+-	flp = netdev_priv(slave);
+-	err = (*flp->assoc)(slave, master);
+-	if (err < 0)
+-		goto err2;
+-
+-	err = register_netdevice(master);
+-	if (err < 0) 
+-		goto err2;
+-
+-	strcpy(dlci->devname, master->name);
+-
+-	list_add(&dlp->list, &dlci_devs);
+-	rtnl_unlock();
+-
+-	return 0;
+-
+- err2:
+-	rtnl_unlock();
+-	free_netdev(master);
+- err1:
+-	dev_put(slave);
+-	return err;
+-}
+-
+-static int dlci_del(struct dlci_add *dlci)
+-{
+-	struct dlci_local	*dlp;
+-	struct frad_local	*flp;
+-	struct net_device	*master, *slave;
+-	int			err;
+-	bool			found = false;
+-
+-	rtnl_lock();
+-
+-	/* validate slave device */
+-	master = __dev_get_by_name(&init_net, dlci->devname);
+-	if (!master) {
+-		err = -ENODEV;
+-		goto out;
+-	}
+-
+-	list_for_each_entry(dlp, &dlci_devs, list) {
+-		if (dlp->master == master) {
+-			found = true;
+-			break;
+-		}
+-	}
+-	if (!found) {
+-		err = -ENODEV;
+-		goto out;
+-	}
+-
+-	if (netif_running(master)) {
+-		err = -EBUSY;
+-		goto out;
+-	}
+-
+-	dlp = netdev_priv(master);
+-	slave = dlp->slave;
+-	flp = netdev_priv(slave);
+-
+-	err = (*flp->deassoc)(slave, master);
+-	if (!err) {
+-		list_del(&dlp->list);
+-
+-		unregister_netdevice(master);
+-
+-		dev_put(slave);
+-	}
+-out:
+-	rtnl_unlock();
+-	return err;
+-}
+-
+-static int dlci_ioctl(unsigned int cmd, void __user *arg)
+-{
+-	struct dlci_add add;
+-	int err;
+-	
+-	if (!capable(CAP_NET_ADMIN))
+-		return -EPERM;
+-
+-	if (copy_from_user(&add, arg, sizeof(struct dlci_add)))
+-		return -EFAULT;
+-
+-	switch (cmd)
+-	{
+-		case SIOCADDDLCI:
+-			err = dlci_add(&add);
+-
+-			if (!err)
+-				if (copy_to_user(arg, &add, sizeof(struct dlci_add)))
+-					return -EFAULT;
+-			break;
+-
+-		case SIOCDELDLCI:
+-			err = dlci_del(&add);
+-			break;
+-
+-		default:
+-			err = -EINVAL;
+-	}
+-
+-	return err;
+-}
+-
+-static const struct header_ops dlci_header_ops = {
+-	.create	= dlci_header,
+-};
+-
+-static const struct net_device_ops dlci_netdev_ops = {
+-	.ndo_open	= dlci_open,
+-	.ndo_stop	= dlci_close,
+-	.ndo_do_ioctl	= dlci_dev_ioctl,
+-	.ndo_start_xmit	= dlci_transmit,
+-	.ndo_change_mtu	= dlci_change_mtu,
+-};
+-
+-static void dlci_setup(struct net_device *dev)
+-{
+-	struct dlci_local *dlp = netdev_priv(dev);
+-
+-	dev->flags		= 0;
+-	dev->header_ops		= &dlci_header_ops;
+-	dev->netdev_ops		= &dlci_netdev_ops;
+-	dev->needs_free_netdev	= true;
+-
+-	dlp->receive		= dlci_receive;
+-
+-	dev->type		= ARPHRD_DLCI;
+-	dev->hard_header_len	= sizeof(struct frhdr);
+-	dev->addr_len		= sizeof(short);
+-
+-}
+-
+-/* if slave is unregistering, then cleanup master */
+-static int dlci_dev_event(struct notifier_block *unused,
+-			  unsigned long event, void *ptr)
+-{
+-	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+-
+-	if (dev_net(dev) != &init_net)
+-		return NOTIFY_DONE;
+-
+-	if (event == NETDEV_UNREGISTER) {
+-		struct dlci_local *dlp;
+-
+-		list_for_each_entry(dlp, &dlci_devs, list) {
+-			if (dlp->slave == dev) {
+-				list_del(&dlp->list);
+-				unregister_netdevice(dlp->master);
+-				dev_put(dlp->slave);
+-				break;
+-			}
+-		}
+-	}
+-	return NOTIFY_DONE;
+-}
+-
+-static struct notifier_block dlci_notifier = {
+-	.notifier_call = dlci_dev_event,
+-};
+-
+-static int __init init_dlci(void)
+-{
+-	dlci_ioctl_set(dlci_ioctl);
+-	register_netdevice_notifier(&dlci_notifier);
+-
+-	printk("%s.\n", version);
+-
+-	return 0;
+-}
+-
+-static void __exit dlci_exit(void)
+-{
+-	struct dlci_local	*dlp, *nxt;
+-	
+-	dlci_ioctl_set(NULL);
+-	unregister_netdevice_notifier(&dlci_notifier);
+-
+-	rtnl_lock();
+-	list_for_each_entry_safe(dlp, nxt, &dlci_devs, list) {
+-		unregister_netdevice(dlp->master);
+-		dev_put(dlp->slave);
+-	}
+-	rtnl_unlock();
+-}
+-
+-module_init(init_dlci);
+-module_exit(dlci_exit);
+-
+-MODULE_AUTHOR("Mike McLagan");
+-MODULE_DESCRIPTION("Frame Relay DLCI layer");
+-MODULE_LICENSE("GPL");
+diff --git a/drivers/net/wan/sdla.c b/drivers/net/wan/sdla.c
+deleted file mode 100644
+index e2e679a01b65..000000000000
+--- a/drivers/net/wan/sdla.c
++++ /dev/null
+@@ -1,1655 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- * SDLA		An implementation of a driver for the Sangoma S502/S508 series
+- *		multi-protocol PC interface card.  Initial offering is with 
+- *		the DLCI driver, providing Frame Relay support for linux.
+- *
+- *		Global definitions for the Frame relay interface.
+- *
+- * Version:	@(#)sdla.c   0.30	12 Sep 1996
+- *
+- * Credits:	Sangoma Technologies, for the use of 2 cards for an extended
+- *			period of time.
+- *		David Mandelstam <dm@sangoma.com> for getting me started on 
+- *			this project, and incentive to complete it.
+- *		Gene Kozen <74604.152@compuserve.com> for providing me with
+- *			important information about the cards.
+- *
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
+- *
+- * Changes:
+- *		0.15	Mike McLagan	Improved error handling, packet dropping
+- *		0.20	Mike McLagan	New transmit/receive flags for config
+- *					If in FR mode, don't accept packets from
+- *					non DLCI devices.
+- *		0.25	Mike McLagan	Fixed problem with rejecting packets
+- *					from non DLCI devices.
+- *		0.30	Mike McLagan	Fixed kernel panic when used with modified
+- *					ifconfig
+- */
+-
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/types.h>
+-#include <linux/fcntl.h>
+-#include <linux/interrupt.h>
+-#include <linux/ptrace.h>
+-#include <linux/ioport.h>
+-#include <linux/in.h>
+-#include <linux/slab.h>
+-#include <linux/string.h>
+-#include <linux/timer.h>
+-#include <linux/errno.h>
+-#include <linux/init.h>
+-#include <linux/netdevice.h>
+-#include <linux/skbuff.h>
+-#include <linux/if_arp.h>
+-#include <linux/if_frad.h>
+-#include <linux/sdla.h>
+-#include <linux/bitops.h>
+-
+-#include <asm/io.h>
+-#include <asm/dma.h>
+-#include <linux/uaccess.h>
+-
+-static const char* version = "SDLA driver v0.30, 12 Sep 1996, mike.mclagan@linux.org";
+-
+-static unsigned int valid_port[] = { 0x250, 0x270, 0x280, 0x300, 0x350, 0x360, 0x380, 0x390};
+-
+-static unsigned int valid_mem[] = {
+-				    0xA0000, 0xA2000, 0xA4000, 0xA6000, 0xA8000, 0xAA000, 0xAC000, 0xAE000, 
+-                                    0xB0000, 0xB2000, 0xB4000, 0xB6000, 0xB8000, 0xBA000, 0xBC000, 0xBE000,
+-                                    0xC0000, 0xC2000, 0xC4000, 0xC6000, 0xC8000, 0xCA000, 0xCC000, 0xCE000,
+-                                    0xD0000, 0xD2000, 0xD4000, 0xD6000, 0xD8000, 0xDA000, 0xDC000, 0xDE000,
+-                                    0xE0000, 0xE2000, 0xE4000, 0xE6000, 0xE8000, 0xEA000, 0xEC000, 0xEE000}; 
+-
+-static DEFINE_SPINLOCK(sdla_lock);
+-
+-/*********************************************************
+- *
+- * these are the core routines that access the card itself 
+- *
+- *********************************************************/
+-
+-#define SDLA_WINDOW(dev,addr) outb((((addr) >> 13) & 0x1F), (dev)->base_addr + SDLA_REG_Z80_WINDOW)
+-
+-static void __sdla_read(struct net_device *dev, int addr, void *buf, short len)
+-{
+-	char          *temp;
+-	const void    *base;
+-	int           offset, bytes;
+-
+-	temp = buf;
+-	while(len)
+-	{	
+-		offset = addr & SDLA_ADDR_MASK;
+-		bytes = offset + len > SDLA_WINDOW_SIZE ? SDLA_WINDOW_SIZE - offset : len;
+-		base = (const void *) (dev->mem_start + offset);
+-
+-		SDLA_WINDOW(dev, addr);
+-		memcpy(temp, base, bytes);
+-
+-		addr += bytes;
+-		temp += bytes;
+-		len  -= bytes;
+-	}  
+-}
+-
+-static void sdla_read(struct net_device *dev, int addr, void *buf, short len)
+-{
+-	unsigned long flags;
+-	spin_lock_irqsave(&sdla_lock, flags);
+-	__sdla_read(dev, addr, buf, len);
+-	spin_unlock_irqrestore(&sdla_lock, flags);
+-}
+-
+-static void __sdla_write(struct net_device *dev, int addr, 
+-			 const void *buf, short len)
+-{
+-	const char    *temp;
+-	void 	      *base;
+-	int           offset, bytes;
+-
+-	temp = buf;
+-	while(len)
+-	{
+-		offset = addr & SDLA_ADDR_MASK;
+-		bytes = offset + len > SDLA_WINDOW_SIZE ? SDLA_WINDOW_SIZE - offset : len;
+-		base = (void *) (dev->mem_start + offset);
+-
+-		SDLA_WINDOW(dev, addr);
+-		memcpy(base, temp, bytes);
+-
+-		addr += bytes;
+-		temp += bytes;
+-		len  -= bytes;
+-	}
+-}
+-
+-static void sdla_write(struct net_device *dev, int addr, 
+-		       const void *buf, short len)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&sdla_lock, flags);
+-	__sdla_write(dev, addr, buf, len);
+-	spin_unlock_irqrestore(&sdla_lock, flags);
+-}
+-
+-
+-static void sdla_clear(struct net_device *dev)
+-{
+-	unsigned long flags;
+-	char          *base;
+-	int           len, addr, bytes;
+-
+-	len = 65536;	
+-	addr = 0;
+-	bytes = SDLA_WINDOW_SIZE;
+-	base = (void *) dev->mem_start;
+-
+-	spin_lock_irqsave(&sdla_lock, flags);
+-	while(len)
+-	{
+-		SDLA_WINDOW(dev, addr);
+-		memset(base, 0, bytes);
+-
+-		addr += bytes;
+-		len  -= bytes;
+-	}
+-	spin_unlock_irqrestore(&sdla_lock, flags);
+-
+-}
+-
+-static char sdla_byte(struct net_device *dev, int addr)
+-{
+-	unsigned long flags;
+-	char          byte, *temp;
+-
+-	temp = (void *) (dev->mem_start + (addr & SDLA_ADDR_MASK));
+-
+-	spin_lock_irqsave(&sdla_lock, flags);
+-	SDLA_WINDOW(dev, addr);
+-	byte = *temp;
+-	spin_unlock_irqrestore(&sdla_lock, flags);
+-
+-	return byte;
+-}
+-
+-static void sdla_stop(struct net_device *dev)
+-{
+-	struct frad_local *flp;
+-
+-	flp = netdev_priv(dev);
+-	switch(flp->type)
+-	{
+-		case SDLA_S502A:
+-			outb(SDLA_S502A_HALT, dev->base_addr + SDLA_REG_CONTROL);
+-			flp->state = SDLA_HALT;
+-			break;
+-		case SDLA_S502E:
+-			outb(SDLA_HALT, dev->base_addr + SDLA_REG_Z80_CONTROL);
+-			outb(SDLA_S502E_ENABLE, dev->base_addr + SDLA_REG_CONTROL);
+-			flp->state = SDLA_S502E_ENABLE;
+-			break;
+-		case SDLA_S507:
+-			flp->state &= ~SDLA_CPUEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
+-		case SDLA_S508:
+-			flp->state &= ~SDLA_CPUEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
+-	}
+-}
+-
+-static void sdla_start(struct net_device *dev)
+-{
+-	struct frad_local *flp;
+-
+-	flp = netdev_priv(dev);
+-	switch(flp->type)
+-	{
+-		case SDLA_S502A:
+-			outb(SDLA_S502A_NMI, dev->base_addr + SDLA_REG_CONTROL);
+-			outb(SDLA_S502A_START, dev->base_addr + SDLA_REG_CONTROL);
+-			flp->state = SDLA_S502A_START;
+-			break;
+-		case SDLA_S502E:
+-			outb(SDLA_S502E_CPUEN, dev->base_addr + SDLA_REG_Z80_CONTROL);
+-			outb(0x00, dev->base_addr + SDLA_REG_CONTROL);
+-			flp->state = 0;
+-			break;
+-		case SDLA_S507:
+-			flp->state |= SDLA_CPUEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
+-		case SDLA_S508:
+-			flp->state |= SDLA_CPUEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
+-	}
+-}
+-
+-/****************************************************
+- *
+- * this is used for the S502A/E cards to determine
+- * the speed of the onboard CPU.  Calibration is
+- * necessary for the Frame Relay code uploaded 
+- * later.  Incorrect results cause timing problems
+- * with link checks & status messages
+- *
+- ***************************************************/
+-
+-static int sdla_z80_poll(struct net_device *dev, int z80_addr, int jiffs, char resp1, char resp2)
+-{
+-	unsigned long start, done, now;
+-	char          resp, *temp;
+-
+-	start = now = jiffies;
+-	done = jiffies + jiffs;
+-
+-	temp = (void *)dev->mem_start;
+-	temp += z80_addr & SDLA_ADDR_MASK;
+-	
+-	resp = ~resp1;
+-	while (time_before(jiffies, done) && (resp != resp1) && (!resp2 || (resp != resp2)))
+-	{
+-		if (jiffies != now)
+-		{
+-			SDLA_WINDOW(dev, z80_addr);
+-			now = jiffies;
+-			resp = *temp;
+-		}
+-	}
+-	return time_before(jiffies, done) ? jiffies - start : -1;
+-}
+-
+-/* constants for Z80 CPU speed */
+-#define Z80_READY 		'1'	/* Z80 is ready to begin */
+-#define LOADER_READY 		'2'	/* driver is ready to begin */
+-#define Z80_SCC_OK 		'3'	/* SCC is on board */
+-#define Z80_SCC_BAD	 	'4'	/* SCC was not found */
+-
+-static int sdla_cpuspeed(struct net_device *dev, struct ifreq *ifr)
+-{
+-	int  jiffs;
+-	char data;
+-
+-	sdla_start(dev);
+-	if (sdla_z80_poll(dev, 0, 3*HZ, Z80_READY, 0) < 0)
+-		return -EIO;
+-
+-	data = LOADER_READY;
+-	sdla_write(dev, 0, &data, 1);
+-
+-	if ((jiffs = sdla_z80_poll(dev, 0, 8*HZ, Z80_SCC_OK, Z80_SCC_BAD)) < 0)
+-		return -EIO;
+-
+-	sdla_stop(dev);
+-	sdla_read(dev, 0, &data, 1);
+-
+-	if (data == Z80_SCC_BAD)
+-	{
+-		printk("%s: SCC bad\n", dev->name);
+-		return -EIO;
+-	}
+-
+-	if (data != Z80_SCC_OK)
+-		return -EINVAL;
+-
+-	if (jiffs < 165)
+-		ifr->ifr_mtu = SDLA_CPU_16M;
+-	else if (jiffs < 220)
+-		ifr->ifr_mtu = SDLA_CPU_10M;
+-	else if (jiffs < 258)
+-		ifr->ifr_mtu = SDLA_CPU_8M;
+-	else if (jiffs < 357)
+-		ifr->ifr_mtu = SDLA_CPU_7M;
+-	else if (jiffs < 467)
+-		ifr->ifr_mtu = SDLA_CPU_5M;
+-	else
+-		ifr->ifr_mtu = SDLA_CPU_3M;
+- 
+-	return 0;
+-}
+-
+-/************************************************
+- *
+- *  Direct interaction with the Frame Relay code 
+- *  starts here.
+- *
+- ************************************************/
+-
+-struct _dlci_stat 
+-{
+-	short dlci;
+-	char  flags;
+-} __packed;
+-
+-struct _frad_stat 
+-{
+-	char    flags;
+-	struct _dlci_stat dlcis[SDLA_MAX_DLCI];
+-};
+-
+-static void sdla_errors(struct net_device *dev, int cmd, int dlci, int ret, int len, void *data) 
+-{
+-	struct _dlci_stat *pstatus;
+-	short             *pdlci;
+-	int               i;
+-	char              *state, line[30];
+-
+-	switch (ret)
+-	{
+-		case SDLA_RET_MODEM:
+-			state = data;
+-			if (*state & SDLA_MODEM_DCD_LOW)
+-				netdev_info(dev, "Modem DCD unexpectedly low!\n");
+-			if (*state & SDLA_MODEM_CTS_LOW)
+-				netdev_info(dev, "Modem CTS unexpectedly low!\n");
+-			/* I should probably do something about this! */
+-			break;
+-
+-		case SDLA_RET_CHANNEL_OFF:
+-			netdev_info(dev, "Channel became inoperative!\n");
+-			/* same here */
+-			break;
+-
+-		case SDLA_RET_CHANNEL_ON:
+-			netdev_info(dev, "Channel became operative!\n");
+-			/* same here */
+-			break;
+-
+-		case SDLA_RET_DLCI_STATUS:
+-			netdev_info(dev, "Status change reported by Access Node\n");
+-			len /= sizeof(struct _dlci_stat);
+-			for(pstatus = data, i=0;i < len;i++,pstatus++)
+-			{
+-				if (pstatus->flags & SDLA_DLCI_NEW)
+-					state = "new";
+-				else if (pstatus->flags & SDLA_DLCI_DELETED)
+-					state = "deleted";
+-				else if (pstatus->flags & SDLA_DLCI_ACTIVE)
+-					state = "active";
+-				else
+-				{
+-					sprintf(line, "unknown status: %02X", pstatus->flags);
+-					state = line;
+-				}
+-				netdev_info(dev, "DLCI %i: %s\n",
+-					    pstatus->dlci, state);
+-				/* same here */
+-			}
+-			break;
+-
+-		case SDLA_RET_DLCI_UNKNOWN:
+-			netdev_info(dev, "Received unknown DLCIs:");
+-			len /= sizeof(short);
+-			for(pdlci = data,i=0;i < len;i++,pdlci++)
+-				pr_cont(" %i", *pdlci);
+-			pr_cont("\n");
+-			break;
+-
+-		case SDLA_RET_TIMEOUT:
+-			netdev_err(dev, "Command timed out!\n");
+-			break;
+-
+-		case SDLA_RET_BUF_OVERSIZE:
+-			netdev_info(dev, "Bc/CIR overflow, acceptable size is %i\n",
+-				    len);
+-			break;
+-
+-		case SDLA_RET_BUF_TOO_BIG:
+-			netdev_info(dev, "Buffer size over specified max of %i\n",
+-				    len);
+-			break;
+-
+-		case SDLA_RET_CHANNEL_INACTIVE:
+-		case SDLA_RET_DLCI_INACTIVE:
+-		case SDLA_RET_CIR_OVERFLOW:
+-		case SDLA_RET_NO_BUFS:
+-			if (cmd == SDLA_INFORMATION_WRITE)
+-				break;
+-			/* Else, fall through */
+-
+-		default: 
+-			netdev_dbg(dev, "Cmd 0x%02X generated return code 0x%02X\n",
+-				   cmd, ret);
+-			/* Further processing could be done here */
+-			break;
+-	}
+-}
+-
+-static int sdla_cmd(struct net_device *dev, int cmd, short dlci, short flags, 
+-                        void *inbuf, short inlen, void *outbuf, short *outlen)
+-{
+-	static struct _frad_stat status;
+-	struct frad_local        *flp;
+-	struct sdla_cmd          *cmd_buf;
+-	unsigned long            pflags;
+-	unsigned long		 jiffs;
+-	int                      ret, waiting, len;
+-	long                     window;
+-
+-	flp = netdev_priv(dev);
+-	window = flp->type == SDLA_S508 ? SDLA_508_CMD_BUF : SDLA_502_CMD_BUF;
+-	cmd_buf = (struct sdla_cmd *)(dev->mem_start + (window & SDLA_ADDR_MASK));
+-	ret = 0;
+-	len = 0;
+-	jiffs = jiffies + HZ;  /* 1 second is plenty */
+-
+-	spin_lock_irqsave(&sdla_lock, pflags);
+-	SDLA_WINDOW(dev, window);
+-	cmd_buf->cmd = cmd;
+-	cmd_buf->dlci = dlci;
+-	cmd_buf->flags = flags;
+-
+-	if (inbuf)
+-		memcpy(cmd_buf->data, inbuf, inlen);
+-
+-	cmd_buf->length = inlen;
+-
+-	cmd_buf->opp_flag = 1;
+-	spin_unlock_irqrestore(&sdla_lock, pflags);
+-
+-	waiting = 1;
+-	len = 0;
+-	while (waiting && time_before_eq(jiffies, jiffs))
+-	{
+-		if (waiting++ % 3) 
+-		{
+-			spin_lock_irqsave(&sdla_lock, pflags);
+-			SDLA_WINDOW(dev, window);
+-			waiting = ((volatile int)(cmd_buf->opp_flag));
+-			spin_unlock_irqrestore(&sdla_lock, pflags);
+-		}
+-	}
+-	
+-	if (!waiting)
+-	{
+-
+-		spin_lock_irqsave(&sdla_lock, pflags);
+-		SDLA_WINDOW(dev, window);
+-		ret = cmd_buf->retval;
+-		len = cmd_buf->length;
+-		if (outbuf && outlen)
+-		{
+-			*outlen = *outlen >= len ? len : *outlen;
+-
+-			if (*outlen)
+-				memcpy(outbuf, cmd_buf->data, *outlen);
+-		}
+-
+-		/* This is a local copy that's used for error handling */
+-		if (ret)
+-			memcpy(&status, cmd_buf->data, len > sizeof(status) ? sizeof(status) : len);
+-
+-		spin_unlock_irqrestore(&sdla_lock, pflags);
+-	}
+-	else
+-		ret = SDLA_RET_TIMEOUT;
+-
+-	if (ret != SDLA_RET_OK)
+-	   	sdla_errors(dev, cmd, dlci, ret, len, &status);
+-
+-	return ret;
+-}
+-
+-/***********************************************
+- *
+- * these functions are called by the DLCI driver 
+- *
+- ***********************************************/
+-
+-static int sdla_reconfig(struct net_device *dev);
+-
+-static int sdla_activate(struct net_device *slave, struct net_device *master)
+-{
+-	struct frad_local *flp;
+-	int i;
+-
+-	flp = netdev_priv(slave);
+-
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->master[i] == master)
+-			break;
+-
+-	if (i == CONFIG_DLCI_MAX)
+-		return -ENODEV;
+-
+-	flp->dlci[i] = abs(flp->dlci[i]);
+-
+-	if (netif_running(slave) && (flp->config.station == FRAD_STATION_NODE))
+-		sdla_cmd(slave, SDLA_ACTIVATE_DLCI, 0, 0, &flp->dlci[i], sizeof(short), NULL, NULL);
+-
+-	return 0;
+-}
+-
+-static int sdla_deactivate(struct net_device *slave, struct net_device *master)
+-{
+-	struct frad_local *flp;
+-	int               i;
+-
+-	flp = netdev_priv(slave);
+-
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->master[i] == master)
+-			break;
+-
+-	if (i == CONFIG_DLCI_MAX)
+-		return -ENODEV;
+-
+-	flp->dlci[i] = -abs(flp->dlci[i]);
+-
+-	if (netif_running(slave) && (flp->config.station == FRAD_STATION_NODE))
+-		sdla_cmd(slave, SDLA_DEACTIVATE_DLCI, 0, 0, &flp->dlci[i], sizeof(short), NULL, NULL);
+-
+-	return 0;
+-}
+-
+-static int sdla_assoc(struct net_device *slave, struct net_device *master)
+-{
+-	struct frad_local *flp;
+-	int               i;
+-
+-	if (master->type != ARPHRD_DLCI)
+-		return -EINVAL;
+-
+-	flp = netdev_priv(slave);
+-
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-	{
+-		if (!flp->master[i])
+-			break;
+-		if (abs(flp->dlci[i]) == *(short *)(master->dev_addr))
+-			return -EADDRINUSE;
+-	} 
+-
+-	if (i == CONFIG_DLCI_MAX)
+-		return -EMLINK;  /* #### Alan: Comments on this ?? */
+-
+-
+-	flp->master[i] = master;
+-	flp->dlci[i] = -*(short *)(master->dev_addr);
+-	master->mtu = slave->mtu;
+-
+-	if (netif_running(slave)) {
+-		if (flp->config.station == FRAD_STATION_CPE)
+-			sdla_reconfig(slave);
+-		else
+-			sdla_cmd(slave, SDLA_ADD_DLCI, 0, 0, master->dev_addr, sizeof(short), NULL, NULL);
+-	}
+-
+-	return 0;
+-}
+-
+-static int sdla_deassoc(struct net_device *slave, struct net_device *master)
+-{
+-	struct frad_local *flp;
+-	int               i;
+-
+-	flp = netdev_priv(slave);
+-
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->master[i] == master)
+-			break;
+-
+-	if (i == CONFIG_DLCI_MAX)
+-		return -ENODEV;
+-
+-	flp->master[i] = NULL;
+-	flp->dlci[i] = 0;
+-
+-
+-	if (netif_running(slave)) {
+-		if (flp->config.station == FRAD_STATION_CPE)
+-			sdla_reconfig(slave);
+-		else
+-			sdla_cmd(slave, SDLA_DELETE_DLCI, 0, 0, master->dev_addr, sizeof(short), NULL, NULL);
+-	}
+-
+-	return 0;
+-}
+-
+-static int sdla_dlci_conf(struct net_device *slave, struct net_device *master, int get)
+-{
+-	struct frad_local *flp;
+-	struct dlci_local *dlp;
+-	int               i;
+-	short             len, ret;
+-
+-	flp = netdev_priv(slave);
+-
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->master[i] == master)
+-			break;
+-
+-	if (i == CONFIG_DLCI_MAX)
+-		return -ENODEV;
+-
+-	dlp = netdev_priv(master);
+-
+-	ret = SDLA_RET_OK;
+-	len = sizeof(struct dlci_conf);
+-	if (netif_running(slave)) {
+-		if (get)
+-			ret = sdla_cmd(slave, SDLA_READ_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0,  
+-			            NULL, 0, &dlp->config, &len);
+-		else
+-			ret = sdla_cmd(slave, SDLA_SET_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0,  
+-			            &dlp->config, sizeof(struct dlci_conf) - 4 * sizeof(short), NULL, NULL);
+-	}
+-
+-	return ret == SDLA_RET_OK ? 0 : -EIO;
+-}
+-
+-/**************************
+- *
+- * now for the Linux driver 
+- *
+- **************************/
+-
+-/* NOTE: the DLCI driver deals with freeing the SKB!! */
+-static netdev_tx_t sdla_transmit(struct sk_buff *skb,
+-				 struct net_device *dev)
+-{
+-	struct frad_local *flp;
+-	int               ret, addr, accept, i;
+-	short             size;
+-	unsigned long     flags;
+-	struct buf_entry  *pbuf;
+-
+-	flp = netdev_priv(dev);
+-	ret = 0;
+-	accept = 1;
+-
+-	netif_stop_queue(dev);
+-
+-	/*
+-	 * stupid GateD insists on setting up the multicast router thru us
+-	 * and we're ill equipped to handle a non Frame Relay packet at this
+-	 * time!
+-	 */
+-
+-	accept = 1;
+-	switch (dev->type)
+-	{
+-		case ARPHRD_FRAD:
+-			if (skb->dev->type != ARPHRD_DLCI)
+-			{
+-				netdev_warn(dev, "Non DLCI device, type %i, tried to send on FRAD module\n",
+-					    skb->dev->type);
+-				accept = 0;
+-			}
+-			break;
+-		default:
+-			netdev_warn(dev, "unknown firmware type 0x%04X\n",
+-				    dev->type);
+-			accept = 0;
+-			break;
+-	}
+-	if (accept)
+-	{
+-		/* this is frame specific, but till there's a PPP module, it's the default */
+-		switch (flp->type)
+-		{
+-			case SDLA_S502A:
+-			case SDLA_S502E:
+-				ret = sdla_cmd(dev, SDLA_INFORMATION_WRITE, *(short *)(skb->dev->dev_addr), 0, skb->data, skb->len, NULL, NULL);
+-				break;
+-				case SDLA_S508:
+-				size = sizeof(addr);
+-				ret = sdla_cmd(dev, SDLA_INFORMATION_WRITE, *(short *)(skb->dev->dev_addr), 0, NULL, skb->len, &addr, &size);
+-				if (ret == SDLA_RET_OK)
+-				{
+-
+-					spin_lock_irqsave(&sdla_lock, flags);
+-					SDLA_WINDOW(dev, addr);
+-					pbuf = (void *)(((int) dev->mem_start) + (addr & SDLA_ADDR_MASK));
+-					__sdla_write(dev, pbuf->buf_addr, skb->data, skb->len);
+-					SDLA_WINDOW(dev, addr);
+-					pbuf->opp_flag = 1;
+-					spin_unlock_irqrestore(&sdla_lock, flags);
+-				}
+-				break;
+-		}
+-
+-		switch (ret)
+-		{
+-			case SDLA_RET_OK:
+-				dev->stats.tx_packets++;
+-				break;
+-
+-			case SDLA_RET_CIR_OVERFLOW:
+-			case SDLA_RET_BUF_OVERSIZE:
+-			case SDLA_RET_NO_BUFS:
+-				dev->stats.tx_dropped++;
+-				break;
+-
+-			default:
+-				dev->stats.tx_errors++;
+-				break;
+-		}
+-	}
+-	netif_wake_queue(dev);
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-	{
+-		if(flp->master[i]!=NULL)
+-			netif_wake_queue(flp->master[i]);
+-	}		
+-
+-	dev_kfree_skb(skb);
+-	return NETDEV_TX_OK;
+-}
+-
+-static void sdla_receive(struct net_device *dev)
+-{
+-	struct net_device	  *master;
+-	struct frad_local *flp;
+-	struct dlci_local *dlp;
+-	struct sk_buff	 *skb;
+-
+-	struct sdla_cmd	*cmd;
+-	struct buf_info	*pbufi;
+-	struct buf_entry  *pbuf;
+-
+-	unsigned long	  flags;
+-	int               i=0, received, success, addr, buf_base, buf_top;
+-	short             dlci, len, len2, split;
+-
+-	flp = netdev_priv(dev);
+-	success = 1;
+-	received = addr = buf_top = buf_base = 0;
+-	len = dlci = 0;
+-	skb = NULL;
+-	master = NULL;
+-	cmd = NULL;
+-	pbufi = NULL;
+-	pbuf = NULL;
+-
+-	spin_lock_irqsave(&sdla_lock, flags);
+-
+-	switch (flp->type)
+-	{
+-		case SDLA_S502A:
+-		case SDLA_S502E:
+-			cmd = (void *) (dev->mem_start + (SDLA_502_RCV_BUF & SDLA_ADDR_MASK));
+-			SDLA_WINDOW(dev, SDLA_502_RCV_BUF);
+-			success = cmd->opp_flag;
+-			if (!success)
+-				break;
+-
+-			dlci = cmd->dlci;
+-			len = cmd->length;
+-			break;
+-
+-		case SDLA_S508:
+-			pbufi = (void *) (dev->mem_start + (SDLA_508_RXBUF_INFO & SDLA_ADDR_MASK));
+-			SDLA_WINDOW(dev, SDLA_508_RXBUF_INFO);
+-			pbuf = (void *) (dev->mem_start + ((pbufi->rse_base + flp->buffer * sizeof(struct buf_entry)) & SDLA_ADDR_MASK));
+-			success = pbuf->opp_flag;
+-			if (!success)
+-				break;
+-
+-			buf_top = pbufi->buf_top;
+-			buf_base = pbufi->buf_base;
+-			dlci = pbuf->dlci;
+-			len = pbuf->length;
+-			addr = pbuf->buf_addr;
+-			break;
+-	}
+-
+-	/* common code, find the DLCI and get the SKB */
+-	if (success)
+-	{
+-		for (i=0;i<CONFIG_DLCI_MAX;i++)
+-			if (flp->dlci[i] == dlci)
+-				break;
+-
+-		if (i == CONFIG_DLCI_MAX)
+-		{
+-			netdev_notice(dev, "Received packet from invalid DLCI %i, ignoring\n",
+-				      dlci);
+-			dev->stats.rx_errors++;
+-			success = 0;
+-		}
+-	}
+-
+-	if (success)
+-	{
+-		master = flp->master[i];
+-		skb = dev_alloc_skb(len + sizeof(struct frhdr));
+-		if (skb == NULL) 
+-		{
+-			netdev_notice(dev, "Memory squeeze, dropping packet\n");
+-			dev->stats.rx_dropped++;
+-			success = 0;
+-		}
+-		else
+-			skb_reserve(skb, sizeof(struct frhdr));
+-	}
+-
+-	/* pick up the data */
+-	switch (flp->type)
+-	{
+-		case SDLA_S502A:
+-		case SDLA_S502E:
+-			if (success)
+-				__sdla_read(dev, SDLA_502_RCV_BUF + SDLA_502_DATA_OFS, skb_put(skb,len), len);
+-
+-			SDLA_WINDOW(dev, SDLA_502_RCV_BUF);
+-			cmd->opp_flag = 0;
+-			break;
+-
+-		case SDLA_S508:
+-			if (success)
+-			{
+-				/* is this buffer split off the end of the internal ring buffer */
+-				split = addr + len > buf_top + 1 ? len - (buf_top - addr + 1) : 0;
+-				len2 = len - split;
+-
+-				__sdla_read(dev, addr, skb_put(skb, len2), len2);
+-				if (split)
+-					__sdla_read(dev, buf_base, skb_put(skb, split), split);
+-			}
+-
+-			/* increment the buffer we're looking at */
+-			SDLA_WINDOW(dev, SDLA_508_RXBUF_INFO);
+-			flp->buffer = (flp->buffer + 1) % pbufi->rse_num;
+-			pbuf->opp_flag = 0;
+-			break;
+-	}
+-
+-	if (success)
+-	{
+-		dev->stats.rx_packets++;
+-		dlp = netdev_priv(master);
+-		(*dlp->receive)(skb, master);
+-	}
+-
+-	spin_unlock_irqrestore(&sdla_lock, flags);
+-}
+-
+-static irqreturn_t sdla_isr(int dummy, void *dev_id)
+-{
+-	struct net_device     *dev;
+-	struct frad_local *flp;
+-	char              byte;
+-
+-	dev = dev_id;
+-
+-	flp = netdev_priv(dev);
+-
+-	if (!flp->initialized)
+-	{
+-		netdev_warn(dev, "irq %d for uninitialized device\n", dev->irq);
+-		return IRQ_NONE;
+-	}
+-
+-	byte = sdla_byte(dev, flp->type == SDLA_S508 ? SDLA_508_IRQ_INTERFACE : SDLA_502_IRQ_INTERFACE);
+-	switch (byte)
+-	{
+-		case SDLA_INTR_RX:
+-			sdla_receive(dev);
+-			break;
+-
+-		/* the command will get an error return, which is processed above */
+-		case SDLA_INTR_MODEM:
+-		case SDLA_INTR_STATUS:
+-			sdla_cmd(dev, SDLA_READ_DLC_STATUS, 0, 0, NULL, 0, NULL, NULL);
+-			break;
+-
+-		case SDLA_INTR_TX:
+-		case SDLA_INTR_COMPLETE:
+-		case SDLA_INTR_TIMER:
+-			netdev_warn(dev, "invalid irq flag 0x%02X\n", byte);
+-			break;
+-	}
+-
+-	/* the S502E requires a manual acknowledgement of the interrupt */ 
+-	if (flp->type == SDLA_S502E)
+-	{
+-		flp->state &= ~SDLA_S502E_INTACK;
+-		outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-		flp->state |= SDLA_S502E_INTACK;
+-		outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-	}
+-
+-	/* this clears the byte, informing the Z80 we're done */
+-	byte = 0;
+-	sdla_write(dev, flp->type == SDLA_S508 ? SDLA_508_IRQ_INTERFACE : SDLA_502_IRQ_INTERFACE, &byte, sizeof(byte));
 -	return IRQ_HANDLED;
 -}
 -
--
--static void
--handle_channel( struct net_device  *dev )
+-static void sdla_poll(struct timer_list *t)
 -{
--	struct net_local	*nl    = netdev_priv(dev);
--	unsigned long		ioaddr = dev->base_addr;
+-	struct frad_local *flp = from_timer(flp, t, timer);
+-	struct net_device *dev = flp->dev;
 -
--	int  req_ans;
--	unsigned char  csr0;
+-	if (sdla_byte(dev, SDLA_502_RCV_BUF))
+-		sdla_receive(dev);
 -
--#ifdef CONFIG_SBNI_MULTILINE
--	/* Lock the master device because we going to change its local data */
--	if( nl->state & FL_SLAVE )
--		spin_lock(&NET_LOCAL_LOCK(nl->master));
--#endif
+-	flp->timer.expires = 1;
+-	add_timer(&flp->timer);
+-}
 -
--	outb( (inb( ioaddr + CSR0 ) & ~EN_INT) | TR_REQ, ioaddr + CSR0 );
+-static int sdla_close(struct net_device *dev)
+-{
+-	struct frad_local *flp;
+-	struct intr_info  intr;
+-	int               len, i;
+-	short             dlcis[CONFIG_DLCI_MAX];
 -
--	nl->timer_ticks = CHANGE_LEVEL_START_TICKS;
--	for(;;) {
--		csr0 = inb( ioaddr + CSR0 );
--		if( ( csr0 & (RC_RDY | TR_RDY) ) == 0 )
+-	flp = netdev_priv(dev);
+-
+-	len = 0;
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->dlci[i])
+-			dlcis[len++] = abs(flp->dlci[i]);
+-	len *= 2;
+-
+-	if (flp->config.station == FRAD_STATION_NODE)
+-	{
+-		for(i=0;i<CONFIG_DLCI_MAX;i++)
+-			if (flp->dlci[i] > 0) 
+-				sdla_cmd(dev, SDLA_DEACTIVATE_DLCI, 0, 0, dlcis, len, NULL, NULL);
+-		sdla_cmd(dev, SDLA_DELETE_DLCI, 0, 0, &flp->dlci[i], sizeof(flp->dlci[i]), NULL, NULL);
+-	}
+-
+-	memset(&intr, 0, sizeof(intr));
+-	/* let's start up the reception */
+-	switch(flp->type)
+-	{
+-		case SDLA_S502A:
+-			del_timer(&flp->timer); 
 -			break;
 -
--		req_ans = !(nl->state & FL_PREV_OK);
+-		case SDLA_S502E:
+-			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(char) + sizeof(short), NULL, NULL);
+-			flp->state &= ~SDLA_S502E_INTACK;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
 -
--		if( csr0 & RC_RDY )
--			req_ans = recv_frame( dev );
+-		case SDLA_S507:
+-			break;
 -
--		/*
--		 * TR_RDY always equals 1 here because we have owned the marker,
--		 * and we set TR_REQ when disabled interrupts
--		 */
--		csr0 = inb( ioaddr + CSR0 );
--		if( !(csr0 & TR_RDY)  ||  (csr0 & RC_RDY) )
--			netdev_err(dev, "internal error!\n");
--
--		/* if state & FL_NEED_RESEND != 0 then tx_frameno != 0 */
--		if( req_ans  ||  nl->tx_frameno != 0 )
--			send_frame( dev );
--		else
--			/* send marker without any data */
--			outb( inb( ioaddr + CSR0 ) & ~TR_REQ, ioaddr + CSR0 );
+-		case SDLA_S508:
+-			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(struct intr_info), NULL, NULL);
+-			flp->state &= ~SDLA_S508_INTEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			break;
 -	}
 -
--	outb( inb( ioaddr + CSR0 ) | EN_INT, ioaddr + CSR0 );
+-	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
 -
--#ifdef CONFIG_SBNI_MULTILINE
--	if( nl->state & FL_SLAVE )
--		spin_unlock(&NET_LOCAL_LOCK(nl->master));
--#endif
--}
--
--
--/*
-- * Routine returns 1 if it needs to acknowledge received frame.
-- * Empty frame received without errors won't be acknowledged.
-- */
--
--static int
--recv_frame( struct net_device  *dev )
--{
--	struct net_local  *nl   = netdev_priv(dev);
--	unsigned long  ioaddr	= dev->base_addr;
--
--	u32  crc = CRC32_INITIAL;
--
--	unsigned  framelen = 0, frameno, ack;
--	unsigned  is_first, frame_ok = 0;
--
--	if( check_fhdr( ioaddr, &framelen, &frameno, &ack, &is_first, &crc ) ) {
--		frame_ok = framelen > 4
--			?  upload_data( dev, framelen, frameno, is_first, crc )
--			:  skip_tail( ioaddr, framelen, crc );
--		if( frame_ok )
--			interpret_ack( dev, ack );
--	}
--
--	outb( inb( ioaddr + CSR0 ) ^ CT_ZER, ioaddr + CSR0 );
--	if( frame_ok ) {
--		nl->state |= FL_PREV_OK;
--		if( framelen > 4 )
--			nl->in_stats.all_rx_number++;
--	} else
--		nl->state &= ~FL_PREV_OK,
--		change_level( dev ),
--		nl->in_stats.all_rx_number++,
--		nl->in_stats.bad_rx_number++;
--
--	return  !frame_ok  ||  framelen > 4;
--}
--
--
--static void
--send_frame( struct net_device  *dev )
--{
--	struct net_local  *nl    = netdev_priv(dev);
--
--	u32  crc = CRC32_INITIAL;
--
--	if( nl->state & FL_NEED_RESEND ) {
--
--		/* if frame was sended but not ACK'ed - resend it */
--		if( nl->trans_errors ) {
--			--nl->trans_errors;
--			if( nl->framelen != 0 )
--				nl->in_stats.resend_tx_number++;
--		} else {
--			/* cannot xmit with many attempts */
--#ifdef CONFIG_SBNI_MULTILINE
--			if( (nl->state & FL_SLAVE)  ||  nl->link )
--#endif
--			nl->state |= FL_LINE_DOWN;
--			drop_xmit_queue( dev );
--			goto  do_send;
--		}
--	} else
--		nl->trans_errors = TR_ERROR_COUNT;
--
--	send_frame_header( dev, &crc );
--	nl->state |= FL_NEED_RESEND;
--	/*
--	 * FL_NEED_RESEND will be cleared after ACK, but if empty
--	 * frame sended then in prepare_to_send next frame
--	 */
--
--
--	if( nl->framelen ) {
--		download_data( dev, &crc );
--		nl->in_stats.all_tx_number++;
--		nl->state |= FL_WAIT_ACK;
--	}
--
--	outsb( dev->base_addr + DAT, (u8 *)&crc, sizeof crc );
--
--do_send:
--	outb( inb( dev->base_addr + CSR0 ) & ~TR_REQ, dev->base_addr + CSR0 );
--
--	if( nl->tx_frameno )
--		/* next frame exists - we request card to send it */
--		outb( inb( dev->base_addr + CSR0 ) | TR_REQ,
--		      dev->base_addr + CSR0 );
--}
--
--
--/*
-- * Write the frame data into adapter's buffer memory, and calculate CRC.
-- * Do padding if necessary.
-- */
--
--static void
--download_data( struct net_device  *dev,  u32  *crc_p )
--{
--	struct net_local  *nl    = netdev_priv(dev);
--	struct sk_buff    *skb	 = nl->tx_buf_p;
--
--	unsigned  len = min_t(unsigned int, skb->len - nl->outpos, nl->framelen);
--
--	outsb( dev->base_addr + DAT, skb->data + nl->outpos, len );
--	*crc_p = calc_crc32( *crc_p, skb->data + nl->outpos, len );
--
--	/* if packet too short we should write some more bytes to pad */
--	for( len = nl->framelen - len;  len--; )
--		outb( 0, dev->base_addr + DAT ),
--		*crc_p = CRC32( 0, *crc_p );
--}
--
--
--static int
--upload_data( struct net_device  *dev,  unsigned  framelen,  unsigned  frameno,
--	     unsigned  is_first,  u32  crc )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	int  frame_ok;
--
--	if( is_first )
--		nl->wait_frameno = frameno,
--		nl->inppos = 0;
--
--	if( nl->wait_frameno == frameno ) {
--
--		if( nl->inppos + framelen  <=  ETHER_MAX_LEN )
--			frame_ok = append_frame_to_pkt( dev, framelen, crc );
--
--		/*
--		 * if CRC is right but framelen incorrect then transmitter
--		 * error was occurred... drop entire packet
--		 */
--		else if( (frame_ok = skip_tail( dev->base_addr, framelen, crc ))
--			 != 0 )
--			nl->wait_frameno = 0,
--			nl->inppos = 0,
--#ifdef CONFIG_SBNI_MULTILINE
--			nl->master->stats.rx_errors++,
--			nl->master->stats.rx_missed_errors++;
--#else
--		        dev->stats.rx_errors++,
--			dev->stats.rx_missed_errors++;
--#endif
--			/* now skip all frames until is_first != 0 */
--	} else
--		frame_ok = skip_tail( dev->base_addr, framelen, crc );
--
--	if( is_first  &&  !frame_ok )
--		/*
--		 * Frame has been broken, but we had already stored
--		 * is_first... Drop entire packet.
--		 */
--		nl->wait_frameno = 0,
--#ifdef CONFIG_SBNI_MULTILINE
--		nl->master->stats.rx_errors++,
--		nl->master->stats.rx_crc_errors++;
--#else
--		dev->stats.rx_errors++,
--		dev->stats.rx_crc_errors++;
--#endif
--
--	return  frame_ok;
--}
--
--
--static inline void
--send_complete( struct net_device *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--#ifdef CONFIG_SBNI_MULTILINE
--	nl->master->stats.tx_packets++;
--	nl->master->stats.tx_bytes += nl->tx_buf_p->len;
--#else
--	dev->stats.tx_packets++;
--	dev->stats.tx_bytes += nl->tx_buf_p->len;
--#endif
--	dev_consume_skb_irq(nl->tx_buf_p);
--
--	nl->tx_buf_p = NULL;
--
--	nl->outpos = 0;
--	nl->state &= ~(FL_WAIT_ACK | FL_NEED_RESEND);
--	nl->framelen   = 0;
--}
--
--
--static void
--interpret_ack( struct net_device  *dev,  unsigned  ack )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	if( ack == FRAME_SENT_OK ) {
--		nl->state &= ~FL_NEED_RESEND;
--
--		if( nl->state & FL_WAIT_ACK ) {
--			nl->outpos += nl->framelen;
--
--			if( --nl->tx_frameno )
--				nl->framelen = min_t(unsigned int,
--						   nl->maxframe,
--						   nl->tx_buf_p->len - nl->outpos);
--			else
--				send_complete( dev ),
--#ifdef CONFIG_SBNI_MULTILINE
--				netif_wake_queue( nl->master );
--#else
--				netif_wake_queue( dev );
--#endif
--		}
--	}
--
--	nl->state &= ~FL_WAIT_ACK;
--}
--
--
--/*
-- * Glue received frame with previous fragments of packet.
-- * Indicate packet when last frame would be accepted.
-- */
--
--static int
--append_frame_to_pkt( struct net_device  *dev,  unsigned  framelen,  u32  crc )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	u8  *p;
--
--	if( nl->inppos + framelen  >  ETHER_MAX_LEN )
--		return  0;
--
--	if( !nl->rx_buf_p  &&  !(nl->rx_buf_p = get_rx_buf( dev )) )
--		return  0;
--
--	p = nl->rx_buf_p->data + nl->inppos;
--	insb( dev->base_addr + DAT, p, framelen );
--	if( calc_crc32( crc, p, framelen ) != CRC32_REMAINDER )
--		return  0;
--
--	nl->inppos += framelen - 4;
--	if( --nl->wait_frameno == 0 )		/* last frame received */
--		indicate_pkt( dev );
--
--	return  1;
--}
--
--
--/*
-- * Prepare to start output on adapter.
-- * Transmitter will be actually activated when marker is accepted.
-- */
--
--static void
--prepare_to_send( struct sk_buff  *skb,  struct net_device  *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	unsigned int  len;
--
--	/* nl->tx_buf_p == NULL here! */
--	if( nl->tx_buf_p )
--		netdev_err(dev, "memory leak!\n");
--
--	nl->outpos = 0;
--	nl->state &= ~(FL_WAIT_ACK | FL_NEED_RESEND);
--
--	len = skb->len;
--	if( len < SBNI_MIN_LEN )
--		len = SBNI_MIN_LEN;
--
--	nl->tx_buf_p	= skb;
--	nl->tx_frameno	= DIV_ROUND_UP(len, nl->maxframe);
--	nl->framelen	= len < nl->maxframe  ?  len  :  nl->maxframe;
--
--	outb( inb( dev->base_addr + CSR0 ) | TR_REQ,  dev->base_addr + CSR0 );
--#ifdef CONFIG_SBNI_MULTILINE
--	netif_trans_update(nl->master);
--#else
--	netif_trans_update(dev);
--#endif
--}
--
--
--static void
--drop_xmit_queue( struct net_device  *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	if( nl->tx_buf_p )
--		dev_kfree_skb_any( nl->tx_buf_p ),
--		nl->tx_buf_p = NULL,
--#ifdef CONFIG_SBNI_MULTILINE
--		nl->master->stats.tx_errors++,
--		nl->master->stats.tx_carrier_errors++;
--#else
--		dev->stats.tx_errors++,
--		dev->stats.tx_carrier_errors++;
--#endif
--
--	nl->tx_frameno	= 0;
--	nl->framelen	= 0;
--	nl->outpos	= 0;
--	nl->state &= ~(FL_WAIT_ACK | FL_NEED_RESEND);
--#ifdef CONFIG_SBNI_MULTILINE
--	netif_start_queue( nl->master );
--	netif_trans_update(nl->master);
--#else
--	netif_start_queue( dev );
--	netif_trans_update(dev);
--#endif
--}
--
--
--static void
--send_frame_header( struct net_device  *dev,  u32  *crc_p )
--{
--	struct net_local  *nl  = netdev_priv(dev);
--
--	u32  crc = *crc_p;
--	u32  len_field = nl->framelen + 6;	/* CRC + frameno + reserved */
--	u8   value;
--
--	if( nl->state & FL_NEED_RESEND )
--		len_field |= FRAME_RETRY;	/* non-first attempt... */
--
--	if( nl->outpos == 0 )
--		len_field |= FRAME_FIRST;
--
--	len_field |= (nl->state & FL_PREV_OK) ? FRAME_SENT_OK : FRAME_SENT_BAD;
--	outb( SBNI_SIG, dev->base_addr + DAT );
--
--	value = (u8) len_field;
--	outb( value, dev->base_addr + DAT );
--	crc = CRC32( value, crc );
--	value = (u8) (len_field >> 8);
--	outb( value, dev->base_addr + DAT );
--	crc = CRC32( value, crc );
--
--	outb( nl->tx_frameno, dev->base_addr + DAT );
--	crc = CRC32( nl->tx_frameno, crc );
--	outb( 0, dev->base_addr + DAT );
--	crc = CRC32( 0, crc );
--	*crc_p = crc;
--}
--
--
--/*
-- * if frame tail not needed (incorrect number or received twice),
-- * it won't store, but CRC will be calculated
-- */
--
--static int
--skip_tail( unsigned int  ioaddr,  unsigned int  tail_len,  u32 crc )
--{
--	while( tail_len-- )
--		crc = CRC32( inb( ioaddr + DAT ), crc );
--
--	return  crc == CRC32_REMAINDER;
--}
--
--
--/*
-- * Preliminary checks if frame header is correct, calculates its CRC
-- * and split it to simple fields
-- */
--
--static int
--check_fhdr( u32  ioaddr,  u32  *framelen,  u32  *frameno,  u32  *ack,
--	    u32  *is_first,  u32  *crc_p )
--{
--	u32  crc = *crc_p;
--	u8   value;
--
--	if( inb( ioaddr + DAT ) != SBNI_SIG )
--		return  0;
--
--	value = inb( ioaddr + DAT );
--	*framelen = (u32)value;
--	crc = CRC32( value, crc );
--	value = inb( ioaddr + DAT );
--	*framelen |= ((u32)value) << 8;
--	crc = CRC32( value, crc );
--
--	*ack = *framelen & FRAME_ACK_MASK;
--	*is_first = (*framelen & FRAME_FIRST) != 0;
--
--	if( (*framelen &= FRAME_LEN_MASK) < 6 ||
--	    *framelen > SBNI_MAX_FRAME - 3 )
--		return  0;
--
--	value = inb( ioaddr + DAT );
--	*frameno = (u32)value;
--	crc = CRC32( value, crc );
--
--	crc = CRC32( inb( ioaddr + DAT ), crc );	/* reserved byte */
--	*framelen -= 2;
--
--	*crc_p = crc;
--	return  1;
--}
--
--
--static struct sk_buff *
--get_rx_buf( struct net_device  *dev )
--{
--	/* +2 is to compensate for the alignment fixup below */
--	struct sk_buff  *skb = dev_alloc_skb( ETHER_MAX_LEN + 2 );
--	if( !skb )
--		return  NULL;
--
--	skb_reserve( skb, 2 );		/* Align IP on longword boundaries */
--	return  skb;
--}
--
--
--static void
--indicate_pkt( struct net_device  *dev )
--{
--	struct net_local  *nl  = netdev_priv(dev);
--	struct sk_buff    *skb = nl->rx_buf_p;
--
--	skb_put( skb, nl->inppos );
--
--#ifdef CONFIG_SBNI_MULTILINE
--	skb->protocol = eth_type_trans( skb, nl->master );
--	netif_rx( skb );
--	++nl->master->stats.rx_packets;
--	nl->master->stats.rx_bytes += nl->inppos;
--#else
--	skb->protocol = eth_type_trans( skb, dev );
--	netif_rx( skb );
--	++dev->stats.rx_packets;
--	dev->stats.rx_bytes += nl->inppos;
--#endif
--	nl->rx_buf_p = NULL;	/* protocol driver will clear this sk_buff */
--}
--
--
--/* -------------------------------------------------------------------------- */
--
--/*
-- * Routine checks periodically wire activity and regenerates marker if
-- * connect was inactive for a long time.
-- */
--
--static void
--sbni_watchdog(struct timer_list *t)
--{
--	struct net_local   *nl  = from_timer(nl, t, watchdog);
--	struct net_device  *dev = nl->watchdog_dev;
--	unsigned long	   flags;
--	unsigned char	   csr0;
--
--	spin_lock_irqsave( &nl->lock, flags );
--
--	csr0 = inb( dev->base_addr + CSR0 );
--	if( csr0 & RC_CHK ) {
--
--		if( nl->timer_ticks ) {
--			if( csr0 & (RC_RDY | BU_EMP) )
--				/* receiving not active */
--				nl->timer_ticks--;
--		} else {
--			nl->in_stats.timeout_number++;
--			if( nl->delta_rxl )
--				timeout_change_level( dev );
--
--			outb( *(u_char *)&nl->csr1 | PR_RES,
--			      dev->base_addr + CSR1 );
--			csr0 = inb( dev->base_addr + CSR0 );
--		}
--	} else
--		nl->state &= ~FL_LINE_DOWN;
--
--	outb( csr0 | RC_CHK, dev->base_addr + CSR0 ); 
--
--	mod_timer(t, jiffies + SBNI_TIMEOUT);
--
--	spin_unlock_irqrestore( &nl->lock, flags );
--}
--
--
--static unsigned char  rxl_tab[] = {
--	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x08,
--	0x0a, 0x0c, 0x0f, 0x16, 0x18, 0x1a, 0x1c, 0x1f
--};
--
--#define SIZE_OF_TIMEOUT_RXL_TAB 4
--static unsigned char  timeout_rxl_tab[] = {
--	0x03, 0x05, 0x08, 0x0b
--};
--
--/* -------------------------------------------------------------------------- */
--
--static void
--card_start( struct net_device  *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	nl->timer_ticks = CHANGE_LEVEL_START_TICKS;
--	nl->state &= ~(FL_WAIT_ACK | FL_NEED_RESEND);
--	nl->state |= FL_PREV_OK;
--
--	nl->inppos = nl->outpos = 0;
--	nl->wait_frameno = 0;
--	nl->tx_frameno	 = 0;
--	nl->framelen	 = 0;
--
--	outb( *(u_char *)&nl->csr1 | PR_RES, dev->base_addr + CSR1 );
--	outb( EN_INT, dev->base_addr + CSR0 );
--}
--
--/* -------------------------------------------------------------------------- */
--
--/* Receive level auto-selection */
--
--static void
--change_level( struct net_device  *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	if( nl->delta_rxl == 0 )	/* do not auto-negotiate RxL */
--		return;
--
--	if( nl->cur_rxl_index == 0 )
--		nl->delta_rxl = 1;
--	else if( nl->cur_rxl_index == 15 )
--		nl->delta_rxl = -1;
--	else if( nl->cur_rxl_rcvd < nl->prev_rxl_rcvd )
--		nl->delta_rxl = -nl->delta_rxl;
--
--	nl->csr1.rxl = rxl_tab[ nl->cur_rxl_index += nl->delta_rxl ];
--	inb( dev->base_addr + CSR0 );	/* needs for PCI cards */
--	outb( *(u8 *)&nl->csr1, dev->base_addr + CSR1 );
--
--	nl->prev_rxl_rcvd = nl->cur_rxl_rcvd;
--	nl->cur_rxl_rcvd  = 0;
--}
--
--
--static void
--timeout_change_level( struct net_device  *dev )
--{
--	struct net_local  *nl = netdev_priv(dev);
--
--	nl->cur_rxl_index = timeout_rxl_tab[ nl->timeout_rxl ];
--	if( ++nl->timeout_rxl >= 4 )
--		nl->timeout_rxl = 0;
--
--	nl->csr1.rxl = rxl_tab[ nl->cur_rxl_index ];
--	inb( dev->base_addr + CSR0 );
--	outb( *(unsigned char *)&nl->csr1, dev->base_addr + CSR1 );
--
--	nl->prev_rxl_rcvd = nl->cur_rxl_rcvd;
--	nl->cur_rxl_rcvd  = 0;
--}
--
--/* -------------------------------------------------------------------------- */
--
--/*
-- *	Open/initialize the board. 
-- */
--
--static int
--sbni_open( struct net_device  *dev )
--{
--	struct net_local	*nl = netdev_priv(dev);
--	struct timer_list	*w  = &nl->watchdog;
--
--	/*
--	 * For double ISA adapters within "common irq" mode, we have to
--	 * determine whether primary or secondary channel is initialized,
--	 * and set the irq handler only in first case.
--	 */
--	if( dev->base_addr < 0x400 ) {		/* ISA only */
--		struct net_device  **p = sbni_cards;
--		for( ;  *p  &&  p < sbni_cards + SBNI_MAX_NUM_CARDS;  ++p )
--			if( (*p)->irq == dev->irq &&
--			    ((*p)->base_addr == dev->base_addr + 4 ||
--			     (*p)->base_addr == dev->base_addr - 4) &&
--			    (*p)->flags & IFF_UP ) {
--
--				((struct net_local *) (netdev_priv(*p)))
--					->second = dev;
--				netdev_notice(dev, "using shared irq with %s\n",
--					      (*p)->name);
--				nl->state |= FL_SECONDARY;
--				goto  handler_attached;
--			}
--	}
--
--	if( request_irq(dev->irq, sbni_interrupt, IRQF_SHARED, dev->name, dev) ) {
--		netdev_err(dev, "unable to get IRQ %d\n", dev->irq);
--		return  -EAGAIN;
--	}
--
--handler_attached:
--
--	spin_lock( &nl->lock );
--	memset( &dev->stats, 0, sizeof(struct net_device_stats) );
--	memset( &nl->in_stats, 0, sizeof(struct sbni_in_stats) );
--
--	card_start( dev );
--
--	netif_start_queue( dev );
--
--	/* set timer watchdog */
--	nl->watchdog_dev = dev;
--	timer_setup(w, sbni_watchdog, 0);
--	w->expires	= jiffies + SBNI_TIMEOUT;
--	add_timer( w );
--   
--	spin_unlock( &nl->lock );
+-	netif_stop_queue(dev);
+-	
 -	return 0;
 -}
 -
+-struct conf_data {
+-	struct frad_conf config;
+-	short            dlci[CONFIG_DLCI_MAX];
+-};
 -
--static int
--sbni_close( struct net_device  *dev )
+-static int sdla_open(struct net_device *dev)
 -{
--	struct net_local  *nl = netdev_priv(dev);
+-	struct frad_local *flp;
+-	struct dlci_local *dlp;
+-	struct conf_data  data;
+-	struct intr_info  intr;
+-	int               len, i;
+-	char              byte;
 -
--	if( nl->second  &&  nl->second->flags & IFF_UP ) {
--		netdev_notice(dev, "Secondary channel (%s) is active!\n",
--			      nl->second->name);
--		return  -EBUSY;
+-	flp = netdev_priv(dev);
+-
+-	if (!flp->initialized)
+-		return -EPERM;
+-
+-	if (!flp->configured)
+-		return -EPERM;
+-
+-	/* time to send in the configuration */
+-	len = 0;
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->dlci[i])
+-			data.dlci[len++] = abs(flp->dlci[i]);
+-	len *= 2;
+-
+-	memcpy(&data.config, &flp->config, sizeof(struct frad_conf));
+-	len += sizeof(struct frad_conf);
+-
+-	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
+-	sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, 0, 0, &data, len, NULL, NULL);
+-
+-	if (flp->type == SDLA_S508)
+-		flp->buffer = 0;
+-
+-	sdla_cmd(dev, SDLA_ENABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
+-
+-	/* let's start up the reception */
+-	memset(&intr, 0, sizeof(intr));
+-	switch(flp->type)
+-	{
+-		case SDLA_S502A:
+-			flp->timer.expires = 1;
+-			add_timer(&flp->timer);
+-			break;
+-
+-		case SDLA_S502E:
+-			flp->state |= SDLA_S502E_ENABLE;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			flp->state |= SDLA_S502E_INTACK;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			byte = 0;
+-			sdla_write(dev, SDLA_502_IRQ_INTERFACE, &byte, sizeof(byte));
+-			intr.flags = SDLA_INTR_RX | SDLA_INTR_STATUS | SDLA_INTR_MODEM;
+-			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(char) + sizeof(short), NULL, NULL);
+-			break;
+-
+-		case SDLA_S507:
+-			break;
+-
+-		case SDLA_S508:
+-			flp->state |= SDLA_S508_INTEN;
+-			outb(flp->state, dev->base_addr + SDLA_REG_CONTROL);
+-			byte = 0;
+-			sdla_write(dev, SDLA_508_IRQ_INTERFACE, &byte, sizeof(byte));
+-			intr.flags = SDLA_INTR_RX | SDLA_INTR_STATUS | SDLA_INTR_MODEM;
+-			intr.irq = dev->irq;
+-			sdla_cmd(dev, SDLA_SET_IRQ_TRIGGER, 0, 0, &intr, sizeof(struct intr_info), NULL, NULL);
+-			break;
 -	}
 -
--#ifdef CONFIG_SBNI_MULTILINE
--	if( nl->state & FL_SLAVE )
--		emancipate( dev );
+-	if (flp->config.station == FRAD_STATION_CPE)
+-	{
+-		byte = SDLA_ICS_STATUS_ENQ;
+-		sdla_cmd(dev, SDLA_ISSUE_IN_CHANNEL_SIGNAL, 0, 0, &byte, sizeof(byte), NULL, NULL);
+-	}
 -	else
--		while( nl->link )	/* it's master device! */
--			emancipate( nl->link );
--#endif
+-	{
+-		sdla_cmd(dev, SDLA_ADD_DLCI, 0, 0, data.dlci, len - sizeof(struct frad_conf), NULL, NULL);
+-		for(i=0;i<CONFIG_DLCI_MAX;i++)
+-			if (flp->dlci[i] > 0)
+-				sdla_cmd(dev, SDLA_ACTIVATE_DLCI, 0, 0, &flp->dlci[i], 2*sizeof(flp->dlci[i]), NULL, NULL);
+-	}
 -
--	spin_lock( &nl->lock );
+-	/* configure any specific DLCI settings */
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->dlci[i])
+-		{
+-			dlp = netdev_priv(flp->master[i]);
+-			if (dlp->configured)
+-				sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, abs(flp->dlci[i]), 0, &dlp->config, sizeof(struct dlci_conf), NULL, NULL);
+-		}
 -
--	nl->second = NULL;
--	drop_xmit_queue( dev );	
--	netif_stop_queue( dev );
--   
--	del_timer( &nl->watchdog );
--
--	outb( 0, dev->base_addr + CSR0 );
--
--	if( !(nl->state & FL_SECONDARY) )
--		free_irq( dev->irq, dev );
--	nl->state &= FL_SECONDARY;
--
--	spin_unlock( &nl->lock );
+-	netif_start_queue(dev);
+-	
 -	return 0;
 -}
 -
--
--/*
--	Valid combinations in CSR0 (for probing):
--
--	VALID_DECODER	0000,0011,1011,1010
--
--				    	; 0   ; -
--				TR_REQ	; 1   ; +
--			TR_RDY	    	; 2   ; -
--			TR_RDY	TR_REQ	; 3   ; +
--		BU_EMP		    	; 4   ; +
--		BU_EMP	     	TR_REQ	; 5   ; +
--		BU_EMP	TR_RDY	    	; 6   ; -
--		BU_EMP	TR_RDY	TR_REQ	; 7   ; +
--	RC_RDY 		     		; 8   ; +
--	RC_RDY			TR_REQ	; 9   ; +
--	RC_RDY		TR_RDY		; 10  ; -
--	RC_RDY		TR_RDY	TR_REQ	; 11  ; -
--	RC_RDY	BU_EMP			; 12  ; -
--	RC_RDY	BU_EMP		TR_REQ	; 13  ; -
--	RC_RDY	BU_EMP	TR_RDY		; 14  ; -
--	RC_RDY	BU_EMP	TR_RDY	TR_REQ	; 15  ; -
--*/
--
--#define VALID_DECODER (2 + 8 + 0x10 + 0x20 + 0x80 + 0x100 + 0x200)
--
--
--static int
--sbni_card_probe( unsigned long  ioaddr )
+-static int sdla_config(struct net_device *dev, struct frad_conf __user *conf, int get)
 -{
--	unsigned char  csr0;
+-	struct frad_local *flp;
+-	struct conf_data  data;
+-	int               i;
+-	short             size;
 -
--	csr0 = inb( ioaddr + CSR0 );
--	if( csr0 != 0xff  &&  csr0 != 0x00 ) {
--		csr0 &= ~EN_INT;
--		if( csr0 & BU_EMP )
--			csr0 |= EN_INT;
--      
--		if( VALID_DECODER & (1 << (csr0 >> 4)) )
--			return  0;
--	}
--   
--	return  -ENODEV;
--}
+-	if (dev->type == 0xFFFF)
+-		return -EUNATCH;
 -
--/* -------------------------------------------------------------------------- */
+-	flp = netdev_priv(dev);
 -
--static int
--sbni_ioctl( struct net_device  *dev,  struct ifreq  *ifr,  int  cmd )
--{
--	struct net_local  *nl = netdev_priv(dev);
--	struct sbni_flags  flags;
--	int  error = 0;
+-	if (!get)
+-	{
+-		if (netif_running(dev))
+-			return -EBUSY;
 -
--#ifdef CONFIG_SBNI_MULTILINE
--	struct net_device  *slave_dev;
--	char  slave_name[ 8 ];
--#endif
--  
--	switch( cmd ) {
--	case  SIOCDEVGETINSTATS :
--		if (copy_to_user( ifr->ifr_data, &nl->in_stats,
--					sizeof(struct sbni_in_stats) ))
--			error = -EFAULT;
--		break;
--
--	case  SIOCDEVRESINSTATS :
--		if (!capable(CAP_NET_ADMIN))
--			return  -EPERM;
--		memset( &nl->in_stats, 0, sizeof(struct sbni_in_stats) );
--		break;
--
--	case  SIOCDEVGHWSTATE :
--		flags.mac_addr	= *(u32 *)(dev->dev_addr + 3);
--		flags.rate	= nl->csr1.rate;
--		flags.slow_mode	= (nl->state & FL_SLOW_MODE) != 0;
--		flags.rxl	= nl->cur_rxl_index;
--		flags.fixed_rxl	= nl->delta_rxl == 0;
--
--		if (copy_to_user( ifr->ifr_data, &flags, sizeof flags ))
--			error = -EFAULT;
--		break;
--
--	case  SIOCDEVSHWSTATE :
--		if (!capable(CAP_NET_ADMIN))
--			return  -EPERM;
--
--		spin_lock( &nl->lock );
--		flags = *(struct sbni_flags*) &ifr->ifr_ifru;
--		if( flags.fixed_rxl )
--			nl->delta_rxl = 0,
--			nl->cur_rxl_index = flags.rxl;
--		else
--			nl->delta_rxl = DEF_RXL_DELTA,
--			nl->cur_rxl_index = DEF_RXL;
--
--		nl->csr1.rxl = rxl_tab[ nl->cur_rxl_index ];
--		nl->csr1.rate = flags.rate;
--		outb( *(u8 *)&nl->csr1 | PR_RES, dev->base_addr + CSR1 );
--		spin_unlock( &nl->lock );
--		break;
--
--#ifdef CONFIG_SBNI_MULTILINE
--
--	case  SIOCDEVENSLAVE :
--		if (!capable(CAP_NET_ADMIN))
--			return  -EPERM;
--
--		if (copy_from_user( slave_name, ifr->ifr_data, sizeof slave_name ))
+-		if(copy_from_user(&data.config, conf, sizeof(struct frad_conf)))
 -			return -EFAULT;
--		slave_dev = dev_get_by_name(&init_net, slave_name );
--		if( !slave_dev  ||  !(slave_dev->flags & IFF_UP) ) {
--			netdev_err(dev, "trying to enslave non-active device %s\n",
--				   slave_name);
--			if (slave_dev)
--				dev_put(slave_dev);
--			return  -EPERM;
+-
+-		if (data.config.station & ~FRAD_STATION_NODE)
+-			return -EINVAL;
+-
+-		if (data.config.flags & ~FRAD_VALID_FLAGS)
+-			return -EINVAL;
+-
+-		if ((data.config.kbaud < 0) || 
+-			 ((data.config.kbaud > 128) && (flp->type != SDLA_S508)))
+-			return -EINVAL;
+-
+-		if (data.config.clocking & ~(FRAD_CLOCK_INT | SDLA_S508_PORT_RS232))
+-			return -EINVAL;
+-
+-		if ((data.config.mtu < 0) || (data.config.mtu > SDLA_MAX_MTU))
+-			return -EINVAL;
+-
+-		if ((data.config.T391 < 5) || (data.config.T391 > 30))
+-			return -EINVAL;
+-
+-		if ((data.config.T392 < 5) || (data.config.T392 > 30))
+-			return -EINVAL;
+-
+-		if ((data.config.N391 < 1) || (data.config.N391 > 255))
+-			return -EINVAL;
+-
+-		if ((data.config.N392 < 1) || (data.config.N392 > 10))
+-			return -EINVAL;
+-
+-		if ((data.config.N393 < 1) || (data.config.N393 > 10))
+-			return -EINVAL;
+-
+-		memcpy(&flp->config, &data.config, sizeof(struct frad_conf));
+-		flp->config.flags |= SDLA_DIRECT_RECV;
+-
+-		if (flp->type == SDLA_S508)
+-			flp->config.flags |= SDLA_TX70_RX30;
+-
+-		if (dev->mtu != flp->config.mtu)
+-		{
+-			/* this is required to change the MTU */
+-			dev->mtu = flp->config.mtu;
+-			for(i=0;i<CONFIG_DLCI_MAX;i++)
+-				if (flp->master[i])
+-					flp->master[i]->mtu = flp->config.mtu;
 -		}
 -
--		return  enslave( dev, slave_dev );
+-		flp->config.mtu += sizeof(struct frhdr);
 -
--	case  SIOCDEVEMANSIPATE :
--		if (!capable(CAP_NET_ADMIN))
--			return  -EPERM;
+-		/* off to the races! */
+-		if (!flp->configured)
+-			sdla_start(dev);
 -
--		return  emancipate( dev );
+-		flp->configured = 1;
+-	}
+-	else
+-	{
+-		/* no sense reading if the CPU isn't started */
+-		if (netif_running(dev))
+-		{
+-			size = sizeof(data);
+-			if (sdla_cmd(dev, SDLA_READ_DLCI_CONFIGURATION, 0, 0, NULL, 0, &data, &size) != SDLA_RET_OK)
+-				return -EIO;
+-		}
+-		else
+-			if (flp->configured)
+-				memcpy(&data.config, &flp->config, sizeof(struct frad_conf));
+-			else
+-				memset(&data.config, 0, sizeof(struct frad_conf));
 -
--#endif	/* CONFIG_SBNI_MULTILINE */
--
--	default :
--		return  -EOPNOTSUPP;
+-		memcpy(&flp->config, &data.config, sizeof(struct frad_conf));
+-		data.config.flags &= FRAD_VALID_FLAGS;
+-		data.config.mtu -= data.config.mtu > sizeof(struct frhdr) ? sizeof(struct frhdr) : data.config.mtu;
+-		return copy_to_user(conf, &data.config, sizeof(struct frad_conf))?-EFAULT:0;
 -	}
 -
--	return  error;
+-	return 0;
 -}
 -
--
--#ifdef CONFIG_SBNI_MULTILINE
--
--static int
--enslave( struct net_device  *dev,  struct net_device  *slave_dev )
+-static int sdla_xfer(struct net_device *dev, struct sdla_mem __user *info, int read)
 -{
--	struct net_local  *nl  = netdev_priv(dev);
--	struct net_local  *snl = netdev_priv(slave_dev);
+-	struct sdla_mem mem;
+-	char	*temp;
 -
--	if( nl->state & FL_SLAVE )	/* This isn't master or free device */
--		return  -EBUSY;
--
--	if( snl->state & FL_SLAVE )	/* That was already enslaved */
--		return  -EBUSY;
--
--	spin_lock( &nl->lock );
--	spin_lock( &snl->lock );
--
--	/* append to list */
--	snl->link = nl->link;
--	nl->link  = slave_dev;
--	snl->master = dev;
--	snl->state |= FL_SLAVE;
--
--	/* Summary statistics of MultiLine operation will be stored
--	   in master's counters */
--	memset( &slave_dev->stats, 0, sizeof(struct net_device_stats) );
--	netif_stop_queue( slave_dev );
--	netif_wake_queue( dev );	/* Now we are able to transmit */
--
--	spin_unlock( &snl->lock );
--	spin_unlock( &nl->lock );
--	netdev_notice(dev, "slave device (%s) attached\n", slave_dev->name);
--	return  0;
+-	if(copy_from_user(&mem, info, sizeof(mem)))
+-		return -EFAULT;
+-		
+-	if (read)
+-	{	
+-		temp = kzalloc(mem.len, GFP_KERNEL);
+-		if (!temp)
+-			return -ENOMEM;
+-		sdla_read(dev, mem.addr, temp, mem.len);
+-		if(copy_to_user(mem.data, temp, mem.len))
+-		{
+-			kfree(temp);
+-			return -EFAULT;
+-		}
+-		kfree(temp);
+-	}
+-	else
+-	{
+-		temp = memdup_user(mem.data, mem.len);
+-		if (IS_ERR(temp))
+-			return PTR_ERR(temp);
+-		sdla_write(dev, mem.addr, temp, mem.len);
+-		kfree(temp);
+-	}
+-	return 0;
 -}
 -
--
--static int
--emancipate( struct net_device  *dev )
+-static int sdla_reconfig(struct net_device *dev)
 -{
--	struct net_local   *snl = netdev_priv(dev);
--	struct net_device  *p   = snl->master;
--	struct net_local   *nl  = netdev_priv(p);
+-	struct frad_local *flp;
+-	struct conf_data  data;
+-	int               i, len;
 -
--	if( !(snl->state & FL_SLAVE) )
--		return  -EINVAL;
+-	flp = netdev_priv(dev);
 -
--	spin_lock( &nl->lock );
--	spin_lock( &snl->lock );
--	drop_xmit_queue( dev );
+-	len = 0;
+-	for(i=0;i<CONFIG_DLCI_MAX;i++)
+-		if (flp->dlci[i])
+-			data.dlci[len++] = flp->dlci[i];
+-	len *= 2;
 -
--	/* exclude from list */
--	for(;;) {	/* must be in list */
--		struct net_local  *t = netdev_priv(p);
--		if( t->link == dev ) {
--			t->link = snl->link;
+-	memcpy(&data, &flp->config, sizeof(struct frad_conf));
+-	len += sizeof(struct frad_conf);
+-
+-	sdla_cmd(dev, SDLA_DISABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
+-	sdla_cmd(dev, SDLA_SET_DLCI_CONFIGURATION, 0, 0, &data, len, NULL, NULL);
+-	sdla_cmd(dev, SDLA_ENABLE_COMMUNICATIONS, 0, 0, NULL, 0, NULL, NULL);
+-
+-	return 0;
+-}
+-
+-static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+-{
+-	struct frad_local *flp;
+-
+-	if(!capable(CAP_NET_ADMIN))
+-		return -EPERM;
+-		
+-	flp = netdev_priv(dev);
+-
+-	if (!flp->initialized)
+-		return -EINVAL;
+-
+-	switch (cmd)
+-	{
+-		case FRAD_GET_CONF:
+-		case FRAD_SET_CONF:
+-			return sdla_config(dev, ifr->ifr_data, cmd == FRAD_GET_CONF);
+-
+-		case SDLA_IDENTIFY:
+-			ifr->ifr_flags = flp->type;
 -			break;
+-
+-		case SDLA_CPUSPEED:
+-			return sdla_cpuspeed(dev, ifr);
+-
+-/* ==========================================================
+-NOTE:  This is rather a useless action right now, as the
+-       current driver does not support protocols other than
+-       FR.  However, Sangoma has modules for a number of
+-       other protocols in the works.
+-============================================================*/
+-		case SDLA_PROTOCOL:
+-			if (flp->configured)
+-				return -EALREADY;
+-
+-			switch (ifr->ifr_flags)
+-			{
+-				case ARPHRD_FRAD:
+-					dev->type = ifr->ifr_flags;
+-					break;
+-				default:
+-					return -ENOPROTOOPT;
+-			}
+-			break;
+-
+-		case SDLA_CLEARMEM:
+-			sdla_clear(dev);
+-			break;
+-
+-		case SDLA_WRITEMEM:
+-		case SDLA_READMEM:
+-			if(!capable(CAP_SYS_RAWIO))
+-				return -EPERM;
+-			return sdla_xfer(dev, ifr->ifr_data, cmd == SDLA_READMEM);
+-
+-		case SDLA_START:
+-			sdla_start(dev);
+-			break;
+-
+-		case SDLA_STOP:
+-			sdla_stop(dev);
+-			break;
+-
+-		default:
+-			return -EOPNOTSUPP;
+-	}
+-	return 0;
+-}
+-
+-static int sdla_change_mtu(struct net_device *dev, int new_mtu)
+-{
+-	if (netif_running(dev))
+-		return -EBUSY;
+-
+-	/* for now, you can't change the MTU! */
+-	return -EOPNOTSUPP;
+-}
+-
+-static int sdla_set_config(struct net_device *dev, struct ifmap *map)
+-{
+-	struct frad_local *flp;
+-	int               i;
+-	char              byte;
+-	unsigned base;
+-	int err = -EINVAL;
+-
+-	flp = netdev_priv(dev);
+-
+-	if (flp->initialized)
+-		return -EINVAL;
+-
+-	for(i=0; i < ARRAY_SIZE(valid_port); i++)
+-		if (valid_port[i] == map->base_addr)
+-			break;   
+-
+-	if (i == ARRAY_SIZE(valid_port))
+-		return -EINVAL;
+-
+-	if (!request_region(map->base_addr, SDLA_IO_EXTENTS, dev->name)){
+-		pr_warn("io-port 0x%04lx in use\n", dev->base_addr);
+-		return -EINVAL;
+-	}
+-	base = map->base_addr;
+-
+-	/* test for card types, S502A, S502E, S507, S508                 */
+-	/* these tests shut down the card completely, so clear the state */
+-	flp->type = SDLA_UNKNOWN;
+-	flp->state = 0;
+-   
+-	for(i=1;i<SDLA_IO_EXTENTS;i++)
+-		if (inb(base + i) != 0xFF)
+-			break;
+-
+-	if (i == SDLA_IO_EXTENTS) {   
+-		outb(SDLA_HALT, base + SDLA_REG_Z80_CONTROL);
+-		if ((inb(base + SDLA_S502_STS) & 0x0F) == 0x08) {
+-			outb(SDLA_S502E_INTACK, base + SDLA_REG_CONTROL);
+-			if ((inb(base + SDLA_S502_STS) & 0x0F) == 0x0C) {
+-				outb(SDLA_HALT, base + SDLA_REG_CONTROL);
+-				flp->type = SDLA_S502E;
+-				goto got_type;
+-			}
 -		}
--		p = t->link;
 -	}
 -
--	snl->link = NULL;
--	snl->master = dev;
--	snl->state &= ~FL_SLAVE;
+-	for(byte=inb(base),i=0;i<SDLA_IO_EXTENTS;i++)
+-		if (inb(base + i) != byte)
+-			break;
 -
--	netif_start_queue( dev );
+-	if (i == SDLA_IO_EXTENTS) {
+-		outb(SDLA_HALT, base + SDLA_REG_CONTROL);
+-		if ((inb(base + SDLA_S502_STS) & 0x7E) == 0x30) {
+-			outb(SDLA_S507_ENABLE, base + SDLA_REG_CONTROL);
+-			if ((inb(base + SDLA_S502_STS) & 0x7E) == 0x32) {
+-				outb(SDLA_HALT, base + SDLA_REG_CONTROL);
+-				flp->type = SDLA_S507;
+-				goto got_type;
+-			}
+-		}
+-	}
 -
--	spin_unlock( &snl->lock );
--	spin_unlock( &nl->lock );
+-	outb(SDLA_HALT, base + SDLA_REG_CONTROL);
+-	if ((inb(base + SDLA_S508_STS) & 0x3F) == 0x00) {
+-		outb(SDLA_S508_INTEN, base + SDLA_REG_CONTROL);
+-		if ((inb(base + SDLA_S508_STS) & 0x3F) == 0x10) {
+-			outb(SDLA_HALT, base + SDLA_REG_CONTROL);
+-			flp->type = SDLA_S508;
+-			goto got_type;
+-		}
+-	}
 -
--	dev_put( dev );
--	return  0;
+-	outb(SDLA_S502A_HALT, base + SDLA_REG_CONTROL);
+-	if (inb(base + SDLA_S502_STS) == 0x40) {
+-		outb(SDLA_S502A_START, base + SDLA_REG_CONTROL);
+-		if (inb(base + SDLA_S502_STS) == 0x40) {
+-			outb(SDLA_S502A_INTEN, base + SDLA_REG_CONTROL);
+-			if (inb(base + SDLA_S502_STS) == 0x44) {
+-				outb(SDLA_S502A_START, base + SDLA_REG_CONTROL);
+-				flp->type = SDLA_S502A;
+-				goto got_type;
+-			}
+-		}
+-	}
+-
+-	netdev_notice(dev, "Unknown card type\n");
+-	err = -ENODEV;
+-	goto fail;
+-
+-got_type:
+-	switch(base) {
+-		case 0x270:
+-		case 0x280:
+-		case 0x380: 
+-		case 0x390:
+-			if (flp->type != SDLA_S508 && flp->type != SDLA_S507)
+-				goto fail;
+-	}
+-
+-	switch (map->irq) {
+-		case 2:
+-			if (flp->type != SDLA_S502E)
+-				goto fail;
+-			break;
+-
+-		case 10:
+-		case 11:
+-		case 12:
+-		case 15:
+-		case 4:
+-			if (flp->type != SDLA_S508 && flp->type != SDLA_S507)
+-				goto fail;
+-			break;
+-		case 3:
+-		case 5:
+-		case 7:
+-			if (flp->type == SDLA_S502A)
+-				goto fail;
+-			break;
+-
+-		default:
+-			goto fail;
+-	}
+-
+-	err = -EAGAIN;
+-	if (request_irq(dev->irq, sdla_isr, 0, dev->name, dev)) 
+-		goto fail;
+-
+-	if (flp->type == SDLA_S507) {
+-		switch(dev->irq) {
+-			case 3:
+-				flp->state = SDLA_S507_IRQ3;
+-				break;
+-			case 4:
+-				flp->state = SDLA_S507_IRQ4;
+-				break;
+-			case 5:
+-				flp->state = SDLA_S507_IRQ5;
+-				break;
+-			case 7:
+-				flp->state = SDLA_S507_IRQ7;
+-				break;
+-			case 10:
+-				flp->state = SDLA_S507_IRQ10;
+-				break;
+-			case 11:
+-				flp->state = SDLA_S507_IRQ11;
+-				break;
+-			case 12:
+-				flp->state = SDLA_S507_IRQ12;
+-				break;
+-			case 15:
+-				flp->state = SDLA_S507_IRQ15;
+-				break;
+-		}
+-	}
+-
+-	for(i=0; i < ARRAY_SIZE(valid_mem); i++)
+-		if (valid_mem[i] == map->mem_start)
+-			break;   
+-
+-	err = -EINVAL;
+-	if (i == ARRAY_SIZE(valid_mem))
+-		goto fail2;
+-
+-	if (flp->type == SDLA_S502A && (map->mem_start & 0xF000) >> 12 == 0x0E)
+-		goto fail2;
+-
+-	if (flp->type != SDLA_S507 && map->mem_start >> 16 == 0x0B)
+-		goto fail2;
+-
+-	if (flp->type == SDLA_S507 && map->mem_start >> 16 == 0x0D)
+-		goto fail2;
+-
+-	byte = flp->type != SDLA_S508 ? SDLA_8K_WINDOW : 0;
+-	byte |= (map->mem_start & 0xF000) >> (12 + (flp->type == SDLA_S508 ? 1 : 0));
+-	switch(flp->type) {
+-		case SDLA_S502A:
+-		case SDLA_S502E:
+-			switch (map->mem_start >> 16) {
+-				case 0x0A:
+-					byte |= SDLA_S502_SEG_A;
+-					break;
+-				case 0x0C:
+-					byte |= SDLA_S502_SEG_C;
+-					break;
+-				case 0x0D:
+-					byte |= SDLA_S502_SEG_D;
+-					break;
+-				case 0x0E:
+-					byte |= SDLA_S502_SEG_E;
+-					break;
+-			}
+-			break;
+-		case SDLA_S507:
+-			switch (map->mem_start >> 16) {
+-				case 0x0A:
+-					byte |= SDLA_S507_SEG_A;
+-					break;
+-				case 0x0B:
+-					byte |= SDLA_S507_SEG_B;
+-					break;
+-				case 0x0C:
+-					byte |= SDLA_S507_SEG_C;
+-					break;
+-				case 0x0E:
+-					byte |= SDLA_S507_SEG_E;
+-					break;
+-			}
+-			break;
+-		case SDLA_S508:
+-			switch (map->mem_start >> 16) {
+-				case 0x0A:
+-					byte |= SDLA_S508_SEG_A;
+-					break;
+-				case 0x0C:
+-					byte |= SDLA_S508_SEG_C;
+-					break;
+-				case 0x0D:
+-					byte |= SDLA_S508_SEG_D;
+-					break;
+-				case 0x0E:
+-					byte |= SDLA_S508_SEG_E;
+-					break;
+-			}
+-			break;
+-	}
+-
+-	/* set the memory bits, and enable access */
+-	outb(byte, base + SDLA_REG_PC_WINDOW);
+-
+-	switch(flp->type)
+-	{
+-		case SDLA_S502E:
+-			flp->state = SDLA_S502E_ENABLE;
+-			break;
+-		case SDLA_S507:
+-			flp->state |= SDLA_MEMEN;
+-			break;
+-		case SDLA_S508:
+-			flp->state = SDLA_MEMEN;
+-			break;
+-	}
+-	outb(flp->state, base + SDLA_REG_CONTROL);
+-
+-	dev->irq = map->irq;
+-	dev->base_addr = base;
+-	dev->mem_start = map->mem_start;
+-	dev->mem_end = dev->mem_start + 0x2000;
+-	flp->initialized = 1;
+-	return 0;
+-
+-fail2:
+-	free_irq(map->irq, dev);
+-fail:
+-	release_region(base, SDLA_IO_EXTENTS);
+-	return err;
 -}
+- 
+-static const struct net_device_ops sdla_netdev_ops = {
+-	.ndo_open	= sdla_open,
+-	.ndo_stop	= sdla_close,
+-	.ndo_do_ioctl	= sdla_ioctl,
+-	.ndo_set_config	= sdla_set_config,
+-	.ndo_start_xmit	= sdla_transmit,
+-	.ndo_change_mtu	= sdla_change_mtu,
+-};
 -
--#endif
--
--static void
--set_multicast_list( struct net_device  *dev )
+-static void setup_sdla(struct net_device *dev)
 -{
--	return;		/* sbni always operate in promiscuos mode */
+-	struct frad_local *flp = netdev_priv(dev);
+-
+-	netdev_boot_setup_check(dev);
+-
+-	dev->netdev_ops		= &sdla_netdev_ops;
+-	dev->flags		= 0;
+-	dev->type		= 0xFFFF;
+-	dev->hard_header_len	= 0;
+-	dev->addr_len		= 0;
+-	dev->mtu		= SDLA_MAX_MTU;
+-
+-	flp->activate		= sdla_activate;
+-	flp->deactivate		= sdla_deactivate;
+-	flp->assoc		= sdla_assoc;
+-	flp->deassoc		= sdla_deassoc;
+-	flp->dlci_conf		= sdla_dlci_conf;
+-	flp->dev		= dev;
+-
+-	timer_setup(&flp->timer, sdla_poll, 0);
+-	flp->timer.expires	= 1;
 -}
 -
+-static struct net_device *sdla;
 -
--#ifdef MODULE
--module_param_hw_array(io, int, ioport, NULL, 0);
--module_param_hw_array(irq, int, irq, NULL, 0);
--module_param_array(baud, int, NULL, 0);
--module_param_array(rxl, int, NULL, 0);
--module_param_array(mac, int, NULL, 0);
--module_param(skip_pci_probe, bool, 0);
+-static int __init init_sdla(void)
+-{
+-	int err;
+-
+-	printk("%s.\n", version);
+-
+-	sdla = alloc_netdev(sizeof(struct frad_local), "sdla0",
+-			    NET_NAME_UNKNOWN, setup_sdla);
+-	if (!sdla) 
+-		return -ENOMEM;
+-
+-	err = register_netdev(sdla);
+-	if (err) 
+-		free_netdev(sdla);
+-
+-	return err;
+-}
+-
+-static void __exit exit_sdla(void)
+-{
+-	struct frad_local *flp = netdev_priv(sdla);
+-
+-	unregister_netdev(sdla);
+-	if (flp->initialized) {
+-		free_irq(sdla->irq, sdla);
+-		release_region(sdla->base_addr, SDLA_IO_EXTENTS);
+-	}
+-	del_timer_sync(&flp->timer);
+-	free_netdev(sdla);
+-}
 -
 -MODULE_LICENSE("GPL");
 -
+-module_init(init_sdla);
+-module_exit(exit_sdla);
+diff --git a/include/Kbuild b/include/Kbuild
+index ffba79483cc5..64ab3aac7379 100644
+--- a/include/Kbuild
++++ b/include/Kbuild
+@@ -205,7 +205,6 @@ header-test-			+= linux/i3c/master.h
+ header-test-			+= linux/i8042.h
+ header-test-			+= linux/ide.h
+ header-test-			+= linux/idle_inject.h
+-header-test-			+= linux/if_frad.h
+ header-test-			+= linux/if_rmnet.h
+ header-test-			+= linux/if_tap.h
+ header-test-			+= linux/iio/accel/kxcjk_1013.h
+diff --git a/include/linux/if_frad.h b/include/linux/if_frad.h
+deleted file mode 100644
+index 52224de798aa..000000000000
+--- a/include/linux/if_frad.h
++++ /dev/null
+@@ -1,92 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- * DLCI/FRAD	Definitions for Frame Relay Access Devices.  DLCI devices are
+- *		created for each DLCI associated with a FRAD.  The FRAD driver
+- *		is not truly a network device, but the lower level device
+- *		handler.  This allows other FRAD manufacturers to use the DLCI
+- *		code, including its RFC1490 encapsulation alongside the current
+- *		implementation for the Sangoma cards.
+- *
+- * Version:	@(#)if_ifrad.h	0.15	31 Mar 96
+- *
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
+- *
+- * Changes:
+- *		0.15	Mike McLagan	changed structure defs (packed)
+- *					re-arranged flags
+- *					added DLCI_RET vars
+- */
+-#ifndef _FRAD_H_
+-#define _FRAD_H_
 -
--int __init init_module( void )
+-#include <uapi/linux/if_frad.h>
+-
+-
+-#if defined(CONFIG_DLCI) || defined(CONFIG_DLCI_MODULE)
+-
+-/* these are the fields of an RFC 1490 header */
+-struct frhdr
 -{
--	struct net_device  *dev;
--	int err;
+-   unsigned char  control;
 -
--	while( num < SBNI_MAX_NUM_CARDS ) {
--		dev = alloc_netdev(sizeof(struct net_local), "sbni%d",
--				   NET_NAME_UNKNOWN, sbni_devsetup);
--		if( !dev)
--			break;
+-   /* for IP packets, this can be the NLPID */
+-   unsigned char  pad;
 -
--		sprintf( dev->name, "sbni%d", num );
+-   unsigned char  NLPID;
+-   unsigned char  OUI[3];
+-   __be16 PID;
 -
--		err = sbni_init(dev);
--		if (err) {
--			free_netdev(dev);
--			break;
--		}
+-#define IP_NLPID pad 
+-} __packed;
 -
--		if( register_netdev( dev ) ) {
--			release_region( dev->base_addr, SBNI_IO_EXTENT );
--			free_netdev( dev );
--			break;
--		}
--	}
+-/* see RFC 1490 for the definition of the following */
+-#define FRAD_I_UI		0x03
 -
--	return  *sbni_cards  ?  0  :  -ENODEV;
--}
+-#define FRAD_P_PADDING		0x00
+-#define FRAD_P_Q933		0x08
+-#define FRAD_P_SNAP		0x80
+-#define FRAD_P_CLNP		0x81
+-#define FRAD_P_IP		0xCC
 -
--void
--cleanup_module(void)
+-struct dlci_local
 -{
--	int i;
+-   struct net_device      *master;
+-   struct net_device      *slave;
+-   struct dlci_conf       config;
+-   int                    configured;
+-   struct list_head	  list;
 -
--	for (i = 0;  i < SBNI_MAX_NUM_CARDS;  ++i) {
--		struct net_device *dev = sbni_cards[i];
--		if (dev != NULL) {
--			unregister_netdev(dev);
--			release_region(dev->base_addr, SBNI_IO_EXTENT);
--			free_netdev(dev);
--		}
--	}
--}
--
--#else	/* MODULE */
--
--static int __init
--sbni_setup( char  *p )
--{
--	int  n, parm;
--
--	if( *p++ != '(' )
--		goto  bad_param;
--
--	for( n = 0, parm = 0;  *p  &&  n < 8; ) {
--		(*dest[ parm ])[ n ] = simple_strtol( p, &p, 0 );
--		if( !*p  ||  *p == ')' )
--			return 1;
--		if( *p == ';' )
--			++p, ++n, parm = 0;
--		else if( *p++ != ',' )
--			break;
--		else
--			if( ++parm >= 5 )
--				break;
--	}
--bad_param:
--	pr_err("Error in sbni kernel parameter!\n");
--	return 0;
--}
--
--__setup( "sbni=", sbni_setup );
--
--#endif	/* MODULE */
--
--/* -------------------------------------------------------------------------- */
--
--static u32
--calc_crc32( u32  crc,  u8  *p,  u32  len )
--{
--	while( len-- )
--		crc = CRC32( *p++, crc );
--
--	return  crc;
--}
--
--static u32  crc32tab[] __attribute__ ((aligned(8))) = {
--	0xD202EF8D,  0xA505DF1B,  0x3C0C8EA1,  0x4B0BBE37,
--	0xD56F2B94,  0xA2681B02,  0x3B614AB8,  0x4C667A2E,
--	0xDCD967BF,  0xABDE5729,  0x32D70693,  0x45D03605,
--	0xDBB4A3A6,  0xACB39330,  0x35BAC28A,  0x42BDF21C,
--	0xCFB5FFE9,  0xB8B2CF7F,  0x21BB9EC5,  0x56BCAE53,
--	0xC8D83BF0,  0xBFDF0B66,  0x26D65ADC,  0x51D16A4A,
--	0xC16E77DB,  0xB669474D,  0x2F6016F7,  0x58672661,
--	0xC603B3C2,  0xB1048354,  0x280DD2EE,  0x5F0AE278,
--	0xE96CCF45,  0x9E6BFFD3,  0x0762AE69,  0x70659EFF,
--	0xEE010B5C,  0x99063BCA,  0x000F6A70,  0x77085AE6,
--	0xE7B74777,  0x90B077E1,  0x09B9265B,  0x7EBE16CD,
--	0xE0DA836E,  0x97DDB3F8,  0x0ED4E242,  0x79D3D2D4,
--	0xF4DBDF21,  0x83DCEFB7,  0x1AD5BE0D,  0x6DD28E9B,
--	0xF3B61B38,  0x84B12BAE,  0x1DB87A14,  0x6ABF4A82,
--	0xFA005713,  0x8D076785,  0x140E363F,  0x630906A9,
--	0xFD6D930A,  0x8A6AA39C,  0x1363F226,  0x6464C2B0,
--	0xA4DEAE1D,  0xD3D99E8B,  0x4AD0CF31,  0x3DD7FFA7,
--	0xA3B36A04,  0xD4B45A92,  0x4DBD0B28,  0x3ABA3BBE,
--	0xAA05262F,  0xDD0216B9,  0x440B4703,  0x330C7795,
--	0xAD68E236,  0xDA6FD2A0,  0x4366831A,  0x3461B38C,
--	0xB969BE79,  0xCE6E8EEF,  0x5767DF55,  0x2060EFC3,
--	0xBE047A60,  0xC9034AF6,  0x500A1B4C,  0x270D2BDA,
--	0xB7B2364B,  0xC0B506DD,  0x59BC5767,  0x2EBB67F1,
--	0xB0DFF252,  0xC7D8C2C4,  0x5ED1937E,  0x29D6A3E8,
--	0x9FB08ED5,  0xE8B7BE43,  0x71BEEFF9,  0x06B9DF6F,
--	0x98DD4ACC,  0xEFDA7A5A,  0x76D32BE0,  0x01D41B76,
--	0x916B06E7,  0xE66C3671,  0x7F6567CB,  0x0862575D,
--	0x9606C2FE,  0xE101F268,  0x7808A3D2,  0x0F0F9344,
--	0x82079EB1,  0xF500AE27,  0x6C09FF9D,  0x1B0ECF0B,
--	0x856A5AA8,  0xF26D6A3E,  0x6B643B84,  0x1C630B12,
--	0x8CDC1683,  0xFBDB2615,  0x62D277AF,  0x15D54739,
--	0x8BB1D29A,  0xFCB6E20C,  0x65BFB3B6,  0x12B88320,
--	0x3FBA6CAD,  0x48BD5C3B,  0xD1B40D81,  0xA6B33D17,
--	0x38D7A8B4,  0x4FD09822,  0xD6D9C998,  0xA1DEF90E,
--	0x3161E49F,  0x4666D409,  0xDF6F85B3,  0xA868B525,
--	0x360C2086,  0x410B1010,  0xD80241AA,  0xAF05713C,
--	0x220D7CC9,  0x550A4C5F,  0xCC031DE5,  0xBB042D73,
--	0x2560B8D0,  0x52678846,  0xCB6ED9FC,  0xBC69E96A,
--	0x2CD6F4FB,  0x5BD1C46D,  0xC2D895D7,  0xB5DFA541,
--	0x2BBB30E2,  0x5CBC0074,  0xC5B551CE,  0xB2B26158,
--	0x04D44C65,  0x73D37CF3,  0xEADA2D49,  0x9DDD1DDF,
--	0x03B9887C,  0x74BEB8EA,  0xEDB7E950,  0x9AB0D9C6,
--	0x0A0FC457,  0x7D08F4C1,  0xE401A57B,  0x930695ED,
--	0x0D62004E,  0x7A6530D8,  0xE36C6162,  0x946B51F4,
--	0x19635C01,  0x6E646C97,  0xF76D3D2D,  0x806A0DBB,
--	0x1E0E9818,  0x6909A88E,  0xF000F934,  0x8707C9A2,
--	0x17B8D433,  0x60BFE4A5,  0xF9B6B51F,  0x8EB18589,
--	0x10D5102A,  0x67D220BC,  0xFEDB7106,  0x89DC4190,
--	0x49662D3D,  0x3E611DAB,  0xA7684C11,  0xD06F7C87,
--	0x4E0BE924,  0x390CD9B2,  0xA0058808,  0xD702B89E,
--	0x47BDA50F,  0x30BA9599,  0xA9B3C423,  0xDEB4F4B5,
--	0x40D06116,  0x37D75180,  0xAEDE003A,  0xD9D930AC,
--	0x54D13D59,  0x23D60DCF,  0xBADF5C75,  0xCDD86CE3,
--	0x53BCF940,  0x24BBC9D6,  0xBDB2986C,  0xCAB5A8FA,
--	0x5A0AB56B,  0x2D0D85FD,  0xB404D447,  0xC303E4D1,
--	0x5D677172,  0x2A6041E4,  0xB369105E,  0xC46E20C8,
--	0x72080DF5,  0x050F3D63,  0x9C066CD9,  0xEB015C4F,
--	0x7565C9EC,  0x0262F97A,  0x9B6BA8C0,  0xEC6C9856,
--	0x7CD385C7,  0x0BD4B551,  0x92DDE4EB,  0xE5DAD47D,
--	0x7BBE41DE,  0x0CB97148,  0x95B020F2,  0xE2B71064,
--	0x6FBF1D91,  0x18B82D07,  0x81B17CBD,  0xF6B64C2B,
--	0x68D2D988,  0x1FD5E91E,  0x86DCB8A4,  0xF1DB8832,
--	0x616495A3,  0x1663A535,  0x8F6AF48F,  0xF86DC419,
--	0x660951BA,  0x110E612C,  0x88073096,  0xFF000000
+-   /* callback function */
+-   void              (*receive)(struct sk_buff *skb, struct net_device *);
 -};
 -
-diff --git a/drivers/net/wan/sbni.h b/drivers/net/wan/sbni.h
+-struct frad_local
+-{
+-   /* devices which this FRAD is slaved to */
+-   struct net_device     *master[CONFIG_DLCI_MAX];
+-   short             dlci[CONFIG_DLCI_MAX];
+-
+-   struct frad_conf  config;
+-   int               configured;	/* has this device been configured */
+-   int               initialized;	/* mem_start, port, irq set ? */
+-
+-   /* callback functions */
+-   int               (*activate)(struct net_device *, struct net_device *);
+-   int               (*deactivate)(struct net_device *, struct net_device *);
+-   int               (*assoc)(struct net_device *, struct net_device *);
+-   int               (*deassoc)(struct net_device *, struct net_device *);
+-   int               (*dlci_conf)(struct net_device *, struct net_device *, int get);
+-
+-   /* fields that are used by the Sangoma SDLA cards */
+-   struct timer_list timer;
+-   struct net_device *dev;
+-   int               type;		/* adapter type */
+-   int               state;		/* state of the S502/8 control latch */
+-   int               buffer;		/* current buffer for S508 firmware */
+-};
+-
+-#endif /* CONFIG_DLCI || CONFIG_DLCI_MODULE */
+-
+-extern void dlci_ioctl_set(int (*hook)(unsigned int, void __user *));
+-
+-#endif
+diff --git a/include/linux/sdla.h b/include/linux/sdla.h
 deleted file mode 100644
-index 84264510a8ed..000000000000
---- a/drivers/net/wan/sbni.h
+index 00e8b3b614f0..000000000000
+--- a/include/linux/sdla.h
 +++ /dev/null
-@@ -1,147 +0,0 @@
--/* sbni.h:  definitions for a Granch SBNI12 driver, version 5.0.0
-- * Written 2001 Denis I.Timofeev (timofeev@granch.ru)
-- * This file is distributed under the GNU GPL
+@@ -1,240 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- * INET		An implementation of the TCP/IP protocol suite for the LINUX
+- *		operating system.  INET is implemented using the  BSD Socket
+- *		interface as the means of communication with the user level.
+- *
+- *		Global definitions for the Frame relay interface.
+- *
+- * Version:	@(#)if_ifrad.h	0.20	13 Apr 96
+- *
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
+- *
+- * Changes:
+- *		0.15	Mike McLagan	Structure packing
+- *
+- *		0.20	Mike McLagan	New flags for S508 buffer handling
+- */
+-#ifndef SDLA_H
+-#define SDLA_H
+-
+-#include <uapi/linux/sdla.h>
+-
+-
+-/* important Z80 window addresses */
+-#define SDLA_CONTROL_WND		0xE000
+-
+-#define SDLA_502_CMD_BUF		0xEF60
+-#define SDLA_502_RCV_BUF		0xA900
+-#define	SDLA_502_TXN_AVAIL		0xFFF1
+-#define SDLA_502_RCV_AVAIL		0xFFF2
+-#define SDLA_502_EVENT_FLAGS		0xFFF3
+-#define SDLA_502_MDM_STATUS		0xFFF4
+-#define SDLA_502_IRQ_INTERFACE		0xFFFD
+-#define SDLA_502_IRQ_PERMISSION		0xFFFE
+-#define SDLA_502_DATA_OFS		0x0010
+-
+-#define SDLA_508_CMD_BUF		0xE000
+-#define SDLA_508_TXBUF_INFO		0xF100
+-#define SDLA_508_RXBUF_INFO		0xF120
+-#define SDLA_508_EVENT_FLAGS		0xF003
+-#define SDLA_508_MDM_STATUS		0xF004
+-#define SDLA_508_IRQ_INTERFACE		0xF010
+-#define SDLA_508_IRQ_PERMISSION		0xF011
+-#define SDLA_508_TSE_OFFSET		0xF012
+-
+-/* Event flags */
+-#define SDLA_EVENT_STATUS		0x01
+-#define SDLA_EVENT_DLCI_STATUS		0x02
+-#define SDLA_EVENT_BAD_DLCI		0x04
+-#define SDLA_EVENT_LINK_DOWN		0x40
+-
+-/* IRQ Trigger flags */
+-#define SDLA_INTR_RX			0x01
+-#define SDLA_INTR_TX			0x02
+-#define SDLA_INTR_MODEM			0x04
+-#define SDLA_INTR_COMPLETE		0x08
+-#define SDLA_INTR_STATUS		0x10
+-#define SDLA_INTR_TIMER			0x20
+-
+-/* DLCI status bits */
+-#define SDLA_DLCI_DELETED		0x01
+-#define SDLA_DLCI_ACTIVE		0x02
+-#define SDLA_DLCI_WAITING		0x04
+-#define SDLA_DLCI_NEW			0x08
+-#define SDLA_DLCI_INCLUDED		0x40
+-
+-/* valid command codes */
+-#define	SDLA_INFORMATION_WRITE		0x01
+-#define	SDLA_INFORMATION_READ		0x02
+-#define SDLA_ISSUE_IN_CHANNEL_SIGNAL	0x03
+-#define	SDLA_SET_DLCI_CONFIGURATION	0x10
+-#define	SDLA_READ_DLCI_CONFIGURATION	0x11
+-#define	SDLA_DISABLE_COMMUNICATIONS	0x12
+-#define	SDLA_ENABLE_COMMUNICATIONS	0x13
+-#define	SDLA_READ_DLC_STATUS		0x14
+-#define	SDLA_READ_DLC_STATISTICS	0x15
+-#define	SDLA_FLUSH_DLC_STATISTICS	0x16
+-#define	SDLA_LIST_ACTIVE_DLCI		0x17
+-#define	SDLA_FLUSH_INFORMATION_BUFFERS	0x18
+-#define	SDLA_ADD_DLCI			0x20
+-#define	SDLA_DELETE_DLCI		0x21
+-#define	SDLA_ACTIVATE_DLCI		0x22
+-#define	SDLA_DEACTIVATE_DLCI		0x23
+-#define	SDLA_READ_MODEM_STATUS		0x30
+-#define	SDLA_SET_MODEM_STATUS		0x31
+-#define	SDLA_READ_COMMS_ERR_STATS	0x32
+-#define SDLA_FLUSH_COMMS_ERR_STATS	0x33
+-#define	SDLA_READ_CODE_VERSION		0x40
+-#define SDLA_SET_IRQ_TRIGGER		0x50
+-#define SDLA_GET_IRQ_TRIGGER		0x51
+-
+-/* In channel signal types */
+-#define SDLA_ICS_LINK_VERIFY		0x02
+-#define SDLA_ICS_STATUS_ENQ		0x03
+-
+-/* modem status flags */
+-#define SDLA_MODEM_DTR_HIGH		0x01
+-#define SDLA_MODEM_RTS_HIGH		0x02
+-#define SDLA_MODEM_DCD_HIGH		0x08
+-#define SDLA_MODEM_CTS_HIGH		0x20
+-
+-/* used for RET_MODEM interpretation */
+-#define SDLA_MODEM_DCD_LOW		0x01
+-#define SDLA_MODEM_CTS_LOW		0x02
+-
+-/* return codes */
+-#define SDLA_RET_OK			0x00
+-#define SDLA_RET_COMMUNICATIONS		0x01
+-#define SDLA_RET_CHANNEL_INACTIVE	0x02
+-#define SDLA_RET_DLCI_INACTIVE		0x03
+-#define SDLA_RET_DLCI_CONFIG		0x04
+-#define SDLA_RET_BUF_TOO_BIG		0x05
+-#define SDLA_RET_NO_DATA		0x05
+-#define SDLA_RET_BUF_OVERSIZE		0x06
+-#define SDLA_RET_CIR_OVERFLOW		0x07
+-#define SDLA_RET_NO_BUFS		0x08
+-#define SDLA_RET_TIMEOUT		0x0A
+-#define SDLA_RET_MODEM			0x10
+-#define SDLA_RET_CHANNEL_OFF		0x11
+-#define SDLA_RET_CHANNEL_ON		0x12
+-#define SDLA_RET_DLCI_STATUS		0x13
+-#define SDLA_RET_DLCI_UNKNOWN       	0x14
+-#define SDLA_RET_COMMAND_INVALID    	0x1F
+-
+-/* Configuration flags */
+-#define SDLA_DIRECT_RECV		0x0080
+-#define SDLA_TX_NO_EXCEPT		0x0020
+-#define SDLA_NO_ICF_MSGS		0x1000
+-#define SDLA_TX50_RX50			0x0000
+-#define SDLA_TX70_RX30			0x2000
+-#define SDLA_TX30_RX70			0x4000
+-
+-/* IRQ selection flags */
+-#define SDLA_IRQ_RECEIVE		0x01
+-#define SDLA_IRQ_TRANSMIT		0x02
+-#define SDLA_IRQ_MODEM_STAT		0x04
+-#define SDLA_IRQ_COMMAND		0x08
+-#define SDLA_IRQ_CHANNEL		0x10
+-#define SDLA_IRQ_TIMER			0x20
+-
+-/* definitions for PC memory mapping */
+-#define SDLA_8K_WINDOW			0x01
+-#define SDLA_S502_SEG_A			0x10
+-#define SDLA_S502_SEG_C			0x20
+-#define SDLA_S502_SEG_D			0x00
+-#define SDLA_S502_SEG_E			0x30
+-#define SDLA_S507_SEG_A			0x00
+-#define SDLA_S507_SEG_B			0x40
+-#define SDLA_S507_SEG_C			0x80
+-#define SDLA_S507_SEG_E			0xC0
+-#define SDLA_S508_SEG_A			0x00
+-#define SDLA_S508_SEG_C			0x10
+-#define SDLA_S508_SEG_D			0x08
+-#define SDLA_S508_SEG_E			0x18
+-
+-/* SDLA adapter port constants */
+-#define SDLA_IO_EXTENTS			0x04
+-	
+-#define SDLA_REG_CONTROL		0x00
+-#define SDLA_REG_PC_WINDOW		0x01	/* offset for PC window select latch */
+-#define SDLA_REG_Z80_WINDOW 		0x02	/* offset for Z80 window select latch */
+-#define SDLA_REG_Z80_CONTROL		0x03	/* offset for Z80 control latch */
+-	
+-#define SDLA_S502_STS			0x00	/* status reg for 502, 502E, 507 */
+-#define SDLA_S508_GNRL			0x00	/* general purp. reg for 508 */
+-#define SDLA_S508_STS			0x01	/* status reg for 508 */
+-#define SDLA_S508_IDR			0x02	/* ID reg for 508 */
+-	
+-/* control register flags */
+-#define SDLA_S502A_START		0x00	/* start the CPU */
+-#define SDLA_S502A_INTREQ		0x02
+-#define SDLA_S502A_INTEN		0x04
+-#define SDLA_S502A_HALT			0x08	/* halt the CPU */	
+-#define SDLA_S502A_NMI			0x10	/* issue an NMI to the CPU */
+-
+-#define SDLA_S502E_CPUEN		0x01
+-#define SDLA_S502E_ENABLE		0x02
+-#define SDLA_S502E_INTACK		0x04
+-	
+-#define SDLA_S507_ENABLE		0x01
+-#define SDLA_S507_IRQ3			0x00
+-#define SDLA_S507_IRQ4			0x20
+-#define SDLA_S507_IRQ5			0x40
+-#define SDLA_S507_IRQ7			0x60
+-#define SDLA_S507_IRQ10			0x80
+-#define SDLA_S507_IRQ11			0xA0
+-#define SDLA_S507_IRQ12			0xC0
+-#define SDLA_S507_IRQ15			0xE0
+-	
+-#define SDLA_HALT			0x00
+-#define SDLA_CPUEN			0x02
+-#define SDLA_MEMEN			0x04
+-#define SDLA_S507_EPROMWR		0x08
+-#define SDLA_S507_EPROMCLK		0x10
+-#define SDLA_S508_INTRQ			0x08
+-#define SDLA_S508_INTEN			0x10
+-
+-struct sdla_cmd {
+-   char  opp_flag;
+-   char  cmd;
+-   short length;
+-   char  retval;
+-   short dlci;
+-   char  flags;
+-   short rxlost_int;
+-   long  rxlost_app;
+-   char  reserve[2];
+-   char  data[SDLA_MAX_DATA];	/* transfer data buffer */
+-} __attribute__((packed));
+-
+-struct intr_info {
+-   char  flags;
+-   short txlen;
+-   char  irq;
+-   char  flags2;
+-   short timeout;
+-} __attribute__((packed));
+-
+-/* found in the 508's control window at RXBUF_INFO */
+-struct buf_info {
+-   unsigned short rse_num;
+-   unsigned long  rse_base;
+-   unsigned long  rse_next;
+-   unsigned long  buf_base;
+-   unsigned short reserved;
+-   unsigned long  buf_top;
+-} __attribute__((packed));
+-
+-/* structure pointed to by rse_base in RXBUF_INFO struct */
+-struct buf_entry {
+-   char  opp_flag;
+-   short length;
+-   short dlci;
+-   char  flags;
+-   short timestamp;
+-   short reserved[2];
+-   long  buf_addr;
+-} __attribute__((packed));
+-
+-#endif
+diff --git a/include/uapi/linux/if_frad.h b/include/uapi/linux/if_frad.h
+deleted file mode 100644
+index 3c6ee85f6262..000000000000
+--- a/include/uapi/linux/if_frad.h
++++ /dev/null
+@@ -1,123 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+-/*
+- * DLCI/FRAD	Definitions for Frame Relay Access Devices.  DLCI devices are
+- *		created for each DLCI associated with a FRAD.  The FRAD driver
+- *		is not truly a network device, but the lower level device
+- *		handler.  This allows other FRAD manufacturers to use the DLCI
+- *		code, including its RFC1490 encapsulation alongside the current
+- *		implementation for the Sangoma cards.
+- *
+- * Version:	@(#)if_ifrad.h	0.15	31 Mar 96
+- *
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
+- *
+- * Changes:
+- *		0.15	Mike McLagan	changed structure defs (packed)
+- *					re-arranged flags
+- *					added DLCI_RET vars
+- *
+- *		This program is free software; you can redistribute it and/or
+- *		modify it under the terms of the GNU General Public License
+- *		as published by the Free Software Foundation; either version
+- *		2 of the License, or (at your option) any later version.
 - */
 -
--#ifndef SBNI_H
--#define SBNI_H
+-#ifndef _UAPI_FRAD_H_
+-#define _UAPI_FRAD_H_
 -
--#ifdef SBNI_DEBUG
--#define DP( A ) A
--#else
--#define DP( A )
--#endif
+-#include <linux/if.h>
 -
+-/* Structures and constants associated with the DLCI device driver */
 -
--/* We don't have official vendor id yet... */
--#define SBNI_PCI_VENDOR 	0x55 
--#define SBNI_PCI_DEVICE 	0x9f
--
--#define ISA_MODE 0x00
--#define PCI_MODE 0x01
--
--#define	SBNI_IO_EXTENT	4
--
--enum sbni_reg {
--	CSR0 = 0,
--	CSR1 = 1,
--	DAT  = 2
+-struct dlci_add
+-{
+-   char  devname[IFNAMSIZ];
+-   short dlci;
 -};
 -
--/* CSR0 mapping */
--enum {
--	BU_EMP = 0x02,
--	RC_CHK = 0x04,
--	CT_ZER = 0x08,
--	TR_REQ = 0x10,
--	TR_RDY = 0x20,
--	EN_INT = 0x40,
--	RC_RDY = 0x80
+-#define DLCI_GET_CONF	(SIOCDEVPRIVATE + 2)
+-#define DLCI_SET_CONF	(SIOCDEVPRIVATE + 3)
+-
+-/* 
+- * These are related to the Sangoma SDLA and should remain in order. 
+- * Code within the SDLA module is based on the specifics of this 
+- * structure.  Change at your own peril.
+- */
+-struct dlci_conf {
+-   short flags;
+-   short CIR_fwd;
+-   short Bc_fwd;
+-   short Be_fwd;
+-   short CIR_bwd;
+-   short Bc_bwd;
+-   short Be_bwd; 
+-
+-/* these are part of the status read */
+-   short Tc_fwd;
+-   short Tc_bwd;
+-   short Tf_max;
+-   short Tb_max;
+-
+-/* add any new fields here above is a mirror of sdla_dlci_conf */
 -};
 -
+-#define DLCI_GET_SLAVE	(SIOCDEVPRIVATE + 4)
 -
--/* CSR1 mapping */
--#define PR_RES 0x80
+-/* configuration flags for DLCI */
+-#define DLCI_IGNORE_CIR_OUT	0x0001
+-#define DLCI_ACCOUNT_CIR_IN	0x0002
+-#define DLCI_BUFFER_IF		0x0008
 -
--struct sbni_csr1 {
--#ifdef __LITTLE_ENDIAN_BITFIELD
--	u8 rxl	: 5;
--	u8 rate	: 2;
--	u8 	: 1;
--#else
--	u8 	: 1;
--	u8 rate	: 2;
--	u8 rxl	: 5;
--#endif
--};
+-#define DLCI_VALID_FLAGS	0x000B
 -
--/* fields in frame header */
--#define FRAME_ACK_MASK  (unsigned short)0x7000
--#define FRAME_LEN_MASK  (unsigned short)0x03FF
--#define FRAME_FIRST     (unsigned short)0x8000
--#define FRAME_RETRY     (unsigned short)0x0800
+-/* defines for the actual Frame Relay hardware */
+-#define FRAD_GET_CONF	(SIOCDEVPRIVATE)
+-#define FRAD_SET_CONF	(SIOCDEVPRIVATE + 1)
 -
--#define FRAME_SENT_BAD  (unsigned short)0x4000
--#define FRAME_SENT_OK   (unsigned short)0x3000
--
--
--/* state flags */
--enum {
--	FL_WAIT_ACK    = 0x01,
--	FL_NEED_RESEND = 0x02,
--	FL_PREV_OK     = 0x04,
--	FL_SLOW_MODE   = 0x08,
--	FL_SECONDARY   = 0x10,
--#ifdef CONFIG_SBNI_MULTILINE
--	FL_SLAVE       = 0x20,
--#endif
--	FL_LINE_DOWN   = 0x40
--};
--
--
--enum {
--	DEFAULT_IOBASEADDR = 0x210,
--	DEFAULT_INTERRUPTNUMBER = 5,
--	DEFAULT_RATE = 0,
--	DEFAULT_FRAME_LEN = 1012
--};
--
--#define DEF_RXL_DELTA	-1
--#define DEF_RXL		0xf
--
--#define SBNI_SIG 0x5a
--
--#define	SBNI_MIN_LEN	60	/* Shortest Ethernet frame without FCS */
--#define SBNI_MAX_FRAME	1023
--#define ETHER_MAX_LEN	1518
--
--#define SBNI_TIMEOUT	(HZ/10)
--
--#define TR_ERROR_COUNT	32
--#define CHANGE_LEVEL_START_TICKS 4
--
--#define SBNI_MAX_NUM_CARDS	16
--
--/* internal SBNI-specific statistics */
--struct sbni_in_stats {
--	u32	all_rx_number;
--	u32	bad_rx_number;
--	u32	timeout_number;
--	u32	all_tx_number;
--	u32	resend_tx_number;
--};
--
--/* SBNI ioctl params */
--#define SIOCDEVGETINSTATS 	SIOCDEVPRIVATE
--#define SIOCDEVRESINSTATS 	SIOCDEVPRIVATE+1
--#define SIOCDEVGHWSTATE   	SIOCDEVPRIVATE+2
--#define SIOCDEVSHWSTATE   	SIOCDEVPRIVATE+3
--#define SIOCDEVENSLAVE  	SIOCDEVPRIVATE+4
--#define SIOCDEVEMANSIPATE  	SIOCDEVPRIVATE+5
--
--
--/* data packet for SIOCDEVGHWSTATE/SIOCDEVSHWSTATE ioctl requests */
--struct sbni_flags {
--	u32	rxl		: 4;
--	u32	rate		: 2;
--	u32	fixed_rxl	: 1;
--	u32	slow_mode	: 1;
--	u32	mac_addr	: 24;
--};
+-#define FRAD_LAST_IOCTL	FRAD_SET_CONF
 -
 -/*
-- * CRC-32 stuff
+- * Based on the setup for the Sangoma SDLA.  If changes are 
+- * necessary to this structure, a routine will need to be 
+- * added to that module to copy fields.
 - */
--#define CRC32(c,crc) (crc32tab[((size_t)(crc) ^ (c)) & 0xff] ^ (((crc) >> 8) & 0x00FFFFFF))
--      /* CRC generator 0xEDB88320 */
--      /* CRC remainder 0x2144DF1C */
--      /* CRC initial value 0x00000000 */
--#define CRC32_REMAINDER 0x2144DF1C
--#define CRC32_INITIAL 0x00000000
+-struct frad_conf 
+-{
+-   short station;
+-   short flags;
+-   short kbaud;
+-   short clocking;
+-   short mtu;
+-   short T391;
+-   short T392;
+-   short N391;
+-   short N392;
+-   short N393;
+-   short CIR_fwd;
+-   short Bc_fwd;
+-   short Be_fwd;
+-   short CIR_bwd;
+-   short Bc_bwd;
+-   short Be_bwd;
 -
--#ifndef __initdata
--#define __initdata
--#endif
+-/* Add new fields here, above is a mirror of the sdla_conf */
 -
--#endif
+-};
 -
-diff --git a/include/net/Space.h b/include/net/Space.h
-index 9cce0d80d37a..475fe96574e5 100644
---- a/include/net/Space.h
-+++ b/include/net/Space.h
-@@ -25,6 +25,3 @@ struct net_device *ltpc_probe(void);
+-#define FRAD_STATION_CPE	0x0000
+-#define FRAD_STATION_NODE	0x0001
+-
+-#define FRAD_TX_IGNORE_CIR	0x0001
+-#define FRAD_RX_ACCOUNT_CIR	0x0002
+-#define FRAD_DROP_ABORTED	0x0004
+-#define FRAD_BUFFERIF		0x0008
+-#define FRAD_STATS		0x0010
+-#define FRAD_MCI		0x0100
+-#define FRAD_AUTODLCI		0x8000
+-#define FRAD_VALID_FLAGS	0x811F
+-
+-#define FRAD_CLOCK_INT		0x0001
+-#define FRAD_CLOCK_EXT		0x0000
+-
+-
+-#endif /* _UAPI_FRAD_H_ */
+diff --git a/include/uapi/linux/sdla.h b/include/uapi/linux/sdla.h
+deleted file mode 100644
+index 1e3735be6511..000000000000
+--- a/include/uapi/linux/sdla.h
++++ /dev/null
+@@ -1,117 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+-/*
+- * INET		An implementation of the TCP/IP protocol suite for the LINUX
+- *		operating system.  INET is implemented using the  BSD Socket
+- *		interface as the means of communication with the user level.
+- *
+- *		Global definitions for the Frame relay interface.
+- *
+- * Version:	@(#)if_ifrad.h	0.20	13 Apr 96
+- *
+- * Author:	Mike McLagan <mike.mclagan@linux.org>
+- *
+- * Changes:
+- *		0.15	Mike McLagan	Structure packing
+- *
+- *		0.20	Mike McLagan	New flags for S508 buffer handling
+- *
+- *		This program is free software; you can redistribute it and/or
+- *		modify it under the terms of the GNU General Public License
+- *		as published by the Free Software Foundation; either version
+- *		2 of the License, or (at your option) any later version.
+- */
+-
+-#ifndef _UAPISDLA_H
+-#define _UAPISDLA_H
+-
+-/* adapter type */
+-#define SDLA_TYPES
+-#define SDLA_S502A			5020
+-#define SDLA_S502E			5021
+-#define SDLA_S503			5030
+-#define SDLA_S507			5070
+-#define SDLA_S508			5080
+-#define SDLA_S509			5090
+-#define SDLA_UNKNOWN			-1
+-
+-/* port selection flags for the S508 */
+-#define SDLA_S508_PORT_V35		0x00
+-#define SDLA_S508_PORT_RS232		0x02
+-
+-/* Z80 CPU speeds */
+-#define SDLA_CPU_3M			0x00
+-#define SDLA_CPU_5M			0x01
+-#define SDLA_CPU_7M			0x02
+-#define SDLA_CPU_8M			0x03
+-#define SDLA_CPU_10M			0x04
+-#define SDLA_CPU_16M			0x05
+-#define SDLA_CPU_12M			0x06
+-
+-/* some private IOCTLs */
+-#define SDLA_IDENTIFY			(FRAD_LAST_IOCTL + 1)
+-#define SDLA_CPUSPEED			(FRAD_LAST_IOCTL + 2)
+-#define SDLA_PROTOCOL			(FRAD_LAST_IOCTL + 3)
+-
+-#define SDLA_CLEARMEM			(FRAD_LAST_IOCTL + 4)
+-#define SDLA_WRITEMEM			(FRAD_LAST_IOCTL + 5)
+-#define SDLA_READMEM			(FRAD_LAST_IOCTL + 6)
+-
+-struct sdla_mem {
+-   int  addr;
+-   int  len;
+-   void __user *data;
+-};
+-
+-#define SDLA_START			(FRAD_LAST_IOCTL + 7)
+-#define SDLA_STOP			(FRAD_LAST_IOCTL + 8)
+-
+-/* some offsets in the Z80's memory space */
+-#define SDLA_NMIADDR			0x0000
+-#define SDLA_CONF_ADDR			0x0010
+-#define SDLA_S502A_NMIADDR		0x0066
+-#define SDLA_CODE_BASEADDR		0x0100
+-#define SDLA_WINDOW_SIZE		0x2000
+-#define SDLA_ADDR_MASK			0x1FFF
+-
+-/* largest handleable block of data */
+-#define SDLA_MAX_DATA			4080
+-#define SDLA_MAX_MTU			4072	/* MAX_DATA - sizeof(fradhdr) */
+-#define SDLA_MAX_DLCI			24
+-
+-/* this should be the same as frad_conf */
+-struct sdla_conf {
+-   short station;
+-   short config;
+-   short kbaud;
+-   short clocking;
+-   short max_frm;
+-   short T391;
+-   short T392;
+-   short N391;
+-   short N392;
+-   short N393;
+-   short CIR_fwd;
+-   short Bc_fwd;
+-   short Be_fwd;
+-   short CIR_bwd;
+-   short Bc_bwd;
+-   short Be_bwd;
+-};
+-
+-/* this should be the same as dlci_conf */
+-struct sdla_dlci_conf {
+-   short config;
+-   short CIR_fwd;
+-   short Bc_fwd;
+-   short Be_fwd;
+-   short CIR_bwd;
+-   short Bc_bwd;
+-   short Be_bwd; 
+-   short Tc_fwd;
+-   short Tc_bwd;
+-   short Tf_max;
+-   short Tb_max;
+-};
+-
+-
+-#endif /* _UAPISDLA_H */
+diff --git a/net/socket.c b/net/socket.c
+index 250dda239a15..ac3ad20953c4 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -64,7 +64,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/mutex.h>
+ #include <linux/if_bridge.h>
+-#include <linux/if_frad.h>
+ #include <linux/if_vlan.h>
+ #include <linux/ptp_classify.h>
+ #include <linux/init.h>
+@@ -1019,17 +1018,6 @@ void vlan_ioctl_set(int (*hook) (struct net *, void __user *))
+ }
+ EXPORT_SYMBOL(vlan_ioctl_set);
  
- /* Fibre Channel adapters */
- int iph5526_probe(struct net_device *dev);
+-static DEFINE_MUTEX(dlci_ioctl_mutex);
+-static int (*dlci_ioctl_hook) (unsigned int, void __user *);
 -
--/* SBNI adapters */
--int sbni_probe(int unit);
+-void dlci_ioctl_set(int (*hook) (unsigned int, void __user *))
+-{
+-	mutex_lock(&dlci_ioctl_mutex);
+-	dlci_ioctl_hook = hook;
+-	mutex_unlock(&dlci_ioctl_mutex);
+-}
+-EXPORT_SYMBOL(dlci_ioctl_set);
+-
+ static long sock_do_ioctl(struct net *net, struct socket *sock,
+ 			  unsigned int cmd, unsigned long arg)
+ {
+@@ -1148,17 +1136,6 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
+ 				err = vlan_ioctl_hook(net, argp);
+ 			mutex_unlock(&vlan_ioctl_mutex);
+ 			break;
+-		case SIOCADDDLCI:
+-		case SIOCDELDLCI:
+-			err = -ENOPKG;
+-			if (!dlci_ioctl_hook)
+-				request_module("dlci");
+-
+-			mutex_lock(&dlci_ioctl_mutex);
+-			if (dlci_ioctl_hook)
+-				err = dlci_ioctl_hook(cmd, argp);
+-			mutex_unlock(&dlci_ioctl_mutex);
+-			break;
+ 		case SIOCGSKNS:
+ 			err = -EPERM;
+ 			if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
+@@ -3403,8 +3380,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 	case SIOCBRDELBR:
+ 	case SIOCGIFVLAN:
+ 	case SIOCSIFVLAN:
+-	case SIOCADDDLCI:
+-	case SIOCDELDLCI:
+ 	case SIOCGSKNS:
+ 	case SIOCGSTAMP_NEW:
+ 	case SIOCGSTAMPNS_NEW:
 -- 
 2.20.0
 
