@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 341AD1166FB
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 07:36:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 133AD116704
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 07:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfLIGgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 01:36:17 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42521 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726834AbfLIGgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:36:17 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y19so9709659lfl.9;
-        Sun, 08 Dec 2019 22:36:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TZRtHTcfvXtQotqGqzJU20iEzWK2qj/gYB6W0njgUJQ=;
-        b=uPtOY71VCNniq6MLIYJKVEP9rxMeQHgeUIVBj0nXv+PjCFhVfqebbFGvI44+/2rf1c
-         YXoHbKu7p7UIcm212yLkQLXJiqN81PdlTTxfSk0yssZpoCxXE/my0v0SmZdx0CEz0eJc
-         K/ozhxyvIHfv4rphvQ/ECaLWbnpMf1rShZlk4coE4eq0Yzjwblyibr8uiaX0BWxDs52e
-         5ZfBbPokDWNoC8BaA51rqkjqBbP0lEG98M52Op/h0QCFedmXJmMamVsUF/Lsb4br6vV7
-         3O9pT6S1JIiboItYawx5ywGb8ii2q3GHuuhGIrfnE4xJgaH238zU2SVDJETvfChmvlZe
-         I46A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TZRtHTcfvXtQotqGqzJU20iEzWK2qj/gYB6W0njgUJQ=;
-        b=J1mxy6bNSElZ8S47PcQFKNPYyQ7TXtj8x/M+euu6Hu47sLQGYWhWjiZpYQaXAKTTGG
-         j14RM0mRxog4wucwCN4MXsu94F47rqg6hdl+qrH7+ZpBOJnNSAYrEC8ob9wCLRoeXRcJ
-         s5qgnZPKTzgzZtXKQ7TtHbGp7lriwREoZM3JVZ/5yF8NV4Tsdj4SxMCiwu3hmqcA33ng
-         c840gktct8AkF8OrINIuy/LJK7k63l77wh1Rr6DZbCXaTNepUM4FhEb1NOAlbdFXGj8O
-         939kFREBYfvQZEPaZgH8ECgo1aCbZ0Op1kkl8Ak6r7Uy6x7unOJAh8b+5TolVnVYHPU/
-         UpiQ==
-X-Gm-Message-State: APjAAAUFdyiyq+05KDVqpnwJ1l7fsxAEc2vonKfq44HmIRK7Vn5jRPN1
-        QKVB+shiPNwO7maOLUZtGsDr5f0rUzrwz2QgFj0NAQ==
-X-Google-Smtp-Source: APXvYqz7upI7svuNrmizPPmClkYLooqcv0Zdhr+nM9hER9V9adllEGJM9nIQZad9wLy90NCMysFKDPzKXd1M+xmNTt4=
-X-Received: by 2002:a19:be93:: with SMTP id o141mr10947350lff.181.1575873375292;
- Sun, 08 Dec 2019 22:36:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20191208.151711.2227834913032509828.davem@davemloft.net>
-In-Reply-To: <20191208.151711.2227834913032509828.davem@davemloft.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 8 Dec 2019 22:36:04 -0800
-Message-ID: <CAADnVQKS1ide6NO+SBgzQ+83mpyTX4ph=P_dEWb=C7wabZKYYA@mail.gmail.com>
-Subject: so is bpf-next... Re: net-next is OPEN...
-To:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727060AbfLIGlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 01:41:16 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:55414 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726170AbfLIGlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:41:15 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F1F00153D7313;
+        Sun,  8 Dec 2019 22:41:14 -0800 (PST)
+Date:   Sun, 08 Dec 2019 22:41:12 -0800 (PST)
+Message-Id: <20191208.224112.2234468529480733416.davem@davemloft.net>
+To:     ms@dev.tdt.de
+Cc:     andrew.hendry@gmail.com, edumazet@google.com,
+        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/x25: add new state X25_STATE_5
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <3841dcf6dab454445da7b225e0d45212@dev.tdt.de>
+References: <20191206133418.14075-1-ms@dev.tdt.de>
+        <20191207.115922.532322440743611081.davem@davemloft.net>
+        <3841dcf6dab454445da7b225e0d45212@dev.tdt.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 08 Dec 2019 22:41:15 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 8, 2019 at 3:17 PM David Miller <davem@davemloft.net> wrote:
->
->
-> We're back online:
->
->         http://vger.kernel.org/~davem/net-next.html
+From: Martin Schiller <ms@dev.tdt.de>
+Date: Mon, 09 Dec 2019 06:28:53 +0100
 
-bpf-next is open.
-Maintainers are on standby to review and accept new features :)
+> On 2019-12-07 20:59, David Miller wrote:
+>> From: Martin Schiller <ms@dev.tdt.de>
+>> Date: Fri,  6 Dec 2019 14:34:18 +0100
+>> 
+>>> +	switch (frametype) {
+>>> +
+>>> +		case X25_CLEAR_REQUEST:
+>> Please remove this unnecessary empty line.
+>> 
+>>> +			if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 2))
+>>> +				goto out_clear;
+>> A goto path for a single call site?  Just inline the operations here.
+> 
+> Well, I was guided by the code style of the other states.
+> I could add a patch to also clean up the other states.
+> What do you think?
+
+Leave the other states and existing code alone.
+
+Make your new code reasonable.
