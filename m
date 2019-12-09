@@ -2,97 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1721D1175C5
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C571175FB
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:34:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727111AbfLIT1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 14:27:18 -0500
-Received: from mout.kundenserver.de ([212.227.126.133]:39839 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbfLIT1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:27:16 -0500
-Received: from mail-qt1-f181.google.com ([209.85.160.181]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1N3KgE-1he9Qm1eLq-010Mtl; Mon, 09 Dec 2019 20:27:14 +0100
-Received: by mail-qt1-f181.google.com with SMTP id k11so281078qtm.3;
-        Mon, 09 Dec 2019 11:27:14 -0800 (PST)
-X-Gm-Message-State: APjAAAW6N3ovd1Gl9x31r4xo1fK3rBiK1mOsrdM4eze4YKLfeSJOUkNN
-        vdirtl2LcElnD45sXuPmkW+Vtal+oOm02/RmOBw=
-X-Google-Smtp-Source: APXvYqw8S7eatu+K64zQ4xgIER2Piv2OR5qIkc9fHY9hfY2/sTUPAuTv7mjAtXGPnDIgDvdsQGZVrBJHzRcDC9wlEio=
-X-Received: by 2002:ac8:768d:: with SMTP id g13mr26650326qtr.7.1575919633087;
- Mon, 09 Dec 2019 11:27:13 -0800 (PST)
+        id S1726826AbfLITeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 14:34:44 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:39024 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbfLITen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:34:43 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 77so13275655oty.6;
+        Mon, 09 Dec 2019 11:34:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PFE1nWxTiyfBRgn/J6q9Y8I6dNPJrpPO2zwkS+e8TbI=;
+        b=l57bR7j5YoTdsraECl+v5XCXZ2L9yCiOQaei6qnxTgzBKu6DHPdEP2L91+oIkroRMl
+         dBW16Yn7M2d5zqpGrKHHu9zqC1Iwdbrm/Bior7UUkbmS7Dzt7c2vA1rIVGXy7w1Xq7jI
+         7cTqZ73LSKdFPLYOPe9dsTyCkkvaHQTmaqpczWxscNNewc8+95w6VQ25TW+OJnEExH9R
+         TrA/R3/6pFOehNsWxcSaOGZ1Crp1aSlN3xuRW9HZitoMTe6QRU4p/4G7m3uVAmI3K8+1
+         St0Rh2zNQH94IiQoZhUthkIOMFEG13Y9CSu0Mg3X/4ibfQ9xRUJCsmdzpZFts0nuLUJE
+         Je0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PFE1nWxTiyfBRgn/J6q9Y8I6dNPJrpPO2zwkS+e8TbI=;
+        b=UdUmEu1Kl8uHkcS6c/u/GFnAv22Rs0oSfyd/St7MQsf3TR/FtHw+cU8S+dJKylpOEw
+         1R4cVWM4J5liRRJxTJMRgIX7YjLxqkisSOlQfShaP7teSwqiJEPIUHt/xrAH6GmRMz5B
+         NLm6igUGZwhxprsscCExYyTtp2M789I8BMZFBxtyBYxYIxkJD8gUngeLwr6nFP5v5TjN
+         PjwVQcFZV6NdMVoy/H9AVH+t+sdTkdttWg8OkLChRIK93u2q8G2XvH+rGSLvKgPivSrf
+         /U856LyWEm3ZCBuVja92gBXHu//yzsEjzYUQ82fCQ8Cm64POEatIJmR8Xlt5eDInoKI9
+         p6rg==
+X-Gm-Message-State: APjAAAU8R5vUAZonjbdqI4xS3OZUtWGch9rgqLsM+V/WmrDyK2+V0EPD
+        Tpd45f6jnu6S8Lt5RhknpP0=
+X-Google-Smtp-Source: APXvYqxSnopGKPKS40Fp2UWWVvhccgBBkC3FGIBGVtKql552IcLIhIyHMgbgNBjN89Vl/gf2tP5iZg==
+X-Received: by 2002:a9d:6a92:: with SMTP id l18mr23312145otq.37.1575920082851;
+        Mon, 09 Dec 2019 11:34:42 -0800 (PST)
+Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id x16sm296462oto.41.2019.12.09.11.34.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 09 Dec 2019 11:34:42 -0800 (PST)
+Date:   Mon, 9 Dec 2019 12:34:40 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Julio Faracco <jcfaracco@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, dnmendes76@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Martin Habets <mhabets@solarflare.com>,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH net-next v9 1/3] netdev: pass the stuck queue to the
+ timeout handler
+Message-ID: <20191209193440.GA15189@ubuntu-m2-xlarge-x86>
+References: <20191209162727.10113-1-mst@redhat.com>
+ <20191209162727.10113-2-mst@redhat.com>
 MIME-Version: 1.0
-References: <20191209151256.2497534-1-arnd@arndb.de> <20191209151256.2497534-4-arnd@arndb.de>
- <20191209.102950.2248756181772063368.davem@davemloft.net>
-In-Reply-To: <20191209.102950.2248756181772063368.davem@davemloft.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 9 Dec 2019 20:26:56 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a25UGV1KS1ufZsyQJk1+9Rp9is0x6eOU7pr5Xf6Z3N2gA@mail.gmail.com>
-Message-ID: <CAK8P3a25UGV1KS1ufZsyQJk1+9Rp9is0x6eOU7pr5Xf6Z3N2gA@mail.gmail.com>
-Subject: Re: [PATCH 4/4] [RFC] staging/net: move AF_X25 into drivers/staging
-To:     David Miller <davem@davemloft.net>
-Cc:     khc@pm.waw.pl, gregkh <gregkh@linuxfoundation.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        linux-x25@vger.kernel.org, Kevin Curtis <kevin.curtis@farsite.com>,
-        "R.J.Dunlop" <bob.dunlop@farsite.com>,
-        Qiang Zhao <qiang.zhao@nxp.com>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:7qnWVUiaxASlMAvTvom/HXL4dbDqoezMjO1lHSGf+4G5u8IuV2X
- pFkXOOQ/6ddk5gl1KfsyK1tj/zLQMt8ArSlH39A7HyP6wxDTF0cOhETKpiuQHJHB6A0f+lu
- jlyai+ijhU2h0kK20dKH1ldsTdDl553/s3lgGvcGb7MuJt1hR6VtrAfGGGDhKw0wB5ySh2D
- mU2pqXR+LbKHHtRE39Qzg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8/+aPbNBCc8=:M7jNY8qixxukakRKEYGtPE
- mWWAZexkE7gKrw1xC0tEtvMj9sq0ybgDz/Bj2ZrxG9ehieGK97AA4czcQK7SCSlAXvUNrNCoS
- kFqWzMcpIfEO1IeuxunVDjvAZWi4gRAVhX2UjLxM/0XeulbWrB9RilRFfKzs3OMXwkDFI2nCN
- vRxHdHroITgI18PRjlNJTMXaS+fpmamcRrxuQ5yZ/ohJuaUrPaV3u5LM0rMqG0Dy2rgAGXVJt
- YQU8sMjCDoeLCNQzQxqQ+e6tXdERGJlknq0H6SkjDQntCyvutRu7DeKTINhYNAfWAhHqYFAsG
- h8BJAajR4cpJjA+/KO8KBD9IEuqRB8wRKZH3LHV+E2KkYrBiNCQ8Pt594FtEop834fSogodMm
- /RpxyEdrCyEMtcpv08lPG7Y7X9uZTmgSoSGFlmaOL421w4Wwi995w6/sqcIIrqL6Y8E6HSzbe
- 6BKHG74vwEmgsfKkFlXtJO75KHWHz3qSDGuzlTNi9g58ZBVAzSQ8IJdF4FdW1NPZv0lr4ZaZr
- eH0kjvU71Cl+77MDwA04KGyJ3IseTKAf4GH5bR4jUZBj8maKuRhsn/kOn+YeIV8SF7sLjm2Pl
- w3GbioHLJSrPPncZt/ZzSXKr+9bty9aWX9ZuWcGMO4Wr+Xp5lNvd8FdFw7WRCZUW4Gd6jI5rW
- KycTTOpbbGv4gSPz/fcz41tmACZ1q0+Fqr/37ZMVA57jeAMqk/7MsV053FglBdSezaXhxP6OI
- RTA+7L1Ir5QNFoEayEQNUp9/hILIXmlWqvcaqKuHDgKWPMPhXe5V5xpCKuK06o7BJjXZlPCpA
- ZcbHu2KNWFmzBbu3nnhF7ED39pj07otjbXcg5I/xduZBCqocx9kJ+tcqahtE95aScInaOpRgp
- CR9UkKMcz95rvjy/FBPQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209162727.10113-2-mst@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 7:29 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
-> Date: Mon,  9 Dec 2019 16:12:56 +0100
->
-> > syzbot keeps finding issues in the X.25 implementation that nobody is
-> > interested in fixing.  Given that all the x25 patches of the past years
-> > that are not global cleanups tend to fix user-triggered oopses, is it
-> > time to just retire the subsystem?
->
-> I have a bug fix that I'm currently applying to 'net' right now actually:
->
->         https://patchwork.ozlabs.org/patch/1205973/
->
-> So your proposal might be a bit premature.
+Hi Michael,
 
-Ok, makes sense. Looking back in the history, I also see other bugfixes
-from the same author.
+On Mon, Dec 09, 2019 at 11:29:03AM -0500, Michael S. Tsirkin wrote:
+> This allows incrementing the correct timeout statistic without any mess.
+> Down the road, devices can learn to reset just the specific queue.
+> 
+> The patch was generated with the following script:
+> 
+<snip>
+> 
+> where the list of files and functions is simply from:
+> 
+> git grep ndo_tx_timeout, with manual addition of headers
+> in the rare cases where the function is from a header,
+> then manually changing the few places which actually
+> call ndo_tx_timeout.
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Acked-by: Shannon Nelson <snelson@pensando.io>
+> Reviewed-by: Martin Habets <mhabets@solarflare.com>
+> 
+> changes from v8:
+> 	fix up a missing direct call to timeout
+> 	rebased on net-next
+> changes from v7:
+> 	fixup leftovers from v3 change
+> changes from v6:
+> 	fix typo in rtl driver
+> changes from v5:
+> 	add missing files (allow any net device argument name)
+> changes from v4:
+> 	add a missing driver header
+> changes from v3:
+>         change queue # to unsigned
+> Changes from v2:
+>         added headers
+> Changes from v1:
+>         Fix errors found by kbuild:
+>         generalize the pattern a bit, to pick up
+>         a couple of instances missed by the previous
+>         version.
+> ---
+<snip>
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> index 6a9d12dad5d9..ad0ecebb1b34 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -288,7 +288,7 @@ static int dpaa_stop(struct net_device *net_dev)
+>  	return err;
+>  }
+>  
+> -static void dpaa_tx_timeout(struct net_device *net_dev)
+> +static void dpaa_tx_timeout(struct net_device *net_dev, int txqueue)
 
-Adding Martin Schiller to Cc: for a few questions:
+This needs to be unsigned int, otherwise there is a build error:
 
-- What hardware are you using for X.25?
-- Would you be available to be listed in the MAINTAINERS file
-  as a contact for net/x25?
-- Does your bug fix address the latest issue found by syzbot[1],
-  or do you have an idea to fix it if not?
+../drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2622:20: error: incompatible pointer types initializing 'void (*)(struct net_device *, unsigned int)' with an expression of type 'void (struct net_device *, int)' [-Werror,-Wincompatible-pointer-types]
+        .ndo_tx_timeout = dpaa_tx_timeout,
+                          ^~~~~~~~~~~~~~~
+1 error generated.
 
-        Arnd
-
-[1] https://lore.kernel.org/netdev/CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com/
+Cheers,
+Nathan
