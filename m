@@ -2,109 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 737BF116E7C
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:03:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2D7116E84
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 15:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbfLIODL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 09:03:11 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34182 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727388AbfLIODK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 09:03:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OmpANq62/vlbGPUs94+2+PHxB6W2FGdbudYXcj430BY=; b=Yn44D9pbqvhM9ISxjBXZUoK1O
-        /T3kGk+KtSNfpvBMZlBONgozlsnyuNbFj9WMyr4Txrdpcr5wcD2kSy2ikIf/rtZpaTPzdI4ySbf26
-        YgMcnkNzZyGYjQBpE6cZ8+BjDBdhPTt6PtBiV4wNxpDkxzbwWK1pvHmRE4Y6H5iDs7/eecGH2EiJB
-        4+sHpYA/+p9cUr5Ae5ucym1m/i1ikEDXB2kAXHjSp+qEg2Q037E/6AVup53esQOGLifhdboId1+mB
-        ATjEPw6cPvaMxpDexL2CWDMczQ+kYcvEzBI1B9hgIDtjj8/wzUpPFAhKkcqL6XunwPnEuJ/Cwozu4
-        uq55bUc2g==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:46484)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ieJcr-0003O3-PU; Mon, 09 Dec 2019 14:03:02 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ieJco-0003h0-EX; Mon, 09 Dec 2019 14:02:58 +0000
-Date:   Mon, 9 Dec 2019 14:02:58 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 00/14] Add support for SFP+ copper modules
-Message-ID: <20191209140258.GI25745@shell.armlinux.org.uk>
+        id S1727496AbfLIOFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 09:05:03 -0500
+Received: from www62.your-server.de ([213.133.104.62]:54858 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727268AbfLIOFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 09:05:03 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ieJem-0006rq-UW; Mon, 09 Dec 2019 15:05:01 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, will@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf-next] bpf, x86, arm64: enable jit by default when not built as always-on
+Date:   Mon,  9 Dec 2019 15:04:42 +0100
+Message-Id: <b869ada979120dbb3463bdb363f6ab463aa38086.1575899698.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25658/Mon Dec  9 10:47:26 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+After Spectre 2 fix via 290af86629b2 ("bpf: introduce BPF_JIT_ALWAYS_ON
+config") most major distros use BPF_JIT_ALWAYS_ON configuration these days
+which compiles out the BPF interpreter entirely and always enables the
+JIT. Also given recent fix in e1608f3fa857 ("bpf: Avoid setting bpf insns
+pages read-only when prog is jited"), we additionally avoid fragmenting
+the direct map for the BPF insns pages sitting in the general data heap
+since they are not used during execution. Latter is only needed when run
+through the interpreter.
 
-This series adds support for Copper SFP+ modules with Clause 45 PHYs.
-Specifically the patches:
+Since both x86 and arm64 JITs have seen a lot of exposure over the years,
+are generally most up to date and maintained, there is more downside in
+!BPF_JIT_ALWAYS_ON configurations to have the interpreter enabled by default
+rather than the JIT. Add a ARCH_WANT_DEFAULT_BPF_JIT config which archs can
+use to set the bpf_jit_{enable,kallsyms} to 1. Back in the days the
+bpf_jit_kallsyms knob was set to 0 by default since major distros still
+had /proc/kallsyms addresses exposed to unprivileged user space which is
+not the case anymore. Hence both knobs are set via BPF_JIT_DEFAULT_ON which
+is set to 'y' in case of BPF_JIT_ALWAYS_ON or ARCH_WANT_DEFAULT_BPF_JIT.
 
-1. drop support for the probably never tested 100BASE-*X modules.
-2. drop EEPROM ID from sfp_select_interface()
-3. add more compliance code definitions from SFF-8024, renaming the
-   existing definitions.
-4. add module start/stop methods so phylink knows when a module is
-   about to become active. The module start method is called after
-   we have probed for a PHY on the module.
-5. move start/stop of module PHY down into phylink using the new
-   module start/stop methods.
-6. add support for Clause 45 I2C accesses, tested with Methode DM7052.
-   Other modules appear to use the same protocol, but slight
-   differences, but I do not have those modules to test with.
-   (if someone does, please holler!)
-7. rearrange how we attach to PHYs so that we can support Clause 45
-   PHYs with indeterminant interface modes.  (Clause 45 PHYs appear
-   to like to change their PHY interface mode depending on the
-   negotiated speed.)
-8. add support for phylink to connect to a clause 45 PHY on a SFP
-   module.
-9. split the link_an_mode between the configured value and the
-   currently selected mode value; some clause 45 PHYs have no
-   capability to provide in-band negotiation.
-10. split the link configuration on SFP module insertion in phylink
-    so we can use it in other code paths.
-11. delay MAC configuration for copper modules without a PHY to the
-    module start method - after any module PHY has been probed.  If
-    the module has a PHY, then we setup the MAC when the PHY is
-    detected.
-12. the Broadcom 84881 PHY does not support in-band negotiation even
-    though it uses SGMII and 2500BASE-X.  Having the MAC operating
-    with in-band negotiation enabled, even with AN bypass enabled,
-    results in no link - Broadcom say that the host MAC must always
-    be forced.
-13. add support for the Broadcom 84881 PHY found on the Methode
-    DM7052 module.
-14. add support to SFP to probe for a Clause 45 PHY on copper SFP+
-    modules.
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ [ Follow-up from https://lore.kernel.org/bpf/20191202200947.GA14353@pc-9.home/,
+   applies to both bpf and bpf-next, but I think going via bpf-next is more
+   appropriate. ]
 
- drivers/net/phy/Kconfig      |   6 +
- drivers/net/phy/Makefile     |   1 +
- drivers/net/phy/bcm84881.c   | 269 +++++++++++++++++++++++++++++++++++++++++++
- drivers/net/phy/marvell10g.c |   2 +-
- drivers/net/phy/mdio-i2c.c   |  28 +++--
- drivers/net/phy/phylink.c    | 229 ++++++++++++++++++++++++++----------
- drivers/net/phy/sfp-bus.c    | 122 ++++++++++++++------
- drivers/net/phy/sfp.c        |  69 ++++++++---
- drivers/net/phy/sfp.h        |   2 +
- include/linux/sfp.h          |  95 ++++++++++-----
- 10 files changed, 670 insertions(+), 153 deletions(-)
- create mode 100644 drivers/net/phy/bcm84881.c
+ arch/arm64/Kconfig | 1 +
+ arch/x86/Kconfig   | 1 +
+ init/Kconfig       | 6 ++++++
+ kernel/bpf/core.c  | 4 ++--
+ 4 files changed, 10 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index b1b4476ddb83..29d03459de20 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -69,6 +69,7 @@ config ARM64
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128 && (GCC_VERSION >= 50000 || CC_IS_CLANG)
+ 	select ARCH_SUPPORTS_NUMA_BALANCING
+ 	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
++	select ARCH_WANT_DEFAULT_BPF_JIT
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_WANT_HUGE_PMD_SHARE if ARM64_4K_PAGES || (ARM64_16K_PAGES && !ARM64_VA_BITS_36)
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 5e8949953660..1f6a0388a65f 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -93,6 +93,7 @@ config X86
+ 	select ARCH_USE_QUEUED_RWLOCKS
+ 	select ARCH_USE_QUEUED_SPINLOCKS
+ 	select ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH
++	select ARCH_WANT_DEFAULT_BPF_JIT	if X86_64
+ 	select ARCH_WANTS_DYNAMIC_TASK_STRUCT
+ 	select ARCH_WANT_HUGE_PMD_SHARE
+ 	select ARCH_WANTS_THP_SWAP		if X86_64
+diff --git a/init/Kconfig b/init/Kconfig
+index a34064a031a5..957a5e758e6d 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1604,6 +1604,9 @@ config BPF_SYSCALL
+ 	  Enable the bpf() system call that allows to manipulate eBPF
+ 	  programs and maps via file descriptors.
+ 
++config ARCH_WANT_DEFAULT_BPF_JIT
++	bool
++
+ config BPF_JIT_ALWAYS_ON
+ 	bool "Permanently enable BPF JIT and remove BPF interpreter"
+ 	depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
+@@ -1611,6 +1614,9 @@ config BPF_JIT_ALWAYS_ON
+ 	  Enables BPF JIT and removes BPF interpreter to avoid
+ 	  speculative execution of BPF instructions by the interpreter
+ 
++config BPF_JIT_DEFAULT_ON
++	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
++
+ config USERFAULTFD
+ 	bool "Enable userfaultfd() system call"
+ 	depends on MMU
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 49e32acad7d8..2ff01a716128 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -520,9 +520,9 @@ void bpf_prog_kallsyms_del_all(struct bpf_prog *fp)
+ 
+ #ifdef CONFIG_BPF_JIT
+ /* All BPF JIT sysctl knobs here. */
+-int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_ALWAYS_ON);
++int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
++int bpf_jit_kallsyms __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_DEFAULT_ON);
+ int bpf_jit_harden   __read_mostly;
+-int bpf_jit_kallsyms __read_mostly;
+ long bpf_jit_limit   __read_mostly;
+ 
+ static __always_inline void
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.21.0
+
