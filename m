@@ -2,143 +2,673 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8236111659B
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 04:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 560991165EA
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 05:56:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbfLIDsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Dec 2019 22:48:05 -0500
-Received: from mx21.baidu.com ([220.181.3.85]:52006 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726748AbfLIDsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 8 Dec 2019 22:48:05 -0500
-Received: from Bc-Mail-Ex13.internal.baidu.com (unknown [172.31.51.53])
-        by Forcepoint Email with ESMTPS id 4BFA4A7F9363A;
-        Mon,  9 Dec 2019 11:47:49 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- Bc-Mail-Ex13.internal.baidu.com (172.31.51.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1531.3; Mon, 9 Dec 2019 11:47:50 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1713.004; Mon, 9 Dec 2019 11:47:50 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>
-CC:     "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3YyXSBwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJl?=
- =?utf-8?B?Y3ljbGUgZm9yIE5VTUFfTk9fTk9ERSBjb25kaXRpb24=?=
-Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Thread-Index: AQHVrBgioGDhH/MP9UuNcNvu7zNf3aeuC1gAgAJ3DgCAAKla4A==
-Date:   Mon, 9 Dec 2019 03:47:50 +0000
-Message-ID: <96bc5e8351a54adc8f00c18a61e2555d@baidu.com>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <e724cb64-776d-176e-f55b-3c328d7c5298@huawei.com>
-In-Reply-To: <e724cb64-776d-176e-f55b-3c328d7c5298@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.19]
-x-baidu-bdmsfe-datecheck: 1_Bc-Mail-Ex13_2019-12-09 11:47:50:477
-x-baidu-bdmsfe-viruscheck: Bc-Mail-Ex13_GRAY_Inside_WithoutAtta_2019-12-09
- 11:47:50:446
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727026AbfLIE4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Dec 2019 23:56:20 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35201 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726834AbfLIE4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Dec 2019 23:56:20 -0500
+Received: by mail-wr1-f66.google.com with SMTP id g17so14599336wro.2;
+        Sun, 08 Dec 2019 20:56:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zk15++/Jv2bK7yQ8Dxblhtg716D20Gr72IFpOmkzS94=;
+        b=RqS+Mge6Wx9l2fqfHQOXExWc0XRLgj7rw5qtrHXFnrGuaT7dYKOOh2+mIrdbldGmb9
+         rVMIK1DT9maKhlyZ+HRcExf7lfsZWYwM9Dfjb2oNBC1VT8S/IjqWzqUhcRBrQuUISdhD
+         DqTtTTFSEME6dJyUa/wEznfWp0LMe80MP9Pzf+4iJYnfkYUpR6PyV/n7ah8QvQTV7ba8
+         Oimq0Geyireb6/bTLS8PRhtKXsk6+XO3JnYHqWtAma6ddf3JbDG2upESFXZZvkqnWaux
+         PT9gqg5Chg1S9gz9DFJfoQ7PRbRa8h2ch7rIHoXGyeFgjqlVUeVGkRwFQaz8CqxkvYE9
+         ZU3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zk15++/Jv2bK7yQ8Dxblhtg716D20Gr72IFpOmkzS94=;
+        b=DhnwODQs0iQcL3RB8J9jFWzlaJMnQmhPz1LM8rEhAyO5gw12y6RtZRObqgEWxUyVKj
+         Ac9njgQVSjHmyLaHkMR9QtR3HfuhE1ZTZh01jNthplRajoRmTRwoDpBgkbEXaKiS+xBG
+         +D0ro7weDXNMES++El1MM2cOUGoa+ZRbEd0XKrtg/mUsVnj6AXIlBX5y+61fq0hducyi
+         1XUsZaQsZ6mjOkvAFq9sOJkYeHW2QeANFFHGsUTuiAkNTD3iL1pfxVh7bS1gQNvo7S2F
+         hnbOpgzUYpfZSGZEE9VKNXMZ82faetvTVZ9JWtT79znBLgpN59gkqXT3Ji44BwDpQ+Cv
+         R6eA==
+X-Gm-Message-State: APjAAAVzfyd+t6tS5vzgaKCdYbkvh6rLvT8ZTOUF2/BDDusxXYLs8m/f
+        lBbq7P7+A9+udd/7NoePz3fk83C0vnwl5Fc4YQM=
+X-Google-Smtp-Source: APXvYqwv2uHV0rmqe96Z22MKino4IHewtgMO5OUtSBoaGo7oU/FfWJXbOmOCp4b7QCqH1cszYwcZQ/MPCIR0xw7jXqg=
+X-Received: by 2002:a5d:45c4:: with SMTP id b4mr28076511wrs.303.1575867373584;
+ Sun, 08 Dec 2019 20:56:13 -0800 (PST)
 MIME-Version: 1.0
+References: <836cbb3768d75ddcf2eabe5f2682a5486a5afe7e.1574654390.git.lucien.xin@gmail.com>
+ <20191125132440.GA14928@hmswarspite.think-freely.org> <CADvbK_e6qDC7OobXROnxyzjXAC1ZpfiVZ5LK+93paORYcdNj=A@mail.gmail.com>
+ <20191126140859.GA21200@hmswarspite.think-freely.org> <CADvbK_dcB69yCwhBNm4TZQ-izAU-JFO+1hNgtFp-xLkFge74-Q@mail.gmail.com>
+ <20191127120913.GA28618@hmswarspite.think-freely.org>
+In-Reply-To: <20191127120913.GA28618@hmswarspite.think-freely.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 9 Dec 2019 12:56:36 +0800
+Message-ID: <CADvbK_c6DZqJExjQPwCreHb-Mxj5ZEQs3L+XhLaLD4Uvr_ei1A@mail.gmail.com>
+Subject: Re: [PATCH net] sctp: get netns from asoc and ep base
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem <davem@davemloft.net>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Q2M6IEdyeWdvcmlpIFN0cmFzaGtvICBJdmFuIEtob3JvbnpodWsNCg0KSSBzZWUgdGhhdCBjcHN3
-IGlzIHVzaW5nIE5VTUFfTk9fTk9ERSB3aGVuIGluaXQgcGFnZSBwb29sDQoNCj4gT24gMjAxOS8x
-Mi83IDExOjUyLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToNCj4gPiBPbiBGcmksIDIwMTktMTItMDYg
-YXQgMTc6MzIgKzA4MDAsIExpIFJvbmdRaW5nIHdyb3RlOg0KPiA+PiBzb21lIGRyaXZlcnMgdXNl
-cyBwYWdlIHBvb2wsIGJ1dCBub3QgcmVxdWlyZSB0byBhbGxvY2F0ZSBwYWdlcyBmcm9tDQo+ID4+
-IGJvdW5kIG5vZGUsIG9yIHNpbXBseSBhc3NpZ24gcG9vbC5wLm5pZCB0byBOVU1BX05PX05PREUs
-IGFuZCB0aGUNCj4gPj4gY29tbWl0IGQ1Mzk0NjEwYjFiYSAoInBhZ2VfcG9vbDoNCj4gPj4gRG9u
-J3QgcmVjeWNsZSBub24tcmV1c2FibGUgcGFnZXMiKSB3aWxsIGJsb2NrIHRoaXMga2luZCBvZiBk
-cml2ZXIgdG8NCj4gPj4gcmVjeWNsZQ0KPiA+Pg0KPiA+PiBzbyB0YWtlIHBhZ2UgYXMgcmV1c2Fi
-bGUgd2hlbiBwYWdlIGJlbG9uZ3MgdG8gY3VycmVudCBtZW1vcnkgbm9kZSBpZg0KPiA+PiBuaWQg
-aXMgTlVNQV9OT19OT0RFDQo+ID4+DQo+ID4+IHYxLS0+djI6IGFkZCBjaGVjayB3aXRoIG51bWFf
-bWVtX2lkIGZyb20gWXVuc2hlbmcNCj4gPj4NCj4gPj4gRml4ZXM6IGQ1Mzk0NjEwYjFiYSAoInBh
-Z2VfcG9vbDogRG9uJ3QgcmVjeWNsZSBub24tcmV1c2FibGUgcGFnZXMiKQ0KPiA+PiBTaWduZWQt
-b2ZmLWJ5OiBMaSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4+IFN1Z2dlc3Rl
-ZC1ieTogWXVuc2hlbmcgTGluIDxsaW55dW5zaGVuZ0BodWF3ZWkuY29tPg0KPiA+PiBDYzogU2Fl
-ZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4+IC0tLQ0KPiA+PiAgbmV0L2Nv
-cmUvcGFnZV9wb29sLmMgfCA3ICsrKysrKy0NCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2Vy
-dGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gPj4NCj4gPj4gZGlmZiAtLWdpdCBhL25ldC9jb3Jl
-L3BhZ2VfcG9vbC5jIGIvbmV0L2NvcmUvcGFnZV9wb29sLmMgaW5kZXgNCj4gPj4gYTZhZWZlOTg5
-MDQzLi4zYzhiNTFjY2QxYzEgMTAwNjQ0DQo+ID4+IC0tLSBhL25ldC9jb3JlL3BhZ2VfcG9vbC5j
-DQo+ID4+ICsrKyBiL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQo+ID4+IEBAIC0zMTIsMTIgKzMxMiwx
-NyBAQCBzdGF0aWMgYm9vbCBfX3BhZ2VfcG9vbF9yZWN5Y2xlX2RpcmVjdChzdHJ1Y3QNCj4gPj4g
-cGFnZSAqcGFnZSwNCj4gPj4gIC8qIHBhZ2UgaXMgTk9UIHJldXNhYmxlIHdoZW46DQo+ID4+ICAg
-KiAxKSBhbGxvY2F0ZWQgd2hlbiBzeXN0ZW0gaXMgdW5kZXIgc29tZSBwcmVzc3VyZS4NCj4gPj4g
-KHBhZ2VfaXNfcGZtZW1hbGxvYykNCj4gPj4gICAqIDIpIGJlbG9uZ3MgdG8gYSBkaWZmZXJlbnQg
-TlVNQSBub2RlIHRoYW4gcG9vbC0+cC5uaWQuDQo+ID4+ICsgKiAzKSBiZWxvbmdzIHRvIGEgZGlm
-ZmVyZW50IG1lbW9yeSBub2RlIHRoYW4gY3VycmVudCBjb250ZXh0DQo+ID4+ICsgKiBpZiBwb29s
-LT5wLm5pZCBpcyBOVU1BX05PX05PREUNCj4gPj4gICAqDQo+ID4+ICAgKiBUbyB1cGRhdGUgcG9v
-bC0+cC5uaWQgdXNlcnMgbXVzdCBjYWxsIHBhZ2VfcG9vbF91cGRhdGVfbmlkLg0KPiA+PiAgICov
-DQo+ID4+ICBzdGF0aWMgYm9vbCBwb29sX3BhZ2VfcmV1c2FibGUoc3RydWN0IHBhZ2VfcG9vbCAq
-cG9vbCwgc3RydWN0IHBhZ2UNCj4gPj4gKnBhZ2UpDQo+ID4+ICB7DQo+ID4+IC0JcmV0dXJuICFw
-YWdlX2lzX3BmbWVtYWxsb2MocGFnZSkgJiYgcGFnZV90b19uaWQocGFnZSkgPT0gcG9vbC0NCj4g
-Pj4+IHAubmlkOw0KPiA+PiArCXJldHVybiAhcGFnZV9pc19wZm1lbWFsbG9jKHBhZ2UpICYmDQo+
-ID4+ICsJCShwYWdlX3RvX25pZChwYWdlKSA9PSBwb29sLT5wLm5pZCB8fA0KPiA+PiArCQkocG9v
-bC0+cC5uaWQgPT0gTlVNQV9OT19OT0RFICYmDQo+ID4+ICsJCXBhZ2VfdG9fbmlkKHBhZ2UpID09
-IG51bWFfbWVtX2lkKCkpKTsNCj4gPj4gIH0NCj4gPj4NCj4gPg0KPiA+IENjJ2VkIEplc3Blciwg
-SWxpYXMgJiBKb25hdGhhbi4NCj4gPg0KPiA+IEkgZG9uJ3QgdGhpbmsgaXQgaXMgY29ycmVjdCB0
-byBjaGVjayB0aGF0IHRoZSBwYWdlIG5pZCBpcyBzYW1lIGFzDQo+ID4gbnVtYV9tZW1faWQoKSBp
-ZiBwb29sIGlzIE5VTUFfTk9fTk9ERS4gSW4gc3VjaCBjYXNlIHdlIHNob3VsZCBhbGxvdw0KPiA+
-IGFsbCBwYWdlcyB0byByZWN5Y2xlLCBiZWNhdXNlIHlvdSBjYW4ndCBhc3N1bWUgd2hlcmUgcGFn
-ZXMgYXJlDQo+ID4gYWxsb2NhdGVkIGZyb20gYW5kIHdoZXJlIHRoZXkgYXJlIGJlaW5nIGhhbmRs
-ZWQuDQo+ID4NCj4gPiBJIHN1Z2dlc3QgdGhlIGZvbGxvd2luZzoNCj4gPg0KPiA+IHJldHVybiAh
-cGFnZV9wZm1lbWFsbG9jKCkgJiYNCj4gPiAoIHBhZ2VfdG9fbmlkKHBhZ2UpID09IHBvb2wtPnAu
-bmlkIHx8IHBvb2wtPnAubmlkID09IE5VTUFfTk9fTk9ERSApOw0KPiA+DQo+ID4gMSkgbmV2ZXIg
-cmVjeWNsZSBlbWVyZ2VuY3kgcGFnZXMsIHJlZ2FyZGxlc3Mgb2YgcG9vbCBuaWQuDQo+ID4gMikg
-YWx3YXlzIHJlY3ljbGUgaWYgcG9vbCBpcyBOVU1BX05PX05PREUuDQo+IA0KPiBBcyBJIGNhbiBz
-ZWUsIGJlbG93IGFyZSB0aGUgY2FzZXMgdGhhdCB0aGUgcG9vbC0+cC5uaWQgY291bGQgYmUNCj4g
-TlVNQV9OT19OT0RFOg0KPiANCj4gMS4ga2VybmVsIGJ1aWx0IHdpdGggdGhlIENPTkZJR19OVU1B
-IGJlaW5nIG9mZi4NCj4gDQo+IDIuIGtlcm5lbCBidWlsdCB3aXRoIHRoZSBDT05GSUdfTlVNQSBi
-ZWluZyBvbiwgYnV0IEZXL0JJT1MgZG9zZSBub3QgcHJvdmlkZQ0KPiAgICBhIHZhbGlkIG5vZGUg
-aWQgdGhyb3VnaCBBQ1BJL0RULCBhbmQgaXQgaGFzIHRoZSBiZWxvdyBjYXNlczoNCj4gDQo+ICAg
-IGEpLiB0aGUgaGFyZHdhcmUgaXRzZWxmIGlzIHNpbmdsZSBudW1hIG5vZGUgc3lzdGVtLCBzbyBt
-YXliZSBpdCBpcyB2YWxpZA0KPiAgICAgICAgdG8gbm90IHByb3ZpZGUgYSB2YWxpZCBub2RlIGZv
-ciB0aGUgZGV2aWNlLg0KPiAgICBiKS4gdGhlIGhhcmR3YXJlIGl0c2VsZiBpcyBtdWx0aSBudW1h
-IG5vZGVzIHN5c3RlbSwgYW5kIHRoZSBGVy9CSU9TIGlzDQo+ICAgICAgICBicm9rZW4gdGhhdCBp
-dCBkb2VzIG5vdCBwcm92aWRlIGEgdmFsaWQgb25lLg0KPiANCj4gMy4ga2VybmVsIGJ1aWx0IHdp
-dGggdGhlIENPTkZJR19OVU1BIGJlaW5nIG9uLCBhbmQgRlcvQklPUyBkb3NlIHByb3ZpZGUgYQ0K
-PiAgICB2YWxpZCBub2RlIGlkIHRocm91Z2ggQUNQSS9EVCwgYnV0IHRoZSBkcml2ZXIgZG9lcyBu
-b3QgcGFzcyB0aGUgdmFsaWQNCj4gICAgbm9kZSBpZCB3aGVuIGNhbGxpbmcgcGFnZV9wb29sX2lu
-aXQoKS4NCj4gDQo+IEkgYW0gbm90IHN1cmUgd2hpY2ggY2FzZSB0aGlzIHBhdGNoIGlzIHRyeWlu
-ZyB0byBmaXgsIG1heWJlIFJvbmdxaW5nIGNhbiBoZWxwIHRvDQo+IGNsYXJpZnkuDQo+IA0KPiBG
-b3IgY2FzZSAxIGFuZCBjYXNlIDIgKGEpLCBJIHN1cHBvc2UgY2hlY2tpbmcgcG9vbC0+cC5uaWQg
-YmVpbmcNCj4gTlVNQV9OT19OT0RFIGlzIGVub3VnaC4NCj4gDQo+IEZvciBjYXNlIDIgKGIpLCBU
-aGVyZSBtYXkgYmUgYXJndW1lbnQgdGhhdCBpdCBzaG91bGQgYmUgZml4ZWQgaW4gdGhlIEJJT1Mv
-RlcsDQo+IEJ1dCBpdCBhbHNvIGNhbiBiZSBhcmd1ZWQgdGhhdCB0aGUgbnVtYV9tZW1faWQoKSBj
-aGVja2luZyBoYXMgYmVlbiBkb25lIGluDQo+IHRoZSBkcml2ZXIgdGhhdCBoYXMgbm90IHVzaW5n
-IHBhZ2UgcG9vbCB5ZXQgd2hlbiBkZWNpZGluZyB3aGV0aGVyIHRvIGRvDQo+IHJlY3ljbGluZywg
-c2VlIFsxXS4gSWYgSSB1bmRlcnN0YW5kaW5nIGNvcnJlY3RseSwgcmVjeWNsaW5nIGlzIG5vcm1h
-bGx5IGRvbmUgYXQgdGhlDQo+IE5BUEkgcG9vbGluZywgd2hpY2ggaGFzIHRoZSBzYW1lIGFmZmlu
-aXR5IGFzIHRoZSByeCBpbnRlcnJ1cHQsIGFuZCByeCBpbnRlcnJ1cHQgaXMNCj4gbm90IGNoYW5n
-ZWQgdmVyeSBvZnRlbi4gSWYgaXQgZG9lcyBjaGFuZ2UgdG8gZGlmZmVyZW50IG1lbW9yeSBub2Rl
-LCBtYXliZSBpdA0KPiBtYWtlcyBzZW5zZSBub3QgdG8gcmVjeWNsZSB0aGUgb2xkIHBhZ2UgYmVs
-b25ncyB0byBvbGQgbm9kZT8NCj4gDQo+IA0KPiBGb3IgY2FzZSAzLCBJIGFtIG5vdCBzdXJlIGlm
-IGFueSBkcml2ZXIgaXMgZG9pbmcgdGhhdCwgYW5kIGlmIHRoZSBwYWdlIHBvb2wgQVBJDQo+IGV2
-ZW4gYWxsb3cgdGhhdD8NCj4gDQoNCkkgdGhpbmsgcG9vbF9wYWdlX3JldXNhYmxlIHNob3VsZCBz
-dXBwb3J0IE5VTUFfTk9fTk9ERSBubyBtYXR0ZXIgd2hpY2ggY2FzZXMNCg0KDQpBbmQgcmVjeWNs
-aW5nIGlzIG5vcm1hbGx5IGRvbmUgYXQgdGhlIE5BUEkgcG9vbGluZywgTlVNQV9OT19OT0RFIGhp
-bnQgdG8gdXNlIHRoZQ0KbG9jYWwgbm9kZSwgZXhjZXB0IG1lbW9yeSB1c2FnZSBpcyB1bmJhbGFu
-Y2UsIHNvIEkgYWRkIHRoZSBjaGVjayB0aGF0IHRoZSBwYWdlIG5pZCBpcw0Kc2FtZSBhcyBudW1h
-X21lbV9pZCgpIGlmIHBvb2wgaXMgTlVNQV9OT19OT0RFDQoNCi1MaQ0KDQoNCj4gWzFdIGh0dHBz
-Oi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L2xhdGVzdC9pZGVudC9udW1hX21lbV9pZA0KPiAN
-Cj4gPg0KPiA+IHRoZSBhYm92ZSBjaGFuZ2Ugc2hvdWxkIG5vdCBhZGQgYW55IG92ZXJoZWFkLCBh
-IG1vZGVzdCBicmFuY2gNCj4gPiBwcmVkaWN0b3Igd2lsbCBoYW5kbGUgdGhpcyB3aXRoIG5vIGVm
-Zm9ydC4NCj4gPg0KPiA+IEplc3BlciBldCBhbC4gd2hhdCBkbyB5b3UgdGhpbms/DQo+ID4NCj4g
-PiAtU2FlZWQuDQo+ID4NCg0K
+I'll repost this one.
+
+On Wed, Nov 27, 2019 at 8:09 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+>
+> On Wed, Nov 27, 2019 at 11:48:04AM +0800, Xin Long wrote:
+> > On Tue, Nov 26, 2019 at 10:09 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > >
+> > > On Tue, Nov 26, 2019 at 04:27:20PM +0800, Xin Long wrote:
+> > > > On Mon, Nov 25, 2019 at 9:24 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > >
+> > > > > On Mon, Nov 25, 2019 at 11:59:50AM +0800, Xin Long wrote:
+> > > > > > Commit 312434617cb1 ("sctp: cache netns in sctp_ep_common") set netns
+> > > > > > in asoc and ep base since they're created, and it will never change.
+> > > > > > It's a better way to get netns from asoc and ep base, comparing to
+> > > > > > calling sock_net().
+> > > > > >
+> > > > > > This patch is to replace them.
+> > > > > >
+> > > > > I don't see anything expressly wrong with this, but I'm not sure I see it as
+> > > > > better either.  It makes things more consistent with commit 312434617cb1, sure,
+> > > > > but both sock_net, and its called read_pnet are both static inline functions, so
+> > > > > it should reduce to the same thing.
+> > > > >
+> > > > > In fact, I think it may be better to ammend the fix from 312434617cb1, to,
+> > > > > instead of caching the net structure in the ep_common struct, instead, update
+> > > > > sctp_assoc_migrate so that the new value base.sk is atomically exchanged before
+> > > > > any calls to sock_put/sock_hold are made, so that the rhashtable lookup is
+> > > > > consistent.  That would allow us to consistently use sock_net the way other
+> > > > > protocols do
+> > > > why is "before any calls to sock_put/sock_hold are made"?
+> > > >
+> > > It was my understanding that the problem in commit 312434617cb1 was that the
+> > > rhashtable lookup that ended in sctp_hash_obj was running in parallel with
+> > > sctp_assoc_migrate, and the result was that the socket pointer in the hash table
+> > > was getting freed on a sock_put while it was being accessed by the
+> > > rehash_operation
+> > >
+> > > But as I look closer, thats not actually whats happening (I don't think), it
+> > > appears that KCSAN is just reporting that a read and write operation is
+> > > happening in parallel between the two, which could potentially lead to a
+> > > corruption.
+> > I think so, that's why we need memory barriers to eliminate this warning.
+> >
+> > >
+> > >
+> > > > I was thinking to use rcu_assign_pointer() and rcu_dereference() for base.sk,
+> > > > but looks troublesome to replace all places.
+> > > > do you think it would work for atomic exchange? or you have some better idea?
+> > > >
+> > > I'm not sure.  I get that rcu is going to be cumbersome here, since
+> > > sctp_assoc_migrate is the only location we seem to be writing the value of
+> > > base.sk while its present in the hash table, and we don't want to annotate all
+> > > the other read sites with rcu tags.  However, we don't really want to use
+> > > cmpxchg either, since we just want to read it on one side and write it in the
+> > > other.
+> > right.
+> >
+> > >
+> > > It seems, like given the rhashtable api, the expectation is that, for a given
+> > > element in the hashtable, if that element changes, we would want to replace the
+> > > element with a new copy using rhashtable_replace_fast, which follows all the
+> > > internal locking protocols of the hashtable and allows for a quick update
+> > > safely, but we don't really want to do that, we just want to replace a field in
+> > > a structure thats pointed to by the transport structs which are whats really in
+> > > the hash table.
+> > Exactly, we don't even really need transport->asoc.base.sk, as you know,
+> > what we care is transport->asoc.base.net, which would never change once
+> > created.
+> >
+> > >
+> > > I wonder if there isn't a need here for an addition to the rhashtable api.
+> > > Something like rhashtable_lock(struct rhashtable *ht) and
+> > > rhashtable_unlock(struct rhashtable *ht), which respectively would just lock and
+> > > unlock the ht->mutex.  Since the rht_deferred_worker isn't exposed in any way
+> > > via the api, it seems like there is no way to really know when its safe to
+> > > update those pointers, because we never know if the rhashtable workers are
+> > > running in parallel with us.  If we had api access to the ht->mutex, we could
+> > > block the forward progress of any async workers in the hash table, which would
+> > > allow us to safely update any member pointers.  And then we wouldn't need to
+> > > cache the net struct.
+> > That would work, but:
+> >
+> > 1. ht->mutex is used to protect hashtable itself, and acquired only when
+> >    hashtable size is changing, NOT even when inserting elements. It does
+> >    not sound good to protect t->asoc->base.sk changing.
+> >
+> > 2. As the node in rhashtbable, transport's keys should be kept invariable
+> >    after created, including t->asoc->base.bind_addr.port, t->ipaddr, and
+> >    t->asoc->base.sk->net.  t->asoc->base.sk is not invariable, but netns
+> >    is, all we should do it to have a proper way to get netns, like:
+> >    t->asoc->base.net.
+> >
+> > 3. caching netns looks clearer and easier than using ht->mutex in sctp.
+> >
+> I agree, it doesn't have to be a lock on the hashtable, but I don't agree that
+> caching is the better solution here.  The only reason that netns doesn't change
+> is because we don't currently migrate sockets between namespaces, but theres no
+> reason we won't.  Its also just a bit ugly to me, since we're caching not for
+> any performance gain, but to avoid sharing data.
+>
+> I'm ok with this for now, but I'd really like to get rid of the extra copy of
+> the namespace pointer if we can.  I wonder if READ_ONCE_NOCHECK might help here,
+> the documentation seems to suggest it can be used to quiet the sanitizer
+> warnings.
+>
+> Acked-by: Neil Horman <nhorman@tuxdriver.com>
+>
+> > >
+> > > What do you think?
+> > >
+> > > Neil
+> > >
+> > > >
+> > > > >
+> > > > > Neil
+> > > > >
+> > > > > > Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > > > ---
+> > > > > >  net/sctp/associola.c         | 10 +++++-----
+> > > > > >  net/sctp/chunk.c             |  2 +-
+> > > > > >  net/sctp/endpointola.c       |  6 +++---
+> > > > > >  net/sctp/input.c             |  5 ++---
+> > > > > >  net/sctp/output.c            |  2 +-
+> > > > > >  net/sctp/outqueue.c          |  6 +++---
+> > > > > >  net/sctp/sm_make_chunk.c     |  7 +++----
+> > > > > >  net/sctp/sm_sideeffect.c     | 16 ++++++----------
+> > > > > >  net/sctp/sm_statefuns.c      |  2 +-
+> > > > > >  net/sctp/socket.c            | 12 +++++-------
+> > > > > >  net/sctp/stream.c            |  3 +--
+> > > > > >  net/sctp/stream_interleave.c | 23 ++++++++++-------------
+> > > > > >  net/sctp/transport.c         |  2 +-
+> > > > > >  net/sctp/ulpqueue.c          | 15 +++++++--------
+> > > > > >  14 files changed, 49 insertions(+), 62 deletions(-)
+> > > > > >
+> > > > > > diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+> > > > > > index 41839b8..a725f53 100644
+> > > > > > --- a/net/sctp/associola.c
+> > > > > > +++ b/net/sctp/associola.c
+> > > > > > @@ -579,7 +579,6 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
+> > > > > >                                          const gfp_t gfp,
+> > > > > >                                          const int peer_state)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > >       struct sctp_transport *peer;
+> > > > > >       struct sctp_sock *sp;
+> > > > > >       unsigned short port;
+> > > > > > @@ -609,7 +608,7 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
+> > > > > >               return peer;
+> > > > > >       }
+> > > > > >
+> > > > > > -     peer = sctp_transport_new(net, addr, gfp);
+> > > > > > +     peer = sctp_transport_new(asoc->base.net, addr, gfp);
+> > > > > >       if (!peer)
+> > > > > >               return NULL;
+> > > > > >
+> > > > > > @@ -978,7 +977,7 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
+> > > > > >       struct sctp_association *asoc =
+> > > > > >               container_of(work, struct sctp_association,
+> > > > > >                            base.inqueue.immediate);
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > > +     struct net *net = asoc->base.net;
+> > > > > >       union sctp_subtype subtype;
+> > > > > >       struct sctp_endpoint *ep;
+> > > > > >       struct sctp_chunk *chunk;
+> > > > > > @@ -1446,7 +1445,8 @@ void sctp_assoc_sync_pmtu(struct sctp_association *asoc)
+> > > > > >  /* Should we send a SACK to update our peer? */
+> > > > > >  static inline bool sctp_peer_needs_update(struct sctp_association *asoc)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > > +     struct net *net = asoc->base.net;
+> > > > > > +
+> > > > > >       switch (asoc->state) {
+> > > > > >       case SCTP_STATE_ESTABLISHED:
+> > > > > >       case SCTP_STATE_SHUTDOWN_PENDING:
+> > > > > > @@ -1580,7 +1580,7 @@ int sctp_assoc_set_bind_addr_from_ep(struct sctp_association *asoc,
+> > > > > >       if (asoc->peer.ipv6_address)
+> > > > > >               flags |= SCTP_ADDR6_PEERSUPP;
+> > > > > >
+> > > > > > -     return sctp_bind_addr_copy(sock_net(asoc->base.sk),
+> > > > > > +     return sctp_bind_addr_copy(asoc->base.net,
+> > > > > >                                  &asoc->base.bind_addr,
+> > > > > >                                  &asoc->ep->base.bind_addr,
+> > > > > >                                  scope, gfp, flags);
+> > > > > > diff --git a/net/sctp/chunk.c b/net/sctp/chunk.c
+> > > > > > index cc0405c..064675b 100644
+> > > > > > --- a/net/sctp/chunk.c
+> > > > > > +++ b/net/sctp/chunk.c
+> > > > > > @@ -227,7 +227,7 @@ struct sctp_datamsg *sctp_datamsg_from_user(struct sctp_association *asoc,
+> > > > > >       if (msg_len >= first_len) {
+> > > > > >               msg->can_delay = 0;
+> > > > > >               if (msg_len > first_len)
+> > > > > > -                     SCTP_INC_STATS(sock_net(asoc->base.sk),
+> > > > > > +                     SCTP_INC_STATS(asoc->base.net,
+> > > > > >                                      SCTP_MIB_FRAGUSRMSGS);
+> > > > > >       } else {
+> > > > > >               /* Which may be the only one... */
+> > > > > > diff --git a/net/sctp/endpointola.c b/net/sctp/endpointola.c
+> > > > > > index 3067deb..6e7e0d3 100644
+> > > > > > --- a/net/sctp/endpointola.c
+> > > > > > +++ b/net/sctp/endpointola.c
+> > > > > > @@ -244,7 +244,7 @@ struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
+> > > > > >       struct sctp_endpoint *retval = NULL;
+> > > > > >
+> > > > > >       if ((htons(ep->base.bind_addr.port) == laddr->v4.sin_port) &&
+> > > > > > -         net_eq(sock_net(ep->base.sk), net)) {
+> > > > > > +         net_eq(ep->base.net, net)) {
+> > > > > >               if (sctp_bind_addr_match(&ep->base.bind_addr, laddr,
+> > > > > >                                        sctp_sk(ep->base.sk)))
+> > > > > >                       retval = ep;
+> > > > > > @@ -292,8 +292,8 @@ bool sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
+> > > > > >                                const union sctp_addr *paddr)
+> > > > > >  {
+> > > > > >       struct sctp_sockaddr_entry *addr;
+> > > > > > +     struct net *net = ep->base.net;
+> > > > > >       struct sctp_bind_addr *bp;
+> > > > > > -     struct net *net = sock_net(ep->base.sk);
+> > > > > >
+> > > > > >       bp = &ep->base.bind_addr;
+> > > > > >       /* This function is called with the socket lock held,
+> > > > > > @@ -384,7 +384,7 @@ static void sctp_endpoint_bh_rcv(struct work_struct *work)
+> > > > > >               if (asoc && sctp_chunk_is_data(chunk))
+> > > > > >                       asoc->peer.last_data_from = chunk->transport;
+> > > > > >               else {
+> > > > > > -                     SCTP_INC_STATS(sock_net(ep->base.sk), SCTP_MIB_INCTRLCHUNKS);
+> > > > > > +                     SCTP_INC_STATS(ep->base.net, SCTP_MIB_INCTRLCHUNKS);
+> > > > > >                       if (asoc)
+> > > > > >                               asoc->stats.ictrlchunks++;
+> > > > > >               }
+> > > > > > diff --git a/net/sctp/input.c b/net/sctp/input.c
+> > > > > > index 4d2bcfc..efaaefc 100644
+> > > > > > --- a/net/sctp/input.c
+> > > > > > +++ b/net/sctp/input.c
+> > > > > > @@ -937,7 +937,7 @@ int sctp_hash_transport(struct sctp_transport *t)
+> > > > > >       if (t->asoc->temp)
+> > > > > >               return 0;
+> > > > > >
+> > > > > > -     arg.net   = sock_net(t->asoc->base.sk);
+> > > > > > +     arg.net   = t->asoc->base.net;
+> > > > > >       arg.paddr = &t->ipaddr;
+> > > > > >       arg.lport = htons(t->asoc->base.bind_addr.port);
+> > > > > >
+> > > > > > @@ -1004,12 +1004,11 @@ struct sctp_transport *sctp_epaddr_lookup_transport(
+> > > > > >                               const struct sctp_endpoint *ep,
+> > > > > >                               const union sctp_addr *paddr)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(ep->base.sk);
+> > > > > >       struct rhlist_head *tmp, *list;
+> > > > > >       struct sctp_transport *t;
+> > > > > >       struct sctp_hash_cmp_arg arg = {
+> > > > > >               .paddr = paddr,
+> > > > > > -             .net   = net,
+> > > > > > +             .net   = ep->base.net,
+> > > > > >               .lport = htons(ep->base.bind_addr.port),
+> > > > > >       };
+> > > > > >
+> > > > > > diff --git a/net/sctp/output.c b/net/sctp/output.c
+> > > > > > index dbda7e7..1441eaf 100644
+> > > > > > --- a/net/sctp/output.c
+> > > > > > +++ b/net/sctp/output.c
+> > > > > > @@ -282,7 +282,7 @@ static enum sctp_xmit sctp_packet_bundle_sack(struct sctp_packet *pkt,
+> > > > > >                                       sctp_chunk_free(sack);
+> > > > > >                                       goto out;
+> > > > > >                               }
+> > > > > > -                             SCTP_INC_STATS(sock_net(asoc->base.sk),
+> > > > > > +                             SCTP_INC_STATS(asoc->base.net,
+> > > > > >                                              SCTP_MIB_OUTCTRLCHUNKS);
+> > > > > >                               asoc->stats.octrlchunks++;
+> > > > > >                               asoc->peer.sack_needed = 0;
+> > > > > > diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
+> > > > > > index 0dab62b..a031d11 100644
+> > > > > > --- a/net/sctp/outqueue.c
+> > > > > > +++ b/net/sctp/outqueue.c
+> > > > > > @@ -279,7 +279,7 @@ void sctp_outq_free(struct sctp_outq *q)
+> > > > > >  /* Put a new chunk in an sctp_outq.  */
+> > > > > >  void sctp_outq_tail(struct sctp_outq *q, struct sctp_chunk *chunk, gfp_t gfp)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(q->asoc->base.sk);
+> > > > > > +     struct net *net = q->asoc->base.net;
+> > > > > >
+> > > > > >       pr_debug("%s: outq:%p, chunk:%p[%s]\n", __func__, q, chunk,
+> > > > > >                chunk && chunk->chunk_hdr ?
+> > > > > > @@ -533,7 +533,7 @@ void sctp_retransmit_mark(struct sctp_outq *q,
+> > > > > >  void sctp_retransmit(struct sctp_outq *q, struct sctp_transport *transport,
+> > > > > >                    enum sctp_retransmit_reason reason)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(q->asoc->base.sk);
+> > > > > > +     struct net *net = q->asoc->base.net;
+> > > > > >
+> > > > > >       switch (reason) {
+> > > > > >       case SCTP_RTXR_T3_RTX:
+> > > > > > @@ -1884,6 +1884,6 @@ void sctp_generate_fwdtsn(struct sctp_outq *q, __u32 ctsn)
+> > > > > >
+> > > > > >       if (ftsn_chunk) {
+> > > > > >               list_add_tail(&ftsn_chunk->list, &q->control_chunk_list);
+> > > > > > -             SCTP_INC_STATS(sock_net(asoc->base.sk), SCTP_MIB_OUTCTRLCHUNKS);
+> > > > > > +             SCTP_INC_STATS(asoc->base.net, SCTP_MIB_OUTCTRLCHUNKS);
+> > > > > >       }
+> > > > > >  }
+> > > > > > diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+> > > > > > index 48d6395..09050c1 100644
+> > > > > > --- a/net/sctp/sm_make_chunk.c
+> > > > > > +++ b/net/sctp/sm_make_chunk.c
+> > > > > > @@ -2307,7 +2307,6 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+> > > > > >                     const union sctp_addr *peer_addr,
+> > > > > >                     struct sctp_init_chunk *peer_init, gfp_t gfp)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > >       struct sctp_transport *transport;
+> > > > > >       struct list_head *pos, *temp;
+> > > > > >       union sctp_params param;
+> > > > > > @@ -2363,8 +2362,8 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+> > > > > >        * also give us an option to silently ignore the packet, which
+> > > > > >        * is what we'll do here.
+> > > > > >        */
+> > > > > > -     if (!net->sctp.addip_noauth &&
+> > > > > > -          (asoc->peer.asconf_capable && !asoc->peer.auth_capable)) {
+> > > > > > +     if (!asoc->base.net->sctp.addip_noauth &&
+> > > > > > +         (asoc->peer.asconf_capable && !asoc->peer.auth_capable)) {
+> > > > > >               asoc->peer.addip_disabled_mask |= (SCTP_PARAM_ADD_IP |
+> > > > > >                                                 SCTP_PARAM_DEL_IP |
+> > > > > >                                                 SCTP_PARAM_SET_PRIMARY);
+> > > > > > @@ -2491,9 +2490,9 @@ static int sctp_process_param(struct sctp_association *asoc,
+> > > > > >                             const union sctp_addr *peer_addr,
+> > > > > >                             gfp_t gfp)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > >       struct sctp_endpoint *ep = asoc->ep;
+> > > > > >       union sctp_addr_param *addr_param;
+> > > > > > +     struct net *net = asoc->base.net;
+> > > > > >       struct sctp_transport *t;
+> > > > > >       enum sctp_scope scope;
+> > > > > >       union sctp_addr addr;
+> > > > > > diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+> > > > > > index e52b212..20b0281 100644
+> > > > > > --- a/net/sctp/sm_sideeffect.c
+> > > > > > +++ b/net/sctp/sm_sideeffect.c
+> > > > > > @@ -516,8 +516,6 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
+> > > > > >                                        struct sctp_transport *transport,
+> > > > > >                                        int is_hb)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > > -
+> > > > > >       /* The check for association's overall error counter exceeding the
+> > > > > >        * threshold is done in the state function.
+> > > > > >        */
+> > > > > > @@ -544,10 +542,10 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
+> > > > > >        * is SCTP_ACTIVE, then mark this transport as Partially Failed,
+> > > > > >        * see SCTP Quick Failover Draft, section 5.1
+> > > > > >        */
+> > > > > > -     if (net->sctp.pf_enable &&
+> > > > > > -        (transport->state == SCTP_ACTIVE) &&
+> > > > > > -        (transport->error_count < transport->pathmaxrxt) &&
+> > > > > > -        (transport->error_count > transport->pf_retrans)) {
+> > > > > > +     if (asoc->base.net->sctp.pf_enable &&
+> > > > > > +         transport->state == SCTP_ACTIVE &&
+> > > > > > +         transport->error_count < transport->pathmaxrxt &&
+> > > > > > +         transport->error_count > transport->pf_retrans) {
+> > > > > >
+> > > > > >               sctp_assoc_control_transport(asoc, transport,
+> > > > > >                                            SCTP_TRANSPORT_PF,
+> > > > > > @@ -793,10 +791,8 @@ static int sctp_cmd_process_sack(struct sctp_cmd_seq *cmds,
+> > > > > >       int err = 0;
+> > > > > >
+> > > > > >       if (sctp_outq_sack(&asoc->outqueue, chunk)) {
+> > > > > > -             struct net *net = sock_net(asoc->base.sk);
+> > > > > > -
+> > > > > >               /* There are no more TSNs awaiting SACK.  */
+> > > > > > -             err = sctp_do_sm(net, SCTP_EVENT_T_OTHER,
+> > > > > > +             err = sctp_do_sm(asoc->base.net, SCTP_EVENT_T_OTHER,
+> > > > > >                                SCTP_ST_OTHER(SCTP_EVENT_NO_PENDING_TSN),
+> > > > > >                                asoc->state, asoc->ep, asoc, NULL,
+> > > > > >                                GFP_ATOMIC);
+> > > > > > @@ -829,7 +825,7 @@ static void sctp_cmd_assoc_update(struct sctp_cmd_seq *cmds,
+> > > > > >                                 struct sctp_association *asoc,
+> > > > > >                                 struct sctp_association *new)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > > +     struct net *net = asoc->base.net;
+> > > > > >       struct sctp_chunk *abort;
+> > > > > >
+> > > > > >       if (!sctp_assoc_update(asoc, new))
+> > > > > > diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+> > > > > > index 4ab8208..42558fa 100644
+> > > > > > --- a/net/sctp/sm_statefuns.c
+> > > > > > +++ b/net/sctp/sm_statefuns.c
+> > > > > > @@ -1320,7 +1320,7 @@ static int sctp_sf_check_restart_addrs(const struct sctp_association *new_asoc,
+> > > > > >                                      struct sctp_chunk *init,
+> > > > > >                                      struct sctp_cmd_seq *commands)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(new_asoc->base.sk);
+> > > > > > +     struct net *net = new_asoc->base.net;
+> > > > > >       struct sctp_transport *new_addr;
+> > > > > >       int ret = 1;
+> > > > > >
+> > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> > > > > > index ffd3262..5e0efbc 100644
+> > > > > > --- a/net/sctp/socket.c
+> > > > > > +++ b/net/sctp/socket.c
+> > > > > > @@ -436,8 +436,7 @@ static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
+> > > > > >  static int sctp_send_asconf(struct sctp_association *asoc,
+> > > > > >                           struct sctp_chunk *chunk)
+> > > > > >  {
+> > > > > > -     struct net      *net = sock_net(asoc->base.sk);
+> > > > > > -     int             retval = 0;
+> > > > > > +     int retval = 0;
+> > > > > >
+> > > > > >       /* If there is an outstanding ASCONF chunk, queue it for later
+> > > > > >        * transmission.
+> > > > > > @@ -449,7 +448,7 @@ static int sctp_send_asconf(struct sctp_association *asoc,
+> > > > > >
+> > > > > >       /* Hold the chunk until an ASCONF_ACK is received. */
+> > > > > >       sctp_chunk_hold(chunk);
+> > > > > > -     retval = sctp_primitive_ASCONF(net, asoc, chunk);
+> > > > > > +     retval = sctp_primitive_ASCONF(asoc->base.net, asoc, chunk);
+> > > > > >       if (retval)
+> > > > > >               sctp_chunk_free(chunk);
+> > > > > >       else
+> > > > > > @@ -2428,9 +2427,8 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
+> > > > > >       int error;
+> > > > > >
+> > > > > >       if (params->spp_flags & SPP_HB_DEMAND && trans) {
+> > > > > > -             struct net *net = sock_net(trans->asoc->base.sk);
+> > > > > > -
+> > > > > > -             error = sctp_primitive_REQUESTHEARTBEAT(net, trans->asoc, trans);
+> > > > > > +             error = sctp_primitive_REQUESTHEARTBEAT(trans->asoc->base.net,
+> > > > > > +                                                     trans->asoc, trans);
+> > > > > >               if (error)
+> > > > > >                       return error;
+> > > > > >       }
+> > > > > > @@ -5308,7 +5306,7 @@ struct sctp_transport *sctp_transport_get_next(struct net *net,
+> > > > > >               if (!sctp_transport_hold(t))
+> > > > > >                       continue;
+> > > > > >
+> > > > > > -             if (net_eq(sock_net(t->asoc->base.sk), net) &&
+> > > > > > +             if (net_eq(t->asoc->base.net, net) &&
+> > > > > >                   t->asoc->peer.primary_path == t)
+> > > > > >                       break;
+> > > > > >
+> > > > > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> > > > > > index e83cdaa..df60b5e 100644
+> > > > > > --- a/net/sctp/stream.c
+> > > > > > +++ b/net/sctp/stream.c
+> > > > > > @@ -218,10 +218,9 @@ void sctp_stream_update(struct sctp_stream *stream, struct sctp_stream *new)
+> > > > > >  static int sctp_send_reconf(struct sctp_association *asoc,
+> > > > > >                           struct sctp_chunk *chunk)
+> > > > > >  {
+> > > > > > -     struct net *net = sock_net(asoc->base.sk);
+> > > > > >       int retval = 0;
+> > > > > >
+> > > > > > -     retval = sctp_primitive_RECONF(net, asoc, chunk);
+> > > > > > +     retval = sctp_primitive_RECONF(asoc->base.net, asoc, chunk);
+> > > > > >       if (retval)
+> > > > > >               sctp_chunk_free(chunk);
+> > > > > >
+> > > > > > diff --git a/net/sctp/stream_interleave.c b/net/sctp/stream_interleave.c
+> > > > > > index 40c40be..6b13f73 100644
+> > > > > > --- a/net/sctp/stream_interleave.c
+> > > > > > +++ b/net/sctp/stream_interleave.c
+> > > > > > @@ -241,9 +241,8 @@ static struct sctp_ulpevent *sctp_intl_retrieve_partial(
+> > > > > >       if (!first_frag)
+> > > > > >               return NULL;
+> > > > > >
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > -                                          &ulpq->reasm, first_frag,
+> > > > > > -                                          last_frag);
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
+> > > > > > +                                          first_frag, last_frag);
+> > > > > >       if (retval) {
+> > > > > >               sin->fsn = next_fsn;
+> > > > > >               if (is_last) {
+> > > > > > @@ -326,7 +325,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled(
+> > > > > >
+> > > > > >       pd_point = sctp_sk(asoc->base.sk)->pd_point;
+> > > > > >       if (pd_point && pd_point <= pd_len) {
+> > > > > > -             retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
+> > > > > > +             retval = sctp_make_reassembled_event(asoc->base.net,
+> > > > > >                                                    &ulpq->reasm,
+> > > > > >                                                    pd_first, pd_last);
+> > > > > >               if (retval) {
+> > > > > > @@ -337,8 +336,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled(
+> > > > > >       goto out;
+> > > > > >
+> > > > > >  found:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
+> > > > > > -                                          &ulpq->reasm,
+> > > > > > +     retval = sctp_make_reassembled_event(asoc->base.net, &ulpq->reasm,
+> > > > > >                                            first_frag, pos);
+> > > > > >       if (retval)
+> > > > > >               retval->msg_flags |= MSG_EOR;
+> > > > > > @@ -630,7 +628,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_partial_uo(
+> > > > > >       if (!first_frag)
+> > > > > >               return NULL;
+> > > > > >
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
+> > > > > >                                            &ulpq->reasm_uo, first_frag,
+> > > > > >                                            last_frag);
+> > > > > >       if (retval) {
+> > > > > > @@ -716,7 +714,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled_uo(
+> > > > > >
+> > > > > >       pd_point = sctp_sk(asoc->base.sk)->pd_point;
+> > > > > >       if (pd_point && pd_point <= pd_len) {
+> > > > > > -             retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
+> > > > > > +             retval = sctp_make_reassembled_event(asoc->base.net,
+> > > > > >                                                    &ulpq->reasm_uo,
+> > > > > >                                                    pd_first, pd_last);
+> > > > > >               if (retval) {
+> > > > > > @@ -727,8 +725,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_reassembled_uo(
+> > > > > >       goto out;
+> > > > > >
+> > > > > >  found:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
+> > > > > > -                                          &ulpq->reasm_uo,
+> > > > > > +     retval = sctp_make_reassembled_event(asoc->base.net, &ulpq->reasm_uo,
+> > > > > >                                            first_frag, pos);
+> > > > > >       if (retval)
+> > > > > >               retval->msg_flags |= MSG_EOR;
+> > > > > > @@ -814,7 +811,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_first_uo(struct sctp_ulpq *ulpq)
+> > > > > >               return NULL;
+> > > > > >
+> > > > > >  out:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
+> > > > > >                                            &ulpq->reasm_uo, first_frag,
+> > > > > >                                            last_frag);
+> > > > > >       if (retval) {
+> > > > > > @@ -921,7 +918,7 @@ static struct sctp_ulpevent *sctp_intl_retrieve_first(struct sctp_ulpq *ulpq)
+> > > > > >               return NULL;
+> > > > > >
+> > > > > >  out:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
+> > > > > >                                            &ulpq->reasm, first_frag,
+> > > > > >                                            last_frag);
+> > > > > >       if (retval) {
+> > > > > > @@ -1159,7 +1156,7 @@ static void sctp_generate_iftsn(struct sctp_outq *q, __u32 ctsn)
+> > > > > >
+> > > > > >       if (ftsn_chunk) {
+> > > > > >               list_add_tail(&ftsn_chunk->list, &q->control_chunk_list);
+> > > > > > -             SCTP_INC_STATS(sock_net(asoc->base.sk), SCTP_MIB_OUTCTRLCHUNKS);
+> > > > > > +             SCTP_INC_STATS(asoc->base.net, SCTP_MIB_OUTCTRLCHUNKS);
+> > > > > >       }
+> > > > > >  }
+> > > > > >
+> > > > > > diff --git a/net/sctp/transport.c b/net/sctp/transport.c
+> > > > > > index 7235a60..f4de064 100644
+> > > > > > --- a/net/sctp/transport.c
+> > > > > > +++ b/net/sctp/transport.c
+> > > > > > @@ -334,7 +334,7 @@ void sctp_transport_update_rto(struct sctp_transport *tp, __u32 rtt)
+> > > > > >               pr_debug("%s: rto_pending not set on transport %p!\n", __func__, tp);
+> > > > > >
+> > > > > >       if (tp->rttvar || tp->srtt) {
+> > > > > > -             struct net *net = sock_net(tp->asoc->base.sk);
+> > > > > > +             struct net *net = tp->asoc->base.net;
+> > > > > >               /* 6.3.1 C3) When a new RTT measurement R' is made, set
+> > > > > >                * RTTVAR <- (1 - RTO.Beta) * RTTVAR + RTO.Beta * |SRTT - R'|
+> > > > > >                * SRTT <- (1 - RTO.Alpha) * SRTT + RTO.Alpha * R'
+> > > > > > diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
+> > > > > > index b6536b7..1c6c640 100644
+> > > > > > --- a/net/sctp/ulpqueue.c
+> > > > > > +++ b/net/sctp/ulpqueue.c
+> > > > > > @@ -486,10 +486,9 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
+> > > > > >               cevent = sctp_skb2event(pd_first);
+> > > > > >               pd_point = sctp_sk(asoc->base.sk)->pd_point;
+> > > > > >               if (pd_point && pd_point <= pd_len) {
+> > > > > > -                     retval = sctp_make_reassembled_event(sock_net(asoc->base.sk),
+> > > > > > +                     retval = sctp_make_reassembled_event(asoc->base.net,
+> > > > > >                                                            &ulpq->reasm,
+> > > > > > -                                                          pd_first,
+> > > > > > -                                                          pd_last);
+> > > > > > +                                                          pd_first, pd_last);
+> > > > > >                       if (retval)
+> > > > > >                               sctp_ulpq_set_pd(ulpq);
+> > > > > >               }
+> > > > > > @@ -497,7 +496,7 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
+> > > > > >  done:
+> > > > > >       return retval;
+> > > > > >  found:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
+> > > > > >                                            &ulpq->reasm, first_frag, pos);
+> > > > > >       if (retval)
+> > > > > >               retval->msg_flags |= MSG_EOR;
+> > > > > > @@ -563,8 +562,8 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_partial(struct sctp_ulpq *ulpq)
+> > > > > >        * further.
+> > > > > >        */
+> > > > > >  done:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > -                                     &ulpq->reasm, first_frag, last_frag);
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
+> > > > > > +                                          first_frag, last_frag);
+> > > > > >       if (retval && is_last)
+> > > > > >               retval->msg_flags |= MSG_EOR;
+> > > > > >
+> > > > > > @@ -664,8 +663,8 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
+> > > > > >        * further.
+> > > > > >        */
+> > > > > >  done:
+> > > > > > -     retval = sctp_make_reassembled_event(sock_net(ulpq->asoc->base.sk),
+> > > > > > -                                     &ulpq->reasm, first_frag, last_frag);
+> > > > > > +     retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
+> > > > > > +                                          first_frag, last_frag);
+> > > > > >       return retval;
+> > > > > >  }
+> > > > > >
+> > > > > > --
+> > > > > > 2.1.0
+> > > > > >
+> > > > > >
+> > > >
+> >
