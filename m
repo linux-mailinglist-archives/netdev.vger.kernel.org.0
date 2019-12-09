@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23534116DB8
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 14:11:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18845116DB1
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 14:09:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727648AbfLINLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 08:11:35 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52102 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727513AbfLINLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 08:11:35 -0500
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 5D3AC9DB6D125A02467D;
-        Mon,  9 Dec 2019 21:11:31 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 9 Dec 2019 21:11:22 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
-        <alexios.zavras@intel.com>, <oneukum@suse.com>,
-        <tglx@linutronix.de>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>,
-        "Hulk Robot" <hulkci@huawei.com>
-Subject: [PATCH v2 -next] NFC: port100: Convert cpu_to_le16(le16_to_cpu(E1) + E2) to use le16_add_cpu().
-Date:   Mon, 9 Dec 2019 21:08:45 +0800
-Message-ID: <20191209130845.47777-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727659AbfLINJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 08:09:46 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40224 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727595AbfLINJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 08:09:45 -0500
+Received: by mail-qt1-f194.google.com with SMTP id t17so8821172qtr.7
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 05:09:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=u1bbrioTwxooO/VsuJjFcFYOpYHh1hahKzAbDFd93vA=;
+        b=Rs48GNbLZeS1qbPRrsA/Ujeko8YVEOLIMBPYg9a+/pL9x5M12qy3R5PpF+/YdBCBTO
+         nmKqWilLQs/auffmDXOyWe8zR5Nit5JuUu1ZQBMHZRqQo8y8uTuIQnGO2Oyx9pTWKCnr
+         MakN0MLXswCSY+JCYg5tgr3ilwDVXd4dw3Jq9fd7BWgaf3475p5qprjIuP8QwiCsWHA+
+         kzvenpx/RlBuzgJ5OsNy4a9/A3dg0GpRQJoiByLLPI4obWE7J0x9ZBrMzk7g0/7Ntu06
+         Hx7mIJaTnKtjNhMn9ig0PnTSCQ9FHlA1x55zJsozYyIzHMDo6Vrb/UBJNNNScdzBt8Im
+         aqSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=u1bbrioTwxooO/VsuJjFcFYOpYHh1hahKzAbDFd93vA=;
+        b=GnMq6aTlwtr1TfJh5OG2WONdyECjzKC9PhxAkwRWzoR0FQFY0MTCHEEbieQVP7gFUw
+         jxGvMH4rFv5r1N9ZjdH6sDTQ1YGUOELCa7E19AW1+TpQO9w1TcoDIvLxKrgya1F0k4/V
+         fF3kGej924jUbAjxTuHlO30pnMwCRmrASzpZzKWtsdBy6hd8jZI9bFm/SFn19RMfaR7s
+         PNjMMasTkelUR3EU2arBSrJDHQOZZgqL5bA3iobqrLe88Lc7fe+wN9kC2TmfyafQ9SMp
+         hUcRw3UmMph6mYXFfo09smzySYqiP0Zg2EfCgqFTdBcNIl7a+nxic7tqr3uZ0Vq3+Gtz
+         k3GA==
+X-Gm-Message-State: APjAAAW8aAJKDtU4EP9BGvNw2jfeIi3z7xSu4ysp8wkZoQZ+ZX1PxUnJ
+        VLjHdB/fSR1RIsIhREdbl9wGHQrMGMhANfUBmpY=
+X-Google-Smtp-Source: APXvYqz9jbaisBUXTCvknEd6lEyr9l/9ozc7OXSS1nkAxt95xdm43cnabJFi0a1CMkGkhPqgMdi7d3jEIaznidRpI7Q=
+X-Received: by 2002:aed:304e:: with SMTP id 72mr24551322qte.113.1575896984702;
+ Mon, 09 Dec 2019 05:09:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Received: by 2002:a05:6214:1413:0:0:0:0 with HTTP; Mon, 9 Dec 2019 05:09:43
+ -0800 (PST)
+Reply-To: mlalduhzuala@aol.com
+From:   "Mr. G.S.Meena Lalduhzuala" <mrali.abun@gmail.com>
+Date:   Mon, 9 Dec 2019 14:09:43 +0100
+Message-ID: <CAPWv7SwzE96r7c6FVpucb2O6e1j=mZyu0GeHtcorr9C+v051NA@mail.gmail.com>
+Subject: very very urgent
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert cpu_to_le16(le16_to_cpu(frame->datalen) + len) to
-use le16_add_cpu(), which is more concise and does the same thing. 
+Dear Friend,
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- v2: change log as julia suggest.
- drivers/nfc/port100.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I Am Mr. G.S.Meena Lalduhzuala, chairman and chief operating officer with the
+Bank of Africa, and I want you to know that the amount of $ 18.6
+million will be transferred to your name as a foreign partner of our
+deceased client.
 
-diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
-index 604dba4..8e4d355 100644
---- a/drivers/nfc/port100.c
-+++ b/drivers/nfc/port100.c
-@@ -565,7 +565,7 @@ static void port100_tx_update_payload_len(void *_frame, int len)
- {
- 	struct port100_frame *frame = _frame;
- 
--	frame->datalen = cpu_to_le16(le16_to_cpu(frame->datalen) + len);
-+	le16_add_cpu(&frame->datalen, len);
- }
- 
- static bool port100_rx_frame_is_valid(void *_frame)
--- 
-2.7.4
+I need your help to get this fund to be transfer out from here to your
+account, and we share at a ratio of 50% for me, while 50% is for you
+in any assistance that you may require to give during the transferring
+process of this fund into your account. You will receive this amount
+by bank transfer.
 
+Please send your full name and your directly phone numbers, and
+address, and I will details you about this transaction. You have to
+contact me through my private e-mail at {mlalduhzuala@aol.com}
+
+Your prompt reply will be highly appreciated.
+
+Sincerely,
+CONTACTS ME THROUGH MY INFORMATION
+Bank Of Africa (A.D.B)
+Ouagadougou Burkina Faso,
+West Africa
+Contact: E-Mail :{mlalduhzuala@aol.com}
+Contact: E-Mail :{mr.g.s.meena@outlook.com}
+Mr. G.S.Meena Lalduhzuala:
+
+Sorry if you received this letter in your spam, is due to recent
+connection error here in the country.
