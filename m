@@ -2,138 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A62A2117982
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA17117986
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 23:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbfLIWiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 17:38:50 -0500
-Received: from mout.web.de ([212.227.15.14]:57057 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727168AbfLIWis (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 17:38:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1575931116;
-        bh=iIcwtGZ7q6+1IJH8HBswoh2M79f+M/HgGj3GZwWb4cU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dXkT1kvsdkuwRbOxQScIQBPCRrzbGwdWzLu4BQCSuuEj0kG8RHK0rIZWCiDspQd5M
-         9amJoQ4CO5o7MG1TqhSYNwStoZZaHhMfqf0uvPjX5XoLlHJHLLDT2eQt3yi4GDBgEL
-         kBbqE8GEr5gRE6W7jq5qBAxRSxnzotqcIuYJsxEs=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from localhost.localdomain ([89.204.137.56]) by smtp.web.de
- (mrweb004 [213.165.67.108]) with ESMTPSA (Nemesis) id
- 0MhOpG-1iQe9W21cg-00MaZJ; Mon, 09 Dec 2019 23:38:36 +0100
-From:   Soeren Moch <smoch@web.de>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Soeren Moch <smoch@web.de>, Heiko Stuebner <heiko@sntech.de>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
-Date:   Mon,  9 Dec 2019 23:38:22 +0100
-Message-Id: <20191209223822.27236-8-smoch@web.de>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191209223822.27236-1-smoch@web.de>
-References: <20191209223822.27236-1-smoch@web.de>
+        id S1727194AbfLIWjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 17:39:07 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:33901 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726665AbfLIWjF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 17:39:05 -0500
+Received: by mail-ot1-f68.google.com with SMTP id a15so13788214otf.1;
+        Mon, 09 Dec 2019 14:39:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Vck/uz8o9EPjsxRkE6GQtWk8nbm1J4z1jJPNcEvOqWg=;
+        b=a8YU+qS++2knEHMlOc+nw3NJtqut3I8pGET8GO21Ff2xdG8dWyfqtbWNmgNw8NoKLb
+         nkrDfz5QgDLNYrvX3ONFX1LUfLHjiRtyF2IDMdlfz7ZlChFKT8ukVP7bn+5N9IWAg3Tj
+         bthKywChcRNJyUqMx3RfUmSyip5B2uwN2XkA+zU6NahPqvigsNNFIgtKl7O5DMRhk105
+         M6cPxt37Mb3q/fWqLbA10wakNOxe5nQGXzmHRlJfss4qN4DUpyFgA+X0ZpGA1SNnWeC5
+         BKYPnS7rAwobuaRvSPEm7HX1zNm6Hb/auGvFtexVEV4jAXcYBQ9Rnbxs+HYNN9dDv0ZX
+         vQZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Vck/uz8o9EPjsxRkE6GQtWk8nbm1J4z1jJPNcEvOqWg=;
+        b=pPUo7VWV/xOOR2Xgism8CyRYGv0giRYLzWOzeEg0D8SstykeowTQZagCIvH5U5XIT0
+         8ENsemv9rRiUl1Tc5cBlpilkLkb9YTWnoinRjRBai0jEf6e03D/ijQEP819UaLbJlI6/
+         /+6mBLhfV5weW5N5rXHxyuh5hgbIX7lX6FYoZxSly1VPpW4lSrAU2X3zYsv9IvjYpaJk
+         0buusNbxiRb6j4GJycMY+hfdoQaU5YzRtQ0kMiYb8/j6lz9+wvGNLwKAgCm/bJ1QaV1m
+         4CoHpkJJEIzx55D1pWZkChZnO4Ij99uYhGSSThZNADlCIVNNwjawHk7CC9rzvlmy4uoO
+         1wRQ==
+X-Gm-Message-State: APjAAAX6AagO53mU+c+gtVS4tRpy39+QFNno9e2qHPSUryRQpQOebl9m
+        GC4IEj0oZftmwikie6PgAuQ=
+X-Google-Smtp-Source: APXvYqxh+Djr3wCr0RmQULGU3DV8YZikbsk/kXIuHXrcFJE9DOzbqaYQkElg7aLDkyEGoXTZBlPnzw==
+X-Received: by 2002:a9d:68ca:: with SMTP id i10mr22651207oto.178.1575931144149;
+        Mon, 09 Dec 2019 14:39:04 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id w8sm504104ote.80.2019.12.09.14.39.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 14:39:03 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] ppp: Adjust indentation into ppp_async_input
+Date:   Mon,  9 Dec 2019 15:38:59 -0700
+Message-Id: <20191209223859.19013-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:JKaU5d2nwpiRHKBLzQOON+w/GWu5jnq3s0cFpfDnyxfLY+ReLv/
- t12RKSkr3wPF+ZXfo6jgBaaUs/Sr54X1V8eD6PJaFVY+DgTx6VMLMd7g5I7Hayx91AKGzYd
- k5/EMQWsoV/viwnF71yh4jM1+SfgE876IVxnXgsSOJm4pDiJ4rGfqvo34S7gD5Dz5PhDPdm
- O10Y1Wx3Kr3rFf+Er7VvQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0gjPZqsxZ3Y=:xsl37Z8u/T3zQJLs0iGiK/
- StbtdO1MulGqkOI+0tC3R05+D2BpUsATmsbUwYvMTdMJ3OpzKLHfRDd68+QV3PPw2PgMwxOMQ
- VpBEc4yTRu71nhJLg1dVBwXFQKswD++aPVZhORWRtZJVzyTlFbMoSj0esJ/iZbsqUYZi7wfIY
- awg05E6yD76DgI1dWcu8OJpCiBzEaAEw+RnKQ5Xpf5AA9ej53O0JN2HEg2b6U45PBW3lbO6Ld
- zvq/bDtAcgnIZWEHx9AGXTGCsg70Rmy/+3Qg+wFhKx6jUDZPfoS6G3Dkffhedq/KZPF8nK7iG
- eomxsBW5LqiZjeiWZ8g5RP4GYJs3pDo3c5+wZSkHcBbKn6MV/2ho41pbe7wBQsau0fxnx5zv1
- 6Lv3jRNvabGS9On3sGpkBLqoAF6Z/mHjLQFoMJBo4YSbAIFyFCeNEXqFbaGdkK5romGqZtMnx
- G7t+nZERHayx5lS9jwBxfDjSfrsCRmPCiif7i+7LCvm8yXr0Xg6PVN7vckZ3As7TUSn6MK4ws
- XLlY7Pxi7yL39FL5e0T4DMS8iQm07ItTBluliHakdLdY9uVnd5kNJK3w/9rdFMo0yeGuGDgxg
- 7y4KDtPKk6CA5Y4lJaeuQnIAwwqX2eRCZMv6ybx01MK/VJTALX4Gq+yacxQF0ugsgEOOM227D
- jWiLxIeaxUJ3uNIME4qiGPQsbre8UoL4ktZzkrqhmda3AQXQMRhB1utmVP5I55YJWB6FQ1BfR
- Mr5iI1kkSe8S90bv1BYE+RLxrcyW15NuOPGvjA6rILHH7iespmAjLPpZuWX9UbQPPEABU/l+b
- 5t6txaPL48St70RlCaXyt7hZTvBW7zqM0m97OM2TkTG9y7GhdvZlDEdKZCTlsBt90P/4b3+K5
- zV8Hj/s8t3J8Qwgcbjl0hzuZrSqySpjqixTY+UChyQCn5mWzv9XbbeSAim3v/pr0dUvUh6A9W
- ke1lp7aR6krzNhehMW425OFITdJLWWRuNxuJZ5W6Y5BqCdtk0N3eD6mxMrfY1E4iLL2uIFMI6
- xkRoqTp4UpoTsXLD7uuaLOZtv7VBPFaeAqhgNX9U57R1HKY2gqEtzc5v8QvODnm4tqkCbJbUe
- x7LcBmKEXxNOayGev5jeN0fv/PdgLlSuzuF7/uSs+LkiMuoa81CQHIGEth1eoBf1hqhQgQtZf
- Nov8rQce8IcauTPloExst3Jp5mukVxxMTCBUioixs79KP1H3m+8rsf2p07s9mkEvvhVNyS/DA
- S0zQ1hJ9bCHz3dLOuyHMO/ZL6CGjuHij7UNTIMA==
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RockPro64 supports an Ampak AP6359SA based wifi/bt combo module.
-The BCM4359/9 wifi controller in this module is connected to sdio0,
-enable this interface.
+Clang warns:
 
-Signed-off-by: Soeren Moch <smoch@web.de>
-=2D--
-Not sure where to place exactly the sdio0 node in the dts because
-existing sd nodes are not sorted alphabetically.
+../drivers/net/ppp/ppp_async.c:877:6: warning: misleading indentation;
+statement is not part of the previous 'if' [-Wmisleading-indentation]
+                                ap->rpkt = skb;
+                                ^
+../drivers/net/ppp/ppp_async.c:875:5: note: previous statement is here
+                                if (!skb)
+                                ^
+1 warning generated.
 
-This last patch in this brcmfmac patch series probably should be picked
-up by Heiko independently of the rest of this series. It was sent together
-to show how this brcmfmac extension for 4359-sdio support with RSDB is
-used and tested.
+This warning occurs because there is a space before the tab on this
+line. Clean up this entire block's indentation so that it is consistent
+with the Linux kernel coding style and clang no longer warns.
 
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: brcm80211-dev-list@cypress.com
-Cc: netdev@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-rockchip@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-=2D--
- .../boot/dts/rockchip/rk3399-rockpro64.dts    | 21 ++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+Fixes: 6722e78c9005 ("[PPP]: handle misaligned accesses")
+Link: https://github.com/ClangBuiltLinux/linux/issues/800
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/ppp/ppp_async.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts b/arch/arm6=
-4/boot/dts/rockchip/rk3399-rockpro64.dts
-index 7f4b2eba31d4..9fa92790d6e0 100644
-=2D-- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-@@ -71,13 +71,6 @@
- 		clock-names =3D "ext_clock";
- 		pinctrl-names =3D "default";
- 		pinctrl-0 =3D <&wifi_enable_h>;
--
--		/*
--		 * On the module itself this is one of these (depending
--		 * on the actual card populated):
--		 * - SDIO_RESET_L_WL_REG_ON
--		 * - PDN (power down when low)
--		 */
- 		reset-gpios =3D <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
- 	};
-
-@@ -650,6 +643,20 @@
- 	status =3D "okay";
- };
-
-+&sdio0 {
-+	bus-width =3D <4>;
-+	cap-sd-highspeed;
-+	cap-sdio-irq;
-+	disable-wp;
-+	keep-power-in-suspend;
-+	mmc-pwrseq =3D <&sdio_pwrseq>;
-+	non-removable;
-+	pinctrl-names =3D "default";
-+	pinctrl-0 =3D <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
-+	sd-uhs-sdr104;
-+	status =3D "okay";
-+};
-+
- &sdmmc {
- 	bus-width =3D <4>;
- 	cap-sd-highspeed;
-=2D-
-2.17.1
+diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
+index a7b9cf3269bf..29a0917a81e6 100644
+--- a/drivers/net/ppp/ppp_async.c
++++ b/drivers/net/ppp/ppp_async.c
+@@ -874,15 +874,15 @@ ppp_async_input(struct asyncppp *ap, const unsigned char *buf,
+ 				skb = dev_alloc_skb(ap->mru + PPP_HDRLEN + 2);
+ 				if (!skb)
+ 					goto nomem;
+- 				ap->rpkt = skb;
+- 			}
+- 			if (skb->len == 0) {
+- 				/* Try to get the payload 4-byte aligned.
+- 				 * This should match the
+- 				 * PPP_ALLSTATIONS/PPP_UI/compressed tests in
+- 				 * process_input_packet, but we do not have
+- 				 * enough chars here to test buf[1] and buf[2].
+- 				 */
++				ap->rpkt = skb;
++			}
++			if (skb->len == 0) {
++				/* Try to get the payload 4-byte aligned.
++				 * This should match the
++				 * PPP_ALLSTATIONS/PPP_UI/compressed tests in
++				 * process_input_packet, but we do not have
++				 * enough chars here to test buf[1] and buf[2].
++				 */
+ 				if (buf[0] != PPP_ALLSTATIONS)
+ 					skb_reserve(skb, 2 + (buf[0] & 1));
+ 			}
+-- 
+2.24.0
 
