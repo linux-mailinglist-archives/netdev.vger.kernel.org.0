@@ -2,106 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7DA81171A7
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A42A1171B4
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbfLIQ3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 11:29:34 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35896 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726362AbfLIQ3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:29:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575908972;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NNvyL4Y9eRzqtb2H2E84LxRf2YADQJydGhMMLpn/rvY=;
-        b=eKiT5CKGXYXTNvkjJWre2sGI9xoeT5Kq+kXrhSRxgD55Cw5lGTbtuVg2gmFUkAc0ZYQpf9
-        ub6AzXx3tu/k9ZUWm44BBpKPmAb3XyUzMSEYke0k5Wa/iY6N1UzL33Km3AJwEZ01CstjgY
-        6W9NQnHM+n13xyRm15HnhQ5kFr9p3pY=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-295-vvClyGdEOS6ovMgt9BdY3Q-1; Mon, 09 Dec 2019 11:29:31 -0500
-Received: by mail-qv1-f70.google.com with SMTP id d7so4917503qvq.12
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 08:29:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wQxMVxgAtK5y0CyKs1BCEj6d5vwE3qN67Xvd5FZmfgk=;
-        b=N38PBl7pn1500q+tYwsTyj1K/5D2pRlddeOP9BA5JG4zs7zJhL/ohK9F2GJZq2aRu0
-         /iY3uExQKh3RAFKeT4MXsQ3CYpPrUEeChPXteqJxJYw928VUUjQsaa8VyNwR+T9sRKpa
-         rEOQWOYYw3837+rp4X2vRwUr6oOOrRnpQRcVE040JbAyjnUFLpayrsYiZ5v7MbJWYwID
-         Xm+ccEvGuRYwedicSxrpqF5MWk97kHrJm+cm34eZitOyhEYIUfRtufSTT86AlAR8ZVcT
-         myaw/vYxhk1iqU9tRRHRqPw1kPuCWL4e2x3d/LuP6UFXCCzyd5VSx2Plfw/Rt5HfYVHR
-         vkFA==
-X-Gm-Message-State: APjAAAVkDMQmg4nYFRgKh0QYZ4kdMBbExPZ6GULdt/GODy4VsOah0gnk
-        ZY+kbrd9dFOfprdg1DDGroX6FzusnetAigDehGQaogtJRurYqmTkiZqg2UMZLxdW3q23GiSR+1x
-        cfTU0uxjZZq6uDfAd
-X-Received: by 2002:a05:620a:899:: with SMTP id b25mr6205348qka.197.1575908971022;
-        Mon, 09 Dec 2019 08:29:31 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwFUcc6D6y2hR3oAFJBLyCpXqAb6UQCleKthwatt7HxCSSIjpA7ZaRTzyQmAILOaUj4yhzSHQ==
-X-Received: by 2002:a05:620a:899:: with SMTP id b25mr6205322qka.197.1575908970851;
-        Mon, 09 Dec 2019 08:29:30 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id f19sm420087qkk.69.2019.12.09.08.29.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2019 08:29:30 -0800 (PST)
-Date:   Mon, 9 Dec 2019 11:29:25 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org, Julio Faracco <jcfaracco@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        dnmendes76@gmail.com, Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next v9 3/3] netronome: use the new txqueue timeout
- argument
-Message-ID: <20191209162727.10113-4-mst@redhat.com>
-References: <20191209162727.10113-1-mst@redhat.com>
+        id S1726495AbfLIQdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 11:33:00 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:43923 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726342AbfLIQdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:00 -0500
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ieLxz-0001up-ER; Mon, 09 Dec 2019 17:32:59 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2019-12-08
+Date:   Mon,  9 Dec 2019 17:32:43 +0100
+Message-Id: <20191209163256.12000-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-In-Reply-To: <20191209162727.10113-1-mst@redhat.com>
-X-Mailer: git-send-email 2.22.0.678.g13338e74b8
-X-Mutt-Fcc: =sent
-X-MC-Unique: vvClyGdEOS6ovMgt9BdY3Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+Hello David,
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/=
-net/ethernet/netronome/nfp/nfp_net_common.c
-index bd305fc6ed5a..d4eeb3b3cf35 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -1324,14 +1324,8 @@ nfp_net_tx_ring_reset(struct nfp_net_dp *dp, struct =
-nfp_net_tx_ring *tx_ring)
- static void nfp_net_tx_timeout(struct net_device *netdev, unsigned int txq=
-ueue)
- {
- =09struct nfp_net *nn =3D netdev_priv(netdev);
--=09int i;
-=20
--=09for (i =3D 0; i < nn->dp.netdev->real_num_tx_queues; i++) {
--=09=09if (!netif_tx_queue_stopped(netdev_get_tx_queue(netdev, i)))
--=09=09=09continue;
--=09=09nn_warn(nn, "TX timeout on ring: %d\n", i);
--=09}
--=09nn_warn(nn, "TX watchdog timeout\n");
-+=09nn_warn(nn, "TX watchdog timeout on ring: %u\n", txqueue);
- }
-=20
- /* Receive processing
---=20
-MST
+this is a pull request of 13 patches for net/master.
+
+The first two patches are by Dan Murphy. He adds himself as a maintainer to the
+m-can MMIO and tcan SPI driver.
+
+The next two patches the j1939 stack. The first one is by Oleksij Rempel and
+fixes a locking problem found by the syzbot, the second one is by me an fixes a
+mistake in the documentation.
+
+Srinivas Neeli fixes missing RX CAN packets on CANFD2.0 in the xilinx driver.
+
+Sean Nyekjaer fixes a possible deadlock in the the flexcan driver after
+suspend/resume. Joakim Zhang contributes two patches for the flexcan driver
+that fix problems with the low power enter/exit.
+
+The next 4 patches all target the tcan part of the m_can driver. Sean Nyekjaer
+adds the required delay after reset and fixes the device tree binding example.
+Dan Murphy's patches make the wake-gpio optional.
+
+In the last patch Xiaolong Huang fixes several kernel memory info leaks to the
+USB device in the kvaser_usb_leaf driver.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 0fc75219fe9a3c90631453e9870e4f6d956f0ebc:
+
+  r8169: fix rtl_hw_jumbo_disable for RTL8168evl (2019-12-07 14:23:06 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.5-20191208
+
+for you to fetch changes up to da2311a6385c3b499da2ed5d9be59ce331fa93e9:
+
+  can: kvaser_usb: kvaser_usb_leaf: Fix some info-leaks to USB devices (2019-12-08 12:22:01 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.5-20191208
+
+----------------------------------------------------------------
+Dan Murphy (4):
+      MAINTAINERS: Add myself as a maintainer for MMIO m_can
+      MAINTAINERS: Add myself as a maintainer for TCAN4x5x
+      dt-bindings: tcan4x5x: Make wake-gpio an optional gpio
+      can: tcan45x: Make wake-up GPIO an optional GPIO
+
+Joakim Zhang (2):
+      can: flexcan: add low power enter/exit acknowledgment helper
+      can: flexcan: poll MCR_LPM_ACK instead of GPR ACK for stop mode acknowledgment
+
+Marc Kleine-Budde (1):
+      can: j1939: fix address claim code example
+
+Oleksij Rempel (1):
+      can: j1939: j1939_sk_bind(): take priv after lock is held
+
+Sean Nyekjaer (3):
+      can: flexcan: fix possible deadlock and out-of-order reception after wakeup
+      can: m_can: tcan4x5x: add required delay after reset
+      dt-bindings: can: tcan4x5x: reset pin is active high
+
+Srinivas Neeli (1):
+      can: xilinx_can: Fix missing Rx can packets on CANFD2.0
+
+Xiaolong Huang (1):
+      can: kvaser_usb: kvaser_usb_leaf: Fix some info-leaks to USB devices
+
+ .../devicetree/bindings/net/can/tcan4x5x.txt       |  4 +-
+ Documentation/networking/j1939.rst                 |  2 +-
+ MAINTAINERS                                        |  8 +++
+ drivers/net/can/flexcan.c                          | 73 +++++++++++-----------
+ drivers/net/can/m_can/tcan4x5x.c                   | 26 ++++++--
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c   |  6 +-
+ drivers/net/can/xilinx_can.c                       |  7 +++
+ net/can/j1939/socket.c                             | 10 ++-
+ 8 files changed, 84 insertions(+), 52 deletions(-)
+
 
