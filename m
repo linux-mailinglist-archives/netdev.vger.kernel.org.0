@@ -2,145 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41AA411703A
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:19:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D07761170A9
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:37:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbfLIPTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:19:54 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35568 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbfLIPTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:19:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZExqbcLQm37N62W50D9jnodCLZh3tujGOFvVc6/9xRw=; b=Uz4WT7op7PT1ssXUo/ab3IhXzk
-        kF+houpsyWG3HTPQA+yK+HtMf//KhM+kUBU7lZFiolCOxcIuqJQHdTs5pJ9oxN0yOunnEb0vUWgw4
-        upAV/rr1KQZAcGd0pLk6JlLOF9Cbfl3QNBbXs6gk7wk/M3pG68kcLbKkDniHhIDtlMRG2KXXZVz3I
-        /r7x28l/8UPEir0Fh0USw6TUPCNHmILT+MJrZAazRCyxIF6gHanyWq/Lvk1ymchOiFMqm/IBeh6UK
-        TylCi9ZI8SPlpqwRRJEyNPDqMVrqUjL7fwCiM2YqNmbkUgAj+CpmzAZNbuSe3he+eLCBDDdm5QY3w
-        oGTVhJyw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54626 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKp3-0003rl-JD; Mon, 09 Dec 2019 15:19:41 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKp0-0004w3-Pb; Mon, 09 Dec 2019 15:19:38 +0000
-In-Reply-To: <20191209151553.GP25745@shell.armlinux.org.uk>
-References: <20191209151553.GP25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 14/14] net: sfp: add support for Clause 45 PHYs
+        id S1726619AbfLIPhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:37:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40036 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726290AbfLIPhr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 10:37:47 -0500
+Received: from localhost (unknown [89.205.132.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 71CAA20726;
+        Mon,  9 Dec 2019 15:37:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575905867;
+        bh=s2bEYWf197utEz/SWsvPqfz1Q0KP1wD9/JS+5YS9CYM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L9+sU8EvFsTmpzSetgEcKgYYK66YVsUDReVMz1qiS69wSltGYaDf60DLq8wNbun/6
+         DAUNwFkEgg1rq1gTfG9AaCbW8t/Ob/+8xwJDUcKPYNnYxyC+UCpDVIcMg1lZTnBPOD
+         gy/OygZek5VMfY3cWArKhoqDIGt8es0lTw4/1fq8=
+Date:   Mon, 9 Dec 2019 16:37:43 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     devel@driverdev.osuosl.org,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        isdn4linux@listserv.isdn4linux.de,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/2] staging: remove isdn capi drivers
+Message-ID: <20191209153743.GA1284708@kroah.com>
+References: <20191209151114.2410762-1-arnd@arndb.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ieKp0-0004w3-Pb@rmk-PC.armlinux.org.uk>
-Date:   Mon, 09 Dec 2019 15:19:38 +0000
+In-Reply-To: <20191209151114.2410762-1-arnd@arndb.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some SFP+ modules have a Clause 45 PHY onboard, which is accessible via
-the normal I2C address.  Detect 10G BASE-T PHYs which may have an
-accessible PHY and probe for it.
+On Mon, Dec 09, 2019 at 04:11:13PM +0100, Arnd Bergmann wrote:
+> As described in drivers/staging/isdn/TODO, the drivers are all
+> assumed to be unmaintained and unused now, with gigaset being the
+> last one to stop being maintained after Paul Bolle lost access
+> to an ISDN network.
+> 
+> The CAPI subsystem remains for now, as it is still required by
+> bluetooth/cmtp.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 44 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 40 insertions(+), 4 deletions(-)
+Nice!  You beat me to it :)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d7d2c797c89c..bfe268028154 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1402,12 +1402,12 @@ static void sfp_sm_phy_detach(struct sfp *sfp)
- 	sfp->mod_phy = NULL;
- }
- 
--static void sfp_sm_probe_phy(struct sfp *sfp)
-+static void sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
- {
- 	struct phy_device *phy;
- 	int err;
- 
--	phy = mdiobus_scan(sfp->i2c_mii, SFP_PHY_ADDR);
-+	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
- 	if (phy == ERR_PTR(-ENODEV)) {
- 		dev_info(sfp->dev, "no PHY detected\n");
- 		return;
-@@ -1417,6 +1417,13 @@ static void sfp_sm_probe_phy(struct sfp *sfp)
- 		return;
- 	}
- 
-+	err = phy_device_register(phy);
-+	if (err) {
-+		phy_device_free(phy);
-+		dev_err(sfp->dev, "phy_device_register failed: %d\n", err);
-+		return;
-+	}
-+
- 	err = sfp_add_phy(sfp->sfp_bus, phy);
- 	if (err) {
- 		phy_device_remove(phy);
-@@ -1487,10 +1494,32 @@ static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
- 	}
- }
- 
-+/* Probe a SFP for a PHY device if the module supports copper - the PHY
-+ * normally sits at I2C bus address 0x56, and may either be a clause 22
-+ * or clause 45 PHY.
-+ *
-+ * Clause 22 copper SFP modules normally operate in Cisco SGMII mode with
-+ * negotiation enabled, but some may be in 1000base-X - which is for the
-+ * PHY driver to determine.
-+ *
-+ * Clause 45 copper SFP+ modules (10G) appear to switch their interface
-+ * mode according to the negotiated line speed.
-+ */
- static void sfp_sm_probe_for_phy(struct sfp *sfp)
- {
--	if (sfp->id.base.e1000_base_t)
--		sfp_sm_probe_phy(sfp);
-+	switch (sfp->id.base.extended_cc) {
-+	case SFF8024_ECC_10GBASE_T_SFI:
-+	case SFF8024_ECC_10GBASE_T_SR:
-+	case SFF8024_ECC_5GBASE_T:
-+	case SFF8024_ECC_2_5GBASE_T:
-+		sfp_sm_probe_phy(sfp, true);
-+		break;
-+
-+	default:
-+		if (sfp->id.base.e1000_base_t)
-+			sfp_sm_probe_phy(sfp, false);
-+		break;
-+	}
- }
- 
- static int sfp_module_parse_power(struct sfp *sfp)
-@@ -1550,6 +1579,13 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- 		return -EAGAIN;
- 	}
- 
-+	/* DM7052 reports as a high power module, responds to reads (with
-+	 * all bytes 0xff) at 0x51 but does not accept writes.  In any case,
-+	 * if the bit is already set, we're already in high power mode.
-+	 */
-+	if (!!(val & BIT(0)) == enable)
-+		return 0;
-+
- 	if (enable)
- 		val |= BIT(0);
- 	else
--- 
-2.20.1
+I'll go queue this up soon.
 
+David, any objection for me taking patch 2/2 here as well?
+
+thanks,
+
+greg k-h
