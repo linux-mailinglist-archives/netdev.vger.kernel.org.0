@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D4211702A
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:18:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3C611702F
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 16:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbfLIPSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 10:18:49 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35448 "EHLO
+        id S1726780AbfLIPSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 10:18:55 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35458 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbfLIPSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:18:49 -0500
+        with ESMTP id S1725956AbfLIPSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 10:18:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=v2/HMrQcCt5tJdDIqFDP8zDqinIPGJKfu5iUGYdT6mg=; b=Oz1IDQ61qdy/RDcS5i9YMI57ZE
-        ojJiZZLfixZT4JkfC4fZA7Ocxv9e20OnNlZTcanWvwTb08gWzXc023lUdzZq+HMq3Jouc6Ql3W0vI
-        2O1acHPFYmPmYoRjyUZ7AB03toI//QQCzy0GWBEnfLcLwIFD3Bi2IMrUZLzcyHqkGK/ui2i3Ej9m2
-        d7OeQI/QKqGg+p2kImYqmy0JvnVaT++Av4JUPOHQi/AMNVMxvf8Cttb4foFbvxqU6gPsGZC4A1p5W
-        9ytdqG6uSb2LSdl9q5XAV09vC+IVUhlq0bh33oo8PhRUzRZm4HBPennAZIdakDgUTAqEF7ynhDfcS
-        Ow319PYQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:38174 helo=rmk-PC.armlinux.org.uk)
+        bh=gHDDCO4pR2psGyN6LkoA/FVbIJza3uq12Dy+w5GLUjo=; b=u01WIzyIM1N3uHtg8MsdLqmDv1
+        bIZtXnx8U13pNCIV6GCGFS+Tz/67JF+yy9RYB3KKrxNY5MR4v/8V9WlA1iLVd2oQo0/8mRh42cJaf
+        doC4PUDaL5ICmVeYKMG92aw6Gzen2xn+qRH54HDyAmS7bJjxzs+4YxuxnFxyNn+dot5AN7VPkb1tv
+        d4BjCsl3f0ez/UIv06PEaatV9sYBQtrzjBL2tZNKaBRfv2/kiLKQiaDrcKIfk7clm0+8s+VNGQN5u
+        XOiQVlnPIYVCX+oWzyHEXs1lM51zdoJag0MaAYUkpmB3tED0OctCD1wX9Mj7iLMQ2xwp3W+jIMKZb
+        awjzMvBQ==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:38176 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKo5-0003q7-93; Mon, 09 Dec 2019 15:18:41 +0000
+        id 1ieKoA-0003qG-UA; Mon, 09 Dec 2019 15:18:47 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ieKo3-0004um-R5; Mon, 09 Dec 2019 15:18:39 +0000
+        id 1ieKo8-0004uu-Uh; Mon, 09 Dec 2019 15:18:45 +0000
 In-Reply-To: <20191209151553.GP25745@shell.armlinux.org.uk>
 References: <20191209151553.GP25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,271 +38,152 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 03/14] net: sfp: add more extended compliance
- codes
+Subject: [PATCH net-next v2 04/14] net: sfp: add module start/stop upstream
+ notifications
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ieKo3-0004um-R5@rmk-PC.armlinux.org.uk>
-Date:   Mon, 09 Dec 2019 15:18:39 +0000
+Message-Id: <E1ieKo8-0004uu-Uh@rmk-PC.armlinux.org.uk>
+Date:   Mon, 09 Dec 2019 15:18:44 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SFF-8024 is used to define various constants re-used in several SFF
-SFP-related specifications.  Split these constants from the enum, and
-rename them to indicate that they're defined by SFF-8024.
+When dealing with some copper modules, we can't positively know the
+module capabilities are until we have probed the PHY. Without the full
+capabilities, we may end up failing a module that we could otherwise
+drive with a restricted set of capabilities.
 
-Add and use updated SFF-8024 extended compliance code definitions for
-10GBASE-T, 5GBASE-T and 2.5GBASE-T modules.
+An example of this would be a module with a NBASE-T PHY plugged into
+a host that supports phy interface modes 2500BASE-X and SGMII. The
+PHY supports 10GBASE-R, 5000BASE-X, 2500BASE-X, SGMII interface modes,
+which means a subset of the capabilities are compatible with the host.
+
+However, reading the module EEPROM leads us to believe that the module
+only supports ethtool link mode 10GBASE-T, which is incompatible with
+the host - and thus results in the module being rejected.
+
+This patch adds an extra notification which are triggered after the
+SFP module's PHY probe, and a corresponding notification just before
+the PHY is removed.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp-bus.c | 60 ++++++++++++++++------------
- drivers/net/phy/sfp.c     |  4 +-
- include/linux/sfp.h       | 82 ++++++++++++++++++++++++++-------------
- 3 files changed, 93 insertions(+), 53 deletions(-)
+ drivers/net/phy/sfp-bus.c | 21 +++++++++++++++++++++
+ drivers/net/phy/sfp.c     |  8 ++++++++
+ drivers/net/phy/sfp.h     |  2 ++
+ include/linux/sfp.h       |  4 ++++
+ 4 files changed, 35 insertions(+)
 
 diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 1561962fda30..c6627f1e5d68 100644
+index c6627f1e5d68..eabc9e3f0a9e 100644
 --- a/drivers/net/phy/sfp-bus.c
 +++ b/drivers/net/phy/sfp-bus.c
-@@ -124,35 +124,35 @@ int sfp_parse_port(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
+@@ -712,6 +712,27 @@ void sfp_module_remove(struct sfp_bus *bus)
+ }
+ EXPORT_SYMBOL_GPL(sfp_module_remove);
  
- 	/* port is the physical connector, set this from the connector field. */
- 	switch (id->base.connector) {
--	case SFP_CONNECTOR_SC:
--	case SFP_CONNECTOR_FIBERJACK:
--	case SFP_CONNECTOR_LC:
--	case SFP_CONNECTOR_MT_RJ:
--	case SFP_CONNECTOR_MU:
--	case SFP_CONNECTOR_OPTICAL_PIGTAIL:
-+	case SFF8024_CONNECTOR_SC:
-+	case SFF8024_CONNECTOR_FIBERJACK:
-+	case SFF8024_CONNECTOR_LC:
-+	case SFF8024_CONNECTOR_MT_RJ:
-+	case SFF8024_CONNECTOR_MU:
-+	case SFF8024_CONNECTOR_OPTICAL_PIGTAIL:
-+	case SFF8024_CONNECTOR_MPO_1X12:
-+	case SFF8024_CONNECTOR_MPO_2X16:
- 		port = PORT_FIBRE;
- 		break;
- 
--	case SFP_CONNECTOR_RJ45:
-+	case SFF8024_CONNECTOR_RJ45:
- 		port = PORT_TP;
- 		break;
- 
--	case SFP_CONNECTOR_COPPER_PIGTAIL:
-+	case SFF8024_CONNECTOR_COPPER_PIGTAIL:
- 		port = PORT_DA;
- 		break;
- 
--	case SFP_CONNECTOR_UNSPEC:
-+	case SFF8024_CONNECTOR_UNSPEC:
- 		if (id->base.e1000_base_t) {
- 			port = PORT_TP;
- 			break;
- 		}
- 		/* fallthrough */
--	case SFP_CONNECTOR_SG: /* guess */
--	case SFP_CONNECTOR_MPO_1X12:
--	case SFP_CONNECTOR_MPO_2X16:
--	case SFP_CONNECTOR_HSSDC_II:
--	case SFP_CONNECTOR_NOSEPARATE:
--	case SFP_CONNECTOR_MXC_2X16:
-+	case SFF8024_CONNECTOR_SG: /* guess */
-+	case SFF8024_CONNECTOR_HSSDC_II:
-+	case SFF8024_CONNECTOR_NOSEPARATE:
-+	case SFF8024_CONNECTOR_MXC_2X16:
- 		port = PORT_OTHER;
- 		break;
- 	default:
-@@ -261,22 +261,33 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
- 	}
- 
- 	switch (id->base.extended_cc) {
--	case 0x00: /* Unspecified */
-+	case SFF8024_ECC_UNSPEC:
- 		break;
--	case 0x02: /* 100Gbase-SR4 or 25Gbase-SR */
-+	case SFF8024_ECC_100GBASE_SR4_25GBASE_SR:
- 		phylink_set(modes, 100000baseSR4_Full);
- 		phylink_set(modes, 25000baseSR_Full);
- 		break;
--	case 0x03: /* 100Gbase-LR4 or 25Gbase-LR */
--	case 0x04: /* 100Gbase-ER4 or 25Gbase-ER */
-+	case SFF8024_ECC_100GBASE_LR4_25GBASE_LR:
-+	case SFF8024_ECC_100GBASE_ER4_25GBASE_ER:
- 		phylink_set(modes, 100000baseLR4_ER4_Full);
- 		break;
--	case 0x0b: /* 100Gbase-CR4 or 25Gbase-CR CA-L */
--	case 0x0c: /* 25Gbase-CR CA-S */
--	case 0x0d: /* 25Gbase-CR CA-N */
-+	case SFF8024_ECC_100GBASE_CR4:
- 		phylink_set(modes, 100000baseCR4_Full);
-+		/* fallthrough */
-+	case SFF8024_ECC_25GBASE_CR_S:
-+	case SFF8024_ECC_25GBASE_CR_N:
- 		phylink_set(modes, 25000baseCR_Full);
- 		break;
-+	case SFF8024_ECC_10GBASE_T_SFI:
-+	case SFF8024_ECC_10GBASE_T_SR:
-+		phylink_set(modes, 10000baseT_Full);
-+		break;
-+	case SFF8024_ECC_5GBASE_T:
-+		phylink_set(modes, 5000baseT_Full);
-+		break;
-+	case SFF8024_ECC_2_5GBASE_T:
-+		phylink_set(modes, 2500baseT_Full);
-+		break;
- 	default:
- 		dev_warn(bus->sfp_dev,
- 			 "Unknown/unsupported extended compliance code: 0x%02x\n",
-@@ -301,7 +312,7 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
- 	 */
- 	if (bitmap_empty(modes, __ETHTOOL_LINK_MODE_MASK_NBITS)) {
- 		/* If the encoding and bit rate allows 1000baseX */
--		if (id->base.encoding == SFP_ENCODING_8B10B && br_nom &&
-+		if (id->base.encoding == SFF8024_ENCODING_8B10B && br_nom &&
- 		    br_min <= 1300 && br_max >= 1200)
- 			phylink_set(modes, 1000baseX_Full);
- 	}
-@@ -332,7 +343,8 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
- 	    phylink_test(link_modes, 10000baseSR_Full) ||
- 	    phylink_test(link_modes, 10000baseLR_Full) ||
- 	    phylink_test(link_modes, 10000baseLRM_Full) ||
--	    phylink_test(link_modes, 10000baseER_Full))
-+	    phylink_test(link_modes, 10000baseER_Full) ||
-+	    phylink_test(link_modes, 10000baseT_Full))
- 		return PHY_INTERFACE_MODE_10GKR;
- 
- 	if (phylink_test(link_modes, 2500baseX_Full))
++int sfp_module_start(struct sfp_bus *bus)
++{
++	const struct sfp_upstream_ops *ops = sfp_get_upstream_ops(bus);
++	int ret = 0;
++
++	if (ops && ops->module_start)
++		ret = ops->module_start(bus->upstream);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(sfp_module_start);
++
++void sfp_module_stop(struct sfp_bus *bus)
++{
++	const struct sfp_upstream_ops *ops = sfp_get_upstream_ops(bus);
++
++	if (ops && ops->module_stop)
++		ops->module_stop(bus->upstream);
++}
++EXPORT_SYMBOL_GPL(sfp_module_stop);
++
+ static void sfp_socket_clear(struct sfp_bus *bus)
+ {
+ 	bus->sfp_dev = NULL;
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index ae6a52a19458..ad3808307dba 100644
+index ad3808307dba..23f30dac0f17 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -242,7 +242,7 @@ struct sfp {
+@@ -59,6 +59,7 @@ enum {
+ 	SFP_DEV_UP,
  
- static bool sff_module_supported(const struct sfp_eeprom_id *id)
- {
--	return id->base.phys_id == SFP_PHYS_ID_SFF &&
-+	return id->base.phys_id == SFF8024_ID_SFF_8472 &&
- 	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
- }
+ 	SFP_S_DOWN = 0,
++	SFP_S_FAIL,
+ 	SFP_S_WAIT,
+ 	SFP_S_INIT,
+ 	SFP_S_INIT_TX_FAULT,
+@@ -122,6 +123,7 @@ static const char *event_to_str(unsigned short event)
  
-@@ -253,7 +253,7 @@ static const struct sff_data sff_data = {
+ static const char * const sm_state_strings[] = {
+ 	[SFP_S_DOWN] = "down",
++	[SFP_S_FAIL] = "fail",
+ 	[SFP_S_WAIT] = "wait",
+ 	[SFP_S_INIT] = "init",
+ 	[SFP_S_INIT_TX_FAULT] = "init_tx_fault",
+@@ -1826,6 +1828,8 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
+ 		if (sfp->sm_state == SFP_S_LINK_UP &&
+ 		    sfp->sm_dev_state == SFP_DEV_UP)
+ 			sfp_sm_link_down(sfp);
++		if (sfp->sm_state > SFP_S_INIT)
++			sfp_module_stop(sfp->sfp_bus);
+ 		if (sfp->mod_phy)
+ 			sfp_sm_phy_detach(sfp);
+ 		sfp_module_tx_disable(sfp);
+@@ -1893,6 +1897,10 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
+ 			 * clear.  Probe for the PHY and check the LOS state.
+ 			 */
+ 			sfp_sm_probe_for_phy(sfp);
++			if (sfp_module_start(sfp->sfp_bus)) {
++				sfp_sm_next(sfp, SFP_S_FAIL, 0);
++				break;
++			}
+ 			sfp_sm_link_check_los(sfp);
  
- static bool sfp_module_supported(const struct sfp_eeprom_id *id)
- {
--	return id->base.phys_id == SFP_PHYS_ID_SFP &&
-+	return id->base.phys_id == SFF8024_ID_SFP &&
- 	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
- }
- 
+ 			/* Reset the fault retry count */
+diff --git a/drivers/net/phy/sfp.h b/drivers/net/phy/sfp.h
+index 64f54b0bbd8c..b83f70526270 100644
+--- a/drivers/net/phy/sfp.h
++++ b/drivers/net/phy/sfp.h
+@@ -22,6 +22,8 @@ void sfp_link_up(struct sfp_bus *bus);
+ void sfp_link_down(struct sfp_bus *bus);
+ int sfp_module_insert(struct sfp_bus *bus, const struct sfp_eeprom_id *id);
+ void sfp_module_remove(struct sfp_bus *bus);
++int sfp_module_start(struct sfp_bus *bus);
++void sfp_module_stop(struct sfp_bus *bus);
+ int sfp_link_configure(struct sfp_bus *bus, const struct sfp_eeprom_id *id);
+ struct sfp_bus *sfp_register_socket(struct device *dev, struct sfp *sfp,
+ 				    const struct sfp_socket_ops *ops);
 diff --git a/include/linux/sfp.h b/include/linux/sfp.h
-index 8d7b98c214d7..373d8b67ea86 100644
+index 373d8b67ea86..66a56396e8e3 100644
 --- a/include/linux/sfp.h
 +++ b/include/linux/sfp.h
-@@ -275,6 +275,61 @@ struct sfp_diag {
- 	__be16 cal_v_offset;
- } __packed;
- 
-+/* SFF8024 defined constants */
-+enum {
-+	SFF8024_ID_UNK			= 0x00,
-+	SFF8024_ID_SFF_8472		= 0x02,
-+	SFF8024_ID_SFP			= 0x03,
-+	SFF8024_ID_DWDM_SFP		= 0x0b,
-+	SFF8024_ID_QSFP_8438		= 0x0c,
-+	SFF8024_ID_QSFP_8436_8636	= 0x0d,
-+	SFF8024_ID_QSFP28_8636		= 0x11,
-+
-+	SFF8024_ENCODING_UNSPEC		= 0x00,
-+	SFF8024_ENCODING_8B10B		= 0x01,
-+	SFF8024_ENCODING_4B5B		= 0x02,
-+	SFF8024_ENCODING_NRZ		= 0x03,
-+	SFF8024_ENCODING_8472_MANCHESTER= 0x04,
-+	SFF8024_ENCODING_8472_SONET	= 0x05,
-+	SFF8024_ENCODING_8472_64B66B	= 0x06,
-+	SFF8024_ENCODING_8436_MANCHESTER= 0x06,
-+	SFF8024_ENCODING_8436_SONET	= 0x04,
-+	SFF8024_ENCODING_8436_64B66B	= 0x05,
-+	SFF8024_ENCODING_256B257B	= 0x07,
-+	SFF8024_ENCODING_PAM4		= 0x08,
-+
-+	SFF8024_CONNECTOR_UNSPEC	= 0x00,
-+	/* codes 01-05 not supportable on SFP, but some modules have single SC */
-+	SFF8024_CONNECTOR_SC		= 0x01,
-+	SFF8024_CONNECTOR_FIBERJACK	= 0x06,
-+	SFF8024_CONNECTOR_LC		= 0x07,
-+	SFF8024_CONNECTOR_MT_RJ		= 0x08,
-+	SFF8024_CONNECTOR_MU		= 0x09,
-+	SFF8024_CONNECTOR_SG		= 0x0a,
-+	SFF8024_CONNECTOR_OPTICAL_PIGTAIL= 0x0b,
-+	SFF8024_CONNECTOR_MPO_1X12	= 0x0c,
-+	SFF8024_CONNECTOR_MPO_2X16	= 0x0d,
-+	SFF8024_CONNECTOR_HSSDC_II	= 0x20,
-+	SFF8024_CONNECTOR_COPPER_PIGTAIL= 0x21,
-+	SFF8024_CONNECTOR_RJ45		= 0x22,
-+	SFF8024_CONNECTOR_NOSEPARATE	= 0x23,
-+	SFF8024_CONNECTOR_MXC_2X16	= 0x24,
-+
-+	SFF8024_ECC_UNSPEC		= 0x00,
-+	SFF8024_ECC_100G_25GAUI_C2M_AOC	= 0x01,
-+	SFF8024_ECC_100GBASE_SR4_25GBASE_SR = 0x02,
-+	SFF8024_ECC_100GBASE_LR4_25GBASE_LR = 0x03,
-+	SFF8024_ECC_100GBASE_ER4_25GBASE_ER = 0x04,
-+	SFF8024_ECC_100GBASE_SR10	= 0x05,
-+	SFF8024_ECC_100GBASE_CR4	= 0x0b,
-+	SFF8024_ECC_25GBASE_CR_S	= 0x0c,
-+	SFF8024_ECC_25GBASE_CR_N	= 0x0d,
-+	SFF8024_ECC_10GBASE_T_SFI	= 0x16,
-+	SFF8024_ECC_10GBASE_T_SR	= 0x1c,
-+	SFF8024_ECC_5GBASE_T		= 0x1d,
-+	SFF8024_ECC_2_5GBASE_T		= 0x1e,
-+};
-+
- /* SFP EEPROM registers */
- enum {
- 	SFP_PHYS_ID			= 0x00,
-@@ -309,34 +364,7 @@ enum {
- 	SFP_SFF8472_COMPLIANCE		= 0x5e,
- 	SFP_CC_EXT			= 0x5f,
- 
--	SFP_PHYS_ID_SFF			= 0x02,
--	SFP_PHYS_ID_SFP			= 0x03,
- 	SFP_PHYS_EXT_ID_SFP		= 0x04,
--	SFP_CONNECTOR_UNSPEC		= 0x00,
--	/* codes 01-05 not supportable on SFP, but some modules have single SC */
--	SFP_CONNECTOR_SC		= 0x01,
--	SFP_CONNECTOR_FIBERJACK		= 0x06,
--	SFP_CONNECTOR_LC		= 0x07,
--	SFP_CONNECTOR_MT_RJ		= 0x08,
--	SFP_CONNECTOR_MU		= 0x09,
--	SFP_CONNECTOR_SG		= 0x0a,
--	SFP_CONNECTOR_OPTICAL_PIGTAIL	= 0x0b,
--	SFP_CONNECTOR_MPO_1X12		= 0x0c,
--	SFP_CONNECTOR_MPO_2X16		= 0x0d,
--	SFP_CONNECTOR_HSSDC_II		= 0x20,
--	SFP_CONNECTOR_COPPER_PIGTAIL	= 0x21,
--	SFP_CONNECTOR_RJ45		= 0x22,
--	SFP_CONNECTOR_NOSEPARATE	= 0x23,
--	SFP_CONNECTOR_MXC_2X16		= 0x24,
--	SFP_ENCODING_UNSPEC		= 0x00,
--	SFP_ENCODING_8B10B		= 0x01,
--	SFP_ENCODING_4B5B		= 0x02,
--	SFP_ENCODING_NRZ		= 0x03,
--	SFP_ENCODING_8472_MANCHESTER	= 0x04,
--	SFP_ENCODING_8472_SONET		= 0x05,
--	SFP_ENCODING_8472_64B66B	= 0x06,
--	SFP_ENCODING_256B257B		= 0x07,
--	SFP_ENCODING_PAM4		= 0x08,
- 	SFP_OPTIONS_HIGH_POWER_LEVEL	= BIT(13),
- 	SFP_OPTIONS_PAGING_A2		= BIT(12),
- 	SFP_OPTIONS_RETIMER		= BIT(11),
+@@ -507,6 +507,8 @@ struct sfp_bus;
+  * @module_insert: called after a module has been detected to determine
+  *   whether the module is supported for the upstream device.
+  * @module_remove: called after the module has been removed.
++ * @module_start: called after the PHY probe step
++ * @module_stop: called before the PHY is removed
+  * @link_down: called when the link is non-operational for whatever
+  *   reason.
+  * @link_up: called when the link is operational.
+@@ -520,6 +522,8 @@ struct sfp_upstream_ops {
+ 	void (*detach)(void *priv, struct sfp_bus *bus);
+ 	int (*module_insert)(void *priv, const struct sfp_eeprom_id *id);
+ 	void (*module_remove)(void *priv);
++	int (*module_start)(void *priv);
++	void (*module_stop)(void *priv);
+ 	void (*link_down)(void *priv);
+ 	void (*link_up)(void *priv);
+ 	int (*connect_phy)(void *priv, struct phy_device *);
 -- 
 2.20.1
 
