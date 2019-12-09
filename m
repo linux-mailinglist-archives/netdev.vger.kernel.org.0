@@ -2,412 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A4A116C5D
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 12:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E100116C93
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 12:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbfLILgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 06:36:21 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:60626 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726377AbfLILgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 06:36:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=wXcoSF5lVsg+P46NhzpR71rHZLr1ZR5DzSYLQta9mWk=; b=cnyCkFbxJ2f/QpCkMJWnZEB5X
-        bW+YtqJ4IzqiobxcFFEn0xbjwOoHgoY2xKRDFh7GVsrmJ8/GiNUydwwndNOlepFjNZxdhVuuXa4nZ
-        eb1kcVFG7VVshPcI6QbNDkqYpxuwsF2rwOajhw8MYVisd95B0p/oOMDlMMZeXHW7ByfqQMohPLwoZ
-        2ur7B1Te51EQCMwQg8pirgBdZMggq3K41zeNAjpMdznrFCOQIRUZa9DBQbsWmGSxe6p2lpB8/bjiN
-        flSZ/gHhEmjS8DNidsSq8DIJ1NKtIDvWcP3Kn5UcpBJNZgXfyHpgDT7GGHCw156B17MRarY81VWVI
-        EW5urBNxg==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:38920)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ieHKj-0002gZ-K3; Mon, 09 Dec 2019 11:36:09 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ieHKg-0003at-71; Mon, 09 Dec 2019 11:36:06 +0000
-Date:   Mon, 9 Dec 2019 11:36:06 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Milind Parab <mparab@cadence.com>
-Cc:     nicolas.nerre@microchip.com, andrew@lunn.ch,
-        antoine.tenart@bootlin.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org, hkallweit1@gmail.com,
-        linux-kernel@vger.kernel.org, dkangude@cadence.com,
-        a.fatoum@pengutronix.de, brad.mouring@ni.com, pthombar@cadence.com
-Subject: Re: [PATCH 3/3] net: macb: add support for high speed interface
-Message-ID: <20191209113606.GF25745@shell.armlinux.org.uk>
-References: <1575890033-23846-1-git-send-email-mparab@cadence.com>
- <1575890176-25630-1-git-send-email-mparab@cadence.com>
+        id S1727686AbfLILxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 06:53:36 -0500
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:49721 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727580AbfLILxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 06:53:36 -0500
+Received: from 2606-a000-111b-43ee-0000-0000-0000-115f.inf6.spectrum.com ([2606:a000:111b:43ee::115f] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1ieHbR-0007NJ-FC; Mon, 09 Dec 2019 06:53:32 -0500
+Date:   Mon, 9 Dec 2019 06:53:24 -0500
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: Re: [PATCH net] sctp: fully initialize v4 addr in some functions
+Message-ID: <20191209115324.GA24499@hmswarspite.think-freely.org>
+References: <dfabc15c8718ae26d93f4ed1b023baee81eb5c34.1575870354.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1575890176-25630-1-git-send-email-mparab@cadence.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <dfabc15c8718ae26d93f4ed1b023baee81eb5c34.1575870354.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 11:16:16AM +0000, Milind Parab wrote:
-> This patch add support for high speed USXGMII PCS and 10G
-> speed in Cadence ethernet controller driver.
-
-How has this been tested?
-
-> Signed-off-by: Milind Parab <mparab@cadence.com>
-> ---
->  drivers/net/ethernet/cadence/macb.h      |  50 ++++++++
->  drivers/net/ethernet/cadence/macb_main.c | 142 ++++++++++++++++++++---
->  2 files changed, 174 insertions(+), 18 deletions(-)
+On Mon, Dec 09, 2019 at 01:45:54PM +0800, Xin Long wrote:
+> Syzbot found a crash:
 > 
-> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> index dbf7070fcdba..b731807d1c49 100644
-> --- a/drivers/net/ethernet/cadence/macb.h
-> +++ b/drivers/net/ethernet/cadence/macb.h
-> @@ -76,10 +76,12 @@
->  #define MACB_RBQPH		0x04D4
->  
->  /* GEM register offsets. */
-> +#define GEM_NCR			0x0000 /* Network Control */
->  #define GEM_NCFGR		0x0004 /* Network Config */
->  #define GEM_USRIO		0x000c /* User IO */
->  #define GEM_DMACFG		0x0010 /* DMA Configuration */
->  #define GEM_JML			0x0048 /* Jumbo Max Length */
-> +#define GEM_HS_MAC_CONFIG	0x0050 /* GEM high speed config */
->  #define GEM_HRB			0x0080 /* Hash Bottom */
->  #define GEM_HRT			0x0084 /* Hash Top */
->  #define GEM_SA1B		0x0088 /* Specific1 Bottom */
-> @@ -164,6 +166,9 @@
->  #define GEM_DCFG7		0x0298 /* Design Config 7 */
->  #define GEM_DCFG8		0x029C /* Design Config 8 */
->  #define GEM_DCFG10		0x02A4 /* Design Config 10 */
-> +#define GEM_DCFG12		0x02AC /* Design Config 12 */
-> +#define GEM_USX_CONTROL		0x0A80 /* USXGMII control register */
-> +#define GEM_USX_STATUS		0x0A88 /* USXGMII status register */
->  
->  #define GEM_TXBDCTRL	0x04cc /* TX Buffer Descriptor control register */
->  #define GEM_RXBDCTRL	0x04d0 /* RX Buffer Descriptor control register */
-> @@ -270,11 +275,19 @@
->  #define MACB_IRXFCS_OFFSET	19
->  #define MACB_IRXFCS_SIZE	1
->  
-> +/* GEM specific NCR bitfields. */
-> +#define GEM_ENABLE_HS_MAC_OFFSET	31
-> +#define GEM_ENABLE_HS_MAC_SIZE		1
-> +
->  /* GEM specific NCFGR bitfields. */
-> +#define GEM_FD_OFFSET		1 /* Full duplex */
-> +#define GEM_FD_SIZE		1
->  #define GEM_GBE_OFFSET		10 /* Gigabit mode enable */
->  #define GEM_GBE_SIZE		1
->  #define GEM_PCSSEL_OFFSET	11
->  #define GEM_PCSSEL_SIZE		1
-> +#define GEM_PAE_OFFSET		13 /* Pause enable */
-> +#define GEM_PAE_SIZE		1
->  #define GEM_CLK_OFFSET		18 /* MDC clock division */
->  #define GEM_CLK_SIZE		3
->  #define GEM_DBW_OFFSET		21 /* Data bus width */
-> @@ -455,11 +468,17 @@
->  #define MACB_REV_OFFSET				0
->  #define MACB_REV_SIZE				16
->  
-> +/* Bitfield in HS_MAC_CONFIG */
-> +#define GEM_HS_MAC_SPEED_OFFSET			0
-> +#define GEM_HS_MAC_SPEED_SIZE			3
-> +
->  /* Bitfields in DCFG1. */
->  #define GEM_IRQCOR_OFFSET			23
->  #define GEM_IRQCOR_SIZE				1
->  #define GEM_DBWDEF_OFFSET			25
->  #define GEM_DBWDEF_SIZE				3
-> +#define GEM_NO_PCS_OFFSET			0
-> +#define GEM_NO_PCS_SIZE				1
->  
->  /* Bitfields in DCFG2. */
->  #define GEM_RX_PKT_BUFF_OFFSET			20
-> @@ -494,6 +513,34 @@
->  #define GEM_RXBD_RDBUFF_OFFSET			8
->  #define GEM_RXBD_RDBUFF_SIZE			4
->  
-> +/* Bitfields in DCFG12. */
-> +#define GEM_HIGH_SPEED_OFFSET			26
-> +#define GEM_HIGH_SPEED_SIZE			1
-> +
-> +/* Bitfields in USX_CONTROL. */
-> +#define GEM_USX_CTRL_SPEED_OFFSET		14
-> +#define GEM_USX_CTRL_SPEED_SIZE			3
-> +#define GEM_SERDES_RATE_OFFSET			12
-> +#define GEM_SERDES_RATE_SIZE			2
-> +#define GEM_RX_SCR_BYPASS_OFFSET		9
-> +#define GEM_RX_SCR_BYPASS_SIZE			1
-> +#define GEM_TX_SCR_BYPASS_OFFSET		8
-> +#define GEM_TX_SCR_BYPASS_SIZE			1
-> +#define GEM_RX_SYNC_RESET_OFFSET		2
-> +#define GEM_RX_SYNC_RESET_SIZE			1
-> +#define GEM_TX_EN_OFFSET			1
-> +#define GEM_TX_EN_SIZE				1
-> +#define GEM_SIGNAL_OK_OFFSET			0
-> +#define GEM_SIGNAL_OK_SIZE			1
-> +
-> +/* Bitfields in USX_STATUS. */
-> +#define GEM_USX_TX_FAULT_OFFSET			28
-> +#define GEM_USX_TX_FAULT_SIZE			1
-> +#define GEM_USX_RX_FAULT_OFFSET			27
-> +#define GEM_USX_RX_FAULT_SIZE			1
-> +#define GEM_USX_BLOCK_LOCK_OFFSET		0
-> +#define GEM_USX_BLOCK_LOCK_SIZE			1
-> +
->  /* Bitfields in TISUBN */
->  #define GEM_SUBNSINCR_OFFSET			0
->  #define GEM_SUBNSINCRL_OFFSET			24
-> @@ -656,6 +703,8 @@
->  #define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
->  #define MACB_CAPS_SG_DISABLED			0x40000000
->  #define MACB_CAPS_MACB_IS_GEM			0x80000000
-> +#define MACB_CAPS_PCS				0x01000000
-> +#define MACB_CAPS_HIGH_SPEED			0x02000000
->  
->  /* LSO settings */
->  #define MACB_LSO_UFO_ENABLE			0x01
-> @@ -724,6 +773,7 @@
->  	})
->  
->  #define MACB_READ_NSR(bp)	macb_readl(bp, NSR)
-> +#define GEM_READ_USX_STATUS(bp)	gem_readl(bp, USX_STATUS)
->  
->  /* struct macb_dma_desc - Hardware DMA descriptor
->   * @addr: DMA address of data buffer
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 17297b01e85e..710ee18a0ef0 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -81,6 +81,18 @@ struct sifive_fu540_macb_mgmt {
->  #define MACB_WOL_HAS_MAGIC_PACKET	(0x1 << 0)
->  #define MACB_WOL_ENABLED		(0x1 << 1)
->  
-> +enum {
-> +	HS_MAC_SPEED_100M,
-> +	HS_MAC_SPEED_1000M,
-> +	HS_MAC_SPEED_2500M,
-> +	HS_MAC_SPEED_5000M,
-> +	HS_MAC_SPEED_10000M,
-
-Are these chip register definitions?  Shouldn't you be relying on fixed
-values for these, rather than their position in an enumerated list?
-
-> +};
-> +
-> +enum {
-> +	MACB_SERDES_RATE_10G = 1,
-> +};
-> +
->  /* Graceful stop timeouts in us. We should allow up to
->   * 1 frame time (10 Mbits/s, full-duplex, ignoring collisions)
->   */
-> @@ -90,6 +102,8 @@ struct sifive_fu540_macb_mgmt {
->  
->  #define MACB_MDIO_TIMEOUT	1000000 /* in usecs */
->  
-> +#define MACB_USX_BLOCK_LOCK_TIMEOUT	1000000 /* in usecs */
-> +
->  /* DMA buffer descriptor might be different size
->   * depends on hardware configuration:
->   *
-> @@ -506,6 +520,7 @@ static void macb_validate(struct phylink_config *config,
->  	    state->interface != PHY_INTERFACE_MODE_RMII &&
->  	    state->interface != PHY_INTERFACE_MODE_GMII &&
->  	    state->interface != PHY_INTERFACE_MODE_SGMII &&
-> +	    state->interface != PHY_INTERFACE_MODE_USXGMII &&
->  	    !phy_interface_mode_is_rgmii(state->interface)) {
->  		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
->  		return;
-> @@ -518,6 +533,13 @@ static void macb_validate(struct phylink_config *config,
->  		return;
+>   BUG: KMSAN: uninit-value in crc32_body lib/crc32.c:112 [inline]
+>   BUG: KMSAN: uninit-value in crc32_le_generic lib/crc32.c:179 [inline]
+>   BUG: KMSAN: uninit-value in __crc32c_le_base+0x4fa/0xd30 lib/crc32.c:202
+>   Call Trace:
+>     crc32_body lib/crc32.c:112 [inline]
+>     crc32_le_generic lib/crc32.c:179 [inline]
+>     __crc32c_le_base+0x4fa/0xd30 lib/crc32.c:202
+>     chksum_update+0xb2/0x110 crypto/crc32c_generic.c:90
+>     crypto_shash_update+0x4c5/0x530 crypto/shash.c:107
+>     crc32c+0x150/0x220 lib/libcrc32c.c:47
+>     sctp_csum_update+0x89/0xa0 include/net/sctp/checksum.h:36
+>     __skb_checksum+0x1297/0x12a0 net/core/skbuff.c:2640
+>     sctp_compute_cksum include/net/sctp/checksum.h:59 [inline]
+>     sctp_packet_pack net/sctp/output.c:528 [inline]
+>     sctp_packet_transmit+0x40fb/0x4250 net/sctp/output.c:597
+>     sctp_outq_flush_transports net/sctp/outqueue.c:1146 [inline]
+>     sctp_outq_flush+0x1823/0x5d80 net/sctp/outqueue.c:1194
+>     sctp_outq_uncork+0xd0/0xf0 net/sctp/outqueue.c:757
+>     sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1781 [inline]
+>     sctp_side_effects net/sctp/sm_sideeffect.c:1184 [inline]
+>     sctp_do_sm+0x8fe1/0x9720 net/sctp/sm_sideeffect.c:1155
+>     sctp_primitive_REQUESTHEARTBEAT+0x175/0x1a0 net/sctp/primitive.c:185
+>     sctp_apply_peer_addr_params+0x212/0x1d40 net/sctp/socket.c:2433
+>     sctp_setsockopt_peer_addr_params net/sctp/socket.c:2686 [inline]
+>     sctp_setsockopt+0x189bb/0x19090 net/sctp/socket.c:4672
+> 
+> The issue was caused by transport->ipaddr set with uninit addr param, which
+> was passed by:
+> 
+>   sctp_transport_init net/sctp/transport.c:47 [inline]
+>   sctp_transport_new+0x248/0xa00 net/sctp/transport.c:100
+>   sctp_assoc_add_peer+0x5ba/0x2030 net/sctp/associola.c:611
+>   sctp_process_param net/sctp/sm_make_chunk.c:2524 [inline]
+> 
+> where 'addr' is set by sctp_v4_from_addr_param(), and it doesn't initialize
+> the padding of addr->v4.
+> 
+> Later when calling sctp_make_heartbeat(), hbinfo.daddr(=transport->ipaddr)
+> will become the part of skb, and the issue occurs.
+> 
+> This patch is to fix it by initializing the padding of addr->v4 in
+> sctp_v4_from_addr_param(), as well as other functions that do the similar
+> thing, and these functions shouldn't trust that the caller initializes the
+> memory, as Marcelo suggested.
+> 
+> Reported-by: syzbot+6dcbfea81cd3d4dd0b02@syzkaller.appspotmail.com
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/sctp/protocol.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+> index fbbf191..78af2fc 100644
+> --- a/net/sctp/protocol.c
+> +++ b/net/sctp/protocol.c
+> @@ -227,6 +227,7 @@ static void sctp_v4_from_skb(union sctp_addr *addr, struct sk_buff *skb,
+>  		sa->sin_port = sh->dest;
+>  		sa->sin_addr.s_addr = ip_hdr(skb)->daddr;
 >  	}
->  
-> +	if (state->interface == PHY_INTERFACE_MODE_USXGMII &&
-> +	    !(bp->caps & MACB_CAPS_HIGH_SPEED &&
-> +	      bp->caps & MACB_CAPS_PCS)) {
-> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +		return;
-> +	}
-> +
->  	phylink_set_port_modes(mask);
->  	phylink_set(mask, Autoneg);
->  	phylink_set(mask, Asym_Pause);
-> @@ -527,6 +549,22 @@ static void macb_validate(struct phylink_config *config,
->  	phylink_set(mask, 100baseT_Half);
->  	phylink_set(mask, 100baseT_Full);
->  
-> +	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
-> +	    (state->interface == PHY_INTERFACE_MODE_NA ||
-> +	     state->interface == PHY_INTERFACE_MODE_USXGMII)) {
-> +		phylink_set(mask, 10000baseCR_Full);
-> +		phylink_set(mask, 10000baseER_Full);
-> +		phylink_set(mask, 10000baseKR_Full);
-> +		phylink_set(mask, 10000baseLR_Full);
-> +		phylink_set(mask, 10000baseLRM_Full);
-> +		phylink_set(mask, 10000baseSR_Full);
-> +		phylink_set(mask, 10000baseT_Full);
-> +		phylink_set(mask, 5000baseT_Full);
-> +		phylink_set(mask, 2500baseX_Full);
-> +		phylink_set(mask, 1000baseX_Full);
-> +		phylink_set(mask, 1000baseT_Full);
-> +	}
-> +
->  	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
->  	    (state->interface == PHY_INTERFACE_MODE_NA ||
->  	     state->interface == PHY_INTERFACE_MODE_GMII ||
-> @@ -544,6 +582,60 @@ static void macb_validate(struct phylink_config *config,
->  		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +	memset(sa->sin_zero, 0, sizeof(sa->sin_zero));
 >  }
 >  
-> +static int gem_mac_usx_configure(struct macb *bp,
-> +				 const struct phylink_link_state *state)
-> +{
-> +	u32 speed, config, val;
-> +	int ret;
-> +
-> +	val = gem_readl(bp, NCFGR);
-> +	val = GEM_BIT(PCSSEL) | (~GEM_BIT(SGMIIEN) & val);
-> +	if (state->pause & MLO_PAUSE_TX)
-> +		val |= GEM_BIT(PAE);
-> +	gem_writel(bp, NCFGR, val);
-> +	gem_writel(bp, NCR, gem_readl(bp, NCR) | GEM_BIT(ENABLE_HS_MAC));
-> +	gem_writel(bp, NCFGR, gem_readl(bp, NCFGR) | GEM_BIT(FD));
-> +	config = gem_readl(bp, USX_CONTROL);
-> +	config = GEM_BFINS(SERDES_RATE, MACB_SERDES_RATE_10G, config);
-> +	config &= ~GEM_BIT(TX_SCR_BYPASS);
-> +	config &= ~GEM_BIT(RX_SCR_BYPASS);
-> +	gem_writel(bp, USX_CONTROL, config | GEM_BIT(TX_EN));
-> +	config = gem_readl(bp, USX_CONTROL);
-> +	gem_writel(bp, USX_CONTROL, config | GEM_BIT(SIGNAL_OK));
-> +	ret = readx_poll_timeout(GEM_READ_USX_STATUS, bp, val,
-> +				 val & GEM_BIT(USX_BLOCK_LOCK),
-> +				 1, MACB_USX_BLOCK_LOCK_TIMEOUT);
-
-What if there's no signal to lock on to?  That's treated as link down
-and is not a failure.
-
-> +	if (ret < 0) {
-> +		netdev_warn(bp->dev, "USXGMII block lock failed");
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	switch (state->speed) {
-> +	case SPEED_10000:
-> +		speed = HS_MAC_SPEED_10000M;
-> +		break;
-> +	case SPEED_5000:
-> +		speed = HS_MAC_SPEED_5000M;
-> +		break;
-> +	case SPEED_2500:
-> +		speed = HS_MAC_SPEED_2500M;
-> +		break;
-> +	case SPEED_1000:
-> +		speed = HS_MAC_SPEED_1000M;
-> +		break;
-> +	default:
-> +	case SPEED_100:
-> +		speed = HS_MAC_SPEED_100M;
-> +		break;
-> +	}
-
-So you only support fixed-mode (phy and fixed links) and not in-band
-links here.
-
-> +
-> +	gem_writel(bp, HS_MAC_CONFIG, GEM_BFINS(HS_MAC_SPEED, speed,
-> +						gem_readl(bp, HS_MAC_CONFIG)));
-> +	gem_writel(bp, USX_CONTROL, GEM_BFINS(USX_CTRL_SPEED, speed,
-> +					      gem_readl(bp, USX_CONTROL)));
-> +	return 0;
-> +}
-> +
->  static void macb_mac_pcs_get_state(struct phylink_config *config,
->  				   struct phylink_link_state *state)
->  {
-> @@ -565,30 +657,39 @@ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+>  /* Initialize an sctp_addr from a socket. */
+> @@ -235,6 +236,7 @@ static void sctp_v4_from_sk(union sctp_addr *addr, struct sock *sk)
+>  	addr->v4.sin_family = AF_INET;
+>  	addr->v4.sin_port = 0;
+>  	addr->v4.sin_addr.s_addr = inet_sk(sk)->inet_rcv_saddr;
+> +	memset(addr->v4.sin_zero, 0, sizeof(addr->v4.sin_zero));
+>  }
 >  
->  	spin_lock_irqsave(&bp->lock, flags);
+>  /* Initialize sk->sk_rcv_saddr from sctp_addr. */
+> @@ -257,6 +259,7 @@ static void sctp_v4_from_addr_param(union sctp_addr *addr,
+>  	addr->v4.sin_family = AF_INET;
+>  	addr->v4.sin_port = port;
+>  	addr->v4.sin_addr.s_addr = param->v4.addr.s_addr;
+> +	memset(addr->v4.sin_zero, 0, sizeof(addr->v4.sin_zero));
+>  }
 >  
-> -	old_ctrl = ctrl = macb_or_gem_readl(bp, NCFGR);
-> +	if (bp->phy_interface == PHY_INTERFACE_MODE_USXGMII) {
-> +		if (gem_mac_usx_configure(bp, state) < 0) {
-> +			spin_unlock_irqrestore(&bp->lock, flags);
-> +			phylink_mac_change(bp->phylink, false);
-> +			return;
-> +		}
-> +	} else {
-> +		old_ctrl = ctrl = macb_or_gem_readl(bp, NCFGR);
+>  /* Initialize an address parameter from a sctp_addr and return the length
+> @@ -281,6 +284,7 @@ static void sctp_v4_dst_saddr(union sctp_addr *saddr, struct flowi4 *fl4,
+>  	saddr->v4.sin_family = AF_INET;
+>  	saddr->v4.sin_port = port;
+>  	saddr->v4.sin_addr.s_addr = fl4->saddr;
+> +	memset(saddr->v4.sin_zero, 0, sizeof(saddr->v4.sin_zero));
+>  }
 >  
-> -	/* Clear all the bits we might set later */
-> -	ctrl &= ~(GEM_BIT(GBE) | MACB_BIT(SPD) | MACB_BIT(FD) | MACB_BIT(PAE) |
-> -		  GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
-> +		/* Clear all the bits we might set later */
-> +		ctrl &= ~(GEM_BIT(GBE) | MACB_BIT(SPD) |
-> +			  MACB_BIT(FD) | MACB_BIT(PAE) |
-> +			  GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
+>  /* Compare two addresses exactly. */
+> @@ -303,6 +307,7 @@ static void sctp_v4_inaddr_any(union sctp_addr *addr, __be16 port)
+>  	addr->v4.sin_family = AF_INET;
+>  	addr->v4.sin_addr.s_addr = htonl(INADDR_ANY);
+>  	addr->v4.sin_port = port;
+> +	memset(addr->v4.sin_zero, 0, sizeof(addr->v4.sin_zero));
+>  }
 >  
-> -	if (state->speed == SPEED_1000)
-> -		ctrl |= GEM_BIT(GBE);
-> -	else if (state->speed == SPEED_100)
-> -		ctrl |= MACB_BIT(SPD);
-> +		if (state->speed == SPEED_1000)
-> +			ctrl |= GEM_BIT(GBE);
-> +		else if (state->speed == SPEED_100)
-> +			ctrl |= MACB_BIT(SPD);
->  
-> -	if (state->duplex)
-> -		ctrl |= MACB_BIT(FD);
-> +		if (state->duplex)
-> +			ctrl |= MACB_BIT(FD);
->  
-> -	/* We do not support MLO_PAUSE_RX yet */
-> -	if (state->pause & MLO_PAUSE_TX)
-> -		ctrl |= MACB_BIT(PAE);
-> +		/* We do not support MLO_PAUSE_RX yet */
-> +		if (state->pause & MLO_PAUSE_TX)
-> +			ctrl |= MACB_BIT(PAE);
->  
-> -	if (state->interface == PHY_INTERFACE_MODE_SGMII)
-> -		ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
-> +		if (state->interface == PHY_INTERFACE_MODE_SGMII)
-> +			ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
->  
-> -	/* Apply the new configuration, if any */
-> -	if (old_ctrl ^ ctrl)
-> -		macb_or_gem_writel(bp, NCFGR, ctrl);
-> +		/* Apply the new configuration, if any */
-> +		if (old_ctrl ^ ctrl)
-> +			macb_or_gem_writel(bp, NCFGR, ctrl);
-> +	}
->  
->  	bp->speed = state->speed;
->  
-> @@ -3399,6 +3500,11 @@ static void macb_configure_caps(struct macb *bp,
->  		dcfg = gem_readl(bp, DCFG1);
->  		if (GEM_BFEXT(IRQCOR, dcfg) == 0)
->  			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
-> +		if (GEM_BFEXT(NO_PCS, dcfg) == 0)
-> +			bp->caps |= MACB_CAPS_PCS;
-> +		dcfg = gem_readl(bp, DCFG12);
-> +		if (GEM_BFEXT(HIGH_SPEED, dcfg) == 1)
-> +			bp->caps |= MACB_CAPS_HIGH_SPEED;
->  		dcfg = gem_readl(bp, DCFG2);
->  		if ((dcfg & (GEM_BIT(RX_PKT_BUFF) | GEM_BIT(TX_PKT_BUFF))) == 0)
->  			bp->caps |= MACB_CAPS_FIFO_MODE;
+>  /* Is this a wildcard address? */
 > -- 
-> 2.17.1
+> 2.1.0
 > 
 > 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
