@@ -2,63 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 133AD116704
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 07:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED14116737
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 07:58:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbfLIGlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 01:41:16 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:55414 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbfLIGlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:41:15 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id F1F00153D7313;
-        Sun,  8 Dec 2019 22:41:14 -0800 (PST)
-Date:   Sun, 08 Dec 2019 22:41:12 -0800 (PST)
-Message-Id: <20191208.224112.2234468529480733416.davem@davemloft.net>
-To:     ms@dev.tdt.de
-Cc:     andrew.hendry@gmail.com, edumazet@google.com,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/x25: add new state X25_STATE_5
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <3841dcf6dab454445da7b225e0d45212@dev.tdt.de>
-References: <20191206133418.14075-1-ms@dev.tdt.de>
-        <20191207.115922.532322440743611081.davem@davemloft.net>
-        <3841dcf6dab454445da7b225e0d45212@dev.tdt.de>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 08 Dec 2019 22:41:15 -0800 (PST)
+        id S1727224AbfLIG4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 01:56:17 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:58407 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726927AbfLIG4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 01:56:16 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 10801229DC;
+        Mon,  9 Dec 2019 01:56:16 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 09 Dec 2019 01:56:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=h0l8AN5u6Jpu/Fpss
+        yMYxRGh10mpV6vi68Gza9wsFJ0=; b=prsknA7kSCueFwXJFQpZrwTBsHKWb22Do
+        OrM8k3GcwBZQn8+IFPnd9ggc9hXeiTEnoAbu8twLdgia+mvweCNyRlDw5V9wW9df
+        JjJHtiU2AfTErDiz0RhoS+UD5njcBN1nnu3k5/OwH0/OMZoR+hvnXpzfOcx6FxhL
+        1bRhUEab9xZvI5UutAuVs8ztcVQveSmeeCZB5emnoW8g9gNu+NGJ3v8xwKLXGpnn
+        jOH64YO6GHFVvTcbKiSUr9uhHau4GW7VYnNqdl+4Bm4HNBYNiuNxe+v8RWXvmfhh
+        uh6/hcber3vfy/5YW/Gniq1IZw/uuhmwHyU2K5b42w2pnrOLtYovA==
+X-ME-Sender: <xms:D_DtXcw1n2aPwkKEO4qWU1PUdZ1OOw2J8l3J67LfiLFlwzf_kx1FSA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudekledgleejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:D_DtXTuOEHFQeWkxNVmRx4RdxTDF2liH6-ghDq3VEOCO_WIWQCHsOQ>
+    <xmx:D_DtXaltDOrGjY50aIg1SBcA0DPXFhxh-4DS1SSxaCV8dMFG0V7SYg>
+    <xmx:D_DtXTg26lyeGCJ3PHkAevKPDYEDL0ytvW8S5psC1P_16pqFJiM0GA>
+    <xmx:EPDtXdrHxIvLtxWlYlWa1UUo56fO0uynMddvNirOU4s_L44Y1UpgWg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C360230600AB;
+        Mon,  9 Dec 2019 01:56:14 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] mlxsw: spectrum_router: Remove unlikely user-triggerable warning
+Date:   Mon,  9 Dec 2019 08:55:20 +0200
+Message-Id: <20191209065520.337136-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Schiller <ms@dev.tdt.de>
-Date: Mon, 09 Dec 2019 06:28:53 +0100
+From: Ido Schimmel <idosch@mellanox.com>
 
-> On 2019-12-07 20:59, David Miller wrote:
->> From: Martin Schiller <ms@dev.tdt.de>
->> Date: Fri,  6 Dec 2019 14:34:18 +0100
->> 
->>> +	switch (frametype) {
->>> +
->>> +		case X25_CLEAR_REQUEST:
->> Please remove this unnecessary empty line.
->> 
->>> +			if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 2))
->>> +				goto out_clear;
->> A goto path for a single call site?  Just inline the operations here.
-> 
-> Well, I was guided by the code style of the other states.
-> I could add a patch to also clean up the other states.
-> What do you think?
+In case the driver vetoes the addition of an IPv6 multipath route, the
+IPv6 stack will emit delete notifications for the sibling routes that
+were already added to the FIB trie. Since these siblings are not present
+in hardware, a warning will be generated.
 
-Leave the other states and existing code alone.
+Have the driver ignore notifications for routes it does not have.
 
-Make your new code reasonable.
+Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add / replace")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 30bfe3880faf..08b7e9f964da 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -5742,8 +5742,13 @@ static void mlxsw_sp_router_fib6_del(struct mlxsw_sp *mlxsw_sp,
+ 	if (mlxsw_sp_fib6_rt_should_ignore(rt))
+ 		return;
+ 
++	/* Multipath routes are first added to the FIB trie and only then
++	 * notified. If we vetoed the addition, we will get a delete
++	 * notification for a route we do not have. Therefore, do not warn if
++	 * route was not found.
++	 */
+ 	fib6_entry = mlxsw_sp_fib6_entry_lookup(mlxsw_sp, rt);
+-	if (WARN_ON(!fib6_entry))
++	if (!fib6_entry)
+ 		return;
+ 
+ 	/* If not all the nexthops are deleted, then only reduce the nexthop
+-- 
+2.23.0
+
