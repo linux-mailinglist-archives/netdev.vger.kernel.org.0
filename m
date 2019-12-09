@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9487C1171BB
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC3411171C4
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbfLIQdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 11:33:07 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33631 "EHLO
+        id S1726955AbfLIQdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 11:33:10 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:38007 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbfLIQdG (ORCPT
+        with ESMTP id S1726903AbfLIQdG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:06 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1ieLy4-0001up-G8; Mon, 09 Dec 2019 17:33:04 +0100
+        id 1ieLy4-0001up-TJ; Mon, 09 Dec 2019 17:33:04 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Sean Nyekjaer <sean@geanix.com>,
-        Rob Herring <robh@kernel.org>,
+        kernel@pengutronix.de, Dan Murphy <dmurphy@ti.com>,
+        Rob Herring <robh@kernel.org>, Sean Nyekjaer <sean@geanix.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 10/13] dt-bindings: can: tcan4x5x: reset pin is active high
-Date:   Mon,  9 Dec 2019 17:32:53 +0100
-Message-Id: <20191209163256.12000-11-mkl@pengutronix.de>
+Subject: [PATCH 11/13] dt-bindings: tcan4x5x: Make wake-gpio an optional gpio
+Date:   Mon,  9 Dec 2019 17:32:54 +0100
+Message-Id: <20191209163256.12000-12-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191209163256.12000-1-mkl@pengutronix.de>
 References: <20191209163256.12000-1-mkl@pengutronix.de>
@@ -38,29 +38,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Nyekjaer <sean@geanix.com>
+From: Dan Murphy <dmurphy@ti.com>
 
-Change the reset pin example to active high to be in line with
-the datasheet
+The wake-up of the device can be configured as an optional feature of
+the device. Move the wake-up gpio from a requried property to an
+optional property.
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
 Cc: Rob Herring <robh@kernel.org>
+Reviewed-by: Sean Nyekjaer <sean@geanix.com>
+Tested-by: Sean Nyekjaer <sean@geanix.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
  Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-index 27e1b4cebfbd..e8aa21d9174e 100644
+index e8aa21d9174e..6bdcc3f84bd3 100644
 --- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
 +++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-@@ -36,5 +36,5 @@ tcan4x5x: tcan4x5x@0 {
- 		interrupts = <14 GPIO_ACTIVE_LOW>;
- 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
- 		device-wake-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
--		reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
-+		reset-gpios = <&gpio1 27 GPIO_ACTIVE_HIGH>;
- };
+@@ -10,7 +10,6 @@ Required properties:
+ 	- #size-cells: 0
+ 	- spi-max-frequency: Maximum frequency of the SPI bus the chip can
+ 			     operate at should be less than or equal to 18 MHz.
+-	- device-wake-gpios: Wake up GPIO to wake up the TCAN device.
+ 	- interrupt-parent: the phandle to the interrupt controller which provides
+                     the interrupt.
+ 	- interrupts: interrupt specification for data-ready.
+@@ -23,6 +22,7 @@ Optional properties:
+ 		       reset.
+ 	- device-state-gpios: Input GPIO that indicates if the device is in
+ 			      a sleep state or if the device is active.
++	- device-wake-gpios: Wake up GPIO to wake up the TCAN device.
+ 
+ Example:
+ tcan4x5x: tcan4x5x@0 {
 -- 
 2.24.0
 
