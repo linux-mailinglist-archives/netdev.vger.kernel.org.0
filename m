@@ -2,115 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A45F9117670
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 20:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1968C1176F4
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 21:03:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbfLIT5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 14:57:40 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:41487 "EHLO
+        id S1726532AbfLIUDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 15:03:22 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37702 "EHLO
         mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfLIT5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 14:57:39 -0500
-Received: by mail-qk1-f195.google.com with SMTP id l124so2293101qkf.8;
-        Mon, 09 Dec 2019 11:57:38 -0800 (PST)
+        with ESMTP id S1726491AbfLIUDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 15:03:22 -0500
+Received: by mail-qk1-f195.google.com with SMTP id m188so14281099qkc.4
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 12:03:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NcB44n0iXRJVyFpixK4empk1pnmKscPpRBnS5swbmcI=;
-        b=b7Fn5KWLzyCLQ5HJCVpwQc6UYQrZJaUDJRuoy8MN5DipxjybCfdNYpizUQxWkHPXwR
-         m/LlDVfRnUorgrJnSS1Kg5XrYGdOg0WLLloWBnqDIXA8XkZ5Ea7Bwsa1VUGv7NH2KPKL
-         yemnVVjPiD5c9VW0j96royNb4sN9fqrZ222Lo4Tk4sELcTCfiPV2d7S8q57bA0Zdb6rS
-         yre3yMJrZDStkg8c1dRL+Iz/sF+xM8yRBpkPKncCnaa8uu9UDUUJsOMVybN3CdJLKgOA
-         ysn+jxXaAvolex6sn6S7IiAiL8tCp5PCOm6Th0OAazOG6lKdV1EvAyRg2hAeiA7JL/JH
-         KTHg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GDUYUeBUbCRk5D6c/V5R/L+ljtI8qLNEf77mvyj/88c=;
+        b=HITeT3Yy7URqczK7aKeGgL2+2uK4OmeOWTuQCmoVEv9f7YGigdozAHsdgsgv/XW54y
+         W9bvk4mT1ub8Y3GFzLKmr7Daq/zDRggB98gvWubNe8lWR8JJBTM4g6pFLMrP3+nrm/NF
+         X95IsUy8F0mtcCIJRkmMnHkiOll/mO35vcUGl8vWDgceNiNUmdVE63MgkGmz6zEpi8m8
+         8VjAojj+l2kv5nMfxFQSc9Ox+RKuzdLXE8KsErS1sYJZdTEELsql0GC8nKc1Nd96WfqE
+         +71OisRabQOTOtsb2gxx2DyzuKx2m0i9kMHV0zfHGhQxTKxTwWdXXvleWy/MdjUx21lW
+         7WZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NcB44n0iXRJVyFpixK4empk1pnmKscPpRBnS5swbmcI=;
-        b=mNkA5pyQdR3zkJ+gLUhUaLaWPbSHsY3ny+GmnqWVBG6ELENwqpn3Le3ueTpeQUleny
-         21mJM//kXxcRz+s8QQsfBcgLDlzLvFbcO5NKwkoCJRYtRC7IINxpuROF9+IkeGNR/68e
-         kCckkyZw80jDeHz+0E/7UuLe/1+YIi9j3c6aUIqCt3zQ67U6R6bWHMeRBE7ad1z86fgz
-         OFiO/VVSNcQYqRYPPQbJrwBOaa4UaokKPs+gN5bYX2+Pj0OobLWqIWJaMuBHCbamnW4S
-         AIcX1iJlu/ZFXwKq8i9RALjLCMMaupPsf7/BoDuNPXNnsy09oIRqXRVHskuZdT+WsLOH
-         xUcg==
-X-Gm-Message-State: APjAAAXr6avMvACmouNX///nS3Ns5i05PfTYExwbl/JFnvXEVq0XS7rj
-        LHyW8ICzvSEcZV1erEie+42Jk9hPPSJ0WF8GzbQ=
-X-Google-Smtp-Source: APXvYqwAlJqjuD/MqL1qjgVFkbXmT4iYKjEEkPJy9RQD9uKvk9LAmDD51ilqG6Q8iLAGCGYrPSkmTDbNo15EjqDtrk4=
-X-Received: by 2002:a37:9c0f:: with SMTP id f15mr29427659qke.297.1575921458257;
- Mon, 09 Dec 2019 11:57:38 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GDUYUeBUbCRk5D6c/V5R/L+ljtI8qLNEf77mvyj/88c=;
+        b=q65Yd3oqRjyezmElDX+5T2Yzp6krS+eNs75uGqWXKO6M+PCvql7Xo+5MaTkiuPybmO
+         ZWy5vjG+Oj5D8c6s5DH3XLZjFmx2i/mg37z3MLbtY8l2Ji/sfz+d8IdStcdsLAqblemA
+         s0E6WsKeNB2QfQSWb96bPP2biyux6cTKNGn5F4iCjdBFhgLpIElaOdVwH/Bx/qrciXyb
+         R3x3NnZ1PPCRwX3340vsdPBlyK/XtnHbKJvuL8EYILq1o3FJ8pE9yT4T6UbaqYnljJsm
+         HxvUxefZxksmQP6GqGAUXt0wpnpeqpaAEmEMQDllN21M43nwlLXohZNHEGZqd2no4bgb
+         SXxw==
+X-Gm-Message-State: APjAAAWaxKXHjp1YAg9yuWabn8H2402kTEkS6uYWMwF1p3c6thQWqN98
+        qOk24wgE6mYQXQ+Yjb3DYCSpIkLqZQ+r8Q==
+X-Google-Smtp-Source: APXvYqxUdfacWJJq3CkJ5nuf6con2/1CclwH5aUJ2zuvDPb4Tye09yHCPNqViUdNW+6fRMhQhgOChg==
+X-Received: by 2002:a37:6294:: with SMTP id w142mr1594816qkb.284.1575921801371;
+        Mon, 09 Dec 2019 12:03:21 -0800 (PST)
+Received: from netronome.com (209-213-91-242.bos.ma.meganet.net. [209.213.91.242])
+        by smtp.gmail.com with ESMTPSA id z4sm175279qkz.62.2019.12.09.12.03.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Dec 2019 12:03:20 -0800 (PST)
+Date:   Mon, 9 Dec 2019 15:03:19 -0500
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
+ attr as u8
+Message-ID: <20191209200317.GA10466@netronome.com>
+References: <cover.1575779993.git.lucien.xin@gmail.com>
+ <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <cover.1575916815.git.paul.chaignon@gmail.com> <966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com>
-In-Reply-To: <966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 9 Dec 2019 20:57:27 +0100
-Message-ID: <CAJ+HfNgFo8viKn3KzNfbmniPNUpjOv_QM4ua_V0RFLBpWCOBYw@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf, riscv: limit to 33 tail calls
-To:     Paul Chaignon <paul.chaignon@orange.com>
-Cc:     Paul Burton <paulburton@kernel.org>,
-        Mahshid Khezri <khezri.mahshid@gmail.com>,
-        paul.chaignon@gmail.com, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Dec 2019 at 19:52, Paul Chaignon <paul.chaignon@orange.com> wrote=
-:
->
-> All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
-> limit at runtime.  In addition, a test was recently added, in tailcalls2,
-> to check this limit.
->
-> This patch updates the tail call limit in RISC-V's JIT compiler to allow
-> 33 tail calls.  I tested it using the above selftest on an emulated
-> RISCV64.
->
+Hi Xin,
 
-33! ICK! ;-) Thanks for finding this!
-
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-
-> Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
-> Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
-> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
+> To keep consistent with ipgre_policy, it's better to parse
+> ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
+> cls_flower and ip_tunnel_core.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > ---
->  arch/riscv/net/bpf_jit_comp.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.=
-c
-> index 5451ef3845f2..7fbf56aab661 100644
-> --- a/arch/riscv/net/bpf_jit_comp.c
-> +++ b/arch/riscv/net/bpf_jit_comp.c
-> @@ -631,14 +631,14 @@ static int emit_bpf_tail_call(int insn, struct rv_j=
-it_context *ctx)
->                 return -1;
->         emit(rv_bgeu(RV_REG_A2, RV_REG_T1, off >> 1), ctx);
->
-> -       /* if (--TCC < 0)
-> +       /* if (TCC-- < 0)
->          *     goto out;
->          */
->         emit(rv_addi(RV_REG_T1, tcc, -1), ctx);
->         off =3D (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
->         if (is_13b_check(off, insn))
->                 return -1;
-> -       emit(rv_blt(RV_REG_T1, RV_REG_ZERO, off >> 1), ctx);
-> +       emit(rv_blt(tcc, RV_REG_ZERO, off >> 1), ctx);
->
->         /* prog =3D array->ptrs[index];
->          * if (!prog)
-> --
-> 2.17.1
->
+>  net/netfilter/nft_tunnel.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+> index 3d4c2ae..f76cd7d 100644
+> --- a/net/netfilter/nft_tunnel.c
+> +++ b/net/netfilter/nft_tunnel.c
+> @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
+>  }
+>  
+>  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
+> +	[NFTA_TUNNEL_KEY_ERSPAN_VERSION]	= { .type = NLA_U8 },
+>  	[NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]	= { .type = NLA_U32 },
+> -	[NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]	= { .type = NLA_U8 },
+> +	[NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]		= { .type = NLA_U8 },
+>  	[NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]	= { .type = NLA_U8 },
+>  };
+>  
+> @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
+>  	if (err < 0)
+>  		return err;
+>  
+> -	version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
+> +	version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
+
+I have concerns about this change and backwards-compatibility with existing
+users of this UAPI. Likewise, with other changes to the encoding of existing
+attributes elsewhere in this series.
+
+>  	switch (version) {
+>  	case ERSPAN_VERSION:
+>  		if (!tb[NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX])
+> -- 
+> 2.1.0
+> 
