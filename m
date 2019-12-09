@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3411171C4
-	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7641171CA
+	for <lists+netdev@lfdr.de>; Mon,  9 Dec 2019 17:33:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbfLIQdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 11:33:10 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:38007 "EHLO
+        id S1727002AbfLIQdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 11:33:20 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:56519 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726903AbfLIQdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:06 -0500
+        with ESMTP id S1726911AbfLIQdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 11:33:07 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1ieLy4-0001up-TJ; Mon, 09 Dec 2019 17:33:04 +0100
+        id 1ieLy5-0001up-Al; Mon, 09 Dec 2019 17:33:05 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Dan Murphy <dmurphy@ti.com>,
-        Rob Herring <robh@kernel.org>, Sean Nyekjaer <sean@geanix.com>,
+        Sean Nyekjaer <sean@geanix.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 11/13] dt-bindings: tcan4x5x: Make wake-gpio an optional gpio
-Date:   Mon,  9 Dec 2019 17:32:54 +0100
-Message-Id: <20191209163256.12000-12-mkl@pengutronix.de>
+Subject: [PATCH 12/13] can: tcan45x: Make wake-up GPIO an optional GPIO
+Date:   Mon,  9 Dec 2019 17:32:55 +0100
+Message-Id: <20191209163256.12000-13-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191209163256.12000-1-mkl@pengutronix.de>
 References: <20191209163256.12000-1-mkl@pengutronix.de>
@@ -40,39 +40,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dan Murphy <dmurphy@ti.com>
 
-The wake-up of the device can be configured as an optional feature of
-the device. Move the wake-up gpio from a requried property to an
-optional property.
+The device has the ability to disable the wake-up pin option. The
+wake-up pin can be either force to GND or Vsup and does not have to be
+tied to a GPIO. In order for the device to not use the wake-up feature
+write the register to disable the WAKE_CONFIG option.
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Cc: Rob Herring <robh@kernel.org>
+Cc: Sean Nyekjaer <sean@geanix.com>
 Reviewed-by: Sean Nyekjaer <sean@geanix.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/m_can/tcan4x5x.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-index e8aa21d9174e..6bdcc3f84bd3 100644
---- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-+++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-@@ -10,7 +10,6 @@ Required properties:
- 	- #size-cells: 0
- 	- spi-max-frequency: Maximum frequency of the SPI bus the chip can
- 			     operate at should be less than or equal to 18 MHz.
--	- device-wake-gpios: Wake up GPIO to wake up the TCAN device.
- 	- interrupt-parent: the phandle to the interrupt controller which provides
-                     the interrupt.
- 	- interrupts: interrupt specification for data-ready.
-@@ -23,6 +22,7 @@ Optional properties:
- 		       reset.
- 	- device-state-gpios: Input GPIO that indicates if the device is in
- 			      a sleep state or if the device is active.
-+	- device-wake-gpios: Wake up GPIO to wake up the TCAN device.
+diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
+index d5d4bfa9c8fd..4e1789ea2bc3 100644
+--- a/drivers/net/can/m_can/tcan4x5x.c
++++ b/drivers/net/can/m_can/tcan4x5x.c
+@@ -101,6 +101,8 @@
+ #define TCAN4X5X_MODE_STANDBY BIT(6)
+ #define TCAN4X5X_MODE_NORMAL BIT(7)
  
- Example:
- tcan4x5x: tcan4x5x@0 {
++#define TCAN4X5X_DISABLE_WAKE_MSK	(BIT(31) | BIT(30))
++
+ #define TCAN4X5X_SW_RESET BIT(2)
+ 
+ #define TCAN4X5X_MCAN_CONFIGURED BIT(5)
+@@ -338,6 +340,14 @@ static int tcan4x5x_init(struct m_can_classdev *cdev)
+ 	return ret;
+ }
+ 
++static int tcan4x5x_disable_wake(struct m_can_classdev *cdev)
++{
++	struct tcan4x5x_priv *tcan4x5x = cdev->device_data;
++
++	return regmap_update_bits(tcan4x5x->regmap, TCAN4X5X_CONFIG,
++				  TCAN4X5X_DISABLE_WAKE_MSK, 0x00);
++}
++
+ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
+ {
+ 	struct tcan4x5x_priv *tcan4x5x = cdev->device_data;
+@@ -345,8 +355,10 @@ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
+ 	tcan4x5x->device_wake_gpio = devm_gpiod_get(cdev->dev, "device-wake",
+ 						    GPIOD_OUT_HIGH);
+ 	if (IS_ERR(tcan4x5x->device_wake_gpio)) {
+-		dev_err(cdev->dev, "device-wake gpio not defined\n");
+-		return -EINVAL;
++		if (PTR_ERR(tcan4x5x->power) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
++
++		tcan4x5x_disable_wake(cdev);
+ 	}
+ 
+ 	tcan4x5x->reset_gpio = devm_gpiod_get_optional(cdev->dev, "reset",
+@@ -430,10 +442,6 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
+ 
+ 	spi_set_drvdata(spi, priv);
+ 
+-	ret = tcan4x5x_parse_config(mcan_class);
+-	if (ret)
+-		goto out_clk;
+-
+ 	/* Configure the SPI bus */
+ 	spi->bits_per_word = 32;
+ 	ret = spi_setup(spi);
+@@ -443,6 +451,10 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
+ 	priv->regmap = devm_regmap_init(&spi->dev, &tcan4x5x_bus,
+ 					&spi->dev, &tcan4x5x_regmap);
+ 
++	ret = tcan4x5x_parse_config(mcan_class);
++	if (ret)
++		goto out_clk;
++
+ 	tcan4x5x_power_enable(priv->power, 1);
+ 
+ 	ret = m_can_class_register(mcan_class);
 -- 
 2.24.0
 
