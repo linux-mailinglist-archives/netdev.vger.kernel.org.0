@@ -2,108 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EE7119276
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:53:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90264119283
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:55:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbfLJUxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:53:03 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:37526 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbfLJUxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:53:03 -0500
-Received: by mail-lf1-f68.google.com with SMTP id b15so14860704lfc.4
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:53:02 -0800 (PST)
+        id S1727024AbfLJUzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:55:04 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42214 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726595AbfLJUzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:55:01 -0500
+Received: by mail-pl1-f195.google.com with SMTP id x13so334433plr.9
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:55:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fmEDmfNgnyzrZ9VU2XdpzBoL/tPjn0qLVvtc+e2r5Oc=;
-        b=e/m83JTC4nzbv0VlJKT759lat2DxFAV1JO9gV9wxjF0R5Yzaj5KEgMvHgSe7iDlWtl
-         9NYuG/xynOebC8eY6gGKmUGR/l7TG6X6zk0rl1lB5GWhSPS/WA7gp+KvLifJuRLlXllq
-         LRzSl+cE0UrQUNwU+f/m7IMF3aYK6jefaQZr0=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=FpkeMzqnudfYJAR1RJofkj4BLPvaslMP35EJSzmn390=;
+        b=1Au0MGXkVSUuxQvKGjX2QkJmMnQzvtWo175oDow9jBax5iLRsxER/XgVeIz8GjlHEA
+         gi0F+wjGY1vbEMx28UNnLvZxuSAVKih8DLhmk2bxC6dwqBtHPrao+SgexMUTNjl5kx2q
+         Re46tM8Rt90lnNFjFMkFRQgCwFogqvQKCJd7pK3bIvg6Mn9uqvAAjtSN6wGJvzdN5afp
+         4IsOzKD8lWB49o+jzEkMha2Q8dE6G/N9Oq5qgNuKmaIFqhDeR/3TV5q6n2r0+OON03/O
+         ua1G2Z5AEAsFUwvg/8m4KGHFN7gMXNiUU03gcdH1rWyUztxbA2OihX2ck6WCTtDxGFoN
+         oRrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fmEDmfNgnyzrZ9VU2XdpzBoL/tPjn0qLVvtc+e2r5Oc=;
-        b=oG0NiKOCBL8HfUw46cmW9DBIL1vEmhDyjIOm32TIXA3575UWP2JBpXqSS1jfe8UrlO
-         bElm2dT6X869wD1rVFNjxDdHAqFXPw0WHRTC7PFDcB44alj6t379znFVS8xY0Jfc43nZ
-         sWASlU0tc2TxDGuNtHABJNIyqIqBjtSopTYRuwfommxVDjx5Rgx7TdF7eWOQYOgIDa4P
-         hywUcjST2ENg6GYz1I1m8IoCb2FNKEhFnUkBo12iUEe3bFoQHfYRgV6vZZJsrbgaHzMq
-         S8AT5SqE+p1r6fZELMzG9rEzIA32cqp9F9xauX3alxOrZ4hV7LXAZKRUrHMtwS8f6/lo
-         U7nQ==
-X-Gm-Message-State: APjAAAUfAcz4yru+VCxslmJDRyYoXEW+PjT5wW2M5TsFzMHmGMuYPuj2
-        tmW4u5G5+P2iZXzriu3aLtXwQw==
-X-Google-Smtp-Source: APXvYqztVGhd39FvfMSc3HRG4lNOgzYmTNPv5ZkG2/05mrVJPhxKKzf0q98tjbnD0vmM8sQuuLFIWg==
-X-Received: by 2002:a19:6d13:: with SMTP id i19mr20713750lfc.6.1576011181363;
-        Tue, 10 Dec 2019 12:53:01 -0800 (PST)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id b63sm1829309lfg.79.2019.12.10.12.53.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Dec 2019 12:53:00 -0800 (PST)
-Subject: Re: [PATCH net-next] net: bridge: add STP xstats
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
- <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
- <20191210143931.GF1344570@t480s.localdomain>
- <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
- <20191210151047.GB1423505@t480s.localdomain>
- <1aa8b6e4-6a73-60b0-c5fb-c0dfa05e27e6@cumulusnetworks.com>
- <20191210153441.GB1429230@t480s.localdomain>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <40090370-4d81-0ea9-e81a-da59534161b7@cumulusnetworks.com>
-Date:   Tue, 10 Dec 2019 22:52:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=FpkeMzqnudfYJAR1RJofkj4BLPvaslMP35EJSzmn390=;
+        b=bqQMZyl+H08vbPjNudkpKgPCeUKXscJSH4T/hlUUJYVIsjFBpVzgeB9AE96vUvMD5e
+         PD0htkotKuU1uWFG5tOzwbicSW7DAr9NqFweuq6dbsbATMOLC7E7+odafzqqrydRkkfM
+         DGGL1g642oF8tnOuZ28T9TgTOvM4wbfrUp/KShGPp4cc0o8hPUJeHXH+GrGMmB+WUZkJ
+         siT2ZY781suIpp9yohT/txenieUxpl5QAsLBc9ECUTu95CbYo4dCMgw0Txc50zWCmLvJ
+         +SHTxw8vG1wP1u471PwkwZiTNPoBsjOshuuRS4OSq/AZpUuPtQoWQTu2XeYbFJkC+JF9
+         DsaQ==
+X-Gm-Message-State: APjAAAXhkArKiMkN6qjdyp2RoxOlH01VeIfAA7bGrxDbarrXAsFKrKpG
+        23nfYtxe3wi1bjPkm2EenLNc5Q==
+X-Google-Smtp-Source: APXvYqxDk2oXKvAMNL8xSIqUf4XZA+vWC8wwKrnzFOMPi/iiA0pCEtvsCLVSgJQqNC79q06wt/lYDQ==
+X-Received: by 2002:a17:90a:a881:: with SMTP id h1mr7581457pjq.50.1576011300561;
+        Tue, 10 Dec 2019 12:55:00 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 199sm4651176pfv.81.2019.12.10.12.54.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 12:55:00 -0800 (PST)
+Date:   Tue, 10 Dec 2019 12:54:57 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or
+ ksyms
+Message-ID: <20191210125457.13f7821a@cakuba.netronome.com>
+In-Reply-To: <20191210181412.151226-1-toke@redhat.com>
+References: <20191210181412.151226-1-toke@redhat.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191210153441.GB1429230@t480s.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/2019 22:34, Vivien Didelot wrote:
-> On Tue, 10 Dec 2019 22:15:26 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
->>>>>> Why do you need percpu ? All of these seem to be incremented with the
->>>>>> bridge lock held. A few more comments below.
->>>>>
->>>>> All other xstats are incremented percpu, I simply followed the pattern.
->>>>>
->>>>
->>>> We have already a lock, we can use it and avoid the whole per-cpu memory handling.
->>>> It seems to be acquired in all cases where these counters need to be changed.
->>>
->>> Since the other xstats counters are currently implemented this way, I prefer
->>> to keep the code as is, until we eventually change them all if percpu is in
->>> fact not needed anymore.
->>>
->>> The new series is ready and I can submit it now if there's no objection.
->>
->> There is a reason other counters use per-cpu - they're incremented without any locking from fast-path.
->> The bridge STP code already has a lock which is acquired in all of these paths and we don't need
->> this overhead and the per-cpu memory allocations. Unless you can find a STP codepath which actually
->> needs per-cpu, I'd prefer you drop it.
-> 
-> Ho ok I understand what you mean now. I'll drop the percpu attribute.
-> 
-> 
-> Thanks,
-> 
-> 	Vivien
-> 
+On Tue, 10 Dec 2019 19:14:12 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> When the kptr_restrict sysctl is set, the kernel can fail to return
+> jited_ksyms or jited_prog_insns, but still have positive values in
+> nr_jited_ksyms and jited_prog_len. This causes bpftool to crash when tryi=
+ng
+> to dump the program because it only checks the len fields not the actual
+> pointers to the instructions and ksyms.
+>=20
+> Fix this by adding the missing checks.
+>=20
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-Great, thanks again.
-I think it's clear, but I'll add just in case to avoid extra work - you can drop
-the dynamic memory allocation altogether and make the struct part of net_bridge_port.
+Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
 
-Cheers,
- Nik
+and
 
+Fixes: f84192ee00b7 ("tools: bpftool: resolve calls without using imm field=
+")
+
+?
