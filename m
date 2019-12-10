@@ -2,124 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25015119439
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221BC1196EA
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728868AbfLJVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:14:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40958 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728844AbfLJVN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:13:58 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 98428208C3;
-        Tue, 10 Dec 2019 21:13:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012437;
-        bh=IuYOpPvSdHmvCmlPfdxsAUVModI75wSqdZHZvJ1mZGQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWJOgr2oWaOQE+/kCxf9tm87GMUUGBi8Eb/YgLul1IYduDLUs7FWyhZLDUD9guVoG
-         GawsH8HPNYUbyOaK99uAwy3twleBXXjTL6LAyzc0YKt5SXPCTymA+NCvqN7lxEwpAF
-         dgjczuEApEw490qFFAXt7vIUV/NCO3Y0co4AIfLU=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Lobakin <alobakin@dlink.ru>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
-        Edward Cree <ecree@solarflare.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 349/350] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet stalling
-Date:   Tue, 10 Dec 2019 16:07:34 -0500
-Message-Id: <20191210210735.9077-310-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
-References: <20191210210735.9077-1-sashal@kernel.org>
+        id S1727230AbfLJV35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:29:57 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44329 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728339AbfLJVKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:10:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576012200;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6Dn0X1y8qWY4L6jupdvIYtGjXctpKGwYZyUlMuuX+gk=;
+        b=QoR6Yr/J4bbjg/p1mvjp7aha9lOWnKDi9ZOSF9vhAgamPAx0hMo1FaX41vIJkJE+j2Lh2K
+        ISZwzpZ2cts5uzgcrjzSZoPLxVlaazc7O+KU167PfBAEoT4Re2QMxxZODBx+13nljlG4+s
+        XZwH0VLWZ0q7q7gg9ZpkjHENCtlY+f4=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-4-v63zDGNYOkKITeruXuXq-A-1; Tue, 10 Dec 2019 16:09:59 -0500
+Received: by mail-lj1-f197.google.com with SMTP id c24so4062572ljk.0
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:09:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=6Dn0X1y8qWY4L6jupdvIYtGjXctpKGwYZyUlMuuX+gk=;
+        b=UGHGjluyWw9PeKlt3oYLx1BLazUl5Q8vjI3GwImg9T4eg6c5vkfyO62xzLpJl4vkNA
+         kR1Bx1xf1Yxkz17aStmGyNvi7iiehAHdiUKDabknlfefg3wmIJaOzMT/+xWlkYCPVaN7
+         QwM1wCe+ImRR4DzLrs81yNgrwNBJkuqFUbeNiTU6913F6yqIZEBvnxTroOuQqOYVqndx
+         tY/XkwczAXyCF2S3+Mesokq2/jYuydpzfxFAMDcXNDaQME/FDk9qFCcmx42dWjy0OkKq
+         s4XaK/X5UYzoLQ1v18k8IKrIM1HjZe1KbTp3596LsghjAJFaHg2ESIhPlA187xHQUBIx
+         R58A==
+X-Gm-Message-State: APjAAAUQpV0HUE6sTRsOpsAbPnNmdPmQY+kLa+lePFEPMZ/a1NxVUdIU
+        pNrtNbSL0utPKZjvxebEuoOiaIO0o4LzST8lkVGXpIdMYVPg4mAYXI0d9o2Sv0W5VP5YQYkF8e9
+        n24fAFiL1CfYWHSex
+X-Received: by 2002:a2e:a408:: with SMTP id p8mr3996820ljn.145.1576012197707;
+        Tue, 10 Dec 2019 13:09:57 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxvMCPn/czOu2GRrVuQOc/gN/GQSbTQE0kUF3zFgRZi0rgmbc3zka5Cy/ldLQX+t9WQBZ45iA==
+X-Received: by 2002:a2e:a408:: with SMTP id p8mr3996800ljn.145.1576012197452;
+        Tue, 10 Dec 2019 13:09:57 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id f8sm2469467ljj.1.2019.12.10.13.09.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 13:09:56 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E6C981803C1; Tue, 10 Dec 2019 22:09:55 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or ksyms
+In-Reply-To: <20191210125457.13f7821a@cakuba.netronome.com>
+References: <20191210181412.151226-1-toke@redhat.com> <20191210125457.13f7821a@cakuba.netronome.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 10 Dec 2019 22:09:55 +0100
+Message-ID: <87eexbhopo.fsf@toke.dk>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MC-Unique: v63zDGNYOkKITeruXuXq-A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@dlink.ru>
+Jakub Kicinski <jakub.kicinski@netronome.com> writes:
 
-[ Upstream commit b167191e2a851cb2e4c6ef8b91c83ff73ef41872 ]
+> On Tue, 10 Dec 2019 19:14:12 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrot=
+e:
+>> When the kptr_restrict sysctl is set, the kernel can fail to return
+>> jited_ksyms or jited_prog_insns, but still have positive values in
+>> nr_jited_ksyms and jited_prog_len. This causes bpftool to crash when try=
+ing
+>> to dump the program because it only checks the len fields not the actual
+>> pointers to the instructions and ksyms.
+>>=20
+>> Fix this by adding the missing checks.
+>>=20
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
+>
+> and
+>
+> Fixes: f84192ee00b7 ("tools: bpftool: resolve calls without using imm fie=
+ld")
+>
+> ?
 
-Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
-napi_gro_receive()") has applied batched GRO_NORMAL packets processing
-to all napi_gro_receive() users, including mac80211-based drivers.
+Yeah, guess so? Although I must admit it's not quite clear to me whether
+bpftool gets stable backports, or if it follows the "only moving
+forward" credo of libbpf?
 
-However, this change has led to a regression in iwlwifi driver [1][2] as
-it is required for NAPI users to call napi_complete_done() or
-napi_complete() and the end of every polling iteration, whilst iwlwifi
-doesn't use NAPI scheduling at all and just calls napi_gro_flush().
-In that particular case, packets which have not been already flushed
-from napi->rx_list stall in it until at least next Rx cycle.
+Anyhow, I don't suppose it'll hurt to have the Fixes: tag(s) in there;
+does Patchwork pick these up (or can you guys do that when you apply
+this?), or should I resend?
 
-Fix this by adding a manual flushing of the list to iwlwifi driver right
-before napi_gro_flush() call to mimic napi_complete() logics.
-
-I prefer to open-code gro_normal_list() rather than exporting it for 2
-reasons:
-* to prevent from using it and napi_gro_flush() in any new drivers,
-  as it is the *really* bad way to use NAPI that should be avoided;
-* to keep gro_normal_list() static and don't lose any CC optimizations.
-
-I also don't add the "Fixes:" tag as the mentioned commit was only a
-trigger that only exposed an improper usage of NAPI in this particular
-driver.
-
-[1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
-[2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
-
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-Acked-by: Luca Coelho <luciano.coelho@intel.com>
-Reported-by: Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
-Tested-by: Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
-Reviewed-by: Edward Cree <ecree@solarflare.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-index 19dd075f2f636..041dd75ac72bc 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-@@ -1429,6 +1429,7 @@ static struct iwl_rx_mem_buffer *iwl_pcie_get_rxb(struct iwl_trans *trans,
- static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
- {
- 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
-+	struct napi_struct *napi;
- 	struct iwl_rxq *rxq;
- 	u32 r, i, count = 0;
- 	bool emergency = false;
-@@ -1534,8 +1535,16 @@ static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
- 	if (unlikely(emergency && count))
- 		iwl_pcie_rxq_alloc_rbs(trans, GFP_ATOMIC, rxq);
- 
--	if (rxq->napi.poll)
--		napi_gro_flush(&rxq->napi, false);
-+	napi = &rxq->napi;
-+	if (napi->poll) {
-+		if (napi->rx_count) {
-+			netif_receive_skb_list(&napi->rx_list);
-+			INIT_LIST_HEAD(&napi->rx_list);
-+			napi->rx_count = 0;
-+		}
-+
-+		napi_gro_flush(napi, false);
-+	}
- 
- 	iwl_pcie_rxq_restock(trans, rxq);
- }
--- 
-2.20.1
+-Toke
 
