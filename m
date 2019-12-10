@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6097118F0F
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8A0A118F1A
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727645AbfLJRc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:32:59 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:43698 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727211AbfLJRc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:32:59 -0500
-Received: by mail-pl1-f196.google.com with SMTP id q16so134189plr.10
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:32:58 -0800 (PST)
+        id S1727592AbfLJReT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:34:19 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:44457 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfLJReT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:34:19 -0500
+Received: by mail-pj1-f66.google.com with SMTP id w5so7661157pjh.11
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:34:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AaMG4AdFLp2klpkdJSB9SEcXB/IkhwmEsgsQmGl7j7Q=;
-        b=CZSbyBUbu8R8hvUWmipAg7r3XxJ6I7wWTfxeWrV37yQT3ujFqSsmRKHbqtu5qOMRow
-         ySPA2CgQ+0VxXHiFK+JJJL/lAPmbSrP2PP0zaYdR7wAZjeqxTU7oX5sId0xmKY+811ZR
-         0HcF2oX/+3+nxAiQRlLop+HTNTHe7DqFC4gpoQ5Bw6ji4GN+cZ01LHglqAMG2SyzVBzk
-         ZCXbINU4kTdmnoTHawtqJptF0HR8VmvkmontXW8rtS8ZPV+yrjye7W58dsoS4mR/l8kP
-         dCtDmiSLgaWGztkRlB5r7fC0psQ5RRe/DHYbvLhopEcB5dIpWV4tVpJH7ZindzdHhwa2
-         hFRg==
+        bh=uGWPjmzSUrNHmd0I95HsznTOmpvx+Q8adKJPosZLh5U=;
+        b=SWY5hNx0GTgPFfDupTOVuCgZuCv0UCQffjYKpB5yUsiYsY8Gq83kRz1b73PY0o5b9B
+         rIA1/3xcILU8BXaQc30peqShrfLVfjoPye1EulloHt9f68H5jwIPEIelxx/32DLb8Oar
+         fBCGWDa8SCXN+Xud2/b1I5ok49NTI/Wj399iAK3Qu3UujnwojNXEaVtivWXOFeAiv8Bd
+         Tac1Vh95FdwQrVUomQlc1G+KGXSJNQzyKhifNx0l9JdYUMaR0A/ytvQG5taJNzZzZIeR
+         bgdL/dxCqwcQ/7KyWB8KDjwjYUwTDUGBnrdMojEjSW/pSH20qB5MrNnwOlAXCWcC/aPj
+         iPGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=AaMG4AdFLp2klpkdJSB9SEcXB/IkhwmEsgsQmGl7j7Q=;
-        b=LY4Hf5YoBCpnG0vCJZ5o5p1b97Vnhi+TrAMmunm8aT4pnRERs9XiEtL/j+KySmZG4I
-         7E72cPeWb0O3XHCGo0cw/Yf1Ab3yQPhNd5hoaJ1juD9XNFVZArOf5EjmG+bAV6689GJN
-         s6VJ8tTt2zFj4YawAdnCvT1FQCOn/5vQjCcok1pCKpyqkIL15nu3UANIxGbl917v94+8
-         zn5aOexMn4FutLT4Ud8Q76xzKAeniUtxBJ00r6XOTT2T2L9nyrCXd/r5j2OiLAXmMNub
-         Dg1cVQdjSJDNiLm2T1cL+K8QliETLnKw5sOKAqQRJS/yFbhNBA2MlPQ9G5FM63fun/21
-         q9nw==
-X-Gm-Message-State: APjAAAWWfvkTTfMom4k00rOaKBpH5vLPM8zEayeW9hwvsLRPAIrKcDtU
-        22Yjz+upSD0jPZs2JXqKY9Khw0Ln
-X-Google-Smtp-Source: APXvYqzw3JBU8Jn00ODQmQWBPmP7LuWtn7Hrsy5Dp3Y+V45FLgSXp8MYPFmMWvgecXluAMkP1K+7iA==
-X-Received: by 2002:a17:902:208:: with SMTP id 8mr10399158plc.53.1575999178006;
-        Tue, 10 Dec 2019 09:32:58 -0800 (PST)
+        bh=uGWPjmzSUrNHmd0I95HsznTOmpvx+Q8adKJPosZLh5U=;
+        b=URd+JTLHGpkPRRvSZbRaccSZ7JwalhzdwFO0ZZk5/wh51WBkJNflhN9WN8bpc+gQzE
+         N+ICj/WBAA08/nBnItZnFs6YmvREmBKW6lmYhFjJ9yUt2GgOMAiQSGI4mCmiwx4yvfki
+         HQ+rZVsso/zGiIZU8ka6861RU5fpZSfPd5uMqn5j/CyaikHRlA7emrXRiZGfaSyyIqg5
+         ZJqQPr6C1AGBw9OTttu4R02ZWeNBTkWb3I2N2Kb2OoOnFAKocHZcnHLaGfHYwP5HaC0f
+         W7bfM9Fsy3tAgC2R6DPSpWBbNX2GBhWZ+xITzrtNjQi/ooYYTnBGz50G8XOkLhP8a1CA
+         jFbA==
+X-Gm-Message-State: APjAAAUEYZxwo5X7HMO4sY0DkVE7e3pRnP317bXjGudSGgpTLt2AFU+/
+        QpfJqfbtv9H4sBkILj3O0Wk9auWB
+X-Google-Smtp-Source: APXvYqy+elTQAPTWQ2yMcuTWUW2GgNXP7GvX4xtwfIcAPwguhHOXEI1EjTYzYb0Xvj105yCnGhySnA==
+X-Received: by 2002:a17:90a:f494:: with SMTP id bx20mr6810883pjb.60.1575999258201;
+        Tue, 10 Dec 2019 09:34:18 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id s60sm3553882pjb.3.2019.12.10.09.32.56
+        by smtp.googlemail.com with ESMTPSA id 68sm4101008pge.14.2019.12.10.09.34.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Dec 2019 09:32:57 -0800 (PST)
-Subject: Re: [PATCH net-next v2 12/14] net: phylink: make Broadcom BCM84881
- based SFPs work
+        Tue, 10 Dec 2019 09:34:17 -0800 (PST)
+Subject: Re: [PATCH net-next v2 13/14] net: phy: add Broadcom BCM84881 PHY
+ driver
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191209151553.GP25745@shell.armlinux.org.uk>
- <E1ieKoq-0004vp-2C@rmk-PC.armlinux.org.uk>
+ <E1ieKov-0004vw-Dk@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <04508e5f-5ead-7c05-b7ff-d227ae5bc6ac@gmail.com>
-Date:   Tue, 10 Dec 2019 09:32:56 -0800
+Message-ID: <557220a9-bdf4-868a-d9cd-a382ae80d288@gmail.com>
+Date:   Tue, 10 Dec 2019 09:34:16 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <E1ieKoq-0004vp-2C@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ieKov-0004vw-Dk@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,16 +123,35 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/9/19 7:19 AM, Russell King wrote:
-> The Broadcom BCM84881 does not appear to send the SGMII control word
-> when operating in SGMII mode, which causes network adapters to fail
-> to link with the PHY, or decide to operate at fixed 1G speed, even if
-> the PHY negotiated 100M.
-> 
-> Work around this by detecting the Broadcom BCM84881 and switch to phy
-> mode rather than inband mode.
+> Add a rudimentary Clause 45 driver for the BCM84881 PHY, found on
+> Methode DM7052 SFPs.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+> ---
+>  drivers/net/phy/Kconfig    |   6 +
+>  drivers/net/phy/Makefile   |   1 +
+>  drivers/net/phy/bcm84881.c | 269 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 276 insertions(+)
+>  create mode 100644 drivers/net/phy/bcm84881.c
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index fe602648b99f..41272106dea9 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -329,6 +329,12 @@ config BROADCOM_PHY
+>  	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
+>  	  BCM5481, BCM54810 and BCM5482 PHYs.
+>  
+> +config BCM84881_PHY
+> +	bool "Broadcom BCM84881 PHY"
+> +	depends on PHYLIB=y
+> +	---help---
+> +	  Support the Broadcom BCM84881 PHY.
+
+Cannot we make this tristate, I believe we cannot until there are more
+fundamental issues (that you just reported) to be fixed, correct?
 -- 
 Florian
