@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D375A118BDE
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF73A118C84
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727480AbfLJPCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 10:02:49 -0500
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:36571 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727272AbfLJPCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 10:02:49 -0500
-Received: by mail-wr1-f45.google.com with SMTP id z3so20504562wru.3
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 07:02:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Embng0ehlRpQgOyJThRi0bZwmGHoUksbsKrG3YADG6A=;
-        b=cU/+JuW/cuQrhE5d/oYvJhPeFCPc9ZPO8Vqj9JukmckYaSHyNbt75aY2iZu21JzsUc
-         0XJ0vDud2OcJ34NXEGVLwiGF5pxRM2lqECDltTAjAvZ8XG6rlNhkNQCfnRhJo4jZNeeC
-         8drYWlFypy3iGYbzCrJgUhP+a4vHgp+GbD0uEcpH+DO2yV9Kq3aZ6jt6wJICz3R3/Fjx
-         wD+LIm3InTPAWayqYEQA5MC8DazFYreblx8iHmMP5OuhbK5VPIddTNP60OwLZKKhKujj
-         tLlQeoKzn1nVTzzAlS6jCrLzcNEJ6poRdn900fhyCBsxLKqGyEUpoL00RWBcQGTSDVPz
-         Yg1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Embng0ehlRpQgOyJThRi0bZwmGHoUksbsKrG3YADG6A=;
-        b=eJLPW6drVj3GnRlijmthAmNO1+cfRuT7UYIA5GS1kiTvR7cuP1Auh8pQBFCZNJnyoi
-         3ehdJ3jGxyX8jJL0BQYf16dVWyYyDbcEMqTLW1oGlkXhVsQo+DpdGgq1Wi2smG/AXVdk
-         OxlM2lLCJWNj58dZlaeAa4ZaAVfUAV8ilxzcAXuNAnTkQmV4xPvmjBNmUyelBU10DUN0
-         Jl5YDy4ItMmNxf6dp5pxMK+fRSHu4/lPsniZKR3xqzWPWAZq8XVkmivapvx0HCW6CxGG
-         qdhRfRm21ngFKVw4Efz0gDlEjRGVwFgHcQWqdx2U0iOgo4b/GOEr7IlYbnTdScG6KAon
-         SqlQ==
-X-Gm-Message-State: APjAAAUN1m61y0Dac6g1QLw+OAD6Bni5xcsjKm8fIvLPSeHE4bsHYX82
-        p23EAy+v9ZuTPBo8Ym59jROx8g==
-X-Google-Smtp-Source: APXvYqwMRGc+RuedEuanSRBG88G1cmns8VDxHtvOcauyevfu5rZf0gMJclU01VqUKVUEd67rbadChQ==
-X-Received: by 2002:adf:f091:: with SMTP id n17mr3846791wro.387.1575990166946;
-        Tue, 10 Dec 2019 07:02:46 -0800 (PST)
-Received: from apalos.home (athedsl-4476713.home.otenet.gr. [94.71.27.49])
-        by smtp.gmail.com with ESMTPSA id d8sm3489005wrx.71.2019.12.10.07.02.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 07:02:46 -0800 (PST)
-Date:   Tue, 10 Dec 2019 17:02:44 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "brouer@redhat.com" <brouer@redhat.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Message-ID: <20191210150244.GB12702@apalos.home>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191209131416.238d4ae4@carbon>
- <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+        id S1727508AbfLJP2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 10:28:54 -0500
+Received: from gateway20.websitewelcome.com ([192.185.55.25]:33813 "EHLO
+        gateway20.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727434AbfLJP2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 10:28:54 -0500
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id E50A1400C733E
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 07:54:09 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id eh3tiJGvyiJ43eh3tijrVO; Tue, 10 Dec 2019 09:04:30 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=di6itqzy1Kz6qTiVDOx+IF2EnF+F8GJNKypw7OnCAyA=; b=erGq0mpwB/ttMA8iQzgnj6nRSo
+        +hvbQTfkTsD27mUp9UFIBDHI+BI28AiDkknua5jG2WGDSkz7QjmuB5pUmnQ1/EPO7bvGAqiFsKNbv
+        7JhHdQOKIZKtC8JbB1o9uqePw2KMJppguDO4R8zIV8Y5RylMmucnrgIRiE6BisnsLJA26BDckQsK3
+        n/V39u4QiRRB1Z+vVH4HML3zdh+fBi1S45x0FatjeCPHrIvfXTboKDEcQ5qx+tdmVqjLulGF1Yp0n
+        wKDvCXjjCiBPdr9SQLESOUzgA1NaxQi96mutVxOeyMV839FA4kIz5aLYzxOnIPWyRU/BHag+gfcKu
+        zH/v63zA==;
+Received: from [187.192.35.14] (port=36632 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1ieh3s-000Syo-0a; Tue, 10 Dec 2019 09:04:28 -0600
+Date:   Tue, 10 Dec 2019 09:05:32 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Dan Murphy <dmurphy@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sean Nyekjaer <sean@geanix.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] can: tcan45x: Fix inconsistent IS_ERR and PTR_ERR
+Message-ID: <20191210150532.GA12732@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.192.35.14
+X-Source-L: No
+X-Exim-ID: 1ieh3s-000Syo-0a
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [187.192.35.14]:36632
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 7
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
+Fix inconsistent IS_ERR and PTR_ERR in tcan4x5x_parse_config.
 
-> > 
-> > The patch description doesn't explain the problem very well.
-> > 
-> > Lets first establish what the problem is.  After I took at closer
-> > look,
-> > I do think we have a real problem here...
-> > 
-> > If function alloc_pages_node() is called with NUMA_NO_NODE (see below
-> > signature), then the nid is re-assigned to numa_mem_id().
-> > 
-> > Our current code checks: page_to_nid(page) == pool->p.nid which seems
-> > bogus, as pool->p.nid=NUMA_NO_NODE and the page NID will not return
-> > NUMA_NO_NODE... as it was set to the local detect numa node, right?
-> > 
-> 
-> right.
-> 
-> > So, we do need a fix... but the question is that semantics do we
-> > want?
-> > 
-> 
-> maybe assume that __page_pool_recycle_direct() is always called from
-> the right node and change the current bogus check:
+The proper pointer to be passed as argument is tcan4x5x->device_wake_gpio.
 
-Is this a typo? pool_page_reusable() is called from __page_pool_put_page().
+This bug was detected with the help of Coccinelle.
 
-page_pool_put_page and page_pool_recycle_direct() (no underscores) call that.
-Can we guarantee that those will always run from the correct cpu?
-In the current code base if they are only called under NAPI this might be true.
-On the page_pool skb recycling patches though (yes we'll eventually send those
-:)) this is called from kfree_skb().
-I don't think we can get such a guarantee there, right?
+Fixes: 2de497356955 ("can: tcan45x: Make wake-up GPIO an optional GPIO")
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/can/m_can/tcan4x5x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards
-/Ilias
+diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
+index 4e1789ea2bc3..6676ecec48c3 100644
+--- a/drivers/net/can/m_can/tcan4x5x.c
++++ b/drivers/net/can/m_can/tcan4x5x.c
+@@ -355,7 +355,7 @@ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
+ 	tcan4x5x->device_wake_gpio = devm_gpiod_get(cdev->dev, "device-wake",
+ 						    GPIOD_OUT_HIGH);
+ 	if (IS_ERR(tcan4x5x->device_wake_gpio)) {
+-		if (PTR_ERR(tcan4x5x->power) == -EPROBE_DEFER)
++		if (PTR_ERR(tcan4x5x->device_wake_gpio) == -EPROBE_DEFER)
+ 			return -EPROBE_DEFER;
+ 
+ 		tcan4x5x_disable_wake(cdev);
+-- 
+2.23.0
+
