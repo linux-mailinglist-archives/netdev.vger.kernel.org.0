@@ -2,251 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C05119052
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4058611905D
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:11:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727634AbfLJTH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:07:58 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56361 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727617AbfLJTH5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:07:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576004876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BfuDWTxO12oAtz92xJyq0vf10hUjhgEKJh0jZ2uLJqc=;
-        b=Bs+WRmPRb7AnYPmxXOUOj1CeOr+nmCNclI68wf31R4PauzNlMyYs/J9oWJOrma6xtQ4bLB
-        LPjHnk9bQPwVYUAsGQC/2I6LmCwt9FDGr472oecxq+t/rnAJ1CSCqoaHoCqmWAc6UBfnYm
-        tVNkDNvXOL6klwjSuT23lvAOfuQOKhs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-89-3SqaN9miMMG9ZqNsI4aYtg-1; Tue, 10 Dec 2019 14:07:52 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0843F107ACC4;
-        Tue, 10 Dec 2019 19:07:51 +0000 (UTC)
-Received: from x1.home (ovpn04.gateway.prod.ext.phx2.redhat.com [10.5.9.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06AB85C1B0;
-        Tue, 10 Dec 2019 19:07:47 +0000 (UTC)
-Date:   Tue, 10 Dec 2019 12:07:47 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 0/6] VFIO mdev aggregated resources handling
-Message-ID: <20191210120747.4530f046@x1.home>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D636944@SHSMSX104.ccr.corp.intel.com>
-References: <20191024050829.4517-1-zhenyuw@linux.intel.com>
-        <AM0PR05MB4866CA9B70A8BEC1868AF8C8D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191108081925.GH4196@zhen-hp.sh.intel.com>
-        <AM0PR05MB4866757033043CC007B5C9CBD15D0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191205060618.GD4196@zhen-hp.sh.intel.com>
-        <AM0PR05MB4866C265B6C9D521A201609DD15C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191206080354.GA15502@zhen-hp.sh.intel.com>
-        <79d0ca87-c6c7-18d5-6429-bb20041646ff@mellanox.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D19D636944@SHSMSX104.ccr.corp.intel.com>
-Organization: Red Hat
+        id S1727667AbfLJTL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:11:28 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:37489 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727625AbfLJTL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:11:27 -0500
+Received: by mail-oi1-f193.google.com with SMTP id x195so10883597oix.4
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:11:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GmjrBCvMDnrN5WSFCLajJ8bTqGflO1i7+JSr9It/EWc=;
+        b=Ex4lPsH4a8l5bv8kn9L5lrpl4vtxvRGxEZHE+Dd3TBHlofvdd8nA60V/0lovnmmqll
+         vDpVuVvG/iMtMj/So/TeL3aYNFHX2Prdkd2/D908pDTt5qN65vvMXhhRRL+EIes7YhAD
+         gTyX9VFnkfjqL2LiTtbgcbwDbaYJRv7ob6jUpwxrfnLaL9O2ka4REcd6/I66UMKrSFfc
+         Hup9xDZ0r1tv6FI0CSP94trTTDVDrGMLnRaSbQ9h6+hFS1lrVrJ49pyAcqRs1NfKGdT9
+         dK5SqXB9JmB+id7FEvJKjl4e4I5IiArymKbf8E3mpU4Ewj30eXQLtCeOq+XJOfDWXIqW
+         jMUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GmjrBCvMDnrN5WSFCLajJ8bTqGflO1i7+JSr9It/EWc=;
+        b=p+c4yCAdQ4bskWZNxJ2W4CW0t4afYyOOOKMowkoXSKhuGKpBaHUv3azlE+YlZLHvi0
+         1FhmVj9LZd3bbp5xxIIORh9CYI1DOxqFGg0eAZRuHq0XUhJ6k2ztfE6EJnt1b4JwTxnh
+         BAJ+skDBRwO35kC4/uesCOlMfXxTjpvh72Qu0daY+ZtQ5c1rk3dE113M7QmxwUHYat53
+         g+JhbybUFNMHwcG1RYtoCMaclCpetblLJQ2fyDA4BSeQrikVyF+yFDBZtXFFKiI2CAuZ
+         gHNm2XpmIx2ZLZH1/e3z0Lt9Jam0N8o+MAaZ3vtrJpsAtjatKGIVVNbgcCtMQ7a6ygZP
+         UKXg==
+X-Gm-Message-State: APjAAAXR3ugT5MQhnRmLmnCafIfZlkpf37StteB5amrCF0aufEiysAPE
+        TrPiEVyZ0ez9NSo1G2vFBtmk6g==
+X-Google-Smtp-Source: APXvYqwlfxFGxU6uwv6jhcMu0rKVzGnVxSRBBkcr+1JAeEB3yNLukggwvld+Qv0r3g2ZrzXaWxlHnQ==
+X-Received: by 2002:a05:6808:9ba:: with SMTP id e26mr349582oig.81.1576005086733;
+        Tue, 10 Dec 2019 11:11:26 -0800 (PST)
+Received: from ziepe.ca ([217.140.111.136])
+        by smtp.gmail.com with ESMTPSA id r6sm1682834otd.66.2019.12.10.11.11.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 Dec 2019 11:11:26 -0800 (PST)
+Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iekur-00001y-KL; Tue, 10 Dec 2019 15:11:25 -0400
+Date:   Tue, 10 Dec 2019 15:11:25 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com
+Subject: Re: [net-next v3 00/20][pull request] Intel Wired LAN Driver Updates
+ 2019-12-09
+Message-ID: <20191210191125.GG46@ziepe.ca>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191210172233.GA46@ziepe.ca>
+ <324a6a4c7553cea5225b6f94ff224e155a252b36.camel@intel.com>
+ <20191210182543.GE46@ziepe.ca>
+ <a13f11a31d5cafcc002d5e5ca73fe4a8e3744fb5.camel@intel.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: 3SqaN9miMMG9ZqNsI4aYtg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a13f11a31d5cafcc002d5e5ca73fe4a8e3744fb5.camel@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 03:33:23 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> > From: Parav Pandit <parav@mellanox.com>
-> > Sent: Saturday, December 7, 2019 1:34 AM
+On Tue, Dec 10, 2019 at 10:41:54AM -0800, Jeff Kirsher wrote:
+> On Tue, 2019-12-10 at 14:25 -0400, Jason Gunthorpe wrote:
+> > On Tue, Dec 10, 2019 at 10:06:41AM -0800, Jeff Kirsher wrote:
+> > > > Please don't send new RDMA drivers in pull requests to net. This
+> > > > driver is completely unreviewed at this point.
+> > > 
+> > > This was done because you requested a for a single pull request in an
+> > > earlier submission 9 months ago.  I am fine with breaking up
+> > > submission,
+> > > even though the RDMA driver would be dependent upon the virtual bus and
+> > > LAN
+> > > driver changes.
 > > 
-> > On 12/6/2019 2:03 AM, Zhenyu Wang wrote:  
-> > > On 2019.12.05 18:59:36 +0000, Parav Pandit wrote:  
-> > >>>>  
-> > >>>>> On 2019.11.07 20:37:49 +0000, Parav Pandit wrote:  
-> > >>>>>> Hi,
-> > >>>>>>  
-> > >>>>>>> -----Original Message-----
-> > >>>>>>> From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org>  
-> > On  
-> > >>>>>>> Behalf Of Zhenyu Wang
-> > >>>>>>> Sent: Thursday, October 24, 2019 12:08 AM
-> > >>>>>>> To: kvm@vger.kernel.org
-> > >>>>>>> Cc: alex.williamson@redhat.com; kwankhede@nvidia.com;
-> > >>>>>>> kevin.tian@intel.com; cohuck@redhat.com
-> > >>>>>>> Subject: [PATCH 0/6] VFIO mdev aggregated resources handling
-> > >>>>>>>
-> > >>>>>>> Hi,
-> > >>>>>>>
-> > >>>>>>> This is a refresh for previous send of this series. I got
-> > >>>>>>> impression that some SIOV drivers would still deploy their own
-> > >>>>>>> create and config method so stopped effort on this. But seems
-> > >>>>>>> this would still be useful for some other SIOV driver which may
-> > >>>>>>> simply want capability to aggregate resources. So here's refreshed  
-> > >>> series.  
-> > >>>>>>>
-> > >>>>>>> Current mdev device create interface depends on fixed mdev type,
-> > >>>>>>> which get uuid from user to create instance of mdev device. If
-> > >>>>>>> user wants to use customized number of resource for mdev device,
-> > >>>>>>> then only can create new  
-> > >>>>>> Can you please give an example of 'resource'?
-> > >>>>>> When I grep [1], [2] and [3], I couldn't find anything related to '  
-> > >>> aggregate'.  
-> > >>>>>
-> > >>>>> The resource is vendor device specific, in SIOV spec there's ADI
-> > >>>>> (Assignable Device Interface) definition which could be e.g queue
-> > >>>>> for net device, context for gpu, etc. I just named this interface as  
-> > >>> 'aggregate'  
-> > >>>>> for aggregation purpose, it's not used in spec doc.
-> > >>>>>  
-> > >>>>
-> > >>>> Some 'unknown/undefined' vendor specific resource just doesn't work.
-> > >>>> Orchestration tool doesn't know which resource and what/how to  
-> > configure  
-> > >>> for which vendor.  
-> > >>>> It has to be well defined.
-> > >>>>
-> > >>>> You can also find such discussion in recent lgpu DRM cgroup patches  
-> > series  
-> > >>> v4.  
-> > >>>>
-> > >>>> Exposing networking resource configuration in non-net namespace  
-> > aware  
-> > >>> mdev sysfs at PCI device level is no-go.  
-> > >>>> Adding per file NET_ADMIN or other checks is not the approach we  
-> > follow in  
-> > >>> kernel.  
-> > >>>>
-> > >>>> devlink has been a subsystem though under net, that has very rich  
-> > interface  
-> > >>> for syscaller, device health, resource management and many more.  
-> > >>>> Even though it is used by net driver today, its written for generic device  
-> > >>> management at bus/device level.  
-> > >>>>
-> > >>>> Yuval has posted patches to manage PCI sub-devices [1] and updated  
-> > version  
-> > >>> will be posted soon which addresses comments.  
-
-Always good to see tools that intend to manage arbitrary devices posted
-only to the netdev list :-\
-
-> > >>>>
-> > >>>> For any device slice resource management of mdev, sub-function etc,  
-> > we  
-> > >>> should be using single kernel interface as devlink [2], [3].  
-
-This seems impractical, mdevs and SR-IOV are both enumerated,
-inspected, created, and removed in sysfs, where do we define what
-features are manipulated vis sysfs versus devlink?  mdevs, by
-definition, are vendor defined "chunks" of a thing.  We allow vendor
-drivers to define different types, representing different
-configurations of these chunks.  Often these different types are
-incrementally bigger or smaller chunks of these things, but defining
-what bigger and smaller means generically across vendors is an
-impossible task.  Orchestration tools already need to know vendor
-specific information in terms of what type of mdev device they want to
-create and make use of.  The aggregation seems to simply augment that
-vendor information, ie. 'type' and 'scale' are separate rather than
-combined only behind just 'type'.
-
-> > >>>>
-> > >>>> [1]
-> > >>>> https://lore.kernel.org/netdev/1573229926-30040-1-git-send-email-  
-> > yuval  
-> > >>>> av@mellanox.com/ [2]
-> > >>>> http://man7.org/linux/man-pages/man8/devlink-dev.8.html
-> > >>>> [3] http://man7.org/linux/man-pages/man8/devlink-resource.8.html
-> > >>>>
-> > >>>> Most modern device configuration that I am aware of is usually done  
-> > via well  
-> > >>> defined ioctl() of the subsystem (vhost, virtio, vfio, rdma, nvme and  
-> > more) or  
-> > >>> via netlink commands (net, devlink, rdma and more) not via sysfs.  
-> > >>>>  
-> > >>>
-> > >>> Current vfio/mdev configuration is via documented sysfs ABI instead of  
-> > other  
-> > >>> ways. So this adhere to that way to introduce more configurable method  
-> > on  
-> > >>> mdev device for standard, it's optional and not actually vendor specific  
-> > e.g vfio-  
-> > >>> ap.
-> > >>>  
-> > >> Some unknown/undefined resource as 'aggregate' is just not an ABI.
-> > >> It has to be well defined, as 'hardware_address', 'num_netdev_sqs' or  
-> > something similar appropriate to that mdev device class.  
-> > >> If user wants to set a parameter for a mdev regardless of vendor, they  
-> > must have single way to do so.
-
-Aggregation augments type, which is by definition vendor specific.
-  
-> > >
-> > > The idea is not specific for some device class, but for each mdev
-> > > type's resource, and be optional for each vendor. If more device class
-> > > specific way is preferred, then we might have very different ways for
-> > > different vendors. Better to avoid that, so here means to aggregate
-> > > number of mdev type's resources for target instance, instead of defining
-> > > kinds of mdev types for those number of resources.
-> > >  
-> > Parameter or attribute certainly can be optional.
-> > But the way to aggregate them should not be vendor specific.
-> > Look for some excellent existing examples across subsystems, for example
-> > how you create aggregated netdev or block device is not depend on vendor
-> > or underlying device type.  
+> > If I said that I ment a single pull request *to RDMA* with Dave's acks
+> > on the net side, not a single pull request to net.
+> > 
+> > Given the growth of the net side changes this may be better to use a
+> > shared branch methodology.
 > 
-> I'd like to hear Alex's opinion on this. Today VFIO mdev supports two styles
-> of "types" imo: fixed resource definition (most cases) and dynamic resource 
-> definition (vfio-ap). In fixed style, a type has fixed association to a set of 
-> vendor specific resources (resourceX=M, resourceY=N, ...). In dynamic case, 
-> the user is allowed to specify actual resource X/Y/... backing the mdev 
-> instance post its creation. In either case, the way to identify such association 
-> or configurable knobs is vendor specific, maybe contained in optional 
-> attributes (name and description) plus additional info in vendor documents.
+> I am open to any suggestions you have on submitting these changes that has
+> the least amount of thrash for all the maintainers involved.
 > 
-> Then the user is assumed to clearly understand the implication of the resource
-> allocation under a given type, when creating a new mdev under this type.
-> 
-> If this assumption holds true, the aggregated attribute simply provides an
-> extension in the same direction of fixed-style types but allowing for more 
-> flexible linearly-increasing resource allocation. e.g. when using aggregate=2, 
-> it means creating a instance with resourceX=2M, resourceY=2N, ... under 
-> the specified type. Along this direction I didn't see the need of well-defined 
-> vendor specific attributes here. When those are actually required, I suppose 
-> the dynamic style would better fit. Or if the vendor driver thinks implementing 
-> such aggregate feature will confuse its type definition, it's optional to not 
-> doing so anyway.
+> My concerns for submitting the network driver changes to the RDMA tree is
+> that it will cause David Miller a headache when taking additional LAN
+> driver changes that would be affected by the changes that were taken into
+> the RDMA tree.
 
-Yep, though I don't think we can even define that aggregate=2 indicates
-that every resources is doubled, it's going to have vendor specific
-meaning.  Maybe this is what Parav is rejecting, but I don't see an
-alternative.  For example, an mdev vGPU might have high level resources
-like the number of execution units, graphics memory, display heads,
-maximum resolution, etc.  Aggregation could affect one or all of these.
-Orchestration tools already need to know the vendor specific type of
-device they want to create, so it doesn't seem unreasonable that if
-they use aggregation that they choose a type that aggregates the
-resource(s) they need, but that aggregation is going to be specific to
-the type.  Potentially as we think about adding "defined" sysfs
-attributes for devices we could start with
-$SYSFS_DEV_PATH/mdev/aggregation/type, where value written to type is a
-vendor specific aggregation of that mdev type.  This allows us the
-option that we might someday agree on specific resources that might be
-aggregated in a common way (ex. ./aggregation/graphics_memory), but I'm
-somewhat doubtful those would ever be pursued.  Thanks,
+If you send the PR to rdma then you must refrain from sending changes
+to net that would conflict with it.
 
-Alex
+I also do not want a headache with conflicts to a huge rdma driver in
+net, so you cannot send it to -net.
+
+Mellanox uses a shared branch approach now, it is working well but
+requires discipline to execute.
+
+You can also send your changes to net, wait a cycle then send the rdma
+changes. IIRC one of the other drivers is working this way.
+
+Jason
 
