@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 939C8119402
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D591194BF
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729013AbfLJVMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:12:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36884 "EHLO mail.kernel.org"
+        id S1729031AbfLJVMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:12:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37196 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729003AbfLJVMd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:12:33 -0500
+        id S1727145AbfLJVMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:12:36 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1255B2077B;
-        Tue, 10 Dec 2019 21:12:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 601682073D;
+        Tue, 10 Dec 2019 21:12:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012352;
-        bh=MI13WdruNkQxoyQuvMsnulcUQpenwMohsKZ7fBvKQJA=;
+        s=default; t=1576012356;
+        bh=t4qaAVhrByK3X7sketG15UMMUfKrub3CkV0rdYVJWzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQoTKO08ouX7/FvlXYcat5m/fh4liNgUne3T3G82NanT98mzt0CEx+aY8Lorb00r3
-         kJU3FReOXws43LU4H2ANx3Pvm0VPmYsqWkAHg8Aj4SGB7pp14llWO8ZvVJkuL1K50V
-         TXIM0GJ4yeQzMMzz1k9esW9syerY7lbtExNVQg0o=
+        b=dsgXqwolKRFzZ1P9HoAsD+gzzqFmcupfgABvGx2SH8BExsMpva8aes38UpRtJKGhw
+         iuixVJgZVV5PgaXRnZwAcaqjroEtsl0eAIeoYYpLUUpHdlC2h2U5JL0Kiy8jhmlZQi
+         5w1EWaXL0rVHE+sXQiC2JpaKCdM0Gkm4Z1yhT8fM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 282/350] qtnfmac: fix invalid channel information output
-Date:   Tue, 10 Dec 2019 16:06:27 -0500
-Message-Id: <20191210210735.9077-243-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 284/350] qtnfmac: fix using skb after free
+Date:   Tue, 10 Dec 2019 16:06:29 -0500
+Message-Id: <20191210210735.9077-245-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -46,43 +46,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>
 
-[ Upstream commit 24227a9e956a7c9913a7e6e7199a9ae3f540fe88 ]
+[ Upstream commit 4a33f21cef84b1b933958c99ed5dac1726214b35 ]
 
-Do not attempt to print frequency for an invalid channel
-provided by firmware. That channel may simply not exist.
+KASAN reported use-after-free error:
+
+[  995.220767] BUG: KASAN: use-after-free in qtnf_cmd_send_with_reply+0x169/0x3e0 [qtnfmac]
+[  995.221098] Read of size 2 at addr ffff888213d1ded0 by task kworker/1:1/71
+
+The issue in qtnf_cmd_send_with_reply impacts all the commands that do
+not need response other then return code. For such commands, consume_skb
+is used for response skb and right after that return code in response
+skb is accessed.
 
 Signed-off-by: Sergey Matyukevich <sergey.matyukevich.os@quantenna.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/quantenna/qtnfmac/event.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/wireless/quantenna/qtnfmac/commands.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/event.c b/drivers/net/wireless/quantenna/qtnfmac/event.c
-index b57c8c18a8d01..7846383c88283 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/event.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/event.c
-@@ -171,8 +171,9 @@ qtnf_event_handle_bss_join(struct qtnf_vif *vif,
- 		return -EPROTO;
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/commands.c b/drivers/net/wireless/quantenna/qtnfmac/commands.c
+index dc0c7244b60e3..c0c32805fb8de 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/commands.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/commands.c
+@@ -83,6 +83,7 @@ static int qtnf_cmd_send_with_reply(struct qtnf_bus *bus,
+ 	struct qlink_cmd *cmd;
+ 	struct qlink_resp *resp = NULL;
+ 	struct sk_buff *resp_skb = NULL;
++	int resp_res = 0;
+ 	u16 cmd_id;
+ 	u8 mac_id;
+ 	u8 vif_id;
+@@ -113,6 +114,7 @@ static int qtnf_cmd_send_with_reply(struct qtnf_bus *bus,
  	}
  
--	pr_debug("VIF%u.%u: BSSID:%pM status:%u\n",
--		 vif->mac->macid, vif->vifid, join_info->bssid, status);
-+	pr_debug("VIF%u.%u: BSSID:%pM chan:%u status:%u\n",
-+		 vif->mac->macid, vif->vifid, join_info->bssid,
-+		 le16_to_cpu(join_info->chan.chan.center_freq), status);
+ 	resp = (struct qlink_resp *)resp_skb->data;
++	resp_res = le16_to_cpu(resp->result);
+ 	ret = qtnf_cmd_check_reply_header(resp, cmd_id, mac_id, vif_id,
+ 					  const_resp_size);
+ 	if (ret)
+@@ -128,8 +130,8 @@ static int qtnf_cmd_send_with_reply(struct qtnf_bus *bus,
+ 	else
+ 		consume_skb(resp_skb);
  
- 	if (status != WLAN_STATUS_SUCCESS)
- 		goto done;
-@@ -181,7 +182,7 @@ qtnf_event_handle_bss_join(struct qtnf_vif *vif,
- 	if (!cfg80211_chandef_valid(&chandef)) {
- 		pr_warn("MAC%u.%u: bad channel freq=%u cf1=%u cf2=%u bw=%u\n",
- 			vif->mac->macid, vif->vifid,
--			chandef.chan->center_freq,
-+			chandef.chan ? chandef.chan->center_freq : 0,
- 			chandef.center_freq1,
- 			chandef.center_freq2,
- 			chandef.width);
+-	if (!ret && resp)
+-		return qtnf_cmd_resp_result_decode(le16_to_cpu(resp->result));
++	if (!ret)
++		return qtnf_cmd_resp_result_decode(resp_res);
+ 
+ 	pr_warn("VIF%u.%u: cmd 0x%.4X failed: %d\n",
+ 		mac_id, vif_id, cmd_id, ret);
 -- 
 2.20.1
 
