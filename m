@@ -2,127 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AAC119B8D
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2530D119B73
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729580AbfLJWJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:09:18 -0500
-Received: from mout.kundenserver.de ([212.227.126.133]:51197 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728856AbfLJWEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 17:04:30 -0500
-Received: from mail-qt1-f171.google.com ([209.85.160.171]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MtfRv-1hsKxf2QUp-00v7CU; Tue, 10 Dec 2019 23:04:28 +0100
-Received: by mail-qt1-f171.google.com with SMTP id b3so458059qti.10;
-        Tue, 10 Dec 2019 14:04:28 -0800 (PST)
-X-Gm-Message-State: APjAAAW7ZhzwUvO3N2faIvYsrRK+941i/3l72ockKp7WetHd7jz+okYC
-        W4dHBIgFDGCz8FMeivB3EEmfJ9i8LLQj/nckF7k=
-X-Google-Smtp-Source: APXvYqwTjvXJ/KoAki4o/MUgxzzj/fhwQvf/9FGGYqifR9IsL+5DzL6tYg3p325LEDaNOoZLB5KJXR0sQBvqgJ8RT3Q=
-X-Received: by 2002:ac8:47d3:: with SMTP id d19mr85987qtr.142.1576015467432;
- Tue, 10 Dec 2019 14:04:27 -0800 (PST)
+        id S1729955AbfLJWID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:08:03 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:33417 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729838AbfLJWIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 17:08:02 -0500
+Received: by mail-io1-f70.google.com with SMTP id i8so14368991ioi.0
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 14:08:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=GwENJOhReXSoSX4FCZp3Vso0XyIxIAaoh96r/uvXuy4=;
+        b=HT1CsRTqLxiUOCSu2xXwWUKD3iJ7ZHSw/uN4IQ3InuvG67RR+A4G3VzY0WQ3WbPJhU
+         oavXYA8+HJDt4T3mHsMeI/8HQW/UvYKKhkICO08XlYxnSNsjJ2Sq/Q2qVn6zJp7x80/F
+         bNxCdanMae+Rdkb0U/2JQ34dB6Yy9GtWZ+YjArkgOH+1myAUmG93HSMe6Le4Csn5PNEO
+         Gs6sULgXO0psQbaI+vV0e+KR/XA2pk16ITKbvCHePFd0ijBH5fXdqHSUvTX3G2F3XNvH
+         MT7WIizmN6n+/Hl2ubQPnbnblIm4+jDXlV+ATwWaz2IY6xp7KKE03WVW8X/GuIc5w7BY
+         BmWA==
+X-Gm-Message-State: APjAAAV9PRTfPJ0IDg5edW/SeoqVg3+dRfnY/2lzQ7bQ6zLBsZZUc9DW
+        NxbuxBKd1cMKOfG2SEGZgvqZSwW8gaUpUti5wWRX0byXYzTa
+X-Google-Smtp-Source: APXvYqw1nemikCJS5D7M4N4f0bYbahpKkcyiyjQt4kL1XP7Z9X8CJ3ZOIh4k/9LB4ygXcYMr/mw1sHHvGwAuiBpmhzif60YWo58S
 MIME-Version: 1.0
-References: <20191210203710.2987983-1-arnd@arndb.de> <CA+h21hrJ45J2N4DD=pAtE8vN6hCjUYUq5vz17pY-7=TpkA51rA@mail.gmail.com>
-In-Reply-To: <CA+h21hrJ45J2N4DD=pAtE8vN6hCjUYUq5vz17pY-7=TpkA51rA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 10 Dec 2019 23:04:11 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2ONPojLz=REmbBMwnSsB3GVyqLYtCD28mmKk5qr3KpdQ@mail.gmail.com>
-Message-ID: <CAK8P3a2ONPojLz=REmbBMwnSsB3GVyqLYtCD28mmKk5qr3KpdQ@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: ocelot: add NET_VENDOR_MICROSEMI dependency
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:zW9BNAUrHQL6FrpIOCu81hOutpEMn/prPi1pqOev5pKC6WIffOs
- HrzPztIp/xmYtniA24mq/QiV/b477YwWmrdtZ07GKqeehwFWgyIvAsRJbqW6T8zUxFKjP3N
- PyWXRyBdbSwFW2JZAh2dkwNeTAgAo3w4ehgBZGhiWrqMqP3w47NJqD9W8c1xsgSaqJpdT2t
- Icxs56Jw4IPxRwmOUoWAQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:xX8tIzNEtV4=:QiZY+obU4/nww/UC6CjsC+
- V6lvjK7a5oH6tir+KwFoan0JXIlgu0mEW7B3l7v6w7WQpxBxv+j+wBkZkRka8Kqcj0ixk33K0
- nWj+QnUALr3QzMHAiEG7Hf7BxXtIDCAZ8Nnr33ypjf1sXbOO5u4AkD5sn2TBTt/H0dCrzOLaj
- nQtDgaCS1M46rbpuD13S20gRwOG7vq3/PyiVdZhprZnX3CAentaY2InZGnaI42vWkH0kdBFGR
- 28lrbaRLCbk/Oso3iLW1QR0A3DLQzfNH+8kcQ+HGauqks+9MuScoHOs94ZYk7FiSIMlWDAuT0
- HiE90yuPoBDMtmx2q/g6/iN9ZJyOLiPdLB76BwyeY4fb/KvA3cLwKi6B10Gkk0SXD1T8abQSc
- 93Kcn3ve22zlB7hAHUIdEuU/8t6nU0oeif+crccKgbKvDg2Sr/DYJqsdd45gvCbdUw0rnPiEL
- e+C3MeKTw8rg7dQWyYEO19dyDWSM3xTejJzuDl9ujU9/nDz6LJngj2QyXafUT1F32FopDqKhg
- O+Ts/xxLt/1jyhugfzgfNl6VKSEK5iPBADfsM2WPbHVZ+21zaRfgdf3lAPBMZZM5HMxROQOLT
- wXB2ONzfHg9rEYnp64zKnGt4ldBUXovOmLmkwXaLETbk0lKYoqH2ARYRYayex9RBPPqzWvzqo
- Ij8eaf7++zTM7Mzjji7PC5g13M0zvI9VIR7QWMRXgWMZXERt630Y5C5MPxd2iODvBCHHdkjgH
- wUMaJDahhC0bMJR/rTHxe91UkrnLbxGGwwQHCWBWh+kgxVVtnIJM7yduqM6pbbC3mGPRXM7FF
- /0F+tW5ghwIu+WeuFECPiGwcRpPG+8ReCHaKI6Ul/OBp6gJfy/WIckjUDQHqZ1t2YnWFRD497
- ZdBQeSknQzSohs5PwGYQ==
+X-Received: by 2002:a5d:9f05:: with SMTP id q5mr234717iot.295.1576015681954;
+ Tue, 10 Dec 2019 14:08:01 -0800 (PST)
+Date:   Tue, 10 Dec 2019 14:08:01 -0800
+In-Reply-To: <0000000000005175bf057617c71d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e22b3c059960bebd@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in ip6_tnl_parse_tlv_enc_lim
+From:   syzbot <syzbot+68dce7caebd8543121de@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, ast@kernel.org, boqun.feng@gmail.com,
+        byungchul.park@lge.com, daniel@iogearbox.net, davem@davemloft.net,
+        dledford@redhat.com, jgg@mellanox.com, jgg@ziepe.ca,
+        kernel-team@lge.com, kirill@shutemov.name, kuznet@ms2.inr.ac.ru,
+        leon@kernel.org, leonro@mellanox.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-rdma@vger.kernel.org, mingo@kernel.org,
+        netdev@vger.kernel.org, npiggin@gmail.com, parav@mellanox.com,
+        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, torvalds@linux-foundation.org,
+        walken@google.com, willy@infradead.org, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 10:37 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hi Arnd,
->
-> On Tue, 10 Dec 2019 at 22:37, Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > Selecting MSCC_OCELOT_SWITCH is not possible when NET_VENDOR_MICROSEMI
-> > is disabled:
-> >
-> > WARNING: unmet direct dependencies detected for MSCC_OCELOT_SWITCH
-> >   Depends on [n]: NETDEVICES [=y] && ETHERNET [=n] && NET_VENDOR_MICROSEMI [=n] && NET_SWITCHDEV [=y] && HAS_IOMEM [=y]
-> >   Selected by [m]:
-> >   - NET_DSA_MSCC_FELIX [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && NET_DSA [=y] && PCI [=y]
-> >
-> > Add a Kconfig dependency on NET_VENDOR_MICROSEMI, which also implies
-> > CONFIG_NETDEVICES.
-> >
-> > Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
->
-> This has been submitted before, here [0].
->
-> It isn't wrong, but in principle I agree with David that it is strange
-> to put a "depends" relationship between a driver in drivers/net/dsa
-> and the Kconfig vendor umbrella from drivers/net/ethernet/mscc ("why
-> would the user care/need to enable NET_VENDOR_MICROSEMI to see the DSA
-> driver" is a valid point to me). This is mainly because I don't
-> understand the point of CONFIG_NET_VENDOR_* options, they're a bit
-> tribalistic to my ears.
->
-> Nonetheless, alternatives may be:
-> - Move MSCC_OCELOT_SWITCH core option outside of the
-> NET_VENDOR_MICROSEMI umbrella, and make it invisible to menuconfig,
-> just selectable from the 2 driver instances (MSCC_OCELOT_SWITCH_OCELOT
-> and NET_DSA_MSCC_FELIX). MSCC_OCELOT_SWITCH has no reason to be
-> selectable by the user anyway.
+syzbot suspects this bug was fixed by commit:
 
-You still need 'depends on NETDEVICES' in that case, otherwise this sounds
-like a good option.
+commit 30471d4b20335d9bd9ae9b2382a1e1e97d18d86d
+Author: Leon Romanovsky <leonro@mellanox.com>
+Date:   Sun Feb 3 12:55:50 2019 +0000
 
-> - Remove NET_VENDOR_MICROSEMI altogether. There is a single driver
-> under drivers/net/ethernet/mscc and it's already causing problems,
-> it's ridiculous.
+     RDMA/core: Share driver structure size with core
 
-It's only there for consistency with the other directories under
-drivers/net/ethernet/.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16b7bb7ae00000
+start commit:   3a5af36b Merge tag '4.19-rc3-smb3-cifs' of git://git.samba..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9c4a80625153107e
+dashboard link: https://syzkaller.appspot.com/bug?extid=68dce7caebd8543121de
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1068a44e400000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=146386c6400000
 
-> - Leave it as it is. I genuinely ask: if the build system tells you
-> that the build dependencies are not met, does it matter if it compiles
-> or not?
+If the result looks correct, please mark the bug fixed by replying with:
 
-We try very hard to allow all randconfig builds to complete without
-any output from the build process when building with 'make -s'.
-Random warnings like this just clutter up the output, even if it's
-harmless there is a risk of missing something important.
+#syz fix: RDMA/core: Share driver structure size with core
 
-Yet another option is
-- Change NET_DSA_MSCC_FELIX to use 'depends on
-  MSCC_OCELOT_SWITCH' instead of 'select NET_DSA_MSCC_FELIX'.
-
-
-     Arnd
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
