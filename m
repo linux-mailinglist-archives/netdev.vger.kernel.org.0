@@ -2,213 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6896F1190ED
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20236119103
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:50:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726568AbfLJTpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:45:40 -0500
-Received: from mail-eopbgr70044.outbound.protection.outlook.com ([40.107.7.44]:46339
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726045AbfLJTpk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 14:45:40 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xe3anHu/CB+RTqaO9UEJICXdkZy3sqmm6abQgvlLhIgDdocNN6n9Q852pF7rOiwBLAJZNO8lWT6cbGDH79Tqj19GrdkxyZheaE38MZOZ7POmgjjBpKQe3hQ/t/NGo2f+MuGwf70MOZXXstmb8TPTLsqpHQsthtOAMIC7F4YafnJRsrI3BM3KaBy3G3yTPyOj4kz3R/Tm+zD0IKEJVsmeVPGlH+MYUXd7LVTH5w0py85LUl5sBbuo0L8dpKvWiC4uNj/HZq0ELxEsR65loDlYHjFT3B4nCYzHRyh/PdLQSGtW+6AcPYYwITXq0RB5CbxHwasmaCO4fS7U77R5s5aI/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RmbJ1Ju15fOyzK2ZDFXY0NEUUfjcPNyQEeNjH7uphKs=;
- b=Ava5pROska4zMOSFYw9AY8cC3kE0LOxz0In2g1uTaTg2kWDq2df8Vh/5u8XKJeiepoKsl9lHTWeMJiKbwKGK6YISz7G7Ar7iypGgcVb/5Xl/COhjUJxEQWNtB+SKeO8ZVQ8GtOVGeBvJR7aMN0bqKkk1SwPRXvZuU1MpM3KcPhdhjQJtQyqnjwBWCTY1VaE4EHrbmkd1uZ3Nu3JTlVm+8erza/ScpLdSh4M7AXfckn7jUDyT915nlnuIRthBPuWsqY2QudZIwmmeMyi8Rdo9iQXlG2EyR57aYvCfgRMf6bVXWiQxrHvq0qP25wFPhZahPGke/rNZl96ga1lR1Q9eQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RmbJ1Ju15fOyzK2ZDFXY0NEUUfjcPNyQEeNjH7uphKs=;
- b=QiWxexCuXbbuGhn2b0L2WOpDrUmgWELhh1Y223KDHoY2Ia2PJw/GsgwstB9oEYlXKFQPQXwEASQIZpM79oy1vcUM+vXIl3S88L3PfO3wZIngk0UmE7TcGRldCEbYTDR73NP4VNXX3MuEoxcTptHOuESTZw5+U59kdwmW5Bf1L+8=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4158.eurprd05.prod.outlook.com (52.133.13.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.12; Tue, 10 Dec 2019 19:45:28 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::c872:cf66:4a5c:c881]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::c872:cf66:4a5c:c881%5]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
- 19:45:28 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Thread-Index: AQHVrBgioGDhH/MP9UuNcNvu7zNf3aeuC1gAgAOw0QCAAL3ugIAAIMwAgAExqIA=
-Date:   Tue, 10 Dec 2019 19:45:28 +0000
-Message-ID: <585eda1ebe8788959b31bca5bb6943908c08c909.camel@mellanox.com>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
-         <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
-         <20191209131416.238d4ae4@carbon>
-         <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
-         <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
-In-Reply-To: <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.5 (3.32.5-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c6ce8734-08dd-4d92-f8c8-08d77da98276
-x-ms-traffictypediagnostic: VI1PR05MB4158:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-x-microsoft-antispam-prvs: <VI1PR05MB415899FA8B18F818F9501037BE5B0@VI1PR05MB4158.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 02475B2A01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(346002)(366004)(376002)(136003)(189003)(199004)(86362001)(6512007)(81156014)(110136005)(66446008)(66556008)(66946007)(8676002)(8936002)(81166006)(54906003)(6486002)(64756008)(66476007)(91956017)(76116006)(2906002)(4326008)(316002)(478600001)(186003)(71200400001)(26005)(2616005)(53546011)(5660300002)(4001150100001)(6506007)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4158;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MWjaB8nxdhrG1zT2XmhK8dcOi8jyXGKe5zxJ9j6f8XQWnBSE+uaGBolTvodFw27cELV64c4NdCHkEJbxCGsWykkjCwlsN3UIsEcIbl6fXwVzbBMU3dXA0zXh6sAhRSjqN2yPN7OJKQUVcK1VyhY3QAo2u6ebZa5sphZS5WN5Rs/Z3a+Kq+QDKJBx/S8RrBvA0sxLrR+21h8ZatCpp0K8zuyVgMpMQ3K6sCXLyJWPFw6HanFXoIJcmIZIOoo+VOz9D7do8Rk4rk0xx3xzFUWVrU6xcpSoP4sEM4PwbVcuKK5ca0eKPcZPrq8WRxnFRl980uR9rCtYFJycRBO0WSuYshBQ9uGsII6Ee28PpWbhXBq263684CC3E3l82Tcq+EttiKcHWv9irB4lyENlM55cy0cGvXzJlydLs05jqVpv5K7+rheEhoO9GlixzTFPmehK
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F01D9DC2EAD9BA4BB7072183D838F875@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726522AbfLJTuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:50:15 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39457 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfLJTuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:50:14 -0500
+Received: by mail-lf1-f68.google.com with SMTP id y1so3401600lfb.6
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mh1MDhoccZ8LcGj7No6Pp5Z8k1gtAci1d0+A5gGxl1E=;
+        b=eXFdChDloDkEyFWlQ+kb/rD3xmn4wMBfccyqSQplXrWA9vQHvu59MGI5/jck3JYQms
+         hlnBt7+yDu3vS2w3tH9wqyAEvXEUG9uDyW0lwjzbmdynzznqx5UaflGPOhWygHzAApMI
+         7QnlL2qtXQNxiVoy2xtO6Rma2PeITxY3tGsdg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mh1MDhoccZ8LcGj7No6Pp5Z8k1gtAci1d0+A5gGxl1E=;
+        b=Q56sCcDiX9l2aVGVljIOsS2jE65g4rNOLH7+kIQKPBn2WjHdlFVT409eisuILIbL58
+         wyO/ojYHNRyh6VvS5GUlgU8EgRGmuzOf9leAFBIEtIJdO8igMdUUzaf5Yi0UieQZOhqV
+         QbrO1cLUWysSrf/gR3qVJFTVe4UcmRV6Vo77kp0OIH8mnPOTO5/aDdvaYXfKtjsfUUJ1
+         t/gos0w0ti1iUhgyvmvTszzKZIb0baUZEi27FxEBack5mUEmqFqSJva0zlXU+sXis6vw
+         wYF3t2A04b2HEQ8J4f43OT2yGRKyPWLsLYQ4cZpr6Cx6RM8pYljXd+v9t63RkPgG13+V
+         DEEA==
+X-Gm-Message-State: APjAAAXDyXJTwMgz4k1EYn3vktEA3VItDT1grecbU5wjZFb9pR6GeZPr
+        zz494c8fE1EwhstKDyl/7LyRuA==
+X-Google-Smtp-Source: APXvYqyl+VfdSDo5UzwybpIatTMhunT7staLyyawXzmvuMq1T/sqIAa8/kbxGXWyzXN5Gxgu7+l9rQ==
+X-Received: by 2002:a19:f00d:: with SMTP id p13mr20761511lfc.37.1576007412928;
+        Tue, 10 Dec 2019 11:50:12 -0800 (PST)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id w17sm2129532lfn.22.2019.12.10.11.50.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Dec 2019 11:50:12 -0800 (PST)
+Subject: Re: [PATCH net-next] net: bridge: add STP xstats
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
+ <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
+ <20191210143931.GF1344570@t480s.localdomain>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
+Date:   Tue, 10 Dec 2019 21:50:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6ce8734-08dd-4d92-f8c8-08d77da98276
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 19:45:28.6212
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oFp+yToxazp9N7EVp/PC8k5jeujhTCMdIZ5c4XsD4Y8LBdB1Ys4BGqT9yKRbGnK3VxvEGDpMwS8QrM8PGoFOcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4158
+In-Reply-To: <20191210143931.GF1344570@t480s.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTEyLTEwIGF0IDA5OjMxICswODAwLCBZdW5zaGVuZyBMaW4gd3JvdGU6DQo+
-IE9uIDIwMTkvMTIvMTAgNzozNCwgU2FlZWQgTWFoYW1lZWQgd3JvdGU6DQo+ID4gT24gTW9uLCAy
-MDE5LTEyLTA5IGF0IDEzOjE0ICswMTAwLCBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIHdyb3RlOg0K
-PiA+ID4gT24gU2F0LCA3IERlYyAyMDE5IDAzOjUyOjQxICswMDAwDQo+ID4gPiBTYWVlZCBNYWhh
-bWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4gd3JvdGU6DQo+ID4gPiANCj4gPiA+ID4gT24gRnJp
-LCAyMDE5LTEyLTA2IGF0IDE3OjMyICswODAwLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiA+ID4g
-PiBzb21lIGRyaXZlcnMgdXNlcyBwYWdlIHBvb2wsIGJ1dCBub3QgcmVxdWlyZSB0byBhbGxvY2F0
-ZQ0KPiA+ID4gPiA+IHBhZ2VzIGZyb20gYm91bmQgbm9kZSwgb3Igc2ltcGx5IGFzc2lnbiBwb29s
-LnAubmlkIHRvDQo+ID4gPiA+ID4gTlVNQV9OT19OT0RFLCBhbmQgdGhlIGNvbW1pdCBkNTM5NDYx
-MGIxYmEgKCJwYWdlX3Bvb2w6DQo+ID4gPiA+ID4gRG9uJ3QgcmVjeWNsZSBub24tcmV1c2FibGUg
-cGFnZXMiKSB3aWxsIGJsb2NrIHRoaXMga2luZA0KPiA+ID4gPiA+IG9mIGRyaXZlciB0byByZWN5
-Y2xlDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gc28gdGFrZSBwYWdlIGFzIHJldXNhYmxlIHdoZW4g
-cGFnZSBiZWxvbmdzIHRvIGN1cnJlbnQNCj4gPiA+ID4gPiBtZW1vcnkgbm9kZSBpZiBuaWQgaXMg
-TlVNQV9OT19OT0RFDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gdjEtLT52MjogYWRkIGNoZWNrIHdp
-dGggbnVtYV9tZW1faWQgZnJvbSBZdW5zaGVuZw0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IEZpeGVz
-OiBkNTM5NDYxMGIxYmEgKCJwYWdlX3Bvb2w6IERvbid0IHJlY3ljbGUgbm9uLXJldXNhYmxlDQo+
-ID4gPiA+ID4gcGFnZXMiKQ0KPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IExpIFJvbmdRaW5nIDxs
-aXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gPiA+ID4gPiBTdWdnZXN0ZWQtYnk6IFl1bnNoZW5nIExp
-biA8bGlueXVuc2hlbmdAaHVhd2VpLmNvbT4NCj4gPiA+ID4gPiBDYzogU2FlZWQgTWFoYW1lZWQg
-PHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gIG5ldC9jb3Jl
-L3BhZ2VfcG9vbC5jIHwgNyArKysrKystDQo+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCA2IGlu
-c2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBkaWZmIC0t
-Z2l0IGEvbmV0L2NvcmUvcGFnZV9wb29sLmMgYi9uZXQvY29yZS9wYWdlX3Bvb2wuYw0KPiA+ID4g
-PiA+IGluZGV4IGE2YWVmZTk4OTA0My4uM2M4YjUxY2NkMWMxIDEwMDY0NA0KPiA+ID4gPiA+IC0t
-LSBhL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQo+ID4gPiA+ID4gKysrIGIvbmV0L2NvcmUvcGFnZV9w
-b29sLmMNCj4gPiA+ID4gPiBAQCAtMzEyLDEyICszMTIsMTcgQEAgc3RhdGljIGJvb2wNCj4gPiA+
-ID4gPiBfX3BhZ2VfcG9vbF9yZWN5Y2xlX2RpcmVjdChzdHJ1Y3QNCj4gPiA+ID4gPiBwYWdlICpw
-YWdlLA0KPiA+ID4gPiA+ICAvKiBwYWdlIGlzIE5PVCByZXVzYWJsZSB3aGVuOg0KPiA+ID4gPiA+
-ICAgKiAxKSBhbGxvY2F0ZWQgd2hlbiBzeXN0ZW0gaXMgdW5kZXIgc29tZSBwcmVzc3VyZS4NCj4g
-PiA+ID4gPiAocGFnZV9pc19wZm1lbWFsbG9jKQ0KPiA+ID4gPiA+ICAgKiAyKSBiZWxvbmdzIHRv
-IGEgZGlmZmVyZW50IE5VTUEgbm9kZSB0aGFuIHBvb2wtPnAubmlkLg0KPiA+ID4gPiA+ICsgKiAz
-KSBiZWxvbmdzIHRvIGEgZGlmZmVyZW50IG1lbW9yeSBub2RlIHRoYW4gY3VycmVudA0KPiA+ID4g
-PiA+IGNvbnRleHQNCj4gPiA+ID4gPiArICogaWYgcG9vbC0+cC5uaWQgaXMgTlVNQV9OT19OT0RF
-DQo+ID4gPiA+ID4gICAqDQo+ID4gPiA+ID4gICAqIFRvIHVwZGF0ZSBwb29sLT5wLm5pZCB1c2Vy
-cyBtdXN0IGNhbGwNCj4gPiA+ID4gPiBwYWdlX3Bvb2xfdXBkYXRlX25pZC4NCj4gPiA+ID4gPiAg
-ICovDQo+ID4gPiA+ID4gIHN0YXRpYyBib29sIHBvb2xfcGFnZV9yZXVzYWJsZShzdHJ1Y3QgcGFn
-ZV9wb29sICpwb29sLA0KPiA+ID4gPiA+IHN0cnVjdA0KPiA+ID4gPiA+IHBhZ2UNCj4gPiA+ID4g
-PiAqcGFnZSkNCj4gPiA+ID4gPiAgew0KPiA+ID4gPiA+IC0JcmV0dXJuICFwYWdlX2lzX3BmbWVt
-YWxsb2MocGFnZSkgJiYgcGFnZV90b19uaWQocGFnZSkNCj4gPiA+ID4gPiA9PQ0KPiA+ID4gPiA+
-IHBvb2wtICANCj4gPiA+ID4gPiA+IHAubmlkOyAgDQo+ID4gPiA+ID4gKwlyZXR1cm4gIXBhZ2Vf
-aXNfcGZtZW1hbGxvYyhwYWdlKSAmJg0KPiA+ID4gPiA+ICsJCShwYWdlX3RvX25pZChwYWdlKSA9
-PSBwb29sLT5wLm5pZCB8fA0KPiA+ID4gPiA+ICsJCShwb29sLT5wLm5pZCA9PSBOVU1BX05PX05P
-REUgJiYNCj4gPiA+ID4gPiArCQlwYWdlX3RvX25pZChwYWdlKSA9PSBudW1hX21lbV9pZCgpKSk7
-DQo+ID4gPiA+ID4gIH0NCj4gPiA+ID4gPiAgICANCj4gPiA+ID4gDQo+ID4gPiA+IENjJ2VkIEpl
-c3BlciwgSWxpYXMgJiBKb25hdGhhbi4NCj4gPiA+ID4gDQo+ID4gPiA+IEkgZG9uJ3QgdGhpbmsg
-aXQgaXMgY29ycmVjdCB0byBjaGVjayB0aGF0IHRoZSBwYWdlIG5pZCBpcyBzYW1lDQo+ID4gPiA+
-IGFzDQo+ID4gPiA+IG51bWFfbWVtX2lkKCkgaWYgcG9vbCBpcyBOVU1BX05PX05PREUuIEluIHN1
-Y2ggY2FzZSB3ZSBzaG91bGQNCj4gPiA+ID4gYWxsb3cNCj4gPiA+ID4gYWxsDQo+ID4gPiA+IHBh
-Z2VzIHRvIHJlY3ljbGUsIGJlY2F1c2UgeW91IGNhbid0IGFzc3VtZSB3aGVyZSBwYWdlcyBhcmUN
-Cj4gPiA+ID4gYWxsb2NhdGVkDQo+ID4gPiA+IGZyb20gYW5kIHdoZXJlIHRoZXkgYXJlIGJlaW5n
-IGhhbmRsZWQuDQo+ID4gPiA+IA0KPiA+ID4gPiBJIHN1Z2dlc3QgdGhlIGZvbGxvd2luZzoNCj4g
-PiA+ID4gDQo+ID4gPiA+IHJldHVybiAhcGFnZV9wZm1lbWFsbG9jKCkgJiYgDQo+ID4gPiA+ICgg
-cGFnZV90b19uaWQocGFnZSkgPT0gcG9vbC0+cC5uaWQgfHwgcG9vbC0+cC5uaWQgPT0NCj4gPiA+
-ID4gTlVNQV9OT19OT0RFDQo+ID4gPiA+ICk7DQo+ID4gPiA+IA0KPiA+ID4gPiAxKSBuZXZlciBy
-ZWN5Y2xlIGVtZXJnZW5jeSBwYWdlcywgcmVnYXJkbGVzcyBvZiBwb29sIG5pZC4NCj4gPiA+ID4g
-MikgYWx3YXlzIHJlY3ljbGUgaWYgcG9vbCBpcyBOVU1BX05PX05PREUuDQo+ID4gPiA+IA0KPiA+
-ID4gPiB0aGUgYWJvdmUgY2hhbmdlIHNob3VsZCBub3QgYWRkIGFueSBvdmVyaGVhZCwgYSBtb2Rl
-c3QgYnJhbmNoDQo+ID4gPiA+IHByZWRpY3Rvcg0KPiA+ID4gPiB3aWxsIGhhbmRsZSB0aGlzIHdp
-dGggbm8gZWZmb3J0Lg0KPiA+ID4gPiANCj4gPiA+ID4gSmVzcGVyIGV0IGFsLiB3aGF0IGRvIHlv
-dSB0aGluaz8NCj4gPiA+IA0KPiA+ID4gVGhlIHBhdGNoIGRlc2NyaXB0aW9uIGRvZXNuJ3QgZXhw
-bGFpbiB0aGUgcHJvYmxlbSB2ZXJ5IHdlbGwuDQo+ID4gPiANCj4gPiA+IExldHMgZmlyc3QgZXN0
-YWJsaXNoIHdoYXQgdGhlIHByb2JsZW0gaXMuICBBZnRlciBJIHRvb2sgYXQgY2xvc2VyDQo+ID4g
-PiBsb29rLA0KPiA+ID4gSSBkbyB0aGluayB3ZSBoYXZlIGEgcmVhbCBwcm9ibGVtIGhlcmUuLi4N
-Cj4gPiA+IA0KPiA+ID4gSWYgZnVuY3Rpb24gYWxsb2NfcGFnZXNfbm9kZSgpIGlzIGNhbGxlZCB3
-aXRoIE5VTUFfTk9fTk9ERSAoc2VlDQo+ID4gPiBiZWxvdw0KPiA+ID4gc2lnbmF0dXJlKSwgdGhl
-biB0aGUgbmlkIGlzIHJlLWFzc2lnbmVkIHRvIG51bWFfbWVtX2lkKCkuDQo+ID4gPiANCj4gPiA+
-IE91ciBjdXJyZW50IGNvZGUgY2hlY2tzOiBwYWdlX3RvX25pZChwYWdlKSA9PSBwb29sLT5wLm5p
-ZCB3aGljaA0KPiA+ID4gc2VlbXMNCj4gPiA+IGJvZ3VzLCBhcyBwb29sLT5wLm5pZD1OVU1BX05P
-X05PREUgYW5kIHRoZSBwYWdlIE5JRCB3aWxsIG5vdA0KPiA+ID4gcmV0dXJuDQo+ID4gPiBOVU1B
-X05PX05PREUuLi4gYXMgaXQgd2FzIHNldCB0byB0aGUgbG9jYWwgZGV0ZWN0IG51bWEgbm9kZSwN
-Cj4gPiA+IHJpZ2h0Pw0KPiA+ID4gDQo+ID4gDQo+ID4gcmlnaHQuDQo+ID4gDQo+ID4gPiBTbywg
-d2UgZG8gbmVlZCBhIGZpeC4uLiBidXQgdGhlIHF1ZXN0aW9uIGlzIHRoYXQgc2VtYW50aWNzIGRv
-IHdlDQo+ID4gPiB3YW50Pw0KPiA+ID4gDQo+ID4gDQo+ID4gbWF5YmUgYXNzdW1lIHRoYXQgX19w
-YWdlX3Bvb2xfcmVjeWNsZV9kaXJlY3QoKSBpcyBhbHdheXMgY2FsbGVkDQo+ID4gZnJvbQ0KPiA+
-IHRoZSByaWdodCBub2RlIGFuZCBjaGFuZ2UgdGhlIGN1cnJlbnQgYm9ndXMgY2hlY2s6DQo+ID4g
-DQo+ID4gZnJvbToNCj4gPiBwYWdlX3RvX25pZChwYWdlKSA9PSBwb29sLT5wLm5pZCANCj4gPiAN
-Cj4gPiB0bzoNCj4gPiBwYWdlX3RvX25pZChwYWdlKSA9PSBudW1hX21lbV9pZCgpDQo+ID4gDQo+
-ID4gVGhpcyB3aWxsIGFsbG93IHJlY3ljbGluZyBvbmx5IGlmIGhhbmRsaW5nIG5vZGUgaXMgdGhl
-IHNhbWUgYXMNCj4gPiB3aGVyZQ0KPiA+IHRoZSBwYWdlIHdhcyBhbGxvY2F0ZWQsIHJlZ2FyZGxl
-c3Mgb2YgcG9vbC0+cC5uaWQuDQo+ID4gDQo+ID4gc28gc2VtYW50aWNzIGFyZToNCj4gPiANCj4g
-PiAxKSBhbGxvY2F0ZSBmcm9tOiBwb29sLT5wLm5pZCwgYXMgY2hvc2VuIGJ5IHVzZXIuDQo+ID4g
-MikgcmVjeWNsZSB3aGVuOiBwYWdlX3RvX25pZChwYWdlKSA9PSBudW1hX21lbV9pZCgpLg0KPiA+
-IDMpIHBvb2wgdXNlciBtdXN0IGd1YXJhbnRlZSB0aGF0IHRoZSBoYW5kbGVyIHdpbGwgcnVuIG9u
-IHRoZSByaWdodA0KPiA+IG5vZGUuIHdoaWNoIHNob3VsZCBhbHdheXMgYmUgdGhlIGNhc2UuIG90
-aGVyd2lzZSByZWN5Y2xpbmcgd2lsbCBiZQ0KPiA+IHNraXBwZWQgKG5vIGNyb3NzIG51bWEgcmVj
-eWNsaW5nKS4NCj4gPiANCj4gPiANCj4gPiBhKSBpZiB0aGUgcG9vbCBtaWdyYXRlcywgd2Ugd2ls
-bCBzdG9wIHJlY3ljbGluZyB1bnRpbCB0aGUgcG9vbA0KPiA+IG1vdmVzDQo+ID4gYmFjayB0byBv
-cmlnaW5hbCBub2RlLCBvciB1c2VyIGNhbGxzIHBvb2xfdXBkYXRlX25pZCgpIGFzIHdlIGRvIGlu
-DQo+ID4gbWx4NS4NCj4gPiBiKSBpZiBwb29sIGlzIE5VTUFfTk9fTk9ERSwgdGhlbiBhbGxvY2F0
-aW9uIGFuZCBoYW5kbGluZyB3aWxsIGJlDQo+ID4gZG9uZQ0KPiA+IG9uIG51bWFfbWVtX2lkKCks
-IHdoaWNoIG1lYW5zIHRoZSBhYm92ZSBjaGVjayB3aWxsIHdvcmsuDQo+IA0KPiBPbmx5IGNoZWNr
-aW5nIHBhZ2VfdG9fbmlkKHBhZ2UpID09IG51bWFfbWVtX2lkKCkgbWF5IG5vdCB3b3JrIGZvciB0
-aGUNCj4gYmVsb3cNCj4gY2FzZSBpbiBtdm5ldGEuYzoNCj4gDQo+IHN0YXRpYyBpbnQgbXZuZXRh
-X2NyZWF0ZV9wYWdlX3Bvb2woc3RydWN0IG12bmV0YV9wb3J0ICpwcCwNCj4gCQkJCSAgIHN0cnVj
-dCBtdm5ldGFfcnhfcXVldWUgKnJ4cSwgaW50DQo+IHNpemUpDQo+IHsNCj4gCXN0cnVjdCBicGZf
-cHJvZyAqeGRwX3Byb2cgPSBSRUFEX09OQ0UocHAtPnhkcF9wcm9nKTsNCj4gCXN0cnVjdCBwYWdl
-X3Bvb2xfcGFyYW1zIHBwX3BhcmFtcyA9IHsNCj4gCQkub3JkZXIgPSAwLA0KPiAJCS5mbGFncyA9
-IFBQX0ZMQUdfRE1BX01BUCB8IFBQX0ZMQUdfRE1BX1NZTkNfREVWLA0KPiAJCS5wb29sX3NpemUg
-PSBzaXplLA0KPiAJCS5uaWQgPSBjcHVfdG9fbm9kZSgwKSwNCj4gCQkuZGV2ID0gcHAtPmRldi0+
-ZGV2LnBhcmVudCwNCj4gCQkuZG1hX2RpciA9IHhkcF9wcm9nID8gRE1BX0JJRElSRUNUSU9OQUwg
-Og0KPiBETUFfRlJPTV9ERVZJQ0UsDQo+IAkJLm9mZnNldCA9IHBwLT5yeF9vZmZzZXRfY29ycmVj
-dGlvbiwNCj4gCQkubWF4X2xlbiA9IE1WTkVUQV9NQVhfUlhfQlVGX1NJWkUsDQo+IAl9Ow0KPiAN
-Cj4gdGhlIHBvb2wtPnAubmlkIGlzIG5vdCBOVU1BX05PX05PREUsIHRoZW4gdGhlIG5vZGUgb2Yg
-cGFnZSBhbGxvY2F0ZWQNCj4gZm9yIHJ4DQo+IG1heSBub3QgYmUgbnVtYV9tZW1faWQoKSB3aGVu
-IHJ1bm5pbmcgaW4gdGhlIE5BUEkgcG9sbGluZywgYmVjYXVzZQ0KPiBwb29sLT5wLm5pZA0KPiBp
-cyBub3QgdGhlIHNhbWUgYXMgdGhlIG5vZGUgb2YgY3B1IHJ1bm5pbmcgaW4gdGhlIE5BUEkgcG9s
-bGluZy4NCj4gDQo+IERvZXMgdGhlIHBhZ2UgcG9vbCBzdXBwb3J0IHJlY3ljbGluZyBmb3IgYWJv
-dmUgY2FzZT8NCj4gDQoNCkkgZG9uJ3QgdGhpbmsgeW91IHdhbnQgdG8gYWxsb3cgY3Jvc3MgbnVt
-YSByZWN5Y2xpbmcuDQoNCj4gT3Igd2UgImZpeCcgdGhlIGFib3ZlIGNhc2UgYnkgc2V0dGluZyBw
-b29sLT5wLm5pZCB0bw0KPiBOVU1BX05PX05PREUvZGV2X3RvX25vZGUoKSwNCj4gb3IgYnkgY2Fs
-bGluZyBwb29sX3VwZGF0ZV9uaWQoKSBpbiBOQVBJIHBvbGxpbmcgYXMgbWx4NSBkb2VzPw0KPiAN
-Cg0KWWVzIGp1c3QgdXBkYXRlX25pZCB3aGVuIG5lZWRlZCwgYW5kIG1ha2Ugc3VyZSB0aGUgTkFQ
-SSBwb2xsaW5nIHJ1bnMgb24NCmEgY29uc2lzdGVudCBjb3JlIGFuZCBldmVudHVhbGx5IGFsbG9j
-L3JlY3ljbGluZyB3aWxsIGhhcHBlbiBvbiB0aGUNCnNhbWUgY29yZS4NCg0KPiANCj4gPiBUaGFu
-a3MsDQo+ID4gU2FlZWQuDQo+ID4gDQo+ID4gDQo+ID4gDQo+ID4gDQo+ID4gDQo+ID4gDQo+ID4g
-DQo=
+On 10/12/2019 21:39, Vivien Didelot wrote:
+> Hi Nikolay,
+> 
+> On Tue, 10 Dec 2019 09:49:59 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+> 
+>> Why did you send the bridge patch again ? Does it have any changes ?
+> 
+> The second iproute2 patch does not include the include guards update, but
+> I kept the bridge_stp_stats structure and the BRIDGE_XSTATS_STP definition
+> otherwise iproute2 wouldn't compile.
+> >>
+>> Why do you need percpu ? All of these seem to be incremented with the
+>> bridge lock held. A few more comments below.
+> 
+> All other xstats are incremented percpu, I simply followed the pattern.
+> 
+
+We have already a lock, we can use it and avoid the whole per-cpu memory handling.
+It seems to be acquired in all cases where these counters need to be changed.
+
+>>>  	struct net_bridge_port *p
+>>>  		= container_of(kobj, struct net_bridge_port, kobj);
+>>> +	free_percpu(p->stp_stats);
+>>
+>> Please leave a new line between local var declaration and the code. I know
+>> it was missing, but you can add it now. :)
+> 
+> OK.
+> 
+>>> +	if (p) {
+>>> +		struct bridge_stp_xstats xstats;
+>>
+>> Please rename the local var here, using just xstats is misleading.
+>> Maybe stp_xstats ?
+> 
+> This isn't misleading to me since its scope is limited to the current block
+> and not the entire function. The block above dumping the VLAN xstats is
+> using a local "struct br_vlan_stats stats" variable for example.
+> 
+
+Yep, as I answered to myself earlier, with the below change this goes away.
+
+>>
+>>> +
+>>> +		br_stp_get_xstats(p, &xstats);
+>>> +
+>>> +		if (nla_put(skb, BRIDGE_XSTATS_STP, sizeof(xstats), &xstats))
+>>> +			goto nla_put_failure;
+>>
+>> Could you please follow how mcast xstats are dumped and do something similar ?
+>> It'd be nice to have similar code to audit.
+> 
+> Sure. I would also love to have easily auditable code in net/bridge. For
+> the bridge STP xstats I followed the VLAN xstats code above, which does:
+> 
+>     if (nla_put(skb, BRIDGE_XSTATS_VLAN, sizeof(vxi), &vxi))
+>         goto nla_put_failure;
+> 
+
+Yeah, we can move that to a vlan-specific helper too, but that is an unrelated change.
+
+> But I can change the STP xstats code to the following:
+> 
+>     if (p) {
+>         nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
+>                                 sizeof(struct bridge_stp_xstats),
+>                                 BRIDGE_XSTATS_PAD);
+>         if (!nla)
+>             goto nla_put_failure;
+> 
+>         br_stp_get_xstats(p, nla_data(nla));
+>     }
+> 
+> Would that be preferred?
+> 
+> 
+
+Perfect, thanks!
+
+> Thanks,
+> 
+> 	Vivien
+> 
+
