@@ -2,273 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3681119049
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:04:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80C05119052
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727627AbfLJTEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:04:41 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:42326 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727568AbfLJTEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:04:41 -0500
-Received: by mail-oi1-f194.google.com with SMTP id j22so10819260oij.9
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:04:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qQUP1b6nyXYgmeIoxTMSdm6/nJ4NuICoBz1i3Y5W8K0=;
-        b=fR3Lx4vAf3gPFJAQoT6uGTu3pG7pMWAFkMQudNvdltjII0DLLugBMO6nlzd8RAcCSR
-         1XBOgjLaYMpZmMEjT9wvqbd0kTkNj/U90li4t2VjV/PzRGPg8+08ooDOQEdky+oCq6Hj
-         SBItLgzGVdRs4Kg60uj/ZUalc6ISL2TpXLayBYlII73QNWebMNw+tF0zcarvk0eLhsEx
-         s6xI7UhXLRhTO2KmnSyVXiG++h3gBGPh+DEhzSNk9NrXDcB1EUf38FbH8hdjTRKlw6kO
-         4N58dIanOqYRPsuwJGF3RiTOZliMbqrme3vo3hX5lgmPenbIMNpH0yVazLPFXicb7Z+l
-         nThQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qQUP1b6nyXYgmeIoxTMSdm6/nJ4NuICoBz1i3Y5W8K0=;
-        b=VxsIG2R7b2fQtE1yS0hFjRHwoDX7Mu5vsx4VdPGuQiFyr1WcEwANh6y/+KoJhCyiIA
-         bzxIh03q1RJvTJX9v3C161eDSEYhE/jL+c2VDcMmavpMMboBFAkvJ+7ZMp54rC84rLlx
-         eJUOf0oyCVr1pHl3QZickRV4l+VW4cBTIeU6XkhZw00SdVUuxI8Yk64pNzFOk9UVUwwR
-         n8UFuV2lCZhLFPMTzji30Rn/e82jnEhw9ycOQbps4AYS1EZ1KZ1+SJ3AyMvyriagKwx2
-         F5Swf1YycImOqS1gN2fzchwTkhIha9PR3KhpqQHUkObDvPRI4WBi42IuyoIg/xI+7/R+
-         d6aw==
-X-Gm-Message-State: APjAAAXnHAHx+/MNlmYSzVlBlheFR4lnue21HAW5Zw/RSSYzqQUzNpvu
-        7oEXXnLOjRxk8W+XKRq3lZqbXg==
-X-Google-Smtp-Source: APXvYqySQr5Hh+2xvwGVSoQOcZOMKSJGI0TBqzMZX08FD285xAK4Bz4QTXaLp4Nx8nTX8hPGFKy3ug==
-X-Received: by 2002:aca:4587:: with SMTP id s129mr322896oia.124.1576004680305;
-        Tue, 10 Dec 2019 11:04:40 -0800 (PST)
-Received: from ziepe.ca ([217.140.111.136])
-        by smtp.gmail.com with ESMTPSA id k203sm1717145oih.7.2019.12.10.11.04.39
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 Dec 2019 11:04:39 -0800 (PST)
-Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iekoI-00001o-Bo; Tue, 10 Dec 2019 15:04:38 -0400
-Date:   Tue, 10 Dec 2019 15:04:38 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: Re: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-Message-ID: <20191210190438.GF46@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
+        id S1727634AbfLJTH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:07:58 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56361 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727617AbfLJTH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:07:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576004876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BfuDWTxO12oAtz92xJyq0vf10hUjhgEKJh0jZ2uLJqc=;
+        b=Bs+WRmPRb7AnYPmxXOUOj1CeOr+nmCNclI68wf31R4PauzNlMyYs/J9oWJOrma6xtQ4bLB
+        LPjHnk9bQPwVYUAsGQC/2I6LmCwt9FDGr472oecxq+t/rnAJ1CSCqoaHoCqmWAc6UBfnYm
+        tVNkDNvXOL6klwjSuT23lvAOfuQOKhs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-89-3SqaN9miMMG9ZqNsI4aYtg-1; Tue, 10 Dec 2019 14:07:52 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0843F107ACC4;
+        Tue, 10 Dec 2019 19:07:51 +0000 (UTC)
+Received: from x1.home (ovpn04.gateway.prod.ext.phx2.redhat.com [10.5.9.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 06AB85C1B0;
+        Tue, 10 Dec 2019 19:07:47 +0000 (UTC)
+Date:   Tue, 10 Dec 2019 12:07:47 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 0/6] VFIO mdev aggregated resources handling
+Message-ID: <20191210120747.4530f046@x1.home>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D636944@SHSMSX104.ccr.corp.intel.com>
+References: <20191024050829.4517-1-zhenyuw@linux.intel.com>
+        <AM0PR05MB4866CA9B70A8BEC1868AF8C8D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191108081925.GH4196@zhen-hp.sh.intel.com>
+        <AM0PR05MB4866757033043CC007B5C9CBD15D0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191205060618.GD4196@zhen-hp.sh.intel.com>
+        <AM0PR05MB4866C265B6C9D521A201609DD15C0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191206080354.GA15502@zhen-hp.sh.intel.com>
+        <79d0ca87-c6c7-18d5-6429-bb20041646ff@mellanox.com>
+        <AADFC41AFE54684AB9EE6CBC0274A5D19D636944@SHSMSX104.ccr.corp.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: 3SqaN9miMMG9ZqNsI4aYtg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 02:49:20PM -0800, Jeff Kirsher wrote:
-> +{
-> +	struct i40e_info *ldev = (struct i40e_info *)rf->ldev.if_ldev;
+On Tue, 10 Dec 2019 03:33:23 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-Why are there so many casts in this file? Is this really container of?
+> > From: Parav Pandit <parav@mellanox.com>
+> > Sent: Saturday, December 7, 2019 1:34 AM
+> > 
+> > On 12/6/2019 2:03 AM, Zhenyu Wang wrote:  
+> > > On 2019.12.05 18:59:36 +0000, Parav Pandit wrote:  
+> > >>>>  
+> > >>>>> On 2019.11.07 20:37:49 +0000, Parav Pandit wrote:  
+> > >>>>>> Hi,
+> > >>>>>>  
+> > >>>>>>> -----Original Message-----
+> > >>>>>>> From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org>  
+> > On  
+> > >>>>>>> Behalf Of Zhenyu Wang
+> > >>>>>>> Sent: Thursday, October 24, 2019 12:08 AM
+> > >>>>>>> To: kvm@vger.kernel.org
+> > >>>>>>> Cc: alex.williamson@redhat.com; kwankhede@nvidia.com;
+> > >>>>>>> kevin.tian@intel.com; cohuck@redhat.com
+> > >>>>>>> Subject: [PATCH 0/6] VFIO mdev aggregated resources handling
+> > >>>>>>>
+> > >>>>>>> Hi,
+> > >>>>>>>
+> > >>>>>>> This is a refresh for previous send of this series. I got
+> > >>>>>>> impression that some SIOV drivers would still deploy their own
+> > >>>>>>> create and config method so stopped effort on this. But seems
+> > >>>>>>> this would still be useful for some other SIOV driver which may
+> > >>>>>>> simply want capability to aggregate resources. So here's refreshed  
+> > >>> series.  
+> > >>>>>>>
+> > >>>>>>> Current mdev device create interface depends on fixed mdev type,
+> > >>>>>>> which get uuid from user to create instance of mdev device. If
+> > >>>>>>> user wants to use customized number of resource for mdev device,
+> > >>>>>>> then only can create new  
+> > >>>>>> Can you please give an example of 'resource'?
+> > >>>>>> When I grep [1], [2] and [3], I couldn't find anything related to '  
+> > >>> aggregate'.  
+> > >>>>>
+> > >>>>> The resource is vendor device specific, in SIOV spec there's ADI
+> > >>>>> (Assignable Device Interface) definition which could be e.g queue
+> > >>>>> for net device, context for gpu, etc. I just named this interface as  
+> > >>> 'aggregate'  
+> > >>>>> for aggregation purpose, it's not used in spec doc.
+> > >>>>>  
+> > >>>>
+> > >>>> Some 'unknown/undefined' vendor specific resource just doesn't work.
+> > >>>> Orchestration tool doesn't know which resource and what/how to  
+> > configure  
+> > >>> for which vendor.  
+> > >>>> It has to be well defined.
+> > >>>>
+> > >>>> You can also find such discussion in recent lgpu DRM cgroup patches  
+> > series  
+> > >>> v4.  
+> > >>>>
+> > >>>> Exposing networking resource configuration in non-net namespace  
+> > aware  
+> > >>> mdev sysfs at PCI device level is no-go.  
+> > >>>> Adding per file NET_ADMIN or other checks is not the approach we  
+> > follow in  
+> > >>> kernel.  
+> > >>>>
+> > >>>> devlink has been a subsystem though under net, that has very rich  
+> > interface  
+> > >>> for syscaller, device health, resource management and many more.  
+> > >>>> Even though it is used by net driver today, its written for generic device  
+> > >>> management at bus/device level.  
+> > >>>>
+> > >>>> Yuval has posted patches to manage PCI sub-devices [1] and updated  
+> > version  
+> > >>> will be posted soon which addresses comments.  
 
-> +	hdl = kzalloc((sizeof(*hdl) + sizeof(*iwdev)), GFP_KERNEL);
-> +	if (!hdl)
-> +		return -ENOMEM;
-> +
-> +	iwdev = (struct irdma_device *)((u8 *)hdl + sizeof(*hdl));
+Always good to see tools that intend to manage arbitrary devices posted
+only to the netdev list :-\
 
-Yikes, use structs and container of for things like this please.
+> > >>>>
+> > >>>> For any device slice resource management of mdev, sub-function etc,  
+> > we  
+> > >>> should be using single kernel interface as devlink [2], [3].  
 
-> +	iwdev->param_wq = alloc_ordered_workqueue("l2params", WQ_MEM_RECLAIM);
-> +	if (!iwdev->param_wq)
-> +		goto error;
+This seems impractical, mdevs and SR-IOV are both enumerated,
+inspected, created, and removed in sysfs, where do we define what
+features are manipulated vis sysfs versus devlink?  mdevs, by
+definition, are vendor defined "chunks" of a thing.  We allow vendor
+drivers to define different types, representing different
+configurations of these chunks.  Often these different types are
+incrementally bigger or smaller chunks of these things, but defining
+what bigger and smaller means generically across vendors is an
+impossible task.  Orchestration tools already need to know vendor
+specific information in terms of what type of mdev device they want to
+create and make use of.  The aggregation seems to simply augment that
+vendor information, ie. 'type' and 'scale' are separate rather than
+combined only behind just 'type'.
 
-Leon usually asks why another work queue at this point, at least have
-a comment justifying why. Shouldn't it have a better name?
+> > >>>>
+> > >>>> [1]
+> > >>>> https://lore.kernel.org/netdev/1573229926-30040-1-git-send-email-  
+> > yuval  
+> > >>>> av@mellanox.com/ [2]
+> > >>>> http://man7.org/linux/man-pages/man8/devlink-dev.8.html
+> > >>>> [3] http://man7.org/linux/man-pages/man8/devlink-resource.8.html
+> > >>>>
+> > >>>> Most modern device configuration that I am aware of is usually done  
+> > via well  
+> > >>> defined ioctl() of the subsystem (vhost, virtio, vfio, rdma, nvme and  
+> > more) or  
+> > >>> via netlink commands (net, devlink, rdma and more) not via sysfs.  
+> > >>>>  
+> > >>>
+> > >>> Current vfio/mdev configuration is via documented sysfs ABI instead of  
+> > other  
+> > >>> ways. So this adhere to that way to introduce more configurable method  
+> > on  
+> > >>> mdev device for standard, it's optional and not actually vendor specific  
+> > e.g vfio-  
+> > >>> ap.
+> > >>>  
+> > >> Some unknown/undefined resource as 'aggregate' is just not an ABI.
+> > >> It has to be well defined, as 'hardware_address', 'num_netdev_sqs' or  
+> > something similar appropriate to that mdev device class.  
+> > >> If user wants to set a parameter for a mdev regardless of vendor, they  
+> > must have single way to do so.
 
-> +/* client interface functions */
-> +static const struct i40e_client_ops i40e_ops = {
-> +	.open = i40iw_open,
-> +	.close = i40iw_close,
-> +	.l2_param_change = i40iw_l2param_change
-> +};
+Aggregation augments type, which is by definition vendor specific.
+  
+> > >
+> > > The idea is not specific for some device class, but for each mdev
+> > > type's resource, and be optional for each vendor. If more device class
+> > > specific way is preferred, then we might have very different ways for
+> > > different vendors. Better to avoid that, so here means to aggregate
+> > > number of mdev type's resources for target instance, instead of defining
+> > > kinds of mdev types for those number of resources.
+> > >  
+> > Parameter or attribute certainly can be optional.
+> > But the way to aggregate them should not be vendor specific.
+> > Look for some excellent existing examples across subsystems, for example
+> > how you create aggregated netdev or block device is not depend on vendor
+> > or underlying device type.  
+> 
+> I'd like to hear Alex's opinion on this. Today VFIO mdev supports two styles
+> of "types" imo: fixed resource definition (most cases) and dynamic resource 
+> definition (vfio-ap). In fixed style, a type has fixed association to a set of 
+> vendor specific resources (resourceX=M, resourceY=N, ...). In dynamic case, 
+> the user is allowed to specify actual resource X/Y/... backing the mdev 
+> instance post its creation. In either case, the way to identify such association 
+> or configurable knobs is vendor specific, maybe contained in optional 
+> attributes (name and description) plus additional info in vendor documents.
+> 
+> Then the user is assumed to clearly understand the implication of the resource
+> allocation under a given type, when creating a new mdev under this type.
+> 
+> If this assumption holds true, the aggregated attribute simply provides an
+> extension in the same direction of fixed-style types but allowing for more 
+> flexible linearly-increasing resource allocation. e.g. when using aggregate=2, 
+> it means creating a instance with resourceX=2M, resourceY=2N, ... under 
+> the specified type. Along this direction I didn't see the need of well-defined 
+> vendor specific attributes here. When those are actually required, I suppose 
+> the dynamic style would better fit. Or if the vendor driver thinks implementing 
+> such aggregate feature will confuse its type definition, it's optional to not 
+> doing so anyway.
 
-Wasn't the whole point of virtual bus to avoid stuff like this? Why
-isn't a client the virtual bus object and this information extended
-into the driver ops?
+Yep, though I don't think we can even define that aggregate=2 indicates
+that every resources is doubled, it's going to have vendor specific
+meaning.  Maybe this is what Parav is rejecting, but I don't see an
+alternative.  For example, an mdev vGPU might have high level resources
+like the number of execution units, graphics memory, display heads,
+maximum resolution, etc.  Aggregation could affect one or all of these.
+Orchestration tools already need to know the vendor specific type of
+device they want to create, so it doesn't seem unreasonable that if
+they use aggregation that they choose a type that aggregates the
+resource(s) they need, but that aggregation is going to be specific to
+the type.  Potentially as we think about adding "defined" sysfs
+attributes for devices we could start with
+$SYSFS_DEV_PATH/mdev/aggregation/type, where value written to type is a
+vendor specific aggregation of that mdev type.  This allows us the
+option that we might someday agree on specific resources that might be
+aggregated in a common way (ex. ./aggregation/graphics_memory), but I'm
+somewhat doubtful those would ever be pursued.  Thanks,
 
-> +int i40iw_probe(struct virtbus_device *vdev)
-> +{
-> +	struct i40e_info *ldev =
-> +		container_of(vdev, struct i40e_info, vdev);
-> +
-> +	if (!ldev)
-> +		return -EINVAL;
+Alex
 
-eh? how can that happen
-
-> +
-> +	if (!ldev->ops->client_device_register)
-> +		return -EINVAL;
-
-How can this happen too? If it doesn't support register then don't
-create a virtual device, surely?
-
-I've really developed a strong distate to these random non-functional
-'ifs' that seem to get into things.
-
-If it is functional then fine, but if it is an assertion write it as
-if (WARN_ON()) to make it clear to readers it can't happen by design
-
-
-> +/**
-> + * irdma_lan_register_qset - Register qset with LAN driver
-> + * @vsi: vsi structure
-> + * @tc_node: Traffic class node
-> + */
-> +static enum irdma_status_code irdma_lan_register_qset(struct irdma_sc_vsi *vsi,
-> +						      struct irdma_ws_node *tc_node)
-> +{
-> +	struct irdma_device *iwdev = vsi->back_vsi;
-> +	struct iidc_peer_dev *ldev = (struct iidc_peer_dev *)iwdev->ldev->if_ldev;
-
-Again with the casts.. Please try to clean up the casting in this driver
-
-> +	struct iidc_res rdma_qset_res = {};
-> +	int ret;
-> +
-> +	if (ldev->ops->alloc_res) {
-
-Quite an abnormal coding style to put the entire function under an if,
-just if() return 0 ? Many examples of this
-
-> +/**
-> + * irdma_log_invalid_mtu: log warning on invalid mtu
-> + * @mtu: maximum tranmission unit
-> + */
-> +static void irdma_log_invalid_mtu(u16 mtu)
-> +{
-> +	if (mtu < IRDMA_MIN_MTU_IPV4)
-> +		pr_warn("Current MTU setting of %d is too low for RDMA traffic. Minimum MTU is 576 for IPv4 and 1280 for IPv6\n",
-> +			mtu);
-> +	else if (mtu < IRDMA_MIN_MTU_IPV6)
-> +		pr_warn("Current MTU setting of %d is too low for IPv6 RDMA traffic, the minimum is 1280\n",
-> +			mtu);
-> +}
-
-Don't use pr_* stuff in drivers that have a struct device.
-
-> +/**
-> + * irdma_event_handler - Called by LAN driver to notify events
-> + * @ldev: Peer device structure
-> + * @event: event from LAN driver
-> + */
-> +static void irdma_event_handler(struct iidc_peer_dev *ldev,
-> +				struct iidc_event *event)
-> +{
-> +	struct irdma_l2params l2params = {};
-> +	struct irdma_device *iwdev;
-> +	int i;
-> +
-> +	iwdev = irdma_get_device(ldev->netdev);
-> +	if (!iwdev)
-> +		return;
-> +
-> +	if (test_bit(IIDC_EVENT_LINK_CHANGE, event->type)) {
-
-Is this atomic? Why using test_bit?
-
-> +		ldev->ops->reg_for_notification(ldev, &events);
-> +	dev_info(rfdev_to_dev(dev), "IRDMA VSI Open Successful");
-
-Lets not do this kind of logging..
-
-> +static void irdma_close(struct iidc_peer_dev *ldev, enum iidc_close_reason reason)
-> +{
-> +	struct irdma_device *iwdev;
-> +	struct irdma_pci_f *rf;
-> +
-> +	iwdev = irdma_get_device(ldev->netdev);
-> +	if (!iwdev)
-> +		return;
-> +
-> +	irdma_put_device(iwdev);
-> +	rf = iwdev->rf;
-> +	if (reason == IIDC_REASON_GLOBR_REQ || reason == IIDC_REASON_CORER_REQ ||
-> +	    reason == IIDC_REASON_PFR_REQ || rf->reset) {
-> +		iwdev->reset = true;
-> +		rf->reset = true;
-> +	}
-> +
-> +	if (iwdev->init_state >= CEQ0_CREATED)
-> +		irdma_deinit_rt_device(iwdev);
-> +
-> +	kfree(iwdev);
-
-Mixing put and kfree? So confusing. Why are there so many structs and
-so much indirection? Very hard to understand if this is right or not.
-
-> new file mode 100644
-> index 000000000000..b418e76a3302
-> +++ b/drivers/infiniband/hw/irdma/main.c
-> @@ -0,0 +1,630 @@
-> +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-> +/* Copyright (c) 2015 - 2019 Intel Corporation */
-> +#include "main.h"
-> +
-> +/* Legacy i40iw module parameters */
-> +static int resource_profile;
-> +module_param(resource_profile, int, 0644);
-> +MODULE_PARM_DESC(resource_profile, "Resource Profile: 0=PF only, 1=Weighted VF, 2=Even Distribution");
-> +
-> +static int max_rdma_vfs = 32;
-> +module_param(max_rdma_vfs, int, 0644);
-> +MODULE_PARM_DESC(max_rdma_vfs, "Maximum VF count: 0-32 32=default");
-> +
-> +static int mpa_version = 2;
-> +module_param(mpa_version, int, 0644);
-> +MODULE_PARM_DESC(mpa_version, "MPA version: deprecated parameter");
-> +
-> +static int push_mode;
-> +module_param(push_mode, int, 0644);
-> +MODULE_PARM_DESC(push_mode, "Low latency mode: deprecated parameter");
-> +
-> +static int debug;
-> +module_param(debug, int, 0644);
-> +MODULE_PARM_DESC(debug, "debug flags: deprecated parameter");
-
-Generally no to module parameters
-
-> +static struct workqueue_struct *irdma_wq;
-
-Another wq already?
-
-> +struct irdma_pci_f {
-> +	bool ooo;
-> +	bool reset;
-> +	bool rsrc_created;
-> +	bool stop_cqp_thread;
-> +	bool msix_shared;
-
-Linus has spoken poorly about lots of bools in a struct. Can this be a
-bitfield?
-
-> +/***********************************************************/
-> +/**
-> + * to_iwdev - get device
-> + * @ibdev: ib device
-> + **/
-
-Maybe some of these comment blocks are not so valuable :\
-
-> +	spin_lock_irqsave(&rf->rsrc_lock, flags);
-> +
-> +	bit_is_set = test_bit(rsrc_num, rsrc_array);
-
-Again, are these atomics? Looks like no, why test_bit?
-
-Jason
