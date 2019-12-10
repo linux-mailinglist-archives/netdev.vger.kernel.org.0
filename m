@@ -2,109 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F110117D08
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 02:15:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC960117D11
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 02:18:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbfLJBPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 20:15:30 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:26152 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727773AbfLJBP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 20:15:27 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBA1BCof019450
-        for <netdev@vger.kernel.org>; Mon, 9 Dec 2019 17:15:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=qoQnl4Q8PMXkMLEQ3ky0X4fTwA8dHghjtxQU5dM5zG4=;
- b=eGCQ7s7ltyB/5IxXqNCTi2RYCq37wyaxMtal7XgnDV429bm8nL7wWCRZT1kmeV6AwKbZ
- UGRMsUosL5tBKj+qc0C9YCj9Dc/UlavXgPn3JGpqgCFR61XAnhPYgNSL/T86z9InZAzk
- qH64py9rE72ukCudLqS9AR5Hz/o7IDUeVwI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wt0cx09vh-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 17:15:26 -0800
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 9 Dec 2019 17:15:22 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 928D12EC16B5; Mon,  9 Dec 2019 17:15:20 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 15/15] bpftool: add `gen skeleton` BASH completions
-Date:   Mon, 9 Dec 2019 17:14:38 -0800
-Message-ID: <20191210011438.4182911-16-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191210011438.4182911-1-andriin@fb.com>
-References: <20191210011438.4182911-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1727704AbfLJBSd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 9 Dec 2019 20:18:33 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:52602 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727524AbfLJBSc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 20:18:32 -0500
+Received: from ip5f5a6266.dynamic.kabel-deutschland.de ([95.90.98.102] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <heiko@sntech.de>)
+        id 1ieUAT-00042d-A7; Tue, 10 Dec 2019 02:18:25 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Soeren Moch <smoch@web.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 8/8] arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
+Date:   Tue, 10 Dec 2019 02:18:24 +0100
+Message-ID: <6162240.GiEx4hqPFh@diego>
+In-Reply-To: <2cf70216-8d98-4122-4f4e-b8254089a017@web.de>
+References: <20191209223822.27236-1-smoch@web.de> <2668270.pdtvSLGib8@diego> <2cf70216-8d98-4122-4f4e-b8254089a017@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-09_05:2019-12-09,2019-12-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- impostorscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=918
- clxscore=1015 malwarescore=0 spamscore=0 phishscore=0 suspectscore=8
- adultscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912100009
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add BASH completions for gen sub-command.
+Hi Soeren,
 
-Cc: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 11 +++++++++++
- tools/bpf/bpftool/main.c                  |  2 +-
- 2 files changed, 12 insertions(+), 1 deletion(-)
+Am Dienstag, 10. Dezember 2019, 00:29:21 CET schrieb Soeren Moch:
+> On 10.12.19 00:08, Heiko Stübner wrote:
+> > Am Montag, 9. Dezember 2019, 23:38:22 CET schrieb Soeren Moch:
+> >> RockPro64 supports an Ampak AP6359SA based wifi/bt combo module.
+> >> The BCM4359/9 wifi controller in this module is connected to sdio0,
+> >> enable this interface.
+> >>
+> >> Signed-off-by: Soeren Moch <smoch@web.de>
+> >> ---
+> >> Not sure where to place exactly the sdio0 node in the dts because
+> >> existing sd nodes are not sorted alphabetically.
+> >>
+> >> This last patch in this brcmfmac patch series probably should be picked
+> >> up by Heiko independently of the rest of this series. It was sent together
+> >> to show how this brcmfmac extension for 4359-sdio support with RSDB is
+> >> used and tested.
+> > node placement looks good so I can apply it, just a general questions
+> > I only got patch 8/8 are patches 1-7 relevant for this one and what are they?
+> Patches 1-7 are the patches to support the BCM4359 chipset with SDIO
+> interface in the linux brcmfmac net-wireless driver, see [1].
+> 
+> So this patch series has 2 parts:
+> patches 1-7: add support for the wifi chipset in the wireless driver,
+> this has to go through net-wireless
+> patch 8: enable the wifi module with this chipset on RockPro64, this patch
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 70493a6da206..986519cc58d1 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -716,6 +716,17 @@ _bpftool()
-                     ;;
-             esac
-             ;;
-+        gen)
-+            case $command in
-+                skeleton)
-+                    _filedir
-+		    ;;
-+                *)
-+                    [[ $prev == $object ]] && \
-+                        COMPREPLY=( $( compgen -W 'skeleton help' -- "$cur" ) )
-+                    ;;
-+            esac
-+            ;;
-         cgroup)
-             case $command in
-                 show|list|tree)
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 758b294e8a7d..1fe91c558508 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -58,7 +58,7 @@ static int do_help(int argc, char **argv)
- 		"       %s batch file FILE\n"
- 		"       %s version\n"
- 		"\n"
--		"       OBJECT := { prog | map | cgroup | perf | net | feature | btf }\n"
-+		"       OBJECT := { prog | map | cgroup | perf | net | feature | btf | gen }\n"
- 		"       " HELP_SPEC_OPTIONS "\n"
- 		"",
- 		bin_name, bin_name, bin_name);
--- 
-2.17.1
+Thanks for the clarification :-) .
+
+As patch 8 "only" does the core sdio node, it doesn't really depend on the
+earlier ones and you can submit any uart-hooks for bluetooth once the
+other patches land I guess.
+
+
+> If this was confusing, what would be the ideal way to post such series?
+
+I think every maintainer has some slightly different perspective on this,
+but personally I like getting the whole series to follow the discussion but
+also to just see when the driver-side changes get merged, as the dts-parts
+need to wait for that in a lot of cases.
+
+Heiko
+
+
+> [1] https://patchwork.kernel.org/project/linux-wireless/list/?series=213951
+> >
+> > Thanks
+> > Heiko
+> >
+> >
+> >> Cc: Heiko Stuebner <heiko@sntech.de>
+> >> Cc: Kalle Valo <kvalo@codeaurora.org>
+> >> Cc: linux-wireless@vger.kernel.org
+> >> Cc: brcm80211-dev-list.pdl@broadcom.com
+> >> Cc: brcm80211-dev-list@cypress.com
+> >> Cc: netdev@vger.kernel.org
+> >> Cc: linux-arm-kernel@lists.infradead.org
+> >> Cc: linux-rockchip@lists.infradead.org
+> >> Cc: linux-kernel@vger.kernel.org
+> >> ---
+> >>  .../boot/dts/rockchip/rk3399-rockpro64.dts    | 21 ++++++++++++-------
+> >>  1 file changed, 14 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
+> >> index 7f4b2eba31d4..9fa92790d6e0 100644
+> >> --- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
+> >> +++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
+> >> @@ -71,13 +71,6 @@
+> >>  		clock-names = "ext_clock";
+> >>  		pinctrl-names = "default";
+> >>  		pinctrl-0 = <&wifi_enable_h>;
+> >> -
+> >> -		/*
+> >> -		 * On the module itself this is one of these (depending
+> >> -		 * on the actual card populated):
+> >> -		 * - SDIO_RESET_L_WL_REG_ON
+> >> -		 * - PDN (power down when low)
+> >> -		 */
+> >>  		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>;
+> >>  	};
+> >>
+> >> @@ -650,6 +643,20 @@
+> >>  	status = "okay";
+> >>  };
+> >>
+> >> +&sdio0 {
+> >> +	bus-width = <4>;
+> >> +	cap-sd-highspeed;
+> >> +	cap-sdio-irq;
+> >> +	disable-wp;
+> >> +	keep-power-in-suspend;
+> >> +	mmc-pwrseq = <&sdio_pwrseq>;
+> >> +	non-removable;
+> >> +	pinctrl-names = "default";
+> >> +	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
+> >> +	sd-uhs-sdr104;
+> >> +	status = "okay";
+> >> +};
+> >> +
+> >>  &sdmmc {
+> >>  	bus-width = <4>;
+> >>  	cap-sd-highspeed;
+> >> --
+> >> 2.17.1
+> >>
+> >
+> >
+> >
+> 
+> 
+
+
+
 
