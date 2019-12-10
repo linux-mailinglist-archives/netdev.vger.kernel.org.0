@@ -2,89 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 800F5117DD8
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 03:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 515D3117E2F
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 04:31:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbfLJCmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 21:42:49 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35243 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726509AbfLJCms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 21:42:48 -0500
-Received: by mail-pl1-f194.google.com with SMTP id s10so6647649plp.2
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 18:42:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=UGkMwhNrzg0G5Sg3aOYCNrL8WQaNG3IAsZb51Z5iri0=;
-        b=MbllKa6s0an6YAbMpG2rW3n9tlpBBcJ/VlpeHuq9DkADaqeW1RABoeo0N92xBMCVu1
-         gDIpSJkuLYaZx2tOzexP1UgefNzgHSfHk8DXCmcMGm5/KBMvFlXzJ0Rhj0GlXDcSsGd0
-         Izz4tTF4gnKkH1rVrKGKtHcxpt3Kit4yHPrJ96uD6lQgMDHmq3rCiTqZazh44Sxz4oOX
-         xrNKvHpwusD+SKiOuQsyEnOb5p9751rkiKP7rD4MJHjPU9Kv5ME7RM4MrRP5ChnK3JmU
-         wVFJWfXbRXRGdnGuQ4D2Gr5qvMYiSyCAhzswBAXLgbhkCV97FkJObfCfCZLqhKj5XTs6
-         YEbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=UGkMwhNrzg0G5Sg3aOYCNrL8WQaNG3IAsZb51Z5iri0=;
-        b=QZsxgs5PiwF+gTC/n5h1FzO+U4tNdXkOuvxpG3g2LxK4+5rRbc/dsAEdEW0yH1lf74
-         G03HyDtvc7Y3RUn93e2iHj4JRspamLbaX428tD/m7A1HmTeaWPZfg9jY/4R09o9Weh44
-         5j0q/qr/DloIiJ/9dFtQ15tfxH9qhBJCzA6Qc6RRYnpq0gKzWmSBBMvkGOm1OBgWWTRG
-         rGdeIt5zxD0UyYRB6KQ75iOhQ514dRm7u8IrE4nf1KGExFzu+2zOcpjuoccHQ/EKgBqJ
-         +pCJZcg+Z+r93OknuQLi0/jFqouJ0/cJAzPdJTyRsVRtB3CnZqR2EvYZZoKPlYcYmoN0
-         RwDQ==
-X-Gm-Message-State: APjAAAVXd4G1NdOKxcf3Uf90Mqr3i0S0gViOlo0R3aKbCxp/jvCpgFqw
-        UM5n8L71PJ+Cn8aTIuwt9Q==
-X-Google-Smtp-Source: APXvYqz8TqkEQIS3mowh0BPTKudBu9D8KnJeV0EqBbauZYh8wC4gnvVsQStLl1Sfb8LRISEHiVA7cg==
-X-Received: by 2002:a17:902:8306:: with SMTP id bd6mr33517680plb.303.1575945767974;
-        Mon, 09 Dec 2019 18:42:47 -0800 (PST)
-Received: from ip-10-0-0-90.ap-northeast-1.compute.internal (ec2-52-194-225-234.ap-northeast-1.compute.amazonaws.com. [52.194.225.234])
-        by smtp.gmail.com with ESMTPSA id y38sm860805pgk.33.2019.12.09.18.42.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 09 Dec 2019 18:42:46 -0800 (PST)
-From:   kuni1840@gmail.com
-To:     davem@davemloft.net, edumazet@google.com, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, kuniyu@amazon.co.jp,
-        Kuniyuki Iwashima <kuni1840@gmail.com>
-Subject: [PATCH v2 net-next] tcp: Cleanup duplicate initialization of sk->sk_state.
-Date:   Tue, 10 Dec 2019 02:41:48 +0000
-Message-Id: <20191210024148.24830-1-kuni1840@gmail.com>
-X-Mailer: git-send-email 2.17.2
+        id S1726777AbfLJDbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 22:31:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58228 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726619AbfLJDbr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Dec 2019 22:31:47 -0500
+Received: from paulmck-ThinkPad-P72.home (199-192-87-166.static.wiline.com [199.192.87.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 55F1F206E0;
+        Tue, 10 Dec 2019 03:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575948707;
+        bh=SK9zlfAidZcR8wXbm7RRCApD4saMH6Z/ATfM1G4weYc=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=hnvSDakzl3sAYuFKLcZYxQ5gFZ8psJrwDkQRCnYagO0lE5sRsEHBM5uHJX5jJmCRT
+         0TP2kLSLQ90MwYTSbkXGTe0yCJwzJxR17ni4La1H6iYlWhcP1MlE9AzvSpnNf+Q0SY
+         heSXFwYKGnguP5X8kUYcMo1Km3fWi1+CSIWzoj2E=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 7B0433522768; Mon,  9 Dec 2019 19:31:46 -0800 (PST)
+Date:   Mon, 9 Dec 2019 19:31:46 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     jon.maloy@ericsson.com, ying.xue@windriver.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        torvalds@linux-foundation.org, mingo@kernel.org, kernel-team@fb.com
+Subject: [PATCH net/tipc] Replace rcu_swap_protected() with
+ rcu_replace_pointer()
+Message-ID: <20191210033146.GA32522@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuni1840@gmail.com>
+This commit replaces the use of rcu_swap_protected() with the more
+intuitively appealing rcu_replace_pointer() as a step towards removing
+rcu_swap_protected().
 
-When a TCP socket is created, sk->sk_state is initialized twice as
-TCP_CLOSE in sock_init_data() and tcp_init_sock(). The tcp_init_sock() is
-always called after the sock_init_data(), so it is not necessary to update
-sk->sk_state in the tcp_init_sock().
+Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Jon Maloy <jon.maloy@ericsson.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: <netdev@vger.kernel.org>
+Cc: <tipc-discussion@lists.sourceforge.net>
 
-Before v2.1.8, the code of the two functions was in the inet_create(). In
-the patch of v2.1.8, the tcp_v4/v6_init_sock() were added and the code of
-initialization of sk->state was duplicated.
-
-Signed-off-by: Kuniyuki Iwashima <kuni1840@gmail.com>
----
- net/ipv4/tcp.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 8a39ee794891..09e2cae92956 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -443,8 +443,6 @@ void tcp_init_sock(struct sock *sk)
- 	tp->tsoffset = 0;
- 	tp->rack.reo_wnd_steps = 1;
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index 990a872..64cf831 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -258,7 +258,7 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
+ 	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
  
--	sk->sk_state = TCP_CLOSE;
--
- 	sk->sk_write_space = sk_stream_write_space;
- 	sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
+ #define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
+-	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
++	rcu_replace_pointer((rcu_ptr), (ptr), lockdep_is_held(lock))
  
--- 
-2.17.2
-
+ #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
+ do {									\
+@@ -1189,7 +1189,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
+ 
+ 	/* Move passive key if any */
+ 	if (key.passive) {
+-		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
++		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2, &rx->lock);
+ 		x = (key.passive - key.pending + new_pending) % KEY_MAX;
+ 		new_passive = (x <= 0) ? x + KEY_MAX : x;
+ 	}
