@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92648117C35
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 01:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44625117C39
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 01:15:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727111AbfLJANy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 19:13:54 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:35572 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbfLJANy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 19:13:54 -0500
-Received: by mail-pj1-f68.google.com with SMTP id w23so6609154pjd.2
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 16:13:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KLN1DYREPXJpHHYubJRCZWT4Wl8rGRaKmxfqjHjWjvk=;
-        b=iwzzrNTlkY94RCl4TChdZktFq7Pjb6pT5dQseFy7qH0h/JLXalF6dHolaBGhxLQowT
-         dhz8TdjxRX29eMgwexF1fgI4Dlu7dA21zBBPkUCSJ9ejdaYLt4WLnLR+fiyw03Y2Sp+i
-         cRhJK+g+J5khXtcocNbBzQtmz0/UDXF0FJqizj5S/Y3cWDPkSUjYg9OXegRsjMXXZrKN
-         PgsXyI/vAt0lNtWHzlJdHS8Bl8xDKpW+lnQnOylhE/ugKIdNnm5npTUXKnElwHpf0Ju/
-         +XE2Z+YQvJVFA5mMUMyFmgFtvrX26pi/NGYuAduda4ekrD33xvogSecQOX4kf6DKr9gk
-         FWnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KLN1DYREPXJpHHYubJRCZWT4Wl8rGRaKmxfqjHjWjvk=;
-        b=V7HFcsg6XI1bum2dx+mee1LSa/eFR0vt5AkVeHJlYv/xvdZ3wR515yY+hdbjBh1Rb7
-         zVoMmzAKNS+wHM4+A199l9lPxZVpug0etrnySVJ5iSUdF3E5GK1ntxhubAr8Tj1vtIcE
-         vbidU8XvVfS4C9o8jgOB7x1MLZnYwdKO+8IXYrMgs5nH7UvWj0+pmrihQFOjyEwkbBW3
-         gdVA7/WW6cLsJiXqtJyp3hVVnDVsrCDVF37p/ymCfOxOjNe/u2p9MaDaYnlDJpVIhz4E
-         rR32oTuSVzphX5yWdDP6QV/F4f77u6FOPInNzbVw1CQZVpWQRU5RB5w6waClh19M69Fk
-         uL0Q==
-X-Gm-Message-State: APjAAAWYJ9omA14f2pAR3+OK8WlKjtMdXkrW5n83wzao6XVdp+yEy+LB
-        fjF9ETJz5hnENMV3wNaeWbXyGA==
-X-Google-Smtp-Source: APXvYqyEr7qSAEmUoFhMYvvTlKzsQKOGd/nnPA/96ScLfk/tsc1jAzlLra/Rm5FbWQte47dauiP8hA==
-X-Received: by 2002:a17:90b:3115:: with SMTP id gc21mr1994006pjb.54.1575936833824;
-        Mon, 09 Dec 2019 16:13:53 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id in6sm468181pjb.8.2019.12.09.16.13.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2019 16:13:53 -0800 (PST)
-Date:   Mon, 9 Dec 2019 16:13:45 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH iproute2 v2] iplink: add support for STP xstats
-Message-ID: <20191209161345.5b3e757a@hermes.lan>
-In-Reply-To: <20191209230522.1255467-2-vivien.didelot@gmail.com>
-References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
-        <20191209230522.1255467-2-vivien.didelot@gmail.com>
+        id S1727306AbfLJAPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 19:15:49 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:57229 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726495AbfLJAPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 19:15:49 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8178C2304C;
+        Tue, 10 Dec 2019 01:15:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1575936947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wSUPiehHumsTgPhza1Uxhk4PKH7aRjIwy6oBQhIf3xI=;
+        b=kBJPEpmEMHRyIKAhEIzhJjZNk3ThFHeYyYTCnm+NH8t4JUj9kaCcJc/NkJgUVi1GtV0o/D
+        Xgx+q/Mi7yzMGI/NYd0XfyAcSNO1xW2O3H9CoWf3B5Rw2IvHN90IxV2XSki1E3SYEcyQ1g
+        Tz4NJN0wbam9mJW5UBo6IxdgNrVKuLM=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] enetc: add software timestamping
+Date:   Tue, 10 Dec 2019 01:15:37 +0100
+Message-Id: <20191210001537.25630-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++
+X-Spam-Level: ****
+X-Rspamd-Server: web
+X-Spam-Status: No, score=4.90
+X-Spam-Score: 4.90
+X-Rspamd-Queue-Id: 8178C2304C
+X-Spamd-Result: default: False [4.90 / 15.00];
+         ARC_NA(0.00)[];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         RCPT_COUNT_FIVE(0.00)[5];
+         DKIM_SIGNED(0.00)[];
+         MID_CONTAINS_FROM(1.00)[];
+         NEURAL_HAM(-0.00)[-0.657];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c::/31, country:DE]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 Dec 2019 18:05:22 -0500
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
+Provide a software TX timestamp and add it to the ethtool query
+interface.
 
-> Add support for the BRIDGE_XSTATS_STP xstats, as follow:
-> 
->     # ip link xstats type bridge_slave dev lan5
->                         STP BPDU:
->                           RX: 0
->                           TX: 39
->                         STP TCN:
->                           RX: 0
->                           TX: 0
->                         STP Transitions:
->                           Blocked: 0
->                           Forwarding: 1
->                         IGMP queries:
->                           RX: v1 0 v2 0 v3 0
->                           TX: v1 0 v2 0 v3 0
->     ...
+skb_tx_timestamp() is also needed if one would like to use PHY
+timestamping.
 
-Might I suggest a more concise format:
-	STP BPDU:  RX: 0 TX: 39
-	STP TCN:   RX: 0 TX:0
-	STP Transitions: Blocked: 0 Forwarding: 1
-...
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c         | 2 ++
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 17739906c966..2ee4a2cd4780 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -227,6 +227,8 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb,
+ 	enetc_bdr_idx_inc(tx_ring, &i);
+ 	tx_ring->next_to_use = i;
+ 
++	skb_tx_timestamp(skb);
++
+ 	/* let H/W know BD ring has been updated */
+ 	enetc_wr_reg(tx_ring->tpir, i); /* includes wmb() */
+ 
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index 880a8ed8bb47..301ee0dde02d 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -579,6 +579,7 @@ static int enetc_get_ts_info(struct net_device *ndev,
+ 			   (1 << HWTSTAMP_FILTER_ALL);
+ #else
+ 	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
+ 				SOF_TIMESTAMPING_SOFTWARE;
+ #endif
+ 	return 0;
+-- 
+2.20.1
+
