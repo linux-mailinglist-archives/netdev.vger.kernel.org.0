@@ -2,118 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C7041190E2
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:41:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 492FE1190EC
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726646AbfLJTlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:41:16 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:33037 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726062AbfLJTlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:41:16 -0500
-Received: by mail-ot1-f66.google.com with SMTP id d17so16658064otc.0;
-        Tue, 10 Dec 2019 11:41:15 -0800 (PST)
+        id S1726362AbfLJTos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:44:48 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:46895 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfLJTor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:44:47 -0500
+Received: by mail-oi1-f193.google.com with SMTP id a124so10919108oii.13
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:44:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=ziepe.ca; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=R83QtXeO25iJn8IIxnah9iFn17pE1UtDQO4xFZfF6uY=;
-        b=cG5STPDbLQSxbyR1qFBtw0bm8F8a+PZv4SlrIwwgoIhOh87cC39hofilNVzE6l87gR
-         pvJe8RsQB5yKofwnt0nmWhQ1r8XDDHK/S74AbpArymg5/6++VKraI6CNa/VB4SXqWGNP
-         J7+gjQZpbV7CnqnfIWxsqOyT3891pAf2SjkTTlohHLSn8MnJhx3C1xFosPGTBcEXkAHm
-         Mdve8NsOcbpVJc36EdqCRzPVUpLA4O4gFEJmTulj+KHRXXxqYTkZM3fCRs6f2SL+BAvw
-         YDv5ibI77J2z3lXSkPfem+cQrGZg6pu1XUXyrMUfpEPXsW2cLqYLNh5H2r0z2fQF+VEH
-         yIKg==
+        bh=cSRVrn8feD3OQNfvTx8m2swsMDSqby5uarB5TK91UvI=;
+        b=TfE54BunmMZ1b3iHwS3zdd2nF63lFRI/pCVTLjpwgslmuAQYm9tSfwJ64F80uhEAfy
+         FCBcJJQzdWhAa8pWm+obj3R+3Bi/h/dRUxN6Zani/IND6/zmEWJTBAKShqBxgHvpL/Ey
+         V5F8KsycbdmKbs4kEZ/Fy4JPqBWFsp7eIfITaE3KVXWUdXZggvkmpkvWoaNJxb36Cmkk
+         7fYVLqoXO3ZOuIjysmXVzyy1/xzYHXEkEx5Hj36dUAnVpSyaVPxXputfCgMcQE7u7qau
+         8oYSe3v+LjdK5LV2xcqcyWYyynW1mC1x2UjgMqW7dssV9YAwzSjVuBv6byI1TVgKfB8Z
+         drsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R83QtXeO25iJn8IIxnah9iFn17pE1UtDQO4xFZfF6uY=;
-        b=e9lYDabNL2j+4jCE/xG9M9kgVjwrxrNq3qRBwl/22EUHdiA7RqyKBoTpnMukL93RD7
-         ldlo3W4WvC4D8SDjFoj20LykgUC7yh6xfGhjD5FHueFyzVEbVHwdfSWSwm+2ogUCSqyO
-         6v8kFWx6U16EI6NjvxzjECE2JoIPyJIw/s8IE++/qQEiyGQhRpNBEvUXxffali3UMkyj
-         aUsIm+t/S0rkitsN7lW6JHPW1VwlFLXYSSXJtVPBPbgibpU3FhTpVV23wAvEQqJEljgr
-         Wuon5dV0/Xugc6M5/tulc/gRiyxxoyzEq54TBry0RLx9fgZHnDtTYsURr0ln1pCGlhZ/
-         ZefQ==
-X-Gm-Message-State: APjAAAXSCEufAGcVWN78qtpN+wF3l9Y5SyvtmHcJvsjNrX12LyRlmwfL
-        RaB/9QmkPLrqAo30Fqu2mhxO64lfeqI=
-X-Google-Smtp-Source: APXvYqwj7IlFzd7fTg//b46vTz/Bnh16nomGJYdN53u03HEpszXsPKwNobIL27/F2dZstEw06Uwqgg==
-X-Received: by 2002:a05:6830:1492:: with SMTP id s18mr27774328otq.285.1576006875389;
-        Tue, 10 Dec 2019 11:41:15 -0800 (PST)
-Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id f85sm1758884oib.38.2019.12.10.11.41.14
+        bh=cSRVrn8feD3OQNfvTx8m2swsMDSqby5uarB5TK91UvI=;
+        b=KuUHLbofv9CWLhi8TegFL2doQQT1n1GUfY2sPSlyzwoj4IKDjMvgW/eJWbQpAdhVzX
+         0QMJie0YVwa7i1yXz747PgFAdX6ehiARqIwTfq0Nzm2ezOn4RoFxhWbg1TN6gPS5ae07
+         ++d8iDq+5qMw3XflK04e0w3q19/jX5JRy/uD6M8iJaS40UF1wVCsZdnqsoMEIChizAjB
+         DjqispI9ZfQyN7KQETcxKuJE8Ms4SB+hMfl4smtEh9Ly/5ukjpg47O3DX4ZSYd6EER5v
+         KgZgVV+S2oswUky39XryuJ4Y9ozADVvwZGXPHWb9M3VjfvnMKdZLulAMfWT6BOxAVT5L
+         Z81A==
+X-Gm-Message-State: APjAAAXNu0Z9j/HeYWjrP7cDO/1iYZ5QViwzjN0sYJx2cjz6Kq56lEd+
+        p9JUmrtVVxozyWkwr4Hv2VA1ZQ==
+X-Google-Smtp-Source: APXvYqwqLm3iUij9wnL5yjOiQjWRrFFcsrbgFfyLXAjsmPxxqdUW/3jZd2xBO2Ce9dHG6tt5zHqrDQ==
+X-Received: by 2002:aca:481:: with SMTP id 123mr524185oie.110.1576007086696;
+        Tue, 10 Dec 2019 11:44:46 -0800 (PST)
+Received: from ziepe.ca ([217.140.111.136])
+        by smtp.gmail.com with ESMTPSA id j130sm1727504oia.34.2019.12.10.11.44.45
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 Dec 2019 11:41:14 -0800 (PST)
-Date:   Tue, 10 Dec 2019 12:41:13 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] net: tulip: Adjust indentation in
- {dmfe,uli526x}_init_module
-Message-ID: <20191210194113.GA10106@ubuntu-m2-xlarge-x86>
-References: <20191209211623.44166-1-natechancellor@gmail.com>
- <20191209.202920.1031568566965416683.davem@davemloft.net>
+        Tue, 10 Dec 2019 11:44:45 -0800 (PST)
+Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1ielR7-000028-0A; Tue, 10 Dec 2019 15:44:45 -0400
+Date:   Tue, 10 Dec 2019 15:44:44 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com
+Subject: Re: [net-next v3 00/20][pull request] Intel Wired LAN Driver Updates
+ 2019-12-09
+Message-ID: <20191210194444.GH46@ziepe.ca>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191210172233.GA46@ziepe.ca>
+ <324a6a4c7553cea5225b6f94ff224e155a252b36.camel@intel.com>
+ <20191210182543.GE46@ziepe.ca>
+ <a13f11a31d5cafcc002d5e5ca73fe4a8e3744fb5.camel@intel.com>
+ <20191210191125.GG46@ziepe.ca>
+ <46ed855e75f9eda89118bfad9c6f7b16dd372c71.camel@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191209.202920.1031568566965416683.davem@davemloft.net>
+In-Reply-To: <46ed855e75f9eda89118bfad9c6f7b16dd372c71.camel@intel.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 08:29:20PM -0800, David Miller wrote:
-> From: Nathan Chancellor <natechancellor@gmail.com>
-> Date: Mon,  9 Dec 2019 14:16:23 -0700
+On Tue, Dec 10, 2019 at 11:23:32AM -0800, Jeff Kirsher wrote:
+> > I also do not want a headache with conflicts to a huge rdma driver in
+> > net, so you cannot send it to -net.
 > 
-> > Clang warns:
-> > 
-> > ../drivers/net/ethernet/dec/tulip/uli526x.c:1812:3: warning: misleading
-> > indentation; statement is not part of the previous 'if'
-> > [-Wmisleading-indentation]
-> >         switch (mode) {
-> >         ^
-> > ../drivers/net/ethernet/dec/tulip/uli526x.c:1809:2: note: previous
-> > statement is here
-> >         if (cr6set)
-> >         ^
-> > 1 warning generated.
-> > 
-> > ../drivers/net/ethernet/dec/tulip/dmfe.c:2217:3: warning: misleading
-> > indentation; statement is not part of the previous 'if'
-> > [-Wmisleading-indentation]
-> >         switch(mode) {
-> >         ^
-> > ../drivers/net/ethernet/dec/tulip/dmfe.c:2214:2: note: previous
-> > statement is here
-> >         if (cr6set)
-> >         ^
-> > 1 warning generated.
-> > 
-> > This warning occurs because there is a space before the tab on these
-> > lines. Remove them so that the indentation is consistent with the Linux
-> > kernel coding style and clang no longer warns.
-> > 
-> > While we are here, adjust the default block in dmfe_init_module to have
-> > a proper break between the label and assignment and add a space between
-> > the switch and opening parentheses to avoid a checkpatch warning.
-> > 
-> > Fixes: e1c3e5014040 ("[PATCH] initialisation cleanup for ULI526x-net-driver")
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/795
-> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> Agreed, I do not want to cause you or David Miller any headaches.  It was
+> not clear on what additional changes the RDMA team would have once their
+> driver got upstream.
+
+It isn't about your changes. We often do tree-wide change the RDMA
+APIs toward the driver. For instance Leon's work to add restracks and
+to move allocations out of drivers. If any driver is out of the
+rdma.git tree then this is all broken for us.
+
+> > Mellanox uses a shared branch approach now, it is working well but
+> > requires discipline to execute.
 > 
-> Applied, but it's really crummy that the tool gets tripped up by the
-> fact that a space preceeds the TAB.  It's what the code visually looks
-> like, not what exact kinds of SPACE characters were used to get there.
+> Wouldn't a shared branch cause issues for either you or David Miller to
+> pull from, since it has changes from the RDMA and net-next tree's?
 
-I agree. There is a follow up patch from the author of the warning that
-claims to alieviate some of these but that is still in discussion and as
-far as I understand it, it won't fix all of them so I'm just dealing
-with all of them on the Linux side.
+The shared tree approach requires discipline and bunch of special
+considerations go into constructing it and organizing patches to make
+it work. When done properly there are no issues.
 
-https://reviews.llvm.org/D71037
+> > You can also send your changes to net, wait a cycle then send the rdma
+> > changes. IIRC one of the other drivers is working this way.
+> 
+> This sounds like the best option currently, since there is still a lot of
+> work being done in the ice driver.  Since Greg wanted to see driver
+> examples, using the virtual bus, I can send the RDMA driver patches as RFC
+> in future submissions.  This way, we can make sure the implementation is
+> acceptable and will be ready for submission, once the virtual bus and LAN
+> driver changes are accepted.
 
-Thanks for picking them up!
-Nathan
+OK
+
+Jason
