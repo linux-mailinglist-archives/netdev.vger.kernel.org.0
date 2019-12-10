@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E08118F80
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:07:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48811118F84
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:11:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727780AbfLJSHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 13:07:00 -0500
-Received: from mga04.intel.com ([192.55.52.120]:18183 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727685AbfLJSHA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 13:07:00 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Dec 2019 10:06:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,300,1571727600"; 
-   d="asc'?scan'208";a="264613838"
-Received: from dssnyder-mobl.amr.corp.intel.com ([10.254.45.55])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Dec 2019 10:06:41 -0800
-Message-ID: <324a6a4c7553cea5225b6f94ff224e155a252b36.camel@intel.com>
-Subject: Re: [net-next v3 00/20][pull request] Intel Wired LAN Driver
- Updates 2019-12-09
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com
-Date:   Tue, 10 Dec 2019 10:06:41 -0800
-In-Reply-To: <20191210172233.GA46@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
-         <20191210172233.GA46@ziepe.ca>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-OTL8bKDFxhcCLS247rmA"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1727685AbfLJSLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 13:11:25 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21572 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727349AbfLJSLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:11:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576001484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z5XSliwwrq9s/hk+XiIILzS+SOwRs74eCD9HtmMu754=;
+        b=D6rz1AzJf8S3cBst0ACcVWQMOJfPBxjgMNytm4WcMqDWFV5s/e4YjjZ9Kkw0BSejCRnb9j
+        tiRiCiJ1DTF9p8SSkT9FuXZZplRJaaU+upSNJeGRRSCqUXcEBXZfp7ScoAw977YH/7pmP2
+        7rW6WPox7A2z9MntDrbZj6EtgexigTg=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-86--Me4mhCxP1aYztbfS8sMbg-1; Tue, 10 Dec 2019 13:11:22 -0500
+Received: by mail-lj1-f197.google.com with SMTP id f1so4031301ljp.5
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 10:11:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Z5XSliwwrq9s/hk+XiIILzS+SOwRs74eCD9HtmMu754=;
+        b=JptJJubqPJ4wJrJfICvIql84YCsKKzLOtfyhllcZcvPK4NLqTEwVhYt0UMopMwCJQQ
+         SRIY/b+flAdh8hnE8nbjbJU7AbXW8gLPt1VkUjDg4MJiE6Uch7SPBHbK9LqxAoHB2OY4
+         KjHKkezFRNFWxRHIlUh//nSA5kCIKQTIf+P8j/tv6qZxDChPx6MYxVzYnTyPGBGm4c+Z
+         9NOUrKqAQVMRXzkyEcONQFeboVy0qNDZkNDQ/sqp3Ad90C3xqkWxpuFlf7tc8deDogZt
+         U1Dx5zH4sd6UPAe84oyiQDmARjKgVOzNbBUCcLFsYjfbqLK2ATvylQ8wd6wI48npnCoE
+         Tv7w==
+X-Gm-Message-State: APjAAAUgV9BIOJWy3KiCcbNZC62NVBww/e6VWUBjlmU3WGZs6dM9pp5y
+        jS7Qx1uT500NBgPdEQH7QpXFtZUftpaCYN/lzlO62GKjea1je4G6p1YYxvWTVnXV+MWgqpyczWQ
+        2aUhP7kbPbMYTPX9r
+X-Received: by 2002:a19:7701:: with SMTP id s1mr18277011lfc.180.1576001481256;
+        Tue, 10 Dec 2019 10:11:21 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzlXgyj+NriSETPpZEMOad//9EBC6p8cMANluHa2HW2EzUm0HW2EBh2pLrV6RDm/kCCI3VsiA==
+X-Received: by 2002:a19:7701:: with SMTP id s1mr18276999lfc.180.1576001481132;
+        Tue, 10 Dec 2019 10:11:21 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id z26sm2004779lfq.69.2019.12.10.10.11.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 10:11:20 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 42A66181AC8; Tue, 10 Dec 2019 19:11:18 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf] bpftool: Don't crash on missing jited insns or ksyms
+In-Reply-To: <20191210175915.wh7njnvt2xk64ski@kafai-mbp>
+References: <20191210143047.142347-1-toke@redhat.com> <20191210175915.wh7njnvt2xk64ski@kafai-mbp>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 10 Dec 2019 19:11:18 +0100
+Message-ID: <87h828giex.fsf@toke.dk>
 MIME-Version: 1.0
+X-MC-Unique: -Me4mhCxP1aYztbfS8sMbg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Martin Lau <kafai@fb.com> writes:
 
---=-OTL8bKDFxhcCLS247rmA
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> On Tue, Dec 10, 2019 at 03:30:47PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> When JIT hardening is turned on, the kernel can fail to return jited_ksy=
+ms
+> JIT hardening means net.core.bpf_jit_harden?
+> From the code, it happens on the bpf_dump_raw_ok() check which is
+> actually "kernel.kptr_restrict" instead?
 
-On Tue, 2019-12-10 at 13:22 -0400, Jason Gunthorpe wrote:
-> On Mon, Dec 09, 2019 at 02:49:15PM -0800, Jeff Kirsher wrote:
-> > This series contains the initial implementation of the Virtual Bus,
-> > virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the
-> > new
-> > Virtual Bus and the new RDMA driver 'irdma' for use with 'ice' and
-> > 'i40e'.
-> >=20
-> > The primary purpose of the Virtual bus is to provide a matching service
-> > and to pass the data pointer contained in the virtbus_device to the
-> > virtbus_driver during its probe call.  This will allow two separate
-> > kernel objects to match up and start communication.
-> >=20
-> > The last 16 patches of the series adds a unified Intel Ethernet
-> > Protocol
-> > driver for RDMA that supports a new network device E810 (iWARP and
-> > RoCEv2 capable) and the existing X722 iWARP device.  The driver
-> > architecture provides the extensibility for future generations of Intel
-> > hardware supporting RDMA.
-> >=20
-> > The 'irdma' driver replaces the legacy X722 driver i40iw and extends
-> > the
-> > ABI already defined for i40iw.  It is backward compatible with legacy
-> > X722 rdma-core provider (libi40iw).
->=20
-> Please don't send new RDMA drivers in pull requests to net. This
-> driver is completely unreviewed at this point.
+Ah, yeah, you're right. I was looking through the hardening patchset and
+the bpf_jit_harden setting was the first thing I hit upon; must admit I
+didn't check this too closely :)
 
-This was done because you requested a for a single pull request in an
-earlier submission 9 months ago.  I am fine with breaking up submission,
-even though the RDMA driver would be dependent upon the virtual bus and LAN
-driver changes.
+I'll send a v2 with an updated commit message...
 
---=-OTL8bKDFxhcCLS247rmA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3v3rEACgkQ5W/vlVpL
-7c6Ypg/+PSeQoqTj7hqPY0EBgLsZEpeCmVppaaeUkTATK0mjOD1NrNfnwTTXBIGB
-cUKkszb+Q/jqYDHIwXG2dZt+nlTAdvd0y+F7OkxU19GupImReBxQ73nME1uUx4Um
-0ZWsDD7PfJ6qh0itBxaFB4e3DRAp2wxKszdZ8KtAjJeNQwgKU733t+VC2rsbxwwc
-F39clibEfwcGc64twOCam27wdg2paz1bgpqFFazOzGhUYUrJcqQ9GtMn5TUW6h14
-So745EIwkTjPOsj8wsCEEuqLeDmXe8xYNhmZ9ON/14e39rHXRqEJSl0hLgHITMp2
-PG1kVk6zMu1JW5+Mnkz0PWfFRcfXBI/Um1mcXLmV0jNvL+XPleoTJYqVGjNeocX1
-BZqaTi4WrNg6RA2Il2bLIE5VCQcATgr93cE8i4MSEhjigj+E+yChuxNas1o1k88W
-KFMKxszjvfnPWRGCzJs8lujDQUpxvSlHBijY/x8qarj/w3c5m9XqrSChX/AJ9N7V
-maGXLjSaAfLoLM8aobiW/UAX5SBbzUgpJ75tsQf7M68nmeH0j95dYIvq9YzqDOTP
-EiY6BEMOeXPXL5TxRI9wttQEoW8DQy5ORHH9O9bZ/xT9LZmJ5OX1YLE+AJGx3Sf/
-LbopooM6+DZlzLwpnG8lDmV5DCh9tqYseWjZf9nOpLt0ka5UjsU=
-=zz7Q
------END PGP SIGNATURE-----
-
---=-OTL8bKDFxhcCLS247rmA--
+-Toke
 
