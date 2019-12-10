@@ -2,151 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20236119103
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B72119129
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfLJTuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:50:15 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:39457 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbfLJTuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:50:14 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y1so3401600lfb.6
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:50:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mh1MDhoccZ8LcGj7No6Pp5Z8k1gtAci1d0+A5gGxl1E=;
-        b=eXFdChDloDkEyFWlQ+kb/rD3xmn4wMBfccyqSQplXrWA9vQHvu59MGI5/jck3JYQms
-         hlnBt7+yDu3vS2w3tH9wqyAEvXEUG9uDyW0lwjzbmdynzznqx5UaflGPOhWygHzAApMI
-         7QnlL2qtXQNxiVoy2xtO6Rma2PeITxY3tGsdg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mh1MDhoccZ8LcGj7No6Pp5Z8k1gtAci1d0+A5gGxl1E=;
-        b=Q56sCcDiX9l2aVGVljIOsS2jE65g4rNOLH7+kIQKPBn2WjHdlFVT409eisuILIbL58
-         wyO/ojYHNRyh6VvS5GUlgU8EgRGmuzOf9leAFBIEtIJdO8igMdUUzaf5Yi0UieQZOhqV
-         QbrO1cLUWysSrf/gR3qVJFTVe4UcmRV6Vo77kp0OIH8mnPOTO5/aDdvaYXfKtjsfUUJ1
-         t/gos0w0ti1iUhgyvmvTszzKZIb0baUZEi27FxEBack5mUEmqFqSJva0zlXU+sXis6vw
-         wYF3t2A04b2HEQ8J4f43OT2yGRKyPWLsLYQ4cZpr6Cx6RM8pYljXd+v9t63RkPgG13+V
-         DEEA==
-X-Gm-Message-State: APjAAAXDyXJTwMgz4k1EYn3vktEA3VItDT1grecbU5wjZFb9pR6GeZPr
-        zz494c8fE1EwhstKDyl/7LyRuA==
-X-Google-Smtp-Source: APXvYqyl+VfdSDo5UzwybpIatTMhunT7staLyyawXzmvuMq1T/sqIAa8/kbxGXWyzXN5Gxgu7+l9rQ==
-X-Received: by 2002:a19:f00d:: with SMTP id p13mr20761511lfc.37.1576007412928;
-        Tue, 10 Dec 2019 11:50:12 -0800 (PST)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id w17sm2129532lfn.22.2019.12.10.11.50.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Dec 2019 11:50:12 -0800 (PST)
-Subject: Re: [PATCH net-next] net: bridge: add STP xstats
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
- <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
- <20191210143931.GF1344570@t480s.localdomain>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
-Date:   Tue, 10 Dec 2019 21:50:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <20191210143931.GF1344570@t480s.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726777AbfLJTzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:55:01 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:45152 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726045AbfLJTzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:55:00 -0500
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 79420C0B80;
+        Tue, 10 Dec 2019 19:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1576007700; bh=M/cwTD418HXN3ZYDrXvm66mfCePGTem77sm0VuzRvnI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Uu7ur+tWnfQV7PBhydZCGLaul9JV7TkAP4j6Q7kW6D+wOeM4sfpJedSnSUPmomo4y
+         aZAbLKUccL9eBeU7xQhw8LdfRFd5kLM+Vw1b7zp3JPYN12EXU+PRKrpqmFmSDv46dc
+         Gkn5ngK7H5Zwmwwq8BlsMfKO9tq9bEllJhLbCFXyWW++bTt7R421HGWXuBQUm39Z9G
+         eBcjvwAzzy8DUTyMox9SCXCagWENJJgtx6xN4iuXdlUF56qTi3UUxQQN0FqBiiEXix
+         eOT1HvArWJVJJN0XfyvB6HCCuyzFwIoYt9Out3ANHAfVDj770bXsGnYjiZyHZii24G
+         FUJH4SsyatvJg==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 214B7A005D;
+        Tue, 10 Dec 2019 19:54:57 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: stmmac: Improvements for -next
+Date:   Tue, 10 Dec 2019 20:54:40 +0100
+Message-Id: <cover.1576007149.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/2019 21:39, Vivien Didelot wrote:
-> Hi Nikolay,
-> 
-> On Tue, 10 Dec 2019 09:49:59 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> 
->> Why did you send the bridge patch again ? Does it have any changes ?
-> 
-> The second iproute2 patch does not include the include guards update, but
-> I kept the bridge_stp_stats structure and the BRIDGE_XSTATS_STP definition
-> otherwise iproute2 wouldn't compile.
-> >>
->> Why do you need percpu ? All of these seem to be incremented with the
->> bridge lock held. A few more comments below.
-> 
-> All other xstats are incremented percpu, I simply followed the pattern.
-> 
+Improvements for stmmac.
 
-We have already a lock, we can use it and avoid the whole per-cpu memory handling.
-It seems to be acquired in all cases where these counters need to be changed.
+1) Adds more information regarding HW Caps in the DebugFS file.
 
->>>  	struct net_bridge_port *p
->>>  		= container_of(kobj, struct net_bridge_port, kobj);
->>> +	free_percpu(p->stp_stats);
->>
->> Please leave a new line between local var declaration and the code. I know
->> it was missing, but you can add it now. :)
-> 
-> OK.
-> 
->>> +	if (p) {
->>> +		struct bridge_stp_xstats xstats;
->>
->> Please rename the local var here, using just xstats is misleading.
->> Maybe stp_xstats ?
-> 
-> This isn't misleading to me since its scope is limited to the current block
-> and not the entire function. The block above dumping the VLAN xstats is
-> using a local "struct br_vlan_stats stats" variable for example.
-> 
+2) Prevents incostant bandwidth because of missing interrupts.
 
-Yep, as I answered to myself earlier, with the below change this goes away.
+3) Allows interrupts to be independently enabled or disabled so that we don't
+have to schedule both TX and RX NAPIs.
 
->>
->>> +
->>> +		br_stp_get_xstats(p, &xstats);
->>> +
->>> +		if (nla_put(skb, BRIDGE_XSTATS_STP, sizeof(xstats), &xstats))
->>> +			goto nla_put_failure;
->>
->> Could you please follow how mcast xstats are dumped and do something similar ?
->> It'd be nice to have similar code to audit.
-> 
-> Sure. I would also love to have easily auditable code in net/bridge. For
-> the bridge STP xstats I followed the VLAN xstats code above, which does:
-> 
->     if (nla_put(skb, BRIDGE_XSTATS_VLAN, sizeof(vxi), &vxi))
->         goto nla_put_failure;
-> 
+4) Stops using a magic number in coalesce timer re-arm.
 
-Yeah, we can move that to a vlan-specific helper too, but that is an unrelated change.
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Chen-Yu Tsai <wens@csie.org>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-kernel@vger.kernel.org
+---
 
-> But I can change the STP xstats code to the following:
-> 
->     if (p) {
->         nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
->                                 sizeof(struct bridge_stp_xstats),
->                                 BRIDGE_XSTATS_PAD);
->         if (!nla)
->             goto nla_put_failure;
-> 
->         br_stp_get_xstats(p, nla_data(nla));
->     }
-> 
-> Would that be preferred?
-> 
-> 
+Jose Abreu (4):
+  net: stmmac: Print more information in DebugFS DMA Capabilities file
+  net: stmmac: Always arm TX Timer at end of transmission start
+  net: stmmac: Let TX and RX interrupts be independently
+    enabled/disabled
+  net: stmmac: Always use TX coalesce timer value when rescheduling
 
-Perfect, thanks!
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c  | 24 +++++-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h   | 11 ++-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c   | 47 +++++++++--
+ drivers/net/ethernet/stmicro/stmmac/dwmac_dma.h    |  6 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c    | 22 ++++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  2 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 24 +++++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  6 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 94 +++++++++++++++-------
+ 10 files changed, 183 insertions(+), 54 deletions(-)
 
-> Thanks,
-> 
-> 	Vivien
-> 
+-- 
+2.7.4
 
