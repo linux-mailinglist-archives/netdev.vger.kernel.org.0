@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29999119572
+	by mail.lfdr.de (Postfix) with ESMTP id 987D7119573
 	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:21:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728953AbfLJVVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:21:01 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:40405 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfLJVVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:21:00 -0500
-Received: by mail-qv1-f67.google.com with SMTP id k10so3213702qve.7
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:20:59 -0800 (PST)
+        id S1729040AbfLJVVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:21:03 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36530 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729291AbfLJVVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:21:02 -0500
+Received: by mail-qt1-f194.google.com with SMTP id k11so4202144qtm.3
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:21:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AtJD3PdB/FMNuFQ+XD+4vKTZusrVALZiKrSm4mB8WGQ=;
-        b=qUvKb9sWV3oNEU77nkCt78CD3Br0Xrn/vOCD7Rovg6S7KICfMPf6CJ6ZqTH6+IrGoj
-         Is0Yx8djY8XjxPX/+3H6z3yuFVclSCUbqyCNAql8egtg70z7RhQu1dShhH5wEFmnoY5e
-         mUHl1EkiNf4lu1P0zhvCk3UoIN0AdyIvNBegJiYnI1NcjcMmMlRdj8bH6c67vf7pclIb
-         Wu0QuSR7OMdK65pMDEm6yrU6+QEe/qVJ3YUi+xivclmsQM02UJHP6a51Q8owIo0wlRr6
-         +AdP3AjiBZUIO5uU3D0tedbbW4waanQqFp5cJv418F8zudxD+/CCg42NH/ilEDYb0Nrg
-         u6kQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HALsy1SsRzqboEILgEkyfVYlqeD8DKr+cao6rYYBxRU=;
+        b=h8KmEzd6aYcu5L1jPwn+xhW3YL9g1YfC2E/rrg7Ni3VVQsOVCcSTsVBjPmW+tbRFjj
+         0XLKbxozgAfBZPNBwOPq3f3RPGKoo08owZ3SMJwbHusB7MDQYbgMBBLgCXeIzgectv0l
+         2m/MrWurpPhSvFsluQVjrbyXTPadOlkXN5WE1df2hzYgQKbfa54M/9nxB/BEc2q9/LSp
+         fNeOj25nnv54dr4iqjAlroP13Oor8zRLr1S8CzUdi+iLy+P7CVhXe8dRHlTU1FWbuZtN
+         luGwK3gjwgukY/FgzLfJ+gxXGsDH6UGsfTHIipae58yxrWa0A804cxLerG2i8vjcOUcz
+         DdCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AtJD3PdB/FMNuFQ+XD+4vKTZusrVALZiKrSm4mB8WGQ=;
-        b=gU1Pk8XM5GgkiGK6cyYvGzNGVF4LH775swlbLiVoSokgeE1AOMytgNuHkGmoV22yJr
-         KVObT++4gyHM0F83HOxeoH+rIAO9Fjx5mmQpj3MZvfPfkEVRZw0JRrNbUmpydDbF1eyT
-         AM9tkrIMhIOH0K+2H3afWnSNL+trjQHOmheN7lwaaW0zA4lKRwetxNKk8RpQVXop6q4o
-         oplA6Nj5cSx174mceohO52SPrfWc6Mo1Ppb3uJ9pofuQt0RFbhugRO2stcPn3P2NBvL7
-         FFUNPocnibUe7bGlPg395+k9FKz0ggURQNOUMMFV3wbY8F6KuWfK81BPYtmIb9EhqLBu
-         TM8w==
-X-Gm-Message-State: APjAAAXR7Mdw7DDC0jhBIsI+h8UD6Qw8Wgt5goykv9lfLZGGTNWtDUs5
-        vs5HbIRASpZEghDCM3UFKxQ=
-X-Google-Smtp-Source: APXvYqyt8+4V+bhDq4IhcraE593a4Df/l8OvUPVxAclpFPOb4GBb3wNITBDp3e1+M4rPMe4Z2br1Ig==
-X-Received: by 2002:a05:6214:4f2:: with SMTP id cl18mr31126357qvb.89.1576012859295;
-        Tue, 10 Dec 2019 13:20:59 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HALsy1SsRzqboEILgEkyfVYlqeD8DKr+cao6rYYBxRU=;
+        b=pSVyxPUIvB/vvVM4pXqh/8udBSzWg1wzcEkHBF9nNgpeD1b6I/mPRnTzhWAnchakuN
+         FNMWblVERaw1DhSAVmqu+IFgz7Wk93oKhz/ayh1Ss5IOAFsewfdQPwNFqrw5e2LsHPgN
+         yo7nqUC25V/RqJ0mMR69VPr7ohWZwRlYYvMMbI7MAjsRJ7tW0iV0jKmDTHks02L1ai3L
+         jf+slKuijARsQxXSm8Y4R5g4GYcNcNJ1GexAZdJdZ8gmm3NweHLFrwlcnjHzAedCVGBf
+         8F1VMeHApcNbbXBzELBoIp+b4MWnfWZmx10qSId94Ex6YZhbx2jXq8J1LM0TuqoWBOmA
+         PwuA==
+X-Gm-Message-State: APjAAAXdT1enH1YULepWcjKYrP64MVuJk4ZReKHKj7wMlYIlS2BfvTxP
+        Gl2vt2UT8OFaRY/OAa/cHbc=
+X-Google-Smtp-Source: APXvYqxqitMcpdWFtvTfohucnCIEIENz0SWcPrCNmg3Mnxk3wY6wS78EyN7uNQF0xqRuFc6F29+3VQ==
+X-Received: by 2002:ac8:538d:: with SMTP id x13mr32812154qtp.375.1576012861243;
+        Tue, 10 Dec 2019 13:21:01 -0800 (PST)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id s26sm1351160qkj.24.2019.12.10.13.20.58
+        by smtp.gmail.com with ESMTPSA id l31sm2862qte.30.2019.12.10.13.21.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 13:20:58 -0800 (PST)
+        Tue, 10 Dec 2019 13:21:00 -0800 (PST)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
@@ -51,10 +51,12 @@ Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
         Stephen Hemminger <stephen@networkplumber.org>,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next v2] net: bridge: add STP xstats
-Date:   Tue, 10 Dec 2019 16:20:49 -0500
-Message-Id: <20191210212050.1470909-1-vivien.didelot@gmail.com>
+Subject: [PATCH iproute2 v3] iplink: add support for STP xstats
+Date:   Tue, 10 Dec 2019 16:20:50 -0500
+Message-Id: <20191210212050.1470909-2-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191210212050.1470909-1-vivien.didelot@gmail.com>
+References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,21 +64,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds rx_bpdu, tx_bpdu, rx_tcn, tx_tcn, transition_blk,
-transition_fwd xstats counters to the bridge ports copied over via
-netlink, providing useful information for STP.
+Add support for the BRIDGE_XSTATS_STP xstats, as follow:
+
+    # ip link xstats type bridge_slave dev lan4 stp
+    lan4
+                        STP BPDU:  RX: 0 TX: 61
+                        STP TCN:   RX: 0 TX: 0
+                        STP Transitions: Blocked: 2 Forwarding: 1
+
+Or below as JSON:
+
+    # ip -j -p link xstats type bridge_slave dev lan0 stp
+    [ {
+            "ifname": "lan0",
+            "stp": {
+                "rx_bpdu": 0,
+                "tx_bpdu": 500,
+                "rx_tcn": 0,
+                "tx_tcn": 0,
+                "transition_blk": 0,
+                "transition_fwd": 0
+            }
+        } ]
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
  include/uapi/linux/if_bridge.h | 10 ++++++++++
- net/bridge/br_netlink.c        | 10 ++++++++++
- net/bridge/br_private.h        |  2 ++
- net/bridge/br_stp.c            | 15 +++++++++++++++
- net/bridge/br_stp_bpdu.c       |  4 ++++
- 5 files changed, 41 insertions(+)
+ ip/iplink_bridge.c             | 26 ++++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
 diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 1b3c2b643a02..e7f2bb782006 100644
+index 31fc51bd..42f76697 100644
 --- a/include/uapi/linux/if_bridge.h
 +++ b/include/uapi/linux/if_bridge.h
 @@ -156,6 +156,15 @@ struct bridge_vlan_xstats {
@@ -103,102 +121,57 @@ index 1b3c2b643a02..e7f2bb782006 100644
  	BRIDGE_XSTATS_PAD,
  	__BRIDGE_XSTATS_MAX
  };
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index a0a54482aabc..d339cc314357 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1597,6 +1597,16 @@ static int br_fill_linkxstats(struct sk_buff *skb,
+diff --git a/ip/iplink_bridge.c b/ip/iplink_bridge.c
+index 06f736d4..bbd6f3a8 100644
+--- a/ip/iplink_bridge.c
++++ b/ip/iplink_bridge.c
+@@ -688,6 +688,7 @@ static void bridge_print_xstats_help(struct link_util *lu, FILE *f)
+ static void bridge_print_stats_attr(struct rtattr *attr, int ifindex)
+ {
+ 	struct rtattr *brtb[LINK_XSTATS_TYPE_MAX+1];
++	struct bridge_stp_xstats *sstats;
+ 	struct br_mcast_stats *mstats;
+ 	struct rtattr *i, *list;
+ 	const char *ifname = "";
+@@ -807,6 +808,29 @@ static void bridge_print_stats_attr(struct rtattr *attr, int ifindex)
+ 				  mstats->mld_parse_errors);
+ 			close_json_object();
+ 			break;
++		case BRIDGE_XSTATS_STP:
++			sstats = RTA_DATA(i);
++			open_json_object("stp");
++			print_string(PRINT_FP, NULL,
++				     "%-16s    STP BPDU:  ", "");
++			print_u64(PRINT_ANY, "rx_bpdu", "RX: %llu ",
++				  sstats->rx_bpdu);
++			print_u64(PRINT_ANY, "tx_bpdu", "TX: %llu\n",
++				  sstats->tx_bpdu);
++			print_string(PRINT_FP, NULL,
++				     "%-16s    STP TCN:   ", "");
++			print_u64(PRINT_ANY, "rx_tcn", "RX: %llu ",
++				  sstats->rx_tcn);
++			print_u64(PRINT_ANY, "tx_tcn", "TX: %llu\n",
++				  sstats->tx_tcn);
++			print_string(PRINT_FP, NULL,
++				     "%-16s    STP Transitions: ", "");
++			print_u64(PRINT_ANY, "transition_blk", "Blocked: %llu ",
++				  sstats->transition_blk);
++			print_u64(PRINT_ANY, "transition_fwd", "Forwarding: %llu\n",
++				  sstats->transition_fwd);
++			close_json_object();
++			break;
  		}
  	}
- 
-+	if (p) {
-+		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
-+					sizeof(p->stp_xstats),
-+					BRIDGE_XSTATS_PAD);
-+		if (!nla)
-+			goto nla_put_failure;
-+
-+		memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
-+	}
-+
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- 	if (++vl_idx >= *prividx) {
- 		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_MCAST,
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 36b0367ca1e0..f540f3bdf294 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -283,6 +283,8 @@ struct net_bridge_port {
- #endif
- 	u16				group_fwd_mask;
- 	u16				backup_redirected_cnt;
-+
-+	struct bridge_stp_xstats	stp_xstats;
- };
- 
- #define kobj_to_brport(obj)	container_of(obj, struct net_bridge_port, kobj)
-diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
-index 1f1410f8d312..6856a6d9282b 100644
---- a/net/bridge/br_stp.c
-+++ b/net/bridge/br_stp.c
-@@ -45,6 +45,17 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
- 		br_info(p->br, "port %u(%s) entered %s state\n",
- 				(unsigned int) p->port_no, p->dev->name,
- 				br_port_state_names[p->state]);
-+
-+	if (p->br->stp_enabled == BR_KERNEL_STP) {
-+		switch (p->state) {
-+		case BR_STATE_BLOCKING:
-+			p->stp_xstats.transition_blk++;
-+			break;
-+		case BR_STATE_FORWARDING:
-+			p->stp_xstats.transition_fwd++;
-+			break;
-+		}
-+	}
- }
- 
- /* called under bridge lock */
-@@ -484,6 +495,8 @@ void br_received_config_bpdu(struct net_bridge_port *p,
- 	struct net_bridge *br;
- 	int was_root;
- 
-+	p->stp_xstats.rx_bpdu++;
-+
- 	br = p->br;
- 	was_root = br_is_root_bridge(br);
- 
-@@ -517,6 +530,8 @@ void br_received_config_bpdu(struct net_bridge_port *p,
- /* called under bridge lock */
- void br_received_tcn_bpdu(struct net_bridge_port *p)
- {
-+	p->stp_xstats.rx_tcn++;
-+
- 	if (br_is_designated_port(p)) {
- 		br_info(p->br, "port %u(%s) received tcn bpdu\n",
- 			(unsigned int) p->port_no, p->dev->name);
-diff --git a/net/bridge/br_stp_bpdu.c b/net/bridge/br_stp_bpdu.c
-index 7796dd9d42d7..0e4572f31330 100644
---- a/net/bridge/br_stp_bpdu.c
-+++ b/net/bridge/br_stp_bpdu.c
-@@ -118,6 +118,8 @@ void br_send_config_bpdu(struct net_bridge_port *p, struct br_config_bpdu *bpdu)
- 	br_set_ticks(buf+33, bpdu->forward_delay);
- 
- 	br_send_bpdu(p, buf, 35);
-+
-+	p->stp_xstats.tx_bpdu++;
- }
- 
- /* called under bridge lock */
-@@ -133,6 +135,8 @@ void br_send_tcn_bpdu(struct net_bridge_port *p)
- 	buf[2] = 0;
- 	buf[3] = BPDU_TYPE_TCN;
- 	br_send_bpdu(p, buf, 4);
-+
-+	p->stp_xstats.tx_tcn++;
- }
- 
- /*
+ 	close_json_object();
+@@ -843,6 +867,8 @@ int bridge_parse_xstats(struct link_util *lu, int argc, char **argv)
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "igmp") == 0 || strcmp(*argv, "mcast") == 0) {
+ 			xstats_print_attr = BRIDGE_XSTATS_MCAST;
++		} else if (strcmp(*argv, "stp") == 0) {
++			xstats_print_attr = BRIDGE_XSTATS_STP;
+ 		} else if (strcmp(*argv, "dev") == 0) {
+ 			NEXT_ARG();
+ 			filter_index = ll_name_to_index(*argv);
 -- 
 2.24.0
 
