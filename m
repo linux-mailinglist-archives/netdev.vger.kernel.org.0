@@ -2,166 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 706271184F9
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9332111850A
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727306AbfLJK0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 05:26:31 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43207 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727016AbfLJK0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:26:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575973589;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CjhvoCLXvtgEYZv9jIClqK91m7ZbdN8s8culv6bngZw=;
-        b=Kpo1TXRIWVujOUiDqW9WKY1jnOWr5SSZHOLgDLg5uAKHVggu/1kLdeGhfIBUCooZRfLCy0
-        psAxQCykMrA4jVIkv517aCvf0shFZBksJIxvBmW8qI5SpfIj5VY37iHK05CYQyL5rH8KGQ
-        /0eBVNHucgeq9T0Oxmk3nJ6Pjl4R+W8=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-39kM1QlSNcSAAmEXlL5wwQ-1; Tue, 10 Dec 2019 05:26:28 -0500
-Received: by mail-lj1-f197.google.com with SMTP id k25so3814311lji.4
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 02:26:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=JNrLGK+dFhgDlH/OWEDa1OGxDTeAgD0iogbB+LNTr9k=;
-        b=jiLHYSI4pKCIbxtYFjkVofmefANIdyBUqCl+LIntHj3YQDv5ivB1T+OIeDwUmkbthU
-         69J2vo0v7Ru1GD8LhGZhFx8uOOoAyZHfxRIp7Qv44oxwh/k1izSn6nqTgN7NhiDUwUii
-         t7vz3/g9x/DQLznjEwKXAuGVTMZKEmcLUdlPsfJ/wT/MWeawSsQIvO3bN77ub9xcKLJe
-         H/FTkgJ3LCnar4S04ZYg0mtMcy5j/9DaSJxgkR13UxdUQ4TTh9SVQ42B4lnL6Q3j5Hqy
-         YwrM38Ee5h94sGXSpOZY4cw3EnATcwoMojT5/tQQGQXBGFj5A3dWAniSvixLfcxfiVq2
-         rErA==
-X-Gm-Message-State: APjAAAV99I03Ux2BQSKWMxXc+BUuWTvHL/IrjTUfgGTNfK28tZdGhNEX
-        k9xN2wfdN0sA3vRa1NhzQ7KzCrbvABHTgZIFP0yr2M8ZolVOg5554/RqPnRIMp3SgNpTGhS9Vn6
-        ljoptnl26lFDRLX5t
-X-Received: by 2002:a19:4f54:: with SMTP id a20mr18800131lfk.39.1575973586660;
-        Tue, 10 Dec 2019 02:26:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqygB41vR0HwMdk7lLktk0q4rbHGszKbPnWCFW4lZTkHNH/J8Fgimaorsxdj9KDKC2XJ31yWyQ==
-X-Received: by 2002:a19:4f54:: with SMTP id a20mr18800118lfk.39.1575973586431;
-        Tue, 10 Dec 2019 02:26:26 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id x13sm1266915lfe.48.2019.12.10.02.26.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 02:26:25 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D4522181B24; Tue, 10 Dec 2019 11:26:24 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Jiri Olsa <jolsa@redhat.com>,
-        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com
-Subject: Re: Establishing /usr/lib/bpf as a convention for eBPF bytecode files?
-In-Reply-To: <20191210101020.767622b7@carbon>
-References: <87fthtlotk.fsf@toke.dk> <20191210014018.ltmjgsaafve54o6w@ast-mbp.dhcp.thefacebook.com> <20191210101020.767622b7@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 10 Dec 2019 11:26:24 +0100
-Message-ID: <87r21ch3xr.fsf@toke.dk>
+        id S1727412AbfLJK2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 05:28:25 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58544 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726574AbfLJK2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 05:28:24 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 769B2B280;
+        Tue, 10 Dec 2019 10:28:20 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id E89EB1E0B23; Tue, 10 Dec 2019 11:28:18 +0100 (CET)
+Date:   Tue, 10 Dec 2019 11:28:18 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: Re: [PATCH v8 08/26] mm/gup: allow FOLL_FORCE for
+ get_user_pages_fast()
+Message-ID: <20191210102818.GF1551@quack2.suse.cz>
+References: <20191209225344.99740-1-jhubbard@nvidia.com>
+ <20191209225344.99740-9-jhubbard@nvidia.com>
 MIME-Version: 1.0
-X-MC-Unique: 39kM1QlSNcSAAmEXlL5wwQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209225344.99740-9-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+On Mon 09-12-19 14:53:26, John Hubbard wrote:
+> Commit 817be129e6f2 ("mm: validate get_user_pages_fast flags") allowed
+> only FOLL_WRITE and FOLL_LONGTERM to be passed to get_user_pages_fast().
+> This, combined with the fact that get_user_pages_fast() falls back to
+> "slow gup", which *does* accept FOLL_FORCE, leads to an odd situation:
+> if you need FOLL_FORCE, you cannot call get_user_pages_fast().
+> 
+> There does not appear to be any reason for filtering out FOLL_FORCE.
+> There is nothing in the _fast() implementation that requires that we
+> avoid writing to the pages. So it appears to have been an oversight.
+> 
+> Fix by allowing FOLL_FORCE to be set for get_user_pages_fast().
+> 
+> Fixes: 817be129e6f2 ("mm: validate get_user_pages_fast flags")
+> Cc: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-> On Mon, 9 Dec 2019 17:40:19 -0800
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
->> On Mon, Dec 09, 2019 at 12:29:27PM +0100, Toke H=C3=B8iland-J=C3=B8rgens=
-en wrote:
->> > Hi everyone
->> >=20
->> > As you have no doubt noticed, we have started thinking about how to
->> > package eBPF-related applications in distributions. As a part of this,
->> > I've been thinking about what to recommend for applications that ship
->> > pre-compiled BPF byte-code files.
->> >=20
->> > The obvious place to place those would be somewhere in the system
->> > $LIBDIR (i.e., /usr/lib or /usr/lib64, depending on the distro). But
->> > since BPF byte code is its own binary format, different from regular
->> > executables, I think having a separate path to put those under makes
->> > sense. So I'm proposing to establish a convention that pre-compiled BP=
-F
->> > programs be installed into /usr/lib{,64}/bpf.
->> >=20
->> > This would let users discover which BPF programs are shipped on their
->> > system, and it could be used to discover which package loaded a
->> > particular BPF program, by walking the directory to find the file a
->> > loaded program came from. It would not work for dynamically-generated
->> > bytecode, of course, but I think at least some applications will end u=
-p
->> > shipping pre-compiled bytecode files (we're doing that for xdp-tools,
->> > for instance).
->> >=20
->> > As I said, this would be a convention. We're already using it for
->> > xdp-tools[0], so my plan is to use that as the "first mover", try to g=
-et
->> > distributions to establish the path as a part of their filesystem
->> > layout, and then just try to encourage packages to use it. Hopefully i=
-t
->> > will catch on.
->> >=20
->> > Does anyone have any objections to this? Do you think it is a complete
->> > waste of time, or is it worth giving it a shot? :) =20
->>=20
->> What will be the name of file/directory ?
->> What is going to be the mechanism to clean it up?
->> What will be stored in there? Just .o files ?
->>=20
->> libbcc stores original C and rewritten C in /var/tmp/bcc/bpf_prog_TAG/
->> It was useful for debugging. Since TAG is used as directory name
->> reloading the same bcc script creates the same dir and /var/tmp
->> periodically gets cleaned by reboot.
->>=20
->> Installing bpf .o into common location feels useful. Not sure though
->> how you can convince folks to follow such convention.
->
-> I imagine the files under /usr/lib{,64}/bpf/ will be pre-compiled
-> binaries (fairly static file).  These will be delivered together with
-> the distro RPM file. The distro will detect/enforce that two packages
-> cannot use the same name for bpf .o files.
+Looks good to me. You can add:
 
-Yes, that was my intention. Packages can choose whether to create a
-subdirectory, or just dump files in /usr/lib{,64}/bpf (this is similar
-to /usr/lib).
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-> I see three different types of BPF-object files, which belong in
-> different places (suggestion in parentheses):
->
->  1. Pre-compiled binaries via RPM. (/usr/lib? [1])
->  2. Application "startup" compiled "cached" BPF-object (/var/cache? [2]).
->  3. Runtime dynamic compiled BPF-objects short lived (/run? [3])
->
-> You can follow the links below, to see if match descriptions in
-> the Filesystem Hierarchy Standard[4].
->
-> I think that filetype 1 + 2 makes sense to store in files. For
-> filetype 3 (the highly dynamic runtime re-compiled files) I'm not
-> sure it makes sense to store those in any central place.  Applications
-> could use /run/application-name/, but it will be a pain to deal with
-> filename-clashes. As Alexei brings up cleanup; /run/ is cleared at the
-> beginning of the boot process[3].
->
-> For fileytpe 2, I suggest /var/cache/bpf/, but with an additional
-> application name as a subdir, this is to avoid name clashes (which then
-> becomes the applications responsibility with in its own dir).
+								Honza
 
-/var/cache/bpf seems reasonable, let's go with that. My plan is to try
-to get the directories established in distribution packaging
-('filesystem' on Arch and Fedora, 'base-files' on Debian); this will
-mean the directories are already there on people's systems, which
-hopefully will encourage developers to use them. And then we can try to
-provide a bit more nudging through the distribution packaging.
-
--Toke
-
+> ---
+>  mm/gup.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/gup.c b/mm/gup.c
+> index c0c56888e7cc..958ab0757389 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -2414,7 +2414,8 @@ int get_user_pages_fast(unsigned long start, int nr_pages,
+>  	unsigned long addr, len, end;
+>  	int nr = 0, ret = 0;
+>  
+> -	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
+> +	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM |
+> +				       FOLL_FORCE)))
+>  		return -EINVAL;
+>  
+>  	start = untagged_addr(start) & PAGE_MASK;
+> -- 
+> 2.24.0
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
