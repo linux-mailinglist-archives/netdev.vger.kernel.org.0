@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F1C119470
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:16:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3B4119469
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729350AbfLJVNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:13:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39760 "EHLO mail.kernel.org"
+        id S1729363AbfLJVNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:13:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729333AbfLJVN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:13:29 -0500
+        id S1729344AbfLJVNb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:13:31 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D84D20828;
-        Tue, 10 Dec 2019 21:13:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0993D2077B;
+        Tue, 10 Dec 2019 21:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012408;
-        bh=8oN66QYS45+wKwaEuxdVg+6RSs3NE0LIegUGdt3GX5E=;
+        s=default; t=1576012409;
+        bh=RH4Oi4KY2cBvtGs8sL4JvqF5q9DMTHE4jUZynnxH8Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rttWNYHguXZfVMkUXT+U0UJyzyFxmjreNCBrQ8KpfurHbn/sEWw6deygKgYNz3QSX
-         Gyv0dze9o0g5bdIrgaVPzabd9P6PSalnHCkFoY/cN1Ujd55EI33qbSgtVzJMvz9JQK
-         uj2KKYP61WflupGAk6BTHFf/9NECzFv+VqRdb6cc=
+        b=zQOyTGVXxW5CUEZCBeR/CFi2sw9BBijmXAumI4+ERl1z+x4XCTt+tWun6vTRdXtJh
+         gr4meJzW1UUMaKkZHloDMBZQ76vULq5rieZFVHOsLW4V7TWsKq+MVtrdJ/AhmW1Suf
+         nleberJ0n+vV6ColGLGUt1T3McYUjyWtxqrWXYXA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, oss-drivers@netronome.com
-Subject: [PATCH AUTOSEL 5.4 326/350] bpf: Switch bpf_map ref counter to atomic64_t so bpf_map_inc() never fails
-Date:   Tue, 10 Dec 2019 16:07:11 -0500
-Message-Id: <20191210210735.9077-287-sashal@kernel.org>
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 327/350] libbpf: Fix call relocation offset calculation bug
+Date:   Tue, 10 Dec 2019 16:07:12 -0500
+Message-Id: <20191210210735.9077-288-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -47,371 +47,234 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit 1e0bd5a091e5d9e0f1d5b0e6329b87bb1792f784 ]
+[ Upstream commit a0d7da26ce86a25e97ae191cb90574ada6daea98 ]
 
-92117d8443bc ("bpf: fix refcnt overflow") turned refcounting of bpf_map into
-potentially failing operation, when refcount reaches BPF_MAX_REFCNT limit
-(32k). Due to using 32-bit counter, it's possible in practice to overflow
-refcounter and make it wrap around to 0, causing erroneous map free, while
-there are still references to it, causing use-after-free problems.
+When relocating subprogram call, libbpf doesn't take into account
+relo->text_off, which comes from symbol's value. This generally works fine for
+subprograms implemented as static functions, but breaks for global functions.
 
-But having a failing refcounting operations are problematic in some cases. One
-example is mmap() interface. After establishing initial memory-mapping, user
-is allowed to arbitrarily map/remap/unmap parts of mapped memory, arbitrarily
-splitting it into multiple non-contiguous regions. All this happening without
-any control from the users of mmap subsystem. Rather mmap subsystem sends
-notifications to original creator of memory mapping through open/close
-callbacks, which are optionally specified during initial memory mapping
-creation. These callbacks are used to maintain accurate refcount for bpf_map
-(see next patch in this series). The problem is that open() callback is not
-supposed to fail, because memory-mapped resource is set up and properly
-referenced. This is posing a problem for using memory-mapping with BPF maps.
+Taking a simplified test_pkt_access.c as an example:
 
-One solution to this is to maintain separate refcount for just memory-mappings
-and do single bpf_map_inc/bpf_map_put when it goes from/to zero, respectively.
-There are similar use cases in current work on tcp-bpf, necessitating extra
-counter as well. This seems like a rather unfortunate and ugly solution that
-doesn't scale well to various new use cases.
+__attribute__ ((noinline))
+static int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
+{
+        return skb->len * 2;
+}
 
-Another approach to solve this is to use non-failing refcount_t type, which
-uses 32-bit counter internally, but, once reaching overflow state at UINT_MAX,
-stays there. This utlimately causes memory leak, but prevents use after free.
+__attribute__ ((noinline))
+static int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
+{
+        return skb->len + val;
+}
 
-But given refcounting is not the most performance-critical operation with BPF
-maps (it's not used from running BPF program code), we can also just switch to
-64-bit counter that can't overflow in practice, potentially disadvantaging
-32-bit platforms a tiny bit. This simplifies semantics and allows above
-described scenarios to not worry about failing refcount increment operation.
+SEC("classifier/test_pkt_access")
+int test_pkt_access(struct __sk_buff *skb)
+{
+        if (test_pkt_access_subprog1(skb) != skb->len * 2)
+                return TC_ACT_SHOT;
+        if (test_pkt_access_subprog2(2, skb) != skb->len + 2)
+                return TC_ACT_SHOT;
+        return TC_ACT_UNSPEC;
+}
 
-In terms of struct bpf_map size, we are still good and use the same amount of
-space:
+When compiled, we get two relocations, pointing to '.text' symbol. .text has
+st_value set to 0 (it points to the beginning of .text section):
 
-BEFORE (3 cache lines, 8 bytes of padding at the end):
-struct bpf_map {
-	const struct bpf_map_ops  * ops __attribute__((__aligned__(64))); /*     0     8 */
-	struct bpf_map *           inner_map_meta;       /*     8     8 */
-	void *                     security;             /*    16     8 */
-	enum bpf_map_type  map_type;                     /*    24     4 */
-	u32                        key_size;             /*    28     4 */
-	u32                        value_size;           /*    32     4 */
-	u32                        max_entries;          /*    36     4 */
-	u32                        map_flags;            /*    40     4 */
-	int                        spin_lock_off;        /*    44     4 */
-	u32                        id;                   /*    48     4 */
-	int                        numa_node;            /*    52     4 */
-	u32                        btf_key_type_id;      /*    56     4 */
-	u32                        btf_value_type_id;    /*    60     4 */
-	/* --- cacheline 1 boundary (64 bytes) --- */
-	struct btf *               btf;                  /*    64     8 */
-	struct bpf_map_memory memory;                    /*    72    16 */
-	bool                       unpriv_array;         /*    88     1 */
-	bool                       frozen;               /*    89     1 */
+0000000000000008  000000050000000a R_BPF_64_32            0000000000000000 .text
+0000000000000040  000000050000000a R_BPF_64_32            0000000000000000 .text
 
-	/* XXX 38 bytes hole, try to pack */
+test_pkt_access_subprog1 and test_pkt_access_subprog2 offsets (targets of two
+calls) are encoded within call instruction's imm32 part as -1 and 2,
+respectively:
 
-	/* --- cacheline 2 boundary (128 bytes) --- */
-	atomic_t                   refcnt __attribute__((__aligned__(64))); /*   128     4 */
-	atomic_t                   usercnt;              /*   132     4 */
-	struct work_struct work;                         /*   136    32 */
-	char                       name[16];             /*   168    16 */
+0000000000000000 test_pkt_access_subprog1:
+       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
+       1:       64 00 00 00 01 00 00 00 w0 <<= 1
+       2:       95 00 00 00 00 00 00 00 exit
 
-	/* size: 192, cachelines: 3, members: 21 */
-	/* sum members: 146, holes: 1, sum holes: 38 */
-	/* padding: 8 */
-	/* forced alignments: 2, forced holes: 1, sum forced holes: 38 */
-} __attribute__((__aligned__(64)));
+0000000000000018 test_pkt_access_subprog2:
+       3:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
+       4:       04 00 00 00 02 00 00 00 w0 += 2
+       5:       95 00 00 00 00 00 00 00 exit
 
-AFTER (same 3 cache lines, no extra padding now):
-struct bpf_map {
-	const struct bpf_map_ops  * ops __attribute__((__aligned__(64))); /*     0     8 */
-	struct bpf_map *           inner_map_meta;       /*     8     8 */
-	void *                     security;             /*    16     8 */
-	enum bpf_map_type  map_type;                     /*    24     4 */
-	u32                        key_size;             /*    28     4 */
-	u32                        value_size;           /*    32     4 */
-	u32                        max_entries;          /*    36     4 */
-	u32                        map_flags;            /*    40     4 */
-	int                        spin_lock_off;        /*    44     4 */
-	u32                        id;                   /*    48     4 */
-	int                        numa_node;            /*    52     4 */
-	u32                        btf_key_type_id;      /*    56     4 */
-	u32                        btf_value_type_id;    /*    60     4 */
-	/* --- cacheline 1 boundary (64 bytes) --- */
-	struct btf *               btf;                  /*    64     8 */
-	struct bpf_map_memory memory;                    /*    72    16 */
-	bool                       unpriv_array;         /*    88     1 */
-	bool                       frozen;               /*    89     1 */
+0000000000000000 test_pkt_access:
+       0:       bf 16 00 00 00 00 00 00 r6 = r1
+===>   1:       85 10 00 00 ff ff ff ff call -1
+       2:       bc 01 00 00 00 00 00 00 w1 = w0
+       3:       b4 00 00 00 02 00 00 00 w0 = 2
+       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
+       5:       64 02 00 00 01 00 00 00 w2 <<= 1
+       6:       5e 21 08 00 00 00 00 00 if w1 != w2 goto +8 <LBB0_3>
+       7:       bf 61 00 00 00 00 00 00 r1 = r6
+===>   8:       85 10 00 00 02 00 00 00 call 2
+       9:       bc 01 00 00 00 00 00 00 w1 = w0
+      10:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
+      11:       04 02 00 00 02 00 00 00 w2 += 2
+      12:       b4 00 00 00 ff ff ff ff w0 = -1
+      13:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB0_3>
+      14:       b4 00 00 00 02 00 00 00 w0 = 2
+0000000000000078 LBB0_3:
+      15:       95 00 00 00 00 00 00 00 exit
 
-	/* XXX 38 bytes hole, try to pack */
+Now, if we compile example with global functions, the setup changes.
+Relocations are now against specifically test_pkt_access_subprog1 and
+test_pkt_access_subprog2 symbols, with test_pkt_access_subprog2 pointing 24
+bytes into its respective section (.text), i.e., 3 instructions in:
 
-	/* --- cacheline 2 boundary (128 bytes) --- */
-	atomic64_t                 refcnt __attribute__((__aligned__(64))); /*   128     8 */
-	atomic64_t                 usercnt;              /*   136     8 */
-	struct work_struct work;                         /*   144    32 */
-	char                       name[16];             /*   176    16 */
+0000000000000008  000000070000000a R_BPF_64_32            0000000000000000 test_pkt_access_subprog1
+0000000000000048  000000080000000a R_BPF_64_32            0000000000000018 test_pkt_access_subprog2
 
-	/* size: 192, cachelines: 3, members: 21 */
-	/* sum members: 154, holes: 1, sum holes: 38 */
-	/* forced alignments: 2, forced holes: 1, sum forced holes: 38 */
-} __attribute__((__aligned__(64)));
+Calls instructions now encode offsets relative to function symbols and are both
+set ot -1:
 
-This patch, while modifying all users of bpf_map_inc, also cleans up its
-interface to match bpf_map_put with separate operations for bpf_map_inc and
-bpf_map_inc_with_uref (to match bpf_map_put and bpf_map_put_with_uref,
-respectively). Also, given there are no users of bpf_map_inc_not_zero
-specifying uref=true, remove uref flag and default to uref=false internally.
+0000000000000000 test_pkt_access_subprog1:
+       0:       61 10 00 00 00 00 00 00 r0 = *(u32 *)(r1 + 0)
+       1:       64 00 00 00 01 00 00 00 w0 <<= 1
+       2:       95 00 00 00 00 00 00 00 exit
 
+0000000000000018 test_pkt_access_subprog2:
+       3:       61 20 00 00 00 00 00 00 r0 = *(u32 *)(r2 + 0)
+       4:       0c 10 00 00 00 00 00 00 w0 += w1
+       5:       95 00 00 00 00 00 00 00 exit
+
+0000000000000000 test_pkt_access:
+       0:       bf 16 00 00 00 00 00 00 r6 = r1
+===>   1:       85 10 00 00 ff ff ff ff call -1
+       2:       bc 01 00 00 00 00 00 00 w1 = w0
+       3:       b4 00 00 00 02 00 00 00 w0 = 2
+       4:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
+       5:       64 02 00 00 01 00 00 00 w2 <<= 1
+       6:       5e 21 09 00 00 00 00 00 if w1 != w2 goto +9 <LBB2_3>
+       7:       b4 01 00 00 02 00 00 00 w1 = 2
+       8:       bf 62 00 00 00 00 00 00 r2 = r6
+===>   9:       85 10 00 00 ff ff ff ff call -1
+      10:       bc 01 00 00 00 00 00 00 w1 = w0
+      11:       61 62 00 00 00 00 00 00 r2 = *(u32 *)(r6 + 0)
+      12:       04 02 00 00 02 00 00 00 w2 += 2
+      13:       b4 00 00 00 ff ff ff ff w0 = -1
+      14:       1e 21 01 00 00 00 00 00 if w1 == w2 goto +1 <LBB2_3>
+      15:       b4 00 00 00 02 00 00 00 w0 = 2
+0000000000000080 LBB2_3:
+      16:       95 00 00 00 00 00 00 00 exit
+
+Thus the right formula to calculate target call offset after relocation should
+take into account relocation's target symbol value (offset within section),
+call instruction's imm32 offset, and (subtracting, to get relative instruction
+offset) instruction index of call instruction itself. All that is shifted by
+number of instructions in main program, given all sub-programs are copied over
+after main program.
+
+Convert few selftests relying on bpf-to-bpf calls to use global functions
+instead of static ones.
+
+Fixes: 48cca7e44f9f ("libbpf: add support for bpf_call")
+Reported-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20191117172806.2195367-2-andriin@fb.com
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20191119224447.3781271-1-andriin@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/netronome/nfp/bpf/offload.c  |  4 +-
- include/linux/bpf.h                           | 10 ++--
- kernel/bpf/inode.c                            |  2 +-
- kernel/bpf/map_in_map.c                       |  2 +-
- kernel/bpf/syscall.c                          | 51 ++++++++-----------
- kernel/bpf/verifier.c                         |  6 +--
- kernel/bpf/xskmap.c                           |  6 +--
- net/core/bpf_sk_storage.c                     |  2 +-
- 8 files changed, 34 insertions(+), 49 deletions(-)
+ tools/lib/bpf/libbpf.c                             | 8 ++++++--
+ tools/testing/selftests/bpf/progs/test_btf_haskv.c | 4 ++--
+ tools/testing/selftests/bpf/progs/test_btf_newkv.c | 4 ++--
+ tools/testing/selftests/bpf/progs/test_btf_nokv.c  | 4 ++--
+ 4 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/offload.c b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-index 88fab6a82acff..06927ba5a3ae0 100644
---- a/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
-@@ -46,9 +46,7 @@ nfp_map_ptr_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
- 	/* Grab a single ref to the map for our record.  The prog destroy ndo
- 	 * happens after free_used_maps().
- 	 */
--	map = bpf_map_inc(map, false);
--	if (IS_ERR(map))
--		return PTR_ERR(map);
-+	bpf_map_inc(map);
- 
- 	record = kmalloc(sizeof(*record), GFP_KERNEL);
- 	if (!record) {
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 3bf3835d0e866..78d5233b4f8ec 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -99,8 +99,8 @@ struct bpf_map {
- 	/* The 3rd and 4th cacheline with misc members to avoid false sharing
- 	 * particularly with refcounting.
- 	 */
--	atomic_t refcnt ____cacheline_aligned;
--	atomic_t usercnt;
-+	atomic64_t refcnt ____cacheline_aligned;
-+	atomic64_t usercnt;
- 	struct work_struct work;
- 	char name[BPF_OBJ_NAME_LEN];
- };
-@@ -649,9 +649,9 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock);
- 
- struct bpf_map *bpf_map_get_with_uref(u32 ufd);
- struct bpf_map *__bpf_map_get(struct fd f);
--struct bpf_map * __must_check bpf_map_inc(struct bpf_map *map, bool uref);
--struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map,
--						   bool uref);
-+void bpf_map_inc(struct bpf_map *map);
-+void bpf_map_inc_with_uref(struct bpf_map *map);
-+struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map);
- void bpf_map_put_with_uref(struct bpf_map *map);
- void bpf_map_put(struct bpf_map *map);
- int bpf_map_charge_memlock(struct bpf_map *map, u32 pages);
-diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-index a70f7209cda3f..2f17f24258dc8 100644
---- a/kernel/bpf/inode.c
-+++ b/kernel/bpf/inode.c
-@@ -34,7 +34,7 @@ static void *bpf_any_get(void *raw, enum bpf_type type)
- 		raw = bpf_prog_inc(raw);
- 		break;
- 	case BPF_TYPE_MAP:
--		raw = bpf_map_inc(raw, true);
-+		bpf_map_inc_with_uref(raw);
- 		break;
- 	default:
- 		WARN_ON_ONCE(1);
-diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-index fab4fb134547d..4cbe987be35b4 100644
---- a/kernel/bpf/map_in_map.c
-+++ b/kernel/bpf/map_in_map.c
-@@ -98,7 +98,7 @@ void *bpf_map_fd_get_ptr(struct bpf_map *map,
- 		return inner_map;
- 
- 	if (bpf_map_meta_equal(map->inner_map_meta, inner_map))
--		inner_map = bpf_map_inc(inner_map, false);
-+		bpf_map_inc(inner_map);
- 	else
- 		inner_map = ERR_PTR(-EINVAL);
- 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index ace1cfaa24b6b..c8668ac70c982 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -313,7 +313,7 @@ static void bpf_map_free_deferred(struct work_struct *work)
- 
- static void bpf_map_put_uref(struct bpf_map *map)
- {
--	if (atomic_dec_and_test(&map->usercnt)) {
-+	if (atomic64_dec_and_test(&map->usercnt)) {
- 		if (map->ops->map_release_uref)
- 			map->ops->map_release_uref(map);
- 	}
-@@ -324,7 +324,7 @@ static void bpf_map_put_uref(struct bpf_map *map)
-  */
- static void __bpf_map_put(struct bpf_map *map, bool do_idr_lock)
- {
--	if (atomic_dec_and_test(&map->refcnt)) {
-+	if (atomic64_dec_and_test(&map->refcnt)) {
- 		/* bpf_map_free_id() must be called first */
- 		bpf_map_free_id(map, do_idr_lock);
- 		btf_put(map->btf);
-@@ -577,8 +577,8 @@ static int map_create(union bpf_attr *attr)
- 	if (err)
- 		goto free_map;
- 
--	atomic_set(&map->refcnt, 1);
--	atomic_set(&map->usercnt, 1);
-+	atomic64_set(&map->refcnt, 1);
-+	atomic64_set(&map->usercnt, 1);
- 
- 	if (attr->btf_key_type_id || attr->btf_value_type_id) {
- 		struct btf *btf;
-@@ -655,21 +655,19 @@ struct bpf_map *__bpf_map_get(struct fd f)
- 	return f.file->private_data;
- }
- 
--/* prog's and map's refcnt limit */
--#define BPF_MAX_REFCNT 32768
--
--struct bpf_map *bpf_map_inc(struct bpf_map *map, bool uref)
-+void bpf_map_inc(struct bpf_map *map)
- {
--	if (atomic_inc_return(&map->refcnt) > BPF_MAX_REFCNT) {
--		atomic_dec(&map->refcnt);
--		return ERR_PTR(-EBUSY);
--	}
--	if (uref)
--		atomic_inc(&map->usercnt);
--	return map;
-+	atomic64_inc(&map->refcnt);
- }
- EXPORT_SYMBOL_GPL(bpf_map_inc);
- 
-+void bpf_map_inc_with_uref(struct bpf_map *map)
-+{
-+	atomic64_inc(&map->refcnt);
-+	atomic64_inc(&map->usercnt);
-+}
-+EXPORT_SYMBOL_GPL(bpf_map_inc_with_uref);
-+
- struct bpf_map *bpf_map_get_with_uref(u32 ufd)
- {
- 	struct fd f = fdget(ufd);
-@@ -679,38 +677,30 @@ struct bpf_map *bpf_map_get_with_uref(u32 ufd)
- 	if (IS_ERR(map))
- 		return map;
- 
--	map = bpf_map_inc(map, true);
-+	bpf_map_inc_with_uref(map);
- 	fdput(f);
- 
- 	return map;
- }
- 
- /* map_idr_lock should have been held */
--static struct bpf_map *__bpf_map_inc_not_zero(struct bpf_map *map,
--					      bool uref)
-+static struct bpf_map *__bpf_map_inc_not_zero(struct bpf_map *map, bool uref)
- {
- 	int refold;
- 
--	refold = atomic_fetch_add_unless(&map->refcnt, 1, 0);
--
--	if (refold >= BPF_MAX_REFCNT) {
--		__bpf_map_put(map, false);
--		return ERR_PTR(-EBUSY);
--	}
--
-+	refold = atomic64_fetch_add_unless(&map->refcnt, 1, 0);
- 	if (!refold)
- 		return ERR_PTR(-ENOENT);
--
- 	if (uref)
--		atomic_inc(&map->usercnt);
-+		atomic64_inc(&map->usercnt);
- 
- 	return map;
- }
- 
--struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map, bool uref)
-+struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map)
- {
- 	spin_lock_bh(&map_idr_lock);
--	map = __bpf_map_inc_not_zero(map, uref);
-+	map = __bpf_map_inc_not_zero(map, false);
- 	spin_unlock_bh(&map_idr_lock);
- 
- 	return map;
-@@ -1456,6 +1446,9 @@ static struct bpf_prog *____bpf_prog_get(struct fd f)
- 	return f.file->private_data;
- }
- 
-+/* prog's refcnt limit */
-+#define BPF_MAX_REFCNT 32768
-+
- struct bpf_prog *bpf_prog_add(struct bpf_prog *prog, int i)
- {
- 	if (atomic_add_return(i, &prog->aux->refcnt) > BPF_MAX_REFCNT) {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index ffc3e53f53009..87181cd5bafd7 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -8008,11 +8008,7 @@ static int replace_map_fd_with_map_ptr(struct bpf_verifier_env *env)
- 			 * will be used by the valid program until it's unloaded
- 			 * and all maps are released in free_used_maps()
- 			 */
--			map = bpf_map_inc(map, false);
--			if (IS_ERR(map)) {
--				fdput(f);
--				return PTR_ERR(map);
--			}
-+			bpf_map_inc(map);
- 
- 			aux->map_index = env->used_map_cnt;
- 			env->used_maps[env->used_map_cnt++] = map;
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index 82a1ffe15dfaa..08dccf733991c 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -18,10 +18,8 @@ struct xsk_map {
- 
- int xsk_map_inc(struct xsk_map *map)
- {
--	struct bpf_map *m = &map->map;
--
--	m = bpf_map_inc(m, false);
--	return PTR_ERR_OR_ZERO(m);
-+	bpf_map_inc(&map->map);
-+	return 0;
- }
- 
- void xsk_map_put(struct xsk_map *map)
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index da5639a5bd3b9..458be6b3eda97 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -798,7 +798,7 @@ int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
- 		 * Try to grab map refcnt to make sure that it's still
- 		 * alive and prevent concurrent removal.
- 		 */
--		map = bpf_map_inc_not_zero(&smap->map, false);
-+		map = bpf_map_inc_not_zero(&smap->map);
- 		if (IS_ERR(map))
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index a267cd0c0ce28..6a87ff9936d7b 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1791,9 +1791,13 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
+ 				pr_warning("incorrect bpf_call opcode\n");
+ 				return -LIBBPF_ERRNO__RELOC;
+ 			}
++			if (sym.st_value % 8) {
++				pr_warn("bad call relo offset: %lu\n", sym.st_value);
++				return -LIBBPF_ERRNO__RELOC;
++			}
+ 			prog->reloc_desc[i].type = RELO_CALL;
+ 			prog->reloc_desc[i].insn_idx = insn_idx;
+-			prog->reloc_desc[i].text_off = sym.st_value;
++			prog->reloc_desc[i].text_off = sym.st_value / 8;
+ 			obj->has_pseudo_calls = true;
  			continue;
+ 		}
+@@ -3239,7 +3243,7 @@ bpf_program__reloc_text(struct bpf_program *prog, struct bpf_object *obj,
+ 			 prog->section_name);
+ 	}
+ 	insn = &prog->insns[relo->insn_idx];
+-	insn->imm += prog->main_prog_cnt - relo->insn_idx;
++	insn->imm += relo->text_off + prog->main_prog_cnt - relo->insn_idx;
+ 	return 0;
+ }
  
+diff --git a/tools/testing/selftests/bpf/progs/test_btf_haskv.c b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
+index e5c79fe0ffdb2..d65c61e64df2f 100644
+--- a/tools/testing/selftests/bpf/progs/test_btf_haskv.c
++++ b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
+@@ -25,7 +25,7 @@ struct dummy_tracepoint_args {
+ };
+ 
+ __attribute__((noinline))
+-static int test_long_fname_2(struct dummy_tracepoint_args *arg)
++int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ {
+ 	struct ipv_counts *counts;
+ 	int key = 0;
+@@ -43,7 +43,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ }
+ 
+ __attribute__((noinline))
+-static int test_long_fname_1(struct dummy_tracepoint_args *arg)
++int test_long_fname_1(struct dummy_tracepoint_args *arg)
+ {
+ 	return test_long_fname_2(arg);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_btf_newkv.c b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
+index 5ee3622ddebb6..8e83317db841f 100644
+--- a/tools/testing/selftests/bpf/progs/test_btf_newkv.c
++++ b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
+@@ -33,7 +33,7 @@ struct dummy_tracepoint_args {
+ };
+ 
+ __attribute__((noinline))
+-static int test_long_fname_2(struct dummy_tracepoint_args *arg)
++int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ {
+ 	struct ipv_counts *counts;
+ 	int key = 0;
+@@ -56,7 +56,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ }
+ 
+ __attribute__((noinline))
+-static int test_long_fname_1(struct dummy_tracepoint_args *arg)
++int test_long_fname_1(struct dummy_tracepoint_args *arg)
+ {
+ 	return test_long_fname_2(arg);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_btf_nokv.c b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
+index 434188c377743..3f44220447594 100644
+--- a/tools/testing/selftests/bpf/progs/test_btf_nokv.c
++++ b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
+@@ -23,7 +23,7 @@ struct dummy_tracepoint_args {
+ };
+ 
+ __attribute__((noinline))
+-static int test_long_fname_2(struct dummy_tracepoint_args *arg)
++int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ {
+ 	struct ipv_counts *counts;
+ 	int key = 0;
+@@ -41,7 +41,7 @@ static int test_long_fname_2(struct dummy_tracepoint_args *arg)
+ }
+ 
+ __attribute__((noinline))
+-static int test_long_fname_1(struct dummy_tracepoint_args *arg)
++int test_long_fname_1(struct dummy_tracepoint_args *arg)
+ {
+ 	return test_long_fname_2(arg);
+ }
 -- 
 2.20.1
 
