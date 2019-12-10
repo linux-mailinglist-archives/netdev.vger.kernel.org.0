@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9296511985F
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:39:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2EE411984C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730179AbfLJVfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:35:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40572 "EHLO mail.kernel.org"
+        id S1728698AbfLJVig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:38:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730168AbfLJVfE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:35:04 -0500
+        id S1730203AbfLJVfO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:35:14 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8192E205C9;
-        Tue, 10 Dec 2019 21:35:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5367205C9;
+        Tue, 10 Dec 2019 21:35:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576013703;
-        bh=k2kvLvL/q8IzY9OsPdyemvu3EapMc47vGOijwnr/ku4=;
+        s=default; t=1576013713;
+        bh=uMzTj59C+aYkV51XN2tz7lF9MA0IC/TM/rAz6NoK6Mo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CkFUef3exQl/TCgm4zqlGna9yw7uPpyf7GqQTrMS4NcknbNKwC6Sh6bSjnrIIbv5P
-         vJwyIG2r8d4VYKASlX4Xd3upAo+yjLAV4R2quwO13JGoIznvWufmAsEjH22SWkWNpw
-         uPS5dVK/BrcHe0IDPLltSbqgxs9x3iCby4b+4gCg=
+        b=WS0THuoaV3TiK1s28d5yuSghdA13qxo82MrpMZnZpCFOelwQhjy+GzOy4JVa7K26U
+         +g81dGdvZRsxtBN53kqUvuAww5Rso3xcFQ4ms+mV/HaMd01EqvztFCYwVlNJ7GChAN
+         Bdc3aP3CzdMLvTPsL9P4PWfLLVez4E9PES5oLrEQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mitch Williams <mitch.a.williams@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Stefan Wahren <wahrenst@gmx.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 132/177] ice: delay less
-Date:   Tue, 10 Dec 2019 16:31:36 -0500
-Message-Id: <20191210213221.11921-132-sashal@kernel.org>
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 141/177] net: bcmgenet: Add RGMII_RXID support
+Date:   Tue, 10 Dec 2019 16:31:45 -0500
+Message-Id: <20191210213221.11921-141-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210213221.11921-1-sashal@kernel.org>
 References: <20191210213221.11921-1-sashal@kernel.org>
@@ -46,58 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mitch Williams <mitch.a.williams@intel.com>
+From: Stefan Wahren <wahrenst@gmx.net>
 
-[ Upstream commit 88bb432a55de8ae62106305083a8bfbb23b01ad2 ]
+[ Upstream commit da38802211cc3fd294211a642932edb09e3af632 ]
 
-Shorten the delay for SQ responses, but increase the number of loops.
-Max delay time is unchanged, but some operations complete much more
-quickly.
+This adds the missing support for the PHY mode RGMII_RXID.
+It's necessary for the Raspberry Pi 4.
 
-In the process, add a new define to make the delay count and delay time
-more explicit. Add comments to make things more explicit.
-
-This fixes a problem with VF resets failing on with many VFs.
-
-Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_controlq.c | 2 +-
- drivers/net/ethernet/intel/ice/ice_controlq.h | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
-index 89f18fe18fe36..921cc0c9a30d7 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.c
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
-@@ -911,7 +911,7 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- 		if (ice_sq_done(hw, cq))
- 			break;
- 
--		mdelay(1);
-+		udelay(ICE_CTL_Q_SQ_CMD_USEC);
- 		total_delay++;
- 	} while (total_delay < cq->sq_cmd_timeout);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.h b/drivers/net/ethernet/intel/ice/ice_controlq.h
-index ea02b89243e2c..0f2cdb06e6efa 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.h
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.h
-@@ -30,8 +30,9 @@ enum ice_ctl_q {
- 	ICE_CTL_Q_ADMIN,
- };
- 
--/* Control Queue default settings */
--#define ICE_CTL_Q_SQ_CMD_TIMEOUT	250  /* msecs */
-+/* Control Queue timeout settings - max delay 250ms */
-+#define ICE_CTL_Q_SQ_CMD_TIMEOUT	2500  /* Count 2500 times */
-+#define ICE_CTL_Q_SQ_CMD_USEC		100   /* Check every 100usec */
- 
- struct ice_ctl_q_ring {
- 	void *dma_head;			/* Virtual address to dma head */
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index a5049d637791d..10dcf8cb523f2 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -283,6 +283,11 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
+ 		bcmgenet_sys_writel(priv,
+ 				    PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
+ 		break;
++
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++		phy_name = "external RGMII (RX delay)";
++		port_ctrl = PORT_MODE_EXT_GPHY;
++		break;
+ 	default:
+ 		dev_err(kdev, "unknown phy mode: %d\n", priv->phy_interface);
+ 		return -EINVAL;
 -- 
 2.20.1
 
