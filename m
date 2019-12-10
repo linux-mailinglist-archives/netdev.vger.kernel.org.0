@@ -2,114 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C021193B8
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9641192C8
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727823AbfLJVJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:09:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58592 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728256AbfLJVJm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:09:42 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C5D4246BA;
-        Tue, 10 Dec 2019 21:09:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012182;
-        bh=796UophT8NjBbk/E9gRtRL1R6ZdTfcJ7TBT6/Hu9NoE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1hidc3VzjsmiVaG6wRKYIOHUo59wMRM5M1rrfhYW78YF3e7JOdYqRY2+HdHKdvM2w
-         77tfDQusKyXT7ZVsUgRTBl3gHqOklH4C2d3a+U6PVOotnhYiFXuNAE1Hf2uD6VsubT
-         TqAUyJp8Uqv2vt7A8QHW0HCq122JxeApLE125djQ=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chris Chiu <chiu@endlessm.com>,
-        Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 139/350] rtl8xxxu: fix RTL8723BU connection failure issue after warm reboot
-Date:   Tue, 10 Dec 2019 16:04:04 -0500
-Message-Id: <20191210210735.9077-100-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
-References: <20191210210735.9077-1-sashal@kernel.org>
+        id S1727131AbfLJVES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:04:18 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:36641 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727093AbfLJVER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:04:17 -0500
+Received: by mail-pg1-f194.google.com with SMTP id k3so8822177pgc.3
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:04:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=52e9X1zaffKYJZsm4RmvVJgpQnjkYQQHNeT1iKIz4Fo=;
+        b=ZymPCP05vBFAW9DNYFX7N3XT5LJ8qPdE57GZbZqx1laYeb6+PiPOcrHZucpRHkw3RF
+         +HhT8g5WpW9RfqKiQmEv5cnycoNIjexOTRAzPy3H8s38X+MEGdrGFSCU7U/BmWj9GxY7
+         4aP2CXu6Z10mxCtobp4MCv26iJDUPdpRPSkMnvgemsMOl4vStvBho0WRpQ3boVd862+8
+         qmHvxsYGZCSzoeM4PMUEFbbeO30xzwKH37TkA1UwRadmG/THMHtY+xq53ow8SoBqmyqH
+         eR0CIlwyxDmRYXqxxZq4ZcnEKE7OgY53LIYU8rX+YnL8N6qne6ngMkeW5m4HqI825ra9
+         RWhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=52e9X1zaffKYJZsm4RmvVJgpQnjkYQQHNeT1iKIz4Fo=;
+        b=GZzsenXIBV5U3b5VoYCP4oXL2mCZLxwUsYbfJwTP7y7eOS6amls3xzAEgUflU4jGYH
+         U0BXOFJw85Er4UIm+r+YkRGZD1LnxJ4/g1eitfGONYVZU7DkddXh6N9f9Ko1c7WWiMxJ
+         u3vmkefwoEqRmrK8RORpFN7AZ1t5kAadJLV/vhbY3UZ+/94NeJrAZocGxArXvCGpfLJS
+         be196DmPkPz+m8UbrYFJdCExALXjlnZZu0lh12q4BYYCJgS4srXTCQlhUYSYet3S0SXW
+         gE9sZ8itw6ZxPkqEi3xKR9LzeuNAsSPeSwGOq/Y579PsAg6FMCBXAb3jo3CLURU3D7Z5
+         vRHQ==
+X-Gm-Message-State: APjAAAW1SfPHSJgIWw0Jgy6+8valESv0Zdezh2XSmrutDtrHZKmMKryl
+        lP/Dl4Qe5NCMMRHEvRQAdCFZmg==
+X-Google-Smtp-Source: APXvYqzT3032TbZ3ENm1RLKpX9StxiKnRGYboO8xIPBzbkiJ1TisWt/KtdY6P3zcDJsogSAYgBac7Q==
+X-Received: by 2002:aa7:98cd:: with SMTP id e13mr36083483pfm.56.1576011856940;
+        Tue, 10 Dec 2019 13:04:16 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id l14sm2397692pgt.42.2019.12.10.13.04.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 13:04:16 -0800 (PST)
+Date:   Tue, 10 Dec 2019 13:04:13 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Paul Chaignon <paul.chaignon@orange.com>
+Cc:     bpf@vger.kernel.org, Quentin Monnet <quentin.monnet@netronome.com>,
+        paul.chaignon@gmail.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next 2/3] bpftool: match programs by name
+Message-ID: <20191210124101.6d5be2dd@cakuba.netronome.com>
+In-Reply-To: <1e3ede4f901a36af342e71bc4fdd2b27fbf9a418.1575991886.git.paul.chaignon@orange.com>
+References: <cover.1575991886.git.paul.chaignon@orange.com>
+        <1e3ede4f901a36af342e71bc4fdd2b27fbf9a418.1575991886.git.paul.chaignon@orange.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Chiu <chiu@endlessm.com>
+On Tue, 10 Dec 2019 17:06:42 +0100, Paul Chaignon wrote:
+> When working with frequently modified BPF programs, both the ID and the
+> tag may change.  bpftool currently doesn't provide a "stable" way to match
+> such programs.
+> 
+> This patch implements lookup by name for programs.  The show and dump
+> commands will return all programs with the given name, whereas other
+> commands will error out if several programs have the same name.
+> 
+> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
 
-[ Upstream commit 0eeb91ade90ce06d2fa1e2fcb55e3316b64c203c ]
+> @@ -164,7 +165,7 @@ prog_parse_fds(int *argc, char ***argv, int *fds)
+>  		}
+>  		return 1;
+>  	} else if (is_prefix(**argv, "tag")) {
+> -		unsigned char tag[BPF_TAG_SIZE];
+> +		char tag[BPF_TAG_SIZE];
 
-The RTL8723BU has problems connecting to AP after each warm reboot.
-Sometimes it returns no scan result, and in most cases, it fails
-the authentication for unknown reason. However, it works totally
-fine after cold reboot.
+Perhaps better to change the argument to prog_fd_by_nametag() to void *?
 
-Compare the value of register SYS_CR and SYS_CLK_MAC_CLK_ENABLE
-for cold reboot and warm reboot, the registers imply that the MAC
-is already powered and thus some procedures are skipped during
-driver initialization. Double checked the vendor driver, it reads
-the SYS_CR and SYS_CLK_MAC_CLK_ENABLE also but doesn't skip any
-during initialization based on them. This commit only tells the
-RTL8723BU to do full initialization without checking MAC status.
+>  
+>  		NEXT_ARGP();
+>  
+> @@ -176,7 +177,20 @@ prog_parse_fds(int *argc, char ***argv, int *fds)
+>  		}
+>  		NEXT_ARGP();
+>  
+> -		return prog_fd_by_tag(tag, fds);
+> +		return prog_fd_by_nametag(tag, fds, true);
+> +	} else if (is_prefix(**argv, "name")) {
+> +		char *name;
+> +
+> +		NEXT_ARGP();
+> +
+> +		name = **argv;
+> +		if (strlen(name) > BPF_OBJ_NAME_LEN - 1) {
 
-Signed-off-by: Chris Chiu <chiu@endlessm.com>
-Signed-off-by: Jes Sorensen <Jes.Sorensen@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h       | 1 +
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 1 +
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 +++
- 3 files changed, 5 insertions(+)
+Is this needed? strncmp will simply never match, is it preferred to
+hard error?
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index ade057d868f7e..5e9ce03067de2 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-@@ -1341,6 +1341,7 @@ struct rtl8xxxu_fileops {
- 	u8 has_s0s1:1;
- 	u8 has_tx_report:1;
- 	u8 gen2_thermal_meter:1;
-+	u8 needs_full_init:1;
- 	u32 adda_1t_init;
- 	u32 adda_1t_path_on;
- 	u32 adda_2t_path_on_a;
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-index ceffe05bd65b2..f3cd314d1a9cf 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-@@ -1670,6 +1670,7 @@ struct rtl8xxxu_fileops rtl8723bu_fops = {
- 	.has_s0s1 = 1,
- 	.has_tx_report = 1,
- 	.gen2_thermal_meter = 1,
-+	.needs_full_init = 1,
- 	.adda_1t_init = 0x01c00014,
- 	.adda_1t_path_on = 0x01c00014,
- 	.adda_2t_path_on_a = 0x01c00014,
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index c6c41fb962ffc..361248e975687 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -3902,6 +3902,9 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
- 	else
- 		macpower = true;
- 
-+	if (fops->needs_full_init)
-+		macpower = false;
-+
- 	ret = fops->power_on(priv);
- 	if (ret < 0) {
- 		dev_warn(dev, "%s: Failed power on\n", __func__);
--- 
-2.20.1
+> +			p_err("can't parse name");
+> +			return -1;
+> +		}
+> +		NEXT_ARGP();
+> +
+> +		return prog_fd_by_nametag(name, fds, false);
+>  	} else if (is_prefix(**argv, "pinned")) {
+>  		char *path;
+>  
+> @@ -191,7 +205,7 @@ prog_parse_fds(int *argc, char ***argv, int *fds)
+>  		return 1;
+>  	}
+>  
+> -	p_err("expected 'id', 'tag' or 'pinned', got: '%s'?", **argv);
+> +	p_err("expected 'id', 'tag', 'name' or 'pinned', got: '%s'?", **argv);
+>  	return -1;
+>  }
+>  
 
