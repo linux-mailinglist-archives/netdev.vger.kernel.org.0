@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 024A911942F
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25015119439
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbfLJVN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:13:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40930 "EHLO mail.kernel.org"
+        id S1728868AbfLJVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:14:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729483AbfLJVN5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:13:57 -0500
+        id S1728844AbfLJVN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:13:58 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 75F43205C9;
-        Tue, 10 Dec 2019 21:13:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98428208C3;
+        Tue, 10 Dec 2019 21:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012436;
-        bh=k2xihUgRcgrb7YUQR2Lk4IorRDQykZiKuabSVR5v+i4=;
+        s=default; t=1576012437;
+        bh=IuYOpPvSdHmvCmlPfdxsAUVModI75wSqdZHZvJ1mZGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jc9H//CsjbM85ERoTD3E8sDCaq9g9CqSbmyGKxEt2zIyxXznh7jmC/FyYkvPD8o6+
-         StYwyXLrw7xytBIGxFjacHcIA6ciBUBTJOwvab1csEgGmOtz8ZHKbXJTSX8lnCfMRe
-         NE2CP5ph11cjZ3pR0HMNWtmEmK8JHImQtffMDv7A=
+        b=mWJOgr2oWaOQE+/kCxf9tm87GMUUGBi8Eb/YgLul1IYduDLUs7FWyhZLDUD9guVoG
+         GawsH8HPNYUbyOaK99uAwy3twleBXXjTL6LAyzc0YKt5SXPCTymA+NCvqN7lxEwpAF
+         dgjczuEApEw490qFFAXt7vIUV/NCO3Y0co4AIfLU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
+Cc:     Alexander Lobakin <alobakin@dlink.ru>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
+        Edward Cree <ecree@solarflare.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 348/350] ibmvnic: Fix completion structure initialization
-Date:   Tue, 10 Dec 2019 16:07:33 -0500
-Message-Id: <20191210210735.9077-309-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 349/350] net: wireless: intel: iwlwifi: fix GRO_NORMAL packet stalling
+Date:   Tue, 10 Dec 2019 16:07:34 -0500
+Message-Id: <20191210210735.9077-310-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -44,107 +47,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
+From: Alexander Lobakin <alobakin@dlink.ru>
 
-[ Upstream commit 070eca955c4af1248cb78a216463ff757a5dc511 ]
+[ Upstream commit b167191e2a851cb2e4c6ef8b91c83ff73ef41872 ]
 
-Fix multiple calls to init_completion for device completion
-structures. Instead, initialize them during device probe and
-reinitialize them later as needed.
+Commit 6570bc79c0df ("net: core: use listified Rx for GRO_NORMAL in
+napi_gro_receive()") has applied batched GRO_NORMAL packets processing
+to all napi_gro_receive() users, including mac80211-based drivers.
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+However, this change has led to a regression in iwlwifi driver [1][2] as
+it is required for NAPI users to call napi_complete_done() or
+napi_complete() and the end of every polling iteration, whilst iwlwifi
+doesn't use NAPI scheduling at all and just calls napi_gro_flush().
+In that particular case, packets which have not been already flushed
+from napi->rx_list stall in it until at least next Rx cycle.
+
+Fix this by adding a manual flushing of the list to iwlwifi driver right
+before napi_gro_flush() call to mimic napi_complete() logics.
+
+I prefer to open-code gro_normal_list() rather than exporting it for 2
+reasons:
+* to prevent from using it and napi_gro_flush() in any new drivers,
+  as it is the *really* bad way to use NAPI that should be avoided;
+* to keep gro_normal_list() static and don't lose any CC optimizations.
+
+I also don't add the "Fixes:" tag as the mentioned commit was only a
+trigger that only exposed an improper usage of NAPI in this particular
+driver.
+
+[1] https://lore.kernel.org/netdev/PSXP216MB04388962C411CD0B17A86F47804A0@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM
+[2] https://bugzilla.kernel.org/show_bug.cgi?id=205647
+
+Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
+Reported-by: Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+Tested-by: Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+Reviewed-by: Edward Cree <ecree@solarflare.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 0686ded7ad3a2..e1ab2feeae53d 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -176,7 +176,7 @@ static int alloc_long_term_buff(struct ibmvnic_adapter *adapter,
- 	ltb->map_id = adapter->map_id;
- 	adapter->map_id++;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index 19dd075f2f636..041dd75ac72bc 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -1429,6 +1429,7 @@ static struct iwl_rx_mem_buffer *iwl_pcie_get_rxb(struct iwl_trans *trans,
+ static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
+ {
+ 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
++	struct napi_struct *napi;
+ 	struct iwl_rxq *rxq;
+ 	u32 r, i, count = 0;
+ 	bool emergency = false;
+@@ -1534,8 +1535,16 @@ static void iwl_pcie_rx_handle(struct iwl_trans *trans, int queue)
+ 	if (unlikely(emergency && count))
+ 		iwl_pcie_rxq_alloc_rbs(trans, GFP_ATOMIC, rxq);
  
--	init_completion(&adapter->fw_done);
-+	reinit_completion(&adapter->fw_done);
- 	rc = send_request_map(adapter, ltb->addr,
- 			      ltb->size, ltb->map_id);
- 	if (rc) {
-@@ -215,7 +215,7 @@ static int reset_long_term_buff(struct ibmvnic_adapter *adapter,
+-	if (rxq->napi.poll)
+-		napi_gro_flush(&rxq->napi, false);
++	napi = &rxq->napi;
++	if (napi->poll) {
++		if (napi->rx_count) {
++			netif_receive_skb_list(&napi->rx_list);
++			INIT_LIST_HEAD(&napi->rx_list);
++			napi->rx_count = 0;
++		}
++
++		napi_gro_flush(napi, false);
++	}
  
- 	memset(ltb->buff, 0, ltb->size);
- 
--	init_completion(&adapter->fw_done);
-+	reinit_completion(&adapter->fw_done);
- 	rc = send_request_map(adapter, ltb->addr, ltb->size, ltb->map_id);
- 	if (rc)
- 		return rc;
-@@ -943,7 +943,7 @@ static int ibmvnic_get_vpd(struct ibmvnic_adapter *adapter)
- 	if (adapter->vpd->buff)
- 		len = adapter->vpd->len;
- 
--	init_completion(&adapter->fw_done);
-+	reinit_completion(&adapter->fw_done);
- 	crq.get_vpd_size.first = IBMVNIC_CRQ_CMD;
- 	crq.get_vpd_size.cmd = GET_VPD_SIZE;
- 	rc = ibmvnic_send_crq(adapter, &crq);
-@@ -1689,7 +1689,7 @@ static int __ibmvnic_set_mac(struct net_device *netdev, u8 *dev_addr)
- 	crq.change_mac_addr.cmd = CHANGE_MAC_ADDR;
- 	ether_addr_copy(&crq.change_mac_addr.mac_addr[0], dev_addr);
- 
--	init_completion(&adapter->fw_done);
-+	reinit_completion(&adapter->fw_done);
- 	rc = ibmvnic_send_crq(adapter, &crq);
- 	if (rc) {
- 		rc = -EIO;
-@@ -2316,7 +2316,7 @@ static int wait_for_reset(struct ibmvnic_adapter *adapter)
- 	adapter->fallback.rx_entries = adapter->req_rx_add_entries_per_subcrq;
- 	adapter->fallback.tx_entries = adapter->req_tx_entries_per_subcrq;
- 
--	init_completion(&adapter->reset_done);
-+	reinit_completion(&adapter->reset_done);
- 	adapter->wait_for_reset = true;
- 	rc = ibmvnic_reset(adapter, VNIC_RESET_CHANGE_PARAM);
- 	if (rc)
-@@ -2332,7 +2332,7 @@ static int wait_for_reset(struct ibmvnic_adapter *adapter)
- 		adapter->desired.rx_entries = adapter->fallback.rx_entries;
- 		adapter->desired.tx_entries = adapter->fallback.tx_entries;
- 
--		init_completion(&adapter->reset_done);
-+		reinit_completion(&adapter->reset_done);
- 		adapter->wait_for_reset = true;
- 		rc = ibmvnic_reset(adapter, VNIC_RESET_CHANGE_PARAM);
- 		if (rc)
-@@ -2603,7 +2603,7 @@ static void ibmvnic_get_ethtool_stats(struct net_device *dev,
- 	    cpu_to_be32(sizeof(struct ibmvnic_statistics));
- 
- 	/* Wait for data to be written */
--	init_completion(&adapter->stats_done);
-+	reinit_completion(&adapter->stats_done);
- 	rc = ibmvnic_send_crq(adapter, &crq);
- 	if (rc)
- 		return;
-@@ -4408,7 +4408,7 @@ static int send_query_phys_parms(struct ibmvnic_adapter *adapter)
- 	memset(&crq, 0, sizeof(crq));
- 	crq.query_phys_parms.first = IBMVNIC_CRQ_CMD;
- 	crq.query_phys_parms.cmd = QUERY_PHYS_PARMS;
--	init_completion(&adapter->fw_done);
-+	reinit_completion(&adapter->fw_done);
- 	rc = ibmvnic_send_crq(adapter, &crq);
- 	if (rc)
- 		return rc;
-@@ -4960,6 +4960,9 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	INIT_LIST_HEAD(&adapter->rwi_list);
- 	spin_lock_init(&adapter->rwi_lock);
- 	init_completion(&adapter->init_done);
-+	init_completion(&adapter->fw_done);
-+	init_completion(&adapter->reset_done);
-+	init_completion(&adapter->stats_done);
- 	clear_bit(0, &adapter->resetting);
- 
- 	do {
+ 	iwl_pcie_rxq_restock(trans, rxq);
+ }
 -- 
 2.20.1
 
