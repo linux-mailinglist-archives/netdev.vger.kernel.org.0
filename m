@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7181182FF
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:05:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 279A311830E
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:09:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbfLJJFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 04:05:10 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:41059 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726883AbfLJJFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 04:05:09 -0500
-Received: by mail-ot1-f65.google.com with SMTP id r27so14837513otc.8;
-        Tue, 10 Dec 2019 01:05:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tPekY5KE1OlmnrXzeQ7lGwG+ABY09TaAXjZgxNUA778=;
-        b=WBSa2LJ3EdEs6rGos7ldZWofOEoOSC1OSIZSVnChUt70PVnO8gDYieB0yxZdMakA4s
-         bMHzLay3jD9rIWGYj9ippXd9Yb7itl99wfNQKHEthmf2L4M2jtJqj6ng9zGIB/eEZWHo
-         jNwJgNhzTO82JaXJkTHEyOHFTaXxdIc/zHbBjX6gV3OG/OyTVOti7U/CSrVCS9GQv0I6
-         AvP69lLh7P4B1XQ0eIMcD2tT2tPi3QcEugcn6vJHE0s75X374oK3TxUxY964DuwCHzsE
-         kgw1YEs2jrYRxC+WuMRMaT4/QOWGfnhJYO7CAP0ttTljc3pOS8CCFRZXxcTTV/vIhS0l
-         RKcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tPekY5KE1OlmnrXzeQ7lGwG+ABY09TaAXjZgxNUA778=;
-        b=CIt4zGBuWril8oec3Al/+YcuGtkkKWIsxYHoLMuywMK2KDlQ+tpqRDBInXwgRLML3+
-         8vUMA8pfnb5ElPyWTnWx6DAIZJQTJyadpwT0/N0/JxH1orONSXdsxK9Uxz9EGJmUvxRW
-         hLjJ+kcroC3BeyJFaEwTwVTLWCWhrgG4lcYbCN3K+mLhzXiPqo5ir06nQxgzdMvHXdQM
-         EbAvuiNaNMF9eR0ZjJK8husoqzan5xxxzER5jCWyOtX3KW4yWvRBtPWUGfCQKNIqCXt9
-         +GAc6csp5PFHrMzxLYzXWpUo91UDmS/qMtXBre0RZF8YRtxR8jft4kQ0+RFstKTcSxlq
-         ifww==
-X-Gm-Message-State: APjAAAWr22+/1Ntqzln6KGMjgVXYER9hIhbsoTAwDxeC7aFVUoXpsqKZ
-        lG5wI+RS3VZhy0dkAVibLHyR8T03Z9cIbLzDEorHTAF5rmI=
-X-Google-Smtp-Source: APXvYqy77a+errJwKDFsdbu0D8dhM21aesmoOUWSNreISh6WeugexkF+feJYESrc+OBLI8ffMt4S/2fGDrrCcVyrcMU=
-X-Received: by 2002:a9d:5c1:: with SMTP id 59mr25043961otd.192.1575968708856;
- Tue, 10 Dec 2019 01:05:08 -0800 (PST)
+        id S1727174AbfLJJIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 04:08:53 -0500
+Received: from a27-56.smtp-out.us-west-2.amazonses.com ([54.240.27.56]:42598
+        "EHLO a27-56.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727045AbfLJJIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 04:08:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1575968931;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
+        bh=fAhQaC8sJcNzBFJdml56yo1VHwYdbrT0AxCr3FdKVP4=;
+        b=LTit0VSro6eezsKkd0yJKAHbAOkpzct9tIrvYYlVv1N6WRAyoYDThKowOKJzz7HO
+        hjL8WTgi/xlb8QyfTgHfOR7hREUpm/oBHLWTyHL8SLvr+FjqMQtNF3aLe5vOudyT5d3
+        h3EZ3UILArkJx718/mt0ELU2sy1K1wW81TcRCKFw=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1575968931;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
+        bh=fAhQaC8sJcNzBFJdml56yo1VHwYdbrT0AxCr3FdKVP4=;
+        b=C+hIXG6h6/8VT5IVFRqUtt3+PFxgMKxcx9EYGu/+BnY0BB+tGanu5PG2D2SS8PwK
+        ehMQl2a1YLVWgr0wX70NCHTtx6vVSPagrY98uwvHWDtMd1pP/T9NFcDMn9qri579xe0
+        o090mWODoSoFOczptEnwRQklWottJ84B6PYjikZs=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 423C7C4479C
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Soeren Moch <smoch@web.de>
+Cc:     Wright Feng <wright.feng@cypress.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] brcmfmac: reset two D11 cores if chip has two D11 cores
+References: <20191209223822.27236-1-smoch@web.de>
+Date:   Tue, 10 Dec 2019 09:08:51 +0000
+In-Reply-To: <20191209223822.27236-1-smoch@web.de> (Soeren Moch's message of
+        "Mon, 9 Dec 2019 23:38:15 +0100")
+Message-ID: <0101016eef117ea9-8b775155-a37b-4174-99b7-c9d320c94b64-000000@us-west-2.amazonses.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
- <1575878189-31860-3-git-send-email-magnus.karlsson@intel.com> <20191210004254.m5cicj3tkc2bhlrd@kafai-mbp>
-In-Reply-To: <20191210004254.m5cicj3tkc2bhlrd@kafai-mbp>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 10 Dec 2019 10:04:58 +0100
-Message-ID: <CAJ8uoz3o23wbezwLpONts=qTdC1Fr9JK1hD=fkwF4snS2Jdqbg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 02/12] xsk: consolidate to one single cached
- producer pointer
-To:     Martin Lau <kafai@fb.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>,
-        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-SES-Outgoing: 2019.12.10-54.240.27.56
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 1:43 AM Martin Lau <kafai@fb.com> wrote:
+Soeren Moch <smoch@web.de> writes:
+
+> From: Wright Feng <wright.feng@cypress.com>
 >
-> On Mon, Dec 09, 2019 at 08:56:19AM +0100, Magnus Karlsson wrote:
-> > Currently, the xsk ring code has two cached producer pointers:
-> > prod_head and prod_tail. This patch consolidates these two into a
-> > single one called cached_prod to make the code simpler and easier to
-> > maintain. This will be in line with the user space part of the the
-> > code found in libbpf, that only uses a single cached pointer.
-> >
-> > The Rx path only uses the two top level functions
-> > xskq_produce_batch_desc and xskq_produce_flush_desc and they both use
-> > prod_head and never prod_tail. So just move them over to
-> > cached_prod.
-> >
-> > The Tx XDP_DRV path uses xskq_produce_addr_lazy and
-> > xskq_produce_flush_addr_n and unnecessarily operates on both prod_tail
-> > and prod_cons, so move them over to just use cached_prod by skipping
-> prod_cons or prod_head?
+> There are two D11 cores in RSDB chips like 4359. We have to reset two
+> D11 cores simutaneously before firmware download, or the firmware may
+> not be initialized correctly and cause "fw initialized failed" error.
+>
+> Signed-off-by: Wright Feng <wright.feng@cypress.com>
 
-Thanks. It should read prod_head. Will fix in a v2.
+Soeren's s-o-b missing at least in patches 1, 6 and 7. Please read:
 
-/Magnus
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#signed-off-by_missing
 
-> > the intermediate step of updating prod_tail.
-> >
-> > The Tx path in XDP_SKB mode uses xskq_reserve_addr and
-> > xskq_produce_addr. They currently use both cached pointers, but we can
-> > operate on the global producer pointer in xskq_produce_addr since it
-> > has to be updated anyway, thus eliminating the use of both cached
-> > pointers. We can also remove the xskq_nb_free in xskq_produce_addr
-> > since it is already called in xskq_reserve_addr. No need to do it
-> > twice.
-> >
-> > When there is only one cached producer pointer, we can also simplify
-> > xskq_nb_free by removing one argument.
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
