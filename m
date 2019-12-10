@@ -2,194 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44200118241
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 09:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B41AD118299
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 09:41:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbfLJIcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 03:32:00 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:55155 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726847AbfLJIb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 03:31:59 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ieavz-0001AG-Kt; Tue, 10 Dec 2019 09:31:55 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e] (unknown [IPv6:2a03:f580:87bc:d400:858e:130c:14c0:366e])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9DB4748C917;
-        Tue, 10 Dec 2019 08:31:53 +0000 (UTC)
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        id S1726957AbfLJIld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 03:41:33 -0500
+Received: from mail-eopbgr10082.outbound.protection.outlook.com ([40.107.1.82]:54944
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726847AbfLJIld (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 03:41:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AIcPB33ztiLcZLgeWOnLgpXHaUxAi1hTmXmL75CvMAxNWsktWgK/TZ0dAnRJfpBY9iBEtSHtfmsEkxr6t+dHpyJFJBYFXIgkcFrAoLTvYGGDOH5b4K3NfgDo0BFAR8W7PUNk33/PZzqqkOeM+KMJa4v5SyDlG4mVfq6BRpknXZfx65NdggZGvy39Yy/yrHMPmzLomh//ni2W1mY3D9frBqOT3GSLy3p6xBGg/+g08YYori2ZZGF3wu0xtygJz+BTqk0Dbqpd1nJ0UNVKr6kgDIxQVJROSgBD130snY0UDd/arBlM+3DvGzXZiosrCXmgR1fZEnrafMNR65uQvGUcQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8frb4hpyvmjeSBbKaQpj6VcyTWH0wITp6FShWXHu1IU=;
+ b=MBJ7UAeS5hrdFa5/ZrmriVAlpa1NDQpCJ5+6M+ZLbpPLfIRTz0aDZUzf2rlRtTHJLRk96sYTmx1fj2slxAJX37JDN5r4RE/NCTWnXwwqjq3XfhC6ZmfUcikDvMbDvImESdN/5IzkGMKY/x2axfVWauAUhwuUo/Vf3Zg+cTq5VZaHPMgKGizO4g9uqHievpVpRC9T2Gx2H5ufcj4BqKqvH4ITl/s98uIqSiGTWmmYL7Hrk7EMIfwc1g3kFPHXzL3YSRg8B5ZVg9zkAc+FRd+cC5+WFHPZyarI6lBj+3Lv5LOMtX/MhCynXTkdKKKJjeIY3t+eLndya9l9v2++gt9UGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8frb4hpyvmjeSBbKaQpj6VcyTWH0wITp6FShWXHu1IU=;
+ b=hA7FRJq+fmClxUzShvvQatgrSoDhzUNMp4YXJIuLNj88Y7o+oIdzVBMfruO7xFXwbvAYV4h1N2dJjq0w2ACEeEblpcoWcUSML2+ZUZRiX9ZHMnL4CbutVpe7ZjCtAXCWNIA7SetBUqt84lXAroH6ITm+tQ1T86eL91umhk4RVYo=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5561.eurprd04.prod.outlook.com (20.178.104.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.12; Tue, 10 Dec 2019 08:41:29 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
+ 08:41:29 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
         "sean@geanix.com" <sean@geanix.com>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
+CC:     dl-linux-imx <linux-imx@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 2/2] can: flexcan: disable clocks during stop mode
+Thread-Topic: [PATCH 2/2] can: flexcan: disable clocks during stop mode
+Thread-Index: AQHVrymtB+TSUJwNhE6xk7ucZQ3eC6ezCjKAgAACe9A=
+Date:   Tue, 10 Dec 2019 08:41:29 +0000
+Message-ID: <DB7PR04MB4618045D0E1135A514329AFFE65B0@DB7PR04MB4618.eurprd04.prod.outlook.com>
 References: <20191210071252.26165-1-qiangqing.zhang@nxp.com>
  <20191210071252.26165-2-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH 2/2] can: flexcan: disable clocks during stop mode
-Message-ID: <3ccfc7ac-b860-8254-ad39-66e2f50a5f3c@pengutronix.de>
-Date:   Tue, 10 Dec 2019 09:31:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ <3ccfc7ac-b860-8254-ad39-66e2f50a5f3c@pengutronix.de>
+In-Reply-To: <3ccfc7ac-b860-8254-ad39-66e2f50a5f3c@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 39440161-e906-43b5-a1e3-08d77d4cc05f
+x-ms-traffictypediagnostic: DB7PR04MB5561:|DB7PR04MB5561:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB5561C6B4D7E9E9A2F4D04E95E65B0@DB7PR04MB5561.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1265;
+x-forefront-prvs: 02475B2A01
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(189003)(199004)(13464003)(66446008)(76116006)(64756008)(53546011)(33656002)(186003)(26005)(8676002)(6506007)(66556008)(71190400001)(7696005)(66476007)(966005)(478600001)(86362001)(110136005)(66946007)(54906003)(316002)(2906002)(52536014)(55016002)(305945005)(9686003)(8936002)(229853002)(71200400001)(5660300002)(4326008)(81166006)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5561;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vjIw0qJjxQjnKApzRf67qFOO4Y6pyqVghHTUAGNiRBUYrSn2ROQUA9r03pAIl7R/v4Q2EYE6aGWy+ie56JoNcc2zPwkqR4ZEgKDZjJq0hzuFiZ3i6fO/HH1NnYiCmf5WXf8gYUcRZwLsAJCjr5JdVM4QVNR4fDbZY+Zykpaiz3QhKrN607ybrHiPXi8PYv7B1gRj7BZabaY8a1TxfO3mbEIte8X1kU0VAVTjCJL5xq7fuzL7l16LlkQMogxwTCpbogVCpO3wP9VcNWdINj6Wgn/Qz+/5yhbq/sEvf6vcMjXdkOvNlr1onKqKFgyY/hAr7aPGYLCKoWhMObCYfowfVUToiyvPDrCyKKhB/dAsklv6Uu/wBNvWRaMUrG8S+gECH/ZIM1tphkFaw1ftUfvLTIkv7hXGBKvl2V4OYUyhRBUsbLfP+4Dw5HKH7IbYDRdXJ44lPi3DqYgCXpMHfZBzKHZ+EW8Zc1oYfje2vCx9vhtGA8IrORHTIgehD3w6C2xZ1yOoMTvQH13L7eNuS95dYK1C0pipMu3zQsomTauhULI=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20191210071252.26165-2-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="lnW7fl0OROBhIE49JrvV35DXoVT6kEWG6"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39440161-e906-43b5-a1e3-08d77d4cc05f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 08:41:29.4184
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aXwoTT7q0ITOxwnDeiAT+LbgXwr/CAy1xIIarIOgo0t7DhDo0wCxayBtj2qFIu0a/yyG//Xcma9c41z2C93GxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5561
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---lnW7fl0OROBhIE49JrvV35DXoVT6kEWG6
-Content-Type: multipart/mixed; boundary="jK4mD1wBQRjuOpIGsEtNuO9txxU9hNrzI";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>, "sean@geanix.com"
- <sean@geanix.com>, "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <3ccfc7ac-b860-8254-ad39-66e2f50a5f3c@pengutronix.de>
-Subject: Re: [PATCH 2/2] can: flexcan: disable clocks during stop mode
-References: <20191210071252.26165-1-qiangqing.zhang@nxp.com>
- <20191210071252.26165-2-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191210071252.26165-2-qiangqing.zhang@nxp.com>
-
---jK4mD1wBQRjuOpIGsEtNuO9txxU9hNrzI
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 12/10/19 8:16 AM, Joakim Zhang wrote:
-> Disable clocks during CAN in stop mode.
->=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
->  drivers/net/can/flexcan.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 6c1ccf9f6c08..d767f85c80d3 100644
-> --- a/drivers/net/can/flexcan.c
-> +++ b/drivers/net/can/flexcan.c
-> @@ -1786,10 +1786,16 @@ static int __maybe_unused flexcan_noirq_suspend=
-(struct device *device)
->  {
->  	struct net_device *dev =3D dev_get_drvdata(device);
->  	struct flexcan_priv *priv =3D netdev_priv(dev);
-> +	int err;
-> =20
-> -	if (netif_running(dev) && device_may_wakeup(device))
-> +	if (netif_running(dev) && device_may_wakeup(device)) {
->  		flexcan_enable_wakeup_irq(priv, true);
-> =20
-> +		err =3D pm_runtime_force_suspend(device);
-> +		if (err)
-> +			return err;
-> +	}
-
-What about moving the pm_runtime_force_suspend() call for both cases
-"device_may_wakeup()" and "!device_may_wakeup()" into the
-flexcan_noirq_suspend() handler?
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---jK4mD1wBQRjuOpIGsEtNuO9txxU9hNrzI--
-
---lnW7fl0OROBhIE49JrvV35DXoVT6kEWG6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3vV/MACgkQWsYho5Hk
-nSC9FQf/c5s7hkfr8XM4tHz8Oet950Rfzdp94c/sbauUbbXx5VmVnd+IpsLbpiga
-WhsSOrEHZBFU++Pk+AP323n3yqbbou9X5g7G/oV5d/5Z/o5gAtHPzvhuGcg5HEdZ
-uzUoVc14SY8QvYhUD0CU5bcmMYq6QhYf/9ySGWwsSQaRy6s5RDmbzFfooZ0pFjL0
-BVPdoXZHS74s8N0OQi0HeJvYXIDopzUcTt/1nLunFIEWdDkjzGcXamMBjgJI2QBg
-289oIFNwm89y+uM0mS1EAOi02hbFnEiJV7lvRCw9GIsuqpvHZA1PVb3M7sGp+bWo
-Do7jAhfa2jUW0WzOBaBXJrYKR8fCTQ==
-=uXSH
------END PGP SIGNATURE-----
-
---lnW7fl0OROBhIE49JrvV35DXoVT6kEWG6--
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMTnlubQxMuaciDEw5pelIDE2OjMyDQo+
+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsgc2VhbkBnZWFuaXgu
+Y29tOw0KPiBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnDQo+IENjOiBkbC1saW51eC1pbXggPGxp
+bnV4LWlteEBueHAuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTog
+W1BBVENIIDIvMl0gY2FuOiBmbGV4Y2FuOiBkaXNhYmxlIGNsb2NrcyBkdXJpbmcgc3RvcCBtb2Rl
+DQo+IA0KPiBPbiAxMi8xMC8xOSA4OjE2IEFNLCBKb2FraW0gWmhhbmcgd3JvdGU6DQo+ID4gRGlz
+YWJsZSBjbG9ja3MgZHVyaW5nIENBTiBpbiBzdG9wIG1vZGUuDQo+ID4NCj4gPiBTaWduZWQtb2Zm
+LWJ5OiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+
+ICBkcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jIHwgMTMgKysrKysrKysrKysrLQ0KPiA+ICAxIGZp
+bGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+ID4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMgYi9kcml2ZXJzL25ldC9jYW4vZmxl
+eGNhbi5jDQo+ID4gaW5kZXggNmMxY2NmOWY2YzA4Li5kNzY3Zjg1YzgwZDMgMTAwNjQ0DQo+ID4g
+LS0tIGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2Nh
+bi9mbGV4Y2FuLmMNCj4gPiBAQCAtMTc4NiwxMCArMTc4NiwxNiBAQCBzdGF0aWMgaW50IF9fbWF5
+YmVfdW51c2VkDQo+ID4gZmxleGNhbl9ub2lycV9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldmlj
+ZSkgIHsNCj4gPiAgCXN0cnVjdCBuZXRfZGV2aWNlICpkZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2
+aWNlKTsNCj4gPiAgCXN0cnVjdCBmbGV4Y2FuX3ByaXYgKnByaXYgPSBuZXRkZXZfcHJpdihkZXYp
+Ow0KPiA+ICsJaW50IGVycjsNCj4gPg0KPiA+IC0JaWYgKG5ldGlmX3J1bm5pbmcoZGV2KSAmJiBk
+ZXZpY2VfbWF5X3dha2V1cChkZXZpY2UpKQ0KPiA+ICsJaWYgKG5ldGlmX3J1bm5pbmcoZGV2KSAm
+JiBkZXZpY2VfbWF5X3dha2V1cChkZXZpY2UpKSB7DQo+ID4gIAkJZmxleGNhbl9lbmFibGVfd2Fr
+ZXVwX2lycShwcml2LCB0cnVlKTsNCj4gPg0KPiA+ICsJCWVyciA9IHBtX3J1bnRpbWVfZm9yY2Vf
+c3VzcGVuZChkZXZpY2UpOw0KPiA+ICsJCWlmIChlcnIpDQo+ID4gKwkJCXJldHVybiBlcnI7DQo+
+ID4gKwl9DQo+IA0KPiBXaGF0IGFib3V0IG1vdmluZyB0aGUgcG1fcnVudGltZV9mb3JjZV9zdXNw
+ZW5kKCkgY2FsbCBmb3IgYm90aCBjYXNlcw0KPiAiZGV2aWNlX21heV93YWtldXAoKSIgYW5kICIh
+ZGV2aWNlX21heV93YWtldXAoKSIgaW50byB0aGUNCj4gZmxleGNhbl9ub2lycV9zdXNwZW5kKCkg
+aGFuZGxlcj8NCg0KU291bmRzIGdyZWF0ISBJIHdpbGwgZG8gaXQgaW4gVjIuDQoNCkJlc3QgUmVn
+YXJkcywNCkpvYWtpbSBaaGFuZw0KPiBNYXJjDQo+IA0KPiAtLQ0KPiBQZW5ndXRyb25peCBlLksu
+ICAgICAgICAgICAgICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAgICAgICB8DQo+IEVtYmVk
+ZGVkIExpbnV4ICAgICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0cm9uaXguZGUg
+IHwNCj4gVmVydHJldHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQaG9uZTogKzQ5LTIzMS0y
+ODI2LTkyNCAgICAgfA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4NiB8IEZheDog
+ICArNDktNTEyMS0yMDY5MTctNTU1NSB8DQoNCg==
