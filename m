@@ -2,136 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C64AF1190D5
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7041190E2
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 20:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfLJTjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:39:35 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46657 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfLJTje (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:39:34 -0500
-Received: by mail-qt1-f196.google.com with SMTP id 38so3852810qtb.13
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 11:39:34 -0800 (PST)
+        id S1726646AbfLJTlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 14:41:16 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:33037 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbfLJTlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:41:16 -0500
+Received: by mail-ot1-f66.google.com with SMTP id d17so16658064otc.0;
+        Tue, 10 Dec 2019 11:41:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=lhiNdVC12nCt8MlphHeNeXsppJHwJXSdVTCOLb3ahXE=;
-        b=mVxM7iSVV/fJa7CCTSh9gS1EjUUhQtROEIUQEHdzVn1zNAU3PG0vNxRzPjSWofjHgZ
-         ugWkGOdN4LCE8DKbwHJL0DJt24YFP4bxZXjgApONHGBb5y8IJmVwx574VvhcVHf2sBlL
-         HB60b42pfla8/r1sKziGjeGJv5oce1uCdqEij3r6hN+uK5UqDIBMLwyb/wvCHsGNo5l5
-         RrS+sVIJUmgSJPgnU3BoP6UOEiMRvQn3RnrYdoNYsK6/WJ6De1qrREgshWFvxG3WCsCW
-         cmov1+bx9aKLaloZm+BQP31YIJOJr4vX+soePPXfHPgO8GdjDniAPsZZwoDf1VoTMcyv
-         GexA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=R83QtXeO25iJn8IIxnah9iFn17pE1UtDQO4xFZfF6uY=;
+        b=cG5STPDbLQSxbyR1qFBtw0bm8F8a+PZv4SlrIwwgoIhOh87cC39hofilNVzE6l87gR
+         pvJe8RsQB5yKofwnt0nmWhQ1r8XDDHK/S74AbpArymg5/6++VKraI6CNa/VB4SXqWGNP
+         J7+gjQZpbV7CnqnfIWxsqOyT3891pAf2SjkTTlohHLSn8MnJhx3C1xFosPGTBcEXkAHm
+         Mdve8NsOcbpVJc36EdqCRzPVUpLA4O4gFEJmTulj+KHRXXxqYTkZM3fCRs6f2SL+BAvw
+         YDv5ibI77J2z3lXSkPfem+cQrGZg6pu1XUXyrMUfpEPXsW2cLqYLNh5H2r0z2fQF+VEH
+         yIKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=lhiNdVC12nCt8MlphHeNeXsppJHwJXSdVTCOLb3ahXE=;
-        b=ou88SxPj+IWBmkIztW/hjmYDgSCjM9DjggWq+kc/iW8hGVtXPR7iEoQ1+SXdaVryn0
-         SSlPi6TwL24GOyfhTe8gNIAYlkv28PYIoSuxuv5HCZNhgDgx/qlmM5m7CHTIRMtmLyuy
-         qu1WPnDAp/V8ehOLmLe7F2adZCTVZu18h8tM/RfitOJwPwn1pdZADJyYnMJ4Iz3OlkHD
-         N+7nH+R2vYLDfn5wAFRBHj98jN7nyndFm+j/W+dM8LlLX8KVknQal8VT5nJK/jcTJ70a
-         WBNdohdrGF6znEklbGzEPiXX2Gn+eOh7XWDqaSEkmRccPk++AVOsAt0BIyeHlEnY5Zll
-         wCkQ==
-X-Gm-Message-State: APjAAAXiidUXOy3yJ1D5Tz/t/bFm/lUts1/0HFX2Ajrw/uQVuqZQl38p
-        FIceLF5A1t5T+tupDyC/58utG3rwZnE=
-X-Google-Smtp-Source: APXvYqwU1xxAUS2fWCQNFh42v/nXu9DqiiWlsyq9lJNmp5wvKyArMv0ENCgUYFRU+5XyEjTRYnAs2w==
-X-Received: by 2002:ac8:664a:: with SMTP id j10mr31595333qtp.70.1576006773764;
-        Tue, 10 Dec 2019 11:39:33 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id o7sm1211842qkd.119.2019.12.10.11.39.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 11:39:32 -0800 (PST)
-Date:   Tue, 10 Dec 2019 14:39:31 -0500
-Message-ID: <20191210143931.GF1344570@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next] net: bridge: add STP xstats
-In-Reply-To: <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
-References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
- <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=R83QtXeO25iJn8IIxnah9iFn17pE1UtDQO4xFZfF6uY=;
+        b=e9lYDabNL2j+4jCE/xG9M9kgVjwrxrNq3qRBwl/22EUHdiA7RqyKBoTpnMukL93RD7
+         ldlo3W4WvC4D8SDjFoj20LykgUC7yh6xfGhjD5FHueFyzVEbVHwdfSWSwm+2ogUCSqyO
+         6v8kFWx6U16EI6NjvxzjECE2JoIPyJIw/s8IE++/qQEiyGQhRpNBEvUXxffali3UMkyj
+         aUsIm+t/S0rkitsN7lW6JHPW1VwlFLXYSSXJtVPBPbgibpU3FhTpVV23wAvEQqJEljgr
+         Wuon5dV0/Xugc6M5/tulc/gRiyxxoyzEq54TBry0RLx9fgZHnDtTYsURr0ln1pCGlhZ/
+         ZefQ==
+X-Gm-Message-State: APjAAAXSCEufAGcVWN78qtpN+wF3l9Y5SyvtmHcJvsjNrX12LyRlmwfL
+        RaB/9QmkPLrqAo30Fqu2mhxO64lfeqI=
+X-Google-Smtp-Source: APXvYqwj7IlFzd7fTg//b46vTz/Bnh16nomGJYdN53u03HEpszXsPKwNobIL27/F2dZstEw06Uwqgg==
+X-Received: by 2002:a05:6830:1492:: with SMTP id s18mr27774328otq.285.1576006875389;
+        Tue, 10 Dec 2019 11:41:15 -0800 (PST)
+Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id f85sm1758884oib.38.2019.12.10.11.41.14
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 Dec 2019 11:41:14 -0800 (PST)
+Date:   Tue, 10 Dec 2019 12:41:13 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] net: tulip: Adjust indentation in
+ {dmfe,uli526x}_init_module
+Message-ID: <20191210194113.GA10106@ubuntu-m2-xlarge-x86>
+References: <20191209211623.44166-1-natechancellor@gmail.com>
+ <20191209.202920.1031568566965416683.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191209.202920.1031568566965416683.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
-
-On Tue, 10 Dec 2019 09:49:59 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-
-> Why did you send the bridge patch again ? Does it have any changes ?
-
-The second iproute2 patch does not include the include guards update, but
-I kept the bridge_stp_stats structure and the BRIDGE_XSTATS_STP definition
-otherwise iproute2 wouldn't compile.
-
+On Mon, Dec 09, 2019 at 08:29:20PM -0800, David Miller wrote:
+> From: Nathan Chancellor <natechancellor@gmail.com>
+> Date: Mon,  9 Dec 2019 14:16:23 -0700
 > 
-> Why do you need percpu ? All of these seem to be incremented with the
-> bridge lock held. A few more comments below.
-
-All other xstats are incremented percpu, I simply followed the pattern.
-
-> >  	struct net_bridge_port *p
-> >  		= container_of(kobj, struct net_bridge_port, kobj);
-> > +	free_percpu(p->stp_stats);
+> > Clang warns:
+> > 
+> > ../drivers/net/ethernet/dec/tulip/uli526x.c:1812:3: warning: misleading
+> > indentation; statement is not part of the previous 'if'
+> > [-Wmisleading-indentation]
+> >         switch (mode) {
+> >         ^
+> > ../drivers/net/ethernet/dec/tulip/uli526x.c:1809:2: note: previous
+> > statement is here
+> >         if (cr6set)
+> >         ^
+> > 1 warning generated.
+> > 
+> > ../drivers/net/ethernet/dec/tulip/dmfe.c:2217:3: warning: misleading
+> > indentation; statement is not part of the previous 'if'
+> > [-Wmisleading-indentation]
+> >         switch(mode) {
+> >         ^
+> > ../drivers/net/ethernet/dec/tulip/dmfe.c:2214:2: note: previous
+> > statement is here
+> >         if (cr6set)
+> >         ^
+> > 1 warning generated.
+> > 
+> > This warning occurs because there is a space before the tab on these
+> > lines. Remove them so that the indentation is consistent with the Linux
+> > kernel coding style and clang no longer warns.
+> > 
+> > While we are here, adjust the default block in dmfe_init_module to have
+> > a proper break between the label and assignment and add a space between
+> > the switch and opening parentheses to avoid a checkpatch warning.
+> > 
+> > Fixes: e1c3e5014040 ("[PATCH] initialisation cleanup for ULI526x-net-driver")
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/795
+> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 > 
-> Please leave a new line between local var declaration and the code. I know
-> it was missing, but you can add it now. :)
+> Applied, but it's really crummy that the tool gets tripped up by the
+> fact that a space preceeds the TAB.  It's what the code visually looks
+> like, not what exact kinds of SPACE characters were used to get there.
 
-OK.
+I agree. There is a follow up patch from the author of the warning that
+claims to alieviate some of these but that is still in discussion and as
+far as I understand it, it won't fix all of them so I'm just dealing
+with all of them on the Linux side.
 
-> > +	if (p) {
-> > +		struct bridge_stp_xstats xstats;
-> 
-> Please rename the local var here, using just xstats is misleading.
-> Maybe stp_xstats ?
+https://reviews.llvm.org/D71037
 
-This isn't misleading to me since its scope is limited to the current block
-and not the entire function. The block above dumping the VLAN xstats is
-using a local "struct br_vlan_stats stats" variable for example.
-
-> 
-> > +
-> > +		br_stp_get_xstats(p, &xstats);
-> > +
-> > +		if (nla_put(skb, BRIDGE_XSTATS_STP, sizeof(xstats), &xstats))
-> > +			goto nla_put_failure;
-> 
-> Could you please follow how mcast xstats are dumped and do something similar ?
-> It'd be nice to have similar code to audit.
-
-Sure. I would also love to have easily auditable code in net/bridge. For
-the bridge STP xstats I followed the VLAN xstats code above, which does:
-
-    if (nla_put(skb, BRIDGE_XSTATS_VLAN, sizeof(vxi), &vxi))
-        goto nla_put_failure;
-
-But I can change the STP xstats code to the following:
-
-    if (p) {
-        nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
-                                sizeof(struct bridge_stp_xstats),
-                                BRIDGE_XSTATS_PAD);
-        if (!nla)
-            goto nla_put_failure;
-
-        br_stp_get_xstats(p, nla_data(nla));
-    }
-
-Would that be preferred?
-
-
-Thanks,
-
-	Vivien
+Thanks for picking them up!
+Nathan
