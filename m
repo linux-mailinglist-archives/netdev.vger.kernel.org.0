@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B81C3118F50
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8839E118F52
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbfLJRvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:51:10 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:42803 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbfLJRvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:51:10 -0500
-Received: by mail-pj1-f65.google.com with SMTP id o11so7683103pjp.9
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:51:09 -0800 (PST)
+        id S1727693AbfLJRvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:51:25 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:45598 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727520AbfLJRvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:51:24 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 59so16257601otp.12
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:51:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=QXn1RGPwZ6zXKbwhoYm49pCMZGeX4H/5cWHqgx7PCfM=;
-        b=IpiSSd7EmETipQvWoJpINVoRETxT/2c+DqXroUQCDRSFC1qcm6iIT5h9CzBpIBcJTe
-         YYJBzvl4ak2xqjymy/vaFJAv3eX383SRXgMKWWT/rEUFG6594OHOQflAPXdCIgVLwD07
-         F470FLKeB4NQy1dISeww6JxRuHhE5uzASfv7hOohNdsp7AL2o0of7erlhaYInWg0atFe
-         2YIBqzMeon+NVBG9UFuh0nyYceM56KeNiAMr2aP2qth+c00vgWtXheK+sBOJWXAbywfh
-         vhg50TUEhalnUnT3B2idrNxlbg4gqnCxfNgSj/r0ig2/uXDO3bjU5h7GMQjbDqrcO61e
-         wvpw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OLDxXwGsHcXK/4MIow1/s2R5pg50DmOvyjuxK3g9wtU=;
+        b=ivsPwB1YTGoIqwpelldM6752S5Z3ZLBx8nEuNVlEjk4B/TTkZmCjast27dQ0FXwecW
+         Pen2BRBdXB/75GSmtdEEV+lF9iyqgTBkQSHbj4RyWDUKm/Yhx1YjowNV77BwEhh577t4
+         9lKrfi4JhS1rJ33z17ZDtPqWiWntpERSfWLJlVbWgrGJf4Kl+fLQFoTF06fgeYhhQU9U
+         piHCWHAD5N3Kjkx/Z065UO6A+0XdHCA+4rPms3NqkVqk+1sjj5s8LgR25lejSsjpkkVh
+         dvsCgBGQ2kY11aPyCnDyiI0frsKbejdL/6iP5S/kWfwyPv9ZtXKeMCTJ2ntY4WaM3jWT
+         gyPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=QXn1RGPwZ6zXKbwhoYm49pCMZGeX4H/5cWHqgx7PCfM=;
-        b=jNX7qAeoAbPzN9KHZ9Oxpg0HWwQQdb/Jf61Uud7/AXTtSX4lJuBAvl2XgTfE1DIpMN
-         wzkBgmP0DCRZBgNJwTFrkTgKifnydIYD1MVxQFW28P/K2WW/t6xhyliSv9kXwA/E4PMB
-         sg1jUfTwOp1CNKpoMahjpBffq+BP8ga6k/aFijjgbYqKFrr59RYO7b/BhEjQ+OVgDSLz
-         lvlHu4V/EclgYFXM3BBXSChGYVSEZSc8xtKVUiI4nO+6kIIvsCvmcem41m9H/stNN99E
-         5U+qaNwg87sssExCQxBaQewLDVT438KH29lCT8eQCs83n2i/0wK3XXA3e2c0Eoq2wSUd
-         ys+w==
-X-Gm-Message-State: APjAAAXXM3jkPgUtkod0JzyRwr8cxyGqkXdSYlTj+yeJ9FSxwQhJsaDm
-        BPT/HplnBhUVV13cH4VAc+I2FA==
-X-Google-Smtp-Source: APXvYqz/h9LdkRG/9mdmSb3sZOuOaDargusiL1V6eXZ2gP9seg20uZFSaxbroaBIHgneLQTU7NTyPA==
-X-Received: by 2002:a17:90a:e98d:: with SMTP id v13mr6825670pjy.107.1576000268735;
-        Tue, 10 Dec 2019 09:51:08 -0800 (PST)
-Received: from cakuba.netronome.com ([2601:646:8e00:e18::3])
-        by smtp.gmail.com with ESMTPSA id i26sm4057278pfr.151.2019.12.10.09.51.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 09:51:08 -0800 (PST)
-Date:   Tue, 10 Dec 2019 09:51:05 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/5] rtnetlink: provide permanent hardware
- address in RTM_NEWLINK
-Message-ID: <20191210095105.1f0008f5@cakuba.netronome.com>
-In-Reply-To: <7c28b1aa87436515de39e04206db36f6f374dc2f.1575982069.git.mkubecek@suse.cz>
-References: <cover.1575982069.git.mkubecek@suse.cz>
-        <7c28b1aa87436515de39e04206db36f6f374dc2f.1575982069.git.mkubecek@suse.cz>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OLDxXwGsHcXK/4MIow1/s2R5pg50DmOvyjuxK3g9wtU=;
+        b=dZtQ1ngGTc9v/2cfYB0BBs3efII77h/TSKuNoI1RJo+f/9/iewLtAbC+ZD9eJfTVHX
+         0QlRj1ILlyLw5xQv2kvMxR0vekhjiP5PLmdc0N7/5K7ywAN22mpJOcZxj1byB1uy897r
+         ZBLOp4mX2EvUiGmLivPSJVV7VMcnkMr06hawTEXjRr5DD61/39v/ZduF4nJW3RcmXYU8
+         mImKl1XoWkUTWxK7D9cY3Gqj7S8IGfq0a7e/x4DkGcTmZE65AySnPUig5zbe43x3T2S7
+         FPIdT9RhyS1I57f6vuLYOdruoS1g/uIYx3xI1LLT6/K8NpEWayHiPekewGlPnuRS3M/K
+         Z4HQ==
+X-Gm-Message-State: APjAAAUj8cZbXOg8tPG0uBZAhtW8ZKPkpYxMhqY1bDcRxyOpqcJXNy68
+        qM4xGqYnGBLOsRYj9si/gcI9/g==
+X-Google-Smtp-Source: APXvYqwjZ7m8GoTodEQ8prrcN+kuiLnooUkBMxA02f4sb6i33XAgDNikDdssy6EDIffCBNIuNTjuOA==
+X-Received: by 2002:a9d:6b06:: with SMTP id g6mr26746974otp.93.1576000283694;
+        Tue, 10 Dec 2019 09:51:23 -0800 (PST)
+Received: from ziepe.ca ([217.140.111.136])
+        by smtp.gmail.com with ESMTPSA id e17sm1628192otq.58.2019.12.10.09.51.22
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 Dec 2019 09:51:22 -0800 (PST)
+Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iejfN-00001O-El; Tue, 10 Dec 2019 13:51:21 -0400
+Date:   Tue, 10 Dec 2019 13:51:21 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        gregkh@linuxfoundation.org, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com,
+        Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [PATCH v3 01/20] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191210175121.GC46@ziepe.ca>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
+ <20191210064929.GJ67461@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191210064929.GJ67461@unreal>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 14:07:53 +0100 (CET), Michal Kubecek wrote:
-> @@ -1822,6 +1826,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX=
-+1] =3D {
->  	[IFLA_PROP_LIST]	=3D { .type =3D NLA_NESTED },
->  	[IFLA_ALT_IFNAME]	=3D { .type =3D NLA_STRING,
->  				    .len =3D ALTIFNAMSIZ - 1 },
-> +	[IFLA_PERM_ADDRESS]	=3D { .type =3D NLA_REJECT },
->  };
-> =20
->  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] =3D {
+On Tue, Dec 10, 2019 at 08:49:29AM +0200, Leon Romanovsky wrote:
 
-Jiri, I just noticed ifla_policy didn't get strict_start_type set when
-ALT_IFNAME was added, should we add it in net? =F0=9F=A4=94
+> > +MODULE_LICENSE("GPL v2");
+> > +MODULE_DESCRIPTION("Lightweight Virtual Bus");
+> > +MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
+> > +MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
+> > +
+> > +static DEFINE_IDA(virtbus_dev_ida);
+> 
+> I was under impression that usage of IDA interface is discouraged in favor
+> of direct calls to XArray.
+
+IDA is OK, idr should be xarray
+
+Jason
