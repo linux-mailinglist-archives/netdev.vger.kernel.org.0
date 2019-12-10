@@ -2,240 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF00B1180C3
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 07:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC8441180D4
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 07:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727208AbfLJGtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 01:49:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726950AbfLJGte (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 01:49:34 -0500
-Received: from localhost (unknown [5.29.147.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88C18206E0;
-        Tue, 10 Dec 2019 06:49:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575960573;
-        bh=CA9kChyryLNNhjVCKVAZvBo5UGCZZE2+iF4ONtRBcH8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PV2pQiQr7OiFekpv+APh+hzsEWq+EdaBWOH9MRj/Jz547maXJcIaUaKV3JjISB46n
-         oZRx/mVujOIHQ9V8jIAC+Stq+4mJ5oeTJHcLmH/i4JxGNs43lgQ/29tkCUmWf2dNGy
-         wdC7uSpGT4ZvdpzCRg5eCzzlOdsBM+lzjuXDg4Sg=
-Date:   Tue, 10 Dec 2019 08:49:29 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, jgg@ziepe.ca, parav@mellanox.com,
-        Kiran Patil <kiran.patil@intel.com>
-Subject: Re: [PATCH v3 01/20] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191210064929.GJ67461@unreal>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
+        id S1727326AbfLJGxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 01:53:20 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:33965 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727299AbfLJGxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 01:53:20 -0500
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 8FCC641A06;
+        Tue, 10 Dec 2019 14:53:18 +0800 (CST)
+Subject: Re: Question about flow table offload in mlx5e
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1574147331-31096-1-git-send-email-wenxu@ucloud.cn>
+ <VI1PR05MB34224DF57470AE3CC46F2CACCF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <746ba973-3c58-31f8-42ce-db880fd1d8f4@ucloud.cn>
+ <VI1PR05MB3422BEDAB38E12C26DF7C6C6CF4E0@VI1PR05MB3422.eurprd05.prod.outlook.com>
+ <64285654-bc9a-c76e-5875-dc6e434dc4d4@ucloud.cn>
+ <AM4PR05MB3411EE998E04B7AA9E0081F0CF4B0@AM4PR05MB3411.eurprd05.prod.outlook.com>
+ <1b13e159-1030-2ea3-f69e-578041504ee6@ucloud.cn>
+ <84874b42-c525-2149-539d-e7510d15f6a6@mellanox.com>
+ <dc72770c-8bc3-d302-be73-f19f9bbe269f@ucloud.cn>
+ <057b0ab1-5ce3-61f0-a59e-1c316e414c84@mellanox.com>
+ <4ecddff0-5ba4-51f7-1544-3d76d43b6b39@mellanox.com>
+ <5ce27064-97ee-a36d-8f20-10a0afe739cf@ucloud.cn>
+ <c06ff5a3-e099-9476-7085-1cd72a9ffc56@ucloud.cn>
+ <e8fadfa2-0145-097b-9779-b5263ff3d7b7@mellanox.com>
+ <052c1c18-89cb-53ed-344c-decd4d296db3@mellanox.com>
+ <c042b39b-3db8-3a61-841d-da930a912a79@ucloud.cn>
+ <01602d82-b46c-07d2-dea7-baa3545db80f@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <b2c878e0-bf8a-5fa5-77d8-598291137bf5@ucloud.cn>
+Date:   Tue, 10 Dec 2019 14:53:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <01602d82-b46c-07d2-dea7-baa3545db80f@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUhMS0tLSktMTE1OSVlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MU06Ohw5Tzg5PUk5ISsOKj8c
+        GjQKCh5VSlVKTkxOQk1LTEJDTEpNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBSENNQjcG
+X-HM-Tid: 0a6eee9565c82086kuqy8fcc641a06
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 02:49:16PM -0800, Jeff Kirsher wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
->
-> This is the initial implementation of the virtual bus,
-> virtbus_device and virtbus_driver.  The virtual bus is
-> a software based bus intended to support registering
-> virtbus_devices and virtbus_drivers and provide matching
-> between them and probing of the registered drivers.
->
-> The primary purpose of the virtual bus is to provide
-> matching services to allow the use of a container_of
-> to get access to a piece of desired data.  This will
-> allow two separate kernel objects to match up and
-> start communication.
->
-> The bus will support probe/remove shutdown and
-> suspend/resume callbacks.
->
-> Kconfig and Makefile alterations are included
->
-> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> ---
->  Documentation/driver-api/virtual_bus.rst      |  76 +++++
->  drivers/bus/Kconfig                           |  12 +
->  drivers/bus/Makefile                          |   1 +
->  drivers/bus/virtual_bus.c                     | 295 ++++++++++++++++++
->  include/linux/mod_devicetable.h               |   8 +
->  include/linux/virtual_bus.h                   |  45 +++
->  scripts/mod/devicetable-offsets.c             |   3 +
->  scripts/mod/file2alias.c                      |   8 +
->  .../virtual_bus/virtual_bus_dev/Makefile      |   7 +
->  .../virtual_bus_dev/virtual_bus_dev.c         |  60 ++++
->  .../virtual_bus/virtual_bus_drv/Makefile      |   7 +
->  .../virtual_bus_drv/virtual_bus_drv.c         | 115 +++++++
->  12 files changed, 637 insertions(+)
->  create mode 100644 Documentation/driver-api/virtual_bus.rst
->  create mode 100644 drivers/bus/virtual_bus.c
->  create mode 100644 include/linux/virtual_bus.h
->  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_dev/Makefile
->  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_dev/virtual_bus_dev.c
->  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_drv/Makefile
->  create mode 100644 tools/testing/selftests/virtual_bus/virtual_bus_drv/virtual_bus_drv.c
->
-> diff --git a/Documentation/driver-api/virtual_bus.rst b/Documentation/driver-api/virtual_bus.rst
-> new file mode 100644
-> index 000000000000..db8c34fcafe8
-> --- /dev/null
-> +++ b/Documentation/driver-api/virtual_bus.rst
-> @@ -0,0 +1,76 @@
-> +===============================
-> +Virtual Bus Devices and Drivers
-> +===============================
-> +
-> +See <linux/virtual_bus.h> for the models for virtbus_device and virtbus_driver.
-> +This bus is meant to be a lightweight software based bus to attach generic
-> +devices and drivers to so that a chunk of data can be passed between them.
-> +
-> +One use case example is an rdma driver needing to connect with several
-> +different types of PCI LAN devices to be able to request resources from
-> +them (queue sets).  Each LAN driver that supports rdma will register a
-> +virtbus_device on the virtual bus for each physical function.  The rdma
-> +driver will register as a virtbus_driver on the virtual bus to be
-> +matched up with multiple virtbus_devices and receive a pointer to a
-> +struct containing the callbacks that the PCI LAN drivers support for
-> +registering with them.
-> +
-> +Sections in this document:
-> +        Virtbus devices
-> +        Virtbus drivers
-> +        Device Enumeration
-> +        Device naming and driver binding
-> +        Virtual Bus API entry points
-> +
-> +Virtbus devices
-> +~~~~~~~~~~~~~~~
-> +Virtbus_devices are lightweight objects that support the minimal device
-> +functionality.  Devices will accept a name, and then an automatically
-> +generated index is concatenated onto it for the virtbus_device->name.
-> +
-> +The virtbus_driver and virtbus_device creators need to both have access
-> +to a predefined virtbus_device_object struct that will look like the
-> +following:
-> +     struct virtbus_object {
-> +          struct virtbus_device vdev;
-> +          struct foo_type foo;
-> +     }
-> +
-> +Then when the virtbus_driver's probe is called with the virtbus_device
-> +as a parameter, it can do a container_of on the virtbus_device to get
-> +to the struct foo_type foo that it cares about.
-> +
-> +Virtbus drivers
-> +~~~~~~~~~~~~~~~
-> +Virtbus drivers register with the virtual bus to be matched with virtbus
-> +devices.  They expect to be registered with a probe and remove callback,
-> +and also support shutdown, suspend, and resume callbacks.  They otherwise
-> +follow the standard driver behavior of having discovery and enumeration
-> +handled in the bus infrastructure.
-> +
-> +Virtbus drivers register themselves with the API entry point virtbus_drv_reg
-> +and unregister with virtbus_drv_unreg.
-> +
-> +Device Enumeration
-> +~~~~~~~~~~~~~~~~~~
-> +Enumeration is handled automatically by the bus infrastructure via the
-> +ida_simple methods.
-> +
-> +Device naming and driver binding
-> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> +The virtbus_device.dev.name is the canonical name for the device. It is
-> +built from two other parts:
-> +
-> +        - virtbus_device.name (also used for matching).
-> +        - virtbus_device.id (generated automatically from ida_simple calls)
-> +
-> +This allows for multiple virtbus_devices with the same name, which will all
-> +be matched to the same virtbus_driver. Driver binding is performed by the
-> +driver core, invoking driver probe() after finding a match between device and driver.
-> +
-> +Virtual Bus API entry points
-> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> +int virtbus_dev_register(struct virtbus_device *vdev)
-> +void virtbus_dev_unregister(struct virtbus_device *vdev)
-> +int virtbus_drv_register(struct virtbus_driver *vdrv, struct module *owner)
-> +void virtbus_drv_unregister(struct virtbus_driver *vdrv)
-> diff --git a/drivers/bus/Kconfig b/drivers/bus/Kconfig
-> index 50200d1c06ea..770519d16d43 100644
-> --- a/drivers/bus/Kconfig
-> +++ b/drivers/bus/Kconfig
-> @@ -203,4 +203,16 @@ config DA8XX_MSTPRI
->
->  source "drivers/bus/fsl-mc/Kconfig"
->
-> +config VIRTUAL_BUS
-> +       tristate "lightweight Virtual Bus"
-> +       depends on PM
-> +       help
-> +         Provides a software bus for virtbus_devices to be added to it
-> +         and virtbus_drivers to be registered on it.  Will create a match
-> +         between the driver and device, then call the driver's probe with
-> +         the virtbus_device's struct.
-> +         One example is the irdma driver needing to connect with various
-> +         PCI LAN drivers to request resources (queues) to be able to perform
-> +         its function.
-> +
->  endmenu
-> diff --git a/drivers/bus/Makefile b/drivers/bus/Makefile
-> index 1320bcf9fa9d..6721c77dc71b 100644
-> --- a/drivers/bus/Makefile
-> +++ b/drivers/bus/Makefile
-> @@ -34,3 +34,4 @@ obj-$(CONFIG_UNIPHIER_SYSTEM_BUS)	+= uniphier-system-bus.o
->  obj-$(CONFIG_VEXPRESS_CONFIG)	+= vexpress-config.o
->
->  obj-$(CONFIG_DA8XX_MSTPRI)	+= da8xx-mstpri.o
-> +obj-$(CONFIG_VIRTUAL_BUS)	+= virtual_bus.o
-> diff --git a/drivers/bus/virtual_bus.c b/drivers/bus/virtual_bus.c
-> new file mode 100644
-> index 000000000000..6bc986659e4b
-> --- /dev/null
-> +++ b/drivers/bus/virtual_bus.c
-> @@ -0,0 +1,295 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * virtual_bus.c - lightweight software based bus for virtual devices
-> + *
-> + * Copyright (c) 2019-20 Intel Corporation
-> + *
-> + * Please see Documentation/driver-api/virtual_bus.rst for
-> + * more information
-> + */
-> +
-> +#include <linux/string.h>
-> +#include <linux/virtual_bus.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pm_domain.h>
-> +#include <linux/acpi.h>
-> +#include <linux/device.h>
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("Lightweight Virtual Bus");
-> +MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
-> +MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
-> +
-> +static DEFINE_IDA(virtbus_dev_ida);
 
-I was under impression that usage of IDA interface is discouraged in favor
-of direct calls to XArray.
+On 12/9/2019 3:48 PM, Paul Blakey wrote:
+> On 12/9/2019 5:18 AM, wenxu wrote:
+>> Hi  Paul,
+>>
+>>
+>> Thanks for your fix, I will test it.
+>>
+>> On 12/8/2019 5:39 PM, Paul Blakey wrote:
+>>> Here's the temp fix:
+>>>
+>>>
+>>> The problem is TC + FT offload, and this revealed a bug in the driver.
+>>>
+>>> For the tunnel test, we changed tc block offload to ft callback, and
+>>> didn't change the indr block offload.
+>>>
+>>> So the tunnel unset rule is offloaded from indr tc callback (it's
+>>> indirect because it's on tun1 device):
+>>>
+>>> mlx5e_rep_indr_setup_block_cb
+>> Maybe It should add a "mlx5e_rep_indr_setup_ft_cb" makes the FT offload can support the indr setup?
+>>
+>> Or all indr setup through TC offload?
+> Adding a "mlx5e_rep_indr_setup_ft_cb" with the correct flags (FT) and 
+> (EGRESS) should work as well, but this is just a test...
 
-Thanks
+Indeed, I test with a mlx5e_rep_indr_setup_ft_c, it is also work as well.
+
+Thanks paul!
+
