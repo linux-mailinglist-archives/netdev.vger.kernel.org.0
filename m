@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95389119B90
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BBB9119B85
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730012AbfLJWJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:09:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35354 "EHLO mail.kernel.org"
+        id S1729197AbfLJWJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:09:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728130AbfLJWE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:04:29 -0500
+        id S1728925AbfLJWEd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:04:33 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0B18F20838;
-        Tue, 10 Dec 2019 22:04:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C72F621D7D;
+        Tue, 10 Dec 2019 22:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576015468;
-        bh=VJRtcpsfpAwpkoGFFGyFknZWq/Vw+SGLlryQ7+DE7Sc=;
+        s=default; t=1576015472;
+        bh=49bS9orNd3ZL4raZ9exAir3QWp/udIrIFkNDQ3sgHVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8ctW28QztQldPAcvIgk5fDFzseZkXwkjn8KJWRAjGVh3nWzccMupCsmr7qhs9M0z
-         Zhpo7Iw2N91yW4F+1CVIy4QeU8BQnuevi25O2W2CvzTKrfHV0At5XEUdxeQFCplmZW
-         5GrLB4fr8yx0WdktX/pxyY+Mo/cdW7xSGRE4KtIg=
+        b=lKLkdBdzibz5F27Y6USdiTR9LU+EU0wXgVMJp2t9ZCfb9eEs1oRb7CBEwIDHouSL/
+         h4tkGfvN50kF/xRhUSfA/QvVkr7gAtCBQaXw+Xur/DMOitzjL1QuWW64eyc+pP091J
+         5MHo9ZpRyQzJUNYH4fV7vrfN6RJ+wYSA5n++MN4U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manjunath Patil <manjunath.b.patil@oracle.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 074/130] ixgbe: protect TX timestamping from API misuse
-Date:   Tue, 10 Dec 2019 17:02:05 -0500
-Message-Id: <20191210220301.13262-74-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 077/130] rfkill: allocate static minor
+Date:   Tue, 10 Dec 2019 17:02:08 -0500
+Message-Id: <20191210220301.13262-77-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210220301.13262-1-sashal@kernel.org>
 References: <20191210220301.13262-1-sashal@kernel.org>
@@ -45,44 +44,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manjunath Patil <manjunath.b.patil@oracle.com>
+From: Marcel Holtmann <marcel@holtmann.org>
 
-[ Upstream commit 07066d9dc3d2326fbad8f7b0cb0120cff7b7dedb ]
+[ Upstream commit 8670b2b8b029a6650d133486be9d2ace146fd29a ]
 
-HW timestamping can only be requested for a packet if the NIC is first
-setup via ioctl(SIOCSHWTSTAMP). If this step was skipped, then the ixgbe
-driver still allowed TX packets to request HW timestamping. In this
-situation, we see 'clearing Tx Timestamp hang' noise in the log.
+udev has a feature of creating /dev/<node> device-nodes if it finds
+a devnode:<node> modalias. This allows for auto-loading of modules that
+provide the node. This requires to use a statically allocated minor
+number for misc character devices.
 
-Fix this by checking that the NIC is configured for HW TX timestamping
-before accepting a HW TX timestamping request.
+However, rfkill uses dynamic minor numbers and prevents auto-loading
+of the module. So allocate the next static misc minor number and use
+it for rfkill.
 
-Similar-to:
-   commit 26bd4e2db06b ("igb: protect TX timestamping from API misuse")
-   commit 0a6f2f05a2f5 ("igb: Fix a test with HWTSTAMP_TX_ON")
-
-Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Link: https://lore.kernel.org/r/20191024174042.19851-1-marcel@holtmann.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/miscdevice.h | 1 +
+ net/rfkill/core.c          | 9 +++++++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 4801d96c4fa91..0edfd199937d5 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -8379,7 +8379,8 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
+diff --git a/include/linux/miscdevice.h b/include/linux/miscdevice.h
+index 4de703d9e21f0..5e1e50b8f8c47 100644
+--- a/include/linux/miscdevice.h
++++ b/include/linux/miscdevice.h
+@@ -56,6 +56,7 @@
+ #define UHID_MINOR		239
+ #define USERIO_MINOR		240
+ #define VHOST_VSOCK_MINOR	241
++#define RFKILL_MINOR		242
+ #define MISC_DYNAMIC_MINOR	255
  
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
- 	    adapter->ptp_clock) {
--		if (!test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
-+		if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
-+		    !test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
- 					   &adapter->state)) {
- 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 			tx_flags |= IXGBE_TX_FLAGS_TSTAMP;
+ struct device;
+diff --git a/net/rfkill/core.c b/net/rfkill/core.c
+index 2064c3a35ef84..99a2e55b01cf3 100644
+--- a/net/rfkill/core.c
++++ b/net/rfkill/core.c
+@@ -1312,10 +1312,12 @@ static const struct file_operations rfkill_fops = {
+ 	.llseek		= no_llseek,
+ };
+ 
++#define RFKILL_NAME "rfkill"
++
+ static struct miscdevice rfkill_miscdev = {
+-	.name	= "rfkill",
+ 	.fops	= &rfkill_fops,
+-	.minor	= MISC_DYNAMIC_MINOR,
++	.name	= RFKILL_NAME,
++	.minor	= RFKILL_MINOR,
+ };
+ 
+ static int __init rfkill_init(void)
+@@ -1367,3 +1369,6 @@ static void __exit rfkill_exit(void)
+ 	class_unregister(&rfkill_class);
+ }
+ module_exit(rfkill_exit);
++
++MODULE_ALIAS_MISCDEV(RFKILL_MINOR);
++MODULE_ALIAS("devname:" RFKILL_NAME);
 -- 
 2.20.1
 
