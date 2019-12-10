@@ -2,86 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94AF7119234
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:37:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0F811925E
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:43:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726968AbfLJUhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:37:21 -0500
-Received: from mout.kundenserver.de ([212.227.126.130]:43473 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbfLJUhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:37:21 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1N2lzA-1hijXp0e9U-0135X3; Tue, 10 Dec 2019 21:37:13 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: dsa: ocelot: add NET_VENDOR_MICROSEMI dependency
-Date:   Tue, 10 Dec 2019 21:36:54 +0100
-Message-Id: <20191210203710.2987983-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1727049AbfLJUn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:43:27 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:39909 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726968AbfLJUn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:43:27 -0500
+Received: by mail-pj1-f66.google.com with SMTP id v93so7860454pjb.6
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:43:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oscuAw5vAE51n3TxNTO2T3duoHxKljGjiqEM2pxbrAE=;
+        b=EqaG3Zgh66B2ZlBqDiUF9UNe4O9r2Sra4GkvhJEOhxiWeiMaLTVvDoZipPCmw3xAlR
+         L1irjKAc0/Dan9MGX3t3MH+lU5vWvTyOnp8eGzag1CI4S6IYqdhohnVy9SzUtxmVd2Vd
+         vK+uG7i87wjhTJs7rPjG4/8k/FcdsP8s1OKr0bbpL+xL/p133xnwlDpzAfnbLWDpNXvA
+         GDUFu7KNECeH0B7iI+pUGbG55VG5TAD1tEbTT+WTmOziFiFah4dHeLuSn5uQ/4wPK+A6
+         rrztK7HmvbTulXHP69dRttHZHgE3UlM7g3Fy7Ju8ensIDDSkLG0fTmh+XeX7ScYe7ikN
+         g4nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oscuAw5vAE51n3TxNTO2T3duoHxKljGjiqEM2pxbrAE=;
+        b=iA4wruOc1VC0wELrZ8dfwbe3Dibps7b35+3jxD6eRwX1pka4lUWSuXEw36EbaZtyzN
+         APHmwyefZITSn0XLeiyOCffCC0+OrO70a9JUEGQa4YMU5RFmr8SOWvWHAfmOAxbrqBpt
+         RRqRbupyn4Dym4tF4JufOWufLAJjzzJJnGivPZv+t+NzbqP0cqL/nBCyv3Qz/rAednKP
+         aYBWKbW35fk79aPjXxorR770hNRZ7LQarGUfOTXjlSnE0UtkUJq5QVxsxhp825wOBPju
+         WjMY7X3AilBgi7arcNauc2o4jbYfsH7iK4UsKAipYczt1I+DgtsqlOmDsasTlG4RGdAa
+         nDMQ==
+X-Gm-Message-State: APjAAAUB0qJk8pbvE2WCa2Rw3oQls3qFfd5dUEu35hQAEoiP1kE4h27w
+        n08yCf6cZ3b1QH5fqIVALhB6IWUZ2GEehA==
+X-Google-Smtp-Source: APXvYqzKu9FMBGbFyZa2IS3LDGGu1YYA3zjt1iFIfTrfgsVFl8Iv7l0MSgniv67vnvchLOUCY13UiQ==
+X-Received: by 2002:a17:90b:110d:: with SMTP id gi13mr7670914pjb.113.1576010606237;
+        Tue, 10 Dec 2019 12:43:26 -0800 (PST)
+Received: from [192.168.1.188] ([66.219.217.145])
+        by smtp.gmail.com with ESMTPSA id r20sm4535871pgu.89.2019.12.10.12.43.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Dec 2019 12:43:25 -0800 (PST)
+Subject: Re: [PATCH 10/11] net: make socket read/write_iter() honor
+ IOCB_NOWAIT
+To:     David Miller <davem@davemloft.net>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org
+References: <20191210155742.5844-1-axboe@kernel.dk>
+ <20191210155742.5844-11-axboe@kernel.dk>
+ <20191210.113700.2038253518329326443.davem@davemloft.net>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <5a1abbbe-2230-d3d8-839b-a1c7acb46bdb@kernel.dk>
+Date:   Tue, 10 Dec 2019 13:43:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:zJ2ZnfctRkGrEmmQCsTswUN3CkKSHq1z6wDjKHcvncBqdAp5pu9
- Fc91qBajfNX/VAvcjRirsXJEWtk20Hjj2CsC+LuKMY987U6YhW0KRxlEzE3wzEoSyAst8m6
- ycVJaUHJsiiLRvtGE8g4eQlklWuB9S/gndxdGaj8f3x/WGeUfTm0G6vw6ACENDxQpVwh/C6
- YatDKbVEe+dE9+mZOa4Gg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/oWooy0CdaA=:LmtZVsHikqzQlV95reccN3
- KGxYNc/zPXeOjbYvNnBQ/JKVgXndvMBhHFKtkrjOPQgAG8pfWACWQoqz4E0FQ//L4Mj2dPJYw
- EKZ8GWp5AI1U95rPFF0BZGcPx7AAaHF2mtYaDZR7RI5PECoxXlKsEqt52ju/yZz3ffFz+RZkA
- U3SpQBcmihPlRmyaRjNE6KrKKSlnZC6vEfFCb2QSMdOz3ieqIKtDgMeEpM1S+D7PonSpcXmEL
- hG7IBOd/5EcYUaKBAasv+UlJQ0ffClD1+pNdBNVQnsNdr53/IZGuBbGkVoGCUztnYTak6jtLP
- XFvWYGeSe3iSwZJLooflerubE/JAUe9ZvVlN9ak7w+109kGGTIj1JunLBVpQkOqfwFZf2KwMq
- 6bj8C8xr98llq1+zQMBT17OES2DBtydhU9rA7/KC4AOn7xrZqxvmPPTuii/ECAyvAiC8ZKXay
- z/FlQaoRWGEB8zP6PWCGDHMhNAhS4wmdZciHZqF8+LjOdaemJX8n/yU4iONNtN04sL16HFSI4
- X9rHUlJR6sdGQMDhz/BuhjTrFQQu+rXexeLB6l7h79vOeFJAKoocXXDszSFewIM0wWVIJjyQv
- TCqiQUmvzX1m3LDK73xd9ygYKg4cdOcg2HTuMtfBYad3tqiyK25zdZqkWO7A9TetvRV0Rt8No
- mzVR8J07TkKi5VMCW5QbIzkEsNbfCL7q0CSxXtfVpW1v9vKLDfazL7VSVTlcQwM2eXAOr4l0l
- WU8DBQlhnstG5WnK3fFMySk6U3SUiC17wbMNj5QkEfgdHLuOXQyXGqT6iuGnAoFJfMbZ/rYfp
- 4HTo7bX1xmlqbs3AMOU3HjO20CwcAA2RDLEGV6oytvzVxkkYxPakO3f2WBW8ZbZPXZKzFHukn
- wPcXoQlU2nCKe2oN0UEw==
+In-Reply-To: <20191210.113700.2038253518329326443.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Selecting MSCC_OCELOT_SWITCH is not possible when NET_VENDOR_MICROSEMI
-is disabled:
+On 12/10/19 12:37 PM, David Miller wrote:
+> From: Jens Axboe <axboe@kernel.dk>
+> Date: Tue, 10 Dec 2019 08:57:41 -0700
+> 
+>> The socket read/write helpers only look at the file O_NONBLOCK. not
+>> the iocb IOCB_NOWAIT flag. This breaks users like preadv2/pwritev2
+>> and io_uring that rely on not having the file itself marked nonblocking,
+>> but rather the iocb itself.
+>>
+>> Cc: David Miller <davem@davemloft.net>
+>> Cc: netdev@vger.kernel.org
+>> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> 
+> I guess this should be OK:
+> 
+> Acked-by: David S. Miller <davem@davemloft.net>
 
-WARNING: unmet direct dependencies detected for MSCC_OCELOT_SWITCH
-  Depends on [n]: NETDEVICES [=y] && ETHERNET [=n] && NET_VENDOR_MICROSEMI [=n] && NET_SWITCHDEV [=y] && HAS_IOMEM [=y]
-  Selected by [m]:
-  - NET_DSA_MSCC_FELIX [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && NET_DSA [=y] && PCI [=y]
+Thanks for reviewing!
 
-Add a Kconfig dependency on NET_VENDOR_MICROSEMI, which also implies
-CONFIG_NETDEVICES.
-
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/dsa/ocelot/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 0031ca814346..6f9804093150 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -2,6 +2,7 @@
- config NET_DSA_MSCC_FELIX
- 	tristate "Ocelot / Felix Ethernet switch support"
- 	depends on NET_DSA && PCI
-+	depends on NET_VENDOR_MICROSEMI
- 	select MSCC_OCELOT_SWITCH
- 	select NET_DSA_TAG_OCELOT
- 	help
 -- 
-2.20.0
+Jens Axboe
 
