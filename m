@@ -2,57 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E32F3118E89
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E0FC118EB5
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:14:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbfLJRGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:06:15 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45248 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727525AbfLJRGO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 12:06:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=64vBQreRYGGQCTi+wf/flYIUuREIxjjkqLmOXdaeMQw=; b=cNxoyrNKyoJDBy3/XYsCP2ItFj
-        eRcXi2gh3506miHFnx1TIRfDVJdm51o5OfhbvJSqE5brLPa71vp4ECc8gHMZ+De/GUqf3ycwH4tNL
-        WkN/5CMhmuThwIEnPh4pt5an/DIopsG8+OxqQcXhsc9SLmnJb+Pb7+24blMpUD85a53M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ieixf-0005Zf-SM; Tue, 10 Dec 2019 18:06:11 +0100
-Date:   Tue, 10 Dec 2019 18:06:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 07/14] net: phylink: re-split
- __phylink_connect_phy()
-Message-ID: <20191210170611.GM27714@lunn.ch>
-References: <20191209151553.GP25745@shell.armlinux.org.uk>
- <E1ieKoP-0004vF-8F@rmk-PC.armlinux.org.uk>
+        id S1727656AbfLJROO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:14:14 -0500
+Received: from rcdn-iport-6.cisco.com ([173.37.86.77]:53962 "EHLO
+        rcdn-iport-6.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726780AbfLJRON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:14:13 -0500
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Tue, 10 Dec 2019 12:14:12 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=5523; q=dns/txt; s=iport;
+  t=1575998052; x=1577207652;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eNVCvjZblmuoLfwPQjChR2q6aFn7eOlpCTR4qcOhLY8=;
+  b=WyiCfv2M9qoL5ICkC5mwMuSNr6ItJlPOR3sIfuITKINUsC77UYBvKm+j
+   pxvDpm/7t+lo9NicyvEx6F0K6M04ApbcEMlHg0v9+eADi+RfHTPSxQFaS
+   I1mLsxJeirKzP8Uh20FXUGpgbxHQlsIxAfzCTR9p6d8D+xgV4dUrMlKKu
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.69,300,1571702400"; 
+   d="scan'208";a="682214336"
+Received: from alln-core-10.cisco.com ([173.36.13.132])
+  by rcdn-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 10 Dec 2019 17:07:05 +0000
+Received: from sjc-ads-7483.cisco.com (sjc-ads-7483.cisco.com [10.30.221.19])
+        by alln-core-10.cisco.com (8.15.2/8.15.2) with ESMTP id xBAH747M030221;
+        Tue, 10 Dec 2019 17:07:04 GMT
+Received: by sjc-ads-7483.cisco.com (Postfix, from userid 838444)
+        id C2BBD156D; Tue, 10 Dec 2019 09:07:03 -0800 (PST)
+From:   Aviraj CJ <acj@cisco.com>
+To:     peppe.cavallaro@st.com, netdev@vger.kernel.org,
+        gregkh@linuxfoundation.org, xe-linux-external@cisco.com
+Cc:     Aviraj CJ <acj@cisco.com>
+Subject: [PATCH 1/2] net: stmmac: use correct DMA buffer size in the RX descriptor
+Date:   Tue, 10 Dec 2019 09:06:58 -0800
+Message-Id: <20191210170659.61829-1-acj@cisco.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1ieKoP-0004vF-8F@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.30.221.19, sjc-ads-7483.cisco.com
+X-Outbound-Node: alln-core-10.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 03:19:01PM +0000, Russell King wrote:
-> In order to support Clause 45 PHYs on SFP+ modules, which have an
-> indeterminant phy interface mode, we need to be able to call
-> phylink_bringup_phy() with a different interface mode to that used when
-> binding the PHY. Reduce __phylink_connect_phy() to an attach operation,
-> and move the call to phylink_bringup_phy() to its call sites.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+We always program the maximum DMA buffer size into the receive descriptor,
+although the allocated size may be less. E.g. with the default MTU size
+we allocate only 1536 bytes. If somebody sends us a bigger frame, then
+memory may get corrupted.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Program DMA using exact buffer sizes.
 
-    Andrew
+[Adopted based on upstream commit c13a936f46e3321ad2426443296571fab2feda44
+("net: stmmac: use correct DMA buffer size in the RX descriptor")
+by Aaro Koskinen <aaro.koskinen@nokia.com> ]
+
+Signed-off-by: Aviraj CJ <acj@cisco.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/common.h      |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/descs_com.h   | 14 ++++++++++----
+ drivers/net/ethernet/stmicro/stmmac/enh_desc.c    | 10 +++++++---
+ drivers/net/ethernet/stmicro/stmmac/norm_desc.c   | 10 +++++++---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++--
+ 5 files changed, 27 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 623c6ed8764a..803df6a32ba9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -301,7 +301,7 @@ struct dma_features {
+ struct stmmac_desc_ops {
+ 	/* DMA RX descriptor ring initialization */
+ 	void (*init_rx_desc) (struct dma_desc *p, int disable_rx_ic, int mode,
+-			      int end);
++			      int end, int bfsize);
+ 	/* DMA TX descriptor ring initialization */
+ 	void (*init_tx_desc) (struct dma_desc *p, int mode, int end);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/descs_com.h b/drivers/net/ethernet/stmicro/stmmac/descs_com.h
+index 6f2cc78c5cf5..6b83fc8e6fbe 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/descs_com.h
++++ b/drivers/net/ethernet/stmicro/stmmac/descs_com.h
+@@ -33,9 +33,10 @@
+ /* Specific functions used for Ring mode */
+ 
+ /* Enhanced descriptors */
+-static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end)
++static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+ {
+-	p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
++	if (bfsize == BUF_SIZE_16KiB)
++		p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
+ 	if (end)
+ 		p->des01.erx.end_ring = 1;
+ }
+@@ -61,9 +62,14 @@ static inline void enh_set_tx_desc_len_on_ring(struct dma_desc *p, int len)
+ }
+ 
+ /* Normal descriptors */
+-static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end)
++static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+ {
+-	p->des01.rx.buffer2_size = BUF_SIZE_2KiB - 1;
++	int size;
++
++	if (bfsize >= BUF_SIZE_2KiB) {
++		size = min(bfsize - BUF_SIZE_2KiB + 1, BUF_SIZE_2KiB - 1);
++		p->des01.rx.buffer2_size = size;
++	}
+ 	if (end)
+ 		p->des01.rx.end_ring = 1;
+ }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
+index 7d944449f5ef..9ecb3a948f86 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
+@@ -238,16 +238,20 @@ static int enh_desc_get_rx_status(void *data, struct stmmac_extra_stats *x,
+ }
+ 
+ static void enh_desc_init_rx_desc(struct dma_desc *p, int disable_rx_ic,
+-				  int mode, int end)
++				  int mode, int end, int bfsize)
+ {
++	int bfsize1;
++
+ 	p->des01.all_flags = 0;
+ 	p->des01.erx.own = 1;
+-	p->des01.erx.buffer1_size = BUF_SIZE_8KiB - 1;
++
++	bfsize1 = min(bfsize, BUF_SIZE_8KiB - 1);
++	p->des01.erx.buffer1_size = bfsize1;
+ 
+ 	if (mode == STMMAC_CHAIN_MODE)
+ 		ehn_desc_rx_set_on_chain(p, end);
+ 	else
+-		ehn_desc_rx_set_on_ring(p, end);
++		ehn_desc_rx_set_on_ring(p, end, bfsize);
+ 
+ 	if (disable_rx_ic)
+ 		p->des01.erx.disable_ic = 1;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
+index 48c3456445b2..07e0c03cfb10 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
+@@ -121,16 +121,20 @@ static int ndesc_get_rx_status(void *data, struct stmmac_extra_stats *x,
+ }
+ 
+ static void ndesc_init_rx_desc(struct dma_desc *p, int disable_rx_ic, int mode,
+-			       int end)
++			       int end, int bfsize)
+ {
++	int bfsize1;
++
+ 	p->des01.all_flags = 0;
+ 	p->des01.rx.own = 1;
+-	p->des01.rx.buffer1_size = BUF_SIZE_2KiB - 1;
++
++	bfsize1 = min(bfsize, (BUF_SIZE_2KiB - 1));
++	p->des01.rx.buffer1_size = bfsize1;
+ 
+ 	if (mode == STMMAC_CHAIN_MODE)
+ 		ndesc_rx_set_on_chain(p, end);
+ 	else
+-		ndesc_rx_set_on_ring(p, end);
++		ndesc_rx_set_on_ring(p, end, bfsize);
+ 
+ 	if (disable_rx_ic)
+ 		p->des01.rx.disable_ic = 1;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index f4d6512f066c..e9d41e03121c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -964,11 +964,11 @@ static void stmmac_clear_descriptors(struct stmmac_priv *priv)
+ 		if (priv->extend_desc)
+ 			priv->hw->desc->init_rx_desc(&priv->dma_erx[i].basic,
+ 						     priv->use_riwt, priv->mode,
+-						     (i == rxsize - 1));
++						     (i == rxsize - 1), priv->dma_buf_sz);
+ 		else
+ 			priv->hw->desc->init_rx_desc(&priv->dma_rx[i],
+ 						     priv->use_riwt, priv->mode,
+-						     (i == rxsize - 1));
++						     (i == rxsize - 1), priv->dma_buf_sz);
+ 	for (i = 0; i < txsize; i++)
+ 		if (priv->extend_desc)
+ 			priv->hw->desc->init_tx_desc(&priv->dma_etx[i].basic,
+-- 
+2.19.1
+
