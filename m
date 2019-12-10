@@ -2,140 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFB8119E84
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:46:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 219D9119E95
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:53:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbfLJWqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:46:14 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:36327 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726717AbfLJWqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 17:46:14 -0500
-Received: by mail-lj1-f196.google.com with SMTP id r19so21784204ljg.3
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 14:46:12 -0800 (PST)
+        id S1727202AbfLJWxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:53:24 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:46605 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbfLJWxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 17:53:23 -0500
+Received: by mail-pg1-f194.google.com with SMTP id z124so9601219pgb.13;
+        Tue, 10 Dec 2019 14:53:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iqidpsRetevR7KQf2spiLZEXt1H+oFvx8yu6gvT2PyY=;
-        b=z/kxokg0605hqzDYiyrxq2x9Kyh+BMYxxmWS8jrbxqlOFo8Xo/aAb1sJtqw1Pn9PdN
-         deUpk3LibVV0+9VeRj+wDPcCDd+tz+NI5Eyje4m9db2BI6uGgmE9NQO2eLJ6LMN9yBX2
-         IMsIeTCd+Jr9bXHYMTsKzudH7CU89kX/SYRyldUeAXeKL+Ys01awCUBj4zig71+d+oOu
-         nNHQYWTlo4WI9gB37T8tf0qBDt8WpbBZ822KurKsTHDl1JUSZeHBT+PiQmeIe1vjz3S6
-         lCaKSEDNwF/q04epKMXNXXfAwyV0XyPWwVEc9EF/kIyisDMLm0+fa9gmRH2AxqNTT0iX
-         9aAg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=dUDhi+vrizCDQsGj4pc5jWU26FSBssN6Xxld2hQXfVA=;
+        b=glGU9x02KRDnsK6A5AaLs4rMCnVwW3EE4N4dp/TxbNWO/ZBbszGfmMqnw7HdES9cxE
+         Pja83pvNOaSNHHtCXiYZ0kaTelWQzDvI58yV/FcQCGdLfHbt28xPjw1Tebg1dyojyEzG
+         hpX2QWFSCsknI6nJiriz2OLae7gZRVx8yS5xbR+2tK/sfAKzsTSroqj50MlfedJoDP3S
+         GVw4VIhuNqphzVT311+/nDoVDh/8OiaaBO1hwqD/R3wSsYGOOgqnrRf8G4AuMk0TwTYZ
+         Pylt7PZqspGPlBhBCS5M1yKnd1yJ818brA+OwED6jbXKfRr1jSnI5kfTjxbbY+xXRUoS
+         Vs8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iqidpsRetevR7KQf2spiLZEXt1H+oFvx8yu6gvT2PyY=;
-        b=YcN+DvmxxgDrBlMHGTy3jVYYtsRw5mfeW6TPisDYH0+u8LazULzwwIjqyvT4vLuNMN
-         DKsGzj/e/nUsyru5CeJ/kO4VbInpNFVazmZPG43kEsgTOBJ1PRn+JcvIQCq0nTCgPGDf
-         gjZIqmWR3pJKO1ALNXFDJMaR5od/Lz+dEIUpVOIonIX7R+JYg7bkku3hnr5BGa8+y/t8
-         N2iu2Ex9AALd2y7HhIeEj0+lJambzj9jqiKDHn+q+8v/r+hwA1/WZqVZgiqOuP8pLKpG
-         yy3KFBbYyiwx3xrefCMiovuFX/rlAHtQPC0gK9M9LV/z7AxEtnW6KWa9dMeYrGXnehI+
-         Ealw==
-X-Gm-Message-State: APjAAAWdAUKL5RzjGIeLm8X5yUjondPoDmTXVGDwRLGFNKLC06roLV0r
-        KJDwL+C2UBawg2k+Y00pI+jZNuiEy6IDkMx4PhKj
-X-Google-Smtp-Source: APXvYqwwFpweBwuruZL/D9PCPIdAr4GxZUnVllKgDndZSSzILeWdfLDomxs8nWamvvW8Y3aYKfYQw+55pd3HU/tS5yg=
-X-Received: by 2002:a2e:800b:: with SMTP id j11mr20040516ljg.126.1576017970966;
- Tue, 10 Dec 2019 14:46:10 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=dUDhi+vrizCDQsGj4pc5jWU26FSBssN6Xxld2hQXfVA=;
+        b=bORDvV8CGSoCmpwvFVZsntP8lE6PaXDfs6JLkKNgD+BU1LkSY3LUX2DwRjH3hRr+iJ
+         6EdjFtMbe+MjAuzZI17JGAIjna2qa4dsJww5UlXHpf8NiPSfG9uSHx5cS0MpchzD/2In
+         gBwCgsnAl1an6E156dYjD+g0pd4s78Yl0iWup+IOAXQxvYOe9UzkKLQSflLRe1ZhczW8
+         3TujUOBD18BkVZnNf01G97wpM2PqOetzKMFQumf/LUDBZgggPbKmYRip1dsCC8p02jmI
+         6mq0UtMxaVOmeoin+lXieKRT3vBdhbTGPyFfiqjeitbHGkPamyAyoI4f8nztpdBbTLwH
+         8yLw==
+X-Gm-Message-State: APjAAAWanKK9Cttnvk86gJFEQCIqnrmRL6LuVYqATLqUf2JY/Cb8scF1
+        AxTKY8aOjHc5F4oi8opPvig=
+X-Google-Smtp-Source: APXvYqyaoXewPtk6K9LcJ2BvDJm09Y0mkTH2JS0qcJmsPhCtrlORmEXitFkhZ7Qbka6vFiST/SILVQ==
+X-Received: by 2002:aa7:8658:: with SMTP id a24mr304483pfo.87.1576018402986;
+        Tue, 10 Dec 2019 14:53:22 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:a25c])
+        by smtp.gmail.com with ESMTPSA id e7sm70381pfe.168.2019.12.10.14.53.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Dec 2019 14:53:22 -0800 (PST)
+Date:   Tue, 10 Dec 2019 14:53:21 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or
+ ksyms
+Message-ID: <20191210225320.pymey5md727e4m5x@ast-mbp.dhcp.thefacebook.com>
+References: <20191210181412.151226-1-toke@redhat.com>
+ <20191210125457.13f7821a@cakuba.netronome.com>
+ <87eexbhopo.fsf@toke.dk>
+ <20191210132428.4470a7b0@cakuba.netronome.com>
+ <20191210213148.kqd6xdvqjkh3zxst@ast-mbp.dhcp.thefacebook.com>
+ <20191210135205.529044a4@cakuba.netronome.com>
 MIME-Version: 1.0
-References: <20191206214934.11319-1-jolsa@kernel.org> <20191209121537.GA14170@linux.fritz.box>
- <CAHC9VhQdOGTj1HT1cwvAdE1sRpzk5mC+oHQLHgJFa3vXEij+og@mail.gmail.com>
- <d387184e-9c5f-d5b2-0acb-57b794235cbd@iogearbox.net> <CAHC9VhRDsEDGripZRrVNcjEBEEULPk+0dRp-uJ3nmmBK7B=sYQ@mail.gmail.com>
- <20191210153652.GA14123@krava>
-In-Reply-To: <20191210153652.GA14123@krava>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 10 Dec 2019 17:45:59 -0500
-Message-ID: <CAHC9VhSa_B-VJOa_r8OcNrm0Yd_t1j3otWhKHgganSDx5Ni=Tg@mail.gmail.com>
-Subject: Re: [PATCHv3] bpf: Emit audit messages upon successful prog load and unload
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-audit@redhat.com,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191210135205.529044a4@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 10:37 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> On Mon, Dec 09, 2019 at 06:53:23PM -0500, Paul Moore wrote:
-> > On Mon, Dec 9, 2019 at 6:19 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > On 12/9/19 3:56 PM, Paul Moore wrote:
-> > > > On Mon, Dec 9, 2019 at 7:15 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >> On Fri, Dec 06, 2019 at 10:49:34PM +0100, Jiri Olsa wrote:
-> > > >>> From: Daniel Borkmann <daniel@iogearbox.net>
-> > > >>>
-> > > >>> Allow for audit messages to be emitted upon BPF program load and
-> > > >>> unload for having a timeline of events. The load itself is in
-> > > >>> syscall context, so additional info about the process initiating
-> > > >>> the BPF prog creation can be logged and later directly correlated
-> > > >>> to the unload event.
-> > > >>>
-> > > >>> The only info really needed from BPF side is the globally unique
-> > > >>> prog ID where then audit user space tooling can query / dump all
-> > > >>> info needed about the specific BPF program right upon load event
-> > > >>> and enrich the record, thus these changes needed here can be kept
-> > > >>> small and non-intrusive to the core.
-> > > >>>
-> > > >>> Raw example output:
-> > > >>>
-> > > >>>    # auditctl -D
-> > > >>>    # auditctl -a always,exit -F arch=x86_64 -S bpf
-> > > >>>    # ausearch --start recent -m 1334
-> > > >>>    ...
-> > > >>>    ----
-> > > >>>    time->Wed Nov 27 16:04:13 2019
-> > > >>>    type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
-> > > >>>    type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
-> > > >>>      success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
-> > > >>>      pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
-> > > >>>      egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
-> > > >>>      exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
-> > > >>>      subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
-> > > >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
-> > > >>>    ----
-> > > >>>    time->Wed Nov 27 16:04:13 2019
-> > > >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
-> > > >>>    ...
-> > > >>>
-> > > >>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > > >>> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
-> > > >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > >>
-> > > >> Paul, Steve, given the merge window is closed by now, does this version look
-> > > >> okay to you for proceeding to merge into bpf-next?
-> > > >
-> > > > Given the change to audit UAPI I was hoping to merge this via the
-> > > > audit/next tree, is that okay with you?
-> > >
-> > > Hm, my main concern is that given all the main changes are in BPF core and
-> > > usually the BPF subsystem has plenty of changes per release coming in that we'd
-> > > end up generating unnecessary merge conflicts. Given the include/uapi/linux/audit.h
-> > > UAPI diff is a one-line change, my preference would be to merge via bpf-next with
-> > > your ACK or SOB added. Does that work for you as well as?
-> >
-> > I regularly (a few times a week) run the audit and SELinux tests
-> > against Linus+audit/next+selinux/next to make sure things are working
-> > as expected and that some other subsystem has introduced a change
-> > which has broken something.  If you are willing to ensure the tests
-> > get run, including your new BPF audit tests I would be okay with that;
-> > is that acceptable?
->
-> hi,
-> would you please let me know which tree this landed at the end?
+On Tue, Dec 10, 2019 at 01:52:05PM -0800, Jakub Kicinski wrote:
+> On Tue, 10 Dec 2019 13:31:50 -0800, Alexei Starovoitov wrote:
+> > On Tue, Dec 10, 2019 at 01:24:28PM -0800, Jakub Kicinski wrote:
+> > > On Tue, 10 Dec 2019 22:09:55 +0100, Toke Høiland-Jørgensen wrote:  
+> > > > Jakub Kicinski <jakub.kicinski@netronome.com> writes:  
+> > > > > On Tue, 10 Dec 2019 19:14:12 +0100, Toke Høiland-Jørgensen wrote:    
+> > > > >> When the kptr_restrict sysctl is set, the kernel can fail to return
+> > > > >> jited_ksyms or jited_prog_insns, but still have positive values in
+> > > > >> nr_jited_ksyms and jited_prog_len. This causes bpftool to crash when trying
+> > > > >> to dump the program because it only checks the len fields not the actual
+> > > > >> pointers to the instructions and ksyms.
+> > > > >> 
+> > > > >> Fix this by adding the missing checks.
+> > > > >> 
+> > > > >> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>    
+> > > > >
+> > > > > Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
+> > > > >
+> > > > > and
+> > > > >
+> > > > > Fixes: f84192ee00b7 ("tools: bpftool: resolve calls without using imm field")
+> > > > >
+> > > > > ?    
+> > > > 
+> > > > Yeah, guess so? Although I must admit it's not quite clear to me whether
+> > > > bpftool gets stable backports, or if it follows the "only moving
+> > > > forward" credo of libbpf?  
+> > > 
+> > > bpftool does not have a GH repo, and seeing strength of Alexei's
+> > > arguments in the recent discussion - I don't think it will. So no
+> > > reason for bpftool to be "special"  
+> > 
+> > bpftool always was and will be a special user of libbpf.
+> 
+> There we go again. Making proclamations without any justification or
+> explanation.
+> 
+> Maybe there is a language barrier between us, but I wrote the initial
+> bpftool code, so I don't see how you (who authored one patch) can say
+> what it was or is. Do you mean to say what you intend to make it?
 
-I think that's what we are trying to figure out - Daniel?
+When code lands it becomes the part of the code that maintainers keep in the
+best shape possible considering contributions from many parties. Original
+author of the code is equal to everyone else who submits patches. The job of
+the maintainer is to mediate folks who contribute the patches. Sounds like you
+expected to own bpftool as a single owner. I don't think kernel is such place.
+In most projects I'm aware of the OWNERS file is discouraged. The kernel is
+such project. The kernel has MAINTAINERS file which lists people most
+knowledgeable in the area and who's job is to keep the code in good shape,
+consider long term growth, etc. Maintainers are not owners of the code.
 
--- 
-paul moore
-www.paul-moore.com
+bpftool became way more than what it was when initially landed. Just like
+libbpf was implemented mainly by huawei folks and used in perf only. Now perf
+is a minority and original authors are not contributing any more. I'm sure you
+thought of bpftool as cli for sys_bpf only. Well thankfully it outgrew this
+narrow view point. bpftool btf dump file doesn't call sys_bpf at all.
+bpftool perf | net using several other kernel apis. I think it's a good growth
+trajectory for bpftool. More people use it and like it.
+
+> Upstreaming bpftool was a big mistake, but we live and we learn
+
+ok. Not going count on your help anymore.
+Since you're not interesting in helping please don't stall it either.
+
