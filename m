@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 482CF118D1E
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:58:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE73E118D36
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 17:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727494AbfLJP6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 10:58:01 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35880 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727223AbfLJP6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 10:58:00 -0500
-Received: by mail-io1-f65.google.com with SMTP id a22so4349522ios.3
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 07:58:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Nvur1Bj3nl4CLr5ek2z8ES9n5dJyB/sJxmpMaueCmiY=;
-        b=e3aSf/KXcc+AR+5F42eoJ4K1Y2VE+DmXZfc8211Yl+ii6+BkV2EHRLFgezbj+bslIo
-         K5gCrJamxlce19s/mXb6qeDZVnKPk4dpEHLV6o7tx+dyofzWfxf2b7kQRwpLVqIvnxdF
-         gGNGyCuFsOeTXpHF27AraAsjOmWZ9OwdBft9IDLqNoviNAsd8exGQxadRomEYCWm1Abp
-         j1Q++Ul5RaS+opJNko4bRKWkqrXFS5U2nHt4m2FPtqYIFanI7Lu6Yx/1cBVRWOs+/vd7
-         TF57Wmz2SPy73NxVNQhJDXpAEDNbzPbNroa1oJHmmjay1m+37RrX9PaMGIV8QfgGdR2o
-         XaZg==
+        id S1727516AbfLJQF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 11:05:58 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40722 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727177AbfLJQF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 11:05:58 -0500
+Received: by mail-wm1-f67.google.com with SMTP id t14so3787272wmi.5;
+        Tue, 10 Dec 2019 08:05:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Nvur1Bj3nl4CLr5ek2z8ES9n5dJyB/sJxmpMaueCmiY=;
-        b=CdwPguvw8xFu4vc/8z6KTXL1jTe6BReDqPunK75Y6afCpHfJ1bfWZmXBdmJBvzn8f2
-         yhf0LDy9edOymD1Eh17nk6TzzD8P5usmKfVqZlfPI9jlZp6OvUvUOPXPgZpT86uca5YS
-         xWJ64bOo2LLORjD/eVcxEpK2pPpV+JhQdcIDBpwqeumPo3MzwNOePKGPCjzefDmHck+w
-         NFwgUXOHylWpYxsQhmrE94VrCa1ByxRP4lUuWTNuzeItXY5I+ABWO5rpD1Eoa3PcOvn0
-         FBLwAPAt2ofpGQaaOAHL0R+qAfU+2xIFKspPs/v6F3aLjgWvcPCi3ijaPozpKUNGY/4D
-         ZFuw==
-X-Gm-Message-State: APjAAAWox5ykNvjIgOgFdc419P9iVT0G5hLP/3SSHuKzlV7i+hjJaEWX
-        tcsiLxbA8bf5skEiYgnnRbPkojUNV8Q4Lw==
-X-Google-Smtp-Source: APXvYqxKQvNZgQMaZ1zbKTgPZjIlZzKeGlZBWxsFUmJz/xTnPkB1O/4ZUq6YhzBH9YTtTw7n9ygIoQ==
-X-Received: by 2002:a02:cd3b:: with SMTP id h27mr15035171jaq.18.1575993479974;
-        Tue, 10 Dec 2019 07:57:59 -0800 (PST)
-Received: from x1.thefacebook.com ([65.144.74.34])
-        by smtp.gmail.com with ESMTPSA id w6sm770953ioa.16.2019.12.10.07.57.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=tXdEloH9GmIwAGeGbGRl5PR3T9VcJC7HTQjpethawjY=;
+        b=VEiaigHeKrkaOrICF39qfJiQBLSN9PFUnWNaH47NIthcTREEKP0aSk8T5RsFchghaT
+         zyRGwBBZUNPH8ce9ZkmP7ODh9zPyq824swidTO6RRm58EYisLTol/03/qh9Hrd2GAebH
+         agpvZkxnLO2KI9o2zZ42frqJEITtlzMcHottIYLjZPleZvYmb/cqYKyC913ko5FoObZc
+         WhCzLEV4puPO14YrpOq9AvUh9I/WI1MEl4WBz6OvoiMez12fz+/mreYd31qZUdTqIOSD
+         0Xx7tXdIWhuZxjelpmAT1lo3Xsecy/4a1t2y0VCJCITpPeTybEzSTvzfBujyzMjGJepH
+         m+3g==
+X-Gm-Message-State: APjAAAW2NGj8qyjOMEKfDV3IKAcTNgbsBS38vLmLUkRpeUIMQhDjGY5d
+        EcvsafJXaPoGyH+69Mc4ado=
+X-Google-Smtp-Source: APXvYqzr9wqBqBn98GaDLhVjUUJGk0PiZhgQ4TPTrhEIO0XdGTgd/1bsTVqHefBKf0fR/CHG09fXaQ==
+X-Received: by 2002:a1c:5603:: with SMTP id k3mr6285078wmb.150.1575993956260;
+        Tue, 10 Dec 2019 08:05:56 -0800 (PST)
+Received: from Nover ([161.105.209.130])
+        by smtp.gmail.com with ESMTPSA id i16sm3742936wmb.36.2019.12.10.08.05.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 07:57:59 -0800 (PST)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     io-uring@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, David Miller <davem@davemloft.net>,
-        netdev@vger.kernel.org
-Subject: [PATCH 10/11] net: make socket read/write_iter() honor IOCB_NOWAIT
-Date:   Tue, 10 Dec 2019 08:57:41 -0700
-Message-Id: <20191210155742.5844-11-axboe@kernel.dk>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191210155742.5844-1-axboe@kernel.dk>
-References: <20191210155742.5844-1-axboe@kernel.dk>
+        Tue, 10 Dec 2019 08:05:56 -0800 (PST)
+Date:   Tue, 10 Dec 2019 17:05:55 +0100
+From:   Paul Chaignon <paul.chaignon@orange.com>
+To:     bpf@vger.kernel.org
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
+        paul.chaignon@gmail.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf-next 0/3] bpftool: match programs and maps by names
+Message-ID: <cover.1575991886.git.paul.chaignon@orange.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The socket read/write helpers only look at the file O_NONBLOCK. not
-the iocb IOCB_NOWAIT flag. This breaks users like preadv2/pwritev2
-and io_uring that rely on not having the file itself marked nonblocking,
-but rather the iocb itself.
+When working with frequently modified BPF programs, both the ID and the
+tag may change.  bpftool currently doesn't provide a "stable" way to match
+such programs.  This patchset allows bpftool to match programs and maps by
+name.
 
-Cc: David Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
----
- net/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+When given a tag that matches several programs, bpftool currently only
+considers the first match.  The first patch changes that behavior to
+either process all matching programs (for the show and dump commands) or
+error out.  The second patch implements program lookup by name, with the
+same behavior as for tags in case of ambiguity.  The last patch implements
+map lookup by name.
 
-diff --git a/net/socket.c b/net/socket.c
-index b343db1489bd..b116e58d6438 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -957,7 +957,7 @@ static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			     .msg_iocb = iocb};
- 	ssize_t res;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (iocb->ki_pos != 0)
-@@ -982,7 +982,7 @@ static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_pos != 0)
- 		return -ESPIPE;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (sock->type == SOCK_SEQPACKET)
+Paul Chaignon (3):
+  bpftool: match several programs with same tag
+  bpftool: match programs by name
+  bpftool: match maps by name
+
+ .../bpf/bpftool/Documentation/bpftool-map.rst |  12 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |  18 +-
+ tools/bpf/bpftool/bash-completion/bpftool     | 145 ++++++-
+ tools/bpf/bpftool/main.h                      |   4 +-
+ tools/bpf/bpftool/map.c                       | 366 +++++++++++++---
+ tools/bpf/bpftool/prog.c                      | 389 +++++++++++++-----
+ 6 files changed, 735 insertions(+), 199 deletions(-)
+
 -- 
-2.24.0
+2.17.1
 
