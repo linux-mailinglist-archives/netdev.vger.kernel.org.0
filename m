@@ -2,80 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0384118163
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 08:33:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E75E118173
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 08:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727221AbfLJHdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 02:33:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57284 "EHLO mail.kernel.org"
+        id S1727194AbfLJHkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 02:40:00 -0500
+Received: from first.geanix.com ([116.203.34.67]:43376 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726819AbfLJHdb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 02:33:31 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56308206D5;
-        Tue, 10 Dec 2019 07:33:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575963210;
-        bh=JPqMrsYFGc0/85JOVZhoNHjbP97FSnCpRd17R/WrPzU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1UwTEDsR+4Fc3q31V3+3yVI/WwROe8vR+e0jXcZam40sdwqFCzYqvuy3uFElovoPi
-         IaxV5PvYi5VUQgksQt4ZCf9eQWYbGMH+K5JTo8g8Gbtw7+T7Qg6G5rUiwZibcrt1Fy
-         lK3Aqyg/Qqzu3HInmOcp+A60teQWglSPyGvjX3w0=
-Date:   Tue, 10 Dec 2019 08:33:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, jgg@ziepe.ca, parav@mellanox.com
-Subject: Re: [net-next v3 00/20][pull request] Intel Wired LAN Driver Updates
- 2019-12-09
-Message-ID: <20191210073326.GA3077639@kroah.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+        id S1726819AbfLJHkA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 02:40:00 -0500
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id C9447415;
+        Tue, 10 Dec 2019 07:39:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1575963575; bh=/X2wh7Aqojci39EYRELV0KD06CaaYcZS5lrxkGROb1o=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=FfBQQ0tbaQtw0zEShUzqGm2+NsPKbA+OxieDiUFSqsodYN5UsTenDbEHWGCZCiNV5
+         4X5efLynHlqFR1QhKOLC9GzI6XO69dx5zIvXsdTSM0VrKpUGHM0uR4GGxiZ1imHDVc
+         g8jkejgGctH5v4mzzJnaIE0LZ2QnMuzTcuEEEOLNxlzuV0tCPbih9C4/sCVyFVItyg
+         USyPjWjbQCcPlJN8TgyAzUUMMQDmDRIdZyiYin8Ii0Jjy3uxCOHFiBuMGDCr6ZMMq2
+         gUAYDNeNI927e1t6pL2Kj7bxf4M47+vBNlj7KbUw+z/8VB/HUvgKFaYdFFqCSCERwY
+         c31dJUQikRFZA==
+Subject: Re: [PATCH 2/2] can: flexcan: disable clocks during stop mode
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191210071252.26165-1-qiangqing.zhang@nxp.com>
+ <20191210071252.26165-2-qiangqing.zhang@nxp.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <0035862d-f202-4a54-0ca0-92bec5dc7063@geanix.com>
+Date:   Tue, 10 Dec 2019 08:39:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20191210071252.26165-2-qiangqing.zhang@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8b5b6f358cc9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 02:49:15PM -0800, Jeff Kirsher wrote:
-> This series contains the initial implementation of the Virtual Bus,
-> virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the new
-> Virtual Bus and the new RDMA driver 'irdma' for use with 'ice' and 'i40e'.
-> 
-> The primary purpose of the Virtual bus is to provide a matching service
-> and to pass the data pointer contained in the virtbus_device to the
-> virtbus_driver during its probe call.  This will allow two separate
-> kernel objects to match up and start communication.
-> 
-> The last 16 patches of the series adds a unified Intel Ethernet Protocol
-> driver for RDMA that supports a new network device E810 (iWARP and
-> RoCEv2 capable) and the existing X722 iWARP device.  The driver
-> architecture provides the extensibility for future generations of Intel
-> hardware supporting RDMA.
-> 
-> The 'irdma' driver replaces the legacy X722 driver i40iw and extends the
-> ABI already defined for i40iw.  It is backward compatible with legacy
-> X722 rdma-core provider (libi40iw).
-> 
-> This series currently builds against net-next tree AND the rdma "for-next"
-> branch.
-> 
-> v1: Initial virtual bus submission
-> v2: Added example virtbus_dev and virtbus_drv in
->     tools/testing/sefltests/ to test the virtual bus and provide an
->     example on how to implement
-> v3: Added ice and i40e driver changes to implement the virtual bus, also
->     added the new irdma driver which is the RDMA driver which
->     communicates with the ice and i40e drivers
 
-Seems pretty premature to ask for a pull request after I rejected your
-first 2 submissions and have not seen a valid implementation yet.
 
-Please give me a few days to review this...
+On 10/12/2019 08.16, Joakim Zhang wrote:
+> Disable clocks during CAN in stop mode.
+> 
 
-greg k-h
+Hi Joakim
+
+I hope I can get time to test this patchset during this week :-)
+
+/Sean
