@@ -2,141 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE10119A1A
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61399119A5C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730128AbfLJVtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:49:40 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:36511 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729805AbfLJVti (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:49:38 -0500
-Received: by mail-ed1-f66.google.com with SMTP id j17so17400623edp.3;
-        Tue, 10 Dec 2019 13:49:37 -0800 (PST)
+        id S1729986AbfLJVwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:52:13 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37460 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729692AbfLJVwK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:52:10 -0500
+Received: by mail-pg1-f193.google.com with SMTP id q127so9533116pga.4
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:52:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w/RHh13G30dPsf7PF6XnyeobQh7tw/e5xd5HpXT9/Q4=;
-        b=d0LEtAxnhLCAUy4eZEBO9pjQsuo+sk9rCtpnoBe1m+chTpsclfzZUsvl60x37xwSSF
-         RQCG8VEFVHOyMsQhbTRTAzcT9IYFNOU7qBNf6xaN1q1l8WnnHabDyPSR+gfKtyd6Hzl8
-         kNtCB3Kbt5VTRiQgCT3wDQjw9gyyA6Zx8IkRjiSi64/8Dt3KIDMPnsZwdEEotz9W3JVa
-         /Br92nMRw1oZp2pW0+oDEiptF6WfaIsQMkwFad9b6q/FKHdL5llXMnsy7vk7gZHsCq8r
-         w1kHiPayTaPGSAvSxXelNy4m5DqlHx3allrqjQg4BdHfp3lG40h7gUnQsYcVzUuam6SC
-         W8Aw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=x1llI4VQgR/NNv9VK0TWAuEng4/7tgvnedskGQElizQ=;
+        b=TN/QOr87yPqhW/2lzNiPS+Jz3xhAwg45MFbe+8DISDcdLzuEBd561ejk5h0oCDb20M
+         cyLB2KMxESf4Ub5nYgtAAseJcF8JrG2TpoOOK8qfqxLY6L6KKBaLA7FApvFfMTJYJ/nD
+         rzvsG3Hy5V1bVEoDwP+bo3VLKfoUq4aXJ0+Xo3Cp173dvNPBZF+DAqX8e0nbD2CZKk9O
+         p8kMwBsQHh50nLmmwHguAwJKH8eve5hwTsj2EHRkq2Yn4/MIPkhixNEv6PV5mPIdAWdX
+         BfndNieAlydYIPORzdzVGct5J8O1VK1nNaPidFt04JpeZqNZDd0NoNb9YkalSivZSsmd
+         CHKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=w/RHh13G30dPsf7PF6XnyeobQh7tw/e5xd5HpXT9/Q4=;
-        b=TiqNiIKZQgpDTAmLoOcdzrUioqIPJdsNsvBUIIPnj7sCvp93MFHQIZCgHMq1Qqja2D
-         NdCbFO40nTJYGfaUB7kEpNJ7TSLr4MMmk9GNsPDizyM7/KeOhyHIb8XnlO7yrsVwa0nF
-         FIW2aFT5zYUMefFG6eRhFkmz9IJ7Md50N/Z6eWCZy/h8DbkpBzgcvp2CcX6jh4PjGGGS
-         WeMg4paCpsOT/9O8YYGl3KuNm0TJq/RD1NimvOr560pJEn86+Y9gixUWwpoepLIpOgmM
-         +5tfNF+H6YvJGkqCTct8Lmyg11eIlk6s1TDbM4no70dG1+5DHHbUJ9mdayelmehvRoqz
-         wlDw==
-X-Gm-Message-State: APjAAAWXOzHANhLo5R0blhjUvlbm7HUbDgF4YXDexT9iwxduENANA5Ej
-        hhRcg9/5F0NXPaimQdXdxExaik8D
-X-Google-Smtp-Source: APXvYqyzKRE8tpUASAqulcYAMp/VIZYChBYiJvgZL0hHpwtdz47CXM//W+Y8yjMnetPwCp4qgaOE4g==
-X-Received: by 2002:a17:906:14d5:: with SMTP id y21mr6285504ejc.212.1576014576083;
-        Tue, 10 Dec 2019 13:49:36 -0800 (PST)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r9sm129216ejx.31.2019.12.10.13.49.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Dec 2019 13:49:35 -0800 (PST)
-Subject: Re: [PATCH AUTOSEL 5.4 276/350] net: bcmgenet: Add RGMII_RXID support
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Stefan Wahren <wahrenst@gmx.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20191210210735.9077-1-sashal@kernel.org>
- <20191210210735.9077-237-sashal@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <d53a8fd0-c4a6-61eb-597c-b4cf094882d3@gmail.com>
-Date:   Tue, 10 Dec 2019 13:49:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=x1llI4VQgR/NNv9VK0TWAuEng4/7tgvnedskGQElizQ=;
+        b=M3Dei5ZcTT7RyJTx2M7rofmjddiuSNWJBgS2HrDJgWrKBy8l8SZgdXEHp3en0FHgN5
+         yTYrg5AA/1ZsmCElKjjDOXs5qvf2k/Ly40iWCrdcXG6PW0760ry74LA+yAbstTcaC9rK
+         M5KeEoK/Jj5fS3jH6Et9AtCXqMgLBI/1pQAXRNvl3ZxJXeFp19CEUKx2i33DrEnbw2hC
+         X9PVmMlrAWeff1D/7SrMsbTEwHjsoYXnzogf4fVpFJUs/+m3/zeA8GsspXXYFB9gVJaW
+         BvmUCR9lzkYO/WmiPr3Mu7TOEZi38rJbJrQG8GSHfXy/BmOOQ/Y90Q46UONM0AJdzKeJ
+         sWVA==
+X-Gm-Message-State: APjAAAXveLWHpIWZDEqAeZ57uMD0O77JUcxAtnWDtXy5Q/ZYdwX1J+oQ
+        0xLOMhdbgefLggxaNcYJ4R7vbQ==
+X-Google-Smtp-Source: APXvYqxXcor3tR+WOkruu/D28GkGpulVaBRaudEGLcLcwEBe3xdOjEwVkq8bKvNdtbH3cY30xIG6Mg==
+X-Received: by 2002:a63:213:: with SMTP id 19mr329909pgc.160.1576014729720;
+        Tue, 10 Dec 2019 13:52:09 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z13sm3865986pjz.15.2019.12.10.13.52.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 13:52:09 -0800 (PST)
+Date:   Tue, 10 Dec 2019 13:52:05 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        lkml <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or
+ ksyms
+Message-ID: <20191210135205.529044a4@cakuba.netronome.com>
+In-Reply-To: <20191210213148.kqd6xdvqjkh3zxst@ast-mbp.dhcp.thefacebook.com>
+References: <20191210181412.151226-1-toke@redhat.com>
+        <20191210125457.13f7821a@cakuba.netronome.com>
+        <87eexbhopo.fsf@toke.dk>
+        <20191210132428.4470a7b0@cakuba.netronome.com>
+        <20191210213148.kqd6xdvqjkh3zxst@ast-mbp.dhcp.thefacebook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191210210735.9077-237-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/19 1:06 PM, Sasha Levin wrote:
-> From: Stefan Wahren <wahrenst@gmx.net>
-> 
-> [ Upstream commit da38802211cc3fd294211a642932edb09e3af632 ]
-> 
-> This adds the missing support for the PHY mode RGMII_RXID.
-> It's necessary for the Raspberry Pi 4.
-> 
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+On Tue, 10 Dec 2019 13:31:50 -0800, Alexei Starovoitov wrote:
+> On Tue, Dec 10, 2019 at 01:24:28PM -0800, Jakub Kicinski wrote:
+> > On Tue, 10 Dec 2019 22:09:55 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote: =20
+> > > Jakub Kicinski <jakub.kicinski@netronome.com> writes: =20
+> > > > On Tue, 10 Dec 2019 19:14:12 +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:   =20
+> > > >> When the kptr_restrict sysctl is set, the kernel can fail to return
+> > > >> jited_ksyms or jited_prog_insns, but still have positive values in
+> > > >> nr_jited_ksyms and jited_prog_len. This causes bpftool to crash wh=
+en trying
+> > > >> to dump the program because it only checks the len fields not the =
+actual
+> > > >> pointers to the instructions and ksyms.
+> > > >>=20
+> > > >> Fix this by adding the missing checks.
+> > > >>=20
+> > > >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> =
+  =20
+> > > >
+> > > > Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
+> > > >
+> > > > and
+> > > >
+> > > > Fixes: f84192ee00b7 ("tools: bpftool: resolve calls without using i=
+mm field")
+> > > >
+> > > > ?   =20
+> > >=20
+> > > Yeah, guess so? Although I must admit it's not quite clear to me whet=
+her
+> > > bpftool gets stable backports, or if it follows the "only moving
+> > > forward" credo of libbpf? =20
+> >=20
+> > bpftool does not have a GH repo, and seeing strength of Alexei's
+> > arguments in the recent discussion - I don't think it will. So no
+> > reason for bpftool to be "special" =20
+>=20
+> bpftool always was and will be a special user of libbpf.
 
-There are more changes required to make the GENET controller on the Pi 4
-to work, how and why this was selected? Same comment applies to the 4.19
-automatic selection.
--- 
-Florian
+There we go again. Making proclamations without any justification or
+explanation.
+
+Maybe there is a language barrier between us, but I wrote the initial
+bpftool code, so I don't see how you (who authored one patch) can say
+what it was or is. Do you mean to say what you intend to make it?
+
+bpftool was intended to be a CLI to BPF _kernel_ interface. libbpf was
+just the library that we all agreed to use moving forward for ELF
+loading.
+
+I'm not going to argue with you again. You kept bad mouthing iproute2
+and then your only argument was the reviews sometimes take longer than
+24 hours. Which I'm sure you have a lot of experience with:
+
+  iproute2$ git log --author=3DStarov --oneline=20
+4bfe68253670 iptnl: add support for collect_md flag in IPv4 and IPv6 tunnels
+
+  iproute2$ git log --author=3Dfb.com --oneline=20
+3da6d055d93f bpf: add btf func and func_proto kind support
+7a04dd84a7f9 bpf: check map symbol type properly with newer llvm compiler
+73451259daaa tc: fix ipv6 filter selector attribute for some prefix lengths
+0b4ea60b5a48 bpf: Add support for IFLA_XDP_PROG_ID
+4bfe68253670 iptnl: add support for collect_md flag in IPv4 and IPv6 tunnels
+414aeec90f82 ss: Add tcp_info fields data_segs_in/out
+409998c5a4eb iproute: ip-gue/ip-fou manpages
+
+Upstreaming bpftool was a big mistake, but we live and we learn.
