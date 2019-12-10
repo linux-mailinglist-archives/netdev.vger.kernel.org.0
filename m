@@ -2,90 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEE0118FF1
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09EAB118FF6
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727704AbfLJSnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 13:43:46 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33288 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727568AbfLJSnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:43:46 -0500
-Received: by mail-wm1-f66.google.com with SMTP id d139so1831576wmd.0
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 10:43:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=/T5WjX6H/ErjoxiBfZBOaK9N8M3Emjx06kbzRJKScRU=;
-        b=u61jC3dd5btuU1LTirGEHKGHO/sJAFpAvEbzr+r1IhSxUBB5d0YLbmzQBXxIGwpBqC
-         dyShA8AuIfIsoS6Gt89TdqqcNVg4/oxz9xEbe43RzdYkG00ZvC74qekSPQ4p4RVpYWS0
-         erL4Shrlk+eanoB++nsy6IlIDey4C0c5fJYz8A18wCVW3s4aZgx/X+UsPX+XKO1MLNU6
-         5jWbrMHbQk61z+gM/h8jjPZ08CyI4F4iTrqWSz7cOkoagX2DbAFgXX6PXs7sJrQBTJ1h
-         Fdv4BNBKcV42OHJJQe1DoQTwprZLJkMe9B2qIF5lFvN1pws65xCHBUq3ao8/2bwpghuw
-         bXwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=/T5WjX6H/ErjoxiBfZBOaK9N8M3Emjx06kbzRJKScRU=;
-        b=tGEOuilqZL8lbka534g7kevi9BTq/LdTCMHHlpIYS3MsBXthSGRpUhyX0p6aDzExYV
-         mLWzKQZL3rz6Xaen9khSQVDNcAIqCA2/B7/i+GOJs/WmsmRGrvPTCq3aJL966GmGvgpy
-         dxze040auEvDFjV/ffFImRlOlEN+yUzQylA0m5zfZa8+m8Qlnngq/iRG86B6pIdvWovY
-         KLZAHeex39BEoP5+/fTPyqb9DU/nt65ieAc23vhVMqk2UmJSVO/z2BZHKhVN7NXA5eQk
-         jEELMa+PNeb1m1QX90Ve5aXKvGt5zim44WfdM6LfhU6gQBfsCaPQYQ55qIsBOHtLM6Qh
-         5bKA==
-X-Gm-Message-State: APjAAAVA75LwFAOulhqcBnPRiH6OdfyVOyN7/zeqjW73r4Eiyw9uqNDD
-        dp4kh5MtxP6ZMnQTghaizzVtHQ==
-X-Google-Smtp-Source: APXvYqxvMexfjRMDF/ZdvhMlXOWa9ckksgWIQ7Dd4HvHvuiFS9+JslyuWH/yANwKzxTom9TBT9/iKw==
-X-Received: by 2002:a7b:c95a:: with SMTP id i26mr6749458wml.67.1576003424871;
-        Tue, 10 Dec 2019 10:43:44 -0800 (PST)
-Received: from localhost (ip-94-113-220-172.net.upcbroadband.cz. [94.113.220.172])
-        by smtp.gmail.com with ESMTPSA id o4sm4121296wrx.25.2019.12.10.10.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 10:43:44 -0800 (PST)
-Date:   Tue, 10 Dec 2019 19:43:43 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/5] rtnetlink: provide permanent hardware
- address in RTM_NEWLINK
-Message-ID: <20191210184343.GB7075@nanopsycho>
-References: <cover.1575982069.git.mkubecek@suse.cz>
- <7c28b1aa87436515de39e04206db36f6f374dc2f.1575982069.git.mkubecek@suse.cz>
- <20191210095105.1f0008f5@cakuba.netronome.com>
+        id S1727643AbfLJSqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 13:46:51 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:55744 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbfLJSqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:46:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LC5ZIQF4aMAdhy0msRUf40fzfdlJt+bjYc9pWJEM/pY=; b=n9sb8OUoph1x4WTdTvU+BmBCC
+        sg3GwKOcUqk9572tmCOW9/z3SqXJuW4QKqsqrH6Fw3fPsWeBvxq2arzHfg6iV41n5xN+wBsE8SIwe
+        WIdlcTwftGk9aE8EGZ+bznBF1P12dv2NCK4SBburQVb2JDz9OuuWA7oiBUZmani5Or6fvehsrsh5g
+        Eo43BeT1gcohHFQE/oyn2is0HbXh7Y1fReIsONDT7UMUejatRaMMeTdAscbQTCJZdPeFE/tvLNBg4
+        ENE180uRDqiWMsUMa/F/bLezhMYnqkUzQhuYiqxL7dZMHwGyEQpqusX+CQikGYGiT4xKjqHBqeG3G
+        RtAzvfRwA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:47050)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iekWx-0003ES-2a; Tue, 10 Dec 2019 18:46:43 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iekWu-0004sA-O2; Tue, 10 Dec 2019 18:46:40 +0000
+Date:   Tue, 10 Dec 2019 18:46:40 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 13/14] net: phy: add Broadcom BCM84881 PHY
+ driver
+Message-ID: <20191210184640.GU1344@shell.armlinux.org.uk>
+References: <20191209151553.GP25745@shell.armlinux.org.uk>
+ <E1ieKov-0004vw-Dk@rmk-PC.armlinux.org.uk>
+ <557220a9-bdf4-868a-d9cd-a382ae80d288@gmail.com>
+ <20191210175837.GY25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191210095105.1f0008f5@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191210175837.GY25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Dec 10, 2019 at 06:51:05PM CET, jakub.kicinski@netronome.com wrote:
->On Tue, 10 Dec 2019 14:07:53 +0100 (CET), Michal Kubecek wrote:
->> @@ -1822,6 +1826,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
->>  	[IFLA_PROP_LIST]	= { .type = NLA_NESTED },
->>  	[IFLA_ALT_IFNAME]	= { .type = NLA_STRING,
->>  				    .len = ALTIFNAMSIZ - 1 },
->> +	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
->>  };
->>  
->>  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
->
->Jiri, I just noticed ifla_policy didn't get strict_start_type set when
->ALT_IFNAME was added, should we add it in net? 🤔
+On Tue, Dec 10, 2019 at 05:58:37PM +0000, Russell King - ARM Linux admin wrote:
+> On Tue, Dec 10, 2019 at 09:34:16AM -0800, Florian Fainelli wrote:
+> > On 12/9/19 7:19 AM, Russell King wrote:
+> > > Add a rudimentary Clause 45 driver for the BCM84881 PHY, found on
+> > > Methode DM7052 SFPs.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > 
+> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > 
+> > > ---
+> > >  drivers/net/phy/Kconfig    |   6 +
+> > >  drivers/net/phy/Makefile   |   1 +
+> > >  drivers/net/phy/bcm84881.c | 269 +++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 276 insertions(+)
+> > >  create mode 100644 drivers/net/phy/bcm84881.c
+> > > 
+> > > diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> > > index fe602648b99f..41272106dea9 100644
+> > > --- a/drivers/net/phy/Kconfig
+> > > +++ b/drivers/net/phy/Kconfig
+> > > @@ -329,6 +329,12 @@ config BROADCOM_PHY
+> > >  	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
+> > >  	  BCM5481, BCM54810 and BCM5482 PHYs.
+> > >  
+> > > +config BCM84881_PHY
+> > > +	bool "Broadcom BCM84881 PHY"
+> > > +	depends on PHYLIB=y
+> > > +	---help---
+> > > +	  Support the Broadcom BCM84881 PHY.
+> > 
+> > Cannot we make this tristate, I believe we cannot until there are more
+> > fundamental issues (that you just reported) to be fixed, correct?
+> 
+> Indeed.  The problem I saw was that although the bcm84881 has the
+> PHY correctly described, for whatever reason, the module was not
+> loaded.
+> 
+> What I think is going in is that with modern udev userspace,
+> request_module() is not functional, and we do not publish the
+> module IDs for Clause 45 PHYs via uevent.  Consequently, there
+> exists no mechanism to load a Clause 45 PHY driver from the
+> filesystem.
 
-Hmm, I guess that is a good idea.
+I just attempted booting with sfp as a module, bcm84881 as a module.
+sfp has to be loaded for the SFP cage to be recognised, so module
+loading is availble prior to the PHY being known to the kernel.
+
+The SFP is probed, and the PHY identified (via my debug):
+
+[    7.209549] sfp sfp: phy PMA devid: 0xae02 0x5151
+
+The PHY is not bound to its driver at this point.
+
+We then try to connect to the PHY, but the support mask is zero,
+so we know nothing about what modes this PHY supports:
+
+[    7.215985] mvneta f1034000.ethernet eno2: phylink_sfp_connect_phy: s=00,00000000,00000000 a=00,00000000,00000000
+[    7.215997] mvneta f1034000.ethernet eno2: validation with support 00,00000000,00000000 failed: -22
+[    7.226343] sfp sfp: sfp_add_phy failed: -22
+
+and we fail - because we are unable to identify what mode we should
+configure the MAC side for, because we have no idea what the
+capabilities of the PHY are at this stage.
+
+We can't wait until we've called phylink_attach_phy(), because that
+configures the PHY for the phy interface mode that was passed in.
+
+There is no sign of the bcm84881 module being loaded.
+
+This is the opposite problem to the one I recently posted about
+regarding the 88e1111 issue, as here we rely on knowing something
+about the PHY capabilities.
+
+I think this is showing that phylink has a very difficult job trying
+to match the capabilities of the SFP module with the capabilities of
+the host MAC - we have no real idea what phy interface modes the
+host MAC supports, or how the PHY is going to behave (which of the
+many modes the PHY is going to choose for particular speeds.)
+Plus the problem that the phylib support mask no longer reflects
+the PHYs abilities after phy_attach_direct() has been called.
+
+I thought I had something sorted, but only if the PHY driver is
+built-in.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
