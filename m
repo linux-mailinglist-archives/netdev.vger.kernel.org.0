@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D68A1184C7
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:18:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 578EF1184D9
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbfLJKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 05:17:47 -0500
-Received: from mx2.suse.de ([195.135.220.15]:48892 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726574AbfLJKRq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 05:17:46 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 99CB6AD4A;
-        Tue, 10 Dec 2019 10:17:42 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 8681F1E0B23; Tue, 10 Dec 2019 11:17:38 +0100 (CET)
-Date:   Tue, 10 Dec 2019 11:17:38 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>, stable@vger.kernel.org
-Subject: Re: [PATCH v8 17/26] media/v4l2-core: set pages dirty upon releasing
- DMA buffers
-Message-ID: <20191210101738.GE1551@quack2.suse.cz>
-References: <20191209225344.99740-1-jhubbard@nvidia.com>
- <20191209225344.99740-18-jhubbard@nvidia.com>
- <20191209165627.bf657cb8fdf660e8f91e966c@linux-foundation.org>
+        id S1727242AbfLJKUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 05:20:07 -0500
+Received: from a27-18.smtp-out.us-west-2.amazonses.com ([54.240.27.18]:50886
+        "EHLO a27-18.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727032AbfLJKUH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:20:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1575973206;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
+        bh=0Kb+E+8ZdD4D68+aCTRlNTqRFi3yA4uuBGG8Rr2pQgY=;
+        b=NeYakiUCjcRoxcFOZnt6eDM0Jw6DgF/tnZftTAXzQSXZCBTLtVUHjodLxZvTXBDH
+        Hq9okvn8vJADB+4lLhu1iExlQjDCa2avyXGPQiQ2N28sL2jhNW2J3eUnPftbCBE0sjS
+        8zvVlxy4TRDsGNGGSfBhTwmNwz1AXdSkjIZLROms=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1575973206;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
+        bh=0Kb+E+8ZdD4D68+aCTRlNTqRFi3yA4uuBGG8Rr2pQgY=;
+        b=VuITrJj+QGHSbjoRYgHcNgD5stmzkqoubp1qS/rPYXMmGRDKHEZ+1XFtF503+RoY
+        vZEjZl3cu1aydYOch0/P/dlSIWprQbnvW3xoRg52LTx6/OAKq52uqvIJOIT+pqxMXjJ
+        +VfRIbeZnjfCG+yBJSf+s9Lz9Vf5FAcJAaECBda8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B3419C447AA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Soeren Moch <smoch@web.de>
+Cc:     Wright Feng <wright.feng@cypress.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] brcmfmac: reset two D11 cores if chip has two D11 cores
+References: <20191209223822.27236-1-smoch@web.de>
+        <0101016eef117d24-d6de85e6-6356-4c73-bff4-f787e8c982bc-000000@us-west-2.amazonses.com>
+        <d72831ab-902e-0b69-3008-6eb915784c4d@web.de>
+Date:   Tue, 10 Dec 2019 10:20:06 +0000
+In-Reply-To: <d72831ab-902e-0b69-3008-6eb915784c4d@web.de> (Soeren Moch's
+        message of "Tue, 10 Dec 2019 11:14:22 +0100")
+Message-ID: <0101016eef52b82d-f791d0d8-d317-4050-9e8a-07a3fa7dafd8-000000@us-west-2.amazonses.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209165627.bf657cb8fdf660e8f91e966c@linux-foundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-SES-Outgoing: 2019.12.10-54.240.27.18
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 09-12-19 16:56:27, Andrew Morton wrote:
-> On Mon, 9 Dec 2019 14:53:35 -0800 John Hubbard <jhubbard@nvidia.com> wrote:
-> 
-> > After DMA is complete, and the device and CPU caches are synchronized,
-> > it's still required to mark the CPU pages as dirty, if the data was
-> > coming from the device. However, this driver was just issuing a
-> > bare put_page() call, without any set_page_dirty*() call.
-> > 
-> > Fix the problem, by calling set_page_dirty_lock() if the CPU pages
-> > were potentially receiving data from the device.
-> > 
-> > Reviewed-by: Christoph Hellwig <hch@lst.de>
-> > Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-> > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > Cc: <stable@vger.kernel.org>
-> 
-> What are the user-visible effects of this change?
+Soeren Moch <smoch@web.de> writes:
 
-Presumably loss of captured video data if the page writeback hits in the
-wrong moment (i.e., after the page was faulted in but before the video HW
-stored data in the page) and the page then gets evicted from the page cache.
+> On 10.12.19 10:08, Kalle Valo wrote:
+>> Soeren Moch <smoch@web.de> writes:
+>>
+>>> From: Wright Feng <wright.feng@cypress.com>
+>>>
+>>> There are two D11 cores in RSDB chips like 4359. We have to reset two
+>>> D11 cores simutaneously before firmware download, or the firmware may
+>>> not be initialized correctly and cause "fw initialized failed" error.
+>>>
+>>> Signed-off-by: Wright Feng <wright.feng@cypress.com>
+>> Soeren's s-o-b missing at least in patches 1, 6 and 7. Please read:
+>>
+>> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#signed-off-by_missing
+>>
+>
+> OK, also for unmodified patches another s-o-b is required.
 
-								Honza
+Yes, every patch you submit needs to have your s-o-b to mark that you
+agree with Developer's Certificate of Origin.
+
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
 
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
