@@ -2,80 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ACB6118D68
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 17:20:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE53118D9C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 17:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727522AbfLJQUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 11:20:24 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45018 "EHLO vps0.lunn.ch"
+        id S1727508AbfLJQaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 11:30:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727178AbfLJQUY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 11:20:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=c6CPgm0IhvA3nyR/Q2z35omEWncDMQnrCCrPzyQjsqw=; b=zQ7/HkMyx7E/bQvQ8wnGiAEg69
-        wrwuBNQHvjITFooDPHqXzjP+oYp8DjZlT8EbI6jDKG02xyQTeqeW4P2UMdJpe4ajwHur01GjPAu8P
-        N5sULJJQTlq8XNVqXTSzm1RXsVpcuKum6ZnFH+oeLhI31klnpZfgG3VW/6sI72DN7mig=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ieiF8-0005FM-Vd; Tue, 10 Dec 2019 17:20:10 +0100
-Date:   Tue, 10 Dec 2019 17:20:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     f.fainelli@gmail.com, vivien.didelot@savoirfairelinux.com,
-        matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
-        frank-w@public-files.de
-Subject: Re: [PATCH net-next 3/6] dt-bindings: net: dsa: add new MT7531
- binding to support MT7531
-Message-ID: <20191210162010.GB27714@lunn.ch>
-References: <cover.1575914275.git.landen.chao@mediatek.com>
- <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
+        id S1727177AbfLJQaU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 11:30:20 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6AD332073B;
+        Tue, 10 Dec 2019 16:30:19 +0000 (UTC)
+Date:   Tue, 10 Dec 2019 11:30:17 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        X86 ML <x86@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf 1/3] ftrace: Fix function_graph tracer interaction
+ with BPF trampoline
+Message-ID: <20191210113017.2fc14de7@gandalf.local.home>
+In-Reply-To: <CAADnVQJVabzj-aytRnZrFCwRJAf+g_wZ-zWiO7D0bUm7UVpDQw@mail.gmail.com>
+References: <20191209000114.1876138-1-ast@kernel.org>
+        <20191209000114.1876138-2-ast@kernel.org>
+        <CAADnVQJVabzj-aytRnZrFCwRJAf+g_wZ-zWiO7D0bUm7UVpDQw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +Example 4:
-> +
-> +&eth {
-> +	gmac0: mac@0 {
-> +		compatible = "mediatek,eth-mac";
-> +		reg = <0>;
-> +		phy-mode = "2500base-x";
-> +
-> +		fixed-link {
-> +			speed = <1000>;
-> +			full-duplex;
-> +			pause;
-> +		};
-> +	};
+On Tue, 10 Dec 2019 08:19:42 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-2500Base-X, but fixed link speed 1000?
+> On Sun, Dec 8, 2019 at 4:03 PM Alexei Starovoitov <ast@kernel.org> wrote:
+> >
+> > Depending on type of BPF programs served by BPF trampoline it can call original
+> > function. In such case the trampoline will skip one stack frame while
+> > returning. That will confuse function_graph tracer and will cause crashes with
+> > bad RIP. Teach graph tracer to skip functions that have BPF trampoline attached.
+> >
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>  
+> 
+> Steven, please take a look.
 
-> +				port@6 {
-> +					reg = <6>;
-> +					label = "cpu";
-> +					ethernet = <&gmac0>;
-> +					phy-mode = "2500base-x";
-> +
-> +					fixed-link {
-> +						speed = <1000>;
-> +						full-duplex;
-> +						pause;
-> +					};
+I'll try to get to it today or tomorrow. I have some other work to get
+done that my job requires I do ;-)
 
-Same here!
-
-     Andrew
+-- Steve
