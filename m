@@ -2,159 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8F2118ACC
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 15:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7730118ACE
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 15:27:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727516AbfLJO1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 09:27:36 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28627 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727061AbfLJO1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 09:27:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575988054;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DzrfXrqS3i0iVxslRT9HAUzTMYttEiFFx6V9DjllFWk=;
-        b=W4fAZHWP8bLvyk8hy1d4EWjsxjawEaI113wtarJYG3eQccSjbepiYAXxpEwDMf45AtF/FF
-        YRF1buyhaY/vLD+SXGj4yIEKHzSk9rQp89uLbEr5Km1dkKTsJvAqh1NPi4avdimAabzrg6
-        Lstw48hUmCOxGLL1jjE6tpgpD39boNM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-317-iykX1j-tMSuuq2-P97vuTg-1; Tue, 10 Dec 2019 09:27:33 -0500
-Received: by mail-wm1-f71.google.com with SMTP id 7so654655wmf.9
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 06:27:32 -0800 (PST)
+        id S1727555AbfLJO14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 09:27:56 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38653 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727436AbfLJO1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 09:27:52 -0500
+Received: by mail-wr1-f66.google.com with SMTP id y17so20349744wrh.5
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 06:27:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=W5IUf7nsGsbe8tjOIPGAbRfLSF1koHZCPW1tiAPp8KQ=;
+        b=L2E5nPkojADtCwJoOc2zngiVfEFaOKerMJDA+dP8i3AACTrFfXIMrkbZ9lYGWVu9sV
+         D2erbLhpXuzHVInZHHR8xNKZ/SM9Kp8u0zdDN8Dlt+Sj0C4Sa7S0/keaBfvgNCDUEXo8
+         h5kebBQIiPHTu3yDYxD7ieCguFvT34pbVQXmbMVMuWJpPfTAM5RiAru/6vv47X8TyUXd
+         Vs3IusyQUM204x2b1Y58btUqzfGzL2KEgImhUKTVNeggWhnICXA0Aq69dkdgr6qLJ31M
+         MLm1/iZMet/4Jam1bbyZ2eZOWDvTuC4v3/jP+cvta2HH5p+QG20t2PqOlYBlqb8ASitt
+         cqqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=X1lHEli2ZPEUphqWeLKjY7ANrLSq38w1XZiJ4O+hMh4=;
-        b=rzarQfv6jYpTP3bIqeJB8DzoOuwao40p7DbznHrWNYENkqpTiQzZkD3pv/vO55fQhM
-         4stV/WQ10FoK1uJNrsGcIMd3WsH5PL2BbIW21j4by9vMchGN1kBV1S8XL/Nocb6R1NLs
-         cN6TUtL4Cr1vmyA5QrzuR5Uj5JhPMBwXSATWTcmE6hqHA6N3akaF5miedcCUA7KNoHzV
-         mxg1OUZlf3Vl0HRX+JK93STT6/60N/OE5ijvMu4FLBse1oeqqlJdQ7fh2OI3QKKHTH65
-         YLflYxhHAhSikcr6x3zFjEn1hrScCF3efQJ8+vIoIPE6kj1N1bpA5+m7+6SoXiaiizN0
-         ThNw==
-X-Gm-Message-State: APjAAAUIkobrCWgT/rD0Hab6Jgisoy/Yls0BC/6lm2Z1thDOim7CKmC/
-        8w4urqY+2O7Y5wGfJsvTguHrh0tZgw6aNy6NNIEv0QDNiajHtFtPQe4CzcZ0+4c1PIw/SIZ5i2j
-        j6LKxkYj9+xPyHbRG
-X-Received: by 2002:a7b:c30b:: with SMTP id k11mr3443159wmj.36.1575988050871;
-        Tue, 10 Dec 2019 06:27:30 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyORv9pUAClZj3uuRIeWG42TpWgdtau7zFiq4ztIMEHBp0R7wL6KdQcy5e01sv2Y+LjIftgSw==
-X-Received: by 2002:a7b:c30b:: with SMTP id k11mr3443140wmj.36.1575988050692;
-        Tue, 10 Dec 2019 06:27:30 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id n1sm3420590wrw.52.2019.12.10.06.27.29
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=W5IUf7nsGsbe8tjOIPGAbRfLSF1koHZCPW1tiAPp8KQ=;
+        b=i3hPSf7N+JsPYRO0NZ108clkVz+FfWQgZw02LiCLKLdgTh9/ZNTN8V9e5GFFq/BBbj
+         0UwRoflXeHr4NqSORI9+SBgK8lKdS6hbg+0p2qDaaY2HByjRcEs9+82V5QUsTImsrjaA
+         1ygSzbNnqHN10QWY+QgX6PNGZIY817ZbdE5XOtAu6VO5/ZXomUANbFurGlGhyYiIUJbi
+         khaUiQM1sPPORm1mEcDEUlM1PKqUS2ZX/j0Dq9/Hpk6vhiHaWRn/lSfQqvnmbuveAApn
+         L0kV3rmH9N52tyLoHlvvzr6KwpdKLIrAlpJ8wepL+eQK22SRoVb2LnzgiWG30Hfs6nib
+         bFPw==
+X-Gm-Message-State: APjAAAVS+7KpJJVbpps3CWR0nWo6F+iwOtlrD5/v+pBaGlePq41XCA+q
+        UVP5lBCXzVnx/Sd+slNQrZTiew==
+X-Google-Smtp-Source: APXvYqyUBijfm2TzBx1LeB2u6bQBew7o/j0N0PGJZC176s95+fAfBOddZN/O46L6Umk0VstiaF22Fg==
+X-Received: by 2002:a5d:46c1:: with SMTP id g1mr3564701wrs.200.1575988070777;
+        Tue, 10 Dec 2019 06:27:50 -0800 (PST)
+Received: from localhost (ip-94-113-220-172.net.upcbroadband.cz. [94.113.220.172])
+        by smtp.gmail.com with ESMTPSA id m10sm3468304wrx.19.2019.12.10.06.27.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 06:27:30 -0800 (PST)
-Date:   Tue, 10 Dec 2019 09:27:27 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Julio Faracco <jcfaracco@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, dnmendes76@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Tue, 10 Dec 2019 06:27:50 -0800 (PST)
+Date:   Tue, 10 Dec 2019 15:27:49 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Martin Habets <mhabets@solarflare.com>
-Subject: Re: [PATCH RFC net-next v8 1/3] netdev: pass the stuck queue to the
- timeout handler
-Message-ID: <20191210092623-mutt-send-email-mst@kernel.org>
-References: <20191203201804.662066-1-mst@redhat.com>
- <20191203201804.662066-2-mst@redhat.com>
- <CAMuHMdXDm0NiCk1pD_-wS9c-ErmRKkrqnPc_pGKzG=QB35mj9A@mail.gmail.com>
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 5/5] ethtool: provide link mode names as a
+ string set
+Message-ID: <20191210142749.GA7075@nanopsycho>
+References: <cover.1575982069.git.mkubecek@suse.cz>
+ <fe689865e1e8cda85dd0ca259c820c473bd9576c.1575982069.git.mkubecek@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdXDm0NiCk1pD_-wS9c-ErmRKkrqnPc_pGKzG=QB35mj9A@mail.gmail.com>
-X-MC-Unique: iykX1j-tMSuuq2-P97vuTg-1
-X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
+In-Reply-To: <fe689865e1e8cda85dd0ca259c820c473bd9576c.1575982069.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 08:40:06AM +0100, Geert Uytterhoeven wrote:
-> Hi Michael,
->=20
-> On Tue, Dec 3, 2019 at 9:21 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > This allows incrementing the correct timeout statistic without any mess=
-.
-> > Down the road, devices can learn to reset just the specific queue.
-> >
-> > The patch was generated with the following script:
->=20
-> [...]
->=20
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->=20
-> > --- a/drivers/net/ethernet/8390/8390p.c
-> > +++ b/drivers/net/ethernet/8390/8390p.c
-> > @@ -41,9 +41,9 @@ void eip_set_multicast_list(struct net_device *dev)
-> >  }
-> >  EXPORT_SYMBOL(eip_set_multicast_list);
-> >
-> > -void eip_tx_timeout(struct net_device *dev)
-> > +void eip_tx_timeout(struct net_device *dev, unsigned int txqueue)
-> >  {
-> > -       __ei_tx_timeout(dev);
-> > +       __ei_tx_timeout(dev, txqueue);
-> >  }
-> >  EXPORT_SYMBOL(eip_tx_timeout);
->=20
-> On Mon, Dec 9, 2019 at 6:37 AM <noreply@ellerman.id.au> wrote:
-> > FAILED linux-next/m68k-defconfig/m68k Mon Dec 09, 16:34
-> >
-> > http://kisskb.ellerman.id.au/kisskb/buildresult/14060060/
-> >
-> > Commit:   Add linux-next specific files for 20191209
-> >           6cf8298daad041cd15dc514d8a4f93ca3636c84e
-> > Compiler: m68k-linux-gcc (GCC) 4.6.3 / GNU ld (GNU Binutils) 2.22
-> >
-> > Possible errors
-> > ---------------
-> >
-> > drivers/net/ethernet/8390/8390p.c:44:6: error: conflicting types for 'e=
-ip_tx_timeout'
-> > drivers/net/ethernet/8390/8390p.c:48:1: error: conflicting types for 'e=
-ip_tx_timeout'
-> > make[5]: *** [scripts/Makefile.build:266: drivers/net/ethernet/8390/839=
-0p.o] Error 1
-> > make[4]: *** [scripts/Makefile.build:503: drivers/net/ethernet/8390] Er=
-ror 2
-> > make[3]: *** [scripts/Makefile.build:503: drivers/net/ethernet] Error 2
-> > make[2]: *** [scripts/Makefile.build:503: drivers/net] Error 2
-> > make[1]: *** [Makefile:1693: drivers] Error 2
-> > make: *** [Makefile:179: sub-make] Error 2
->=20
-> Looks like you forgot to update the forward declaration in
-> drivers/net/ethernet/8390/8390.h
+Tue, Dec 10, 2019 at 02:08:13PM CET, mkubecek@suse.cz wrote:
+>Unlike e.g. netdev features, the ethtool ioctl interface requires link mode
+>table to be in sync between kernel and userspace for userspace to be able
+>to display and set all link modes supported by kernel. The way arbitrary
+>length bitsets are implemented in netlink interface, this will be no longer
+>needed.
+>
+>To allow userspace to access all link modes running kernel supports, add
+>table of ethernet link mode names and make it available as a string set to
+>userspace GET_STRSET requests. Add build time check to make sure names
+>are defined for all modes declared in enum ethtool_link_mode_bit_indices.
+>
+>Once the string set is available, make it also accessible via ioctl.
+>
+>Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Fixed now.
-
-> There may be others...
-
-Could not find any but pls do let me know.
-
-> http://kisskb.ellerman.id.au/kisskb/head/6cf8298daad041cd15dc514d8a4f93ca=
-3636c84e/
->=20
-> Gr{oetje,eeting}s,
->=20
->                         Geert
->=20
-> --=20
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                 -- Linus Torvalds
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
