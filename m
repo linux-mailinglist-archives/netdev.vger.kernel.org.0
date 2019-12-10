@@ -2,174 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9268D118F67
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:59:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B070118F78
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:06:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbfLJR7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:59:36 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8458 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727621AbfLJR7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:59:36 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBAHwX0a002439;
-        Tue, 10 Dec 2019 09:59:20 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=zorBJGWG668atPyeKqXErh0ofzt2AkMhpWlOsGLOfuk=;
- b=ORhPR4U9lav33wzr39WJqT8Pio4YjvaL3SEUB1mDNy2cXc7+ITaTSsc/oOmqbYZ/kpxs
- k46F2dnJNzpv0lesw+cYSPo4SrI/6hbJ/Nr9+3e2IhS+4+HlAUOkiNzUyeNtZVv/DV+8
- 7c8dKqbxd5fkKdZlyXptXBXpy1UOsXfj6cs= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2wrbemq8ts-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 10 Dec 2019 09:59:20 -0800
-Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 10 Dec 2019 09:59:19 -0800
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 10 Dec 2019 09:59:19 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 10 Dec 2019 09:59:19 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EZLutvl8OyJGrdjafzXdU77XeMfRfnWykAx3Jt9efXMJfdBmB6sAr+SH9Yrj1bZyXZS8nxpxls5Na+C5C7QZEs6DKMoTEANipii4bczlqoKCDtEVgpj36D5rdVdxq2vP/zvphT/BriUCTQA1An16vO67ADra4v5PPtwu0TRcJljgKO/twcFrBufWsqgZ7+ptL6tuKiWPOMOTHMrSCsV/Z9589cLJI1dj7lX8sYtbG7iM5pby375wVDFsSZfnDqCnElafHPekMMuE9SO9FEnB6ATsVWrZHGu/kJr2Pi21f0OqTqQy0n7TJiZDlOPrcy5Qp5M7SjAEeUF2D0RuJ9VQNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zorBJGWG668atPyeKqXErh0ofzt2AkMhpWlOsGLOfuk=;
- b=IxzKcUGTc7vKvqy4mvE+hwIYbVpVuuOHXp/FCe0C6jWn4OZH4Xa02cdZoC4P8z+Gunxo3aKFz1OEkpWi1yKzw3OsgfKja0MOwQCuLjdOB0sYI0TknZZmc+MW228BWBENu0kRI/u47rdRVh9z1NLjnPXdbtVvJgsBFjKv54arTwX2rp4mc7CXe2gexonlL7fhaVv0Hz6NKB70NzZRT0/oZZneHmtKc68vtMhszxxYTCM3q4t0cuDL3WXya40/62AhnupVTLV/T+0QG7YjWRBIa5bwG9DRVmvX0kSZEXtj1yBXjbdxWDHi4ay1K/jdQ4oF1athgS7205zITMU6tp6cXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zorBJGWG668atPyeKqXErh0ofzt2AkMhpWlOsGLOfuk=;
- b=L0t+u37EhWaMj99noKh7atMsXKk4+fP82i2q3MIsobgMdg6P8tRmLpAlou5snJObDhgYm1aejiPUVe6vp6g4S7UjjbXLcx1EqXyvwvfKKI3os8iiv5xBU1KSB1omfDuhBeyGLYuBbJLkSQeie3KFKHA7vvMY3jxVv9EB0NSJ2fs=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB2863.namprd15.prod.outlook.com (20.178.251.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.18; Tue, 10 Dec 2019 17:59:18 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
- 17:59:18 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf] bpftool: Don't crash on missing jited insns or ksyms
-Thread-Topic: [PATCH bpf] bpftool: Don't crash on missing jited insns or ksyms
-Thread-Index: AQHVr2Z8gkLcxSYflkOO1ZvZLvptRaezqESA
-Date:   Tue, 10 Dec 2019 17:59:18 +0000
-Message-ID: <20191210175915.wh7njnvt2xk64ski@kafai-mbp>
-References: <20191210143047.142347-1-toke@redhat.com>
-In-Reply-To: <20191210143047.142347-1-toke@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR17CA0083.namprd17.prod.outlook.com
- (2603:10b6:300:c2::21) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:85a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f92e4b45-02f3-4870-fb42-08d77d9aad0b
-x-ms-traffictypediagnostic: MN2PR15MB2863:
-x-microsoft-antispam-prvs: <MN2PR15MB286314CF5AB1B85EDED6C2DBD55B0@MN2PR15MB2863.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 02475B2A01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(199004)(189003)(81166006)(81156014)(4326008)(8676002)(6486002)(66476007)(6512007)(66946007)(54906003)(5660300002)(9686003)(66556008)(64756008)(6916009)(71200400001)(66446008)(33716001)(8936002)(86362001)(2906002)(6506007)(52116002)(498600001)(1076003)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2863;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PDt47IKQtn0z3pr/4bPQOAxn5rFkZy8h+06XEacUMcVE7Y30XHSymaV/m4WTyc08hSpvhBlmfVg0Zkzxj5j4op2lAKlfjeF+iA+hctZ+t0a5aqyaNjf7s2tCnqTbkW1I1ylMQHiBph8XWvLYjmRj5ZJYLJNp/DzvDPBM+eLDyR9YWir3KyGGq38W1SoxfFOrwAhB1+QUdT7cf6pjy9MzGmYGO/x84f1YI2I1rFVlRFH9e61+y2jxAbSKgYQibeMVInSwKdBgenX8r2ABAyOktqB2ahS1EuEwQR7NH+7HA+p86TqXleTIcuZmb0HOAbum2VhnDp8kd2ymnObpsaJhkrV4u/oX8dLAXkNxuLqesmR834Quqe75wpmgrpPUfTP1eoGBfeaABNZIb+MqTXpt5tPH/eBne+ypsfW63wLMnU1Yw6eubnG62RFpst/VMLks
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <E0D461AFA89D374F931568939DF0D7FE@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727675AbfLJSFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 13:05:42 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:44276 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727654AbfLJSFm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:05:42 -0500
+Received: by mail-pj1-f68.google.com with SMTP id w5so7691226pjh.11
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 10:05:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=p250SP6LYYK/01N51GqevSzgn/NOjQ88ERfazogiGtc=;
+        b=pAvWc+I5V+HG3QHjPEZN9FO75Z7VXMrY61CNOcY4yRGVAZrItKsNiFDBQ4rOLirN3q
+         diGwW+ozhY2J6C4UNCFMhdy9bJTdOjP1NWkVtOiH7KdFQXiFGfyTIfVqloPAp9DPjOeV
+         XJ4KbfTgHP0bv3QuIAFaNbkEzof9GzzB/EGrFNc7efRsoX3jVLwSREs5MIN3huRiUdkU
+         Hdtnoj36J5m0V5Yi1wWcDRCu8RKqXJ5/R5AEOkVD0YR8/LPDJs5vkbvRyHy3frzmfSe7
+         dBl0HaKsG4ltLGxNdojP3Ag+pt6MWd4lPPWFLPwhgHsWUW19XRreetlB/lqEzGkjOh/i
+         1gEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=p250SP6LYYK/01N51GqevSzgn/NOjQ88ERfazogiGtc=;
+        b=T0h+7BGHaKpJIaFtZtZe51EV2jzQ+yLzntUWFxGIQ2e4NmjSj3KzwrrYS2heADvbti
+         ScWrA5SaTC2H3tR8MRU7iLj0tIloPcNJjZCewNYUAED3HRu6fgo/yl+KVxgsvrmFmMAq
+         r/jdOaV38wmYJ8G3Iy+M5UkRYzgpAba0o3F6yYL7ASML4x/CrsHHcSMRvQYhlIfMMXj5
+         1epYsbjT1MZtoKYbc84s9Tf8ay9QUSv2iQtZofBEdaXxN/kp+phewFqeRXenj8D8Fzku
+         fY4UKwQpTrb8OE+5vXEOVRW47WoqE4KCFzwu7XZJ7+tDFFUEnyQHxnZ8f8fbYjSe+75U
+         pIgA==
+X-Gm-Message-State: APjAAAXxppISr66R2PSkrTnhhySuQRj91nvDwT5X+N26NEbDs5+vTK4w
+        P0F87yRrLew6jTdo5Qz6a7dn/g==
+X-Google-Smtp-Source: APXvYqyZRXka/z8RR1tKDIEA0XaCqYLuoBjycoYsD7UW/Xfi6vYmVk1cUnYXmJB0mIbHHraF934jZA==
+X-Received: by 2002:a17:902:d696:: with SMTP id v22mr36021185ply.66.1576001141079;
+        Tue, 10 Dec 2019 10:05:41 -0800 (PST)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::3])
+        by smtp.gmail.com with ESMTPSA id o184sm3982442pgo.62.2019.12.10.10.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 10:05:40 -0800 (PST)
+Date:   Tue, 10 Dec 2019 10:05:36 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+Message-ID: <20191210100536.7a57d5e1@cakuba.netronome.com>
+In-Reply-To: <CAEf4Bzaow7w+TGyiF67pXn42TumxFZb7Q4BOQPPGfRJdyeY-ig@mail.gmail.com>
+References: <20191210011438.4182911-1-andriin@fb.com>
+        <20191210011438.4182911-12-andriin@fb.com>
+        <20191209175745.2d96a1f0@cakuba.netronome.com>
+        <CAEf4Bzaow7w+TGyiF67pXn42TumxFZb7Q4BOQPPGfRJdyeY-ig@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: f92e4b45-02f3-4870-fb42-08d77d9aad0b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 17:59:18.1311
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8O2V6lsUFhs5QCztFe9uFHoQDxBrcn4P6XJwd98VmPZSWY3uxnmks24Ez0ArrgpN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2863
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-10_05:2019-12-10,2019-12-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=0 mlxlogscore=846 priorityscore=1501 clxscore=1015
- phishscore=0 malwarescore=0 bulkscore=0 spamscore=0 adultscore=0
- impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912100152
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:30:47PM +0100, Toke H=F8iland-J=F8rgensen wrote:
-> When JIT hardening is turned on, the kernel can fail to return jited_ksym=
-s
-JIT hardening means net.core.bpf_jit_harden?
-From the code, it happens on the bpf_dump_raw_ok() check which is
-actually "kernel.kptr_restrict" instead?
+On Tue, 10 Dec 2019 09:11:31 -0800, Andrii Nakryiko wrote:
+> On Mon, Dec 9, 2019 at 5:57 PM Jakub Kicinski wrote:
+> > On Mon, 9 Dec 2019 17:14:34 -0800, Andrii Nakryiko wrote:  
+> > > struct <object-name> {
+> > >       /* used by libbpf's skeleton API */
+> > >       struct bpf_object_skeleton *skeleton;
+> > >       /* bpf_object for libbpf APIs */
+> > >       struct bpf_object *obj;
+> > >       struct {
+> > >               /* for every defined map in BPF object: */
+> > >               struct bpf_map *<map-name>;
+> > >       } maps;
+> > >       struct {
+> > >               /* for every program in BPF object: */
+> > >               struct bpf_program *<program-name>;
+> > >       } progs;
+> > >       struct {
+> > >               /* for every program in BPF object: */
+> > >               struct bpf_link *<program-name>;
+> > >       } links;
+> > >       /* for every present global data section: */
+> > >       struct <object-name>__<one of bss, data, or rodata> {
+> > >               /* memory layout of corresponding data section,
+> > >                * with every defined variable represented as a struct field
+> > >                * with exactly the same type, but without const/volatile
+> > >                * modifiers, e.g.:
+> > >                */
+> > >                int *my_var_1;
+> > >                ...
+> > >       } *<one of bss, data, or rodata>;
+> > > };  
+> >
+> > I think I understand how this is useful, but perhaps the problem here
+> > is that we're using C for everything, and simple programs for which
+> > loading the ELF is majority of the code would be better of being
+> > written in a dynamic language like python?  Would it perhaps be a
+> > better idea to work on some high-level language bindings than spend
+> > time writing code gens and working around limitations of C?  
+> 
+> None of this work prevents Python bindings and other improvements, is
+> it? Patches, as always, are greatly appreciated ;)
 
-> or jited_prog_insns, but still have positive values in nr_jited_ksyms and
-> jited_prog_len. This causes bpftool to crash when trying to dump the
-> program because it only checks the len fields not the actual pointers to
-> the instructions and ksyms.
->=20
-> Fix this by adding the missing checks.
-Changes look good.
+This "do it yourself" shit is not really funny :/
 
->=20
-> Signed-off-by: Toke H=F8iland-J=F8rgensen <toke@redhat.com>
-> ---
->  tools/bpf/bpftool/prog.c          | 2 +-
->  tools/bpf/bpftool/xlated_dumper.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> index 4535c863d2cd..2ce9c5ba1934 100644
-> --- a/tools/bpf/bpftool/prog.c
-> +++ b/tools/bpf/bpftool/prog.c
-> @@ -493,7 +493,7 @@ static int do_dump(int argc, char **argv)
-> =20
->  	info =3D &info_linear->info;
->  	if (mode =3D=3D DUMP_JITED) {
-> -		if (info->jited_prog_len =3D=3D 0) {
-> +		if (info->jited_prog_len =3D=3D 0 || !info->jited_prog_insns) {
->  			p_info("no instructions returned");
->  			goto err_free;
->  		}
-> diff --git a/tools/bpf/bpftool/xlated_dumper.c b/tools/bpf/bpftool/xlated=
-_dumper.c
-> index 494d7ae3614d..5b91ee65a080 100644
-> --- a/tools/bpf/bpftool/xlated_dumper.c
-> +++ b/tools/bpf/bpftool/xlated_dumper.c
-> @@ -174,7 +174,7 @@ static const char *print_call(void *private_data,
->  	struct kernel_sym *sym;
-> =20
->  	if (insn->src_reg =3D=3D BPF_PSEUDO_CALL &&
-> -	    (__u32) insn->imm < dd->nr_jited_ksyms)
-> +	    (__u32) insn->imm < dd->nr_jited_ksyms && dd->jited_ksyms)
->  		address =3D dd->jited_ksyms[insn->imm];
-> =20
->  	sym =3D kernel_syms_search(dd, address);
-> --=20
-> 2.24.0
->=20
+I'll stop providing feedback on BPF patches if you guy keep saying 
+that :/ Maybe that's what you want.
+
+> This skeleton stuff is not just to save code, but in general to
+> simplify and streamline working with BPF program from userspace side.
+> Fortunately or not, but there are a lot of real-world applications
+> written in C and C++ that could benefit from this, so this is still
+> immensely useful. selftests/bpf themselves benefit a lot from this
+> work, see few of the last patches in this series.
+
+Maybe those applications are written in C and C++ _because_ there 
+are no bindings for high level languages. I just wish BPF programming
+was less weird and adding some funky codegen is not getting us closer
+to that goal.
+
+In my experience code gen is nothing more than a hack to work around
+bad APIs, but experiences differ so that's not a solid argument.
+
+> > > This provides great usability improvements:
+> > > - no need to look up maps and programs by name, instead just
+> > >   my_obj->maps.my_map or my_obj->progs.my_prog would give necessary
+> > >   bpf_map/bpf_program pointers, which user can pass to existing libbpf APIs;
+> > > - pre-defined places for bpf_links, which will be automatically populated for
+> > >   program types that libbpf knows how to attach automatically (currently
+> > >   tracepoints, kprobe/kretprobe, raw tracepoint and tracing programs). On
+> > >   tearing down skeleton, all active bpf_links will be destroyed (meaning BPF
+> > >   programs will be detached, if they are attached). For cases in which libbpf
+> > >   doesn't know how to auto-attach BPF program, user can manually create link
+> > >   after loading skeleton and they will be auto-detached on skeleton
+> > >   destruction:
+> > >
+> > >       my_obj->links.my_fancy_prog = bpf_program__attach_cgroup_whatever(
+> > >               my_obj->progs.my_fancy_prog, <whatever extra param);
+> > >
+> > > - it's extremely easy and convenient to work with global data from userspace
+> > >   now. Both for read-only and read/write variables, it's possible to
+> > >   pre-initialize them before skeleton is loaded:
+> > >
+> > >       skel = my_obj__open(raw_embed_data);
+> > >       my_obj->rodata->my_var = 123;
+> > >       my_obj__load(skel); /* 123 will be initialization value for my_var */
+> > >
+> > >   After load, if kernel supports mmap() for BPF arrays, user can still read
+> > >   (and write for .bss and .data) variables values, but at that point it will
+> > >   be directly mmap()-ed to BPF array, backing global variables. This allows to
+> > >   seamlessly exchange data with BPF side. From userspace program's POV, all
+> > >   the pointers and memory contents stay the same, but mapped kernel memory
+> > >   changes to point to created map.
+> > >   If kernel doesn't yet support mmap() for BPF arrays, it's still possible to
+> > >   use those data section structs to pre-initialize .bss, .data, and .rodata,
+> > >   but after load their pointers will be reset to NULL, allowing user code to
+> > >   gracefully handle this condition, if necessary.
+> > >
+> > > Given a big surface area, skeleton is kept as an experimental non-public
+> > > API for now, until more feedback and real-world experience is collected.  
+> >
+> > That makes no sense to me. bpftool has the same backward compat
+> > requirements as libbpf. You're just pushing the requirements from
+> > one component to the other. Feedback and real-world use cases have
+> > to be exercised before code is merged to any project with backward
+> > compatibility requirements :(  
+> 
+> To get this feedback we need to have this functionality adopted. To
+> have it adopted, we need it available in tool users already know,
+> have, and use. 
+
+Well you claim you have users for it, just talk to them now. I don't
+understand how this is not obvious. It's like saying "we can't test
+this unless it's in the tree"..!?
+
+> If you feel that "experimental" disclaimer is not enough, I guess we
+> can add extra flag to bpftool itself to enable experimental
+> functionality, something like:
+> 
+> bpftool --experimental gen skeleton <bla>
+
+Yeah, world doesn't really work like that. Users start depending on 
+a feature, it will break people's scripts/Makefiles if it disappears.
+This codegen thing is made to be hard coded in Makefiles.. how do you
+expect people not to immediately become dependent on it.
+
+> > Also please run checkpatch on your patches, and fix reverse xmas tree.
+> > This is bpftool, not libbpf. Creating a separate tool for this codegen
+> > stuff is also an option IMHO.  
+> 
+> Sure, will fix few small things checkpatch detected.
+
+Running checkpatch should be part of your upstreaming routine, you're
+wasting people's time. So stop with the amused tone.
+
+> Will reverse christmas-ize all the variables, of course :)
+> 
+> As for separate tool just for this, you are not serious, right? If
+> bpftool is not right tool for this, I don't know which one is.
+
+I am serious. There absolutely nothing this tool needs from BPF, no
+JSON needed, no bpffs etc. It can be a separate tool like
+libbpf-skel-gen or libbpf-c-skel or something, distributed with libbpf.
+That way you can actually soften the backward compat. In case people
+become dependent on it they can carry that little tool on their own.
