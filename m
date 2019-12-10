@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 970EA119534
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:19:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F25B119531
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728957AbfLJVMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:12:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36236 "EHLO mail.kernel.org"
+        id S1728773AbfLJVT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:19:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728944AbfLJVMX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:12:23 -0500
+        id S1728637AbfLJVM0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:12:26 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B5828246A2;
-        Tue, 10 Dec 2019 21:12:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BFBD82077B;
+        Tue, 10 Dec 2019 21:12:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012343;
-        bh=Xc+R0wxmcm7rjXDmYijo1uCkTy8c9s8xszZck25u3nU=;
+        s=default; t=1576012345;
+        bh=q+Y2FqgyC5P4xznxyYbyo57Frv7m6bD/d91ky37bn4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDxLI5GjCkQV+JpbZzuAzu5NzthKym3OISk7mGURqABUdcKp631uRLdPyEBZLEJjs
-         MsA+s3mu6oKh6/oHl/roovml2SoNT/xNeK6CndTwYrjKM7qHn9Jp1DBjQI05Cn0J0A
-         Dj+EMzPVq4lQCwjh07afWqRzAczqvqAPfANQsDXw=
+        b=uANCwYjYJdLZQrchXZdtqx+1HzeYrcxCT4k9nwk6PvUjNEBYe6sfoJQQ7VVmScQyA
+         ecSyRAyVxUdHy6QlCaUwMvGGuwO1GZvLdV5XJPi9j50HylvfchARP0hXJu2t027ZD1
+         hIpHrnA+u0C/L6GNbxVZMERGEwcU+YckqFKbPVUY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mao Wenan <maowenan@huawei.com>,
+Cc:     Stefan Wahren <wahrenst@gmx.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 274/350] net: ethernet: ti: Add dependency for TI_DAVINCI_EMAC
-Date:   Tue, 10 Dec 2019 16:06:19 -0500
-Message-Id: <20191210210735.9077-235-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 276/350] net: bcmgenet: Add RGMII_RXID support
+Date:   Tue, 10 Dec 2019 16:06:21 -0500
+Message-Id: <20191210210735.9077-237-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -43,50 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
+From: Stefan Wahren <wahrenst@gmx.net>
 
-[ Upstream commit b2ef81dcdf3835bd55e5f97ff30131bb327be7fa ]
+[ Upstream commit da38802211cc3fd294211a642932edb09e3af632 ]
 
-If TI_DAVINCI_EMAC=y and GENERIC_ALLOCATOR is not set,
-below erros can be seen:
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_desc_pool_destroy.isra.14':
-davinci_cpdma.c:(.text+0x359): undefined reference to `gen_pool_size'
-davinci_cpdma.c:(.text+0x365): undefined reference to `gen_pool_avail'
-davinci_cpdma.c:(.text+0x373): undefined reference to `gen_pool_avail'
-davinci_cpdma.c:(.text+0x37f): undefined reference to `gen_pool_size'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `__cpdma_chan_free':
-davinci_cpdma.c:(.text+0x4a2): undefined reference to `gen_pool_free_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_chan_submit_si':
-davinci_cpdma.c:(.text+0x66c): undefined reference to `gen_pool_alloc_algo_owner'
-davinci_cpdma.c:(.text+0x805): undefined reference to `gen_pool_free_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_ctlr_create':
-davinci_cpdma.c:(.text+0xabd): undefined reference to `devm_gen_pool_create'
-davinci_cpdma.c:(.text+0xb79): undefined reference to `gen_pool_add_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_check_free_tx_desc':
-davinci_cpdma.c:(.text+0x16c6): undefined reference to `gen_pool_avail'
+This adds the missing support for the PHY mode RGMII_RXID.
+It's necessary for the Raspberry Pi 4.
 
-This patch mades TI_DAVINCI_EMAC select GENERIC_ALLOCATOR.
-
-Fixes: 99f629718272 ("net: ethernet: ti: cpsw: drop TI_DAVINCI_CPDMA config option")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index 834afca3a0195..137632b09c729 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -22,6 +22,7 @@ config TI_DAVINCI_EMAC
- 	depends on ARM && ( ARCH_DAVINCI || ARCH_OMAP3 ) || COMPILE_TEST
- 	select TI_DAVINCI_MDIO
- 	select PHYLIB
-+	select GENERIC_ALLOCATOR
- 	---help---
- 	  This driver supports TI's DaVinci Ethernet .
- 
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index dbe18cdf6c1b8..04a2a2d171136 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -281,6 +281,11 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
+ 		bcmgenet_sys_writel(priv,
+ 				    PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
+ 		break;
++
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++		phy_name = "external RGMII (RX delay)";
++		port_ctrl = PORT_MODE_EXT_GPHY;
++		break;
+ 	default:
+ 		dev_err(kdev, "unknown phy mode: %d\n", priv->phy_interface);
+ 		return -EINVAL;
 -- 
 2.20.1
 
