@@ -2,96 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB83118BCA
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 15:58:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D375A118BDE
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727516AbfLJO6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 09:58:18 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:52826 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727272AbfLJO6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 09:58:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=isOkNJUMf1B7fKaSQLUZcaf/MKjMhWFz9C5BGsPEgD8=; b=na1axSozcdM+lGT7A5F3mPwpr
-        TbEutl70IYUef1czLJRlfGJndf1ZwqsWBY3m7DNXm4OTK5j1laMtGETGVU1Ujz2pstYnurjLfgT6C
-        L+hLjKsuMkv2vbzPKanIafAR0ct5HyjggBwqZ7Dv6caJyRqLkk5xGSHXP2m8HMcjudguGcIgJPiPm
-        vMJefwytFY1cz3Cg3rjyEnR4hL9lI0dK+oUOSt9qu8a1hJ35NtnuXrBBWMT7dAjgty2d/jByYLRet
-        I4SxKZ0jKf/kmZbrSM482MWqxCcK1T4Cx3GKOf1NXwCuZu04CN3hTSr4C9+XLZwyhF7/mqdeYrH2X
-        03WLBTEEA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:39452)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1iegxi-00023g-OS; Tue, 10 Dec 2019 14:58:06 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1iegxf-0004jM-3O; Tue, 10 Dec 2019 14:58:03 +0000
-Date:   Tue, 10 Dec 2019 14:58:03 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     Willy Tarreau <w@1wt.eu>, Andrew Lunn <andrew@lunn.ch>,
-        Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        maxime.chevallier@bootlin.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: mvpp2: fix condition for setting up link
- interrupt
-Message-ID: <20191210145802.GV25745@shell.armlinux.org.uk>
-References: <20190124131803.14038-1-tbogendoerfer@suse.de>
- <20190124155137.GD482@lunn.ch>
- <20190124160741.jady3r2e4dme7c4m@e5254000004ec.dyn.armlinux.org.uk>
- <20190125083720.GK3662@kwain>
- <20191208164235.GT1344@shell.armlinux.org.uk>
- <20191210145359.GA90089@kwain>
+        id S1727480AbfLJPCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 10:02:49 -0500
+Received: from mail-wr1-f45.google.com ([209.85.221.45]:36571 "EHLO
+        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727272AbfLJPCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 10:02:49 -0500
+Received: by mail-wr1-f45.google.com with SMTP id z3so20504562wru.3
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 07:02:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Embng0ehlRpQgOyJThRi0bZwmGHoUksbsKrG3YADG6A=;
+        b=cU/+JuW/cuQrhE5d/oYvJhPeFCPc9ZPO8Vqj9JukmckYaSHyNbt75aY2iZu21JzsUc
+         0XJ0vDud2OcJ34NXEGVLwiGF5pxRM2lqECDltTAjAvZ8XG6rlNhkNQCfnRhJo4jZNeeC
+         8drYWlFypy3iGYbzCrJgUhP+a4vHgp+GbD0uEcpH+DO2yV9Kq3aZ6jt6wJICz3R3/Fjx
+         wD+LIm3InTPAWayqYEQA5MC8DazFYreblx8iHmMP5OuhbK5VPIddTNP60OwLZKKhKujj
+         tLlQeoKzn1nVTzzAlS6jCrLzcNEJ6poRdn900fhyCBsxLKqGyEUpoL00RWBcQGTSDVPz
+         Yg1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Embng0ehlRpQgOyJThRi0bZwmGHoUksbsKrG3YADG6A=;
+        b=eJLPW6drVj3GnRlijmthAmNO1+cfRuT7UYIA5GS1kiTvR7cuP1Auh8pQBFCZNJnyoi
+         3ehdJ3jGxyX8jJL0BQYf16dVWyYyDbcEMqTLW1oGlkXhVsQo+DpdGgq1Wi2smG/AXVdk
+         OxlM2lLCJWNj58dZlaeAa4ZaAVfUAV8ilxzcAXuNAnTkQmV4xPvmjBNmUyelBU10DUN0
+         Jl5YDy4ItMmNxf6dp5pxMK+fRSHu4/lPsniZKR3xqzWPWAZq8XVkmivapvx0HCW6CxGG
+         qdhRfRm21ngFKVw4Efz0gDlEjRGVwFgHcQWqdx2U0iOgo4b/GOEr7IlYbnTdScG6KAon
+         SqlQ==
+X-Gm-Message-State: APjAAAUN1m61y0Dac6g1QLw+OAD6Bni5xcsjKm8fIvLPSeHE4bsHYX82
+        p23EAy+v9ZuTPBo8Ym59jROx8g==
+X-Google-Smtp-Source: APXvYqwMRGc+RuedEuanSRBG88G1cmns8VDxHtvOcauyevfu5rZf0gMJclU01VqUKVUEd67rbadChQ==
+X-Received: by 2002:adf:f091:: with SMTP id n17mr3846791wro.387.1575990166946;
+        Tue, 10 Dec 2019 07:02:46 -0800 (PST)
+Received: from apalos.home (athedsl-4476713.home.otenet.gr. [94.71.27.49])
+        by smtp.gmail.com with ESMTPSA id d8sm3489005wrx.71.2019.12.10.07.02.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 07:02:46 -0800 (PST)
+Date:   Tue, 10 Dec 2019 17:02:44 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "brouer@redhat.com" <brouer@redhat.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Message-ID: <20191210150244.GB12702@apalos.home>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191209131416.238d4ae4@carbon>
+ <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191210145359.GA90089@kwain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:53:59PM +0100, Antoine Tenart wrote:
-> Hi Russell,
-> 
-> On Sun, Dec 08, 2019 at 04:42:36PM +0000, Russell King - ARM Linux admin wrote:
-> > 
-> > Today, I received an email from Willy Tarreau about this issue which
-> > persists to this day with mainline kernels.
-> > 
-> > Willy reminded me that I've been carrying a fix for this, but because
-> > of your concerns as stated above, I haven't bothered submitting it
-> > through fear of causing regressions (which you seem to know about):
-> > 
-> >    http://git.armlinux.org.uk/cgit/linux-arm.git/commit/?h=mvpp2&id=67ef3bff255b26cc0d6def8ca99c4e8ae9937727
-> > 
-> > Just like Thomas' case, the current code is broken for phylink when
-> > in-band negotiation is being used - such as with the 1G/2.5G SFP
-> > slot on the Macchiatobin.
-> > 
-> > It seems that resolving the issue has stalled.  Can I merge my patch,
-> > or could you state exactly what the problems are with it so that
-> > someone else can look into the issues please?
-> 
-> Yes, please merge your patch (the one dropping the check on
-> '!port->phylink'), I've been using it for months. I answered that patch
-> submission back then[1] but it seems it was lost somehow :)
-> 
-> Thanks!
-> Antoine
-> 
-> [1] https://www.spinics.net/lists/netdev/msg555697.html
+Hi Saeed,
 
-Thanks.  Looks like I never read your reply (probably got buried.)
+> > 
+> > The patch description doesn't explain the problem very well.
+> > 
+> > Lets first establish what the problem is.  After I took at closer
+> > look,
+> > I do think we have a real problem here...
+> > 
+> > If function alloc_pages_node() is called with NUMA_NO_NODE (see below
+> > signature), then the nid is re-assigned to numa_mem_id().
+> > 
+> > Our current code checks: page_to_nid(page) == pool->p.nid which seems
+> > bogus, as pool->p.nid=NUMA_NO_NODE and the page NID will not return
+> > NUMA_NO_NODE... as it was set to the local detect numa node, right?
+> > 
+> 
+> right.
+> 
+> > So, we do need a fix... but the question is that semantics do we
+> > want?
+> > 
+> 
+> maybe assume that __page_pool_recycle_direct() is always called from
+> the right node and change the current bogus check:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Is this a typo? pool_page_reusable() is called from __page_pool_put_page().
+
+page_pool_put_page and page_pool_recycle_direct() (no underscores) call that.
+Can we guarantee that those will always run from the correct cpu?
+In the current code base if they are only called under NAPI this might be true.
+On the page_pool skb recycling patches though (yes we'll eventually send those
+:)) this is called from kfree_skb().
+I don't think we can get such a guarantee there, right?
+
+Regards
+/Ilias
