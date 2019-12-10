@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F09B119743
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D0211973A
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728106AbfLJVJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:09:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57582 "EHLO mail.kernel.org"
+        id S1728278AbfLJVb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:31:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728092AbfLJVJR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:09:17 -0500
+        id S1728095AbfLJVJS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:09:18 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A96924699;
-        Tue, 10 Dec 2019 21:09:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 584E2246A3;
+        Tue, 10 Dec 2019 21:09:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012157;
-        bh=3VioIPXcwSHgv1LxAJxjtKwmHJCLok8lLIgAF8k9yIk=;
+        s=default; t=1576012158;
+        bh=xJ6cWECGTI87+zeHdc7ft6/oh7NfheN/H4B2YxWsVek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psdz+E/U3EkQ1FG7Z0Xtmmer1UOyv9OV/9GJmrISqaLChMDDYcta6ncDtCefko2NV
-         zexPf/ULIbMV2rYPWoOlw5zJpsB8eJiGgqNdwMVRWV7EaqnWChy3CTI59ivHTiYMVz
-         zXn1ZvgMbuU7JSCnR0Q7/UvFF3mZI+N0gtcLGZiE=
+        b=jLX/qN5veZDCVw16P/qZkev7aXInRj2LBV+zCBrciFXq1vliKCewh+gWhr5ceSau/
+         3DWItK6ZFVInsaczV8dGebJe+giixihrvirVfkg37DqbjStzOZr8BnQZAcbLD9ZYcT
+         2cMAh6ji3ai6llIQFyHnexbFGpw28SaMWYZ2gslY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
+Cc:     Szymon Janc <szymon.janc@codecoup.pl>,
+        =?UTF-8?q?S=C3=B6ren=20Beye?= <linux@hypfer.de>,
         Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 119/350] Bluetooth: missed cpu_to_le16 conversion in hci_init4_req
-Date:   Tue, 10 Dec 2019 16:03:44 -0500
-Message-Id: <20191210210735.9077-80-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 120/350] Bluetooth: Workaround directed advertising bug in Broadcom controllers
+Date:   Tue, 10 Dec 2019 16:03:45 -0500
+Message-Id: <20191210210735.9077-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,46 +46,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+From: Szymon Janc <szymon.janc@codecoup.pl>
 
-[ Upstream commit 727ea61a5028f8ac96f75ab34cb1b56e63fd9227 ]
+[ Upstream commit 4c371bb95cf06ded80df0e6139fdd77cee1d9a94 ]
 
-It looks like in hci_init4_req() the request is being
-initialised from cpu-endian data but the packet is specified
-to be little-endian. This causes an warning from sparse due
-to __le16 to u16 conversion.
+It appears that some Broadcom controllers (eg BCM20702A0) reject LE Set
+Advertising Parameters command if advertising intervals provided are not
+within range for undirected and low duty directed advertising.
 
-Fix this by using cpu_to_le16() on the two fields in the packet.
+Workaround this bug by populating min and max intervals with 'valid'
+values.
 
-net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
-net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
-net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
-net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
-net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
-net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
+< HCI Command: LE Set Advertising Parameters (0x08|0x0006) plen 15
+        Min advertising interval: 0.000 msec (0x0000)
+        Max advertising interval: 0.000 msec (0x0000)
+        Type: Connectable directed - ADV_DIRECT_IND (high duty cycle) (0x01)
+        Own address type: Public (0x00)
+        Direct address type: Random (0x01)
+        Direct address: E2:F0:7B:9F:DC:F4 (Static)
+        Channel map: 37, 38, 39 (0x07)
+        Filter policy: Allow Scan Request from Any, Allow Connect Request from Any (0x00)
+> HCI Event: Command Complete (0x0e) plen 4
+      LE Set Advertising Parameters (0x08|0x0006) ncmd 1
+        Status: Invalid HCI Command Parameters (0x12)
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Signed-off-by: Szymon Janc <szymon.janc@codecoup.pl>
+Tested-by: Sören Beye <linux@hypfer.de>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/bluetooth/hci_conn.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 04bc79359a173..b2559d4bed815 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -842,8 +842,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
- 	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
- 		struct hci_cp_le_write_def_data_len cp;
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index ad5b0ac1f9cef..7ff92dd4c53cd 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -934,6 +934,14 @@ static void hci_req_directed_advertising(struct hci_request *req,
+ 			return;
  
--		cp.tx_len = hdev->le_max_tx_len;
--		cp.tx_time = hdev->le_max_tx_time;
-+		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
-+		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
- 		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
- 	}
- 
+ 		memset(&cp, 0, sizeof(cp));
++
++		/* Some controllers might reject command if intervals are not
++		 * within range for undirected advertising.
++		 * BCM20702A0 is known to be affected by this.
++		 */
++		cp.min_interval = cpu_to_le16(0x0020);
++		cp.max_interval = cpu_to_le16(0x0020);
++
+ 		cp.type = LE_ADV_DIRECT_IND;
+ 		cp.own_address_type = own_addr_type;
+ 		cp.direct_addr_type = conn->dst_type;
 -- 
 2.20.1
 
