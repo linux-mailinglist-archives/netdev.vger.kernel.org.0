@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3FA11914E
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:00:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E6011916D
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:02:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbfLJT76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 14:59:58 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41507 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfLJT76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 14:59:58 -0500
-Received: by mail-qk1-f194.google.com with SMTP id l124so5591434qkf.8;
-        Tue, 10 Dec 2019 11:59:57 -0800 (PST)
+        id S1726522AbfLJUCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:02:25 -0500
+Received: from mail-lj1-f173.google.com ([209.85.208.173]:36430 "EHLO
+        mail-lj1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbfLJUCZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:02:25 -0500
+Received: by mail-lj1-f173.google.com with SMTP id r19so21342601ljg.3
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:02:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ftjTNhVzo9C0Y9p3ygakz6BrTC5EY3OeVFYVC2Ii2XE=;
-        b=TUWXI4V65rdrQ1gUSTZWqBEY5KTwtTo09Xhb3zp5257LWMJ31/xkWSA+ybgEHyvSlp
-         k+uB0LUeO6gXfYJNKluFwkmgwdbtGvUeHXNzGDA63yCf1+2Xq5OmHNWrkBUNU+6FFL6J
-         Nj9Ewnkt88irThW1Ul4WBu1lsyifz1E0mQmW8wdeLNaSgw1XVOzdyXdeVwbcw7g5ZlAQ
-         djyNuSOJnO/LTua9iIVsdWorcks7bXcgLAgAOUzD7kzedT1s9azmFrdbQ13mygpsa562
-         t9bM+kUkzFWFqDya+Xs+LtOiw54zQ5ggxE1SitJ+Ei2vwDfZXbJRyOWCpLbjMXtd7CJ/
-         WSzQ==
+         :cc;
+        bh=9ZYclKpP4jyyryWq+kzkCBY1iMTu2OfnAQ/Q1iOaCSc=;
+        b=BeFsyYbr8G0yJ4qRAzrgtavEuzD4XmUKwPTDYfW/EnRUDv6hfN8ClFGYwtTGZiEEwh
+         vcusHhjAT2Re3cmAuW8iDek4CTgF6pBhYrw0ol9Mh9CHt2sfaO+CHd0tcI1iJ4yJ6WCf
+         kkhYLj0OeM1f1hTJs0vs9caKk180Qps2ZP3doY4xcF8it1RT9YWqporSmrQqU6AdOhW7
+         USfPIrWHDmhQ33wltkPTiipo2Ms5swjN0+Zs/2uk1fay+KY77RmOrlx1LrETE8Y7Hg9G
+         WujQ3B0pXqv+SK2EhnG8yoNctFD9t7np9bRVrW82F5VxNPtFokqY7gvx1kqO0V054bJM
+         uEFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ftjTNhVzo9C0Y9p3ygakz6BrTC5EY3OeVFYVC2Ii2XE=;
-        b=OvBafFz2jtGZc67CJQLCEIfUtHMATnI9cDpmQA8Y5udBBszg8mwSOuQtLWAou6fZnm
-         cAYqqZMlft6O7qoysotCU/nhLM6/HTUKZuUuXByHv+6RqKgtwUwn178mcggogFTOOMXL
-         oFhdz8zUXG4OQJP5RpI/BgPrE4XM0nA6vIGvnkODiAZSFTHLdkWIBHGpuLaN5Zk8ry9l
-         MiZNAyhl95GLlnFn1dcqsvJnQqmWwTbGfIg3RvTi4wQU0y4h8PzJMoSq02Z8QT+IHxsh
-         s2wdRhQ62oQ5vnIm04iVRU2NVdV3L2Y85WVL9hEYwi0fLxIrgkAwVcAT61Ua/x7tsCqz
-         IEag==
-X-Gm-Message-State: APjAAAWoiIJoxYH67AjrWkHh/vcnzLOD9tFQdk7F+5FwrYcwsiWUmfSi
-        BNSb7M279WJY/JLF/mBcDVe92fWFyw++LZ34UUcufo4g0i8=
-X-Google-Smtp-Source: APXvYqwzmXumLbnjLluk8LZmQQzn5FiGF0EmyEBzA5IYMhlOMnAk39r8nYnd1NjQEuKg7Ob2v+JndIB4Vn3ntLvHMj4=
-X-Received: by 2002:ae9:ee11:: with SMTP id i17mr31532763qkg.333.1576007996694;
- Tue, 10 Dec 2019 11:59:56 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=9ZYclKpP4jyyryWq+kzkCBY1iMTu2OfnAQ/Q1iOaCSc=;
+        b=RraGZeRd3lRj9OgMVnCNYn7RV+NB4nOO7bJHVWVLL0+QcPEX4H9NR8ukUL8IA34Xqv
+         KJTeU5SdUy/Oa2OoviaxK2EWrSJ+3h0WXHKMxhR+oUmgeLEQE2OSuvSxYOwNqPsGmPYV
+         5Cjp9Btd6iqSFDtn+f6h35pRE1ZwWmdlfiWt3AzQSBBclhD+L55VLeRuunTh5LYTTY3E
+         m/ZFIP5TF7h3S83+wWD+LR2z7Vgq2g82cqxfZeXhYtwhExOWy+oHzBShJeob/cmoAHik
+         b+ZHPkIOx+rumTX7iOgyktq5t/+tjIyIxOSEHOBDPrCdBWJxfIHo8P4lEZzWataSg73q
+         SPpA==
+X-Gm-Message-State: APjAAAVccmBWfifRkZ6vwvINyEkMfPGEwggmMwyC6uyAkZwbmZEWj2TG
+        4FpVxAOHt8XSaBvDh2YYGAwMk89duq1dyIXQ4Wza8Q==
+X-Google-Smtp-Source: APXvYqxhHRb9dfhLqw+xg5goWfInptZhvg3+vt8yVQVDP04XG1AQkxBGxlAgz59l68MaQeO8IxUT8ZNuqE4sJTilj90=
+X-Received: by 2002:a2e:2417:: with SMTP id k23mr6885881ljk.29.1576008143103;
+ Tue, 10 Dec 2019 12:02:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20191209135522.16576-1-bjorn.topel@gmail.com>
-In-Reply-To: <20191209135522.16576-1-bjorn.topel@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 10 Dec 2019 20:59:45 +0100
-Message-ID: <CAJ+HfNhN+0n1XAZ8-fvH9EDL44aEAfuhWHKOPzqfoavM9h+-nQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/6] Introduce the BPF dispatcher
-To:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Edward Cree <ecree@solarflare.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191209131416.238d4ae4@carbon> <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+ <20191210150244.GB12702@apalos.home>
+In-Reply-To: <20191210150244.GB12702@apalos.home>
+From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Date:   Tue, 10 Dec 2019 12:02:12 -0800
+Message-ID: <CALzJLG_m0haciU6AinMvy3MfGGFokfGf+1djRnfsZczgxnuKUg@mail.gmail.com>
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE condition
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Dec 2019 at 14:55, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> =
-wrote:
+On Tue, Dec 10, 2019 at 7:02 AM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
 >
-[...]
+> Hi Saeed,
 >
-> Discussion/feedback
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > >
+> > > The patch description doesn't explain the problem very well.
+> > >
+> > > Lets first establish what the problem is.  After I took at closer
+> > > look,
+> > > I do think we have a real problem here...
+> > >
+> > > If function alloc_pages_node() is called with NUMA_NO_NODE (see below
+> > > signature), then the nid is re-assigned to numa_mem_id().
+> > >
+> > > Our current code checks: page_to_nid(page) == pool->p.nid which seems
+> > > bogus, as pool->p.nid=NUMA_NO_NODE and the page NID will not return
+> > > NUMA_NO_NODE... as it was set to the local detect numa node, right?
+> > >
+> >
+> > right.
+> >
+> > > So, we do need a fix... but the question is that semantics do we
+> > > want?
+> > >
+> >
+> > maybe assume that __page_pool_recycle_direct() is always called from
+> > the right node and change the current bogus check:
 >
-> My measurements did not show any improvements for the jump target 16 B
-> alignments. Maybe it would make sense to leave alignment out?
+> Is this a typo? pool_page_reusable() is called from __page_pool_put_page().
+>
+> page_pool_put_page and page_pool_recycle_direct() (no underscores) call that.
+
+Yes a typo :) , thanks for the correction.
+
+> Can we guarantee that those will always run from the correct cpu?
+No, but we add the tool to correct any discrepancy: page_pool_nid_changed()
+
+> In the current code base if they are only called under NAPI this might be true.
+> On the page_pool skb recycling patches though (yes we'll eventually send those
+> :)) this is called from kfree_skb().
+> I don't think we can get such a guarantee there, right?
 >
 
-I did a micro benchmark with "test_progs -t xdp_prog" for all sizes
-(max 48 aligned, max 64 non-aligned) of the dispatcher. I couldn't
-measure any difference at all, so I will leave the last patch out
-(aligning jump targets). If a workload appears where this is
-measurable, it can be added at that point.
+Yes, but this has nothing to do with page recycling from pool's owner
+level (driver napi)
+ for SKB recycling we can use pool.nid to recycle, and not numa_mem_id().
 
-The micro benchmark also show that it makes little sense disabling the
-dispatcher when "mitigations=3Doff". The diff is within 1ns(!), when
-mitigations are off. I'll post the data as a reply to the v4 cover
-letter, so that the cover isn't clobbered with data. :-P
-
-
-Bj=C3=B6rn
+> Regards
+> /Ilias
