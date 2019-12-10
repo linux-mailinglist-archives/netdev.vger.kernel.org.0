@@ -2,85 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C4C1191EB
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:29:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B3211921C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:34:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727010AbfLJU3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:29:23 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:53582 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfLJU3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:29:23 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iem89-0020Fc-TP; Tue, 10 Dec 2019 21:29:14 +0100
-Message-ID: <1172ea9c3f70ec0ea527926b2daa6e94c80ee807.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v2 1/5] rtnetlink: provide permanent hardware
- address in RTM_NEWLINK
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 10 Dec 2019 21:29:11 +0100
-In-Reply-To: <513ce8a1-f3ee-bd5f-a27c-86729e0536fd@gmail.com> (sfid-20191210_212718_256450_DC91B1DA)
-References: <cover.1575982069.git.mkubecek@suse.cz>
-         <7c28b1aa87436515de39e04206db36f6f374dc2f.1575982069.git.mkubecek@suse.cz>
-         <20191210095105.1f0008f5@cakuba.netronome.com>
-         <acd3947857e5be5340239cd49c8e2a51c283b884.camel@sipsolutions.net>
-         <0c9148be76615b3b77a3e730df75f311b1001b9f.camel@sipsolutions.net>
-         <513ce8a1-f3ee-bd5f-a27c-86729e0536fd@gmail.com>
-         (sfid-20191210_212718_256450_DC91B1DA)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1727068AbfLJUd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:33:58 -0500
+Received: from mail.nic.cz ([217.31.204.67]:51412 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725999AbfLJUdy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 15:33:54 -0500
+Received: from localhost (unknown [172.20.6.135])
+        by mail.nic.cz (Postfix) with ESMTPSA id 5429F140AC8;
+        Tue, 10 Dec 2019 21:33:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1576010032; bh=gT9/qt/EE7APHbwGwmFdoeHh/5ij9tU8+0uQXcYhjVI=;
+        h=Date:From:To;
+        b=sThtOEeX+qYfIcojZT7f2Vbh9MTdECtF/Ctl0YngNsUBcL6Y7s6S5lCAiP0kfmx/v
+         KAyG5LPOqa6UrjRlit08uN0nTJHjzOo98m/IKDFtXdVfk1tYHqKKb1DttwKCg+MKk+
+         ufKzsCzDzfO82MDF5WYpvs/zZSe04O4Ms945Lx40=
+Date:   Tue, 10 Dec 2019 21:33:51 +0100
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Landen Chao <landen.chao@mediatek.com>, f.fainelli@gmail.com,
+        vivien.didelot@savoirfairelinux.com, matthias.bgg@gmail.com,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
+        frank-w@public-files.de
+Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of
+ MT7531 switch
+Message-ID: <20191210213351.2df6acbf@nic.cz>
+In-Reply-To: <20191210163557.GC27714@lunn.ch>
+References: <cover.1575914275.git.landen.chao@mediatek.com>
+        <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
+        <20191210163557.GC27714@lunn.ch>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-12-10 at 13:27 -0700, David Ahern wrote:
-> On 12/10/19 1:23 PM, Johannes Berg wrote:
-> > On Tue, 2019-12-10 at 21:22 +0100, Johannes Berg wrote:
-> > > On Tue, 2019-12-10 at 09:51 -0800, Jakub Kicinski wrote:
-> > > > On Tue, 10 Dec 2019 14:07:53 +0100 (CET), Michal Kubecek wrote:
-> > > > > @@ -1822,6 +1826,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
-> > > > >  	[IFLA_PROP_LIST]	= { .type = NLA_NESTED },
-> > > > >  	[IFLA_ALT_IFNAME]	= { .type = NLA_STRING,
-> > > > >  				    .len = ALTIFNAMSIZ - 1 },
-> > > > > +	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
-> > > > >  };
-> > > > >  
-> > > > >  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
-> > > > 
-> > > > Jiri, I just noticed ifla_policy didn't get strict_start_type set when
-> > > > ALT_IFNAME was added, should we add it in net? 🤔
-> > > 
-> > > Does it need one? It shouldn't be used with
-> > > nla_parse_nested_deprecated(), and if it's used with nla_parse_nested()
-> > > then it doesn't matter?
+On Tue, 10 Dec 2019 17:35:57 +0100
+Andrew Lunn <andrew@lunn.ch> wrote:
+
+> On Tue, Dec 10, 2019 at 04:14:40PM +0800, Landen Chao wrote:
+> > Add new support for MT7531:
 > > 
-> > No, wait. I misread, you said "when ALT_IFNAME was added" but somehow I
-> > managed to read "when it was added"...
-> > 
-> > So yeah, it should have one. Dunno about net, your call. I'd probably
-> > not bother for an NLA_REJECT attribute, there's little use including it
-> > anyway.
-> > 
+> > MT7531 is the next generation of MT7530. It is also a 7-ports switch with
+> > 5 giga embedded phys, 2 cpu ports, and the same MAC logic of MT7530. Cpu
+> > port 6 only supports HSGMII interface. Cpu port 5 supports either RGMII
+> > or HSGMII in different HW sku.  
 > 
-> It's new in net, so it has to be there not net-next.
+> Hi Landen
+> 
+> Looking at the code, you seem to treat HSGMII as 2500Base-X. Is this
+> correct? Or is it SGMII over clocked to 2.5Gbps?
+> 
+> 	 Andrew
 
-Oh, ok. Well, I was actually thinking to just add it on the next
-attribute or so, but I guess now that we're discussing it there's a
-higher chance of it actually happening :)
-
-johannes
-
+How would that work? Would 10 and 100 be overclocked to 25 and 250?
