@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 816371193D1
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AF34119600
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbfLJVKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:10:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32782 "EHLO mail.kernel.org"
+        id S1729389AbfLJVYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:24:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728190AbfLJVKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:10:47 -0500
+        id S1728627AbfLJVKx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:10:53 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A9ECC246C0;
-        Tue, 10 Dec 2019 21:10:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6ABDA24697;
+        Tue, 10 Dec 2019 21:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012246;
-        bh=njjDUTgh+3uYkyHWL/u2VaDdv36+V/DkVM3Km0gjKtA=;
+        s=default; t=1576012253;
+        bh=u/TA5nCukRHIf1eZ2xTVzBsDtu7MZr78Wrzuy7Mx6ZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BtU5ozbZJmkaTzYJLVzRFNqogG0e2/Pelwh74w7DMpwQNxWjmkRnlP2UnUJfR6RcM
-         l53YaatE1A0dOxOJqSybfH+Nrtv0vo1ymSshuJAiolP7/IMU9jjlu7fRmTZf3MU8O5
-         nDbqfeEy2CInAk/BQ1RQD6UaS49f+YiRN/WlUG68=
+        b=N6uqnIoUhdo2MvC4LH/L9AsCV3ErqKjwIsodv5koxBrvRgkzZH+2ZUkgC/SOqiRhK
+         r1tB6Ncb6HY4WbN/3Ht9lTvTpdYtlqwJeQu36BtdNNt5m3zf/+BLsZGeDyNvYZ3xTT
+         nf+KytQfrBNa63JbUXRVj5kk86o7aEibkVXFo460=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Johan Hedberg <johan.hedberg@intel.com>,
+Cc:     Manjunath Patil <manjunath.b.patil@oracle.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 194/350] Bluetooth: Fix advertising duplicated flags
-Date:   Tue, 10 Dec 2019 16:04:59 -0500
-Message-Id: <20191210210735.9077-155-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 200/350] ixgbe: protect TX timestamping from API misuse
+Date:   Tue, 10 Dec 2019 16:05:05 -0500
+Message-Id: <20191210210735.9077-161-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -44,58 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Manjunath Patil <manjunath.b.patil@oracle.com>
 
-[ Upstream commit 6012b9346d8959194c239fd60a62dfec98d43048 ]
+[ Upstream commit 07066d9dc3d2326fbad8f7b0cb0120cff7b7dedb ]
 
-Instances may have flags set as part of its data in which case the code
-should not attempt to add it again otherwise it can cause duplication:
+HW timestamping can only be requested for a packet if the NIC is first
+setup via ioctl(SIOCSHWTSTAMP). If this step was skipped, then the ixgbe
+driver still allowed TX packets to request HW timestamping. In this
+situation, we see 'clearing Tx Timestamp hang' noise in the log.
 
-< HCI Command: LE Set Extended Advertising Data (0x08|0x0037) plen 35
-        Handle: 0x00
-        Operation: Complete extended advertising data (0x03)
-        Fragment preference: Minimize fragmentation (0x01)
-        Data length: 0x06
-        Flags: 0x04
-          BR/EDR Not Supported
-        Flags: 0x06
-          LE General Discoverable Mode
-          BR/EDR Not Supported
+Fix this by checking that the NIC is configured for HW TX timestamping
+before accepting a HW TX timestamping request.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Similar-to:
+   commit 26bd4e2db06b ("igb: protect TX timestamping from API misuse")
+   commit 0a6f2f05a2f5 ("igb: Fix a test with HWTSTAMP_TX_ON")
+
+Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_request.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 7f6a581b5b7e1..3d25dbf10b26f 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1273,6 +1273,14 @@ static u8 create_instance_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 91b3780ddb040..1a7203fede12c 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -8639,7 +8639,8 @@ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
  
- 	instance_flags = get_adv_instance_flags(hdev, instance);
- 
-+	/* If instance already has the flags set skip adding it once
-+	 * again.
-+	 */
-+	if (adv_instance && eir_get_data(adv_instance->adv_data,
-+					 adv_instance->adv_data_len, EIR_FLAGS,
-+					 NULL))
-+		goto skip_flags;
-+
- 	/* The Add Advertising command allows userspace to set both the general
- 	 * and limited discoverable flags.
- 	 */
-@@ -1305,6 +1313,7 @@ static u8 create_instance_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
- 		}
- 	}
- 
-+skip_flags:
- 	if (adv_instance) {
- 		memcpy(ptr, adv_instance->adv_data,
- 		       adv_instance->adv_data_len);
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+ 	    adapter->ptp_clock) {
+-		if (!test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
++		if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
++		    !test_and_set_bit_lock(__IXGBE_PTP_TX_IN_PROGRESS,
+ 					   &adapter->state)) {
+ 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 			tx_flags |= IXGBE_TX_FLAGS_TSTAMP;
 -- 
 2.20.1
 
