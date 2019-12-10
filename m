@@ -2,113 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8F9117C3D
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 01:18:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E220117C7E
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 01:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727286AbfLJASk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 19:18:40 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46727 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbfLJASj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 19:18:39 -0500
-Received: by mail-pf1-f196.google.com with SMTP id y14so8068522pfm.13
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 16:18:39 -0800 (PST)
+        id S1727329AbfLJAgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 19:36:35 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34364 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727213AbfLJAgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 19:36:35 -0500
+Received: by mail-lj1-f194.google.com with SMTP id m6so17821768ljc.1
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 16:36:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=yR1KySs+qQP0dJ1gc6Y3Ylu4ra2zW/p9kEKFua+/qu4=;
-        b=xOuetOzK7jpTSuWGsrj82iBN1wkwIE05VOzQMi0hYWSu4Dt5qQz9XcWGfZdST7Iuwv
-         y4caUubRi6zNGl53A9zz0NW2Ci7JjVSPIDKm5YRtt4eFvz828uriCkDxXz04R97bdGuT
-         olnJ7OGNyWhguJi2GQHYcYG9Ebbu2342pgGfAamLA9nhmcn9J0dHpBy69JV8YNExxwfh
-         sNcZVTT9rZnhds1mR0m2GU4g3KHaun1ODmJfAPwm0Ou/469ZawwNSjxLi6uU6wjR9pzz
-         b8349jQEmIxobfOkB+el7XJVdfWjF47LUc5c+urTxhGlSK47JqfBkvL5KL3nZXOgwrTQ
-         F8qg==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=NNbt9iXFC3mSUkW8lp1e59pLAciWOKTwA4+gczGmNf0=;
+        b=H0rKcq37Rn1uoXMKwQMyPeZ1a0LZzud/zRB5KSNJSDOBrBIg1H0KXR8pTmD2PrZZDz
+         KHwY9H92GFTBG6KV84CsJnOy6BMRR9lrhrtjyOs2Qj9pYYSKtvrz8Ya7AfIoxruQQcVP
+         1nUcrbujsUxm6DPlFhhRGuuQu3TPjXgZ9AH6i0dL4wDgyhMcy9WJiP4c1gkG1kRR9iDh
+         zVt2/NAcWnjbRjVGuXyu0uGHGOw/vJxYXhmMWxgGclR4GHdNbWQvvszbby4cZhKq8lEj
+         3TRqYuG6CdU777c4of9k0N7aX/XvHYuobIg1wynZIl/GmApiX+5riNA/3aNgeK5o/POR
+         jTUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=yR1KySs+qQP0dJ1gc6Y3Ylu4ra2zW/p9kEKFua+/qu4=;
-        b=MMgEwfFfzbZZn35gdSusDFRleM9A7g+ZJ3PONwiW/Tw6WL0TSZMh7jpzotXFetstef
-         IWlwodiFYh5IWcQsGYhPltwHBm1PNxqEV6+w9SqNAo+V52U4iCZFanqnVDep65tVglRd
-         ryYluUUKd8RxQZ3xfYhdqH7RDSP49A63i4Bp/1Gjy6vu8noKvFt0TONghN05LxBP9Pjd
-         Z2gocjKulpebrON6nHFPPJv7MY3bwf8lJ7FYif34zmxYAATWBzxRSmBkmcY8yD2OxrLM
-         2SwxB8F0gnFlc/SFdOXhWKiy2h5lBJdpJlG9p0O955MAy6lm3RUSFyMcuaxXIcueFO+1
-         6hrA==
-X-Gm-Message-State: APjAAAXEN85tM6K1B7qpmhDpgMTx6J8GINmF3vq2vhQzO1954VSnpkr1
-        JWsgGmH2C5mBN8/9xVrKArXlOQ==
-X-Google-Smtp-Source: APXvYqxg7D1dBaCApAPv7fIACWzG+g9WKWTF3nPZnp2Y8FQoJuPpNUulT0HNxVkqcL+FpeHfn+LPYA==
-X-Received: by 2002:a65:5bc3:: with SMTP id o3mr21255099pgr.226.1575937119193;
-        Mon, 09 Dec 2019 16:18:39 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g8sm617234pfh.43.2019.12.09.16.18.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Dec 2019 16:18:39 -0800 (PST)
-Date:   Mon, 9 Dec 2019 16:18:35 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
-Message-ID: <20191209161835.7c455fc0@cakuba.netronome.com>
-In-Reply-To: <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
-References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
-        <20191209224530.156283-1-zenczykowski@gmail.com>
-        <20191209154216.7e19e0c0@cakuba.netronome.com>
-        <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=NNbt9iXFC3mSUkW8lp1e59pLAciWOKTwA4+gczGmNf0=;
+        b=XQDGxIwsFCg2CkBA7k9jMqvl2DVcCBE/HCtEMJ5ed4lGu0ygUdNMO4AZI0xG+TE3ML
+         qXxkPikpoh8w3Qcj5dhzIvNazTS0MOXuz1nN48PCj8prFRQdcPbe4/vzxud3ig88Wamw
+         nm2yIe5Z9+8v8V60oIPanSrHZeTiJcG0ZqEXnWCj8yiFp8V7pd1hdf5IFTar8xkT/ELz
+         kUWJBxBm6UYqBbTvXZOOwtJqCzbQAg2SPWSLLOOZeemQIvwMRQIknJPsf2Z3OCjegp8F
+         G/t3XJKHTSLkXsXdVDmym1ou6o+Vrw/MeAuOty1wGQcdmPnlEdIbTQN9g2bxLxboFThe
+         bh7Q==
+X-Gm-Message-State: APjAAAW7R05KjrS/uZjJR4AX1DQxe5lTw7cEuuqhSJiIAfdSVZryBcLy
+        9/vTPyhhW+7vzQEZP+B0CU8VmmlTQZsYeTeo/6A=
+X-Google-Smtp-Source: APXvYqzEDr/4N0m3pAvdW9lw1ZgNhcf6BNV8tQ2t8O9whYNVL3ZjlkujeoWr6YhkXCJS2FXLqRriTXkW49OkI4tm3Yk=
+X-Received: by 2002:a2e:9bcd:: with SMTP id w13mr18126000ljj.139.1575938193250;
+ Mon, 09 Dec 2019 16:36:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a2e:7c18:0:0:0:0:0 with HTTP; Mon, 9 Dec 2019 16:36:32 -0800 (PST)
+Reply-To: mcompola444@gmail.com
+From:   "Mrs M. Compola" <visacarddapartbf@gmail.com>
+Date:   Mon, 9 Dec 2019 16:36:32 -0800
+Message-ID: <CAHYB684m4DHxF3mXQ4FiXKXmojgPJ=C1=-fNHmuzecwL2HG7hg@mail.gmail.com>
+Subject: Dear Friend, My present internet connection is very slow in case you
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 01:02:08 +0100, Maciej =C5=BBenczykowski wrote:
-> > Could you elaborate what protocols and products are in need of this
-> > functionality? =20
->=20
-> The ones I'm aware of are:
-> (a) Google's servers
-> (b) Android on at least some chipsets (Qualcomm at the bare minimum,
-> but I think it's pretty standard a solution) where there's a complex
-> port sharing scheme between the Linux kernel on the Application
-> Processor and the Firmware running on the modem (for ipv4 we only get
-> one ip address from the cellular carrier).  It's basically required
-> for things like wifi calling to work.
+Dear Friend, My present internet connection is very slow in case you
+received my email in your spam
 
-Okay, that's what I was suspecting.  It'd be great if the real
-motivation for a patch was spelled out in the commit message :/
+How are you today?.With due respect to your person and much sincerity
+of purpose,Well it is a pleasure to contact you on this regard and I
+pray that this will turn out to be everlasting relationship for both
+of us. However it's just my urgent need for a Foreign partner that
+made me to contact you for this Transaction,I got your contact from
+internet, while searching for a reliable someone that I can go into
+partnership with. I am Mrs.mcompola, from  BURKINA FASO, West Africa
+.Presently i work in the Bank as bill and exchange manager.
 
-So some SoCs which run non-vanilla kernels require hacks to steal
-ports from the networking stack for use by proprietary firmware.
+I have the opportunity of transferring the left over fund $5.4 Million
+us dollars of one of my Bank clients who died in the collapsing of the
+world trade center on september 11th 2001.I have placed this fund to
+and escrow account without name of beneficiary.i will use my position
+here in the bank to effect a hitch free transfer of the fund to your
+bank account and there will be no trace.
 
-I don't see how merging this patch benefits the community.
+I agree that 40% of this money will be for you as my foreign
+partner,50% for me while 10% will be for the expenses that will occur
+in this transaction .If you are really interested in my proposal
+further details of the Transfer will be forwarded unto you as soon as
+I receive your willingness mail for successful transfer.
 
-> > Why can't the NIC just get its own IP like it usually does with NCSI? =
-=20
->=20
-> Because often these nics are deployed as in place upgrades in
-> environments where there's a limited number of IPs.
-> Say a rack with a /27 ipv4 subnet (2**5 =3D 32 -> 29 usable ips, since
-> network/broadcast/gateway are burned) and 15+ pre-existing machines.
-> This means there's not enough IPs to assign separate ones for the nics.
-> Renumbering the rack, would imply renumbering the datacenter, etc...
-> And ipv4 - even RFC1918 - has long run out - so even in new
-> deployments there's not enough IPv4 ips to give to nics, and IPv6
-> isn't yet deployed *everywhere*.
-
-So the conditions for this are:
- - in-place upgrade of an existing rack
- - IPv4 only
- - the existing servers didn't have NCSI or otherwise IPs for OOB
-   control
-
-Unlike the AP one this sounds like a very rare scenario..
+Yours Faithfully,
+Mrs.mcompola444@gmail.com
