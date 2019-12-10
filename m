@@ -2,51 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 223871193E8
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12815119598
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728811AbfLJVLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:11:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34600 "EHLO mail.kernel.org"
+        id S1728535AbfLJVVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:21:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34704 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728525AbfLJVLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:11:39 -0500
+        id S1728806AbfLJVLl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:11:41 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E9E3246AE;
-        Tue, 10 Dec 2019 21:11:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E065A24697;
+        Tue, 10 Dec 2019 21:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012298;
-        bh=S7s86h+6KeqRF+X6M+MwymUuKKIUxWBoBrdACSS/7Z4=;
+        s=default; t=1576012300;
+        bh=UgTjlc2QNNj2DJv7LAYQwFyJq4Ea+Eu9pXIlImpn1AU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qVORyjm7NBbrZgnjLS/IDHC7F51Oehl6DXpemgkA5zRu/o1Xo8TEM6rkHISUMQbEf
-         wDvxNKuVIRQNuSnK9d2lcLVbOG69G9Yy7gv/plFpoHuxgqPysLt/3WCgPS94VABpqA
-         6FwMHoSpj58VuBZi4Sf8I7CG636qHAXGeL4i6AwY=
+        b=gtO/imSFlzEA9o+w+Zg2MZtaOdUhFAJLD834gOKmg3Oa93KBg8/Kva+MPJ5ff5lsa
+         5mLLBcKCGZwAJWdJCAr5VLeNNuNZY8CoEXiPRGhoQs/Sa/685XoNF9id+5vzBaRm3H
+         Isu5m6DD9tL64sRY1HxgGGSdpbMbiQ8xIrKtW+tc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, netdev@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 235/350] perf parse: If pmu configuration fails free terms
-Date:   Tue, 10 Dec 2019 16:05:40 -0500
-Message-Id: <20191210210735.9077-196-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 237/350] net: avoid potential false sharing in neighbor related code
+Date:   Tue, 10 Dec 2019 16:05:42 -0500
+Message-Id: <20191210210735.9077-198-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -59,60 +43,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 38f2c4226e6bc3e8c41c318242821ba5dc825aba ]
+[ Upstream commit 25c7a6d1f90e208ec27ca854b1381ed39842ec57 ]
 
-Avoid a memory leak when the configuration fails.
+There are common instances of the following construct :
 
-Signed-off-by: Ian Rogers <irogers@google.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: clang-built-linux@googlegroups.com
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191030223448.12930-9-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+	if (n->confirmed != now)
+		n->confirmed = now;
+
+A C compiler could legally remove the conditional.
+
+Use READ_ONCE()/WRITE_ONCE() to avoid this problem.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/parse-events.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ include/net/arp.h   |  4 ++--
+ include/net/ndisc.h |  8 ++++----
+ include/net/sock.h  | 12 ++++++------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index d5ea043d3fc4c..422ad1888e74f 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1365,8 +1365,15 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	if (get_config_terms(head_config, &config_terms))
- 		return -ENOMEM;
+diff --git a/include/net/arp.h b/include/net/arp.h
+index c8f580a0e6b1f..4950191f6b2bf 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -57,8 +57,8 @@ static inline void __ipv4_confirm_neigh(struct net_device *dev, u32 key)
+ 		unsigned long now = jiffies;
  
--	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error))
-+	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error)) {
-+		struct perf_evsel_config_term *pos, *tmp;
-+
-+		list_for_each_entry_safe(pos, tmp, &config_terms, list) {
-+			list_del_init(&pos->list);
-+			free(pos);
-+		}
- 		return -EINVAL;
-+	}
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index b2f715ca05672..b5ebeb3b0de0e 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -414,8 +414,8 @@ static inline void __ipv6_confirm_neigh(struct net_device *dev,
+ 		unsigned long now = jiffies;
  
- 	evsel = __add_event(list, &parse_state->idx, &attr,
- 			    get_config_name(head_config), pmu,
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+@@ -431,8 +431,8 @@ static inline void __ipv6_confirm_neigh_stub(struct net_device *dev,
+ 		unsigned long now = jiffies;
+ 
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 718e62fbe869d..013396e50b91f 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1940,8 +1940,8 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie);
+ 
+ static inline void sk_dst_confirm(struct sock *sk)
+ {
+-	if (!sk->sk_dst_pending_confirm)
+-		sk->sk_dst_pending_confirm = 1;
++	if (!READ_ONCE(sk->sk_dst_pending_confirm))
++		WRITE_ONCE(sk->sk_dst_pending_confirm, 1);
+ }
+ 
+ static inline void sock_confirm_neigh(struct sk_buff *skb, struct neighbour *n)
+@@ -1951,10 +1951,10 @@ static inline void sock_confirm_neigh(struct sk_buff *skb, struct neighbour *n)
+ 		unsigned long now = jiffies;
+ 
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
+-		if (sk && sk->sk_dst_pending_confirm)
+-			sk->sk_dst_pending_confirm = 0;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
++		if (sk && READ_ONCE(sk->sk_dst_pending_confirm))
++			WRITE_ONCE(sk->sk_dst_pending_confirm, 0);
+ 	}
+ }
+ 
 -- 
 2.20.1
 
