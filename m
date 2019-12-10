@@ -2,171 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80686119F5C
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 00:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B94E3119F70
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 00:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727306AbfLJXZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 18:25:49 -0500
-Received: from mail-eopbgr00048.outbound.protection.outlook.com ([40.107.0.48]:12257
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726930AbfLJXZt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 18:25:49 -0500
+        id S1727145AbfLJXfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 18:35:05 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14270 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726683AbfLJXfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 18:35:04 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBANYaFC025418;
+        Tue, 10 Dec 2019 15:34:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=EhCDKHC4gUCM3jUceATSEfV87aYQrW7uNQzeE7yd1nU=;
+ b=K6/ejvNqr+uwCM7HPk4EGM2Y2CSiyrjq+Q435LLE/Jv6tDIIOUDIqEWG4k5WMCg6sJG/
+ VSKJir9uF6CdVr0YlW60Cp6JtNTSOSjCiHKJ2uWFiSHZbe++K6iy2GJWMIhn44t5ab/g
+ lCmWxznW520AAIaq1af5vEScd3UlmD5ApNQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wtddktx9g-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 10 Dec 2019 15:34:39 -0800
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 10 Dec 2019 15:34:26 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Tue, 10 Dec 2019 15:34:26 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i+r7HgfCkRtRoXxTFZiwOy53tUxcaDu20+ky1xiBfLwNPoLTd9n2qDqWm6rDlNdQ9Rj7R2KUpfjP0NvNifOjjKZZprIViyX2qSPT8iu4n4KZKCGVQ30B2jMuzE5ngejdoblrrKpxefhaWoTKNc1YEWT5VDlmtUBey+A0AzdGSwwGQ5nDOMOt2n/c6UyO9tL+Ggs4hgARmPJkyMJxlQmDQ/0EySZo5s+Yt4b7JcRGtKCMm/pzsjo0PGiPdl/3m69JG4oyfHzyHc7DMHVccyN7FTjGoXf00f+cR6CLzndwHWU+Ad8MUb7FMzFzcPussghjz9FQzmnXi6rVwz2yEq+bqg==
+ b=VW67uXw+3CL2Gb7hJ6SLwcfz3aLJsGczie93NTZ0roEGcw3J2E4dnuBxIaVe5JPNvqgBHkldk6/zG79l/qAG0/yIvLglhksILYXE0esJL+imZf0900PhGgPPgeqfghJPqdChtiY6Q/VX49x7nxXM9yuwVsk1GFLu97g1recgybg2NHwK68iWcYe9XrbIGlA9d0/Z+S1je+lA+QrCz9Ukd+hGwK+6ORzi/TJQt2VHPCYIfRSZ/elnCMYDc/6UZH8g65mFEcm1HWppIMD4eu3xvuJPLOq9R/zmxe23efxeFIBA2Jyyist0gIaVHzMOeRaGl3BzujQFFzv8TvFAL0e1Ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0p+8lbc6DIHxWZuka9GEdhfOgxps4Ba6HLHEOVR378g=;
- b=auPltRwkMEYq1Tw92OKhJzIp2v/pzjDCs8QWqnribd/1UOim7R33ISF/AWMesDbaUIU405uaO4TUVMIkp8UQBmiDuYbERXdyNIKLBoXgoD00e6+SMGhmhdzf8iJgQtE/FlVfvNyP2IcpDK5Dr9y1dvGrc0vxtB5wQQTX3RlnyLU0fucGD5Hy8bUFaat3Hque2ekEMTsFUQUxSVcQgSf2pIjGX2+X+qQrRPOIp6CPgunij9RGVKWsK1gWDvG+GguUw3erYkLKO9E7glLmURMz5tDj7X1h+JQt7mXBM7vrqh2KFe5He90C0nDtBbXpndj4wNaPZrJaORvX9J9koyXlJQ==
+ bh=EhCDKHC4gUCM3jUceATSEfV87aYQrW7uNQzeE7yd1nU=;
+ b=VLAzolLcy0en038iK/TYksAjLFNpGdzifLGDmsjVnxez5kcDR7RywjKS6I2yz80KssMAfp9SRAFIfYvzDO289UIrqnqSbTB4w6l0W9zIRgl9mYua5zP+ELTV0OhYex4jsLOIgVfUo4ytF9oOK3A4pAVJuMOF97mTNf88xMIdlLE5EENtdsAUdYRuT/s3r07Xx0hd/8/WGm87gBDJ1EZkLrB9xij8cxwth4lwfr5ksrd7NZag9jhZR9TMMCf7Z37b9f4Ewdai44yPyQwmbi2p0T76FEpbq2qI+l6on7QojN1gRAOdr0Kaf7GEX1JN38PDCzpxKnyi36S1JUSaTit4+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0p+8lbc6DIHxWZuka9GEdhfOgxps4Ba6HLHEOVR378g=;
- b=oHyG1+j2WpDMvPd8BdGndYwQ8U9uZMHMpUyLzGQ4GD6t5Q0eW40dRM8Q9mZYHdBHosMwUwjHwFzi4ML6JlZOJR5PP9FfwwB/vHYP45ZvB++kJjOuNGP6EPocf5uqdA9Ny63bAInn7IYKynidUvYjo8fduX0MhcxoPzmZ+B/yXGE=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6834.eurprd05.prod.outlook.com (10.186.175.82) with Microsoft SMTP
+ bh=EhCDKHC4gUCM3jUceATSEfV87aYQrW7uNQzeE7yd1nU=;
+ b=dMHQCBp/5MaILHU9QfsR/D3EKiwJjI1Iftav4tSqBbixbBB8Pt0aAad7tHujrJQUBqINHXuH7ZlSlnmru5kdR1kyqhKoIGUQYr5udR/Zeh39ovM35aMKJ98ZQ94E1FJMoXVU2dxsCwU7q2pilRKfVq9MaKiszfveZtWYd/tIKBM=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2671.namprd15.prod.outlook.com (20.179.146.142) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.14; Tue, 10 Dec 2019 23:25:44 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::16:9951:5a4b:9ec6]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::16:9951:5a4b:9ec6%7]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
- 23:25:44 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Shannon Nelson <snelson@pensando.io>,
+ 15.20.2516.14; Tue, 10 Dec 2019 23:34:25 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
+ 23:34:25 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 2/2] ionic: support sr-iov operations
-Thread-Topic: [PATCH net-next 2/2] ionic: support sr-iov operations
-Thread-Index: AQHVr6zOFjqN5wjDOEqkWYoFSecuO6e0Au6A
-Date:   Tue, 10 Dec 2019 23:25:43 +0000
-Message-ID: <06e51df6-1da1-97fd-0765-a0efbece45c5@mellanox.com>
-References: <20191210225421.35193-1-snelson@pensando.io>
- <20191210225421.35193-3-snelson@pensando.io>
-In-Reply-To: <20191210225421.35193-3-snelson@pensando.io>
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bpf: Fix build in minimal configurations, again
+Thread-Topic: [PATCH] bpf: Fix build in minimal configurations, again
+Thread-Index: AQHVr5luvUr1OsnMX0ud4dyRR00tDqe0BX+A
+Date:   Tue, 10 Dec 2019 23:34:24 +0000
+Message-ID: <20191210233421.vnybkzc6noskmsjt@kafai-mbp>
+References: <20191210203553.2941035-1-arnd@arndb.de>
+In-Reply-To: <20191210203553.2941035-1-arnd@arndb.de>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [208.176.44.194]
+x-clientproxiedby: CO2PR04CA0165.namprd04.prod.outlook.com
+ (2603:10b6:104:4::19) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:4349]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5b244988-f257-41ff-2158-08d77dc8475e
-x-ms-traffictypediagnostic: AM0PR05MB6834:
-x-microsoft-antispam-prvs: <AM0PR05MB6834C63A38CBD235FC4CD780D15B0@AM0PR05MB6834.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-ms-office365-filtering-correlation-id: ff918764-f22a-41b4-5192-08d77dc97db4
+x-ms-traffictypediagnostic: MN2PR15MB2671:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR15MB2671B33B27C6936873981E63D55B0@MN2PR15MB2671.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 02475B2A01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(376002)(366004)(346002)(39860400002)(199004)(189003)(66946007)(5660300002)(6512007)(2616005)(2906002)(186003)(8936002)(66476007)(31686004)(6486002)(110136005)(31696002)(316002)(71200400001)(6506007)(66556008)(81156014)(81166006)(64756008)(86362001)(76116006)(8676002)(53546011)(26005)(478600001)(36756003)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6834;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(199004)(189003)(8936002)(66946007)(5660300002)(2906002)(6512007)(4326008)(9686003)(86362001)(64756008)(66446008)(8676002)(71200400001)(186003)(81156014)(81166006)(66556008)(1076003)(498600001)(6916009)(33716001)(6486002)(54906003)(6506007)(52116002)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2671;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ezn29891xTh37QT4rg4uLXJ1ccpdIsDybx3/tJho30QLSaldk0UXyR0BrvI7wecgiIFzXytm2o1lZa5pQ5bxRRmJlkEpx2m63t/gLZpGOi1zX87RI1OWC+6HUYyASfdyhNAAP/R1DO31i7GQM7f9VE08hkA/SZ5yDuKHlwBfZ12CW2OVbwBc8mtkR7Oes2dyVnVGVE8yxFQyJgfE+aO+S5cyDlzvOE7jFabv16qOb3pdsq/71bzpVh8bG+J/5OItyYBpLrkQV3v6tU1upZ0j5u7YXniA/dcMiIXhSMsKMz0/X1RzF5g59eMLsB8lXoNSHjcq308cnqL+ARwCMP0cmPM7YvNMTFlFSNROx+gAWw1kpD2Ao5XTGwJVA4wFnb6O3Q8/ftEFifIykhYc8wRd2G4d+qVhCvcmbZyRbMI2hwThzo+tib5eX+Hy6XEgWdiV
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E6BFB6B7AD863F409B7930314449DC67@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: nsyTa9/nsnm9a/tt0ofDQomnmdyzNxHFaHuUDoOx58/i3V/WgQw3As9cI8va2goGt2+wATTAiId8JkPtFAiGnDC+WdK+CWzqTEtcF9vu9sdsDtchBr0k2t2RlvZt48KQQAn941O2chpgQZKJL2fhoa25DENP8mB/RcOze2mrCLMtSZu3dJgQbL5nGzy+MjIbuzaaLA6NgxhXBivamnZ9SeQp2G1PxZDAqWojqeXlud4uLDLsRGhxnM//qtY2emOQTkxyDFAwsi+sNzh+5mHEGiZnQesoORg121ZoDoh+LuGOnUgCBtLTHN05+EzFZsIGi200IMq8IiCA3qmvvS00vUcrYAsIu6vhh7iM2zGUDOBaV4ku8d983+jY4yrylc9GFGgGUDYCeyVYvwVFPHsFdz018O3TQu1IpzwH3N6ByWnM+fQcycGo196Kc5nT4zW1
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B0045B965EC74644BA81F88070FB9A2B@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b244988-f257-41ff-2158-08d77dc8475e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 23:25:43.9057
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff918764-f22a-41b4-5192-08d77dc97db4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 23:34:24.9620
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: //baApr83j4YfyvveiBTlbc57NLF1Lt0vVrNgzcsPpNYW0yaIwayy71zgnD9e6p2qnqKW93iJ82SOzqQpGjSwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6834
+X-MS-Exchange-CrossTenant-userprincipalname: pZko3wOSBAcUta7IV2OH/HgOYboc9YmSfrFWOoGvmuaRnI5HsH6OYJRLGX0SGlbG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2671
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-10_07:2019-12-10,2019-12-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 bulkscore=0 clxscore=1011 malwarescore=0 phishscore=0
+ spamscore=0 priorityscore=1501 adultscore=0 impostorscore=0
+ mlxlogscore=865 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912100193
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTIvMTAvMjAxOSA0OjU0IFBNLCBTaGFubm9uIE5lbHNvbiB3cm90ZToNCj4gQWRkIHRoZSBu
-ZXRkZXYgb3BzIGZvciBtYW5hZ2luZyBWRnMuICBTaW5jZSBtb3N0IG9mIHRoZQ0KPiBtYW5hZ2Vt
-ZW50IHdvcmsgaGFwcGVucyBpbiB0aGUgTklDIGZpcm13YXJlLCB0aGUgZHJpdmVyIGJlY29tZXMN
-Cj4gbW9zdGx5IGEgcGFzcy10aHJvdWdoIGZvciB0aGUgbmV0d29yayBzdGFjayBjb21tYW5kcyB0
-aGF0IHdhbnQNCj4gdG8gY29udHJvbCBhbmQgY29uZmlndXJlIHRoZSBWRnMuDQo+IA0KPiBXZSBh
-bHNvIHR3ZWFrIGlvbmljX3N0YXRpb25fc2V0KCkgYSBsaXR0bGUgdG8gYWxsb3cgZm9yDQo+IHRo
-ZSBWRnMgdGhhdCBzdGFydCBvZmYgd2l0aCBhIHplcm8nZCBtYWMgYWRkcmVzcy4NCj4gDQo+IFNp
-Z25lZC1vZmYtYnk6IFNoYW5ub24gTmVsc29uIDxzbmVsc29uQHBlbnNhbmRvLmlvPg0KPiAtLS0N
-Cj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmljLmggICB8ICAxNiAr
-LQ0KPiAgLi4uL2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmljX2J1c19wY2kuYyAgIHwgIDc1
-ICsrKysrKysNCj4gIC4uLi9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfZGV2LmMg
-ICB8ICA2MSArKysrKysNCj4gIC4uLi9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNf
-ZGV2LmggICB8ICAgNyArDQo+ICAuLi4vbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmlj
-X2xpZi5jICAgfCAxODggKysrKysrKysrKysrKysrKystDQo+ICAuLi4vbmV0L2V0aGVybmV0L3Bl
-bnNhbmRvL2lvbmljL2lvbmljX2xpZi5oICAgfCAgIDYgKw0KPiAgLi4uL25ldC9ldGhlcm5ldC9w
-ZW5zYW5kby9pb25pYy9pb25pY19tYWluLmMgIHwgICA0ICsNCj4gIDcgZmlsZXMgY2hhbmdlZCwg
-MzQ5IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWMuaCBiL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L3BlbnNhbmRvL2lvbmljL2lvbmljLmgNCj4gaW5kZXggOThlMTAyYWY3NzU2Li5kNGNm
-NThkYThkMTMgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3BlbnNhbmRvL2lv
-bmljL2lvbmljLmgNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcGVuc2FuZG8vaW9uaWMv
-aW9uaWMuaA0KPiBAQCAtMTIsNyArMTIsNyBAQCBzdHJ1Y3QgaW9uaWNfbGlmOw0KPiAgDQo+ICAj
-ZGVmaW5lIElPTklDX0RSVl9OQU1FCQkiaW9uaWMiDQo+ICAjZGVmaW5lIElPTklDX0RSVl9ERVND
-UklQVElPTgkiUGVuc2FuZG8gRXRoZXJuZXQgTklDIERyaXZlciINCj4gLSNkZWZpbmUgSU9OSUNf
-RFJWX1ZFUlNJT04JIjAuMTguMC1rIg0KPiArI2RlZmluZSBJT05JQ19EUlZfVkVSU0lPTgkiMC4y
-MC4wLWsiDQo+ICANCj4gICNkZWZpbmUgUENJX1ZFTkRPUl9JRF9QRU5TQU5ETwkJCTB4MWRkOA0K
-PiAgDQo+IEBAIC0yNSw2ICsyNSwxOCBAQCBzdHJ1Y3QgaW9uaWNfbGlmOw0KPiAgDQo+ICAjZGVm
-aW5lIERFVkNNRF9USU1FT1VUICAxMA0KPiAgDQo+ICtzdHJ1Y3QgaW9uaWNfdmYgew0KPiArCXUx
-NgkgaW5kZXg7DQo+ICsJdTgJIG1hY2FkZHJbNl07DQo+ICsJX19sZTMyCSBtYXhyYXRlOw0KPiAr
-CV9fbGUxNgkgdmxhbmlkOw0KPiArCXU4CSBzcG9vZmNoazsNCj4gKwl1OAkgdHJ1c3RlZDsNCj4g
-Kwl1OAkgbGlua3N0YXRlOw0KPiArCWRtYV9hZGRyX3QgICAgICAgc3RhdHNfcGE7DQo+ICsJc3Ry
-dWN0IGlvbmljX2xpZl9zdGF0cyBzdGF0czsNCj4gK307DQo+ICsNCj4gIHN0cnVjdCBpb25pYyB7
-DQo+ICAJc3RydWN0IHBjaV9kZXYgKnBkZXY7DQo+ICAJc3RydWN0IGRldmljZSAqZGV2Ow0KPiBA
-QCAtNDYsNiArNTgsOCBAQCBzdHJ1Y3QgaW9uaWMgew0KPiAgCURFQ0xBUkVfQklUTUFQKGludHJz
-LCBJT05JQ19JTlRSX0NUUkxfUkVHU19NQVgpOw0KPiAgCXN0cnVjdCB3b3JrX3N0cnVjdCBuYl93
-b3JrOw0KPiAgCXN0cnVjdCBub3RpZmllcl9ibG9jayBuYjsNCj4gKwlpbnQgbnVtX3ZmczsNClBs
-ZWFzZSBkcm9wIG51bV92ZnMgYW5kIHVzZSBwY2lfbnVtX3ZmKCkgaW4gaW9uaWNfZ2V0X3ZmX2Nv
-bmZpZygpIGFuZA0Kb3RoZXIgZnJpZW5kIGZ1bmN0aW9ucy4NCg0KPiArCXN0cnVjdCBpb25pY192
-ZiAqKnZmOw0KPiAgCXN0cnVjdCB0aW1lcl9saXN0IHdhdGNoZG9nX3RpbWVyOw0KPiAgCWludCB3
-YXRjaGRvZ19wZXJpb2Q7DQo+ICB9Ow0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvcGVuc2FuZG8vaW9uaWMvaW9uaWNfYnVzX3BjaS5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-cGVuc2FuZG8vaW9uaWMvaW9uaWNfYnVzX3BjaS5jDQo+IGluZGV4IDlhOWFiOGNiMmNiMy4uZmU0
-ZWZlMTJiNTBiIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9wZW5zYW5kby9p
-b25pYy9pb25pY19idXNfcGNpLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvcGVuc2Fu
-ZG8vaW9uaWMvaW9uaWNfYnVzX3BjaS5jDQo+IEBAIC0yNzQsMTEgKzI3NCw4NiBAQCBzdGF0aWMg
-dm9pZCBpb25pY19yZW1vdmUoc3RydWN0IHBjaV9kZXYgKnBkZXYpDQo+ICAJaW9uaWNfZGV2bGlu
-a19mcmVlKGlvbmljKTsNCj4gIH0NCj4gIA0KPiArc3RhdGljIGludCBpb25pY19zcmlvdl9jb25m
-aWd1cmUoc3RydWN0IHBjaV9kZXYgKnBkZXYsIGludCBudW1fdmZzKQ0KPiArew0KPiArCXN0cnVj
-dCBpb25pYyAqaW9uaWMgPSBwY2lfZ2V0X2RydmRhdGEocGRldik7DQo+ICsJc3RydWN0IGRldmlj
-ZSAqZGV2ID0gaW9uaWMtPmRldjsNCj4gKwl1bnNpZ25lZCBpbnQgc2l6ZTsNCj4gKwlpbnQgaSwg
-ZXJyID0gMDsNCj4gKw0KPiArCWlmICghaW9uaWNfaXNfcGYoaW9uaWMpKQ0KPiArCQlyZXR1cm4g
-LUVOT0RFVjsNCj4gKw0KVGhpcyBjaGVjayBpcyBhbHJlYWR5IGRvbmUgYnkgcGNpIGNvcmUga2Vy
-bmVsLiBObyBuZWVkIGZvciBpb25pYyBkcml2ZXINCnRvIGRvIHRoaXMuIElmIFNSLUlPViBjYXBh
-YmlsaXR5IGlzIG5vdCBlbmFibGVkLCBpdCB3b24ndCByZWFjaCBoZXJlLg0KDQo+ICsJaWYgKG51
-bV92ZnMgPiAwKSB7DQo+ICsJCWVyciA9IHBjaV9lbmFibGVfc3Jpb3YocGRldiwgbnVtX3Zmcyk7
-DQo+ICsJCWlmIChlcnIpIHsNCj4gKwkJCWRldl9lcnIoJnBkZXYtPmRldiwgIkNhbm5vdCBlbmFi
-bGUgU1JJT1Y6ICVkXG4iLCBlcnIpOw0KPiArCQkJcmV0dXJuIGVycjsNCj4gKwkJfQ0KPiArDQo+
-ICsJCXNpemUgPSBzaXplb2Yoc3RydWN0IGlvbmljX3ZmICopICogbnVtX3ZmczsNCj4gKwkJaW9u
-aWMtPnZmID0ga3phbGxvYyhzaXplLCBHRlBfS0VSTkVMKTsNClBsZWFzZSB1c2Uga2NhbGxvYygp
-DQoNCj4gKwkJaWYgKCFpb25pYy0+dmYpIHsNCj4gKwkJCXBjaV9kaXNhYmxlX3NyaW92KHBkZXYp
-Ow0KPiArCQkJcmV0dXJuIC1FTk9NRU07DQo+ICsJCX0NCj4gKw0KPiArCQlmb3IgKGkgPSAwOyBp
-IDwgbnVtX3ZmczsgaSsrKSB7DQo+ICsJCQlzdHJ1Y3QgaW9uaWNfdmYgKnY7DQo+ICsNCj4gKwkJ
-CXYgPSBremFsbG9jKHNpemVvZigqdiksIEdGUF9LRVJORUwpOw0KPiArCQkJaWYgKCF2KSB7DQo+
-ICsJCQkJZXJyID0gLUVOT01FTTsNCj4gKwkJCQludW1fdmZzID0gMDsNCj4gKwkJCQlnb3RvIHJl
-bW92ZV92ZnM7DQo+ICsJCQl9DQo+ICsNCj4gKwkJCXYtPnN0YXRzX3BhID0gZG1hX21hcF9zaW5n
-bGUoZGV2LCAmdi0+c3RhdHMsDQo+ICsJCQkJCQkgICAgIHNpemVvZih2LT5zdGF0cyksDQo+ICsJ
-CQkJCQkgICAgIERNQV9GUk9NX0RFVklDRSk7DQo+ICsJCQlpZiAoZG1hX21hcHBpbmdfZXJyb3Io
-ZGV2LCB2LT5zdGF0c19wYSkpIHsNCj4gKwkJCQllcnIgPSAtRU5PREVWOw0KPiArCQkJCWtmcmVl
-KHYpOw0KPiArCQkJCWlvbmljLT52ZltpXSA9IE5VTEw7DQo+ICsJCQkJbnVtX3ZmcyA9IDA7DQo+
-ICsJCQkJZ290byByZW1vdmVfdmZzOw0KPiArCQkJfQ0KPiArDQo+ICsJCQlpb25pYy0+dmZbaV0g
-PSB2Ow0KPiArCQkJaW9uaWMtPm51bV92ZnMrKzsNCj4gKwkJfQ0KPiArDQo+ICsJCXJldHVybiBu
-dW1fdmZzOw0KPiArCX0NCj4gKw0KPiArcmVtb3ZlX3ZmczoNCj4gKwlpZiAobnVtX3ZmcyA9PSAw
-KSB7DQo+ICsJCWlmIChlcnIpDQo+ICsJCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJTUklPViBzZXR1
-cCBmYWlsZWQ6ICVkXG4iLCBlcnIpOw0KPiArDQo+ICsJCXBjaV9kaXNhYmxlX3NyaW92KHBkZXYp
-Ow0KPiArDQo+ICsJCWZvciAoaSA9IDA7IGkgPCBpb25pYy0+bnVtX3ZmczsgaSsrKSB7DQo+ICsJ
-CQlkbWFfdW5tYXBfc2luZ2xlKGRldiwgaW9uaWMtPnZmW2ldLT5zdGF0c19wYSwNCj4gKwkJCQkJ
-IHNpemVvZihzdHJ1Y3QgaW9uaWNfbGlmX3N0YXRzKSwNCj4gKwkJCQkJIERNQV9GUk9NX0RFVklD
-RSk7DQo+ICsJCQlrZnJlZShpb25pYy0+dmZbaV0pOw0KPiArCQl9DQo+ICsNCj4gKwkJa2ZyZWUo
-aW9uaWMtPnZmKTsNCj4gKwkJaW9uaWMtPnZmID0gTlVMTDsNCj4gKwkJaW9uaWMtPm51bV92ZnMg
-PSAwOw0KPiArCX0NCj4gKw0KPiArCXJldHVybiBlcnI7DQo+ICt9DQo+ICsNCj4gIHN0YXRpYyBz
-dHJ1Y3QgcGNpX2RyaXZlciBpb25pY19kcml2ZXIgPSB7DQo+ICAJLm5hbWUgPSBJT05JQ19EUlZf
-TkFNRSwNCj4gIAkuaWRfdGFibGUgPSBpb25pY19pZF90YWJsZSwNCj4gIAkucHJvYmUgPSBpb25p
-Y19wcm9iZSwNCj4gIAkucmVtb3ZlID0gaW9uaWNfcmVtb3ZlLA0KPiArCS5zcmlvdl9jb25maWd1
-cmUgPSBpb25pY19zcmlvdl9jb25maWd1cmUsDQo+ICB9Ow0K
+On Tue, Dec 10, 2019 at 09:35:46PM +0100, Arnd Bergmann wrote:
+> Building with -Werror showed another failure:
+>=20
+> kernel/bpf/btf.c: In function 'btf_get_prog_ctx_type.isra.31':
+> kernel/bpf/btf.c:3508:63: error: array subscript 0 is above array bounds =
+of 'u8[0]' {aka 'unsigned char[0]'} [-Werror=3Darray-bounds]
+>   ctx_type =3D btf_type_member(conv_struct) + bpf_ctx_convert_map[prog_ty=
+pe] * 2;
+>=20
+> I don't actually understand why the array is empty, but a similar
+> fix has addressed a related problem, so I suppose we can do the
+> same thing here.
+>=20
+> Fixes: ce27709b8162 ("bpf: Fix build in minimal configurations")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  kernel/bpf/btf.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 7d40da240891..ed2075884724 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3470,6 +3470,7 @@ static u8 bpf_ctx_convert_map[] =3D {
+>  	[_id] =3D __ctx_convert##_id,
+>  #include <linux/bpf_types.h>
+>  #undef BPF_PROG_TYPE
+> +	0, /* avoid empty array */
+If bpf_types.h is empty, the prog should have already failed
+earlier in find_prog_type() in syscall.c, so 0 here should
+be fine.
+
+Acked-by: Martin KaFai Lau <kafai@fb.com>
