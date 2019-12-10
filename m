@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1659119B65
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:11:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E1C119B5C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:11:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729927AbfLJWH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:07:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36324 "EHLO mail.kernel.org"
+        id S1729511AbfLJWHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:07:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36592 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729369AbfLJWFH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:05:07 -0500
+        id S1727607AbfLJWFO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:05:14 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8BFBE2073B;
-        Tue, 10 Dec 2019 22:05:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4227922464;
+        Tue, 10 Dec 2019 22:05:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576015507;
-        bh=16FYzRNi2DXgouO8ewO/GG8teFaO/XQJ1D395ooRIVs=;
+        s=default; t=1576015514;
+        bh=88srsW2eBFqpTiH1jjXX1wBZFk7FgPd5GNMd4Atazg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xduOiWNs/QkMWThi5c7DeKxxlqA3Q7iLxG7EiA+qBsQKfYB/lE8GI/+xzRV5edEwn
-         h2leUCzBPYuG2JeXOMjwtq48FqSdC1XX0KQdXZBDU8GpUoYHrLzfKBQU8IAihVM+/d
-         JkBcLibjeXv7/CDW0jvtRVC7Wy3zcTzytov9btjk=
+        b=v6j0OzGGcSLfFfWT6MSdLztp22KvZyCkCDb4RuSD8y03knfCJqkeqHN1fh0G2rJUt
+         vxWmIoz1uMf6p4vLsqxn9xODJq5m/kLSqDeXkvx280cpvyEiEDe30Kj4ir63N+hiZX
+         wmCFJxSeR7rrF/rjHfRX6uRUzKK7mLhSZXAfu8dQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Wahren <wahrenst@gmx.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Wang Xuerui <wangxuerui@qiniu.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 106/130] net: bcmgenet: Add RGMII_RXID support
-Date:   Tue, 10 Dec 2019 17:02:37 -0500
-Message-Id: <20191210220301.13262-106-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 111/130] iwlwifi: mvm: fix unaligned read of rx_pkt_status
+Date:   Tue, 10 Dec 2019 17:02:42 -0500
+Message-Id: <20191210220301.13262-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210220301.13262-1-sashal@kernel.org>
 References: <20191210220301.13262-1-sashal@kernel.org>
@@ -45,37 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Wahren <wahrenst@gmx.net>
+From: Wang Xuerui <wangxuerui@qiniu.com>
 
-[ Upstream commit da38802211cc3fd294211a642932edb09e3af632 ]
+[ Upstream commit c5aaa8be29b25dfe1731e9a8b19fd91b7b789ee3 ]
 
-This adds the missing support for the PHY mode RGMII_RXID.
-It's necessary for the Raspberry Pi 4.
+This is present since the introduction of iwlmvm.
+Example stack trace on MIPS:
 
-Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[<ffffffffc0789328>] iwl_mvm_rx_rx_mpdu+0xa8/0xb88 [iwlmvm]
+[<ffffffffc0632b40>] iwl_pcie_rx_handle+0x420/0xc48 [iwlwifi]
+
+Tested with a Wireless AC 7265 for ~6 months, confirmed to fix the
+problem. No other unaligned accesses are spotted yet.
+
+Signed-off-by: Wang Xuerui <wangxuerui@qiniu.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index fca9da1b13635..201cc533d0344 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -267,6 +267,11 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
- 		bcmgenet_sys_writel(priv,
- 				    PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
- 		break;
-+
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		phy_name = "external RGMII (RX delay)";
-+		port_ctrl = PORT_MODE_EXT_GPHY;
-+		break;
- 	default:
- 		dev_err(kdev, "unknown phy mode: %d\n", priv->phy_interface);
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rx.c b/drivers/net/wireless/intel/iwlwifi/mvm/rx.c
+index c73e4be9bde3f..c31303d13069a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rx.c
+@@ -62,6 +62,7 @@
+  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *****************************************************************************/
++#include <asm/unaligned.h>
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+ #include "iwl-trans.h"
+@@ -290,7 +291,7 @@ void iwl_mvm_rx_rx_mpdu(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 	rx_res = (struct iwl_rx_mpdu_res_start *)pkt->data;
+ 	hdr = (struct ieee80211_hdr *)(pkt->data + sizeof(*rx_res));
+ 	len = le16_to_cpu(rx_res->byte_count);
+-	rx_pkt_status = le32_to_cpup((__le32 *)
++	rx_pkt_status = get_unaligned_le32((__le32 *)
+ 		(pkt->data + sizeof(*rx_res) + len));
+ 
+ 	/* Dont use dev_alloc_skb(), we'll have enough headroom once
 -- 
 2.20.1
 
