@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B9F119914
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B80119903
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728306AbfLJVma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:42:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38634 "EHLO mail.kernel.org"
+        id S1728064AbfLJVl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:41:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729326AbfLJVd6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:33:58 -0500
+        id S1729937AbfLJVeG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:34:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9211022464;
-        Tue, 10 Dec 2019 21:33:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 320BC222C4;
+        Tue, 10 Dec 2019 21:34:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576013638;
-        bh=6Ve9dJgXvkid6EqjAKU+C/eDNUi6JUFV6zDuf7RN9Gg=;
+        s=default; t=1576013645;
+        bh=YxEtpmiNCRn/jEj2AHiY6cENakVyQhsWOpHRM5wtLHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H+nb64CEzVub9om0l5rb8ToTVDPsfNk1peYdEnCEaccSH0jaqzU64zCtexmq1Cwyz
-         ZjOztkCJUsd6WB3Re/GTRprPrN20qQOrYF01uX0PzsRZIjF3crYnAfHOiBY446CUw0
-         kAEGAPI71qky8TXm+Uw5mjDT3yqeT2zIzOrYk+q8=
+        b=Yp2M8nagqmdTfG0w2tmxRRuxccsNkDkI+D6tKpihl85/r5WwM8cNNF1ry6tPFxz9Q
+         Co0ZVaC5U2Kk+FhKDdMp97xiNt2n1KU8MN0QBiChEARM9/cK34T+8QWDClusrA+rdN
+         LQqHUAeW338U5P+wbythxvq6fjwxRPenHe0LkcuE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Mao Wenan <maowenan@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 078/177] net: phy: dp83867: enable robust auto-mdix
-Date:   Tue, 10 Dec 2019 16:30:42 -0500
-Message-Id: <20191210213221.11921-78-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 085/177] net: dsa: LAN9303: select REGMAP when LAN9303 enable
+Date:   Tue, 10 Dec 2019 16:30:49 -0500
+Message-Id: <20191210213221.11921-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210213221.11921-1-sashal@kernel.org>
 References: <20191210213221.11921-1-sashal@kernel.org>
@@ -45,67 +43,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+From: Mao Wenan <maowenan@huawei.com>
 
-[ Upstream commit 5a7f08c2abb0efc9d17aff2fc75d6d3b85e622e4 ]
+[ Upstream commit b6989d248a2d13f02895bae1a9321b3bbccc0283 ]
 
-The link detection timeouts can be observed (or link might not be detected
-at all) when dp83867 PHY is configured in manual mode (speed/duplex).
+When NET_DSA_SMSC_LAN9303=y and NET_DSA_SMSC_LAN9303_MDIO=y,
+below errors can be seen:
+drivers/net/dsa/lan9303_mdio.c:87:23: error: REGMAP_ENDIAN_LITTLE
+undeclared here (not in a function)
+  .reg_format_endian = REGMAP_ENDIAN_LITTLE,
+drivers/net/dsa/lan9303_mdio.c:93:3: error: const struct regmap_config
+has no member named reg_read
+  .reg_read = lan9303_mdio_read,
 
-CFG3[9] Robust Auto-MDIX option allows to significantly improve link detection
-in case dp83867 is configured in manual mode and reduce link detection
-time.
-As per DM: "If link partners are configured to operational modes that are
-not supported by normal Auto MDI/MDIX mode (like Auto-Neg versus Force
-100Base-TX or Force 100Base-TX versus Force 100Base-TX), this Robust Auto
-MDI/MDIX mode allows MDI/MDIX resolution and prevents deadlock."
+It should select REGMAP in config NET_DSA_SMSC_LAN9303.
 
-Hence, enable this option by default as there are no known reasons
-not to do so.
-
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: dc7005831523 ("net: dsa: LAN9303: add MDIO managed mode support")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/dp83867.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/dsa/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index eeadfde159401..879096d3ff412 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -86,6 +86,10 @@
- #define DP83867_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
- #define DP83867_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
- 
-+/* CFG3 bits */
-+#define DP83867_CFG3_INT_OE			BIT(7)
-+#define DP83867_CFG3_ROBUST_AUTO_MDIX		BIT(9)
-+
- /* CFG4 bits */
- #define DP83867_CFG4_PORT_MIRROR_EN              BIT(0)
- 
-@@ -331,12 +335,13 @@ static int dp83867_config_init(struct phy_device *phydev)
- 			return ret;
- 	}
- 
-+	val = phy_read(phydev, DP83867_CFG3);
- 	/* Enable Interrupt output INT_OE in CFG3 register */
--	if (phy_interrupt_is_valid(phydev)) {
--		val = phy_read(phydev, DP83867_CFG3);
--		val |= BIT(7);
--		phy_write(phydev, DP83867_CFG3, val);
--	}
-+	if (phy_interrupt_is_valid(phydev))
-+		val |= DP83867_CFG3_INT_OE;
-+
-+	val |= DP83867_CFG3_ROBUST_AUTO_MDIX;
-+	phy_write(phydev, DP83867_CFG3, val);
- 
- 	if (dp83867->port_mirroring != DP83867_PORT_MIRROING_KEEP)
- 		dp83867_config_port_mirroring(phydev);
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index d3ce1e4cb4d3c..dbfb6ad80fac8 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -66,6 +66,7 @@ config NET_DSA_REALTEK_SMI
+ config NET_DSA_SMSC_LAN9303
+ 	tristate
+ 	select NET_DSA_TAG_LAN9303
++	select REGMAP
+ 	---help---
+ 	  This enables support for the SMSC/Microchip LAN9303 3 port ethernet
+ 	  switch chips.
 -- 
 2.20.1
 
