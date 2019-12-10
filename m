@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F79E118572
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:44:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC67911856E
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfLJKnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 05:43:45 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:49506 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727518AbfLJKna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:43:30 -0500
+        id S1727539AbfLJKne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 05:43:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38276 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727540AbfLJKnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:43:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575974609;
+        s=mimecast20190719; t=1575974611;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jaNjlxDMPZqlhfTY1RQg/SgU5i5aNL66cyn4N8vlSXA=;
-        b=Q8YEQi/QUMQQMrctDQ/h5UDm66gIcg/86FLDRHNrz8qkboLELdUqNWANDVGxD15TKzZyGU
-        MAtRtkw3E4iUx8LYm4ZaupfeBJzBqVz7Km9kui/ocviJnPAmvrDxzNaAsTR9zAL3JWcyQj
-        2C0peEyeJjRnj96g7w0Z/GYm6QDxRvc=
+        bh=8fTadIIM/EGcJyroW82UCutvScqyTCaxJaPZkU5T0yE=;
+        b=d7m+tdvp7ak/qIxsyc1tQlkY+AVi2J8XX3qAqDS5UcWo3sCYokuWkC2VtHAzVGkuFmxb/8
+        hVe62YI54fzkWC8YRvLU5xW6yN4rWDA+ZPhYqIDLOWdUUvUBsKQTqar005KxCTmS9BUKFD
+        QHkytaK4UiajC6kOsO0RI4w3sGVc7J4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-390-S4IbS98XMCuB5YZLZx2cFQ-1; Tue, 10 Dec 2019 05:43:26 -0500
+ us-mta-36-VouMmq0dMj-tIB48CAjylw-1; Tue, 10 Dec 2019 05:43:28 -0500
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22F6D12A7E2A;
-        Tue, 10 Dec 2019 10:43:25 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5EA92104ED28;
+        Tue, 10 Dec 2019 10:43:27 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-117-168.ams2.redhat.com [10.36.117.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F3F4C6057B;
-        Tue, 10 Dec 2019 10:43:22 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7246D605AF;
+        Tue, 10 Dec 2019 10:43:25 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Dexuan Cui <decui@microsoft.com>,
@@ -40,14 +40,14 @@ Cc:     Dexuan Cui <decui@microsoft.com>,
         linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
         Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH net-next v2 5/6] vsock: use local transport when it is loaded
-Date:   Tue, 10 Dec 2019 11:43:06 +0100
-Message-Id: <20191210104307.89346-6-sgarzare@redhat.com>
+Subject: [PATCH net-next v2 6/6] vsock/virtio: remove loopback handling
+Date:   Tue, 10 Dec 2019 11:43:07 +0100
+Message-Id: <20191210104307.89346-7-sgarzare@redhat.com>
 In-Reply-To: <20191210104307.89346-1-sgarzare@redhat.com>
 References: <20191210104307.89346-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: S4IbS98XMCuB5YZLZx2cFQ-1
+X-MC-Unique: VouMmq0dMj-tIB48CAjylw-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
@@ -56,93 +56,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a transport that can handle the local communication,
-we can use it when it is loaded.
+We can remove the loopback handling from virtio_transport,
+because now the vsock core is able to handle local communication
+using the new vsock_loopback device.
 
-A socket will use the local transport (loopback) when the remote
-CID is:
-- equal to VMADDR_CID_LOCAL
-- or equal to transport_g2h->get_local_cid(), if transport_g2h
-  is loaded (this allows us to keep the same behavior implemented
-  by virtio and vmci transports)
-- or equal to VMADDR_CID_HOST, if transport_g2h is not loaded
-
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
-v1 -> v2:
-- use G2H transport when local transport is not loaded and remote cid
-  is VMADDR_CID_LOCAL [Stefan]
----
- net/vmw_vsock/af_vsock.c | 28 +++++++++++++++++++++++-----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+ net/vmw_vsock/virtio_transport.c | 61 ++------------------------------
+ 1 file changed, 2 insertions(+), 59 deletions(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 3da0749a0c97..9c5b2a91baad 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -388,6 +388,21 @@ void vsock_enqueue_accept(struct sock *listener, struc=
-t sock *connected)
- }
- EXPORT_SYMBOL_GPL(vsock_enqueue_accept);
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transp=
+ort.c
+index 1458c5c8b64d..dfbaf6bd8b1c 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -44,10 +44,6 @@ struct virtio_vsock {
+ =09spinlock_t send_pkt_list_lock;
+ =09struct list_head send_pkt_list;
 =20
-+static bool vsock_use_local_transport(unsigned int remote_cid)
-+{
-+=09if (!transport_local)
-+=09=09return false;
-+
-+=09if (remote_cid =3D=3D VMADDR_CID_LOCAL)
-+=09=09return true;
-+
-+=09if (transport_g2h) {
-+=09=09return remote_cid =3D=3D transport_g2h->get_local_cid();
-+=09} else {
-+=09=09return remote_cid =3D=3D VMADDR_CID_HOST;
-+=09}
-+}
-+
- static void vsock_deassign_transport(struct vsock_sock *vsk)
+-=09struct work_struct loopback_work;
+-=09spinlock_t loopback_list_lock; /* protects loopback_list */
+-=09struct list_head loopback_list;
+-
+ =09atomic_t queued_replies;
+=20
+ =09/* The following fields are protected by rx_lock.  vqs[VSOCK_VQ_RX]
+@@ -86,20 +82,6 @@ static u32 virtio_transport_get_local_cid(void)
+ =09return ret;
+ }
+=20
+-static int virtio_transport_send_pkt_loopback(struct virtio_vsock *vsock,
+-=09=09=09=09=09      struct virtio_vsock_pkt *pkt)
+-{
+-=09int len =3D pkt->len;
+-
+-=09spin_lock_bh(&vsock->loopback_list_lock);
+-=09list_add_tail(&pkt->list, &vsock->loopback_list);
+-=09spin_unlock_bh(&vsock->loopback_list_lock);
+-
+-=09queue_work(virtio_vsock_workqueue, &vsock->loopback_work);
+-
+-=09return len;
+-}
+-
+ static void
+ virtio_transport_send_pkt_work(struct work_struct *work)
  {
- =09if (!vsk->transport)
-@@ -404,9 +419,9 @@ static void vsock_deassign_transport(struct vsock_sock =
-*vsk)
-  * (e.g. during the connect() or when a connection request on a listener
-  * socket is received).
-  * The vsk->remote_addr is used to decide which transport to use:
-+ *  - remote CID =3D=3D VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_H=
-OST if
-+ *    g2h is not loaded, will use local transport;
-  *  - remote CID <=3D VMADDR_CID_HOST will use guest->host transport;
-- *  - remote CID =3D=3D local_cid (guest->host transport) will use guest->=
-host
-- *    transport for loopback (host->guest transports don't support loopbac=
-k);
-  *  - remote CID > VMADDR_CID_HOST will use host->guest transport;
-  */
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-@@ -421,9 +436,9 @@ int vsock_assign_transport(struct vsock_sock *vsk, stru=
-ct vsock_sock *psk)
- =09=09new_transport =3D transport_dgram;
- =09=09break;
- =09case SOCK_STREAM:
--=09=09if (remote_cid <=3D VMADDR_CID_HOST ||
--=09=09    (transport_g2h &&
--=09=09     remote_cid =3D=3D transport_g2h->get_local_cid()))
-+=09=09if (vsock_use_local_transport(remote_cid))
-+=09=09=09new_transport =3D transport_local;
-+=09=09else if (remote_cid <=3D VMADDR_CID_HOST)
- =09=09=09new_transport =3D transport_g2h;
- =09=09else
- =09=09=09new_transport =3D transport_h2g;
-@@ -466,6 +481,9 @@ bool vsock_find_cid(unsigned int cid)
- =09if (transport_h2g && cid =3D=3D VMADDR_CID_HOST)
- =09=09return true;
+@@ -194,7 +176,8 @@ virtio_transport_send_pkt(struct virtio_vsock_pkt *pkt)
+ =09}
 =20
-+=09if (transport_local && cid =3D=3D VMADDR_CID_LOCAL)
-+=09=09return true;
-+
- =09return false;
- }
- EXPORT_SYMBOL_GPL(vsock_find_cid);
+ =09if (le64_to_cpu(pkt->hdr.dst_cid) =3D=3D vsock->guest_cid) {
+-=09=09len =3D virtio_transport_send_pkt_loopback(vsock, pkt);
++=09=09virtio_transport_free_pkt(pkt);
++=09=09len =3D -ENODEV;
+ =09=09goto out_rcu;
+ =09}
+=20
+@@ -502,33 +485,6 @@ static struct virtio_transport virtio_transport =3D {
+ =09.send_pkt =3D virtio_transport_send_pkt,
+ };
+=20
+-static void virtio_transport_loopback_work(struct work_struct *work)
+-{
+-=09struct virtio_vsock *vsock =3D
+-=09=09container_of(work, struct virtio_vsock, loopback_work);
+-=09LIST_HEAD(pkts);
+-
+-=09spin_lock_bh(&vsock->loopback_list_lock);
+-=09list_splice_init(&vsock->loopback_list, &pkts);
+-=09spin_unlock_bh(&vsock->loopback_list_lock);
+-
+-=09mutex_lock(&vsock->rx_lock);
+-
+-=09if (!vsock->rx_run)
+-=09=09goto out;
+-
+-=09while (!list_empty(&pkts)) {
+-=09=09struct virtio_vsock_pkt *pkt;
+-
+-=09=09pkt =3D list_first_entry(&pkts, struct virtio_vsock_pkt, list);
+-=09=09list_del_init(&pkt->list);
+-
+-=09=09virtio_transport_recv_pkt(&virtio_transport, pkt);
+-=09}
+-out:
+-=09mutex_unlock(&vsock->rx_lock);
+-}
+-
+ static void virtio_transport_rx_work(struct work_struct *work)
+ {
+ =09struct virtio_vsock *vsock =3D
+@@ -633,13 +589,10 @@ static int virtio_vsock_probe(struct virtio_device *v=
+dev)
+ =09mutex_init(&vsock->event_lock);
+ =09spin_lock_init(&vsock->send_pkt_list_lock);
+ =09INIT_LIST_HEAD(&vsock->send_pkt_list);
+-=09spin_lock_init(&vsock->loopback_list_lock);
+-=09INIT_LIST_HEAD(&vsock->loopback_list);
+ =09INIT_WORK(&vsock->rx_work, virtio_transport_rx_work);
+ =09INIT_WORK(&vsock->tx_work, virtio_transport_tx_work);
+ =09INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+ =09INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
+-=09INIT_WORK(&vsock->loopback_work, virtio_transport_loopback_work);
+=20
+ =09mutex_lock(&vsock->tx_lock);
+ =09vsock->tx_run =3D true;
+@@ -720,22 +673,12 @@ static void virtio_vsock_remove(struct virtio_device =
+*vdev)
+ =09}
+ =09spin_unlock_bh(&vsock->send_pkt_list_lock);
+=20
+-=09spin_lock_bh(&vsock->loopback_list_lock);
+-=09while (!list_empty(&vsock->loopback_list)) {
+-=09=09pkt =3D list_first_entry(&vsock->loopback_list,
+-=09=09=09=09       struct virtio_vsock_pkt, list);
+-=09=09list_del(&pkt->list);
+-=09=09virtio_transport_free_pkt(pkt);
+-=09}
+-=09spin_unlock_bh(&vsock->loopback_list_lock);
+-
+ =09/* Delete virtqueues and flush outstanding callbacks if any */
+ =09vdev->config->del_vqs(vdev);
+=20
+ =09/* Other works can be queued before 'config->del_vqs()', so we flush
+ =09 * all works before to free the vsock object to avoid use after free.
+ =09 */
+-=09flush_work(&vsock->loopback_work);
+ =09flush_work(&vsock->rx_work);
+ =09flush_work(&vsock->tx_work);
+ =09flush_work(&vsock->event_work);
 --=20
 2.23.0
 
