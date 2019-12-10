@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9EC1119CDA
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F0F119D6C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:38:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729949AbfLJWdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:33:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54578 "EHLO mail.kernel.org"
+        id S1730329AbfLJWhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:37:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54936 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729911AbfLJWdk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:33:40 -0500
+        id S1729427AbfLJWdw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:33:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 954C520828;
-        Tue, 10 Dec 2019 22:33:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B3B37208C3;
+        Tue, 10 Dec 2019 22:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017219;
-        bh=/ionkiJBoIZVekyJOvcY7uYabENd7yYeZVVoTNntnLs=;
+        s=default; t=1576017231;
+        bh=nbQdTNtfSD5DbSFqvV0bw5QYGDq9+muh2sSkV1tjNjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z+u6qyD3YjwwhTtPJnVVuQlYfpLmAUDLxtiKVdWUQyG9vv6HHxory1KCcFdrfenh1
-         CeAY7O378YF8uhVF5x0WHFwLKgfVO1norvvtg8caT/1dDHZfh7JsS2BEx1UpAtmA/V
-         0WZXKWVNjuCMu2H17+kekA8HD3FaMbYdhoMcSppo=
+        b=tjevCIrIaGgNxnRQVJsOW6oAkrnrGkAaBenL1Z29YzTY4tlMzYW/qjWbHszqTtH/F
+         cxtDy2PXfiTG/jpQzKFBlslh9E79ehHfjA++y9SRH0UmVM0ziCdZn7dBH65nJXANbh
+         nZPoADVDA4OJaxC27sgIcViKXfkrTM4ZuxgQOOqA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 19/71] mwifiex: pcie: Fix memory leak in mwifiex_pcie_init_evt_ring
-Date:   Tue, 10 Dec 2019 17:32:24 -0500
-Message-Id: <20191210223316.14988-19-sashal@kernel.org>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 29/71] Bluetooth: hci_core: fix init for HCI_USER_CHANNEL
+Date:   Tue, 10 Dec 2019 17:32:34 -0500
+Message-Id: <20191210223316.14988-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210223316.14988-1-sashal@kernel.org>
 References: <20191210223316.14988-1-sashal@kernel.org>
@@ -45,40 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: Mattijs Korpershoek <mkorpershoek@baylibre.com>
 
-[ Upstream commit d10dcb615c8e29d403a24d35f8310a7a53e3050c ]
+[ Upstream commit eb8c101e28496888a0dcfe16ab86a1bee369e820 ]
 
-In mwifiex_pcie_init_evt_ring, a new skb is allocated which should be
-released if mwifiex_map_pci_memory() fails. The release for skb and
-card->evtbd_ring_vbase is added.
+During the setup() stage, HCI device drivers expect the chip to
+acknowledge its setup() completion via vendor specific frames.
 
-Fixes: 0732484b47b5 ("mwifiex: separate ring initialization and ring creation routines")
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Acked-by: Ganapathi Bhat <gbhat@marvell.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+If userspace opens() such HCI device in HCI_USER_CHANNEL [1] mode,
+the vendor specific frames are never tranmitted to the driver, as
+they are filtered in hci_rx_work().
+
+Allow HCI devices which operate in HCI_USER_CHANNEL mode to receive
+frames if the HCI device is is HCI_INIT state.
+
+[1] https://www.spinics.net/lists/linux-bluetooth/msg37345.html
+
+Fixes: 23500189d7e0 ("Bluetooth: Introduce new HCI socket channel for user operation")
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mwifiex/pcie.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_core.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mwifiex/pcie.c b/drivers/net/wireless/mwifiex/pcie.c
-index 268e50ba88a51..4c0a656928996 100644
---- a/drivers/net/wireless/mwifiex/pcie.c
-+++ b/drivers/net/wireless/mwifiex/pcie.c
-@@ -577,8 +577,11 @@ static int mwifiex_pcie_init_evt_ring(struct mwifiex_adapter *adapter)
- 		skb_put(skb, MAX_EVENT_SIZE);
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 5d0b1358c7547..4bce3ef2c392a 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -4459,7 +4459,14 @@ static void hci_rx_work(struct work_struct *work)
+ 			hci_send_to_sock(hdev, skb);
+ 		}
  
- 		if (mwifiex_map_pci_memory(adapter, skb, MAX_EVENT_SIZE,
--					   PCI_DMA_FROMDEVICE))
-+					   PCI_DMA_FROMDEVICE)) {
-+			kfree_skb(skb);
-+			kfree(card->evtbd_ring_vbase);
- 			return -1;
-+		}
- 
- 		buf_pa = MWIFIEX_SKB_DMA_ADDR(skb);
- 
+-		if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
++		/* If the device has been opened in HCI_USER_CHANNEL,
++		 * the userspace has exclusive access to device.
++		 * When device is HCI_INIT, we still need to process
++		 * the data packets to the driver in order
++		 * to complete its setup().
++		 */
++		if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
++		    !test_bit(HCI_INIT, &hdev->flags)) {
+ 			kfree_skb(skb);
+ 			continue;
+ 		}
 -- 
 2.20.1
 
