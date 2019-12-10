@@ -2,107 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8E91187AE
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 13:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0DCC1188D2
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 13:50:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727310AbfLJMKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 07:10:31 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:42837 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727224AbfLJMKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 07:10:31 -0500
-Received: by mail-io1-f65.google.com with SMTP id f82so18500693ioa.9
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 04:10:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=89A9O3Ee8EXOlolrj7ydhDdY30BNEeW/RkGiXf3rzLQ=;
-        b=JbZ2UFRwm6qYfydmQBFjI5fX0etb3dRnNQE2JAytF3FoAAAd/2cY5tnXopJ8k+Fbdf
-         /x8TLfYXIjnMGJqDcWGrryCkFMgVSFro2dAliMi/ZVAQIVXrIGbpfxX5RRbR74bgGY28
-         lMZSSiz3FhHRw+OYSwu8W2vxnaUkQaVwTKonwYPzLTBcZOIcPYFUV1It/2kkdGhkSLsd
-         EbXnniNqexmhnNHLFvwsHqFeVaKaAcUXJaskY3dw7RV/babEAgEsGHKp3FOZ9VcZJGIJ
-         bEeAaBLdFG1GJOcN6WeLqhqiJU4MLIv0uSUv3WiTq2M7A3Jjoa7ovFuU1Le0BeyZ5hDM
-         w3Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=89A9O3Ee8EXOlolrj7ydhDdY30BNEeW/RkGiXf3rzLQ=;
-        b=BeSo/WweEHjqifDfrG2HDee9AMzssLEE3Iabbggvef7Js/7jvzTXasX9X0nMv1T5gd
-         J26iREqHdqpU0hAkum0iakmHm3TQ1a9MQKC7YDbI5/6vz41G+gXh9lR5MzKRbIyF4OFv
-         D6fV82F9+L7LFH4pXBfWnXjyJu63Sidc5tjkzj8SI/IMhwkyXBuBRPUcs2HvxWyZqGGO
-         RqKFQGicnJmm2YSlCjgDEobWNDn4H5tELgtbnqP3ewo5a3Qi9Z0zshO+GIUZD/M9JVLT
-         bFXRgokl2lOEQj2pcPLWyXWfova7HVYRuA+5zQV9vhydXWjRaDw4KNA6G0/EW1UlGEf+
-         ri2A==
-X-Gm-Message-State: APjAAAXdWp18k09BX39YOcJ9YUyP2rBjbkE74H715AhgvRXDRppkq4Wc
-        XKOaznvkYEjMZBj00h9dPPv+lkBCkkCt9RiKTCg=
-X-Google-Smtp-Source: APXvYqy+4kWd2AsOsBRCuaBBcDf3g9XAaK1+rnNUs7XYclsfgWKg2I2GM54x7r3ZRqAPUP6bjFRDcJPI1KbLWUD5KdU=
-X-Received: by 2002:a02:b615:: with SMTP id h21mr31431610jam.109.1575979830342;
- Tue, 10 Dec 2019 04:10:30 -0800 (PST)
+        id S1727455AbfLJMuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 07:50:05 -0500
+Received: from mx2.suse.de ([195.135.220.15]:37718 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727131AbfLJMuE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 07:50:04 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id E26C9AF76;
+        Tue, 10 Dec 2019 12:49:59 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 84F101E0B23; Tue, 10 Dec 2019 13:49:57 +0100 (CET)
+Date:   Tue, 10 Dec 2019 13:49:57 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCH v8 23/26] mm/gup: pass flags arg to __gup_device_*
+ functions
+Message-ID: <20191210124957.GG1551@quack2.suse.cz>
+References: <20191209225344.99740-1-jhubbard@nvidia.com>
+ <20191209225344.99740-24-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Received: by 2002:a92:5b4f:0:0:0:0:0 with HTTP; Tue, 10 Dec 2019 04:10:30
- -0800 (PST)
-Reply-To: marthatimoty8@gmail.com
-From:   "Mrs. Martha Timothy" <mrsjesswalk200@gmail.com>
-Date:   Tue, 10 Dec 2019 13:10:30 +0100
-Message-ID: <CAEq=RHaB6Dx4_PkGVahzdunw-qwumjOXd+EMg4uAEhxG+KBBSw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191209225344.99740-24-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gr=C3=BC=C3=9Fe an Sie Mit geb=C3=BChrendem Respekt und Menschlichkeit war =
-ich
-gezwungen, Ihnen aus humanit=C3=A4ren Gr=C3=BCnden zu schreiben.
+On Mon 09-12-19 14:53:41, John Hubbard wrote:
+> A subsequent patch requires access to gup flags, so pass the flags
+> argument through to the __gup_device_* functions.
+> 
+> Also placate checkpatch.pl by shortening a nearby line.
+> 
+> TODO: Christoph Hellwig requested folding this into the patch the uses
+> the gup flags arguments.
 
-=C2=A0Ich hei=C3=9Fe Frau Martha Timothy. Ich wurde in Baltimore, Maryland,
-geboren und bin mit Eric Timothy, dem Direktor von J.C Industry Togo,
-verheiratet.
+You should probably implement this TODO? :)
 
-Wir waren 36 Jahre ohne Kind verheiratet. Er starb nach einer
-Operation der Herzarterien.
+								Honza
 
-Und vor kurzem sagte mir mein Arzt, dass ich aufgrund meines
-Krebsproblems (Leberkrebs und Schlaganfall) die n=C3=A4chsten sechs Monate
-nicht =C3=BCberleben w=C3=BCrde.
-
-Bevor mein Mann letztes Jahr starb, gab es diese Summe von 2,8
-Millionen Dollar, die er hier in Togo bei einer Bank hinterlegt hat.
-Derzeit ist dieses Geld noch auf der Bank.
-
-Nachdem ich meinen Zustand gekannt hatte, entschloss ich mich, diesen
-Fonds an jeden gottesf=C3=BCrchtigen Bruder oder jede gottesf=C3=BCrchtige
-Schwester zu spenden, der bzw. die diesen Fonds so verwenden wird, wie
-ich es hier anweisen werde.
-
-=C2=A0Ich m=C3=B6chte jemanden, der diesen Fonds nach dem Wunsch meines
-verstorbenen verwendet.
-
-Ehemann, um benachteiligten Menschen, Waisenh=C3=A4usern, Witwen und der
-Verbreitung des Wortes Gottes zu helfen.
-
-Ich habe diese Entscheidung getroffen, weil ich kein Kind habe, das
-diesen Fonds erbt, und ich m=C3=B6chte nicht weg, wo dieses Geld auf
-gottlose Weise verwendet wird.
-
-Aus diesem Grund entscheide ich mich, Ihnen diesen Fonds auszuh=C3=A4ndigen=
-.
-
-Ich habe keine Angst vor dem Tod, daher wei=C3=9F ich, wohin ich gehe. Ich
-m=C3=B6chte, dass Sie sich wegen meiner bevorstehenden Krebsoperation in
-Ihren t=C3=A4glichen Gebeten immer an mich erinnern.
-
-Schreiben Sie so schnell wie m=C3=B6glich zur=C3=BCck. Wenn sich Ihre Antwo=
-rt
-verz=C3=B6gert, kann ich eine andere Person f=C3=BCr den gleichen Zweck gew=
-innen
-und hoffe, so schnell wie m=C3=B6glich von Ihnen lesen zu k=C3=B6nnen.
-
-Gott segne dich, wenn du auf die Stimme des Denkens h=C3=B6rst,
-
-Frau Martha Timothy.
+> 
+> Reviewed-by: Jan Kara <jack@suse.cz>
+> Reviewed-by: Jérôme Glisse <jglisse@redhat.com>
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  mm/gup.c | 28 ++++++++++++++++++----------
+>  1 file changed, 18 insertions(+), 10 deletions(-)
+> 
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 73aedcefa4bd..687d48506f04 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -1957,7 +1957,8 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+>  
+>  #if defined(CONFIG_ARCH_HAS_PTE_DEVMAP) && defined(CONFIG_TRANSPARENT_HUGEPAGE)
+>  static int __gup_device_huge(unsigned long pfn, unsigned long addr,
+> -		unsigned long end, struct page **pages, int *nr)
+> +			     unsigned long end, unsigned int flags,
+> +			     struct page **pages, int *nr)
+>  {
+>  	int nr_start = *nr;
+>  	struct dev_pagemap *pgmap = NULL;
+> @@ -1983,13 +1984,14 @@ static int __gup_device_huge(unsigned long pfn, unsigned long addr,
+>  }
+>  
+>  static int __gup_device_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+> -		unsigned long end, struct page **pages, int *nr)
+> +				 unsigned long end, unsigned int flags,
+> +				 struct page **pages, int *nr)
+>  {
+>  	unsigned long fault_pfn;
+>  	int nr_start = *nr;
+>  
+>  	fault_pfn = pmd_pfn(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+> -	if (!__gup_device_huge(fault_pfn, addr, end, pages, nr))
+> +	if (!__gup_device_huge(fault_pfn, addr, end, flags, pages, nr))
+>  		return 0;
+>  
+>  	if (unlikely(pmd_val(orig) != pmd_val(*pmdp))) {
+> @@ -2000,13 +2002,14 @@ static int __gup_device_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+>  }
+>  
+>  static int __gup_device_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+> -		unsigned long end, struct page **pages, int *nr)
+> +				 unsigned long end, unsigned int flags,
+> +				 struct page **pages, int *nr)
+>  {
+>  	unsigned long fault_pfn;
+>  	int nr_start = *nr;
+>  
+>  	fault_pfn = pud_pfn(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+> -	if (!__gup_device_huge(fault_pfn, addr, end, pages, nr))
+> +	if (!__gup_device_huge(fault_pfn, addr, end, flags, pages, nr))
+>  		return 0;
+>  
+>  	if (unlikely(pud_val(orig) != pud_val(*pudp))) {
+> @@ -2017,14 +2020,16 @@ static int __gup_device_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+>  }
+>  #else
+>  static int __gup_device_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+> -		unsigned long end, struct page **pages, int *nr)
+> +				 unsigned long end, unsigned int flags,
+> +				 struct page **pages, int *nr)
+>  {
+>  	BUILD_BUG();
+>  	return 0;
+>  }
+>  
+>  static int __gup_device_huge_pud(pud_t pud, pud_t *pudp, unsigned long addr,
+> -		unsigned long end, struct page **pages, int *nr)
+> +				 unsigned long end, unsigned int flags,
+> +				 struct page **pages, int *nr)
+>  {
+>  	BUILD_BUG();
+>  	return 0;
+> @@ -2136,7 +2141,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+>  	if (pmd_devmap(orig)) {
+>  		if (unlikely(flags & FOLL_LONGTERM))
+>  			return 0;
+> -		return __gup_device_huge_pmd(orig, pmdp, addr, end, pages, nr);
+> +		return __gup_device_huge_pmd(orig, pmdp, addr, end, flags,
+> +					     pages, nr);
+>  	}
+>  
+>  	page = pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+> @@ -2157,7 +2163,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+>  }
+>  
+>  static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+> -		unsigned long end, unsigned int flags, struct page **pages, int *nr)
+> +			unsigned long end, unsigned int flags,
+> +			struct page **pages, int *nr)
+>  {
+>  	struct page *head, *page;
+>  	int refs;
+> @@ -2168,7 +2175,8 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+>  	if (pud_devmap(orig)) {
+>  		if (unlikely(flags & FOLL_LONGTERM))
+>  			return 0;
+> -		return __gup_device_huge_pud(orig, pudp, addr, end, pages, nr);
+> +		return __gup_device_huge_pud(orig, pudp, addr, end, flags,
+> +					     pages, nr);
+>  	}
+>  
+>  	page = pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+> -- 
+> 2.24.0
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
