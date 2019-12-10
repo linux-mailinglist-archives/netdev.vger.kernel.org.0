@@ -2,105 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E03B119D44
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FF6119CBA
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729855AbfLJWhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:37:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55254 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729170AbfLJWeD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:34:03 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EEA6A207FF;
-        Tue, 10 Dec 2019 22:34:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017242;
-        bh=SWq216+F8l7Z445rLdIYffnwZFmjp3ysALFL5P7ZJ2w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JoLEgUOWvI7soSQeKmi78hrtH+MVRbVZVWF4tp1ITWDrhYHvOWXN9RXcRbxPe1FP3
-         NEgsl2B3A9LS4W187UHQw/78qpnOSk9IHUS2bjG00ZGTLcqA/PSAmw6vKN71ZrVpm5
-         EExdkhZS2V2NJnB7PKiCK+ifiarARQED4yx4FELo=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 39/71] rtlwifi: fix memory leak in rtl92c_set_fw_rsvdpagepkt()
-Date:   Tue, 10 Dec 2019 17:32:44 -0500
-Message-Id: <20191210223316.14988-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210223316.14988-1-sashal@kernel.org>
-References: <20191210223316.14988-1-sashal@kernel.org>
+        id S1729659AbfLJWdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:33:06 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45544 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728381AbfLJWdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 17:33:04 -0500
+Received: by mail-ed1-f66.google.com with SMTP id v28so17457702edw.12;
+        Tue, 10 Dec 2019 14:33:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LNQ0jMB8gZFPp0NLmxkrc1EEggT9LCv92qH5mLZQn7E=;
+        b=UdleQTCYzdto/XDkDBc0wy0oLO9O4UIossFAYL5j0SionlEc7/2rUDr8jXaqyJ9pUb
+         Shbj9aRQQaf7KUfTzdP/aOvEZ/rRQLxXFANN9vJNbo6yjqqRy8e1tSzj4Q5hZVoIYVpC
+         vtdFjKf/3QSroyGtG75X1FYUVRYqaLc77bsKJu7OiidnciVjhrxe3JcYkDHMo+adPAsg
+         CWTX7MMnTkJdo+xDRWDHAZxje6kv37fl+WL6Bu2b6ho+zPrpSJyIZa47uOyKxRQT+kkV
+         kGK6bx+iSRD6Y/K+lCrjig4my6gDqyq8LxCok2pFAFs9u1apu9PCUyPBXj2LXEHoYL4J
+         DRrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LNQ0jMB8gZFPp0NLmxkrc1EEggT9LCv92qH5mLZQn7E=;
+        b=Jsn/20VAXTuLAwMLLOeNhLdwe0OCFRTQmvT3cB5B0e1QEaeR5gWH/l9bAlQ2V/pw0k
+         fAl/tiGhWXw8Vaa6QKbaEjjyvUwOtsvQS7346eUKnFGBHP/KeMaG3+EwzX892iQwMkt7
+         5DBx7PqlVS1kduokoPD1cXSF9AHgeKuOryUrFP4/fc9Xj/cmzK0N23WgmMj0RpJmQA+4
+         ubcA5Hcjgxpm4eRr/VVakM8FuCSXjkMepvjgj52EQ2plVafAMJDF78nAg5BtLEgAYjwE
+         ydUmOz6tXRsY6owqj6jDnNUqAfiHmKIHG1aUq8hmR5p+hEElBEgPyfF0m2QNsMrV2QtU
+         nZYA==
+X-Gm-Message-State: APjAAAUyTiiMwynukoXUmsVLjwRXkcASSUC39/Hpj/4oVlggnKgoe+/d
+        YqlE7CEODowvWUEv7D2lbVcRlqh+IXdMHPWvMrE=
+X-Google-Smtp-Source: APXvYqzJqt2wsYt+KWKc8RcKL1/b0ohlGjdmwKmNy00TpZUVg1gYRTKgogUZBgR44Oi2QRRp4XJWLVXoAVG14pZC2cg=
+X-Received: by 2002:a50:fb96:: with SMTP id e22mr40134592edq.18.1576017182883;
+ Tue, 10 Dec 2019 14:33:02 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20191210203710.2987983-1-arnd@arndb.de> <CA+h21hrJ45J2N4DD=pAtE8vN6hCjUYUq5vz17pY-7=TpkA51rA@mail.gmail.com>
+ <CAK8P3a2ONPojLz=REmbBMwnSsB3GVyqLYtCD28mmKk5qr3KpdQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a2ONPojLz=REmbBMwnSsB3GVyqLYtCD28mmKk5qr3KpdQ@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 11 Dec 2019 00:32:51 +0200
+Message-ID: <CA+h21hp1gg2SNX3f-+3gG3au90XsrYkzjvWYXmHdiWv-Bu=KPQ@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: ocelot: add NET_VENDOR_MICROSEMI dependency
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+On Wed, 11 Dec 2019 at 00:04, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Tue, Dec 10, 2019 at 10:37 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > Hi Arnd,
+> >
+> > On Tue, 10 Dec 2019 at 22:37, Arnd Bergmann <arnd@arndb.de> wrote:
+> > >
+> > > Selecting MSCC_OCELOT_SWITCH is not possible when NET_VENDOR_MICROSEMI
+> > > is disabled:
+> > >
+> > > WARNING: unmet direct dependencies detected for MSCC_OCELOT_SWITCH
+> > >   Depends on [n]: NETDEVICES [=y] && ETHERNET [=n] && NET_VENDOR_MICROSEMI [=n] && NET_SWITCHDEV [=y] && HAS_IOMEM [=y]
+> > >   Selected by [m]:
+> > >   - NET_DSA_MSCC_FELIX [=m] && NETDEVICES [=y] && HAVE_NET_DSA [=y] && NET_DSA [=y] && PCI [=y]
+> > >
+> > > Add a Kconfig dependency on NET_VENDOR_MICROSEMI, which also implies
+> > > CONFIG_NETDEVICES.
+> > >
+> > > Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > > ---
+> >
+> > This has been submitted before, here [0].
+> >
+> > It isn't wrong, but in principle I agree with David that it is strange
+> > to put a "depends" relationship between a driver in drivers/net/dsa
+> > and the Kconfig vendor umbrella from drivers/net/ethernet/mscc ("why
+> > would the user care/need to enable NET_VENDOR_MICROSEMI to see the DSA
+> > driver" is a valid point to me). This is mainly because I don't
+> > understand the point of CONFIG_NET_VENDOR_* options, they're a bit
+> > tribalistic to my ears.
+> >
+> > Nonetheless, alternatives may be:
+> > - Move MSCC_OCELOT_SWITCH core option outside of the
+> > NET_VENDOR_MICROSEMI umbrella, and make it invisible to menuconfig,
+> > just selectable from the 2 driver instances (MSCC_OCELOT_SWITCH_OCELOT
+> > and NET_DSA_MSCC_FELIX). MSCC_OCELOT_SWITCH has no reason to be
+> > selectable by the user anyway.
+>
+> You still need 'depends on NETDEVICES' in that case, otherwise this sounds
+> like a good option.
+>
 
-[ Upstream commit 5174f1e41074b5186608badc2e89441d021e8c08 ]
+I don't completely understand this. Looks like NETDEVICES is another
+one of those options that don't enable any code. I would have expected
+that NET_SWITCHDEV depended on it already? But anyway, it's still a
+small compromise and not a problem.
 
-This leak was found by testing the EDIMAX EW-7612 on Raspberry Pi 3B+ with
-Linux 5.4-rc5 (multi_v7_defconfig + rtlwifi + kmemleak) and noticed a
-single memory leak during probe:
+> > - Remove NET_VENDOR_MICROSEMI altogether. There is a single driver
+> > under drivers/net/ethernet/mscc and it's already causing problems,
+> > it's ridiculous.
+>
+> It's only there for consistency with the other directories under
+> drivers/net/ethernet/.
+>
+> > - Leave it as it is. I genuinely ask: if the build system tells you
+> > that the build dependencies are not met, does it matter if it compiles
+> > or not?
+>
+> We try very hard to allow all randconfig builds to complete without
+> any output from the build process when building with 'make -s'.
+> Random warnings like this just clutter up the output, even if it's
+> harmless there is a risk of missing something important.
+>
+> Yet another option is
+> - Change NET_DSA_MSCC_FELIX to use 'depends on
+>   MSCC_OCELOT_SWITCH' instead of 'select NET_DSA_MSCC_FELIX'.
+>
 
-unreferenced object 0xec13ee40 (size 176):
-  comm "kworker/u8:1", pid 36, jiffies 4294939321 (age 5580.790s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<fc1bbb3e>] __netdev_alloc_skb+0x9c/0x164
-    [<863dfa6e>] rtl92c_set_fw_rsvdpagepkt+0x254/0x340 [rtl8192c_common]
-    [<9572be0d>] rtl92cu_set_hw_reg+0xf48/0xfa4 [rtl8192cu]
-    [<116df4d8>] rtl_op_bss_info_changed+0x234/0x96c [rtlwifi]
-    [<8933575f>] ieee80211_bss_info_change_notify+0xb8/0x264 [mac80211]
-    [<d4061e86>] ieee80211_assoc_success+0x934/0x1798 [mac80211]
-    [<e55adb56>] ieee80211_rx_mgmt_assoc_resp+0x174/0x314 [mac80211]
-    [<5974629e>] ieee80211_sta_rx_queued_mgmt+0x3f4/0x7f0 [mac80211]
-    [<d91091c6>] ieee80211_iface_work+0x208/0x318 [mac80211]
-    [<ac5fcae4>] process_one_work+0x22c/0x564
-    [<f5e6d3b6>] worker_thread+0x44/0x5d8
-    [<82c7b073>] kthread+0x150/0x154
-    [<b43e1b7d>] ret_from_fork+0x14/0x2c
-    [<794dff30>] 0x0
+That's strange too. MSCC_OCELOT_SWITCH just enables a common driver
+core which is used by both NET_DSA_MSCC_FELIX and
+MSCC_OCELOT_SWITCH_OCELOT (possibly by more in the future). I don't
+see any reason why the common library (purely an implementation
+detail) should even be user-visible, let alone why it should hide a
+DSA driver.
 
-It is because 8192cu doesn't implement usb_cmd_send_packet(), and this
-patch just frees the skb within the function to resolve memleak problem
-by now. Since 8192cu doesn't turn on fwctrl_lps that needs to download
-command packet for firmware via the function, applying this patch doesn't
-affect driver behavior.
+So, if you agree, I can take care of this tomorrow by reworking the
+Kconfig in the 1st proposed way. I hope you don't mind that I'm
+volunteering to do it, but the change will require a bit of explaining
+which is non-trivial, and I don't expect that you really want to know
+these details, just that it compiles with no issue from all angles.
 
-Reported-by: Stefan Wahren <wahrenst@gmx.net>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c | 2 ++
- 1 file changed, 2 insertions(+)
+>
+>      Arnd
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
-index 34ce06441d1b6..137d7c8645dae 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
-@@ -1601,6 +1601,8 @@ static bool usb_cmd_send_packet(struct ieee80211_hw *hw, struct sk_buff *skb)
-    * This is maybe necessary:
-    * rtlpriv->cfg->ops->fill_tx_cmddesc(hw, buffer, 1, 1, skb);
-    */
-+	dev_kfree_skb(skb);
-+
- 	return true;
- }
- 
--- 
-2.20.1
-
+Thanks,
+-Vladimir
