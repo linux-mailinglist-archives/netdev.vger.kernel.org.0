@@ -2,316 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 982D1118EF2
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53342118EFF
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:29:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbfLJRZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:25:05 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:40719 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727386AbfLJRZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:25:02 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5CA3722375;
-        Tue, 10 Dec 2019 12:25:01 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 10 Dec 2019 12:25:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=zxIUP/JVEkB1dQn1sd9aWnt+QYkya8gVNu8VOC3JZWU=; b=ihFk/ARA
-        JU4JhmDLhI9svTPANVibcp+KZVenpGJptNSpajdeVtCQZdJxVSqAd0t2HYwcMjvb
-        9venThcTE6dFTGRuc/+ep5F8bkpJQxFCg8sHeUN7LzChjzJIVzzCMA4vcQMVQ/bm
-        vGwKTN9jhO8IhDJnulsuFui3mWWommReoioZLhNBHBIYnRxjAlLUowa5oUDyIOPh
-        H1JcPKI49kBwBXs012aBsUUFyM4x5uvss04OvzinP0qtxG5aDw0l7FGlEYf25R6O
-        hhf/NmKWNzjDdaV7tD/WbYj+/HcjPVXlWBtzpI2okUNxceEr74IPEyGEmTUnvpft
-        vxJAsHAmKYpKBQ==
-X-ME-Sender: <xms:7dTvXUIWOC0iGIatwwOcHDmy5gvnB_ny-GdIZTjKGJbCSa7km7M7Yw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudelfedgleelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeei
-X-ME-Proxy: <xmx:7dTvXYa73Qa-ClIlYanGBO8F29I1mPV3dpKaGyahflCB8Oiqh7oXPQ>
-    <xmx:7dTvXfsoFvjBcNk7A4HnQrPJ2cbmS8PbFmOBaJmY3E6WWdb-aqkCOA>
-    <xmx:7dTvXVv-owooZF_AFaQGVAv-wJnn80GGl3JPGwa6lDXBZqE_-Mf6Jw>
-    <xmx:7dTvXdaWUhMcdT1nhIvFQCuIRIXgbTqksjm9VX3VUbchv1DG2TBRNw>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DD7AC80059;
-        Tue, 10 Dec 2019 12:24:59 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 9/9] ipv4: Remove old route notifications and convert listeners
-Date:   Tue, 10 Dec 2019 19:24:02 +0200
-Message-Id: <20191210172402.463397-10-idosch@idosch.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191210172402.463397-1-idosch@idosch.org>
-References: <20191210172402.463397-1-idosch@idosch.org>
+        id S1727587AbfLJR3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:29:24 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35212 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727425AbfLJR3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:29:23 -0500
+Received: by mail-wm1-f65.google.com with SMTP id c20so4141473wmb.0
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:29:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IHgpwLrNeuOuBJWJ9xSmyd82zmrlT84LiK7U7bQGaIk=;
+        b=vQegrrz1v7ISzbZoNbwq/XjGpzrc8KRF/ol4dkPLohqzkKKjhpOZPB8MPw4yOQ9oX4
+         I4b8VGiBqgf1FokSJk+gBL0PGbZy26uXU/Hzx3u0vcxnzZWyFo8WMvB1G4AQlc28YV4r
+         0qhDD2sECm5L052o3sCkCQFvUSeCLTWsqvX8kbxCRLVFK0sfFIhC5mlUp8nde5dVuRMI
+         mD/0VLtbbiHC9g48bDYiQDgW9MM8slqeMXb1BLfMUrZHEIORUkMXr2QtkYCkbP9WG3m7
+         4eB7uHXS2GRs8dN9DXT53YXumf88jo9aJdOpL4Yw3hbBkAKPP2YNYdIGROA/achQetWG
+         9OuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=IHgpwLrNeuOuBJWJ9xSmyd82zmrlT84LiK7U7bQGaIk=;
+        b=CjV5lmuHP2p628KDVpTDeijBsTZqGcRGm0deSlll30tdqcliOk1dndJ2rhRcLqjAWg
+         K4aYwnpfGRRwZP5UcyeCzXwaI3wx3TwCoMOePphHiOxC8haoBQDKfJky0NrV+ItlBZ0n
+         HTPzfIRImoZNQ95Rd1gql/oxdyKlDTayFo1WVtEObgZE1q9PxV1CgAZT0nRC7bihM6eZ
+         haVZc6yS7QR0flfDEXdv3ZTF3HZIf9r4PFlE9ZdPHRKbh9eXQisq63rp8DZQxmZQ4vqh
+         WlTcbW+sTKf254qhOiQ1uVOMAYFDF8R1t4sNAu9CpaZcsfyH2XDwaEHK8DdbuyhvKAK1
+         lEKw==
+X-Gm-Message-State: APjAAAXGV4Q5Ffq35N3urB3D4pZ5mbXFdA0Ilh6h22IDCEg0ify7k5/j
+        gdfEcu79XeDxZR8exExv6byGzg==
+X-Google-Smtp-Source: APXvYqwCJJFAZR6mB/jlnbIjmfv00hJEWtpBH4RF4JL5RApevSNapWQT49128Cz5FieaOsekKd10xQ==
+X-Received: by 2002:a05:600c:2144:: with SMTP id v4mr6218069wml.141.1575998960524;
+        Tue, 10 Dec 2019 09:29:20 -0800 (PST)
+Received: from [172.20.1.104] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id r6sm3865728wrq.92.2019.12.10.09.29.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Dec 2019 09:29:19 -0800 (PST)
+To:     Paul Chaignon <paul.chaignon@orange.com>, bpf@vger.kernel.org
+Cc:     paul.chaignon@gmail.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+References: <cover.1575991886.git.paul.chaignon@orange.com>
+ <4db34d127179faafd6eca408792222c922969904.1575991886.git.paul.chaignon@orange.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
+ 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
+ RHhSHGnKaQ6MfrTge5Q0h5A=
+Subject: Re: [PATCH bpf-next 1/3] bpftool: match several programs with same
+ tag
+Message-ID: <99f35770-9a3f-2135-a9a6-34d931b1ae1e@netronome.com>
+Date:   Tue, 10 Dec 2019 17:29:18 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
+In-Reply-To: <4db34d127179faafd6eca408792222c922969904.1575991886.git.paul.chaignon@orange.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Hi Paul,
 
-Unlike mlxsw, the other listeners to the FIB notification chain do not
-require any special modifications as they never considered multiple
-identical routes.
+2019-12-10 17:06 UTC+0100 ~ Paul Chaignon <paul.chaignon@orange.com>
+> When several BPF programs have the same tag, bpftool matches only the
+> first (in ID order).  This patch changes that behavior such that dump and
+> show commands return all matched programs.  Commands that require a single
+> program (e.g., pin and attach) will error out if given a tag that matches
+> several.  bpftool prog dump will also error out if file or visual are
+> given and several programs have the given tag.
+> 
+> In the case of the dump command, a program header is added before each
+> dump only if the tag matches several programs; this patch doesn't change
+> the output if a single program matches.
+> 
+> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+> ---
+>  .../bpftool/Documentation/bpftool-prog.rst    |  16 +-
+>  tools/bpf/bpftool/prog.c                      | 371 ++++++++++++------
+>  2 files changed, 272 insertions(+), 115 deletions(-)
+> 
 
-This patch removes the old route notifications and converts all the
-listeners to use the new replace / delete notifications.
+> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> index 4535c863d2cd..ca4278269e73 100644
+> --- a/tools/bpf/bpftool/prog.c
+> +++ b/tools/bpf/bpftool/prog.c
+> @@ -25,6 +25,11 @@
+>  #include "main.h"
+>  #include "xlated_dumper.h"
+>  
+> +enum dump_mode {
+> +	DUMP_JITED,
+> +	DUMP_XLATED,
+> +};
+> +
+>  static const char * const attach_type_strings[] = {
+>  	[BPF_SK_SKB_STREAM_PARSER] = "stream_parser",
+>  	[BPF_SK_SKB_STREAM_VERDICT] = "stream_verdict",
+> @@ -77,11 +82,13 @@ static void print_boot_time(__u64 nsecs, char *buf, unsigned int size)
+>  		strftime(buf, size, "%FT%T%z", &load_tm);
+>  }
+>  
+> -static int prog_fd_by_tag(unsigned char *tag)
+> +static int
+> +prog_fd_by_tag(unsigned char *tag, int *fds)
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |  4 --
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 11 +++---
- drivers/net/ethernet/rocker/rocker_main.c     |  4 +-
- drivers/net/netdevsim/fib.c                   |  4 +-
- include/net/fib_notifier.h                    |  2 -
- net/ipv4/fib_trie.c                           | 38 ++++---------------
- 6 files changed, 16 insertions(+), 47 deletions(-)
+Nit: No line break necessary if it fits on one line.
+(Sorry for misleading you on that in an earlier discussion :/)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index b70afa310ad2..416676c35b1f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -200,8 +200,6 @@ static void mlx5_lag_fib_update(struct work_struct *work)
- 	rtnl_lock();
- 	switch (fib_work->event) {
- 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
--	case FIB_EVENT_ENTRY_APPEND: /* fall through */
--	case FIB_EVENT_ENTRY_ADD: /* fall through */
- 	case FIB_EVENT_ENTRY_DEL:
- 		mlx5_lag_fib_route_event(ldev, fib_work->event,
- 					 fib_work->fen_info.fi);
-@@ -259,8 +257,6 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
- 
- 	switch (event) {
- 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
--	case FIB_EVENT_ENTRY_APPEND: /* fall through */
--	case FIB_EVENT_ENTRY_ADD: /* fall through */
- 	case FIB_EVENT_ENTRY_DEL:
- 		fen_info = container_of(info, struct fib_entry_notifier_info,
- 					info);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 396b27b9cdb4..bba1c8215d06 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -6007,14 +6007,14 @@ static void mlxsw_sp_router_fib4_event_work(struct work_struct *work)
- 	mlxsw_sp_span_respin(mlxsw_sp);
- 
- 	switch (fib_work->event) {
--	case FIB_EVENT_ENTRY_REPLACE_TMP:
-+	case FIB_EVENT_ENTRY_REPLACE:
- 		err = mlxsw_sp_router_fib4_replace(mlxsw_sp,
- 						   &fib_work->fen_info);
- 		if (err)
- 			mlxsw_sp_router_fib_abort(mlxsw_sp);
- 		fib_info_put(fib_work->fen_info.fi);
- 		break;
--	case FIB_EVENT_ENTRY_DEL_TMP:
-+	case FIB_EVENT_ENTRY_DEL:
- 		mlxsw_sp_router_fib4_del(mlxsw_sp, &fib_work->fen_info);
- 		fib_info_put(fib_work->fen_info.fi);
- 		break;
-@@ -6111,8 +6111,8 @@ static void mlxsw_sp_router_fib4_event(struct mlxsw_sp_fib_event_work *fib_work,
- 	struct fib_nh_notifier_info *fnh_info;
- 
- 	switch (fib_work->event) {
--	case FIB_EVENT_ENTRY_REPLACE_TMP: /* fall through */
--	case FIB_EVENT_ENTRY_DEL_TMP:
-+	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
-+	case FIB_EVENT_ENTRY_DEL:
- 		fen_info = container_of(info, struct fib_entry_notifier_info,
- 					info);
- 		fib_work->fen_info = *fen_info;
-@@ -6243,8 +6243,7 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
- 						     router->mlxsw_sp);
- 		return notifier_from_errno(err);
- 	case FIB_EVENT_ENTRY_ADD: /* fall through */
--	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
--	case FIB_EVENT_ENTRY_REPLACE_TMP:
-+	case FIB_EVENT_ENTRY_REPLACE:
- 		if (router->aborted) {
- 			NL_SET_ERR_MSG_MOD(info->extack, "FIB offload was aborted. Not configuring route");
- 			return notifier_from_errno(-EINVAL);
-diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
-index bc4f951315da..7585cd2270ba 100644
---- a/drivers/net/ethernet/rocker/rocker_main.c
-+++ b/drivers/net/ethernet/rocker/rocker_main.c
-@@ -2159,7 +2159,7 @@ static void rocker_router_fib_event_work(struct work_struct *work)
- 	/* Protect internal structures from changes */
- 	rtnl_lock();
- 	switch (fib_work->event) {
--	case FIB_EVENT_ENTRY_ADD:
-+	case FIB_EVENT_ENTRY_REPLACE:
- 		err = rocker_world_fib4_add(rocker, &fib_work->fen_info);
- 		if (err)
- 			rocker_world_fib4_abort(rocker);
-@@ -2201,7 +2201,7 @@ static int rocker_router_fib_event(struct notifier_block *nb,
- 	fib_work->event = event;
- 
- 	switch (event) {
--	case FIB_EVENT_ENTRY_ADD: /* fall through */
-+	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
- 	case FIB_EVENT_ENTRY_DEL:
- 		if (info->family == AF_INET) {
- 			struct fib_entry_notifier_info *fen_info = ptr;
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index 13540dee7364..4e02a4231fcb 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -177,10 +177,10 @@ static int nsim_fib_event_nb(struct notifier_block *nb, unsigned long event,
- 					  event == FIB_EVENT_RULE_ADD);
- 		break;
- 
-+	case FIB_EVENT_ENTRY_REPLACE:  /* fall through */
- 	case FIB_EVENT_ENTRY_ADD:  /* fall through */
- 	case FIB_EVENT_ENTRY_DEL:
--		err = nsim_fib_event(data, info,
--				     event == FIB_EVENT_ENTRY_ADD);
-+		err = nsim_fib_event(data, info, event != FIB_EVENT_ENTRY_DEL);
- 		break;
- 	}
- 
-diff --git a/include/net/fib_notifier.h b/include/net/fib_notifier.h
-index b3c54325caec..6d59221ff05a 100644
---- a/include/net/fib_notifier.h
-+++ b/include/net/fib_notifier.h
-@@ -23,8 +23,6 @@ enum fib_event_type {
- 	FIB_EVENT_NH_DEL,
- 	FIB_EVENT_VIF_ADD,
- 	FIB_EVENT_VIF_DEL,
--	FIB_EVENT_ENTRY_REPLACE_TMP,
--	FIB_EVENT_ENTRY_DEL_TMP,
- };
- 
- struct fib_notifier_ops {
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index eff45e7795ba..ed9141d4725a 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -1143,7 +1143,6 @@ static void fib_remove_alias(struct trie *t, struct key_vector *tp,
- int fib_table_insert(struct net *net, struct fib_table *tb,
- 		     struct fib_config *cfg, struct netlink_ext_ack *extack)
- {
--	enum fib_event_type event = FIB_EVENT_ENTRY_ADD;
- 	struct trie *t = (struct trie *)tb->tb_data;
- 	struct fib_alias *fa, *new_fa;
- 	struct key_vector *l, *tp;
-@@ -1242,19 +1241,13 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 						 tb->tb_id) == fa) {
- 				enum fib_event_type fib_event;
- 
--				fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
-+				fib_event = FIB_EVENT_ENTRY_REPLACE;
- 				err = call_fib_entry_notifiers(net, fib_event,
- 							       key, plen,
- 							       new_fa, extack);
- 				if (err)
- 					goto out_free_new_fa;
- 			}
--			err = call_fib_entry_notifiers(net,
--						       FIB_EVENT_ENTRY_REPLACE,
--						       key, plen, new_fa,
--						       extack);
--			if (err)
--				goto out_free_new_fa;
- 
- 			rtmsg_fib(RTM_NEWROUTE, htonl(key), new_fa, plen,
- 				  tb->tb_id, &cfg->fc_nlinfo, nlflags);
-@@ -1276,12 +1269,10 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 		if (fa_match)
- 			goto out;
- 
--		if (cfg->fc_nlflags & NLM_F_APPEND) {
--			event = FIB_EVENT_ENTRY_APPEND;
-+		if (cfg->fc_nlflags & NLM_F_APPEND)
- 			nlflags |= NLM_F_APPEND;
--		} else {
-+		else
- 			fa = fa_first;
--		}
- 	}
- 	err = -ENOENT;
- 	if (!(cfg->fc_nlflags & NLM_F_CREATE))
-@@ -1315,15 +1306,12 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 	    new_fa) {
- 		enum fib_event_type fib_event;
- 
--		fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
-+		fib_event = FIB_EVENT_ENTRY_REPLACE;
- 		err = call_fib_entry_notifiers(net, fib_event, key, plen,
- 					       new_fa, extack);
- 		if (err)
- 			goto out_remove_new_fa;
- 	}
--	err = call_fib_entry_notifiers(net, event, key, plen, new_fa, extack);
--	if (err)
--		goto out_remove_new_fa;
- 
- 	if (!plen)
- 		tb->tb_num_default++;
-@@ -1606,10 +1594,10 @@ static void fib_notify_alias_delete(struct net *net, u32 key,
- 	fa_next = hlist_entry_safe(fa_to_delete->fa_list.next,
- 				   struct fib_alias, fa_list);
- 	if (fa_next && fa_next->fa_slen == slen && fa_next->tb_id == tb_id) {
--		fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
-+		fib_event = FIB_EVENT_ENTRY_REPLACE;
- 		fa_to_notify = fa_next;
- 	} else {
--		fib_event = FIB_EVENT_ENTRY_DEL_TMP;
-+		fib_event = FIB_EVENT_ENTRY_DEL;
- 		fa_to_notify = fa_to_delete;
- 	}
- 	call_fib_entry_notifiers(net, fib_event, key, KEYLENGTH - slen,
-@@ -1670,8 +1658,6 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
- 		return -ESRCH;
- 
- 	fib_notify_alias_delete(net, key, &l->leaf, fa_to_delete, extack);
--	call_fib_entry_notifiers(net, FIB_EVENT_ENTRY_DEL, key, plen,
--				 fa_to_delete, extack);
- 	rtmsg_fib(RTM_DELROUTE, htonl(key), fa_to_delete, plen, tb->tb_id,
- 		  &cfg->fc_nlinfo, 0);
- 
-@@ -1997,10 +1983,6 @@ int fib_table_flush(struct net *net, struct fib_table *tb, bool flush_all)
- 
- 			fib_notify_alias_delete(net, n->key, &n->leaf, fa,
- 						NULL);
--			call_fib_entry_notifiers(net, FIB_EVENT_ENTRY_DEL,
--						 n->key,
--						 KEYLENGTH - fa->fa_slen, fa,
--						 NULL);
- 			hlist_del_rcu(&fa->fa_list);
- 			fib_release_info(fa->fa_info);
- 			alias_free_mem_rcu(fa);
-@@ -2111,17 +2093,11 @@ static int fib_leaf_notify(struct key_vector *l, struct fib_table *tb,
- 		if (tb->tb_id != fa->tb_id)
- 			continue;
- 
--		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_ADD, l->key,
--					      KEYLENGTH - fa->fa_slen,
--					      fa, extack);
--		if (err)
--			return err;
--
- 		if (fa->fa_slen == last_slen)
- 			continue;
- 
- 		last_slen = fa->fa_slen;
--		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_REPLACE_TMP,
-+		err = call_fib_entry_notifier(nb, FIB_EVENT_ENTRY_REPLACE,
- 					      l->key, KEYLENGTH - fa->fa_slen,
- 					      fa, extack);
- 		if (err)
--- 
-2.23.0
+>  {
+>  	unsigned int id = 0;
+> +	int fd, nb_fds = 0;
+> +	void *tmp;
+>  	int err;
+> -	int fd;
+>  
+>  	while (true) {
+>  		struct bpf_prog_info info = {};
 
+[...]
+
+> @@ -351,21 +421,43 @@ static int show_prog(int fd)
+>  
+>  static int do_show(int argc, char **argv)
+>  {
+> +	int fd, nb_fds, i;
+> +	int *fds = NULL;
+>  	__u32 id = 0;
+>  	int err;
+> -	int fd;
+>  
+>  	if (show_pinned)
+>  		build_pinned_obj_table(&prog_table, BPF_OBJ_PROG);
+>  
+>  	if (argc == 2) {
+> -		fd = prog_parse_fd(&argc, &argv);
+> -		if (fd < 0)
+> +		fds = malloc(sizeof(int));
+> +		if (!fds) {
+> +			p_err("mem alloc failed");
+>  			return -1;
+> +		}
+> +		nb_fds = prog_parse_fds(&argc, &argv, fds);
+> +		if (nb_fds < 1)
+> +			goto err_free;
+>  
+> -		err = show_prog(fd);
+> -		close(fd);
+> -		return err;
+> +		if (json_output && nb_fds > 1)
+> +			jsonw_start_array(json_wtr);	/* root array */
+> +		for (i = 0; i < nb_fds; i++) {
+> +			err = show_prog(fds[i]);
+> +			close(fds[i]);
+> +			if (err) {
+> +				for (i++; i < nb_fds; i++)
+> +					close(fds[i]);
+> +				goto err_free;
+
+Alternatively, we could keep trying to list the remaining programs. For
+example, if the system has a long list of BPF programs running and one
+of them is removed while printing the list, we would still have the rest
+of the list.
+
+If we went this way, maybe just set err to non-zero if no program at all
+could be printed?
+
+> +			}
+> +		}
+> +		if (json_output && nb_fds > 1)
+> +			jsonw_end_array(json_wtr);	/* root array */
+> +
+> +		return 0;
+> +
+> +err_free:
+> +		free(fds);
+> +		return -1;
+>  	}
+>  
+>  	if (argc)
