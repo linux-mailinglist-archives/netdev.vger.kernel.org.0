@@ -2,77 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA01117E6B
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 04:41:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBB1117EAF
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 05:02:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbfLJDlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 22:41:25 -0500
-Received: from foss.arm.com ([217.140.110.172]:56054 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727325AbfLJDlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Dec 2019 22:41:25 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6B3B51FB;
-        Mon,  9 Dec 2019 19:41:24 -0800 (PST)
-Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 51CEA3F52E;
-        Mon,  9 Dec 2019 19:41:19 -0800 (PST)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com, steven.price@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
-        jianyong.wu@arm.com, nd@arm.com
-Subject: [RFC PATCH v9 8/8] kvm: arm64: Add capability check extension for ptp_kvm
-Date:   Tue, 10 Dec 2019 11:40:26 +0800
-Message-Id: <20191210034026.45229-9-jianyong.wu@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191210034026.45229-1-jianyong.wu@arm.com>
-References: <20191210034026.45229-1-jianyong.wu@arm.com>
+        id S1726955AbfLJECw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 23:02:52 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43177 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbfLJECw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 23:02:52 -0500
+Received: by mail-wr1-f66.google.com with SMTP id d16so18371613wre.10;
+        Mon, 09 Dec 2019 20:02:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GBZ2UUf/d5CTfHQ5WvVCK1dFeiSiz8Zvk0HK0yLq+9I=;
+        b=XSQ1avuhCexaRtjUefvVcYbzWq69d7LmI3kNiSsvEXlO+08U/EFFdAnCVLpQAPgLEP
+         hlSJBmgFdFYAnoO7eG4YEdLgj54FYsAdMRLg/+dNOge/d4CUmM+J8fT00h+kSne2tS35
+         PA8gQvnBbA+0657B2yoNsIPMxVgHpQkP5lrGKjZdE8rX+vOoA5rU2cEM7ue+Exe2AOOl
+         w6bQKv3VUs/vcP2N3gBWnGkGpm27FobfakDk5SfRfBqDPNJhLyZRvxkF2Pr1RkKNGBid
+         z8B9ZZZB+ndnCZKuB44k8OflNMSPE/MCqfkNPpon4ov0fjrQt6AGcGJcK4gyP7B2cWTf
+         jPtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GBZ2UUf/d5CTfHQ5WvVCK1dFeiSiz8Zvk0HK0yLq+9I=;
+        b=so7n4T1ESSeA9yk0A4EZNLt07BQk9r31KM+N19oIbx0ZmhtIguDCPmdxleA8Hg8lfH
+         N2u6ApItPk381mYBqndm8VcnH+BDMU99WJgLcGb41ApEd6/yfibWKJWbmZe4vpezbcEy
+         FKRLyI4SmM9RL/r83TTnxV+Lz03seS+bxlD3t2TFV07v02lrK34Pk1E7lK2pMSV+tO0U
+         8b7AzK5S3ugZp+HcsCJgpnz0298WRhCiFWRD8K+ZdzLeFxn6guBWcI5Dqo0vGQCa12Fa
+         8+nsHzyWFhADLbgYnFTlalS5iIiKIEjb3DNnUkIX37/PHNZVN90bE5YYDf5DzPbtCs1K
+         YE6A==
+X-Gm-Message-State: APjAAAXfyNJ3ABF16eNAbOTAt6neXvaLRRWTFgTuQJe1oaRE+7x34Suu
+        xJttbC0onjaVqoGRvcvoKyJwveAIgEHdO8H3HK8=
+X-Google-Smtp-Source: APXvYqxNovVit0Io+1SOuILG++pLbanQ0zeYm6LYo7hp42A7bCab1XpYLi+Jzc7N6nujyIufuouesmv3krhZYTeG7iQ=
+X-Received: by 2002:a5d:6886:: with SMTP id h6mr485017wru.154.1575950569902;
+ Mon, 09 Dec 2019 20:02:49 -0800 (PST)
+MIME-Version: 1.0
+References: <76df0e4ae335e3869475d133ce201cc93361ce0c.1575870318.git.lucien.xin@gmail.com>
+ <20191209.101403.781347318798443818.davem@davemloft.net>
+In-Reply-To: <20191209.101403.781347318798443818.davem@davemloft.net>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 10 Dec 2019 12:03:17 +0800
+Message-ID: <CADvbK_cVw49RXCnR3ztKC_RzZf=ipoH2a8ZabaAytmPy+0j4jQ@mail.gmail.com>
+Subject: Re: [PATCHv2 net] sctp: get netns from asoc and ep base
+To:     David Miller <davem@davemloft.net>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let userspace check if there is kvm ptp service in host.
-before VMs migrate to a another host, VMM may check if this
-cap is available to determine the migration behaviour.
+On Tue, Dec 10, 2019 at 2:14 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Xin Long <lucien.xin@gmail.com>
+> Date: Mon,  9 Dec 2019 13:45:18 +0800
+>
+> > Commit 312434617cb1 ("sctp: cache netns in sctp_ep_common") set netns
+> > in asoc and ep base since they're created, and it will never change.
+> > It's a better way to get netns from asoc and ep base, comparing to
+> > calling sock_net().
+> >
+> > This patch is to replace them.
+> >
+> > v1->v2:
+> >   - no change.
+> >
+> > Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > Acked-by: Neil Horman <nhorman@tuxdriver.com>
+>
+> This looks like a cleanup rather than a bug fix, so net-next right?
+Yes, a cleanup, and net-next should be better.
 
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Suggested-by: Marc Zyngier <maz@kernel.org>
----
- include/uapi/linux/kvm.h | 1 +
- virt/kvm/arm/arm.c       | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 2fe12b40d503..a0bff6002bd9 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -993,6 +993,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_ARM_SVE 170
- #define KVM_CAP_ARM_PTRAUTH_ADDRESS 171
- #define KVM_CAP_ARM_PTRAUTH_GENERIC 172
-+#define KVM_CAP_ARM_KVM_PTP 173
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-diff --git a/virt/kvm/arm/arm.c b/virt/kvm/arm/arm.c
-index bd5c55916d0d..80999985160b 100644
---- a/virt/kvm/arm/arm.c
-+++ b/virt/kvm/arm/arm.c
-@@ -201,6 +201,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_MP_STATE:
- 	case KVM_CAP_IMMEDIATE_EXIT:
- 	case KVM_CAP_VCPU_EVENTS:
-+	case KVM_CAP_ARM_KVM_PTP:
- 		r = 1;
- 		break;
- 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
--- 
-2.17.1
-
+>
+> Otherwise we need a Fixes: tag here and a better explanation in the
+> commit message about what problem this fixes.  Are the netns's wrong
+> sometimes without this conversion for example?
+>
+> Thanks.
