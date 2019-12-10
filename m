@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD16119A88
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:03:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1659119B65
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:11:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbfLJWCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:02:41 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46138 "EHLO vps0.lunn.ch"
+        id S1729927AbfLJWH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:07:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36324 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726362AbfLJWCl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:02:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=oNrhFWA1lMqgOP0XHTa3xdZ+GV9N7jCyBqMVj23yRHs=; b=xZWRhz+CFM5NfZoAhdE/Gf5Ate
-        jwkCAm8gpKDWE3b5P9ajfLkTLdVB6mq5zla3yoyBXTl7B6q88/vbXgqargSm/6APZB/TKAoXevZv4
-        oTGN3doiai+QIEhx1FqEk3Fa7u7QZwAndwta5kY3sotOnTY49pV6t4NxXfpKEYe8xkuI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ienaR-0007qA-JO; Tue, 10 Dec 2019 23:02:31 +0100
-Date:   Tue, 10 Dec 2019 23:02:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Landen Chao <landen.chao@mediatek.com>, f.fainelli@gmail.com,
-        vivien.didelot@savoirfairelinux.com, matthias.bgg@gmail.com,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
-        frank-w@public-files.de
-Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of MT7531
- switch
-Message-ID: <20191210220231.GA30053@lunn.ch>
-References: <cover.1575914275.git.landen.chao@mediatek.com>
- <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
- <20191210163557.GC27714@lunn.ch>
- <20191210213351.2df6acbf@nic.cz>
+        id S1729369AbfLJWFH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:05:07 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BFBE2073B;
+        Tue, 10 Dec 2019 22:05:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576015507;
+        bh=16FYzRNi2DXgouO8ewO/GG8teFaO/XQJ1D395ooRIVs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xduOiWNs/QkMWThi5c7DeKxxlqA3Q7iLxG7EiA+qBsQKfYB/lE8GI/+xzRV5edEwn
+         h2leUCzBPYuG2JeXOMjwtq48FqSdC1XX0KQdXZBDU8GpUoYHrLzfKBQU8IAihVM+/d
+         JkBcLibjeXv7/CDW0jvtRVC7Wy3zcTzytov9btjk=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Stefan Wahren <wahrenst@gmx.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 106/130] net: bcmgenet: Add RGMII_RXID support
+Date:   Tue, 10 Dec 2019 17:02:37 -0500
+Message-Id: <20191210220301.13262-106-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191210220301.13262-1-sashal@kernel.org>
+References: <20191210220301.13262-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191210213351.2df6acbf@nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 09:33:51PM +0100, Marek Behun wrote:
-> On Tue, 10 Dec 2019 17:35:57 +0100
-> Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > On Tue, Dec 10, 2019 at 04:14:40PM +0800, Landen Chao wrote:
-> > > Add new support for MT7531:
-> > > 
-> > > MT7531 is the next generation of MT7530. It is also a 7-ports switch with
-> > > 5 giga embedded phys, 2 cpu ports, and the same MAC logic of MT7530. Cpu
-> > > port 6 only supports HSGMII interface. Cpu port 5 supports either RGMII
-> > > or HSGMII in different HW sku.  
-> > 
-> > Hi Landen
-> > 
-> > Looking at the code, you seem to treat HSGMII as 2500Base-X. Is this
-> > correct? Or is it SGMII over clocked to 2.5Gbps?
-> > 
-> > 	 Andrew
-> 
-> How would that work? Would 10 and 100 be overclocked to 25 and 250?
+From: Stefan Wahren <wahrenst@gmx.net>
 
-No. SGMII clocked up to 2.5G does not support any of the lower
-speeds. And inband signalling does not make much sense, the control
-word is all wrong.
+[ Upstream commit da38802211cc3fd294211a642932edb09e3af632 ]
 
-     Andrew
+This adds the missing support for the PHY mode RGMII_RXID.
+It's necessary for the Raspberry Pi 4.
+
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/broadcom/genet/bcmmii.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index fca9da1b13635..201cc533d0344 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -267,6 +267,11 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
+ 		bcmgenet_sys_writel(priv,
+ 				    PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
+ 		break;
++
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++		phy_name = "external RGMII (RX delay)";
++		port_ctrl = PORT_MODE_EXT_GPHY;
++		break;
+ 	default:
+ 		dev_err(kdev, "unknown phy mode: %d\n", priv->phy_interface);
+ 		return -EINVAL;
+-- 
+2.20.1
+
