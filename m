@@ -2,137 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F30A11184B0
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:16:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D68A1184C7
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:18:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbfLJKQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 05:16:15 -0500
-Received: from mout.web.de ([212.227.15.4]:45433 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727281AbfLJKQP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 05:16:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1575972961;
-        bh=3lu1/bDzlHQWncDoTWVRGXTFeZBsALALSvK0V4xQUsY=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=KFb25BYRz38RT7bBf9g68vibTN2tb4JGx9opUc1mZNJ4Not8GUBMr7buSnrGJUqQx
-         7axuRPjrS5qBaXUm59c8a/RaxEmtkkRg7iTR1WqRYdIGTgMCcre1VaK47DMHJqGnNI
-         f0BU9UDZvOg/etK6APcDSsREplsuuJu18HeoRsQs=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.43.108] ([89.204.137.56]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LZvfZ-1htANw25Az-00lm0J; Tue, 10
- Dec 2019 11:16:01 +0100
-Subject: Re: [PATCH 8/8] arm64: dts: rockchip: RockPro64: enable wifi module
- at sdio0
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20191209223822.27236-1-smoch@web.de> <2668270.pdtvSLGib8@diego>
- <2cf70216-8d98-4122-4f4e-b8254089a017@web.de> <6162240.GiEx4hqPFh@diego>
- <0101016eef171394-2c71e1b8-45b9-4e38-96f9-2841dd0607ba-000000@us-west-2.amazonses.com>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <e8742d18-9dd9-bd97-1d4a-0c5312501b24@web.de>
-Date:   Tue, 10 Dec 2019 11:15:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1726915AbfLJKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 05:17:47 -0500
+Received: from mx2.suse.de ([195.135.220.15]:48892 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726574AbfLJKRq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 05:17:46 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 99CB6AD4A;
+        Tue, 10 Dec 2019 10:17:42 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 8681F1E0B23; Tue, 10 Dec 2019 11:17:38 +0100 (CET)
+Date:   Tue, 10 Dec 2019 11:17:38 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     John Hubbard <jhubbard@nvidia.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>, stable@vger.kernel.org
+Subject: Re: [PATCH v8 17/26] media/v4l2-core: set pages dirty upon releasing
+ DMA buffers
+Message-ID: <20191210101738.GE1551@quack2.suse.cz>
+References: <20191209225344.99740-1-jhubbard@nvidia.com>
+ <20191209225344.99740-18-jhubbard@nvidia.com>
+ <20191209165627.bf657cb8fdf660e8f91e966c@linux-foundation.org>
 MIME-Version: 1.0
-In-Reply-To: <0101016eef171394-2c71e1b8-45b9-4e38-96f9-2841dd0607ba-000000@us-west-2.amazonses.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:BmouxPORzFnUtMfMs9rkSg06N45biyMWFv+dkxM532l+MBmsCq9
- NKrsNRGYig8S6iERHaN1OEDubM+pu6B4PQehaKPwuJUFbld0HZvWXcyJ1iCZKgK+h1b76D6
- OwuGqbC6k/i4YNYXPy1kRnaSgy69AyTCLqMbYxtDKTTvk8OoS2CaXCk90NFm9+Y6kvbd5Y2
- 0ekhcoci7MjDZSaZonzrg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JdUVEkMY6j4=:YPPupy08imKC1CuXy723Fb
- oojqA1+dEiyvgS6ZUBJAZ5A65eTviEtBJV4o4OCd9ZA0kmqfrU80oq0mQclUw/wMuiqNbxiCR
- y3Da5meb5biCNAXVnAmQdeYt3q/eFc2EPwS3yjNRHv1nfPso7gsgJz7qXwGCRNvtMiKifD0Nb
- ma8Hl8QLWIb4RYsLeGebnCYbfNUx+9uxFhYtM3unf340sOM0G4jBgHmJQa7k3pV0dP/WByyFR
- 3KD3zRjPgaOaS2P8Hos9QmYpyzRkb7ibRvaAzLfiDmqDqD4M+z5/oP6gZ5+6N/zurIPDpEgNc
- 7Dkum/I2cTVCcVwNCJSmuRR+KW6hgNJbCneE4NBvWpHMbjOtAO/86+inVWXFOVLEN+jtOU9qZ
- be7EN7NjWMk7OBd5jHdWtj62PoGnd3/SZaF8tHEjWOrEnsGROV6ElDlSQpM8muQlkuqzH++H6
- /F9+ghMAT/MTY+U162haEdsMeN3DSYtZuNWhs9Pp6CVre4pB3eisliYdbTAzIunnA7iKFNf0c
- q6/Dyf2qv0hWHMqQBamdigB/TMxAgzmlPP/4BbFeYHgEAcbQvuMC6q1Y+qGeWtMBr+pUSMgCD
- pRgSgyJtjBQzR92BWJG8jV4viPa/pHr9iQCcVowjH8n8GvHAh+2WXMn4LXCQiMrfXpp7IJG1E
- qRhinRvo+RsPHe5n3//NEkdSVJiqi8j9cc3mu9nDbm7svfuTupNsQNrmbL+qxs36z0Eunprxm
- djgO6OSSSrhJUbglhLouU3/dNMWySsEpF+UDGOoTb37xsgE4t3uK+gCGNK2lsm7a5EMLPJ6gh
- IjfH2+CYhAPEs36M+7OykUU8DD3p5fQ7PDsYvJ60leWKTChqOSAlmZ8kBYftkBmGy6f/kA0SW
- z0qnFc4vt16ogKGe9d+Psh2aB4cZup83qt7ybXBfqe42hDs6vlYAZakOIbBiOHYq9Pmbbfhmi
- OBTDn4mXyonqoD6LY5e06xvv779fPeFeIvIejlH+9Owo50mtK17RDqY1Ug0uRb3CrsJi/5DGt
- Sk7WpDtlOam9IzBt9otYxh7d+pVc+1hEiZxZlTTZAvr9ORNWwaYrVh4VdBisOI5LMVoCbUq63
- dbXBbt7JW2CX/pqtLvdti16g+lFrtaL1m7J4fYosqSG9ICUMKQhoxdbqXXlJD00XM66nK/Zu7
- /Tr4MHJlY7TFY4F3JsCPRei2XP0PUQ9BBeFZwM80D9dA21UTof7jWkvPnZHcRiU3JOV7mEaXB
- rnyk7ZdfPzyWIuqkjyOqA9ffuicoDRxB6qKykZA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209165627.bf657cb8fdf660e8f91e966c@linux-foundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon 09-12-19 16:56:27, Andrew Morton wrote:
+> On Mon, 9 Dec 2019 14:53:35 -0800 John Hubbard <jhubbard@nvidia.com> wrote:
+> 
+> > After DMA is complete, and the device and CPU caches are synchronized,
+> > it's still required to mark the CPU pages as dirty, if the data was
+> > coming from the device. However, this driver was just issuing a
+> > bare put_page() call, without any set_page_dirty*() call.
+> > 
+> > Fix the problem, by calling set_page_dirty_lock() if the CPU pages
+> > were potentially receiving data from the device.
+> > 
+> > Reviewed-by: Christoph Hellwig <hch@lst.de>
+> > Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+> > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > Cc: <stable@vger.kernel.org>
+> 
+> What are the user-visible effects of this change?
 
+Presumably loss of captured video data if the page writeback hits in the
+wrong moment (i.e., after the page was faulted in but before the video HW
+stored data in the page) and the page then gets evicted from the page cache.
 
-On 10.12.19 10:14, Kalle Valo wrote:
-> Heiko St=C3=BCbner <heiko@sntech.de> writes:
->
->> Hi Soeren,
->>
->> Am Dienstag, 10. Dezember 2019, 00:29:21 CET schrieb Soeren Moch:
->>> On 10.12.19 00:08, Heiko St=C3=BCbner wrote:
->>>> Am Montag, 9. Dezember 2019, 23:38:22 CET schrieb Soeren Moch:
->>>>> RockPro64 supports an Ampak AP6359SA based wifi/bt combo module.
->>>>> The BCM4359/9 wifi controller in this module is connected to sdio0,
->>>>> enable this interface.
->>>>>
->>>>> Signed-off-by: Soeren Moch <smoch@web.de>
->>>>> ---
->>>>> Not sure where to place exactly the sdio0 node in the dts because
->>>>> existing sd nodes are not sorted alphabetically.
->>>>>
->>>>> This last patch in this brcmfmac patch series probably should be pic=
-ked
->>>>> up by Heiko independently of the rest of this series. It was sent to=
-gether
->>>>> to show how this brcmfmac extension for 4359-sdio support with RSDB =
-is
->>>>> used and tested.
->>>> node placement looks good so I can apply it, just a general questions
->>>> I only got patch 8/8 are patches 1-7 relevant for this one and what a=
-re they?
->>> Patches 1-7 are the patches to support the BCM4359 chipset with SDIO
->>> interface in the linux brcmfmac net-wireless driver, see [1].
->>>
->>> So this patch series has 2 parts:
->>> patches 1-7: add support for the wifi chipset in the wireless driver,
->>> this has to go through net-wireless
->>> patch 8: enable the wifi module with this chipset on RockPro64, this p=
-atch
->> Thanks for the clarification :-) .
->>
->> As patch 8 "only" does the core sdio node, it doesn't really depend on =
-the
->> earlier ones and you can submit any uart-hooks for bluetooth once the
->> other patches land I guess.
->>
->>
->>> If this was confusing, what would be the ideal way to post such series=
-?
->> I think every maintainer has some slightly different perspective on thi=
-s,
->> but personally I like getting the whole series to follow the discussion=
- but
->> also to just see when the driver-side changes get merged, as the dts-pa=
-rts
->> need to wait for that in a lot of cases.
-> FWIW I prefer the same as Heiko. If I don't see all the patches in the
-> patchset I start worrying if patchwork lost them, or something, and then
-> it takes more time from me to investigate what happened. So I strongly
-> recommend sending the whole series to everyone as it saves time.
->
-Thanks for your explanation.
-I will keep this in mind for future submissions.
+								Honza
 
-Soeren
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
