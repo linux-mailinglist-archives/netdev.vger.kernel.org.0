@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4DF511972F
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 991D2119715
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728146AbfLJVJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:09:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57770 "EHLO mail.kernel.org"
+        id S1728225AbfLJVJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:09:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728137AbfLJVJW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:09:22 -0500
+        id S1728211AbfLJVJf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:09:35 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1A4324696;
-        Tue, 10 Dec 2019 21:09:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5565246AF;
+        Tue, 10 Dec 2019 21:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012161;
-        bh=llz9S6WiqrSWJvcdBeTcmMWA3GxRhPN9GqmdpxjJ+is=;
+        s=default; t=1576012174;
+        bh=oW7QC7ZN3sDu53rgPYqBtojvRFrE+jG2HcylGdisCL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXh3eEp8H2HPWaUYxh5zuPSoLDJ5wRBMUdYye5pOY4CKSg/Fr8IbYTKeBr9g7Byg4
-         njS5JJidVM5vxuofEbCCWCQJrwuAk9HBUNzwwmrp499wpeeKX/pKrZzO9sLBBVQ0Zu
-         EaIuY6fKSedzgVYfoeLK7ezvdV7MUnKlbu8RwxH4=
+        b=W13duTr1XBqXhgqkrQaTsEqgF+fXheSzF8lFe2Mg5u6YODrQh7oshGRmE8G+M6YqL
+         slm3+4vxpN4i9I8fVhbMnhUJDwE+wYskAyz10Hrgt76xT5ZFb0Xh9G/hTlMoOgdPnC
+         mQjO8WHg1/J4Bk42ZnuHEng0iIYu97CR3vPLRqUU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
+Cc:     Andrii Nakryiko <andriin@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 123/350] bpf/stackmap: Fix deadlock with rq_lock in bpf_get_stack()
-Date:   Tue, 10 Dec 2019 16:03:48 -0500
-Message-Id: <20191210210735.9077-84-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 132/350] selftests/bpf: Make a copy of subtest name
+Date:   Tue, 10 Dec 2019 16:03:57 -0500
+Message-Id: <20191210210735.9077-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -46,149 +45,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit eac9153f2b584c702cea02c1f1a57d85aa9aea42 ]
+[ Upstream commit f90415e9600c5227131531c0ed11514a2d3bbe62 ]
 
-bpf stackmap with build-id lookup (BPF_F_STACK_BUILD_ID) can trigger A-A
-deadlock on rq_lock():
+test_progs never created a copy of subtest name, rather just stored
+pointer to whatever string test provided. This is bad as that string
+might be freed or modified by the end of subtest. Fix this by creating
+a copy of given subtest name when subtest starts.
 
-rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-[...]
-Call Trace:
- try_to_wake_up+0x1ad/0x590
- wake_up_q+0x54/0x80
- rwsem_wake+0x8a/0xb0
- bpf_get_stack+0x13c/0x150
- bpf_prog_fbdaf42eded9fe46_on_event+0x5e3/0x1000
- bpf_overflow_handler+0x60/0x100
- __perf_event_overflow+0x4f/0xf0
- perf_swevent_overflow+0x99/0xc0
- ___perf_sw_event+0xe7/0x120
- __schedule+0x47d/0x620
- schedule+0x29/0x90
- futex_wait_queue_me+0xb9/0x110
- futex_wait+0x139/0x230
- do_futex+0x2ac/0xa50
- __x64_sys_futex+0x13c/0x180
- do_syscall_64+0x42/0x100
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-This can be reproduced by:
-1. Start a multi-thread program that does parallel mmap() and malloc();
-2. taskset the program to 2 CPUs;
-3. Attach bpf program to trace_sched_switch and gather stackmap with
-   build-id, e.g. with trace.py from bcc tools:
-   trace.py -U -p <pid> -s <some-bin,some-lib> t:sched:sched_switch
-
-A sample reproducer is attached at the end.
-
-This could also trigger deadlock with other locks that are nested with
-rq_lock.
-
-Fix this by checking whether irqs are disabled. Since rq_lock and all
-other nested locks are irq safe, it is safe to do up_read() when irqs are
-not disable. If the irqs are disabled, postpone up_read() in irq_work.
-
-Fixes: 615755a77b24 ("bpf: extend stackmap to save binary_build_id+offset instead of address")
-Signed-off-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20191014171223.357174-1-songliubraving@fb.com
-
-Reproducer:
-============================ 8< ============================
-
-char *filename;
-
-void *worker(void *p)
-{
-        void *ptr;
-        int fd;
-        char *pptr;
-
-        fd = open(filename, O_RDONLY);
-        if (fd < 0)
-                return NULL;
-        while (1) {
-                struct timespec ts = {0, 1000 + rand() % 2000};
-
-                ptr = mmap(NULL, 4096 * 64, PROT_READ, MAP_PRIVATE, fd, 0);
-                usleep(1);
-                if (ptr == MAP_FAILED) {
-                        printf("failed to mmap\n");
-                        break;
-                }
-                munmap(ptr, 4096 * 64);
-                usleep(1);
-                pptr = malloc(1);
-                usleep(1);
-                pptr[0] = 1;
-                usleep(1);
-                free(pptr);
-                usleep(1);
-                nanosleep(&ts, NULL);
-        }
-        close(fd);
-        return NULL;
-}
-
-int main(int argc, char *argv[])
-{
-        void *ptr;
-        int i;
-        pthread_t threads[THREAD_COUNT];
-
-        if (argc < 2)
-                return 0;
-
-        filename = argv[1];
-
-        for (i = 0; i < THREAD_COUNT; i++) {
-                if (pthread_create(threads + i, NULL, worker, NULL)) {
-                        fprintf(stderr, "Error creating thread\n");
-                        return 0;
-                }
-        }
-
-        for (i = 0; i < THREAD_COUNT; i++)
-                pthread_join(threads[i], NULL);
-        return 0;
-}
-============================ 8< ============================
-
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20191021033902.3856966-6-andriin@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/stackmap.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/test_progs.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index 052580c33d268..173e983619d77 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -287,7 +287,7 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
- 	bool irq_work_busy = false;
- 	struct stack_map_irq_work *work = NULL;
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index af75a1c7a4587..3bf18364c67c9 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -20,7 +20,7 @@ struct prog_test_def {
+ 	bool tested;
+ 	bool need_cgroup_cleanup;
  
--	if (in_nmi()) {
-+	if (irqs_disabled()) {
- 		work = this_cpu_ptr(&up_read_work);
- 		if (work->irq_work.flags & IRQ_WORK_BUSY)
- 			/* cannot queue more up_read, fallback */
-@@ -295,8 +295,9 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
- 	}
+-	const char *subtest_name;
++	char *subtest_name;
+ 	int subtest_num;
  
- 	/*
--	 * We cannot do up_read() in nmi context. To do build_id lookup
--	 * in nmi context, we need to run up_read() in irq_work. We use
-+	 * We cannot do up_read() when the irq is disabled, because of
-+	 * risk to deadlock with rq_lock. To do build_id lookup when the
-+	 * irqs are disabled, we need to run up_read() in irq_work. We use
- 	 * a percpu variable to do the irq_work. If the irq_work is
- 	 * already used by another lookup, we fall back to report ips.
- 	 *
+ 	/* store counts before subtest started */
+@@ -81,16 +81,17 @@ void test__end_subtest()
+ 	fprintf(env.stdout, "#%d/%d %s:%s\n",
+ 	       test->test_num, test->subtest_num,
+ 	       test->subtest_name, sub_error_cnt ? "FAIL" : "OK");
++
++	free(test->subtest_name);
++	test->subtest_name = NULL;
+ }
+ 
+ bool test__start_subtest(const char *name)
+ {
+ 	struct prog_test_def *test = env.test;
+ 
+-	if (test->subtest_name) {
++	if (test->subtest_name)
+ 		test__end_subtest();
+-		test->subtest_name = NULL;
+-	}
+ 
+ 	test->subtest_num++;
+ 
+@@ -104,7 +105,13 @@ bool test__start_subtest(const char *name)
+ 	if (!should_run(&env.subtest_selector, test->subtest_num, name))
+ 		return false;
+ 
+-	test->subtest_name = name;
++	test->subtest_name = strdup(name);
++	if (!test->subtest_name) {
++		fprintf(env.stderr,
++			"Subtest #%d: failed to copy subtest name!\n",
++			test->subtest_num);
++		return false;
++	}
+ 	env.test->old_error_cnt = env.test->error_cnt;
+ 
+ 	return true;
 -- 
 2.20.1
 
