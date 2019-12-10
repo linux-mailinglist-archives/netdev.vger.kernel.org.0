@@ -2,86 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8839E118F52
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:51:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B99D9118F55
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727693AbfLJRvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:51:25 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:45598 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbfLJRvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:51:24 -0500
-Received: by mail-ot1-f67.google.com with SMTP id 59so16257601otp.12
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:51:24 -0800 (PST)
+        id S1727708AbfLJRvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:51:39 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34814 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727587AbfLJRvi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:51:38 -0500
+Received: by mail-pf1-f193.google.com with SMTP id n13so213459pff.1
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:51:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OLDxXwGsHcXK/4MIow1/s2R5pg50DmOvyjuxK3g9wtU=;
-        b=ivsPwB1YTGoIqwpelldM6752S5Z3ZLBx8nEuNVlEjk4B/TTkZmCjast27dQ0FXwecW
-         Pen2BRBdXB/75GSmtdEEV+lF9iyqgTBkQSHbj4RyWDUKm/Yhx1YjowNV77BwEhh577t4
-         9lKrfi4JhS1rJ33z17ZDtPqWiWntpERSfWLJlVbWgrGJf4Kl+fLQFoTF06fgeYhhQU9U
-         piHCWHAD5N3Kjkx/Z065UO6A+0XdHCA+4rPms3NqkVqk+1sjj5s8LgR25lejSsjpkkVh
-         dvsCgBGQ2kY11aPyCnDyiI0frsKbejdL/6iP5S/kWfwyPv9ZtXKeMCTJ2ntY4WaM3jWT
-         gyPg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=fW3Ref0PHQ5io/FZ7XeWN9s3SNVfAIL+FiYKUeQn2KE=;
+        b=mt115MN0ewRf9mbMFfp3Iuy2d9FfypEgxpQPsNISDAUH+rYzYYoVGNS6eQVx4xwi7P
+         yTtaMc7LznoM3N9LJtFlmsznQ0SGCA7fpiGDFmINKs/wZ+ddeaDvS5XJj5isX8gCWPn+
+         cfh+7/hpwkswXJwkPhciglEpdSvkWiZithOzgl+FdoDdWMXk1r1uRSPSvEi6e+dPZzuW
+         M2SkMSiHHj2cbV6o06Ph2ggoSQQ6j1YB1OhHfP8YWBCLhnAcvJ3C7RwuftNOGuJE0E0w
+         zGZV1mQY+gTcqgcLn4dgrucRHY4oamVhHdAXQH0goEO9cb2BEEs2PZNrayEg8nkaVLPv
+         v1Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OLDxXwGsHcXK/4MIow1/s2R5pg50DmOvyjuxK3g9wtU=;
-        b=dZtQ1ngGTc9v/2cfYB0BBs3efII77h/TSKuNoI1RJo+f/9/iewLtAbC+ZD9eJfTVHX
-         0QlRj1ILlyLw5xQv2kvMxR0vekhjiP5PLmdc0N7/5K7ywAN22mpJOcZxj1byB1uy897r
-         ZBLOp4mX2EvUiGmLivPSJVV7VMcnkMr06hawTEXjRr5DD61/39v/ZduF4nJW3RcmXYU8
-         mImKl1XoWkUTWxK7D9cY3Gqj7S8IGfq0a7e/x4DkGcTmZE65AySnPUig5zbe43x3T2S7
-         FPIdT9RhyS1I57f6vuLYOdruoS1g/uIYx3xI1LLT6/K8NpEWayHiPekewGlPnuRS3M/K
-         Z4HQ==
-X-Gm-Message-State: APjAAAUj8cZbXOg8tPG0uBZAhtW8ZKPkpYxMhqY1bDcRxyOpqcJXNy68
-        qM4xGqYnGBLOsRYj9si/gcI9/g==
-X-Google-Smtp-Source: APXvYqwjZ7m8GoTodEQ8prrcN+kuiLnooUkBMxA02f4sb6i33XAgDNikDdssy6EDIffCBNIuNTjuOA==
-X-Received: by 2002:a9d:6b06:: with SMTP id g6mr26746974otp.93.1576000283694;
-        Tue, 10 Dec 2019 09:51:23 -0800 (PST)
-Received: from ziepe.ca ([217.140.111.136])
-        by smtp.gmail.com with ESMTPSA id e17sm1628192otq.58.2019.12.10.09.51.22
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 Dec 2019 09:51:22 -0800 (PST)
-Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iejfN-00001O-El; Tue, 10 Dec 2019 13:51:21 -0400
-Date:   Tue, 10 Dec 2019 13:51:21 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        gregkh@linuxfoundation.org, Dave Ertman <david.m.ertman@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com,
-        Kiran Patil <kiran.patil@intel.com>
-Subject: Re: [PATCH v3 01/20] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191210175121.GC46@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
- <20191210064929.GJ67461@unreal>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=fW3Ref0PHQ5io/FZ7XeWN9s3SNVfAIL+FiYKUeQn2KE=;
+        b=NdxZqvWQMmZA8PIGYQVDlMMVK684ZCn8AlefaMvebWR9xpy/tmLcZDFBOwq9tFBwtb
+         ZVYBMV5mwCdozysB2uhSKb+0NEnRzNPQhWiJ7TmqhjCUnL06UBMN0fZzRvim+GCGAZht
+         iakMKTH3gg3D2F7qOQVUSH4cUJi6eiO50SOmpIQLv70xdIECL3OB8Pk8NGgdyxLeNhEh
+         Y9HYlyYvqDA1JlBdaHlUydI60GP7CVoN9wMBD+WiSYMlW3IaEzMYeWjEjCCoC7bEyLhw
+         crv2gq04IhA6GtK79xHxL3w1579uNljMJyQ4iDK09b7npMxXqrLK17W2toyZHEUGuoUA
+         AWKw==
+X-Gm-Message-State: APjAAAVgzcpgfWsuaypFaVAQxAG21gXWVXEsVlNgJSUnHci5eIHmsfO2
+        UwYIfNBarZ2qfZ8GhOfWf742icCmwq4=
+X-Google-Smtp-Source: APXvYqwcFHWWm9eTWrLu+KNteuLcuDUJ3dB0pTgi9WFTG+6hBnstYp4EgibKkKe5+8YCV2iFmQrQKg==
+X-Received: by 2002:a65:5608:: with SMTP id l8mr26335894pgs.210.1576000298286;
+        Tue, 10 Dec 2019 09:51:38 -0800 (PST)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::3])
+        by smtp.gmail.com with ESMTPSA id y128sm4103464pfg.17.2019.12.10.09.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 09:51:38 -0800 (PST)
+Date:   Tue, 10 Dec 2019 09:51:34 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/5] ethtool netlink interface, preliminary
+ part
+Message-ID: <20191210095134.27f46a81@cakuba.netronome.com>
+In-Reply-To: <cover.1575982069.git.mkubecek@suse.cz>
+References: <cover.1575982069.git.mkubecek@suse.cz>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191210064929.GJ67461@unreal>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 08:49:29AM +0200, Leon Romanovsky wrote:
-
-> > +MODULE_LICENSE("GPL v2");
-> > +MODULE_DESCRIPTION("Lightweight Virtual Bus");
-> > +MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
-> > +MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
-> > +
-> > +static DEFINE_IDA(virtbus_dev_ida);
+On Tue, 10 Dec 2019 14:07:48 +0100 (CET), Michal Kubecek wrote:
+> As Jakub Kicinski suggested in ethtool netlink v7 discussion, this
+> submission consists only of preliminary patches which raised no objections;
+> first four patches already have Acked-by or Reviewed-by.
 > 
-> I was under impression that usage of IDA interface is discouraged in favor
-> of direct calls to XArray.
+> - patch 1 exposes permanent hardware address (as shown by "ethtool -P")
+>   via rtnetlink
+> - patch 2 is renames existing netlink helper to a better name
+> - patch 3 and 4 reorganize existing ethtool code (no functional change)
+> - patch 5 makes the table of link mode names available as an ethtool string
+>   set (will be needed for the netlink interface) 
+> 
+> Once we get these out of the way, v8 of the first part of the ethtool
+> netlink interface will follow.
 
-IDA is OK, idr should be xarray
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Jason
+Thank you!
