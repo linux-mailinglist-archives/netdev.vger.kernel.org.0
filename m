@@ -2,136 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F9811800E
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 06:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F202E118005
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 06:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727101AbfLJFzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 00:55:53 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2831 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbfLJFzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 00:55:52 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5def33600000>; Mon, 09 Dec 2019 21:55:45 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 09 Dec 2019 21:55:50 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 09 Dec 2019 21:55:50 -0800
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 10 Dec
- 2019 05:55:50 +0000
-Received: from [10.2.166.216] (10.124.1.5) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 10 Dec
- 2019 05:55:49 +0000
-Subject: Re: [PATCH v8 20/26] powerpc: book3s64: convert to pin_user_pages()
- and put_user_page()
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191209225344.99740-1-jhubbard@nvidia.com>
- <20191209225344.99740-21-jhubbard@nvidia.com>
- <08f5d716-8b31-b016-4994-19fbe829dc28@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <61e0c3a5-992e-4571-e22d-d63286ce10ec@nvidia.com>
-Date:   Mon, 9 Dec 2019 21:53:00 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1726953AbfLJFyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 00:54:46 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40385 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726573AbfLJFyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 00:54:46 -0500
+Received: by mail-qt1-f195.google.com with SMTP id t17so1725659qtr.7;
+        Mon, 09 Dec 2019 21:54:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aEdbSb4fDofi843wGegclbDxWODU3NrINX67WoXCGbE=;
+        b=laiHemXoMlKAziVJp1hmYJMC31hksAvOs52IVY0hYhyenWMEgQz+nd7FAIkRC2M+Un
+         phQtApChTnFDFMBMEbFRAL5h3Ip5APo19P7B6x2A61rkMOVKLQjOqxePAd1vvi1sYnfo
+         738oXSNfX8rNdjh+Kio5BCyHTpvNYD/fFh5liJIzqyy8m/t2B3iIw3iyKpl14jB5/XUX
+         +nS1CFZ42S+EH1bl0H0V4jMAAkZGqCAaOuXvMWYRmGuAyRXF53BohLmGdLrbtmyqPz7G
+         u60/m7IDsTL0LX74oOpPFe7mGHyIJROmrLL/WUnqwz6pOgcAgFFwZj+zEBFq7fDURMKI
+         eoSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aEdbSb4fDofi843wGegclbDxWODU3NrINX67WoXCGbE=;
+        b=gThp0NvyoOPAqHpYpXGINE/kb4h9CO+Uf0LX5h4tRYkGVmFkiHOE3Xpjqt667BwgTw
+         z7V9RnDpwrExD8I6s+MRMxFOgLny5VxOAcDGt4EppguTWlGIvm+t+s4YLcpX6YDGozie
+         qzuwfUL4WGT2VdPyFTINR1Jjt3dMTLX8hDHabSHFMU5uVylAGywhVO+CMDM9Vn+qHext
+         KSokIMBQUoVcpWTcI/v2nZSSxM26XWqbbNGevP3ydFBVYKDMxLaoA6WPTYcN0km1XY8m
+         Y56+YPFxWBQ8cCY/UUHUgQFESMlQqbHVloYxYA5pYNqJXIODIPIR2q26dOFXHTSUJH7X
+         xaxQ==
+X-Gm-Message-State: APjAAAV1w1A6wPeHdVpAGt1BudeGTrwinguR/+tmFd4DHo0NQsK4YAHr
+        FtfVGTsKTyRXZ4Kt5fgSCRQZikwICLKRrPtSEag=
+X-Google-Smtp-Source: APXvYqzqCwX50vpUAHemUw3tbBPzvGWhpOVQKrMajAAXp/qN0zDOdtKxDMp7JO+oq3gw7KCBt5/GqZ8Va3FdE0Pdmts=
+X-Received: by 2002:ac8:104:: with SMTP id e4mr28232284qtg.37.1575957285115;
+ Mon, 09 Dec 2019 21:54:45 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <08f5d716-8b31-b016-4994-19fbe829dc28@nvidia.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1575957345; bh=hOQHo4yBws9X1nqgVCC1VdrUiF9Z86xIO4U2wGVXRCw=;
-        h=X-PGP-Universal:Subject:From:To:CC:References:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=Z0uGtjzdMedDuhQsG1jpU7HmbXe0kx1+9sLgOIk8Tsa+qSKrJwruITPp5YqsEqw/n
-         J6r9xabZ4a9OQN/Wl8LVj9LrtdwAy11ChiFmcjZZVTuORyZEi3yR7n2LRqkwn66Ltr
-         eeIwWiN6PGMYv9eL7SAOfeP4KVVco/4prZuZTjVwpd53jjxNLLJqGfcC9sxeGP6ykt
-         D8DJTJbSiZvX3LC8FmFbEGS2I/TRo6uZZSD6HwdT5k7HU7OxF7PBsCrAkF07RmEA1a
-         ZcPVotCE1aYXgj3rJWRvh8EJXUvCr0vK9kwBlCNWSwhBERf1C6gVTs8+AjkAsxO8km
-         d4nN+/tFy5PPg==
+References: <20191209135522.16576-1-bjorn.topel@gmail.com> <20191209135522.16576-3-bjorn.topel@gmail.com>
+ <20191210055042.bhvm2gw633ts2gmg@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191210055042.bhvm2gw633ts2gmg@ast-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 10 Dec 2019 06:54:33 +0100
+Message-ID: <CAJ+HfNjtawO7f6kFimRiXoyQ_-9r2Y7FMV_2CU60TwaqHGhExw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/6] bpf: introduce BPF dispatcher
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/19 3:46 PM, John Hubbard wrote:
-> On 12/9/19 2:53 PM, John Hubbard wrote:
-> ...
->> @@ -212,10 +211,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->>   		if (!page)
->>   			continue;
->>   
->> -		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
->> -			SetPageDirty(page);
->> +		put_user_pages_dirty_lock(&page, 1,
->> +				mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY);
->>   
->> -		put_page(page);
-> 
-> 
-> Correction: this is somehow missing the fixes that resulted from Jan Kara's review (he
-> noted that we can't take a page lock in this context). I must have picked up the
-> wrong version of it, when I rebased for -rc1.
-> 
+On Tue, 10 Dec 2019 at 06:50, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Dec 09, 2019 at 02:55:18PM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> > +
+> > +struct bpf_disp_prog {
+> > +     struct bpf_prog *prog;
+> > +     refcount_t users;
+> > +};
+> > +
+> > +struct bpf_dispatcher {
+> > +     void *func;
+> > +     struct bpf_disp_prog progs[BPF_DISPATCHER_MAX];
+> > +     int num_progs;
+> > +     void *image;
+> > +     u32 image_off;
+> > +};
+> > +
+> > +static struct bpf_dispatcher *bpf_disp;
+> > +
+> > +static DEFINE_MUTEX(dispatcher_mutex);
+> > +
+> > +static struct bpf_dispatcher *bpf_dispatcher_lookup(void *func)
+> > +{
+> > +     struct bpf_dispatcher *d;
+> > +     void *image;
+> > +
+> > +     if (bpf_disp) {
+> > +             if (bpf_disp->func !=3D func)
+> > +                     return NULL;
+> > +             return bpf_disp;
+> > +     }
+> > +
+> > +     d =3D kzalloc(sizeof(*d), GFP_KERNEL);
+> > +     if (!d)
+> > +             return NULL;
+>
+> The bpf_dispatcher_lookup() above makes this dispatch logic a bit difficu=
+lt to
+> extend, since it works for only one bpf_disp and additional dispatchers w=
+ould
+> need hash table. Yet your numbers show that even with retpoline=3Doff the=
+re is a
+> performance benefit. So dispatcher probably can be reused almost as-is to
+> accelerate sched_cls programs.
+> What I was trying to say in my previous feedback on this subject is that
+> lookup() doesn't need to exist. That 'void *func' doesn't need to be a fu=
+nction
+> that dispatcher uses. It can be 'struct bpf_dispatcher *' instead.
+> And lookup() becomes init().
+> Then bpf_dispatcher_change_prog() will be passing &bpf_dispatcher_xdp
+> and bpf_dispatcher_xdp is defined via macro that supplies
+> 'struct bpf_dispatcher' above and instantiated in particular .c file
+> that used that macro. Then dispatcher can be used in more than one place.
+> No need for hash table. Multiple dispatchers are instantiated in places
+> that need them via macro.
+> The code will look like:
+> bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog)
+> {
+>    bpf_dispatcher_change_prog(&bpf_dispatcher_xdp, prev_prog, prog);
+> }
+> Similarly sched_cls dispatcher for skb progs will do:
+>    bpf_dispatcher_change_prog(&bpf_dispatcher_tc, prev_prog, prog);
+> wdyt?
+>
 
-Andrew, given that the series is now in -mm, what's the preferred way for me to fix this?
-Send a v9 version of the whole series? Or something else?
-
-I'm still learning the ropes...
-
-thanks,
--- 
-John Hubbard
-NVIDIA
-
-> Will fix in the next version (including the commit description). Here's what the
-> corrected hunk will look like:
-> 
-> @@ -215,7 +214,8 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->                  if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
->                          SetPageDirty(page);
->   
-> -               put_page(page);
-> +               put_user_page(page);
-> +
->                  mem->hpas[i] = 0;
->          }
->   }
-> 
-> 
-> thanks,
-> 
+Yes, much cleaner. I'll respin!
