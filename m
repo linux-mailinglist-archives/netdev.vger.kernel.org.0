@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DEE11893B
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 14:09:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C3B118948
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 14:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727502AbfLJNJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 08:09:26 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37200 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727306AbfLJNJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 08:09:26 -0500
+        id S1727592AbfLJNJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 08:09:41 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21991 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727349AbfLJNJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 08:09:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575983364;
+        s=mimecast20190719; t=1575983380;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=NNvyL4Y9eRzqtb2H2E84LxRf2YADQJydGhMMLpn/rvY=;
-        b=YCyQxxBCwG9YnKU8c4d3uWtS/1dc5JI9f0XVSok+6Yu1dNVHJfYbgvWIsZ6eJ/t7utYxX7
-        bvxM5Tozv4+KIs/cXrwyQCgvvEi5asck2B/yQWtUTQHMP5C1wicuTqowJ+NKZDnlFpR2lJ
-        xCK8dCCHIBvy4zGnWEkSURe3qHBKBjo=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-346-564kIVYIONOx6vP92p5nGw-1; Tue, 10 Dec 2019 08:09:23 -0500
-Received: by mail-qv1-f72.google.com with SMTP id q17so6731267qvo.23
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 05:09:23 -0800 (PST)
+        b=AlD9lK0lcRsDsXFvNQYzjqN8VPz1SiM8s3OBwIm9Ok0zggn7BmR7jMvd2vdQWyVfuPUK44
+        59ccR13uXYDFEPpiJqjeQiXHauO1oFZ2RYf6gW8p+edtr3DE0DvT8M17EE6a7j7nFDUJTr
+        PFpLqmrhyxiSr0Fr9vVn89Y3D2+4E0s=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-247-xXD4D2MyMumRJM-F0QxiGQ-1; Tue, 10 Dec 2019 08:09:38 -0500
+Received: by mail-qk1-f198.google.com with SMTP id m13so12195058qka.9
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 05:09:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
         bh=wQxMVxgAtK5y0CyKs1BCEj6d5vwE3qN67Xvd5FZmfgk=;
-        b=anFVQkNYYvmuOW8haWjF2lbGHMuw4xXKtAJXS+7CPT9sO5CuUQX6zuAduFeKt/9xfd
-         +HfpiQecYpfC1kqmpOE/Nd4HnBzowLAD4hEO0AohA4ICdgGSA42Bf0HfWbyMufveVcF1
-         w6/tvHIjb2+qm/44ikEgxZfRob6X7+kZj0LvAoRO9xS1okinqNl7H85hCHolyw1k8NmS
-         4/W5LDd4r6aMXDO/tgjSW4AJpvA3ToQanqcKk2VVn7Rjv3NL6k0T58Imwt2Q6aYVNS7z
-         dSQpbzaJWfBNxclu7YbjI8OHzc6lF5e1XpoE7fM4dwMfN7J3EXYCRbqKVFvrhPtGqY1B
-         UCjw==
-X-Gm-Message-State: APjAAAUz8oteNuT7rz+zOqJezAIW1hzYQGrdXk755jTT6lmMfG8sUK3e
-        yFyoVLjUOleHHb8lrOLPXc5URNwEze1e2PkUtGq13LFk9HRsEwYG3pOrygt1SkMfOnCiuwlnvvd
-        LZbv9M6xCdFnven2f
-X-Received: by 2002:a05:620a:911:: with SMTP id v17mr12704479qkv.251.1575983363391;
-        Tue, 10 Dec 2019 05:09:23 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz7ER+Suti7b7WGSHiGKo0njA6UpaXbA4+jGOZ4LZZhkiLlbT0G0TM3FUm0G1znF25VZZnGAw==
-X-Received: by 2002:a05:620a:911:: with SMTP id v17mr12704462qkv.251.1575983363208;
-        Tue, 10 Dec 2019 05:09:23 -0800 (PST)
+        b=VQTRJMTBf+IYphpNwPp59/kj8cSaXi0KAaa2/bgpWxu3kjL1gv90MrUJdZOWKdmHyT
+         wXYmeTf2dugq6kq/GqKoSdwjkPdjeh9DG6cfTykzeR95Ynjeky9/4GR1IN+Wqm9pd6sq
+         qUOafLUv/SQoOKknzREfRi8si7kDmVGrff5F2ymq1t9EZJZWOXyhCBKMC4913vrhmHl1
+         81Vrswxsjt1gKPUI0VqFnnObtfR95K7pPAlrEvco3PvgieGrFkKpu0UdmwVTUL3tUHoh
+         HSrfzxqm37hLiz+6RR7eHmYJuK+qyzeYMQl2IOKHNr96QNF8FiWUOYKPwm+4t2g5AqJ0
+         KRdQ==
+X-Gm-Message-State: APjAAAXnKBWCsZipn+tkO8kL6Vj8VMzSqwrZAnfrGv/qN+S166nJIMul
+        ZEw7Qt/TUgrc789FzzTZmQ6GWRr0/ICGdJdWJiPG3hXELH0aNe/VaDtF44Ox3Tun3wLoSsLO1d7
+        Ww7LWpvSR9OrX7U62
+X-Received: by 2002:ac8:1348:: with SMTP id f8mr30477641qtj.159.1575983378429;
+        Tue, 10 Dec 2019 05:09:38 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxzCxpfTPGAXiCVPIWJAs4HLWH6sVbFeBsTubfL0QW4kVTGuGgosmmYsXqgQxz0BbX7tFuG7A==
+X-Received: by 2002:ac8:1348:: with SMTP id f8mr30477630qtj.159.1575983378295;
+        Tue, 10 Dec 2019 05:09:38 -0800 (PST)
 Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id x32sm1074057qtx.84.2019.12.10.05.09.20
+        by smtp.gmail.com with ESMTPSA id o187sm903287qkf.26.2019.12.10.05.09.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 05:09:22 -0800 (PST)
-Date:   Tue, 10 Dec 2019 08:09:17 -0500
+        Tue, 10 Dec 2019 05:09:37 -0800 (PST)
+Date:   Tue, 10 Dec 2019 08:09:32 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org, Julio Faracco <jcfaracco@gmail.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, mst@redhat.com,
@@ -63,7 +63,7 @@ MIME-Version: 1.0
 In-Reply-To: <20191210130837.47913-1-mst@redhat.com>
 X-Mailer: git-send-email 2.22.0.678.g13338e74b8
 X-Mutt-Fcc: =sent
-X-MC-Unique: 564kIVYIONOx6vP92p5nGw-1
+X-MC-Unique: xXD4D2MyMumRJM-F0QxiGQ-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
