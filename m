@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF51119931
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B21119782
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729868AbfLJVoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:44:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37804 "EHLO mail.kernel.org"
+        id S1729806AbfLJVdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:33:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38110 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728196AbfLJVd2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:33:28 -0500
+        id S1729780AbfLJVdi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:33:38 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 09A2A24655;
-        Tue, 10 Dec 2019 21:33:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9EAA5214AF;
+        Tue, 10 Dec 2019 21:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576013607;
-        bh=Zmqhn+gLHF4HZ1l6ptap/Srkv2xAvfXDEkW1pu0VASY=;
+        s=default; t=1576013617;
+        bh=8P3TtMsefHilumjF2q4Tw8inPFntUz/MU5VFocLHRiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhH1yKWIe7HbPDIZHXBcQVglSmsN1tR+G6G5i2kk1QcXGKIDhpTE7PfliqpGDCUe+
-         2YGfpDszWC3wvOUrgmAevVzSm+EIt0ig1gZI/u3p5jxka7jhMtV6diTdUAt0QnGqke
-         GH9YzQBtdT87B0/nXQBvIGUe5mBie334QIGvtvxM=
+        b=rFn8Srs4Cd5Vo3C+rcqCRxKCHbd+8pu7/4QOePFcKBekynVSM6hSPQC1Bpc0TZ5Rr
+         a4npnrVihufvuq2eIBscNYfQBq8Be9Z5m5E2kaI3eee0dt34Bs+2FkvOMhwFVqw3Mr
+         tVt0C6JIstQJoIiemQTptP74JRilmr3o7+KwDvkw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Niklas Cassel <niklas.cassel@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 054/177] ath10k: Correct error handling of dma_map_single()
-Date:   Tue, 10 Dec 2019 16:30:18 -0500
-Message-Id: <20191210213221.11921-54-sashal@kernel.org>
+Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 062/177] Bluetooth: missed cpu_to_le16 conversion in hci_init4_req
+Date:   Tue, 10 Dec 2019 16:30:26 -0500
+Message-Id: <20191210213221.11921-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210213221.11921-1-sashal@kernel.org>
 References: <20191210213221.11921-1-sashal@kernel.org>
@@ -45,42 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
 
-[ Upstream commit d43810b2c1808ac865aa1a2a2c291644bf95345c ]
+[ Upstream commit 727ea61a5028f8ac96f75ab34cb1b56e63fd9227 ]
 
-The return value of dma_map_single() should be checked for errors using
-dma_mapping_error() and the skb has been dequeued so it needs to be
-freed.
+It looks like in hci_init4_req() the request is being
+initialised from cpu-endian data but the packet is specified
+to be little-endian. This causes an warning from sparse due
+to __le16 to u16 conversion.
 
-This was found when enabling CONFIG_DMA_API_DEBUG and it warned about the
-missing dma_mapping_error() call.
+Fix this by using cpu_to_le16() on the two fields in the packet.
 
-Fixes: 1807da49733e ("ath10k: wmi: add management tx by reference support over wmi")
-Reported-by: Niklas Cassel <niklas.cassel@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
+net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
+net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
+net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
+net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
+net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
+
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 174e0ce31c42b..448e3a8c33a6d 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -3844,8 +3844,10 @@ void ath10k_mgmt_over_wmi_tx_work(struct work_struct *work)
- 			     ar->running_fw->fw_file.fw_features)) {
- 			paddr = dma_map_single(ar->dev, skb->data,
- 					       skb->len, DMA_TO_DEVICE);
--			if (!paddr)
-+			if (dma_mapping_error(ar->dev, paddr)) {
-+				ieee80211_free_txskb(ar->hw, skb);
- 				continue;
-+			}
- 			ret = ath10k_wmi_mgmt_tx_send(ar, skb, paddr);
- 			if (ret) {
- 				ath10k_warn(ar, "failed to transmit management frame by ref via WMI: %d\n",
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 5afd67ef797a6..e0de9a609265a 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -841,8 +841,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
+ 	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
+ 		struct hci_cp_le_write_def_data_len cp;
+ 
+-		cp.tx_len = hdev->le_max_tx_len;
+-		cp.tx_time = hdev->le_max_tx_time;
++		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
++		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
+ 		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
+ 	}
+ 
 -- 
 2.20.1
 
