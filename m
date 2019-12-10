@@ -2,86 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E32A11922E
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E761119230
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfLJUgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:36:17 -0500
-Received: from mout.kundenserver.de ([212.227.126.135]:47765 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfLJUgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:36:16 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M2ep5-1iiuph1YVD-004DY0; Tue, 10 Dec 2019 21:35:54 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        id S1726928AbfLJUga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:36:30 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:46366 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726741AbfLJUga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:36:30 -0500
+Received: by mail-pj1-f66.google.com with SMTP id z21so7827205pjq.13
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:36:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=m4lR4/qTA+x4lWMCsr3lyiJ3HAGpeNIlbEfrqpGeIOA=;
+        b=bs/R1E7G9tgGFY/AMt4YyATQFUGcQ8I8p3F5bR1m+TQwtRXsRmSgksbFpsBm2S0+vS
+         kRvmNORmijmV/cHnjinZstjpOAnj7Ag/LbfBqvWxD4wLM5eeqZHIUm/iLvNqtbn3Mmhz
+         N2QvGNzaC5Sq0VqOIHFQ0BSxgEbQ3JyeC3S/RB/kGQA4Wbk4aGph3VjsWBTxJ2Jy25Tf
+         bdZs3looOP8sLwmM2iWoRP7m3XX7pLXzQBTnwbuBu/7y2rFQCzEh+VtnMbpAaRHBwekM
+         OAFJANW8JV9KHZ5DZYD/c8BPfSAfoJyoG2veG6rOQp+vKn0hpiwl7OiZJIT6J+Awkskv
+         yGKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=m4lR4/qTA+x4lWMCsr3lyiJ3HAGpeNIlbEfrqpGeIOA=;
+        b=q7AE/XPxnZFCe2P4vYXoAY2K9pIAAqSWuGNOF/dORwNWfkKcFE/FGfSF/20dHI383U
+         R8l48QOrWR5gbFmG9DStNKliYvuU/zLGkdpxMAYGxWuHJvJxciaA9XQUQ49ldZAwCMPJ
+         5sGs40x1QBCb2n4McyhTEJG4k8BQNC9wnLWpAO+CuU+01PPhQbDfnMjEbTL3A0+tSaVX
+         C015i+oQSJ9C8Cma+0CfQzkimTW5GJDhOomQkOgZR88FXzzcwGJ9Cg5dshxNkdCHxfBJ
+         nGTEBtzXqAGnQ3LxRcPNI0in7BFu6OXWS08WDUMP2t99Nrvaq1du9txVPqRxQ8x7K4ZL
+         2I9g==
+X-Gm-Message-State: APjAAAWiF/aOQnmzG7Ot4Y6EnUSa0JUJ1Xkxc7crJsTjLjF9sFl2Vmbh
+        hnNsglXmpHK3mE3YhgOhJ/dP9w==
+X-Google-Smtp-Source: APXvYqxMj8JfspXi3A7BnpdrN+zZp2PrEV/FNY20PzoFuq2pIqCf/p8ugcaEJRUbyLNRgIgDEgqy+g==
+X-Received: by 2002:a17:902:d88f:: with SMTP id b15mr34612369plz.172.1576010189331;
+        Tue, 10 Dec 2019 12:36:29 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a15sm4653619pfh.169.2019.12.10.12.36.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 12:36:29 -0800 (PST)
+Date:   Tue, 10 Dec 2019 12:36:25 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Paul Chaignon <paul.chaignon@orange.com>
+Cc:     bpf@vger.kernel.org, Quentin Monnet <quentin.monnet@netronome.com>,
+        paul.chaignon@gmail.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Randy Dunlap <rdunlap@infradead.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] bpf: Fix build in minimal configurations, again
-Date:   Tue, 10 Dec 2019 21:35:46 +0100
-Message-Id: <20191210203553.2941035-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] bpftool: match several programs with same
+ tag
+Message-ID: <20191210123625.48ab21fa@cakuba.netronome.com>
+In-Reply-To: <4db34d127179faafd6eca408792222c922969904.1575991886.git.paul.chaignon@orange.com>
+References: <cover.1575991886.git.paul.chaignon@orange.com>
+        <4db34d127179faafd6eca408792222c922969904.1575991886.git.paul.chaignon@orange.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:/TPNkN7ip+x2EGFaeArJV7t8UOMDz3Xt3D+KTG86o+YtHi7AQpl
- EA0traGRcVUYNiVhb1WcqtyedHFK/G7uo0ODPsfSwvljgdSlfpiB9jNCLcGrp8AhFzBC3Rd
- 4nUPKrnESghS/cdlCX+dbI/zA0oHna+X0b/mFXnE8c9EQLoI9fPJU9FDHyh3lXC7+LwYcnO
- MgvBxcOH6E8fFfruQkYlA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bT0fWJOkfpk=:6CchuXFwP8SMBieEroZBrH
- AEk/STZiwVmNZ6TG+ImhFDC8ApYwPA7+2PF1wJ1oF4yezz4fciDC2lAIcsYU8l9tOdKyaAspc
- 0SV4G8rpDiBjXWCLZFHS7Z0Te6aJKDsHTnwW5S830ljYf1BSx2ot7TrIb+leoxWvV/rJpv7G6
- s93O3GFciGFrMcGQvg/4y5kuZTog+nYzBYsYTkoMhg94yai9Lt1IRXZ+Hfqgwboq+fyK9dxlB
- l9BeW0HRcPSCTz/Ffv3pRWOc8grqW1Ch9/qcx8X/MvZc6NZI5Q0pkb9C1F3Luz2JswPZotGUe
- 3b2aLkC6+GHufoBizFdA/b0KJSMyKqrgfbX/X/ZsxY1LNOZggZZ7D4Azve0M5vAtt9elY0gA9
- 1O8BK9hMoUxBG7rBjdE86VP0HDrKI3nYXD6GFOXW1asqP8X0sPceT2JqFJ0WORXaDcISz8cMK
- Ql2klZPu/IBSMdURuGUq/MX7eul0lx+jgH4enSmzY7dZ0A1LiJ9vyGUrwdLbj9qrwmyqRc+kg
- TH7oDzkvFT7pPOAuqi3JXAyT2MEIRPqIp7Lg3RW6MlfCM+IO1BmLFprg6nq4n9FiNKMEZN+Jc
- fwQldPMpfVPv/oy+cOmzm3pR+g+W/VRoQvQtsNui5r/0YTD6VxIC3t5mfw9z41bzv60Cdm+Ur
- KrxfaMaRqcW23Ic55KNRGxmoqmwoIfzyZnL0e85ry9EBbcgd/hCYNDkuvB74++T31XmWyNWdZ
- MsT72djQzrEtDUsHBD7Tznyn0vpyOO9cMJpdu1OWpNwJfp/kDX9ISul2HBStsFU+t+lf3z5xB
- 8qrhMqfuRGHL0wlzT9vDVAF2ZruLF9m1EUVzvrSuay9XrZLsyZR0d53z/apMy4yDL2M51VGDd
- 0BQYnKMJ8IWxWvoy3Jfg==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Building with -Werror showed another failure:
+On Tue, 10 Dec 2019 17:06:25 +0100, Paul Chaignon wrote:
+> When several BPF programs have the same tag, bpftool matches only the
+> first (in ID order).  This patch changes that behavior such that dump and
+> show commands return all matched programs.  Commands that require a single
+> program (e.g., pin and attach) will error out if given a tag that matches
+> several.  bpftool prog dump will also error out if file or visual are
+> given and several programs have the given tag.
+>=20
+> In the case of the dump command, a program header is added before each
+> dump only if the tag matches several programs; this patch doesn't change
+> the output if a single program matches.
 
-kernel/bpf/btf.c: In function 'btf_get_prog_ctx_type.isra.31':
-kernel/bpf/btf.c:3508:63: error: array subscript 0 is above array bounds of 'u8[0]' {aka 'unsigned char[0]'} [-Werror=array-bounds]
-  ctx_type = btf_type_member(conv_struct) + bpf_ctx_convert_map[prog_type] * 2;
+How does this work? Could you add examples to the commit message?
 
-I don't actually understand why the array is empty, but a similar
-fix has addressed a related problem, so I suppose we can do the
-same thing here.
+This header idea doesn't seem correct, aren't id and other per-instance
+fields only printed once?
 
-Fixes: ce27709b8162 ("bpf: Fix build in minimal configurations")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- kernel/bpf/btf.c | 1 +
- 1 file changed, 1 insertion(+)
+> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 7d40da240891..ed2075884724 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3470,6 +3470,7 @@ static u8 bpf_ctx_convert_map[] = {
- 	[_id] = __ctx_convert##_id,
- #include <linux/bpf_types.h>
- #undef BPF_PROG_TYPE
-+	0, /* avoid empty array */
- };
- #undef BPF_MAP_TYPE
- 
--- 
-2.20.0
+> -		close(fd);
+> +		if (nb_fds > 0) {
+> +			tmp =3D realloc(fds, (nb_fds + 1) * sizeof(int));
+> +			if (!tmp) {
+> +				p_err("failed to realloc");
+> +				goto err_close_fd;
+> +			}
+> +			fds =3D tmp;
+
+How does this work? the new array is never returned to the caller, and
+the caller will most likely access freed memory, no?
+
+> +		}
+> +		fds[nb_fds++] =3D fd;
+>  	}
+> +
+> +err_close_fd:
+> +	close(fd);
+> +err_close_fds:
+> +	for (nb_fds--; nb_fds >=3D 0; nb_fds--)
+> +		close(fds[nb_fds]);
+> +	return -1;
+>  }
+
+> +int prog_parse_fd(int *argc, char ***argv)
+> +{
+> +	int *fds =3D NULL;
+> +	int nb_fds, fd;
+> +
+> +	fds =3D malloc(sizeof(int));
+> +	if (!fds) {
+> +		p_err("mem alloc failed");
+> +		return -1;
+> +	}
+> +	nb_fds =3D prog_parse_fds(argc, argv, fds);
+> +	if (nb_fds !=3D 1) {
+> +		if (nb_fds > 1) {
+> +			p_err("several programs match this handle");
+> +			for (nb_fds--; nb_fds >=3D 0; nb_fds--)
+
+nit: since you checked nb_fds is positive, while (nb_fds--) ?
+
+> +				close(fds[nb_fds]);
+> +		}
+> +		fd =3D -1;
+> +		goto err_free;
+> +	}
+> +
+> +	fd =3D fds[0];
+> +err_free:
+
+nit: we tried to call the labels exit_xyz if the code is used on both
+     error and success path, but maybe that pattern got lost over time.
+
+> +	free(fds);
+> +	return fd;
+> +}
+> +
+>  static void show_prog_maps(int fd, u32 num_maps)
+>  {
+>  	struct bpf_prog_info info =3D {};
+
+>  static int do_show(int argc, char **argv)
+>  {
+> +	int fd, nb_fds, i;
+> +	int *fds =3D NULL;
+>  	__u32 id =3D 0;
+>  	int err;
+> -	int fd;
+> =20
+>  	if (show_pinned)
+>  		build_pinned_obj_table(&prog_table, BPF_OBJ_PROG);
+> =20
+>  	if (argc =3D=3D 2) {
+> -		fd =3D prog_parse_fd(&argc, &argv);
+> -		if (fd < 0)
+> +		fds =3D malloc(sizeof(int));
+> +		if (!fds) {
+> +			p_err("mem alloc failed");
+>  			return -1;
+> +		}
+> +		nb_fds =3D prog_parse_fds(&argc, &argv, fds);
+> +		if (nb_fds < 1)
+> +			goto err_free;
+> =20
+> -		err =3D show_prog(fd);
+> -		close(fd);
+> -		return err;
+> +		if (json_output && nb_fds > 1)
+> +			jsonw_start_array(json_wtr);	/* root array */
+> +		for (i =3D 0; i < nb_fds; i++) {
+> +			err =3D show_prog(fds[i]);
+> +			close(fds[i]);
+> +			if (err) {
+> +				for (i++; i < nb_fds; i++)
+> +					close(fds[i]);
+> +				goto err_free;
+
+I'm 90% sure JSON arrays close/end themselves on exit =F0=9F=A4=94
+
+> +			}
+> +		}
+> +		if (json_output && nb_fds > 1)
+> +			jsonw_end_array(json_wtr);	/* root array */
+> +
+> +		return 0;
+> +
+> +err_free:
+> +		free(fds);
+> +		return -1;
+
+Perhaps move the argc =3D=3D 2 code to a separate function?
+
+>  	}
+> =20
+>  	if (argc)
+> @@ -408,101 +500,32 @@ static int do_show(int argc, char **argv)
+>  	return err;
+>  }
 
