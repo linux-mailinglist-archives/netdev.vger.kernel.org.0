@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4000911956F
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81081119569
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729225AbfLJVUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:20:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35212 "EHLO mail.kernel.org"
+        id S1729035AbfLJVUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:20:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728877AbfLJVL5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:11:57 -0500
+        id S1728892AbfLJVMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:12:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42A08246B4;
-        Tue, 10 Dec 2019 21:11:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2EB06246B8;
+        Tue, 10 Dec 2019 21:12:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012316;
-        bh=8keJoVDJcCZfsw467TcPzFQmkinK6RE0pvbE92Y/pJg=;
+        s=default; t=1576012322;
+        bh=dM+Pngq4KjmW9vBg73ieV0QwQR7zMJuUxI9260U4jIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0SC+9n2wAzy6ABWnbPLprh5pLMbzG7AG+pPwE4ZNndK+MQZjAD6V1ygLSs2tDmPn
-         UkR2j8wcJenKRf6xWP/lqZn0T6MkrCQOoe1BJn4hGeAYJnTH3NqzMZ0ZjlNRC/WHaX
-         UzgL8CWA8ZbvlQ5dC7nb9tyzGobp+RYM2vLQDihU=
+        b=igIFhtgg2GO295WbyVy9OVS+TfTc+tkl7XoavOKerzl7XfxvVYETAI2Klzhqgkej4
+         Irl7QrFjm8LlWRfP/bKISb8KW1SbIDLmbAzMdQXTllutx5NVjpTH/8Lpnj5NPwFRmg
+         aDYKMiLCkDGKx/lm4Wv8WpvX2hCZIEDG10t2j0vo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 250/350] selftests: net: Fix printf format warnings on arm
-Date:   Tue, 10 Dec 2019 16:05:55 -0500
-Message-Id: <20191210210735.9077-211-sashal@kernel.org>
+Cc:     Mitch Williams <mitch.a.williams@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 255/350] ice: delay less
+Date:   Tue, 10 Dec 2019 16:06:00 -0500
+Message-Id: <20191210210735.9077-216-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
@@ -46,72 +46,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Mitch Williams <mitch.a.williams@intel.com>
 
-[ Upstream commit 670cd6849ea36ea4df2f2941cf4717dff8755abe ]
+[ Upstream commit 88bb432a55de8ae62106305083a8bfbb23b01ad2 ]
 
-Fix printf format warnings on arm (and other 32bit arch).
+Shorten the delay for SQ responses, but increase the number of loops.
+Max delay time is unchanged, but some operations complete much more
+quickly.
 
- - udpgso.c and udpgso_bench_tx use %lu for size_t but it
-   should be unsigned long long on 32bit arch.
+In the process, add a new define to make the delay count and delay time
+more explicit. Add comments to make things more explicit.
 
- - so_txtime.c uses %ld for int64_t, but it should be
-   unsigned long long on 32bit arch.
+This fixes a problem with VF resets failing on with many VFs.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/so_txtime.c       | 4 ++--
- tools/testing/selftests/net/udpgso.c          | 3 ++-
- tools/testing/selftests/net/udpgso_bench_tx.c | 3 ++-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_controlq.c | 2 +-
+ drivers/net/ethernet/intel/ice/ice_controlq.h | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/net/so_txtime.c b/tools/testing/selftests/net/so_txtime.c
-index 53f598f066470..34df4c8882afb 100644
---- a/tools/testing/selftests/net/so_txtime.c
-+++ b/tools/testing/selftests/net/so_txtime.c
-@@ -105,8 +105,8 @@ static void do_recv_one(int fdr, struct timed_send *ts)
- 	tstop = (gettime_ns() - glob_tstart) / 1000;
- 	texpect = ts->delay_us >= 0 ? ts->delay_us : 0;
+diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
+index 2353166c654ea..c68709c7ef81d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_controlq.c
++++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
+@@ -948,7 +948,7 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
+ 		if (ice_sq_done(hw, cq))
+ 			break;
  
--	fprintf(stderr, "payload:%c delay:%ld expected:%ld (us)\n",
--			rbuf[0], tstop, texpect);
-+	fprintf(stderr, "payload:%c delay:%lld expected:%lld (us)\n",
-+			rbuf[0], (long long)tstop, (long long)texpect);
+-		mdelay(1);
++		udelay(ICE_CTL_Q_SQ_CMD_USEC);
+ 		total_delay++;
+ 	} while (total_delay < cq->sq_cmd_timeout);
  
- 	if (rbuf[0] != ts->data)
- 		error(1, 0, "payload mismatch. expected %c", ts->data);
-diff --git a/tools/testing/selftests/net/udpgso.c b/tools/testing/selftests/net/udpgso.c
-index 614b31aad168b..c66da6ffd6d8d 100644
---- a/tools/testing/selftests/net/udpgso.c
-+++ b/tools/testing/selftests/net/udpgso.c
-@@ -440,7 +440,8 @@ static bool __send_one(int fd, struct msghdr *msg, int flags)
- 	if (ret == -1)
- 		error(1, errno, "sendmsg");
- 	if (ret != msg->msg_iov->iov_len)
--		error(1, 0, "sendto: %d != %lu", ret, msg->msg_iov->iov_len);
-+		error(1, 0, "sendto: %d != %llu", ret,
-+			(unsigned long long)msg->msg_iov->iov_len);
- 	if (msg->msg_flags)
- 		error(1, 0, "sendmsg: return flags 0x%x\n", msg->msg_flags);
+diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.h b/drivers/net/ethernet/intel/ice/ice_controlq.h
+index 44945c2165d80..4df9da3591359 100644
+--- a/drivers/net/ethernet/intel/ice/ice_controlq.h
++++ b/drivers/net/ethernet/intel/ice/ice_controlq.h
+@@ -31,8 +31,9 @@ enum ice_ctl_q {
+ 	ICE_CTL_Q_MAILBOX,
+ };
  
-diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
-index ada99496634aa..17512a43885e7 100644
---- a/tools/testing/selftests/net/udpgso_bench_tx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_tx.c
-@@ -405,7 +405,8 @@ static int send_udp_segment(int fd, char *data)
- 	if (ret == -1)
- 		error(1, errno, "sendmsg");
- 	if (ret != iov.iov_len)
--		error(1, 0, "sendmsg: %u != %lu\n", ret, iov.iov_len);
-+		error(1, 0, "sendmsg: %u != %llu\n", ret,
-+			(unsigned long long)iov.iov_len);
+-/* Control Queue default settings */
+-#define ICE_CTL_Q_SQ_CMD_TIMEOUT	250  /* msecs */
++/* Control Queue timeout settings - max delay 250ms */
++#define ICE_CTL_Q_SQ_CMD_TIMEOUT	2500  /* Count 2500 times */
++#define ICE_CTL_Q_SQ_CMD_USEC		100   /* Check every 100usec */
  
- 	return 1;
- }
+ struct ice_ctl_q_ring {
+ 	void *dma_head;			/* Virtual address to DMA head */
 -- 
 2.20.1
 
