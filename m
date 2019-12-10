@@ -2,152 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D436C118CAB
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CE5118CC2
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 16:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbfLJPhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 10:37:07 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:50970 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727615AbfLJPhF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 10:37:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1575992224;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W/UN284g7iI6B6yJziwS2LsAhtN9pj39NTYCrCHscB4=;
-        b=R76oBbdK7ao0aB8dz2Xb5NZFFXVxHjW6kEy2a7Eu2IqoScXHxd/91K4jL6tjxD9Rcabn4W
-        8mquOsDoQue3OXnbIhVQJbIBvOIzw6P8WFnnQDTEp40VdIkMITMC/sK/0SD+L56eqNyY/S
-        iUE1cuYSVC2gt7WVohy6OBq34mIc9R4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-280--O-3HyJBO6-0Xp0XTl8lgg-1; Tue, 10 Dec 2019 10:37:01 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727508AbfLJPkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 10:40:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57552 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727178AbfLJPkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 10:40:03 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7D706800D41;
-        Tue, 10 Dec 2019 15:36:59 +0000 (UTC)
-Received: from krava (unknown [10.43.17.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 545566E3FF;
-        Tue, 10 Dec 2019 15:36:54 +0000 (UTC)
-Date:   Tue, 10 Dec 2019 16:36:52 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-audit@redhat.com,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Subject: Re: [PATCHv3] bpf: Emit audit messages upon successful prog load and
- unload
-Message-ID: <20191210153652.GA14123@krava>
-References: <20191206214934.11319-1-jolsa@kernel.org>
- <20191209121537.GA14170@linux.fritz.box>
- <CAHC9VhQdOGTj1HT1cwvAdE1sRpzk5mC+oHQLHgJFa3vXEij+og@mail.gmail.com>
- <d387184e-9c5f-d5b2-0acb-57b794235cbd@iogearbox.net>
- <CAHC9VhRDsEDGripZRrVNcjEBEEULPk+0dRp-uJ3nmmBK7B=sYQ@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 77F38206D5;
+        Tue, 10 Dec 2019 15:40:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575992401;
+        bh=oAC4tgr1G3fJw6y2dBgr994HWOHowaSSAxovKb0AOIQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=si4ucwK9rUhJRuOwMdb7jPNudjIX0wgcS1UYu+EvIhL3YMQZxfKkCZdhKA8PSAmfj
+         nF/ewOxUajbifRDOEypejE7K3dDT70JB4ekZ+HCOEDC4tY0U5gfGGU4H2uvWU5sP4Z
+         sp/+7a7vQG7zQXVm7zSdBL3gSgaeZ0msT/k54QWQ=
+Date:   Tue, 10 Dec 2019 16:39:59 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Shiraz Saleem <shiraz.saleem@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        parav@mellanox.com, Mustafa Ismail <mustafa.ismail@intel.com>
+Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
+Message-ID: <20191210153959.GD4053085@kroah.com>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhRDsEDGripZRrVNcjEBEEULPk+0dRp-uJ3nmmBK7B=sYQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: -O-3HyJBO6-0Xp0XTl8lgg-1
-X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
+In-Reply-To: <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 06:53:23PM -0500, Paul Moore wrote:
-> On Mon, Dec 9, 2019 at 6:19 PM Daniel Borkmann <daniel@iogearbox.net> wro=
-te:
-> > On 12/9/19 3:56 PM, Paul Moore wrote:
-> > > On Mon, Dec 9, 2019 at 7:15 AM Daniel Borkmann <daniel@iogearbox.net>=
- wrote:
-> > >> On Fri, Dec 06, 2019 at 10:49:34PM +0100, Jiri Olsa wrote:
-> > >>> From: Daniel Borkmann <daniel@iogearbox.net>
-> > >>>
-> > >>> Allow for audit messages to be emitted upon BPF program load and
-> > >>> unload for having a timeline of events. The load itself is in
-> > >>> syscall context, so additional info about the process initiating
-> > >>> the BPF prog creation can be logged and later directly correlated
-> > >>> to the unload event.
-> > >>>
-> > >>> The only info really needed from BPF side is the globally unique
-> > >>> prog ID where then audit user space tooling can query / dump all
-> > >>> info needed about the specific BPF program right upon load event
-> > >>> and enrich the record, thus these changes needed here can be kept
-> > >>> small and non-intrusive to the core.
-> > >>>
-> > >>> Raw example output:
-> > >>>
-> > >>>    # auditctl -D
-> > >>>    # auditctl -a always,exit -F arch=3Dx86_64 -S bpf
-> > >>>    # ausearch --start recent -m 1334
-> > >>>    ...
-> > >>>    ----
-> > >>>    time->Wed Nov 27 16:04:13 2019
-> > >>>    type=3DPROCTITLE msg=3Daudit(1574867053.120:84664): proctitle=3D=
-"./bpf"
-> > >>>    type=3DSYSCALL msg=3Daudit(1574867053.120:84664): arch=3Dc000003=
-e syscall=3D321   \
-> > >>>      success=3Dyes exit=3D3 a0=3D5 a1=3D7ffea484fbe0 a2=3D70 a3=3D0=
- items=3D0 ppid=3D7477    \
-> > >>>      pid=3D12698 auid=3D1001 uid=3D1001 gid=3D1001 euid=3D1001 suid=
-=3D1001 fsuid=3D1001    \
-> > >>>      egid=3D1001 sgid=3D1001 fsgid=3D1001 tty=3Dpts2 ses=3D4 comm=
-=3D"bpf"                \
-> > >>>      exe=3D"/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"      =
-            \
-> > >>>      subj=3Dunconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 k=
-ey=3D(null)
-> > >>>    type=3DUNKNOWN[1334] msg=3Daudit(1574867053.120:84664): prog-id=
-=3D76 op=3DLOAD
-> > >>>    ----
-> > >>>    time->Wed Nov 27 16:04:13 2019
-> > >>>    type=3DUNKNOWN[1334] msg=3Daudit(1574867053.120:84665): prog-id=
-=3D76 op=3DUNLOAD
-> > >>>    ...
-> > >>>
-> > >>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > >>> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
-> > >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > >>
-> > >> Paul, Steve, given the merge window is closed by now, does this vers=
-ion look
-> > >> okay to you for proceeding to merge into bpf-next?
-> > >
-> > > Given the change to audit UAPI I was hoping to merge this via the
-> > > audit/next tree, is that okay with you?
-> >
-> > Hm, my main concern is that given all the main changes are in BPF core =
-and
-> > usually the BPF subsystem has plenty of changes per release coming in t=
-hat we'd
-> > end up generating unnecessary merge conflicts. Given the include/uapi/l=
-inux/audit.h
-> > UAPI diff is a one-line change, my preference would be to merge via bpf=
--next with
-> > your ACK or SOB added. Does that work for you as well as?
->=20
-> I regularly (a few times a week) run the audit and SELinux tests
-> against Linus+audit/next+selinux/next to make sure things are working
-> as expected and that some other subsystem has introduced a change
-> which has broken something.  If you are willing to ensure the tests
-> get run, including your new BPF audit tests I would be okay with that;
-> is that acceptable?
+On Mon, Dec 09, 2019 at 02:49:19PM -0800, Jeff Kirsher wrote:
+> From: Shiraz Saleem <shiraz.saleem@intel.com>
+> 
+> Register client virtbus device on the virtbus for the RDMA
+> virtbus driver (irdma) to bind to. It allows to realize a
+> single RDMA driver capable of working with multiple netdev
+> drivers over multi-generation Intel HW supporting RDMA.
+> There is also no load ordering dependencies between i40e and
+> irdma.
+> 
+> Summary of changes:
+> * Support to add/remove virtbus devices
+> * Add 2 new client ops.
+> 	* i40e_client_device_register() which is called during RDMA
+> 	  probe() per PF. Validate client drv OPs and schedule service
+> 	  task to call open()
+> 	* i40e_client_device_unregister() called during RDMA remove()
+> 	  per PF. Call client close() and release_qvlist.
+> * The global register/unregister calls exported for i40iw are retained
+>   until i40iw is removed from the kernel.
+> 
+> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>  drivers/infiniband/hw/i40iw/Makefile          |   1 -
+>  drivers/infiniband/hw/i40iw/i40iw.h           |   2 +-
+>  drivers/net/ethernet/intel/Kconfig            |   1 +
+>  drivers/net/ethernet/intel/i40e/i40e.h        |   3 +-
+>  drivers/net/ethernet/intel/i40e/i40e_client.c | 109 +++++++++++++++---
+>  .../linux/net/intel}/i40e_client.h            |  20 +++-
+>  6 files changed, 112 insertions(+), 24 deletions(-)
+>  rename {drivers/net/ethernet/intel/i40e => include/linux/net/intel}/i40e_client.h (92%)
+> 
+> diff --git a/drivers/infiniband/hw/i40iw/Makefile b/drivers/infiniband/hw/i40iw/Makefile
+> index 8942f8229945..34da9eba8a7c 100644
+> --- a/drivers/infiniband/hw/i40iw/Makefile
+> +++ b/drivers/infiniband/hw/i40iw/Makefile
+> @@ -1,5 +1,4 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -ccflags-y :=  -I $(srctree)/drivers/net/ethernet/intel/i40e
+>  
+>  obj-$(CONFIG_INFINIBAND_I40IW) += i40iw.o
+>  
+> diff --git a/drivers/infiniband/hw/i40iw/i40iw.h b/drivers/infiniband/hw/i40iw/i40iw.h
+> index 8feec35f95a7..3197e3536d5c 100644
+> --- a/drivers/infiniband/hw/i40iw/i40iw.h
+> +++ b/drivers/infiniband/hw/i40iw/i40iw.h
+> @@ -57,7 +57,7 @@
+>  #include "i40iw_d.h"
+>  #include "i40iw_hmc.h"
+>  
+> -#include <i40e_client.h>
+> +#include <linux/net/intel/i40e_client.h>
+>  #include "i40iw_type.h"
+>  #include "i40iw_p.h"
+>  #include <rdma/i40iw-abi.h>
+> diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+> index b88328fea1d0..8595f578fbe7 100644
+> --- a/drivers/net/ethernet/intel/Kconfig
+> +++ b/drivers/net/ethernet/intel/Kconfig
+> @@ -241,6 +241,7 @@ config I40E
+>  	tristate "Intel(R) Ethernet Controller XL710 Family support"
+>  	imply PTP_1588_CLOCK
+>  	depends on PCI
+> +	select VIRTUAL_BUS
+>  	---help---
+>  	  This driver supports Intel(R) Ethernet Controller XL710 Family of
+>  	  devices.  For more information on how to identify your adapter, go
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+> index cb6367334ca7..4321e81d347c 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e.h
+> +++ b/drivers/net/ethernet/intel/i40e/i40e.h
+> @@ -38,7 +38,7 @@
+>  #include <net/xdp_sock.h>
+>  #include "i40e_type.h"
+>  #include "i40e_prototype.h"
+> -#include "i40e_client.h"
+> +#include <linux/net/intel/i40e_client.h>
+>  #include <linux/avf/virtchnl.h>
+>  #include "i40e_virtchnl_pf.h"
+>  #include "i40e_txrx.h"
+> @@ -655,6 +655,7 @@ struct i40e_pf {
+>  	u16 last_sw_conf_valid_flags;
+>  	/* List to keep previous DDP profiles to be rolled back in the future */
+>  	struct list_head ddp_old_prof;
+> +	int peer_idx;
+>  };
+>  
+>  /**
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
+> index e81530ca08d0..a3dee729719b 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_client.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
+> @@ -1,12 +1,12 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /* Copyright(c) 2013 - 2018 Intel Corporation. */
+>  
+> +#include <linux/net/intel/i40e_client.h>
+>  #include <linux/list.h>
+>  #include <linux/errno.h>
+>  
+>  #include "i40e.h"
+>  #include "i40e_prototype.h"
+> -#include "i40e_client.h"
+>  
+>  static const char i40e_client_interface_version_str[] = I40E_CLIENT_VERSION_STR;
+>  static struct i40e_client *registered_client;
+> @@ -30,11 +30,17 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
+>  				       bool is_vf, u32 vf_id,
+>  				       u32 flag, u32 valid_flag);
+>  
+> +static int i40e_client_device_register(struct i40e_info *ldev);
+> +
+> +static void i40e_client_device_unregister(struct i40e_info *ldev);
+> +
+>  static struct i40e_ops i40e_lan_ops = {
+>  	.virtchnl_send = i40e_client_virtchnl_send,
+>  	.setup_qvlist = i40e_client_setup_qvlist,
+>  	.request_reset = i40e_client_request_reset,
+>  	.update_vsi_ctxt = i40e_client_update_vsi_ctxt,
+> +	.client_device_register = i40e_client_device_register,
+> +	.client_device_unregister = i40e_client_device_unregister,
+>  };
+>  
+>  /**
+> @@ -275,6 +281,27 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
+>  	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
+>  }
+>  
+> +static int i40e_init_client_virtdev(struct i40e_pf *pf)
+> +{
+> +	struct i40e_info *ldev = &pf->cinst->lan_info;
+> +	struct pci_dev *pdev = pf->pdev;
+> +	struct virtbus_device *vdev;
+> +	int ret;
+> +
+> +	vdev = &ldev->vdev;
+> +	vdev->name = I40E_PEER_RDMA_NAME;
+> +	vdev->dev.parent = &pf->pdev->dev;
 
-hi,
-would you please let me know which tree this landed at the end?
+What a total and complete mess of a tangled web you just wove here.
+
+Ok, so you pass in a single pointer, that then dereferences 3 pointers
+deep to find the pointer to the virtbus_device structure, but then you
+point the parent of that device, back at the original structure's
+sub-pointer's device itself.
+
+WTF?
+
+And who owns the memory of this thing that is supposed to be
+dynamically controlled by something OUTSIDE of this driver?  Who created
+that thing 3 pointers deep?  What happens when you leak the memory below
+(hint, you did), and who is supposed to clean it up if you need to
+properly clean it up if something bad happens?
+
+> +
+> +	ret = virtbus_dev_register(vdev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failure adding client virtbus dev %s %d\n",
+> +			I40E_PEER_RDMA_NAME, ret);
+
+Again, the core should handle this, right?
+
+> +		return ret;
+
+Did you just leak memory?
+
+Yup, you did, you never actually checked the return value of this
+function :(
+
+Ugh.
+
+I feel like the virtual bus code is getting better, but this use of the
+code, um, no, not ok.
+
+Either way, this series is NOT ready to be merged anywhere, please do
+not try to rush things.
+
+Also, what ever happened to my "YOU ALL MUST AGREE TO WORK TOGETHER"
+requirement between this group, and the other group trying to do the
+same thing?  I want to see signed-off-by from EVERYONE involved before
+we are going to consider this thing.
 
 thanks,
-jirka
 
+greg k-h
