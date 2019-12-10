@@ -2,206 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7184118F04
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C43118F09
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfLJR3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:29:55 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:41938 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727516AbfLJR3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:29:54 -0500
-Received: by mail-wr1-f68.google.com with SMTP id c9so21053086wrw.8
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:29:52 -0800 (PST)
+        id S1727621AbfLJRbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:31:17 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33554 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727597AbfLJRbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:31:17 -0500
+Received: by mail-pf1-f196.google.com with SMTP id y206so192940pfb.0
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:31:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aDmC92jBqiL+/WoMc+0FY9tr4/vQFb7jJJbUuvUOxgk=;
-        b=GNnaibblkhsIakHJW7Pcm0KSdPkdDEu/YacNWKldOTxAtoBmpNF1qRUTT58RICahb3
-         myNMq41VY2pHmYgZPbYDYGE7ZfzKN+ZzWVBDTy/FuZZVKpXMBlcoybwe2ZVSvr0DqcCq
-         8Dv+pDqw6hr3x4H8mbhnLY5T50Q1N7q2GnT4OhHL0K3uuptI1zMihaPCHD7Wj0n/84HF
-         rz1GbxjdUKAbKGL4USg2rVYAb4G3hkzXTXKXC9JL2endyRGOiQXcv6bMcJIDO5pWbc8v
-         Ss1K696T7dweWmGRZYw0AknAA1/7eDQGmWVPVAbxvFHCy8/ryn/7ILV58csSzUyFyMRo
-         824A==
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=J7eD26mFIlQahOsKyXk+aSeIwPjhMzK6P1OiNJx0ExI=;
+        b=bSIab2f4FVE6XLbfo7AYMYu9i+Nj45cDMdNIDoeMra9jfB8z/ClzUlL4gseBRg3QLM
+         ZEynPUMUTN1o6+EsAq8qnENQMLvRCdFh0eoQp5pzcDpheEwYuxCTeRXIWD7HWiBCcVvy
+         SVGZUVMEDv7MpZ0T03svN5glx7fx7fmoiOPT18BSd2B4GH4/LNtNea2f8ZgdfuhWHUtT
+         2FNzJqoRB1M+bu7+16SQSc8IqrUBYC5ULP0aIsRgahk6XDXgRioy2qKu7CcWSXg7M08O
+         QkPhQot0Lu5cfz88PlG+CMaLOCGbl2TzqkEL0yYK82QzKreRYlNHqaTdReDEHZ2MLv2j
+         Pgdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=aDmC92jBqiL+/WoMc+0FY9tr4/vQFb7jJJbUuvUOxgk=;
-        b=BIH+hWbbXdrT7qG41YUAUp9Tym9BZ+bTxvtms+g89MJyZOpNSqciTLihqqMRRgLP76
-         9FKvt4AdIYzmkdL3WAtQheHbgdV6zHzj2wj9o5nmFFJ4rMBx2ZbQ2QaEAtZkxkbbPVXm
-         AliL+ZzA1espAuY/SFQGsYnHbZWpMkjHr0cuPipBS8iM6QytGvXy/FmTneWtKtL2WZ92
-         WSxvdphIHw1rpQ2OzM2IIUHmDWkhRrU2J3iBc+vLJOvhnkQdpT7Q4gwdWF4T0Yd2rq37
-         rEYQ0rscquvnk/hDuaOojDpZ+8jDuGguDH1ONyfulrAU6M/yUNK50/gUAwspbiE03KoX
-         zFrw==
-X-Gm-Message-State: APjAAAVG6WI9wHeNAI3HC3p/R7hfPxfeWkYRhu6jaymbBfr398PAQlEI
-        YpM3ttEiTswXoMSl8lX87HvYGQ==
-X-Google-Smtp-Source: APXvYqzZ32OZ43XiDmnL0tZ+0N4vglz77WKkPK0994O0BNNY3gZaGRbpeBkXnQ1BWAJeSTojSEDqVw==
-X-Received: by 2002:adf:df8e:: with SMTP id z14mr4536101wrl.190.1575998991273;
-        Tue, 10 Dec 2019 09:29:51 -0800 (PST)
-Received: from [172.20.1.104] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id z11sm3684519wrt.82.2019.12.10.09.29.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Dec 2019 09:29:50 -0800 (PST)
-To:     Paul Chaignon <paul.chaignon@orange.com>, bpf@vger.kernel.org
-Cc:     paul.chaignon@gmail.com, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-References: <cover.1575991886.git.paul.chaignon@orange.com>
- <06aad9217a37b0582407cab11469125e645f5084.1575991886.git.paul.chaignon@orange.com>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [PATCH bpf-next 3/3] bpftool: match maps by name
-Message-ID: <61747303-6cd5-e2e7-749f-13068085ed9c@netronome.com>
-Date:   Tue, 10 Dec 2019 17:29:50 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=J7eD26mFIlQahOsKyXk+aSeIwPjhMzK6P1OiNJx0ExI=;
+        b=r5mwN9kXB5LQhXqcPdriaD37KCyEEHwrr0Io8wggL0K7g1KZHLiOGl/JjtXL+2B0Wi
+         Btx0oPSTyGE3CpnoyBE1c2BftOK7mx/0LpezzTl0m77H0NPSnF41OV3O2odl93OCflAG
+         UJwrw7itfPYNLCSkM60wXSY6hATT3RHODgx4GtB0Hkou6FVobjP889zRW+x4uZApLvre
+         P96r8vy5qGcF59Ovb05j6TqWYjLJCtDUQbFdIarXenZ0ORinQ2DMTBu2kyvqV/vrf/Nh
+         UGMeYzOBvRHDIm2pQNgG99tXpgttx5zddrk5u/syJ6bpZhOsHcYwdld2aFzBF7LBUPjN
+         pf8g==
+X-Gm-Message-State: APjAAAVJnhJ7PMW6ocG0uMCMkD1qzsXoMe4pSUe94hCLmLYqiTAGbRu7
+        ZTd1ZO1g2eFPyP+QDObHxtl8ng==
+X-Google-Smtp-Source: APXvYqy+kQLqyeUYQhiA8k8C9HrBqehNSjFCKUoZ4jUrzygwOhI0FW6fEcG2hvsPNn56/YdQZJk6/g==
+X-Received: by 2002:a62:7590:: with SMTP id q138mr35504583pfc.241.1575999075344;
+        Tue, 10 Dec 2019 09:31:15 -0800 (PST)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::3])
+        by smtp.gmail.com with ESMTPSA id i16sm4113991pfo.12.2019.12.10.09.31.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 09:31:15 -0800 (PST)
+Date:   Tue, 10 Dec 2019 09:31:11 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <zenczykowski@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
+Message-ID: <20191210093111.7f1ad05d@cakuba.netronome.com>
+In-Reply-To: <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
+References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
+        <20191209224530.156283-1-zenczykowski@gmail.com>
+        <20191209154216.7e19e0c0@cakuba.netronome.com>
+        <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
+        <20191209161835.7c455fc0@cakuba.netronome.com>
+        <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <06aad9217a37b0582407cab11469125e645f5084.1575991886.git.paul.chaignon@orange.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-12-10 17:06 UTC+0100 ~ Paul Chaignon <paul.chaignon@orange.com>
-> This patch implements lookup by name for maps and changes the behavior of
-> lookups by tag to be consistent with prog subcommands.  Similarly to
-> program subcommands, the show and dump commands will return all maps with
-> the given name (or tag), whereas other commands will error out if several
-> maps have the same name (resp. tag).
-> 
-> When a map has BTF info, it is dumped in JSON with available BTF info.
-> This patch requires that all matched maps have BTF info before switching
-> the output format to JSON.
-> 
-> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
-> ---
->  .../bpf/bpftool/Documentation/bpftool-map.rst |  10 +-
->  tools/bpf/bpftool/bash-completion/bpftool     | 131 ++++++-
->  tools/bpf/bpftool/main.h                      |   2 +-
->  tools/bpf/bpftool/map.c                       | 366 +++++++++++++++---
->  4 files changed, 432 insertions(+), 77 deletions(-)
-> 
+On Tue, 10 Dec 2019 12:46:29 +0100, Maciej =C5=BBenczykowski wrote:
+> > Okay, that's what I was suspecting.  It'd be great if the real
+> > motivation for a patch was spelled out in the commit message :/ =20
+>=20
+> It is, but the commit message is already extremely long.
 
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index 05b5be4a6ef9..21c676a1eeb1 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
+Long, yet it doesn't mention the _real_ reason for the patch.
 
-Nice work on the completion, thanks!
+> At some point essays and discussions belong in email and not in the
+> commit message.
 
-> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-> index de61d73b9030..f0e0be08ba21 100644
-> --- a/tools/bpf/bpftool/map.c
-> +++ b/tools/bpf/bpftool/map.c
+Ugh just admit you didn't mention the primary use case in the commit
+log, and we can move on.
 
-[...]
+> Here's another use case:
+>=20
+> A network where firewall policy or network behaviour blocks all
+> traffic using specific ports.
+>=20
+> I've seen generic firewalls that unconditionally drop all BGP or SMTP
+> port traffic, or all traffic on ports 5060/5061 (regardless of
+> direction) or on 25/53/80/123/443/853/3128/8000/8080/8088/8888
+> (usually due to some ill guided security policies against sip or open
+> proxies or xxx). If you happen to use port XXXX as your source port
+> your connection just hangs (packets are blackholed).
+>=20
+> Sure you can argue the network is broken, but in the real world you
+> often can't fix it... Go try and convince your ISP that they should
+> only drop inbound connections to port 8000, but not outgoing
+> connections from port 8000 - you'll go crazy before you find someone
+> who even understands what you're talking about - and even if you find
+> such a person, they'll probably be too busy to change things - and
+> even though it might be a 1 letter change (port -> dport) - it still
+> might take months of testing and rollout before it's fully deployed.
+>=20
+> I've seen networks where specific ports are automatically classified
+> as super high priority (network control) so you don't want anything
+> using these ports without very good reason (common for BGP for
+> example, or for encap schemes).
+>=20
+> Or a specific port number being reserved by GUE or other udp encap
+> schemes and thus unsafe to use for generic traffic (because the
+> network or even the kernel itself might for example auto decapsulate
+> it [via tc ebpf for example], or parse the interior of the packet for
+> flowhashing purposes...).
+>=20
+> [I'll take this opportunity to point out that due to poor flow hashing
+> behaviour GRE is basically unusable at scale (not to mention poorly
+> extensible), and thus GUE and other UDP encap schemes are taking over]
+>=20
+> Or you might want to forward udp port 4500 from your external IP to a
+> dedicated ipsec box or some hardware offload engine... etc.
 
-> @@ -654,14 +771,42 @@ static int do_show(int argc, char **argv)
->  		build_pinned_obj_table(&map_table, BPF_OBJ_MAP);
->  
->  	if (argc == 2) {
-> -		fd = map_parse_fd_and_info(&argc, &argv, &info, &len);
-> -		if (fd < 0)
-> +		fds = malloc(sizeof(int));
-> +		if (!fds) {
-> +			p_err("mem alloc failed");
->  			return -1;
-> +		}
-> +		nb_fds = map_parse_fds(&argc, &argv, fds);
-> +		if (nb_fds < 1)
-> +			goto err_free;
-> +
-> +		if (json_output && nb_fds > 1)
-> +			jsonw_start_array(json_wtr);	/* root array */
-> +		for (i = 0; i < nb_fds; i++) {
-> +			err = bpf_obj_get_info_by_fd(fds[i], &info, &len);
-> +			if (err) {
-> +				p_err("can't get map info: %s",
-> +				      strerror(errno));
-> +				for (; i < nb_fds; i++)
-> +					close(fds[i]);
-> +				goto err_free;
+It's networking you can concoct a scenario to justify anything.
 
-Same remarks as on patch 1, we may want to keep listing the maps even if
-we get a failure for one of them?
+> > So some SoCs which run non-vanilla kernels require hacks to steal
+> > ports from the networking stack for use by proprietary firmware.
+> > I don't see how merging this patch benefits the community. =20
+>=20
+> I think you're failing to account for the fact that the majority of
+> Linux users are Android users - there's around 2.5 billion Android
+> phones in the wild... - but perhaps you don't consider your users (or
+> Android?) to be part of your community?
 
-> +			}
->  
-> -		if (json_output)
-> -			return show_map_close_json(fd, &info);
-> -		else
-> -			return show_map_close_plain(fd, &info);
-> +			if (json_output)
-> +				show_map_close_json(fds[i], &info);
-> +			else
-> +				show_map_close_plain(fds[i], &info);
-> +
-> +			close(fds[i]);
-> +		}
-> +		if (json_output && nb_fds > 1)
-> +			jsonw_end_array(json_wtr);	/* root array */
-> +
-> +		return 0;
-> +
-> +err_free:
-> +		free(fds);
-> +		return -1;
->  	}
->  
->  	if (argc)
+I don't consider users of non-vanilla kernels to necessarily be a
+reason to merge patches upstream, no. They carry literally millions=20
+of lines of patches out of tree, let them carry this patch, too.
+If I can't boot a vanilla kernel on those devices, and clearly there is
+no intent by the device manufacturers for me to ever will, why would I
+care? Some companies care about upstream, and those should be rewarded
+by us taking some of the maintenance off their hands. Some don't:
+https://www.youtube.com/watch?v=3D_36yNWw_07g (link to Linus+nVidia video)=
+=20
+even tho they sell majority of SoCs for 2.5 billion devices.
 
-The rest of the code looks good to me, thanks a lot for working on this!
-Quentin
+> btw. Chrome OS is also Linux based (and if a quick google search is to
+> be believed, about 1/7th of the linux desktop/laptop share), but since
+> it supports running Android apps, it needs to have all Android
+> specific generic kernel changes...
+>=20
+> The reason Android runs non-vanilla kernels is *because* patches like
+> this - that make Linux work in the real world - are missing from
+> vanilla Linux
+> (I can think of a few other networking patches off the top of my head
+> where we've been unable to upstream them for no particularly good
+> reason).
+
+The way to get those patches upstream is to have a honest discussion
+about the use case so people can validate the design. Not by sending
+a patch with a 5 page commit message which fails to clearly state the
+motivation for the feature :/
