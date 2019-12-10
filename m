@@ -2,131 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5EA2118FAE
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E74F118FB0
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 19:22:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727633AbfLJSWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 13:22:03 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50972 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727374AbfLJSWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:22:02 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBAIJtvi005690;
-        Tue, 10 Dec 2019 10:21:46 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=dwVl7DGRtWPLAsXUWKHJZjcTRpvqxVkng764O/h1nDc=;
- b=LcGq5E92j7t+9Pt7FMeihXf9CdesLfzr6v6WF6h8qXWZCr3BCcCTfpQ+Vs5iyXTe61Xu
- 1nl5Eq0qiHSP/acREKkBWdrP6BxsjXwAtogU42zCjL77pI4lHmhcilqqabg+nvB+0Xpm
- pl8ogK8Wsi+GVTxBOFneRx/sSyYQXDyoRvw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wteug8p4a-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 10 Dec 2019 10:21:46 -0800
-Received: from ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) by
- ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 10 Dec 2019 10:21:46 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 10 Dec 2019 10:21:46 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PeBwAvJioS8C8g/kDqU8DLDcMO2201MNHUq8xUhVxpUm8o7QpYqK/2XAyvHq48QXBNtXS08V9ETEfDsUiWKhcHwvInGLKMLggsxl1gWbIER1cX9SsPyWWnM1dpMrQf9MZNmz1IZbSqKmRtsyg+na7M5qpW4jnJzX2+LjHYKB15lFApH70lS+m3PvCKmsSPqjnHxaQp7cE5CrHwDuhSZDGa/9SDLFjlo1/wMYRKigS2YK8n0cw0mjG2h8gv9FfXGL45D9JuY1aCeK6WIQxsTC2WUtCQWoos5dlnejt4cYussGO2CLrTHUAvap7wbSHhm4If6UuXOIwm++kREuyx5u6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dwVl7DGRtWPLAsXUWKHJZjcTRpvqxVkng764O/h1nDc=;
- b=XhkXSoXIhd1QRmDc6D1/OSUV93hVVQNGwV8pDI0j58/7Lf9C5hGWo/iAulrTgwUu1qJBE7sva9kC/Yi5VdpTdpJ6eyll0jBdg9h0QbqtzNdEBjIgQUiiZb5w8Xh8DkmKhp0TZjclaY9jiUNQzzbVcXcj+OHZZ5xzIXkRH2Ix8ws5fwic/e1aN/zxymlzrMbCNeyoqWvVnKWoh6B+wxSd3O/PwLGhquUUUbcr79I4Km6R9ysS0SlTkcgE0SAe/J1e9jp2hMePL8FvcXCSOBW1coLPVORpcWDIsnfvVx173920NDsmOc8ZIbMaZphJuvTLldPYcEF6TPIq0pOeWtzmsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dwVl7DGRtWPLAsXUWKHJZjcTRpvqxVkng764O/h1nDc=;
- b=MozRi5HAiOgw8WafQQA3gKxE2iblOmcLr3zGaroHjLZkuJSMt/bs1JOZZEZw6z9ERLXY1gQl76Q1N31Ot+BAJRIZ/9E/bjIs+oA/1sh8wcucls9y+2cc3LRrmfmPTHT7KYvMeV2PS0QSgMI2JGI1l5VZLtpXEqPWapeak3awCB0=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3279.namprd15.prod.outlook.com (20.179.21.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.14; Tue, 10 Dec 2019 18:21:45 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
- 18:21:45 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or
- ksyms
-Thread-Topic: [PATCH bpf v2] bpftool: Don't crash on missing jited insns or
- ksyms
-Thread-Index: AQHVr4XTlNJlrcw9ukGEe5p86G241aezrksA
-Date:   Tue, 10 Dec 2019 18:21:45 +0000
-Message-ID: <20191210182141.eibshhthezq6d6zd@kafai-mbp>
-References: <20191210181412.151226-1-toke@redhat.com>
-In-Reply-To: <20191210181412.151226-1-toke@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR20CA0008.namprd20.prod.outlook.com
- (2603:10b6:300:13d::18) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:85a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 089eb64c-5c00-445d-363b-08d77d9dd00c
-x-ms-traffictypediagnostic: MN2PR15MB3279:
-x-microsoft-antispam-prvs: <MN2PR15MB3279F460FE132406CBC40F85D55B0@MN2PR15MB3279.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 02475B2A01
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(199004)(189003)(71200400001)(66446008)(6486002)(81156014)(66556008)(81166006)(5660300002)(8936002)(66946007)(66476007)(64756008)(33716001)(186003)(4744005)(6506007)(6916009)(86362001)(6512007)(498600001)(1076003)(54906003)(8676002)(2906002)(52116002)(4326008)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3279;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: huACOZBp/zaiZklM9/44khm9WYG6lTmTOiGdtEXQgNXarCs3m6beHd19lPm8FZmMwvYJzUssQq187Xv5O8awntTUHa8VkkRIYNnWsq2/KBXSyIt3umYIyMfSGGKgYgCSlVd48yoSXGYqC6mL+J6/3aXTBj0Ta5U8/jfdfIsn0nasCnfuWxPxPQSRr8BHwwvDJ14Im9p1E/GjLiPoFg2Z/qZPScnp7sZUMJfqT2/FCGG22LUUlBrPKhCTz6SGgqbiOZbjKHnn6/Gj2wOyFdjjyDDv0eZyPClLJbl+vLJD2zVw+dOncbTbModaNbn4nijM1mNMw3TarMGMKKYtopkWFQ4xoG+NwvszuaUTY1V/TeDrD4aBO5p77/QJVtWvl9B7V1dMXmEMohpfeVcivtQR/2xz1GDW3AkWopseaN0j6QxvRg/DeJrUSVnXShT98skR
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <122C4B40D7FD9143B4C925365EEAD417@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727704AbfLJSWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 13:22:14 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:42845 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727374AbfLJSWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 13:22:14 -0500
+Received: by mail-ot1-f68.google.com with SMTP id 66so16376796otd.9
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 10:22:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9Vy5gqa14MFPxKZ2ZwVgNPXutvyEa2q5+JvzsiuCuAg=;
+        b=j6PH8cK+5VL3VTCnkX8uqFYDQNP+vNIo5nRIc3dY5kMKEbyXH3lqEjI1YbD19X9ESm
+         ntY5RDqTWLconEJ5ozxCPH8u5ipKSOQG993WfszwLmZvznzqEI0kBUXy/4VF8eQW+LS/
+         /LhswAx3TuV3tHg23/3DWbyfjEbwndcu6r6BOVM23oPLclgr1BW8hMS1Bsn6+rAmew7z
+         l+iRDT/xkzmEBvi4Am0I/y6xSGoTw/DJFTmcHPhiR8cEf3WWceWNDr1bIclbLPu1d5ts
+         m8/20Hq4ctytg6w3hWGgNZw/t37ddyW5sfjvdZq24Qx20s4o+9+F2NjQPS4ACy3Zyc6R
+         UEsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9Vy5gqa14MFPxKZ2ZwVgNPXutvyEa2q5+JvzsiuCuAg=;
+        b=rT5axD5cerAnvlZXromxhtsgE/ux0o/LAJzn+ugLKZXPuhy9lXeQ4EMEQDjSb+CIiI
+         qRTAGJKoTkNsrxIYpE8/VbDVYvqwdl6VzBUzbMfKG+qH+LNP1gfY47LwHKk+FlXcSYK4
+         CeCtKOb5V2Jqvi1XTMfgZZFzKSiYSn9PEpLlZqRIzyrKNy1HdBvfymowkG130FsSjr3v
+         f+MAlwO/L5yfMvlhhtYjgHaoYg97a3pnnfZvGM+sk8dqk8duDnPoqmSAfRen+dLkWBJc
+         35BoLidYnqzvGOgfi4dRrJNLpgx8xY9exb9YSbiBoJbG5mt9urXPlVrBS3Wo7avBclSh
+         VNOA==
+X-Gm-Message-State: APjAAAXSc0p4yWmnNInf4r/dk4EVUckpLZf9s6hCnPPfXCemSAiIY6Bd
+        QFWBi914L+hnMuTl63TQlJi/bQ==
+X-Google-Smtp-Source: APXvYqyULL/mBywFzCzgOFmeDt3apg3fAZfTuiYMXsH82AiDFPXwyKHFirq2I+ej09hTUhvFyioffA==
+X-Received: by 2002:a05:6830:18ce:: with SMTP id v14mr24827282ote.254.1576002133249;
+        Tue, 10 Dec 2019 10:22:13 -0800 (PST)
+Received: from ziepe.ca ([217.140.111.136])
+        by smtp.gmail.com with ESMTPSA id w72sm1644200oie.49.2019.12.10.10.22.12
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 Dec 2019 10:22:12 -0800 (PST)
+Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iek9D-00001W-Jp; Tue, 10 Dec 2019 14:22:11 -0400
+Date:   Tue, 10 Dec 2019 14:22:11 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, parav@mellanox.com,
+        Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [PATCH v3 01/20] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191210182211.GD46@ziepe.ca>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 089eb64c-5c00-445d-363b-08d77d9dd00c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 18:21:45.1782
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mK4xfRvam03FpHm3dMbHrisXkfCqGpD+VoyEIJ8rl+efJImaUV8T35/Gla74GH9p
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3279
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-10_05:2019-12-10,2019-12-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxlogscore=435 suspectscore=0 priorityscore=1501 mlxscore=0 spamscore=0
- phishscore=0 impostorscore=0 adultscore=0 malwarescore=0 clxscore=1015
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912100153
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191209224935.1780117-2-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 07:14:12PM +0100, Toke H=F8iland-J=F8rgensen wrote:
-> When the kptr_restrict sysctl is set, the kernel can fail to return
-> jited_ksyms or jited_prog_insns, but still have positive values in
-> nr_jited_ksyms and jited_prog_len. This causes bpftool to crash when tryi=
-ng
-> to dump the program because it only checks the len fields not the actual
-> pointers to the instructions and ksyms.
->=20
-> Fix this by adding the missing checks.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+On Mon, Dec 09, 2019 at 02:49:16PM -0800, Jeff Kirsher wrote:
+
+> +#define to_virtbus_dev(x)	(container_of((x), struct virtbus_device, dev))
+> +#define to_virtbus_drv(x)	(container_of((x), struct virtbus_driver, \
+> +				 driver))
+
+Please use static inlines for things like this, it makes the type
+system clearer
+
+> +/**
+> + * virtbus_dev_register - add a virtual bus device
+> + * @vdev: virtual bus device to add
+> + */
+> +int virtbus_dev_register(struct virtbus_device *vdev)
+> +{
+> +	int ret;
+> +
+> +	device_initialize(&vdev->dev);
+
+I generally try to discourage the pattern where the device_initialize
+is inside a function called register.
+
+The kref inside the struct device should be the only kref for this
+memory, and the kref system should be setup close to allocating the
+memory. Any non-trivial user tends to require access to the kref
+before calling register (which should be done last)
+
+> +	/* All device IDs are automatically allocated */
+> +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+
+Should this be a cyclic allocation?
+
+> +
+> +	vdev->id = ret;
+> +	dev_set_name(&vdev->dev, "%s.%d", vdev->name, vdev->id);
+
+This is also stuff that can be useful to do early as the driver can
+then use functions like dev_warn/etc
+
+> +struct virtbus_object {
+> +	struct virtbus_device vdev;
+> +	char name[];
+> +};
+
+This whole virtbus_object makes no sense to me
+
+> +
+> +/**
+> + * virtbus_dev_release - Destroy a virtbus device
+> + * @vdev: virtual device to release
+> + *
+> + * Note that the vdev->data which is separately allocated needs to be
+> + * separately freed on it own.
+
+How will that happen?
+
+> + */
+> +static void virtbus_dev_release(struct device *dev)
+> +{
+> +	struct virtbus_object *vo = container_of(dev, struct virtbus_object,
+> +						 vdev.dev);
+> +
+> +	ida_simple_remove(&virtbus_dev_ida, vo->vdev.id);
+> +	kfree(vo);
+> +}
+
+Is something wrong with my search? I couldn't find a user for this?
+
+If the virtbus framework wants to provide a release function then it
+should also provide the alloc and require that the virtbus_device be
+at offset 0 in the caller's struct so that the above kfree can work.
+(ie like netdev does with the whole priv thing)
+
+I have no idea what the virtbus_object is supposed to be doing here.
+
+> +struct virtbus_device {
+> +	const char *name;
+> +	int id;
+
+id is always positive, should be unsigned
+
+Jason
