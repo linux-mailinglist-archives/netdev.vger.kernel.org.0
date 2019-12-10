@@ -2,116 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C2971183B0
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 012311183C8
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:39:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfLJJgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 04:36:09 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45500 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726574AbfLJJgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 04:36:09 -0500
-Received: by mail-wr1-f65.google.com with SMTP id j42so19148753wrj.12;
-        Tue, 10 Dec 2019 01:36:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=mgAZ5+aB/GvC0mnzXTVn3f/oGiktcBasZAmAbLkZ9JE=;
-        b=nx93M4IT9DSr/mpaNHid9wLdFHgRPoZGI4R09KrAJWMRYtmyogl3X9OhOhRI82k5ES
-         yb3+up9pKS9FWpjfM+PKnnNjEX0s+JOuRvKR1csDiDCYjOIq94koN9qYZeSmXoA52day
-         PqxtkHuFiI5sMppqvoZBhJQsBnaX/UGw6W8jH/vNSNrE2Z9RX8So/TlAELVo0XDdk94R
-         pV62R+OJ+xddJMfrTREmP9VMluqVCgq3WR4Boska1Z6OY36fHPtC3Lkbe07T1PiMU/C+
-         XK7TEj/qfDRy5AAjKjpXYNkr521uonm22zpfMt8NVYpa1jAN8SVsZUti6IedKwy5u+Pq
-         RBrQ==
-X-Gm-Message-State: APjAAAVJ8daZjsF2iKjUlnbZnKCEUlpA8UyG6VzqeyiVq6Pw47Kk80jn
-        6L5nlz3cyRbJM628a3AKr7o=
-X-Google-Smtp-Source: APXvYqw6FVjHfOx8q4A7LdcghN9XlvKV2lcjY8QJoImoDiAVgnjuYhzenEbMcT7oIrBlD+tcehYX5g==
-X-Received: by 2002:a5d:6349:: with SMTP id b9mr2137418wrw.346.1575970567440;
-        Tue, 10 Dec 2019 01:36:07 -0800 (PST)
-Received: from Nover ([161.105.209.130])
-        by smtp.gmail.com with ESMTPSA id m10sm2609149wrx.19.2019.12.10.01.36.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 01:36:06 -0800 (PST)
-Date:   Tue, 10 Dec 2019 10:36:06 +0100
-From:   Paul Chaignon <paul.chaignon@orange.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     Paul Burton <paulburton@kernel.org>,
-        Mahshid Khezri <khezri.mahshid@gmail.com>,
-        paul.chaignon@gmail.com, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH bpf 1/2] bpf, riscv: limit to 33 tail calls
-Message-ID: <20191210093605.GA31145@Nover>
-References: <cover.1575916815.git.paul.chaignon@gmail.com>
- <966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com>
- <CAJ+HfNgFo8viKn3KzNfbmniPNUpjOv_QM4ua_V0RFLBpWCOBYw@mail.gmail.com>
+        id S1727159AbfLJJjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 04:39:18 -0500
+Received: from mx21.baidu.com ([220.181.3.85]:33750 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726915AbfLJJjR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 04:39:17 -0500
+Received: from BJHW-Mail-Ex16.internal.baidu.com (unknown [10.127.64.39])
+        by Forcepoint Email with ESMTPS id A3039B19AABF1;
+        Tue, 10 Dec 2019 17:39:13 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BJHW-Mail-Ex16.internal.baidu.com (10.127.64.39) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 10 Dec 2019 17:39:14 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1713.004; Tue, 10 Dec 2019 17:39:14 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>
+CC:     "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3YyXSBwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJl?=
+ =?utf-8?B?Y3ljbGUgZm9yIE5VTUFfTk9fTk9ERSBjb25kaXRpb24=?=
+Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Thread-Index: AQHVrBgioGDhH/MP9UuNcNvu7zNf3aeuC1gAgAMqtQCAAL3wgIAAIMoAgAEG1JA=
+Date:   Tue, 10 Dec 2019 09:39:14 +0000
+Message-ID: <bb3c3846334744d7bbe83b1a29eaa762@baidu.com>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191209131416.238d4ae4@carbon>
+ <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+ <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
+In-Reply-To: <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.19]
+x-baidu-bdmsfe-datecheck: 1_BJHW-Mail-Ex16_2019-12-10 17:39:14:464
+x-baidu-bdmsfe-viruscheck: BJHW-Mail-Ex16_GRAY_Inside_WithoutAtta_2019-12-10
+ 17:39:14:448
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ+HfNgFo8viKn3KzNfbmniPNUpjOv_QM4ua_V0RFLBpWCOBYw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 08:57:27PM +0100, Björn Töpel wrote:
-> On Mon, 9 Dec 2019 at 19:52, Paul Chaignon <paul.chaignon@orange.com> wrote:
-> >
-> > All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
-> > limit at runtime.  In addition, a test was recently added, in tailcalls2,
-> > to check this limit.
-> >
-> > This patch updates the tail call limit in RISC-V's JIT compiler to allow
-> > 33 tail calls.  I tested it using the above selftest on an emulated
-> > RISCV64.
-> >
-> 
-> 33! ICK! ;-) Thanks for finding this!
-
-Actually, Mahshid found it during her internship because she wanted to
-check that the number of tail calls was limited.  And now I feel so
-naive for trusting the doc...
-
-> 
-> Acked-by: Björn Töpel <bjorn.topel@gmail.com>
-> 
-> > Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
-> > Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
-> > Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
-> > ---
-> >  arch/riscv/net/bpf_jit_comp.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-> > index 5451ef3845f2..7fbf56aab661 100644
-> > --- a/arch/riscv/net/bpf_jit_comp.c
-> > +++ b/arch/riscv/net/bpf_jit_comp.c
-> > @@ -631,14 +631,14 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
-> >                 return -1;
-> >         emit(rv_bgeu(RV_REG_A2, RV_REG_T1, off >> 1), ctx);
-> >
-> > -       /* if (--TCC < 0)
-> > +       /* if (TCC-- < 0)
-> >          *     goto out;
-> >          */
-> >         emit(rv_addi(RV_REG_T1, tcc, -1), ctx);
-> >         off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
-> >         if (is_13b_check(off, insn))
-> >                 return -1;
-> > -       emit(rv_blt(RV_REG_T1, RV_REG_ZERO, off >> 1), ctx);
-> > +       emit(rv_blt(tcc, RV_REG_ZERO, off >> 1), ctx);
-> >
-> >         /* prog = array->ptrs[index];
-> >          * if (!prog)
-> > --
-> > 2.17.1
-> >
+PiANCj4gc3RhdGljIGludCBtdm5ldGFfY3JlYXRlX3BhZ2VfcG9vbChzdHJ1Y3QgbXZuZXRhX3Bv
+cnQgKnBwLA0KPiAJCQkJICAgc3RydWN0IG12bmV0YV9yeF9xdWV1ZSAqcnhxLCBpbnQgc2l6ZSkg
+ew0KPiAJc3RydWN0IGJwZl9wcm9nICp4ZHBfcHJvZyA9IFJFQURfT05DRShwcC0+eGRwX3Byb2cp
+Ow0KPiAJc3RydWN0IHBhZ2VfcG9vbF9wYXJhbXMgcHBfcGFyYW1zID0gew0KPiAJCS5vcmRlciA9
+IDAsDQo+IAkJLmZsYWdzID0gUFBfRkxBR19ETUFfTUFQIHwgUFBfRkxBR19ETUFfU1lOQ19ERVYs
+DQo+IAkJLnBvb2xfc2l6ZSA9IHNpemUsDQo+IAkJLm5pZCA9IGNwdV90b19ub2RlKDApLA0KDQpU
+aGlzIGtpbmQgb2YgZGV2aWNlIHNob3VsZCBvbmx5IGJlIGluc3RhbGxlZCB0byB2ZW5kb3IncyBw
+bGF0Zm9ybSB3aGljaCBkaWQgbm90IHN1cHBvcnQgbnVtYQ0KDQpCdXQgYXMgeW91IHNheSAsIFNh
+ZWVkIGFkdmljZSBtYXliZSBjYXVzZSB0aGF0IHJlY3ljbGUgYWx3YXlzIGZhaWwsIGlmIG5pZCBp
+cyBjb25maWd1cmVkIGxpa2UgdXBwZXIsIGFuZCBkaWZmZXJlbnQgZnJvbSBydW5uaW5nIE5BUEkg
+bm9kZSBpZA0KDQpBbmQgbWF5YmUgd2UgY2FuIGNhdGNoIHRoaXMgY2FzZSBieSB0aGUgYmVsb3cN
+Cg0KZGlmZiAtLWdpdCBhL25ldC9jb3JlL3BhZ2VfcG9vbC5jIGIvbmV0L2NvcmUvcGFnZV9wb29s
+LmMNCmluZGV4IDNjOGI1MWNjZDFjMS4uOTczMjM1YzA5NDg3IDEwMDY0NA0KLS0tIGEvbmV0L2Nv
+cmUvcGFnZV9wb29sLmMNCisrKyBiL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQpAQCAtMzI4LDYgKzMy
+OCwxMSBAQCBzdGF0aWMgYm9vbCBwb29sX3BhZ2VfcmV1c2FibGUoc3RydWN0IHBhZ2VfcG9vbCAq
+cG9vbCwgc3RydWN0IHBhZ2UgKnBhZ2UpDQogdm9pZCBfX3BhZ2VfcG9vbF9wdXRfcGFnZShzdHJ1
+Y3QgcGFnZV9wb29sICpwb29sLCBzdHJ1Y3QgcGFnZSAqcGFnZSwNCiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgdW5zaWduZWQgaW50IGRtYV9zeW5jX3NpemUsIGJvb2wgYWxsb3dfZGlyZWN0KQ0K
+IHsNCisgICAgICAgYWxsb3dfZGlyZWN0ID0gYWxsb3dfZGlyZWN0ICYmIGluX3NlcnZpbmdfc29m
+dGlycSgpOw0KKw0KKyAgICAgICBpZiAoYWxsb3dfZGlyZWN0KQ0KKyAgICAgICAgICAgICAgIFdB
+Uk5fT05fT05DRSgocG9vbC0+cC5uaWQgIT0gTlVNQV9OT19OT0RFKSAmJg0KKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIChwb29sLT5wLm5pZCAhPSBudW1hX21lbV9pZCgpKSk7
+DQogICAgICAgIC8qIFRoaXMgYWxsb2NhdG9yIGlzIG9wdGltaXplZCBmb3IgdGhlIFhEUCBtb2Rl
+IHRoYXQgdXNlcw0KICAgICAgICAgKiBvbmUtZnJhbWUtcGVyLXBhZ2UsIGJ1dCBoYXZlIGZhbGxi
+YWNrcyB0aGF0IGFjdCBsaWtlIHRoZQ0KICAgICAgICAgKiByZWd1bGFyIHBhZ2UgYWxsb2NhdG9y
+IEFQSXMuDQpAQCAtMzQyLDcgKzM0Nyw3IEBAIHZvaWQgX19wYWdlX3Bvb2xfcHV0X3BhZ2Uoc3Ry
+dWN0IHBhZ2VfcG9vbCAqcG9vbCwgc3RydWN0IHBhZ2UgKnBhZ2UsDQogICAgICAgICAgICAgICAg
+ICAgICAgICBwYWdlX3Bvb2xfZG1hX3N5bmNfZm9yX2RldmljZShwb29sLCBwYWdlLA0KICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZG1hX3N5bmNf
+c2l6ZSk7DQogDQotICAgICAgICAgICAgICAgaWYgKGFsbG93X2RpcmVjdCAmJiBpbl9zZXJ2aW5n
+X3NvZnRpcnEoKSkNCisgICAgICAgICAgICAgICBpZiAoYWxsb3dfZGlyZWN0KQ0KICAgICAgICAg
+ICAgICAgICAgICAgICAgaWYgKF9fcGFnZV9wb29sX3JlY3ljbGVfZGlyZWN0KHBhZ2UsIHBvb2wp
+KQ0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXR1cm47DQoNCg0KLUxpDQoNCj4g
+CQkuZGV2ID0gcHAtPmRldi0+ZGV2LnBhcmVudCwNCj4gCQkuZG1hX2RpciA9IHhkcF9wcm9nID8g
+RE1BX0JJRElSRUNUSU9OQUwgOiBETUFfRlJPTV9ERVZJQ0UsDQo+IAkJLm9mZnNldCA9IHBwLT5y
+eF9vZmZzZXRfY29ycmVjdGlvbiwNCj4gCQkubWF4X2xlbiA9IE1WTkVUQV9NQVhfUlhfQlVGX1NJ
+WkUsDQo+IAl9Ow0KPiANCj4gdGhlIHBvb2wtPnAubmlkIGlzIG5vdCBOVU1BX05PX05PREUsIHRo
+ZW4gdGhlIG5vZGUgb2YgcGFnZSBhbGxvY2F0ZWQgZm9yIHJ4DQo+IG1heSBub3QgYmUgbnVtYV9t
+ZW1faWQoKSB3aGVuIHJ1bm5pbmcgaW4gdGhlIE5BUEkgcG9sbGluZywgYmVjYXVzZQ0KPiBwb29s
+LT5wLm5pZCBpcyBub3QgdGhlIHNhbWUgYXMgdGhlIG5vZGUgb2YgY3B1IHJ1bm5pbmcgaW4gdGhl
+IE5BUEkgcG9sbGluZy4NCj4gDQo+IERvZXMgdGhlIHBhZ2UgcG9vbCBzdXBwb3J0IHJlY3ljbGlu
+ZyBmb3IgYWJvdmUgY2FzZT8NCj4gDQo+IE9yIHdlICJmaXgnIHRoZSBhYm92ZSBjYXNlIGJ5IHNl
+dHRpbmcgcG9vbC0+cC5uaWQgdG8NCj4gTlVNQV9OT19OT0RFL2Rldl90b19ub2RlKCksIG9yIGJ5
+IGNhbGxpbmcgcG9vbF91cGRhdGVfbmlkKCkgaW4gTkFQSQ0KPiBwb2xsaW5nIGFzIG1seDUgZG9l
+cz8NCj4gDQo+IA0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+IFNhZWVkLg0KPiA+DQo+ID4NCj4gPg0K
+PiA+DQo+ID4NCj4gPg0KPiA+DQoNCg==
