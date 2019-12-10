@@ -2,89 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 578EF1184D9
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13F4A1184E0
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 11:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbfLJKUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 05:20:07 -0500
-Received: from a27-18.smtp-out.us-west-2.amazonses.com ([54.240.27.18]:50886
-        "EHLO a27-18.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727032AbfLJKUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:20:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1575973206;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
-        bh=0Kb+E+8ZdD4D68+aCTRlNTqRFi3yA4uuBGG8Rr2pQgY=;
-        b=NeYakiUCjcRoxcFOZnt6eDM0Jw6DgF/tnZftTAXzQSXZCBTLtVUHjodLxZvTXBDH
-        Hq9okvn8vJADB+4lLhu1iExlQjDCa2avyXGPQiQ2N28sL2jhNW2J3eUnPftbCBE0sjS
-        8zvVlxy4TRDsGNGGSfBhTwmNwz1AXdSkjIZLROms=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1575973206;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
-        bh=0Kb+E+8ZdD4D68+aCTRlNTqRFi3yA4uuBGG8Rr2pQgY=;
-        b=VuITrJj+QGHSbjoRYgHcNgD5stmzkqoubp1qS/rPYXMmGRDKHEZ+1XFtF503+RoY
-        vZEjZl3cu1aydYOch0/P/dlSIWprQbnvW3xoRg52LTx6/OAKq52uqvIJOIT+pqxMXjJ
-        +VfRIbeZnjfCG+yBJSf+s9Lz9Vf5FAcJAaECBda8=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B3419C447AA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Soeren Moch <smoch@web.de>
-Cc:     Wright Feng <wright.feng@cypress.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] brcmfmac: reset two D11 cores if chip has two D11 cores
-References: <20191209223822.27236-1-smoch@web.de>
-        <0101016eef117d24-d6de85e6-6356-4c73-bff4-f787e8c982bc-000000@us-west-2.amazonses.com>
-        <d72831ab-902e-0b69-3008-6eb915784c4d@web.de>
-Date:   Tue, 10 Dec 2019 10:20:06 +0000
-In-Reply-To: <d72831ab-902e-0b69-3008-6eb915784c4d@web.de> (Soeren Moch's
-        message of "Tue, 10 Dec 2019 11:14:22 +0100")
-Message-ID: <0101016eef52b82d-f791d0d8-d317-4050-9e8a-07a3fa7dafd8-000000@us-west-2.amazonses.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727163AbfLJKVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 05:21:53 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:48936 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727016AbfLJKVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 05:21:53 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-181-dlX51XbcOgGmzaLpZVEObQ-1; Tue, 10 Dec 2019 10:21:50 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 10 Dec 2019 10:21:49 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 10 Dec 2019 10:21:49 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andy Lutomirski' <luto@amacapital.net>
+CC:     Eric Dumazet <eric.dumazet@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
+Thread-Topic: recvfrom/recvmsg performance and CONFIG_HARDENED_USERCOPY
+Thread-Index: AdWsNynavvs+VRwOQ6mSStk+IzVA6AACUqqAAI3fO8AAEiVBgAAgNCaQ
+Date:   Tue, 10 Dec 2019 10:21:49 +0000
+Message-ID: <5a3cf731da8442909a4b84d975beb5e0@AcuMS.aculab.com>
+References: <efffc167eff1475f94f745f733171d59@AcuMS.aculab.com>
+ <F6840B11-060A-48F2-9FFE-774E73C50765@amacapital.net>
+In-Reply-To: <F6840B11-060A-48F2-9FFE-774E73C50765@amacapital.net>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-SES-Outgoing: 2019.12.10-54.240.27.18
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+X-MC-Unique: dlX51XbcOgGmzaLpZVEObQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Soeren Moch <smoch@web.de> writes:
+RnJvbTogQW5keSBMdXRvbWlyc2tpDQo+IFNlbnQ6IDA5IERlY2VtYmVyIDIwMTkgMTg6NDMNCj4g
+DQo+ID4gT24gRGVjIDksIDIwMTksIGF0IDM6MDEgQU0sIERhdmlkIExhaWdodCA8RGF2aWQuTGFp
+Z2h0QGFjdWxhYi5jb20+IHdyb3RlOg0KPiA+DQo+ID4g77u/RnJvbTogRXJpYyBEdW1hemV0DQo+
+ID4+IFNlbnQ6IDA2IERlY2VtYmVyIDIwMTkgMTQ6MjINCj4gPiAuLi4NCj4gPj4gUmVhbCBxdWVz
+dGlvbiBpcyA6IERvIHlvdSBhY3R1YWxseSBuZWVkIHRvIHVzZSByZWN2bXNnKCkgaW5zdGVhZCBv
+ZiByZWN2ZnJvbSgpID8NCj4gPj4gSWYgcmVjdm1zZygpIHByb3ZpZGVzIGFkZGl0aW9uYWwgY21z
+ZywgdGhpcyBpcyBub3Qgc3VycHJpc2luZyBpdCBpcyBtb3JlIGV4cGVuc2l2ZS4NCj4gPg0KPiA+
+IEV4Y2VwdCBJJ20gbm90IHBhc3NpbmcgaW4gYSBidWZmZXIgZm9yIGl0Lg0KPiA+IFRoZSByZWFz
+b24gSSdtIGxvb2tpbmcgYXQgcmVjdm1zZyBpcyB0aGF0IEknZCBsaWtlIHRvIHVzZSByZWN2bW1z
+ZyBpdCBvcmRlciB0bw0KPiA+IHJlYWQgb3V0IG1vcmUgdGhhbiBvbmUgbWVzc2FnZSBmcm9tIGEg
+c29ja2V0IHdpdGhvdXQgZG9pbmcgYW4gZXh0cmEgcG9sbCgpLg0KPiA+IE5vdGUgdGhhdCBJIGRv
+bid0IGV4cGVjdCB0aGVyZSB0byBiZSBhIHNlY29uZCBtZXNzYWdlIG1vc3Qgb2YgdGhlIHRpbWUg
+YW5kDQo+ID4gYWxtb3N0IG5ldmVyIGEgdGhpcmQgb25lLg0KPiA+DQo+ID4gQWx0aG91Z2ggSSB0
+aGluayB0aGF0IHdpbGwgb25seSBldmVyICd3aW4nIGlmIHJlY3ZtbXNnKCkgY2FsbGVkIHZmc19w
+b2xsKCkgdG8gZmluZA0KPiA+IGlmIHRoZXJlIHdhcyBtb3JlIGRhdGEgdG8gcmVhZCBiZWZvcmUg
+ZG9pbmcgYW55IG9mIHRoZSBjb3B5X2Zyb21fdXNlcigpIGV0Yw0KPiANCj4gSSB3b3VsZCBzdWdn
+ZXN0IGEgbW9yZSBnZW5lcmFsIGltcHJvdmVtZW50OiBhZGQgYSAtRUFHQUlOIGZhc3QgcGF0aCB0
+byByZWN2bXNnKCkuDQo+IElmIHRoZSBzb2NrZXQgaXMgbm9uYmxvY2tpbmcgYW5kIGhhcyBubyBk
+YXRhIHRvDQo+IHJlYWQsIHRoZW4gdGhlcmUgc2hvdWxkbuKAmXQgYmUgYSBuZWVkIHRvIHByb2Nl
+c3MgdGhlIGlvdmVjIGF0IGFsbC4NCg0KWW91IGRvbid0IHdhbnQgdG8gZG8gdGhhdCBmb3IgcmVj
+dm1zZygpIGl0c2VsZi4NCkl0IHdpbGwgbm9ybWFsbHkgb25seSBiZSBjYWxsZWQgaWYgcG9sbCgp
+IHJlcG9ydGVkIGRhdGEgaXMgYXZhaWxhYmxlLg0KQWN0dWFsbHkgdGhlIE1TR19XQUlURk9ST05F
+IGZsYWcgY291bGQgYmUgdXNlZCB0byBkbyBhIGNhbGwNCnRvIHZmc19wb2xsKCkgYmVmb3JlIHRo
+ZSBzdWJzZXF1ZW50IGNhbGxzIHRvIF9fc3lzX3JlY3Ztc2coKS4NClRoaXMgd2lsbCB3b3JrIGZv
+ciBub24tYmxvY2tpbmcgc29ja2V0cyAob3IgZXZlbiBjYWxscyB3aXRoIGJvdGgNCk1TR19ET05U
+V0FJVCBhbmQgTVNHX1dBSVRGT1JPTkUgc2V0KS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQg
+QWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVz
+LCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-> On 10.12.19 10:08, Kalle Valo wrote:
->> Soeren Moch <smoch@web.de> writes:
->>
->>> From: Wright Feng <wright.feng@cypress.com>
->>>
->>> There are two D11 cores in RSDB chips like 4359. We have to reset two
->>> D11 cores simutaneously before firmware download, or the firmware may
->>> not be initialized correctly and cause "fw initialized failed" error.
->>>
->>> Signed-off-by: Wright Feng <wright.feng@cypress.com>
->> Soeren's s-o-b missing at least in patches 1, 6 and 7. Please read:
->>
->> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#signed-off-by_missing
->>
->
-> OK, also for unmodified patches another s-o-b is required.
-
-Yes, every patch you submit needs to have your s-o-b to mark that you
-agree with Developer's Certificate of Origin.
-
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
