@@ -2,133 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA80E119192
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:10:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B4A119193
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfLJUKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:10:37 -0500
-Received: from mail-wm1-f51.google.com ([209.85.128.51]:37998 "EHLO
-        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbfLJUKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:10:37 -0500
-Received: by mail-wm1-f51.google.com with SMTP id p17so4604240wmi.3
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:10:36 -0800 (PST)
+        id S1726623AbfLJUKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:10:51 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:34084 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726364AbfLJUKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:10:51 -0500
+Received: by mail-qv1-f67.google.com with SMTP id o18so4738927qvf.1
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:10:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=O3VF/Bit85Za+22/UiJfAF/ByjYkLV6gxloE05tqeI8=;
-        b=G7Ez8mCM2REkbYFr4acRzlRPOYop0D4kgl4p++ctQK5s21DmCHzy3AggmbxJ5EIqA+
-         872uh8lUIJSv8tCk34guRgn687eFvRfsj/NwbhLsHmIXaa+V0zL0RdgwGISlb3RhGZeI
-         wmbygTE6ZGkz8YlYyaTpohASSJnLtQdfMU78xuJSxCbwfvGxeCLTybK+6z8nvtvii18B
-         RMxxLARow7wXekGPRXrrjb5mQECaivOz51G32w6vmd5kCqV52I2I5ipdKcj6iW1803eM
-         qD76uNh9PHSu8ssHzu1YQCkm8M6krI78GK8w1do2Mx85gqHV/dgGWh4y5Oy5uo9SV9Nb
-         +aMQ==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=tPg6HNf3WY8ezIcG4ChbTF8Z6mYyQlYkzlIgv8Ay1G4=;
+        b=nE8UgUJtn+wZBfPfQc9Kq8XZE/NBo5vuY5hCaYf6g6ft38NS2ub1gyF+Z7ue6zCAaY
+         fg82czGJCLVajza/WZTB7T8FUAUJM81ERVaH7iG7J4gyCtRX1eVi/zZR7E/fLGGSmN3u
+         E9vgL/GwbtMd3J9NNG1XS4soWjFM3rE0QQr1Xn1nek4OoaAfxXZKbTBiu53kROlK6bQm
+         BUOEIihJeok88kcFgYkJYReIuBjuhl1hMc8zuF07xbTL6mHXHrmMGRYYXloD4A7aqQrR
+         43y+oIVzY5WfrL04wULu9vw+KrIP5yZT2bWPHZXfgxYnYHkwjA21mb+pTBp2IFXqmShy
+         etdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=O3VF/Bit85Za+22/UiJfAF/ByjYkLV6gxloE05tqeI8=;
-        b=toCSIhY5KpwpbGKgiXX20TNq+ghbJ07dswOvpTQSqnOy/4moJ1bUNQ4I+wPDK7ONTg
-         guMOZGIblvHW3PJfL7lCxKOyl6yE1Q35zmu0Dba75FWZZp3YBb9PJzJFiRVFEBhpyxSI
-         MfCn/2ajkoLYT3/NK6hGLVsWTEY2TDiFQ0JX0NcG/lje+xjK5GuPngcy9Bu4LrfolwGo
-         VVOfIKty+e9ASQTFPj+6HR6dCtR6k91nrHkeJSH/BMVpQnc4mHxYhJcCIWDxyYGVoBX3
-         rllUTLI2k30FAdMw0P+pqNd3FnxEADbICVLdrTr3B+FeIeOqygAUHzroZ0Ipw3g/BIST
-         K20Q==
-X-Gm-Message-State: APjAAAU7kjNes9WKiewW3cKhTYfZcEyk2p4hIrEFrsgnEa5DghKnrtvl
-        ZCWQ6BSnwoaiStynI2mseN6g1w==
-X-Google-Smtp-Source: APXvYqzd0GuRw1r+B+xxNAKCZAh2zbM11UqQxPov8eD6WEYBgniOtZxUr43zSkGb96gnA1y2HbtDlw==
-X-Received: by 2002:a1c:4f:: with SMTP id 76mr6913005wma.69.1576008635497;
-        Tue, 10 Dec 2019 12:10:35 -0800 (PST)
-Received: from apalos.home (athedsl-4476713.home.otenet.gr. [94.71.27.49])
-        by smtp.gmail.com with ESMTPSA id s65sm4429795wmf.48.2019.12.10.12.10.34
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=tPg6HNf3WY8ezIcG4ChbTF8Z6mYyQlYkzlIgv8Ay1G4=;
+        b=FH9e8cICqeCL1Nxv/CPQXhUwf8C6Igs2hLLUVUref16hZWsa59FEbTSyANV8MPQKDV
+         XarDm4YwekGgzttGZZdTXL8Y6INBsnN1kK8oqhiu7cxg4S/zzYZvOiOCR4n5VdtbaxH/
+         eifpA2nDBRNEAT8up1rPUQOF4IdIpu+gpNSjzqtkUjP6ZjIjXI6T276UkqI6X/l5ggI/
+         lN4A5l6471Jic5iNEqfLOH1h9kC0QGREc9WK7rRTzX6trmBeQ+KrukF3u2Ce1tOgrs9J
+         Rh1Bmv1OB8UJxGGrnE8aQLUvgzXUWm34A2S8nOJ6AWquhQsiicGlSILjtIdYj9xEx0hQ
+         O8NQ==
+X-Gm-Message-State: APjAAAWEDWjaCdyi2k1hGNoJiG3njS3lacSiEMSNd5eymCKk2IzuVDqZ
+        9VAFQbzLQWWFsQ30ZpmvfQZL+vx3fwo=
+X-Google-Smtp-Source: APXvYqzFW+k63CcJTwg4KLlPQFkVd3B0IL/8hW8ebFwVwxZIQzDn0kcboWLvm73YdeEE8k0mw5LWvQ==
+X-Received: by 2002:ad4:496f:: with SMTP id p15mr29714803qvy.191.1576008649750;
+        Tue, 10 Dec 2019 12:10:49 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id 200sm617114qkn.79.2019.12.10.12.10.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 12:10:35 -0800 (PST)
-Date:   Tue, 10 Dec 2019 22:10:32 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Message-ID: <20191210201032.GA2034@apalos.home>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191209131416.238d4ae4@carbon>
- <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
- <20191210150244.GB12702@apalos.home>
- <CALzJLG_m0haciU6AinMvy3MfGGFokfGf+1djRnfsZczgxnuKUg@mail.gmail.com>
+        Tue, 10 Dec 2019 12:10:48 -0800 (PST)
+Date:   Tue, 10 Dec 2019 15:10:47 -0500
+Message-ID: <20191210151047.GB1423505@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH net-next] net: bridge: add STP xstats
+In-Reply-To: <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
+References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
+ <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
+ <20191210143931.GF1344570@t480s.localdomain>
+ <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CALzJLG_m0haciU6AinMvy3MfGGFokfGf+1djRnfsZczgxnuKUg@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
+Hi Nikolay,
 
-On Tue, Dec 10, 2019 at 12:02:12PM -0800, Saeed Mahameed wrote:
-> On Tue, Dec 10, 2019 at 7:02 AM Ilias Apalodimas
-> <ilias.apalodimas@linaro.org> wrote:
-> >
-> > Hi Saeed,
-> >
-> > > >
-> > > > The patch description doesn't explain the problem very well.
-> > > >
-> > > > Lets first establish what the problem is.  After I took at closer
-> > > > look,
-> > > > I do think we have a real problem here...
-> > > >
-> > > > If function alloc_pages_node() is called with NUMA_NO_NODE (see below
-> > > > signature), then the nid is re-assigned to numa_mem_id().
-> > > >
-> > > > Our current code checks: page_to_nid(page) == pool->p.nid which seems
-> > > > bogus, as pool->p.nid=NUMA_NO_NODE and the page NID will not return
-> > > > NUMA_NO_NODE... as it was set to the local detect numa node, right?
-> > > >
-> > >
-> > > right.
-> > >
-> > > > So, we do need a fix... but the question is that semantics do we
-> > > > want?
-> > > >
-> > >
-> > > maybe assume that __page_pool_recycle_direct() is always called from
-> > > the right node and change the current bogus check:
-> >
-> > Is this a typo? pool_page_reusable() is called from __page_pool_put_page().
-> >
-> > page_pool_put_page and page_pool_recycle_direct() (no underscores) call that.
+On Tue, 10 Dec 2019 21:50:10 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+> >> Why do you need percpu ? All of these seem to be incremented with the
+> >> bridge lock held. A few more comments below.
+> > 
+> > All other xstats are incremented percpu, I simply followed the pattern.
+> > 
 > 
-> Yes a typo :) , thanks for the correction.
-> 
-> > Can we guarantee that those will always run from the correct cpu?
-> No, but we add the tool to correct any discrepancy: page_pool_nid_changed()
-> 
-> > In the current code base if they are only called under NAPI this might be true.
-> > On the page_pool skb recycling patches though (yes we'll eventually send those
-> > :)) this is called from kfree_skb().
-> > I don't think we can get such a guarantee there, right?
-> >
-> 
-> Yes, but this has nothing to do with page recycling from pool's owner
-> level (driver napi)
->  for SKB recycling we can use pool.nid to recycle, and not numa_mem_id().
+> We have already a lock, we can use it and avoid the whole per-cpu memory handling.
+> It seems to be acquired in all cases where these counters need to be changed.
 
-Right i responded to an email without the proper context!
-Let me try again. You suggested  changing the check
-from page_to_nid(page) == pool->p.nid to page_to_nid(page) == numa_mem_id().
+Since the other xstats counters are currently implemented this way, I prefer
+to keep the code as is, until we eventually change them all if percpu is in
+fact not needed anymore.
 
-Since the skb recycling code is using page_pool_put_page() won't that break the
-recycling for thatr patchset?
+The new series is ready and I can submit it now if there's no objection.
 
-Thanks
-/Ilias
+
+Thanks,
+
+	Vivien
