@@ -2,94 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCA6118E81
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:05:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D02C118E84
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:05:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727733AbfLJRFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:05:11 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38815 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727505AbfLJRFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:05:11 -0500
-Received: by mail-qt1-f193.google.com with SMTP id z15so3422131qts.5;
-        Tue, 10 Dec 2019 09:05:10 -0800 (PST)
+        id S1727758AbfLJRFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:05:22 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:37337 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727482AbfLJRFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:05:22 -0500
+Received: by mail-ed1-f65.google.com with SMTP id cy15so16626767edb.4;
+        Tue, 10 Dec 2019 09:05:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hq2orN4bzDs9BZngQDWA2aITI2xBOitIAgMk0BXVEwA=;
-        b=WWXv43wIlp0HKLM3kWoMGnq9uaaEz9bhi+hGeEMPp3r2LKNQIzkMrNSibXD7krKKI+
-         8rHdKjand3Ybvs06G269oQ9hvTGI0s7wge5KYo1rnKCnL2K8ZSQLODuBRjfEaOySKbkw
-         P2XBgfUMaZp0A3828TLPirQbQUq9ymSa6KD/+2TvsZPF/h6GQPnQ1rzfJOovu6dT7yLV
-         qpUxxJfsAHxC4h++amw5BIIClWAiixNa7pXpJh7GKA/DUDlK7o5TedCjvFo6CaocCRx2
-         xXwbGKmoKvG7meIT+5699bmYGXF8lmNlsT4GQ6N/PRjBOKdGdcfaGRza7uSwJ9cm/7Gx
-         MAZA==
+        bh=V/m7GvYpg3asIPZhHfNwzAdY+b/5CfIU9R9Z7IpYwiU=;
+        b=urIFH+zO4UZfF2rCurnwpzVDpFNMAqb2rWMAIdXu58p8ugm6svnzZ31UqKn+Rtbu5e
+         PQsO/BsQcZt/HKR9Hv4vG658oKEceiGQQVzZQcDCEEuiMdWZbPa8u31fvChGoYyihI6Y
+         sl5fkWptMuptcHYYYeXRZneQVLiNZmRg52kmHZy2nFsGvceMwwa1MKoOeZ7HkVSFiCzK
+         nuD7lyyY/3F2R8aVkID44KN0loAp/QQCgWhn4yFIKm+V7Jbnun8WnKWqmVo4Ntm+41Z5
+         P+iwzzCI7ibvAAnmmMzUWCsPVXjIo3en5FfaJIT/ttoJaq9exR3GPS32l+UhFoQca0lg
+         2mTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hq2orN4bzDs9BZngQDWA2aITI2xBOitIAgMk0BXVEwA=;
-        b=uQapl5Pcvo5AwZerF1gidkkh378MCwXOT9RAaVB9PSfF5VQaBLHPIKaldch80QIK6s
-         XXN8x82B/9CgeXlXyp20MkV96WWeP0zbB6gdK01ngFk8y3p3B+cYZU24NrkuzAUZNLAs
-         OnkeocUhmHLiPyGpK9SjkoEwx2r/6dTfSAFByGEubmlUbS6m607SLXOH093d0YED8hMv
-         uSr5rf+5bC+vzZDmoMUlAxRhBXojlz/qjjbvsFSS5IH9UudvVYQ0uwWCdY6C2jiLOohe
-         yhl2FEXcAfCGHUabY/q5kkiM3so/pjinejTTCAsOv6WVGnGpBZ0hhyzZJy3G2H9M5no9
-         UszA==
-X-Gm-Message-State: APjAAAXFik/J+W7sRywfsrh9FN3TBbNxtP2KnmT3k2gy+xyjV1Hv3NWC
-        K/VNuzPQlUWgE6XpCKdu+hYOVbiv0SK7EWFCo7o=
-X-Google-Smtp-Source: APXvYqzSQflsEC0jC2jtW8BiBz9tYg4DZXsAOLjBW3t240EedldhaWO9bSdWgP2FXUgvyVENBRY01HqWEsutx435+y4=
-X-Received: by 2002:ac8:5457:: with SMTP id d23mr29370437qtq.93.1575997509922;
- Tue, 10 Dec 2019 09:05:09 -0800 (PST)
+        bh=V/m7GvYpg3asIPZhHfNwzAdY+b/5CfIU9R9Z7IpYwiU=;
+        b=dLQCvLvKcvZY8c3Bl29HYB9hejgb4ngDKjrvWsVJokR6aJKEyHpbtKl2bqS9LSO6vb
+         cEI1tK1lCtzquyzn8bQUrdQfuy1cmjWobRX5emuMJ/LnUDsv9ipQXyiNCDyLW20AWOm3
+         tjftByKCqehd27YsRHklzytUYdOAPRz56Ee7iR8TClyANDcUoYFdgrgp3IzevbvXHZ+U
+         Z09KIBcZbq5Xd9DthvQkKikv/j/1e6JLbSCpkMnojn1Qb575HcCDEGgNvqmHzVub4tCB
+         dvvJbQlV65XnI5IAcMZvApehrH7P9noXT054kjOglV2WwyKfQId50yezGy0bCIEqnbwj
+         jcRw==
+X-Gm-Message-State: APjAAAX+fqbonNqu8TixMR8DFHNuf7kQ3ixXPmyPRmQPUkh5xug+LIys
+        ggznIfKfp9RW7St8f6uAXOEM0s7moQ+jdsWwuVg=
+X-Google-Smtp-Source: APXvYqzyHbVIEY/8yAXTbmWOCmJY+Np2u+GYL67HEkNJeOc5mAbpPhpBS37Z+eeJdlRiZHSgZ7qlEoQyRL9kKTMTrHc=
+X-Received: by 2002:a17:907:11cc:: with SMTP id va12mr4844106ejb.164.1575997520215;
+ Tue, 10 Dec 2019 09:05:20 -0800 (PST)
 MIME-Version: 1.0
-References: <20191210011438.4182911-1-andriin@fb.com> <20191210011438.4182911-4-andriin@fb.com>
- <20191209173353.64aeef0a@cakuba.netronome.com>
-In-Reply-To: <20191209173353.64aeef0a@cakuba.netronome.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 Dec 2019 09:04:58 -0800
-Message-ID: <CAEf4BzbYvNJ0VV2jHLVK3jwk+_GvVhSWk_-YM2Twu5XkZduZVQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 03/15] libbpf: move non-public APIs from libbpf.h
- to libbpf_internal.h
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <cover.1575914275.git.landen.chao@mediatek.com>
+ <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
+ <20191210163557.GC27714@lunn.ch>
+In-Reply-To: <20191210163557.GC27714@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 10 Dec 2019 19:05:08 +0200
+Message-ID: <CA+h21hp12UGQ04W4rDo2PdFa2_5oMmX05KKUecdz5-+hv-JqAA@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of MT7531 switch
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Landen Chao <landen.chao@mediatek.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        matthias.bgg@gmail.com, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>, sean.wang@mediatek.com,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        frank-w@public-files.de
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 5:33 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Mon, 9 Dec 2019 17:14:26 -0800, Andrii Nakryiko wrote:
-> > Few libbpf APIs are not public but currently exposed through libbpf.h to be
-> > used by bpftool. Move them to libbpf_internal.h, where intent of being
-> > non-stable and non-public is much more obvious.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/bpf/bpftool/net.c         |  1 +
-> >  tools/lib/bpf/libbpf.h          | 17 -----------------
-> >  tools/lib/bpf/libbpf_internal.h | 17 +++++++++++++++++
-> >  3 files changed, 18 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-> > index 4f52d3151616..d93bee298e54 100644
-> > --- a/tools/bpf/bpftool/net.c
-> > +++ b/tools/bpf/bpftool/net.c
-> > @@ -18,6 +18,7 @@
-> >
-> >  #include <bpf.h>
-> >  #include <nlattr.h>
-> > +#include "libbpf_internal.h"
-> >  #include "main.h"
-> >  #include "netlink_dumper.h"
->
-> I thought this idea was unpopular when proposed?
+Hi Landen, Andrew,
 
-There was a recent discussion about the need for unstable APIs to be
-exposed to bpftool and we concluded that libbpf_internal.h is the most
-appropriate place to do this.
+On Tue, 10 Dec 2019 at 18:36, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Tue, Dec 10, 2019 at 04:14:40PM +0800, Landen Chao wrote:
+> > Add new support for MT7531:
+> >
+> > MT7531 is the next generation of MT7530. It is also a 7-ports switch with
+> > 5 giga embedded phys, 2 cpu ports, and the same MAC logic of MT7530. Cpu
+> > port 6 only supports HSGMII interface. Cpu port 5 supports either RGMII
+> > or HSGMII in different HW sku.
+>
+> Hi Landen
+>
+> Looking at the code, you seem to treat HSGMII as 2500Base-X. Is this
+> correct? Or is it SGMII over clocked to 2.5Gbps?
+>
+>          Andrew
+
+I think the better question is: what is being understood by HSGMII?
+What does the AN base page look like? Do you support AN with the 2500
+baud speed? Do you support AN with lower speeds? Do you support lower
+speeds at all? What PHYs do you interoperate with in this mode? If you
+don't support AN, then what's so SGMII about it? And for that matter,
+if you don't support AN, what's so 2500Base-X (802.3z) about it? I see
+you unconditionally force the speed and disable AN in this mode. Do
+you have any reference for what SerDes protocol your hardware
+implements in this mode?
+
+Thanks,
+-Vladimir
