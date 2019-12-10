@@ -2,92 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E8DD118EE0
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEDF9118EE9
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 18:24:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727553AbfLJRWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 12:22:36 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:35200 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727561AbfLJRWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:22:36 -0500
-Received: by mail-oi1-f194.google.com with SMTP id k196so10553742oib.2
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 09:22:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+yXS1qMqBQgYNWoie6aez+kq4hBmW6bci2Vzcn52mDU=;
-        b=n3myC2TiVG4k/XZaOe+3WrOokgsqMo+ejKQ1Gof/FryawAQcojQ9xlSLSfOVPrTGyT
-         JeEoP3M/NOzo/nt9DOs0Es/bi82NDOH+rjNZW7tOjwF+Ecdgnf0ylNC3L2fecxsvaMLS
-         jVzASl3DLL86yIURm1S+OruWqXJ7Scu/dx0cZG1YshxkGzEy4c5YbAoT0UH7RbPuaR+r
-         nRY4b8HIW9ABLAbw8VXl0ebEeZ6ZEXZSDM8t4gVJdKin4vuKg1gW09Q/rDMEgurrZFfr
-         UYsCHv+BQsmHKdZCubIglZ6Dx3fqjBGwsRK8VtDPVAzEFW44c2wYbbCKr0zKRXEvVJqt
-         fQlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+yXS1qMqBQgYNWoie6aez+kq4hBmW6bci2Vzcn52mDU=;
-        b=fsc0zg1wLX/j1GjmKZJndCyNJU3W0elnhXtVJOoV7BM3WPCtWHYYOzj5kNhweRjzLD
-         VW/TK13Gqam3ECmXVEMR1pPnGIUO7pQPAotNVY/XSYSlt/PaCLssXjtCRH7yNK12xywO
-         QCP5cuaF24Ax/92P9bfX9eSw/4DcQMBPesHnfC4GPmELffqJFuxDaHNvHtMlkUOcwzbc
-         iEt2PCulC9iCOeCsFqf5fOEGxOv0Uxeh596rRQJrQkaFxstdfm0QvtRTI35j+LSA49Xf
-         ds0D70u/oyW/x8gn2ujyu4d+TmouUAm5SihrMIL0jKPvx/DGIQGRnrrmHyOL6ap/Dvq7
-         iyxQ==
-X-Gm-Message-State: APjAAAVcASNoFFzvNlyJCWvPN137gK+MsnS5vDT7R1pTg6lbRl4MCFKX
-        pUqHobonZrzbRYqv6RFXHCKX8A==
-X-Google-Smtp-Source: APXvYqzhYtCBUztj+R5JygBJ57q/e4L0cYCUZRTereZX4deELFDYjhTZ0Jf5pObGnLqqXLToJ06w1g==
-X-Received: by 2002:aca:50cd:: with SMTP id e196mr4954490oib.178.1575998555399;
-        Tue, 10 Dec 2019 09:22:35 -0800 (PST)
-Received: from ziepe.ca ([217.140.111.136])
-        by smtp.gmail.com with ESMTPSA id g203sm1588884oib.17.2019.12.10.09.22.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 Dec 2019 09:22:34 -0800 (PST)
-Received: from jgg by LT-JGG-7470.mtl.com with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iejDW-000013-0n; Tue, 10 Dec 2019 13:22:34 -0400
-Date:   Tue, 10 Dec 2019 13:22:33 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com
-Subject: Re: [net-next v3 00/20][pull request] Intel Wired LAN Driver Updates
- 2019-12-09
-Message-ID: <20191210172233.GA46@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+        id S1727669AbfLJRYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 12:24:50 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:47621 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727562AbfLJRYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 12:24:49 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id AB08A22329;
+        Tue, 10 Dec 2019 12:24:48 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 10 Dec 2019 12:24:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=HmnVB56mbND1H/Vzw
+        TyPVut5dNnylyN+JFco8mL2ac4=; b=weGCRbt+9YaQo+1asQnEt4QE8WHQDwZg6
+        1+i+9b/wOnGCjeQPEODn0A98QwBd+VEw+D0GewSidesKq4DHvSJRUAJ5dF+aESnF
+        122PCdVDxDHoqiH3r4jnVjmzu0Lqc9pAE+Kx/8tg8ceLkbWrN1dxwzfk5YuX7OlZ
+        MGMGdPFGB1g9k0lYEuoI6VowEQgqiNy5BG8qbViVDEm6rVUR3a48yeQXA9+g3UPQ
+        vAlbh4RV4RrBYGL5sCWDw81X0tXX1qn3MrUBE9kckfOc/g/VDFGH16e3VQD5RTe/
+        jMpoDQZho26uLYvHf0p5cNUwDu314QGgbVoO6BsZx7PY+bju1sFKA==
+X-ME-Sender: <xms:4NTvXe_LA9qXAC1BF5XJremZ206jfPNGiEDUhQV0zxRMeD0y65LrRg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudelfedgleelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuffhomhgrihhnpehgihhthhhusgdrtghomhdpohiilhgrsghsrdhorh
+    hgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:4NTvXXKG8x0Q3v7nxgv_fj9Thw-_GhRR0US-tvQnJ_P2nQeGWwyzWw>
+    <xmx:4NTvXZrUJ-b6P2oUUJVONiXPRXjikRTUcT-xndMTGK2cRdUYdIYm6g>
+    <xmx:4NTvXagIYFVa5CxbbQB49HFLp8vJDPTkx-5VqsTs_lAH9TsXNGJUIA>
+    <xmx:4NTvXf2N07Qw7RuF6Q-UihQn5pnngtgUrSbV0JEt6YNSlqR13sMLoQ>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id AD98F80060;
+        Tue, 10 Dec 2019 12:24:46 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/9] Simplify IPv4 route offload API
+Date:   Tue, 10 Dec 2019 19:23:53 +0200
+Message-Id: <20191210172402.463397-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 02:49:15PM -0800, Jeff Kirsher wrote:
-> This series contains the initial implementation of the Virtual Bus,
-> virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the new
-> Virtual Bus and the new RDMA driver 'irdma' for use with 'ice' and 'i40e'.
-> 
-> The primary purpose of the Virtual bus is to provide a matching service
-> and to pass the data pointer contained in the virtbus_device to the
-> virtbus_driver during its probe call.  This will allow two separate
-> kernel objects to match up and start communication.
-> 
-> The last 16 patches of the series adds a unified Intel Ethernet Protocol
-> driver for RDMA that supports a new network device E810 (iWARP and
-> RoCEv2 capable) and the existing X722 iWARP device.  The driver
-> architecture provides the extensibility for future generations of Intel
-> hardware supporting RDMA.
-> 
-> The 'irdma' driver replaces the legacy X722 driver i40iw and extends the
-> ABI already defined for i40iw.  It is backward compatible with legacy
-> X722 rdma-core provider (libi40iw).
+From: Ido Schimmel <idosch@mellanox.com>
 
-Please don't send new RDMA drivers in pull requests to net. This
-driver is completely unreviewed at this point.
+Motivation
+==========
 
-Jason
+The aim of this patch set is to simplify the IPv4 route offload API by
+making the stack a bit smarter about the notifications it is generating.
+This allows driver authors to focus on programming the underlying device
+instead of having to duplicate the IPv4 route insertion logic in their
+driver, which is error-prone.
+
+This is the first patch set out of a series of four. Subsequent patch
+sets will simplify the IPv6 API, add offload/trap indication to routes
+and add tests for all the code paths (including error paths). Available
+here [1].
+
+Details
+=======
+
+Today, whenever an IPv4 route is added or deleted a notification is sent
+in the FIB notification chain and it is up to offload drivers to decide
+if the route should be programmed to the hardware or not. This is not an
+easy task as in hardware routes are keyed by {prefix, prefix length,
+table id}, whereas the kernel can store multiple such routes that only
+differ in metric / TOS / nexthop info.
+
+This series makes sure that only routes that are actually used in the
+data path are notified to offload drivers. This greatly simplifies the
+work these drivers need to do, as they are now only concerned with
+programming the hardware and do not need to replicate the IPv4 route
+insertion logic and store multiple identical routes.
+
+The route that is notified is the first FIB alias in the FIB node with
+the given {prefix, prefix length, table ID}. In case the route is
+deleted and there is another route with the same key, a replace
+notification is emitted. Otherwise, a delete notification is emitted.
+
+The above means that in the case of multiple routes with the same key,
+but different TOS, only the route with the highest TOS is notified.
+While the kernel can route a packet based on its TOS, this is not
+supported by any hardware devices I am familiar with. Moreover, this is
+not supported by IPv6 nor by BIRD/FRR from what I could see. Offload
+drivers should therefore use the presence of a non-zero TOS as an
+indication to trap packets matching the route and let the kernel route
+them instead. mlxsw has been doing it for the past two years.
+
+Testing
+=======
+
+To ensure there is no degradation in route insertion rates, I averaged
+the insertion rate of 512k routes (/24 and /32) over 50 runs. Did not
+observe any degradation.
+
+Functional tests are available here [1]. They rely on route trap
+indication, which is only added in the last patch set.
+
+In addition, I have been running syzkaller for the past week with all
+four patch sets and debug options enabled. Did not observe any problems.
+
+Patch set overview
+==================
+
+Patches #1-#7 gradually introduce the new FIB notifications
+Patch #8 converts mlxsw to use the new notifications
+Patch #9 converts the remaining listeners and removes the old
+notifications
+
+RFC: https://patchwork.ozlabs.org/cover/1170530/
+
+[1] https://github.com/idosch/linux/tree/fib-notifier
+
+Ido Schimmel (9):
+  net: fib_notifier: Add temporary events to the FIB notification chain
+  ipv4: Notify route after insertion to the routing table
+  ipv4: Notify route if replacing currently offloaded one
+  ipv4: Notify newly added route if should be offloaded
+  ipv4: Handle route deletion notification
+  ipv4: Handle route deletion notification during flush
+  ipv4: Only Replay routes of interest to new listeners
+  mlxsw: spectrum_router: Start using new IPv4 route notifications
+  ipv4: Remove old route notifications and convert listeners
+
+ .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |   4 -
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 136 +++---------------
+ drivers/net/ethernet/rocker/rocker_main.c     |   4 +-
+ drivers/net/netdevsim/fib.c                   |   4 +-
+ net/ipv4/fib_trie.c                           | 131 ++++++++++++-----
+ 5 files changed, 117 insertions(+), 162 deletions(-)
+
+-- 
+2.23.0
+
