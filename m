@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E56A1194DF
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:19:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A72D31194E2
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729241AbfLJVNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:13:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39134 "EHLO mail.kernel.org"
+        id S1727352AbfLJVQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:16:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39172 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729220AbfLJVNN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:13:13 -0500
+        id S1728746AbfLJVNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:13:14 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5C4E3222C4;
-        Tue, 10 Dec 2019 21:13:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A1735206EC;
+        Tue, 10 Dec 2019 21:13:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012392;
-        bh=+dVhmFBSY3GbhTVxM3STKjRvyQehONRqDjgD14b1w0U=;
+        s=default; t=1576012393;
+        bh=5FGK8L0ogpLPS6b89aghX3QuJKo/ina7I9SvdO3b1MQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5VxBckK+rYhBdvGfbn9KJZTXY4X7AWbL8/IweVcFpBauewjCJYFNKjM03nzVCh7j
-         Eft/Z4j3Y3fYcyHlRbFJ6mBvQKhQIqnEAxAhUopdwPSfwPURXSVKInkqqHThY3d91K
-         MqZwz2fnIcr4b8iqTJzpJnenL4eqtqO0p/4BK3wA=
+        b=zzdCCNgq6Byn5mkVMn9lu6L8hHKomOuY0hO3NRzx2GCF7N/SUmKKvs/aBtsNqgYVI
+         HS4esdRpmKW5a9xdlnGu1OHwppk4TlMCgHWA8BIKvOM7uAY/tD9r5c4YUzTCHUwPFS
+         UoXbzPkIZUPNTi/Vs53BoccxCqc7XKeBJ3fDc5nA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luigi Rizzo <lrizzo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 313/350] net-af_xdp: Use correct number of channels from ethtool
-Date:   Tue, 10 Dec 2019 16:06:58 -0500
-Message-Id: <20191210210735.9077-274-sashal@kernel.org>
+Cc:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 314/350] brcmfmac: remove monitor interface when detaching
+Date:   Tue, 10 Dec 2019 16:06:59 -0500
+Message-Id: <20191210210735.9077-275-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
 References: <20191210210735.9077-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,53 +47,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luigi Rizzo <lrizzo@google.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 3de88c9113f88c04abda339f1aa629397bf89e02 ]
+[ Upstream commit 4f61563da075bc8faefddfd5f8fc0cc14c49650a ]
 
-Drivers use different fields to report the number of channels, so take
-the maximum of all data channels (rx, tx, combined) when determining the
-size of the xsk map. The current code used only 'combined' which was set
-to 0 in some drivers e.g. mlx4.
+This fixes a minor WARNING in the cfg80211:
+[  130.658034] ------------[ cut here ]------------
+[  130.662805] WARNING: CPU: 1 PID: 610 at net/wireless/core.c:954 wiphy_unregister+0xb4/0x198 [cfg80211]
 
-Tested: compiled and run xdpsock -q 3 -r -S on mlx4
-
-Signed-off-by: Luigi Rizzo <lrizzo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Link: https://lore.kernel.org/bpf/20191119001951.92930-1-lrizzo@google.com
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/xsk.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index a73b79d293337..70f9e10de286e 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -344,13 +344,18 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
- 		goto out;
- 	}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index 406b367c284ca..85cf96461ddeb 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -1350,6 +1350,11 @@ void brcmf_detach(struct device *dev)
+ 	brcmf_fweh_detach(drvr);
+ 	brcmf_proto_detach(drvr);
  
--	if (err || channels.max_combined == 0)
-+	if (err) {
- 		/* If the device says it has no channels, then all traffic
- 		 * is sent to a single stream, so max queues = 1.
- 		 */
- 		ret = 1;
--	else
--		ret = channels.max_combined;
-+	} else {
-+		/* Take the max of rx, tx, combined. Drivers return
-+		 * the number of channels in different ways.
-+		 */
-+		ret = max(channels.max_rx, channels.max_tx);
-+		ret = max(ret, (int)channels.max_combined);
++	if (drvr->mon_if) {
++		brcmf_net_detach(drvr->mon_if->ndev, false);
++		drvr->mon_if = NULL;
 +	}
- 
- out:
- 	close(fd);
++
+ 	/* make sure primary interface removed last */
+ 	for (i = BRCMF_MAX_IFS - 1; i > -1; i--) {
+ 		if (drvr->iflist[i])
 -- 
 2.20.1
 
