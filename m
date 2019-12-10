@@ -2,117 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E7A1182ED
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:00:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6CF81182F1
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 10:00:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbfLJI7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 03:59:36 -0500
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:8332
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726574AbfLJI7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 03:59:36 -0500
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 487A8203AF;
-        Tue, 10 Dec 2019 08:59:29 +0000 (UTC)
+        id S1726987AbfLJJAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 04:00:14 -0500
+Received: from mail-eopbgr50076.outbound.protection.outlook.com ([40.107.5.76]:50837
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726932AbfLJJAN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 04:00:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UUFi2fjs7Z96FdZejklzpQ6fmEnWklM6y+T9q9W0Jz6+FZKR0maGbpywXlWVJBTH3qtwAdWNg+jTKlYJkC+Z3zeK9cHge0+TNgt84YGZPBPkL6NhDSDoEDJXNIPnmquKQ55AVtg3tlAovbze06c8tTelWIKavUV60z24ja1Rtd4AeFkmsCTQcoRrdt+3Om/7Ma3LRlTjSlK1/cSN9WhXWX0L3MhB9MhDOBWFLovRLmUPN9lmu+5kUNXjyRCd7E83bt+0lU3U98zftgqWYx2nkcKrMtWQbU4ze8p54OQeAQ/FrXpayvBzjyetpyRuTUVGcMbCuU3HLp6NX0SH00kwuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZWotqm44KA7MN3VTR2K4RfqTRVL81whr2JH03pLjq/A=;
+ b=NByTsM8vrBwHSrVAtYsp0fv2Sj9QvLGjEGB1CNPaEAGKAMMpcWUod42UfROJ9xKPl3LGN0m7PIRyspQUSC2SpZNft0zzWqsNvX7McUPDNdkGe7ESJ0I3FuZ84RMqfbbMI/PzOGr24OioennELF18lJyKqj6t9GKm/6vE8tkYPumf0Uy5oQAMsBpDJ9pw5AIyv7u+Yt+hmQ0b70UUpTfJFPd/zF7WRw5wz6JppkZ8U1tlRjD8GdkRMlr9fX4380W6fDD8PYrrMXGItRGRrDTIlrSocJxxi4UUju8711LTnJIoz+P2CkXFnB2b4YiNCOGVPicy2AcX/6qKzsmAwUeAXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZWotqm44KA7MN3VTR2K4RfqTRVL81whr2JH03pLjq/A=;
+ b=C4ka8ZrhNy2adt98POcm4fg6c32AYR0AbYLuy+PUr3FCYc1CbcLvPwRnzLXRHsTSWTG9YV6dZCM42uzoLwLk+7sX82ic5E7qExr9fQWpIUymGYe2Bb+0Tm0WWnUxEKzjOxMp4NS2q1idqXOduRQbgY+RAQfzQVNlnbK2VjU6WT4=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4889.eurprd04.prod.outlook.com (20.176.234.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.17; Tue, 10 Dec 2019 09:00:10 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2516.018; Tue, 10 Dec 2019
+ 09:00:10 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "sean@geanix.com" <sean@geanix.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH V2 1/2] can: flexcan: disable runtime PM if register
+ flexcandev failed
+Thread-Topic: [PATCH V2 1/2] can: flexcan: disable runtime PM if register
+ flexcandev failed
+Thread-Index: AQHVrzg6EKh7HkIWdEajMXWfT23TGw==
+Date:   Tue, 10 Dec 2019 09:00:10 +0000
+Message-ID: <20191210085721.9853-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR02CA0118.apcprd02.prod.outlook.com
+ (2603:1096:4:92::34) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 90eed7b6-07be-4f3f-3fe4-08d77d4f5c5a
+x-ms-traffictypediagnostic: DB7PR04MB4889:|DB7PR04MB4889:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB4889FC97F87C0978EE9A3D15E65B0@DB7PR04MB4889.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:392;
+x-forefront-prvs: 02475B2A01
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(199004)(189003)(54534003)(478600001)(86362001)(186003)(2616005)(2906002)(26005)(54906003)(6506007)(52116002)(8936002)(8676002)(71200400001)(71190400001)(5660300002)(110136005)(4744005)(4326008)(6512007)(81156014)(81166006)(1076003)(305945005)(66446008)(66946007)(64756008)(36756003)(6486002)(316002)(66556008)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4889;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6F3qe1QX6jf4v8XZMq7Dx/AHPZcM2EfC1UyudC53d2ik3uldyRXutdWMLdqy3ix0g0SgvU1r7vutkaXDOJaqYAjFw4y8i+AbUh30FWiet50FCEfM30LIFea6SddKFKUozwaZLs7h1+d7HA4lL+lTCJKXmek2AvpGoWHC0JI5o2cG+mh5W3V4ktd51vA7VacuWmr1otI0g1vhCHbIi1FEzTYMHdaljn7l32fGf0MNA07aUAPtGnLBsmFs1ayFhuRqwT7sBPXA8JsWcqAMqjtyEzWK9OO8fJCdUBcm/3ZhJPNYADqWdkb47LNd2P6wK6CSPJZl3H9G8bUzi/EPpVn32QYyrjipytMrn4+j81rsStbHj0y6NpAxhekJu+nphRgsigY3+P8J/AMhxbutZ4dNb1jtm3UxvOcSv21mwgsg0sP0OzVmLYk2JseO3N89d5gd8Va8yiUO4rfgNv4BAgxvlsrBZZBdbe3XzC99YOP9oP3IHeBNeDxvYiBGtn+OSTMJ
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 10 Dec 2019 09:59:29 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     David Miller <davem@davemloft.net>, khc@pm.waw.pl,
-        gregkh <gregkh@linuxfoundation.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        linux-x25@vger.kernel.org, Kevin Curtis <kevin.curtis@farsite.com>,
-        "R.J.Dunlop" <bob.dunlop@farsite.com>,
-        Qiang Zhao <qiang.zhao@nxp.com>
-Subject: Re: [PATCH 4/4] [RFC] staging/net: move AF_X25 into drivers/staging
-Organization: TDT AG
-In-Reply-To: <CAK8P3a25UGV1KS1ufZsyQJk1+9Rp9is0x6eOU7pr5Xf6Z3N2gA@mail.gmail.com>
-References: <20191209151256.2497534-1-arnd@arndb.de>
- <20191209151256.2497534-4-arnd@arndb.de>
- <20191209.102950.2248756181772063368.davem@davemloft.net>
- <CAK8P3a25UGV1KS1ufZsyQJk1+9Rp9is0x6eOU7pr5Xf6Z3N2gA@mail.gmail.com>
-Message-ID: <407acd92c92c3ba04578da89b1a0f191@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90eed7b6-07be-4f3f-3fe4-08d77d4f5c5a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2019 09:00:10.5109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: c/HaU+8RWLAeXUvigBLFus9ZNFiIEmQv9vXmKfC2qv+l1IBmjDfLVUNM2vXjHUdDR8ZGmgifV+HXpn+rKqaAVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4889
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-09 20:26, Arnd Bergmann wrote:
-> On Mon, Dec 9, 2019 at 7:29 PM David Miller <davem@davemloft.net> 
-> wrote:
->> 
->> From: Arnd Bergmann <arnd@arndb.de>
->> Date: Mon,  9 Dec 2019 16:12:56 +0100
->> 
->> > syzbot keeps finding issues in the X.25 implementation that nobody is
->> > interested in fixing.  Given that all the x25 patches of the past years
->> > that are not global cleanups tend to fix user-triggered oopses, is it
->> > time to just retire the subsystem?
->> 
->> I have a bug fix that I'm currently applying to 'net' right now 
->> actually:
->> 
->>         https://patchwork.ozlabs.org/patch/1205973/
->> 
->> So your proposal might be a bit premature.
-> 
-> Ok, makes sense. Looking back in the history, I also see other bugfixes
-> from the same author.
-> 
-> Adding Martin Schiller to Cc: for a few questions:
-> 
-> - What hardware are you using for X.25?
+Had better disable runtime PM if register flexcandev failed.
 
-I would say that X.25 is (at least in Germany) not dead yet. For 
-example, it is
-still used in the railway network of the Deutsche Bahn AG in many 
-different
-areas. [1]
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+------
+ChangeLog:
+	V1->V2: *no change.
+---
+ drivers/net/can/flexcan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-We deliver products for this and use the Linux X.25 stack with some 
-bugfixes
-and extensions that I would like to get upstream.
-
-As hardware/interfaces we use X.21bis/G.703 adapters, which are 
-connected via
-HDLC_X25 and LAPB. Also for this there are extensions and bugfixes, 
-which I
-would like to include in the kernel.
-
-> - Would you be available to be listed in the MAINTAINERS file
->   as a contact for net/x25?
-
-Yes, you can add me to the MAINTAINERS file.
-I have only limited time, but I will try to follow all requests 
-concerning this
-subsystem.
-
-> - Does your bug fix address the latest issue found by syzbot[1],
->   or do you have an idea to fix it if not?
-
-I don't have a direct solution for the concrete problem mentioned above, 
-but at
-first sight I would say that the commit 95d6ebd53c79 ("net/x25: fix
-use-after-free in x25_device_event()") holds the wrong lock 
-(&x25_list_lock).
-Shouldn't this be the lock &x25_neigh_list_lock as in x25_get_neigh(), 
-where
-x25_neigh_hold() is called?
-
-> 
->         Arnd
-> 
-> [1]
-> https://lore.kernel.org/netdev/CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com/
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 3a754355ebe6..6c1ccf9f6c08 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1681,6 +1681,8 @@ static int flexcan_probe(struct platform_device *pdev=
+)
+ 	return 0;
+=20
+  failed_register:
++	pm_runtime_put_noidle(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
+ 	free_candev(dev);
+ 	return err;
+ }
+--=20
+2.17.1
 
