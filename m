@@ -2,129 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1601117BD7
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 00:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91FD0117BFB
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 01:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbfLIXxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Dec 2019 18:53:37 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37750 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbfLIXxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 18:53:37 -0500
-Received: by mail-lj1-f193.google.com with SMTP id u17so17723383lja.4
-        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 15:53:35 -0800 (PST)
+        id S1727320AbfLJACU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Dec 2019 19:02:20 -0500
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:42143 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726592AbfLJACU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Dec 2019 19:02:20 -0500
+Received: by mail-vs1-f65.google.com with SMTP id b79so6678219vsd.9
+        for <netdev@vger.kernel.org>; Mon, 09 Dec 2019 16:02:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8PYO3gKOvpQJUKoPD4Ucl8MVrwdN3gMad52iHtR/vZs=;
-        b=uNIvwKuUJUxV53loQOeaM/o9OzquvKgMQxAKv1tzc1Hl0aojhv/hJfrHlMebF56Ed1
-         wBUZJH4bUGx/OPdnE0tB56rphcIyScW02U1GuxlJAXr3D1dWj05IjfiZhEpES96gX21+
-         cVLRpYDN+8Yqdt6/JLICWCKQrgxGRIxeGJXKz4UuDjp+FHlYc0mnLxAu60In87Ml8Ico
-         n8AM+kuo6M8gLio4E71FslY0sR7A8HekUsePuvTGpITXka9+h2sbyJ/dn8pov+U2Yv+F
-         SnSg8Z33ik5+gk5D4hfCqKs+IH6L4Zvvx8IVE+Uhm46a1VSFGA+LRbz7W6JdpCmZNqqb
-         0FVA==
+        bh=Wphls3SzJx5+aTzGoiV39CkydXm7yCTwQM/h0lD+QLE=;
+        b=nbnNST0R/B3VIVT7bOmpa/0OtHv2Ee+2ifQQq4F5FwddiZRPrcgMpCnyM1kBIlrWaW
+         s6jP3fuerktGXcP7Y7qRAVl7blMV2IgpTnuE832xy7h0ZxqvLD1Sox3WKErfQI54dWb3
+         jJFuJFuxJxsv1PDPyCm/mrjqTvNYg2sGU1prl9qBI+oBAI2SoY4n8z/LiR2L+h+1aSrQ
+         OdTlpnqENwS1DbGOYdeWW3UDo7s7ci1rVE2TKoT+acKwOshdkzRxhz6yiaZNj6T40F3V
+         K5Jy+YorqlUVpqi0R2gkuihy9uEJXIX3yaZLlo4SrML/ob5IHxko3JtcmAtBRkM4LPUM
+         icLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8PYO3gKOvpQJUKoPD4Ucl8MVrwdN3gMad52iHtR/vZs=;
-        b=UkTTBGNxM/Lni68Bn8AmEhCbIrQxmKYrzymSIyrwbK+S16dmgXJvO8D7Rz3ERjesKk
-         ZJKUPYidauemw5cpszsQQQvr0LcUaT1tK3gHWvWEjgUr8XXhkEeGsROrvtYDDBBt2JhC
-         0n0rPIPmtEHWZ41xhY7Xwvfi+u6tMJwohTpz1bIJROKVBz7vaRMTyq+37LDcBKhJuAWV
-         k9AYmrLqHNfRdeUGLnCrg++Pj0Dbmf1Kvm0OE///dF+qIWNlxDQ8jxWlAYeXp1q9DIXl
-         ANEuym4yNz4gMDdqCoMv74+yRCIJonLp3ddKI1ymvrDK1HTzOfXrp5Cp8d9/06qU7wsQ
-         PURQ==
-X-Gm-Message-State: APjAAAVNDqXyd/73bhstTaChjzrnwxLuZWsHrsiY4E/YAmnlMGCQUgVq
-        gPA7Lp2g3eukLdmmQgZLxNAHGlhCfoHKoYn+V2DG
-X-Google-Smtp-Source: APXvYqxm5P6p8PMa6Ve7YcMvKPOBDHSKqfXxUTTrADm7WlA8FeZonMrFtrUaZwY0Q7lPO92mGz404lWFoQ6nO9KpZis=
-X-Received: by 2002:a2e:99cd:: with SMTP id l13mr4379179ljj.243.1575935614551;
- Mon, 09 Dec 2019 15:53:34 -0800 (PST)
+        bh=Wphls3SzJx5+aTzGoiV39CkydXm7yCTwQM/h0lD+QLE=;
+        b=KzTGOXashpqD7/mogETw+FWf46/19t3UNmCY1Wsd8H9Ckcol//H2q6DeQmpsfpXQgU
+         gxn4M1q2BhnNE5hcPN4e0O1uFX6DJhBEJLD/f8yoaWNo+tBYepFo+9RsoxR4iHdxlujp
+         hnHfUP3G2jkUsa7Av2C4XXviD5dkTPdZs+KJwun64LzcMt2DDFOEHva97+dwAW9VbDGK
+         aqfjmtHMm9ULqMC0FX2IMnonKfxAbEaVISAD0QQ2oGx9rOy/djqRsIpli8xS+lhuDko/
+         Ni7gRkIwa0k9kJiQpQY+6jG9fvVlG42d3FDaKVIX+mWUKODf6EvE3lkWGPLIot2vO9Ua
+         au0Q==
+X-Gm-Message-State: APjAAAXeeg75yG4zYQI4H/VnE7ZR5+40im+taxqnaUN74WYH4ka+NjqA
+        UYjbwwkIN6dhLFxO4Vi9GCLJ5tTpVVdqoXNbqUWr/syk
+X-Google-Smtp-Source: APXvYqwjT1cCnH40UKFDwHU9qHvfiioixe0zYm6UgIhw3qNNR2TZWfRw+z034Wg2jSHJafDcDMq9kfxmnAbMpaFRB8o=
+X-Received: by 2002:a05:6102:2332:: with SMTP id b18mr22668936vsa.231.1575936138928;
+ Mon, 09 Dec 2019 16:02:18 -0800 (PST)
 MIME-Version: 1.0
-References: <20191206214934.11319-1-jolsa@kernel.org> <20191209121537.GA14170@linux.fritz.box>
- <CAHC9VhQdOGTj1HT1cwvAdE1sRpzk5mC+oHQLHgJFa3vXEij+og@mail.gmail.com> <d387184e-9c5f-d5b2-0acb-57b794235cbd@iogearbox.net>
-In-Reply-To: <d387184e-9c5f-d5b2-0acb-57b794235cbd@iogearbox.net>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 9 Dec 2019 18:53:23 -0500
-Message-ID: <CAHC9VhRDsEDGripZRrVNcjEBEEULPk+0dRp-uJ3nmmBK7B=sYQ@mail.gmail.com>
-Subject: Re: [PATCHv3] bpf: Emit audit messages upon successful prog load and unload
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-audit@redhat.com, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
+References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
+ <20191209224530.156283-1-zenczykowski@gmail.com> <20191209154216.7e19e0c0@cakuba.netronome.com>
+In-Reply-To: <20191209154216.7e19e0c0@cakuba.netronome.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 10 Dec 2019 01:02:08 +0100
+Message-ID: <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
+Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 9, 2019 at 6:19 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> On 12/9/19 3:56 PM, Paul Moore wrote:
-> > On Mon, Dec 9, 2019 at 7:15 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On Fri, Dec 06, 2019 at 10:49:34PM +0100, Jiri Olsa wrote:
-> >>> From: Daniel Borkmann <daniel@iogearbox.net>
-> >>>
-> >>> Allow for audit messages to be emitted upon BPF program load and
-> >>> unload for having a timeline of events. The load itself is in
-> >>> syscall context, so additional info about the process initiating
-> >>> the BPF prog creation can be logged and later directly correlated
-> >>> to the unload event.
-> >>>
-> >>> The only info really needed from BPF side is the globally unique
-> >>> prog ID where then audit user space tooling can query / dump all
-> >>> info needed about the specific BPF program right upon load event
-> >>> and enrich the record, thus these changes needed here can be kept
-> >>> small and non-intrusive to the core.
-> >>>
-> >>> Raw example output:
-> >>>
-> >>>    # auditctl -D
-> >>>    # auditctl -a always,exit -F arch=x86_64 -S bpf
-> >>>    # ausearch --start recent -m 1334
-> >>>    ...
-> >>>    ----
-> >>>    time->Wed Nov 27 16:04:13 2019
-> >>>    type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
-> >>>    type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
-> >>>      success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
-> >>>      pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
-> >>>      egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
-> >>>      exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
-> >>>      subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
-> >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
-> >>>    ----
-> >>>    time->Wed Nov 27 16:04:13 2019
-> >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
-> >>>    ...
-> >>>
-> >>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> >>> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
-> >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> >>
-> >> Paul, Steve, given the merge window is closed by now, does this version look
-> >> okay to you for proceeding to merge into bpf-next?
-> >
-> > Given the change to audit UAPI I was hoping to merge this via the
-> > audit/next tree, is that okay with you?
->
-> Hm, my main concern is that given all the main changes are in BPF core and
-> usually the BPF subsystem has plenty of changes per release coming in that we'd
-> end up generating unnecessary merge conflicts. Given the include/uapi/linux/audit.h
-> UAPI diff is a one-line change, my preference would be to merge via bpf-next with
-> your ACK or SOB added. Does that work for you as well as?
+> Could you elaborate what protocols and products are in need of this
+> functionality?
 
-I regularly (a few times a week) run the audit and SELinux tests
-against Linus+audit/next+selinux/next to make sure things are working
-as expected and that some other subsystem has introduced a change
-which has broken something.  If you are willing to ensure the tests
-get run, including your new BPF audit tests I would be okay with that;
-is that acceptable?
+The ones I'm aware of are:
+(a) Google's servers
+(b) Android on at least some chipsets (Qualcomm at the bare minimum,
+but I think it's pretty standard a solution) where there's a complex
+port sharing scheme between the Linux kernel on the Application
+Processor and the Firmware running on the modem (for ipv4 we only get
+one ip address from the cellular carrier).  It's basically required
+for things like wifi calling to work.
 
--- 
-paul moore
-www.paul-moore.com
+> Why can't the NIC just get its own IP like it usually does with NCSI?
+
+Because often these nics are deployed as in place upgrades in
+environments where there's a limited number of IPs.
+Say a rack with a /27 ipv4 subnet (2**5 = 32 -> 29 usable ips, since
+network/broadcast/gateway are burned) and 15+ pre-existing machines.
+This means there's not enough IPs to assign separate ones for the nics.
+Renumbering the rack, would imply renumbering the datacenter, etc...
+And ipv4 - even RFC1918 - has long run out - so even in new
+deployments there's not enough IPv4 ips to give to nics, and IPv6
+isn't yet deployed *everywhere*.
