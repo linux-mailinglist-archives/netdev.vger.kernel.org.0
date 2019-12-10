@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF66119BEA
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC6C119BB7
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 23:12:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729757AbfLJWMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 17:12:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33940 "EHLO mail.kernel.org"
+        id S1729149AbfLJWK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 17:10:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727972AbfLJWDk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:03:40 -0500
+        id S1728446AbfLJWED (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:04:03 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AE3C2053B;
-        Tue, 10 Dec 2019 22:03:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0830C208C3;
+        Tue, 10 Dec 2019 22:04:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576015419;
-        bh=ix5mK7oJThaUdmYNmkZ6hF2IOt9z02uqSQrAY595ey8=;
+        s=default; t=1576015442;
+        bh=mN3wsluKVT5Rsnu1k6zRRJHpubasb33Quq6TKKfdouw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AlK81up+SUeuzZwF2qDJe+94szCsZO+mx/bLAod1YfPmXiNPYUTTa3w+I9nmsRmFm
-         GSChT4vP0ok9kJVdxhYvkUm52w6uPEsBEXynJByT+kLp+Pxm8z5uqus4lNALCANihc
-         hC+yd6ayGUfjtbSUhPoePZ7yhso+SFsxn9bzEjlE=
+        b=fuhUi8aSRBPf+LZep3Bm+u+d7l9BhMP4lYesXu6PaQiWPAbWtzdBImavPWn8L2rb/
+         Fc/vXlgTBZ2BxvhejZ+aR65Tdu5KUGHAdQrlBBCnkHCp3WbdEnq92cHfPFfd02S5W2
+         0JsuCE4SzcQuyb1bsBrnbJpt9pv65pdnX6N68644=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Ganapathi Bhat <gbhat@marvell.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 032/130] mwifiex: pcie: Fix memory leak in mwifiex_pcie_init_evt_ring
-Date:   Tue, 10 Dec 2019 17:01:23 -0500
-Message-Id: <20191210220301.13262-32-sashal@kernel.org>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 051/130] Bluetooth: missed cpu_to_le16 conversion in hci_init4_req
+Date:   Tue, 10 Dec 2019 17:01:42 -0500
+Message-Id: <20191210220301.13262-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210220301.13262-1-sashal@kernel.org>
 References: <20191210220301.13262-1-sashal@kernel.org>
@@ -45,39 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
 
-[ Upstream commit d10dcb615c8e29d403a24d35f8310a7a53e3050c ]
+[ Upstream commit 727ea61a5028f8ac96f75ab34cb1b56e63fd9227 ]
 
-In mwifiex_pcie_init_evt_ring, a new skb is allocated which should be
-released if mwifiex_map_pci_memory() fails. The release for skb and
-card->evtbd_ring_vbase is added.
+It looks like in hci_init4_req() the request is being
+initialised from cpu-endian data but the packet is specified
+to be little-endian. This causes an warning from sparse due
+to __le16 to u16 conversion.
 
-Fixes: 0732484b47b5 ("mwifiex: separate ring initialization and ring creation routines")
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Acked-by: Ganapathi Bhat <gbhat@marvell.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fix this by using cpu_to_le16() on the two fields in the packet.
+
+net/bluetooth/hci_core.c:845:27: warning: incorrect type in assignment (different base types)
+net/bluetooth/hci_core.c:845:27:    expected restricted __le16 [usertype] tx_len
+net/bluetooth/hci_core.c:845:27:    got unsigned short [usertype] le_max_tx_len
+net/bluetooth/hci_core.c:846:28: warning: incorrect type in assignment (different base types)
+net/bluetooth/hci_core.c:846:28:    expected restricted __le16 [usertype] tx_time
+net/bluetooth/hci_core.c:846:28:    got unsigned short [usertype] le_max_tx_time
+
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/pcie.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 9511f5fe62f43..9d0d790a13197 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -677,8 +677,11 @@ static int mwifiex_pcie_init_evt_ring(struct mwifiex_adapter *adapter)
- 		skb_put(skb, MAX_EVENT_SIZE);
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 6bc679cd34818..d6d7364838f47 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -802,8 +802,8 @@ static int hci_init4_req(struct hci_request *req, unsigned long opt)
+ 	if (hdev->le_features[0] & HCI_LE_DATA_LEN_EXT) {
+ 		struct hci_cp_le_write_def_data_len cp;
  
- 		if (mwifiex_map_pci_memory(adapter, skb, MAX_EVENT_SIZE,
--					   PCI_DMA_FROMDEVICE))
-+					   PCI_DMA_FROMDEVICE)) {
-+			kfree_skb(skb);
-+			kfree(card->evtbd_ring_vbase);
- 			return -1;
-+		}
- 
- 		buf_pa = MWIFIEX_SKB_DMA_ADDR(skb);
+-		cp.tx_len = hdev->le_max_tx_len;
+-		cp.tx_time = hdev->le_max_tx_time;
++		cp.tx_len = cpu_to_le16(hdev->le_max_tx_len);
++		cp.tx_time = cpu_to_le16(hdev->le_max_tx_time);
+ 		hci_req_add(req, HCI_OP_LE_WRITE_DEF_DATA_LEN, sizeof(cp), &cp);
+ 	}
  
 -- 
 2.20.1
