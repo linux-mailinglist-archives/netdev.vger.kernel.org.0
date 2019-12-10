@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F55119227
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E32A11922E
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 21:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbfLJUep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 15:34:45 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:45648 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbfLJUeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:34:44 -0500
-Received: by mail-qv1-f67.google.com with SMTP id c2so4745727qvp.12
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 12:34:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=k9StEROeVFHgDma5h9VD+gMFs/72EafIdPmXm2r7ghk=;
-        b=PsL8HeIF/pbv1HxDF4LzH/nSUtms0dwXA+dzZvwl/Wc9lv1sPtkRc4eDbX5ufVHO0A
-         ez8TgCSMBNY/INVzWaE3Yu0NUdG0QQTUTJlq4M3pLXpdMXOmW4f5ljjU3DIYfUEmUIvN
-         gjWJ5zGNX8qjWLGzHIg2dOLeZimFsS08SsAwv+xAPk8fVNpIuQIxFcwqN8OA26R8xFpU
-         58ksFGwwl/iuODPS2x4Mn1AremLP+NxYbsai1vErzb/pR50tsMhwRbgNmWvU7G5Kl3Lo
-         6jO8H81GG1vQJ/wW8Zg0ghFF6UryCCgLrdZJxpQJ2vCEJsp2Yu4XnLWgm5Ux6G3zAioi
-         yGhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=k9StEROeVFHgDma5h9VD+gMFs/72EafIdPmXm2r7ghk=;
-        b=EdQvwrME9HqFDfkxvyCaVMDMkbythlkzjXCjfqSdrGkh0IryVTX02MFc5COE92ZvJK
-         0cTsbc5vcXnGqc21OiTmx8WMNyxhwvHl5v/v4DmiH8UqhPLpmhwX0FFQSYe2G6OLUNC7
-         SnL1MdULagvN2lh2Srby2mrrPZNCiBVtGHn6LP1TBGV92QjJdK1FcAo1fm8SSxZ7tOqV
-         cmYah4TFQ+lzP/B34bpInv7ECi7YYwFRyoCKYBADtzhircwsgOwCoduedMhAVc0wh1PQ
-         YwlqJkB6CeaUCn0B/LnlP+/GZnm18IFG145xmdnesKF1Xz9D6efyjsTjxN4CtnZHcpU/
-         CkLg==
-X-Gm-Message-State: APjAAAWggdjUSKWpC4zKWkA6IPe+ZvC+EgTAmqc1k4fB6DVUnmPUhyhA
-        NsFCSwx1KQHhmqhmNsqhBBVXZoNG8xo=
-X-Google-Smtp-Source: APXvYqxNYIhCvP5N4qvAggJtN7eDK4YJ9LB4h4K69m1xMvYCG3XLQgmX4jWnRUTxarsBg9JJD8I+7g==
-X-Received: by 2002:ad4:55e8:: with SMTP id bu8mr30969794qvb.61.1576010083657;
-        Tue, 10 Dec 2019 12:34:43 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id p19sm4954qte.81.2019.12.10.12.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 12:34:43 -0800 (PST)
-Date:   Tue, 10 Dec 2019 15:34:41 -0500
-Message-ID: <20191210153441.GB1429230@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next] net: bridge: add STP xstats
-In-Reply-To: <1aa8b6e4-6a73-60b0-c5fb-c0dfa05e27e6@cumulusnetworks.com>
-References: <20191209230522.1255467-1-vivien.didelot@gmail.com>
- <a3b8e24d-5152-7243-545f-8a3e5fbaa53a@cumulusnetworks.com>
- <20191210143931.GF1344570@t480s.localdomain>
- <2f4e351c-158a-4f00-629f-237a63742f66@cumulusnetworks.com>
- <20191210151047.GB1423505@t480s.localdomain>
- <1aa8b6e4-6a73-60b0-c5fb-c0dfa05e27e6@cumulusnetworks.com>
+        id S1726801AbfLJUgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 15:36:17 -0500
+Received: from mout.kundenserver.de ([212.227.126.135]:47765 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbfLJUgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 15:36:16 -0500
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1M2ep5-1iiuph1YVD-004DY0; Tue, 10 Dec 2019 21:35:54 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] bpf: Fix build in minimal configurations, again
+Date:   Tue, 10 Dec 2019 21:35:46 +0100
+Message-Id: <20191210203553.2941035-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:/TPNkN7ip+x2EGFaeArJV7t8UOMDz3Xt3D+KTG86o+YtHi7AQpl
+ EA0traGRcVUYNiVhb1WcqtyedHFK/G7uo0ODPsfSwvljgdSlfpiB9jNCLcGrp8AhFzBC3Rd
+ 4nUPKrnESghS/cdlCX+dbI/zA0oHna+X0b/mFXnE8c9EQLoI9fPJU9FDHyh3lXC7+LwYcnO
+ MgvBxcOH6E8fFfruQkYlA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bT0fWJOkfpk=:6CchuXFwP8SMBieEroZBrH
+ AEk/STZiwVmNZ6TG+ImhFDC8ApYwPA7+2PF1wJ1oF4yezz4fciDC2lAIcsYU8l9tOdKyaAspc
+ 0SV4G8rpDiBjXWCLZFHS7Z0Te6aJKDsHTnwW5S830ljYf1BSx2ot7TrIb+leoxWvV/rJpv7G6
+ s93O3GFciGFrMcGQvg/4y5kuZTog+nYzBYsYTkoMhg94yai9Lt1IRXZ+Hfqgwboq+fyK9dxlB
+ l9BeW0HRcPSCTz/Ffv3pRWOc8grqW1Ch9/qcx8X/MvZc6NZI5Q0pkb9C1F3Luz2JswPZotGUe
+ 3b2aLkC6+GHufoBizFdA/b0KJSMyKqrgfbX/X/ZsxY1LNOZggZZ7D4Azve0M5vAtt9elY0gA9
+ 1O8BK9hMoUxBG7rBjdE86VP0HDrKI3nYXD6GFOXW1asqP8X0sPceT2JqFJ0WORXaDcISz8cMK
+ Ql2klZPu/IBSMdURuGUq/MX7eul0lx+jgH4enSmzY7dZ0A1LiJ9vyGUrwdLbj9qrwmyqRc+kg
+ TH7oDzkvFT7pPOAuqi3JXAyT2MEIRPqIp7Lg3RW6MlfCM+IO1BmLFprg6nq4n9FiNKMEZN+Jc
+ fwQldPMpfVPv/oy+cOmzm3pR+g+W/VRoQvQtsNui5r/0YTD6VxIC3t5mfw9z41bzv60Cdm+Ur
+ KrxfaMaRqcW23Ic55KNRGxmoqmwoIfzyZnL0e85ry9EBbcgd/hCYNDkuvB74++T31XmWyNWdZ
+ MsT72djQzrEtDUsHBD7Tznyn0vpyOO9cMJpdu1OWpNwJfp/kDX9ISul2HBStsFU+t+lf3z5xB
+ 8qrhMqfuRGHL0wlzT9vDVAF2ZruLF9m1EUVzvrSuay9XrZLsyZR0d53z/apMy4yDL2M51VGDd
+ 0BQYnKMJ8IWxWvoy3Jfg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 22:15:26 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> >>>> Why do you need percpu ? All of these seem to be incremented with the
-> >>>> bridge lock held. A few more comments below.
-> >>>
-> >>> All other xstats are incremented percpu, I simply followed the pattern.
-> >>>
-> >>
-> >> We have already a lock, we can use it and avoid the whole per-cpu memory handling.
-> >> It seems to be acquired in all cases where these counters need to be changed.
-> > 
-> > Since the other xstats counters are currently implemented this way, I prefer
-> > to keep the code as is, until we eventually change them all if percpu is in
-> > fact not needed anymore.
-> > 
-> > The new series is ready and I can submit it now if there's no objection.
-> 
-> There is a reason other counters use per-cpu - they're incremented without any locking from fast-path.
-> The bridge STP code already has a lock which is acquired in all of these paths and we don't need
-> this overhead and the per-cpu memory allocations. Unless you can find a STP codepath which actually
-> needs per-cpu, I'd prefer you drop it.
+Building with -Werror showed another failure:
 
-Ho ok I understand what you mean now. I'll drop the percpu attribute.
+kernel/bpf/btf.c: In function 'btf_get_prog_ctx_type.isra.31':
+kernel/bpf/btf.c:3508:63: error: array subscript 0 is above array bounds of 'u8[0]' {aka 'unsigned char[0]'} [-Werror=array-bounds]
+  ctx_type = btf_type_member(conv_struct) + bpf_ctx_convert_map[prog_type] * 2;
 
+I don't actually understand why the array is empty, but a similar
+fix has addressed a related problem, so I suppose we can do the
+same thing here.
 
-Thanks,
+Fixes: ce27709b8162 ("bpf: Fix build in minimal configurations")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ kernel/bpf/btf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-	Vivien
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 7d40da240891..ed2075884724 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3470,6 +3470,7 @@ static u8 bpf_ctx_convert_map[] = {
+ 	[_id] = __ctx_convert##_id,
+ #include <linux/bpf_types.h>
+ #undef BPF_PROG_TYPE
++	0, /* avoid empty array */
+ };
+ #undef BPF_MAP_TYPE
+ 
+-- 
+2.20.0
+
