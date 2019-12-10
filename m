@@ -2,89 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE9F118654
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 12:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 798CE118667
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 12:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbfLJLdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 06:33:16 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:32989 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727162AbfLJLdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 06:33:14 -0500
-Received: by mail-lj1-f194.google.com with SMTP id 21so19513288ljr.0;
-        Tue, 10 Dec 2019 03:33:12 -0800 (PST)
+        id S1727272AbfLJLgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 06:36:07 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:44624 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727149AbfLJLgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 06:36:07 -0500
+Received: by mail-lf1-f67.google.com with SMTP id v201so13392848lfa.11;
+        Tue, 10 Dec 2019 03:36:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XY8c6o1ZDn8cLZbnNzZSfgpKdfWpT+q9NlTDas4NADs=;
+        b=E0IPWnBysw7r8g+PXtBwBKHNMugbTCeASem8y+wRRw3YT+VThZupd4ntxO+BuZvEQB
+         cDstpy4Zk6rOK9PuSiBauARQHJ0mS5NaMXniVSOF0HO3xFiS7/PM3YjUjmFlo6WHyDuH
+         8Myq9KsDrCn3RuRYWBigmIxPfl6bj3qFx6FGurE6NdT755P9DpqSln90fnflXRxLjg8I
+         1VHhYU9dC24VkjAkfrDFUYOv9Ra0J0FASrq+BFNlcGW6LRyG2uA5T1J5uJkUL8bZuq2U
+         /xepSdSt5WJpoMKTyPnqwNGMLpyKJVpwfnPPai1RMeOEvV9j6nuN7w03PqPUanGTtCzW
+         t0Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Blqzm8+uJKvQuA0CbBCrZIVx4YR1ZVnP2Lq7em2cyqU=;
-        b=uIsFRSpXYpbsB3qwKImibSBrF+IbCHbbPYNWQtRgjLODgQxa655ByJ9ezyf2/j/ePL
-         sjmvkt6xMrhPZla7N3ceaPPA7OdaxogjLsFaH6rj5azn6TqPiYWpt1JbkE39GuLCscp4
-         F6ME7wD4sKmEyIj4wDaPpTBKTNT3naSvx9leKdDmhVll46Uu3Pwg6XjNyPkXbX/Ba4IP
-         XwpfN4Jh3Dzw0zZQvXB3YOKMAHyqjQ27fV4ayNDXegz6v2G9VEXj8Bt42wHjbqH685MZ
-         0tVPetmJGl72xiI/XJDoiwH/IuzLdl5VlkF0OshrmhB80WT2X0d49iYo0AZjttu+Q81X
-         GMbA==
-X-Gm-Message-State: APjAAAVjq8/iaM9dL03hCJLpo9s4QaXLpcBkIURWt8j0pC/v36X53eug
-        pdvNwA35mn9G9UGdlHrrzoc=
-X-Google-Smtp-Source: APXvYqyIW5IfmyQIRr8p5hkGBqsmCvU2d723wr+Rta8PDZbIsTTmqLcYTIyuETrZVRpDC52t7Wr7qg==
-X-Received: by 2002:a2e:b0c9:: with SMTP id g9mr9586456ljl.134.1575977591464;
-        Tue, 10 Dec 2019 03:33:11 -0800 (PST)
-Received: from xi.terra (c-14b8e655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.184.20])
-        by smtp.gmail.com with ESMTPSA id i16sm1387353lfo.87.2019.12.10.03.33.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 03:33:09 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@xi.terra>)
-        id 1iedlQ-00010S-4r; Tue, 10 Dec 2019 12:33:12 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 2/2] can: gs_usb: use descriptors of current altsetting
-Date:   Tue, 10 Dec 2019 12:32:31 +0100
-Message-Id: <20191210113231.3797-3-johan@kernel.org>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191210113231.3797-1-johan@kernel.org>
-References: <20191210113231.3797-1-johan@kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XY8c6o1ZDn8cLZbnNzZSfgpKdfWpT+q9NlTDas4NADs=;
+        b=frQPJvV+JYLoSaD0TTIfwVyaiwzqgnqoXn9GwGCV3fVdT5BVBejfkLKXcgFaLQGfHG
+         dph962/gwrsiCEcCH/FR9Cl5C9WN4VY9NnNYG1QbxztNXZyJSbHrKWcDZuzRrCJz78oV
+         23dzWJl+NLJuvRmRxGEWWVy7VJ6xBDXE9F607OBXzaDA7SBhWV3i9Z5PkI105TXbN3+l
+         9bhE4+QrSjNVaNnZV2hGeIwvJTocFX7+/XPF0vDPZvgrP4RkWcrLtVU6TTMvaRaHvmyx
+         ITxxJMFAHf6ugiidx/dv+d/YzC4s0kK4I8rELBn01Rp+NVLeW1fq/hRcRh+1u1OcLd54
+         vIDQ==
+X-Gm-Message-State: APjAAAXiYkk0VTcVSfr1MPJITQ1m9h0W6r8fs2QTYY3meGZA7fuMlbpy
+        sIl7bz25NC2Ax4rH9rmWx7XPNssH
+X-Google-Smtp-Source: APXvYqwZTeTw9gdCAOj+K3A+HpOHJgHhLsv0iGFMi1WxC/9xPxcNI/uPw/rXyFJXuLapEACmz4u9vA==
+X-Received: by 2002:ac2:4849:: with SMTP id 9mr18286682lfy.11.1575977764751;
+        Tue, 10 Dec 2019 03:36:04 -0800 (PST)
+Received: from localhost.localdomain (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id j10sm1595496ljc.76.2019.12.10.03.36.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Dec 2019 03:36:04 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Winnie Chang <winnie.chang@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH] brcmfmac: set interface carrier to off by default
+Date:   Tue, 10 Dec 2019 12:35:55 +0100
+Message-Id: <20191210113555.1868-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure to always use the descriptors of the current alternate setting
-to avoid future issues when accessing fields that may differ between
-settings.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Signed-off-by: Johan Hovold <johan@kernel.org>
+It's important as brcmfmac creates one main interface for each PHY and
+doesn't allow deleting it. Not setting carrier could result in other
+subsystems misbehaving (e.g. LEDs "netdev" trigger turning LED on).
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/net/can/usb/gs_usb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I noticed this problem when using "netdev" LED trigger with "wlan0" set
+as "device_name". While my interface was down (unused) the "netdev"
+trigger was checking it with netif_carrier_ok() and assuming it's up.
 
-diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
-index 2f74f6704c12..a4b4b742c80c 100644
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -918,7 +918,7 @@ static int gs_usb_probe(struct usb_interface *intf,
- 			     GS_USB_BREQ_HOST_FORMAT,
- 			     USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 			     1,
--			     intf->altsetting[0].desc.bInterfaceNumber,
-+			     intf->cur_altsetting->desc.bInterfaceNumber,
- 			     hconf,
- 			     sizeof(*hconf),
- 			     1000);
-@@ -941,7 +941,7 @@ static int gs_usb_probe(struct usb_interface *intf,
- 			     GS_USB_BREQ_DEVICE_CONFIG,
- 			     USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE,
- 			     1,
--			     intf->altsetting[0].desc.bInterfaceNumber,
-+			     intf->cur_altsetting->desc.bInterfaceNumber,
- 			     dconf,
- 			     sizeof(*dconf),
- 			     1000);
+This solution affects initial state of all brcmfmac interfaces (not
+only the first non-removable one) but I think it should be fine. Later
+on brcmfmac takes care of updating carrier as needed.
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index 85cf96461dde..d3ddd97fe768 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -661,6 +661,8 @@ int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked)
+ 		goto fail;
+ 	}
+ 
++	netif_carrier_off(ndev);
++
+ 	ndev->priv_destructor = brcmf_cfg80211_free_netdev;
+ 	brcmf_dbg(INFO, "%s: Broadcom Dongle Host Driver\n", ndev->name);
+ 	return 0;
 -- 
-2.24.0
+2.21.0
 
