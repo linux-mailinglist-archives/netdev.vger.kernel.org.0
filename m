@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9D4119806
-	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:39:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79ED811998C
+	for <lists+netdev@lfdr.de>; Tue, 10 Dec 2019 22:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730395AbfLJVfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 16:35:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41864 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730377AbfLJVft (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:35:49 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BFF2C24654;
-        Tue, 10 Dec 2019 21:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576013748;
-        bh=eGZb0mLut5CLjKtIi5QfNOaQefvgGgYuUtmdojA4tRU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y6SMdv2XcMsDV0NUofEn0WxRkoTtQfYQPCblmRYSvCCcSkZ2C5GwAKg4VqCTM3B/F
-         LamB7Ry5MudgQ3CpWpTnqkdQET/rWs05Wi7cl9oj3TZenr2cPnsprHSlpGnosiOREQ
-         JVumMHkYs5ze+5RP5pA+LIX1edOkuJryKIh5yk3E=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Pedersen <thomas@adapt-ip.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 170/177] mac80211: consider QoS Null frames for STA_NULLFUNC_ACKED
-Date:   Tue, 10 Dec 2019 16:32:14 -0500
-Message-Id: <20191210213221.11921-170-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210213221.11921-1-sashal@kernel.org>
-References: <20191210213221.11921-1-sashal@kernel.org>
+        id S1728882AbfLJVce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 16:32:34 -0500
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:37247 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728813AbfLJVce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 16:32:34 -0500
+Received: by mail-ed1-f47.google.com with SMTP id cy15so17357733edb.4
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 13:32:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=4Ja+Cy4lz3d7/9D3E5SJdSwFwUmUfYYIZtw7SRnmxMQ=;
+        b=xSLCrrxPejnE0kdt17030quLJkQSeBjnB1vQJo4e7EaofNY9vrZMLRjLWjTUAcCSCT
+         yuxr7DHf+2HvLYOySwaOiOuJZYvB0oesOytWvM4DmGl/IhueidOi+nYm0/KXxlf2GwEa
+         eXFXrese8dp5z5H0DwYhE+Ts7EObyeM8Pthks=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=4Ja+Cy4lz3d7/9D3E5SJdSwFwUmUfYYIZtw7SRnmxMQ=;
+        b=teaSzDoXbRBwqPbMTk1Oc03Ot2XDPWrkKiLNPQYe3Qu0gzNTQkYmWf9+tgnZBoF4wA
+         PW5Opi5mILXmQF3zNCNshAJE7VSxijOwRwHmpq/a1gxs8rSFjQAwzZrMdCwahqyC+9xa
+         6W0CD0UBT5E3lGTIyd6D+3Rs5hrG3R+B+KYCFnFxyGyakr0VJfHzRdol64NfR8ZFDlyk
+         JsezY5wd+EuI99w6x+BnTGwVVRZBlw0GzH6a9atEa52EB13I2Eao/RPfW5Bg3BFehVqj
+         dASNNi3wSTpyzoEoBxOWCIiAP3i5xlXcD/VkPZHj22iC2KYmkXDcnW4hiHV5q84FWawE
+         J/7w==
+X-Gm-Message-State: APjAAAWXyJwfSmujgRG6Qu2ygOAFIwPEtEOdRWk3crCTmmBUb+zhR0Fn
+        4apK1opCkOnUvIbf7Ya1u47ft92wt8uQCovKHFdrbw==
+X-Google-Smtp-Source: APXvYqy8VOTXuAbKw0j1c3O8zCSGmAQsSkjj1KkDXdHcwLguds5DtEdZJNT8Hy/+moiMk2YEf22e7OKRLAhqNqpl30A=
+X-Received: by 2002:a17:906:2e47:: with SMTP id r7mr6151354eji.215.1576013552064;
+ Tue, 10 Dec 2019 13:32:32 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+From:   Ivan Babrou <ivan@cloudflare.com>
+Date:   Tue, 10 Dec 2019 13:32:21 -0800
+Message-ID: <CABWYdi2GG3qi6ucxtyk3=Bu1eXi0N9Dow42F4gzi9DUUc3XhLw@mail.gmail.com>
+Subject: Lock contention around unix_gc_lock
+To:     linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, hare@suse.com,
+        axboe@kernel.dk, allison@lohutok.net, tglx@linutronix.de,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Pedersen <thomas@adapt-ip.com>
+Hello,
 
-[ Upstream commit 08a5bdde3812993cb8eb7aa9124703df0de28e4b ]
+We're seeing very high contention on unix_gc_lock when a bug in an
+application makes it stop reading incoming messages with inflight unix
+sockets. In our system we churn through a lot of unix sockets and we
+have 96 logical CPUs in the system, so spinlock gets very hot.
 
-Commit 7b6ddeaf27ec ("mac80211: use QoS NDP for AP probing")
-let STAs send QoS Null frames as PS triggers if the AP was
-a QoS STA.  However, the mac80211 PS stack relies on an
-interface flag IEEE80211_STA_NULLFUNC_ACKED for
-determining trigger frame ACK, which was not being set for
-acked non-QoS Null frames. The effect is an inability to
-trigger hardware sleep via IEEE80211_CONF_PS since the QoS
-Null frame was seemingly never acked.
+I was able to halve overall system throughput with 1024 inflight unix
+sockets, which is the default RLIMIT_NOFILE. This doesn't sound too
+good for isolation, one user should not be able to affect the system
+as much. One might even consider this as DoS vector.
 
-This bug only applies to drivers which set both
-IEEE80211_HW_REPORTS_TX_ACK_STATUS and
-IEEE80211_HW_PS_NULLFUNC_STACK.
+There's a lot of time is spent in _raw_spin_unlock_irqrestore, which
+is triggered by wait_for_unix_gc, which in turn is unconditionally
+called from unix_stream_sendmsg:
 
-Detect the acked QoS Null frame to restore STA power save.
+ffffffff9f64f3ea _raw_spin_unlock_irqrestore+0xa
+ffffffff9eea6ab0 prepare_to_wait_event+0x70
+ffffffff9f5a4ac6 wait_for_unix_gc+0x76
+ffffffff9f5a182c unix_stream_sendmsg+0x3c
+ffffffff9f4bb7f9 sock_sendmsg+0x39
 
-Fixes: 7b6ddeaf27ec ("mac80211: use QoS NDP for AP probing")
-Signed-off-by: Thomas Pedersen <thomas@adapt-ip.com>
-Link: https://lore.kernel.org/r/20191119053538.25979-4-thomas@adapt-ip.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/mac80211/status.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+* https://elixir.bootlin.com/linux/v4.19.80/source/net/unix/af_unix.c#L1849
 
-diff --git a/net/mac80211/status.c b/net/mac80211/status.c
-index 534a604b75c26..f895c656407b5 100644
---- a/net/mac80211/status.c
-+++ b/net/mac80211/status.c
-@@ -867,7 +867,8 @@ static void __ieee80211_tx_status(struct ieee80211_hw *hw,
- 			I802_DEBUG_INC(local->dot11FailedCount);
- 	}
- 
--	if (ieee80211_is_nullfunc(fc) && ieee80211_has_pm(fc) &&
-+	if ((ieee80211_is_nullfunc(fc) || ieee80211_is_qos_nullfunc(fc)) &&
-+	    ieee80211_has_pm(fc) &&
- 	    ieee80211_hw_check(&local->hw, REPORTS_TX_ACK_STATUS) &&
- 	    !(info->flags & IEEE80211_TX_CTL_INJECTED) &&
- 	    local->ps_sdata && !(local->scanning)) {
--- 
-2.20.1
+Even more time is spent in waiting on spinlock because of call to
+unix_gc from unix_release_sock, where condition is having any inflight
+sockets whatsoever:
 
+ffffffff9eeb1758 queued_spin_lock_slowpath+0x158
+ffffffff9f5a4718 unix_gc+0x38
+ffffffff9f5a28f3 unix_release_sock+0x2b3
+ffffffff9f5a2929 unix_release+0x19
+ffffffff9f4b902d __sock_release+0x3d
+ffffffff9f4b90a1 sock_close+0x11
+
+* https://elixir.bootlin.com/linux/v4.19.80/source/net/unix/af_unix.c#L586
+
+Should this condition take the number of inflight sockets into
+account, just like unix_stream_sendmsg does via wait_for_unix_gc?
+
+Static number of inflight sockets that trigger a GC from
+wait_for_unix_gc may also be something that is scaled with system
+size, rather than be a hardcoded value.
+
+I know that our case is a pathological one, but it sounds like
+scalability of garbage collection can be better, especially on systems
+with large number of CPUs.
