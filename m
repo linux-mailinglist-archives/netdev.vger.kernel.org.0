@@ -2,130 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F5E11A928
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:42:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4AE11A944
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729021AbfLKKmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 05:42:44 -0500
-Received: from mx2.suse.de ([195.135.220.15]:59588 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728030AbfLKKmn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 05:42:43 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id D483FB178;
-        Wed, 11 Dec 2019 10:42:38 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id F3EB81E0B23; Wed, 11 Dec 2019 11:42:36 +0100 (CET)
-Date:   Wed, 11 Dec 2019 11:42:36 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v9 20/25] powerpc: book3s64: convert to pin_user_pages()
- and put_user_page()
-Message-ID: <20191211104236.GM1551@quack2.suse.cz>
-References: <20191211025318.457113-1-jhubbard@nvidia.com>
- <20191211025318.457113-21-jhubbard@nvidia.com>
+        id S1728401AbfLKKsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 05:48:31 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39394 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726119AbfLKKsb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 05:48:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=TKZb84qVS6bHRVcxfXRF7NP42eMuVrqEp9OfojhvIog=; b=vq8hLiOJCDhYBxyZC/v6ro+l9
+        c1yLG3JRccPV1mR3UNMOvjc8Tbyq+Y9KiiekNu91D2ZzUpWKQyZ07WUoJiTsRKOYN31NxbZHVPvs5
+        fVLlThByDQQUvOvoNGUdQ1KSR3lQmCZoe2OwEDMEuKy/oiTPDJiuywg7d6ZMFFlRb8SwD1Oj6bbkB
+        PCkxYm28c+YfPbiSYY4krytESboOZT7RmgW65M+7tZB0SvihdkzBgpat5I2phiWF3+IGITrxOKsE3
+        d+oa0BNnccB3sJHHaZbZ63ERIxMgn7ttJgvqgYm+iV5i6HtR6hU9Fux7Lfadcw/XMin6cKRSzPITV
+        U1YMK2n5g==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:39846)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iezXb-0007rC-Bw; Wed, 11 Dec 2019 10:48:23 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iezXZ-0005nC-Cq; Wed, 11 Dec 2019 10:48:21 +0000
+Date:   Wed, 11 Dec 2019 10:48:21 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v3 00/14] Add support for SFP+ copper modules
+Message-ID: <20191211104821.GB25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191211025318.457113-21-jhubbard@nvidia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 10-12-19 18:53:13, John Hubbard wrote:
-> 1. Convert from get_user_pages() to pin_user_pages().
-> 
-> 2. As required by pin_user_pages(), release these pages via
-> put_user_page().
-> 
-> Cc: Jan Kara <jack@suse.cz>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+Hi,
 
-The patch looks good to me. You can add:
+This series adds support for Copper SFP+ modules with Clause 45 PHYs.
+Specifically the patches:
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+1. drop support for the probably never tested 100BASE-*X modules.
+2. drop EEPROM ID from sfp_select_interface()
+3. add more compliance code definitions from SFF-8024, renaming the
+   existing definitions.
+4. add module start/stop methods so phylink knows when a module is
+   about to become active. The module start method is called after
+   we have probed for a PHY on the module.
+5. move start/stop of module PHY down into phylink using the new
+   module start/stop methods.
+6. add support for Clause 45 I2C accesses, tested with Methode DM7052.
+   Other modules appear to use the same protocol, but slight
+   differences, but I do not have those modules to test with.
+   (if someone does, please holler!)
+7. rearrange how we attach to PHYs so that we can support Clause 45
+   PHYs with indeterminant interface modes.  (Clause 45 PHYs appear
+   to like to change their PHY interface mode depending on the
+   negotiated speed.)
+8. add support for phylink to connect to a clause 45 PHY on a SFP
+   module.
+9. split the link_an_mode between the configured value and the
+   currently selected mode value; some clause 45 PHYs have no
+   capability to provide in-band negotiation.
+10. split the link configuration on SFP module insertion in phylink
+    so we can use it in other code paths.
+11. delay MAC configuration for copper modules without a PHY to the
+    module start method - after any module PHY has been probed.  If
+    the module has a PHY, then we setup the MAC when the PHY is
+    detected.
+12. the Broadcom 84881 PHY does not support in-band negotiation even
+    though it uses SGMII and 2500BASE-X.  Having the MAC operating
+    with in-band negotiation enabled, even with AN bypass enabled,
+    results in no link - Broadcom say that the host MAC must always
+    be forced.
+13. add support for the Broadcom 84881 PHY found on the Methode
+    DM7052 module.
+14. add support to SFP to probe for a Clause 45 PHY on copper SFP+
+    modules.
 
-I'd just note that mm_iommu_do_alloc() has a pre-existing bug that the last
-jump to 'free_exit' (at line 157) happens already after converting page
-pointers to physical addresses so put_page() calls there will just crash.
-But that's completely unrelated to your change. I'll send a fix separately.
+v3: now bisectable!
 
-								Honza
+ drivers/net/phy/Kconfig      |   6 +
+ drivers/net/phy/Makefile     |   1 +
+ drivers/net/phy/bcm84881.c   | 269 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/net/phy/marvell10g.c |   2 +-
+ drivers/net/phy/mdio-i2c.c   |  28 +++--
+ drivers/net/phy/phylink.c    | 229 ++++++++++++++++++++++++++----------
+ drivers/net/phy/sfp-bus.c    | 122 ++++++++++++++------
+ drivers/net/phy/sfp.c        |  69 ++++++++---
+ drivers/net/phy/sfp.h        |   2 +
+ include/linux/sfp.h          |  95 ++++++++++-----
+ 10 files changed, 670 insertions(+), 153 deletions(-)
+ create mode 100644 drivers/net/phy/bcm84881.c
 
-> ---
->  arch/powerpc/mm/book3s64/iommu_api.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
-> index 56cc84520577..a86547822034 100644
-> --- a/arch/powerpc/mm/book3s64/iommu_api.c
-> +++ b/arch/powerpc/mm/book3s64/iommu_api.c
-> @@ -103,7 +103,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
->  	for (entry = 0; entry < entries; entry += chunk) {
->  		unsigned long n = min(entries - entry, chunk);
->  
-> -		ret = get_user_pages(ua + (entry << PAGE_SHIFT), n,
-> +		ret = pin_user_pages(ua + (entry << PAGE_SHIFT), n,
->  				FOLL_WRITE | FOLL_LONGTERM,
->  				mem->hpages + entry, NULL);
->  		if (ret == n) {
-> @@ -167,9 +167,8 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
->  	return 0;
->  
->  free_exit:
-> -	/* free the reference taken */
-> -	for (i = 0; i < pinned; i++)
-> -		put_page(mem->hpages[i]);
-> +	/* free the references taken */
-> +	put_user_pages(mem->hpages, pinned);
->  
->  	vfree(mem->hpas);
->  	kfree(mem);
-> @@ -215,7 +214,8 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->  		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
->  			SetPageDirty(page);
->  
-> -		put_page(page);
-> +		put_user_page(page);
-> +
->  		mem->hpas[i] = 0;
->  	}
->  }
-> -- 
-> 2.24.0
-> 
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
