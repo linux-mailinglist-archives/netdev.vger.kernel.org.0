@@ -2,69 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E33FC11AA7A
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56DF011AA98
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:17:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729176AbfLKMH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:07:57 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:59875 "EHLO frisell.zx2c4.com"
+        id S1729180AbfLKMR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:17:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727477AbfLKMH5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 07:07:57 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 6985870e;
-        Wed, 11 Dec 2019 11:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=C9FwO9B7K+es48HT2oaJ5pAFwII=; b=mlqewS
-        8jCyNq7cpTXkGZmMD7fBCfMzJuJXaSq0+/BxmgynD9T+UwKqxXM0+vL/H2CkverN
-        zx/RCPlsb65oAd8QNz2Fd/+KyqfRjb685Khb7tZbl8E7VMRAt/ryvC4Pv0bUmFdO
-        CDfkyRHedn9KKcBX0e+askiuAdlsHfAERXcQxFSXrn3JN7g80q6pmZ4b/SzDYPkL
-        MPDLHt4puauKs+SZ6GPYX8/8X1TmHuTI4MU2W02dFKcY7Sp0awK3KFArO8fKAYRu
-        sGr0NKe+8k5F5HkHjjkYj6/3hHL2MWEBQN83ObIOoVYATz391UiaUn3YbEpnuoDg
-        MbDXPmQsmSZj/dzw==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e42bde5c (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Wed, 11 Dec 2019 11:12:15 +0000 (UTC)
-Received: by mail-ot1-f42.google.com with SMTP id i4so18578358otr.3;
-        Wed, 11 Dec 2019 04:07:54 -0800 (PST)
-X-Gm-Message-State: APjAAAUQze3M7QyH2C6FTA0iadraBGucCf1Hky2tOV0f4kH4/WpbtOHq
-        9pHpgHjlgmbK24GOMPuYCE+JrkObil0Wc0ZP87c=
-X-Google-Smtp-Source: APXvYqwe0utfbrRMFWhDsp03hIAgIDRCrndnTnAEWTs1Updy6jeM7OtmSLWXLN2ZN7Fx5sXoEWT/x59M2l/SxJHTvzY=
-X-Received: by 2002:a9d:4f0f:: with SMTP id d15mr2064176otl.179.1576066074187;
- Wed, 11 Dec 2019 04:07:54 -0800 (PST)
+        id S1727365AbfLKMR2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 07:17:28 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6ADEA214D8;
+        Wed, 11 Dec 2019 12:17:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576066646;
+        bh=1n4dRkvvdCKETj6YqGunEjOSbdyLrGPyEqXt3M6/6wg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=THftVLfHvoU6YrX83eDiFEHMqmQzvJgd5DeuwSKhX2F4lhHXMy+pikZZxyRETijp3
+         kESWxqIVEK0BKR/gxeZZm9zuT6lD22QmeIKDUw9Cp0JkHxatXzo3qrCedCfutgWWAH
+         IZpPzdBjNzNsHQheWPxZC3At7oJRHln1BdIH3CcA=
+Date:   Wed, 11 Dec 2019 13:17:24 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Chng, Jack Ping" <jack.ping.chng@linux.intel.com>
+Cc:     devel@driverdev.osuosl.org, cheol.yong.kim@intel.com,
+        andriy.shevchenko@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mallikarjunax.reddy@linux.intel.com,
+        davem@davemloft.net
+Subject: Re: FW: [PATCH v2] staging: intel-gwdpa: gswip: Introduce Gigabit
+ Ethernet Switch (GSWIP) device driver
+Message-ID: <20191211121724.GA514307@kroah.com>
+References: <5f85180573a3fb20238d6a340cdd990f140ed6f0.1576054234.git.jack.ping.chng@intel.com>
+ <20191211092738.GA505511@kroah.com>
+ <BYAPR11MB317606F8BE2B60C4BAD872F1DE5A0@BYAPR11MB3176.namprd11.prod.outlook.com>
+ <c26e56cf-eb04-5992-252a-e66f6029d6ac@linux.intel.com>
 MIME-Version: 1.0
-References: <20191211102455.7b55218e@canb.auug.org.au> <20191211092640.107621-1-Jason@zx2c4.com>
- <CAKv+Gu80vONMAuv=2OpSOuZHvVv22quRxeNtbxnSkFBz_DvfbQ@mail.gmail.com>
-In-Reply-To: <CAKv+Gu80vONMAuv=2OpSOuZHvVv22quRxeNtbxnSkFBz_DvfbQ@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 11 Dec 2019 13:07:43 +0100
-X-Gmail-Original-Message-ID: <CAHmME9r09=YNw1MmnzoRLA4szJ9zz-uV4Hut4dFZKHDwG8Qp6A@mail.gmail.com>
-Message-ID: <CAHmME9r09=YNw1MmnzoRLA4szJ9zz-uV4Hut4dFZKHDwG8Qp6A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] crypto: arm/curve25519 - add arch-specific key
- generation function
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c26e56cf-eb04-5992-252a-e66f6029d6ac@linux.intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 10:38 AM Ard Biesheuvel
-<ard.biesheuvel@linaro.org> wrote:
-> > The x86_64 glue has a specific key
-> > generation implementation, but the Arm one does not. However, it can
-> > still receive the NEON speedups by calling the ordinary DH function
-> > using the base point.
-> >
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->
-> With the first sentence dropped,
->
-> Acked-by: Ard Biesheuvel <ardb@kernel.org>
+On Wed, Dec 11, 2019 at 06:37:42PM +0800, Chng, Jack Ping wrote:
+> Hi Greg,
+> 
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Wednesday, December 11, 2019 5:28 PM
+> > To: Chng, Jack Ping <jack.ping.chng@intel.com>
+> > Cc: devel@driverdev.osuosl.org; Kim, Cheol Yong <cheol.yong.kim@intel.com>; Shevchenko, Andriy <andriy.shevchenko@intel.com>; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Amireddy Mallikarjuna reddy <mallikarjunax.reddy@linux.intel.com>; davem@davemloft.net
+> > Subject: Re: [PATCH v2] staging: intel-gwdpa: gswip: Introduce Gigabit Ethernet Switch (GSWIP) device driver
+> > 
+> > On Wed, Dec 11, 2019 at 04:57:28PM +0800, Jack Ping CHNG wrote:
+> > > This driver enables the Intel's LGM SoC GSWIP block.
+> > > GSWIP is a core module tailored for L2/L3/L4+ data plane and QoS functions.
+> > > It allows CPUs and other accelerators connected to the SoC datapath to
+> > > enqueue and dequeue packets through DMAs.
+> > > Most configuration values are stored in tables such as Parsing and
+> > > Classification Engine tables, Buffer Manager tables and Pseudo MAC
+> > > tables.
+> > Odd line wrapping :(
+> > 
+> > > Signed-off-by: Jack Ping CHNG <jack.ping.chng@intel.com>
+> > > Signed-off-by: Amireddy Mallikarjuna reddy
+> > > <mallikarjunax.reddy@linux.intel.com>
+> > > ---
+> > > Changes on v2:
+> > > - Renamed intel-dpa to intel-gwdpa
+> > > - Added intel-gwdpa.txt(Intel Gateway Datapath Architecture)
+> > > - Added TODO (upstream plan)
+> > 
+> > > +Upstream plan
+> > > +--------------
+> > > +
+> > > +      GSWIP  CQM  PP  DPM     DCDP
+> > > +        |     |    |   |        |
+> > > +        |     |    |   |        |
+> > > +        V     V    V   V        V
+> > > +        -------------------------------------( drivers/staging/intel-gwdpa/* )
+> > > +                            |  (move to soc folder)
+> > > +                            V
+> > > +                    -------------------------(
+> > > + drivers/soc/intel/gwdpa-*/* )
+> > > +
+> > > +                            Eth driver  Wireless/
+> > > +                                |       WAN driver
+> > > +                                |         |
+> > > +                                V         V
+> > > +                             ----------------( drivers/net/ethernet/intel )
+> > > +                                             ( drivers/net/wireless )
+> > > +                                             ( drivers/net/wan)
+> > > +
+> > > +* Each driver will have a TODO list.
+> > Again, what kind of plan is this?  It's just a "these files need to be moved to this location" plan?
+> > 
+> > Why not do that today?
+> > 
+> > What is keeping this code from being accepted in the "correct" place today?  And why do you want it in staging?  You know it takes even more work to do things here, right?  Are you ready to sign up for that work (hint, you didn't add your names to the MAINTAINER file, so I worry about that...)
+> 
+> Thanks for the reply.
+> 
+> We are trying to upstream the datapath code for Intel new NoC gateway
+> (please refer to intel-gwdpa.txt at the end of the patch). It consists of
+> ethernet, WIFI and passive optics handling. Since the code is quite huge, we
+> have broken it into parts for internal review.
+> 
+> As we have seen past upstream example such as fsl/dpaa, we thought that it
+> is better for us to start the upstreaming of the driver into staging folder
+> to get feedback from the community.
+> 
+> Is this the right approach? Or do we upstream all the drivers into
+> drivers/soc folder when we have all the drivers ready?
 
-Herbert - can you pick this up for 5.5-rc2 rather than 5.6?
+Why is drivers/soc/ the place to put networking drivers?
+
+Please please please work with the Intel Linux kernel developers who
+know how to do this type of thing and do not require the kernel
+community to teach you all the proper development model and methods
+here.
+
+thanks,
+
+greg k-h
