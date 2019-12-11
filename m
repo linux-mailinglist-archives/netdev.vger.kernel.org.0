@@ -2,217 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96BF511C0CC
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 00:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D8411C0D3
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 00:53:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfLKXuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 18:50:04 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:46230 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726989AbfLKXuE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 18:50:04 -0500
-Received: by mail-lf1-f68.google.com with SMTP id f15so187166lfl.13
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 15:50:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=3ar8hSRxaWEDYYcaZhXo4D+jXpzHyiQxdbvMX4+sxbw=;
-        b=J+3gOEj9//BN+ky7TtDHfiFUhcWKKXu2q0p6enY7O+oXtkHhmLpg6Ex0ksSgm9rXw9
-         XUrVXLA1pS1Ifvi4qYIcqrMyHqRuwn3Ag46LEv62xxqIMCGnIMq+XrBZVuJN7HRW+X+9
-         i4FYhYcEVv+GB6LUDzvvpD5yFvgzrpVf0dxGuLqLkHwitL1PaY7ScPRB2ztP3o8McMuJ
-         AQMJuSVv8zBpVHFid1m/jyrbbxkxmW/eYqkaYFtUzjaY3ypVTu4XYti4SwFBJGCkrUQ9
-         Uh5eKXayjbTimhfZ9/lHUWch1Oq97UNT5h1AE613YkuVJhsV2vo79d6KmdsLRFsxLnRw
-         kowA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=3ar8hSRxaWEDYYcaZhXo4D+jXpzHyiQxdbvMX4+sxbw=;
-        b=X+yocWfcjeTHEq+IfIgzP4PpRsgy9CXrOG8PgluhCrAREjGPvQYtTCV8A6o4NuLt5A
-         Ryksms0VwTF8t1qB7yDCUHbXzN1MBxY+y9NbAlhzkmp1wBuev1HHXVVC+XcKGF3e8IFp
-         82xG4KQ7ec8uII6O/KNNrMg4fU676E4Yx/1AbvKhPlaZEc7hsbAZSGDhLx8VMcOVWarm
-         RwfjEHsywcV07kQ+eQwQhcYdL7ctbZrHwWUFsUfQUI4MQjpx0bK165FL5LBWyS3EjjPC
-         ePoM58SXoeI+8AI35OA7rz9h3LrRzLQ1ELlnGgUH86w1c9RqAS6oNSlkcwu+0o+hMNFc
-         0H/g==
-X-Gm-Message-State: APjAAAVyBNrtRbIhbO6O+P95wpy05ByXrhICL8nd77R07lYetJsrjby/
-        m4XijvDkaWc56NXqs3raEkjLlQ==
-X-Google-Smtp-Source: APXvYqxLBlm2lDvETlbo6tR3SMfMEiRwEcggIuyy2hd+tE015YJ2jzRHZ0h2rdzwNuMk3KFs/l7V0Q==
-X-Received: by 2002:a19:784:: with SMTP id 126mr3803119lfh.191.1576108200961;
-        Wed, 11 Dec 2019 15:50:00 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 192sm1928868lfh.28.2019.12.11.15.49.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 15:50:00 -0800 (PST)
-Date:   Wed, 11 Dec 2019 15:49:52 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Yuval Avnery <yuvalav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Message-ID: <20191211154952.50109494@cakuba.netronome.com>
-In-Reply-To: <AM6PR05MB51423D365FB5A8DB22B1DE62C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
-        <20191211095854.6cd860f1@cakuba.netronome.com>
-        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-        <20191211111537.416bf078@cakuba.netronome.com>
-        <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-        <20191211142401.742189cf@cakuba.netronome.com>
-        <AM6PR05MB51423D365FB5A8DB22B1DE62C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1727166AbfLKXxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 18:53:25 -0500
+Received: from mout.web.de ([217.72.192.78]:51499 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726932AbfLKXxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 18:53:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1576108386;
+        bh=SHwEKS5HfPBsQhvwUPeNKlfOw3SLEczu2hmisG7j3I0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=aIqzyFzwBvAIkbawHJWO72Fzh/mqzDnJ47gjo+yrZ0emK3xg0COqzKQvdofPbG6W1
+         d7UTORKsKVPB8mlcfk9JMtDGKMUW+dFPP6LlKDo6mwJFdQ55GLNRf73sIIj++11RuN
+         PlgBQIehl0VmRhZV/cTxU5lHqFlyVkQsgnPN7mnU=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from localhost.localdomain ([89.204.139.166]) by smtp.web.de
+ (mrweb101 [213.165.67.124]) with ESMTPSA (Nemesis) id
+ 0LhNjo-1hshso0mnI-00mXj0; Thu, 12 Dec 2019 00:53:06 +0100
+From:   Soeren Moch <smoch@web.de>
+To:     Kalle Valo <kvalo@codeaurora.org>, Heiko Stuebner <heiko@sntech.de>
+Cc:     Soeren Moch <smoch@web.de>, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/9] brcmfmac: add support for BCM4359 SDIO chipset
+Date:   Thu, 12 Dec 2019 00:52:44 +0100
+Message-Id: <20191211235253.2539-1-smoch@web.de>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:wlune+MBVxnnPbtH/WJuKIHVW5Kt4Bh3x2TSi6jf84eE1oZeOVU
+ dmIZckdKvEOp6T4MOEtvJQgRx77JwjPoOcGEySs5ql5yqY1cwslVBk26J6vh1rviiwMAuad
+ k1NAwnKUmVgu/TQ6URsFElTL0U9+2DgdvYs6zDvLSawYziqCa9ESz6goH4pbemoW/JI1hWJ
+ z0wb2ZsezZhRj/yGPwUfQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5h+qvYh+xgc=:yPWTesPFkaFZunR1Eod+lF
+ 2qKdRZ6DCppLTdhLkqMCYqcFmh8UYXKNnRvrmKane6YZKwhFfqgEOFl/wkxwBd6/7wBoIqRGy
+ M5W26qWzPxoBqkP1917hy1u72p+UuZdttRBNGM2iV/+xPXJ7XxnSQycad14nt73x6LMKLapY7
+ SdsLP60IVD7h6kuu2E4pEXaI1kByLxetc3+DUaVkkYA8grZLbAp7faZZbFKO1TVIzS5aUAxeY
+ eFgmLd4U4re5UZLqyd9YgKHj5x5KISZl8Me2v5CB9dvUeYmpHU5/YDkpdDUpThQ4CoeuzS+5g
+ UMWMcGM1g7uNZd1t5QtF7nqf40zxtEukWAaPj4v2sUNAja7dryceVeaFddB9THb6/jx8rvDCv
+ DWu/9wXZFD877mjmALV3pAWCH793Yf4DBwlSdszpRTiJC8IysS1FIA8NPLfhpD01VKk480Hc6
+ M1XB/ydwHTCHMUOZeVHBNQ93h+9XBCkyri+v3ciXp09Z7h42XFiwkqZ874Iva0xa7Qr+o2w4k
+ iYOweRTYoSsnKn8CaguvO+qrguwzvSm9ltwA9fyFctTLQv4yBW8WHBxVwPoZBky0qjGWwZDHB
+ kACE+SY9SyxUUL+2Lc7SHZB3uenG7XO1A+8U/LGLdvT0O2NTw5J2coJNUONG2KLEwVjaCCy2Q
+ +pBQbiKvDiKhUGfv6nUTtkbr9Xn9rfiI5yU7FadQKcnCpKudCGGqFcE4WzkGHLS0+RshMKfhi
+ 60qRJZKqUe3/iQzBamiZmg8b4dpXKgil74k/F9tJcNTrLFbMh5sI6lBu0PHP5Pq5mUKR0i/nM
+ f2/T/YeZmT9cmtduo6fhV719mFpRLw63HL2VLYsXT1nYkDFKa3aL/UF8gUETQWazXe0SqYEgv
+ 1ojGnYZs7WH6VEwQRtDMMcOCxOk+lxKU8EI/TaazwCfDYtUl6W8ecsTta9ZHlNCnyITs2O55O
+ C/34cfSS94RetB76ivOVnf/QPCDOHC15FSjuMjHfL4QyjsaQH2ntkqh91NsAb1rM0aiQ8zYzO
+ h+n05fHcVMzuByU/O94zRRwLjgHKjvD1PbNT4e5WWazigCvn1NBbA1yOkOkhknZ7QDJR0dNYF
+ nYckdKT5YEsrgvE+3Wl5fb9II3K9SLV45+YjpNHQR6/WltwL8ceJ2ZGHXPQO6tmg6Sn7ZOIyD
+ Hcu79rZlBnFVFLxRz1X6kWQbSkBool9oS21KSLY1AT637q30RFrPBmZUwe5Bc7+xMnZfPMAlz
+ grHTBdSenszURSwg2PPqMcX8zA22rNMMdZ/RAzA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 23:25:09 +0000, Yuval Avnery wrote:
-> > -----Original Message-----
-> > From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > Sent: Wednesday, December 11, 2019 2:24 PM
-> > To: Yuval Avnery <yuvalav@mellanox.com>
-> > Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-> > 
-> > On Wed, 11 Dec 2019 19:57:34 +0000, Yuval Avnery wrote:  
-> > > > -----Original Message-----
-> > > > From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > > > Sent: Wednesday, December 11, 2019 11:16 AM
-> > > > To: Yuval Avnery <yuvalav@mellanox.com>
-> > > > Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
-> > > > netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> > > > Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-> > > >
-> > > > On Wed, 11 Dec 2019 18:19:56 +0000, Yuval Avnery wrote:  
-> > > > > > On Wed, 11 Dec 2019 04:58:53 +0200, Yuval Avnery wrote:  
-> > > > > > > Currently there is no limit to the number of VFs netdevsim can enable.  
-> > > > > > > In a real systems this value exist and used by driver.
-> > > > > > > Fore example, Some features might need to consider this value
-> > > > > > > when allocating memory.  
-> > > > > >
-> > > > > > Thanks for the patch!
-> > > > > >
-> > > > > > Can you shed a little bit more light on where it pops up? Just
-> > > > > > for my  
-> > > > curiosity?  
-> > > > >
-> > > > > Yes, like we described in the subdev threads.
-> > > > > User should be able to configure some attributes before the VF was  
-> > > > enabled.  
-> > > > > So all those (persistent) VF attributes should be available for
-> > > > > query and configuration before VF was enabled.
-> > > > > The driver can allocate an array according to max_vfs to hold all
-> > > > > that data, like we do here in" vfconfigs".  
-> > > >
-> > > > I was after more practical reasoning, are you writing some tests for
-> > > > subdev stuff that will depend on this change? :)  
-> > >
-> > > Yes we are writing tests for subdev with this.  
-> > 
-> > Okay, please post v2 together with the tests. We don't accept netdevsim
-> > features without tests any more.  
-> 
-> I think the only test I can currently write is the enable SR-IOV max_vfs enforcement.
-> Because subdev is not in yet.
-> Will that be good enough?
+Add support for the BCM4359 chipset with SDIO interface and RSDB support
+to the brcmfmac wireless network driver in patches 1-7.
 
-It'd be good to test some netdev API rather than just the enforcement
-itself which is entirely in netdevsim, I think.
+Enhance devicetree of the RockPro64 arm64/rockchip board to use an
+AP6359SA based wifi/bt combo module with this chipset in patches 8-9.
 
-So max_vfs enforcement plus checking that ip link lists the correct
-number of entries (and perhaps the entries are in reset state after
-enable) would do IMO.
 
-> > > This is the way mlx5 works.. is that practical enough?
-> > >  
-> > > > > > > Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
-> > > > > > > Acked-by: Jiri Pirko <jiri@mellanox.com>
-> > > > > > >
-> > > > > > > diff --git a/drivers/net/netdevsim/bus.c
-> > > > > > > b/drivers/net/netdevsim/bus.c index 6aeed0c600f8..f1a0171080cb
-> > > > > > > 100644
-> > > > > > > --- a/drivers/net/netdevsim/bus.c
-> > > > > > > +++ b/drivers/net/netdevsim/bus.c
-> > > > > > > @@ -26,9 +26,9 @@ static struct nsim_bus_dev
-> > > > > > > *to_nsim_bus_dev(struct device *dev)  static int
-> > > > > > > nsim_bus_dev_vfs_enable(struct nsim_bus_dev  
-> > > > > > *nsim_bus_dev,  
-> > > > > > >  				   unsigned int num_vfs)
-> > > > > > >  {
-> > > > > > > -	nsim_bus_dev->vfconfigs = kcalloc(num_vfs,
-> > > > > > > -					  sizeof(struct  
-> > nsim_vf_config),  
-> > > > > > > -					  GFP_KERNEL);  
-> > > > > >
-> > > > > > You're changing the semantics of the enable/disable as well now.
-> > > > > > The old values used to be wiped when SR-IOV is disabled, now
-> > > > > > they will be retained across disable/enable pair.
-> > > > > >
-> > > > > > I think it'd be better if that wasn't the case. Users may expect
-> > > > > > a system to be in the same state after they enable SR-IOV,
-> > > > > > regardless if someone else used SR-IOV since last reboot.  
-> > > > >
-> > > > > Right,
-> > > > > But some values should retain across enable/disable, for example
-> > > > > MAC  
-> > > > address which is persistent.  
-> > > > > So maybe we need to retain some values, while resetting others on  
-> > > > disable?  
-> > > > > Would that work?  
-> > > >
-> > > > Mmm. That is a good question. For all practical purposes SR-IOV used
-> > > > to be local to the host that enables it until Smart/middle box NICs  
-> > emerged.  
-> > > >
-> > > > Perhaps the best way forward would be to reset the config that was
-> > > > set via legacy APIs and keep only the MACs provisioned via persistent  
-> > devlink API?  
-> > > >
-> > > > So for now we'd memset, and once devlink API lands reset selectively?  
-> > >
-> > > Legacy is also persistent.
-> > > Currently when you set mac address with "ip link vf set mac" it is persistent  
-> > (at least in mlx5).
-> > 
-> > "Currently in mlx5" - maybe, but this is netdevsim. Currently it clears the
-> > config on re-enable which I believe to be preferable as explained before.
-> >   
-> > > But ip link only exposes enabled VFS, so driver on VF has to reload to  
-> > acquire this MAC.  
-> > > With devlink subdev it will be possible to set the MAC before VF was  
-> > enabled.
-> > 
-> > Yup, sure. As I said, once subdev is implemented, we will treat the addresses
-> > set by it differently. Those are inherently persistent or rather their life time is
-> > independent of just the SR-IOV host.  
-> 
-> Ok, got it.
-> I am just wondering how this works when you have "ip link" and devlink setting the MAC independently.
-> Will they show the same MAC?
-> Or ip link will show the non-persistent MAC And devlink the persistent?
+Chung-Hsien Hsu (1):
+  brcmfmac: set F2 blocksize and watermark for 4359
 
-My knee jerk reaction is that we should populate the values to those set
-via devlink upon SR-IOV enable, but then if user overwrites those values
-that's their problem.
+Soeren Moch (5):
+  brcmfmac: fix rambase for 4359/9
+  brcmfmac: make errors when setting roaming parameters non-fatal
+  brcmfmac: add support for BCM4359 SDIO chipset
+  arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
+  arm64: dts: rockchip: RockPro64: hook up bluetooth at uart0
 
-Sort of mirror how VF MAC addrs work, just a level deeper. The VF
-defaults to the MAC addr provided by the PF after reset, but it can
-change it to something else (things may stop working because spoof
-check etc. will drop all its frames, but nothing stops the VF in legacy
-HW from writing its MAC addr register).
+Wright Feng (3):
+  brcmfmac: reset two D11 cores if chip has two D11 cores
+  brcmfmac: add RSDB condition when setting interface combinations
+  brcmfmac: not set mbss in vif if firmware does not support MBSS
 
-IOW the devlink addr is the default/provisioned addr, not necessarily
-the addr the PF has set _now_.
+ .../boot/dts/rockchip/rk3399-rockpro64.dts    | 50 +++++++++++---
+ .../broadcom/brcm80211/brcmfmac/bcmsdh.c      |  8 ++-
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 68 +++++++++++++++----
+ .../broadcom/brcm80211/brcmfmac/chip.c        | 54 ++++++++++++++-
+ .../broadcom/brcm80211/brcmfmac/chip.h        |  1 +
+ .../broadcom/brcm80211/brcmfmac/pcie.c        |  2 +-
+ .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 +++++
+ include/linux/mmc/sdio_ids.h                  |  2 +
+ 8 files changed, 176 insertions(+), 26 deletions(-)
 
-Other options I guess are (a) reject the changes of the address from
-the PF once devlink has set a value; (b) provide some device->control
-CPU notifier which can ack/reject a request from the PF to change
-devlink's value..?
+=2D--
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: linux-wireless@vger.kernel.org
+Cc: brcm80211-dev-list.pdl@broadcom.com
+Cc: brcm80211-dev-list@cypress.com
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-rockchip@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
 
-You guys posted the devlink patches a while ago, what was your
-implementation doing?
+=2D-
+2.17.1
+
