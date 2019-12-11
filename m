@@ -2,126 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7326411A2D8
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 04:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C60511A2D9
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 04:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbfLKDGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 22:06:32 -0500
-Received: from mail-eopbgr10099.outbound.protection.outlook.com ([40.107.1.99]:35300
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        id S1727254AbfLKDGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 22:06:38 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:47642 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726619AbfLKDGc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 22:06:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F+br7YwWdytHk95tOQsdayew23Fqtgo4rmPNd1A9M9nDvRv5RbAYFyo9lOYXDJ6tYgMVF7wrHCoVzKiH+8CgUA/bN+HZnliSLVyxqUBvtueHiNFlLnNIzmiIBvFct7y5fiYoKZFjAoS38s+39+6GipaGqL2MpYs+pJ6taxW/LfPlR1AcSQ2UuKGR8jovvSIUHam1majHVZCTWXKfhxf8wA0AnvyuupVONnHx9kJ8BUSCP2nFsYMHVxPkYP6kyJ44AxMM2ny58/LiNT5WT/J8oFrvKDWle3Bx68GJS8RKFFoZmAkrxWJg3i6xQo/ws8NJyQSQX05jQ2sKpVWZeQuImQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gyt+9Ps3OL5tL65/MzkfFgTTRe3SM/zDRNQvB+SdlLc=;
- b=Ml6/Qy3/RTS6bgYTUyhWbowDzBbxPHRBu29dbvJE8+WUIJ7XK3YqGAp2FzXoetPEIbA3B6g/kMcfu9xVb2fWk768Q5djLpUILrImKdQgPYmzHYDIGcnPBd445e6r5/F5xlQoFAF3HLn2NK2C0vMRsFARpvJNsdga8jFP8RJ0/NYQ84vMaLGrj4TNWSPMCVTBQ8b7awwvQ8Ix0MSH0iGV3h0x9kenWbn9Tzmlnrceb615UC0xmekqkQSvaBrug6tKHUCBs94Ic+pZDDoB2SrieCZ3wWbSw91jHpC5w/ldDuC2Tlx5UL7E8pia8sBcVlWNhmm2AIF4O3JcNMDCvePvOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gyt+9Ps3OL5tL65/MzkfFgTTRe3SM/zDRNQvB+SdlLc=;
- b=YzS0rP3NBu/69I66wCWatheGDk43zT5uc+fyqiI+n61txBOm5iInVwXFsQrO3Jz0t5fVHzpKQwk4NvPI7aA+8XCmHOKAp782eX9hQdn7L7fOK/590Rnqm+PJin0HJ9bAJce8pVWKHoDumZxhbYDDhHCuBbbkUQjNh82NPOLkOTo=
-Received: from DB6PR07MB4408.eurprd07.prod.outlook.com (10.168.24.141) by
- DB6PR07MB4216.eurprd07.prod.outlook.com (10.168.25.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.8; Wed, 11 Dec 2019 03:06:26 +0000
-Received: from DB6PR07MB4408.eurprd07.prod.outlook.com
- ([fe80::e430:ac8d:bb4a:21cf]) by DB6PR07MB4408.eurprd07.prod.outlook.com
- ([fe80::e430:ac8d:bb4a:21cf%6]) with mapi id 15.20.2538.012; Wed, 11 Dec 2019
- 03:06:26 +0000
-From:   "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-To:     David Miller <davem@davemloft.net>,
-        "martinvarghesenokia@gmail.com" <martinvarghesenokia@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pshelar@ovn.org" <pshelar@ovn.org>,
-        "Drennan, Scott (Nokia - US/Mountain View)" <scott.drennan@nokia.com>,
-        "jbenc@redhat.com" <jbenc@redhat.com>
-Subject: RE: [PATCH net-next 1/3] net: skb_mpls_push() modified to allow MPLS
- header push at start of packet.
-Thread-Topic: [PATCH net-next 1/3] net: skb_mpls_push() modified to allow MPLS
- header push at start of packet.
-Thread-Index: AQHVry9Ze9r+xo2c2k2xXP/XP9VHD6e0Km0AgAAWxWA=
-Date:   Wed, 11 Dec 2019 03:06:25 +0000
-Message-ID: <DB6PR07MB440807A1042502E67507A55BED5A0@DB6PR07MB4408.eurprd07.prod.outlook.com>
-References: <cover.1575964218.git.martin.varghese@nokia.com>
-        <8ff8206cc062f1755292b26a32421a66eeb17ce7.1575964218.git.martin.varghese@nokia.com>
- <20191210.174334.2001305350497606544.davem@davemloft.net>
-In-Reply-To: <20191210.174334.2001305350497606544.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=martin.varghese@nokia.com; 
-x-originating-ip: [131.228.69.10]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e7eea6d1-9b61-4e6d-1206-08d77de71c5e
-x-ms-traffictypediagnostic: DB6PR07MB4216:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR07MB421688D5C04FCE30BAF29A53ED5A0@DB6PR07MB4216.eurprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 024847EE92
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(376002)(366004)(39860400002)(346002)(13464003)(199004)(189003)(33656002)(71200400001)(4326008)(110136005)(8936002)(55016002)(7696005)(8676002)(9686003)(478600001)(86362001)(76116006)(81166006)(81156014)(66946007)(26005)(2906002)(66556008)(53546011)(186003)(6506007)(66446008)(5660300002)(64756008)(66476007)(316002)(54906003)(52536014);DIR:OUT;SFP:1102;SCL:1;SRVR:DB6PR07MB4216;H:DB6PR07MB4408.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nokia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ffajB6+UMYj7BmsxD1ve2A3LqN8eIzQTM6VWNemkOvu5xNB5mpl1S0JM+LBFavCHV15DHJyqxpBV66tDZnqvpriLOovgcXLzxG3Rx7HAnjrLkhN0mt7xE2+bDy1ViFWxZLGwm3Gfr4fXV3LewLs3M6E1IDXjn3aMxDGWRV9wWyOPMKDWmiZpDPbLs8O/eAYK0AXMQ2z/AES/0/lc+OSod/FsCvfkqcJdUl1mI4qO5rZ6qlAHrXXYG8LtjreJA/C0G6y21+Ko5B055TjSRdYH+dnUxYRZMbEAukdeRFt8wBrSVAH/QnAcm1tsnNMN9uhNW2hGrqeeZDnsWcUHgUiFca3v9NGGEqJN8x1aA34XywN3hhwQfNuxEnUv9cJC45kn6bhjtWIHxJ92bQze3sETNbqMH+AEkhb5W9/cM3L3HkD5Te33cF6CpRfix3PG+kfDdUKIsAt7lxvYxhLdfq7RVFFja2nadFm7uESK2rqOwQK7o7+1vlIlRq2uGot672ry
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726619AbfLKDGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 22:06:38 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 429194B3F1CE7D9164E8;
+        Wed, 11 Dec 2019 11:06:36 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Wed, 11 Dec 2019
+ 11:06:32 +0800
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>
+CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191209131416.238d4ae4@carbon>
+ <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+ <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
+ <585eda1ebe8788959b31bca5bb6943908c08c909.camel@mellanox.com>
+ <910156da-0b43-0a86-67a0-f4e7e6547373@huawei.com>
+Message-ID: <69faa802-bae3-6ccb-4502-530bcd058322@huawei.com>
+Date:   Wed, 11 Dec 2019 11:06:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7eea6d1-9b61-4e6d-1206-08d77de71c5e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Dec 2019 03:06:26.0880
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: te358Q23KWiH3eoCTIJHfgq6RVF2QTHEOeIaK/qGa9Ab/mGu4Od9Q+PDhCBFcnLu6cdsd/j/CXruEhcDDVHiCwgU+lr55ecBtQHBDFPU2Tw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR07MB4216
+In-Reply-To: <910156da-0b43-0a86-67a0-f4e7e6547373@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oops Typo, will fix it. thanks
+On 2019/12/11 11:01, Yunsheng Lin wrote:
+> On 2019/12/11 3:45, Saeed Mahameed wrote:
+>>>> maybe assume that __page_pool_recycle_direct() is always called
+>>>> from
+>>>> the right node and change the current bogus check:
+>>>>
+>>>> from:
+>>>> page_to_nid(page) == pool->p.nid 
+>>>>
+>>>> to:
+>>>> page_to_nid(page) == numa_mem_id()
+>>>>
+>>>> This will allow recycling only if handling node is the same as
+>>>> where
+>>>> the page was allocated, regardless of pool->p.nid.
+>>>>
+>>>> so semantics are:
+>>>>
+>>>> 1) allocate from: pool->p.nid, as chosen by user.
+>>>> 2) recycle when: page_to_nid(page) == numa_mem_id().
+>>>> 3) pool user must guarantee that the handler will run on the right
+>>>> node. which should always be the case. otherwise recycling will be
+>>>> skipped (no cross numa recycling).
+>>>>
+>>>>
+>>>> a) if the pool migrates, we will stop recycling until the pool
+>>>> moves
+>>>> back to original node, or user calls pool_update_nid() as we do in
+>>>> mlx5.
+>>>> b) if pool is NUMA_NO_NODE, then allocation and handling will be
+>>>> done
+>>>> on numa_mem_id(), which means the above check will work.
+>>>
+>>> Only checking page_to_nid(page) == numa_mem_id() may not work for the
+>>> below
+>>> case in mvneta.c:
+>>>
+>>> static int mvneta_create_page_pool(struct mvneta_port *pp,
+>>> 				   struct mvneta_rx_queue *rxq, int
+>>> size)
+>>> {
+>>> 	struct bpf_prog *xdp_prog = READ_ONCE(pp->xdp_prog);
+>>> 	struct page_pool_params pp_params = {
+>>> 		.order = 0,
+>>> 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+>>> 		.pool_size = size,
+>>> 		.nid = cpu_to_node(0),
+>>> 		.dev = pp->dev->dev.parent,
+>>> 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL :
+>>> DMA_FROM_DEVICE,
+>>> 		.offset = pp->rx_offset_correction,
+>>> 		.max_len = MVNETA_MAX_RX_BUF_SIZE,
+>>> 	};
+>>>
+>>> the pool->p.nid is not NUMA_NO_NODE, then the node of page allocated
+>>> for rx
+>>> may not be numa_mem_id() when running in the NAPI polling, because
+>>> pool->p.nid
+>>> is not the same as the node of cpu running in the NAPI polling.
+>>>
+>>> Does the page pool support recycling for above case?
+>>>
+>>
+>> I don't think you want to allow cross numa recycling.
+> 
+> Cross numa recycling is not what I want.
+> 
+>>
+>>> Or we "fix' the above case by setting pool->p.nid to
+>>> NUMA_NO_NODE/dev_to_node(),
+>>> or by calling pool_update_nid() in NAPI polling as mlx5 does?
+>>>
+>>
+>> Yes just update_nid when needed, and make sure the NAPI polling runs on
+>> a consistent core and eventually alloc/recycling will happen on the
+>> same core.
+> 
+> To me, passing NUMA_NO_NODE/dev_to_node() seems to always work.
+> Calling pool_update_nid() in NAPI polling is another way of passing
+> NUMA_NO_NODE to page_pool_init().
+> 
+> And it seems it is a copy & paste problem for mvneta and netsec
+> driver that uses cpu_to_node(0) as pool->p.nid but does not call
+> page_pool_nid_changed() in the NAPI polling as mlx5 does.
+> 
+> So I suggest to remove page_pool_nid_changed() and always use
+> NUMA_NO_NODE/dev_to_node() as pool->p.nid or make it clear (
+> by comment or warning?)that page_pool_nid_changed() should be
+> called when pool->p.nid is NUMA_NO_NODE/dev_to_node().
+                          ~~
 
------Original Message-----
-From: David Miller <davem@davemloft.net>=20
-Sent: Wednesday, December 11, 2019 7:14 AM
-To: martinvarghesenokia@gmail.com
-Cc: netdev@vger.kernel.org; pshelar@ovn.org; Drennan, Scott (Nokia - US/Mou=
-ntain View) <scott.drennan@nokia.com>; jbenc@redhat.com; Varghese, Martin (=
-Nokia - IN/Bangalore) <martin.varghese@nokia.com>
-Subject: Re: [PATCH net-next 1/3] net: skb_mpls_push() modified to allow MP=
-LS header push at start of packet.
+sorry for the typo.
 
-From: Martin Varghese <martinvarghesenokia@gmail.com>
-Date: Tue, 10 Dec 2019 13:45:52 +0530
+I meant pool->p.nid is not NUMA_NO_NODE/dev_to_node().
 
-> @@ -5472,12 +5472,15 @@ static void skb_mod_eth_type(struct sk_buff=20
-> *skb, struct ethhdr *hdr,  }
-> =20
->  /**
-> - * skb_mpls_push() - push a new MPLS header after the mac header
-> + * skb_mpls_push() - push a new MPLS header after mac_len bytes from sta=
-rt of
-> + *                   the packet
->   *
->   * @skb: buffer
->   * @mpls_lse: MPLS label stack entry to push
->   * @mpls_proto: ethertype of the new MPLS header (expects 0x8847 or 0x88=
-48)
->   * @mac_len: length of the MAC header
-> + * #ethernet: flag to indicate if the resulting packet after skb_mpls_pu=
-sh is
-> + *            ethernet
+> 
+> I prefer to remove page_pool_nid_changed() if we do not allow
+> cross numa recycling.
+> 
+> 
+>>
+>>>
+>>>> Thanks,
+>>>> Saeed.
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+> 
+> 
+> .
+> 
 
-Why "#ethernet" and not "@ethernet" to refer to this argument?
