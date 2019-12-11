@@ -2,131 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6FFE11A616
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221C211A649
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:53:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728402AbfLKImM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 03:42:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45768 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727253AbfLKImM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 03:42:12 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F74A2173E;
-        Wed, 11 Dec 2019 08:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576053731;
-        bh=12jKiiiaTPJVxoIxfBVZKjvh7sNdAl/aAKNfpHkRhdU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=swKuW/IgImJjrMJnaup1i8Q9gJ5Jrl2bK1s/YXT6H0BhZ5uPbzQkPS+FVn9GyrXUF
-         hv1llrXy4Fy6NinQt6jF+XtCVhSioMGadwM9RoN5LOq3Q4d7PNVW5XTiiAIi6Q2Kyr
-         gflwJBJ6Fzgki1GK+O1TCsA8vh2fvWOkeMswEzV0=
-Date:   Wed, 11 Dec 2019 09:42:06 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Scott Schafer <schaferjscott@gmail.com>
-Cc:     devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        GR-Linux-NIC-Dev@marvell.com, linux-kernel@vger.kernel.org,
-        Manish Chopra <manishc@marvell.com>
-Subject: Re: [PATCH] staging: qlge: Fix multiple WARNING and CHECK relating
- to formatting
-Message-ID: <20191211084206.GA483343@kroah.com>
-References: <20191211014759.4749-1-schaferjscott@gmail.com>
- <20191211073136.GB397938@kroah.com>
- <20191211082839.GA13244@karen>
+        id S1728277AbfLKIxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 03:53:18 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22625 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726983AbfLKIxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:53:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576054396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ErN/Wg7v3eiCe0Kx9UO/6mPJH73V49FsTdeJpQaYLfg=;
+        b=PPTERP/jZBI9ppL71ptLGVJrSZDALjQL70kgk2W+Uf2DwrX6szRUIGVhtvNA6yb9nQlBH4
+        S9mxbydWDCLYQQ8Xg0AlSvnzAwgY3afVzRJIvo75RhB3vE3u1gvS+FeN7AsUYVoNl0hqZM
+        Xj8zGk9MHwFbX7s94l5GnfMsFbzq0Hk=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-198-naSJLOusMSq_mFQmKa3e4A-1; Wed, 11 Dec 2019 03:53:14 -0500
+Received: by mail-lf1-f70.google.com with SMTP id y4so4859771lfg.1
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 00:53:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=pZtJTilsJZlUcalnSJQYHRduUjW4Lu05sEgNkR0v5cc=;
+        b=Ja3T0P+1Kj7D68HZzxhO9Vd+GepSGCSIPYIr1CFVrzqjj1YPjucVyAhjI5g38h4wPX
+         9o4nhYPmf/EplYBmqpIh+yXlUDsTUlUAaIER/CByj6C1qz2SS9+mbuOEAMfNjNmdHLW2
+         aR5c7328FhwqIpAGu4ruPpiHEGU+iGKSh37FZJnmHbRzrgqRfE9vqWrl4BLzo37T4H7f
+         ylm6sgaH/6HGaI+/MPCHVYKGOKPbNmWm3AXg7pIQd5qo8luFHWbXRMDsaAJHx4VkQfv5
+         z34BruAVsqaaJUi6nqDjr5Fs9MDduCp2LqR0bL0vDbUfPDSEVHsikIXKF/1wsgr+5YIz
+         c5sQ==
+X-Gm-Message-State: APjAAAXSsya5oDeTMs/c9UjmODh0F7UCOwTuruQ2rD1cpiwK84aGBtTl
+        s6JPdtpKGlGYAHfldZ+gauPliWGHtP+xs9gbp6nFhXABwE53qavJ2ze7MyCFn2H8jm2KNK8nHJx
+        saL65QEFbXSmmSJ+f
+X-Received: by 2002:a2e:2201:: with SMTP id i1mr1191571lji.110.1576054392776;
+        Wed, 11 Dec 2019 00:53:12 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxzv9/7GEytOxrzOgMa5SPSHN1QlJE2sj9Zc1uAwuE1YS00Wxmllztzk/j/zIsSMKOfS3I0CQ==
+X-Received: by 2002:a2e:2201:: with SMTP id i1mr1191555lji.110.1576054392609;
+        Wed, 11 Dec 2019 00:53:12 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id v26sm765021lfq.73.2019.12.11.00.53.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 00:53:11 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9C5D318033F; Wed, 11 Dec 2019 09:53:10 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jens Axboe <axboe@kernel.dk>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: iwlwifi warnings in 5.5-rc1
+In-Reply-To: <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 11 Dec 2019 09:53:10 +0100
+Message-ID: <878snjgs5l.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191211082839.GA13244@karen>
+X-MC-Unique: naSJLOusMSq_mFQmKa3e4A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 02:28:39AM -0600, Scott Schafer wrote:
-> On Wed, Dec 11, 2019 at 08:31:36AM +0100, Greg Kroah-Hartman wrote:
-> > On Tue, Dec 10, 2019 at 07:47:59PM -0600, Scott Schafer wrote:
-> > > CHECK: Please don't use multiple blank lines
-> > > CHECK: Blank lines aren't necessary before a close brace '}'
-> > > CHECK: Blank lines aren't necessary after an open brace '{'
-> > > WARNING: Missing a blank line after declarations
-> > > CHECK: No space is necessary after a cast
-> > > CHECK: braces {} should be used on all arms of this statement
-> > > CHECK: Unbalanced braces around else statement
-> > > WARNING: please, no space before tabs
-> > > CHECK: spaces preferred around that '/' (ctx:VxV)
-> > > CHECK: spaces preferred around that '+' (ctx:VxV)
-> > > CHECK: spaces preferred around that '%' (ctx:VxV)
-> > > CHECK: spaces preferred around that '|' (ctx:VxV)
-> > > CHECK: spaces preferred around that '*' (ctx:VxV)
-> > > WARNING: Unnecessary space before function pointer arguments
-> > > WARNING: please, no spaces at the start of a line
-> > > WARNING: Block comments use a trailing */ on a separate line
-> > > ERROR: trailing whitespace
-> > > 
-> > > In files qlge.h, qlge_dbg.c, qlge_ethtool.c, qlge_main.c, and qlge_mpi.c
-> > > 
-> > > Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
-> > > ---
-> > >  drivers/staging/qlge/qlge.h         |  45 ++++++-------
-> > >  drivers/staging/qlge/qlge_dbg.c     |  41 ++++++-----
-> > >  drivers/staging/qlge/qlge_ethtool.c |  20 ++++--
-> > >  drivers/staging/qlge/qlge_main.c    | 101 ++++++++++++++--------------
-> > >  drivers/staging/qlge/qlge_mpi.c     |  37 +++++-----
-> > >  5 files changed, 125 insertions(+), 119 deletions(-)
-> > 
-> > Hi,
-> > 
-> > This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> > a patch that has triggered this response.  He used to manually respond
-> > to these common problems, but in order to save his sanity (he kept
-> > writing the same thing over and over, yet to different people), I was
-> > created.  Hopefully you will not take offence and will fix the problem
-> > in your patch and resubmit it so that it can be accepted into the Linux
-> > kernel tree.
-> > 
-> > You are receiving this message because of the following common error(s)
-> > as indicated below:
-> > 
-> > - Your patch did many different things all at once, making it difficult
-> >   to review.  All Linux kernel patches need to only do one thing at a
-> >   time.  If you need to do multiple things (such as clean up all coding
-> >   style issues in a file/driver), do it in a sequence of patches, each
-> >   one doing only one thing.  This will make it easier to review the
-> >   patches to ensure that they are correct, and to help alleviate any
-> >   merge issues that larger patches can cause.
-> > 
-> > If you wish to discuss this problem further, or you have questions about
-> > how to resolve this issue, please feel free to respond to this email and
-> > Greg will reply once he has dug out from the pending patches received
-> > from other developers.
-> > 
-> > thanks,
-> > 
-> > greg k-h's patch email bot
-> 
-> I was wondering how I would go about chaning the patch.
+Johannes Berg <johannes@sipsolutions.net> writes:
 
-Break it up into "one patch per logical change".
+> On Tue, 2019-12-10 at 13:46 -0700, Jens Axboe wrote:
+>> Hi,
+>>=20
+>> Since the GRO issue got fixed, iwlwifi has worked fine for me.
+>> However, on every boot, I get some warnings:
+>>=20
+>> ------------[ cut here ]------------
+>> STA b4:75:0e:99:1f:e0 AC 2 txq pending airtime underflow: 4294967088, 20=
+8
+>
+> Yeah, we've seen a few reports of this.
 
-See the many other patchsets on this mailing list for examples of how
-this is done.
+FWIW I've tried reproducing but I don't get the error with the 8265 /
+8275 chip in my laptop. I've thought about sending a patch for mac80211
+to just clear the tx_time_est field after calling
+ieee80211_sta_update_pending_airtime() - that should prevent any errors
+from double-reporting of skbs (which is what I'm guessing is going on
+here). However, it kinda feels like a band-aid so I'd much rather figure
+out why this particular driver/device combo cause this :)
 
-> I know I should switch to a patchset but how would I go about doing
-> that?
+> I guess I kinda feel responsible for this since I merged the AQL work,
+> I'll take a look as soon as I can.
 
-What exactly do you mean by "how"?
+Sounds good, thanks!
 
-> Also where would I place the new patches?
+-Toke
 
-You email them here :)
-
-> Would I, create a new patch series or would I split the patch into new
-> (smaller) patches and reply to this thread?
-
-Just a whole new patch series is good.
-
-thanks,
-
-greg k-h
