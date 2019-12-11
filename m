@@ -2,122 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9716E11BC24
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:46:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C584911BC2A
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729512AbfLKSqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:46:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38660 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726411AbfLKSqL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 13:46:11 -0500
-Received: from paulmck-ThinkPad-P72.home (unknown [199.201.64.130])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726487AbfLKStq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:49:46 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47688 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726242AbfLKStq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:49:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576090184;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BiLSYDkRntIU858BzJstZyuUBPdrBkPDKmfLrKClZAk=;
+        b=ALZfhn+nuMwWMipe+3Q1EFiePNkQ4/KciAC6YFv7tC66H8O/QuDaDjrPJ2mtRwwIdRmks5
+        R/feF41Q+B4Jg9vK28KqDnRZrfgE2D8kwISmz2e5qZpks3oGmQbfkT1PwXkWNsupZwqOSS
+        mMgJr4oLb/vWRMC7ess+jCwsuEhdzEM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-179-KXCLEEqOO1SUHuSbF4k6uQ-1; Wed, 11 Dec 2019 13:49:41 -0500
+X-MC-Unique: KXCLEEqOO1SUHuSbF4k6uQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 87A3520663;
-        Wed, 11 Dec 2019 18:46:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576089969;
-        bh=Rxu3mxn5istrjLGBr8ceMQOBnhaUS3GdugN8U5Q6Rl4=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=nUmRiHtB8Ht3AcdvCUFWUPZnA+1gNnKjEtCGlErAJ8wKdvaWMLfoova0MinBcPcOI
-         58pPK1VHXHWHbzQe0wLy/aWcDJs/2+ekX4LKMPVGDfQ5S9TIerYyWLugZZUY302XKA
-         n6Ns7DRy6iDJ2Bi7t7W01yz9jwC1pEVyVg0Iy6hY=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 1D59F35203C6; Wed, 11 Dec 2019 10:46:09 -0800 (PST)
-Date:   Wed, 11 Dec 2019 10:46:09 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Ying Xue <ying.xue@windriver.com>
-Cc:     Tuong Lien Tong <tuong.t.lien@dektech.com.au>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@kernel.org, tipc-discussion@lists.sourceforge.net,
-        kernel-team@fb.com, torvalds@linux-foundation.org,
-        davem@davemloft.net
-Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
- with rcu_replace_pointer()
-Message-ID: <20191211184609.GI2889@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20191210033146.GA32522@paulmck-ThinkPad-P72>
- <0e565b68-ece1-5ae6-bb5d-710163fb8893@windriver.com>
- <20191210223825.GS2889@paulmck-ThinkPad-P72>
- <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
- <707801d5afc6$cac68190$605384b0$@dektech.com.au>
- <db88d33f-8e25-8859-84ec-3372a108c759@windriver.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2244800C75;
+        Wed, 11 Dec 2019 18:49:39 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C8DAB5C1BB;
+        Wed, 11 Dec 2019 18:49:34 +0000 (UTC)
+Date:   Wed, 11 Dec 2019 19:49:33 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        brouer@redhat.com
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Message-ID: <20191211194933.15b53c11@carbon>
+In-Reply-To: <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+        <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db88d33f-8e25-8859-84ec-3372a108c759@windriver.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 12:42:00PM +0800, Ying Xue wrote:
-> On 12/11/19 10:00 AM, Tuong Lien Tong wrote:
-> >>  
-> >>  	/* Move passive key if any */
-> >>  	if (key.passive) {
-> >> -		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-> >> +		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2,
-> > &rx->lock);
-> > The 3rd parameter should be the lockdep condition checking instead of the
-> > spinlock's pointer i.e. "lockdep_is_held(&rx->lock)"?
-> > That's why I'd prefer to use the 'tipc_aead_rcu_swap ()' macro, which is
-> > clear & concise at least for the context here. It might be re-used later as
-> > well...
-> > 
+On Sat, 7 Dec 2019 03:52:41 +0000
+Saeed Mahameed <saeedm@mellanox.com> wrote:
+
+> I don't think it is correct to check that the page nid is same as
+> numa_mem_id() if pool is NUMA_NO_NODE. In such case we should allow all
+> pages to recycle, because you can't assume where pages are allocated
+> from and where they are being handled.
+
+I agree, using numa_mem_id() is not valid, because it takes the numa
+node id from the executing CPU and the call to __page_pool_put_page()
+can happen on a remote CPU (e.g. cpumap redirect, and in future SKBs).
+
+
+> I suggest the following:
 > 
-> Right. The 3rd parameter of rcu_replace_pointer() should be
-> "lockdep_is_held(&rx->lock)" instead of "&rx->lock".
+> return !page_pfmemalloc() && 
+> ( page_to_nid(page) == pool->p.nid || pool->p.nid == NUMA_NO_NODE );
 
-Like this?
+Above code doesn't generate optimal ASM code, I suggest:
 
-							Thanx, Paul
+ static bool pool_page_reusable(struct page_pool *pool, struct page *page)
+ {
+	return !page_is_pfmemalloc(page) &&
+		pool->p.nid != NUMA_NO_NODE &&
+		page_to_nid(page) == pool->p.nid;
+ }
 
-------------------------------------------------------------------------
+I have compiled different variants and looked at the ASM code generated
+by GCC.  This seems to give the best result.
 
-commit 575bb4ba1b22383656760feb3d122e11656ccdfd
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Mon Dec 9 19:13:45 2019 -0800
 
-    net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
-    
-    This commit replaces the use of rcu_swap_protected() with the more
-    intuitively appealing rcu_replace_pointer() as a step towards removing
-    rcu_swap_protected().
-    
-    Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
-    Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-    Reported-by: kbuild test robot <lkp@intel.com>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-    [ paulmck: Updated based on Ying Xue and Tuong Lien Tong feedback. ]
-    Cc: Jon Maloy <jon.maloy@ericsson.com>
-    Cc: Ying Xue <ying.xue@windriver.com>
-    Cc: "David S. Miller" <davem@davemloft.net>
-    Cc: <netdev@vger.kernel.org>
-    Cc: <tipc-discussion@lists.sourceforge.net>
+> 1) never recycle emergency pages, regardless of pool nid.
+> 2) always recycle if pool is NUMA_NO_NODE.
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 990a872..c8c47fc 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -257,9 +257,6 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
- #define tipc_aead_rcu_ptr(rcu_ptr, lock)				\
- 	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
- 
--#define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
--	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
--
- #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
- do {									\
- 	typeof(rcu_ptr) __tmp = rcu_dereference_protected((rcu_ptr),	\
-@@ -1189,7 +1186,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
- 
- 	/* Move passive key if any */
- 	if (key.passive) {
--		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-+		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2, lockdep_is_held(&rx->lock));
- 		x = (key.passive - key.pending + new_pending) % KEY_MAX;
- 		new_passive = (x <= 0) ? x + KEY_MAX : x;
- 	}
+Yes, this defines the semantics, that a page_pool configured with
+NUMA_NO_NODE means skip NUMA checks.  I think that sounds okay...
+
+
+> the above change should not add any overhead, a modest branch
+> predictor will handle this with no effort.
+
+It still annoys me that we keep adding instructions to this code
+hot-path (I counted 34 bytes and 11 instructions in my proposed
+function).
+
+I think that it might be possible to move these NUMA checks to
+alloc-side (instead of return/recycles side as today), and perhaps only
+on slow-path when dequeuing from ptr_ring (as recycles that call
+__page_pool_recycle_direct() will be pinned during NAPI).  But lets
+focus on a smaller fix for the immediate issue...
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
