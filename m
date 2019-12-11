@@ -2,138 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC5511A5C5
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F79811A5C6
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbfLKIXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 03:23:09 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44015 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728277AbfLKIXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:23:09 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b1so10383730pgq.10
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 00:23:09 -0800 (PST)
+        id S1728324AbfLKIXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 03:23:25 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37496 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728277AbfLKIXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:23:25 -0500
+Received: by mail-pg1-f195.google.com with SMTP id q127so10410921pga.4
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 00:23:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=lJULtQpShpRHaFvPKisAkpyn8+FMGgWhnQPjZrnhx70=;
-        b=QJbAEUAU8o36R3ftEbob/J1V8rJpAgoS2KqNQYUWYPSor4kApLDSh92KDBrFzA9WG2
-         wENNSnLaI0kLTkGsjisgfMDpXm2VE7RWKdRPlIBmodc4eRbrKK9rXc2ltfQYEe4NNkp7
-         tZadZbAhK/5t7DPKDC5iznIDUmlWszWg2ud+jfJ1mfo3UypFy9kzeeQb4z57XZf9r8mR
-         s5PLHAUPrn1jMJFyF/EENshY97tahCLDLKvxILOGA5JvN3F0zDMo8nDJhXhIwtY04ybb
-         Uy79OSHPqV8GLpz60JO8VJiQtPu9FSFwTzM3eKA+axwtJfwLLngAqJgtlI+1RDPpZrhC
-         wetA==
+        bh=9AaKIHGVxUO/9sjItMG4Dz/kMGJMWTEvFs9HTsa7WhI=;
+        b=nOvDKEPThk20a8mBu9sMh/FJ9H/0huElK9EConIwjxVLEFg73EHrGLy2i532Vf0qNj
+         KGybyyK2HzJ2G8lv/L9G9RZ9SiN0LVt2EIB5Xnhk1exDLP6ekIIhGNMfBSb84oNn03sO
+         Pt6KCVIV9In5Pk1xM71iPMBQWJ7Q8RADWdsCfCwqQwopqW0sNbgtGehkg8jH7X4h/4eF
+         7EqPVPvGltL68U/v+wIB0QderFvJUvUGOOnf1d+tawjSeGc5k9+i4Uk8K+eMVkNEp7Uc
+         96CW4V9icN1G4wxuyCGLE3lfHlZxiBbB513/ETvH6SlY09NM/Dm4tkq6LUP/UlbTKyY0
+         81/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lJULtQpShpRHaFvPKisAkpyn8+FMGgWhnQPjZrnhx70=;
-        b=G7GLkxXGC4/Lv5re+H3HysGA4/5KZ6bMCnaX76r+f+FKXO3MpKh4B0qqrToRAdAZX9
-         7KkSbV6nHDs9IZG0yuSF9+1ZMBsWRdJDHKpmjFICpfZH56Ctj8fgH8p8Z99RRQRo6dos
-         tOrRm5Us1i2kdmHX3aHoGA9W6VeihOq3J4TQqSc3hp6lLxxx/eB9eYojWcdYsSTYZmNg
-         +cp8yHaIJyRAAZv4RKVqiSieW5l10S430LJK9nG6Uvc+yl/G574XopGb8q9ZhgymM5SW
-         V0I94Bz6Te6XzfZJuyM+ALDrKR3C0+OVyHXMMYlrFqqH+DhYEZbX7eolBZJUOOkmPrsb
-         5VKA==
-X-Gm-Message-State: APjAAAUbCr0APguEV81+r6m8OJtKH3xtq08VLe56YXgjL8gJj437fYLa
-        KytWGSA60NsqyDWSZUzVq7E=
-X-Google-Smtp-Source: APXvYqzhXVm9uN6RLHuqEpYVGf6dnA04Kag86rWP+Kimy+CsdAmKcVGibJBH0hShzgZsKsDS1aQYSA==
-X-Received: by 2002:aa7:8181:: with SMTP id g1mr2405778pfi.215.1576052588789;
-        Wed, 11 Dec 2019 00:23:08 -0800 (PST)
+        bh=9AaKIHGVxUO/9sjItMG4Dz/kMGJMWTEvFs9HTsa7WhI=;
+        b=CxF5ev3NOullWz5/6YL0hlM4hWVAHj4D8rEhM761Z78Edxuklamschpgyw0341u8el
+         VxzmiQXV268W6xysCY3Qs6hWHJmFv0mB4blr+zS8TUQyo+BwUHNIMnoz7OkBEC0TSAbA
+         KDsX19LHxomOs1M1lwnRoDxvwpicZFtiGh9ZtnLysfITbQ7MwRjW2h8ng0DD4Y+fXXRX
+         a220sEYV19QI5lGmSqZH6wwBTiqPOroDUhD1NKuPLBJbIMAbUsBWewDDbWH3qSuR117O
+         FafPwLxr9dq26+v1VQG5VzElWAXFE5iA+lzQk8XCuotAqwROt7tmnrcXkXaOCIX0+PNx
+         n2rw==
+X-Gm-Message-State: APjAAAUlF4w6kxR2oUxGbraT6fDvUDZWooAfYTa8USxZRSEwS0eMyY3n
+        X1dCA0or+1zbkvtPD8QNZ5U=
+X-Google-Smtp-Source: APXvYqypI31RJq6L8oduT00EeJT6PCgojIVTKyB80ovzCynTkwwULqjvHylPs7F41gsqimcaBgAcSg==
+X-Received: by 2002:aa7:9697:: with SMTP id f23mr2333729pfk.232.1576052605032;
+        Wed, 11 Dec 2019 00:23:25 -0800 (PST)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id a13sm1852549pfc.40.2019.12.11.00.23.05
+        by smtp.gmail.com with ESMTPSA id e6sm1852398pfh.32.2019.12.11.00.23.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 00:23:07 -0800 (PST)
+        Wed, 11 Dec 2019 00:23:24 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, pablo@netfilter.org, laforge@gnumonks.org,
         osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 1/4] gtp: do not allow adding duplicate tid and ms_addr pdp context
-Date:   Wed, 11 Dec 2019 08:23:00 +0000
-Message-Id: <20191211082300.28530-1-ap420073@gmail.com>
+Subject: [PATCH net 2/4] gtp: fix wrong condition in gtp_genl_dump_pdp()
+Date:   Wed, 11 Dec 2019 08:23:17 +0000
+Message-Id: <20191211082317.28609-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GTP RX packet path lookups pdp context with TID. If duplicate TID pdp
-contexts are existing in the list, it couldn't select correct pdp context.
-So, TID value  should be unique.
-GTP TX packet path lookups pdp context with ms_addr. If duplicate ms_addr pdp
-contexts are existing in the list, it couldn't select correct pdp context.
-So, ms_addr value should be unique.
+gtp_genl_dump_pdp() is ->dumpit() callback of GTP module and it is used
+to dump pdp contexts. it would be re-executed because of dump packet size.
+
+If dump packet size is too big, it saves current dump pointer
+(gtp interface pointer, bucket, TID value) then it restarts dump from
+last pointer.
+Current GTP code allows adding zero TID pdp context but dump code
+ignores zero TID value. So, last dump pointer will not be found.
+
+In addition, this patch adds missing rcu_read_lock() in
+gtp_genl_dump_pdp().
 
 Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/gtp.c | 32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+ drivers/net/gtp.c | 36 +++++++++++++++++++-----------------
+ 1 file changed, 19 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index ecfe26215935..8b742edf793d 100644
+index 8b742edf793d..a010e0a11c33 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -926,24 +926,31 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
+@@ -38,7 +38,6 @@ struct pdp_ctx {
+ 	struct hlist_node	hlist_addr;
+ 
+ 	union {
+-		u64		tid;
+ 		struct {
+ 			u64	tid;
+ 			u16	flow;
+@@ -1244,43 +1243,46 @@ static int gtp_genl_dump_pdp(struct sk_buff *skb,
+ 				struct netlink_callback *cb)
+ {
+ 	struct gtp_dev *last_gtp = (struct gtp_dev *)cb->args[2], *gtp;
++	int i, j, bucket = cb->args[0], skip = cb->args[1];
+ 	struct net *net = sock_net(skb->sk);
+-	struct gtp_net *gn = net_generic(net, gtp_net_id);
+-	unsigned long tid = cb->args[1];
+-	int i, k = cb->args[0], ret;
+ 	struct pdp_ctx *pctx;
++	struct gtp_net *gn;
++
++	gn = net_generic(net, gtp_net_id);
+ 
+ 	if (cb->args[4])
+ 		return 0;
+ 
++	rcu_read_lock();
+ 	list_for_each_entry_rcu(gtp, &gn->gtp_dev_list, list) {
+ 		if (last_gtp && last_gtp != gtp)
+ 			continue;
+ 		else
+ 			last_gtp = NULL;
+ 
+-		for (i = k; i < gtp->hash_size; i++) {
+-			hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i], hlist_tid) {
+-				if (tid && tid != pctx->u.tid)
+-					continue;
+-				else
+-					tid = 0;
+-
+-				ret = gtp_genl_fill_info(skb,
+-							 NETLINK_CB(cb->skb).portid,
+-							 cb->nlh->nlmsg_seq,
+-							 cb->nlh->nlmsg_type, pctx);
+-				if (ret < 0) {
++		for (i = bucket; i < gtp->hash_size; i++) {
++			j = 0;
++			hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i],
++						 hlist_tid) {
++				if (j >= skip &&
++				    gtp_genl_fill_info(skb,
++					    NETLINK_CB(cb->skb).portid,
++					    cb->nlh->nlmsg_seq,
++					    cb->nlh->nlmsg_type, pctx)) {
+ 					cb->args[0] = i;
+-					cb->args[1] = pctx->u.tid;
++					cb->args[1] = j;
+ 					cb->args[2] = (unsigned long)gtp;
+ 					goto out;
+ 				}
++				j++;
+ 			}
++			skip = 0;
+ 		}
++		bucket = 0;
  	}
+ 	cb->args[4] = 1;
+ out:
++	rcu_read_unlock();
+ 	return skb->len;
  }
  
--static int ipv4_pdp_add(struct gtp_dev *gtp, struct sock *sk,
--			struct genl_info *info)
-+static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
-+		       struct genl_info *info)
- {
-+	struct pdp_ctx *pctx, *pctx_tid = NULL;
- 	struct net_device *dev = gtp->dev;
- 	u32 hash_ms, hash_tid = 0;
--	struct pdp_ctx *pctx;
-+	unsigned int version;
- 	bool found = false;
- 	__be32 ms_addr;
- 
- 	ms_addr = nla_get_be32(info->attrs[GTPA_MS_ADDRESS]);
- 	hash_ms = ipv4_hashfn(ms_addr) % gtp->hash_size;
-+	version = nla_get_u32(info->attrs[GTPA_VERSION]);
- 
--	hlist_for_each_entry_rcu(pctx, &gtp->addr_hash[hash_ms], hlist_addr) {
--		if (pctx->ms_addr_ip4.s_addr == ms_addr) {
--			found = true;
--			break;
--		}
--	}
-+	pctx = ipv4_pdp_find(gtp, ms_addr);
-+	if (pctx)
-+		found = true;
-+	if (version == GTP_V0)
-+		pctx_tid = gtp0_pdp_find(gtp,
-+					 nla_get_u64(info->attrs[GTPA_TID]));
-+	else if (version == GTP_V1)
-+		pctx_tid = gtp1_pdp_find(gtp,
-+					 nla_get_u32(info->attrs[GTPA_I_TEI]));
-+	if (pctx_tid)
-+		found = true;
- 
- 	if (found) {
- 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
-@@ -951,6 +958,11 @@ static int ipv4_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 		if (info->nlhdr->nlmsg_flags & NLM_F_REPLACE)
- 			return -EOPNOTSUPP;
- 
-+		if (pctx && pctx_tid)
-+			return -EEXIST;
-+		if (!pctx)
-+			pctx = pctx_tid;
-+
- 		ipv4_pdp_fill(pctx, info);
- 
- 		if (pctx->gtp_version == GTP_V0)
-@@ -1074,7 +1086,7 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
- 		goto out_unlock;
- 	}
- 
--	err = ipv4_pdp_add(gtp, sk, info);
-+	err = gtp_pdp_add(gtp, sk, info);
- 
- out_unlock:
- 	rcu_read_unlock();
 -- 
 2.17.1
 
