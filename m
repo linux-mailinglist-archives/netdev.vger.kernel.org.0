@@ -2,127 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 714F611BF8D
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:00:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F7511BF91
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbfLKWAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 17:00:02 -0500
-Received: from mail-eopbgr680096.outbound.protection.outlook.com ([40.107.68.96]:42730
-        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726313AbfLKWAC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 17:00:02 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MOhc4mpMw2qhlVaDFsjJhVRc9rhKgqq6aqye8BncSzO84MiAYo9CNPhmdvLeHSrq1D1ZC2Mn/vis0KMJOGY0JUP5lszTLulDM/C7w5jLzlvjJER97AZIaqsCbqz3QgUpI5s1JlCL6+9x76bpE/R+XyEVEBLeW6QZTjgDNFin2YZJjvyuXplaWkpyFNxKuyiA3RlzWfMiKo2ognBhusbfkDRBte+xPdpovG83Bzggryoy3IvStBYjXaHlB0urSZ2eGHkRNRrg+nHNYD9/62bym+vlaftQRe0bOe+x+289eYPN+Q8Wpk5fqdVpw6I54MJHh0Fvrn8MMFzfHez+QRZStA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XM2amkkYojjLcRzL9usR7m+QR9CHtChNKLPqy3C4kLs=;
- b=aogYViKzTMKEfKpTkoWVmVNbHBsOEQlup235ggTh7ttPYgd93cRcAyV7MDFtWDPyWW8phhLwYjdzxbBbx0WG8W2XcdGIVBa9xqUUeSV4TjPwX5+toYFjOK4o30sIEbng+kmnGzKzCj/9QdjCMkq6YreDqww+RiknPiwok/YmBUXpVmPeIMODIbKFOCMA8cPS4IyrDEMO3Nh0JzI4C/xCzuSc1/P03qmAPUGpyU6QCoRDuTZSn99CqJvSAOpFh8OFQLcB7a5YvmmXyMu0PVezuUY9V/QfUTi4GtRsZJfzYUnvUdTpS/Vr1/wL1ZKb5o2zzm1qW5RXUiTdTWu43aV44A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XM2amkkYojjLcRzL9usR7m+QR9CHtChNKLPqy3C4kLs=;
- b=E6vAcLEdJdZp9oLxRA7sCL28GsEf3wXB5jEizoInRvVNttZuIETuvSjPzPNiAHT0Bfv9IaylpPYQqjGlz1K9W1E4dIYkNG98SAU18G9I6l14It5K177KW1GY6vobHrPAQtJGwfR+O5EcEGlVVyx4LVrzxcFbvpdHADPgAhJsXq8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-Received: from DM5PR2101MB0901.namprd21.prod.outlook.com (52.132.132.158) by
- DM5PR2101MB0869.namprd21.prod.outlook.com (10.167.110.162) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.2; Wed, 11 Dec 2019 21:59:56 +0000
-Received: from DM5PR2101MB0901.namprd21.prod.outlook.com
- ([fe80::38a4:3ae9:3c5d:9b3a]) by DM5PR2101MB0901.namprd21.prod.outlook.com
- ([fe80::38a4:3ae9:3c5d:9b3a%8]) with mapi id 15.20.2538.000; Wed, 11 Dec 2019
- 21:59:55 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Fix tx_table init in rndis_set_subchannel()
-Date:   Wed, 11 Dec 2019 13:59:03 -0800
-Message-Id: <1576101543-130334-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: MWHPR13CA0013.namprd13.prod.outlook.com
- (2603:10b6:300:16::23) To DM5PR2101MB0901.namprd21.prod.outlook.com
- (2603:10b6:4:a7::30)
+        id S1726313AbfLKWE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 17:04:27 -0500
+Received: from correo.us.es ([193.147.175.20]:35110 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726345AbfLKWE0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 17:04:26 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id DE84C505554
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 23:04:23 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D184EDA70C
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 23:04:23 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C6A7EDA715; Wed, 11 Dec 2019 23:04:23 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 45B99DA703;
+        Wed, 11 Dec 2019 23:04:21 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 11 Dec 2019 23:04:21 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 1405042EE38F;
+        Wed, 11 Dec 2019 23:04:21 +0100 (CET)
+Date:   Wed, 11 Dec 2019 23:04:21 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>, wenxu <wenxu@ucloud.cn>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: nf_flow_table: fix big-endian integer overflow
+Message-ID: <20191211220421.jrirqeyogry4pnlw@salvia>
+References: <20191210202443.2226043-1-arnd@arndb.de>
 MIME-Version: 1.0
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR13CA0013.namprd13.prod.outlook.com (2603:10b6:300:16::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2538.6 via Frontend Transport; Wed, 11 Dec 2019 21:59:54 +0000
-X-Mailer: git-send-email 1.8.3.1
-X-Originating-IP: [13.77.154.182]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 86b44b87-3048-4c88-b722-08d77e8574ea
-X-MS-TrafficTypeDiagnostic: DM5PR2101MB0869:|DM5PR2101MB0869:|DM5PR2101MB0869:
-X-MS-Exchange-Transport-Forked: True
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM5PR2101MB0869293A92DC0C360F72DD14AC5A0@DM5PR2101MB0869.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-Forefront-PRVS: 024847EE92
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(136003)(366004)(39860400002)(396003)(376002)(346002)(199004)(189003)(36756003)(8676002)(6486002)(10290500003)(4326008)(81156014)(81166006)(956004)(8936002)(478600001)(2616005)(186003)(16526019)(316002)(52116002)(6506007)(5660300002)(2906002)(6512007)(66946007)(66476007)(26005)(6666004)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR2101MB0869;H:DM5PR2101MB0901.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /rCidJ4bvnc5rOWmkeQVXIW6rlbUBhvFSUU/m11Rkwz47ybLf++XtxQ5GnJow+28X+i4U8EQOXbkld0is8RGIshspqqNHR7pOlRCwORHIHIb03+aioG7+Euqf9hL1q94yHAi75EP5tMwYthJxNwpUy30DPBCStnwnVP22/9EHV1EuafYQi6j8C6FNEFet3ZfJu0Oxprzsz2+fDF62UF/6YC2xwPD+zhK+Oe4U9wE2akCXin/ZDN8Ie3wjPQ3HO7NeYxF2Ajrir2wOlTLxXeCp69El4cjWaHhbpcAXpHaFPkgwQBCs158BLuY4MP1zQlt++fpg3GWNs8w0JebvWZlJWf84Qzvq9cJC41lXZv2Tg1NbrfT8y/Ry1koc7uQxJlwFdpkqkh9h/hFzSssZDC3Kwhfk0zrEgvvUyEn8jM1qJCs1HDdZl7CYCaI3YuMJWpX
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86b44b87-3048-4c88-b722-08d77e8574ea
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2019 21:59:55.7501
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lt0HqoesmLNkd2VI7wMOJybLIARRb7D+XTsfdSTCr3cU6JIYNvvu6JQRgzeF489GHfB3LIu5stWNv3LfVVxSEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR2101MB0869
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191210202443.2226043-1-arnd@arndb.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Host can provide send indirection table messages anytime after RSS is
-enabled by calling rndis_filter_set_rss_param(). So the host provided
-table values may be overwritten by the initialization in
-rndis_set_subchannel().
+Hi Arnd,
 
-To prevent this problem, move the tx_table initialization before calling
-rndis_filter_set_rss_param().
+On Tue, Dec 10, 2019 at 09:24:28PM +0100, Arnd Bergmann wrote:
+> In some configurations, gcc reports an integer overflow:
+> 
+> net/netfilter/nf_flow_table_offload.c: In function 'nf_flow_rule_match':
+> net/netfilter/nf_flow_table_offload.c:80:21: error: unsigned conversion from 'int' to '__be16' {aka 'short unsigned int'} changes value from '327680' to '0' [-Werror=overflow]
+>    mask->tcp.flags = TCP_FLAG_RST | TCP_FLAG_FIN;
+>                      ^~~~~~~~~~~~
+> 
+> From what I can tell, we want the upper 16 bits of these constants,
+> so they need to be shifted in cpu-endian mode.
+> 
+> Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> I'm not sure if this is the correct fix, please check carefully
 
-Fixes: a6fb6aa3cfa9 ("hv_netvsc: Set tx_table to equal weight after subchannels open")
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+Thanks. I posted this one:
 
----
- drivers/net/hyperv/rndis_filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+https://patchwork.ozlabs.org/patch/1206384/
 
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index 206b4e7..05bc5ec8 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -1171,6 +1171,9 @@ int rndis_set_subchannel(struct net_device *ndev,
- 	wait_event(nvdev->subchan_open,
- 		   atomic_read(&nvdev->open_chn) == nvdev->num_chn);
- 
-+	for (i = 0; i < VRSS_SEND_TAB_SIZE; i++)
-+		ndev_ctx->tx_table[i] = i % nvdev->num_chn;
-+
- 	/* ignore failures from setting rss parameters, still have channels */
- 	if (dev_info)
- 		rndis_filter_set_rss_param(rdev, dev_info->rss_key);
-@@ -1180,9 +1183,6 @@ int rndis_set_subchannel(struct net_device *ndev,
- 	netif_set_real_num_tx_queues(ndev, nvdev->num_chn);
- 	netif_set_real_num_rx_queues(ndev, nvdev->num_chn);
- 
--	for (i = 0; i < VRSS_SEND_TAB_SIZE; i++)
--		ndev_ctx->tx_table[i] = i % nvdev->num_chn;
--
- 	return 0;
- }
- 
--- 
-1.8.3.1
-
+The flow dissector matching on tcp flags seems also broken on big-endian.
