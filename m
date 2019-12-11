@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A3911AB12
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 994B311AB62
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:57:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729133AbfLKMiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:38:14 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:40557 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728128AbfLKMiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:38:13 -0500
-Received: by mail-qv1-f65.google.com with SMTP id k10so4039777qve.7;
-        Wed, 11 Dec 2019 04:38:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CQk2Nxee7Zcdm3hAjI/D3a7hGTTJ2wRYtO1TPkIIDNE=;
-        b=s1eHc2P9bJ0iukevCS2MaStDALxCIAv4P96FLoGxy4DU/iP3kPjJTmvJQ7Omts9ju/
-         Bj/fkkxl1N1y6cmWBHI3bV1Bd8aZJcBdwYjc1v8CN858o0AwXFZD5oRsTCOA0bBEzp15
-         we3GQYYIWsrLR3OOfW+9277PPzliN5e6cY7kStnybXaAs2cLJkE7kYylHpKWZgEa70mY
-         g7yR6X0HqJ09lKEuqLplrdZ6yuq8Qut306y/KR+uKAaBZBfL0tK6PQugU8Vhlgv2YPaE
-         vgeRStx3pocBjtyciRHFxfiXg6Hp0LtmqTpMWtGs/LfyOvR926oNo24Wu1JLYGvMPzr3
-         9pag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CQk2Nxee7Zcdm3hAjI/D3a7hGTTJ2wRYtO1TPkIIDNE=;
-        b=Ld/M1M5hq9T/yfM25lLcgDGOyrz2Y4FhEwlteqpVRRyhpRgbGlRZ82dXSz+NIrzxKX
-         eQfyb+GLXtViW9tX2KkJGTyRfQJ+ww0GtBMA/qf6x3tlpnAN7ZZuED+B1CqJiDzJcuFQ
-         pBCh0HUdKBRcAr/gTIxtxxhKhIudtat96eiVNQNb4o24n8RrqZbtB/ou4J4HTONYh7Aq
-         DFLJCHRxFMvf4kyRRabIRdwNgpzHQiq/kLhGCO/W7oH2BnBBmOAhSLSwuDOS2pzQguMB
-         1RtLnCgUWv/NstPCYnJRx2BPTYGCKR9N+9es9L2RXOkKzQla61wfiin4iskjoubEW7eY
-         wg0w==
-X-Gm-Message-State: APjAAAXggCVzbKpQXi1mpYtCq9G4v7g8h6Ze/Rz0EJtd+4DiP4DapJq5
-        SGfKq6wmyK5xkSUx+uXvuG7WcJkelVYUdBnfHq0GXqj+c9k=
-X-Google-Smtp-Source: APXvYqwo5EhzUFagCmi0bIUTak2sLbw+HZcUN5372PbiQwN2QnctG/hRYwrl6H2HTnzBxXjEfThKaFcSHHLJyUeLb0A=
-X-Received: by 2002:a05:6214:448:: with SMTP id cc8mr2756750qvb.10.1576067892709;
- Wed, 11 Dec 2019 04:38:12 -0800 (PST)
-MIME-Version: 1.0
-References: <20191209135522.16576-1-bjorn.topel@gmail.com> <87h829ilwr.fsf@toke.dk>
- <CAJ+HfNjZnxrgYtTzbqj2VOP+5A81UW-7OKoReT0dMVBT0fQ1pg@mail.gmail.com>
-In-Reply-To: <CAJ+HfNjZnxrgYtTzbqj2VOP+5A81UW-7OKoReT0dMVBT0fQ1pg@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 11 Dec 2019 13:38:01 +0100
-Message-ID: <CAJ+HfNiH4KUO-MXm3L8pka3dECC1S6rHUJ9NoMfyrhPD+9s9nw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/6] Introduce the BPF dispatcher
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
+        id S1729337AbfLKM5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:57:14 -0500
+Received: from mout.kundenserver.de ([212.227.126.131]:46431 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727402AbfLKM5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:57:14 -0500
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MoOIi-1hugFE2B6e-00ol0h; Wed, 11 Dec 2019 13:56:48 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Edward Cree <ecree@solarflare.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH 1/2] net: ethernet: ti: select PAGE_POOL for switchdev driver
+Date:   Wed, 11 Dec 2019 13:56:09 +0100
+Message-Id: <20191211125643.1987157-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:6xobw418PyXkV3CYCKrKrkqYW/pQBVgYt++7QWDd1Gfizh2agwO
+ DVm/zQK2J9mYF45nZz9r+hJW5WNEs79PYMDjvnpCSaz+juIGroWBy+kCKJnkSjiwJe11xtJ
+ k/+cxrj1Koa2WOT96iYKn1gdzuSDKeOI8MdVKGY93tjVmy1yqI1rjd3nnnrS9tPiOVyoTsC
+ /UcNApcongbQFK1MvZ1Dg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:o0oCe+1KPDY=:3I5WOPzsVQn/dZchhDjCqQ
+ 362M8WJcGI1zUSC5T1bN8rol0rStp2wLcrxKXY6cluhRZo5wN8Jvxk/QLnjxYIRVTXT2MpWbB
+ EWbwwJcZWosRBqy0qiRQMiTBFxrugsUEJqMDUyVUUIv6bELxjsLUpQP38V/bEXfuZojr/e4Iz
+ fAc5mEgni8MZvt3ZpoLAcf/oqzg4kSt4ozZCtHCqHaGwj5pNcwkjslkFFJ0sGmdOxH7JEN97b
+ aRxht6GJ4K5+oIaIgxo4aAIgD2UCZQt++998LUrdGAAatwt/dOaMbVkp/Z+aVkqk/pHPHwDEj
+ QhPae0wjGTMc3aDNNftsZlRkgIxIk8vvU0qjXxKt4NBgUpul0TNMgSlTYAd3EOCMH5F5orh/d
+ 47rul2ONxiLGR2eLHWxAyf/w6nP5CqBNuhYAftdpeBO8n8a2Iu1GDOJZTjMZmMxIt5G9CfdTb
+ maj1cjiINatkodirADoJuRBBOWX8PXWMXTkkSET2JMv8mpcR/0V2GsjIRdLYHw4rPMEEoYuDP
+ bkhtwEJMPj0JJfR6D/8UtHelmmEtbDaKcj+5m+I+k1zWE1Dom4Vih/NH4p4kYPBG2HyHEIDTF
+ Jl5LLAYu1/lmyvi98ARkZ5znucnpkiSIlyTCQOi/jRs004JSUwSJli/V9/tZgsh/freQ2zvd8
+ ef0/tcmcni0MQ0ich7AoLXGPcaP8m7jyCqc4XjmMA1xe3jrMQvyjTvVlp8rCCUmXAj91vkgkK
+ H/DWKrdI8c9/HoHxzSRqoiNyK4wM3fh2VoWnYKVoVXAYPkHSgZc/sl/CEzHyBSZJjnNaFoHpj
+ T/v3JsjU2qv8AfVVyBxCy0URjCrIguF4CeAodvrr90ebvLc5HAv9syu2r+E4dof+aqzWXB3XU
+ gbVQZ0jxc2A8xn/jcMVw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Dec 2019 at 18:42, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> =
-wrote:
->
-[...]
-> > You mentioned in the earlier version that this would impact the time it
-> > takes to attach an XDP program. Got any numbers for this?
-> >
->
-> Ah, no, I forgot to measure that. I'll get back with that. So, when a
-> new program is entered or removed from dispatcher, it needs to be
-> re-jited, but more importantly -- a text poke is needed. I don't know
-> if this is a concern or not, but let's measure it.
->
+The new driver misses a dependency:
 
-Toke, I tried to measure the impact, but didn't really get anything
-useful out. :-(
+drivers/net/ethernet/ti/cpsw_new.o: In function `cpsw_rx_handler':
+cpsw_new.c:(.text+0x259c): undefined reference to `__page_pool_put_page'
+cpsw_new.c:(.text+0x25d0): undefined reference to `page_pool_alloc_pages'
+drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_fill_rx_channels':
+cpsw_priv.c:(.text+0x22d8): undefined reference to `page_pool_alloc_pages'
+cpsw_priv.c:(.text+0x2420): undefined reference to `__page_pool_put_page'
+drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_create_xdp_rxqs':
+cpsw_priv.c:(.text+0x2624): undefined reference to `page_pool_create'
+drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_run_xdp':
+cpsw_priv.c:(.text+0x2dc8): undefined reference to `__page_pool_put_page'
 
-My concern was mainly that text-poking is a point of contention, and
-it messes with the icache. As for contention, we're already
-synchronized around the rtnl-lock. As for the icache-flush effects...
-well... I'm open to suggestions how to measure the impact in a useful
-way.
+Other drivers use 'select' for PAGE_POOL, so do the same here.
 
->
-> Bj=C3=B6rn
->
-> > -Toke
-> >
+Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/ti/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index a46f4189fde3..bf98e0fa7d8b 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -63,6 +63,7 @@ config TI_CPSW_SWITCHDEV
+ 	tristate "TI CPSW Switch Support with switchdev"
+ 	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
+ 	depends on NET_SWITCHDEV
++	select PAGE_POOL
+ 	select TI_DAVINCI_MDIO
+ 	select MFD_SYSCON
+ 	select REGMAP
+-- 
+2.20.0
+
