@@ -2,152 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F79811A5C6
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29FE311A5C8
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:23:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728324AbfLKIXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 03:23:25 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37496 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728277AbfLKIXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:23:25 -0500
-Received: by mail-pg1-f195.google.com with SMTP id q127so10410921pga.4
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 00:23:25 -0800 (PST)
+        id S1728277AbfLKIXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 03:23:43 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:36584 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727298AbfLKIXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:23:43 -0500
+Received: by mail-pj1-f65.google.com with SMTP id n96so8645966pjc.3
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 00:23:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=9AaKIHGVxUO/9sjItMG4Dz/kMGJMWTEvFs9HTsa7WhI=;
-        b=nOvDKEPThk20a8mBu9sMh/FJ9H/0huElK9EConIwjxVLEFg73EHrGLy2i532Vf0qNj
-         KGybyyK2HzJ2G8lv/L9G9RZ9SiN0LVt2EIB5Xnhk1exDLP6ekIIhGNMfBSb84oNn03sO
-         Pt6KCVIV9In5Pk1xM71iPMBQWJ7Q8RADWdsCfCwqQwopqW0sNbgtGehkg8jH7X4h/4eF
-         7EqPVPvGltL68U/v+wIB0QderFvJUvUGOOnf1d+tawjSeGc5k9+i4Uk8K+eMVkNEp7Uc
-         96CW4V9icN1G4wxuyCGLE3lfHlZxiBbB513/ETvH6SlY09NM/Dm4tkq6LUP/UlbTKyY0
-         81/A==
+        bh=iAl6Wgg5JJEDTaBV/ZiMeNUVZiclw1haj3Vo8EN4cFg=;
+        b=f1MfkL0DhkWZzpXbyC3R0r3hMGlNdZ5EnGdT2tO02W8NWDL4OR/Q8ifhPHjIJfwIhc
+         wst5WqYfTKuV6rEOszlldriI1mkOeEt+2kuWnkPMxBOttDWn1F6XeNyySFeg+UYtLlur
+         XafttwKUX0pXahdimU/TAqaGpR39S1aVm3O1E6vBGFABCRRlqD/eREoxvrHzJTMczQJc
+         xsXmjUGMiPQj4DHvt3HL8JRWWt9IF5k8G28lKwKGMJ3xXi9GZOW36r9zL1cNdNdZwXKf
+         B+Abp6dGSm9h+zUYLcz8maLi6sJj3Jty72k1Cw+XCREm0Q0Xl8e26mCukvp3VI/ivnWi
+         7zjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9AaKIHGVxUO/9sjItMG4Dz/kMGJMWTEvFs9HTsa7WhI=;
-        b=CxF5ev3NOullWz5/6YL0hlM4hWVAHj4D8rEhM761Z78Edxuklamschpgyw0341u8el
-         VxzmiQXV268W6xysCY3Qs6hWHJmFv0mB4blr+zS8TUQyo+BwUHNIMnoz7OkBEC0TSAbA
-         KDsX19LHxomOs1M1lwnRoDxvwpicZFtiGh9ZtnLysfITbQ7MwRjW2h8ng0DD4Y+fXXRX
-         a220sEYV19QI5lGmSqZH6wwBTiqPOroDUhD1NKuPLBJbIMAbUsBWewDDbWH3qSuR117O
-         FafPwLxr9dq26+v1VQG5VzElWAXFE5iA+lzQk8XCuotAqwROt7tmnrcXkXaOCIX0+PNx
-         n2rw==
-X-Gm-Message-State: APjAAAUlF4w6kxR2oUxGbraT6fDvUDZWooAfYTa8USxZRSEwS0eMyY3n
-        X1dCA0or+1zbkvtPD8QNZ5U=
-X-Google-Smtp-Source: APXvYqypI31RJq6L8oduT00EeJT6PCgojIVTKyB80ovzCynTkwwULqjvHylPs7F41gsqimcaBgAcSg==
-X-Received: by 2002:aa7:9697:: with SMTP id f23mr2333729pfk.232.1576052605032;
-        Wed, 11 Dec 2019 00:23:25 -0800 (PST)
+        bh=iAl6Wgg5JJEDTaBV/ZiMeNUVZiclw1haj3Vo8EN4cFg=;
+        b=rH/ExzqlJAxGQFvtIpORgW191ldU4yeq2W6xvNuvTX36Bjm170/2Ae3zlGsBIIYR29
+         4KGLizNOynXtPgqTQbWLtaQdsrA785sJhYca17OicXKXOo+y2SAQMQ4FhcTRKip5IPzI
+         3yr7neI8ard7K7/186WVsVsrbVavk9XEtWMsRzxOrvcPVecyUSJqbrA4Jo2KKeGsyL7w
+         hDdONWU1ovR4EJX2wVyRthJ4nz7gHA8LXTz+wOzVElvoCmqpOfSVvR7NGwUuHzpqPRud
+         aUPg0kof9ivrsMPOnNzxch2MHO7G1s6xULUzNBFQDieFSE6Kmw8HRNXuBGusfXs0ZDaB
+         a+qA==
+X-Gm-Message-State: APjAAAXJdGc9asFpDjClJ9bdx2hMUbE/GlbPfUMk5NsWXQUVV5LeVDtW
+        XwinuzvJGuIkSn+ElIM1/us=
+X-Google-Smtp-Source: APXvYqy7u3lQkyMou1mjjyp+thNVZlogXXZqZY/QZQeD3RbGJ2pVUfc5nBPW4jcW9mF57fwcDNLwug==
+X-Received: by 2002:a17:902:8306:: with SMTP id bd6mr1940814plb.303.1576052622519;
+        Wed, 11 Dec 2019 00:23:42 -0800 (PST)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id e6sm1852398pfh.32.2019.12.11.00.23.22
+        by smtp.gmail.com with ESMTPSA id 83sm1746988pgh.12.2019.12.11.00.23.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 00:23:24 -0800 (PST)
+        Wed, 11 Dec 2019 00:23:41 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, pablo@netfilter.org, laforge@gnumonks.org,
         osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 2/4] gtp: fix wrong condition in gtp_genl_dump_pdp()
-Date:   Wed, 11 Dec 2019 08:23:17 +0000
-Message-Id: <20191211082317.28609-1-ap420073@gmail.com>
+Subject: [PATCH net 3/4] gtp: fix an use-after-free in ipv4_pdp_find()
+Date:   Wed, 11 Dec 2019 08:23:34 +0000
+Message-Id: <20191211082334.28688-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gtp_genl_dump_pdp() is ->dumpit() callback of GTP module and it is used
-to dump pdp contexts. it would be re-executed because of dump packet size.
+ipv4_pdp_find() is called in TX packet path of GTP.
+ipv4_pdp_find() internally uses gtp->tid_hash to lookup pdp context.
+In the current code, gtp->tid_hash and gtp->addr_hash are freed by
+->dellink(), which is gtp_dellink().
+But gtp_dellink() would be called while packets are processing.
+So, gtp_dellink() should not free gtp->tid_hash and gtp->addr_hash.
+Instead, dev->priv_destructor() would be used because this callback
+is called after all packet processing safely.
 
-If dump packet size is too big, it saves current dump pointer
-(gtp interface pointer, bucket, TID value) then it restarts dump from
-last pointer.
-Current GTP code allows adding zero TID pdp context but dump code
-ignores zero TID value. So, last dump pointer will not be found.
+Test commands:
+    ip link add veth1 type veth peer name veth2
+    ip a a 172.0.0.1/24 dev veth1
+    ip link set veth1 up
+    ip a a 172.99.0.1/32 dev lo
 
-In addition, this patch adds missing rcu_read_lock() in
-gtp_genl_dump_pdp().
+    gtp-link add gtp1 &
+
+    gtp-tunnel add gtp1 v1 200 100 172.99.0.2 172.0.0.2
+    ip r a  172.99.0.2/32 dev gtp1
+    ip link set gtp1 mtu 1500
+
+    ip netns add ns2
+    ip link set veth2 netns ns2
+    ip netns exec ns2 ip a a 172.0.0.2/24 dev veth2
+    ip netns exec ns2 ip link set veth2 up
+    ip netns exec ns2 ip a a 172.99.0.2/32 dev lo
+    ip netns exec ns2 ip link set lo up
+
+    ip netns exec ns2 gtp-link add gtp2 &
+    ip netns exec ns2 gtp-tunnel add gtp2 v1 100 200 172.99.0.1 172.0.0.1
+    ip netns exec ns2 ip r a 172.99.0.1/32 dev gtp2
+    ip netns exec ns2 ip link set gtp2 mtu 1500
+
+    hping3 172.99.0.2 -2 --flood &
+    ip link del gtp1
+
+Splat looks like:
+[   72.568081][ T1195] BUG: KASAN: use-after-free in ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.568916][ T1195] Read of size 8 at addr ffff8880b9a35d28 by task hping3/1195
+[   72.569631][ T1195]
+[   72.569861][ T1195] CPU: 2 PID: 1195 Comm: hping3 Not tainted 5.5.0-rc1 #199
+[   72.570547][ T1195] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   72.571438][ T1195] Call Trace:
+[   72.571764][ T1195]  dump_stack+0x96/0xdb
+[   72.572171][ T1195]  ? ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.572761][ T1195]  print_address_description.constprop.5+0x1be/0x360
+[   72.573400][ T1195]  ? ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.573971][ T1195]  ? ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.574544][ T1195]  __kasan_report+0x12a/0x16f
+[   72.575014][ T1195]  ? ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.575593][ T1195]  kasan_report+0xe/0x20
+[   72.576004][ T1195]  ipv4_pdp_find.isra.12+0x130/0x170 [gtp]
+[   72.576577][ T1195]  gtp_build_skb_ip4+0x199/0x1420 [gtp]
+[ ... ]
+[   72.647671][ T1195] BUG: unable to handle page fault for address: ffff8880b9a35d28
+[   72.648512][ T1195] #PF: supervisor read access in kernel mode
+[   72.649158][ T1195] #PF: error_code(0x0000) - not-present page
+[   72.649849][ T1195] PGD a6c01067 P4D a6c01067 PUD 11fb07067 PMD 11f939067 PTE 800fffff465ca060
+[   72.652958][ T1195] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[   72.653834][ T1195] CPU: 2 PID: 1195 Comm: hping3 Tainted: G    B             5.5.0-rc1 #199
+[   72.668062][ T1195] RIP: 0010:ipv4_pdp_find.isra.12+0x86/0x170 [gtp]
+[ ... ]
+[   72.679168][ T1195] Call Trace:
+[   72.679603][ T1195]  gtp_build_skb_ip4+0x199/0x1420 [gtp]
+[   72.681915][ T1195]  ? ipv4_pdp_find.isra.12+0x170/0x170 [gtp]
+[   72.682513][ T1195]  ? lock_acquire+0x164/0x3b0
+[   72.682966][ T1195]  ? gtp_dev_xmit+0x35e/0x890 [gtp]
+[   72.683481][ T1195]  gtp_dev_xmit+0x3c2/0x890 [gtp]
+[ ... ]
 
 Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/gtp.c | 36 +++++++++++++++++++-----------------
- 1 file changed, 19 insertions(+), 17 deletions(-)
+ drivers/net/gtp.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 8b742edf793d..a010e0a11c33 100644
+index a010e0a11c33..5450b1099c6d 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -38,7 +38,6 @@ struct pdp_ctx {
- 	struct hlist_node	hlist_addr;
- 
- 	union {
--		u64		tid;
- 		struct {
- 			u64	tid;
- 			u16	flow;
-@@ -1244,43 +1243,46 @@ static int gtp_genl_dump_pdp(struct sk_buff *skb,
- 				struct netlink_callback *cb)
- {
- 	struct gtp_dev *last_gtp = (struct gtp_dev *)cb->args[2], *gtp;
-+	int i, j, bucket = cb->args[0], skip = cb->args[1];
- 	struct net *net = sock_net(skb->sk);
--	struct gtp_net *gn = net_generic(net, gtp_net_id);
--	unsigned long tid = cb->args[1];
--	int i, k = cb->args[0], ret;
- 	struct pdp_ctx *pctx;
-+	struct gtp_net *gn;
-+
-+	gn = net_generic(net, gtp_net_id);
- 
- 	if (cb->args[4])
- 		return 0;
- 
-+	rcu_read_lock();
- 	list_for_each_entry_rcu(gtp, &gn->gtp_dev_list, list) {
- 		if (last_gtp && last_gtp != gtp)
- 			continue;
- 		else
- 			last_gtp = NULL;
- 
--		for (i = k; i < gtp->hash_size; i++) {
--			hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i], hlist_tid) {
--				if (tid && tid != pctx->u.tid)
--					continue;
--				else
--					tid = 0;
--
--				ret = gtp_genl_fill_info(skb,
--							 NETLINK_CB(cb->skb).portid,
--							 cb->nlh->nlmsg_seq,
--							 cb->nlh->nlmsg_type, pctx);
--				if (ret < 0) {
-+		for (i = bucket; i < gtp->hash_size; i++) {
-+			j = 0;
-+			hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i],
-+						 hlist_tid) {
-+				if (j >= skip &&
-+				    gtp_genl_fill_info(skb,
-+					    NETLINK_CB(cb->skb).portid,
-+					    cb->nlh->nlmsg_seq,
-+					    cb->nlh->nlmsg_type, pctx)) {
- 					cb->args[0] = i;
--					cb->args[1] = pctx->u.tid;
-+					cb->args[1] = j;
- 					cb->args[2] = (unsigned long)gtp;
- 					goto out;
- 				}
-+				j++;
- 			}
-+			skip = 0;
- 		}
-+		bucket = 0;
- 	}
- 	cb->args[4] = 1;
- out:
-+	rcu_read_unlock();
- 	return skb->len;
+@@ -640,9 +640,16 @@ static void gtp_link_setup(struct net_device *dev)
  }
  
+ static int gtp_hashtable_new(struct gtp_dev *gtp, int hsize);
+-static void gtp_hashtable_free(struct gtp_dev *gtp);
+ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[]);
+ 
++static void gtp_destructor(struct net_device *dev)
++{
++	struct gtp_dev *gtp = netdev_priv(dev);
++
++	kfree(gtp->addr_hash);
++	kfree(gtp->tid_hash);
++}
++
+ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 		       struct nlattr *tb[], struct nlattr *data[],
+ 		       struct netlink_ext_ack *extack)
+@@ -677,13 +684,15 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	gn = net_generic(dev_net(dev), gtp_net_id);
+ 	list_add_rcu(&gtp->list, &gn->gtp_dev_list);
++	dev->priv_destructor = gtp_destructor;
+ 
+ 	netdev_dbg(dev, "registered new GTP interface\n");
+ 
+ 	return 0;
+ 
+ out_hashtable:
+-	gtp_hashtable_free(gtp);
++	kfree(gtp->addr_hash);
++	kfree(gtp->tid_hash);
+ out_encap:
+ 	gtp_encap_disable(gtp);
+ 	return err;
+@@ -692,8 +701,13 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ static void gtp_dellink(struct net_device *dev, struct list_head *head)
+ {
+ 	struct gtp_dev *gtp = netdev_priv(dev);
++	struct pdp_ctx *pctx;
++	int i;
++
++	for (i = 0; i < gtp->hash_size; i++)
++		hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i], hlist_tid)
++			pdp_context_delete(pctx);
+ 
+-	gtp_hashtable_free(gtp);
+ 	list_del_rcu(&gtp->list);
+ 	unregister_netdevice_queue(dev, head);
+ }
+@@ -771,20 +785,6 @@ static int gtp_hashtable_new(struct gtp_dev *gtp, int hsize)
+ 	return -ENOMEM;
+ }
+ 
+-static void gtp_hashtable_free(struct gtp_dev *gtp)
+-{
+-	struct pdp_ctx *pctx;
+-	int i;
+-
+-	for (i = 0; i < gtp->hash_size; i++)
+-		hlist_for_each_entry_rcu(pctx, &gtp->tid_hash[i], hlist_tid)
+-			pdp_context_delete(pctx);
+-
+-	synchronize_rcu();
+-	kfree(gtp->addr_hash);
+-	kfree(gtp->tid_hash);
+-}
+-
+ static struct sock *gtp_encap_enable_socket(int fd, int type,
+ 					    struct gtp_dev *gtp)
+ {
 -- 
 2.17.1
 
