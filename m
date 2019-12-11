@@ -2,185 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E0111BFC0
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:24:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C93B11BFC3
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbfLKWYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 17:24:14 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:38350 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726141AbfLKWYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 17:24:13 -0500
-Received: by mail-lf1-f67.google.com with SMTP id r14so86214lfm.5
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 14:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nCoSE00vetFY6N24a0PBJQVBAX8gwJHe+ZxdD5MCb8c=;
-        b=jr06c+uQyVdYk187Ce37yIfy0HQ3rOTtUOMy0ZA53H1mk/SpflTs1l6KtD0vNVrxCh
-         XwT2xLdTP4bB0C5cVV51I3uEGvCjBwYUn2pPNpLrPpaIWdxMswi1EiDdjTEPtHFdYwWy
-         OOl8JCFSgx7kvybHro+CXVQdC9qB6heELkI14TUS8a7ssF1o3Y417jr7Ne8A5DTdxEO7
-         z6nJ5DwHhwVh+IKRVjgNUuVNVOZsyIE/UvIHsUfso/12F39tvA99ZJfSvPsaPJz4RDYM
-         ydidlvQv9HLrjZ3IiC7iYnb8iuW/D55Itx6x65mqF60TGj3L/al3qIQGxij2qBoX5URp
-         +Izw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nCoSE00vetFY6N24a0PBJQVBAX8gwJHe+ZxdD5MCb8c=;
-        b=Jm/GLhR/yFqfSVC4tDtS6F6gxR4U09kinn2FNzDj/oFWI2rdjUpy3NUBEhn4Q/vskE
-         6Xr6EKYKNldJcQmc3X/ahRU1rbbzdTSPjOd24gBhkPSXaBb/WnfCfVLFMSGX18VRB2t3
-         R1Hj/ymsrK/aOqL6hoqkEQ8wkLLE1U723KSLwvhdBv/0LZANL71Hk4QbiFCn1t62Kkxz
-         4k+376cG18A8V6y+eiZlKVsrji6XcR1+BMl9lZkYMOAq2DE7FelGD6njNvYTfQcIq3z9
-         Z20MMWJ3PzOca9d9Vah9PRuqrHNuG4z6T2kdXghKFWhOisbDNjOPKSGkJ4yGO8WYDdY2
-         RgdA==
-X-Gm-Message-State: APjAAAVUEEUSlW9z/+DAZfdQZpC6ow6n9NsZ5LXz9SrFnki4DNrmHhlX
-        tHY/+oA6OETVXbSOAqD5bwl+/Q==
-X-Google-Smtp-Source: APXvYqwYgUs0AOyU357cM28/siG2F0/KsVT0sRIxpSk2JqpcsGHM9MYRc5najp5MEPgn3uqme+e8xg==
-X-Received: by 2002:a05:6512:21d:: with SMTP id a29mr3843981lfo.186.1576103051489;
-        Wed, 11 Dec 2019 14:24:11 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m8sm1847115lfp.4.2019.12.11.14.24.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 14:24:11 -0800 (PST)
-Date:   Wed, 11 Dec 2019 14:24:01 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Yuval Avnery <yuvalav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Message-ID: <20191211142401.742189cf@cakuba.netronome.com>
-In-Reply-To: <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
-        <20191211095854.6cd860f1@cakuba.netronome.com>
-        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-        <20191211111537.416bf078@cakuba.netronome.com>
-        <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1726708AbfLKW0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 17:26:44 -0500
+Received: from mail-bn8nam11on2092.outbound.protection.outlook.com ([40.107.236.92]:22112
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726494AbfLKW0n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 17:26:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TYUgx8+tj2dw2OMDX3jYHY0GMkugw/X/jV2N1BjsSnIaEZ4HYClVBx/qJiyd+imwOqDIlO+yByAQnMSBg1O7Z0zDFKZqeDXS4glikNjo4PcEzf3Dd2eY1u4lHnKgXNmh0EhXYhuH/2QVrCnCq8u1dR46yRJlAW8Dy7pbQtE+DVncL4/nFsywGQpb+Z0DTmtNWHDWuckBYFh8oKpIQfvXGSBbd9IXjYuqgBZHRD7IHLE1Zz7nHoJ8agOfwfAbLltrmHMG3LGG0gs37OXKvpD0cCwEDQ228hSNxjEtm//E11aDZ5mrDzihJDW4yhosEcfamnITqwOvPpDvCDZo0Uhhrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XM2amkkYojjLcRzL9usR7m+QR9CHtChNKLPqy3C4kLs=;
+ b=lG7+8KfJ3d2R/9pwsuerqeguEm8lkHdhD1M2Y4uPwWHkS9VcWhfnSr8SYPVCJP3j9IzG9oChgwBQDW/Kzet2rOhtLittgn7MQOMkVGkWQY4EzZoTLpsyYBU1NzA3C17kf3rXYZZprYk5XTKHZ2Qyldl7oNq8me3AQ+b6W/x6ERa+2m1iAx/hX8r5C7Lj31AV7Pw9mY/MP99iBni11Al1vfEM748wlqwMreew0xi0eflOHk8L4VZE4RWhSkJVCUixUuVP/1wO6BpOH09SVO0Cn2Eaon7FRoUBkpPVdQrQuplVmHDVUNVUVpHDCUs5Bdjf7miyqJshASLeCCbpDiEBNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XM2amkkYojjLcRzL9usR7m+QR9CHtChNKLPqy3C4kLs=;
+ b=S4xuxJNJv6TdYNxVrRAXkXVQjXBJVQtgRltKfKppK5DgA3GYapox7Cq8XRFUNFB3u/Jfm5TYXiBU9jCf/M8+kI+77e9ALSTaz5OUy2DW8MCZZhH/9/3NuNQroY2xgFO5Oe1QcfPJE0EIS/fdMBA56ImYqQ9WPFSgCvxMsuO/u6I=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=lkmlhyz@microsoft.com; 
+Received: from DM5PR2101MB0901.namprd21.prod.outlook.com (52.132.132.158) by
+ DM5PR2101MB1128.namprd21.prod.outlook.com (52.132.133.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.2; Wed, 11 Dec 2019 22:26:39 +0000
+Received: from DM5PR2101MB0901.namprd21.prod.outlook.com
+ ([fe80::38a4:3ae9:3c5d:9b3a]) by DM5PR2101MB0901.namprd21.prod.outlook.com
+ ([fe80::38a4:3ae9:3c5d:9b3a%8]) with mapi id 15.20.2538.000; Wed, 11 Dec 2019
+ 22:26:39 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     sashal@kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
+        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2,net] hv_netvsc: Fix tx_table init in rndis_set_subchannel()
+Date:   Wed, 11 Dec 2019 14:26:27 -0800
+Message-Id: <1576103187-2681-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR17CA0096.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::34) To DM5PR2101MB0901.namprd21.prod.outlook.com
+ (2603:10b6:4:a7::30)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR17CA0096.namprd17.prod.outlook.com (2603:10b6:300:c2::34) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Wed, 11 Dec 2019 22:26:38 +0000
+X-Mailer: git-send-email 1.8.3.1
+X-Originating-IP: [13.77.154.182]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: e8ecffa3-134d-49ce-4a7d-08d77e8930fe
+X-MS-TrafficTypeDiagnostic: DM5PR2101MB1128:|DM5PR2101MB1128:|DM5PR2101MB1128:
+X-MS-Exchange-Transport-Forked: True
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM5PR2101MB112846D670B0545E0A11E47FAC5A0@DM5PR2101MB1128.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Forefront-PRVS: 024847EE92
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(346002)(136003)(396003)(376002)(189003)(199004)(66476007)(66946007)(66556008)(10290500003)(2616005)(956004)(6666004)(478600001)(2906002)(316002)(36756003)(4326008)(8936002)(26005)(5660300002)(186003)(6486002)(6506007)(81166006)(81156014)(8676002)(6512007)(52116002)(16526019);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR2101MB1128;H:DM5PR2101MB0901.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Sso8D02MJ+n0YkoVP+ugju+KKbR+uXfSnOqxTWZ4LKqjbQbrzeB4skOOeLyaAot45Sb/iw/IjyA5sQdRE90TLN0qGmgyCVqWlLWNPgBIgO+mEmcOeOJxX4zMZPzQH5BrbD63DxQ92vzTpSdsbpqcwcgzRjSPJl3QHA2WaWwXP57VZ5B8g2SIr7obiOeSLCgsbYGHZykhmghMJPJz+qv1rgCL3clz3ys/LLTUWJq0E/Vntsh5brmqk5UO1mctBo+nuyMDGwyDbVpyrjfL8DO/rDjSchEeyBF3X3F4YecCxkPH+uDX7F7D/dUzDveIKFA3bPWKp3FIP5wDYCihJPMSS8J6YnO/FWeBg1g4zCSsVq1j2jt8DrpjYbOXyKiSOihMqMrXJnV/HOX1jVotiEWIdlzh4XbbGgCHQQ7WBkiYSBVHo5iMBbfq+kSEZ8FDtexD
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8ecffa3-134d-49ce-4a7d-08d77e8930fe
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2019 22:26:39.5654
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mcdgJg5bXS+nxX+SoYo1YhL3AGQbcAMJ4H1H0ioCU/WkccWDK+MZjVSnHas0TnFb2+Ks7CnnwmEhMh/kZJPQow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR2101MB1128
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 19:57:34 +0000, Yuval Avnery wrote:
-> > -----Original Message-----
-> > From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > Sent: Wednesday, December 11, 2019 11:16 AM
-> > To: Yuval Avnery <yuvalav@mellanox.com>
-> > Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-> > 
-> > On Wed, 11 Dec 2019 18:19:56 +0000, Yuval Avnery wrote:  
-> > > > On Wed, 11 Dec 2019 04:58:53 +0200, Yuval Avnery wrote:  
-> > > > > Currently there is no limit to the number of VFs netdevsim can enable.
-> > > > > In a real systems this value exist and used by driver.
-> > > > > Fore example, Some features might need to consider this value when
-> > > > > allocating memory.  
-> > > >
-> > > > Thanks for the patch!
-> > > >
-> > > > Can you shed a little bit more light on where it pops up? Just for my  
-> > curiosity?  
-> > >
-> > > Yes, like we described in the subdev threads.
-> > > User should be able to configure some attributes before the VF was  
-> > enabled.  
-> > > So all those (persistent) VF attributes should be available for query
-> > > and configuration before VF was enabled.
-> > > The driver can allocate an array according to max_vfs to hold all that
-> > > data, like we do here in" vfconfigs".  
-> > 
-> > I was after more practical reasoning, are you writing some tests for subdev
-> > stuff that will depend on this change? :)  
-> 
-> Yes we are writing tests for subdev with this.
+Host can provide send indirection table messages anytime after RSS is
+enabled by calling rndis_filter_set_rss_param(). So the host provided
+table values may be overwritten by the initialization in
+rndis_set_subchannel().
 
-Okay, please post v2 together with the tests. We don't accept netdevsim
-features without tests any more.
+To prevent this problem, move the tx_table initialization before calling
+rndis_filter_set_rss_param().
 
-> This is the way mlx5 works.. is that practical enough?
-> 
-> > > > > Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
-> > > > > Acked-by: Jiri Pirko <jiri@mellanox.com>
-> > > > >
-> > > > > diff --git a/drivers/net/netdevsim/bus.c
-> > > > > b/drivers/net/netdevsim/bus.c index 6aeed0c600f8..f1a0171080cb
-> > > > > 100644
-> > > > > --- a/drivers/net/netdevsim/bus.c
-> > > > > +++ b/drivers/net/netdevsim/bus.c
-> > > > > @@ -26,9 +26,9 @@ static struct nsim_bus_dev
-> > > > > *to_nsim_bus_dev(struct device *dev)  static int
-> > > > > nsim_bus_dev_vfs_enable(struct nsim_bus_dev  
-> > > > *nsim_bus_dev,  
-> > > > >  				   unsigned int num_vfs)
-> > > > >  {
-> > > > > -	nsim_bus_dev->vfconfigs = kcalloc(num_vfs,
-> > > > > -					  sizeof(struct nsim_vf_config),
-> > > > > -					  GFP_KERNEL);  
-> > > >
-> > > > You're changing the semantics of the enable/disable as well now.
-> > > > The old values used to be wiped when SR-IOV is disabled, now they
-> > > > will be retained across disable/enable pair.
-> > > >
-> > > > I think it'd be better if that wasn't the case. Users may expect a
-> > > > system to be in the same state after they enable SR-IOV, regardless
-> > > > if someone else used SR-IOV since last reboot.  
-> > >
-> > > Right,
-> > > But some values should retain across enable/disable, for example MAC  
-> > address which is persistent.  
-> > > So maybe we need to retain some values, while resetting others on  
-> > disable?  
-> > > Would that work?  
-> > 
-> > Mmm. That is a good question. For all practical purposes SR-IOV used to be
-> > local to the host that enables it until Smart/middle box NICs emerged.
-> > 
-> > Perhaps the best way forward would be to reset the config that was set via
-> > legacy APIs and keep only the MACs provisioned via persistent devlink API?
-> > 
-> > So for now we'd memset, and once devlink API lands reset selectively?  
-> 
-> Legacy is also persistent.
-> Currently when you set mac address with "ip link vf set mac" it is persistent (at least in mlx5).
+Fixes: a6fb6aa3cfa9 ("hv_netvsc: Set tx_table to equal weight after subchannels open")
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-"Currently in mlx5" - maybe, but this is netdevsim. Currently it clears
-the config on re-enable which I believe to be preferable as explained
-before.
+---
+ drivers/net/hyperv/rndis_filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> But ip link only exposes enabled VFS, so driver on VF has to reload to acquire this MAC.
-> With devlink subdev it will be possible to set the MAC before VF was enabled.
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index 206b4e7..05bc5ec8 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -1171,6 +1171,9 @@ int rndis_set_subchannel(struct net_device *ndev,
+ 	wait_event(nvdev->subchan_open,
+ 		   atomic_read(&nvdev->open_chn) == nvdev->num_chn);
+ 
++	for (i = 0; i < VRSS_SEND_TAB_SIZE; i++)
++		ndev_ctx->tx_table[i] = i % nvdev->num_chn;
++
+ 	/* ignore failures from setting rss parameters, still have channels */
+ 	if (dev_info)
+ 		rndis_filter_set_rss_param(rdev, dev_info->rss_key);
+@@ -1180,9 +1183,6 @@ int rndis_set_subchannel(struct net_device *ndev,
+ 	netif_set_real_num_tx_queues(ndev, nvdev->num_chn);
+ 	netif_set_real_num_rx_queues(ndev, nvdev->num_chn);
+ 
+-	for (i = 0; i < VRSS_SEND_TAB_SIZE; i++)
+-		ndev_ctx->tx_table[i] = i % nvdev->num_chn;
+-
+ 	return 0;
+ }
+ 
+-- 
+1.8.3.1
 
-Yup, sure. As I said, once subdev is implemented, we will treat the
-addresses set by it differently. Those are inherently persistent or
-rather their life time is independent of just the SR-IOV host.
-
-> I think we need to distinguish here between:
-> - PF sets MAC to a VF - persistent.
-> - VF sets MAC to itself - not persistent.
-> 
-> But is the second case relevant in netdevsim?
-
-Not sure where you're going with this. Second case, i.e. if VF sets its
-MAC, is not exposed in the hypervisor. I think iproute2 should still
-list the MAC it provisioned, or 00:00.. if unset.
-
-The two cases I'm differentiating is reset behaviour for addresses set
-via PF vs via devlink.
-
-> > > > Could you add a memset(,0,) here?
-> > > >  
-> > > > > +	if (nsim_bus_dev->max_vfs < num_vfs)
-> > > > > +		return -ENOMEM;
-> > > > > +
-> > > > >  	if (!nsim_bus_dev->vfconfigs)
-> > > > >  		return -ENOMEM;  
-> > > >
-> > > > This check seems useless now, no? We will always have vfconfigs  
