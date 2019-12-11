@@ -2,136 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E58A711BCB9
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1487111BCC0
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728339AbfLKTPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 14:15:48 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42283 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727079AbfLKTPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:15:47 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e28so25300880ljo.9
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:15:46 -0800 (PST)
+        id S1727096AbfLKTRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 14:17:30 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:45072 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfLKTR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:17:29 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 59so852969otp.12
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:17:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nJ/VWCmz71EpQ9QVZBA9BDeegL7NdVe7RbPuPTBMFb8=;
-        b=KMPbSM+RTtQCtsZ+EOpry4KaHB4ciwutPzLElQIdeyKoETduWovwHScxT/XWI5rNvN
-         eF7bdWi8ukAekR9UiOtDWXBw+13AjJXss6wLWJLlITQIca6enXWhk8Z9oTuHvmDNRSCZ
-         MsSWmKHNJWGd5UqvLi20oamFGsHjUHwyXlblsKLoF5HalIwl56Hi+mQKOVjD0LNXmhkR
-         LsGXS8DG8BAWJL2QtnArulm2UUhTH5R11Qb2aAJrxtHAxtXhjAJDHSKyMML/DK9fMQKc
-         2qydHgUs66emUt7dHu1mgTHJSPh0qYK3nRjdUzOT2vpEOahACJXIG8fjtKsLq3WFmJ16
-         PN+g==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V4cP0f+jTCOEwzsB+qIKa00ifWd+VJ6cO9ddtzoRP5E=;
+        b=mdrCySH++7rIpH4z48OGg8gZpWjNGOpwAR4I414eYiZlWsFda1SIErZwmc5LReAMg9
+         36vAS+FD9EVh/DsXFynMepY0Zj5bwgOrilJ2qkI9CsflLxeioI3WJTgGyluMkM/xgu1v
+         rio8fi+ZOQ0s9wEqSCyRO4bwzMcAh+xnl9YdlELrFx1Ulfo236qMle6mo/hWMQzv22ia
+         fRpulxtt7vPW8oJ+2cs01pruyeT1YZz1xr4ZWZtlIyaS5Rap0ZoF2sJ0aKwRyPR0hdR6
+         FU3muwA7P6C7o+7cqMIjayhIHIF8I30XVudUTPZiptaz178hMQoohtf70LeXe9yIUlXe
+         bltg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nJ/VWCmz71EpQ9QVZBA9BDeegL7NdVe7RbPuPTBMFb8=;
-        b=FJil1Hy9Gpm6XGhKVCbs/+3CgzYqzg4GYHjZrdI88qRG0xDoNlfWeKvF6KtjIjdImb
-         bW621p6Nn7fk+JQHnn9JvcESor5hGO0YelhXMWOk37eH7PyFAygagr72rGlZxkrnopui
-         GBmeFOS/Q1gUoe4ALiKjgdWzuKy9ZmK8EcTWNYJSsF7UnzbWzZZX6RZSm6GBNYDm49C6
-         ljI7XKBWbf0R3n/qX/SjkhlEaD1W9opmrP/SL5cNOBBlWlDepe9IgdJW352P+rwmkCaL
-         xOHNbZZ1RuArVbi9Xee7J3In8ZBYyjKKxFgr5VIfdVI/HfxGRYt+K6+9AV9c3RRi3LJ/
-         PwWA==
-X-Gm-Message-State: APjAAAWncBhCaqemcMnRAs+Ytwtcu8uVjD47KuDmYVvL2ZawmBc4ePJc
-        h44ZJvCBtHXG1W3oizPzqaYZqA==
-X-Google-Smtp-Source: APXvYqxTp5F4Swjbm8LWzvdZAlAL3P4BSJ8wsGKdr885KWjVK5ejFjxkIeC6HYZfJ8GViWOP7UDDCg==
-X-Received: by 2002:a2e:8613:: with SMTP id a19mr3268726lji.210.1576091745719;
-        Wed, 11 Dec 2019 11:15:45 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 138sm1689304lfa.76.2019.12.11.11.15.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 11:15:45 -0800 (PST)
-Date:   Wed, 11 Dec 2019 11:15:37 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Yuval Avnery <yuvalav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Message-ID: <20191211111537.416bf078@cakuba.netronome.com>
-In-Reply-To: <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
-        <20191211095854.6cd860f1@cakuba.netronome.com>
-        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V4cP0f+jTCOEwzsB+qIKa00ifWd+VJ6cO9ddtzoRP5E=;
+        b=nsBK73y+0AP48wTdsgmOqHkbIDOLrYSa3YI5jXBXH+ZDkrhO6OrDhpLBn7yfUmhPTe
+         YUbMM/uAxOFHUMU2GRXRsePZuqefYgRtdva/8Z3C5jmbMnpY5PzOkZkHjADLHqZ4k94E
+         DrpjBk28345Gul0obFCla/ntJZB/Kw4H61DFsmyyZ7Q7i+PgU9KSk7Tw2QrpYD1r/k4K
+         h7mydfstSNHHV7fZmme2wEriwGbe5rhVCnEoe8mCsCX+EM/rY8QgKBRCDLBn9RQCLov2
+         TLZ5B7H0nKs3Z2KLkUASq74xWm7DhmKv6rlujkUWCfFRmvmYxtVefNoBPptIv+LnPK+a
+         4osw==
+X-Gm-Message-State: APjAAAWUICDHTbOx2HIgFzRkR6eTwYT/DDOG3tajGEghmSrBZnfosn/5
+        b8IPPLj+zf0oB3mOLS7AjXQRhTIeLaDHlJGdm2e90w==
+X-Google-Smtp-Source: APXvYqyAemVaEfn9qaK1IxtKdnDsCeKKKFV7H6WPLb4HwS2HysPTksmQDYALSnnf0r6hJSM7zsA9THyUks/sFlKZYe4=
+X-Received: by 2002:a9d:7c8f:: with SMTP id q15mr3626607otn.341.1576091848212;
+ Wed, 11 Dec 2019 11:17:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191211073419.258820-1-edumazet@google.com>
+In-Reply-To: <20191211073419.258820-1-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 11 Dec 2019 14:17:12 -0500
+Message-ID: <CADVnQynJoDaNhY=NODF7CJ5KdqVzwgTZU5zoysAEbGJ3TXJnvQ@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: do not send empty skb from tcp_write_xmit()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 18:19:56 +0000, Yuval Avnery wrote:
-> > On Wed, 11 Dec 2019 04:58:53 +0200, Yuval Avnery wrote:  
-> > > Currently there is no limit to the number of VFs netdevsim can enable.
-> > > In a real systems this value exist and used by driver.
-> > > Fore example, Some features might need to consider this value when
-> > > allocating memory.  
-> > 
-> > Thanks for the patch!
-> > 
-> > Can you shed a little bit more light on where it pops up? Just for my curiosity?  
-> 
-> Yes, like we described in the subdev threads.
-> User should be able to configure some attributes before the VF was enabled.
-> So all those (persistent) VF attributes should be available for query and configuration
-> before VF was enabled.
-> The driver can allocate an array according to max_vfs to hold all that data,
-> like we do here in" vfconfigs".
+On Wed, Dec 11, 2019 at 2:34 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Backport of commit fdfc5c8594c2 ("tcp: remove empty skb from
+> write queue in error cases") in linux-4.14 stable triggered
+> various bugs. One of them has been fixed in commit ba2ddb43f270
+> ("tcp: Don't dequeue SYN/FIN-segments from write-queue"), but
+> we still have crashes in some occasions.
+>
+> Root-cause is that when tcp_sendmsg() has allocated a fresh
+> skb and could not append a fragment before being blocked
+> in sk_stream_wait_memory(), tcp_write_xmit() might be called
+> and decide to send this fresh and empty skb.
+>
+> Sending an empty packet is not only silly, it might have caused
+> many issues we had in the past with tp->packets_out being
+> out of sync.
+>
+> Fixes: c65f7f00c587 ("[TCP]: Simplify SKB data portion allocation with NETIF_F_SG.")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Christoph Paasch <cpaasch@apple.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
+> Cc: Jason Baron <jbaron@akamai.com>
+> ---
+>  net/ipv4/tcp_output.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index b184f03d743715ef4b2d166ceae651529be77953..57f434a8e41ffd6bc584cb4d9e87703491a378c1 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -2438,6 +2438,14 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+>                 if (tcp_small_queue_check(sk, skb, 0))
+>                         break;
+>
+> +               /* Argh, we hit an empty skb(), presumably a thread
+> +                * is sleeping in sendmsg()/sk_stream_wait_memory().
+> +                * We do not want to send a pure-ack packet and have
+> +                * a strange looking rtx queue with empty packet(s).
+> +                */
+> +               if (TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq)
+> +                       break;
+> +
+>                 if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
+>                         break;
+>
+> --
 
-I was after more practical reasoning, are you writing some tests for
-subdev stuff that will depend on this change? :)
+Thanks for the fix, Eric!
 
-> > > Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
-> > > Acked-by: Jiri Pirko <jiri@mellanox.com>  
-> > >
-> > > diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-> > > index 6aeed0c600f8..f1a0171080cb 100644
-> > > --- a/drivers/net/netdevsim/bus.c
-> > > +++ b/drivers/net/netdevsim/bus.c
-> > > @@ -26,9 +26,9 @@ static struct nsim_bus_dev *to_nsim_bus_dev(struct
-> > > device *dev)  static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev  
-> > *nsim_bus_dev,  
-> > >  				   unsigned int num_vfs)
-> > >  {
-> > > -	nsim_bus_dev->vfconfigs = kcalloc(num_vfs,
-> > > -					  sizeof(struct nsim_vf_config),
-> > > -					  GFP_KERNEL);  
-> > 
-> > You're changing the semantics of the enable/disable as well now.
-> > The old values used to be wiped when SR-IOV is disabled, now they will be
-> > retained across disable/enable pair.
-> > 
-> > I think it'd be better if that wasn't the case. Users may expect a system to be
-> > in the same state after they enable SR-IOV, regardless if someone else used
-> > SR-IOV since last reboot.  
-> 
-> Right, 
-> But some values should retain across enable/disable, for example MAC address which is persistent.
-> So maybe we need to retain some values, while resetting others on disable?
-> Would that work?
+Is there any risk that any current or future bugs that create
+persistently empty skbs could cause the connection to "freeze", unable
+to reach the tcp_transmit_skb() call in tcp_write_xmit()?
 
-Mmm. That is a good question. For all practical purposes SR-IOV used 
-to be local to the host that enables it until Smart/middle box NICs
-emerged.
+To avoid this risk, would it make sense to delete the empty skb and
+continue the tcp_write_xmit() transmit loop, rather than breaking out
+of the loop?
 
-Perhaps the best way forward would be to reset the config that was set
-via legacy APIs and keep only the MACs provisioned via persistent
-devlink API?
+Just curious to learn. :-)
 
-So for now we'd memset, and once devlink API lands reset selectively?
-
-> > Could you add a memset(,0,) here?
-> >   
-> > > +	if (nsim_bus_dev->max_vfs < num_vfs)
-> > > +		return -ENOMEM;
-> > > +
-> > >  	if (!nsim_bus_dev->vfconfigs)
-> > >  		return -ENOMEM;  
-> > 
-> > This check seems useless now, no? We will always have vfconfigs
+thanks,
+neal
