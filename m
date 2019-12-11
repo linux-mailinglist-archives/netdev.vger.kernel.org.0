@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA07711BF63
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 22:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B158B11BF65
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 22:51:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfLKVr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 16:47:58 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:46812 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbfLKVr5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 16:47:57 -0500
-Received: by mail-qv1-f65.google.com with SMTP id t9so75385qvh.13
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 13:47:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=RaAE7sjaNd1lnPk57Cwl+t3wgCFYj7SYpv6MvMoqfZM=;
-        b=TyBKqC7aMmrh+M6LP64NE4QW7xWQKWLDifFe4gpI7ZIaVzF4igUoNCdI6aw++uiE2w
-         a2kHcrZ8EAdWJIDY54CrtgKsgAEjnSjG48BIbTqGWKmy66OUQYLEYGD476TScP+HmOIy
-         /W9rmUeuAa87/A/TiMhuZVPWNXUQQUOe55G1llrZKFLXgUJiub0lIPNPmvGfNSg29efN
-         nDUBa53Qtp0pOdxrRxHdIYa2ml8eAcIJFfsvY9IHqmdTN1iNFcqm+G/f2yPZWxxFRgyQ
-         pSpz2RhqqpUZq9qXDtPSlqKGUvjgGsQIW44dcxSJy0ft0abuO6po6ZTTg46d48PieaZo
-         OUqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=RaAE7sjaNd1lnPk57Cwl+t3wgCFYj7SYpv6MvMoqfZM=;
-        b=etUL6/6X3bnfL/PpSiGrqVdZnxhDDEVTM1yoPlKgY+sZr2YtT2gSJ0WyvqFEJllcDp
-         yr0mF+o8DcnCcfLH8IS4UGTHxBdQaxe9viSFLrDbsZxiyzh6+6/tSHM8HYLoup7AqIms
-         KeLTUr8pEJkpQj4dUN6wvKM1yP5iqxHZ50K+TKeyckOllzpAy8PI1kzL1PfROqRzJMbm
-         5/thNMIs30xP10J8rP47E5wFZ77Y0dIFRGSfvyJc21XByyi3u8SzW4eP5iePQXmgdu6t
-         nIYK1//5CosA6TLAmp6TMzlL5SX0NxDOV07sayz9p7+rjHJCLt7u4WE4n5SBh0rF95wI
-         aiTg==
-X-Gm-Message-State: APjAAAVUUMIQRv+DWpQC8bHplC/yiQLRBqtmaU7qdbu4/Ei6xR2lACGB
-        Dp944qAQYqSYzZGBut404C0=
-X-Google-Smtp-Source: APXvYqxp54jG68g6gUukW3yMjWMe0M9d2XbuokGR9xtBNRBzoSlTPiyfoICsOkrUnEFD1Kz1mCIkzw==
-X-Received: by 2002:a0c:f513:: with SMTP id j19mr5185205qvm.206.1576100876870;
-        Wed, 11 Dec 2019 13:47:56 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id 184sm1061118qke.73.2019.12.11.13.47.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 13:47:55 -0800 (PST)
-Date:   Wed, 11 Dec 2019 16:47:54 -0500
-Message-ID: <20191211164754.GB1616641@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     nikolay@cumulusnetworks.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, stephen@networkplumber.org
-Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
-In-Reply-To: <20191211.120120.991784482938734303.davem@davemloft.net>
-References: <0e45fd22-c31b-a9c2-bf87-22c16a60aeb4@gmail.com>
- <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
- <20191211134133.GB1587652@t480s.localdomain>
- <20191211.120120.991784482938734303.davem@davemloft.net>
+        id S1726524AbfLKVvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 16:51:10 -0500
+Received: from correo.us.es ([193.147.175.20]:58348 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726313AbfLKVvK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 16:51:10 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8E5971F0D05
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 22:51:06 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7C528DA70A
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 22:51:06 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 72093DA703; Wed, 11 Dec 2019 22:51:06 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 60FAFDA705;
+        Wed, 11 Dec 2019 22:51:04 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 11 Dec 2019 22:51:04 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 3C32C4265A5A;
+        Wed, 11 Dec 2019 22:51:04 +0100 (CET)
+Date:   Wed, 11 Dec 2019 22:51:04 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
+ attr as u8
+Message-ID: <20191211215104.qnvifdmlg55ox45b@salvia>
+References: <cover.1575779993.git.lucien.xin@gmail.com>
+ <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hi,
 
-On Wed, 11 Dec 2019 12:01:20 -0800 (PST), David Miller <davem@davemloft.net> wrote:
-> >> >>  /* Bridge multicast database attributes
-> >> >>   * [MDBA_MDB] = {
-> >> >>   *     [MDBA_MDB_ENTRY] = {
-> >> >> @@ -261,6 +270,7 @@ enum {
-> >> >>  	BRIDGE_XSTATS_UNSPEC,
-> >> >>  	BRIDGE_XSTATS_VLAN,
-> >> >>  	BRIDGE_XSTATS_MCAST,
-> >> >> +	BRIDGE_XSTATS_STP,
-> >> >>  	BRIDGE_XSTATS_PAD,
-> >> >>  	__BRIDGE_XSTATS_MAX
-> >> >>  };
-> >> > 
-> >> > Shouldn't the new entry be appended to the end - after BRIDGE_XSTATS_PAD
-> >> > 
-> >> 
-> >> Oh yes, good catch. That has to be fixed, too.
-> >> 
-> > 
-> > This I don't get. Why new attributes must come between BRIDGE_XSTATS_PAD
-> > and __BRIDGE_XSTATS_MAX?
+On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
+> To keep consistent with ipgre_policy, it's better to parse
+> ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
+> cls_flower and ip_tunnel_core.
 > 
-> Because, just like any other attribute value, BRIDGE_XSTATS_PAD is an
-> API and fixed in stone.  You can't add things before it which change
-> it's value.
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/netfilter/nft_tunnel.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+> index 3d4c2ae..f76cd7d 100644
+> --- a/net/netfilter/nft_tunnel.c
+> +++ b/net/netfilter/nft_tunnel.c
+> @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
+>  }
+>  
+>  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
+> +	[NFTA_TUNNEL_KEY_ERSPAN_VERSION]	= { .type = NLA_U8 },
+>  	[NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]	= { .type = NLA_U32 },
+> -	[NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]	= { .type = NLA_U8 },
+> +	[NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]		= { .type = NLA_U8 },
+>  	[NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]	= { .type = NLA_U8 },
+>  };
+>  
+> @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
+>  	if (err < 0)
+>  		return err;
+>  
+> -	version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
+> +	version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
 
-I thought the whole point of using enums was to avoid caring about fixed
-numeric values, but well. To be more precise, what I don't get is that when
-I move the BRIDGE_XSTATS_STP definition *after* BRIDGE_XSTATS_PAD, the STP
-xstats don't show up anymore in iproute2.
+I think NFTA_TUNNEL_KEY_ERSPAN_VERSION as 32-bit is just fine.
 
+Netlink will be adding the padding anyway for u8.
 
-Thanks,
+I would suggest you leave this as is.
 
-	Vivien
+Thanks.
