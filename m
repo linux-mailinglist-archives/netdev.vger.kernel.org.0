@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C65311AACD
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2FC11AACF
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729225AbfLKMam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:30:42 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40385 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728991AbfLKMam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:42 -0500
-Received: by mail-pg1-f195.google.com with SMTP id k25so10707968pgt.7;
-        Wed, 11 Dec 2019 04:30:42 -0800 (PST)
+        id S1729238AbfLKMaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:30:46 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37931 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728991AbfLKMaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:46 -0500
+Received: by mail-pg1-f194.google.com with SMTP id a33so10499565pgm.5;
+        Wed, 11 Dec 2019 04:30:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sT+Rgz+TmAjyrWpFdgUif1oMQNgqWzzJF0FvXnQcojA=;
-        b=nIOv9NG3U0MFmWnMfX95stCSsmAuni8nOVAx+lAuWnp/+9FnUNMMpxYT/cboencLdJ
-         vF4PK3Sbjs35wVwd9XcXAoHsodIgPOJwwhAgg3A3xsMllJst3bHhjomnOLu+CIYUKeqE
-         knbCiSelUCL+VhcEQuyldslPrInIPMD1FDjKch8oERRSc58Kota0/kFaqVKVajk/ba5c
-         SIioVkMDwCs7HOW+jjn4g8b97ltfaMNC097Vh2JQ7NCwEeaqVJHVsjp2nVmWdHW0948V
-         tRdhH+0Md+9PAFeGeAGXaKPNh7cJrnPDh6AX9/+ORsdJ/i/XYPtESvya1pBPp4xXOhCs
-         FoHg==
+        bh=rRqDcNnLG2JtDn1sPfTbToIau7rGU2D371JxWP2l1oM=;
+        b=UESBXhNhm/fU42wAN7zXRLTsX4kwyx6zTZgQhV1dxBYEa4/mIqhy2IjwGmeXrO8EvH
+         5RhSFWkccCZwqkm0DqWBIsVbuugTe1VUlRcyAZHYJnrFd4J4gGMJzWaFLY7Duf6YB4oV
+         f/K8/67nKnEACiVo419hg1S6CkowWdr2KwAAJ2+36JrHkZyz9g3MR3WsskJUkQnMSQBv
+         gXmCs27POgEkHlYWlfqhoADbvb33UoxDUkCL20iwGAc9XggbKyhDokgN1p7htv31T3w0
+         RW6nxRA4o9M7J6lszpfqUZiLuSJt52u509ZW3YOasSnBgLeYPh5BsRRsIQCUwH+wRpff
+         +5yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sT+Rgz+TmAjyrWpFdgUif1oMQNgqWzzJF0FvXnQcojA=;
-        b=OXkObEaeyD4wThv5eXynxiLnFg08UqtoVJE/j8GBv7rL47hmPxYHY4vv7EjY4kf4o6
-         RgDWJskGo33I8FCN74L6vV4agrPt6U2UileSgiMsnSxdI8aphV+Bg4+vrZ7as7X6KnkX
-         l6j9P3rmPWlFXkfskrO8H+cwOqzgFRPgohBvAVOYyNjo7FeP40KPraetYoXyzBvtcz1g
-         63HTLTbZliZdMKxSWXWo4PyOjVVyLhvDcXGTp+OibQ3T3Tg4Cw+CpWt9voUgG16jDnAV
-         bHlY6Bzvs0a443ailIl5ZbJZ5Jtr2Qq58XqlgQhU18pYQueU+K0sDu69jmH/6++83GD/
-         ifpQ==
-X-Gm-Message-State: APjAAAV4toibfo2PgnSdvQzxI6fZ4+NzSvA7ssHZCYfpNzyPfTia/Cs1
-        C9POOUmhAoEJu/Z+eJQe/kKp53Tb0cme9Q==
-X-Google-Smtp-Source: APXvYqwkyTdyyzaoZYkLYgQ28Chw7BVamvYiJjwgY5pCYWrSIDiCGUIhUBprykL04iw42LLNN/tWRA==
-X-Received: by 2002:a63:5c1c:: with SMTP id q28mr3742843pgb.245.1576067441191;
-        Wed, 11 Dec 2019 04:30:41 -0800 (PST)
+        bh=rRqDcNnLG2JtDn1sPfTbToIau7rGU2D371JxWP2l1oM=;
+        b=EZvvUT7bKWh/KDEsZPUj0gCBqs+lICcy49vZQ+RM1hqJJaS26ofmKNxi9X/bzqkiFD
+         vJJB7uS11gcem0sHjDi2qu7HNXgXcqrSXkDqMtLH6AZ+G3BRLPrkv2VMm8QW78XVPEVq
+         LGD81BJWcdo74BQhoCFP3/aAwFbPb1Xl/VjWD/8M1fGFvyQkPtzsfySYOzDiCk1z1Nua
+         GIfgQ97WPEqc7MEMC9+2OkwS0CLqqb8lpgovUHrrr3Hh/ndsQmoU6H9xFLQhERB3899y
+         iTsFXkcaYH1uYEgwx4mnAIAdUzrxi0FbS9Y1qwK3ssNyuaYbUNzB7fppdYi3cs80F/9W
+         yOeg==
+X-Gm-Message-State: APjAAAVXdSblfxcJhXquFnNRnFXcg5VWH173Al/NgkkCMg9iQBITHauj
+        RKKGpegxGcHzCx90cnj2uKnU0pSE4qefnA==
+X-Google-Smtp-Source: APXvYqwncnpLtyt/7duSUXkZX2hZEvBRGwh1IhPKcK5TNLkPWK2RE41bK1PHmbpxBR8yU0SmJEyYkQ==
+X-Received: by 2002:a65:654d:: with SMTP id a13mr3899460pgw.141.1576067445092;
+        Wed, 11 Dec 2019 04:30:45 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.37
+        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 04:30:40 -0800 (PST)
+        Wed, 11 Dec 2019 04:30:44 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -51,9 +51,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
         ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
         andrii.nakryiko@gmail.com
-Subject: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
-Date:   Wed, 11 Dec 2019 13:30:13 +0100
-Message-Id: <20191211123017.13212-3-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v4 3/6] bpf, xdp: start using the BPF dispatcher for XDP
+Date:   Wed, 11 Dec 2019 13:30:14 +0100
+Message-Id: <20191211123017.13212-4-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191211123017.13212-1-bjorn.topel@gmail.com>
 References: <20191211123017.13212-1-bjorn.topel@gmail.com>
@@ -67,428 +67,229 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-The BPF dispatcher is a multi-way branch code generator, mainly
-targeted for XDP programs. When an XDP program is executed via the
-bpf_prog_run_xdp(), it is invoked via an indirect call. The indirect
-call has a substantial performance impact, when retpolines are
-enabled. The dispatcher transform indirect calls to direct calls, and
-therefore avoids the retpoline. The dispatcher is generated using the
-BPF JIT, and relies on text poking provided by bpf_arch_text_poke().
-
-The dispatcher hijacks a trampoline function it via the __fentry__ nop
-of the trampoline. One dispatcher instance currently supports up to 64
-dispatch points. A user creates a dispatcher with its corresponding
-trampoline with the DEFINE_BPF_DISPATCHER macro.
+This commit adds a BPF dispatcher for XDP. The dispatcher is updated
+from the XDP control-path, dev_xdp_install(), and used when an XDP
+program is run via bpf_prog_run_xdp().
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 122 +++++++++++++++++++++++++++
- include/linux/bpf.h         |  56 +++++++++++++
- kernel/bpf/Makefile         |   1 +
- kernel/bpf/dispatcher.c     | 159 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 338 insertions(+)
- create mode 100644 kernel/bpf/dispatcher.c
+ include/linux/bpf.h    | 15 +++++++++++++++
+ include/linux/filter.h | 40 ++++++++++++++++++++++++----------------
+ kernel/bpf/syscall.c   | 26 ++++++++++++++++++--------
+ net/core/dev.c         | 19 ++++++++++++++++++-
+ net/core/filter.c      |  8 ++++++++
+ 5 files changed, 83 insertions(+), 25 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index b8be18427277..3ce7ad41bd6f 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -10,10 +10,12 @@
- #include <linux/if_vlan.h>
- #include <linux/bpf.h>
- #include <linux/memory.h>
-+#include <linux/sort.h>
- #include <asm/extable.h>
- #include <asm/set_memory.h>
- #include <asm/nospec-branch.h>
- #include <asm/text-patching.h>
-+#include <asm/asm-prototypes.h>
- 
- static u8 *emit_code(u8 *ptr, u32 bytes, unsigned int len)
- {
-@@ -1530,6 +1532,126 @@ int arch_prepare_bpf_trampoline(void *image, struct btf_func_model *m, u32 flags
- 	return 0;
- }
- 
-+static int emit_cond_near_jump(u8 **pprog, void *func, void *ip, u8 jmp_cond)
-+{
-+	u8 *prog = *pprog;
-+	int cnt = 0;
-+	s64 offset;
-+
-+	offset = func - (ip + 2 + 4);
-+	if (!is_simm32(offset)) {
-+		pr_err("Target %p is out of range\n", func);
-+		return -EINVAL;
-+	}
-+	EMIT2_off32(0x0F, jmp_cond + 0x10, offset);
-+	*pprog = prog;
-+	return 0;
-+}
-+
-+static int emit_fallback_jump(u8 **pprog)
-+{
-+	u8 *prog = *pprog;
-+	int err = 0;
-+
-+#ifdef CONFIG_RETPOLINE
-+	/* Note that this assumes the the compiler uses external
-+	 * thunks for indirect calls. Both clang and GCC use the same
-+	 * naming convention for external thunks.
-+	 */
-+	err = emit_jump(&prog, __x86_indirect_thunk_rdx, prog);
-+#else
-+	int cnt = 0;
-+
-+	EMIT2(0xFF, 0xE2);	/* jmp rdx */
-+#endif
-+	*pprog = prog;
-+	return err;
-+}
-+
-+static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
-+{
-+	int pivot, err, jg_bytes = 1, cnt = 0;
-+	u8 *jg_reloc, *prog = *pprog;
-+	s64 jg_offset;
-+
-+	if (a == b) {
-+		/* Leaf node of recursion, i.e. not a range of indices
-+		 * anymore.
-+		 */
-+		EMIT1(add_1mod(0x48, BPF_REG_3));	/* cmp rdx,func */
-+		if (!is_simm32(progs[a]))
-+			return -1;
-+		EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3),
-+			    progs[a]);
-+		err = emit_cond_near_jump(&prog,	/* je func */
-+					  (void *)progs[a], prog,
-+					  X86_JE);
-+		if (err)
-+			return err;
-+
-+		err = emit_fallback_jump(&prog);	/* jmp thunk/indirect */
-+		if (err)
-+			return err;
-+
-+		*pprog = prog;
-+		return 0;
-+	}
-+
-+	/* Not a leaf node, so we pivot, and recursively descend into
-+	 * the lower and upper ranges.
-+	 */
-+	pivot = (b - a) / 2;
-+	EMIT1(add_1mod(0x48, BPF_REG_3));		/* cmp rdx,func */
-+	if (!is_simm32(progs[a + pivot]))
-+		return -1;
-+	EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3), progs[a + pivot]);
-+
-+	if (pivot > 2) {				/* jg upper_part */
-+		/* Require near jump. */
-+		jg_bytes = 4;
-+		EMIT2_off32(0x0F, X86_JG + 0x10, 0);
-+	} else {
-+		EMIT2(X86_JG, 0);
-+	}
-+	jg_reloc = prog;
-+
-+	err = emit_bpf_dispatcher(&prog, a, a + pivot,	/* emit lower_part */
-+				  progs);
-+	if (err)
-+		return err;
-+
-+	jg_offset = prog - jg_reloc;
-+	emit_code(jg_reloc - jg_bytes, jg_offset, jg_bytes);
-+
-+	err = emit_bpf_dispatcher(&prog, a + pivot + 1,	/* emit upper_part */
-+				  b, progs);
-+	if (err)
-+		return err;
-+
-+	*pprog = prog;
-+	return 0;
-+}
-+
-+static int cmp_ips(const void *a, const void *b)
-+{
-+	const s64 *ipa = a;
-+	const s64 *ipb = b;
-+
-+	if (*ipa > *ipb)
-+		return 1;
-+	if (*ipa < *ipb)
-+		return -1;
-+	return 0;
-+}
-+
-+int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
-+{
-+	u8 *prog = image;
-+
-+	sort(funcs, num_funcs, sizeof(funcs[0]), cmp_ips, NULL);
-+	return emit_bpf_dispatcher(&prog, 0, num_funcs - 1, funcs);
-+}
-+
- struct x64_jit_data {
- 	struct bpf_binary_header *header;
- 	int *addrs;
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5d744828b399..e6a9d74d4e30 100644
+index e6a9d74d4e30..ed32b5d901a1 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -470,12 +470,61 @@ struct bpf_trampoline {
- 	void *image;
- 	u64 selector;
+@@ -488,6 +488,14 @@ struct bpf_dispatcher {
+ 	u32 image_off;
  };
-+
-+#define BPF_DISPATCHER_MAX 64 /* Fits in 2048B */
-+
-+struct bpf_dispatcher_prog {
-+	struct bpf_prog *prog;
-+	refcount_t users;
-+};
-+
-+struct bpf_dispatcher {
-+	/* dispatcher mutex */
-+	struct mutex mutex;
-+	void *func;
-+	struct bpf_dispatcher_prog progs[BPF_DISPATCHER_MAX];
-+	int num_progs;
-+	void *image;
-+	u32 image_off;
-+};
-+
+ 
++static __always_inline unsigned int bpf_dispatcher_nopfunc(
++	const void *ctx,
++	const struct bpf_insn *insnsi,
++	unsigned int (*bpf_func)(const void *,
++				 const struct bpf_insn *))
++{
++	return bpf_func(ctx, insnsi);
++}
  #ifdef CONFIG_BPF_JIT
  struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
  int bpf_trampoline_link_prog(struct bpf_prog *prog);
- int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
- void bpf_trampoline_put(struct bpf_trampoline *tr);
- void *bpf_jit_alloc_exec_page(void);
-+#define BPF_DISPATCHER_INIT(name) {			\
-+	.mutex = __MUTEX_INITIALIZER(name.mutex),	\
-+	.func = &name##func,				\
-+	.progs = {},					\
-+	.num_progs = 0,					\
-+	.image = NULL,					\
-+	.image_off = 0					\
-+}
-+
-+#define DEFINE_BPF_DISPATCHER(name)					\
-+	unsigned int name##func(					\
-+		const void *xdp_ctx,					\
-+		const struct bpf_insn *insnsi,				\
-+		unsigned int (*bpf_func)(const void *,			\
-+					 const struct bpf_insn *))	\
-+	{								\
-+		return bpf_func(xdp_ctx, insnsi);			\
-+	}								\
-+	EXPORT_SYMBOL(name##func);			\
-+	struct bpf_dispatcher name = BPF_DISPATCHER_INIT(name);
-+#define DECLARE_BPF_DISPATCHER(name)					\
-+	unsigned int name##func(					\
-+		const void *xdp_ctx,					\
-+		const struct bpf_insn *insnsi,				\
-+		unsigned int (*bpf_func)(const void *,			\
-+					 const struct bpf_insn *));	\
-+	extern struct bpf_dispatcher name;
-+#define BPF_DISPATCHER_FUNC(name) name##func
-+#define BPF_DISPATCHER_PTR(name) (&name)
-+void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
-+				struct bpf_prog *to);
- #else
- static inline struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
- {
-@@ -490,6 +539,13 @@ static inline int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
- 	return -ENOTSUPP;
- }
- static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
-+#define DEFINE_BPF_DISPATCHER(name)
-+#define DECLARE_BPF_DISPATCHER(name)
-+#define BPF_DISPATCHER_FUNC(name) bpf_dispatcher_nopfunc
-+#define BPF_DISPATCHER_PTR(name) NULL
-+static inline void bpf_dispatcher_change_prog(struct bpf_dispatcher *d,
-+					      struct bpf_prog *from,
-+					      struct bpf_prog *to) {}
- #endif
+@@ -997,6 +1005,8 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
  
- struct bpf_func_info_aux {
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index 3f671bf617e8..d4f330351f87 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o
- obj-$(CONFIG_BPF_SYSCALL) += disasm.o
- obj-$(CONFIG_BPF_JIT) += trampoline.o
- obj-$(CONFIG_BPF_SYSCALL) += btf.o
-+obj-$(CONFIG_BPF_JIT) += dispatcher.o
- ifeq ($(CONFIG_NET),y)
- obj-$(CONFIG_BPF_SYSCALL) += devmap.o
- obj-$(CONFIG_BPF_SYSCALL) += cpumap.o
-diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-new file mode 100644
-index 000000000000..a4690460d815
---- /dev/null
-+++ b/kernel/bpf/dispatcher.c
-@@ -0,0 +1,159 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(c) 2019 Intel Corporation. */
+ int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog);
+ 
++struct bpf_prog *bpf_prog_by_id(u32 id);
 +
-+#include <linux/hash.h>
-+#include <linux/bpf.h>
-+#include <linux/filter.h>
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ {
+@@ -1128,6 +1138,11 @@ static inline int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+ static inline void bpf_map_put(struct bpf_map *map)
+ {
+ }
 +
-+/* The BPF dispatcher is a multiway branch code generator. The
-+ * dispatcher is a mechanism to avoid the performance penalty of an
-+ * indirect call, which is expensive when retpolines are enabled. A
-+ * dispatch client registers a BPF program into the dispatcher, and if
-+ * there is available room in the dispatcher a direct call to the BPF
-+ * program will be generated. All calls to the BPF programs called via
-+ * the dispatcher will then be a direct call, instead of an
-+ * indirect. The dispatcher hijacks a trampoline function it via the
-+ * __fentry__ of the trampoline. The trampoline function has the
-+ * following signature:
-+ *
-+ * unsigned int trampoline(const void *xdp_ctx,
-+ *                         const struct bpf_insn *insnsi,
-+ *                         unsigned int (*bpf_func)(const void *,
-+ *                                                  const struct bpf_insn *));
-+ */
-+
-+static struct bpf_dispatcher_prog *bpf_dispatcher_find_prog(
-+	struct bpf_dispatcher *d, struct bpf_prog *prog)
++static inline struct bpf_prog *bpf_prog_by_id(u32 id)
 +{
-+	int i;
++	return ERR_PTR(-ENOTSUPP);
++}
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
+ static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index a141cb07e76a..37ac7025031d 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -559,23 +559,26 @@ struct sk_filter {
+ 
+ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ 
+-#define BPF_PROG_RUN(prog, ctx)	({				\
+-	u32 ret;						\
+-	cant_sleep();						\
+-	if (static_branch_unlikely(&bpf_stats_enabled_key)) {	\
+-		struct bpf_prog_stats *stats;			\
+-		u64 start = sched_clock();			\
+-		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
+-		stats = this_cpu_ptr(prog->aux->stats);		\
+-		u64_stats_update_begin(&stats->syncp);		\
+-		stats->cnt++;					\
+-		stats->nsecs += sched_clock() - start;		\
+-		u64_stats_update_end(&stats->syncp);		\
+-	} else {						\
+-		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
+-	}							\
++#define __BPF_PROG_RUN(prog, ctx, dfunc)	({			\
++	u32 ret;							\
++	cant_sleep();							\
++	if (static_branch_unlikely(&bpf_stats_enabled_key)) {		\
++		struct bpf_prog_stats *stats;				\
++		u64 start = sched_clock();				\
++		ret = dfunc(ctx, (prog)->insnsi, (prog)->bpf_func);	\
++		stats = this_cpu_ptr(prog->aux->stats);			\
++		u64_stats_update_begin(&stats->syncp);			\
++		stats->cnt++;						\
++		stats->nsecs += sched_clock() - start;			\
++		u64_stats_update_end(&stats->syncp);			\
++	} else {							\
++		ret = dfunc(ctx, (prog)->insnsi, (prog)->bpf_func);	\
++	}								\
+ 	ret; })
+ 
++#define BPF_PROG_RUN(prog, ctx) __BPF_PROG_RUN(prog, ctx,		\
++					       bpf_dispatcher_nopfunc)
 +
-+	for (i = 0; i < BPF_DISPATCHER_MAX; i++) {
-+		if (prog == d->progs[i].prog)
-+			return &d->progs[i];
-+	}
-+	return NULL;
+ #define BPF_SKB_CB_LEN QDISC_CB_PRIV_LEN
+ 
+ struct bpf_skb_data_end {
+@@ -699,6 +702,8 @@ static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
+ 	return res;
+ }
+ 
++DECLARE_BPF_DISPATCHER(bpf_dispatcher_xdp)
++
+ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
+ 					    struct xdp_buff *xdp)
+ {
+@@ -708,9 +713,12 @@ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
+ 	 * already takes rcu_read_lock() when fetching the program, so
+ 	 * it's not necessary here anymore.
+ 	 */
+-	return BPF_PROG_RUN(prog, xdp);
++	return __BPF_PROG_RUN(prog, xdp,
++			      BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
+ }
+ 
++void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog);
++
+ static inline u32 bpf_prog_insn_size(const struct bpf_prog *prog)
+ {
+ 	return prog->len * sizeof(struct bpf_insn);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e3461ec59570..1a67d468637b 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2305,17 +2305,12 @@ static int bpf_obj_get_next_id(const union bpf_attr *attr,
+ 
+ #define BPF_PROG_GET_FD_BY_ID_LAST_FIELD prog_id
+ 
+-static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
++struct bpf_prog *bpf_prog_by_id(u32 id)
+ {
+ 	struct bpf_prog *prog;
+-	u32 id = attr->prog_id;
+-	int fd;
+-
+-	if (CHECK_ATTR(BPF_PROG_GET_FD_BY_ID))
+-		return -EINVAL;
+ 
+-	if (!capable(CAP_SYS_ADMIN))
+-		return -EPERM;
++	if (!id)
++		return ERR_PTR(-ENOENT);
+ 
+ 	spin_lock_bh(&prog_idr_lock);
+ 	prog = idr_find(&prog_idr, id);
+@@ -2324,7 +2319,22 @@ static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
+ 	else
+ 		prog = ERR_PTR(-ENOENT);
+ 	spin_unlock_bh(&prog_idr_lock);
++	return prog;
 +}
 +
-+static struct bpf_dispatcher_prog *bpf_dispatcher_find_free(
-+	struct bpf_dispatcher *d)
++static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
 +{
-+	return bpf_dispatcher_find_prog(d, NULL);
-+}
++	struct bpf_prog *prog;
++	u32 id = attr->prog_id;
++	int fd;
 +
-+static bool bpf_dispatcher_add_prog(struct bpf_dispatcher *d,
-+				    struct bpf_prog *prog)
-+{
-+	struct bpf_dispatcher_prog *entry;
++	if (CHECK_ATTR(BPF_PROG_GET_FD_BY_ID))
++		return -EINVAL;
 +
-+	if (!prog)
-+		return false;
-+
-+	entry = bpf_dispatcher_find_prog(d, prog);
-+	if (entry) {
-+		refcount_inc(&entry->users);
-+		return false;
-+	}
-+
-+	entry = bpf_dispatcher_find_free(d);
-+	if (!entry)
-+		return false;
-+
-+	bpf_prog_inc(prog);
-+	entry->prog = prog;
-+	refcount_set(&entry->users, 1);
-+	d->num_progs++;
-+	return true;
-+}
-+
-+static bool bpf_dispatcher_remove_prog(struct bpf_dispatcher *d,
-+				       struct bpf_prog *prog)
-+{
-+	struct bpf_dispatcher_prog *entry;
-+
-+	if (!prog)
-+		return false;
-+
-+	entry = bpf_dispatcher_find_prog(d, prog);
-+	if (!entry)
-+		return false;
-+
-+	if (refcount_dec_and_test(&entry->users)) {
-+		entry->prog = NULL;
-+		bpf_prog_put(prog);
-+		d->num_progs--;
-+		return true;
-+	}
-+	return false;
-+}
-+
-+int __weak arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static int bpf_dispatcher_prepare(struct bpf_dispatcher *d, void *image)
-+{
-+	s64 ips[BPF_DISPATCHER_MAX] = {}, *ipsp = &ips[0];
-+	int i;
-+
-+	for (i = 0; i < BPF_DISPATCHER_MAX; i++) {
-+		if (d->progs[i].prog)
-+			*ipsp++ = (s64)(uintptr_t)d->progs[i].prog->bpf_func;
-+	}
-+	return arch_prepare_bpf_dispatcher(image, &ips[0], d->num_progs);
-+}
-+
-+static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
-+{
-+	void *old, *new;
-+	u32 noff;
++	if (!capable(CAP_SYS_ADMIN))
++		return -EPERM;
+ 
++	prog = bpf_prog_by_id(id);
+ 	if (IS_ERR(prog))
+ 		return PTR_ERR(prog);
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2c277b8aba38..255d3cf35360 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8542,7 +8542,17 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 			   struct netlink_ext_ack *extack, u32 flags,
+ 			   struct bpf_prog *prog)
+ {
++	bool non_hw = !(flags & XDP_FLAGS_HW_MODE);
++	struct bpf_prog *prev_prog = NULL;
+ 	struct netdev_bpf xdp;
 +	int err;
 +
-+	if (!prev_num_progs) {
-+		old = NULL;
-+		noff = 0;
-+	} else {
-+		old = d->image + d->image_off;
-+		noff = d->image_off ^ (PAGE_SIZE / 2);
++	if (non_hw) {
++		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op,
++							   XDP_QUERY_PROG));
++		if (IS_ERR(prev_prog))
++			prev_prog = NULL;
 +	}
+ 
+ 	memset(&xdp, 0, sizeof(xdp));
+ 	if (flags & XDP_FLAGS_HW_MODE)
+@@ -8553,7 +8563,14 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 	xdp.flags = flags;
+ 	xdp.prog = prog;
+ 
+-	return bpf_op(dev, &xdp);
++	err = bpf_op(dev, &xdp);
++	if (!err && non_hw)
++		bpf_prog_change_xdp(prev_prog, prog);
 +
-+	new = d->num_progs ? d->image + noff : NULL;
-+	if (new) {
-+		if (bpf_dispatcher_prepare(d, new))
-+			return;
-+	}
++	if (prev_prog)
++		bpf_prog_put(prev_prog);
 +
-+	err = bpf_arch_text_poke(d->func, BPF_MOD_JUMP, old, new);
-+	if (err || !new)
-+		return;
++	return err;
+ }
+ 
+ static void dev_xdp_uninstall(struct net_device *dev)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f1e703eed3d2..a411f7835dee 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8940,3 +8940,11 @@ const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
+ const struct bpf_prog_ops sk_reuseport_prog_ops = {
+ };
+ #endif /* CONFIG_INET */
 +
-+	d->image_off = noff;
-+}
++DEFINE_BPF_DISPATCHER(bpf_dispatcher_xdp)
 +
-+void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
-+				struct bpf_prog *to)
++void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog)
 +{
-+	bool changed = false;
-+	int prev_num_progs;
-+
-+	if (from == to)
-+		return;
-+
-+	mutex_lock(&d->mutex);
-+	if (!d->image) {
-+		d->image = bpf_jit_alloc_exec_page();
-+		if (!d->image)
-+			goto out;
-+	}
-+
-+	prev_num_progs = d->num_progs;
-+	changed |= bpf_dispatcher_remove_prog(d, from);
-+	changed |= bpf_dispatcher_add_prog(d, to);
-+
-+	if (!changed)
-+		goto out;
-+
-+	bpf_dispatcher_update(d, prev_num_progs);
-+out:
-+	mutex_unlock(&d->mutex);
++	bpf_dispatcher_change_prog(BPF_DISPATCHER_PTR(bpf_dispatcher_xdp),
++				   prev_prog, prog);
 +}
 -- 
 2.20.1
