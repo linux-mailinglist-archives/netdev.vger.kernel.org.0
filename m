@@ -2,92 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0904311A0FC
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB0711A188
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:41:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727573AbfLKCCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 21:02:07 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:45210 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727166AbfLKCCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:02:06 -0500
-Received: by mail-qv1-f65.google.com with SMTP id c2so5063713qvp.12
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 18:02:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=hnNNPiH+0knQ/mTzZcYqFPWlCiT6PxlNTbmMZNe9cuI=;
-        b=CI3y8NjAcg4RuMdoysRTliQdCeFvnlTn3p4r4x7yyAAOTht5S99FivoTPRLD2MDFgo
-         yxxfP8bkP5M783hKAt0Y2mE0zBxFbKk5T+qtv//4r0NWBgGg7CbWnkFyXo76JY/3ir98
-         ZaFXjOWNpKYKsviYRW5E4Mkvf7a0PxmZbCcyIL28oecPLTlC6T4BOvPZVlyOA2tc7AMQ
-         2UK02IKwVa/8SuWn7sKGQNMX0q9z5btI9udvmazi4E7UBDsUnf0Cijw+m9a7qRNsZ29r
-         BQJDqPg60OSZkIkh9p9o+0px5NEz9Tp4MhGVpG2Bc+rpIgZDrNTPXQoROmm3drwsvH1i
-         ac2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=hnNNPiH+0knQ/mTzZcYqFPWlCiT6PxlNTbmMZNe9cuI=;
-        b=gUMZZ/aeE8rc/4w2Kus7okZfpmuAoUeWSyB95prqeh+Ur/XOPQX6+ZSrwqySULMcTP
-         lBOJKxcWdwPDB4LF1etk43Nz1cQNoJ1EK1n/Qq0H594pgrlypugjbzma+feYrTR1ADkc
-         Vj5WiMtl3wd8WvdfknrmZxa65E3MJSOGBiJ5kBVZsih7zklxUaKcsMdZ0al7ArDZmkgJ
-         8sfrK3wlJBsjXFAAd/RwmE5r40EZmV8un17jjZmFcpRrETzOhd4MQcAWcApMp584AhJu
-         owRvAIk9rByU4rJs6oJafoak7RlBIo549p+4iFZmbmfsP8SsGHNaj+zAdRnjaHU30fob
-         gWXw==
-X-Gm-Message-State: APjAAAUL8AtTH+u4f8JWXleho7/QF7CgfrhSHGMJ4JjsaY/qvDm8ZCIN
-        onjC9GYH+Q7uipv1SBfVY3ankAEm
-X-Google-Smtp-Source: APXvYqySIaUEAShOwMQtJMFxIMCwEiclUKMGXfuVcM+sbrtE7tZdTWcWpaiYsp87aE34pSfNl+tZ4g==
-X-Received: by 2002:a05:6214:3a1:: with SMTP id m1mr808145qvy.77.1576029725576;
-        Tue, 10 Dec 2019 18:02:05 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id 184sm167242qke.73.2019.12.10.18.02.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 18:02:04 -0800 (PST)
-Date:   Tue, 10 Dec 2019 21:02:03 -0500
-Message-ID: <20191210210203.GB1480973@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
-In-Reply-To: <30e93cfb-cc2c-c484-a743-479cce19d8a9@cumulusnetworks.com>
-References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
- <30e93cfb-cc2c-c484-a743-479cce19d8a9@cumulusnetworks.com>
+        id S1727814AbfLKClk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 21:41:40 -0500
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:32132 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbfLKClk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:41:40 -0500
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 0672840F58;
+        Wed, 11 Dec 2019 10:41:32 +0800 (CST)
+Subject: Re: [PATCH net-next 2/2] net/mlx5e: add mlx5e_rep_indr_setup_ft_cb
+ support
+To:     Paul Blakey <paulb@mellanox.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+References: <1575972525-20046-1-git-send-email-wenxu@ucloud.cn>
+ <1575972525-20046-2-git-send-email-wenxu@ucloud.cn>
+ <140d29e0-712a-31b0-e7b0-e4f8af29d4a8@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <a96ffa33-e680-d92c-3c5c-f86b7b9e12bb@ucloud.cn>
+Date:   Wed, 11 Dec 2019 10:41:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <140d29e0-712a-31b0-e7b0-e4f8af29d4a8@mellanox.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEtMS0tLS09KS0tDWVdZKFlBSU
+        I3V1ktWUFJV1kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mj46Fzo*MTg0TEkeDRILDRc6
+        LE0wCRlVSlVKTkxNS0hJS0JPS09MVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBT05PQzcG
+X-HM-Tid: 0a6ef2d543e62086kuqy0672840f58
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
 
-On Tue, 10 Dec 2019 23:45:13 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> > +	if (p) {
-> > +		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
-> > +					sizeof(p->stp_xstats),
-> > +					BRIDGE_XSTATS_PAD);
-> > +		if (!nla)
-> > +			goto nla_put_failure;
-> > +
-> > +		memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
-> 
-> You need to take the STP lock here to get a proper snapshot of the values.
+On 12/10/2019 7:44 PM, Paul Blakey wrote:
+> On 12/10/2019 12:08 PM, wenxu@ucloud.cn wrote:
+>> From: wenxu <wenxu@ucloud.cn>
+>>
+>> Add mlx5e_rep_indr_setup_ft_cb to support indr block setup
+>> in FT mode.
+>>
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 37 ++++++++++++++++++++++++
+>>   1 file changed, 37 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>> index 6f304f6..e0da17c 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+>> @@ -748,6 +748,40 @@ static int mlx5e_rep_indr_setup_tc_cb(enum tc_setup_type type,
+>>   	}
+>>   }
+>>   
+>> +static int mlx5e_rep_indr_setup_ft_cb(enum tc_setup_type type,
+>> +				      void *type_data, void *indr_priv)
+>> +{
+>> +	struct mlx5e_rep_indr_block_priv *priv = indr_priv;
+>> +	struct mlx5e_priv *mpriv = netdev_priv(priv->rpriv->netdev);
+>> +	struct mlx5_eswitch *esw = mpriv->mdev->priv.eswitch;
+>> +	struct flow_cls_offload *f = type_data;
+>> +	struct flow_cls_offload cls_flower;
+>> +	unsigned long flags;
+>> +	int err;
+>> +
+>> +	flags = MLX5_TC_FLAG(EGRESS) |
+>> +		MLX5_TC_FLAG(ESW_OFFLOAD) |
+>> +		MLX5_TC_FLAG(FT_OFFLOAD);
+>> +
+>> +	switch (type) {
+>> +	case TC_SETUP_CLSFLOWER:
+>> +		if (!mlx5_eswitch_prios_supported(esw) || f->common.chain_index)
+>> +			return -EOPNOTSUPP;
+>> +
+>> +		/* Re-use tc offload path by moving the ft flow to the
+>> +		 * reserved ft chain.
+>> +		 */
+>> +		memcpy(&cls_flower, f, sizeof(*f));
+>> +		cls_flower.common.chain_index = FDB_FT_CHAIN;
+>> +		err = mlx5e_rep_indr_offload(priv->netdev, &cls_flower, priv,
+>> +					     flags);
+>> +		memcpy(&f->stats, &cls_flower.stats, sizeof(f->stats));
+>> +		return err;
+>> +	default:
+>> +		return -EOPNOTSUPP;
+>> +	}
+>> +}
+>> +
+>>   static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+>>   {
+>>   	struct mlx5e_rep_indr_block_priv *indr_priv = cb_priv;
+>> @@ -825,6 +859,9 @@ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, void *cb_priv,
+>>   	case TC_SETUP_BLOCK:
+>>   		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
+>>   						  mlx5e_rep_indr_setup_tc_cb);
+>> +	case TC_SETUP_FT:
+>> +		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
+>> +						  mlx5e_rep_indr_setup_ft_cb);
+>>   	default:
+>>   		return -EOPNOTSUPP;
+>>   	}
+>
+> +cc Saeed
+>
+>
+> This looks good to me, but it should be on top of a patch that will 
+> actual allows the indirect BIND if the nft
+>
+> table device is a tunnel device. Is that upstream? If so which patch?
+>
+>
+> Currently (5.5.0-rc1+), nft_register_flowtable_net_hooks calls 
+> nf_flow_table_offload_setup which will see
+>
+> that the tunnel device doesn't have ndo_setup_tc and return 
+> -EOPNOTSUPPORTED.
 
-Good catch! I see a br->multicast_lock but no br->stp_lock. Is this what
-you expect?
+The related patch  http://patchwork.ozlabs.org/patch/1206935/
 
-    spin_lock_bh(&br->lock);
-    memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
-    spin_unlock_bh(&br->lock);
+is waiting for upstream
 
 
-Thanks,
-
-	Vivien
+>
+> Thanks,
+>
+> Paul.
+>
+>
+>
