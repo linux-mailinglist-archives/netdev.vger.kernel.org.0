@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC0F211BB6F
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF12311BB5B
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731213AbfLKSQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:16:30 -0500
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:34203 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731185AbfLKSPZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:25 -0500
-Received: by mail-yw1-f67.google.com with SMTP id b186so2419458ywc.1;
-        Wed, 11 Dec 2019 10:15:24 -0800 (PST)
+        id S1731273AbfLKSPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:15:33 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:40877 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731242AbfLKSP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:27 -0500
+Received: by mail-yw1-f68.google.com with SMTP id i126so9295324ywe.7;
+        Wed, 11 Dec 2019 10:15:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AltD7NJ0HtBITKXh/Q98jUiSNgIROsA0NlBEZ+kMmy0=;
-        b=KGKPCHz8bCGVGi8gtpGiJVmaMmvc6YAWgorKsOHn7gW03R04TaJ9cCZvarLBSHXwvP
-         cQ2ToUrDjCvWOLs0QXN25mLahqf+n3UeoY6pQkYSvY+GY/SMjPpaKc68Do0zAlPGULou
-         DeVigjPSLKGnvxo1WZy9ZzRo3GuEEH8T+kC8QXH54+pB33vitgf4UFN+gvQ6IbkAckMs
-         6be+awe846PXtkZYFTJieQhV8rZfBNYVr8/5UedkIQZK+O7sBt5Q2TaOGRM+JmgjdSBN
-         KDK2s/SN7oWotx1pFlzg2zbi5kTzLINTfboHpe9L9LSLlWG8ne9Nk1NhXIIF5+NlpTVX
-         8hAg==
+        bh=WcxYr9RZCBsnbidLa8eleGOYukmYC7BtU1QAQ3T47uk=;
+        b=VmBiBCIVN/9mZ5ewjyFn0SXVBO5g9Kex9cLjyo3xJq+9dqNFK08YN2qa25Rs+lyAio
+         QMAoItaqttwy+ykk4s1UteT/EAxUgIF5VCoCuwiHsfsVTKBNadUDfmZRH9FJk3N7Cb6N
+         G7TRFWw2AabJkv1w58GKzQ6rZF86Y4sfYfwMTwmPJf97Cha8psc/jQ8PFKgzMbxjDGSJ
+         B5+aDAIOiWMt+dsYWOJgs6vpJgdMcNKMAinSxAk/Shh5OIk6MkZz8OKe1QeIMQL2INEm
+         PeRRn4w5JMNmvOz4wg+fSt76LDf/7Q7O+Zp5UkIITG2fNRIU4hgF98LitNuo5PIYMqe9
+         d+iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AltD7NJ0HtBITKXh/Q98jUiSNgIROsA0NlBEZ+kMmy0=;
-        b=DsugeSO1EwT295mJyvPBeJ5anNPHW5sw8DWQhQxk+MUs6NZmO15eqH0QQrGXeBuawb
-         ADpCSbpUavMuK5Mc5v0ZH3SKV+AJ3vQz0L/KWOdS1mizPBkYHyKkqJD8Vw2WV/4po0hC
-         8QY9la23VhIjwfuPuqwNKyjkZ+07Vd5xDvvxkrRPSRmtVFgcH8YGytks0/cRRFzJbgU/
-         ulsFu1m4pTI3N9El+chGfEHP3QPO3/v7sKSFgDS1O7wVrnM8r6Gor4t2geyqd+OFWsrk
-         TgjN9zCK5i7hC7EdCSDVcQ+2wPBbTv1wEOFItKi2mN3Q1l+oJ34Qt6qBBzrJIa6bRRjD
-         tAqg==
-X-Gm-Message-State: APjAAAWYdJgt5OQz26cxh3mfUCcUkehkkElm/SNLdwSneayrT7pIvn5v
-        TylID5YtzkrjSLDErwg2ew/BhOt935OkBg==
-X-Google-Smtp-Source: APXvYqx0upN00DK83okn8lbD1jrmyl6jEtD9VuYn6RnO7G5sOkOZNKEPXbMMsWvtE1gxb/3oOR/GqA==
-X-Received: by 2002:a0d:ca50:: with SMTP id m77mr910883ywd.4.1576088124175;
-        Wed, 11 Dec 2019 10:15:24 -0800 (PST)
+        bh=WcxYr9RZCBsnbidLa8eleGOYukmYC7BtU1QAQ3T47uk=;
+        b=NwdCD7IQPqh/aCLJfI/5kizp+GLG4BITaUZFpRBPXKU3FwQOPrYOrTAGqaRN0xHAzb
+         xMf+5H3xDUfduizSxASe/+iJpr0mftMzxLEf3t1AFqWTvy/Jy61MXLigvbszNU9b2yVt
+         RVoX0OCXyGqJKPSj7SshDok/1/MkzQkpPYPhLqxiOONd7SN7x3/3uDKcgHnGmyr6Py3T
+         X1OlGksRwZwCwwJ1eZmOqZM15/vFFv6V/VHZ/0dpRqcjVMX8OAteORjfLIUiDchrdFZ3
+         Fzd7pVn9DaCG7MDkAGt4/9bxH/1UboHkxZrYNxoqisEgCTdqj6vDiu/hqGVJfNNSoRuJ
+         //mA==
+X-Gm-Message-State: APjAAAVi5A801zgCRfzaZFR7EJSj56qwVfOCk9vbtRgTTLZcLJ55gDWX
+        dqYMYne4O8NKYppGOo+ISMiiWuCmmUV27g==
+X-Google-Smtp-Source: APXvYqwvjrbh/5FmBwa94ei1z66nQ5R93gCHgVkZdQTEs9tpJL+x1TSQNXy2LWP8oCPoaZ0RVOVX5w==
+X-Received: by 2002:a81:f50:: with SMTP id 77mr907958ywp.340.1576088125875;
+        Wed, 11 Dec 2019 10:15:25 -0800 (PST)
 Received: from karen ([2604:2d80:d68a:cf00:a4bc:8e08:1748:387f])
-        by smtp.gmail.com with ESMTPSA id e204sm1290134ywe.92.2019.12.11.10.15.23
+        by smtp.gmail.com with ESMTPSA id d207sm1298391ywa.62.2019.12.11.10.15.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 10:15:23 -0800 (PST)
+        Wed, 11 Dec 2019 10:15:25 -0800 (PST)
 From:   Scott Schafer <schaferjscott@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Scott Schafer <schaferjscott@gmail.com>,
         Manish Chopra <manishc@marvell.com>,
         GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 13/23] staging: qlge: Fix CHECK: spaces preferred around that (ctx:VxV)
-Date:   Wed, 11 Dec 2019 12:12:42 -0600
-Message-Id: <a6f197d39478dc6955834412e20b4aed7c7141a2.1576086080.git.schaferjscott@gmail.com>
+Subject: [PATCH v2 14/23] staging: qlge: Fix WARNING: Unnecessary space before function pointer arguments
+Date:   Wed, 11 Dec 2019 12:12:43 -0600
+Message-Id: <b80b28a9e4377bbaa8f33e78311302a97c2e5f41.1576086080.git.schaferjscott@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1576086080.git.schaferjscott@gmail.com>
 References: <cover.1576086080.git.schaferjscott@gmail.com>
@@ -63,131 +63,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix CHECK: spaces preferred around that (ctx:VxV) in qlge.h and
-qlge_main.c
+WARNING: Unnecessary space before function pointer arguments in qlge.h
 
 Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
 ---
- drivers/staging/qlge/qlge.h      |  6 +++---
- drivers/staging/qlge/qlge_main.c | 18 +++++++++---------
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/staging/qlge/qlge.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index 63642cb9e624..9ab4c7ce7714 100644
+index 9ab4c7ce7714..010d39b4b30d 100644
 --- a/drivers/staging/qlge/qlge.h
 +++ b/drivers/staging/qlge/qlge.h
-@@ -59,7 +59,7 @@
- #define MAX_CQ 128
- #define DFLT_COALESCE_WAIT 100	/* 100 usec wait for coalescing */
- #define MAX_INTER_FRAME_WAIT 10	/* 10 usec max interframe-wait for coalescing */
--#define DFLT_INTER_FRAME_WAIT (MAX_INTER_FRAME_WAIT/2)
-+#define DFLT_INTER_FRAME_WAIT (MAX_INTER_FRAME_WAIT / 2)
- #define UDELAY_COUNT 3
- #define UDELAY_DELAY 100
- 
-@@ -1366,7 +1366,7 @@ struct tx_ring_desc {
- 	struct tx_ring_desc *next;
+@@ -2057,8 +2057,8 @@ enum {
  };
  
--#define QL_TXQ_IDX(qdev, skb) (smp_processor_id()%(qdev->tx_ring_count))
-+#define QL_TXQ_IDX(qdev, skb) (smp_processor_id() % (qdev->tx_ring_count))
- 
- struct tx_ring {
- 	/*
-@@ -1790,7 +1790,7 @@ struct ql_reg_dump {
- 
- 	/* segment 34 */
- 	struct mpi_coredump_segment_header ets_seg_hdr;
--	u32 ets[8+2];
-+	u32 ets[8 + 2];
+ struct nic_operations {
+-	int (*get_flash) (struct ql_adapter *);
+-	int (*port_initialize) (struct ql_adapter *);
++	int (*get_flash)(struct ql_adapter *);
++	int (*port_initialize)(struct ql_adapter *);
  };
  
- struct ql_mpi_coredump {
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 4dc4edbb2de5..38d217ae4002 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -706,7 +706,7 @@ static int ql_get_8000_flash_params(struct ql_adapter *qdev)
- 
- 	size = sizeof(struct flash_params_8000) / sizeof(u32);
- 	for (i = 0; i < size; i++, p++) {
--		status = ql_read_flash_word(qdev, i+offset, p);
-+		status = ql_read_flash_word(qdev, i + offset, p);
- 		if (status) {
- 			netif_err(qdev, ifup, qdev->ndev,
- 				  "Error reading flash.\n");
-@@ -769,7 +769,7 @@ static int ql_get_8012_flash_params(struct ql_adapter *qdev)
- 		return -ETIMEDOUT;
- 
- 	for (i = 0; i < size; i++, p++) {
--		status = ql_read_flash_word(qdev, i+offset, p);
-+		status = ql_read_flash_word(qdev, i + offset, p);
- 		if (status) {
- 			netif_err(qdev, ifup, qdev->ndev,
- 				  "Error reading flash.\n");
-@@ -1544,7 +1544,7 @@ static void ql_process_mac_rx_page(struct ql_adapter *qdev,
- 			struct iphdr *iph =
- 				(struct iphdr *)((u8 *)addr + hlen);
- 			if (!(iph->frag_off &
--				htons(IP_MF|IP_OFFSET))) {
-+				htons(IP_MF | IP_OFFSET))) {
- 				skb->ip_summed = CHECKSUM_UNNECESSARY;
- 				netif_printk(qdev, rx_status, KERN_DEBUG,
- 					     qdev->ndev,
-@@ -1651,7 +1651,7 @@ static void ql_process_mac_rx_skb(struct ql_adapter *qdev,
- 			struct iphdr *iph = (struct iphdr *)skb->data;
- 
- 			if (!(iph->frag_off &
--				htons(IP_MF|IP_OFFSET))) {
-+				htons(IP_MF | IP_OFFSET))) {
- 				skb->ip_summed = CHECKSUM_UNNECESSARY;
- 				netif_printk(qdev, rx_status, KERN_DEBUG,
- 					     qdev->ndev,
-@@ -1940,7 +1940,7 @@ static void ql_process_mac_split_rx_intr(struct ql_adapter *qdev,
- 			struct iphdr *iph = (struct iphdr *)skb->data;
- 
- 			if (!(iph->frag_off &
--				htons(IP_MF|IP_OFFSET))) {
-+				htons(IP_MF | IP_OFFSET))) {
- 				skb->ip_summed = CHECKSUM_UNNECESSARY;
- 				netif_printk(qdev, rx_status, KERN_DEBUG, qdev->ndev,
- 					     "TCP checksum done!\n");
-@@ -4560,7 +4560,7 @@ static void ql_timer(struct timer_list *t)
- 		return;
- 	}
- 
--	mod_timer(&qdev->timer, jiffies + (5*HZ));
-+	mod_timer(&qdev->timer, jiffies + (5 * HZ));
- }
- 
- static int qlge_probe(struct pci_dev *pdev,
-@@ -4632,7 +4632,7 @@ static int qlge_probe(struct pci_dev *pdev,
- 	 * the bus goes dead
- 	 */
- 	timer_setup(&qdev->timer, ql_timer, TIMER_DEFERRABLE);
--	mod_timer(&qdev->timer, jiffies + (5*HZ));
-+	mod_timer(&qdev->timer, jiffies + (5 * HZ));
- 	ql_link_off(qdev);
- 	ql_display_dev_info(ndev);
- 	atomic_set(&qdev->lb_count, 0);
-@@ -4766,7 +4766,7 @@ static void qlge_io_resume(struct pci_dev *pdev)
- 		netif_err(qdev, ifup, qdev->ndev,
- 			  "Device was not running prior to EEH.\n");
- 	}
--	mod_timer(&qdev->timer, jiffies + (5*HZ));
-+	mod_timer(&qdev->timer, jiffies + (5 * HZ));
- 	netif_device_attach(ndev);
- }
- 
-@@ -4828,7 +4828,7 @@ static int qlge_resume(struct pci_dev *pdev)
- 			return err;
- 	}
- 
--	mod_timer(&qdev->timer, jiffies + (5*HZ));
-+	mod_timer(&qdev->timer, jiffies + (5 * HZ));
- 	netif_device_attach(ndev);
- 
- 	return 0;
+ /*
 -- 
 2.20.1
 
