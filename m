@@ -2,356 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3648211BD22
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:38:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2C011BD25
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:39:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726717AbfLKTig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 14:38:36 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49108 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726242AbfLKTif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:38:35 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBBJYSOV019121;
-        Wed, 11 Dec 2019 11:38:22 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=aCLAKSjScmzpDh1ttzei3EpS9VOdq8M1dqgoTfO/E5Y=;
- b=V+mzbPqxiNcqrvEtoxc5IaS9N2xHFtJNUHMXJxYfqG1YD/JzNtQRYSpuEJziN5jhfvhi
- X7jJbuO4YhMcwod+jA0WLipRQMlRbmaqldqml2/J7adF+0UIRhUAhNpq4LSQDz2e94ax
- 9sUZpN25jJ4MwIua8gU8Ii+bvlV+AC3pHxg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wu2gf1cra-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 11 Dec 2019 11:38:22 -0800
-Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 11 Dec 2019 11:38:14 -0800
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 11 Dec 2019 11:38:14 -0800
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 11 Dec 2019 11:38:14 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fdJPGHcLfu90lcOWY0z0eL2ExPOW0pwG1/cVAmM+adSZrmfltWi7DA/kNpVVSd3qm3PY/naB146kk1sDZ5ppP0L4v/YwR0CN9aibgG1iTZGvQ1PRKRc4gaGcVa/6HkiWIgLg1t9cL+QOYFsUE4JmzMSkbQPjRmABLVttwGPprVPfeZpDuYgIi7e5ZjYACnlyqVJl1DsAalrs7exCL9ZaAzDjEbDfOFE9z12Cig4w9yPSpMRdfZqyzPu6dfW3i6eI3Pd230Mlh2kYqPdLgHz6Cn8FbeS5RPxNxG98oyf0dcnhf/7oW9FDiQ+Wbw7Ew2sCiSmrqpIvNFNy3vOU6ILK5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aCLAKSjScmzpDh1ttzei3EpS9VOdq8M1dqgoTfO/E5Y=;
- b=n9epAj/qWQZvlzinyD/QEcmlS2IRHdiDjdWbPw2jwUIf3X2OY+P+Su4EF0wkUaQEghGj/FmkduY9ATdQxYM+uihXUrwKkUEWmXMepdWpcF5qGET25hlLNt7Y77B6Av+SuaUot/PzltZRUjEMzf+Obfw+SYBfUrHnINr9yrgFg05rwb5aDRjth5IUz1T1J5cllSL3vfU/vnrj9pEij9BM5X2n/Rtzf62qirv4TqSOEYfV2PUyxK1CORbqdGWDQWUkA2MqxAy8Qr4E1DAJM4CtCGqZyHTO3mMjoaDXkCB6ThImHsUeIXNngsi7c7nIZFtnzYWRuMH3h4482lLHq6rFDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aCLAKSjScmzpDh1ttzei3EpS9VOdq8M1dqgoTfO/E5Y=;
- b=Bw8bthNccukiuQqbWf/8fktmcT4XIDrHsvY2r23VFVadnSL3qs9sSf17eLXTZ14bEsPumFPYAQq+MhOEplCW7y1+zJM3i2Yki6iE/e8+EE0WgsZpR/zw4BzgPXngMeBeEhMfCvFqwg9F/8V4S8+SFXyU5qI65z09SYbuNu8swBg=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3038.namprd15.prod.outlook.com (20.178.254.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.12; Wed, 11 Dec 2019 19:38:11 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2516.018; Wed, 11 Dec 2019
- 19:38:11 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [Potential Spoof] [PATCH bpf-next 06/15] libbpf: expose BPF
- program's function name
-Thread-Topic: [Potential Spoof] [PATCH bpf-next 06/15] libbpf: expose BPF
- program's function name
-Thread-Index: AQHVrvdZyZ4inVs3WEChnRyXP7K9U6e1VxeA
-Date:   Wed, 11 Dec 2019 19:38:11 +0000
-Message-ID: <20191211193807.raz42oiqmrm763tr@kafai-mbp>
-References: <20191210011438.4182911-1-andriin@fb.com>
- <20191210011438.4182911-7-andriin@fb.com>
-In-Reply-To: <20191210011438.4182911-7-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR02CA0017.namprd02.prod.outlook.com
- (2603:10b6:300:4b::27) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:ee78]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 858ff44b-3256-47fe-e2d4-08d77e71a826
-x-ms-traffictypediagnostic: MN2PR15MB3038:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB3038B5FA38C76A9A1EF8D95ED55A0@MN2PR15MB3038.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:586;
-x-forefront-prvs: 024847EE92
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(396003)(366004)(39860400002)(136003)(376002)(346002)(189003)(199004)(86362001)(66556008)(66476007)(2906002)(6636002)(33716001)(66446008)(478600001)(1076003)(6486002)(316002)(64756008)(54906003)(81156014)(81166006)(6512007)(5660300002)(8676002)(6862004)(52116002)(186003)(4326008)(8936002)(6506007)(66946007)(71200400001)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3038;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jW/Qlpkr2CD8IbROld6oqzH2hkU+lvF8KlsQwX37hw29wHsCwQKMKzbiHl/QFbJWTxROsKKS7QonN5+/QykIXoqmNQmjaEYweRErZHTHpfh+vWKE+mKda1BZecVzD1qAE6st0+WnXpTGL926unv3QJ2drdmG2zaLmhdPZpzSpeEruJrAu840FF/zIaNP7BO0SSalwc/NGtBu3TJn66aNAJ9zWdmt3skxNwfq9fY6KOtW1Sn8boEQLu+YX/Ldt132eohZnjrNzV/BAnGIy2RRwj5+95WrRZDBP3Kn/40k0sjEsCm3TUP6Pq90w2WTzVLNdDlseiRYTjooLBm2gZbbtXPuSFdgBKgdkR5SPyfq0jrukJI2ZsdgCIuWOPMDziUoAaR5C99DEQZm3paTql+lEAvieqghaWXpjxvCV24nwdRYkdpSMW+tVus2uaDaH/lh
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E5BF7EAD3FF60A479738628BA602F1CA@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726877AbfLKTjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 14:39:37 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:42135 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726242AbfLKTjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:39:36 -0500
+Received: by mail-yb1-f194.google.com with SMTP id p137so9491123ybg.9
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:39:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bICb5D6Xa9d9HbXAaouBtEU+Rjvs0lLo4y2MwnYehLk=;
+        b=POEcHYtCbBWDQKjS5j2V5HbwbiosYrN3N/LNOI/5VVum2qrFQXrHmYb822qkyMID/N
+         sooyrt9POI2EpShTy/DX4reXcg0QfQN+CG9E0YWn5N36WgC3IMe18895y0ICZpgVmPLs
+         qmCLJb9rnixgeRjem8r77kupw+UbLuchqJhUyiuPgwpnNkfjpUxJY4NrlNM80AFHOEGX
+         PYS82qBCsWuB2FLa/gHCjz99SN8ztkFpmNiPwq9YxfVZ8ron9NXLTcHaKqDmJpW6H5aU
+         MS4oMKBBbIAGWYhfrLBvMuBLccpAjkIZ47WY0HoT0LRrqT+klAxZEUVh+aXdwavVggFJ
+         yU7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bICb5D6Xa9d9HbXAaouBtEU+Rjvs0lLo4y2MwnYehLk=;
+        b=lyN0VKPkpFXNFmdCHobsLUbcbIdEcxpzrZuAclCSj1/MdEC2p4QFYYnPpSTATzilck
+         Nf+K9o7X4GnTcBVSTtmafz6TuYpVfzOQZd1PC9NFJIerWCoI6qh8ddqUqWZV6vAw3tgx
+         +MHN2BxHvph/CBnyGdf8jgf8jsuSmi9F6/eUHRjbNjrDRSDLYNdbaktzvq8PFGxuqSNP
+         +BOYndOqVytPACUBrbJS5VPWdMhWcFpS0bktQ8tGNi9BNRapmQt4kgoenMKFfjzAmQca
+         N+jEOlmfM+6sf0pWxcFsH7oIDrnIXfsqad1Y+IeUdYI3tSCl5wBozD6jvqpQTNNmglph
+         RDuw==
+X-Gm-Message-State: APjAAAXCMewzNBuKKym6FDWKl8ElbI1L329moltf6VFR54wgas8mBisl
+        1Puv8K2nbAdkR3TeF+z4tWFX1ygtZG6MLI1dadIozA==
+X-Google-Smtp-Source: APXvYqwXj6ZO+6QEctOBSYxlPqADwdGbzvU6Pdi1bUJuIYKf8HrEa+3NsHKjarwFg6r/aIl0cbH+GKNJf4o3HnEC2wE=
+X-Received: by 2002:a25:aaa4:: with SMTP id t33mr1333807ybi.274.1576093175220;
+ Wed, 11 Dec 2019 11:39:35 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 858ff44b-3256-47fe-e2d4-08d77e71a826
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Dec 2019 19:38:11.7357
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7vbAsa0iiBlF/1ALwWK+v1p8xjwa8/yQHSMNUCX56A3fh8a5GWFCcIdCNWBOPEkK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3038
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-11_06:2019-12-11,2019-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- bulkscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 clxscore=1015
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912110162
-X-FB-Internal: deliver
+References: <20191211073419.258820-1-edumazet@google.com> <CADVnQynJoDaNhY=NODF7CJ5KdqVzwgTZU5zoysAEbGJ3TXJnvQ@mail.gmail.com>
+In-Reply-To: <CADVnQynJoDaNhY=NODF7CJ5KdqVzwgTZU5zoysAEbGJ3TXJnvQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 11 Dec 2019 11:39:23 -0800
+Message-ID: <CANn89i+z8mOB+YAwvKN=0EwLN-gQDKit8WA9SbeCyxdACB_O_Q@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: do not send empty skb from tcp_write_xmit()
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 05:14:29PM -0800, Andrii Nakryiko wrote:
-> Add APIs to get BPF program function name, as opposed to bpf_program__tit=
-le(),
-> which returns BPF program function's section name. Function name has a be=
-nefit
-> of being a valid C identifier and uniquely identifies a specific BPF prog=
-ram,
-> while section name can be duplicated across multiple independent BPF prog=
-rams.
->=20
-> Add also bpf_object__find_program_by_name(), similar to
-> bpf_object__find_program_by_title(), to facilitate looking up BPF program=
-s by
-> their C function names.
->=20
-> Convert one of selftests to new API for look up.
->=20
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/libbpf.c                        | 28 +++++++++++++++----
->  tools/lib/bpf/libbpf.h                        |  9 ++++--
->  tools/lib/bpf/libbpf.map                      |  2 ++
->  .../selftests/bpf/prog_tests/rdonly_maps.c    | 11 +++-----
->  4 files changed, 36 insertions(+), 14 deletions(-)
->=20
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index edfe1cf1e940..f13752c4d271 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -209,8 +209,8 @@ static const char * const libbpf_type_to_btf_name[] =
-=3D {
->  };
-> =20
->  struct bpf_map {
-> -	int fd;
->  	char *name;
-> +	int fd;
-This change, and
+On Wed, Dec 11, 2019 at 11:17 AM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Wed, Dec 11, 2019 at 2:34 AM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > Backport of commit fdfc5c8594c2 ("tcp: remove empty skb from
+> > write queue in error cases") in linux-4.14 stable triggered
+> > various bugs. One of them has been fixed in commit ba2ddb43f270
+> > ("tcp: Don't dequeue SYN/FIN-segments from write-queue"), but
+> > we still have crashes in some occasions.
+> >
+> > Root-cause is that when tcp_sendmsg() has allocated a fresh
+> > skb and could not append a fragment before being blocked
+> > in sk_stream_wait_memory(), tcp_write_xmit() might be called
+> > and decide to send this fresh and empty skb.
+> >
+> > Sending an empty packet is not only silly, it might have caused
+> > many issues we had in the past with tp->packets_out being
+> > out of sync.
+> >
+> > Fixes: c65f7f00c587 ("[TCP]: Simplify SKB data portion allocation with NETIF_F_SG.")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Cc: Christoph Paasch <cpaasch@apple.com>
+> > Cc: Neal Cardwell <ncardwell@google.com>
+> > Cc: Jason Baron <jbaron@akamai.com>
+> > ---
+> >  net/ipv4/tcp_output.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >
+> > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> > index b184f03d743715ef4b2d166ceae651529be77953..57f434a8e41ffd6bc584cb4d9e87703491a378c1 100644
+> > --- a/net/ipv4/tcp_output.c
+> > +++ b/net/ipv4/tcp_output.c
+> > @@ -2438,6 +2438,14 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+> >                 if (tcp_small_queue_check(sk, skb, 0))
+> >                         break;
+> >
+> > +               /* Argh, we hit an empty skb(), presumably a thread
+> > +                * is sleeping in sendmsg()/sk_stream_wait_memory().
+> > +                * We do not want to send a pure-ack packet and have
+> > +                * a strange looking rtx queue with empty packet(s).
+> > +                */
+> > +               if (TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq)
+> > +                       break;
+> > +
+> >                 if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
+> >                         break;
+> >
+> > --
+>
+> Thanks for the fix, Eric!
+>
+> Is there any risk that any current or future bugs that create
+> persistently empty skbs could cause the connection to "freeze", unable
+> to reach the tcp_transmit_skb() call in tcp_write_xmit()?
+>
+> To avoid this risk, would it make sense to delete the empty skb and
+> continue the tcp_write_xmit() transmit loop, rather than breaking out
+> of the loop?
 
->  	int sec_idx;
->  	size_t sec_offset;
->  	int map_ifindex;
-> @@ -1384,7 +1384,7 @@ static int bpf_object__init_user_btf_maps(struct bp=
-f_object *obj, bool strict,
->  }
-> =20
->  static int bpf_object__init_maps(struct bpf_object *obj,
-> -				 struct bpf_object_open_opts *opts)
-> +				 const struct bpf_object_open_opts *opts)
-here, and a few other const changes,
+This 'empty' skb must be the last in the queue.
 
-are all good changes.  If they are not in a separate patch, it will be usef=
-ul
-to the reviewer if there is commit messages mentioning there are some
-unrelated cleanup changes.  I have been looking at where it may cause
-compiler warning because of this change, or I missed something?
+Removing it from the queue would not prevent tcp_write_xmit() from
+breaking the loop.
 
->  {
->  	const char *pin_root_path =3D OPTS_GET(opts, pin_root_path, NULL);
->  	bool strict =3D !OPTS_GET(opts, relaxed_maps, false);
-> @@ -1748,6 +1748,19 @@ bpf_object__find_program_by_title(const struct bpf=
-_object *obj,
->  	return NULL;
->  }
-> =20
-> +struct bpf_program *
-> +bpf_object__find_program_by_name(const struct bpf_object *obj,
-> +				 const char *name)
-> +{
-> +	struct bpf_program *prog;
-> +
-> +	bpf_object__for_each_program(prog, obj) {
-> +		if (!strcmp(prog->name, name))
-> +			return prog;
-> +	}
-> +	return NULL;
-> +}
-> +
->  static bool bpf_object__shndx_is_data(const struct bpf_object *obj,
->  				      int shndx)
->  {
-> @@ -3893,7 +3906,7 @@ static int libbpf_find_attach_btf_id(const char *na=
-me,
->  				     __u32 attach_prog_fd);
->  static struct bpf_object *
->  __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf=
-_sz,
-> -		   struct bpf_object_open_opts *opts)
-> +		   const struct bpf_object_open_opts *opts)
->  {
->  	struct bpf_program *prog;
->  	struct bpf_object *obj;
-> @@ -4002,7 +4015,7 @@ struct bpf_object *bpf_object__open(const char *pat=
-h)
->  }
-> =20
->  struct bpf_object *
-> -bpf_object__open_file(const char *path, struct bpf_object_open_opts *opt=
-s)
-> +bpf_object__open_file(const char *path, const struct bpf_object_open_opt=
-s *opts)
->  {
->  	if (!path)
->  		return ERR_PTR(-EINVAL);
-> @@ -4014,7 +4027,7 @@ bpf_object__open_file(const char *path, struct bpf_=
-object_open_opts *opts)
-> =20
->  struct bpf_object *
->  bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
-> -		     struct bpf_object_open_opts *opts)
-> +		     const struct bpf_object_open_opts *opts)
->  {
->  	if (!obj_buf || obj_buf_sz =3D=3D 0)
->  		return ERR_PTR(-EINVAL);
-> @@ -4819,6 +4832,11 @@ void bpf_program__set_ifindex(struct bpf_program *=
-prog, __u32 ifindex)
->  	prog->prog_ifindex =3D ifindex;
->  }
-> =20
-> +const char *bpf_program__name(const struct bpf_program *prog)
-> +{
-> +	return prog->name;
-> +}
-> +
->  const char *bpf_program__title(const struct bpf_program *prog, bool need=
-s_copy)
->  {
->  	const char *title;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index fa803dde1f46..7fa583ebe56f 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -114,10 +114,10 @@ struct bpf_object_open_opts {
-> =20
->  LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
->  LIBBPF_API struct bpf_object *
-> -bpf_object__open_file(const char *path, struct bpf_object_open_opts *opt=
-s);
-> +bpf_object__open_file(const char *path, const struct bpf_object_open_opt=
-s *opts);
->  LIBBPF_API struct bpf_object *
->  bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
-> -		     struct bpf_object_open_opts *opts);
-> +		     const struct bpf_object_open_opts *opts);
-> =20
->  /* deprecated bpf_object__open variants */
->  LIBBPF_API struct bpf_object *
-> @@ -156,6 +156,7 @@ struct bpf_object_load_attr {
->  LIBBPF_API int bpf_object__load(struct bpf_object *obj);
->  LIBBPF_API int bpf_object__load_xattr(struct bpf_object_load_attr *attr)=
-;
->  LIBBPF_API int bpf_object__unload(struct bpf_object *obj);
-> +
->  LIBBPF_API const char *bpf_object__name(const struct bpf_object *obj);
->  LIBBPF_API unsigned int bpf_object__kversion(const struct bpf_object *ob=
-j);
-> =20
-> @@ -166,6 +167,9 @@ LIBBPF_API int bpf_object__btf_fd(const struct bpf_ob=
-ject *obj);
->  LIBBPF_API struct bpf_program *
->  bpf_object__find_program_by_title(const struct bpf_object *obj,
->  				  const char *title);
-> +LIBBPF_API struct bpf_program *
-> +bpf_object__find_program_by_name(const struct bpf_object *obj,
-> +				 const char *name);
-> =20
->  LIBBPF_API struct bpf_object *bpf_object__next(struct bpf_object *prev);
->  #define bpf_object__for_each_safe(pos, tmp)			\
-> @@ -209,6 +213,7 @@ LIBBPF_API void *bpf_program__priv(const struct bpf_p=
-rogram *prog);
->  LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
->  					 __u32 ifindex);
-> =20
-> +LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog)=
-;
->  LIBBPF_API const char *bpf_program__title(const struct bpf_program *prog=
-,
->  					  bool needs_copy);
-> =20
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 757a88f64b5a..f2b2fa0f5c2a 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -211,5 +211,7 @@ LIBBPF_0.0.6 {
-> =20
->  LIBBPF_0.0.7 {
->  	global:
-> +		bpf_object__find_program_by_name;
->  		bpf_program__attach;
-> +		bpf_program__name;
->  } LIBBPF_0.0.6;
-> diff --git a/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c b/tools=
-/testing/selftests/bpf/prog_tests/rdonly_maps.c
-> index d90acc13d1ec..563e12120e77 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
-> @@ -16,14 +16,11 @@ struct rdonly_map_subtest {
-> =20
->  void test_rdonly_maps(void)
->  {
-> -	const char *prog_name_skip_loop =3D "raw_tracepoint/sys_enter:skip_loop=
-";
-> -	const char *prog_name_part_loop =3D "raw_tracepoint/sys_enter:part_loop=
-";
-> -	const char *prog_name_full_loop =3D "raw_tracepoint/sys_enter:full_loop=
-";
->  	const char *file =3D "test_rdonly_maps.o";
->  	struct rdonly_map_subtest subtests[] =3D {
-> -		{ "skip loop", prog_name_skip_loop, 0, 0 },
-> -		{ "part loop", prog_name_part_loop, 3, 2 + 3 + 4 },
-> -		{ "full loop", prog_name_full_loop, 4, 2 + 3 + 4 + 5 },
-> +		{ "skip loop", "skip_loop", 0, 0 },
-> +		{ "part loop", "part_loop", 3, 2 + 3 + 4 },
-> +		{ "full loop", "full_loop", 4, 2 + 3 + 4 + 5 },
->  	};
->  	int i, err, zero =3D 0, duration =3D 0;
->  	struct bpf_link *link =3D NULL;
-> @@ -50,7 +47,7 @@ void test_rdonly_maps(void)
->  		if (!test__start_subtest(t->subtest_name))
->  			continue;
-> =20
-> -		prog =3D bpf_object__find_program_by_title(obj, t->prog_name);
-> +		prog =3D bpf_object__find_program_by_name(obj, t->prog_name);
->  		if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
->  			  t->prog_name))
->  			goto cleanup;
-> --=20
-> 2.17.1
->=20
+If we remove it, then we force sendmsg() to re-allocate a fresh skb,
+which seems more work, and would paper around the bugs that would be
+un-noticed.
+
+Another question to ask is if we need to reconsider how we use
+tcp_write_queue_empty() as an indicator
+for 'I  have something in the write queue'
+
+This is obviously wrong if the write queue has a single empty skb.
+
+Maybe we should instead use tp->write_seq != tp->snd_nxt
