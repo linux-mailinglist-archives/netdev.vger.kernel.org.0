@@ -2,156 +2,1107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 906CB11AAD5
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9716E11AB00
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:33:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729270AbfLKMa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:30:58 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45898 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728991AbfLKMa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:57 -0500
-Received: by mail-pg1-f193.google.com with SMTP id b9so10311553pgk.12;
-        Wed, 11 Dec 2019 04:30:57 -0800 (PST)
+        id S1729230AbfLKMdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:33:52 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40038 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729144AbfLKMdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:33:51 -0500
+Received: by mail-qk1-f194.google.com with SMTP id c17so9531268qkg.7;
+        Wed, 11 Dec 2019 04:33:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Zbup76ODHdaIhD5xrLZjw/rVJwXfbmf+21M8/XO3+Es=;
-        b=fD67hPojb2zTJL1rY+YE6NmqWxjaC0xe+V6Az6p+CM6F+L+SafvEWqhgvRyfnAvPF/
-         Gh1CQyxfrzviKD3TwUrJgpqw/xkwTZkhlxZ3cjfCqhyhZRhSESjEeraUC+GQeLX7U9ad
-         T1J8RbpAwcAMEp2e6iSQPvfCh4w9ZeQY/67TAfEnjdBKYvlWxvmx1PWaqr/RPrDV6WPc
-         2WV8lQsLg3I7Cf+wlibP927zT+wlKOwkBef9u+vwZ+CEulK36Ybtbxb2CQiy9HLLh9P6
-         s6+EVDQczWEhEzYR9RrMNaV2cAEeoV/fTAk/Epkc2AQpfC93vCmsBBNf+Sdck6ygLQIm
-         umbg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+RzjGE34ioPFKzWsut22B1rLKHvMto56A+xUgaCNFjg=;
+        b=bBbKqeJZLYm76q7n/t452XRYYksH5QK+LJszBX5svzHhapxkCDPlDHDJsGqtDh5y+r
+         dTHrE7O/M0SN2S2DzM0lbfBwekyx9fFRHc1M6kE7qQbj7Jn/e4dlUH2flyqSPXJKnKUd
+         8SZ5yx0JxmEkYETE6Ye3FJEWWTmYssdjatarosAMHnx2sKDPJbJggMV88Xfe/sQUe0cs
+         sM1yKQWcEQSbjU9E6tZyeDm/9zDsgdtUY0ZzAVJjyssmuA+KrrD0vEnrZjPG+f4IpQ/B
+         FVHZlx88ilfPePC/ryvFqtI2ZwsiHbl+6kHisgQkQOWr0cPJQwzVadqVWxTUnWx6Z1EL
+         Wadg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zbup76ODHdaIhD5xrLZjw/rVJwXfbmf+21M8/XO3+Es=;
-        b=VIhTV3gKEda9McOx90QJxZEvwkG/vBiek/K0IaiQ4VKk2xz6HL9Wj/DInAPZW3FUD7
-         //SVTY7s5buruXh+i/a9/hELlDuLILa+7fxqaJp9XSp3L6524HRIi/kfKNuqQOWDnFzN
-         M9u0bOMV485Q+UIqv0XZsI85D2cM5CM9Zz0NVNFVBNDuNkAmcyq6Npgc8oZ7W+HlYyAd
-         /CnBqFDWYS8eZKhYW2L4uzZq6PgFS3VI9O/WnZtBi5ZQnuTdvf3kdD3vfDbSEbwG15mn
-         Mho6aCSp7TSke9UFHhnR3DH/YvUfXzcqBu94Z2utaZr/zVkNV+7cW0SSxeWIkKeiW+7P
-         SDOQ==
-X-Gm-Message-State: APjAAAVQ49ocN5+ROoQvQP8T+icGJvZTcGLE+t1CkXx60rTm72UPcqJr
-        cAEADBoTVWlBCcUJwB0Z2Hgs7nDZ3m6Eiw==
-X-Google-Smtp-Source: APXvYqwVdzYQGUMuTXq2BzaKkEb6tt8FxJTpr1NKTi4aSABxAhiDn0ue3iIkjfM0JehY0Bxcxf88sQ==
-X-Received: by 2002:aa7:9465:: with SMTP id t5mr3343525pfq.67.1576067456803;
-        Wed, 11 Dec 2019 04:30:56 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 04:30:56 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
-        andrii.nakryiko@gmail.com
-Subject: [PATCH bpf-next v4 6/6] bpf, x86: align dispatcher branch targets to 16B
-Date:   Wed, 11 Dec 2019 13:30:17 +0100
-Message-Id: <20191211123017.13212-7-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191211123017.13212-1-bjorn.topel@gmail.com>
-References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+RzjGE34ioPFKzWsut22B1rLKHvMto56A+xUgaCNFjg=;
+        b=JPQDikXBlZxIuvkKbuZix4BZWO13PuYdezuIcJdvmw98IyNLHLhJJ9W/oAvwwgRH7Y
+         8spPp0ywGeXw9gVQeT3VZDu2NfwzqJf/yifgh3+YGvOuwzpFelA80DY1n+iZ1fNWNNKb
+         o+IowLvn4Ed97+0TVC1kqgM5VNRrX+J/+NRhwn/WEgUQg2WHr41MQVzGJDe5TUn6fvEo
+         hidHnT6blc9UEOuGU7vkzHSyR4ksMwIJR1l6+mmHk8bnMEi5xJuayqO3nF5wVf+n/Odb
+         RlZpuZxvfUrmghx/5iIy9H0bgFqw6EBZTt33k1E8seUp07KQCbXtG9mNLMAmF7nur34B
+         hekQ==
+X-Gm-Message-State: APjAAAWjjibC5vrjpi1qCODuqtZ/kBWHcnWgPFloZPyU5yfkoyJ6E9xR
+        xeKemOsva8UYb6nZJqMPSjbI3qP6koZ0iUnOpJfCi/ikgmPqYA==
+X-Google-Smtp-Source: APXvYqxhBuSvNJQhc3BVd8e8MLK3ClON+ISXP88Vd458my9mFbzN6LEELzY9aPpZpU9yUkNFDwdMFSdlC8j+NVRzzxM=
+X-Received: by 2002:a37:4146:: with SMTP id o67mr2616135qka.232.1576067627385;
+ Wed, 11 Dec 2019 04:33:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+In-Reply-To: <20191211123017.13212-1-bjorn.topel@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 11 Dec 2019 13:33:36 +0100
+Message-ID: <CAJ+HfNg42ycM+3-FP8VsxcuN2CM83hgtLVBo_KyukrOdO6MQBQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 0/6] Introduce the BPF dispatcher
+To:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Wed, 11 Dec 2019 at 13:30, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>=
+ wrote:
+>
+[...]
+>
+> xdp-perf runs, aliged vs non-aligned jump targets
+> -------------------------------------------------
+>
+> In this test dispatchers of different sizes, with and without jump
+> target alignment, were exercised. As outlined above the function
+> lookup is performed via binary search. This means that depending on
+> the pointer value of the function, it can reside in the upper or lower
+> part of the search table. The performed tests were:
+>
+> 1. aligned, mititations=3Dauto, function entry < other entries
+> 2. aligned, mititations=3Dauto, function entry > other entries
+> 3. non-aligned, mititations=3Dauto, function entry < other entries
+> 4. non-aligned, mititations=3Dauto, function entry > other entries
+> 5. aligned, mititations=3Doff, function entry < other entries
+> 6. aligned, mititations=3Doff, function entry > other entries
+> 7. non-aligned, mititations=3Doff, function entry < other entries
+> 8. non-aligned, mititations=3Doff, function entry > other entries
+>
+> The micro benchmarks showed that alignment of jump target has some
+> positive impact.
+>
+> A reply to this cover letter will contain complete data for all runs.
+>
 
-From Intel 64 and IA-32 Architectures Optimization Reference Manual,
-3.4.1.4 Code Alignment, Assembly/Compiler Coding Rule 11: All branch
-targets should be 16-byte aligned.
+Please find all the output of "xdp-perf runs, aliged vs non-aligned
+jump targets" below.
 
-This commits aligns branch targets according to the Intel manual.
+To see the alignment impact, compare
+align_opneg_auto.txt/nonalign_opneg_auto.txt and
+align_opneg_auto.txt/nonalign_opneg_auto.txt.
 
-The nops used to align branch targets make the dispatcher larger, and
-therefore the number of supported dispatch points/programs are
-descreased from 64 to 48.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- arch/x86/net/bpf_jit_comp.c | 30 +++++++++++++++++++++++++++++-
- include/linux/bpf.h         |  2 +-
- 2 files changed, 30 insertions(+), 2 deletions(-)
+Bj=C3=B6rn
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 3ce7ad41bd6f..4c8a2d1f8470 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1548,6 +1548,26 @@ static int emit_cond_near_jump(u8 **pprog, void *func, void *ip, u8 jmp_cond)
- 	return 0;
- }
- 
-+static void emit_nops(u8 **pprog, unsigned int len)
-+{
-+	unsigned int i, noplen;
-+	u8 *prog = *pprog;
-+	int cnt = 0;
-+
-+	while (len > 0) {
-+		noplen = len;
-+
-+		if (noplen > ASM_NOP_MAX)
-+			noplen = ASM_NOP_MAX;
-+
-+		for (i = 0; i < noplen; i++)
-+			EMIT1(ideal_nops[noplen][i]);
-+		len -= noplen;
-+	}
-+
-+	*pprog = prog;
-+}
-+
- static int emit_fallback_jump(u8 **pprog)
- {
- 	u8 *prog = *pprog;
-@@ -1570,8 +1590,8 @@ static int emit_fallback_jump(u8 **pprog)
- 
- static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
- {
-+	u8 *jg_reloc, *jg_target, *prog = *pprog;
- 	int pivot, err, jg_bytes = 1, cnt = 0;
--	u8 *jg_reloc, *prog = *pprog;
- 	s64 jg_offset;
- 
- 	if (a == b) {
-@@ -1620,6 +1640,14 @@ static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
- 	if (err)
- 		return err;
- 
-+	/* From Intel 64 and IA-32 Architectures Optimization
-+	 * Reference Manual, 3.4.1.4 Code Alignment, Assembly/Compiler
-+	 * Coding Rule 11: All branch targets should be 16-byte
-+	 * aligned.
-+	 */
-+	jg_target = PTR_ALIGN(prog, 16);
-+	if (jg_target != prog)
-+		emit_nops(&prog, jg_target - prog);
- 	jg_offset = prog - jg_reloc;
- 	emit_code(jg_reloc - jg_bytes, jg_offset, jg_bytes);
- 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ed32b5d901a1..026892e55ca2 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -471,7 +471,7 @@ struct bpf_trampoline {
- 	u64 selector;
- };
- 
--#define BPF_DISPATCHER_MAX 64 /* Fits in 2048B */
-+#define BPF_DISPATCHER_MAX 48 /* Fits in 2048B */
- 
- struct bpf_dispatcher_prog {
- 	struct bpf_prog *prog;
--- 
-2.20.1
-
+align_op1_auto.txt
+# aligned jump targets, mitigations=3Dauto, prog->bpf_func < other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 5
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 4
+9 322 4
+10 354 4
+11 402 4
+12 450 5
+13 482 4
+14 530 4
+15 562 4
+16 594 4
+17 642 4
+18 674 4
+19 706 5
+20 738 4
+21 786 4
+22 834 4
+23 882 4
+24 930 4
+25 962 4
+26 994 4
+27 1042 4
+28 1090 4
+29 1122 4
+30 1154 4
+31 1186 4
+32 1218 4
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 17
+align_op1_off.txt
+# aligned jump targets, mitigations=3Doff, prog->bpf_func < other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 4
+9 322 4
+10 354 4
+11 402 4
+12 450 4
+13 482 4
+14 530 4
+15 562 4
+16 594 4
+17 642 4
+18 674 4
+19 706 4
+20 738 4
+21 786 4
+22 834 4
+23 882 4
+24 930 4
+25 962 4
+26 994 4
+27 1042 5
+28 1090 4
+29 1122 4
+30 1154 4
+31 1186 4
+32 1218 4
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 5
+align_opneg_auto.txt
+# aligned jump targets, mitigations=3Dauto, prog->bpf_func > other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 5
+9 322 5
+10 354 5
+11 402 5
+12 450 5
+13 482 5
+14 530 5
+15 562 5
+16 594 5
+17 642 5
+18 674 5
+19 706 5
+20 738 5
+21 786 5
+22 834 5
+23 882 5
+24 930 5
+25 962 5
+26 994 5
+27 1042 5
+28 1090 5
+29 1122 5
+30 1154 5
+31 1186 5
+32 1218 5
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 6
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 6
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 17
+align_opneg_off.txt
+# aligned jump targets, mitigations=3Doff, prog->bpf_func > other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 5
+9 322 5
+10 354 5
+11 402 5
+12 450 5
+13 482 5
+14 530 5
+15 562 5
+16 594 5
+17 642 5
+18 674 5
+19 706 5
+20 738 5
+21 786 5
+22 834 5
+23 882 5
+24 930 5
+25 962 5
+26 994 5
+27 1042 5
+28 1090 5
+29 1122 5
+30 1154 5
+31 1186 5
+32 1218 5
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 5
+mail.txt
+align_op1_auto.txt
+# aligned jump targets, mitigations=3Dauto, prog->bpf_func < other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 5
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 4
+9 322 4
+10 354 4
+11 402 4
+12 450 5
+13 482 4
+14 530 4
+15 562 4
+16 594 4
+17 642 4
+18 674 4
+19 706 5
+20 738 4
+21 786 4
+22 834 4
+23 882 4
+24 930 4
+25 962 4
+26 994 4
+27 1042 4
+28 1090 4
+29 1122 4
+30 1154 4
+31 1186 4
+32 1218 4
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 17
+align_op1_off.txt
+# aligned jump targets, mitigations=3Doff, prog->bpf_func < other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 4
+9 322 4
+10 354 4
+11 402 4
+12 450 4
+13 482 4
+14 530 4
+15 562 4
+16 594 4
+17 642 4
+18 674 4
+19 706 4
+20 738 4
+21 786 4
+22 834 4
+23 882 4
+24 930 4
+25 962 4
+26 994 4
+27 1042 5
+28 1090 4
+29 1122 4
+30 1154 4
+31 1186 4
+32 1218 4
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 5
+align_opneg_auto.txt
+# aligned jump targets, mitigations=3Dauto, prog->bpf_func > other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 5
+9 322 5
+10 354 5
+11 402 5
+12 450 5
+13 482 5
+14 530 5
+15 562 5
+16 594 5
+17 642 5
+18 674 5
+19 706 5
+20 738 5
+21 786 5
+22 834 5
+23 882 5
+24 930 5
+25 962 5
+26 994 5
+27 1042 5
+28 1090 5
+29 1122 5
+30 1154 5
+31 1186 5
+32 1218 5
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 6
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 6
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 17
+align_opneg_off.txt
+# aligned jump targets, mitigations=3Doff, prog->bpf_func > other entries
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 50 4
+3 98 4
+4 130 4
+5 162 4
+6 210 4
+7 258 4
+8 290 5
+9 322 5
+10 354 5
+11 402 5
+12 450 5
+13 482 5
+14 530 5
+15 562 5
+16 594 5
+17 642 5
+18 674 5
+19 706 5
+20 738 5
+21 786 5
+22 834 5
+23 882 5
+24 930 5
+25 962 5
+26 994 5
+27 1042 5
+28 1090 5
+29 1122 5
+30 1154 5
+31 1186 5
+32 1218 5
+33 1266 5
+34 1314 5
+35 1346 5
+36 1378 5
+37 1410 5
+38 1442 5
+39 1474 5
+40 1506 5
+41 1554 5
+42 1602 5
+43 1650 5
+44 1698 5
+45 1746 5
+46 1794 5
+47 1842 5
+48 1890 5
+49 1890 5
+mail.txt
+nonalign_op1_auto.txt
+# non-aligned jump targets, mitigations=3Dauto, prog->bpf_func < other entr=
+ies
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 4
+9 238 4
+10 265 4
+11 292 4
+12 319 4
+13 350 4
+14 381 4
+15 408 4
+16 435 4
+17 462 4
+18 489 4
+19 516 4
+20 543 4
+21 570 4
+22 597 4
+23 624 4
+24 651 4
+25 682 5
+26 713 4
+27 744 4
+28 775 4
+29 802 4
+30 829 4
+31 856 4
+32 883 4
+33 910 5
+34 937 5
+35 964 5
+36 991 5
+37 1018 5
+38 1045 5
+39 1072 5
+40 1099 5
+41 1126 5
+42 1153 5
+43 1180 5
+44 1207 5
+45 1234 5
+46 1261 5
+47 1288 5
+48 1315 5
+49 1346 5
+50 1377 5
+51 1408 5
+52 1439 5
+53 1470 5
+54 1501 5
+55 1532 5
+56 1563 5
+57 1590 5
+58 1617 5
+59 1644 5
+60 1671 5
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 5
+65 1779 17
+nonalign_op1_off.txt
+# non-aligned jump targets, mitigations=3Doff, prog->bpf_func < other entri=
+es
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 4
+9 238 4
+10 265 4
+11 292 4
+12 319 4
+13 350 4
+14 381 4
+15 408 4
+16 435 4
+17 462 4
+18 489 4
+19 516 4
+20 543 4
+21 570 5
+22 597 5
+23 624 4
+24 651 4
+25 682 4
+26 713 4
+27 744 5
+28 775 4
+29 802 4
+30 829 4
+31 856 4
+32 883 4
+33 910 5
+34 937 5
+35 964 5
+36 991 5
+37 1018 5
+38 1045 5
+39 1072 5
+40 1099 5
+41 1126 5
+42 1153 5
+43 1180 5
+44 1207 5
+45 1234 5
+46 1261 5
+47 1288 5
+48 1315 5
+49 1346 5
+50 1377 5
+51 1408 5
+52 1439 5
+53 1470 5
+54 1501 5
+55 1532 5
+56 1563 5
+57 1590 5
+58 1617 5
+59 1644 5
+60 1671 5
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 5
+65 1779 5
+nonalign_opneg_auto.txt
+# non-aligned jump targets, mitigations=3Dauto, prog->bpf_func > other entr=
+ies
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 5
+8 211 5
+9 238 5
+10 265 5
+11 292 5
+12 319 5
+13 350 5
+14 381 5
+15 408 5
+16 435 5
+17 462 6
+18 489 6
+19 516 6
+20 543 6
+21 570 5
+22 597 5
+23 624 6
+24 651 5
+25 682 5
+26 713 5
+27 744 5
+28 775 6
+29 802 5
+30 829 5
+31 856 5
+32 883 5
+33 910 6
+34 937 6
+35 964 6
+36 991 7
+37 1018 5
+38 1045 5
+39 1072 6
+40 1099 6
+41 1126 6
+42 1153 6
+43 1180 6
+44 1207 5
+45 1234 5
+46 1261 6
+47 1288 6
+48 1315 6
+49 1346 6
+50 1377 7
+51 1408 6
+52 1439 6
+53 1470 6
+54 1501 6
+55 1532 5
+56 1563 5
+57 1590 6
+58 1617 6
+59 1644 6
+60 1671 6
+61 1698 6
+62 1725 5
+63 1752 5
+64 1779 6
+65 1779 17
+nonalign_opneg_off.txt
+# non-aligned jump targets, mitigations=3Doff, prog->bpf_func > other entri=
+es
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 5
+9 238 5
+10 265 5
+11 292 5
+12 319 5
+13 350 5
+14 381 5
+15 408 5
+16 435 5
+17 462 6
+18 489 6
+19 516 6
+20 543 6
+21 570 6
+22 597 6
+23 624 5
+24 651 5
+25 682 5
+26 713 5
+27 744 6
+28 775 6
+29 802 5
+30 829 5
+31 856 5
+32 883 5
+33 910 6
+34 937 6
+35 964 6
+36 991 6
+37 1018 5
+38 1045 5
+39 1072 6
+40 1099 6
+41 1126 6
+42 1153 5
+43 1180 6
+44 1207 5
+45 1234 5
+46 1261 7
+47 1288 6
+48 1315 6
+49 1346 6
+50 1377 7
+51 1408 7
+52 1439 6
+53 1470 6
+54 1501 6
+55 1532 6
+56 1563 5
+57 1590 6
+58 1617 6
+59 1644 6
+60 1671 6
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 6
+65 1779 6
+nonalign_op1_auto.txt
+# non-aligned jump targets, mitigations=3Dauto, prog->bpf_func < other entr=
+ies
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 4
+9 238 4
+10 265 4
+11 292 4
+12 319 4
+13 350 4
+14 381 4
+15 408 4
+16 435 4
+17 462 4
+18 489 4
+19 516 4
+20 543 4
+21 570 4
+22 597 4
+23 624 4
+24 651 4
+25 682 5
+26 713 4
+27 744 4
+28 775 4
+29 802 4
+30 829 4
+31 856 4
+32 883 4
+33 910 5
+34 937 5
+35 964 5
+36 991 5
+37 1018 5
+38 1045 5
+39 1072 5
+40 1099 5
+41 1126 5
+42 1153 5
+43 1180 5
+44 1207 5
+45 1234 5
+46 1261 5
+47 1288 5
+48 1315 5
+49 1346 5
+50 1377 5
+51 1408 5
+52 1439 5
+53 1470 5
+54 1501 5
+55 1532 5
+56 1563 5
+57 1590 5
+58 1617 5
+59 1644 5
+60 1671 5
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 5
+65 1779 17
+nonalign_op1_off.txt
+# non-aligned jump targets, mitigations=3Doff, prog->bpf_func < other entri=
+es
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 4
+9 238 4
+10 265 4
+11 292 4
+12 319 4
+13 350 4
+14 381 4
+15 408 4
+16 435 4
+17 462 4
+18 489 4
+19 516 4
+20 543 4
+21 570 5
+22 597 5
+23 624 4
+24 651 4
+25 682 4
+26 713 4
+27 744 5
+28 775 4
+29 802 4
+30 829 4
+31 856 4
+32 883 4
+33 910 5
+34 937 5
+35 964 5
+36 991 5
+37 1018 5
+38 1045 5
+39 1072 5
+40 1099 5
+41 1126 5
+42 1153 5
+43 1180 5
+44 1207 5
+45 1234 5
+46 1261 5
+47 1288 5
+48 1315 5
+49 1346 5
+50 1377 5
+51 1408 5
+52 1439 5
+53 1470 5
+54 1501 5
+55 1532 5
+56 1563 5
+57 1590 5
+58 1617 5
+59 1644 5
+60 1671 5
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 5
+65 1779 5
+nonalign_opneg_auto.txt
+# non-aligned jump targets, mitigations=3Dauto, prog->bpf_func > other entr=
+ies
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 5
+8 211 5
+9 238 5
+10 265 5
+11 292 5
+12 319 5
+13 350 5
+14 381 5
+15 408 5
+16 435 5
+17 462 6
+18 489 6
+19 516 6
+20 543 6
+21 570 5
+22 597 5
+23 624 6
+24 651 5
+25 682 5
+26 713 5
+27 744 5
+28 775 6
+29 802 5
+30 829 5
+31 856 5
+32 883 5
+33 910 6
+34 937 6
+35 964 6
+36 991 7
+37 1018 5
+38 1045 5
+39 1072 6
+40 1099 6
+41 1126 6
+42 1153 6
+43 1180 6
+44 1207 5
+45 1234 5
+46 1261 6
+47 1288 6
+48 1315 6
+49 1346 6
+50 1377 7
+51 1408 6
+52 1439 6
+53 1470 6
+54 1501 6
+55 1532 5
+56 1563 5
+57 1590 6
+58 1617 6
+59 1644 6
+60 1671 6
+61 1698 6
+62 1725 5
+63 1752 5
+64 1779 6
+65 1779 17
+nonalign_opneg_off.txt
+# non-aligned jump targets, mitigations=3Doff, prog->bpf_func > other entri=
+es
+# column 1: number entries in dispatcher
+# column 2: size of dispatcher
+# column 3: runtime average 1000000 XDP calls (xdp_perf)
+1 18 4
+2 45 4
+3 72 4
+4 99 4
+5 126 4
+6 153 4
+7 184 4
+8 211 5
+9 238 5
+10 265 5
+11 292 5
+12 319 5
+13 350 5
+14 381 5
+15 408 5
+16 435 5
+17 462 6
+18 489 6
+19 516 6
+20 543 6
+21 570 6
+22 597 6
+23 624 5
+24 651 5
+25 682 5
+26 713 5
+27 744 6
+28 775 6
+29 802 5
+30 829 5
+31 856 5
+32 883 5
+33 910 6
+34 937 6
+35 964 6
+36 991 6
+37 1018 5
+38 1045 5
+39 1072 6
+40 1099 6
+41 1126 6
+42 1153 5
+43 1180 6
+44 1207 5
+45 1234 5
+46 1261 7
+47 1288 6
+48 1315 6
+49 1346 6
+50 1377 7
+51 1408 7
+52 1439 6
+53 1470 6
+54 1501 6
+55 1532 6
+56 1563 5
+57 1590 6
+58 1617 6
+59 1644 6
+60 1671 6
+61 1698 5
+62 1725 5
+63 1752 5
+64 1779 6
+65 1779 6
