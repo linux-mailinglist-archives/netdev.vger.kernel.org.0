@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C4314E8E2
-	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 07:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C4D514E8E4
+	for <lists+netdev@lfdr.de>; Fri, 31 Jan 2020 07:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728137AbgAaGkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728121AbgAaGkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 31 Jan 2020 01:40:53 -0500
-Received: from mga02.intel.com ([134.134.136.20]:64027 "EHLO mga02.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:64035 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728109AbgAaGkt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Jan 2020 01:40:49 -0500
+        id S1725815AbgAaGkv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 31 Jan 2020 01:40:51 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Jan 2020 22:40:49 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Jan 2020 22:40:50 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,384,1574150400"; 
-   d="scan'208";a="309925513"
+   d="scan'208";a="309925522"
 Received: from wtczc53028gn.jf.intel.com (HELO localhost.localdomain) ([10.54.87.17])
-  by orsmga001.jf.intel.com with ESMTP; 30 Jan 2020 22:40:49 -0800
+  by orsmga001.jf.intel.com with ESMTP; 30 Jan 2020 22:40:50 -0800
 From:   christopher.s.hall@intel.com
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         tglx@linutronix.de, hpa@zytor.com, mingo@redhat.com,
         x86@kernel.org, jacob.e.keller@intel.com, richardcochran@gmail.com,
         davem@davemloft.net, sean.v.kelley@intel.com
 Cc:     Christopher Hall <christopher.s.hall@intel.com>
-Subject: [Intel PMC TGPIO Driver 3/5] drivers/ptp: Add user-space input polling interface
-Date:   Wed, 11 Dec 2019 13:48:50 -0800
-Message-Id: <20191211214852.26317-4-christopher.s.hall@intel.com>
+Subject: [Intel PMC TGPIO Driver 4/5] x86/tsc: Add TSC support functions to support ART driven Time-Aware GPIO
+Date:   Wed, 11 Dec 2019 13:48:51 -0800
+Message-Id: <20191211214852.26317-5-christopher.s.hall@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191211214852.26317-1-christopher.s.hall@intel.com>
 References: <20191211214852.26317-1-christopher.s.hall@intel.com>
@@ -41,78 +41,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Christopher Hall <christopher.s.hall@intel.com>
 
-The Intel PMC Time-Aware GPIO controller doesn't implement interrupts to
-notify software that an input event has occurred. To solve this problem,
-implement a user-space polling interface allowing the application to check
-for input events. The API returns an event count and time. This interface
-(EVENT_COUNT_TSTAMP2) is *reused* from the output frequency adjustment API.
-The event count delta indicates that one or more events have occurred and
-how many events may have been missed.
+The PMC Time-Aware GPIO (TGPIO) logic is driven by ART. Several support
+functions are required to translate ART to/from nanoseconds units which
+is required by the PHC clock interface. A function is also added to get
+the current value of ART/TSC using get_cycles() (RDTSC). This avoids
+multiple MMIO reads required to retrieve ART.
 
-For periodic input use cases, polling is fairly efficient. Using PPS input,
-as an example, polling 3x per second is more than sufficient to capture
-rising and falling edge timestamps. Generalizing, the poll period should
-be:
+Note that rather than ART nanoseconds, TSC nanoseconds are used. These are
+related by TSC = ART * CPUID[15H].EBX/CPUID[15H].EAX + K. The value of
+K is the distinction between between the ART and TSC nanoseconds.
 
-	poll_period = (nominal_input_period / (1 + freq_offset)) / 2
-
-	Where freq_offset = <remote:local clock ratio> - 1;
-
-A flag that indicates a pin isn't capable of generating interrupts is
-added. Software should not expect notification through the read() interface
-on pins marked as such. If all pins are marked as poll only, the read
-interface is marked 'defunct' and immediately returns an error because no
-interrupt would ever occur to exit the wait state.
+The advantage of using TSC nanoseconds to represent the device clock
+because it can easily be calculated in user-space using only CPUID[15H].
+The value of ART in general can't be since K isn't necessarily known to
+the application.
 
 Signed-off-by: Christopher Hall <christopher.s.hall@intel.com>
 ---
- drivers/ptp/ptp_clock.c        | 13 +++++++++++++
- include/uapi/linux/ptp_clock.h |  1 +
- 2 files changed, 14 insertions(+)
+ arch/x86/include/asm/tsc.h |   6 ++
+ arch/x86/kernel/tsc.c      | 116 ++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 120 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index b84f16bbd6f2..518dc911ec40 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -190,6 +190,17 @@ static void ptp_aux_kworker(struct kthread_work *work)
- 		kthread_queue_delayed_work(ptp->kworker, &ptp->aux_work, delay);
- }
+diff --git a/arch/x86/include/asm/tsc.h b/arch/x86/include/asm/tsc.h
+index 8a0c25c6bf09..f44c92fe3cd5 100644
+--- a/arch/x86/include/asm/tsc.h
++++ b/arch/x86/include/asm/tsc.h
+@@ -32,6 +32,12 @@ static inline cycles_t get_cycles(void)
  
-+static bool check_for_readability(struct ptp_pin_desc *pin_desc, size_t size)
+ extern struct system_counterval_t convert_art_to_tsc(u64 art);
+ extern struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns);
++extern struct timespec64 get_tsc_ns_now(struct system_counterval_t
++					*system_counter);
++extern u64 convert_tsc_ns_to_art(struct timespec64 *tsc_ns);
++extern u64 convert_tsc_ns_to_art_duration(struct timespec64 *tsc_ns);
++extern struct timespec64 convert_art_to_tsc_ns(u64 art);
++extern struct timespec64 convert_art_to_tsc_ns_duration(u64 art);
+ 
+ extern void tsc_early_init(void);
+ extern void tsc_init(void);
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index 7e322e2daaf5..fb0dc3169e6b 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -1215,7 +1215,7 @@ int unsynchronized_tsc(void)
+ /*
+  * Convert ART to TSC given numerator/denominator found in detect_art()
+  */
+-struct system_counterval_t convert_art_to_tsc(u64 art)
++static struct system_counterval_t _convert_art_to_tsc(u64 art, bool dur)
+ {
+ 	u64 tmp, res, rem;
+ 
+@@ -1225,13 +1225,125 @@ struct system_counterval_t convert_art_to_tsc(u64 art)
+ 	tmp = rem * art_to_tsc_numerator;
+ 
+ 	do_div(tmp, art_to_tsc_denominator);
+-	res += tmp + art_to_tsc_offset;
++	res += tmp;
++	if (!dur)
++		res += art_to_tsc_offset;
+ 
+ 	return (struct system_counterval_t) {.cs = art_related_clocksource,
+ 			.cycles = res};
+ }
++
++struct system_counterval_t convert_art_to_tsc(u64 art)
 +{
-+	int i;
-+	unsigned int flags = PTP_PINDESC_INPUTPOLL;
++	return _convert_art_to_tsc(art, false);
++}
+ EXPORT_SYMBOL(convert_art_to_tsc);
+ 
++static
++struct timespec64 get_tsc_ns(struct system_counterval_t *system_counter)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
 +
-+	for (i = 0; i < size && flags != 0; ++i)
-+		flags &= pin_desc[i].flags;
++	cycles = system_counter->cycles;
++	rem = do_div(cycles, tsc_khz);
 +
-+	return flags == 0;
++	res = cycles * USEC_PER_SEC;
++	tmp = rem * USEC_PER_SEC;
++
++	rem = do_div(tmp, tsc_khz);
++	tmp += rem > tsc_khz >> 2 ? 1 : 0;
++	res += tmp;
++
++	rem = do_div(res, NSEC_PER_SEC);
++
++	return (struct timespec64) {.tv_sec = res, .tv_nsec = rem};
 +}
 +
- /* public interface */
- 
- struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
-@@ -213,6 +224,8 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 		goto no_slot;
- 	}
- 
-+	ptp->defunct = !check_for_readability(info->pin_config, info->n_pins);
++struct timespec64 get_tsc_ns_now(struct system_counterval_t *system_counter)
++{
++	struct system_counterval_t counterval;
 +
- 	ptp->clock.ops = ptp_clock_ops;
- 	ptp->info = info;
- 	ptp->devid = MKDEV(major, index);
-diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-index ecb4c4e49205..d5bd6504480c 100644
---- a/include/uapi/linux/ptp_clock.h
-+++ b/include/uapi/linux/ptp_clock.h
-@@ -38,6 +38,7 @@
-  * Bits of the ptp_pin_desc.flags field:
-  */
- #define PTP_PINDESC_EVTCNTVALID	(1<<0)
-+#define PTP_PINDESC_INPUTPOLL	(1<<1)
- 
- /*
-  * flag fields valid for the new PTP_EXTTS_REQUEST2 ioctl.
++	if (system_counter == NULL)
++		system_counter = &counterval;
++
++	system_counter->cycles = clocksource_tsc.read(NULL);
++	system_counter->cs = art_related_clocksource;
++
++	return get_tsc_ns(system_counter);
++}
++EXPORT_SYMBOL(get_tsc_ns_now);
++
++struct timespec64 convert_art_to_tsc_ns(u64 art)
++{
++	struct system_counterval_t counterval;
++
++	counterval = _convert_art_to_tsc(art, false);
++
++	return get_tsc_ns(&counterval);
++}
++EXPORT_SYMBOL(convert_art_to_tsc_ns);
++
++struct timespec64 convert_art_to_tsc_ns_duration(u64 art)
++{
++	struct system_counterval_t counterval;
++
++	counterval = _convert_art_to_tsc(art, true);
++
++	return get_tsc_ns(&counterval);
++}
++EXPORT_SYMBOL(convert_art_to_tsc_ns_duration);
++
++static u64 convert_tsc_ns_to_tsc(struct timespec64 *tsc_ns)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
++
++	cycles = timespec64_to_ns(tsc_ns);
++
++	rem = do_div(cycles, USEC_PER_SEC);
++
++	res = cycles * tsc_khz;
++	tmp = rem * tsc_khz;
++
++	do_div(tmp, USEC_PER_SEC);
++
++	return res + tmp;
++}
++
++
++static u64 _convert_tsc_ns_to_art(struct timespec64 *tsc_ns, bool dur)
++{
++	u64 tmp, res, rem;
++	u64 cycles;
++
++	cycles = convert_tsc_ns_to_tsc(tsc_ns);
++	if (!dur)
++		cycles -= art_to_tsc_offset;
++
++	rem = do_div(cycles, art_to_tsc_numerator);
++
++	res = cycles * art_to_tsc_denominator;
++	tmp = rem * art_to_tsc_denominator;
++
++	rem = do_div(tmp, art_to_tsc_numerator);
++	tmp += rem > art_to_tsc_numerator >> 2 ? 1 : 0;
++
++	return res + tmp;
++}
++
++u64 convert_tsc_ns_to_art(struct timespec64 *tsc_ns)
++{
++	return _convert_tsc_ns_to_art(tsc_ns, false);
++}
++EXPORT_SYMBOL(convert_tsc_ns_to_art);
++
++u64 convert_tsc_ns_to_art_duration(struct timespec64 *tsc_ns)
++{
++	return _convert_tsc_ns_to_art(tsc_ns, true);
++}
++EXPORT_SYMBOL(convert_tsc_ns_to_art_duration);
++
+ /**
+  * convert_art_ns_to_tsc() - Convert ART in nanoseconds to TSC.
+  * @art_ns: ART (Always Running Timer) in unit of nanoseconds
 -- 
 2.21.0
 
