@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E1811AE31
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:47:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A1211AE77
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729934AbfLKOrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 09:47:19 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51609 "EHLO
+        id S1729742AbfLKOzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 09:55:22 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29755 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730076AbfLKOrO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:47:14 -0500
+        with ESMTP id S1729435AbfLKOzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:55:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576075633;
+        s=mimecast20190719; t=1576076121;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uirOhgSvjq4DT4EarKgWh3oOvWR/NL1lmoArYsaFvfU=;
-        b=XYf6iYdVDT4VPrsX6WrA/nWXGMlz37X59Dzc7pxkdyXfVADN/6apgP9xak83VCzZIocjuT
-        KlRxFFPJHKt2Q4jq6LzTp/B0pgDncskuUsROp/ZX2Si+yVxTohZCuhGDi+arRALBK523NH
-        /JyewvcEE6RYAwuMKuXupE/Q0PnjHmw=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-ilZVaj8BN2anY2nBxxUcyw-1; Wed, 11 Dec 2019 09:47:12 -0500
-Received: by mail-lj1-f197.google.com with SMTP id c24so4450627ljk.0
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:47:12 -0800 (PST)
+        bh=/xRV6BaNRtqgbV4uBsZ9UxoINqOvZn7cXzR7XnrwTAM=;
+        b=a47CfTUgW4nhJSJUlY0eDS9Ci60xQotpTl3QEJXZ72iIpI76OmhgfqdUpI6MWne5DolWM6
+        lJ9zT0/czIOVdpmhGK2xjD3leJfSL+t932lCzg34sOj+/9B4G5KTB7i/yv2OOqglWS4wC+
+        Dk24/t39X8vtHVF1vkJ/83Q0eBI+ckw=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-rhFqRgX0Mt-8SoAliaRxmg-1; Wed, 11 Dec 2019 09:55:17 -0500
+Received: by mail-lj1-f200.google.com with SMTP id z23so4453249ljk.21
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:55:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=DrlMxGv0pYjq5Gdk23gjEZddH1IAa/lFb9hEecJndV4=;
-        b=PZr6ntTPHz//U6nzY6QiN/xkc6IZy9Whz4+9UzlqO6dHlnV+P+GWX3XMsdj6HEfLRW
-         ePqDJ9WLCjtKGa6pE+yHtPEhdOiWZLPg9w1jpQPKs8vIug/oWGjfFiF1vFSG/84YsxZe
-         sdlc+9Mk22PPyORI1ZbkSPeWIGBMAg8WEBTXTMLbqKuHkB3RanAK82mKWlWDJlCex5re
-         HTGd7CPrLiW0VzJlXE7Har7rEoptNCWvTRNwXHQy1WRDfX4yAgf9Ka7LKaTnt96RWgLi
-         mF8tNNwyPIwxLu1ZeDIwhg5v7kDeG6N/uvE3QvvYYOL3lp8gzUTrAnYBMyZaxPnblvPo
-         otKw==
-X-Gm-Message-State: APjAAAWeyEVZHrfAsWx1/wZpEWJS4FHPU7HwhFg0UgyArlJd4XBgibDl
-        yz7r89yPRjOY/56v+ToMM2eCi0zgJR/tBIb5Fngq3Kx5Hy6hClKl+hFx1oB/2PVcviLL8fwtB+r
-        zZjvTifC9KKXyLrLv
-X-Received: by 2002:a2e:99d0:: with SMTP id l16mr2374138ljj.1.1576075630891;
-        Wed, 11 Dec 2019 06:47:10 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzV4TVbG7SBbl7pnNaA6hSPeBIeHzeUKgWyTtLqludm96u74ZEBRobOs16/al35Shb/4+N+TA==
-X-Received: by 2002:a2e:99d0:: with SMTP id l16mr2374126ljj.1.1576075630705;
-        Wed, 11 Dec 2019 06:47:10 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id c189sm1312552lfg.75.2019.12.11.06.47.09
+        bh=9ucwElWdgkQaEklwem1iDH2kvuF3LSBSdbIgBouf/AM=;
+        b=VpjEC1GF7PcCcC7dRe6BYzHQECZfClJSuagjmy4qe/PznL0BN0XjeELqXqlXnFSNvO
+         v4GMCvsWNVC0rvk4q7u2TqvxTyMsVpWwzBaEi3Ll0tO5d7AY62wN/5NOv8fWzuE6UcvV
+         MpfpshZV+65TuxNeJ0udCZvXHViHVdiopPhbD7j8QcVXEoG4kcfazwXWIuYR39bdpdUe
+         L8zfdXts3ld8/fzezkx+rjlQdYfItoeRwunV3okolqHJ8HSwLUEBDX6GwIzRX0LyYR0L
+         eDYAQFqP0O4p3FQP9RpMzbKjZgdf470OHKpK1IWe3OLaDVLjQ3o9X/rgkqM40VcEq+jY
+         A7XQ==
+X-Gm-Message-State: APjAAAXJdz//jPQx6AcKS7qCU94ILFKcdKfRXT+1Zu8ouG6cIguZDWBy
+        mKiLh8Bw2Q9p+Oo9ANfJ7hogQXSZYbGTmdQ9SU4wxvqwozUrDf0wQ8Au2vkBYN+0VkpEIzSa0Mf
+        UUSBgcMz5EBzoN73+
+X-Received: by 2002:a2e:9f52:: with SMTP id v18mr2122642ljk.30.1576076115912;
+        Wed, 11 Dec 2019 06:55:15 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz6Nr+91aIAs23LlUXWGoq9CZxbo/71kgTRBTc7tB10BzoTuzW+r9oMxAtPOzr8tsV54UPBpg==
+X-Received: by 2002:a2e:9f52:: with SMTP id v18mr2122628ljk.30.1576076115767;
+        Wed, 11 Dec 2019 06:55:15 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id e12sm1324145ljj.17.2019.12.11.06.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 06:47:10 -0800 (PST)
+        Wed, 11 Dec 2019 06:55:15 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4F04418033F; Wed, 11 Dec 2019 15:47:08 +0100 (CET)
+        id 896F318033F; Wed, 11 Dec 2019 15:55:14 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Johannes Berg <johannes@sipsolutions.net>,
         Jens Axboe <axboe@kernel.dk>,
         Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
+        Luca Coelho <luciano.coelho@intel.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Steve French <smfrench@gmail.com>
 Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>
 Subject: Re: iwlwifi warnings in 5.5-rc1
-In-Reply-To: <b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net>
-References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net> <878snjgs5l.fsf@toke.dk> <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net> <875zingnzt.fsf@toke.dk> <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net> <14bbfcc8408500704c46701251546e7ff65c6fd0.camel@sipsolutions.net> <87r21bez5g.fsf@toke.dk> <b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net>
+In-Reply-To: <e65574ac1bb414c9feb3d51e5cbd643c2907b221.camel@sipsolutions.net>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <d4a48cbdc4b0db7b07b8776a1ee70b140e8a9bbf.camel@sipsolutions.net> <87o8wfeyx5.fsf@toke.dk> <e65574ac1bb414c9feb3d51e5cbd643c2907b221.camel@sipsolutions.net>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Dec 2019 15:47:08 +0100
-Message-ID: <87k172gbrn.fsf@toke.dk>
+Date:   Wed, 11 Dec 2019 15:55:14 +0100
+Message-ID: <87d0cugbe5.fsf@toke.dk>
 MIME-Version: 1.0
-X-MC-Unique: ilZVaj8BN2anY2nBxxUcyw-1
+X-MC-Unique: rhFqRgX0Mt-8SoAliaRxmg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -76,54 +78,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Johannes Berg <johannes@sipsolutions.net> writes:
 
-> On Wed, 2019-12-11 at 15:04 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrote=
+> On Wed, 2019-12-11 at 15:09 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrote=
 :
->> Johannes Berg <johannes@sipsolutions.net> writes:
 >>=20
->> > Btw, there's *another* issue. You said in the commit log:
->> >=20
->> >     This patch does *not* include any mechanism to wake a throttled TX=
-Q again,
->> >     on the assumption that this will happen anyway as a side effect of=
- whatever
->> >     freed the skb (most commonly a TX completion).
->> >=20
->> > Thinking about this some more, I'm not convinced that this assumption
->> > holds. You could have been stopped due to the global limit, and now yo=
-u
->> > wake some queue but the TXQ is empty - now you should reschedule some
->> > *other* TXQ since the global limit had kicked in, not the per-TXQ limi=
-t,
->> > and prevented dequeuing, no?
->>=20
->> Well if you hit the global limit that means you have 24ms worth of data
->> queued in the hardware; those should be completed in turn, and enable
->> more to be dequeued, no?
+>> If we're doing this on a per-driver basis, let's make it a proper
+>> NL80211_EXT_FEATURE and expose it to userspace; that way users can at
+>> least discover if it's supported on their device. I can send a patch
+>> adding that...
 >
-> Yes, but on which queues?
->
-> Say you have some queues - some (Q1-Qn) got a LOT of traffic, and
-> another (Q0) just has some interactive traffic.
->
-> You could then end up in a situation where you have 24ms queued up on
-> Q1-Qn (with n high enough to not have hit the per-queue AQL limit),
-> right?
->
-> Say also the last frame on Q0 was dequeued by the hardware, but the
-> tx_dequeue() got NULL because of the AQL limit having been eaten up by
-> all the packets on Q1-Qn.
->
-> Now you'll no longer get a new dequeue attempt on Q0 (it was already
-> empty last time, so no hardware reclaim to trigger new dequeues), and a
-> new dequeue on the *other* queues will not do anything for this queue.
+> Sure. Just didn't get to that yet, but if you want to send a patch
+> that's very welcome. I have to run out now, will be back in the evening
+> at most.
 
-Oh, right, I see; yeah, that could probably happen. I guess we could
-either kick all available queues whenever the global limit goes from
-"above" to "below"; or we could remove the "return NULL" logic from
-tx_dequeue() and rely on next_txq() to throttle. I think the latter is
-probably simpler, but I'm a little worried that the throttling will
-become too lax (because the driver can keep dequeueing in the same
-scheduling round)...
+Patch here (for those not following linux-wireless):
+https://patchwork.kernel.org/project/linux-wireless/list/?series=3D215107
+
+>> Maybe we should untangle this from airtime_flags completely, since if we
+>> just use the flags people could conceivably end up disabling it by
+>> mistake, couldn't they?
+>
+> Yes, that sounds like a good plan, now I was wondering why it's there
+> anyway.
+
+Convenience, I think :)
 
 -Toke
 
