@@ -2,135 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC0911B997
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:06:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52EE611B99C
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:07:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730211AbfLKRGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 12:06:41 -0500
-Received: from www62.your-server.de ([213.133.104.62]:49940 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729512AbfLKRGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:06:41 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1if59U-0008Ab-2Z; Wed, 11 Dec 2019 17:47:52 +0100
-Date:   Wed, 11 Dec 2019 17:47:51 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-audit@redhat.com,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Steve Grubb <sgrubb@redhat.com>,
-        David Miller <davem@redhat.com>,
-        Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
-Subject: Re: [PATCHv3] bpf: Emit audit messages upon successful prog load and
- unload
-Message-ID: <20191211164751.GA31590@linux.fritz.box>
-References: <20191206214934.11319-1-jolsa@kernel.org>
- <20191209121537.GA14170@linux.fritz.box>
- <CAHC9VhQdOGTj1HT1cwvAdE1sRpzk5mC+oHQLHgJFa3vXEij+og@mail.gmail.com>
- <d387184e-9c5f-d5b2-0acb-57b794235cbd@iogearbox.net>
- <CAHC9VhRDsEDGripZRrVNcjEBEEULPk+0dRp-uJ3nmmBK7B=sYQ@mail.gmail.com>
- <20191210153652.GA14123@krava>
- <CAHC9VhSa_B-VJOa_r8OcNrm0Yd_t1j3otWhKHgganSDx5Ni=Tg@mail.gmail.com>
- <20191211131955.GC23383@linux.fritz.box>
- <CAHC9VhQqiD7BBGwLYuQVySG84iwR9MJh8GZuTU3xCBm7GLn8hw@mail.gmail.com>
+        id S1730724AbfLKRHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:07:33 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:36189 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729512AbfLKRHd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 12:07:33 -0500
+Received: from tarshish (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 819BE4400C6;
+        Wed, 11 Dec 2019 19:07:30 +0200 (IST)
+References: <87tv67tcom.fsf@tarshish> <20191211131111.GK16369@lunn.ch>
+User-agent: mu4e 1.2.0; emacs 26.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org,
+        Denis Odintsov <d.odintsov@traviangames.com>,
+        Hubert Feurstein <h.feurstein@gmail.com>
+Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
+In-reply-to: <20191211131111.GK16369@lunn.ch>
+Date:   Wed, 11 Dec 2019 19:07:29 +0200
+Message-ID: <87fthqu6y6.fsf@tarshish>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhQqiD7BBGwLYuQVySG84iwR9MJh8GZuTU3xCBm7GLn8hw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25660/Wed Dec 11 10:47:07 2019)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 11:21:33AM -0500, Paul Moore wrote:
-> On Wed, Dec 11, 2019 at 8:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > On Tue, Dec 10, 2019 at 05:45:59PM -0500, Paul Moore wrote:
-> > > On Tue, Dec 10, 2019 at 10:37 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > > On Mon, Dec 09, 2019 at 06:53:23PM -0500, Paul Moore wrote:
-> > > > > On Mon, Dec 9, 2019 at 6:19 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > > > > On 12/9/19 3:56 PM, Paul Moore wrote:
-> > > > > > > On Mon, Dec 9, 2019 at 7:15 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > > > > >> On Fri, Dec 06, 2019 at 10:49:34PM +0100, Jiri Olsa wrote:
-> > > > > > >>> From: Daniel Borkmann <daniel@iogearbox.net>
-> > > > > > >>>
-> > > > > > >>> Allow for audit messages to be emitted upon BPF program load and
-> > > > > > >>> unload for having a timeline of events. The load itself is in
-> > > > > > >>> syscall context, so additional info about the process initiating
-> > > > > > >>> the BPF prog creation can be logged and later directly correlated
-> > > > > > >>> to the unload event.
-> > > > > > >>>
-> > > > > > >>> The only info really needed from BPF side is the globally unique
-> > > > > > >>> prog ID where then audit user space tooling can query / dump all
-> > > > > > >>> info needed about the specific BPF program right upon load event
-> > > > > > >>> and enrich the record, thus these changes needed here can be kept
-> > > > > > >>> small and non-intrusive to the core.
-> > > > > > >>>
-> > > > > > >>> Raw example output:
-> > > > > > >>>
-> > > > > > >>>    # auditctl -D
-> > > > > > >>>    # auditctl -a always,exit -F arch=x86_64 -S bpf
-> > > > > > >>>    # ausearch --start recent -m 1334
-> > > > > > >>>    ...
-> > > > > > >>>    ----
-> > > > > > >>>    time->Wed Nov 27 16:04:13 2019
-> > > > > > >>>    type=PROCTITLE msg=audit(1574867053.120:84664): proctitle="./bpf"
-> > > > > > >>>    type=SYSCALL msg=audit(1574867053.120:84664): arch=c000003e syscall=321   \
-> > > > > > >>>      success=yes exit=3 a0=5 a1=7ffea484fbe0 a2=70 a3=0 items=0 ppid=7477    \
-> > > > > > >>>      pid=12698 auid=1001 uid=1001 gid=1001 euid=1001 suid=1001 fsuid=1001    \
-> > > > > > >>>      egid=1001 sgid=1001 fsgid=1001 tty=pts2 ses=4 comm="bpf"                \
-> > > > > > >>>      exe="/home/jolsa/auditd/audit-testsuite/tests/bpf/bpf"                  \
-> > > > > > >>>      subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
-> > > > > > >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84664): prog-id=76 op=LOAD
-> > > > > > >>>    ----
-> > > > > > >>>    time->Wed Nov 27 16:04:13 2019
-> > > > > > >>>    type=UNKNOWN[1334] msg=audit(1574867053.120:84665): prog-id=76 op=UNLOAD
-> > > > > > >>>    ...
-> > > > > > >>>
-> > > > > > >>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > > > > > >>> Co-developed-by: Jiri Olsa <jolsa@kernel.org>
-> > > > > > >>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > > > > >>
-> > > > > > >> Paul, Steve, given the merge window is closed by now, does this version look
-> > > > > > >> okay to you for proceeding to merge into bpf-next?
-> > > > > > >
-> > > > > > > Given the change to audit UAPI I was hoping to merge this via the
-> > > > > > > audit/next tree, is that okay with you?
-> > > > > >
-> > > > > > Hm, my main concern is that given all the main changes are in BPF core and
-> > > > > > usually the BPF subsystem has plenty of changes per release coming in that we'd
-> > > > > > end up generating unnecessary merge conflicts. Given the include/uapi/linux/audit.h
-> > > > > > UAPI diff is a one-line change, my preference would be to merge via bpf-next with
-> > > > > > your ACK or SOB added. Does that work for you as well as?
-> > > > >
-> > > > > I regularly (a few times a week) run the audit and SELinux tests
-> > > > > against Linus+audit/next+selinux/next to make sure things are working
-> > > > > as expected and that some other subsystem has introduced a change
-> > > > > which has broken something.  If you are willing to ensure the tests
-> > > > > get run, including your new BPF audit tests I would be okay with that;
-> > > > > is that acceptable?
-> > > >
-> > > > would you please let me know which tree this landed at the end?
-> > >
-> > > I think that's what we are trying to figure out - Daniel?
-> >
-> > Yeah, sounds reasonable wrt running tests to make sure nothing breaks. In that
-> > case I'd wait for your ACK or SOB to proceed with merging into bpf-next. Thanks
-> > Paul!
-> 
-> As long as you're going to keep testing this, here ya go :)
-> 
-> Acked-by: Paul Moore <paul@paul-moore.com>
-> 
-> (also, go ahead and submit that PR for audit-testsuite - thanks!)
+Hi Andrew,
 
-Perfect, thanks for all your help! Applied to bpf-next.
+On Wed, Dec 11 2019, Andrew Lunn wrote:
+
+> On Wed, Dec 11, 2019 at 11:48:57AM +0200, Baruch Siach wrote:
+>> Hi Andrew, Vivien,
+>> 
+>> Since kernel v5.3 (tested v5.3.15), the 88E6141 switch on SolidRun
+>> Clearfog GT-8K stopped transmitting packets on switch connected
+>> ports. Kernel v5.2 works fine (tested v5.2.21).
+>> 
+>> Here are the relevant kernel v5.3 log lines:
+>> 
+>> [    2.867424] mv88e6085 f412a200.mdio-mii:04: switch 0x3400 detected: Marvell 88E6141, revision 0
+>> [    2.927445] libphy: mdio: probed
+>> [    3.578496] mv88e6085 f412a200.mdio-mii:04 lan2 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:11] driver [Marvell 88E6390]
+>> [    3.595674] mv88e6085 f412a200.mdio-mii:04 lan1 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:12] driver [Marvell 88E6390]
+>> [    3.612797] mv88e6085 f412a200.mdio-mii:04 lan4 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:13] driver [Marvell 88E6390]
+>> [    3.629910] mv88e6085 f412a200.mdio-mii:04 lan3 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:14] driver [Marvell 88E6390]
+>> [    3.646049] mv88e6085 f412a200.mdio-mii:04: configuring for phy/ link mode
+>> [    3.654451] DSA: tree 0 setup
+>> ...
+>> [   10.784521] mvpp2 f4000000.ethernet eth2: configuring for fixed/2500base-x link mode
+>> [   10.792401] mvpp2 f4000000.ethernet eth2: Link is Up - 2.5Gbps/Full - flow control off
+>> [   19.817981] mv88e6085 f412a200.mdio-mii:04 lan1: configuring for phy/ link mode
+>> [   19.827083] 8021q: adding VLAN 0 to HW filter on device lan1
+>> [   21.577276] mv88e6085 f412a200.mdio-mii:04 lan1: Link is Up - 100Mbps/Full - flow control rx/tx
+>> [   21.586030] IPv6: ADDRCONF(NETDEV_CHANGE): lan1: link becomes ready
+>> 
+>> The Tx count on the lan1 interface increments, but the ARP packets don't 
+>> show on the network.
+>
+> Hi Baruch
+>
+> I don't know of an issues.
+>
+> If the MAC TX counter increases, it sounds like it is a PHY issue?
+> Does 100Mbps/Full make sense for this link?
+
+100Mbps switch is what I have at the other side of the link. Works
+perfectly with v5.2.
+
+> Probably your best bet is to do a git bisect to find which commit
+> broke it.
+
+Bisect points at 7fb5a711545d ("net: dsa: mv88e6xxx: drop adjust_link to
+enabled phylink"). Reverting this commit on top of v5.3.15 fixes the
+issue (and brings the warning back). As I understand, this basically
+reverts the driver migration to phylink. What might be the issue with
+phylink?
+
+Thanks,
+baruch
+
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
