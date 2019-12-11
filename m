@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FFF311A457
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 07:16:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3A611A460
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 07:19:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727749AbfLKGQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 01:16:13 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:60507 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726687AbfLKGQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 01:16:13 -0500
-X-Originating-IP: 209.85.217.48
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com [209.85.217.48])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 9FDC2240006
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:16:10 +0000 (UTC)
-Received: by mail-vs1-f48.google.com with SMTP id t12so14928940vso.13
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 22:16:10 -0800 (PST)
-X-Gm-Message-State: APjAAAUF1mNwAZUJBU+FmvYOKKc9U5R4wf3KpkzgZXIbd2iGzAPfiNgh
-        y/hbFcSmaMDtlpw4Yk/77OQ+59n+qbFpPTdqpBM=
-X-Google-Smtp-Source: APXvYqwLfzuSPi/TOv3FXT6dHj3ugCb2XROF01UfeNkhNWLgG6wlU76GF9uzFRUoFsVrK3GEbEiWBEXb09yD4jJ+XTU=
-X-Received: by 2002:a67:2701:: with SMTP id n1mr1125862vsn.103.1576044969286;
- Tue, 10 Dec 2019 22:16:09 -0800 (PST)
+        id S1727805AbfLKGRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 01:17:10 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:46284 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725800AbfLKGRK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 01:17:10 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id CE3712019C;
+        Wed, 11 Dec 2019 07:17:08 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id sPwbxyKzNNMX; Wed, 11 Dec 2019 07:17:07 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E90BC2009B;
+        Wed, 11 Dec 2019 07:17:07 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 11 Dec 2019
+ 07:17:07 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 79B193180449;
+ Wed, 11 Dec 2019 07:17:07 +0100 (CET)
+Date:   Wed, 11 Dec 2019 07:17:07 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH ipsec-next v7 0/6] ipsec: add TCP encapsulation support
+ (RFC 8229)
+Message-ID: <20191211061707.GA8621@gauss3.secunet.de>
+References: <cover.1574685542.git.sd@queasysnail.net>
 MIME-Version: 1.0
-References: <cover.1575964218.git.martin.varghese@nokia.com> <c7b6eaa599aff9167b4123efb5b990e3afb20d15.1575964218.git.martin.varghese@nokia.com>
-In-Reply-To: <c7b6eaa599aff9167b4123efb5b990e3afb20d15.1575964218.git.martin.varghese@nokia.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Tue, 10 Dec 2019 22:15:57 -0800
-X-Gmail-Original-Message-ID: <CAOrHB_BKv3EvdoNc6HxN6a5cMAhmrSOa57MeaF1kCWss_NTZHQ@mail.gmail.com>
-Message-ID: <CAOrHB_BKv3EvdoNc6HxN6a5cMAhmrSOa57MeaF1kCWss_NTZHQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/3] openvswitch: New MPLS actions for layer 2 tunnelling
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
-        Jiri Benc <jbenc@redhat.com>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cover.1574685542.git.sd@queasysnail.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 12:17 AM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
->
-> From: Martin Varghese <martin.varghese@nokia.com>
->
-> The existing PUSH MPLS & POP MPLS actions inserts & removes MPLS header
-> between ethernet header and the IP header. Though this behaviour is fine
-> for L3 VPN where an IP packet is encapsulated inside a MPLS tunnel, it
-> does not suffice the L2 VPN (l2 tunnelling) requirements. In L2 VPN
-> the MPLS header should encapsulate the ethernet packet.
->
-> The new mpls actions PTAP_PUSH_MPLS & PTAP_POP_MPLS inserts and removes
-> MPLS header from start of the packet respectively.
->
-> PTAP_PUSH_MPLS - Inserts MPLS header at the start of the packet.
-> @ethertype - Ethertype of MPLS header.
->
-> PTAP_POP_MPLS - Removes MPLS header from the start of the packet.
-> @ethertype - Ethertype of next header following the popped MPLS header.
->              Value 0 in ethertype indicates the tunnelled packet is
->              ethernet.
->
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> ---
->  include/uapi/linux/openvswitch.h |  2 ++
->  net/openvswitch/actions.c        | 40 ++++++++++++++++++++++++++++++++++++++++
->  net/openvswitch/flow_netlink.c   | 21 +++++++++++++++++++++
->  3 files changed, 63 insertions(+)
->
-> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> index a87b44c..af05062 100644
-> --- a/include/uapi/linux/openvswitch.h
-> +++ b/include/uapi/linux/openvswitch.h
-> @@ -927,6 +927,8 @@ enum ovs_action_attr {
->         OVS_ACTION_ATTR_METER,        /* u32 meter ID. */
->         OVS_ACTION_ATTR_CLONE,        /* Nested OVS_CLONE_ATTR_*.  */
->         OVS_ACTION_ATTR_CHECK_PKT_LEN, /* Nested OVS_CHECK_PKT_LEN_ATTR_*. */
-> +       OVS_ACTION_ATTR_PTAP_PUSH_MPLS,    /* struct ovs_action_push_mpls. */
-> +       OVS_ACTION_ATTR_PTAP_POP_MPLS,     /* __be16 ethertype. */
->
->         __OVS_ACTION_ATTR_MAX,        /* Nothing past this will be accepted
->                                        * from userspace. */
-What about MPLS set action? does existing action works with PTAP MPLS?
+On Mon, Nov 25, 2019 at 02:48:56PM +0100, Sabrina Dubroca wrote:
+> This patchset introduces support for TCP encapsulation of IKE and ESP
+> messages, as defined by RFC 8229 [0]. It is an evolution of what
+> Herbert Xu proposed in January 2018 [1] that addresses the main
+> criticism against it, by not interfering with the TCP implementation
+> at all. The networking stack now has infrastructure for this: TCP ULPs
+> and Stream Parsers.
+> 
+> The first patches are preparation and refactoring, and the final patch
+> adds the feature.
+> 
+> The main omission in this submission is IPv6 support. ESP
+> encapsulation over UDP with IPv6 is currently not supported in the
+> kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
+> is not frequently used with IPv6.
+> 
+> Some of the code is taken directly, or slightly modified, from Herbert
+> Xu's original submission [1]. The ULP and strparser pieces are
+> new. This work was presented and discussed at the IPsec workshop and
+> netdev 0x13 conference [2] in Prague, last March.
+> 
+> [0] https://tools.ietf.org/html/rfc8229
+> [1] https://patchwork.ozlabs.org/patch/859107/
+> [2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
+> 
+> Changes since v6:
+>  - fix sparse warning in patch 6/6
+> 
+> Changes since v5:
+>  - rebase patch 1/6 on top of ipsec-next (conflict with commits
+>    7c422d0ce975 ("net: add READ_ONCE() annotation in
+>    __skb_wait_for_more_packets()") and 3f926af3f4d6 ("net: use
+>    skb_queue_empty_lockless() in busy poll contexts"))
+> 
+> Changes since v4:
+>  - prevent combining sockmap with espintcp, as this does not work
+>    properly and I can't see a use case for it
+> 
+> Changes since v3:
+>  - fix sparse warning related to RCU tag on icsk_ulp_data
+> 
+> Changes since v2:
+>  - rename config option to INET_ESPINTCP and move it to
+>    net/ipv4/Kconfig (patch 6/6)
+> 
+> Changes since v1:
+>  - drop patch 1, already present in the tree as commit bd95e678e0f6
+>    ("bpf: sockmap, fix use after free from sleep in psock backlog
+>    workqueue")
+>  - patch 1/6: fix doc error reported by kbuild test robot <lkp@intel.com>
+>  - patch 6/6, fix things reported by Steffen Klassert:
+>    - remove unneeded goto and improve error handling in
+>      esp_output_tcp_finish
+>    - clean up the ifdefs by providing dummy implementations of those
+>      functions
+>    - fix Kconfig select, missing NET_SOCK_MSG
+> 
+> Sabrina Dubroca (6):
+>   net: add queue argument to __skb_wait_for_more_packets and
+>     __skb_{,try_}recv_datagram
+>   xfrm: introduce xfrm_trans_queue_net
+>   xfrm: add route lookup to xfrm4_rcv_encap
+>   esp4: prepare esp_input_done2 for non-UDP encapsulation
+>   esp4: split esp_output_udp_encap and introduce esp_output_encap
+>   xfrm: add espintcp (RFC 8229)
 
-
-> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> index 4c83954..d43c37e 100644
-> --- a/net/openvswitch/actions.c
-> +++ b/net/openvswitch/actions.c
-> @@ -160,6 +160,38 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
->                               struct sw_flow_key *key,
->                               const struct nlattr *attr, int len);
->
-> +static int push_ptap_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> +                         const struct ovs_action_push_mpls *mpls)
-> +{
-> +       int err;
-> +
-> +       err = skb_mpls_push(skb, mpls->mpls_lse, mpls->mpls_ethertype,
-> +                           0, false);
-> +       if (err)
-> +               return err;
-> +
-> +       key->mac_proto = MAC_PROTO_NONE;
-> +       invalidate_flow_key(key);
-> +       return 0;
-> +}
-> +
-Can you factor out code from existing MPLS action to avoid code duplication.
-
-> +static int ptap_pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
-> +                        const __be16 ethertype)
-> +{
-> +       int err;
-> +
-> +       err = skb_mpls_pop(skb, ethertype, skb->mac_len,
-> +                          ovs_key_mac_proto(key) == MAC_PROTO_ETHERNET);
-> +       if (err)
-> +               return err;
-> +
-Why is mac_len passed here? given MPLS is topmost header I do not see
-any need to move headers during pop operation.
+All applied to ipsec-next, thanks a lot Sabrina!
