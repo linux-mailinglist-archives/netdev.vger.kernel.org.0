@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 155AE11A06F
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 02:23:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4635411A07A
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 02:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbfLKBXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 20:23:47 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:51028 "EHLO
+        id S1727320AbfLKB2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 20:28:23 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:51066 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbfLKBXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 20:23:47 -0500
+        with ESMTP id S1726362AbfLKB2X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 20:28:23 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3B8E015037605;
-        Tue, 10 Dec 2019 17:23:46 -0800 (PST)
-Date:   Tue, 10 Dec 2019 17:23:45 -0800 (PST)
-Message-Id: <20191210.172345.1443717103734845249.davem@davemloft.net>
-To:     linux@armlinux.org.uk
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 00/14] Add support for SFP+ copper modules
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5780415037A02;
+        Tue, 10 Dec 2019 17:28:22 -0800 (PST)
+Date:   Tue, 10 Dec 2019 17:28:21 -0800 (PST)
+Message-Id: <20191210.172821.1406974012095303846.davem@davemloft.net>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, tglx@linutronix.de
+Subject: Re: [RFC v1 PATCH 0/7] bpf: Make RT friendly.
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191209151553.GP25745@shell.armlinux.org.uk>
-References: <20191209151553.GP25745@shell.armlinux.org.uk>
+In-Reply-To: <20191207.160357.828344895192682546.davem@davemloft.net>
+References: <20191207.160357.828344895192682546.davem@davemloft.net>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 10 Dec 2019 17:23:46 -0800 (PST)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 10 Dec 2019 17:28:22 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIDxsaW51eEBhcm1saW51eC5vcmcu
-dWs+DQpEYXRlOiBNb24sIDkgRGVjIDIwMTkgMTU6MTU6NTMgKzAwMDANCg0KPiBUaGlzIHNlcmll
-cyBhZGRzIHN1cHBvcnQgZm9yIENvcHBlciBTRlArIG1vZHVsZXMgd2l0aCBDbGF1c2UgNDUgUEhZ
-cy4NCj4gU3BlY2lmaWNhbGx5IHRoZSBwYXRjaGVzOg0KDQpUaGlzIHNlcmllcyBuZWVkcyBzb21l
-IHdvcmsgYWN0dWFsbHk6DQoNCjEpIFBhdGNoICM2IGFkZHMgdGhlIGZvbGxvd2luZyB3YXJuaW5n
-Og0KDQpkcml2ZXJzL25ldC9waHkvcGh5bGluay5jOiBJbiBmdW5jdGlvbiChcGh5bGlua19hdHRh
-Y2hfcGh5ojoNCmRyaXZlcnMvbmV0L3BoeS9waHlsaW5rLmM6NzcwOjY6IHdhcm5pbmc6IHVudXNl
-ZCB2YXJpYWJsZSChcmV0oiBbLVd1bnVzZWQtdmFyaWFibGVdDQoNCjIpIFBhdGNoICMxMSBhZGRz
-IGEgcmVmZXJlbmNlIHRvIE1MX0FOX0lOQkFORCB3aGljaCBicmVha3MgdGhlIGJ1aWxkOg0KDQpk
-cml2ZXJzL25ldC9waHkvcGh5bGluay5jOiBJbiBmdW5jdGlvbiChcGh5bGlua19zZnBfY29ubmVj
-dF9waHmiOg0KZHJpdmVycy9uZXQvcGh5L3BoeWxpbmsuYzoxODU2OjMxOiBlcnJvcjogoU1MX0FO
-X0lOQkFORKIgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pOyBkaWQgeW91
-IG1lYW4goU1MT19BTl9JTkJBTkSiPw0KICByZXQgPSBwaHlsaW5rX3NmcF9jb25maWcocGwsIE1M
-X0FOX0lOQkFORCwgcGh5LT5zdXBwb3J0ZWQsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgXn5+fn5+fn5+fn5+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTUxPX0FOX0lO
-QkFORA0KDQozKSBQYXRjaCAjMTIgcmVtb3ZlcyB0aGlzIGxpbmUuDQoNClBsZWFzZSBmaXggdGhl
-IHdhcm5pbmcgYW5kIG1ha2UgdGhpcyBwYXRjaCBzZXJpZXMgcHJvcGVybHkgYmlzZWN0YWJsZS4N
-Cg0KWW91IGhhdmUgYWxsIHRoZSBBQ0tzLCBzbyBvbmNlIHRoaXMgaXMgZml4ZWQgdXAgSSdsbCBh
-cHBseSBpdC4NCg0KVGhhbmtzLg0K
+From: David Miller <davem@davemloft.net>
+Date: Sat, 07 Dec 2019 16:03:57 -0800 (PST)
+
+> 
+> The goal of this patch set is to make the BPF code friendly in RT
+> configurations.
+> 
+> The first step is eliminating preemption disable/enable and replacing
+> it with local lock usage when full RT is enabled.
+> 
+> Likewise we also need to elide usage of up_read_non_owner() in the
+> stackmap code when full RT is turned on.
+> 
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+
+Thomas can you please take a look at this patch series?
+
+It eliminates all of the RT problems we were made aware of, and these
+patches have been through the bpf test suite as well as gotten 0-day
+testing.
+
+The only major thing we needs ACK'd is the locallock stubs.
+
+Thank you.
