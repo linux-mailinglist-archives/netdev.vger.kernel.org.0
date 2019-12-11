@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2FC11AACF
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B5711AAD1
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729238AbfLKMaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:30:46 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37931 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728991AbfLKMaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:46 -0500
-Received: by mail-pg1-f194.google.com with SMTP id a33so10499565pgm.5;
-        Wed, 11 Dec 2019 04:30:45 -0800 (PST)
+        id S1729246AbfLKMau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:30:50 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:40990 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728991AbfLKMau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:50 -0500
+Received: by mail-pj1-f65.google.com with SMTP id ca19so8893557pjb.8;
+        Wed, 11 Dec 2019 04:30:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rRqDcNnLG2JtDn1sPfTbToIau7rGU2D371JxWP2l1oM=;
-        b=UESBXhNhm/fU42wAN7zXRLTsX4kwyx6zTZgQhV1dxBYEa4/mIqhy2IjwGmeXrO8EvH
-         5RhSFWkccCZwqkm0DqWBIsVbuugTe1VUlRcyAZHYJnrFd4J4gGMJzWaFLY7Duf6YB4oV
-         f/K8/67nKnEACiVo419hg1S6CkowWdr2KwAAJ2+36JrHkZyz9g3MR3WsskJUkQnMSQBv
-         gXmCs27POgEkHlYWlfqhoADbvb33UoxDUkCL20iwGAc9XggbKyhDokgN1p7htv31T3w0
-         RW6nxRA4o9M7J6lszpfqUZiLuSJt52u509ZW3YOasSnBgLeYPh5BsRRsIQCUwH+wRpff
-         +5yA==
+        bh=K/y2oIRRhF2GBW1wRD/KjpZ9zXuv6w7I3mWnKh9t2ZU=;
+        b=vJRwHGqvy59IPawj6bQpV8FyCfmBzY+E7ub7kIeETvxV6o+pYC0qX2JYA8i0uOAvji
+         VgQP1bIocyKfUzrpOwKTkClea1Ih0fWdWnBxzJbtydG4ONHC1fESVECF+ZViXLjKP8zQ
+         Fgk+/iELZFHG5E89H6qkFOahJcVM7Pc4qfTpLZBRda05zkocT/yOPZdJS53a7L06RBdW
+         Upi7DNxDYeibjs1JDUtrClQxv69rlYYMG1v+Alh/AQVzVoERgA+/rD5r6Bdz8mhNFIKx
+         vbEMC5W6AY2O0LjuG7n0MLLrTWMC6ibwfDx9dIrTRcychLeLW0/mlKf4verubKrGb/xV
+         4H8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rRqDcNnLG2JtDn1sPfTbToIau7rGU2D371JxWP2l1oM=;
-        b=EZvvUT7bKWh/KDEsZPUj0gCBqs+lICcy49vZQ+RM1hqJJaS26ofmKNxi9X/bzqkiFD
-         vJJB7uS11gcem0sHjDi2qu7HNXgXcqrSXkDqMtLH6AZ+G3BRLPrkv2VMm8QW78XVPEVq
-         LGD81BJWcdo74BQhoCFP3/aAwFbPb1Xl/VjWD/8M1fGFvyQkPtzsfySYOzDiCk1z1Nua
-         GIfgQ97WPEqc7MEMC9+2OkwS0CLqqb8lpgovUHrrr3Hh/ndsQmoU6H9xFLQhERB3899y
-         iTsFXkcaYH1uYEgwx4mnAIAdUzrxi0FbS9Y1qwK3ssNyuaYbUNzB7fppdYi3cs80F/9W
-         yOeg==
-X-Gm-Message-State: APjAAAVXdSblfxcJhXquFnNRnFXcg5VWH173Al/NgkkCMg9iQBITHauj
-        RKKGpegxGcHzCx90cnj2uKnU0pSE4qefnA==
-X-Google-Smtp-Source: APXvYqwncnpLtyt/7duSUXkZX2hZEvBRGwh1IhPKcK5TNLkPWK2RE41bK1PHmbpxBR8yU0SmJEyYkQ==
-X-Received: by 2002:a65:654d:: with SMTP id a13mr3899460pgw.141.1576067445092;
-        Wed, 11 Dec 2019 04:30:45 -0800 (PST)
+        bh=K/y2oIRRhF2GBW1wRD/KjpZ9zXuv6w7I3mWnKh9t2ZU=;
+        b=dEsx0ouG1aGLvQR15uF+ZA+/UHME2N7bVkyoyFNQ78ws+i9eGZGUvAH7b89eRO280v
+         gWrCrIwEv9lerkEzWhkPWSqz/PUYPe2eJxjMRQ48Tt0C144Z+Kk8a26YbhqYPLz2oQJb
+         K+11qIxTzKZU6Ykkrwr5leUf5xQNnWJx9xay6sewinTqivHTX/bkQI9gtbK/HllDhKJw
+         twkcaNkq6StWvM4rkmUFwJFAEQA+zqR0IFdauYQNG1dBjd5VyE57oVXqEf7Kyq7Q4wbn
+         QMfyBRAnyMZeFB7BFRs/5WSV/pX/ASxAxSQw/61SfuYN0hL8TlivsLay6ESwkFTyiXTv
+         Z0uA==
+X-Gm-Message-State: APjAAAV1EJN5BHCJNi0kUDd6Sd/P+8TMQ2C3NVW6/w08OtNAIpytOyts
+        cDI6XuPI4uMfGfsWkU/qRBK68fYdi2uCIQ==
+X-Google-Smtp-Source: APXvYqxxtnCWE8cu/NEUexUt5k5pkDM1hI2TX3gzZRXJSHtKxg5Rm+SV3wlzxKYNPn335lNPyuBT7g==
+X-Received: by 2002:a17:902:6a82:: with SMTP id n2mr3011967plk.5.1576067448975;
+        Wed, 11 Dec 2019 04:30:48 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.41
+        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 04:30:44 -0800 (PST)
+        Wed, 11 Dec 2019 04:30:48 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -51,9 +51,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
         ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
         andrii.nakryiko@gmail.com
-Subject: [PATCH bpf-next v4 3/6] bpf, xdp: start using the BPF dispatcher for XDP
-Date:   Wed, 11 Dec 2019 13:30:14 +0100
-Message-Id: <20191211123017.13212-4-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v4 4/6] bpf: start using the BPF dispatcher in BPF_TEST_RUN
+Date:   Wed, 11 Dec 2019 13:30:15 +0100
+Message-Id: <20191211123017.13212-5-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191211123017.13212-1-bjorn.topel@gmail.com>
 References: <20191211123017.13212-1-bjorn.topel@gmail.com>
@@ -67,230 +67,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-This commit adds a BPF dispatcher for XDP. The dispatcher is updated
-from the XDP control-path, dev_xdp_install(), and used when an XDP
-program is run via bpf_prog_run_xdp().
+In order to properly exercise the BPF dispatcher, this commit adds BPF
+dispatcher usage to BPF_TEST_RUN when executing XDP programs.
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/linux/bpf.h    | 15 +++++++++++++++
- include/linux/filter.h | 40 ++++++++++++++++++++++++----------------
- kernel/bpf/syscall.c   | 26 ++++++++++++++++++--------
- net/core/dev.c         | 19 ++++++++++++++++++-
- net/core/filter.c      |  8 ++++++++
- 5 files changed, 83 insertions(+), 25 deletions(-)
+ net/bpf/test_run.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index e6a9d74d4e30..ed32b5d901a1 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -488,6 +488,14 @@ struct bpf_dispatcher {
- 	u32 image_off;
- };
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 915c2d6f7fb9..400f473c2541 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -15,7 +15,7 @@
+ #include <trace/events/bpf_test_run.h>
  
-+static __always_inline unsigned int bpf_dispatcher_nopfunc(
-+	const void *ctx,
-+	const struct bpf_insn *insnsi,
-+	unsigned int (*bpf_func)(const void *,
-+				 const struct bpf_insn *))
-+{
-+	return bpf_func(ctx, insnsi);
-+}
- #ifdef CONFIG_BPF_JIT
- struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
- int bpf_trampoline_link_prog(struct bpf_prog *prog);
-@@ -997,6 +1005,8 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
- 
- int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog);
- 
-+struct bpf_prog *bpf_prog_by_id(u32 id);
-+
- #else /* !CONFIG_BPF_SYSCALL */
- static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+-			u32 *retval, u32 *time)
++			u32 *retval, u32 *time, bool xdp)
  {
-@@ -1128,6 +1138,11 @@ static inline int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- static inline void bpf_map_put(struct bpf_map *map)
- {
- }
+ 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
+ 	enum bpf_cgroup_storage_type stype;
+@@ -41,7 +41,11 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 	time_start = ktime_get_ns();
+ 	for (i = 0; i < repeat; i++) {
+ 		bpf_cgroup_storage_set(storage);
+-		*retval = BPF_PROG_RUN(prog, ctx);
 +
-+static inline struct bpf_prog *bpf_prog_by_id(u32 id)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
- #endif /* CONFIG_BPF_SYSCALL */
++		if (xdp)
++			*retval = bpf_prog_run_xdp(prog, ctx);
++		else
++			*retval = BPF_PROG_RUN(prog, ctx);
  
- static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index a141cb07e76a..37ac7025031d 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -559,23 +559,26 @@ struct sk_filter {
+ 		if (signal_pending(current)) {
+ 			ret = -EINTR;
+@@ -359,7 +363,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 	ret = convert___skb_to_skb(skb, ctx);
+ 	if (ret)
+ 		goto out;
+-	ret = bpf_test_run(prog, skb, repeat, &retval, &duration);
++	ret = bpf_test_run(prog, skb, repeat, &retval, &duration, false);
+ 	if (ret)
+ 		goto out;
+ 	if (!is_l2) {
+@@ -416,8 +420,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
  
- DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- 
--#define BPF_PROG_RUN(prog, ctx)	({				\
--	u32 ret;						\
--	cant_sleep();						\
--	if (static_branch_unlikely(&bpf_stats_enabled_key)) {	\
--		struct bpf_prog_stats *stats;			\
--		u64 start = sched_clock();			\
--		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
--		stats = this_cpu_ptr(prog->aux->stats);		\
--		u64_stats_update_begin(&stats->syncp);		\
--		stats->cnt++;					\
--		stats->nsecs += sched_clock() - start;		\
--		u64_stats_update_end(&stats->syncp);		\
--	} else {						\
--		ret = (*(prog)->bpf_func)(ctx, (prog)->insnsi);	\
--	}							\
-+#define __BPF_PROG_RUN(prog, ctx, dfunc)	({			\
-+	u32 ret;							\
-+	cant_sleep();							\
-+	if (static_branch_unlikely(&bpf_stats_enabled_key)) {		\
-+		struct bpf_prog_stats *stats;				\
-+		u64 start = sched_clock();				\
-+		ret = dfunc(ctx, (prog)->insnsi, (prog)->bpf_func);	\
-+		stats = this_cpu_ptr(prog->aux->stats);			\
-+		u64_stats_update_begin(&stats->syncp);			\
-+		stats->cnt++;						\
-+		stats->nsecs += sched_clock() - start;			\
-+		u64_stats_update_end(&stats->syncp);			\
-+	} else {							\
-+		ret = dfunc(ctx, (prog)->insnsi, (prog)->bpf_func);	\
-+	}								\
- 	ret; })
- 
-+#define BPF_PROG_RUN(prog, ctx) __BPF_PROG_RUN(prog, ctx,		\
-+					       bpf_dispatcher_nopfunc)
-+
- #define BPF_SKB_CB_LEN QDISC_CB_PRIV_LEN
- 
- struct bpf_skb_data_end {
-@@ -699,6 +702,8 @@ static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
- 	return res;
- }
- 
-+DECLARE_BPF_DISPATCHER(bpf_dispatcher_xdp)
-+
- static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
- 					    struct xdp_buff *xdp)
- {
-@@ -708,9 +713,12 @@ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
- 	 * already takes rcu_read_lock() when fetching the program, so
- 	 * it's not necessary here anymore.
- 	 */
--	return BPF_PROG_RUN(prog, xdp);
-+	return __BPF_PROG_RUN(prog, xdp,
-+			      BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
- }
- 
-+void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog);
-+
- static inline u32 bpf_prog_insn_size(const struct bpf_prog *prog)
- {
- 	return prog->len * sizeof(struct bpf_insn);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e3461ec59570..1a67d468637b 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2305,17 +2305,12 @@ static int bpf_obj_get_next_id(const union bpf_attr *attr,
- 
- #define BPF_PROG_GET_FD_BY_ID_LAST_FIELD prog_id
- 
--static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
-+struct bpf_prog *bpf_prog_by_id(u32 id)
- {
- 	struct bpf_prog *prog;
--	u32 id = attr->prog_id;
--	int fd;
+ 	rxqueue = __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 0);
+ 	xdp.rxq = &rxqueue->xdp_rxq;
 -
--	if (CHECK_ATTR(BPF_PROG_GET_FD_BY_ID))
--		return -EINVAL;
- 
--	if (!capable(CAP_SYS_ADMIN))
--		return -EPERM;
-+	if (!id)
-+		return ERR_PTR(-ENOENT);
- 
- 	spin_lock_bh(&prog_idr_lock);
- 	prog = idr_find(&prog_idr, id);
-@@ -2324,7 +2319,22 @@ static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
- 	else
- 		prog = ERR_PTR(-ENOENT);
- 	spin_unlock_bh(&prog_idr_lock);
-+	return prog;
-+}
-+
-+static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
-+{
-+	struct bpf_prog *prog;
-+	u32 id = attr->prog_id;
-+	int fd;
-+
-+	if (CHECK_ATTR(BPF_PROG_GET_FD_BY_ID))
-+		return -EINVAL;
-+
-+	if (!capable(CAP_SYS_ADMIN))
-+		return -EPERM;
- 
-+	prog = bpf_prog_by_id(id);
- 	if (IS_ERR(prog))
- 		return PTR_ERR(prog);
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 2c277b8aba38..255d3cf35360 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8542,7 +8542,17 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 			   struct netlink_ext_ack *extack, u32 flags,
- 			   struct bpf_prog *prog)
- {
-+	bool non_hw = !(flags & XDP_FLAGS_HW_MODE);
-+	struct bpf_prog *prev_prog = NULL;
- 	struct netdev_bpf xdp;
-+	int err;
-+
-+	if (non_hw) {
-+		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op,
-+							   XDP_QUERY_PROG));
-+		if (IS_ERR(prev_prog))
-+			prev_prog = NULL;
-+	}
- 
- 	memset(&xdp, 0, sizeof(xdp));
- 	if (flags & XDP_FLAGS_HW_MODE)
-@@ -8553,7 +8563,14 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 	xdp.flags = flags;
- 	xdp.prog = prog;
- 
--	return bpf_op(dev, &xdp);
-+	err = bpf_op(dev, &xdp);
-+	if (!err && non_hw)
-+		bpf_prog_change_xdp(prev_prog, prog);
-+
-+	if (prev_prog)
-+		bpf_prog_put(prev_prog);
-+
-+	return err;
+-	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration);
++	bpf_prog_change_xdp(NULL, prog);
++	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
+ 	if (ret)
+ 		goto out;
+ 	if (xdp.data != data + XDP_PACKET_HEADROOM + NET_IP_ALIGN ||
+@@ -425,6 +429,7 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 		size = xdp.data_end - xdp.data;
+ 	ret = bpf_test_finish(kattr, uattr, xdp.data, size, retval, duration);
+ out:
++	bpf_prog_change_xdp(prog, NULL);
+ 	kfree(data);
+ 	return ret;
  }
- 
- static void dev_xdp_uninstall(struct net_device *dev)
-diff --git a/net/core/filter.c b/net/core/filter.c
-index f1e703eed3d2..a411f7835dee 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8940,3 +8940,11 @@ const struct bpf_verifier_ops sk_reuseport_verifier_ops = {
- const struct bpf_prog_ops sk_reuseport_prog_ops = {
- };
- #endif /* CONFIG_INET */
-+
-+DEFINE_BPF_DISPATCHER(bpf_dispatcher_xdp)
-+
-+void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog)
-+{
-+	bpf_dispatcher_change_prog(BPF_DISPATCHER_PTR(bpf_dispatcher_xdp),
-+				   prev_prog, prog);
-+}
 -- 
 2.20.1
 
