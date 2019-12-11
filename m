@@ -2,87 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F059011C0D6
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 00:53:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CB011C0E1
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 00:53:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbfLKXxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 18:53:30 -0500
-Received: from mout.web.de ([217.72.192.78]:59813 "EHLO mout.web.de"
+        id S1727336AbfLKXxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 18:53:46 -0500
+Received: from mout.web.de ([212.227.17.11]:36427 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727199AbfLKXx1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 18:53:27 -0500
+        id S1727226AbfLKXxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 18:53:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1576108388;
-        bh=QrCQqilrTouTgYj7yPQjXnTFJOK16++5KJ6q9dqCzuQ=;
+        s=dbaedf251592; t=1576108389;
+        bh=Jw3d/3FG5d2fs3pbP5cmR9tz+imTkB9FfgldNiz16/M=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=OZLDxo+YhfcGWOq2ZjW1XGmkZRwtMEa9B9St7EgXLEOMeHEizbtlijhXFLk/N0qoz
-         1+fJdbnjKSi2k+kVhlRJ+Ddd/mmBmYMibz10dF+1OBg6WKTPhoSbiod9KOofyA948D
-         emoZkjekJmVExY4VLQIVrf0OqIDqpZSxTWz1g1NQ=
+        b=QHfjrJCvhmuCCnSf1F/RiTE3u7NdGsOyiro4sUDoDIQ+BV6PzAODPhHh1Cl7rbGB8
+         8g2zq0CxIlQxFOZ0mVoVjj+Q1dN150ZDpr5DsCsqGUV2gw/Iy4detaBikD0SXnkeal
+         jfU6VBuWfOIv7zxNJOfScJziWrGpu8ob2L2xUIF0=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from localhost.localdomain ([89.204.139.166]) by smtp.web.de
  (mrweb101 [213.165.67.124]) with ESMTPSA (Nemesis) id
- 0MRl5x-1iGpH02iS1-00SxXf; Thu, 12 Dec 2019 00:53:07 +0100
+ 0Mhlmh-1iJYJC0mhf-00MwBd; Thu, 12 Dec 2019 00:53:09 +0100
 From:   Soeren Moch <smoch@web.de>
 To:     Kalle Valo <kvalo@codeaurora.org>, Heiko Stuebner <heiko@sntech.de>
-Cc:     Wright Feng <wright.feng@cypress.com>, Soeren Moch <smoch@web.de>,
+Cc:     Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Soeren Moch <smoch@web.de>,
         Arend van Spriel <arend.vanspriel@broadcom.com>,
         Franky Lin <franky.lin@broadcom.com>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/9] brcmfmac: reset two D11 cores if chip has two D11 cores
-Date:   Thu, 12 Dec 2019 00:52:45 +0100
-Message-Id: <20191211235253.2539-2-smoch@web.de>
+Subject: [PATCH v2 2/9] brcmfmac: set F2 blocksize and watermark for 4359
+Date:   Thu, 12 Dec 2019 00:52:46 +0100
+Message-Id: <20191211235253.2539-3-smoch@web.de>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191211235253.2539-1-smoch@web.de>
 References: <20191211235253.2539-1-smoch@web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Us4gcuk0RbKR4HQNOPkL/oiRL4tAdmkHERdAxq/8Wll6xa5unY6
- vc4ERbkOO1hBhlxdSovkzPZ9KF6ywGdKRjYa7y55CjUt/ifWRWTIps60cr3cl9ahlVyaxpL
- Nq2iiB7gOeo62Y4PROt4/1e7GCvb4gO+errOwi4IcUJX42eqY0n9VdPINUEI8dW7lXJf2ye
- Y8lk7+vzq15It0JcqoSFg==
+X-Provags-ID: V03:K1:vMAckOgNBxG6cLi2IX3dVxNnAjzrN9nQcd36iOgEGjn7lSyOXK0
+ nMmPQF96FpuS9n/OnUjpHNPcWxW8ctz5fO3ibNoNVUPj3EW+6zvheCwlxSOOoWs2gDf+gmY
+ p4EirClUV1rcJdk7pgxNeOvTWz8mX1eiqcst5vCJFqdAHlgxEYhaMFLTEBK2i2tiRaxBzO3
+ pyg4nxvbZPxpAHrGgvnZQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+88Ev/9dDg4=:z2IeWqdpeb4UiDzDXawSBY
- aGmsNDovtHG8mwxFuNhrq9OyZ/gUQOmAMlwyeiqOiyPVeKvbYpHS2WclK7O062I6pN8MQ9Sx1
- Lrk3EG8jTIo6Ba5x7E6hFNkE2JUhdwQ7Z1K6ymRWvLcUK3ANocVW7z3dP2ejwLfzA45hgoPi1
- F5Wokbc3wTCW/W8+HsaYOBz3Ik7EAtpcfFYqyqRrw/kCb/L9nI91b407JafIRdnt/duekI6sq
- X8mHk07N6xi3McZ/dWZUilbZtNjFx0/B7kVt5RqhTrci+V0fPZDqr8BJf9VjhzIDNFRW1PGYt
- b2HGNFBGluMKTldZNDT8phfSSIss1QfXdyMarIlZmMgXGvA/MLeQWfNQXlf6g5MFc5ve4TFnI
- QeAToxom+TMk/gj8D243yCeDGpIIdWvOvDqYhoJDlR+ibB8bpwy47rlVufYIB1yWm+iV7UlYZ
- RvcSS72+FN7QSNP4EkU0CKuSv9btbKC1tqWm2jgTeqWQAnQnCwX26MoPvjI9+vB/FFYclzVkM
- MksltDd3e6/MIHxNMPSVwHBomyucLipRt2jgMSgL8gUifILepUSLN9oDAUIudTOfMb3b1p2oM
- U5n8Z8Lh8ABCnFlb+6CG0miBqC2HrSTgvmaM2onU5MRHSCUopNuiyk83DdU9CCkgYT639e0O7
- L8XcjRvSa0TxsUu3h+0JdOu1BDpD4ZlckIvTXU+5UmEFCUokIeoRN4scySgqaINUOlAk5kB8+
- Q9BKn/9VgwWMfQYAwBdcsR/SpqdspfkCT7b5SarpkvQzHU3x7npAHgQZ2bIy37vf/d32lDufe
- dLPvVjb5ZhulNO5nTrWfe6jIvNdxBXCMR24ODnJ85EXh0RHJy1sV2j5zf8VXeh/2e7i34Gw4U
- 2R4jE3mwPBIKKZp6mUa5dE1DVyCGE7Pw10cVbAe2a4c5vhd/I24f7w55RFChaNLGEhXG7J/Bq
- lRsI+1yABHbXTL28NG8zSLRboH9GN9gpfZreuzSZEPThPKv2QW9lzUs6gN3sNHYxdIs/rYpte
- nsCQ4rY5l9gAslr1HMDnnbPujEkpM3/bBS5aJ9TChVjVs/BNfDv6mCB5IJ2KCggfoIPRhQRFG
- uqCE/eToDktOZ1czy6n/wQyM3yTWFH5zu0gr54Gu5MHpHv4hx3A0M+uVM+9lzeLaHI9ore98M
- fDZU3r2s0muCJ7UC1rNn+e+zQ5ZQAPnzrQUADrdWJaJdtexNlcig2I+VuvRxnFLfTwFgXq1t9
- di3sCBWONCqTgyshjaj1kaT2cFCc/oDCh/9NYVQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Jm6PikBj8do=:bhZOh8ji0Cm3PXLd8vpAhB
+ c7KTXi1ITKNxCijfIlhgJKvVQDYDAgkGWFdQSKy8WVmVRRXjzTWL5dkSRcpZbYZT/kCdMcv5E
+ cNSQdgYK9OoY0+QUPV9M6+5lAymFlzhjrWU0y/umHkgscJK/l68t/ge+xV3POxR16m3yKl7gd
+ T0AU3Mgz18RmHQkB4gvRZQFaVjhOpjZSkEALjU6Iy7ZaupVXQdtoVYtU7YSe/9KFNOlYkj/Qe
+ O3mcXMoWArV1bPPx17Q3cKaW2i6ChTMC/jQ72Yvi6YRe0EhXtioF3tmX/LSJ39ooaE4pAImRG
+ ndHMqmA/IRXkgv3jlUo15fPBeexloNFrLg3B5pbHm93CtWSEHTVAcBzKAltK62RA5mMEr4+cO
+ Y4BXPf/v13ZlWDcYmg1w82o7cNvdfTY8EFaOBLDjqK1jJUescVSc8NRlVyhsoJIPvUcXOzfmU
+ WzR3GUagJ3/fyh7xa9+SNFjYsFJHVcQHB3nidL3DRYLpLXFYNKR/n4YJU5ijEFPDW7xkN7t1l
+ DWfMyWI1bptx9yK9LIxdqp0fFTQN8cD/qhsYm8bhpwK5Pn6FRvDdGpat8Waa63I0pwwcopikT
+ cAsvWGN4c1iPzgGFNE/qOtxMMrqL/l3Hls/oPoSnV4uixQnBxq/Sr5iLaFUiv2pP8z1H88nmb
+ AarpNGmk52LtFUOR0qKhO+BbhVIWbXCbb5ZGHxF9GA5nDR3dcRXWmNiUvxCTUYEoU6hFIw8jQ
+ 8TvU7ShRQGjZP+vkv2XBVSzzui4MdrIRyLF8OZh0UgLbWB9tZY+inDhGDa9InOmK6Zn5mCzKs
+ kDs4RY/KRp/OvNeOSDgnGuP3yGa06aWA08lfMkhnGYrbLdRRNvcrXLc2RjcbtD/T1WAGZdD3L
+ LFYaaq+YmEHK8+AnSb8rmAbor0ynGp0bLYpo02c3kKEVKToJ4QvjbzROrOmiNYn/bhdxIn2ML
+ ku8R3r/eRwZzOMVfVoAR/soNZiV2eXN5VWj5aPvRwpCKiy0Xieo30PYkIvapF8asgJ/IoD9bQ
+ 1ho9MkOstO/z4yfARCHWHePoYq2FaymEsO0tKpr+J5FMbsC7lPoPoVKvq3FfHUFDbWfyz/j08
+ YcpsQ05Po3tDeao9xyk0cO2kZ2kA25ic2TeifPRDQow9ogTTTSYhJCrREBtQ3wljTE9g0MG0L
+ 9N2Rw16Oitu46gwY4aR3zUIlM6itQMAuZF1Imj1Zrbj2dk1Ha00y/U9Id/PqaUSR1JB4ifYan
+ N5MNtNk3cmZwBbpmRKtsp9azFnviVwGUl/Yy3vw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wright Feng <wright.feng@cypress.com>
+From: Chung-Hsien Hsu <stanley.hsu@cypress.com>
 
-There are two D11 cores in RSDB chips like 4359. We have to reset two
-D11 cores simutaneously before firmware download, or the firmware may
-not be initialized correctly and cause "fw initialized failed" error.
+Set F2 blocksize to 256 bytes and watermark to 0x40 for 4359. Also
+enable and configure F1 MesBusyCtrl. It fixes DMA error while having
+UDP bi-directional traffic.
 
-Signed-off-by: Wright Feng <wright.feng@cypress.com>
+Signed-off-by: Chung-Hsien Hsu <stanley.hsu@cypress.com>
+[slightly adapted for rebase on mainline linux]
 Signed-off-by: Soeren Moch <smoch@web.de>
 Reviewed-by: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
 =2D--
 changes in v2:
-- add missing s-o-b
 - add review tag received for v1
 
 Cc: Kalle Valo <kvalo@codeaurora.org>
@@ -100,129 +102,80 @@ Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-rockchip@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 =2D--
- .../broadcom/brcm80211/brcmfmac/chip.c        | 50 +++++++++++++++++++
- .../broadcom/brcm80211/brcmfmac/chip.h        |  1 +
- .../broadcom/brcm80211/brcmfmac/pcie.c        |  2 +-
- 3 files changed, 52 insertions(+), 1 deletion(-)
+ .../wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c |  6 +++++-
+ .../wireless/broadcom/brcm80211/brcmfmac/sdio.c   | 15 +++++++++++++++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/dri=
-vers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index a795d781b4c5..0b5fbe5d8270 100644
-=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -433,11 +433,25 @@ static void brcmf_chip_ai_resetcore(struct brcmf_cor=
-e_priv *core, u32 prereset,
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/d=
+rivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+index 96fd8e2bf773..68baf0189305 100644
+=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -43,6 +43,7 @@
+
+ #define SDIO_FUNC1_BLOCKSIZE		64
+ #define SDIO_FUNC2_BLOCKSIZE		512
++#define SDIO_4359_FUNC2_BLOCKSIZE	256
+ /* Maximum milliseconds to wait for F2 to come up */
+ #define SDIO_WAIT_F2RDY	3000
+
+@@ -903,6 +904,7 @@ static void brcmf_sdiod_host_fixup(struct mmc_host *ho=
+st)
+ static int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
  {
- 	struct brcmf_chip_priv *ci;
- 	int count;
-+	struct brcmf_core *d11core2 =3D NULL;
-+	struct brcmf_core_priv *d11priv2 =3D NULL;
+ 	int ret =3D 0;
++	unsigned int f2_blksz =3D SDIO_FUNC2_BLOCKSIZE;
 
- 	ci =3D core->chip;
+ 	sdio_claim_host(sdiodev->func1);
 
-+	/* special handle two D11 cores reset */
-+	if (core->pub.id =3D=3D BCMA_CORE_80211) {
-+		d11core2 =3D brcmf_chip_get_d11core(&ci->pub, 1);
-+		if (d11core2) {
-+			brcmf_dbg(INFO, "found two d11 cores, reset both\n");
-+			d11priv2 =3D container_of(d11core2,
-+						struct brcmf_core_priv, pub);
-+		}
-+	}
-+
- 	/* must disable first to work for arbitrary current core state */
- 	brcmf_chip_ai_coredisable(core, prereset, reset);
-+	if (d11priv2)
-+		brcmf_chip_ai_coredisable(d11priv2, prereset, reset);
-
- 	count =3D 0;
- 	while (ci->ops->read32(ci->ctx, core->wrapbase + BCMA_RESET_CTL) &
-@@ -449,9 +463,30 @@ static void brcmf_chip_ai_resetcore(struct brcmf_core=
-_priv *core, u32 prereset,
- 		usleep_range(40, 60);
+@@ -912,7 +914,9 @@ static int brcmf_sdiod_probe(struct brcmf_sdio_dev *sd=
+iodev)
+ 		sdio_release_host(sdiodev->func1);
+ 		goto out;
  	}
+-	ret =3D sdio_set_block_size(sdiodev->func2, SDIO_FUNC2_BLOCKSIZE);
++	if (sdiodev->func2->device =3D=3D SDIO_DEVICE_ID_BROADCOM_4359)
++		f2_blksz =3D SDIO_4359_FUNC2_BLOCKSIZE;
++	ret =3D sdio_set_block_size(sdiodev->func2, f2_blksz);
+ 	if (ret) {
+ 		brcmf_err("Failed to set F2 blocksize\n");
+ 		sdio_release_host(sdiodev->func1);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/dri=
+vers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 264ad63232f8..21e535072f3f 100644
+=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -42,6 +42,8 @@
+ #define DEFAULT_F2_WATERMARK    0x8
+ #define CY_4373_F2_WATERMARK    0x40
+ #define CY_43012_F2_WATERMARK    0x60
++#define CY_4359_F2_WATERMARK	0x40
++#define CY_4359_F1_MESBUSYCTRL	(CY_4359_F2_WATERMARK | SBSDIO_MESBUSYCTRL=
+_ENAB)
 
-+	if (d11priv2) {
-+		count =3D 0;
-+		while (ci->ops->read32(ci->ctx,
-+				       d11priv2->wrapbase + BCMA_RESET_CTL) &
-+				       BCMA_RESET_CTL_RESET) {
-+			ci->ops->write32(ci->ctx,
-+					 d11priv2->wrapbase + BCMA_RESET_CTL,
-+					 0);
-+			count++;
-+			if (count > 50)
-+				break;
-+			usleep_range(40, 60);
-+		}
-+	}
-+
- 	ci->ops->write32(ci->ctx, core->wrapbase + BCMA_IOCTL,
- 			 postreset | BCMA_IOCTL_CLK);
- 	ci->ops->read32(ci->ctx, core->wrapbase + BCMA_IOCTL);
-+
-+	if (d11priv2) {
-+		ci->ops->write32(ci->ctx, d11priv2->wrapbase + BCMA_IOCTL,
-+				 postreset | BCMA_IOCTL_CLK);
-+		ci->ops->read32(ci->ctx, d11priv2->wrapbase + BCMA_IOCTL);
-+	}
- }
+ #ifdef DEBUG
 
- char *brcmf_chip_name(u32 id, u32 rev, char *buf, uint len)
-@@ -1109,6 +1144,21 @@ void brcmf_chip_detach(struct brcmf_chip *pub)
- 	kfree(chip);
- }
-
-+struct brcmf_core *brcmf_chip_get_d11core(struct brcmf_chip *pub, u8 unit=
-)
-+{
-+	struct brcmf_chip_priv *chip;
-+	struct brcmf_core_priv *core;
-+
-+	chip =3D container_of(pub, struct brcmf_chip_priv, pub);
-+	list_for_each_entry(core, &chip->cores, list) {
-+		if (core->pub.id =3D=3D BCMA_CORE_80211) {
-+			if (unit-- =3D=3D 0)
-+				return &core->pub;
-+		}
-+	}
-+	return NULL;
-+}
-+
- struct brcmf_core *brcmf_chip_get_core(struct brcmf_chip *pub, u16 coreid=
-)
- {
- 	struct brcmf_chip_priv *chip;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.h b/dri=
-vers/net/wireless/broadcom/brcm80211/brcmfmac/chip.h
-index 7b00f6a59e89..8fa38658e727 100644
-=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.h
-@@ -74,6 +74,7 @@ struct brcmf_chip *brcmf_chip_attach(void *ctx,
- 				     const struct brcmf_buscore_ops *ops);
- void brcmf_chip_detach(struct brcmf_chip *chip);
- struct brcmf_core *brcmf_chip_get_core(struct brcmf_chip *chip, u16 corei=
-d);
-+struct brcmf_core *brcmf_chip_get_d11core(struct brcmf_chip *pub, u8 unit=
-);
- struct brcmf_core *brcmf_chip_get_chipcommon(struct brcmf_chip *chip);
- struct brcmf_core *brcmf_chip_get_pmu(struct brcmf_chip *pub);
- bool brcmf_chip_iscoreup(struct brcmf_core *core);
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/dri=
-vers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index f64ce5074a55..7ac72804e285 100644
-=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -78,7 +78,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fw=
-names[] =3D {
- 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
- };
-
--#define BRCMF_PCIE_FW_UP_TIMEOUT		2000 /* msec */
-+#define BRCMF_PCIE_FW_UP_TIMEOUT		5000 /* msec */
-
- #define BRCMF_PCIE_REG_MAP_SIZE			(32 * 1024)
-
+@@ -4205,6 +4207,19 @@ static void brcmf_sdio_firmware_callback(struct dev=
+ice *dev, int err,
+ 			brcmf_sdiod_writeb(sdiod, SBSDIO_DEVICE_CTL, devctl,
+ 					   &err);
+ 			break;
++		case SDIO_DEVICE_ID_BROADCOM_4359:
++			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes\n",
++				  CY_4359_F2_WATERMARK);
++			brcmf_sdiod_writeb(sdiod, SBSDIO_WATERMARK,
++					   CY_4359_F2_WATERMARK, &err);
++			devctl =3D brcmf_sdiod_readb(sdiod, SBSDIO_DEVICE_CTL,
++						   &err);
++			devctl |=3D SBSDIO_DEVCTL_F2WM_ENAB;
++			brcmf_sdiod_writeb(sdiod, SBSDIO_DEVICE_CTL, devctl,
++					   &err);
++			brcmf_sdiod_writeb(sdiod, SBSDIO_FUNC1_MESBUSYCTRL,
++					   CY_4359_F1_MESBUSYCTRL, &err);
++			break;
+ 		default:
+ 			brcmf_sdiod_writeb(sdiod, SBSDIO_WATERMARK,
+ 					   DEFAULT_F2_WATERMARK, &err);
 =2D-
 2.17.1
 
