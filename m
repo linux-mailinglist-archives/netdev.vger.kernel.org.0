@@ -2,79 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D27CD11AD29
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:18:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3A711AD16
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:12:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729790AbfLKOSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 09:18:05 -0500
-Received: from mailgw02.mediatek.com ([216.200.240.185]:34817 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729671AbfLKOSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:18:05 -0500
-X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 09:18:05 EST
-X-UUID: 8624b81f66794d988dc55291a6f9872d-20191211
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=Axc6RlNHq3r5/GnAxxkyvJrrLbwxm4JZnBh/iubqg2g=;
-        b=WbANH9bYzqKU4Qs01Ukn8js+r5f8MbEjNt2YUOmrd+4dH1EUWHoeSRT23noh7xATcAUgWLA0dOpeNHH3ePSVC9qHWwXaczN1czCLKJrJyVlH2UuxGNiz7jkRrogCHYsyPgVjOVqQDdx5NbI5YWP9MN2xMuxagFE77qgsR4MXu6g=;
-X-UUID: 8624b81f66794d988dc55291a6f9872d-20191211
-Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 118975065; Wed, 11 Dec 2019 06:12:55 -0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- MTKMBS62N2.mediatek.inc (172.29.193.42) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 11 Dec 2019 06:11:45 -0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Wed, 11 Dec 2019 22:10:42 +0800
-Message-ID: <1576073444.23763.11.camel@mtksdccf07>
-Subject: Re: [PATCH net-next 3/6] dt-bindings: net: dsa: add new MT7531
- binding to support MT7531
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "opensource@vdorst.com" <opensource@vdorst.com>,
-        "frank-w@public-files.de" <frank-w@public-files.de>
-Date:   Wed, 11 Dec 2019 22:10:44 +0800
-In-Reply-To: <20191210162010.GB27714@lunn.ch>
-References: <cover.1575914275.git.landen.chao@mediatek.com>
-         <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
-         <20191210162010.GB27714@lunn.ch>
+        id S1729755AbfLKOMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 09:12:40 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:55060 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727554AbfLKOMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:12:39 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1if2jB-004BxT-Uz; Wed, 11 Dec 2019 15:12:34 +0100
+Message-ID: <b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net>
+Subject: Re: iwlwifi warnings in 5.5-rc1
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Date:   Wed, 11 Dec 2019 15:12:31 +0100
+In-Reply-To: <87r21bez5g.fsf@toke.dk>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk>
+         <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
+         <878snjgs5l.fsf@toke.dk>
+         <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net>
+         <875zingnzt.fsf@toke.dk>
+         <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
+         <14bbfcc8408500704c46701251546e7ff65c6fd0.camel@sipsolutions.net>
+         <87r21bez5g.fsf@toke.dk>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQW5kcmV3LA0KDQpPbiBXZWQsIDIwMTktMTItMTEgYXQgMDA6MjAgKzA4MDAsIEFuZHJldyBM
-dW5uIHdyb3RlOg0KPiA+ICtFeGFtcGxlIDQ6DQo+ID4gKw0KPiA+ICsmZXRoIHsNCj4gPiArCWdt
-YWMwOiBtYWNAMCB7DQo+ID4gKwkJY29tcGF0aWJsZSA9ICJtZWRpYXRlayxldGgtbWFjIjsNCj4g
-PiArCQlyZWcgPSA8MD47DQo+ID4gKwkJcGh5LW1vZGUgPSAiMjUwMGJhc2UteCI7DQo+ID4gKw0K
-PiA+ICsJCWZpeGVkLWxpbmsgew0KPiA+ICsJCQlzcGVlZCA9IDwxMDAwPjsNCj4gPiArCQkJZnVs
-bC1kdXBsZXg7DQo+ID4gKwkJCXBhdXNlOw0KPiA+ICsJCX07DQo+ID4gKwl9Ow0KPiANCj4gMjUw
-MEJhc2UtWCwgYnV0IGZpeGVkIGxpbmsgc3BlZWQgMTAwMD8NCmZpeGVkLWxpbmsgc3BlZWQgc2hv
-dWxkIGJlIDI1MDAuIEkgd2lsbCB1cGRhdGUgaXQuDQo+IA0KPiA+ICsJCQkJcG9ydEA2IHsNCj4g
-PiArCQkJCQlyZWcgPSA8Nj47DQo+ID4gKwkJCQkJbGFiZWwgPSAiY3B1IjsNCj4gPiArCQkJCQll
-dGhlcm5ldCA9IDwmZ21hYzA+Ow0KPiA+ICsJCQkJCXBoeS1tb2RlID0gIjI1MDBiYXNlLXgiOw0K
-PiA+ICsNCj4gPiArCQkJCQlmaXhlZC1saW5rIHsNCj4gPiArCQkJCQkJc3BlZWQgPSA8MTAwMD47
-DQo+ID4gKwkJCQkJCWZ1bGwtZHVwbGV4Ow0KPiA+ICsJCQkJCQlwYXVzZTsNCj4gPiArCQkJCQl9
-Ow0KPiANCj4gU2FtZSBoZXJlIQ0KSSB3aWxsIHVwZGF0ZSBpdCBvciByZW1vdmUgZml4ZWQtbGlu
-ayBibG9jayBhcyB0aGUgZGlzY3Vzc2lvbiBpbiBkdHMNCnRocmVhZC4NCj4gDQo+ICAgICAgQW5k
-cmV3DQoNCnJlZ2FyZHMgTGFuZGVuDQo=
+On Wed, 2019-12-11 at 15:04 +0100, Toke Høiland-Jørgensen wrote:
+> Johannes Berg <johannes@sipsolutions.net> writes:
+> 
+> > Btw, there's *another* issue. You said in the commit log:
+> > 
+> >     This patch does *not* include any mechanism to wake a throttled TXQ again,
+> >     on the assumption that this will happen anyway as a side effect of whatever
+> >     freed the skb (most commonly a TX completion).
+> > 
+> > Thinking about this some more, I'm not convinced that this assumption
+> > holds. You could have been stopped due to the global limit, and now you
+> > wake some queue but the TXQ is empty - now you should reschedule some
+> > *other* TXQ since the global limit had kicked in, not the per-TXQ limit,
+> > and prevented dequeuing, no?
+> 
+> Well if you hit the global limit that means you have 24ms worth of data
+> queued in the hardware; those should be completed in turn, and enable
+> more to be dequeued, no?
+
+Yes, but on which queues?
+
+Say you have some queues - some (Q1-Qn) got a LOT of traffic, and
+another (Q0) just has some interactive traffic.
+
+You could then end up in a situation where you have 24ms queued up on
+Q1-Qn (with n high enough to not have hit the per-queue AQL limit),
+right?
+
+Say also the last frame on Q0 was dequeued by the hardware, but the
+tx_dequeue() got NULL because of the AQL limit having been eaten up by
+all the packets on Q1-Qn.
+
+Now you'll no longer get a new dequeue attempt on Q0 (it was already
+empty last time, so no hardware reclaim to trigger new dequeues), and a
+new dequeue on the *other* queues will not do anything for this queue.
+
+johannes
 
