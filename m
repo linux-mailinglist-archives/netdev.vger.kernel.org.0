@@ -2,69 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 445D911BA5A
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:32:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D656D11BA61
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730630AbfLKRcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 12:32:24 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:37032 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730284AbfLKRcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:32:24 -0500
-Received: by mail-qk1-f195.google.com with SMTP id m188so20369738qkc.4;
-        Wed, 11 Dec 2019 09:32:23 -0800 (PST)
+        id S1730112AbfLKReI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:34:08 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:44308 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727185AbfLKReH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:34:07 -0500
+Received: by mail-qt1-f194.google.com with SMTP id g17so6941828qtp.11
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 09:34:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y74W7ds/oFSqwevvK+SoBp1jmUpvfeeCvpHuniIjFnI=;
-        b=ga2dZfSN+dgMxCb7+mr0MXMi4VZEM4Kbl2ZHFI55U7CSELZlckhDsuxYeaAyUcLllD
-         0pMTWWi9heBvi+CDF2TuO2cjXEszibIByTzP1pX6UqrvQc4yhBVGPdarnCr7Pn1j0jjR
-         +WWPbzCRC3yQs5uSknCMFKjAz8906bulU0calnoiZCJwhnb+Wn2BVBC9ewN+s+wyQicm
-         KBZA7chwUtzR+DEMpUum576m7n1Tozm82FmJ2KJm2q7ZTdhwK5PbOyX82yRRf3aYyJLU
-         2P1QJWPg//B9rFaoi6LhmpEP2WbB3QNzDJsHvoNUA3jqBathx9ygFm+lIrtrsSdZ6Le/
-         WkRQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=50RL1Ys/g/CuCeM3SVK9XV7OUSks1WfgsTp0U7DnZzc=;
+        b=R9q/6Ou/CAHHtcuYNMyvf4w96c3glEQrds/C0aHHA8O23NQpaL1pVuygwpRFEiaeiH
+         E+hnAZGJAhBAfoihTjUWB+4ehL3CJ+cPkCIElljkbCoyYcZ3iUhq8k3EamFFw3kjFjtw
+         pxdcwTyUxE3juoVLeckmzhvL6n87MGvz2gGVw70MpxS0LWwcEUFHugQ+y4xQT7La8F8A
+         9XWaCUi+v3IWAsfny7RVg9wWlb4Ax4IdKPwne+kKrq5wazlLNur/tfeuH0ComJrsjiq4
+         t6YKn+9LXGAzpW4ecZaMBN3wCr5uQFbppYLnsq2WgIKSP85qNKWaDlWu5MnmUgRArcW1
+         GaZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y74W7ds/oFSqwevvK+SoBp1jmUpvfeeCvpHuniIjFnI=;
-        b=QuZaTnjIEcJgKRO8h4ottdeSehHUofip46GDXxrDRZ/ckVtFpuaD7++UR9lt6whCoV
-         kx6weU7OR7ww+SSQxBs/tlD1M+a0syN2y1CsPfrm5V8LhrC7CZXBxOkeV1e+vvTXXxKa
-         M0xNjO2xf0JoHVDYwQPWomIiLk6ws2P1mrRNvBwNYSzxy+9nRP5pkXTpNg8Yr9HkKupv
-         0f1/+MN/0vMpSL5zoVg19uclWfmWx394XtqJlwOXYfMcABPy3C8GrdNAQqerTYVC/yn4
-         DLUHvKtsWmM0QJhRGJAWnZzmTY97zU+qw8WAEBmf/a6v/OFcK5tvOuaOeFIdtJqy9zoz
-         XlBA==
-X-Gm-Message-State: APjAAAVyt4yggMj2SVUH1omPJZS/zYUVYU1MYYm8IU3FRcwxvPs5H5wb
-        CgTak+g2nwen6vsIZIp7RKW7Upj5jyP2RJW+gUU=
-X-Google-Smtp-Source: APXvYqzeKrfttwoz7uCUCmS3pptZ2DRwu3fNc1/S/9GLlDtRYDRGVejZaLAuSslD9Gvd1luGOeT1OpV0LeGyZbWXyBc=
-X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr4123300qkq.437.1576085543078;
- Wed, 11 Dec 2019 09:32:23 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=50RL1Ys/g/CuCeM3SVK9XV7OUSks1WfgsTp0U7DnZzc=;
+        b=jOqmddkFXRlMhUBGpUf+MmHhq+kFM5C2PZLBZkL2+kA7PTn5YhuUFdrJPKcpXhB/rf
+         lLkaKtJBwzujqs7Mx5VonV8CB9l44GtVsQDHvCwaZNVCCf4s+IpgQeoSSa4knrz4xW6U
+         8NQcNEEXHpFSawkZKrUp85see4kKdwXEdaYeZY6Plo/kt9/qr+qFFTzBbSiIemezG+vK
+         XS+kznCtxTIH6CplIDzy9mT3O6+iwFhDCNwMZRQ7ky1n3aES392lJFC9wbU3H8KEJsaW
+         5HJIqNj4heffj1ASVShIcpI//fxQWlAP0Ed/IfpUZwsbnkIEzNbbzcfjviEBpJxo9yNZ
+         wswg==
+X-Gm-Message-State: APjAAAWKqHg5yWnnD+gyXS4wM/OV5jwRJMgRghmauuDZ+u9tYDcV7Htg
+        wqm11h/7MMvItW9rVhyZJd4=
+X-Google-Smtp-Source: APXvYqyN9ymuHg5wOg767UL3vWa0i7SyEyh47XEflWVmSf2F4PPYZAWok3CKdUuPEDFkNpmYyKdGzA==
+X-Received: by 2002:ac8:470d:: with SMTP id f13mr3522106qtp.330.1576085646849;
+        Wed, 11 Dec 2019 09:34:06 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:79bb:41c5:ccad:6884? ([2601:282:800:fd80:79bb:41c5:ccad:6884])
+        by smtp.googlemail.com with ESMTPSA id r205sm330820qke.34.2019.12.11.09.34.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Dec 2019 09:34:06 -0800 (PST)
+Subject: Re: [PATCH net-next 2/9] ipv4: Notify route after insertion to the
+ routing table
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, roopa@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20191210172402.463397-1-idosch@idosch.org>
+ <20191210172402.463397-3-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e22981b7-8411-dd94-3f57-64f30647ec44@gmail.com>
+Date:   Wed, 11 Dec 2019 10:34:04 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <20191209224022.3544519-1-andriin@fb.com> <20191211135703.GB25011@linux.fritz.box>
-In-Reply-To: <20191211135703.GB25011@linux.fritz.box>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Dec 2019 09:32:12 -0800
-Message-ID: <CAEf4BzZjAiWkYdCwDyE-vy4zdO6j461m1Wj5qKffRrzfFj1G_A@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: Bump libpf current version to v0.0.7
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191210172402.463397-3-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 5:57 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Mon, Dec 09, 2019 at 02:40:22PM -0800, Andrii Nakryiko wrote:
-> > New development cycles starts, bump to v0.0.7 proactively.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Subject says 'bpf', but I applied this to bpf-next, thanks!
+On 12/10/19 10:23 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Currently, a new route is notified in the FIB notification chain before
+> it is inserted to the FIB alias list.
+> 
+> Subsequent patches will use the placement of the new route in the
+> ordered FIB alias list in order to determine if the route should be
+> notified or not.
+> 
+> As a preparatory step, change the order so that the route is first
+> inserted into the FIB alias list and only then notified.
+> 
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  net/ipv4/fib_trie.c | 29 ++++++++++++++---------------
+>  1 file changed, 14 insertions(+), 15 deletions(-)
+> 
 
-Oh, my bad, was intending against bpf-next, of course. Thanks for fixing up!
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
+
