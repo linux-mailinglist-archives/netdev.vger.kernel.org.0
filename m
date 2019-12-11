@@ -2,82 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CED11BA96
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB6F511BACA
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730693AbfLKRqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 12:46:19 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44835 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730370AbfLKRqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:46:19 -0500
-Received: by mail-pl1-f194.google.com with SMTP id bh2so1688303plb.11
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 09:46:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=pH/MeUG6U+PeUxo9WVjeAv7eJhTh2CljY/V4Bq5aQrg=;
-        b=kYMXVcJ2MmQZdtM9JZaPTil1JZheXrYs23mYC69S6zmXRcHSfpZsJPt6rEL9vttNtn
-         dEe4qklWZzLYeP/P4Cz76chLn01UBoS9rm/8Wo0nhHEmPF9kI8b56CnYIj4V+y6dpGXy
-         8Xupa0nGeyIIqQjbl2IE+5pVLMrA7d/YIRxyUfoQL9trGcLKAgW12BAX/rW3JU7GPOhI
-         VASDTUw4jpb4ld4zjrIforLTO0jNts2hpL51iEmjS50Y4Rz81/NiOghTj/lUWc2f8y/9
-         mUtXLN+6HVDIn5JAcKPzXPjmxtjR+r49EDs6MZrQmg+ZCE0mb7+kra4gc5CAjZxdzVK3
-         xHWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pH/MeUG6U+PeUxo9WVjeAv7eJhTh2CljY/V4Bq5aQrg=;
-        b=Fo83tAvd7ncVGg2OQCrMRNrdy8SejaMbzKHvV4KQrgHCAqtCjgVRiwuJbDovGqLP+n
-         EAdC+wk7moTykhTxQIBXRr0YSe7CkWAbMsIsIIPue5h6FlrVvHRo9YVE35J8h1DnEHYK
-         90BNd4AkzcfUvaQTRVZJMMV1PBu6lFTmn+0hXInA6k74wAaEfOGU/Ott0jkRFmOrfG3A
-         nk/uESnY7ODV8FAAx5dIP4l3pEmNPyxdeGd5cG0nLCLJX1hPnJ5mzF1Mh4k8hKpP4muX
-         IPurHUr34eg9HpD/sCzEnxdCnvKxwhUaLRvvHgmpyzBPGB6mFOeOGofXM1aEPw3Lpblj
-         mkXA==
-X-Gm-Message-State: APjAAAX4c2Vh114TPwHo96VsIL5zBASqaZ0wdIVwNuCqseElsgggGQTG
-        LGkOWRegsDRD/OrhccNnqPLSSg==
-X-Google-Smtp-Source: APXvYqwME9tYryxKSlnBP/bHZxeWLRFSR9tVq3Iri7kK2Qq3DliCuRtE83dE03NyiazxAsu/4P2i8w==
-X-Received: by 2002:a17:90a:ba08:: with SMTP id s8mr4651030pjr.69.1576086378371;
-        Wed, 11 Dec 2019 09:46:18 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 16sm3788242pfh.182.2019.12.11.09.46.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 09:46:18 -0800 (PST)
-Date:   Wed, 11 Dec 2019 09:46:15 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 0/5] ethtool netlink interface, preliminary
- part
-Message-ID: <20191211094615.79cb56bc@cakuba.netronome.com>
-In-Reply-To: <cover.1576057593.git.mkubecek@suse.cz>
-References: <cover.1576057593.git.mkubecek@suse.cz>
-Organization: Netronome Systems, Ltd.
+        id S1730835AbfLKR6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:58:02 -0500
+Received: from mailgw02.mediatek.com ([216.200.240.185]:41887 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729228AbfLKR6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:58:02 -0500
+X-UUID: 62157b23eeb545c7ab86c1fe8c47aeb5-20191211
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=u7qv1t+UEdcZ3p9avQ8ygs4s73dg8OSg8iN56BmCOVg=;
+        b=pfltpKZnVgfgvpFUQxqIxY0veuIleO4Ge2hVHVj5TRDVqWu0xtE0EUSqsQAYLqHYfPyZ2m2f5ZlZwE26Le74VT+Bu4WuBj2YyPmmlSF38TWsWMJXeC43255okcdazeonO0x8R15xhQJx4tla1DDHBdjSGnfKu5xNDkixsXm/r/s=;
+X-UUID: 62157b23eeb545c7ab86c1fe8c47aeb5-20191211
+Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
+        (envelope-from <landen.chao@mediatek.com>)
+        (musrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1466117543; Wed, 11 Dec 2019 09:58:00 -0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 11 Dec 2019 09:48:35 -0800
+Received: from [172.21.84.99] (172.21.84.99) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Thu, 12 Dec 2019 01:47:31 +0800
+Message-ID: <1576086486.23763.61.camel@mtksdccf07>
+Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of
+ MT7531 switch
+From:   Landen Chao <landen.chao@mediatek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@savoirfairelinux.com" 
+        <vivien.didelot@savoirfairelinux.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        "opensource@vdorst.com" <opensource@vdorst.com>,
+        "frank-w@public-files.de" <frank-w@public-files.de>
+Date:   Thu, 12 Dec 2019 01:48:06 +0800
+In-Reply-To: <20191210164855.GE27714@lunn.ch>
+References: <cover.1575914275.git.landen.chao@mediatek.com>
+         <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
+         <20191210164855.GE27714@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 10:58:09 +0100 (CET), Michal Kubecek wrote:
-> As Jakub Kicinski suggested in ethtool netlink v7 discussion, this
-> submission consists only of preliminary patches which raised no objections;
-> first four patches already have Acked-by or Reviewed-by.
-> 
-> - patch 1 exposes permanent hardware address (as shown by "ethtool -P")
->   via rtnetlink
-> - patch 2 is renames existing netlink helper to a better name
-> - patch 3 and 4 reorganize existing ethtool code (no functional change)
-> - patch 5 makes the table of link mode names available as an ethtool string
->   set (will be needed for the netlink interface) 
+T24gV2VkLCAyMDE5LTEyLTExIGF0IDAwOjQ4ICswODAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+PiArc3RhdGljIGludCBtdDc1MzFfc2V0dXAoc3RydWN0IGRzYV9zd2l0Y2ggKmRzKQ0KPiA+ICt7
+DQo+ID4gKwkvKiBFbmFibGUgUEhZIHBvd2VyLCBzaW5jZSBwaHlfZGV2aWNlIGhhcyBub3QgeWV0
+IGJlZW4gY3JlYXRlZA0KPiA+ICsJICogcHJvdmlkZWQgZm9yIHBoeV9bcmVhZCx3cml0ZV1fbW1k
+X2luZGlyZWN0IGlzIGNhbGxlZCwgd2UgcHJvdmlkZQ0KPiA+ICsJICogb3VyIG93biBtdDc1MzFf
+aW5kX21tZF9waHlfW3JlYWQsd3JpdGVdIHRvIGNvbXBsZXRlIHRoaXMNCj4gPiArCSAqIGZ1bmN0
+aW9uLg0KPiA+ICsJICovDQo+ID4gKwl2YWwgPSBtdDc1MzFfaW5kX21tZF9waHlfcmVhZChwcml2
+LCAwLCBQSFlfREVWMUYsDQo+ID4gKwkJCQkgICAgICBNVDc1MzFfUEhZX0RFVjFGX1JFR180MDMp
+Ow0KPiA+ICsJdmFsIHw9IE1UNzUzMV9QSFlfRU5fQllQQVNTX01PREU7DQo+ID4gKwl2YWwgJj0g
+fk1UNzUzMV9QSFlfUE9XRVJfT0ZGOw0KPiA+ICsJbXQ3NTMxX2luZF9tbWRfcGh5X3dyaXRlKHBy
+aXYsIDAsIFBIWV9ERVYxRiwNCj4gPiArCQkJCSBNVDc1MzFfUEhZX0RFVjFGX1JFR180MDMsIHZh
+bCk7DQo+ID4gKw0KPiANCj4gSXMgdGhpcyBwb3dlciB0byBhbGwgdGhlIFBIWXM/IE9yIGp1c3Qg
+b25lPw0KVGhpcyBpcyBhbiBpbnRlcm5hbCBjaXJjdWl0IHRoYXQgY29udHJvbHMgdGhlIHBvd2Vy
+IHRvIGFsbCBQSFlzIGJlZm9yZQ0KR2VuZXJpYyBNSUkgcmVnaXN0ZXJzIGFyZSBhdmFpbGFibGUu
+DQoNCkxhbmRlbg0KPiANCj4gICAgQW5kcmV3DQoNCg==
 
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
