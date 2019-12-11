@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A140E11A95E
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D662D11A95F
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:57:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728935AbfLKK44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 05:56:56 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39576 "EHLO
+        id S1728947AbfLKK5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 05:57:02 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39588 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728912AbfLKK44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 05:56:56 -0500
+        with ESMTP id S1728912AbfLKK5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 05:57:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=etzwZVRhMpN+omMe2ZF6rOcLqrShIcCFRn567H2BAhk=; b=MjH+kyRUIdGeZVoo7FP7cOwfZN
-        fJ36OWjTse2uTtRUUKjLjzCsUdrA+OlGappYg66OnC9iE5kyqtJCtIFPrvRLjYVyoyNJdEpdZrTZb
-        5OHgMywtDVwKnQ8OKkJRuOL7dx68AiauUyAR0zJgociuoa6sVLpBafAUq0Cs9ey+Pg3Pj5ufS/74s
-        mKzd9vDjSNqf2+GY4UiW125P00xun/iJYRmO/0zams8NU7O1rndBUKPihrpAeLCPsx9GK2m8VHCqm
-        0WgMEK41ZzzCIr4veVmyULQNuGZ0QvEXemTF7HK9wEgUwMceR5WUYJPxeZoMzQ/632+xkFcV7+ZUw
-        xbjlcJVQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:44556 helo=rmk-PC.armlinux.org.uk)
+        bh=/EAL+fd1v6lkI51XEnNBUfraZUHH9hRvM8U6GxcUANc=; b=A4Xahe65Ibl05WkEOMR5DJaZf3
+        DN2wZMHxbQ+qkhMLk6DH7lDPtzGv/IKkB9D+pC0CO4XWn4QU8FmzMI52pJNuPwv6VkZq+IY4Eyzkq
+        yzoWxFsfN3Q2+LMAijzvGQd5A+gFAshnvHPxXcBNWayjymZHDJP1qkzjNDA7aSLKcUMgalKYewSjV
+        pR8blXIocBVOSfCUN6K0nFJxDGqufuZbARRepZMMwPhhozdl/7OMe1H3JhQZBHr/V/4LOgJt3b1XC
+        93DiqNJ409J65hnpTnEqnhgPRi2Un6HS7s9ME8K5S+bblH2xpYmDpNEBGs+fjJee04PW6HLkR52mJ
+        l0yvsZUw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:56746 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iezfZ-0007vH-Pe; Wed, 11 Dec 2019 10:56:38 +0000
+        id 1iezfe-0007vO-TV; Wed, 11 Dec 2019 10:56:43 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iezfX-0002yY-Ei; Wed, 11 Dec 2019 10:56:35 +0000
+        id 1iezfc-0002yf-JE; Wed, 11 Dec 2019 10:56:40 +0000
 In-Reply-To: <20191211104821.GB25745@shell.armlinux.org.uk>
 References: <20191211104821.GB25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,273 +38,137 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 09/14] net: phylink: split link_an_mode configured
- and current settings
+Subject: [PATCH net-next v3 10/14] net: phylink: split
+ phylink_sfp_module_insert()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iezfX-0002yY-Ei@rmk-PC.armlinux.org.uk>
-Date:   Wed, 11 Dec 2019 10:56:35 +0000
+Message-Id: <E1iezfc-0002yf-JE@rmk-PC.armlinux.org.uk>
+Date:   Wed, 11 Dec 2019 10:56:40 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split link_an_mode between the configured setting and the current
-operating setting.  This is an important distinction to make when we
-need to configure PHY mode for a plugged SFP+ module that does not
-use in-band signalling.
+Split out the configuration step from phylink_sfp_module_insert() so
+we can re-use this later.
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 59 ++++++++++++++++++++-------------------
- 1 file changed, 31 insertions(+), 28 deletions(-)
+ drivers/net/phy/phylink.c | 47 +++++++++++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 370c9fcb0cda..6ee9bcbf8283 100644
+index 6ee9bcbf8283..a7717d70fade 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -48,7 +48,8 @@ struct phylink {
- 	unsigned long phylink_disable_state; /* bitmask of disables */
- 	struct phy_device *phydev;
- 	phy_interface_t link_interface;	/* PHY_INTERFACE_xxx */
--	u8 link_an_mode;		/* MLO_AN_xxx */
-+	u8 cfg_link_an_mode;		/* MLO_AN_xxx */
-+	u8 cur_link_an_mode;
- 	u8 link_port;			/* The current non-phy ethtool port */
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
- 
-@@ -256,12 +257,12 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 
- 	dn = fwnode_get_named_child_node(fwnode, "fixed-link");
- 	if (dn || fwnode_property_present(fwnode, "fixed-link"))
--		pl->link_an_mode = MLO_AN_FIXED;
-+		pl->cfg_link_an_mode = MLO_AN_FIXED;
- 	fwnode_handle_put(dn);
- 
- 	if (fwnode_property_read_string(fwnode, "managed", &managed) == 0 &&
- 	    strcmp(managed, "in-band-status") == 0) {
--		if (pl->link_an_mode == MLO_AN_FIXED) {
-+		if (pl->cfg_link_an_mode == MLO_AN_FIXED) {
- 			phylink_err(pl,
- 				    "can't use both fixed-link and in-band-status\n");
- 			return -EINVAL;
-@@ -273,7 +274,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 		phylink_set(pl->supported, Asym_Pause);
- 		phylink_set(pl->supported, Pause);
- 		pl->link_config.an_enabled = true;
--		pl->link_an_mode = MLO_AN_INBAND;
-+		pl->cfg_link_an_mode = MLO_AN_INBAND;
- 
- 		switch (pl->link_config.interface) {
- 		case PHY_INTERFACE_MODE_SGMII:
-@@ -333,14 +334,14 @@ static void phylink_mac_config(struct phylink *pl,
- {
- 	phylink_dbg(pl,
- 		    "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
--		    __func__, phylink_an_mode_str(pl->link_an_mode),
-+		    __func__, phylink_an_mode_str(pl->cur_link_an_mode),
- 		    phy_modes(state->interface),
- 		    phy_speed_to_str(state->speed),
- 		    phy_duplex_to_str(state->duplex),
- 		    __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
- 		    state->pause, state->link, state->an_enabled);
- 
--	pl->ops->mac_config(pl->config, pl->link_an_mode, state);
-+	pl->ops->mac_config(pl->config, pl->cur_link_an_mode, state);
+@@ -1687,25 +1687,21 @@ static void phylink_sfp_detach(void *upstream, struct sfp_bus *bus)
+ 	pl->netdev->sfp_bus = NULL;
  }
  
- static void phylink_mac_config_up(struct phylink *pl,
-@@ -441,7 +442,7 @@ static void phylink_mac_link_up(struct phylink *pl,
- 	struct net_device *ndev = pl->netdev;
- 
- 	pl->cur_interface = link_state.interface;
--	pl->ops->mac_link_up(pl->config, pl->link_an_mode,
-+	pl->ops->mac_link_up(pl->config, pl->cur_link_an_mode,
- 			     pl->phy_state.interface,
- 			     pl->phydev);
- 
-@@ -461,7 +462,7 @@ static void phylink_mac_link_down(struct phylink *pl)
- 
- 	if (ndev)
- 		netif_carrier_off(ndev);
--	pl->ops->mac_link_down(pl->config, pl->link_an_mode,
-+	pl->ops->mac_link_down(pl->config, pl->cur_link_an_mode,
- 			       pl->cur_interface);
- 	phylink_info(pl, "Link is Down\n");
- }
-@@ -480,7 +481,7 @@ static void phylink_resolve(struct work_struct *w)
- 	} else if (pl->mac_link_dropped) {
- 		link_state.link = false;
- 	} else {
--		switch (pl->link_an_mode) {
-+		switch (pl->cur_link_an_mode) {
- 		case MLO_AN_PHY:
- 			link_state = pl->phy_state;
- 			phylink_resolve_flow(pl, &link_state);
-@@ -648,7 +649,7 @@ struct phylink *phylink_create(struct phylink_config *config,
- 		return ERR_PTR(ret);
- 	}
- 
--	if (pl->link_an_mode == MLO_AN_FIXED) {
-+	if (pl->cfg_link_an_mode == MLO_AN_FIXED) {
- 		ret = phylink_parse_fixedlink(pl, fwnode);
- 		if (ret < 0) {
- 			kfree(pl);
-@@ -656,6 +657,8 @@ struct phylink *phylink_create(struct phylink_config *config,
- 		}
- 	}
- 
-+	pl->cur_link_an_mode = pl->cfg_link_an_mode;
-+
- 	ret = phylink_register_sfp(pl, fwnode);
- 	if (ret < 0) {
- 		kfree(pl);
-@@ -769,8 +772,8 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
- static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
- 			      phy_interface_t interface)
+-static int phylink_sfp_module_insert(void *upstream,
+-				     const struct sfp_eeprom_id *id)
++static int phylink_sfp_config(struct phylink *pl, u8 mode, u8 port,
++			      const unsigned long *supported,
++			      const unsigned long *advertising)
  {
--	if (WARN_ON(pl->link_an_mode == MLO_AN_FIXED ||
--		    (pl->link_an_mode == MLO_AN_INBAND &&
-+	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED ||
-+		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
- 		     phy_interface_mode_is_8023z(interface))))
- 		return -EINVAL;
+-	struct phylink *pl = upstream;
+-	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(support1);
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(support);
+ 	struct phylink_link_state config;
+ 	phy_interface_t iface;
+-	int ret = 0;
+ 	bool changed;
+-	u8 port;
+-
+-	ASSERT_RTNL();
++	int ret;
  
-@@ -837,8 +840,8 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
- 	int ret;
+-	sfp_parse_support(pl->sfp_bus, id, support);
+-	port = sfp_parse_port(pl->sfp_bus, id, support);
++	linkmode_copy(support, supported);
  
- 	/* Fixed links and 802.3z are handled without needing a PHY */
--	if (pl->link_an_mode == MLO_AN_FIXED ||
--	    (pl->link_an_mode == MLO_AN_INBAND &&
-+	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
-+	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
- 	     phy_interface_mode_is_8023z(pl->link_interface)))
- 		return 0;
- 
-@@ -849,7 +852,7 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
- 		phy_node = of_parse_phandle(dn, "phy-device", 0);
- 
- 	if (!phy_node) {
--		if (pl->link_an_mode == MLO_AN_PHY)
-+		if (pl->cfg_link_an_mode == MLO_AN_PHY)
- 			return -ENODEV;
- 		return 0;
+ 	memset(&config, 0, sizeof(config));
+-	linkmode_copy(config.advertising, support);
++	linkmode_copy(config.advertising, advertising);
+ 	config.interface = PHY_INTERFACE_MODE_NA;
+ 	config.speed = SPEED_UNKNOWN;
+ 	config.duplex = DUPLEX_UNKNOWN;
+@@ -1720,8 +1716,6 @@ static int phylink_sfp_module_insert(void *upstream,
+ 		return ret;
  	}
-@@ -912,7 +915,7 @@ int phylink_fixed_state_cb(struct phylink *pl,
- 	/* It does not make sense to let the link be overriden unless we use
- 	 * MLO_AN_FIXED
- 	 */
--	if (pl->link_an_mode != MLO_AN_FIXED)
-+	if (pl->cfg_link_an_mode != MLO_AN_FIXED)
- 		return -EINVAL;
  
- 	mutex_lock(&pl->state_mutex);
-@@ -962,7 +965,7 @@ void phylink_start(struct phylink *pl)
- 	ASSERT_RTNL();
- 
- 	phylink_info(pl, "configuring for %s/%s link mode\n",
--		     phylink_an_mode_str(pl->link_an_mode),
-+		     phylink_an_mode_str(pl->cur_link_an_mode),
- 		     phy_modes(pl->link_config.interface));
- 
- 	/* Always set the carrier off */
-@@ -985,7 +988,7 @@ void phylink_start(struct phylink *pl)
- 	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
- 	phylink_run_resolve(pl);
- 
--	if (pl->link_an_mode == MLO_AN_FIXED && pl->link_gpio) {
-+	if (pl->cfg_link_an_mode == MLO_AN_FIXED && pl->link_gpio) {
- 		int irq = gpiod_to_irq(pl->link_gpio);
- 
- 		if (irq > 0) {
-@@ -1000,7 +1003,7 @@ void phylink_start(struct phylink *pl)
- 		if (irq <= 0)
- 			mod_timer(&pl->link_poll, jiffies + HZ);
+-	linkmode_copy(support1, support);
+-
+ 	iface = sfp_select_interface(pl->sfp_bus, config.advertising);
+ 	if (iface == PHY_INTERFACE_MODE_NA) {
+ 		phylink_err(pl,
+@@ -1731,18 +1725,18 @@ static int phylink_sfp_module_insert(void *upstream,
  	}
--	if (pl->link_an_mode == MLO_AN_FIXED && pl->get_fixed_state)
-+	if (pl->cfg_link_an_mode == MLO_AN_FIXED && pl->get_fixed_state)
- 		mod_timer(&pl->link_poll, jiffies + HZ);
- 	if (pl->phydev)
- 		phy_start(pl->phydev);
-@@ -1127,7 +1130,7 @@ int phylink_ethtool_ksettings_get(struct phylink *pl,
  
- 	linkmode_copy(kset->link_modes.supported, pl->supported);
+ 	config.interface = iface;
++	linkmode_copy(support1, support);
+ 	ret = phylink_validate(pl, support1, &config);
+ 	if (ret) {
+ 		phylink_err(pl, "validation of %s/%s with support %*pb failed: %d\n",
+-			    phylink_an_mode_str(MLO_AN_INBAND),
++			    phylink_an_mode_str(mode),
+ 			    phy_modes(config.interface),
+ 			    __ETHTOOL_LINK_MODE_MASK_NBITS, support, ret);
+ 		return ret;
+ 	}
  
--	switch (pl->link_an_mode) {
-+	switch (pl->cur_link_an_mode) {
- 	case MLO_AN_FIXED:
- 		/* We are using fixed settings. Report these as the
- 		 * current link settings - and note that these also
-@@ -1199,7 +1202,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 		/* If we have a fixed link (as specified by firmware), refuse
- 		 * to change link parameters.
- 		 */
--		if (pl->link_an_mode == MLO_AN_FIXED &&
-+		if (pl->cur_link_an_mode == MLO_AN_FIXED &&
- 		    (s->speed != pl->link_config.speed ||
- 		     s->duplex != pl->link_config.duplex))
- 			return -EINVAL;
-@@ -1211,7 +1214,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 		__clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, config.advertising);
- 	} else {
- 		/* If we have a fixed link, refuse to enable autonegotiation */
--		if (pl->link_an_mode == MLO_AN_FIXED)
-+		if (pl->cur_link_an_mode == MLO_AN_FIXED)
- 			return -EINVAL;
+ 	phylink_dbg(pl, "requesting link mode %s/%s with support %*pb\n",
+-		    phylink_an_mode_str(MLO_AN_INBAND),
+-		    phy_modes(config.interface),
++		    phylink_an_mode_str(mode), phy_modes(config.interface),
+ 		    __ETHTOOL_LINK_MODE_MASK_NBITS, support);
  
- 		config.speed = SPEED_UNKNOWN;
-@@ -1253,7 +1256,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 	 * configuration. For a fixed link, this isn't able to change any
- 	 * parameters, which just leaves inband mode.
- 	 */
--	if (pl->link_an_mode == MLO_AN_INBAND &&
-+	if (pl->cur_link_an_mode == MLO_AN_INBAND &&
- 	    !test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {
- 		phylink_mac_config(pl, &pl->link_config);
- 		phylink_mac_an_restart(pl);
-@@ -1343,7 +1346,7 @@ int phylink_ethtool_set_pauseparam(struct phylink *pl,
- 				   pause->tx_pause);
- 	} else if (!test_bit(PHYLINK_DISABLE_STOPPED,
- 			     &pl->phylink_disable_state)) {
--		switch (pl->link_an_mode) {
-+		switch (pl->cur_link_an_mode) {
- 		case MLO_AN_FIXED:
- 			/* Should we allow fixed links to change against the config? */
- 			phylink_resolve_flow(pl, config);
-@@ -1550,7 +1553,7 @@ static int phylink_mii_read(struct phylink *pl, unsigned int phy_id,
- 	struct phylink_link_state state;
- 	int val = 0xffff;
- 
--	switch (pl->link_an_mode) {
-+	switch (pl->cur_link_an_mode) {
- 	case MLO_AN_FIXED:
- 		if (phy_id == 0) {
- 			phylink_get_fixed_state(pl, &state);
-@@ -1578,7 +1581,7 @@ static int phylink_mii_read(struct phylink *pl, unsigned int phy_id,
- static int phylink_mii_write(struct phylink *pl, unsigned int phy_id,
- 			     unsigned int reg, unsigned int val)
- {
--	switch (pl->link_an_mode) {
-+	switch (pl->cur_link_an_mode) {
- 	case MLO_AN_FIXED:
- 		break;
- 
-@@ -1751,10 +1754,10 @@ static int phylink_sfp_module_insert(void *upstream,
+ 	if (phy_interface_mode_is_8023z(iface) && pl->phydev)
+@@ -1754,15 +1748,15 @@ static int phylink_sfp_module_insert(void *upstream,
  		linkmode_copy(pl->link_config.advertising, config.advertising);
  	}
  
--	if (pl->link_an_mode != MLO_AN_INBAND ||
-+	if (pl->cur_link_an_mode != MLO_AN_INBAND ||
+-	if (pl->cur_link_an_mode != MLO_AN_INBAND ||
++	if (pl->cur_link_an_mode != mode ||
  	    pl->link_config.interface != config.interface) {
  		pl->link_config.interface = config.interface;
--		pl->link_an_mode = MLO_AN_INBAND;
-+		pl->cur_link_an_mode = MLO_AN_INBAND;
+-		pl->cur_link_an_mode = MLO_AN_INBAND;
++		pl->cur_link_an_mode = mode;
  
  		changed = true;
  
+ 		phylink_info(pl, "switched to %s/%s link mode\n",
+-			     phylink_an_mode_str(MLO_AN_INBAND),
++			     phylink_an_mode_str(mode),
+ 			     phy_modes(config.interface));
+ 	}
+ 
+@@ -1775,6 +1769,21 @@ static int phylink_sfp_module_insert(void *upstream,
+ 	return ret;
+ }
+ 
++static int phylink_sfp_module_insert(void *upstream,
++				     const struct sfp_eeprom_id *id)
++{
++	struct phylink *pl = upstream;
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
++	u8 port;
++
++	ASSERT_RTNL();
++
++	sfp_parse_support(pl->sfp_bus, id, support);
++	port = sfp_parse_port(pl->sfp_bus, id, support);
++
++	return phylink_sfp_config(pl, MLO_AN_INBAND, port, support, support);
++}
++
+ static int phylink_sfp_module_start(void *upstream)
+ {
+ 	struct phylink *pl = upstream;
 -- 
 2.20.1
 
