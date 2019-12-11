@@ -2,73 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2775311A90A
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F5E11A928
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 11:42:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbfLKKip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 05:38:45 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:40482 "EHLO cstnet.cn"
+        id S1729021AbfLKKmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 05:42:44 -0500
+Received: from mx2.suse.de ([195.135.220.15]:59588 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727496AbfLKKip (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 05:38:45 -0500
-X-Greylist: delayed 419 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 05:38:43 EST
-Received: from localhost.localdomain (unknown [159.226.5.100])
-        by APP-01 (Coremail) with SMTP id qwCowACnrrp+xfBdniUxAw--.217S3;
-        Wed, 11 Dec 2019 18:31:27 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     peppe.cavallaro@st.com
-Cc:     alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] stmmac: platform: Remove unnecessary conditions
-Date:   Wed, 11 Dec 2019 10:31:24 +0000
-Message-Id: <1576060284-12371-1-git-send-email-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: qwCowACnrrp+xfBdniUxAw--.217S3
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFyrAFWDCw1UWF4DZr45Awb_yoWDAwcE93
-        W29FnxGF1UJF90kw47Kr43ur92vFyDuF1rJF1DXFW3A34kXas8JFZ8uryUA3WxC342vF9r
-        Gwn3KF17A3sxGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbw8YjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I
-        3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxV
-        WUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAF
-        wI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcI
-        k0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_
-        Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07je1v3UUUUU=
-X-Originating-IP: [159.226.5.100]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBAoBA102SyGETgAAsH
+        id S1728030AbfLKKmn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 05:42:43 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id D483FB178;
+        Wed, 11 Dec 2019 10:42:38 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id F3EB81E0B23; Wed, 11 Dec 2019 11:42:36 +0100 (CET)
+Date:   Wed, 11 Dec 2019 11:42:36 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v9 20/25] powerpc: book3s64: convert to pin_user_pages()
+ and put_user_page()
+Message-ID: <20191211104236.GM1551@quack2.suse.cz>
+References: <20191211025318.457113-1-jhubbard@nvidia.com>
+ <20191211025318.457113-21-jhubbard@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191211025318.457113-21-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove conditions where if and else branch are identical.
-This issue is detected by coccinelle.
+On Tue 10-12-19 18:53:13, John Hubbard wrote:
+> 1. Convert from get_user_pages() to pin_user_pages().
+> 
+> 2. As required by pin_user_pages(), release these pages via
+> put_user_page().
+> 
+> Cc: Jan Kara <jack@suse.cz>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 --
- 1 file changed, 2 deletions(-)
+The patch looks good to me. You can add:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index bedaff0..1d26691 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -229,8 +229,6 @@ static int stmmac_mtl_setup(struct platform_device *pdev,
- 		plat->tx_sched_algorithm = MTL_TX_ALGORITHM_WFQ;
- 	else if (of_property_read_bool(tx_node, "snps,tx-sched-dwrr"))
- 		plat->tx_sched_algorithm = MTL_TX_ALGORITHM_DWRR;
--	else if (of_property_read_bool(tx_node, "snps,tx-sched-sp"))
--		plat->tx_sched_algorithm = MTL_TX_ALGORITHM_SP;
- 	else
- 		plat->tx_sched_algorithm = MTL_TX_ALGORITHM_SP;
- 
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+I'd just note that mm_iommu_do_alloc() has a pre-existing bug that the last
+jump to 'free_exit' (at line 157) happens already after converting page
+pointers to physical addresses so put_page() calls there will just crash.
+But that's completely unrelated to your change. I'll send a fix separately.
+
+								Honza
+
+> ---
+>  arch/powerpc/mm/book3s64/iommu_api.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
+> index 56cc84520577..a86547822034 100644
+> --- a/arch/powerpc/mm/book3s64/iommu_api.c
+> +++ b/arch/powerpc/mm/book3s64/iommu_api.c
+> @@ -103,7 +103,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
+>  	for (entry = 0; entry < entries; entry += chunk) {
+>  		unsigned long n = min(entries - entry, chunk);
+>  
+> -		ret = get_user_pages(ua + (entry << PAGE_SHIFT), n,
+> +		ret = pin_user_pages(ua + (entry << PAGE_SHIFT), n,
+>  				FOLL_WRITE | FOLL_LONGTERM,
+>  				mem->hpages + entry, NULL);
+>  		if (ret == n) {
+> @@ -167,9 +167,8 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
+>  	return 0;
+>  
+>  free_exit:
+> -	/* free the reference taken */
+> -	for (i = 0; i < pinned; i++)
+> -		put_page(mem->hpages[i]);
+> +	/* free the references taken */
+> +	put_user_pages(mem->hpages, pinned);
+>  
+>  	vfree(mem->hpas);
+>  	kfree(mem);
+> @@ -215,7 +214,8 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
+>  		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
+>  			SetPageDirty(page);
+>  
+> -		put_page(page);
+> +		put_user_page(page);
+> +
+>  		mem->hpas[i] = 0;
+>  	}
+>  }
+> -- 
+> 2.24.0
+> 
 -- 
-2.7.4
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
