@@ -2,116 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC6A11BCCC
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4014511BCDB
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:26:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728122AbfLKTXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 14:23:09 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:42942 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726487AbfLKTXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:23:09 -0500
-Received: by mail-oi1-f196.google.com with SMTP id j22so14271541oij.9;
-        Wed, 11 Dec 2019 11:23:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bCTr7fmrdCM12DG9npwXco6rWsJDAoPjlBHUqV/P72g=;
-        b=Yu3O0jeojH9Zes6n3MGhRv6Z2hJetFnAU0HFzlmpIeQ8tXn5icPQNhoDBNAfiDjYi+
-         C4qFwFSudaOksvVtGhfIi3a7yjQ7Lvx/FjlpKW4eVFQzsJZa9NPBjLJ7O9RQzMHp8axa
-         K1OqSEFo60qKYj0d1CwGYjFadxgSp1iY0J/HrrGXkgIAlNZkUc6M0beuVU0PeBqT3gCO
-         H3lKCqhvE1EPBRccaubq0e4EUy5Q4W7eSYx8xTUGF209Ee/IXh4KvwRuJUlLohhCVEIh
-         O4ydXScx5up4u3BoBOT6DgCOoQsOswD/dhDFe60lmoq2CVtHZwWYhXokBqVvRRg1VriV
-         TFLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bCTr7fmrdCM12DG9npwXco6rWsJDAoPjlBHUqV/P72g=;
-        b=N8lGH1kBmkb7z6yWBwL9eXcXdiSlnbjDKDfuVzitz4uSMKkgjVjE8q+/FN0zHvgv8i
-         h50gAHS539MVq2ZUL25UXZBiRJ2gT2lFx4IAEEnlxaqhcC/z8Zi0iCoWpNmG9dq9dD77
-         sIyOTq+UvC0wXr3zKD7vv5Gy7uNPzjcxnH4UmGpID521u+Y1ca7f9l2wtgviIKu52fCD
-         vI75Y71hp5wtkRabPzsAfz1UtbUjuAmZWurC9P2Wmv1InvJmc3J5Zg4lSWO8ezh7lkK1
-         Ne3y+eyBOOcP+FS+KwoPBonxivZlaq6xjtifuJGBjICOkCA0XF9qa9PWyfqcMYovtVPj
-         EOeg==
-X-Gm-Message-State: APjAAAXn+1GPKuwDoCRJ0oJ2/UH6gAv/pXZ6Dfb1QIQQu4cc9p0ylQzI
-        UMSQwsu3HiZtxyu1kLM8aQ0=
-X-Google-Smtp-Source: APXvYqyUDGwkPUj7a4qQgGxJBjJeSklRA8D/d1M6Ib+kCUZaHC8bp/tqkEhAmR7AONWoA/pnQT2REQ==
-X-Received: by 2002:a54:4407:: with SMTP id k7mr4200950oiw.56.1576092188199;
-        Wed, 11 Dec 2019 11:23:08 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id a74sm1112930oii.37.2019.12.11.11.23.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 11:23:07 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] ath11k: Remove unnecessary enum scan_priority
-Date:   Wed, 11 Dec 2019 12:22:52 -0700
-Message-Id: <20191211192252.35024-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S1728122AbfLKT0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 14:26:49 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:41726 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726487AbfLKT0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:26:49 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBBJQZHR028165
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:26:47 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=K0RrwVZy1Ew2s3ZKlJhzN539TlzDFyQxMnfZtLLQn+M=;
+ b=pcPyWxwsTvcg2jt7x6XTEDYulx5h4N+6H9ft++Z0hZuyL4xIOmZ4OSLslEpn4HtxF2C2
+ 5ZSnkaJnw1w5vN+EQsSCfZe0dhwAU88vMft5e0fX14/9WobpLSNsF1DQo9mODPV2b2Yy
+ lMWAQ8d1OOJ09Ic0lkfvmDfltrSd6wPhJBM= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wu2gf1b10-16
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:26:47 -0800
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 11 Dec 2019 11:26:36 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 100432EC1D4F; Wed, 11 Dec 2019 11:26:35 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: fix printf compilation warnings on ppc64le arch
+Date:   Wed, 11 Dec 2019 11:26:34 -0800
+Message-ID: <20191211192634.402675-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-11_06:2019-12-11,2019-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ bulkscore=0 suspectscore=8 priorityscore=1501 impostorscore=0
+ malwarescore=0 lowpriorityscore=0 spamscore=0 clxscore=1015
+ mlxlogscore=952 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912110160
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
+respectively. This causes compiler to emit warning when %lld/%llu are used to
+printf 64-bit numbers. Fix this by casting directly to unsigned long long
+(through shorter typedef). In few cases casting error code to int explicitly
+is cleaner, so that's what's done instead.
 
-drivers/net/wireless/ath/ath11k/wmi.c:1827:23: warning: implicit
-conversion from enumeration type 'enum wmi_scan_priority' to different
-enumeration type 'enum scan_priority' [-Wenum-conversion]
-        arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
-                           ~ ^~~~~~~~~~~~~~~~~~~~~
-1 warning generated.
-
-wmi_scan_priority and scan_priority have the same values but the wmi one
-has WMI prefixed to the names. Since that enum is already being used,
-get rid of scan_priority and switch its one use to wmi_scan_priority to
-fix this warning.
-
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Link: https://github.com/ClangBuiltLinux/linux/issues/808
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Fixes: 1f8e2bcb2cd5 ("libbpf: Refactor relocation handling")
+Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- drivers/net/wireless/ath/ath11k/wmi.h | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ tools/lib/bpf/libbpf.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 4a518d406bc5..756101656391 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.h
-+++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -2896,15 +2896,6 @@ struct wmi_bcn_offload_ctrl_cmd {
- 	u32 bcn_ctrl_op;
- } __packed;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 3f09772192f1..5ee54f9355a4 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -128,6 +128,8 @@ void libbpf_print(enum libbpf_print_level level, const char *format, ...)
+ # define LIBBPF_ELF_C_READ_MMAP ELF_C_READ
+ #endif
  
--enum scan_priority {
--	SCAN_PRIORITY_VERY_LOW,
--	SCAN_PRIORITY_LOW,
--	SCAN_PRIORITY_MEDIUM,
--	SCAN_PRIORITY_HIGH,
--	SCAN_PRIORITY_VERY_HIGH,
--	SCAN_PRIORITY_COUNT,
--};
--
- enum scan_dwelltime_adaptive_mode {
- 	SCAN_DWELL_MODE_DEFAULT = 0,
- 	SCAN_DWELL_MODE_CONSERVATIVE = 1,
-@@ -3056,7 +3047,7 @@ struct scan_req_params {
- 	u32 scan_req_id;
- 	u32 vdev_id;
- 	u32 pdev_id;
--	enum scan_priority scan_priority;
-+	enum wmi_scan_priority scan_priority;
- 	union {
- 		struct {
- 			u32 scan_ev_started:1,
++typedef unsigned long long __pu64;
++
+ static inline __u64 ptr_to_u64(const void *ptr)
+ {
+ 	return (__u64) (unsigned long) ptr;
+@@ -1242,15 +1244,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
+ 			}
+ 			sz = btf__resolve_size(obj->btf, t->type);
+ 			if (sz < 0) {
+-				pr_warn("map '%s': can't determine key size for type [%u]: %lld.\n",
+-					map_name, t->type, sz);
++				pr_warn("map '%s': can't determine key size for type [%u]: %d.\n",
++					map_name, t->type, (int)sz);
+ 				return sz;
+ 			}
+-			pr_debug("map '%s': found key [%u], sz = %lld.\n",
+-				 map_name, t->type, sz);
++			pr_debug("map '%s': found key [%u], sz = %d.\n",
++				 map_name, t->type, (int)sz);
+ 			if (map->def.key_size && map->def.key_size != sz) {
+-				pr_warn("map '%s': conflicting key size %u != %lld.\n",
+-					map_name, map->def.key_size, sz);
++				pr_warn("map '%s': conflicting key size %u != %d.\n",
++					map_name, map->def.key_size, (int)sz);
+ 				return -EINVAL;
+ 			}
+ 			map->def.key_size = sz;
+@@ -1285,15 +1287,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
+ 			}
+ 			sz = btf__resolve_size(obj->btf, t->type);
+ 			if (sz < 0) {
+-				pr_warn("map '%s': can't determine value size for type [%u]: %lld.\n",
+-					map_name, t->type, sz);
++				pr_warn("map '%s': can't determine value size for type [%u]: %d.\n",
++					map_name, t->type, (int)sz);
+ 				return sz;
+ 			}
+-			pr_debug("map '%s': found value [%u], sz = %lld.\n",
+-				 map_name, t->type, sz);
++			pr_debug("map '%s': found value [%u], sz = %d.\n",
++				 map_name, t->type, (int)sz);
+ 			if (map->def.value_size && map->def.value_size != sz) {
+-				pr_warn("map '%s': conflicting value size %u != %lld.\n",
+-					map_name, map->def.value_size, sz);
++				pr_warn("map '%s': conflicting value size %u != %d.\n",
++					map_name, map->def.value_size, (int)sz);
+ 				return -EINVAL;
+ 			}
+ 			map->def.value_size = sz;
+@@ -1817,7 +1819,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		if (sym->st_value % 8) {
+-			pr_warn("bad call relo offset: %llu\n", (__u64)sym->st_value);
++			pr_warn("bad call relo offset: %llu\n", (__pu64)sym->st_value);
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		reloc_desc->type = RELO_CALL;
+@@ -1860,7 +1862,7 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 		}
+ 		if (map_idx >= nr_maps) {
+ 			pr_warn("map relo failed to find map for sec %u, off %llu\n",
+-				shdr_idx, (__u64)sym->st_value);
++				shdr_idx, (__pu64)sym->st_value);
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		reloc_desc->type = RELO_LD64;
+@@ -1942,8 +1944,8 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
+ 				  sym.st_name) ? : "<?>";
+ 
+ 		pr_debug("relo for shdr %u, symb %llu, value %llu, type %d, bind %d, name %d (\'%s\'), insn %u\n",
+-			 (__u32)sym.st_shndx, (__u64)GELF_R_SYM(rel.r_info),
+-			 (__u64)sym.st_value, GELF_ST_TYPE(sym.st_info),
++			 (__u32)sym.st_shndx, (__pu64)GELF_R_SYM(rel.r_info),
++			 (__pu64)sym.st_value, GELF_ST_TYPE(sym.st_info),
+ 			 GELF_ST_BIND(sym.st_info), sym.st_name, name,
+ 			 insn_idx);
+ 
 -- 
-2.24.0
+2.17.1
 
