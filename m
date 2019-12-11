@@ -2,147 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C3211A1E4
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:54:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6144311A2CF
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:59:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728154AbfLKCyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 21:54:09 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17227 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728039AbfLKCxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:53:40 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5df05a1d0001>; Tue, 10 Dec 2019 18:53:17 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 10 Dec 2019 18:53:38 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 10 Dec 2019 18:53:38 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 11 Dec
- 2019 02:53:38 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Wed, 11 Dec 2019 02:53:37 +0000
-Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5df05a300002>; Tue, 10 Dec 2019 18:53:37 -0800
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH v9 25/25] selftests/vm: run_vmtests: invoke gup_benchmark with basic FOLL_PIN coverage
-Date:   Tue, 10 Dec 2019 18:53:18 -0800
-Message-ID: <20191211025318.457113-26-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191211025318.457113-1-jhubbard@nvidia.com>
-References: <20191211025318.457113-1-jhubbard@nvidia.com>
-MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1576032797; bh=efjW/rF0EGuRthlOGEU05IQnyHi57jZRzyopoxtDk8c=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Transfer-Encoding:Content-Type;
-        b=jHA0ByLj6QYFV7n2rBCzqPPa0Q5IP+7x/G8P6mLvVFTEJzqowAWdJqPwWnruswBro
-         lpqfRzvKktTAc+zH4nLabgjThi49XGxeN4DzH53ip1UebXi644j4LuLdlW9mBohUa6
-         SqdUZeet0abo7Kiy7j2yqxOvyhcj3tYFHqQG/LZggQlkcI6EZw4H9s49zoYBV6eHmG
-         8C2IAQPjpWKhfziN+V9Kfo//HwuPhn/a7K84mDN+lqXArlPK/gOgmyBFj7ACDpGNEx
-         eiEUFhIGc89HsbF2aNRnPaRmMHQo4tuBuTQNPTmDKBJn39TpGjnTZWk4Eqa+uj+5g4
-         0zJ9szbQSw+FA==
+        id S1727689AbfLKC7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 21:59:00 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40272 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727217AbfLKC7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:59:00 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yuvalav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 11 Dec 2019 04:58:58 +0200
+Received: from sw-mtx-008.mtx.labs.mlnx (sw-mtx-008.mtx.labs.mlnx [10.9.150.35])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xBB2wv6U003700;
+        Wed, 11 Dec 2019 04:58:58 +0200
+Received: from sw-mtx-008.mtx.labs.mlnx (localhost [127.0.0.1])
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id xBB2wuAl018882;
+        Wed, 11 Dec 2019 04:58:56 +0200
+Received: (from yuvalav@localhost)
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id xBB2wt3s018881;
+        Wed, 11 Dec 2019 04:58:55 +0200
+From:   Yuval Avnery <yuvalav@mellanox.com>
+Cc:     jiri@mellanox.com, jakub.kicinski@netronome.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yuval Avnery <yuvalav@mellanox.com>
+Subject: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Date:   Wed, 11 Dec 2019 04:58:53 +0200
+Message-Id: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's good to have basic unit test coverage of the new FOLL_PIN
-behavior. Fortunately, the gup_benchmark unit test is extremely
-fast (a few milliseconds), so adding it the the run_vmtests suite
-is going to cause no noticeable change in running time.
+Currently there is no limit to the number of VFs netdevsim can enable.
+In a real systems this value exist and used by driver.
+Fore example, Some features might need to consider this value when
+allocating memory.
 
-So, add two new invocations to run_vmtests:
-
-1) Run gup_benchmark with normal get_user_pages().
-
-2) Run gup_benchmark with pin_user_pages(). This is much like
-the first call, except that it sets FOLL_PIN.
-
-Running these two in quick succession also provide a visual
-comparison of the running times, which is convenient.
-
-The new invocations are fairly early in the run_vmtests script,
-because with test suites, it's usually preferable to put the
-shorter, faster tests first, all other things being equal.
-
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- tools/testing/selftests/vm/run_vmtests | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/net/netdevsim/bus.c       | 39 +++++++++++++++++++++++--------
+ drivers/net/netdevsim/netdevsim.h |  1 +
+ 2 files changed, 30 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/run_vmtests b/tools/testing/selftes=
-ts/vm/run_vmtests
-index a692ea828317..df6a6bf3f238 100755
---- a/tools/testing/selftests/vm/run_vmtests
-+++ b/tools/testing/selftests/vm/run_vmtests
-@@ -112,6 +112,28 @@ echo "NOTE: The above hugetlb tests provide minimal co=
-verage.  Use"
- echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
- echo "      hugetlb regression testing."
-=20
-+echo "--------------------------------------------"
-+echo "running 'gup_benchmark -U' (normal/slow gup)"
-+echo "--------------------------------------------"
-+./gup_benchmark -U
-+if [ $? -ne 0 ]; then
-+	echo "[FAIL]"
-+	exitcode=3D1
-+else
-+	echo "[PASS]"
-+fi
+diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
+index 6aeed0c600f8..f1a0171080cb 100644
+--- a/drivers/net/netdevsim/bus.c
++++ b/drivers/net/netdevsim/bus.c
+@@ -26,9 +26,9 @@ static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
+ static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
+ 				   unsigned int num_vfs)
+ {
+-	nsim_bus_dev->vfconfigs = kcalloc(num_vfs,
+-					  sizeof(struct nsim_vf_config),
+-					  GFP_KERNEL);
++	if (nsim_bus_dev->max_vfs < num_vfs)
++		return -ENOMEM;
 +
-+echo "------------------------------------------"
-+echo "running gup_benchmark -b (pin_user_pages)"
-+echo "------------------------------------------"
-+./gup_benchmark -b
-+if [ $? -ne 0 ]; then
-+	echo "[FAIL]"
-+	exitcode=3D1
-+else
-+	echo "[PASS]"
-+fi
+ 	if (!nsim_bus_dev->vfconfigs)
+ 		return -ENOMEM;
+ 	nsim_bus_dev->num_vfs = num_vfs;
+@@ -38,8 +38,6 @@ static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
+ 
+ static void nsim_bus_dev_vfs_disable(struct nsim_bus_dev *nsim_bus_dev)
+ {
+-	kfree(nsim_bus_dev->vfconfigs);
+-	nsim_bus_dev->vfconfigs = NULL;
+ 	nsim_bus_dev->num_vfs = 0;
+ }
+ 
+@@ -154,22 +152,29 @@ static struct device_type nsim_bus_dev_type = {
+ };
+ 
+ static struct nsim_bus_dev *
+-nsim_bus_dev_new(unsigned int id, unsigned int port_count);
++nsim_bus_dev_new(unsigned int id, unsigned int port_count,
++		 unsigned int max_vfs);
 +
- echo "-------------------"
- echo "running userfaultfd"
- echo "-------------------"
---=20
-2.24.0
++#define NSIM_BUS_DEV_MAX_VFS 4
+ 
+ static ssize_t
+ new_device_store(struct bus_type *bus, const char *buf, size_t count)
+ {
+ 	struct nsim_bus_dev *nsim_bus_dev;
+ 	unsigned int port_count;
++	unsigned int max_vfs;
+ 	unsigned int id;
+ 	int err;
+ 
+-	err = sscanf(buf, "%u %u", &id, &port_count);
++	err = sscanf(buf, "%u %u %u", &id, &port_count, &max_vfs);
+ 	switch (err) {
+ 	case 1:
+ 		port_count = 1;
+ 		/* fall through */
+ 	case 2:
++		max_vfs = NSIM_BUS_DEV_MAX_VFS;
++		/* fall through */
++	case 3:
+ 		if (id > INT_MAX) {
+ 			pr_err("Value of \"id\" is too big.\n");
+ 			return -EINVAL;
+@@ -179,7 +184,7 @@ new_device_store(struct bus_type *bus, const char *buf, size_t count)
+ 		pr_err("Format for adding new device is \"id port_count\" (uint uint).\n");
+ 		return -EINVAL;
+ 	}
+-	nsim_bus_dev = nsim_bus_dev_new(id, port_count);
++	nsim_bus_dev = nsim_bus_dev_new(id, port_count, max_vfs);
+ 	if (IS_ERR(nsim_bus_dev))
+ 		return PTR_ERR(nsim_bus_dev);
+ 
+@@ -267,7 +272,8 @@ static struct bus_type nsim_bus = {
+ };
+ 
+ static struct nsim_bus_dev *
+-nsim_bus_dev_new(unsigned int id, unsigned int port_count)
++nsim_bus_dev_new(unsigned int id, unsigned int port_count,
++		 unsigned int max_vfs)
+ {
+ 	struct nsim_bus_dev *nsim_bus_dev;
+ 	int err;
+@@ -284,12 +290,24 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
+ 	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
+ 	nsim_bus_dev->port_count = port_count;
+ 	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
++	nsim_bus_dev->max_vfs = max_vfs;
++
++	nsim_bus_dev->vfconfigs = kcalloc(nsim_bus_dev->max_vfs,
++					  sizeof(struct nsim_vf_config),
++					  GFP_KERNEL);
++	if (!nsim_bus_dev->vfconfigs) {
++		err = -ENOMEM;
++		goto err_nsim_bus_dev_id_free;
++	}
+ 
+ 	err = device_register(&nsim_bus_dev->dev);
+ 	if (err)
+-		goto err_nsim_bus_dev_id_free;
++		goto err_nsim_vfconfigs_free;
++
+ 	return nsim_bus_dev;
+ 
++err_nsim_vfconfigs_free:
++	kfree(nsim_bus_dev->vfconfigs);
+ err_nsim_bus_dev_id_free:
+ 	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
+ err_nsim_bus_dev_free:
+@@ -301,6 +319,7 @@ static void nsim_bus_dev_del(struct nsim_bus_dev *nsim_bus_dev)
+ {
+ 	device_unregister(&nsim_bus_dev->dev);
+ 	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
++	kfree(nsim_bus_dev->vfconfigs);
+ 	kfree(nsim_bus_dev);
+ }
+ 
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 94df795ef4d3..e2049856add8 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -238,6 +238,7 @@ struct nsim_bus_dev {
+ 	struct net *initial_net; /* Purpose of this is to carry net pointer
+ 				  * during the probe time only.
+ 				  */
++	unsigned int max_vfs;
+ 	unsigned int num_vfs;
+ 	struct nsim_vf_config *vfconfigs;
+ };
+-- 
+2.17.1
 
