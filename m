@@ -2,123 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1487111BCC0
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:17:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC6A11BCCC
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:23:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbfLKTRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 14:17:30 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:45072 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfLKTR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:17:29 -0500
-Received: by mail-ot1-f67.google.com with SMTP id 59so852969otp.12
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:17:29 -0800 (PST)
+        id S1728122AbfLKTXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 14:23:09 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42942 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726487AbfLKTXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:23:09 -0500
+Received: by mail-oi1-f196.google.com with SMTP id j22so14271541oij.9;
+        Wed, 11 Dec 2019 11:23:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V4cP0f+jTCOEwzsB+qIKa00ifWd+VJ6cO9ddtzoRP5E=;
-        b=mdrCySH++7rIpH4z48OGg8gZpWjNGOpwAR4I414eYiZlWsFda1SIErZwmc5LReAMg9
-         36vAS+FD9EVh/DsXFynMepY0Zj5bwgOrilJ2qkI9CsflLxeioI3WJTgGyluMkM/xgu1v
-         rio8fi+ZOQ0s9wEqSCyRO4bwzMcAh+xnl9YdlELrFx1Ulfo236qMle6mo/hWMQzv22ia
-         fRpulxtt7vPW8oJ+2cs01pruyeT1YZz1xr4ZWZtlIyaS5Rap0ZoF2sJ0aKwRyPR0hdR6
-         FU3muwA7P6C7o+7cqMIjayhIHIF8I30XVudUTPZiptaz178hMQoohtf70LeXe9yIUlXe
-         bltg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bCTr7fmrdCM12DG9npwXco6rWsJDAoPjlBHUqV/P72g=;
+        b=Yu3O0jeojH9Zes6n3MGhRv6Z2hJetFnAU0HFzlmpIeQ8tXn5icPQNhoDBNAfiDjYi+
+         C4qFwFSudaOksvVtGhfIi3a7yjQ7Lvx/FjlpKW4eVFQzsJZa9NPBjLJ7O9RQzMHp8axa
+         K1OqSEFo60qKYj0d1CwGYjFadxgSp1iY0J/HrrGXkgIAlNZkUc6M0beuVU0PeBqT3gCO
+         H3lKCqhvE1EPBRccaubq0e4EUy5Q4W7eSYx8xTUGF209Ee/IXh4KvwRuJUlLohhCVEIh
+         O4ydXScx5up4u3BoBOT6DgCOoQsOswD/dhDFe60lmoq2CVtHZwWYhXokBqVvRRg1VriV
+         TFLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V4cP0f+jTCOEwzsB+qIKa00ifWd+VJ6cO9ddtzoRP5E=;
-        b=nsBK73y+0AP48wTdsgmOqHkbIDOLrYSa3YI5jXBXH+ZDkrhO6OrDhpLBn7yfUmhPTe
-         YUbMM/uAxOFHUMU2GRXRsePZuqefYgRtdva/8Z3C5jmbMnpY5PzOkZkHjADLHqZ4k94E
-         DrpjBk28345Gul0obFCla/ntJZB/Kw4H61DFsmyyZ7Q7i+PgU9KSk7Tw2QrpYD1r/k4K
-         h7mydfstSNHHV7fZmme2wEriwGbe5rhVCnEoe8mCsCX+EM/rY8QgKBRCDLBn9RQCLov2
-         TLZ5B7H0nKs3Z2KLkUASq74xWm7DhmKv6rlujkUWCfFRmvmYxtVefNoBPptIv+LnPK+a
-         4osw==
-X-Gm-Message-State: APjAAAWUICDHTbOx2HIgFzRkR6eTwYT/DDOG3tajGEghmSrBZnfosn/5
-        b8IPPLj+zf0oB3mOLS7AjXQRhTIeLaDHlJGdm2e90w==
-X-Google-Smtp-Source: APXvYqyAemVaEfn9qaK1IxtKdnDsCeKKKFV7H6WPLb4HwS2HysPTksmQDYALSnnf0r6hJSM7zsA9THyUks/sFlKZYe4=
-X-Received: by 2002:a9d:7c8f:: with SMTP id q15mr3626607otn.341.1576091848212;
- Wed, 11 Dec 2019 11:17:28 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bCTr7fmrdCM12DG9npwXco6rWsJDAoPjlBHUqV/P72g=;
+        b=N8lGH1kBmkb7z6yWBwL9eXcXdiSlnbjDKDfuVzitz4uSMKkgjVjE8q+/FN0zHvgv8i
+         h50gAHS539MVq2ZUL25UXZBiRJ2gT2lFx4IAEEnlxaqhcC/z8Zi0iCoWpNmG9dq9dD77
+         sIyOTq+UvC0wXr3zKD7vv5Gy7uNPzjcxnH4UmGpID521u+Y1ca7f9l2wtgviIKu52fCD
+         vI75Y71hp5wtkRabPzsAfz1UtbUjuAmZWurC9P2Wmv1InvJmc3J5Zg4lSWO8ezh7lkK1
+         Ne3y+eyBOOcP+FS+KwoPBonxivZlaq6xjtifuJGBjICOkCA0XF9qa9PWyfqcMYovtVPj
+         EOeg==
+X-Gm-Message-State: APjAAAXn+1GPKuwDoCRJ0oJ2/UH6gAv/pXZ6Dfb1QIQQu4cc9p0ylQzI
+        UMSQwsu3HiZtxyu1kLM8aQ0=
+X-Google-Smtp-Source: APXvYqyUDGwkPUj7a4qQgGxJBjJeSklRA8D/d1M6Ib+kCUZaHC8bp/tqkEhAmR7AONWoA/pnQT2REQ==
+X-Received: by 2002:a54:4407:: with SMTP id k7mr4200950oiw.56.1576092188199;
+        Wed, 11 Dec 2019 11:23:08 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id a74sm1112930oii.37.2019.12.11.11.23.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 11:23:07 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] ath11k: Remove unnecessary enum scan_priority
+Date:   Wed, 11 Dec 2019 12:22:52 -0700
+Message-Id: <20191211192252.35024-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20191211073419.258820-1-edumazet@google.com>
-In-Reply-To: <20191211073419.258820-1-edumazet@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 11 Dec 2019 14:17:12 -0500
-Message-ID: <CADVnQynJoDaNhY=NODF7CJ5KdqVzwgTZU5zoysAEbGJ3TXJnvQ@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: do not send empty skb from tcp_write_xmit()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 2:34 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> Backport of commit fdfc5c8594c2 ("tcp: remove empty skb from
-> write queue in error cases") in linux-4.14 stable triggered
-> various bugs. One of them has been fixed in commit ba2ddb43f270
-> ("tcp: Don't dequeue SYN/FIN-segments from write-queue"), but
-> we still have crashes in some occasions.
->
-> Root-cause is that when tcp_sendmsg() has allocated a fresh
-> skb and could not append a fragment before being blocked
-> in sk_stream_wait_memory(), tcp_write_xmit() might be called
-> and decide to send this fresh and empty skb.
->
-> Sending an empty packet is not only silly, it might have caused
-> many issues we had in the past with tp->packets_out being
-> out of sync.
->
-> Fixes: c65f7f00c587 ("[TCP]: Simplify SKB data portion allocation with NETIF_F_SG.")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Christoph Paasch <cpaasch@apple.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> Cc: Jason Baron <jbaron@akamai.com>
-> ---
->  net/ipv4/tcp_output.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index b184f03d743715ef4b2d166ceae651529be77953..57f434a8e41ffd6bc584cb4d9e87703491a378c1 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -2438,6 +2438,14 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
->                 if (tcp_small_queue_check(sk, skb, 0))
->                         break;
->
-> +               /* Argh, we hit an empty skb(), presumably a thread
-> +                * is sleeping in sendmsg()/sk_stream_wait_memory().
-> +                * We do not want to send a pure-ack packet and have
-> +                * a strange looking rtx queue with empty packet(s).
-> +                */
-> +               if (TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq)
-> +                       break;
-> +
->                 if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
->                         break;
->
-> --
+Clang warns:
 
-Thanks for the fix, Eric!
+drivers/net/wireless/ath/ath11k/wmi.c:1827:23: warning: implicit
+conversion from enumeration type 'enum wmi_scan_priority' to different
+enumeration type 'enum scan_priority' [-Wenum-conversion]
+        arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
+                           ~ ^~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
 
-Is there any risk that any current or future bugs that create
-persistently empty skbs could cause the connection to "freeze", unable
-to reach the tcp_transmit_skb() call in tcp_write_xmit()?
+wmi_scan_priority and scan_priority have the same values but the wmi one
+has WMI prefixed to the names. Since that enum is already being used,
+get rid of scan_priority and switch its one use to wmi_scan_priority to
+fix this warning.
 
-To avoid this risk, would it make sense to delete the empty skb and
-continue the tcp_write_xmit() transmit loop, rather than breaking out
-of the loop?
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Link: https://github.com/ClangBuiltLinux/linux/issues/808
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/wmi.h | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-Just curious to learn. :-)
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 4a518d406bc5..756101656391 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -2896,15 +2896,6 @@ struct wmi_bcn_offload_ctrl_cmd {
+ 	u32 bcn_ctrl_op;
+ } __packed;
+ 
+-enum scan_priority {
+-	SCAN_PRIORITY_VERY_LOW,
+-	SCAN_PRIORITY_LOW,
+-	SCAN_PRIORITY_MEDIUM,
+-	SCAN_PRIORITY_HIGH,
+-	SCAN_PRIORITY_VERY_HIGH,
+-	SCAN_PRIORITY_COUNT,
+-};
+-
+ enum scan_dwelltime_adaptive_mode {
+ 	SCAN_DWELL_MODE_DEFAULT = 0,
+ 	SCAN_DWELL_MODE_CONSERVATIVE = 1,
+@@ -3056,7 +3047,7 @@ struct scan_req_params {
+ 	u32 scan_req_id;
+ 	u32 vdev_id;
+ 	u32 pdev_id;
+-	enum scan_priority scan_priority;
++	enum wmi_scan_priority scan_priority;
+ 	union {
+ 		struct {
+ 			u32 scan_ev_started:1,
+-- 
+2.24.0
 
-thanks,
-neal
