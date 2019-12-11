@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB8B111A526
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 08:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 840EB11A52D
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 08:38:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbfLKHe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 02:34:26 -0500
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:39690 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725800AbfLKHe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 02:34:26 -0500
-Received: by mail-pf1-f201.google.com with SMTP id i196so1577673pfe.6
-        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 23:34:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=/5LYIRtHd/gBYwDBXvo7ud3Qnlz09mvci1Jyk+pEnsQ=;
-        b=nK64nWq4JnHfNtNKd8a7zip2s55+wQ3FAKYBucJrh9l18PCO2Fz/MJozah5LtFJsYr
-         8aNSIX3cgOM7JartdezFipLV5nPeA8ZxGu7FhoMQuMClB7XeJd1emR2cvfRFDOqbJt9e
-         LCrFFuBaZ5QybbfWmuHOfpm4UzylKbaTbPs35inK5DVuvlXmZzynA+JoMDjhQVhwiMq3
-         r3l8GlONzOs1Hu50DeK+1HWU0Yyd9OcaA8VKiJU3msiR7yfWQE7stJmpYEKJcqWyYe5Q
-         x1gFm5653k5MrgjChRy0R2ERDwYsaMpzUZ94jY4gMHL5tyQmeXfNrRMhtB6XuR3hBxJI
-         1iAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=/5LYIRtHd/gBYwDBXvo7ud3Qnlz09mvci1Jyk+pEnsQ=;
-        b=Vf47pzsbRlacgTSzDCm6jFeAJLXAGIMTIv9yBOniWB7qLXOjQ+dw9Q2u5TLYe+fGTS
-         FVAvtPy9YcFKZN7HaenENy6usfmjFkdqPNAtTVHQr0YK+q30af7C9qlI2vfu2iALYOKa
-         /B7tc0hvOZOArg4vNUcHufx8Y8kIwOdyb1g4Tz8HFe6cCm852OPmEw38cnQH1VUuw/94
-         kJYcaEsvFG6PzgqPVmmV2acQzP3Qb+Kd74kNdaYCEBb0Nb3/+q6yuDVabBSMoS1xHjUh
-         C4Mjb09wTLqoM7/IAL2U/vH0QLbnyEbDAhJRKSLF/w3Fn1zCPMST/nm8SARbhaoS09bU
-         PnDA==
-X-Gm-Message-State: APjAAAWRfvQMrnUgl7d7S4jzD+LP3cf+vYgfSbMONs053dyFOiMq8P7A
-        tJrZKugLrqR+o8Kx81oLoMvPVlpHoyHe6A==
-X-Google-Smtp-Source: APXvYqxu7IVZDqYFpSs3TY4KvY4m2OStMsB7W+zZ6kXu9UN54yfd+ms3ZgVLcDjxBSzsbfvh35Ak8xy/CT6/Mw==
-X-Received: by 2002:a63:da4d:: with SMTP id l13mr2714529pgj.106.1576049665454;
- Tue, 10 Dec 2019 23:34:25 -0800 (PST)
-Date:   Tue, 10 Dec 2019 23:34:19 -0800
-Message-Id: <20191211073419.258820-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.525.g8f36a354ae-goog
-Subject: [PATCH net] tcp: do not send empty skb from tcp_write_xmit()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Jason Baron <jbaron@akamai.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726988AbfLKHiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 02:38:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49680 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726151AbfLKHiO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 02:38:14 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BD0A5208C3;
+        Wed, 11 Dec 2019 07:38:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576049893;
+        bh=oWuub5EXQa2UcXV8h8dA9dFT2L0EsWY/1ZrBW4KAwxU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TvuIY9ULFr22p6P34314qbKp8ZUQ5MvoYZu7OSrExa+lLeBO5WdvEzrDUqB8stwdT
+         0N7G2neoqdAP7YRgljopkdgHNEzQyFjFB3Luf2sLJAza3z32mHNyedzf8w8TCkVup5
+         k3deWoBevG+tC61VikgSNawVQr82f81LPK2AMW+s=
+Date:   Wed, 11 Dec 2019 08:38:10 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Daniel Walker (danielwa)" <danielwa@cisco.com>
+Cc:     "Aviraj Cj (acj)" <acj@cisco.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
+Subject: Re: [PATCH 1/2] net: stmmac: use correct DMA buffer size in the RX
+ descriptor
+Message-ID: <20191211073810.GA398293@kroah.com>
+References: <20191210170659.61829-1-acj@cisco.com>
+ <20191210205542.GB4080658@kroah.com>
+ <20191210214014.GV20426@zorba>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191210214014.GV20426@zorba>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Backport of commit fdfc5c8594c2 ("tcp: remove empty skb from
-write queue in error cases") in linux-4.14 stable triggered
-various bugs. One of them has been fixed in commit ba2ddb43f270
-("tcp: Don't dequeue SYN/FIN-segments from write-queue"), but
-we still have crashes in some occasions.
+On Tue, Dec 10, 2019 at 09:40:17PM +0000, Daniel Walker (danielwa) wrote:
+> On Tue, Dec 10, 2019 at 09:55:42PM +0100, Greg KH wrote:
+> > On Tue, Dec 10, 2019 at 09:06:58AM -0800, Aviraj CJ wrote:
+> > > We always program the maximum DMA buffer size into the receive descriptor,
+> > > although the allocated size may be less. E.g. with the default MTU size
+> > > we allocate only 1536 bytes. If somebody sends us a bigger frame, then
+> > > memory may get corrupted.
+> > > 
+> > > Program DMA using exact buffer sizes.
+> > > 
+> > > [Adopted based on upstream commit c13a936f46e3321ad2426443296571fab2feda44
+> > > ("net: stmmac: use correct DMA buffer size in the RX descriptor")
+> > > by Aaro Koskinen <aaro.koskinen@nokia.com> ]
+> > 
+> > Adopted to what?
+> > 
+> > What is this patch for, it looks just like the commit you reference
+> > here.
+> > 
+> > totally confused,
+> 
+> 
+> We're using the patches on the v4.4 -stable branch. It doesn't have these patches and
+> the backport had rejects.
 
-Root-cause is that when tcp_sendmsg() has allocated a fresh
-skb and could not append a fragment before being blocked
-in sk_stream_wait_memory(), tcp_write_xmit() might be called
-and decide to send this fresh and empty skb.
+Ok, but commit "c13a936f46e3321ad2426443296571fab2feda44" is not in
+Linus's tree, and so I think you really mean 583e63614149 ("net: stmmac:
+use correct DMA buffer size in the RX descriptor") which is only
+included in 4.19 and newer kernels.
 
-Sending an empty packet is not only silly, it might have caused
-many issues we had in the past with tp->packets_out being
-out of sync.
+So why would this need to go to 4.4.y?
 
-Fixes: c65f7f00c587 ("[TCP]: Simplify SKB data portion allocation with NETIF_F_SG.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Christoph Paasch <cpaasch@apple.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Cc: Jason Baron <jbaron@akamai.com>
----
- net/ipv4/tcp_output.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+And if so, it needs to be explicitly stated as such, you all have read
+the stable kernel rules file, right?
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index b184f03d743715ef4b2d166ceae651529be77953..57f434a8e41ffd6bc584cb4d9e87703491a378c1 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2438,6 +2438,14 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
- 		if (tcp_small_queue_check(sk, skb, 0))
- 			break;
- 
-+		/* Argh, we hit an empty skb(), presumably a thread
-+		 * is sleeping in sendmsg()/sk_stream_wait_memory().
-+		 * We do not want to send a pure-ack packet and have
-+		 * a strange looking rtx queue with empty packet(s).
-+		 */
-+		if (TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq)
-+			break;
-+
- 		if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
- 			break;
- 
--- 
-2.24.0.525.g8f36a354ae-goog
+Please fix up and resend properly, as well as providing a version for
+newer kernels also if you really want this in a 4.4.y release.
 
+As David said, to not do so just causes a total waste of developer time
+trying to figure out what you all are wanting to do here...
+
+thanks,
+
+greg k-h
