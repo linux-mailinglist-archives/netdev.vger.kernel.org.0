@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FCFF11ACB0
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:02:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 262FF11AD02
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:06:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729671AbfLKOCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 09:02:36 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:22190 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727554AbfLKOCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:02:36 -0500
+        id S1729877AbfLKOFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 09:05:06 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50488 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729686AbfLKOFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:05:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576072953;
+        s=mimecast20190719; t=1576073104;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eS1ulbpjbL3cpC4UOh1VrRrE49CxlddKySSCHyYBN1w=;
-        b=bhDgeVuD0qk3XzUNG4DcV8yvedUFTlCzwyQarf2Jey4XBx/wMaX4AevHrHyG8LJbeuP1jC
-        TlpGS0KZCQrgs0eEcHMDq8jNVuntC6J1VhfEEV4ehzv9+YXBqnHlPgg3xri3HVceVvk8i2
-        f/A35JzcwdxoeGJmfE0u19RW5i+e4A4=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-mvM3k-xcPgeki8-XbgGxNA-1; Wed, 11 Dec 2019 09:02:30 -0500
-Received: by mail-lj1-f198.google.com with SMTP id y15so4416659lji.1
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:02:30 -0800 (PST)
+        bh=StIwrr6DiPVKFPlnlboJLDOKadEa6n2fz2fdl4s30Mo=;
+        b=KloWcJzxNpTbGWkzxgV/Vlu43XIVCVxJqsWdBZfZw+OdRPsJ7ReUdcF3QLcFPf5w4QJyQ0
+        W1cRx9+LFLO+vDZuaiFvfLkdmEl7etOsv78thcxYgjyNpMqTTGWBJbBBKobUPuvqXCxMP3
+        Uz7HFopCg6RyMbUwOdfqMtL7IkRNEos=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-93-nNMRCQ3NOuWHR_4Yjt4IRA-1; Wed, 11 Dec 2019 09:05:02 -0500
+Received: by mail-lf1-f70.google.com with SMTP id a11so5055054lff.12
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:05:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=bbVO1TAkugzzVKgAPW45q9SGgy0QAxF8d9CLJkj10AM=;
-        b=BSbeTBWo7oLqs2oCVG1fNQmM4cmtK4OZpWVo4/L7kyG4etBo7TyiAx7hbRPAapIft4
-         YeJRE1tFjCeLOoIx8ewFv7vBkyfSA5o2WSnelPf4iuUZscBdnO54L1Ct5/iRJ81RmmrR
-         qRxq8r0MMe81KUtJM6/eZyrYBngF1eAE/cmw89rQXqHGjEwIpOYverxqK0Y8Fh9e80Dx
-         6pVABTDoMFrjVbzzhmEpy+8ewaMG7f3cS1EU56ArjDCa5s3BOIazC/mke3ONdmll7NgH
-         ILsel6sHHYXtJSJPUwxZCb6nqZS4m/oii/4aiInYTc5/B5FfWNiuIGJI9alaxz+D1cHC
-         vbWA==
-X-Gm-Message-State: APjAAAU3/xUQq+9nc3dIxbTzmJvh55y42g0yOppyiPnSWMf1Yml9LITE
-        rV0FLg5Arb07o0OgZW8qebIg6fm8IClohT8h5MtWxKTX4Kl6QTIEm0OctNlrgOY2ujanPM3gT/4
-        2lg70YfpcP3R1u75o
-X-Received: by 2002:a05:651c:102c:: with SMTP id w12mr2162224ljm.53.1576072949152;
-        Wed, 11 Dec 2019 06:02:29 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyHQoPGTnI+zpqMpPfV9tvoxC4sSartkEWyyTZZPeoEHC552cp+Q9YvAkEg3UkGVXDz2NNEPg==
-X-Received: by 2002:a05:651c:102c:: with SMTP id w12mr2162203ljm.53.1576072948844;
-        Wed, 11 Dec 2019 06:02:28 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id j19sm1210984lja.100.2019.12.11.06.02.28
+        bh=rXYd5E3GGY67cV6y2ES2WF64lJpRnllNrekC9v/TCy0=;
+        b=FSYMEtLsYM55wpIoeP4veHCXuhJdHmJEmIiLljZLapzJHPBVGN9/MtpESqBRIhRDyZ
+         PgOcIWOcMBZzuKmKbCLNPbRpSw8ZytvkpkSS3KLrRSO8VJU485dzQBw+to/Q8IbPI/u/
+         6lLhsoU3TGolVuxJTdZG3jz6tqo7kqyOBh6ZnC+iTIwUUAUHDwd+qBNivDji2DDLyqMw
+         SCNzs0tyD3pJ95/v9dPQUpTInqpQaekuZaXrba3hjnglhTLg/6ebWGIMRuQCZukPRBNH
+         Rx+TAa5REE7iUDx8NVIS2yaQ4p5yUeWBTKu/8vUKIuK4uCn46R1m+WUPDju1StuxU0Gd
+         Y4Hg==
+X-Gm-Message-State: APjAAAWebJdxQYyGn6EjrPqRiJrr5WiB1KktKcONgUmmsgf7Khq6d24R
+        2SJBzyryLjnM8wLv40PSk9xTCiDRiSLHBPVlty9VS6aQ8Tu6FxgziZqdPy449Whi2T7sWtl8pTB
+        7+3b+l9riCKI0JEyx
+X-Received: by 2002:a05:651c:327:: with SMTP id b7mr2168408ljp.22.1576073101105;
+        Wed, 11 Dec 2019 06:05:01 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxnPP5sggaD4AQ3op+KNXfSHW0erfYVnF+khRRz45HXniArvp0gpfieBpJJzB4ogPT5qbBV9A==
+X-Received: by 2002:a05:651c:327:: with SMTP id b7mr2168398ljp.22.1576073100955;
+        Wed, 11 Dec 2019 06:05:00 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id z13sm1247604ljh.21.2019.12.11.06.05.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 06:02:28 -0800 (PST)
+        Wed, 11 Dec 2019 06:05:00 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EF69418033F; Wed, 11 Dec 2019 15:02:26 +0100 (CET)
+        id 8623318033F; Wed, 11 Dec 2019 15:04:59 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Johannes Berg <johannes@sipsolutions.net>,
         Jens Axboe <axboe@kernel.dk>,
@@ -59,13 +59,13 @@ To:     Johannes Berg <johannes@sipsolutions.net>,
 Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>
 Subject: Re: iwlwifi warnings in 5.5-rc1
-In-Reply-To: <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
-References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net> <878snjgs5l.fsf@toke.dk> <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net> <875zingnzt.fsf@toke.dk> <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
+In-Reply-To: <14bbfcc8408500704c46701251546e7ff65c6fd0.camel@sipsolutions.net>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net> <878snjgs5l.fsf@toke.dk> <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net> <875zingnzt.fsf@toke.dk> <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net> <14bbfcc8408500704c46701251546e7ff65c6fd0.camel@sipsolutions.net>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Dec 2019 15:02:26 +0100
-Message-ID: <87tv67ez9p.fsf@toke.dk>
+Date:   Wed, 11 Dec 2019 15:04:59 +0100
+Message-ID: <87r21bez5g.fsf@toke.dk>
 MIME-Version: 1.0
-X-MC-Unique: mvM3k-xcPgeki8-XbgGxNA-1
+X-MC-Unique: nNMRCQ3NOuWHR_4Yjt4IRA-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
@@ -76,82 +76,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Johannes Berg <johannes@sipsolutions.net> writes:
 
-> Hi Toke,
+> Btw, there's *another* issue. You said in the commit log:
 >
->> > OK, I talked with Emmanuel and I think it's the GSO path - it'll end u=
-p
->> > with skb_clone() and then report both of them back.
->>=20
->> Right, figured it was something like that; just couldn't find the place
->> in the driver where it did that from my cursory browsing.
+>     This patch does *not* include any mechanism to wake a throttled TXQ a=
+gain,
+>     on the assumption that this will happen anyway as a side effect of wh=
+atever
+>     freed the skb (most commonly a TX completion).
 >
-> Yeah, deeply hidden in the guts :)
->
->> > Regardless, I think I'll probably have to disable AQL and make it more
->> > opt-in for the driver - I found a bunch of other issues ...
->>=20
->> Issues like what? Making it opt-in was going to be my backup plan; I was
->> kinda hoping we could work out any issues so it would be a "no harm"
->> kind of thing that could be left as always-on. Maybe that was a bit too
->> optimistic; but it's also a pain having to keep track of which drivers
->> have which features/fixes...
->
-> Sorry to keep you in suspense, had to run when I sent that email and
-> didn't have time to elaborate.
->
-> 1) Hardware building A-MPDU will probably make the airtime estimate
->    quite a bit wrong. Maybe this doesn't matter? But I wasn't sure how
->    this works now with ath10k where (most of?) the testing was.
+> Thinking about this some more, I'm not convinced that this assumption
+> holds. You could have been stopped due to the global limit, and now you
+> wake some queue but the TXQ is empty - now you should reschedule some
+> *other* TXQ since the global limit had kicked in, not the per-TXQ limit,
+> and prevented dequeuing, no?
 
-Yeah, not too worried about this...
-
-> 2) GSO/TSO like what we have - it's not really clear how to handle it.
->    The airtime estimate will shoot *way* up (64kB frame) once that frame
->    enters, and then ... should it "trickle back down" as the generated=20
->    parts are transmitted? But then the driver needs to split up the
->    airtime estimate? Or should it just go back down entirely? On the
->    first frame? That might overshoot. On the last frame? Opposite
->    problem ...
-
-Well, ideally it would be divided out over the component packets; but
-yeah, who is going to do that? I think reporting it on the first packet
-would be the safest if we had to choose. Also, ideally we would want the
-GSO/TSO mechanism to lower the size of the superpackets at lower rates
-(does it?). At higher rates this matters less...
-
-> 3) I'm not quite convinced that all drivers report the TX rate
->    completely correctly in the status, some don't even use this path
->    but the ieee80211_tx_status_ext() which doesn't update the rate.
->
-> 4) Probably most importantly, this is completely broken with HE because
->    there's currently no way to report HE rates in the TX status at all!
->    I just worked around that in our driver for 'iw' reporting purposes
->    by implementing the rate reporting in the sta_statistics callback,
->    but that data won't be used by the airtime estimates.
-
-Hmm, yeah, both of those are good points. I guess I just kinda assumed
-that the drivers were already doing the right thing there... :)
-
-> Now, (1) probably doesn't matter, the estimates don't need to be that
-> accurate. (2) I'm not sure how to solve; (3) and (4) could both be
-> solved by having some mechanism of the rate scaling to tell us what the
-> current rate is whenever it updates, rather than relying on the
-> last_rate. Really we should do that much more, and even phase out
-> last_rate entirely, it's a stupid concept.
-
-Yes, that last bit would be good!
-
-> There's an additional wrinkle here - what about HE scheduled mode, where
-> the AP decided when and at what rate you're allowed to send? We don't
-> report that at all, not even as part of rate scaling, since rate scaling
-> only affects *our* decision, not when we send as a response to a trigger
-> frame. This is _still_ relevant for AQL, but there we can only see what
-> the AP used last (**), but we don't track that now nor do we track the
-> proportion of packets that we sent triggered vs. normal medium
-> access...
-
-Huh, wasn't aware that was a thing in HE; that's cool! And yeah, could
-have interesting interactions with AQL...
+Well if you hit the global limit that means you have 24ms worth of data
+queued in the hardware; those should be completed in turn, and enable
+more to be dequeued, no?
 
 -Toke
 
