@@ -2,136 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D78A711BEAE
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 21:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3759511BEF3
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 22:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbfLKU5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 15:57:42 -0500
-Received: from ms.lwn.net ([45.79.88.28]:58190 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbfLKU5l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 15:57:41 -0500
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 7D799739;
-        Wed, 11 Dec 2019 20:57:38 +0000 (UTC)
-Date:   Wed, 11 Dec 2019 13:57:37 -0700
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@intel.com>, Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?UTF-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v9 10/25] mm/gup: introduce pin_user_pages*() and
- FOLL_PIN
-Message-ID: <20191211135737.581add2f@lwn.net>
-In-Reply-To: <20191211025318.457113-11-jhubbard@nvidia.com>
-References: <20191211025318.457113-1-jhubbard@nvidia.com>
-        <20191211025318.457113-11-jhubbard@nvidia.com>
-Organization: LWN.net
+        id S1726595AbfLKVRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 16:17:41 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:41110 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726345AbfLKVRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 16:17:41 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1if9MT-0055JU-VA; Wed, 11 Dec 2019 22:17:34 +0100
+Message-ID: <3ca2be96898e9d30c27b2411148d201318e413f2.camel@sipsolutions.net>
+Subject: Re: iwlwifi warnings in 5.5-rc1
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Date:   Wed, 11 Dec 2019 22:17:30 +0100
+In-Reply-To: <87tv67ez9p.fsf@toke.dk>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk>
+         <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
+         <878snjgs5l.fsf@toke.dk>
+         <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net>
+         <875zingnzt.fsf@toke.dk>
+         <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
+         <87tv67ez9p.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 18:53:03 -0800
-John Hubbard <jhubbard@nvidia.com> wrote:
+On Wed, 2019-12-11 at 15:02 +0100, Toke Høiland-Jørgensen wrote:
 
-> Introduce pin_user_pages*() variations of get_user_pages*() calls,
-> and also pin_longterm_pages*() variations.
+> > 2) GSO/TSO like what we have - it's not really clear how to handle it.
+> >    The airtime estimate will shoot *way* up (64kB frame) once that frame
+> >    enters, and then ... should it "trickle back down" as the generated 
+> >    parts are transmitted? But then the driver needs to split up the
+> >    airtime estimate? Or should it just go back down entirely? On the
+> >    first frame? That might overshoot. On the last frame? Opposite
+> >    problem ...
+> 
+> Well, ideally it would be divided out over the component packets; but
+> yeah, who is going to do that?
 
-Just a couple of nits on the documentation patch
+I'm not even sure we *can* do this easily - do we know up-front how many
+packets this will expand to? We should know, but it might not be so easy
+given the abstraction layers. We could guess and if it's wrong just set
+it to 0 on any remaining ones.
 
-> +++ b/Documentation/core-api/pin_user_pages.rst
-> @@ -0,0 +1,232 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +====================================================
-> +pin_user_pages() and related calls
-> +====================================================
-> +
-> +.. contents:: :local:
-> +
-> +Overview
-> +========
-> +
-> +This document describes the following functions: ::
-> +
-> + pin_user_pages
-> + pin_user_pages_fast
-> + pin_user_pages_remote
+> I think reporting it on the first packet
+> would be the safest if we had to choose. 
 
-You could just say "the following functions::" and get the result you're
-after with a slightly less alien plain-text reading experience.
+Agree.
 
-Of course, you could also just say "This document describes
-pin_user_pages(), pin_user_pages_fast(), and pin_user_pages_remote()." But
-that's a matter of personal taste, I guess.  Using the function() notation
-will cause the docs system to automatically link to the kerneldoc info,
-though.  
+> Also, ideally we would want the
+> GSO/TSO mechanism to lower the size of the superpackets at lower rates
+> (does it?). At higher rates this matters less...
 
-> +Basic description of FOLL_PIN
-> +=============================
-> +
-> +FOLL_PIN and FOLL_LONGTERM are flags that can be passed to the get_user_pages*()
-> +("gup") family of functions. FOLL_PIN has significant interactions and
-> +interdependencies with FOLL_LONGTERM, so both are covered here.
-> +
-> +FOLL_PIN is internal to gup, meaning that it should not appear at the gup call
-> +sites. This allows the associated wrapper functions  (pin_user_pages*() and
-> +others) to set the correct combination of these flags, and to check for problems
-> +as well.
-> +
-> +FOLL_LONGTERM, on the other hand, *is* allowed to be set at the gup call sites.
-> +This is in order to avoid creating a large number of wrapper functions to cover
-> +all combinations of get*(), pin*(), FOLL_LONGTERM, and more. Also, the
-> +pin_user_pages*() APIs are clearly distinct from the get_user_pages*() APIs, so
-> +that's a natural dividing line, and a good point to make separate wrapper calls.
-> +In other words, use pin_user_pages*() for DMA-pinned pages, and
-> +get_user_pages*() for other cases. There are four cases described later on in
-> +this document, to further clarify that concept.
-> +
-> +FOLL_PIN and FOLL_GET are mutually exclusive for a given gup call. However,
-> +multiple threads and call sites are free to pin the same struct pages, via both
-> +FOLL_PIN and FOLL_GET. It's just the call site that needs to choose one or the
-> +other, not the struct page(s).
-> +
-> +The FOLL_PIN implementation is nearly the same as FOLL_GET, except that FOLL_PIN
-> +uses a different reference counting technique.
-> +
-> +FOLL_PIN is a prerequisite to FOLL_LONGTGERM. Another way of saying that is,
+Well TCP does limit (pacing shift) the amount of outstanding data, so if
+it's _really_ slow I guess it will also limit the size of the
+superpackets?
 
-FOLL_LONGTERM typoed there.
+It's really just an artifact of our software implementation that we
+report the SKBs back as used with partial content. Maybe we shouldn't
+even do that, since they weren't generated by mac80211 in the first
+place, and only report the original skb or something.
 
-Thanks,
+> > 3) I'm not quite convinced that all drivers report the TX rate
+> >    completely correctly in the status, some don't even use this path
+> >    but the ieee80211_tx_status_ext() which doesn't update the rate.
+> > 
+> > 4) Probably most importantly, this is completely broken with HE because
+> >    there's currently no way to report HE rates in the TX status at all!
+> >    I just worked around that in our driver for 'iw' reporting purposes
+> >    by implementing the rate reporting in the sta_statistics callback,
+> >    but that data won't be used by the airtime estimates.
+> 
+> Hmm, yeah, both of those are good points. I guess I just kinda assumed
+> that the drivers were already doing the right thing there... :)
 
-jon
+I'm not really sure I want to rely on this - this was never really
+needed *functionally*, just from a *statistics* point of view (e.g. "iw
+link" or such).
+
+> > Now, (1) probably doesn't matter, the estimates don't need to be that
+> > accurate. (2) I'm not sure how to solve; (3) and (4) could both be
+> > solved by having some mechanism of the rate scaling to tell us what the
+> > current rate is whenever it updates, rather than relying on the
+> > last_rate. Really we should do that much more, and even phase out
+> > last_rate entirely, it's a stupid concept.
+> 
+> Yes, that last bit would be good!
+
+We already partially have this, we have a 'get best rate' or so callback
+in the rate scaling, we'd just have to extend it to the driver ops for
+offloaded rate scaling.
+
+Ideally, it'd be a function call from the rate scaling to mac80211 so we
+don't have to call a function every time we need the value, but the rate
+scaling just calls us whenever it updates. This would even work with
+iwlwifi's offloaded algorithm - it notifies the host on all changes.
+
+> > There's an additional wrinkle here - what about HE scheduled mode, where
+> > the AP decided when and at what rate you're allowed to send? We don't
+> > report that at all, not even as part of rate scaling, since rate scaling
+> > only affects *our* decision, not when we send as a response to a trigger
+> > frame. This is _still_ relevant for AQL, but there we can only see what
+> > the AP used last (**), but we don't track that now nor do we track the
+> > proportion of packets that we sent triggered vs. normal medium
+> > access...
+> 
+> Huh, wasn't aware that was a thing in HE; that's cool! And yeah, could
+> have interesting interactions with AQL...
+
+Yeah ...
+
+johannes
+
