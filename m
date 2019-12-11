@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC5B11BB4E
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:15:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90A9F11BB4D
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731355AbfLKSPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:15:42 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:37140 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731334AbfLKSPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:39 -0500
-Received: by mail-yw1-f68.google.com with SMTP id v84so2956832ywa.4;
-        Wed, 11 Dec 2019 10:15:39 -0800 (PST)
+        id S1731364AbfLKSPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:15:43 -0500
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:38624 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731306AbfLKSPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:41 -0500
+Received: by mail-yw1-f67.google.com with SMTP id 10so9308158ywv.5;
+        Wed, 11 Dec 2019 10:15:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+x/b256hi/BiDL31JHY2PQmq0IAPIM+EJHKCtlj8/GQ=;
-        b=fX6sP+zsfo7QiNbgczb4g4RwNHoCbsE1Qdyiv+e78chsM5SpDb4VEhKpowEc//NJoF
-         FjK35PxJAduy/TX/48sMOL3RShtFhvUhNwsxT+kqQaC0P0K8epI0Z9BONFqdXhvqaS+Z
-         JdChIJ1NIBh4GYo0JeyRRonR7dGvME5szcK+5dxOzjyME0JL+5hqPSLt0c3rVPZ/CA/k
-         TPT3c9y4uC/H5pA25FeD5hZNcBfMikGd+GN2ODylL4gQzHbNIveYNbU3TCBOyxk7Oodl
-         3ncupRw6DqkxFFMCl21ApGz5DExaUQ+K3+3oorm/IcwlBs/ngNQvTk+jo09qZUQCAVn2
-         CgQw==
+        bh=nwGdO4R8lji1D/r7NSUfswqgTgfKAYEWc+q0aQAaY34=;
+        b=aUxLEcZUouXI6SiOx6pzGdSVCiQx8vK4DJHmtxf40D8r2b8eE/Z7eFcVMho5BCcp5X
+         TWAopBJt6oZEaDrtyeLOmvzBUHni/LGxL7s3zooI5vp3hz+tf/sIY36AZ4ujyxRHdSM1
+         JW/i27mPlMCELPmiKLsbGaquGB0q4X7u10AVk6/TmUCwWN03CUXliusqyzdUQzTaTKm8
+         EmnzAmMs5HpqAoAL5Uh8/pasMHdghdduGWBgA4X5VWID+DVGHsYkcLwljb9EYVaya0T3
+         HlMFB3Nr7xLUmO3wfvrHAAHOSmPCjq6O5tjrX4lfjqHKVrh+78yKijz5Zl8ajfsy/tBN
+         RoIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+x/b256hi/BiDL31JHY2PQmq0IAPIM+EJHKCtlj8/GQ=;
-        b=T8bpSbqhp99dTOScYbbWChBTW4wZYI5ESZKOTBt3I2Po64sjkXDKUpRnpq4VBl14iO
-         vKmhhJVXZFx2KeBgQkPs2AMNpyqTP0W6IcA+NGGv4qlSloIkr34pRVdF9d+uF3yb5zjW
-         5fJS5pKIG9oYtZNdFbo0/Luso3LGOiLJx7pPPfgLR5hfrIF4AKWhqmhcMrsoxuReJaIE
-         jg5dwsUHeksAvE30MFaCF+7Ehd3AtC+UN33YbG5VTXvxPryOIx7iVV0Myia6SVoHs1AM
-         3nxXxm1S9S8zPybhUkI9GZGv8/gCWVzrIowr57ChkXbNtiEXitxwf5i9xc88LRfvWKoP
-         aDLA==
-X-Gm-Message-State: APjAAAWTzeo8apgtoHYRqj2SNMHCyTwNPOOxb43G1JLfSSOtLycbaAc/
-        pQx4LzBQ2av/vBdQFlnMqVgLAWNrMd2TRw==
-X-Google-Smtp-Source: APXvYqy+8SSiMyc2gSAf5nlC+pArO37lD4CnuaJdfKdo8miRp32JKEQHg5OHDfOWK1+LzEnk0ZTCWg==
-X-Received: by 2002:a81:ad1a:: with SMTP id l26mr852793ywh.481.1576088138380;
-        Wed, 11 Dec 2019 10:15:38 -0800 (PST)
+        bh=nwGdO4R8lji1D/r7NSUfswqgTgfKAYEWc+q0aQAaY34=;
+        b=cjS3o+fYnaMo/0HZ6gcHzbwFAhuEKfvhjfVZ3grJkFdDOn+7k3TPw97mnzjwGJJyKv
+         7HNMCctHwGlTdnYWIaPCNUXdZSRaMe+IjhySH1C+luA7fXydRgDxgjvQL2eAiAG6aEI9
+         Q4cbBkvjMFICCArd7hes4aBrFvLtbYU1KA7Xk8HXU1P7I4+GNRhj41XbglhZUpNxhRgf
+         wgHSV4KEa7l6P2+rpC1//I1BtsdxAZBU2b1lFD9caDf1Sstu+xv05USFCeb3azxSB4Vd
+         L7KZj6L/s+jsGakYpGjqqpVvP0t9T8/zfXvEIyWa+2Var18hSa50oRZg5ibkIOyBEDdL
+         LFBg==
+X-Gm-Message-State: APjAAAVrb4ZFSPs+N+1bnFbfNmRfTXWoEn2frzLmaRF9+bokvVfiotDC
+        PNyqDCQyoKTzdvl1lnY0N+07JDdv2/BVww==
+X-Google-Smtp-Source: APXvYqyozxGB2X1nuGDB7dAEJrbGUelIJWseYKoI5+DIGHJRwfsZF4g4z3Za9/kKACyVGBgBVB3tMw==
+X-Received: by 2002:a0d:d2c2:: with SMTP id u185mr875765ywd.211.1576088139917;
+        Wed, 11 Dec 2019 10:15:39 -0800 (PST)
 Received: from karen ([2604:2d80:d68a:cf00:a4bc:8e08:1748:387f])
-        by smtp.gmail.com with ESMTPSA id i84sm1341120ywc.43.2019.12.11.10.15.37
+        by smtp.gmail.com with ESMTPSA id f134sm1304186ywb.68.2019.12.11.10.15.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 10:15:37 -0800 (PST)
+        Wed, 11 Dec 2019 10:15:39 -0800 (PST)
 From:   Scott Schafer <schaferjscott@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Scott Schafer <schaferjscott@gmail.com>,
         Manish Chopra <manishc@marvell.com>,
         GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 22/23] staging: qlge: Fix CHECK: Unbalanced braces around else statement
-Date:   Wed, 11 Dec 2019 12:12:51 -0600
-Message-Id: <943bad431329fc77f515158444c6d06fbeeb66fe.1576086080.git.schaferjscott@gmail.com>
+Subject: [PATCH v2 23/23] staging: qlge: Fix WARNING: Avoid multiple line dereference
+Date:   Wed, 11 Dec 2019 12:12:52 -0600
+Message-Id: <f2e9384f0940fb7e57649a8ea8493abae2c220ee.1576086080.git.schaferjscott@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1576086080.git.schaferjscott@gmail.com>
 References: <cover.1576086080.git.schaferjscott@gmail.com>
@@ -63,42 +63,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix CHECK: Unbalanced braces around else statement in file qlge_mpi.c
+Fix WARNING: Avoid multiple line dereference in qlge_main.c
 
 Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
 ---
- drivers/staging/qlge/qlge_mpi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/staging/qlge/qlge_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-index ba8ce3506a59..c9d45c8feabe 100644
---- a/drivers/staging/qlge/qlge_mpi.c
-+++ b/drivers/staging/qlge/qlge_mpi.c
-@@ -244,12 +244,12 @@ static int ql_idc_cmplt_aen(struct ql_adapter *qdev)
- 		netif_err(qdev, drv, qdev->ndev,
- 			  "Could not read MPI, resetting RISC!\n");
- 		ql_queue_fw_error(qdev);
--	} else
-+	} else {
- 		/* Wake up the sleeping mpi_idc_work thread that is
- 		 * waiting for this event.
- 		 */
- 		complete(&qdev->ide_completion);
--
-+	}
- 	return status;
- }
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 102da1fe9899..725db7262a9a 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -399,9 +399,8 @@ static int ql_set_mac_addr_reg(struct ql_adapter *qdev, u8 *addr, u32 type,
+ 			 * the route field to NIC core.
+ 			 */
+ 			cam_output = (CAM_OUT_ROUTE_NIC |
+-				      (qdev->
+-				       func << CAM_OUT_FUNC_SHIFT) |
+-					(0 << CAM_OUT_CQ_ID_SHIFT));
++				      (qdev->func << CAM_OUT_FUNC_SHIFT) |
++				      (0 << CAM_OUT_CQ_ID_SHIFT));
+ 			if (qdev->ndev->features & NETIF_F_HW_VLAN_CTAG_RX)
+ 				cam_output |= CAM_OUT_RV;
+ 			/* route to NIC core */
+@@ -3428,10 +3427,9 @@ static int ql_request_irq(struct ql_adapter *qdev)
+ 				     &qdev->rx_ring[0]);
+ 			status =
+ 			    request_irq(pdev->irq, qlge_isr,
+-					test_bit(QL_MSI_ENABLED,
+-						 &qdev->
+-						 flags) ? 0 : IRQF_SHARED,
+-					intr_context->name, &qdev->rx_ring[0]);
++					test_bit(QL_MSI_ENABLED, &qdev->flags)
++					? 0 : IRQF_SHARED, intr_context->name,
++					&qdev->rx_ring[0]);
+ 			if (status)
+ 				goto err_irq;
  
-@@ -353,8 +353,7 @@ static int ql_aen_lost(struct ql_adapter *qdev, struct mbox_params *mbcp)
- 	status = ql_get_mb_sts(qdev, mbcp);
- 	if (status) {
- 		netif_err(qdev, drv, qdev->ndev, "Lost AEN broken!\n");
--	}
--	else {
-+	} else {
- 		int i;
- 
- 		netif_err(qdev, drv, qdev->ndev, "Lost AEN detected.\n");
 -- 
 2.20.1
 
