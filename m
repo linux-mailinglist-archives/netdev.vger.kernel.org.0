@@ -2,75 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED51D11BBB7
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 108EA11BBFC
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:41:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731301AbfLKS2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:28:11 -0500
-Received: from mailgw02.mediatek.com ([216.200.240.185]:58549 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731155AbfLKS2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:28:09 -0500
-X-UUID: 51a9bce2e8cd4f61ab5a3414b952c729-20191211
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=DayJ7MQWQ4RP+Xy9OFTguKUS9uFN/Vn4kGqH3oJR+Hs=;
-        b=RjHN9U0eQTpQs/XOW7GXxK7+TRHWYSLdznZmKzSoGVyKknnlsf8ILFhfqLBjAXp82huinTHDXuejodmE9mX/qzTQ++4N4pKaJ4BsSBlUg79tmtgrg0WlXUD4iYvkAvPzkHsJGRX90CZqzL21iAz/OhpSzm8O0AWPb1WdxdQqpiU=;
-X-UUID: 51a9bce2e8cd4f61ab5a3414b952c729-20191211
-Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 766005550; Wed, 11 Dec 2019 10:28:05 -0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 11 Dec 2019 10:27:43 -0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Thu, 12 Dec 2019 02:27:23 +0800
-Message-ID: <1576088846.23763.80.camel@mtksdccf07>
-Subject: Re: [PATCH net-next 5/6] arm64: dts: mt7622: add mt7531 dsa to
- mt7622-rfb1 board
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "opensource@vdorst.com" <opensource@vdorst.com>,
-        "frank-w@public-files.de" <frank-w@public-files.de>
-Date:   Thu, 12 Dec 2019 02:27:26 +0800
-In-Reply-To: <20191210165149.GF27714@lunn.ch>
-References: <cover.1575914275.git.landen.chao@mediatek.com>
-         <7f5a690281664a0fe47cfe7726f26d7f6211d015.1575914275.git.landen.chao@mediatek.com>
-         <20191210165149.GF27714@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        id S1729945AbfLKSlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:41:36 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:44283 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729809AbfLKSlg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:41:36 -0500
+Received: by mail-qv1-f67.google.com with SMTP id n8so6162143qvg.11
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 10:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=QUS5BKSH61f4lKv1hrX3EZ1prXDNxY1nxacn7O67xGg=;
+        b=KAxl3K1I5FzMh3XKViZcFfB9EeCf3AgNLlq9zOTdVMCwrHjKa7EWCjZJ+bBwcajfMA
+         UIWclJQTkfpLMoXQjHaXmUIA51uhLaq4auOr/EDiJfvYUainah0ecJuFQ0t1S4UiKEDD
+         n897e8jEBLwH2TvQcyyLL0fYeEYDI42XMcHJ3IDhsXrDiTFRf8g9LxE/i2Ffqgo9Lz30
+         93gZJOPNJHOw01l40eSFt9OZVjLyAQmTZp1p23R4EVVvPkS7uJeNPlvoFly1SsRTv7sl
+         CvhlaFCUXI7k5+6R4FeNWHIiGuye+9q0cx02WnxFAKmdQZG+BuMmsMxysutPykgIhTem
+         BrbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=QUS5BKSH61f4lKv1hrX3EZ1prXDNxY1nxacn7O67xGg=;
+        b=pT+JRJIxR53WW6nGNZUZgNGk9YIutgEzIgUI22FmwuJYNWkxyxOlMHX96D2gxwWDMB
+         YkXiXHkjpglXGE7pADeRXtp/BrEV2FTIUqb9o4CpVKC2mWTPFxBBZ1Asu7+gyvA6+Vzk
+         jQLt7WahgJp4mTvN503h8IR8i2vWzmYtX51or5fIJMgr5EAnxNJB2yqZd/VSI/ft2/dc
+         asIoF+izNAqVi2yFUF9zcMWh0617AcnSw0/Yx0WfgZNoO8Do5JqMiLJERqWGFKIAz6AN
+         O+PpTlD1hxa93z5ZSsuPJse9AU6+5ZDTtesTww/sTJzLVdPneNv0c9VOvMUnVd0jYbpE
+         BIWQ==
+X-Gm-Message-State: APjAAAXc/7KdGUQd3UgHUz7ypgtCqx6m3rKyeRpmi+rIBKITqd4ggaRP
+        SHmWplIClP6pTbBYf7c/KKOV6/p8lyc=
+X-Google-Smtp-Source: APXvYqybAGoY76aTj5RQJd3vFH0dJvslULeQwYPRVEcNhEQaULWGWCYIBBUBNOdTHVLS66c/GN67Qg==
+X-Received: by 2002:a0c:a145:: with SMTP id d63mr4608615qva.120.1576089695195;
+        Wed, 11 Dec 2019 10:41:35 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id o33sm1196818qta.27.2019.12.11.10.41.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 10:41:34 -0800 (PST)
+Date:   Wed, 11 Dec 2019 13:41:33 -0500
+Message-ID: <20191211134133.GB1587652@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
+In-Reply-To: <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
+References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
+ <0e45fd22-c31b-a9c2-bf87-22c16a60aeb4@gmail.com>
+ <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTEyLTExIGF0IDAwOjUxICswODAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-PiArCQkJCXBvcnRANiB7DQo+ID4gKwkJCQkJcmVnID0gPDY+Ow0KPiA+ICsJCQkJCWxhYmVsID0g
-ImNwdSI7DQo+ID4gKwkJCQkJZXRoZXJuZXQgPSA8JmdtYWMwPjsNCj4gPiArCQkJCQlwaHktbW9k
-ZSA9ICIyNTAwYmFzZS14IjsNCj4gPiArDQo+ID4gKwkJCQkJZml4ZWQtbGluayB7DQo+ID4gKwkJ
-CQkJCXNwZWVkID0gPDI1MDA+Ow0KPiA+ICsJCQkJCQlmdWxsLWR1cGxleDsNCj4gPiArCQkJCQkJ
-cGF1c2U7DQo+ID4gKwkJCQkJfTsNCj4gDQo+IFRoaXMgZml4ZWQtbGluayBzaG91bGQgbm90IGJl
-IG5lZWRlZC4gVGhlIERTQSBkcml2ZXIgaXMgc3VwcG9zZWQgdG8NCj4gY29uZmlndXJlIHRoZSBD
-UFUgcG9ydCB0byBpdHMgZmFzdGVzdCBzcGVlZCBieSBkZWZhdWx0LiAyNTAwIGlzDQo+IHRoZSBm
-YXN0ZXN0IHNwZWVkIGEgMjUwMEJhc2UtWCBsaW5rIGNhbiBkby4uLg0KSSdsbCBhZGQgdGhlIGNw
-dSBwb3J0IGxvZ2ljIHRvIHVzZSB0aGUgZmFzdGVzdCBzcGVlZCBieSBkZWZhdWx0Lg0KSXQgYWxz
-byBuZWVkcyB0byBtb2RpZnkgdGhlIG10NzUzeF9waHlsaW5rX21hY19jb25maWcoKSBsb2dpYy4N
-Cg0KTGFuZGVuDQo+IA0KPiAgICAgQW5kcmV3DQoNCg==
+Hi David, Nikolay,
 
+On Wed, 11 Dec 2019 17:42:33 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+> >>  /* Bridge multicast database attributes
+> >>   * [MDBA_MDB] = {
+> >>   *     [MDBA_MDB_ENTRY] = {
+> >> @@ -261,6 +270,7 @@ enum {
+> >>  	BRIDGE_XSTATS_UNSPEC,
+> >>  	BRIDGE_XSTATS_VLAN,
+> >>  	BRIDGE_XSTATS_MCAST,
+> >> +	BRIDGE_XSTATS_STP,
+> >>  	BRIDGE_XSTATS_PAD,
+> >>  	__BRIDGE_XSTATS_MAX
+> >>  };
+> > 
+> > Shouldn't the new entry be appended to the end - after BRIDGE_XSTATS_PAD
+> > 
+> 
+> Oh yes, good catch. That has to be fixed, too.
+> 
+
+This I don't get. Why new attributes must come between BRIDGE_XSTATS_PAD
+and __BRIDGE_XSTATS_MAX?
+
+
+Thanks,
+
+	Vivien
