@@ -2,89 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 840EB11A52D
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 08:38:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE65711A55A
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 08:48:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfLKHiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 02:38:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49680 "EHLO mail.kernel.org"
+        id S1728198AbfLKHsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 02:48:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53350 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726151AbfLKHiO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 02:38:14 -0500
+        id S1726983AbfLKHsn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 02:48:43 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BD0A5208C3;
-        Wed, 11 Dec 2019 07:38:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8893420637;
+        Wed, 11 Dec 2019 07:48:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576049893;
-        bh=oWuub5EXQa2UcXV8h8dA9dFT2L0EsWY/1ZrBW4KAwxU=;
+        s=default; t=1576050523;
+        bh=4JZ8e8dgIBsEwHJUXH82+M2U3AS11Z7JV21zGuOxey4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TvuIY9ULFr22p6P34314qbKp8ZUQ5MvoYZu7OSrExa+lLeBO5WdvEzrDUqB8stwdT
-         0N7G2neoqdAP7YRgljopkdgHNEzQyFjFB3Luf2sLJAza3z32mHNyedzf8w8TCkVup5
-         k3deWoBevG+tC61VikgSNawVQr82f81LPK2AMW+s=
-Date:   Wed, 11 Dec 2019 08:38:10 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Daniel Walker (danielwa)" <danielwa@cisco.com>
-Cc:     "Aviraj Cj (acj)" <acj@cisco.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
-Subject: Re: [PATCH 1/2] net: stmmac: use correct DMA buffer size in the RX
- descriptor
-Message-ID: <20191211073810.GA398293@kroah.com>
-References: <20191210170659.61829-1-acj@cisco.com>
- <20191210205542.GB4080658@kroah.com>
- <20191210214014.GV20426@zorba>
+        b=WvN9ujTG/rkSPBA5i7NrgPvxm87aTaJM2wrtcgGLTFab2somSSD3B4Z+GZU8Ms6QA
+         zOQO35JhqqwFaL/g+IQb5DBi6vgBbtOlvQPR97Ec+9DRQta/7N8go6pYKwjnu4M+mz
+         xRVtBveDUoLfGaCLOGRA5d2h0eCuUQDA74LOjyYI=
+Date:   Wed, 11 Dec 2019 08:48:40 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.14 077/130] rfkill: allocate static minor
+Message-ID: <20191211074840.GH398293@kroah.com>
+References: <20191210220301.13262-1-sashal@kernel.org>
+ <20191210220301.13262-77-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191210214014.GV20426@zorba>
+In-Reply-To: <20191210220301.13262-77-sashal@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 09:40:17PM +0000, Daniel Walker (danielwa) wrote:
-> On Tue, Dec 10, 2019 at 09:55:42PM +0100, Greg KH wrote:
-> > On Tue, Dec 10, 2019 at 09:06:58AM -0800, Aviraj CJ wrote:
-> > > We always program the maximum DMA buffer size into the receive descriptor,
-> > > although the allocated size may be less. E.g. with the default MTU size
-> > > we allocate only 1536 bytes. If somebody sends us a bigger frame, then
-> > > memory may get corrupted.
-> > > 
-> > > Program DMA using exact buffer sizes.
-> > > 
-> > > [Adopted based on upstream commit c13a936f46e3321ad2426443296571fab2feda44
-> > > ("net: stmmac: use correct DMA buffer size in the RX descriptor")
-> > > by Aaro Koskinen <aaro.koskinen@nokia.com> ]
-> > 
-> > Adopted to what?
-> > 
-> > What is this patch for, it looks just like the commit you reference
-> > here.
-> > 
-> > totally confused,
+On Tue, Dec 10, 2019 at 05:02:08PM -0500, Sasha Levin wrote:
+> From: Marcel Holtmann <marcel@holtmann.org>
 > 
+> [ Upstream commit 8670b2b8b029a6650d133486be9d2ace146fd29a ]
 > 
-> We're using the patches on the v4.4 -stable branch. It doesn't have these patches and
-> the backport had rejects.
+> udev has a feature of creating /dev/<node> device-nodes if it finds
+> a devnode:<node> modalias. This allows for auto-loading of modules that
+> provide the node. This requires to use a statically allocated minor
+> number for misc character devices.
+> 
+> However, rfkill uses dynamic minor numbers and prevents auto-loading
+> of the module. So allocate the next static misc minor number and use
+> it for rfkill.
+> 
+> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+> Link: https://lore.kernel.org/r/20191024174042.19851-1-marcel@holtmann.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  include/linux/miscdevice.h | 1 +
+>  net/rfkill/core.c          | 9 +++++++--
+>  2 files changed, 8 insertions(+), 2 deletions(-)
 
-Ok, but commit "c13a936f46e3321ad2426443296571fab2feda44" is not in
-Linus's tree, and so I think you really mean 583e63614149 ("net: stmmac:
-use correct DMA buffer size in the RX descriptor") which is only
-included in 4.19 and newer kernels.
-
-So why would this need to go to 4.4.y?
-
-And if so, it needs to be explicitly stated as such, you all have read
-the stable kernel rules file, right?
-
-Please fix up and resend properly, as well as providing a version for
-newer kernels also if you really want this in a 4.4.y release.
-
-As David said, to not do so just causes a total waste of developer time
-trying to figure out what you all are wanting to do here...
+This is not needed in older kernels, please do not backport it unless
+the networking developers _REALLY_ think it is necessary.
 
 thanks,
 
