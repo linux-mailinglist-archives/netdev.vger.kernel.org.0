@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AFA11BAA7
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:52:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44FA811BAB0
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:53:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730593AbfLKRwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 12:52:35 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:41876 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729616AbfLKRwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:52:35 -0500
-Received: by mail-qv1-f67.google.com with SMTP id b18so6099177qvo.8
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 09:52:35 -0800 (PST)
+        id S1730684AbfLKRxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:53:52 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:47210 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730390AbfLKRxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:53:52 -0500
+Received: by mail-pf1-f202.google.com with SMTP id e62so2536334pfh.14
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 09:53:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FwmpzTi6RdlpMktZS9J8gXSszVfk8pW6XMKMrgazgys=;
-        b=uWyNM5T2ks64tN2oy9ia94cileO6Ns+cuejTH+Zg9CDUznKeqG1FQeFfLpGPk7iIsf
-         yyWm+bjOxRiJ+p+Q2f+m6OMWipKqsJe+Qn8w31FD/OnL+ZWViELVFpjM2TylfzwNbS6o
-         Sohdbpm7Q9NsUbyKBeM7g+L84hqFEThDmh65IDW5cBSFurg5w1fldV3CKqnbyK6JSut2
-         8phl0zSrfkyTiJq2bxuqImwy1J54nyX0lExWwHRCQQRXXBrZ8pk3VMkkxYyi+6a7R75r
-         ysr6/pZsZ+jxhE39K32Kfc45rn37ae2DPxVIUVS5IwGK+1HFLrJp/NhzckyLeYeUxvIf
-         AaFQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ZJ1oDyTzeXeW7N9+MWcw6Erx6CiN4LkWGkKMDboif64=;
+        b=UEJDUel8+0mbaKzZkv5PN5vaSzLDpVZyCmC9O4Kr9JA44Q1Vf0cVw1Ksa/qoerfutZ
+         oYFMs1CY+K8GlNR8+MaQJ6ew63QpIr61vK3GPfZEZHpwevAyDBb2URMbL4Z51Znd5NQu
+         XC9DgrsZlmqYfLbt6ceiMjj0iolNVbAp2/0WW8ml38ehYA/0K9zQK2ikqxTvwAYGLD4A
+         V2G1Ek1GxZPJOA3ZN1ZtBdyUw2FRV0qPeSI6qjmx/gYuLRGcag/AdEvM/w7kI4SdBh+Z
+         5/Srm1oGpjXhKnjcQzYpk/Ze1rs2zDhOv+/tbRMRF4OLMDXtZOHvXYgNCZpQ6bmii0AN
+         jCFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FwmpzTi6RdlpMktZS9J8gXSszVfk8pW6XMKMrgazgys=;
-        b=gqwX6isGJE8yJDjGD0f/jFFQ5u0BftpYqQT32ho/xz5aZxO+w1q3RhqtywFbJpIh/J
-         jVdOZm7dJDj6VFhQaC5Wdjt5muCP190Aze1BHUkj3nAOr0hzDWDA+iTjwxBgZlZ11NiS
-         7spvKJlWpF0VeE6ZZ29Qz8MG6ZvE0CHqeKvMQm8jw+JLCPh2swI48b/gKDA+CpcwpMFT
-         HXOjD/Q1bAfkJkovCKo/+QcLvnxQlSJqX7nk97QzDX+Ozgo+BVCinuWRdu3eyX2bi7S5
-         IthK9rPm+/mQ1hhrMUQ11KW4tne8GOui3Xqpm+HqS0AhIiorP87IUidlVN8SPRAo7T2O
-         I+kQ==
-X-Gm-Message-State: APjAAAXKq5xsc/7mgN3YGCam/5SGOO6EUPxbwF6pohxKmJdxPKLm4qvN
-        0/f6Q4Itz+Pt0HDQAuvMdjI=
-X-Google-Smtp-Source: APXvYqzGEe3vS94PgloG4VmZeQO3lhJOaKopZIO+nNvCX47RPE9Bl+ie3cEQWUKfS8RxVOvwVC0kxw==
-X-Received: by 2002:a05:6214:13a3:: with SMTP id h3mr4270393qvz.212.1576086754938;
-        Wed, 11 Dec 2019 09:52:34 -0800 (PST)
-Received: from ?IPv6:2601:282:800:fd80:79bb:41c5:ccad:6884? ([2601:282:800:fd80:79bb:41c5:ccad:6884])
-        by smtp.googlemail.com with ESMTPSA id k31sm1088588qtd.64.2019.12.11.09.52.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 09:52:34 -0800 (PST)
-Subject: Re: [PATCH net-next 6/9] ipv4: Handle route deletion notification
- during flush
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, roopa@cumulusnetworks.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20191210172402.463397-1-idosch@idosch.org>
- <20191210172402.463397-7-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0becb113-01c2-6342-b162-095664c89e9d@gmail.com>
-Date:   Wed, 11 Dec 2019 10:52:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
-MIME-Version: 1.0
-In-Reply-To: <20191210172402.463397-7-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ZJ1oDyTzeXeW7N9+MWcw6Erx6CiN4LkWGkKMDboif64=;
+        b=OUlTeq0enrRUv38+35XDXxOSZFSyH31VfvblIkNb3NpfOxj8O1W5VYCVUrlyf9WT4C
+         JN9JDUz3MyNwYDZMZnWN4N0jvDCNFsFBfJhr/Yx5nIOGSVxgWON8GKtV+g6j6+iIeQde
+         uTRvOYjPdV7QnMz0DPmXXu2ErdMabBK0vilhESSU4GSFq9TUgFb/+TbakG7PgC6C0MuA
+         hwpmQek61+t0mJ/ve1+FD7Atr90ZpKJX6W+Gt5AnK0/pAMi0J83JaGeDy+8g6QrOIzR2
+         SY6WcM3lO9sdbZT5+rzuZDW8ja0/KQj07QV2CO9B4ZZlSGP+ZwCbTUkpq8bDAPi0KhxY
+         BcyA==
+X-Gm-Message-State: APjAAAXF6J161ZNlwH3LxbUEkP4ZOFNcRVZTGEG1YUe7DmUnqwt4Iwbf
+        1InLI5a7pH12ChKAnlFMmXteXEVFRAHDiQtJLZbh/H8A5OeL4DQ1E1sJiOieYIuFD7QYfkQCMd2
+        XdizhsWU3UqBuOQRpwBgJ8tr7CvUGLHe2Zvc0NWhLSiG/HAXzvwiD3A==
+X-Google-Smtp-Source: APXvYqyK6BjDE2BnAYzWgZj9ST91PypaNH+s76eIB4XplW47dYQSCT8BstG2UT0rErnRTFHE4rShTZc=
+X-Received: by 2002:a63:d543:: with SMTP id v3mr5389333pgi.285.1576086831333;
+ Wed, 11 Dec 2019 09:53:51 -0800 (PST)
+Date:   Wed, 11 Dec 2019 09:53:48 -0800
+Message-Id: <20191211175349.245622-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.525.g8f36a354ae-goog
+Subject: [PATCH bpf-next 1/2] bpf: expose __sk_buff wire_len/gso_segs to BPF_PROG_TEST_RUN
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/19 10:23 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> In a similar fashion to previous patch, when a route is deleted as part
-> of table flushing, promote the next route in the list, if exists.
-> Otherwise, simply emit a delete notification.
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  net/ipv4/fib_trie.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+wire_len should not be less than real len and is capped by GSO_MAX_SIZE.
+gso_segs is capped by GSO_MAX_SEGS.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ net/bpf/test_run.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 85c8cbbada92..06cadba2e3b9 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -263,8 +263,10 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 		return -EINVAL;
+ 
+ 	/* tstamp is allowed */
++	/* wire_len is allowed */
++	/* gso_segs is allowed */
+ 
+-	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, tstamp),
++	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, gso_segs),
+ 			   sizeof(struct __sk_buff)))
+ 		return -EINVAL;
+ 
+@@ -272,6 +274,14 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	skb->tstamp = __skb->tstamp;
+ 	memcpy(&cb->data, __skb->cb, QDISC_CB_PRIV_LEN);
+ 
++	if (__skb->wire_len < skb->len || __skb->wire_len > GSO_MAX_SIZE)
++		return -EINVAL;
++	cb->pkt_len = __skb->wire_len;
++
++	if (__skb->gso_segs > GSO_MAX_SEGS)
++		return -EINVAL;
++	skb_shinfo(skb)->gso_segs = __skb->gso_segs;
++
+ 	return 0;
+ }
+ 
+@@ -285,6 +295,8 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	__skb->priority = skb->priority;
+ 	__skb->tstamp = skb->tstamp;
+ 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
++	__skb->wire_len = cb->pkt_len;
++	__skb->gso_segs = skb_shinfo(skb)->gso_segs;
+ }
+ 
+ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+-- 
+2.24.0.525.g8f36a354ae-goog
 
