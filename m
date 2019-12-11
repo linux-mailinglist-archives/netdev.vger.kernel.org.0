@@ -2,185 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 453E411BF20
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 22:25:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA07711BF63
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 22:47:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726818AbfLKVZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 16:25:37 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:1456 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbfLKVZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 16:25:36 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5df15eb80000>; Wed, 11 Dec 2019 13:25:12 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 11 Dec 2019 13:25:34 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 11 Dec 2019 13:25:34 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 11 Dec
- 2019 21:25:34 +0000
-Subject: Re: [PATCH v9 10/25] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-To:     Jonathan Corbet <corbet@lwn.net>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20191211025318.457113-1-jhubbard@nvidia.com>
- <20191211025318.457113-11-jhubbard@nvidia.com>
- <20191211135737.581add2f@lwn.net>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <c8930e77-9c99-2d3d-743d-9d58176ea690@nvidia.com>
-Date:   Wed, 11 Dec 2019 13:25:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1726623AbfLKVr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 16:47:58 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:46812 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbfLKVr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 16:47:57 -0500
+Received: by mail-qv1-f65.google.com with SMTP id t9so75385qvh.13
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 13:47:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=RaAE7sjaNd1lnPk57Cwl+t3wgCFYj7SYpv6MvMoqfZM=;
+        b=TyBKqC7aMmrh+M6LP64NE4QW7xWQKWLDifFe4gpI7ZIaVzF4igUoNCdI6aw++uiE2w
+         a2kHcrZ8EAdWJIDY54CrtgKsgAEjnSjG48BIbTqGWKmy66OUQYLEYGD476TScP+HmOIy
+         /W9rmUeuAa87/A/TiMhuZVPWNXUQQUOe55G1llrZKFLXgUJiub0lIPNPmvGfNSg29efN
+         nDUBa53Qtp0pOdxrRxHdIYa2ml8eAcIJFfsvY9IHqmdTN1iNFcqm+G/f2yPZWxxFRgyQ
+         pSpz2RhqqpUZq9qXDtPSlqKGUvjgGsQIW44dcxSJy0ft0abuO6po6ZTTg46d48PieaZo
+         OUqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=RaAE7sjaNd1lnPk57Cwl+t3wgCFYj7SYpv6MvMoqfZM=;
+        b=etUL6/6X3bnfL/PpSiGrqVdZnxhDDEVTM1yoPlKgY+sZr2YtT2gSJ0WyvqFEJllcDp
+         yr0mF+o8DcnCcfLH8IS4UGTHxBdQaxe9viSFLrDbsZxiyzh6+6/tSHM8HYLoup7AqIms
+         KeLTUr8pEJkpQj4dUN6wvKM1yP5iqxHZ50K+TKeyckOllzpAy8PI1kzL1PfROqRzJMbm
+         5/thNMIs30xP10J8rP47E5wFZ77Y0dIFRGSfvyJc21XByyi3u8SzW4eP5iePQXmgdu6t
+         nIYK1//5CosA6TLAmp6TMzlL5SX0NxDOV07sayz9p7+rjHJCLt7u4WE4n5SBh0rF95wI
+         aiTg==
+X-Gm-Message-State: APjAAAVUUMIQRv+DWpQC8bHplC/yiQLRBqtmaU7qdbu4/Ei6xR2lACGB
+        Dp944qAQYqSYzZGBut404C0=
+X-Google-Smtp-Source: APXvYqxp54jG68g6gUukW3yMjWMe0M9d2XbuokGR9xtBNRBzoSlTPiyfoICsOkrUnEFD1Kz1mCIkzw==
+X-Received: by 2002:a0c:f513:: with SMTP id j19mr5185205qvm.206.1576100876870;
+        Wed, 11 Dec 2019 13:47:56 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id 184sm1061118qke.73.2019.12.11.13.47.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 13:47:55 -0800 (PST)
+Date:   Wed, 11 Dec 2019 16:47:54 -0500
+Message-ID: <20191211164754.GB1616641@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     nikolay@cumulusnetworks.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org, stephen@networkplumber.org
+Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
+In-Reply-To: <20191211.120120.991784482938734303.davem@davemloft.net>
+References: <0e45fd22-c31b-a9c2-bf87-22c16a60aeb4@gmail.com>
+ <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
+ <20191211134133.GB1587652@t480s.localdomain>
+ <20191211.120120.991784482938734303.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20191211135737.581add2f@lwn.net>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1576099513; bh=h8WoxBOtUL7d4aBHwikvS71dFoLle6Q1qJcgfYlGzoI=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=n8ng2gW+8yccOTJ0sb0qKZBSBkMzrO2w+mX1jwAwhVYYv3FE21MXjsfMjjhApcnib
-         wo8d+ZRlDZwi9+66AYkoZtFFMIJupZ7au9saOmm/kNh3KbsRApo1SSaYZzqpFUg9dv
-         APDY2cvczFMX0P05ANDG9Wpe8w2DHHN7/JdQsO1AuudRaAw4keF3jV1uyq3uA82xUI
-         ieCnDqXdxIHT69mdMVDE/JA7qgs+lLHW/JROAhLDlkZchTV8THtwKre9xUIr3vtdDd
-         8O/vqZHRFo4GrCktOUJaI0JiNxox7/Ns2xEUIaiCnKWdDSbo4DOz0JmZdD1qJCvncm
-         kDdssHEUgirjg==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/19 12:57 PM, Jonathan Corbet wrote:
-> On Tue, 10 Dec 2019 18:53:03 -0800
-> John Hubbard <jhubbard@nvidia.com> wrote:
+Hi David,
+
+On Wed, 11 Dec 2019 12:01:20 -0800 (PST), David Miller <davem@davemloft.net> wrote:
+> >> >>  /* Bridge multicast database attributes
+> >> >>   * [MDBA_MDB] = {
+> >> >>   *     [MDBA_MDB_ENTRY] = {
+> >> >> @@ -261,6 +270,7 @@ enum {
+> >> >>  	BRIDGE_XSTATS_UNSPEC,
+> >> >>  	BRIDGE_XSTATS_VLAN,
+> >> >>  	BRIDGE_XSTATS_MCAST,
+> >> >> +	BRIDGE_XSTATS_STP,
+> >> >>  	BRIDGE_XSTATS_PAD,
+> >> >>  	__BRIDGE_XSTATS_MAX
+> >> >>  };
+> >> > 
+> >> > Shouldn't the new entry be appended to the end - after BRIDGE_XSTATS_PAD
+> >> > 
+> >> 
+> >> Oh yes, good catch. That has to be fixed, too.
+> >> 
+> > 
+> > This I don't get. Why new attributes must come between BRIDGE_XSTATS_PAD
+> > and __BRIDGE_XSTATS_MAX?
 > 
->> Introduce pin_user_pages*() variations of get_user_pages*() calls,
->> and also pin_longterm_pages*() variations.
-> 
-> Just a couple of nits on the documentation patch
-> 
->> +++ b/Documentation/core-api/pin_user_pages.rst
->> @@ -0,0 +1,232 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +====================================================
->> +pin_user_pages() and related calls
->> +====================================================
->> +
->> +.. contents:: :local:
->> +
->> +Overview
->> +========
->> +
->> +This document describes the following functions: ::
->> +
->> + pin_user_pages
->> + pin_user_pages_fast
->> + pin_user_pages_remote
-> 
-> You could just say "the following functions::" and get the result you're
-> after with a slightly less alien plain-text reading experience.
+> Because, just like any other attribute value, BRIDGE_XSTATS_PAD is an
+> API and fixed in stone.  You can't add things before it which change
+> it's value.
 
-I see. That works nicely: same result with fewer :'s. 
-
-> 
-> Of course, you could also just say "This document describes
-> pin_user_pages(), pin_user_pages_fast(), and pin_user_pages_remote()." But
-> that's a matter of personal taste, I guess.  Using the function() notation
-> will cause the docs system to automatically link to the kerneldoc info,
-> though.  
-
-OK. I did try the single-sentence approach just now, but to me the one-per-line
-seems to make both the text and the generated HTML slightly easier to look at. 
-Of course, like you say, different people will have different preferences. So 
-in the end I've combined the tips, like this:
-
-+Overview
-+========
-+
-+This document describes the following functions::
-+
-+ pin_user_pages()
-+ pin_user_pages_fast()
-+ pin_user_pages_remote()
+I thought the whole point of using enums was to avoid caring about fixed
+numeric values, but well. To be more precise, what I don't get is that when
+I move the BRIDGE_XSTATS_STP definition *after* BRIDGE_XSTATS_PAD, the STP
+xstats don't show up anymore in iproute2.
 
 
-> 
->> +Basic description of FOLL_PIN
->> +=============================
->> +
->> +FOLL_PIN and FOLL_LONGTERM are flags that can be passed to the get_user_pages*()
->> +("gup") family of functions. FOLL_PIN has significant interactions and
->> +interdependencies with FOLL_LONGTERM, so both are covered here.
->> +
->> +FOLL_PIN is internal to gup, meaning that it should not appear at the gup call
->> +sites. This allows the associated wrapper functions  (pin_user_pages*() and
->> +others) to set the correct combination of these flags, and to check for problems
->> +as well.
->> +
->> +FOLL_LONGTERM, on the other hand, *is* allowed to be set at the gup call sites.
->> +This is in order to avoid creating a large number of wrapper functions to cover
->> +all combinations of get*(), pin*(), FOLL_LONGTERM, and more. Also, the
->> +pin_user_pages*() APIs are clearly distinct from the get_user_pages*() APIs, so
->> +that's a natural dividing line, and a good point to make separate wrapper calls.
->> +In other words, use pin_user_pages*() for DMA-pinned pages, and
->> +get_user_pages*() for other cases. There are four cases described later on in
->> +this document, to further clarify that concept.
->> +
->> +FOLL_PIN and FOLL_GET are mutually exclusive for a given gup call. However,
->> +multiple threads and call sites are free to pin the same struct pages, via both
->> +FOLL_PIN and FOLL_GET. It's just the call site that needs to choose one or the
->> +other, not the struct page(s).
->> +
->> +The FOLL_PIN implementation is nearly the same as FOLL_GET, except that FOLL_PIN
->> +uses a different reference counting technique.
->> +
->> +FOLL_PIN is a prerequisite to FOLL_LONGTGERM. Another way of saying that is,
-> 
-> FOLL_LONGTERM typoed there.
-> 
+Thanks,
 
-Good catch. Fixed.
-
-thanks,
--- 
-John Hubbard
-NVIDIA
-
-
+	Vivien
