@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C584911BC2A
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:49:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3A4211BC5E
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 20:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfLKStq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:49:46 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47688 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726242AbfLKStq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:49:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576090184;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BiLSYDkRntIU858BzJstZyuUBPdrBkPDKmfLrKClZAk=;
-        b=ALZfhn+nuMwWMipe+3Q1EFiePNkQ4/KciAC6YFv7tC66H8O/QuDaDjrPJ2mtRwwIdRmks5
-        R/feF41Q+B4Jg9vK28KqDnRZrfgE2D8kwISmz2e5qZpks3oGmQbfkT1PwXkWNsupZwqOSS
-        mMgJr4oLb/vWRMC7ess+jCwsuEhdzEM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-179-KXCLEEqOO1SUHuSbF4k6uQ-1; Wed, 11 Dec 2019 13:49:41 -0500
-X-MC-Unique: KXCLEEqOO1SUHuSbF4k6uQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2244800C75;
-        Wed, 11 Dec 2019 18:49:39 +0000 (UTC)
-Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C8DAB5C1BB;
-        Wed, 11 Dec 2019 18:49:34 +0000 (UTC)
-Date:   Wed, 11 Dec 2019 19:49:33 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Message-ID: <20191211194933.15b53c11@carbon>
-In-Reply-To: <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
-        <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+        id S1727237AbfLKTAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 14:00:17 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:39459 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726987AbfLKTAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 14:00:17 -0500
+Received: by mail-yw1-f68.google.com with SMTP id h126so9366605ywc.6
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:00:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LiYnu/zIEic5PWtCvRDc52iyqPUbIrsp7Fefx1KWNRM=;
+        b=tS4db11oCQ99MyPpd7BWu6H1H3aEivbgAqU4tWnn83Y7UgeaYORbCcHuwHlte0L/0i
+         TTL4naWxFdT5LJd+GVzh7ccUIP0/w9gSvKNaQnXb8x5sB/uNgg6LkjveU2AmxnrRAqzh
+         3VGizdMFYn3Dxj9jf6wVXollv555bfyeid5qZGtzdCHII9oA6FSGkMppQOWEv8uyc73W
+         YvnqeTwU7l279aaHny9hoF81G40VwX1RtjwWqFucG9T4sL5jS1ar6ICC6x1SiX/wXUIK
+         756/rk69gYs5hhMYsJv8YBigc+JOieJUdcubKkAoA31FXaRZ0dwed1SLx6Je8uCq1VJn
+         IZeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LiYnu/zIEic5PWtCvRDc52iyqPUbIrsp7Fefx1KWNRM=;
+        b=mJEE26EU4koBz5ffxaDZjG4ILuzIxeEmush219Caf6X3zEtDpCIr9hMvYd2jzFreh7
+         hrXn/pQiIBluJ2KRtSRHS9ElvBOWE5US4nF2OutOfhSEp2qGOBEXMpA46H97iiaYQ3dn
+         RCJg4EiKAYwtTvlVu+jmjumUzOu4XpMyobHvFsJ6+EQSFPQe8KWeCLBVgMP0dl7LZ7Mu
+         bMg5qtmeFhM/WXQlzbZlmt+ofEsHhNPtWuawcjIr3yv3Ag6iL1dR70EvoHJrpoiRFZso
+         QYvYMIW837Jf7FNNNcXF+gLFwqAQLwV4ziufRqlqVL+3wJEUi9T6AJqFNW/qU4c+0y5X
+         MMnw==
+X-Gm-Message-State: APjAAAUz78L+x6OHu5Y03jjHZnIcijieX1ojZZjMJvjKMzp9TTLR7FZR
+        R+z6KvXdiB0G3hfT84WXlHy22aaq
+X-Google-Smtp-Source: APXvYqwXNlODEvMikN/spwnsa2DFGuQ8lKE5PUI4U28u/MPKjb7BxaXxoF9ruIq6NJnuEvsPnf3pUw==
+X-Received: by 2002:a81:5c56:: with SMTP id q83mr998313ywb.223.1576090816304;
+        Wed, 11 Dec 2019 11:00:16 -0800 (PST)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id u77sm1496266ywc.70.2019.12.11.11.00.15
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Dec 2019 11:00:15 -0800 (PST)
+Received: by mail-yb1-f171.google.com with SMTP id p137so9440760ybg.9
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 11:00:15 -0800 (PST)
+X-Received: by 2002:a25:208b:: with SMTP id g133mr1138013ybg.337.1576090814496;
+ Wed, 11 Dec 2019 11:00:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <83161576077966@vla4-87a00c2d2b1b.qloud-c.yandex.net>
+In-Reply-To: <83161576077966@vla4-87a00c2d2b1b.qloud-c.yandex.net>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 11 Dec 2019 13:59:38 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSey4oa-WPRuAu8TAQFDO9e==e-+-SQ2p4237drq8GzOWQ@mail.gmail.com>
+Message-ID: <CA+FuTSey4oa-WPRuAu8TAQFDO9e==e-+-SQ2p4237drq8GzOWQ@mail.gmail.com>
+Subject: Re: RPS arp processing
+To:     Aleksei Zakharov <zakharov.a.g@yandex.ru>
+Cc:     Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 7 Dec 2019 03:52:41 +0000
-Saeed Mahameed <saeedm@mellanox.com> wrote:
+On Wed, Dec 11, 2019 at 10:34 AM Aleksei Zakharov
+<zakharov.a.g@yandex.ru> wrote:
+>
+> Hi, everyone
+> Is it possible to balance ARP across CPUs with RPS?
+> I don't clearly understand how hash is calulated for ARP packets, but it seems that it should consider source and target IPs.
 
-> I don't think it is correct to check that the page nid is same as
-> numa_mem_id() if pool is NUMA_NO_NODE. In such case we should allow all
-> pages to recycle, because you can't assume where pages are allocated
-> from and where they are being handled.
+The hash is derived by flow dissection:
 
-I agree, using numa_mem_id() is not valid, because it takes the numa
-node id from the executing CPU and the call to __page_pool_put_page()
-can happen on a remote CPU (e.g. cpumap redirect, and in future SKBs).
+    get_rps_cpus
+      ___skb_get_hash
+          skb_flow_dissect_flow_keys
 
+This calls __skb_flow_dissector with the flow_keys_dissector
+dissection program, which is initialized in
+init_default_flow_dissectors from flow_keys_dissector_keys.
 
-> I suggest the following:
-> 
-> return !page_pfmemalloc() && 
-> ( page_to_nid(page) == pool->p.nid || pool->p.nid == NUMA_NO_NODE );
+That program incorporates IPV4_ADDRS and IPV6_ADDRS. But that does not
+apply to ARP packets. Contrast case ETH_P_IPV6 with case ETH_P_ARP in
+__skb_flow_dissect.
 
-Above code doesn't generate optimal ASM code, I suggest:
+The flow dissector calls __skb_flow_dissect_arp() for deeper
+dissection, from which you could extract entropy for RPS. But the
+flow_keys_dissector program does not have FLOW_DISSECTOR_KEY_ARP
+enabled.
 
- static bool pool_page_reusable(struct page_pool *pool, struct page *page)
- {
-	return !page_is_pfmemalloc(page) &&
-		pool->p.nid != NUMA_NO_NODE &&
-		page_to_nid(page) == pool->p.nid;
- }
+> In our current setup we have one l2 segment between external hardware routers and namespaces on linux server.
+> When router sends ARP request, it is passed through server's physical port, then via openvswitch bridge it is copied to every namespace.
+> We've found that all ARPs (for different destination ips and few source ips) are processed on one CPU inside namespaces. We use RPS, and most packets are balanced between all CPUs.
 
-I have compiled different variants and looked at the ASM code generated
-by GCC.  This seems to give the best result.
-
-
-> 1) never recycle emergency pages, regardless of pool nid.
-> 2) always recycle if pool is NUMA_NO_NODE.
-
-Yes, this defines the semantics, that a page_pool configured with
-NUMA_NO_NODE means skip NUMA checks.  I think that sounds okay...
+I suggest looking at the newer BPF flow dissector, which allows tuning
+dissection to specific use cases, like yours.
 
 
-> the above change should not add any overhead, a modest branch
-> predictor will handle this with no effort.
 
-It still annoys me that we keep adding instructions to this code
-hot-path (I counted 34 bytes and 11 instructions in my proposed
-function).
 
-I think that it might be possible to move these NUMA checks to
-alloc-side (instead of return/recycles side as today), and perhaps only
-on slow-path when dequeuing from ptr_ring (as recycles that call
-__page_pool_recycle_direct() will be pinned during NAPI).  But lets
-focus on a smaller fix for the immediate issue...
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> Kernel 4.15.0-65 from ubuntu 18.04.
+>
+> Might this issue be related to namespaces somehow?
+>
+> --
+> Regards,
+> Aleksei Zakharov
+>
