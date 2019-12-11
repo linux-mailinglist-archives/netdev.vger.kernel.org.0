@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A453E11A852
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:58:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F72C11A854
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728535AbfLKJ6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 04:58:18 -0500
-Received: from mx2.suse.de ([195.135.220.15]:58166 "EHLO mx1.suse.de"
+        id S1728637AbfLKJ6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 04:58:22 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58220 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727829AbfLKJ6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 04:58:16 -0500
+        id S1727829AbfLKJ6V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 04:58:21 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C4836AF8E;
-        Wed, 11 Dec 2019 09:58:14 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id CDE95AFE8;
+        Wed, 11 Dec 2019 09:58:19 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 78E84E00B7; Wed, 11 Dec 2019 10:58:14 +0100 (CET)
-Message-Id: <f92869fa9d024e61eacd97cd8518d1d2cc7dc319.1576057593.git.mkubecek@suse.cz>
+        id 7F585E00B7; Wed, 11 Dec 2019 10:58:19 +0100 (CET)
+Message-Id: <e20dc08833e3f902a012d5a5a4eacf44729b4410.1576057593.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1576057593.git.mkubecek@suse.cz>
 References: <cover.1576057593.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v3 1/5] rtnetlink: provide permanent hardware address
- in RTM_NEWLINK
+Subject: [PATCH net-next v3 2/5] netlink: rename nl80211_validate_nested() to
+ nla_validate_nested()
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -31,78 +31,65 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Wed, 11 Dec 2019 10:58:14 +0100 (CET)
+Date:   Wed, 11 Dec 2019 10:58:19 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Permanent hardware address of a network device was traditionally provided
-via ethtool ioctl interface but as Jiri Pirko pointed out in a review of
-ethtool netlink interface, rtnetlink is much more suitable for it so let's
-add it to the RTM_NEWLINK message.
-
-Add IFLA_PERM_ADDRESS attribute to RTM_NEWLINK messages unless the
-permanent address is all zeros (i.e. device driver did not fill it). As
-permanent address is not modifiable, reject userspace requests containing
-IFLA_PERM_ADDRESS attribute.
-
-Note: we already provide permanent hardware address for bond slaves;
-unfortunately we cannot drop that attribute for backward compatibility
-reasons.
-
-v5 -> v6: only add the attribute if permanent address is not zero
+Function nl80211_validate_nested() is not specific to nl80211, it's
+a counterpart to nla_validate_nested_deprecated() with strict validation.
+For consistency with other validation and parse functions, rename it to
+nla_validate_nested().
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 ---
- include/uapi/linux/if_link.h | 1 +
- net/core/rtnetlink.c         | 5 +++++
- 2 files changed, 6 insertions(+)
+ include/net/netlink.h  | 8 ++++----
+ net/wireless/nl80211.c | 3 +--
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 8aec8769d944..1d69f637c5d6 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -169,6 +169,7 @@ enum {
- 	IFLA_MAX_MTU,
- 	IFLA_PROP_LIST,
- 	IFLA_ALT_IFNAME, /* Alternative ifname */
-+	IFLA_PERM_ADDRESS,
- 	__IFLA_MAX
- };
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 02916f43bf63..20bc406f3871 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1041,6 +1041,7 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
- 	       + nla_total_size(4)  /* IFLA_MIN_MTU */
- 	       + nla_total_size(4)  /* IFLA_MAX_MTU */
- 	       + rtnl_prop_list_size(dev)
-+	       + nla_total_size(MAX_ADDR_LEN) /* IFLA_PERM_ADDRESS */
- 	       + 0;
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index b140c8f1be22..56c365dc6dc7 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -1735,7 +1735,7 @@ static inline void nla_nest_cancel(struct sk_buff *skb, struct nlattr *start)
  }
  
-@@ -1757,6 +1758,9 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
- 	    nla_put_s32(skb, IFLA_NEW_IFINDEX, new_ifindex) < 0)
- 		goto nla_put_failure;
+ /**
+- * nla_validate_nested - Validate a stream of nested attributes
++ * __nla_validate_nested - Validate a stream of nested attributes
+  * @start: container attribute
+  * @maxtype: maximum attribute type to be expected
+  * @policy: validation policy
+@@ -1758,9 +1758,9 @@ static inline int __nla_validate_nested(const struct nlattr *start, int maxtype,
+ }
  
-+	if (memchr_inv(dev->perm_addr, '\0', dev->addr_len) &&
-+	    nla_put(skb, IFLA_PERM_ADDRESS, dev->addr_len, dev->perm_addr))
-+		goto nla_put_failure;
+ static inline int
+-nl80211_validate_nested(const struct nlattr *start, int maxtype,
+-			const struct nla_policy *policy,
+-			struct netlink_ext_ack *extack)
++nla_validate_nested(const struct nlattr *start, int maxtype,
++		    const struct nla_policy *policy,
++		    struct netlink_ext_ack *extack)
+ {
+ 	return __nla_validate_nested(start, maxtype, policy,
+ 				     NL_VALIDATE_STRICT, extack);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index da5262b2298b..fa3526592c51 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -12900,8 +12900,7 @@ static int nl80211_vendor_check_policy(const struct wiphy_vendor_command *vcmd,
+ 		return -EINVAL;
+ 	}
  
- 	rcu_read_lock();
- 	if (rtnl_fill_link_af(skb, dev, ext_filter_mask))
-@@ -1822,6 +1826,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
- 	[IFLA_PROP_LIST]	= { .type = NLA_NESTED },
- 	[IFLA_ALT_IFNAME]	= { .type = NLA_STRING,
- 				    .len = ALTIFNAMSIZ - 1 },
-+	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
- };
+-	return nl80211_validate_nested(attr, vcmd->maxattr, vcmd->policy,
+-				       extack);
++	return nla_validate_nested(attr, vcmd->maxattr, vcmd->policy, extack);
+ }
  
- static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+ static int nl80211_vendor_cmd(struct sk_buff *skb, struct genl_info *info)
 -- 
 2.24.0
 
