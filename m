@@ -2,84 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 080C511AB65
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B0A11AB72
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 14:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729379AbfLKM50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:57:26 -0500
-Received: from mout.kundenserver.de ([212.227.126.134]:42119 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728128AbfLKM50 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:57:26 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MatmF-1i8ibS36ZH-00cOoO; Wed, 11 Dec 2019 13:57:13 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: ethernet: ti: build cpsw-common for switchdev
-Date:   Wed, 11 Dec 2019 13:56:10 +0100
-Message-Id: <20191211125643.1987157-2-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20191211125643.1987157-1-arnd@arndb.de>
-References: <20191211125643.1987157-1-arnd@arndb.de>
+        id S1729345AbfLKNAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 08:00:17 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53612 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727402AbfLKNAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 08:00:17 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1if1b9-0002Hf-CV; Wed, 11 Dec 2019 14:00:11 +0100
+Date:   Wed, 11 Dec 2019 14:00:10 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Paul Chaignon <paul.chaignon@orange.com>
+Cc:     Paul Burton <paulburton@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Mahshid Khezri <khezri.mahshid@gmail.com>,
+        paul.chaignon@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf 0/2] Limit tail calls to 33 in all JIT compilers
+Message-ID: <20191211130010.GA23015@linux.fritz.box>
+References: <cover.1575916815.git.paul.chaignon@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:K6rsam58HmBZQzLvo9EBHtFu2MxaOTWeFk96Se6piIUDIb6cI0F
- /dI9Aep+YrNPLwpnbwhuOcewweRyHskJN33FJh+PjMYCurRpkrzac+njNH/TpTNGYKvmMMa
- LaN36M/SepcSpqQCim9xV7od6ph8Vppbjz8BRiCUu3hfCIIuizlXu94JDbVqnLJ+2ofXZeB
- 5srA/DbfW66duIwP47qpQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:kqUrXnKg35M=:CaUAdEjNCKSXdpNTo0Eorq
- b6ldRdm5Tauq2CQV3kUOU2OLIInZe3UuZdSgZKEZTzyl5pvTzwVTIvYJToqXS9k+O6lKqSG3j
- OHBMNiQln4vY02omU0+rAhYHK/hqg1Cvex0uofOhbf4xryiRcanTLOOPhqQwJvRJFJtEOCHl9
- E2BfqGeanhJwLlpdZIBIDTamgWWlWPInVJ/i3czwYnWbBZ0xBCdD2+qJ5lM0+8H0yfYYIFzmB
- hWxsJOlX59P0EevL6tR2oMuu50FE1ERBDoALc+xsr4DnnKlViRpsFJbn9fJOxoD2zS/NgStIZ
- GD07xbQZWFtl9wpbCltJ500d00FEdnAb72VY8gt0T+B05wRnYWPDpIhnLUhMoi3/mIGctaqwY
- NKSXsip/AEhMLCsDOXAmpyccgGSkrqjS9qviBjgk1gjp6ic3UInrrFRJuULvNq1+JrWXSwc93
- I8kA7iypL2yrxiXGBrrLFkCwQOk5Qeu4poQuDy0SG0PL6tY2nyIG5h0O8W2cwV2Hz0X86IHNP
- zPChNae4ykswfrd5GbM7sLsBBmMh9EH5jXyoQzHyAgRZeuGwO4N9dhzUmpd+m2fvHVLWjSP7l
- DL/nYhKNWHZo2zFYw9nMfgBrqbGOI/j42hE6mZB4PaTJQKnC8zJA/FBVJlAPzielwWl/vHw8h
- yviFiD3E+OP024kmLaUlMWIQJl/TDQx/TMKtMdncDawnUUrPO1ZrMtSxu5w4r/1el16rZJn6e
- Pw+WZD2vIe/cyMBM15P3NMtLJ52SYhcFvw2RSwTXelh/lLBCPtZl2Unor67znXuOD/MwjJRkl
- yOGf1J2nQyF7e6RR8I1MNt//8hG7d/Cb69Nx4Ie5ceymS61b5IG0PhkATLNh02vxpdNVlhdGo
- H7HiYrXmWcJcZqEyIT9A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1575916815.git.paul.chaignon@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25660/Wed Dec 11 10:47:07 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without the common part of the driver, the new file fails to link:
+On Mon, Dec 09, 2019 at 07:51:52PM +0100, Paul Chaignon wrote:
+> The BPF interpreter and all JIT compilers, except RISC-V's and MIPS',
+> enforce a 33-tail calls limit at runtime.  Because of this discrepancy, a
+> BPF program can have a different behavior and output depending on whether
+> it is interpreted or JIT compiled, or depending on the underlying
+> architecture.
+> 
+> This patchset changes the RISC-V and MIPS JIT compilers to limit tail
+> calls to 33 instead of 32.  I have checked other BPF JIT compilers for the
+> same discrepancy.
+> 
+> Paul Chaignon (2):
+>   bpf, riscv: limit to 33 tail calls
+>   bpf, mips: limit to 33 tail calls
+> 
+>  arch/mips/net/ebpf_jit.c      | 9 +++++----
+>  arch/riscv/net/bpf_jit_comp.c | 4 ++--
+>  2 files changed, 7 insertions(+), 6 deletions(-)
 
-drivers/net/ethernet/ti/cpsw_new.o: In function `cpsw_probe':
-cpsw_new.c:(.text+0x312c): undefined reference to `ti_cm_get_macid'
-
-Use the same Makefile hack as before, and build cpsw-common.o for
-any driver that needs it.
-
-Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/ti/Makefile | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/ti/Makefile b/drivers/net/ethernet/ti/Makefile
-index d34df8e5cf94..ecf776ad8689 100644
---- a/drivers/net/ethernet/ti/Makefile
-+++ b/drivers/net/ethernet/ti/Makefile
-@@ -5,6 +5,7 @@
- 
- obj-$(CONFIG_TI_CPSW) += cpsw-common.o
- obj-$(CONFIG_TI_DAVINCI_EMAC) += cpsw-common.o
-+obj-$(CONFIG_TI_CPSW_SWITCHDEV) += cpsw-common.o
- 
- obj-$(CONFIG_TLAN) += tlan.o
- obj-$(CONFIG_CPMAC) += cpmac.o
--- 
-2.20.0
-
+Applied, thanks!
