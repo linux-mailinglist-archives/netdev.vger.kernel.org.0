@@ -2,144 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D87B511A0F6
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0904311A0FC
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbfLKCAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 21:00:46 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:33349 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726364AbfLKCAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:00:46 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 753A144473;
-        Wed, 11 Dec 2019 13:00:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-language:x-mailer:content-transfer-encoding
-        :content-type:content-type:mime-version:message-id:date:date
-        :subject:subject:in-reply-to:references:from:from:received
-        :received:received; s=mail_dkim; t=1576029642; bh=l2BCh4INk9Xjpe
-        9P/beFH/83GOUPTtLsM+aYAl/XV6c=; b=nCYEQBF61ryWA+OV6FDSLHaFumv+df
-        zbbjBAzawtlgOH2nvOCmwh+5Qm0UyIMZeYEg/jsCofyODFaPszM6F+DdjaYqPwjC
-        MFI7L8Lcfs+OWjFex/2uLvsHEQY83EkQChNCiTyvVGGVho+XXrC+MIybahToejdD
-        h1E35TKiFSMqk=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id xnnyoYZzpIOv; Wed, 11 Dec 2019 13:00:42 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 400704BBFB;
-        Wed, 11 Dec 2019 13:00:41 +1100 (AEDT)
-Received: from VNLAP288VNPC (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 908CF44473;
-        Wed, 11 Dec 2019 13:00:40 +1100 (AEDT)
-From:   "Tuong Lien Tong" <tuong.t.lien@dektech.com.au>
-To:     "'Ying Xue'" <ying.xue@windriver.com>, <paulmck@kernel.org>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <mingo@kernel.org>, <tipc-discussion@lists.sourceforge.net>,
-        <kernel-team@fb.com>, <torvalds@linux-foundation.org>,
-        <davem@davemloft.net>
-References: <20191210033146.GA32522@paulmck-ThinkPad-P72> <0e565b68-ece1-5ae6-bb5d-710163fb8893@windriver.com> <20191210223825.GS2889@paulmck-ThinkPad-P72> <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
-In-Reply-To: <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
-Subject: RE: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected() with rcu_replace_pointer()
-Date:   Wed, 11 Dec 2019 09:00:39 +0700
-Message-ID: <707801d5afc6$cac68190$605384b0$@dektech.com.au>
+        id S1727573AbfLKCCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 21:02:07 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:45210 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727166AbfLKCCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:02:06 -0500
+Received: by mail-qv1-f65.google.com with SMTP id c2so5063713qvp.12
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 18:02:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=hnNNPiH+0knQ/mTzZcYqFPWlCiT6PxlNTbmMZNe9cuI=;
+        b=CI3y8NjAcg4RuMdoysRTliQdCeFvnlTn3p4r4x7yyAAOTht5S99FivoTPRLD2MDFgo
+         yxxfP8bkP5M783hKAt0Y2mE0zBxFbKk5T+qtv//4r0NWBgGg7CbWnkFyXo76JY/3ir98
+         ZaFXjOWNpKYKsviYRW5E4Mkvf7a0PxmZbCcyIL28oecPLTlC6T4BOvPZVlyOA2tc7AMQ
+         2UK02IKwVa/8SuWn7sKGQNMX0q9z5btI9udvmazi4E7UBDsUnf0Cijw+m9a7qRNsZ29r
+         BQJDqPg60OSZkIkh9p9o+0px5NEz9Tp4MhGVpG2Bc+rpIgZDrNTPXQoROmm3drwsvH1i
+         ac2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=hnNNPiH+0knQ/mTzZcYqFPWlCiT6PxlNTbmMZNe9cuI=;
+        b=gUMZZ/aeE8rc/4w2Kus7okZfpmuAoUeWSyB95prqeh+Ur/XOPQX6+ZSrwqySULMcTP
+         lBOJKxcWdwPDB4LF1etk43Nz1cQNoJ1EK1n/Qq0H594pgrlypugjbzma+feYrTR1ADkc
+         Vj5WiMtl3wd8WvdfknrmZxa65E3MJSOGBiJ5kBVZsih7zklxUaKcsMdZ0al7ArDZmkgJ
+         8sfrK3wlJBsjXFAAd/RwmE5r40EZmV8un17jjZmFcpRrETzOhd4MQcAWcApMp584AhJu
+         owRvAIk9rByU4rJs6oJafoak7RlBIo549p+4iFZmbmfsP8SsGHNaj+zAdRnjaHU30fob
+         gWXw==
+X-Gm-Message-State: APjAAAUL8AtTH+u4f8JWXleho7/QF7CgfrhSHGMJ4JjsaY/qvDm8ZCIN
+        onjC9GYH+Q7uipv1SBfVY3ankAEm
+X-Google-Smtp-Source: APXvYqySIaUEAShOwMQtJMFxIMCwEiclUKMGXfuVcM+sbrtE7tZdTWcWpaiYsp87aE34pSfNl+tZ4g==
+X-Received: by 2002:a05:6214:3a1:: with SMTP id m1mr808145qvy.77.1576029725576;
+        Tue, 10 Dec 2019 18:02:05 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id 184sm167242qke.73.2019.12.10.18.02.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2019 18:02:04 -0800 (PST)
+Date:   Tue, 10 Dec 2019 21:02:03 -0500
+Message-ID: <20191210210203.GB1480973@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
+In-Reply-To: <30e93cfb-cc2c-c484-a743-479cce19d8a9@cumulusnetworks.com>
+References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
+ <30e93cfb-cc2c-c484-a743-479cce19d8a9@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHn7R6lm2O6ODufE4ZTwpx6e2ZmvgEdJvCUAq0d++oCtrNyxadbqMjw
-Content-Language: en-us
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ying, Paul,
+Hi Nikolay,
 
-Please see my comments inline. Thanks!
-
-BR/Tuong
-
------Original Message-----
-From: Ying Xue <ying.xue@windriver.com> 
-Sent: Wednesday, December 11, 2019 8:32 AM
-To: paulmck@kernel.org
-Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; mingo@kernel.org;
-tipc-discussion@lists.sourceforge.net; kernel-team@fb.com;
-torvalds@linux-foundation.org; davem@davemloft.net
-Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
-with rcu_replace_pointer()
-
-On 12/11/19 6:38 AM, Paul E. McKenney wrote:
-> commit 4ee8e2c68b076867b7a5af82a38010fffcab611c
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Mon Dec 9 19:13:45 2019 -0800
+On Tue, 10 Dec 2019 23:45:13 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+> > +	if (p) {
+> > +		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
+> > +					sizeof(p->stp_xstats),
+> > +					BRIDGE_XSTATS_PAD);
+> > +		if (!nla)
+> > +			goto nla_put_failure;
+> > +
+> > +		memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
 > 
->     net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
->     
->     This commit replaces the use of rcu_swap_protected() with the more
->     intuitively appealing rcu_replace_pointer() as a step towards removing
->     rcu_swap_protected().
->     
->     Link:
-https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4g
-g6Hw@mail.gmail.com/
->     Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
->     Reported-by: kbuild test robot <lkp@intel.com>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->     Cc: Jon Maloy <jon.maloy@ericsson.com>
->     Cc: Ying Xue <ying.xue@windriver.com>
->     Cc: "David S. Miller" <davem@davemloft.net>
->     Cc: <netdev@vger.kernel.org>
->     Cc: <tipc-discussion@lists.sourceforge.net>
-> 
+> You need to take the STP lock here to get a proper snapshot of the values.
 
-Acked-by: Ying Xue <ying.xue@windriver.com>
+Good catch! I see a br->multicast_lock but no br->stp_lock. Is this what
+you expect?
 
-> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-> index 990a872..978d2db 100644
-> --- a/net/tipc/crypto.c
-> +++ b/net/tipc/crypto.c
-> @@ -257,9 +257,6 @@ static char *tipc_key_change_dump(struct tipc_key old,
-struct tipc_key new,
->  #define tipc_aead_rcu_ptr(rcu_ptr, lock)				\
->  	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
->  
-> -#define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)
-\
-> -	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
-> -
->  #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
->  do {									\
->  	typeof(rcu_ptr) __tmp = rcu_dereference_protected((rcu_ptr),	\
-> @@ -1189,7 +1186,7 @@ static bool tipc_crypto_key_try_align(struct
-tipc_crypto *rx, u8 new_pending)
->  
->  	/* Move passive key if any */
->  	if (key.passive) {
-> -		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-> +		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2,
-&rx->lock);
-The 3rd parameter should be the lockdep condition checking instead of the
-spinlock's pointer i.e. "lockdep_is_held(&rx->lock)"?
-That's why I'd prefer to use the 'tipc_aead_rcu_swap ()' macro, which is
-clear & concise at least for the context here. It might be re-used later as
-well...
-
->  		x = (key.passive - key.pending + new_pending) % KEY_MAX;
->  		new_passive = (x <= 0) ? x + KEY_MAX : x;
->  	}
-> 
+    spin_lock_bh(&br->lock);
+    memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
+    spin_unlock_bh(&br->lock);
 
 
-_______________________________________________
-tipc-discussion mailing list
-tipc-discussion@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/tipc-discussion
+Thanks,
 
+	Vivien
