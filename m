@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D921611BFD9
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:34:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F1211BFF5
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 23:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbfLKWec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 17:34:32 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:48625 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727047AbfLKWea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 17:34:30 -0500
-Received: by mail-pg1-f202.google.com with SMTP id c8so190790pgl.15
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 14:34:29 -0800 (PST)
+        id S1726847AbfLKWfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 17:35:20 -0500
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:38977 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfLKWee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 17:34:34 -0500
+Received: by mail-pf1-f201.google.com with SMTP id i196so38646pfe.6
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 14:34:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=32U3png4dzMqFX2eRDO2dCbQbOL/7+0IfZtgOUFBf0A=;
-        b=Jtn/gEWQD7EIy6Bjrl5YvoRO959WbqPKaUQlDLnoRDEImaXWJvFLaFqaEeczCp0g9h
-         7qyyodzuklWb9l1hpaUI1/sdZZRc7dsnKtExMT64sUgQhCFVbqZrNq3CZ+SNciD/FRA6
-         hk+P2/9MSu8NHmKYd5U0kpnfbWAJGHYVCoRPCmCmrifHLSqosXIA31Ys2Y5NGUXN3vqQ
-         f89DvdMylPXXnvTdWbhHX85RVDNujkBbCF2JxyC2tNfESxA8XkHtCOyrQQZ98A3U9a4+
-         CDOL1MkRE10kDhOJbY05MpuIEGothGjv5rkbv8d+AzZjvXEzkIkn4sr4H73emfkNVN2P
-         Z3Hg==
+        bh=5AhdXmPKS0JiQuHlniKRJHWxS22JqYuwMDsvrT9JMfs=;
+        b=lB/oei63/sAcH89+V93til6fN/6F4X/UcwDCuMEW2z20zvLpRYxp6tbM7sW3X9BZlo
+         /QtDi+qmTeJzFlCzIUcXsgjp2JA+qx9E7EvVKpKIHAy+hvQQSdzV5jPGAe0Wa8bmPB3y
+         7eweDWffEI1IaCtN/Fp0OtuL6QF+RNRC73BGNLZtoqCuB8LZEHimoYzhFMpIy5kqEYFC
+         X5bc13g9GwWLNfQMaZG+MoifnE9u3uLUqdRDboe309tfHmdqzpkbZP8zcnbNIf9waAUo
+         qxMp3jfxIub34hDAOim4pcHB1e92YhnZHAYJYSWAQcrmYrwomrFCrwX+8Axu3BN7PXEd
+         fvKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=32U3png4dzMqFX2eRDO2dCbQbOL/7+0IfZtgOUFBf0A=;
-        b=QRNxZk7LvsCUUvaXxqn23XWReJJYa4Ujdjo3FY/TxKEmFeXjM4arowAPmyce9qMYfe
-         oQNG9dC21xej8UD88cufS8wa546Pf9uOAUXvXKkOo1BLp+j7diPSzjdjrx3p+qRKTXqj
-         0N4PgoKJlaXDD9LABiDNs5lP2EcgRruWKFHDhoAmjfGltjoaZNQ+p/bgCtYRLhDMAVJS
-         T2+vN+J5DecG6P8D3jsNJbZzlWgPYGwv/OERR/7B53+uLUEr7vL6uSd8nDYj4veVY8N4
-         3j0cO5Rew8id6hhQ5EiaTLV3eG6ZnljDybZimZ+/h8R/aRtBtI9Z22G7Sxy/raKhPZGY
-         QVpA==
-X-Gm-Message-State: APjAAAWT/QKfQDbhbjoskN6idXqRq4dZ5KSVS1w/hUBOvF1EJpI0T/Br
-        MZD9UNhFVPwbrHCf4UnJez639IINcusu
-X-Google-Smtp-Source: APXvYqwY81AwnzuaarejlQK1EoJNAtQ4xSv07K5q/7brfr2nih2yEfDd7UoNKLARUKM2GsTStuOuoB67BlyQ
-X-Received: by 2002:a63:647:: with SMTP id 68mr6839227pgg.202.1576103669219;
- Wed, 11 Dec 2019 14:34:29 -0800 (PST)
-Date:   Wed, 11 Dec 2019 14:33:37 -0800
+        bh=5AhdXmPKS0JiQuHlniKRJHWxS22JqYuwMDsvrT9JMfs=;
+        b=cZyb5NGrHfX4VXw7X4B3KMAPT2IFK+6z2YEZFVbiGBgGgxmKKgEpimzSS5irUawWE7
+         b8XXRYc3xLDHyWnF/K4k+MXTZK7wv3NJVF0f4Aa90kAPt5YsG7EObNXafWAZ0ZICzMx+
+         2TabFavXXog0Tq8wu5RgOkDi0STOzjNlswYTxUzFwygARp4+SK20FmbICBd/SQjldlLP
+         9/jFxfOqlJsysiBBSfpm8v7Ugh/QCPHWo7kRXWLV75Cx2/VPX2jonAIxwWsedK82fm/F
+         MqKhoeY4FnimEKztuOM92FKedVyZfF45k4v8fYy+aIlmsAaIM8i1Pmh2RB+pvlTc04Bx
+         /Jvw==
+X-Gm-Message-State: APjAAAUonqtQX6an4qvvJHp73BTUSJQM/Cw4yfQPmVzS9gLFkS3l0WHA
+        wDjaTxTcWWZyEbnj92/PsbJOhocgIGE9
+X-Google-Smtp-Source: APXvYqzvLtomxTN9fAdNSflYuVsHsM/b3e23KaWeDADeXX0GG4+Yzq5XdJNQgJpdumTdY/7TVwHiMmaC4rnx
+X-Received: by 2002:a65:4c06:: with SMTP id u6mr7000062pgq.412.1576103673604;
+ Wed, 11 Dec 2019 14:34:33 -0800 (PST)
+Date:   Wed, 11 Dec 2019 14:33:38 -0800
 In-Reply-To: <20191211223344.165549-1-brianvv@google.com>
-Message-Id: <20191211223344.165549-5-brianvv@google.com>
+Message-Id: <20191211223344.165549-6-brianvv@google.com>
 Mime-Version: 1.0
 References: <20191211223344.165549-1-brianvv@google.com>
 X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH v3 bpf-next 04/11] bpf: add lookup and updated batch ops to arraymap
+Subject: [PATCH v3 bpf-next 05/11] bpf: add generic_batch_ops to lpm_trie map
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Brian Vazquez <brianvv@google.com>,
@@ -64,28 +64,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the generic batch ops functionality to bpf arraymap, note that
-since deletion is not a valid operation for arraymap, only batch and
-lookup are added.
+This adds the generic batch ops functionality to bpf lpm_trie.
 
 Signed-off-by: Brian Vazquez <brianvv@google.com>
 ---
- kernel/bpf/arraymap.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/bpf/lpm_trie.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index f0d19bbb9211e..95d77770353c9 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -503,6 +503,8 @@ const struct bpf_map_ops array_map_ops = {
- 	.map_mmap = array_map_mmap,
- 	.map_seq_show_elem = array_map_seq_show_elem,
- 	.map_check_btf = array_map_check_btf,
+diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
+index 56e6c75d354d9..92c47b4f03337 100644
+--- a/kernel/bpf/lpm_trie.c
++++ b/kernel/bpf/lpm_trie.c
+@@ -743,4 +743,8 @@ const struct bpf_map_ops trie_map_ops = {
+ 	.map_update_elem = trie_update_elem,
+ 	.map_delete_elem = trie_delete_elem,
+ 	.map_check_btf = trie_check_btf,
 +	.map_lookup_batch = generic_map_lookup_batch,
++	.map_lookup_and_delete_batch = generic_map_lookup_and_delete_batch,
++	.map_delete_batch = generic_map_delete_batch,
 +	.map_update_batch = generic_map_update_batch,
  };
- 
- const struct bpf_map_ops percpu_array_map_ops = {
 -- 
 2.24.1.735.g03f4e72817-goog
 
