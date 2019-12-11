@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B5711AAD1
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6D411AAD3
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 13:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729246AbfLKMau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 07:30:50 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:40990 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728991AbfLKMau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:50 -0500
-Received: by mail-pj1-f65.google.com with SMTP id ca19so8893557pjb.8;
-        Wed, 11 Dec 2019 04:30:49 -0800 (PST)
+        id S1729260AbfLKMay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 07:30:54 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46053 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728991AbfLKMax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 07:30:53 -0500
+Received: by mail-pf1-f196.google.com with SMTP id 2so1739067pfg.12;
+        Wed, 11 Dec 2019 04:30:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=K/y2oIRRhF2GBW1wRD/KjpZ9zXuv6w7I3mWnKh9t2ZU=;
-        b=vJRwHGqvy59IPawj6bQpV8FyCfmBzY+E7ub7kIeETvxV6o+pYC0qX2JYA8i0uOAvji
-         VgQP1bIocyKfUzrpOwKTkClea1Ih0fWdWnBxzJbtydG4ONHC1fESVECF+ZViXLjKP8zQ
-         Fgk+/iELZFHG5E89H6qkFOahJcVM7Pc4qfTpLZBRda05zkocT/yOPZdJS53a7L06RBdW
-         Upi7DNxDYeibjs1JDUtrClQxv69rlYYMG1v+Alh/AQVzVoERgA+/rD5r6Bdz8mhNFIKx
-         vbEMC5W6AY2O0LjuG7n0MLLrTWMC6ibwfDx9dIrTRcychLeLW0/mlKf4verubKrGb/xV
-         4H8A==
+        bh=6SeiTsvAEy8VQxsdRHDPpYhwUBoXZ86ZAU9B9WJ43Dg=;
+        b=qSSy380u5/sjaarQ+dNwzZlB6aui2R3qP1cxudXSHWPttVaoClVozVKoifkDqvU+7V
+         uzxskK+w1RMuYVp1r7DZWAFWFfL3GyHVUAqkHRatUwonda/p42dgu/urTWfEfjpoKia8
+         Acq6/LYKXtl+zhHVHolodBs08CS8rRqoDM9jVdE47di+tmNj4JGBHY2VWXJCU3HwzMkN
+         mZB3DJX9i36cxxKID0ssrLI2jx+fS652LawR55fAmNCJf+XO9SWTRS1B/a3UiJ4AWoQs
+         J4Vnaeel1cWbe9qz9A19vtPDx9393VJucsGCfUhwrnsKX9INUoX0gJ6s2fY6UErh96Je
+         ASUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=K/y2oIRRhF2GBW1wRD/KjpZ9zXuv6w7I3mWnKh9t2ZU=;
-        b=dEsx0ouG1aGLvQR15uF+ZA+/UHME2N7bVkyoyFNQ78ws+i9eGZGUvAH7b89eRO280v
-         gWrCrIwEv9lerkEzWhkPWSqz/PUYPe2eJxjMRQ48Tt0C144Z+Kk8a26YbhqYPLz2oQJb
-         K+11qIxTzKZU6Ykkrwr5leUf5xQNnWJx9xay6sewinTqivHTX/bkQI9gtbK/HllDhKJw
-         twkcaNkq6StWvM4rkmUFwJFAEQA+zqR0IFdauYQNG1dBjd5VyE57oVXqEf7Kyq7Q4wbn
-         QMfyBRAnyMZeFB7BFRs/5WSV/pX/ASxAxSQw/61SfuYN0hL8TlivsLay6ESwkFTyiXTv
-         Z0uA==
-X-Gm-Message-State: APjAAAV1EJN5BHCJNi0kUDd6Sd/P+8TMQ2C3NVW6/w08OtNAIpytOyts
-        cDI6XuPI4uMfGfsWkU/qRBK68fYdi2uCIQ==
-X-Google-Smtp-Source: APXvYqxxtnCWE8cu/NEUexUt5k5pkDM1hI2TX3gzZRXJSHtKxg5Rm+SV3wlzxKYNPn335lNPyuBT7g==
-X-Received: by 2002:a17:902:6a82:: with SMTP id n2mr3011967plk.5.1576067448975;
-        Wed, 11 Dec 2019 04:30:48 -0800 (PST)
+        bh=6SeiTsvAEy8VQxsdRHDPpYhwUBoXZ86ZAU9B9WJ43Dg=;
+        b=igXrLiJpLbT5xuzkS09dUJAleBVK1cffn/zK7Bue2lhL0O97TgF9xZER3qDu7UH5SQ
+         Pz7jJGpKod2xlfOwNUjrI5153uOrElHQTd91Bx97Hv8XIvGH1DLka4KeIhrE4Y9w1oww
+         EB8olgwkp033X1FWCN/gpZVfIkAekqNz+r47fhAXHNrNDzyCdBf6Mq61or4xWgRK1RBP
+         qEshlEyfd3HfM4n30INoZgJye+emYVBJVH6Uo69q3NpD/qaJXo95lcJXJWG0Ju5SMsnj
+         7jbs6jDSyqxDLfTn7KCYJ3DKWpAaPSZL1caOPVlc8Ct/DS1pTXRlThUP95bdFkgWywwI
+         ysQg==
+X-Gm-Message-State: APjAAAW/2RRGI8N59W0dAMaDGQb084r1y7/K8bpEyLx9Xb4Kuf/HUSBW
+        Csk7bpaui/NBgnKESBa/n7AE1Pyw6lGVTg==
+X-Google-Smtp-Source: APXvYqzU81v/S5/fMnHIRIx+CsRrM+MTLRbsAMHhiU1RVjh1pX+QwQzMzzkxN0Yb9HO3XTlgmNuNkQ==
+X-Received: by 2002:aa7:9355:: with SMTP id 21mr2063060pfn.61.1576067452793;
+        Wed, 11 Dec 2019 04:30:52 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.45
+        by smtp.gmail.com with ESMTPSA id 24sm3097132pfn.101.2019.12.11.04.30.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 04:30:48 -0800 (PST)
+        Wed, 11 Dec 2019 04:30:52 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -51,9 +51,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
         ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
         andrii.nakryiko@gmail.com
-Subject: [PATCH bpf-next v4 4/6] bpf: start using the BPF dispatcher in BPF_TEST_RUN
-Date:   Wed, 11 Dec 2019 13:30:15 +0100
-Message-Id: <20191211123017.13212-5-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v4 5/6] selftests: bpf: add xdp_perf test
+Date:   Wed, 11 Dec 2019 13:30:16 +0100
+Message-Id: <20191211123017.13212-6-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191211123017.13212-1-bjorn.topel@gmail.com>
 References: <20191211123017.13212-1-bjorn.topel@gmail.com>
@@ -67,68 +67,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-In order to properly exercise the BPF dispatcher, this commit adds BPF
-dispatcher usage to BPF_TEST_RUN when executing XDP programs.
+The xdp_perf is a dummy XDP test, only used to measure the the cost of
+jumping into a naive XDP program one million times.
+
+To build and run the program:
+  $ cd tools/testing/selftests/bpf
+  $ make
+  $ ./test_progs -v -t xdp_perf
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- net/bpf/test_run.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ .../selftests/bpf/prog_tests/xdp_perf.c       | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_perf.c
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 915c2d6f7fb9..400f473c2541 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -15,7 +15,7 @@
- #include <trace/events/bpf_test_run.h>
- 
- static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
--			u32 *retval, u32 *time)
-+			u32 *retval, u32 *time, bool xdp)
- {
- 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
- 	enum bpf_cgroup_storage_type stype;
-@@ -41,7 +41,11 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 	time_start = ktime_get_ns();
- 	for (i = 0; i < repeat; i++) {
- 		bpf_cgroup_storage_set(storage);
--		*retval = BPF_PROG_RUN(prog, ctx);
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_perf.c b/tools/testing/selftests/bpf/prog_tests/xdp_perf.c
+new file mode 100644
+index 000000000000..7185bee16fe4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_perf.c
+@@ -0,0 +1,25 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
 +
-+		if (xdp)
-+			*retval = bpf_prog_run_xdp(prog, ctx);
-+		else
-+			*retval = BPF_PROG_RUN(prog, ctx);
- 
- 		if (signal_pending(current)) {
- 			ret = -EINTR;
-@@ -359,7 +363,7 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	ret = convert___skb_to_skb(skb, ctx);
- 	if (ret)
- 		goto out;
--	ret = bpf_test_run(prog, skb, repeat, &retval, &duration);
-+	ret = bpf_test_run(prog, skb, repeat, &retval, &duration, false);
- 	if (ret)
- 		goto out;
- 	if (!is_l2) {
-@@ -416,8 +420,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 
- 	rxqueue = __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 0);
- 	xdp.rxq = &rxqueue->xdp_rxq;
--
--	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration);
-+	bpf_prog_change_xdp(NULL, prog);
-+	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
- 	if (ret)
- 		goto out;
- 	if (xdp.data != data + XDP_PACKET_HEADROOM + NET_IP_ALIGN ||
-@@ -425,6 +429,7 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		size = xdp.data_end - xdp.data;
- 	ret = bpf_test_finish(kattr, uattr, xdp.data, size, retval, duration);
- out:
-+	bpf_prog_change_xdp(prog, NULL);
- 	kfree(data);
- 	return ret;
- }
++void test_xdp_perf(void)
++{
++	const char *file = "./xdp_dummy.o";
++	__u32 duration, retval, size;
++	struct bpf_object *obj;
++	char in[128], out[128];
++	int err, prog_fd;
++
++	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
++	if (CHECK_FAIL(err))
++		return;
++
++	err = bpf_prog_test_run(prog_fd, 1000000, &in[0], 128,
++				out, &size, &retval, &duration);
++
++	CHECK(err || retval != XDP_PASS || size != 128,
++	      "xdp-perf",
++	      "err %d errno %d retval %d size %d\n",
++	      err, errno, retval, size);
++
++	bpf_object__close(obj);
++}
 -- 
 2.20.1
 
