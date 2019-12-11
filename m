@@ -2,61 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2243B11BA9F
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABA7611BAA2
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730267AbfLKRtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 12:49:40 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48438 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729524AbfLKRtk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 12:49:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=jmd4oZRB2oaaUlAC2mwLSvTh0bdmsKNKQFZo0Gn+F3A=; b=U5DagJe+yC0Wu+COqr/tTppK7P
-        CrkQAOxLhjSki0cXrEmtCGaCpMckpmHlJ41DlcFvb3lKOKVcMHrsYkAp0CD8wVstIfHvJxXkc3S2j
-        /xu0CX8WHMZ9pOF4VeSWY5Msl9pcQRhc+rmrxOdb6fjelVXtIfzJYMtTone8kqKf2w5M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1if67G-0006MF-6l; Wed, 11 Dec 2019 18:49:38 +0100
-Date:   Wed, 11 Dec 2019 18:49:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191211174938.GB30053@lunn.ch>
-References: <87tv67tcom.fsf@tarshish>
- <20191211131111.GK16369@lunn.ch>
- <87fthqu6y6.fsf@tarshish>
+        id S1730370AbfLKRwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:52:16 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:36429 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbfLKRwP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:52:15 -0500
+Received: by mail-qk1-f195.google.com with SMTP id a203so10281603qkc.3
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 09:52:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ubp3/NrxVrJDDtINPT/a+hSSHV009gNRw3e+lHCd4oY=;
+        b=adF+8L7mmMBGdqyqkZBGV8RAolhwtRT5MJi4XDmC8JyA8Yg8inVH0VjA4+ybu3zuaD
+         1YPKdhK+8TfZ21msXx/JrHJa/+FOMpe6ZHowJnPpMiVEFSELDusxa6vxPZ9suWp6ClwP
+         dXFHuz7vx5/nuyiNDPSgh1Kej8iUiQfpEZQD7ERKOfRWjXQ4IvUx6l7f7s0txHNsoTOa
+         3+z6D71MHNEI9LhwOrOUmQ61WOJVpur20xLEAQ+byoIIciBwc39Ufh2C4OREUXgfoMUO
+         RiqJrC/I+c1n8zoKloIhfhQaag1XQJtj6cRBTGH6GyB7aTBCs0jCK4akIz8ST56b+TcQ
+         SwAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ubp3/NrxVrJDDtINPT/a+hSSHV009gNRw3e+lHCd4oY=;
+        b=DDpuGTd/7j7aYwUGpwGbtiEDdOFOTMLWVx1nrCJ/Pz3aZV3C7NFzyINTMBVh8An3hQ
+         qQvISg0YZicg9tAn2ePP8Q8lZ705E5T/ZOUC3/xlYLuUiRp1too5/lVdL8aXRNsUGm3B
+         ePfVSIrKYw4is8ayYSYuoMOrJ4Sct4M1MQ6lPEs4sBaJyeJ2RcujZgzLXXdeTY7cFU5c
+         JZvu3olI8DzEvormJ3k+8Xx2akeQWciHSjjwEZOTQp+fqlW4rHdvWbef+bbRdUG40Kl8
+         M0RLETLu2UEquawyKIRjnhOab+i60W1DzzYDsBWJ7kEsa0hJa1h2g55gcATkvg9T2yZ/
+         98Kw==
+X-Gm-Message-State: APjAAAV2uv48k9zhEhLxHDySeDMTM3tlMlU2gx22X3fxxe6OmWEg7bUA
+        dvzFcJLp1tfVRlHMTxqbDUNv7pbmdj0=
+X-Google-Smtp-Source: APXvYqxwtDZIYKpeCCgpCG/KZEMH/FJzehi/GamT4BgWCVomBxb+NdvAgHecKnrloCvhBTfBKASCuw==
+X-Received: by 2002:a37:9a46:: with SMTP id c67mr4205650qke.308.1576086734822;
+        Wed, 11 Dec 2019 09:52:14 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:79bb:41c5:ccad:6884? ([2601:282:800:fd80:79bb:41c5:ccad:6884])
+        by smtp.googlemail.com with ESMTPSA id f2sm1144098qtm.55.2019.12.11.09.52.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Dec 2019 09:52:14 -0800 (PST)
+Subject: Re: [PATCH net-next 6/9] ipv4: Handle route deletion notification
+ during flush
+From:   David Ahern <dsahern@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, roopa@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20191210172402.463397-1-idosch@idosch.org>
+ <20191210172402.463397-7-idosch@idosch.org>
+ <7ad891f6-a096-2795-2e7f-5eefc710503b@gmail.com>
+Message-ID: <87294c71-3e2d-f45b-43c1-87b233cb8672@gmail.com>
+Date:   Wed, 11 Dec 2019 10:52:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87fthqu6y6.fsf@tarshish>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <7ad891f6-a096-2795-2e7f-5eefc710503b@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Bisect points at 7fb5a711545d ("net: dsa: mv88e6xxx: drop adjust_link to
-> enabled phylink"). Reverting this commit on top of v5.3.15 fixes the
-> issue (and brings the warning back). As I understand, this basically
-> reverts the driver migration to phylink. What might be the issue with
-> phylink?
+On 12/11/19 10:46 AM, David Ahern wrote:
+> On 12/10/19 10:23 AM, Ido Schimmel wrote:
+>> From: Ido Schimmel <idosch@mellanox.com>
+>>
+>> In a similar fashion to previous patch, when a route is deleted as part
+>> of table flushing, promote the next route in the list, if exists.
+>> Otherwise, simply emit a delete notification.
+> 
+> I am not following your point on a flush. If all routes are getting
+> deleted, why do you need to promote the next one in the list?
 
-That suggests the MAC is wrongly running at 1G, and the PHY at 100M,
-which is why it does not work.
+never mind. I see. The second notifier gets deleted in patch 9 and the
+new notifier is needed to remove the offloaded route.
 
-You probably want to add #define DEBUG to the top of phylink.c, and
-scatter some debug prints in mv88e6xxx_mac_config(). My guess would
-be, either mv88e6xxx_mac_config() is existing before configuring the
-MAC, or mv88e6xxx_port_setup_mac() has wrongly decided nothing has
-changed and so has not configured the MAC.
+> 
+>>
+>> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+>> ---
+>>  net/ipv4/fib_trie.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+>> index 2d338469d4f2..60947a44d363 100644
+>> --- a/net/ipv4/fib_trie.c
+>> +++ b/net/ipv4/fib_trie.c
+>> @@ -1995,6 +1995,8 @@ int fib_table_flush(struct net *net, struct fib_table *tb, bool flush_all)
+>>  				continue;
+>>  			}
+>>  
+>> +			fib_notify_alias_delete(net, n->key, &n->leaf, fa,
+>> +						NULL);
+>>  			call_fib_entry_notifiers(net, FIB_EVENT_ENTRY_DEL,
+>>  						 n->key,
+>>  						 KEYLENGTH - fa->fa_slen, fa,
+>>
+> 
 
-	Andrew
