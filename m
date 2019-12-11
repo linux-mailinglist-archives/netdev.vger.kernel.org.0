@@ -2,280 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D9711BB8F
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:20:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B54EA11BBA6
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730923AbfLKSUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:20:00 -0500
-Received: from mail-eopbgr150079.outbound.protection.outlook.com ([40.107.15.79]:34725
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729296AbfLKSUA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 13:20:00 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QaxwoTc5pYOqOwg8S2lQqp+wltto9twUXDeoXTT1ZdjevXHI3V6YuYXKPiY+PY/Utlc3mfjzUAP6pECV2/ZWtAaB8lunxGYE/76Mnt3qcFQzQJFkGCXC/1iw/LBhoW9CkSL97Wd0LQhk3PO6fQ+v/DLWyDe1hZ8atiuGaoOvitguMNMr6YXrGKU8r4y7rYTLC6QPcZdcHFaJpbl1LUxRKpQ79W3GzTqcH2a577tR3nTBU0xjRnonhZCgKVV2NljfBcLX5gpnpHlYkjzgmgLSyHUi1FL8Lqm1asaNBx2JQSWrKEUSVM2yN9SNh5co7Wfebh94txlV6QJlaeZ5Sb0FCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zeh6KJpFa4o8VfTiwkKI1pqbjVf30vRdaFic9rfo0Xo=;
- b=lZf2JP280eNOthkTAz3c9iT3po/owG7J0XLrtC0yr3Y8FFS07u95ToztDeeE8zMq2hxEgaF3YtY5Fp5tIpLAQBG4A0hlsgb9Yu+kx2N2BohUFLMe4Af3GKuStTQ1+k5ibY+iyGgWyDgOO+rGLGTRyloHKT8pu7A2srB5CN8zBuETBPSrYutqHmjKXl5/NtKj1oaMlGaPNzWqH6ND+BKY+78pafSp8SESbRa3He2H0XsujTrT4IxFb5zjutJMCFCotBvDw0ltRHc5WpiN6tz8TrdTrnlyLCeKVrBp+jPAkLtvpQgPf7p5OuboCpxOuG1UylKaWAZ8TU8NnFRRRtiUTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zeh6KJpFa4o8VfTiwkKI1pqbjVf30vRdaFic9rfo0Xo=;
- b=iPAuwHCvdZJTcjZFkxvFcEtiUd8jirPFDrZMiojSXcHosjZYTMuOsLhA7aLpCUVgRrJMSZrRP6DazSr3R1lObTZVm3Kc4kS2ZGpAD9le+Z8eFq0PywP/NcFBrdsL1npMnPJlWBHBoyoFlwmzaazoXcekDVFn0fI3FrURmuCF+ME=
-Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
- AM6PR05MB6262.eurprd05.prod.outlook.com (20.177.34.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.16; Wed, 11 Dec 2019 18:19:56 +0000
-Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
- ([fe80::e8d3:c539:7550:2fdd]) by AM6PR05MB5142.eurprd05.prod.outlook.com
- ([fe80::e8d3:c539:7550:2fdd%6]) with mapi id 15.20.2538.016; Wed, 11 Dec 2019
- 18:19:56 +0000
-From:   Yuval Avnery <yuvalav@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Thread-Topic: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Thread-Index: AQHVr871nDBB5hrvy0ak2C7+9Ay1lae1Oa8AgAAB1gA=
-Date:   Wed, 11 Dec 2019 18:19:56 +0000
-Message-ID: <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
- <20191211095854.6cd860f1@cakuba.netronome.com>
-In-Reply-To: <20191211095854.6cd860f1@cakuba.netronome.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yuvalav@mellanox.com; 
-x-originating-ip: [70.66.202.183]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 315209ea-e569-41f5-7c70-08d77e66b9a0
-x-ms-traffictypediagnostic: AM6PR05MB6262:|AM6PR05MB6262:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB6262E06A1F7414DF797DC595C55A0@AM6PR05MB6262.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 024847EE92
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(396003)(346002)(39860400002)(189003)(199004)(13464003)(51914003)(5660300002)(9686003)(186003)(26005)(4326008)(55016002)(54906003)(316002)(2906002)(53546011)(6916009)(66476007)(33656002)(81166006)(52536014)(66446008)(8936002)(64756008)(66556008)(8676002)(76116006)(7696005)(81156014)(66946007)(6506007)(478600001)(71200400001)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6262;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Ly3VhCPW6ZOv3oEBI/j9uI7ub2ERmC0kTbFfU7gkNJ/N+CNgz/zhWaAfeRx3RGAYcNCndB3//kaJhvcmu0WWGqXb1A5D1HDZftwAdkHlN0rMDLgULcTLmXqhJI8eJVjGaUt5fNAB7WTuruRYNMsvzxRIdFf6xWo1JWqJamNZNH29aBSTs4jLLRIrIU6gBuGTHsnUUQZRX5Vm2LvKZl2LyQ4y9pTnwa+ZeW2zUEz7HZ3BUoBb5aX5QrKAMj98do2m5ygrpUYdhyfkFMDHWAqQ8RWBq+jj0n2goYq6s9LzCEfE/pRvEUxC9G3XF69FoyEClkJkoHfjM2P0G9/QFJQ4qJhqUOpekfW47Zp6xBhWZCbcRp9njZ0y86dNP9WsW9rsyi3xJjCL/lRqiCXLSZSm+4eRDfAck/QQG95UgEYytj+rw0TAqcq0P0A0fqBvESDrbawtPtY3zA2dp7gKMNO9ERKoPq3wgJHUth3RnStEaqXqlv5Nd+NmtLysZN8gSUw9RwKjJ4VqZe1AMNza5H9Apg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1731147AbfLKS0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:26:16 -0500
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:38578 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730127AbfLKS0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:26:15 -0500
+Received: by mail-qv1-f67.google.com with SMTP id t5so6159806qvs.5;
+        Wed, 11 Dec 2019 10:26:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=22EkT7GOEaxa8vVZEv+WJ1y8r0/9GKXIcQNGKOtvNus=;
+        b=UlbfbTqGcbgpK/IaX7WB3pZiQWb3yCuTEI7m6SnLZq/S99t5MrQbgZxTcRDgRuTjBC
+         WWBs1kRBgYawgNmC+MkQeRkJ5RiFd90fXZmOSBxrN5GeQu0WBPR03JwveXZy+NFA0/fG
+         1vsolSsK3SYVnlqutCOisFmtXNEAnerGo33zqd6nY8uJiuOTKXtMlQ20WFXHDa/uqyi1
+         4199pnvQX/9OGxpcse9pNy4HS7CP7HhhuXYGqupn3G1KwdMHrR2jdecoGUlOORV6m9vb
+         SL7vBYnyBtlHSVcmjIQICOGfSr+e3i6SqY51C6SZw8ZVU0VApozLx3kqfaq8FqzDYJ28
+         2LwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=22EkT7GOEaxa8vVZEv+WJ1y8r0/9GKXIcQNGKOtvNus=;
+        b=CyHVepLFa/AB+GBvA0Z1p9RKx1DmYHPZho+o3dDb78KDWUHuw/TjpU1MeDungrP8Zv
+         Opd5hFOWVMs2kX0RMdbbuBHueFiao8JHyuZz57dprEyVGXCoNCWZ85yPjpU7Iejhn2hy
+         TTAC1LDtxcwhkp2a9sVJdjDNQMZbVl/fUcFh3Wx/59+3+qzyGUq4e7FP24HB/Txi8/dl
+         sj8Mgfuarx28MCBFGCH+0r0AJ07/0FKT93VMx9KRPHz8zXACBFo7Kysz3A9Z3AwnlacG
+         L1LcpQAOLc4dizukPwNJxFGuXFOL3NGj4E7sdwBLum/fDicAgo7GTs5FnISr5uivOyfK
+         3phQ==
+X-Gm-Message-State: APjAAAWz5aEbDe4FCnWR7II22/1BDJ82uDpcYM7F+IinVk5a0laSd80K
+        bfXpd0AeEzLlwClUupZpt7BKhM+nViaf/7GlQxk=
+X-Google-Smtp-Source: APXvYqzHtSs0Rz9wkk4GESBr3DPXWXp816cvdMNtov6119JjEXBc/gOynSoBUE0KMQqSjcBY3ykyZ42of68lwDYGaDE=
+X-Received: by 2002:a05:6214:8cb:: with SMTP id da11mr3227189qvb.228.1576088774152;
+ Wed, 11 Dec 2019 10:26:14 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 315209ea-e569-41f5-7c70-08d77e66b9a0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Dec 2019 18:19:56.1631
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pnq1PpHMGmyhit8nfFOBG5q9OdjbiR7RE5E0CWADOVkxEw/RoKGqW1Usq30e5shEFn3uoEgXQhxmAtapeF9HQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6262
+References: <20191210011438.4182911-1-andriin@fb.com> <20191210011438.4182911-12-andriin@fb.com>
+ <20191209175745.2d96a1f0@cakuba.netronome.com> <CAEf4Bzaow7w+TGyiF67pXn42TumxFZb7Q4BOQPPGfRJdyeY-ig@mail.gmail.com>
+ <20191210100536.7a57d5e1@cakuba.netronome.com> <20191210214407.GA3105713@mini-arch>
+ <CAEf4BzbSwoeKVnyJU7EoP86exNj3Eku5_+8MbEieZKt2MqrhbQ@mail.gmail.com>
+ <20191210225900.GB3105713@mini-arch> <CAEf4BzYtqywKn4yGQ+vq2sKod4XE03HYWWBfUiNvg=BXhgFdWg@mail.gmail.com>
+ <20191211172432.GC3105713@mini-arch>
+In-Reply-To: <20191211172432.GC3105713@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 11 Dec 2019 10:26:02 -0800
+Message-ID: <CAEf4Bzb+3b-ypP8YJVA=ogQgp1KXx2xPConOswA0EiGXsmfJow@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 11, 2019 at 9:24 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 12/10, Andrii Nakryiko wrote:
+> > On Tue, Dec 10, 2019 at 2:59 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > >
+> > > On 12/10, Andrii Nakryiko wrote:
+> > > > On Tue, Dec 10, 2019 at 1:44 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > > > >
+> > > > > On 12/10, Jakub Kicinski wrote:
+> > > > > > On Tue, 10 Dec 2019 09:11:31 -0800, Andrii Nakryiko wrote:
+> > > > > > > On Mon, Dec 9, 2019 at 5:57 PM Jakub Kicinski wrote:
+> > > > > > > > On Mon, 9 Dec 2019 17:14:34 -0800, Andrii Nakryiko wrote:
+> > > > > > > > > struct <object-name> {
+> > > > > > > > >       /* used by libbpf's skeleton API */
+> > > > > > > > >       struct bpf_object_skeleton *skeleton;
+> > > > > > > > >       /* bpf_object for libbpf APIs */
+> > > > > > > > >       struct bpf_object *obj;
+> > > > > > > > >       struct {
+> > > > > > > > >               /* for every defined map in BPF object: */
+> > > > > > > > >               struct bpf_map *<map-name>;
+> > > > > > > > >       } maps;
+> > > > > > > > >       struct {
+> > > > > > > > >               /* for every program in BPF object: */
+> > > > > > > > >               struct bpf_program *<program-name>;
+> > > > > > > > >       } progs;
+> > > > > > > > >       struct {
+> > > > > > > > >               /* for every program in BPF object: */
+> > > > > > > > >               struct bpf_link *<program-name>;
+> > > > > > > > >       } links;
+> > > > > > > > >       /* for every present global data section: */
+> > > > > > > > >       struct <object-name>__<one of bss, data, or rodata> {
+> > > > > > > > >               /* memory layout of corresponding data section,
+> > > > > > > > >                * with every defined variable represented as a struct field
+> > > > > > > > >                * with exactly the same type, but without const/volatile
+> > > > > > > > >                * modifiers, e.g.:
+> > > > > > > > >                */
+> > > > > > > > >                int *my_var_1;
+> > > > > > > > >                ...
+> > > > > > > > >       } *<one of bss, data, or rodata>;
+> > > > > > > > > };
+> > > > > > > >
+> > > > > > > > I think I understand how this is useful, but perhaps the problem here
+> > > > > > > > is that we're using C for everything, and simple programs for which
+> > > > > > > > loading the ELF is majority of the code would be better of being
+> > > > > > > > written in a dynamic language like python?  Would it perhaps be a
+> > > > > > > > better idea to work on some high-level language bindings than spend
+> > > > > > > > time writing code gens and working around limitations of C?
+> > > > > > >
+> > > > > > > None of this work prevents Python bindings and other improvements, is
+> > > > > > > it? Patches, as always, are greatly appreciated ;)
+> > > > > >
+> > > > > > This "do it yourself" shit is not really funny :/
+> > > > > >
+> > > > > > I'll stop providing feedback on BPF patches if you guy keep saying
+> > > > > > that :/ Maybe that's what you want.
+> > > > > >
+> > > > > > > This skeleton stuff is not just to save code, but in general to
+> > > > > > > simplify and streamline working with BPF program from userspace side.
+> > > > > > > Fortunately or not, but there are a lot of real-world applications
+> > > > > > > written in C and C++ that could benefit from this, so this is still
+> > > > > > > immensely useful. selftests/bpf themselves benefit a lot from this
+> > > > > > > work, see few of the last patches in this series.
+> > > > > >
+> > > > > > Maybe those applications are written in C and C++ _because_ there
+> > > > > > are no bindings for high level languages. I just wish BPF programming
+> > > > > > was less weird and adding some funky codegen is not getting us closer
+> > > > > > to that goal.
+> > > > > >
+> > > > > > In my experience code gen is nothing more than a hack to work around
+> > > > > > bad APIs, but experiences differ so that's not a solid argument.
+> > > > > *nod*
+> > > > >
+> > > > > We have a nice set of C++ wrappers around libbpf internally, so we can do
+> > > > > something like BpfMap<key type, value type> and get a much better interface
+> > > > > with type checking. Maybe we should focus on higher level languages instead?
+> > > > > We are open to open-sourcing our C++ bits if you want to collaborate.
+> > > >
+> > > > Python/C++ bindings and API wrappers are an orthogonal concerns here.
+> > > > I personally think it would be great to have both Python and C++
+> > > > specific API that uses libbpf under the cover. The only debatable
+> > > > thing is the logistics: where the source code lives, how it's kept in
+> > > > sync with libbpf, how we avoid crippling libbpf itself because
+> > > > something is hard or inconvenient to adapt w/ Python, etc.
+> > >
+> > > [..]
+> > > > The problem I'm trying to solve here is not really C-specific. I don't
+> > > > think you can solve it without code generation for C++. How do you
+> > > > "generate" BPF program-specific layout of .data, .bss, .rodata, etc
+> > > > data sections in such a way, where it's type safe (to the degree that
+> > > > language allows that, of course) and is not "stringly-based" API? This
+> > > > skeleton stuff provides a natural, convenient and type-safe way to
+> > > > work with global data from userspace pretty much at the same level of
+> > > > performance and convenience, as from BPF side. How can you achieve
+> > > > that w/ C++ without code generation? As for Python, sure you can do
+> > > > dynamic lookups based on just the name of property/method, but amount
+> > > > of overheads is not acceptable for all applications (and Python itself
+> > > > is not acceptable for those applications). In addition to that, C is
+> > > > the best way for other less popular languages (e.g., Rust) to leverage
+> > > > libbpf without investing lots of effort in re-implementing libbpf in
+> > > > Rust.
+> > > I'd say that a libbpf API similar to dlopen/dlsym is a more
+> > > straightforward thing to do. Have a way to "open" a section and
+> > > a way to find a symbol in it. Yes, it's a string-based API,
+> > > but there is nothing wrong with it. IMO, this is easier to
+> > > use/understand and I suppose Python/C++ wrappers are trivial.
+> >
+> > Without digging through libbpf source code (or actually, look at code,
+> > but don't run any test program), what's the name of the map
+> > corresponding to .bss section, if object file is
+> > some_bpf_object_file.o? If you got it right (congrats, btw, it took me
+> > multiple attempts to memorize the pattern), how much time did you
+> > spend looking it up? Now compare it to `skel->maps.bss`. Further, if
+> > you use anonymous structs for your global vars, good luck maintaining
+> > two copies of that: one for BPF side and one for userspace.
+> As your average author of BPF programs I don't really care
+> which section my symbol ends up into. Just give me an api
+> to mmap all "global" sections (or a call per section which does all the
+> naming magic inside) and lookup symbol by name; I can cast it to a proper
+> type and set it.
 
+I'd like to not have to know about bss/rodata/data as well, but that's
+how things are done for global variables. In skeleton we can try to
+make an illusion like they are part of one big datasection/struct, but
+that seems like a bit too much magic at this point. But then again,
+one of the reasons I want this as an experimental feature, so that we
+can actually judge from real experience how inconvenient some things
+are, and not just based on "I think it would be ...".
 
-> -----Original Message-----
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Sent: Wednesday, December 11, 2019 9:59 AM
-> To: Yuval Avnery <yuvalav@mellanox.com>
-> Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
->=20
-> On Wed, 11 Dec 2019 04:58:53 +0200, Yuval Avnery wrote:
-> > Currently there is no limit to the number of VFs netdevsim can enable.
-> > In a real systems this value exist and used by driver.
-> > Fore example, Some features might need to consider this value when
-> > allocating memory.
->=20
-> Thanks for the patch!
->=20
-> Can you shed a little bit more light on where it pops up? Just for my cur=
-iosity?
+re: "Just give me ...". Following the spirit of "C is hard" from your
+previous arguments, you already have that API: mmap() syscall. C
+programmers have to be able to figure out the rest ;) But on the
+serious note, this auto-generated code in skeleton actually addresses
+all concerns (and more) that you mentioned: mmaping, knowing offsets,
+knowing names and types, etc. And it doesn't preclude adding more
+"conventional" additional APIs to do everything more dynamically,
+based on string names.
 
-Yes, like we described in the subdev threads.
-User should be able to configure some attributes before the VF was enabled.
-So all those (persistent) VF attributes should be available for query and c=
-onfiguration
-before VF was enabled.
-The driver can allocate an array according to max_vfs to hold all that data=
-,
-like we do here in" vfconfigs".
+>
+> RE anonymous structs: maybe don't use them if you want to share the data
+> between bpf and userspace?
 
->=20
-> > Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
-> > Acked-by: Jiri Pirko <jiri@mellanox.com>
->=20
-> > diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-> > index 6aeed0c600f8..f1a0171080cb 100644
-> > --- a/drivers/net/netdevsim/bus.c
-> > +++ b/drivers/net/netdevsim/bus.c
-> > @@ -26,9 +26,9 @@ static struct nsim_bus_dev *to_nsim_bus_dev(struct
-> > device *dev)  static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev
-> *nsim_bus_dev,
-> >  				   unsigned int num_vfs)
-> >  {
-> > -	nsim_bus_dev->vfconfigs =3D kcalloc(num_vfs,
-> > -					  sizeof(struct nsim_vf_config),
-> > -					  GFP_KERNEL);
->=20
-> You're changing the semantics of the enable/disable as well now.
-> The old values used to be wiped when SR-IOV is disabled, now they will be
-> retained across disable/enable pair.
->=20
-> I think it'd be better if that wasn't the case. Users may expect a system=
- to be
-> in the same state after they enable SR-IOV, regardless if someone else us=
-ed
-> SR-IOV since last reboot.
+Alright.
 
-Right,=20
-But some values should retain across enable/disable, for example MAC addres=
-s which is persistent.
-So maybe we need to retain some values, while resetting others on disable?
-Would that work?
+>
+> > I never said there is anything wrong with current straightforward
+> > libbpf API, but I also never said it's the easiest and most
+> > user-friendly way to work with BPF either. So we'll have both
+> > code-generated interface and existing API. Furthermore, they are
+> > interoperable (you can pass skel->maps.whatever to any of the existing
+> > libbpf APIs, same for progs, links, obj itself). But there isn't much
+> > that can beat performance and usability of code-generated .data, .bss,
+> > .rodata (and now .extern) layout.
+> I haven't looked closely enough, but is there a libbpf api to get
+> an offset of a variable? Suppose I have the following in bpf.c:
+>
+>         int a;
+>         int b;
+>
+> Can I get an offset of 'b' in the .bss without manually parsing BTF?
 
->=20
-> Could you add a memset(,0,) here?
->=20
-> > +	if (nsim_bus_dev->max_vfs < num_vfs)
-> > +		return -ENOMEM;
-> > +
-> >  	if (!nsim_bus_dev->vfconfigs)
-> >  		return -ENOMEM;
->=20
-> This check seems useless now, no? We will always have vfconfigs
->=20
-> >  	nsim_bus_dev->num_vfs =3D num_vfs;
-> > @@ -38,8 +38,6 @@ static int nsim_bus_dev_vfs_enable(struct
-> > nsim_bus_dev *nsim_bus_dev,
-> >
-> >  static void nsim_bus_dev_vfs_disable(struct nsim_bus_dev
-> > *nsim_bus_dev)  {
-> > -	kfree(nsim_bus_dev->vfconfigs);
-> > -	nsim_bus_dev->vfconfigs =3D NULL;
-> >  	nsim_bus_dev->num_vfs =3D 0;
-> >  }
-> >
-> > @@ -154,22 +152,29 @@ static struct device_type nsim_bus_dev_type =3D {
-> > };
-> >
-> >  static struct nsim_bus_dev *
-> > -nsim_bus_dev_new(unsigned int id, unsigned int port_count);
-> > +nsim_bus_dev_new(unsigned int id, unsigned int port_count,
-> > +		 unsigned int max_vfs);
-> > +
-> > +#define NSIM_BUS_DEV_MAX_VFS 4
-> >
-> >  static ssize_t
-> >  new_device_store(struct bus_type *bus, const char *buf, size_t count)
-> > {
-> >  	struct nsim_bus_dev *nsim_bus_dev;
-> >  	unsigned int port_count;
-> > +	unsigned int max_vfs;
-> >  	unsigned int id;
-> >  	int err;
-> >
-> > -	err =3D sscanf(buf, "%u %u", &id, &port_count);
-> > +	err =3D sscanf(buf, "%u %u %u", &id, &port_count, &max_vfs);
-> >  	switch (err) {
-> >  	case 1:
-> >  		port_count =3D 1;
-> >  		/* fall through */
-> >  	case 2:
-> > +		max_vfs =3D NSIM_BUS_DEV_MAX_VFS;
-> > +		/* fall through */
-> > +	case 3:
-> >  		if (id > INT_MAX) {
-> >  			pr_err("Value of \"id\" is too big.\n");
-> >  			return -EINVAL;
->=20
-> Is 0 VFs okay? will kcalloc(0, size, flags) behave correctly?
+No there isn't right now. There isn't even an API to know that there
+is such a variable called "b". Except for this skeleton, of course.
 
-Right, I will fix.
+>
+> TBH, I don't buy the performance argument for these global maps.
+> When you did the mmap patchset for the array, you said it yourself
+> that it's about convenience and not performance.
 
->=20
-> > @@ -179,7 +184,7 @@ new_device_store(struct bus_type *bus, const char
-> *buf, size_t count)
-> >  		pr_err("Format for adding new device is \"id port_count\"
-> (uint uint).\n");
-> >  		return -EINVAL;
-> >  	}
-> > -	nsim_bus_dev =3D nsim_bus_dev_new(id, port_count);
-> > +	nsim_bus_dev =3D nsim_bus_dev_new(id, port_count, max_vfs);
-> >  	if (IS_ERR(nsim_bus_dev))
-> >  		return PTR_ERR(nsim_bus_dev);
-> >
-> > @@ -267,7 +272,8 @@ static struct bus_type nsim_bus =3D {  };
-> >
-> >  static struct nsim_bus_dev *
-> > -nsim_bus_dev_new(unsigned int id, unsigned int port_count)
-> > +nsim_bus_dev_new(unsigned int id, unsigned int port_count,
-> > +		 unsigned int max_vfs)
-> >  {
-> >  	struct nsim_bus_dev *nsim_bus_dev;
-> >  	int err;
-> > @@ -284,12 +290,24 @@ nsim_bus_dev_new(unsigned int id, unsigned int
-> port_count)
-> >  	nsim_bus_dev->dev.type =3D &nsim_bus_dev_type;
-> >  	nsim_bus_dev->port_count =3D port_count;
-> >  	nsim_bus_dev->initial_net =3D current->nsproxy->net_ns;
-> > +	nsim_bus_dev->max_vfs =3D max_vfs;
-> > +
-> > +	nsim_bus_dev->vfconfigs =3D kcalloc(nsim_bus_dev->max_vfs,
-> > +					  sizeof(struct nsim_vf_config),
-> > +					  GFP_KERNEL);
-> > +	if (!nsim_bus_dev->vfconfigs) {
-> > +		err =3D -ENOMEM;
-> > +		goto err_nsim_bus_dev_id_free;
-> > +	}
-> >
-> >  	err =3D device_register(&nsim_bus_dev->dev);
-> >  	if (err)
-> > -		goto err_nsim_bus_dev_id_free;
-> > +		goto err_nsim_vfconfigs_free;
-> > +
-> >  	return nsim_bus_dev;
-> >
-> > +err_nsim_vfconfigs_free:
-> > +	kfree(nsim_bus_dev->vfconfigs);
-> >  err_nsim_bus_dev_id_free:
-> >  	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
-> >  err_nsim_bus_dev_free:
-> > @@ -301,6 +319,7 @@ static void nsim_bus_dev_del(struct nsim_bus_dev
-> > *nsim_bus_dev)  {
-> >  	device_unregister(&nsim_bus_dev->dev);
-> >  	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
-> > +	kfree(nsim_bus_dev->vfconfigs);
-> >  	kfree(nsim_bus_dev);
-> >  }
-> >
-> > diff --git a/drivers/net/netdevsim/netdevsim.h
-> > b/drivers/net/netdevsim/netdevsim.h
-> > index 94df795ef4d3..e2049856add8 100644
-> > --- a/drivers/net/netdevsim/netdevsim.h
-> > +++ b/drivers/net/netdevsim/netdevsim.h
-> > @@ -238,6 +238,7 @@ struct nsim_bus_dev {
-> >  	struct net *initial_net; /* Purpose of this is to carry net pointer
-> >  				  * during the probe time only.
-> >  				  */
-> > +	unsigned int max_vfs;
-> >  	unsigned int num_vfs;
-> >  	struct nsim_vf_config *vfconfigs;
-> >  };
+Yes, it's first and foremost about convenience, addressing exactly the
+problems you mentioned above. But performance is critical for some use
+cases, and nothing can beat memory-mapped view of BPF map for those.
+Think about the case of frequently polling (or even atomically
+exchanging) some stats from userspace, as one possible example. E.g.,
+like some map statistics (number of filled elements, p50 of whatever
+of those elements, etc). I'm not sure what's there to buy: doing
+syscall to get **entire** global data map contents vs just fetching
+single integer from memory-mapped region, guess which one is cheaper?
 
+>
+> > > As for type-safety: it's C, forget about it :-)
+> >
+> > C is weakly, but still typed language. There are types and they are
+> > helpful. Yes, you can disregard them and re-interpret values as
+> > anything, but that's beside the point.
+> My point was that there is a certain mental model when working
+> with this type of external symbols which feels "natural" for C
+> (dlopen/dlsym).
+>
+> But I agree with you, that as long as code-gen is optional
+> and there is an alternative api in libbpf, we should be good.
