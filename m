@@ -2,41 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4946911B94B
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 17:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC0911B997
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 18:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729912AbfLKQ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 11:56:16 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:34491 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726444AbfLKQ4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 11:56:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576083374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KPNvaGpq3HBFsvPBMbtFzNSf8jY+m1mkWfo8bwQYb1M=;
-        b=fa8iH4fx/eBTIxK1t50omahAapkCGbKWouGEIXIPA4SCTYXPCMvV5Oqx7c7a0u6pfTC/jk
-        cff6++Q1TEU1u6nZ8+gmHyg1jRsKnLU1uvsIM3NI1Me/YIZqZalbiDvv4uVDf191tXxXG+
-        sKahBhb1RAqnAPJ16rT4zkFhTHBN3Mc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-124-BWJS7TFYMbKlq0NdBdIvLw-1; Wed, 11 Dec 2019 11:56:10 -0500
-X-MC-Unique: BWJS7TFYMbKlq0NdBdIvLw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F353F911EF;
-        Wed, 11 Dec 2019 16:56:08 +0000 (UTC)
-Received: from krava (unknown [10.43.17.106])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 68AEC66074;
-        Wed, 11 Dec 2019 16:56:03 +0000 (UTC)
-Date:   Wed, 11 Dec 2019 17:56:00 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
+        id S1730211AbfLKRGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 12:06:41 -0500
+Received: from www62.your-server.de ([213.133.104.62]:49940 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729512AbfLKRGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 12:06:41 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1if59U-0008Ab-2Z; Wed, 11 Dec 2019 17:47:52 +0100
+Date:   Wed, 11 Dec 2019 17:47:51 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     Paul Moore <paul@paul-moore.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@kernel.org>,
+Cc:     Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-audit@redhat.com,
         Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
@@ -47,7 +30,7 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Eric Paris <eparis@redhat.com>, Jiri Benc <jbenc@redhat.com>
 Subject: Re: [PATCHv3] bpf: Emit audit messages upon successful prog load and
  unload
-Message-ID: <20191211165600.GG25474@krava>
+Message-ID: <20191211164751.GA31590@linux.fritz.box>
 References: <20191206214934.11319-1-jolsa@kernel.org>
  <20191209121537.GA14170@linux.fritz.box>
  <CAHC9VhQdOGTj1HT1cwvAdE1sRpzk5mC+oHQLHgJFa3vXEij+og@mail.gmail.com>
@@ -61,7 +44,9 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <CAHC9VhQqiD7BBGwLYuQVySG84iwR9MJh8GZuTU3xCBm7GLn8hw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25660/Wed Dec 11 10:47:07 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -148,8 +133,4 @@ On Wed, Dec 11, 2019 at 11:21:33AM -0500, Paul Moore wrote:
 > 
 > (also, go ahead and submit that PR for audit-testsuite - thanks!)
 
-https://github.com/linux-audit/audit-testsuite/pull/90
-
-thanks,
-jirka
-
+Perfect, thanks for all your help! Applied to bpf-next.
