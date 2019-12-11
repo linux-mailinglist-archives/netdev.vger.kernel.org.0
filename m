@@ -2,103 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F15C211AD11
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:10:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D27CD11AD29
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 15:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729686AbfLKOKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 09:10:05 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:51422 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729513AbfLKOKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:10:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576073403;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CRjLj/QMQdvB2RW+lvMBaFSl35T38iJMITVAoGS3WF4=;
-        b=Aej8nrs5a9UZPFcFrhKxQIqVyyeaoV34Y+vMzYLavl2qpBoTtbBocY0YNOKuMlcxUrlg5+
-        gLWp0ao+U9qWmU7r0cX25TONagW4UJ0kiy7WjcInDZxsY4lUVmNwVnl+i8x2R95mGKT+uq
-        nwtXqm7UCocSsLk8xXXoVOV28Orb7pM=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-kVDE9gWqMl-eJd6wTD94PA-1; Wed, 11 Dec 2019 09:10:02 -0500
-Received: by mail-lj1-f200.google.com with SMTP id v26so4413088ljg.22
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 06:10:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=dTrWxnRVAzj9leiLeNhkBTish4ezNsQZosYh2w8B3qo=;
-        b=T9AJB3QEys4u0j7nXKwcLsfDR46AdCOcfGvWDg0ePuKvKtVc9mE7wmk4a6ObLWTLOx
-         hiUU4234FiRRrdi391rErATzSArWncQLDH1tQ1dnk1wE3dpZbtGG2hCHbqdM+kikEbAI
-         ogingoRW1bAgWyy5bGOlqnv9uf9T/pmjmYe+XZ1I+ofQHzYynDH0Txjei1+de1Mbqgxn
-         MEdi6MEn5fL1MAQFbfAe3j+V+viUXdP5DMi4puyQDzBygQbZOG194Ay9vQlI/maPOENZ
-         tRxWjLooOGcSy+4MsKaDSUZyErgTawHYgdsXSBYNRo7sBqoIFNlB+RYHZ2lcFaYWAMnm
-         RTIg==
-X-Gm-Message-State: APjAAAVGdMLjpYNF8BJv/xaW+sQrd/ecXX/cF3Y6G3p5JCpyiDQhscyX
-        /wIFTbsaLsGEY90Gt7pJtuVySP45V4xpwXblA85Ox4Lv1y3dejt/nVsasDiHplNiS5bWT+aViix
-        fqCVcL98rJwQUXH8T
-X-Received: by 2002:a2e:b0c4:: with SMTP id g4mr2202361ljl.83.1576073399942;
-        Wed, 11 Dec 2019 06:09:59 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxB+7teT7IB7mDdURKb2g3vi5DLHypHamQJXkpcDTBO710Ui4YzBpQJSm89qMgyBAYy22mVFg==
-X-Received: by 2002:a2e:b0c4:: with SMTP id g4mr2202348ljl.83.1576073399797;
-        Wed, 11 Dec 2019 06:09:59 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id e8sm1408470ljb.45.2019.12.11.06.09.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 06:09:59 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7EF0C18033F; Wed, 11 Dec 2019 15:09:58 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Jens Axboe <axboe@kernel.dk>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Steve French <smfrench@gmail.com>
-Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: iwlwifi warnings in 5.5-rc1
-In-Reply-To: <d4a48cbdc4b0db7b07b8776a1ee70b140e8a9bbf.camel@sipsolutions.net>
-References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <d4a48cbdc4b0db7b07b8776a1ee70b140e8a9bbf.camel@sipsolutions.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Dec 2019 15:09:58 +0100
-Message-ID: <87o8wfeyx5.fsf@toke.dk>
+        id S1729790AbfLKOSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 09:18:05 -0500
+Received: from mailgw02.mediatek.com ([216.200.240.185]:34817 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729671AbfLKOSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 09:18:05 -0500
+X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 09:18:05 EST
+X-UUID: 8624b81f66794d988dc55291a6f9872d-20191211
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=Axc6RlNHq3r5/GnAxxkyvJrrLbwxm4JZnBh/iubqg2g=;
+        b=WbANH9bYzqKU4Qs01Ukn8js+r5f8MbEjNt2YUOmrd+4dH1EUWHoeSRT23noh7xATcAUgWLA0dOpeNHH3ePSVC9qHWwXaczN1czCLKJrJyVlH2UuxGNiz7jkRrogCHYsyPgVjOVqQDdx5NbI5YWP9MN2xMuxagFE77qgsR4MXu6g=;
+X-UUID: 8624b81f66794d988dc55291a6f9872d-20191211
+Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by mailgw02.mediatek.com
+        (envelope-from <landen.chao@mediatek.com>)
+        (musrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 118975065; Wed, 11 Dec 2019 06:12:55 -0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ MTKMBS62N2.mediatek.inc (172.29.193.42) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 11 Dec 2019 06:11:45 -0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Wed, 11 Dec 2019 22:10:42 +0800
+Message-ID: <1576073444.23763.11.camel@mtksdccf07>
+Subject: Re: [PATCH net-next 3/6] dt-bindings: net: dsa: add new MT7531
+ binding to support MT7531
+From:   Landen Chao <landen.chao@mediatek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@savoirfairelinux.com" 
+        <vivien.didelot@savoirfairelinux.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        "opensource@vdorst.com" <opensource@vdorst.com>,
+        "frank-w@public-files.de" <frank-w@public-files.de>
+Date:   Wed, 11 Dec 2019 22:10:44 +0800
+In-Reply-To: <20191210162010.GB27714@lunn.ch>
+References: <cover.1575914275.git.landen.chao@mediatek.com>
+         <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
+         <20191210162010.GB27714@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-X-MC-Unique: kVDE9gWqMl-eJd6wTD94PA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johannes Berg <johannes@sipsolutions.net> writes:
-
-> ++ others who reported this
->
-> On Tue, 2019-12-10 at 13:46 -0700, Jens Axboe wrote:
->
->> ------------[ cut here ]------------
->> STA b4:75:0e:99:1f:e0 AC 2 txq pending airtime underflow: 4294967088, 20=
-8
->
-> We think this is due to TSO, the change below will disable the AQL again
-> for now until we can figure out how to really fix it. I think I'll do
-> the equivalent for 5.5 and maybe leave it enabled only for ath10k, or
-> something like that ...
-
-If we're doing this on a per-driver basis, let's make it a proper
-NL80211_EXT_FEATURE and expose it to userspace; that way users can at
-least discover if it's supported on their device. I can send a patch
-adding that...
-
-Maybe we should untangle this from airtime_flags completely, since if we
-just use the flags people could conceivably end up disabling it by
-mistake, couldn't they?
-
--Toke
+SGkgQW5kcmV3LA0KDQpPbiBXZWQsIDIwMTktMTItMTEgYXQgMDA6MjAgKzA4MDAsIEFuZHJldyBM
+dW5uIHdyb3RlOg0KPiA+ICtFeGFtcGxlIDQ6DQo+ID4gKw0KPiA+ICsmZXRoIHsNCj4gPiArCWdt
+YWMwOiBtYWNAMCB7DQo+ID4gKwkJY29tcGF0aWJsZSA9ICJtZWRpYXRlayxldGgtbWFjIjsNCj4g
+PiArCQlyZWcgPSA8MD47DQo+ID4gKwkJcGh5LW1vZGUgPSAiMjUwMGJhc2UteCI7DQo+ID4gKw0K
+PiA+ICsJCWZpeGVkLWxpbmsgew0KPiA+ICsJCQlzcGVlZCA9IDwxMDAwPjsNCj4gPiArCQkJZnVs
+bC1kdXBsZXg7DQo+ID4gKwkJCXBhdXNlOw0KPiA+ICsJCX07DQo+ID4gKwl9Ow0KPiANCj4gMjUw
+MEJhc2UtWCwgYnV0IGZpeGVkIGxpbmsgc3BlZWQgMTAwMD8NCmZpeGVkLWxpbmsgc3BlZWQgc2hv
+dWxkIGJlIDI1MDAuIEkgd2lsbCB1cGRhdGUgaXQuDQo+IA0KPiA+ICsJCQkJcG9ydEA2IHsNCj4g
+PiArCQkJCQlyZWcgPSA8Nj47DQo+ID4gKwkJCQkJbGFiZWwgPSAiY3B1IjsNCj4gPiArCQkJCQll
+dGhlcm5ldCA9IDwmZ21hYzA+Ow0KPiA+ICsJCQkJCXBoeS1tb2RlID0gIjI1MDBiYXNlLXgiOw0K
+PiA+ICsNCj4gPiArCQkJCQlmaXhlZC1saW5rIHsNCj4gPiArCQkJCQkJc3BlZWQgPSA8MTAwMD47
+DQo+ID4gKwkJCQkJCWZ1bGwtZHVwbGV4Ow0KPiA+ICsJCQkJCQlwYXVzZTsNCj4gPiArCQkJCQl9
+Ow0KPiANCj4gU2FtZSBoZXJlIQ0KSSB3aWxsIHVwZGF0ZSBpdCBvciByZW1vdmUgZml4ZWQtbGlu
+ayBibG9jayBhcyB0aGUgZGlzY3Vzc2lvbiBpbiBkdHMNCnRocmVhZC4NCj4gDQo+ICAgICAgQW5k
+cmV3DQoNCnJlZ2FyZHMgTGFuZGVuDQo=
 
