@@ -2,285 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0F411A67B
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:08:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B9E11A6B1
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728441AbfLKJI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 04:08:28 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43933 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728030AbfLKJI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 04:08:28 -0500
-Received: by mail-wr1-f68.google.com with SMTP id d16so23102874wre.10;
-        Wed, 11 Dec 2019 01:08:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZgO1EIMcUGuNXFXkqH8UOy74L1DUZcZMdqQkjmZafOs=;
-        b=o33tH8/GxY2/f9GySbtExz3XwhVMefnOSxW1jCegqd1AR/ZUDOTQeU8YHZixhnfPzo
-         hFEgjm34nkbl2j+S5ukZkEQMuexReookkBr6CK6Fq3ilMY9ojI/7gn/8GIl+pQ7FEbSf
-         iRqN8T/4pg/6CulDIurcFcsrI1LD42kg4qYhF8IenXRHWAyNCkS5U/ND/pYHpNwtaypm
-         MTl2owcqHyLpapdin3bOFVPXh7bYvMe67+HgPTo/1+PST25DBXw/EJLbLqGpiuDSAC5r
-         3j3PwL8HdU2oEkE7TM29Rb/LahN3sBqSqM/UaaFAC9gnL4atFJ11cZyAtd2oEO9IFBQr
-         E4JA==
-X-Gm-Message-State: APjAAAUI4SPcUeyOSoswdZSNzyPynVqecbcGPd21bbNq8evTyYhkZeTM
-        ax5U7FvQ3XoZQGjVLYxq7ds=
-X-Google-Smtp-Source: APXvYqxKHbrZoWIT++YlXlRVxVzB8Bi123GMBe2dgfGgEjEtiDA3i6lrxwkVK0nyw6f9VBPlEpAGYw==
-X-Received: by 2002:a5d:52c4:: with SMTP id r4mr2375505wrv.368.1576055305024;
-        Wed, 11 Dec 2019 01:08:25 -0800 (PST)
-Received: from localhost (prg-ext-pat.suse.com. [213.151.95.130])
-        by smtp.gmail.com with ESMTPSA id x6sm1623025wmi.44.2019.12.11.01.08.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 01:08:24 -0800 (PST)
-Date:   Wed, 11 Dec 2019 10:08:23 +0100
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        yuqi jin <jinyuqi@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [PATCH v4] lib: optimize cpumask_local_spread()
-Message-ID: <20191211090823.GD14655@dhcp22.suse.cz>
-References: <1576051437-23230-1-git-send-email-zhangshaokun@hisilicon.com>
+        id S1728421AbfLKJVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 04:21:02 -0500
+Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:56710 "EHLO
+        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726983AbfLKJVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 04:21:02 -0500
+Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
+        by mx0a-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBB9DVOY014094;
+        Wed, 11 Dec 2019 01:20:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint;
+ bh=9Wqnj2O7KVIT9n9DodKm0GhT7PmFwDT38TJNTaonqb0=;
+ b=Qb247e9S4TxVvcpTGZ8qv87o+S8ef6bLoq23Q0SG+Sd2kfPeeS0M709CNNJR56sOPQuv
+ t5pTjYXTxCRzRDmbd94ZKW3DtPwXcc8vgyHXPfMVyH8/Zzox42CZ5OhKeC/03KV+SsQ7
+ 9kUuwxCQlVu6OWwo2cQZgAywN+l3pMU0ZeTJ8QbYMY2+TKyGTOt9Xnl3nKq9vQNuJHG1
+ 8yQybEfkS1QwodW2uDiluC/2uHOUHFNSU5fIAIvnHB+2Oz2dULCGHgvF5AxDq6ItsdB/
+ uHGp2zv4/OuiRwWIwd69su2w7/7PLTd8Kbxnkxb07nS+LlPrnBpWdl/ykkWwQJWz+83n 1w== 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2171.outbound.protection.outlook.com [104.47.59.171])
+        by mx0a-0014ca01.pphosted.com with ESMTP id 2wra70dg46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 Dec 2019 01:20:39 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=et1cblu3TjZ5HrgWTTujptc9pcQkZw30tNJIC/5q67ULwzcJPcdXJ13Y96TMe329aELdDxxis8EuZFLjjzIBdwqvqJduvTxDP34mjL+KBO8ZM4HEhF1FMeDC64pZicRTVbFfwT7imPxSdDA8rLGV8pRu9C4D8nG0RQ9UXMkkx5HBEvdurmR5DcXwg6tEAFYrRtBKjKJW14TvdYXBwlOzAAfkqO8j95wqSEJach1UdcSKVhWx7vSAhaRi79HwxApuilxeAlcwV6X1VPU10QyXOX9OVGJhNTHcFx+yod7QwuxvvsaSjiXFAhL0IdMstY14h7goeNf7z3+B9MnYIAW4BA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9Wqnj2O7KVIT9n9DodKm0GhT7PmFwDT38TJNTaonqb0=;
+ b=EC3FJnvrnjlYFulAC2REPMHoLfTsGlB3FyAQXFOIO/KmnEHD7rVlcaR/HkMBXmoIzdHWuWQPXfanZsAHaUs+N/KamdxrAJ4JLGSrZRzLSVEW1MLiAe+KaOqj90hhPnBCYm5E5cBxWxUfSSqmjarnz2FN+TKq/0xXr3Y684qRIG/wJPSorDkyDESzFjBdPVj+Wro6WgvkH+mGet6lLgl7SNtrTS0RlENqIPM/AvPtm9GrKPoIaf5E9lXjN1Z1KMwz/5iv6jhbYjE/SLemIygmeoYEDhH7hscs3F/NTv8oZC3UJZEAqfCeHVMWC8tRGz63LkFrDNlLwnDmc5uCG8dUEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cadence.com; dmarc=pass action=none header.from=cadence.com;
+ dkim=pass header.d=cadence.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9Wqnj2O7KVIT9n9DodKm0GhT7PmFwDT38TJNTaonqb0=;
+ b=YXW8JvVO5xD2ohsME6MEaKWBWL5NN5sNycznk/evqpmc/D4AVxvqlpbL15xWA6nZCcZs/lZm3FgtmN+/6UiQWuRCgjkWtsfXPw09oXJSuEI8Mx/CXnc0/pfNXD9ubCLt2skQ1k0DR3MzKoXcA8EzV4gl6O+Aa7lsmQs5SSahutQ=
+Received: from BY5PR07MB6514.namprd07.prod.outlook.com (10.255.137.27) by
+ BY5PR07MB6886.namprd07.prod.outlook.com (52.133.249.22) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.13; Wed, 11 Dec 2019 09:20:37 +0000
+Received: from BY5PR07MB6514.namprd07.prod.outlook.com
+ ([fe80::e5b3:f11f:7907:d5e7]) by BY5PR07MB6514.namprd07.prod.outlook.com
+ ([fe80::e5b3:f11f:7907:d5e7%5]) with mapi id 15.20.2516.018; Wed, 11 Dec 2019
+ 09:20:37 +0000
+From:   Milind Parab <mparab@cadence.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "nicolas.nerre@microchip.com" <nicolas.nerre@microchip.com>,
+        "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dhananjay Vilasrao Kangude <dkangude@cadence.com>,
+        "a.fatoum@pengutronix.de" <a.fatoum@pengutronix.de>,
+        "brad.mouring@ni.com" <brad.mouring@ni.com>,
+        Parshuram Raju Thombare <pthombar@cadence.com>
+Subject: RE: [PATCH 3/3] net: macb: add support for high speed interface
+Thread-Topic: [PATCH 3/3] net: macb: add support for high speed interface
+Thread-Index: AQHVroIXac2qRLU0l0+QWTJxCA7dLKexrKsAgAF+vXCAADRqAIABQssw
+Date:   Wed, 11 Dec 2019 09:20:37 +0000
+Message-ID: <BY5PR07MB6514A9B0EBD033A91000F2FED35A0@BY5PR07MB6514.namprd07.prod.outlook.com>
+References: <1575890033-23846-1-git-send-email-mparab@cadence.com>
+ <1575890176-25630-1-git-send-email-mparab@cadence.com>
+ <20191209113606.GF25745@shell.armlinux.org.uk>
+ <BY5PR07MB651448607BAF87DC9C60F2AFD35B0@BY5PR07MB6514.namprd07.prod.outlook.com>
+ <20191210133334.GA16369@lunn.ch>
+In-Reply-To: <20191210133334.GA16369@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbXBhcmFiXGFwcGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEyOWUzNWJcbXNnc1xtc2ctN2JmMjJmNzMtMWJmNy0xMWVhLWFlY2EtZDhmMmNhNGQyNWFhXGFtZS10ZXN0XDdiZjIyZjc0LTFiZjctMTFlYS1hZWNhLWQ4ZjJjYTRkMjVhYWJvZHkudHh0IiBzej0iNzE0IiB0PSIxMzIyMDUyOTYzNDg5NjE4NjEiIGg9IldFVHZONTkxK05mbk1LV3dmZVZFS3BEVFk5ST0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
+x-dg-rorf: true
+x-originating-ip: [14.143.9.161]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 766f7bcc-1bbb-4233-eacc-08d77e1b6254
+x-ms-traffictypediagnostic: BY5PR07MB6886:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR07MB688678A88469D310B8A05A14D35A0@BY5PR07MB6886.namprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 024847EE92
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(376002)(346002)(39860400002)(36092001)(199004)(189003)(33656002)(66476007)(66556008)(64756008)(66946007)(7416002)(66446008)(52536014)(76116006)(2906002)(6916009)(54906003)(8936002)(316002)(81156014)(81166006)(55016002)(9686003)(86362001)(26005)(5660300002)(4744005)(186003)(71200400001)(478600001)(55236004)(6506007)(4326008)(8676002)(7696005)(107886003);DIR:OUT;SFP:1101;SCL:1;SRVR:BY5PR07MB6886;H:BY5PR07MB6514.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: cadence.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Y/GOyEwX+mMuzooMEW9ZuvzUVNN/ZIu8QPewwE7UUVgk1AVGY2+jMljYbzqb++PI4rb4b6E/FVFgW1O4Z2dV4X3Li6+X3FNhga8LknG/rrNyC+1cE5R5IIn2ZO8YirKjyHcJ3mJUudJOx1q9a9sjah4B6xYO1e8u7/jrNvqIX+DdUpFokY6kzblGlPOiW8IIV8ynzuegn1Gb0B8+QIv0yPFh2UhE9DAzTbbi4bhxOvkrvXH8nviu9pt7l+weASeosrgL3OLyi+v6ApCK7gUif3B81BF533mhkD3hI8i2WZlavU6wJOcJEEfi/3CJFEXUDXkFtZvznSPIj2GUYiCTWJSKR9YtRQlbciBINm9nGTQmI2CRnzkKeemclPw2gJ8x2RMGuDe74ZPPpbnVWE1ajsw+AgtzjKO3sw2Hfijm5i1FtsTkkG5AkILtbea6MrMoT1ZuOkebHhFlIN8K0xB9t1dHCOJznCl8RKGcmZIQg3DV0LzhGehh33JIf/+lgQ04
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1576051437-23230-1-git-send-email-zhangshaokun@hisilicon.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 766f7bcc-1bbb-4233-eacc-08d77e1b6254
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Dec 2019 09:20:37.4024
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: X4WHyvhf6ULtxOWum1Z/AIIbEFmPW7qVuRwPU98cHhfYgECYAAaCi1IdGbu3S0LvrDuXZQMFT12Gm2EEYJMc8v8ELgWdpG297Ctb86FX2a8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR07MB6886
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-11_01:2019-12-11,2019-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 mlxlogscore=763
+ suspectscore=0 malwarescore=0 phishscore=0 lowpriorityscore=0
+ impostorscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 adultscore=0
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912110080
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 11-12-19 16:03:57, Shaokun Zhang wrote:
-> From: yuqi jin <jinyuqi@huawei.com>
-> 
-> In multi-processor and NUMA system, I/O driver will find cpu cores that
-> which shall be bound IRQ. When cpu cores in the local numa have been
-> used, it is better to find the node closest to the local numa node for
-> performance, instead of choosing any online cpu immediately.
-> 
-> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
-> system(0 - 1). The topology of this server is followed:
-> available: 4 nodes (0-3)
-> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-> node 0 size: 63379 MB
-> node 0 free: 61899 MB
-> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
-> node 1 size: 64509 MB
-> node 1 free: 63942 MB
-> node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
-> node 2 size: 64509 MB
-> node 2 free: 63056 MB
-> node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
-> node 3 size: 63997 MB
-> node 3 free: 63420 MB
-> node distances:
-> node   0   1   2   3
->   0:  10  16  32  33
->   1:  16  10  25  32
->   2:  32  25  10  16
->   3:  33  32  16  10
-> 
-> We perform PS (parameter server) business test, the behavior of the 
-> service is that the client initiates a request through the network card,
-> the server responds to the request after calculation. When two PS
-> processes run on node2 and node3 separately and the network card is
-> located on 'node2' which is in cpu1, the performance of node2 (26W QPS)
-> and node3 (22W QPS) is different.
-> It is better that the NIC queues are bound to the cpu1 cores in turn,
-> then XPS will also be properly initialized, while cpumask_local_spread
-> only considers the local node. When the number of NIC queues exceeds the
-> number of cores in the local node, it returns to the online core directly.
-> So when PS runs on node3 sending a calculated request, the performance is
-> not as good as the node2.
-> The IRQ from 369-392 will be bound from NUMA node0 to NUMA node3 with this
-> patch, before the patch:
-> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-> 0
-> Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-> 1
-> ...
-> Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-> 22
-> Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-> 23
-> After the patch:
-> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-> 72
-> Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
-> 73
-> ...
-> Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
-> 94
-> Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
-> 95
-> So the performance of the node3 is the same as node2 that is 26W QPS when
-> the network card is still in 'node2' with the patch.
-> 
-> It is considered that the NIC and other I/O devices shall initialize the
-> interrupt binding, if the cores of the local node are used up, it is
-> reasonable to return the node closest to it. Let's optimize it and find
-> the nearest node through NUMA distance for the non-local NUMA nodes.
+>> >How has this been tested?
+>> >
+>>
+>> This patch is tested in 10G fixed mode on SFP+ module.
+>>
+>> In our own lab, we have various hardware test platforms supporting SGMII
+>(through a TI PHY and another build that connects to a Marvell 1G PHY), GM=
+II
+>(through a Marvell PHY), 10GBASE-R (direct connection to SFP+), USXGMII
+>(currently we can emulate this using an SFP+ connection from/to our own
+>hardware)
+>
+>Are any of these PHY using C45?
 
-As I've said/asked earlier. I am missing some background how this is
-affecting other existing users. Is this just that nobody has noticed the
-suboptimal cpu usage or is your workload very special in that regards.
+No, none of these PHYs use C45.=20
+For C45 testing we had a simulated PHY. The simulated PHY implemented a Cla=
+use 45 slave interface.
 
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Juergen Gross <jgross@suse.com>
-> Cc: Paul Burton <paul.burton@mips.com>
-> Cc: Michal Hocko <mhocko@suse.com>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Mike Rapoport <rppt@linux.ibm.com>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> Signed-off-by: yuqi jin <jinyuqi@huawei.com>
-> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-> ---
-> ChangeLog from v3:
->     1. Make spread_lock local to cpumask_local_spread();
->     2. Add more descriptions on the affinities change in log;
-> 
-> ChangeLog from v2:
->     1. Change the variables as static and use spinlock to protect;
->     2. Give more explantation on test and performance;
-> 
->  lib/cpumask.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 90 insertions(+), 12 deletions(-)
-> 
-> diff --git a/lib/cpumask.c b/lib/cpumask.c
-> index 0cb672eb107c..f7394ba36116 100644
-> --- a/lib/cpumask.c
-> +++ b/lib/cpumask.c
-> @@ -6,6 +6,7 @@
->  #include <linux/export.h>
->  #include <linux/memblock.h>
->  #include <linux/numa.h>
-> +#include <linux/spinlock.h>
->  
->  /**
->   * cpumask_next - get the next cpu in a cpumask
-> @@ -192,18 +193,39 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
->  }
->  #endif
->  
-> -/**
-> - * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-> - * @i: index number
-> - * @node: local numa_node
-> - *
-> - * This function selects an online CPU according to a numa aware policy;
-> - * local cpus are returned first, followed by non-local ones, then it
-> - * wraps around.
-> - *
-> - * It's not very efficient, but useful for setup.
-> - */
-> -unsigned int cpumask_local_spread(unsigned int i, int node)
-> +static void calc_node_distance(int *node_dist, int node)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < nr_node_ids; i++)
-> +		node_dist[i] = node_distance(node, i);
-> +}
-> +
-> +static int find_nearest_node(int *node_dist, bool *used)
-> +{
-> +	int i, min_dist = node_dist[0], node_id = -1;
-> +
-> +	/* Choose the first unused node to compare */
-> +	for (i = 0; i < nr_node_ids; i++) {
-> +		if (used[i] == 0) {
-> +			min_dist = node_dist[i];
-> +			node_id = i;
-> +			break;
-> +		}
-> +	}
-> +
-> +	/* Compare and return the nearest node */
-> +	for (i = 0; i < nr_node_ids; i++) {
-> +		if (node_dist[i] < min_dist && used[i] == 0) {
-> +			min_dist = node_dist[i];
-> +			node_id = i;
-> +		}
-> +	}
-> +
-> +	return node_id;
-> +}
-> +
-> +static unsigned int __cpumask_local_spread(unsigned int i, int node)
->  {
->  	int cpu;
->  
-> @@ -231,4 +253,60 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
->  	}
->  	BUG();
->  }
-> +
-> +/**
-> + * cpumask_local_spread - select the i'th cpu with local numa cpu's first
-> + * @i: index number
-> + * @node: local numa_node
-> + *
-> + * This function selects an online CPU according to a numa aware policy;
-> + * local cpus are returned first, followed by the nearest non-local ones,
-> + * then it wraps around.
-> + *
-> + * It's not very efficient, but useful for setup.
-> + */
-> +unsigned int cpumask_local_spread(unsigned int i, int node)
-> +{
-> +	static DEFINE_SPINLOCK(spread_lock);
-> +	static int node_dist[MAX_NUMNODES];
-> +	static bool used[MAX_NUMNODES];
-> +	unsigned long flags;
-> +	int cpu, j, id;
-> +
-> +	/* Wrap: we always want a cpu. */
-> +	i %= num_online_cpus();
-> +
-> +	if (node == NUMA_NO_NODE) {
-> +		for_each_cpu(cpu, cpu_online_mask)
-> +			if (i-- == 0)
-> +				return cpu;
-> +	} else {
-> +		if (nr_node_ids > MAX_NUMNODES)
-> +			return __cpumask_local_spread(i, node);
-> +
-> +		spin_lock_irqsave(&spread_lock, flags);
-> +		memset(used, 0, nr_node_ids * sizeof(bool));
-> +		calc_node_distance(node_dist, node);
-> +		for (j = 0; j < nr_node_ids; j++) {
-> +			id = find_nearest_node(node_dist, used);
-> +			if (id < 0)
-> +				break;
-> +
-> +			for_each_cpu_and(cpu, cpumask_of_node(id),
-> +					 cpu_online_mask)
-> +				if (i-- == 0) {
-> +					spin_unlock_irqrestore(&spread_lock,
-> +							       flags);
-> +					return cpu;
-> +				}
-> +			used[id] = 1;
-> +		}
-> +		spin_unlock_irqrestore(&spread_lock, flags);
-> +
-> +		for_each_cpu(cpu, cpu_online_mask)
-> +			if (i-- == 0)
-> +				return cpu;
-> +	}
-> +	BUG();
-> +}
->  EXPORT_SYMBOL(cpumask_local_spread);
-> -- 
-> 2.7.4
-
--- 
-Michal Hocko
-SUSE Labs
+>
+>    Thanks
+>	Andrew
