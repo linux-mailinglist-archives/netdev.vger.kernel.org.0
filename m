@@ -2,175 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6144311A2CF
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 03:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0237F11A2D2
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 04:01:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727689AbfLKC7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 21:59:00 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40272 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727217AbfLKC7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 21:59:00 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from yuvalav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 11 Dec 2019 04:58:58 +0200
-Received: from sw-mtx-008.mtx.labs.mlnx (sw-mtx-008.mtx.labs.mlnx [10.9.150.35])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xBB2wv6U003700;
-        Wed, 11 Dec 2019 04:58:58 +0200
-Received: from sw-mtx-008.mtx.labs.mlnx (localhost [127.0.0.1])
-        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id xBB2wuAl018882;
-        Wed, 11 Dec 2019 04:58:56 +0200
-Received: (from yuvalav@localhost)
-        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id xBB2wt3s018881;
-        Wed, 11 Dec 2019 04:58:55 +0200
-From:   Yuval Avnery <yuvalav@mellanox.com>
-Cc:     jiri@mellanox.com, jakub.kicinski@netronome.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yuval Avnery <yuvalav@mellanox.com>
-Subject: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
-Date:   Wed, 11 Dec 2019 04:58:53 +0200
-Message-Id: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S1727297AbfLKDBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 22:01:20 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7663 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726974AbfLKDBU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Dec 2019 22:01:20 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 0F8CAC025CD6E66F5CAB;
+        Wed, 11 Dec 2019 11:01:18 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 11 Dec 2019
+ 11:01:16 +0800
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>
+CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191209131416.238d4ae4@carbon>
+ <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
+ <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
+ <585eda1ebe8788959b31bca5bb6943908c08c909.camel@mellanox.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <910156da-0b43-0a86-67a0-f4e7e6547373@huawei.com>
+Date:   Wed, 11 Dec 2019 11:01:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
+MIME-Version: 1.0
+In-Reply-To: <585eda1ebe8788959b31bca5bb6943908c08c909.camel@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently there is no limit to the number of VFs netdevsim can enable.
-In a real systems this value exist and used by driver.
-Fore example, Some features might need to consider this value when
-allocating memory.
+On 2019/12/11 3:45, Saeed Mahameed wrote:
+>>> maybe assume that __page_pool_recycle_direct() is always called
+>>> from
+>>> the right node and change the current bogus check:
+>>>
+>>> from:
+>>> page_to_nid(page) == pool->p.nid 
+>>>
+>>> to:
+>>> page_to_nid(page) == numa_mem_id()
+>>>
+>>> This will allow recycling only if handling node is the same as
+>>> where
+>>> the page was allocated, regardless of pool->p.nid.
+>>>
+>>> so semantics are:
+>>>
+>>> 1) allocate from: pool->p.nid, as chosen by user.
+>>> 2) recycle when: page_to_nid(page) == numa_mem_id().
+>>> 3) pool user must guarantee that the handler will run on the right
+>>> node. which should always be the case. otherwise recycling will be
+>>> skipped (no cross numa recycling).
+>>>
+>>>
+>>> a) if the pool migrates, we will stop recycling until the pool
+>>> moves
+>>> back to original node, or user calls pool_update_nid() as we do in
+>>> mlx5.
+>>> b) if pool is NUMA_NO_NODE, then allocation and handling will be
+>>> done
+>>> on numa_mem_id(), which means the above check will work.
+>>
+>> Only checking page_to_nid(page) == numa_mem_id() may not work for the
+>> below
+>> case in mvneta.c:
+>>
+>> static int mvneta_create_page_pool(struct mvneta_port *pp,
+>> 				   struct mvneta_rx_queue *rxq, int
+>> size)
+>> {
+>> 	struct bpf_prog *xdp_prog = READ_ONCE(pp->xdp_prog);
+>> 	struct page_pool_params pp_params = {
+>> 		.order = 0,
+>> 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+>> 		.pool_size = size,
+>> 		.nid = cpu_to_node(0),
+>> 		.dev = pp->dev->dev.parent,
+>> 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL :
+>> DMA_FROM_DEVICE,
+>> 		.offset = pp->rx_offset_correction,
+>> 		.max_len = MVNETA_MAX_RX_BUF_SIZE,
+>> 	};
+>>
+>> the pool->p.nid is not NUMA_NO_NODE, then the node of page allocated
+>> for rx
+>> may not be numa_mem_id() when running in the NAPI polling, because
+>> pool->p.nid
+>> is not the same as the node of cpu running in the NAPI polling.
+>>
+>> Does the page pool support recycling for above case?
+>>
+> 
+> I don't think you want to allow cross numa recycling.
 
-Signed-off-by: Yuval Avnery <yuvalav@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/netdevsim/bus.c       | 39 +++++++++++++++++++++++--------
- drivers/net/netdevsim/netdevsim.h |  1 +
- 2 files changed, 30 insertions(+), 10 deletions(-)
+Cross numa recycling is not what I want.
 
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index 6aeed0c600f8..f1a0171080cb 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -26,9 +26,9 @@ static struct nsim_bus_dev *to_nsim_bus_dev(struct device *dev)
- static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
- 				   unsigned int num_vfs)
- {
--	nsim_bus_dev->vfconfigs = kcalloc(num_vfs,
--					  sizeof(struct nsim_vf_config),
--					  GFP_KERNEL);
-+	if (nsim_bus_dev->max_vfs < num_vfs)
-+		return -ENOMEM;
-+
- 	if (!nsim_bus_dev->vfconfigs)
- 		return -ENOMEM;
- 	nsim_bus_dev->num_vfs = num_vfs;
-@@ -38,8 +38,6 @@ static int nsim_bus_dev_vfs_enable(struct nsim_bus_dev *nsim_bus_dev,
- 
- static void nsim_bus_dev_vfs_disable(struct nsim_bus_dev *nsim_bus_dev)
- {
--	kfree(nsim_bus_dev->vfconfigs);
--	nsim_bus_dev->vfconfigs = NULL;
- 	nsim_bus_dev->num_vfs = 0;
- }
- 
-@@ -154,22 +152,29 @@ static struct device_type nsim_bus_dev_type = {
- };
- 
- static struct nsim_bus_dev *
--nsim_bus_dev_new(unsigned int id, unsigned int port_count);
-+nsim_bus_dev_new(unsigned int id, unsigned int port_count,
-+		 unsigned int max_vfs);
-+
-+#define NSIM_BUS_DEV_MAX_VFS 4
- 
- static ssize_t
- new_device_store(struct bus_type *bus, const char *buf, size_t count)
- {
- 	struct nsim_bus_dev *nsim_bus_dev;
- 	unsigned int port_count;
-+	unsigned int max_vfs;
- 	unsigned int id;
- 	int err;
- 
--	err = sscanf(buf, "%u %u", &id, &port_count);
-+	err = sscanf(buf, "%u %u %u", &id, &port_count, &max_vfs);
- 	switch (err) {
- 	case 1:
- 		port_count = 1;
- 		/* fall through */
- 	case 2:
-+		max_vfs = NSIM_BUS_DEV_MAX_VFS;
-+		/* fall through */
-+	case 3:
- 		if (id > INT_MAX) {
- 			pr_err("Value of \"id\" is too big.\n");
- 			return -EINVAL;
-@@ -179,7 +184,7 @@ new_device_store(struct bus_type *bus, const char *buf, size_t count)
- 		pr_err("Format for adding new device is \"id port_count\" (uint uint).\n");
- 		return -EINVAL;
- 	}
--	nsim_bus_dev = nsim_bus_dev_new(id, port_count);
-+	nsim_bus_dev = nsim_bus_dev_new(id, port_count, max_vfs);
- 	if (IS_ERR(nsim_bus_dev))
- 		return PTR_ERR(nsim_bus_dev);
- 
-@@ -267,7 +272,8 @@ static struct bus_type nsim_bus = {
- };
- 
- static struct nsim_bus_dev *
--nsim_bus_dev_new(unsigned int id, unsigned int port_count)
-+nsim_bus_dev_new(unsigned int id, unsigned int port_count,
-+		 unsigned int max_vfs)
- {
- 	struct nsim_bus_dev *nsim_bus_dev;
- 	int err;
-@@ -284,12 +290,24 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count)
- 	nsim_bus_dev->dev.type = &nsim_bus_dev_type;
- 	nsim_bus_dev->port_count = port_count;
- 	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
-+	nsim_bus_dev->max_vfs = max_vfs;
-+
-+	nsim_bus_dev->vfconfigs = kcalloc(nsim_bus_dev->max_vfs,
-+					  sizeof(struct nsim_vf_config),
-+					  GFP_KERNEL);
-+	if (!nsim_bus_dev->vfconfigs) {
-+		err = -ENOMEM;
-+		goto err_nsim_bus_dev_id_free;
-+	}
- 
- 	err = device_register(&nsim_bus_dev->dev);
- 	if (err)
--		goto err_nsim_bus_dev_id_free;
-+		goto err_nsim_vfconfigs_free;
-+
- 	return nsim_bus_dev;
- 
-+err_nsim_vfconfigs_free:
-+	kfree(nsim_bus_dev->vfconfigs);
- err_nsim_bus_dev_id_free:
- 	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
- err_nsim_bus_dev_free:
-@@ -301,6 +319,7 @@ static void nsim_bus_dev_del(struct nsim_bus_dev *nsim_bus_dev)
- {
- 	device_unregister(&nsim_bus_dev->dev);
- 	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
-+	kfree(nsim_bus_dev->vfconfigs);
- 	kfree(nsim_bus_dev);
- }
- 
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 94df795ef4d3..e2049856add8 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -238,6 +238,7 @@ struct nsim_bus_dev {
- 	struct net *initial_net; /* Purpose of this is to carry net pointer
- 				  * during the probe time only.
- 				  */
-+	unsigned int max_vfs;
- 	unsigned int num_vfs;
- 	struct nsim_vf_config *vfconfigs;
- };
--- 
-2.17.1
+> 
+>> Or we "fix' the above case by setting pool->p.nid to
+>> NUMA_NO_NODE/dev_to_node(),
+>> or by calling pool_update_nid() in NAPI polling as mlx5 does?
+>>
+> 
+> Yes just update_nid when needed, and make sure the NAPI polling runs on
+> a consistent core and eventually alloc/recycling will happen on the
+> same core.
+
+To me, passing NUMA_NO_NODE/dev_to_node() seems to always work.
+Calling pool_update_nid() in NAPI polling is another way of passing
+NUMA_NO_NODE to page_pool_init().
+
+And it seems it is a copy & paste problem for mvneta and netsec
+driver that uses cpu_to_node(0) as pool->p.nid but does not call
+page_pool_nid_changed() in the NAPI polling as mlx5 does.
+
+So I suggest to remove page_pool_nid_changed() and always use
+NUMA_NO_NODE/dev_to_node() as pool->p.nid or make it clear (
+by comment or warning?)that page_pool_nid_changed() should be
+called when pool->p.nid is NUMA_NO_NODE/dev_to_node().
+
+I prefer to remove page_pool_nid_changed() if we do not allow
+cross numa recycling.
+
+
+> 
+>>
+>>> Thanks,
+>>> Saeed.
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
 
