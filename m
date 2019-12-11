@@ -2,105 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 440AA11A57D
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 08:58:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B2DE11A585
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:01:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbfLKH6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 02:58:17 -0500
-Received: from mout.kundenserver.de ([212.227.126.187]:43221 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726983AbfLKH6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 02:58:16 -0500
-Received: from mail-qt1-f177.google.com ([209.85.160.177]) by
- mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1Mq33i-1hswtB086U-00nC11; Wed, 11 Dec 2019 08:58:15 +0100
-Received: by mail-qt1-f177.google.com with SMTP id 5so5512162qtz.1;
-        Tue, 10 Dec 2019 23:58:14 -0800 (PST)
-X-Gm-Message-State: APjAAAWujv/5DOfEq91zRO4Hxn1PrMrpqVv5IHLCumRyiezB26dXfhhW
-        lgvQdYzPzJxjOhh+paY1BMkOPpinq80nE0B2nVI=
-X-Google-Smtp-Source: APXvYqwaO6ygNI/YjrKsZsmfiPRjEO9YCitE0sPil72zQapjP36ejQ/hjJM6YqeIimph30jJFbk5N29y//l7ykIh/pQ=
-X-Received: by 2002:ac8:3a27:: with SMTP id w36mr1595586qte.204.1576051093887;
- Tue, 10 Dec 2019 23:58:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20191210203710.2987983-1-arnd@arndb.de> <CA+h21hrJ45J2N4DD=pAtE8vN6hCjUYUq5vz17pY-7=TpkA51rA@mail.gmail.com>
- <CAK8P3a2ONPojLz=REmbBMwnSsB3GVyqLYtCD28mmKk5qr3KpdQ@mail.gmail.com> <CA+h21hp1gg2SNX3f-+3gG3au90XsrYkzjvWYXmHdiWv-Bu=KPQ@mail.gmail.com>
-In-Reply-To: <CA+h21hp1gg2SNX3f-+3gG3au90XsrYkzjvWYXmHdiWv-Bu=KPQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 11 Dec 2019 08:57:57 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2J2zLGnCNG=Py+LMFELCrtjPoyPY9CZRVdRsWa+Mt=tw@mail.gmail.com>
-Message-ID: <CAK8P3a2J2zLGnCNG=Py+LMFELCrtjPoyPY9CZRVdRsWa+Mt=tw@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: ocelot: add NET_VENDOR_MICROSEMI dependency
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:+Jy7L1UZU8QDHmCRHghgXHzrZdld6hWgpveoupzzJHC32k1McU3
- ZKfLgFUbtWGN3Yg1pfzJyjRtW5u3psY9FCxJ158EBy1YgWnKjJH+PZzLLosYJLPf1FBBI2a
- agcSivsJAktd1nsWJ1iUiYTAptRMRS9ncwupinY1hhZ+JOu6kW3X8NvHspngYLdgbrAhRB+
- NYL8sN14fnpCwfaYvRg2A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NKYZpOml388=:ANrIohBgQ3e/W/Zqlt19C9
- bmsgX85AXiIASY01wdMyiR7iv1XSK27qVqdAk+QfdIQ1Zv+lZMUEytNWGMJSvxEmlzfOCn5om
- PfueCL7kvjI64h4vcpxJEjALvJYW22iAtJAPRGbuiKctHZNiBfRTRQQSG+KpLh+PrFCdxlN8a
- xB/9ZtJsuRiQb4JQ4EGDXDMnjfzTgQcpMbYLFh3mgXrRK743j7AMLttIMMcY8ktE5+5Gm5Tnj
- I5kP4XId0Yr8AwDUd/m/adYyxq5Fnxwi5RiznB9DAMT844IB3eYOuaYgYbzFmYC+Xyt4F4wC7
- OqPLWvXFI4/ffqc5zXw2OMIsCZLXIVWpHxUYGPWFzOe+lLXzl4VmloLTvkzRkvaka+jrq688a
- KN/f4g3I3IRs7z3GNTp+Y4/oTm73ZNuLmiOVK7nDLDWOYqmSyOKtfSejJ3xRCIW6hH1wojoll
- yrGdq05GTtEL6tWsOOwn1H4G6BdQWKGUbuXU8HV61eWVFwP2kDnDisFb141E4+I3d4UlRAGBe
- TTV9mRfAhw7U6UcJuZOXUzNUIWuz3zhOgRHEbDNbx0ORApckNF0zLzBHPM/kNVMjMQ9121neh
- XBFImlfi1Cbfl+76CjnrGoq+6eVA5hgljNmV1d5WDoUAHKMqgq+ACL+yTO6XNP4Agc8ipb2zE
- LzG5p3dHY0E1OvHyD/P0vxjzHllrOl2sttPjNLTXYSDE/FH8/JPRqcSE3Zxj2xJJAwIggmnhN
- ceA7S+HF+atFCXERpeBGwQ1/1/lti2FPFTqEAW39RQnd8H+FEYPPwU8OW4L5wehi+Np2ZQ8rp
- 5w0TkI0s5709P598ejxXVovxGV1I57K9oloe7j4hjijtd0aqvS5oSIOzxszri2XXo8Mcu4bNu
- XfMxTcKwSciiF1ZZB/qA==
+        id S1728104AbfLKIBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 03:01:32 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51015 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726983AbfLKIBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:01:32 -0500
+Received: by mail-wm1-f65.google.com with SMTP id a5so173984wmb.0;
+        Wed, 11 Dec 2019 00:01:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=iNafb8iy7Y+FGGrqVQWeJF9BXCyC71QaJHmHluKRT0o=;
+        b=baaWlDZCjyJzC2yTy9CXfarqpwTt1iLf+khLAWw+yk7gPLxRc9PrKn1Z89jdL9UTTE
+         +mrqhCMHzzwKRJeZuZrPTeI9sZcTJn55fbzEoy1QiB+uEC4h23S1aQkqsOlQQs8K3vlg
+         /e+z+LO9kIpIzviLVTCtUZMxF2SLJOdHtsxhi6DnTFzorCTMhOAMVQn3JdCaIZTSAFcr
+         h5o/2zOwCzs+6905Nw1dsIKLSZRhW7ikvXe+VqwJubNFww+nwo89MnuygOYjYKp34pjf
+         xTujZQKqRRvIaRBRSJtCMzxEFxKbW72QYbgx2SJuFwYjt8gaOznUEZqVS8pKLa60Yqhj
+         zxJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iNafb8iy7Y+FGGrqVQWeJF9BXCyC71QaJHmHluKRT0o=;
+        b=gKYkjaMMC2yDXWfsWOu8o0/TkNetCq51SVcsTP5EyUoPetcMWfviUs58vdFaznNL6X
+         Wp8+MUyXK000A16JiowXa5slUYXy3PuK3RMPpCABpVK0+s+ZdvzYz6yD/aDCJuQzLK85
+         DbRWoz3XdtxXMpTZQstbbmVGZNFl/GkAcxTyB7hHQoiOri8cWMx4HxOeLpZj73osPC/0
+         jDkUBztOs1g0Lr79WLP3CIwDt5dcsTs5BmAAwQGl16B6wRJ5UqZKdDyF7uBlmP8e2G9I
+         ZoJmXYHMF05ixwyIoNAMLhUeqm6W00V/2QJCXWoJmepTlVFDatebpPbQ7WC/VkzGpJMn
+         U/qQ==
+X-Gm-Message-State: APjAAAXo+qCT1SF0SAr6XOsNsG8sMwKP660AfaI02I8Q9cwSUF5ky8hj
+        dtkkH6v+SGgKnjxv7lAT0Pw=
+X-Google-Smtp-Source: APXvYqzTJllTzFGqeiMqEBx0JuKyRO5tZacl4sepHfUt5XF/++K3JLMTcU2Py3wrRaNsGkcVKOsjJQ==
+X-Received: by 2002:a1c:dc82:: with SMTP id t124mr2068687wmg.122.1576051289961;
+        Wed, 11 Dec 2019 00:01:29 -0800 (PST)
+Received: from aherlnxbspsrv01.lgs-net.com ([193.8.40.126])
+        by smtp.gmail.com with ESMTPSA id s25sm1313160wmh.4.2019.12.11.00.01.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 00:01:29 -0800 (PST)
+From:   Andrey Zhizhikin <andrey.z@gmail.com>
+X-Google-Original-From: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+To:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        sergey.senozhatsky@gmail.com, pmladek@suse.com,
+        wangkefeng.wang@huawei.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: [PATCH] tools lib api fs: fix gcc9 compilation error
+Date:   Wed, 11 Dec 2019 08:01:09 +0000
+Message-Id: <20191211080109.18765-1-andrey.zhizhikin@leica-geosystems.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 11:33 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Wed, 11 Dec 2019 at 00:04, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Tue, Dec 10, 2019 at 10:37 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > Nonetheless, alternatives may be:
-> > > - Move MSCC_OCELOT_SWITCH core option outside of the
-> > > NET_VENDOR_MICROSEMI umbrella, and make it invisible to menuconfig,
-> > > just selectable from the 2 driver instances (MSCC_OCELOT_SWITCH_OCELOT
-> > > and NET_DSA_MSCC_FELIX). MSCC_OCELOT_SWITCH has no reason to be
-> > > selectable by the user anyway.
-> >
-> > You still need 'depends on NETDEVICES' in that case, otherwise this sounds
-> > like a good option.
-> >
->
-> I don't completely understand this. Looks like NETDEVICES is another
-> one of those options that don't enable any code. I would have expected
-> that NET_SWITCHDEV depended on it already? But anyway, it's still a
-> small compromise and not a problem.
+GCC9 introduced string hardening mechanisms, which exhibits the error
+during fs api compilation:
 
-My mistake: When I had tried it, I did run into this problem, but it was
-CONFIG_ETHERNET, not CONFIG_NETDEVICES.
+error: '__builtin_strncpy' specified bound 4096 equals destination size
+[-Werror=stringop-truncation]
 
-NET_SWITCHDEV depends only on INET, NET_DSA also depends on
-NETDEVICES, but neither of them depends on ETHERNET, which
-only controls drivers under drivers/net/ethernet, but not support for
-ethernet itself.
->
-> So, if you agree, I can take care of this tomorrow by reworking the
-> Kconfig in the 1st proposed way. I hope you don't mind that I'm
-> volunteering to do it, but the change will require a bit of explaining
-> which is non-trivial, and I don't expect that you really want to know
-> these details, just that it compiles with no issue from all angles.
+This comes when the length of copy passed to strncpy is is equal to
+destination size, which could potentially lead to buffer overflow.
 
-Sounds good, thanks!
+There is a need to mitigate this potential issue by limiting the size of
+destination by 1 and explicitly terminate the destination with NULL.
 
-If you like, I can give your patch a spin on my randconfig build
-system before you submit it for inclusion, in case there is another
-problem we both missed.
+Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/lib/api/fs/fs.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-        Arnd
+diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
+index 11b3885e833e..027b18f7ed8c 100644
+--- a/tools/lib/api/fs/fs.c
++++ b/tools/lib/api/fs/fs.c
+@@ -210,6 +210,7 @@ static bool fs__env_override(struct fs *fs)
+ 	size_t name_len = strlen(fs->name);
+ 	/* name + "_PATH" + '\0' */
+ 	char upper_name[name_len + 5 + 1];
++
+ 	memcpy(upper_name, fs->name, name_len);
+ 	mem_toupper(upper_name, name_len);
+ 	strcpy(&upper_name[name_len], "_PATH");
+@@ -219,7 +220,8 @@ static bool fs__env_override(struct fs *fs)
+ 		return false;
+ 
+ 	fs->found = true;
+-	strncpy(fs->path, override_path, sizeof(fs->path));
++	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
++	fs->path[sizeof(fs->path) - 1] = '\0';
+ 	return true;
+ }
+ 
+-- 
+2.17.1
+
