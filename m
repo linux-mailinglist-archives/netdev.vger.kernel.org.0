@@ -2,137 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B032611ABD7
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 14:17:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C92811ABDA
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 14:17:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729370AbfLKNRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 08:17:25 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57229 "EHLO
+        id S1729468AbfLKNRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 08:17:39 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46096 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729131AbfLKNRZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 08:17:25 -0500
+        with ESMTP id S1729442AbfLKNRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 08:17:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576070243;
+        s=mimecast20190719; t=1576070257;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=euN1BL4YywoP7RbUg1LVqDst2OmJiHQIB5+Y09DMWek=;
-        b=PaBuAEP9577FGxDa2OyWjw7WJIF5GVV9JIIeO/pUkBRLlvPemMi/hFmS/gHu/vVoNgNSBV
-        OZGjlahgtOgivVBJ/+iJFUT4j3jZOq1TW8fZR/3BqA1GzdfniahUkP0BqJ1dZfnBhY79lG
-        SMI5dxfV72z9spX2vGXYxR+vus6cgkQ=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-247-I_VnyzP-N-eq88RoSqKIRg-1; Wed, 11 Dec 2019 08:17:20 -0500
-Received: by mail-lf1-f70.google.com with SMTP id q16so5032444lfa.13
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 05:17:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=WA9dD6PXu0G7afNTJEKi8tc4wSzduavlA73aFj9hvJg=;
-        b=NWe+JnV0/GCMwIpGjy63n5JNGdekLGALaAUBHIVh8qb7tD4g9oj2TrsAvBIqT5pzBt
-         4UtAD9qA9m053GOUNPlQOEjsYyB3bxsV1N4V+MJAJyTHBnsjgqFW24+mBqummnlgEPLM
-         JO3iEdLet3cKHmx1Mqaj8DaWyn8+ZF1O1toh94Q0ZRB5YpF+4sLUbOg/8LcwLl3sn/CF
-         00LklhZtftAyuq1x3BI3OJwyxoq04c93P+IgaNlmjtDzwCtrPdqjZ0rF+e4FQDeDzZkt
-         GAPlgdlw2Xut5zu14uCLUo6IRUZNZyVoBrTf96t6W+/uy3/LDG6xTUZNKQrQDuqtm0lg
-         7RLQ==
-X-Gm-Message-State: APjAAAUKvlt9iM760q73dlHspYTc7dS/r7nXkRjnhIrMDs3/PzM0TfHV
-        reyWJFy/Zhko8diW3rZukfqzuhUnH1TNmvztSdLoWhgFMDHTq93B8JK6CdAICOGxg0f2nqjxLde
-        sJMb0lFXv7hcJbUA2
-X-Received: by 2002:a19:6a06:: with SMTP id u6mr2208215lfu.187.1576070239173;
-        Wed, 11 Dec 2019 05:17:19 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyCWgPBIbmMy5trTf3w8CUkWk2zOkeDBJfB57rNVw5wVMlb19yY3qW7y54+PwtcC6QAtTxEHA==
-X-Received: by 2002:a19:6a06:: with SMTP id u6mr2208200lfu.187.1576070238958;
-        Wed, 11 Dec 2019 05:17:18 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id x12sm1154992ljd.92.2019.12.11.05.17.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 05:17:18 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1EB6718033F; Wed, 11 Dec 2019 14:17:17 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
+        bh=AX5fhWmUkcVTK2FGEAydksRsVVwg5DCyda4UF354+FM=;
+        b=eUK89sLkwK4WEdYCOh7XW/Z+JcNRL6Az0F2MZG9jvMfovTfcJ/HF8+8XE+Xh7jHZ1eIuO2
+        7M+iOwXoUuBZZWPkLmsD3BRvGCaw6DFkkBg0BHdhNccRi55g3E9zyydJVGcP1MmGby68Wc
+        5/PncOVfERKJzoZeNfSvp4GlaEy19tc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-286-OSi8-b5bP9uGf_WTtpb2Qw-1; Wed, 11 Dec 2019 08:17:34 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B441DB25;
+        Wed, 11 Dec 2019 13:17:32 +0000 (UTC)
+Received: from carbon (ovpn-200-56.brq.redhat.com [10.40.200.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D1BDD100EBA4;
+        Wed, 11 Dec 2019 13:17:25 +0000 (UTC)
+Date:   Wed, 11 Dec 2019 14:17:23 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     brouer@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rg?= =?utf-8?Q?ensen?= 
-        <thoiland@redhat.com>, Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/6] Introduce the BPF dispatcher
-In-Reply-To: <CAJ+HfNiH4KUO-MXm3L8pka3dECC1S6rHUJ9NoMfyrhPD+9s9nw@mail.gmail.com>
-References: <20191209135522.16576-1-bjorn.topel@gmail.com> <87h829ilwr.fsf@toke.dk> <CAJ+HfNjZnxrgYtTzbqj2VOP+5A81UW-7OKoReT0dMVBT0fQ1pg@mail.gmail.com> <CAJ+HfNiH4KUO-MXm3L8pka3dECC1S6rHUJ9NoMfyrhPD+9s9nw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 11 Dec 2019 14:17:17 +0100
-Message-ID: <8736drgfxe.fsf@toke.dk>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: ethernet: ti: select PAGE_POOL for switchdev
+ driver
+Message-ID: <20191211141723.2cb3d5e9@carbon>
+In-Reply-To: <20191211125643.1987157-1-arnd@arndb.de>
+References: <20191211125643.1987157-1-arnd@arndb.de>
 MIME-Version: 1.0
-X-MC-Unique: I_VnyzP-N-eq88RoSqKIRg-1
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: OSi8-b5bP9uGf_WTtpb2Qw-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+On Wed, 11 Dec 2019 13:56:09 +0100
+Arnd Bergmann <arnd@arndb.de> wrote:
 
-> On Mon, 9 Dec 2019 at 18:42, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com=
-> wrote:
->>
-> [...]
->> > You mentioned in the earlier version that this would impact the time i=
-t
->> > takes to attach an XDP program. Got any numbers for this?
->> >
->>
->> Ah, no, I forgot to measure that. I'll get back with that. So, when a
->> new program is entered or removed from dispatcher, it needs to be
->> re-jited, but more importantly -- a text poke is needed. I don't know
->> if this is a concern or not, but let's measure it.
->>
->
-> Toke, I tried to measure the impact, but didn't really get anything
-> useful out. :-(
->
-> My concern was mainly that text-poking is a point of contention, and
-> it messes with the icache. As for contention, we're already
-> synchronized around the rtnl-lock. As for the icache-flush effects...
-> well... I'm open to suggestions how to measure the impact in a useful
-> way.
+> The new driver misses a dependency:
+> 
+> drivers/net/ethernet/ti/cpsw_new.o: In function `cpsw_rx_handler':
+> cpsw_new.c:(.text+0x259c): undefined reference to `__page_pool_put_page'
+> cpsw_new.c:(.text+0x25d0): undefined reference to `page_pool_alloc_pages'
+> drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_fill_rx_channels':
+> cpsw_priv.c:(.text+0x22d8): undefined reference to `page_pool_alloc_pages'
+> cpsw_priv.c:(.text+0x2420): undefined reference to `__page_pool_put_page'
+> drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_create_xdp_rxqs':
+> cpsw_priv.c:(.text+0x2624): undefined reference to `page_pool_create'
+> drivers/net/ethernet/ti/cpsw_priv.o: In function `cpsw_run_xdp':
+> cpsw_priv.c:(.text+0x2dc8): undefined reference to `__page_pool_put_page'
+> 
+> Other drivers use 'select' for PAGE_POOL, so do the same here.
+> 
+> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Hmm, how about:
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Test 1:
+Thanks for fixing this.
 
-- Run a test with a simple drop program (like you have been) on a
-  physical interface (A), sampling the PPS with interval I.
-- Load a new XDP program on interface B (which could just be a veth I
-  guess?)
-- Record the PPS delta in the sampling interval on which the program was
-  loaded on interval B.
-
-You could also record for how many intervals the throughput drops, but I
-would guess you'd need a fairly short sampling interval to see anything
-for this.
-
-Test 2:
-
-- Run an XDP_TX program that just reflects the packets.
-- Have the traffic generator measure per-packet latency (from it's
-  transmitted until the same packet comes back).
-- As above, load a program on a different interface and look for a blip
-  in the recorded latency.
-
-
-Both of these tests could also be done with the program being replaced
-being the one that processes packets on the physical interface (instead
-of on another interface). That way you could also see if there's any
-difference for that before/after patch...
-
--Toke
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
