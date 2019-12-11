@@ -2,145 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D908D11A2EA
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 04:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A57E511A2F0
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 04:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727230AbfLKDRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Dec 2019 22:17:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727059AbfLKDRx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Dec 2019 22:17:53 -0500
-Received: from paulmck-ThinkPad-P72.home (199-192-87-166.static.wiline.com [199.192.87.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1C8DE20836;
-        Wed, 11 Dec 2019 03:17:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576034272;
-        bh=+YcxndZMyPJlutMO+HDeqVbIBmhcahLQYT/Qc077ev0=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=NPftQfmwQr+msZd7MLaHlkkmDDM9r3b1WcrArFX6G6DOWsqrNNZEFCykv5GR+SXS7
-         Y0m8TIlBCSKbPRm9OCly8PYNNvRZzNK2aBhry6DU68nHtDL8JS1mPkZj2yJ+POz9lv
-         3covE9eb0GMP7EeVETkjzcTFA+jc12RKE/0yHndc=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 8FDD4352276C; Tue, 10 Dec 2019 19:17:51 -0800 (PST)
-Date:   Tue, 10 Dec 2019 19:17:51 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Tuong Lien Tong <tuong.t.lien@dektech.com.au>
-Cc:     'Ying Xue' <ying.xue@windriver.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mingo@kernel.org,
-        tipc-discussion@lists.sourceforge.net, kernel-team@fb.com,
-        torvalds@linux-foundation.org, davem@davemloft.net
-Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
- with rcu_replace_pointer()
-Message-ID: <20191211031751.GZ2889@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20191210033146.GA32522@paulmck-ThinkPad-P72>
- <0e565b68-ece1-5ae6-bb5d-710163fb8893@windriver.com>
- <20191210223825.GS2889@paulmck-ThinkPad-P72>
- <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
- <707801d5afc6$cac68190$605384b0$@dektech.com.au>
+        id S1726932AbfLKDUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Dec 2019 22:20:40 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36077 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbfLKDUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Dec 2019 22:20:40 -0500
+Received: by mail-pl1-f196.google.com with SMTP id d15so823228pll.3
+        for <netdev@vger.kernel.org>; Tue, 10 Dec 2019 19:20:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=2jHJ4JHgC5cvePnWImJM1hJsQ0h/bLKO8qjeUguHivg=;
+        b=R/WzI5y6RWgaCRy1ckrMZIIH5WkOtEcPGNwgY7o2Q+nwuxAA6A82MOeV2r2wUTJ0hy
+         yFM/aNjBEGNyupPPiKR+4Vw5VEOn1QivA2Z4WOONmiefJ2PjsgyDBZiFnto8eU1e/xVV
+         Asu4Zu7KJe3wOklPgpwsPz0IaRuKhNUhIUIdgTmMoD5fTe1sr8ebWMSp0O/Pzz1TGtfU
+         2cW5VM1U1PiH3fihPLQyNkEy4Qm4kSfv8LApWvVzmwDFWclpA+ayIWKmiVE/fit6ebAE
+         yxSSPehHW6QyqV3vEbDWWDwRzfI8NiD1OaddNYxGFtWPlHsJmyAeKsSs/sGd9HBSkxvm
+         DlRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=2jHJ4JHgC5cvePnWImJM1hJsQ0h/bLKO8qjeUguHivg=;
+        b=h/Fwsj0usxib2GA1eUnKG0jgxPdSi6yurAzJGk2hPOcLskc0N6VttnVp7J2GqLgTvH
+         GgyBO6RXE5XYShU62P1P8XIz2YIRefiMZeG2xSu+w/AAFVNsPpE40YZS7P6USmXYs3H5
+         8LmwTePZYLR4KXyhhLSZq4NObGs5TtLkOzBm7KilxBsOFdSIYdq60X4ANUOpgGgPNvxc
+         hWY/mo/qo6r/RPJXX+Zt/Xe0omjSdvvr6SU2LMyyUGgCpgIJ5G7KTozN2nfnzwDmn1yD
+         KW6II1nW8aXWpHBI04eyNvU/pW/ZCsLYO5LULQiuXT0iGR3+frPCKQ11a9YFzsvu45lZ
+         PG7w==
+X-Gm-Message-State: APjAAAUwTl5C0UJ5GHilluvwTDdUyUtgVaP9HsbMCR6Sq2CeRoAVghc8
+        RJ2ziH5BdBlre/5IbDkhE6MhkQ==
+X-Google-Smtp-Source: APXvYqxEXP9v+2noFk5dIfnKF45VtAX5J89K80D3IwLlOljUwaN7sGJD4sRk0SpzjaHto6pKco71Mw==
+X-Received: by 2002:a17:90a:9dc3:: with SMTP id x3mr971181pjv.45.1576034439726;
+        Tue, 10 Dec 2019 19:20:39 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id x4sm493073pfx.68.2019.12.10.19.20.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Dec 2019 19:20:39 -0800 (PST)
+Subject: Re: [PATCH net-next 2/2] ionic: support sr-iov operations
+To:     Parav Pandit <parav@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+References: <20191210225421.35193-1-snelson@pensando.io>
+ <20191210225421.35193-3-snelson@pensando.io>
+ <84808074-6984-14ca-7d22-65332086ad19@mellanox.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <2bdf19d1-55e3-60ff-bf6b-dd4f3097d672@pensando.io>
+Date:   Tue, 10 Dec 2019 19:20:38 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <707801d5afc6$cac68190$605384b0$@dektech.com.au>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <84808074-6984-14ca-7d22-65332086ad19@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 09:00:39AM +0700, Tuong Lien Tong wrote:
-> Hi Ying, Paul,
-> 
-> Please see my comments inline. Thanks!
+On 12/10/19 5:39 PM, Parav Pandit wrote:
+> On 12/10/2019 4:54 PM, Shannon Nelson wrote:
+>> Add the netdev ops for managing VFs.  Since most of the
+>> management work happens in the NIC firmware, the driver becomes
+>> mostly a pass-through for the network stack commands that want
+>> to control and configure the VFs.
+>>
+>> We also tweak ionic_station_set() a little to allow for
+>> the VFs that start off with a zero'd mac address.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> ---
+[...]
+>>   
+>> +/* VF commands */
+>> +int ionic_set_vf_config(struct ionic *ionic, int vf, u8 attr, u8 *data)
+>> +{
+> I forgot to mention in my previous review comment that set_vf_config()
+> and other VF config friend callback functions can race with
+> ionic_sriov_configure().
+>
+> Former is called from netlink context, later is called from sysfs.
+> Its not too hard to crash the system both racing with each other.
+>
+> Hence protect them using rwsem, where set_vf_() and sriov_configure()
+> does down/up_write() and get_vf_config() and get_vf_stat() does
+> down_up/read().
+>
+>
 
-Good catch!
+Ah, good catch.  That seems to be relatively a new thing and with a 
+quick look around it seems not many drivers deal with that yet. Thanks 
+for pointing it out.
 
-> BR/Tuong
-> 
-> -----Original Message-----
-> From: Ying Xue <ying.xue@windriver.com> 
-> Sent: Wednesday, December 11, 2019 8:32 AM
-> To: paulmck@kernel.org
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; mingo@kernel.org;
-> tipc-discussion@lists.sourceforge.net; kernel-team@fb.com;
-> torvalds@linux-foundation.org; davem@davemloft.net
-> Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
-> with rcu_replace_pointer()
-> 
-> On 12/11/19 6:38 AM, Paul E. McKenney wrote:
-> > commit 4ee8e2c68b076867b7a5af82a38010fffcab611c
-> > Author: Paul E. McKenney <paulmck@kernel.org>
-> > Date:   Mon Dec 9 19:13:45 2019 -0800
-> > 
-> >     net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
-> >     
-> >     This commit replaces the use of rcu_swap_protected() with the more
-> >     intuitively appealing rcu_replace_pointer() as a step towards removing
-> >     rcu_swap_protected().
-> >     
-> >     Link:
-> https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4g
-> g6Hw@mail.gmail.com/
-> >     Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> >     Reported-by: kbuild test robot <lkp@intel.com>
-> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> >     Cc: Jon Maloy <jon.maloy@ericsson.com>
-> >     Cc: Ying Xue <ying.xue@windriver.com>
-> >     Cc: "David S. Miller" <davem@davemloft.net>
-> >     Cc: <netdev@vger.kernel.org>
-> >     Cc: <tipc-discussion@lists.sourceforge.net>
-> 
-> Acked-by: Ying Xue <ying.xue@windriver.com>
+sln
 
-As in the following?  If so, I will be very happy to apply your Acked-by.
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-commit 4c0855120704e7a578dc6862ae57babf6dc9bc77
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Mon Dec 9 19:13:45 2019 -0800
-
-    net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
-    
-    This commit replaces the use of rcu_swap_protected() with the more
-    intuitively appealing rcu_replace_pointer() as a step towards removing
-    rcu_swap_protected().
-    
-    Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
-    Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-    Reported-by: kbuild test robot <lkp@intel.com>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-    [ paulmck: Updated based on Ying Xue and Tuong Lien Tong feedback. ]
-    Cc: Jon Maloy <jon.maloy@ericsson.com>
-    Cc: Ying Xue <ying.xue@windriver.com>
-    Cc: "David S. Miller" <davem@davemloft.net>
-    Cc: <netdev@vger.kernel.org>
-    Cc: <tipc-discussion@lists.sourceforge.net>
-
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 990a872..39a13b4 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -258,7 +258,7 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
- 	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
- 
- #define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
--	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
-+	rcu_replace_pointer((rcu_ptr), (ptr), lockdep_is_held(lock))
- 
- #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
- do {									\
-@@ -1189,7 +1189,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
- 
- 	/* Move passive key if any */
- 	if (key.passive) {
--		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-+		tmp2 = tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
- 		x = (key.passive - key.pending + new_pending) % KEY_MAX;
- 		new_passive = (x <= 0) ? x + KEY_MAX : x;
- 	}
