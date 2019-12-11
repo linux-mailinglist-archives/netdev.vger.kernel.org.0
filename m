@@ -2,101 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80F9D11A793
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:40:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7176411A84C
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 10:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728608AbfLKJkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 04:40:35 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:34353 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727318AbfLKJke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 04:40:34 -0500
-Received: by mail-lf1-f65.google.com with SMTP id l18so16159664lfc.1
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 01:40:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VEiTqs3AdcOOADsYpDlYWqADQJ1OE+9BmLTpHWgdwWA=;
-        b=GhxoZKc5XN75PQaqV66FqdkPlEFs9NHr8vay7vPpK0Gv0Z4gZO1JVarSAkNVUdqq1y
-         QEWyzyKj+hk2Qp2pcqlZrcZyOuFMz/eXRj3m7X+mIpseNgHSFSy/0EBoPEH/xqswnpmR
-         2iAtAb1XVFSqUfQqJzTM9ogWBjvBWefgWMkeY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VEiTqs3AdcOOADsYpDlYWqADQJ1OE+9BmLTpHWgdwWA=;
-        b=Xn/AFSyLKUAftfrpG01mr3igh6LUmC1KUv7hzVKdNFqHtmdlrWux8+MzjAJjphVK5c
-         B4Lykp4MiyPY7yh+bqDsrRXBTm7mEPs7x9thxfaRS4lRgZER9iLRW/h9Xk2IW+U5fXDY
-         yWv+NN+FH7xELKv3xA3GqQZYw3QEN0veXKltth2sKgM1AmYPRyvyxMapLclb3qQNnq7t
-         gRlPm2XxSkqalpYGz4ijNiZjnQUpCnvhf+KrpAeutDLyV6SHerkcyDnYF6rxNZEzg7Zt
-         /mfT48jfUi6sZ1umfR2Gwd6RFOzSgSYtURiWFuS9ySufZa/+BuFVwSfU+eenwFg8EN+A
-         mhQA==
-X-Gm-Message-State: APjAAAWpiovcFl55PnA5VT+/XSrxH9qrR7pTMuRmEW05QIpKZvQPGlOm
-        XkduU+ZRsD4T3IDQPE9tjnTApQ==
-X-Google-Smtp-Source: APXvYqyEVpct9K2sXUM2MbItPcfiRlNPGv5wGFyBRzyiYOJTrwmV0Fui86l9vGvO/+SvYo9HZ0OzvA==
-X-Received: by 2002:ac2:424d:: with SMTP id m13mr1526102lfl.13.1576057233234;
-        Wed, 11 Dec 2019 01:40:33 -0800 (PST)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t14sm771137ljh.52.2019.12.11.01.40.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 01:40:32 -0800 (PST)
-Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
- <30e93cfb-cc2c-c484-a743-479cce19d8a9@cumulusnetworks.com>
- <20191210210203.GB1480973@t480s.localdomain>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <498b31ea-bafc-1f44-d4bd-354f30a71972@cumulusnetworks.com>
-Date:   Wed, 11 Dec 2019 11:40:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1728265AbfLKJzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 04:55:51 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:36144 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727493AbfLKJzv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 04:55:51 -0500
+X-Greylist: delayed 411 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 04:55:51 EST
+Received: from tarshish (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id C6D9F440044;
+        Wed, 11 Dec 2019 11:48:57 +0200 (IST)
+User-agent: mu4e 1.2.0; emacs 26.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Denis Odintsov <d.odintsov@traviangames.com>
+Subject: [BUG] mv88e6xxx: tx regression in v5.3
+Date:   Wed, 11 Dec 2019 11:48:57 +0200
+Message-ID: <87tv67tcom.fsf@tarshish>
 MIME-Version: 1.0
-In-Reply-To: <20191210210203.GB1480973@t480s.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/2019 04:02, Vivien Didelot wrote:
-> Hi Nikolay,
-> 
-> On Tue, 10 Dec 2019 23:45:13 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
->>> +	if (p) {
->>> +		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
->>> +					sizeof(p->stp_xstats),
->>> +					BRIDGE_XSTATS_PAD);
->>> +		if (!nla)
->>> +			goto nla_put_failure;
->>> +
->>> +		memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
->>
->> You need to take the STP lock here to get a proper snapshot of the values.
-> 
-> Good catch! I see a br->multicast_lock but no br->stp_lock. Is this what
-> you expect?
-> 
->     spin_lock_bh(&br->lock);
->     memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
->     spin_unlock_bh(&br->lock);
-> 
+Hi Andrew, Vivien,
 
-Yeah, this is a very old lock (pre-git) which needs some attention. :)
-That is the lock and the above looks good to me.
+Since kernel v5.3 (tested v5.3.15), the 88E6141 switch on SolidRun
+Clearfog GT-8K stopped transmitting packets on switch connected
+ports. Kernel v5.2 works fine (tested v5.2.21).
 
-> 
-> Thanks,
-> 
-> 	Vivien
-> 
+Here are the relevant kernel v5.3 log lines:
 
-Cheers,
- Nik
+[    2.867424] mv88e6085 f412a200.mdio-mii:04: switch 0x3400 detected: Marvell 88E6141, revision 0
+[    2.927445] libphy: mdio: probed
+[    3.578496] mv88e6085 f412a200.mdio-mii:04 lan2 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:11] driver [Marvell 88E6390]
+[    3.595674] mv88e6085 f412a200.mdio-mii:04 lan1 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:12] driver [Marvell 88E6390]
+[    3.612797] mv88e6085 f412a200.mdio-mii:04 lan4 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:13] driver [Marvell 88E6390]
+[    3.629910] mv88e6085 f412a200.mdio-mii:04 lan3 (uninitialized): PHY [!cp1!config-space@f4000000!mdio@12a200!switch0@4!mdio:14] driver [Marvell 88E6390]
+[    3.646049] mv88e6085 f412a200.mdio-mii:04: configuring for phy/ link mode
+[    3.654451] DSA: tree 0 setup
+...
+[   10.784521] mvpp2 f4000000.ethernet eth2: configuring for fixed/2500base-x link mode
+[   10.792401] mvpp2 f4000000.ethernet eth2: Link is Up - 2.5Gbps/Full - flow control off
+[   19.817981] mv88e6085 f412a200.mdio-mii:04 lan1: configuring for phy/ link mode
+[   19.827083] 8021q: adding VLAN 0 to HW filter on device lan1
+[   21.577276] mv88e6085 f412a200.mdio-mii:04 lan1: Link is Up - 100Mbps/Full - flow control rx/tx
+[   21.586030] IPv6: ADDRCONF(NETDEV_CHANGE): lan1: link becomes ready
+
+The Tx count on the lan1 interface increments, but the ARP packets don't
+show on the network.
+
+Do you have any idea?
+
+Thanks,
+baruch
+
+--
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
