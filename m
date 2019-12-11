@@ -2,97 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 108EA11BBFC
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:41:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9716E11BC24
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:46:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729945AbfLKSlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:41:36 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:44283 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729809AbfLKSlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:41:36 -0500
-Received: by mail-qv1-f67.google.com with SMTP id n8so6162143qvg.11
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 10:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=QUS5BKSH61f4lKv1hrX3EZ1prXDNxY1nxacn7O67xGg=;
-        b=KAxl3K1I5FzMh3XKViZcFfB9EeCf3AgNLlq9zOTdVMCwrHjKa7EWCjZJ+bBwcajfMA
-         UIWclJQTkfpLMoXQjHaXmUIA51uhLaq4auOr/EDiJfvYUainah0ecJuFQ0t1S4UiKEDD
-         n897e8jEBLwH2TvQcyyLL0fYeEYDI42XMcHJ3IDhsXrDiTFRf8g9LxE/i2Ffqgo9Lz30
-         93gZJOPNJHOw01l40eSFt9OZVjLyAQmTZp1p23R4EVVvPkS7uJeNPlvoFly1SsRTv7sl
-         CvhlaFCUXI7k5+6R4FeNWHIiGuye+9q0cx02WnxFAKmdQZG+BuMmsMxysutPykgIhTem
-         BrbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=QUS5BKSH61f4lKv1hrX3EZ1prXDNxY1nxacn7O67xGg=;
-        b=pT+JRJIxR53WW6nGNZUZgNGk9YIutgEzIgUI22FmwuJYNWkxyxOlMHX96D2gxwWDMB
-         YkXiXHkjpglXGE7pADeRXtp/BrEV2FTIUqb9o4CpVKC2mWTPFxBBZ1Asu7+gyvA6+Vzk
-         jQLt7WahgJp4mTvN503h8IR8i2vWzmYtX51or5fIJMgr5EAnxNJB2yqZd/VSI/ft2/dc
-         asIoF+izNAqVi2yFUF9zcMWh0617AcnSw0/Yx0WfgZNoO8Do5JqMiLJERqWGFKIAz6AN
-         O+PpTlD1hxa93z5ZSsuPJse9AU6+5ZDTtesTww/sTJzLVdPneNv0c9VOvMUnVd0jYbpE
-         BIWQ==
-X-Gm-Message-State: APjAAAXc/7KdGUQd3UgHUz7ypgtCqx6m3rKyeRpmi+rIBKITqd4ggaRP
-        SHmWplIClP6pTbBYf7c/KKOV6/p8lyc=
-X-Google-Smtp-Source: APXvYqybAGoY76aTj5RQJd3vFH0dJvslULeQwYPRVEcNhEQaULWGWCYIBBUBNOdTHVLS66c/GN67Qg==
-X-Received: by 2002:a0c:a145:: with SMTP id d63mr4608615qva.120.1576089695195;
-        Wed, 11 Dec 2019 10:41:35 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id o33sm1196818qta.27.2019.12.11.10.41.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 10:41:34 -0800 (PST)
-Date:   Wed, 11 Dec 2019 13:41:33 -0500
-Message-ID: <20191211134133.GB1587652@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next v2] net: bridge: add STP xstats
-In-Reply-To: <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
-References: <20191210212050.1470909-1-vivien.didelot@gmail.com>
- <0e45fd22-c31b-a9c2-bf87-22c16a60aeb4@gmail.com>
- <9f978ee1-08ee-aa57-6e3d-9b68657eeb14@cumulusnetworks.com>
+        id S1729512AbfLKSqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:46:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38660 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726411AbfLKSqL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 13:46:11 -0500
+Received: from paulmck-ThinkPad-P72.home (unknown [199.201.64.130])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87A3520663;
+        Wed, 11 Dec 2019 18:46:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576089969;
+        bh=Rxu3mxn5istrjLGBr8ceMQOBnhaUS3GdugN8U5Q6Rl4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=nUmRiHtB8Ht3AcdvCUFWUPZnA+1gNnKjEtCGlErAJ8wKdvaWMLfoova0MinBcPcOI
+         58pPK1VHXHWHbzQe0wLy/aWcDJs/2+ekX4LKMPVGDfQ5S9TIerYyWLugZZUY302XKA
+         n6Ns7DRy6iDJ2Bi7t7W01yz9jwC1pEVyVg0Iy6hY=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 1D59F35203C6; Wed, 11 Dec 2019 10:46:09 -0800 (PST)
+Date:   Wed, 11 Dec 2019 10:46:09 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Ying Xue <ying.xue@windriver.com>
+Cc:     Tuong Lien Tong <tuong.t.lien@dektech.com.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@kernel.org, tipc-discussion@lists.sourceforge.net,
+        kernel-team@fb.com, torvalds@linux-foundation.org,
+        davem@davemloft.net
+Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
+ with rcu_replace_pointer()
+Message-ID: <20191211184609.GI2889@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20191210033146.GA32522@paulmck-ThinkPad-P72>
+ <0e565b68-ece1-5ae6-bb5d-710163fb8893@windriver.com>
+ <20191210223825.GS2889@paulmck-ThinkPad-P72>
+ <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
+ <707801d5afc6$cac68190$605384b0$@dektech.com.au>
+ <db88d33f-8e25-8859-84ec-3372a108c759@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <db88d33f-8e25-8859-84ec-3372a108c759@windriver.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Nikolay,
-
-On Wed, 11 Dec 2019 17:42:33 +0200, Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> >>  /* Bridge multicast database attributes
-> >>   * [MDBA_MDB] = {
-> >>   *     [MDBA_MDB_ENTRY] = {
-> >> @@ -261,6 +270,7 @@ enum {
-> >>  	BRIDGE_XSTATS_UNSPEC,
-> >>  	BRIDGE_XSTATS_VLAN,
-> >>  	BRIDGE_XSTATS_MCAST,
-> >> +	BRIDGE_XSTATS_STP,
-> >>  	BRIDGE_XSTATS_PAD,
-> >>  	__BRIDGE_XSTATS_MAX
-> >>  };
-> > 
-> > Shouldn't the new entry be appended to the end - after BRIDGE_XSTATS_PAD
+On Wed, Dec 11, 2019 at 12:42:00PM +0800, Ying Xue wrote:
+> On 12/11/19 10:00 AM, Tuong Lien Tong wrote:
+> >>  
+> >>  	/* Move passive key if any */
+> >>  	if (key.passive) {
+> >> -		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
+> >> +		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2,
+> > &rx->lock);
+> > The 3rd parameter should be the lockdep condition checking instead of the
+> > spinlock's pointer i.e. "lockdep_is_held(&rx->lock)"?
+> > That's why I'd prefer to use the 'tipc_aead_rcu_swap ()' macro, which is
+> > clear & concise at least for the context here. It might be re-used later as
+> > well...
 > > 
 > 
-> Oh yes, good catch. That has to be fixed, too.
-> 
+> Right. The 3rd parameter of rcu_replace_pointer() should be
+> "lockdep_is_held(&rx->lock)" instead of "&rx->lock".
 
-This I don't get. Why new attributes must come between BRIDGE_XSTATS_PAD
-and __BRIDGE_XSTATS_MAX?
+Like this?
 
+							Thanx, Paul
 
-Thanks,
+------------------------------------------------------------------------
 
-	Vivien
+commit 575bb4ba1b22383656760feb3d122e11656ccdfd
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Mon Dec 9 19:13:45 2019 -0800
+
+    net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
+    
+    This commit replaces the use of rcu_swap_protected() with the more
+    intuitively appealing rcu_replace_pointer() as a step towards removing
+    rcu_swap_protected().
+    
+    Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
+    Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Reported-by: kbuild test robot <lkp@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+    [ paulmck: Updated based on Ying Xue and Tuong Lien Tong feedback. ]
+    Cc: Jon Maloy <jon.maloy@ericsson.com>
+    Cc: Ying Xue <ying.xue@windriver.com>
+    Cc: "David S. Miller" <davem@davemloft.net>
+    Cc: <netdev@vger.kernel.org>
+    Cc: <tipc-discussion@lists.sourceforge.net>
+
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index 990a872..c8c47fc 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -257,9 +257,6 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
+ #define tipc_aead_rcu_ptr(rcu_ptr, lock)				\
+ 	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
+ 
+-#define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
+-	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
+-
+ #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
+ do {									\
+ 	typeof(rcu_ptr) __tmp = rcu_dereference_protected((rcu_ptr),	\
+@@ -1189,7 +1186,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
+ 
+ 	/* Move passive key if any */
+ 	if (key.passive) {
+-		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
++		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2, lockdep_is_held(&rx->lock));
+ 		x = (key.passive - key.pending + new_pending) % KEY_MAX;
+ 		new_passive = (x <= 0) ? x + KEY_MAX : x;
+ 	}
