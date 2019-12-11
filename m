@@ -2,135 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54AC411A5D8
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:28:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCDF211A5ED
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 09:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728296AbfLKI2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 03:28:43 -0500
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:32853 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727298AbfLKI2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:28:43 -0500
-Received: by mail-yb1-f194.google.com with SMTP id o63so8757511ybc.0;
-        Wed, 11 Dec 2019 00:28:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gpuk/6fgFZEvalrQGg6avsB0dY+y51rwO2rD1UzUjgQ=;
-        b=eNe13BCmYpqFXSSYVg/raEywCIw/5nPHLKm9U9qH8eornuNc3ym0k34KvrvgBTQT5D
-         EORCrGYsxMd55hmo/ngIgqo7ckcbG0Nj9DXFUFsDY5i4u3ayPE1fS9bHSFQpSNbnUAR9
-         0avaW0Hbs9D9XUQU5VOzwEwMR6bBhapPk/gJITbk4WzUeiE492ulHCFuu4JJjcLG66Df
-         d0ZIckx5KBKVu27l/M8EdDMG7mYB3PdUtKjDvHHiSWSgEkktCics2RZKap3NM9/55Qc0
-         VaHLXDOQ4PTa3KB/iY3hvvNNrPc0gcRUSNuOW1TFE0endihnaBmDqpvJQrQaySOWkMA9
-         EoLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gpuk/6fgFZEvalrQGg6avsB0dY+y51rwO2rD1UzUjgQ=;
-        b=FrsaAPcM1CN/8VjvwuOo8V0VVR+kaVOxDpDQo9WssEWlOmEZFg+tmhNf2kwE25ei90
-         2VozzUfM9e4pdq3VKGG7k4H7iGPE58AmuyhhqVHmXqIF7cxJN6W1ZJCxFHjo2j8dznhL
-         B2lqFV8aWPGYhnh+jPZlfRWpO1UU2SZQeGlQ+R1D+PvM8BQVlm19aBf2EFv87VB7Fr0a
-         zq4rLVtwcswK1+DW31BZXgNn61kys4vMKZhy04ObxD+vvoTc6ON8UtIjLUfDSR08H7Qu
-         D5DjiA1qSeLMUdRimbqUSBehRQp4q2Bg0cdZ4ub4mzmMUsHBkHes2j1J2knTGUvbf/Ej
-         +vow==
-X-Gm-Message-State: APjAAAX5J5hYGfCcTulsa4Z9wnO02Vy84YhJ0Max6P9VtTPnDFQGacCg
-        SKOEY2cjtgDZYQafsH2m6Kc=
-X-Google-Smtp-Source: APXvYqwE10h3gNKTPZrfppPm75isVrI65WhKpiLDIwf4LT9LCSccHABY4gnhxmaNnubCz/3EWbMT6A==
-X-Received: by 2002:a25:ac8:: with SMTP id 191mr1674636ybk.396.1576052922070;
-        Wed, 11 Dec 2019 00:28:42 -0800 (PST)
-Received: from karen ([2604:2d80:d68a:cf00:a4bc:8e08:1748:387f])
-        by smtp.gmail.com with ESMTPSA id y9sm681643ywc.19.2019.12.11.00.28.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 00:28:41 -0800 (PST)
-Date:   Wed, 11 Dec 2019 02:28:39 -0600
-From:   Scott Schafer <schaferjscott@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devel@driverdev.osuosl.org, GR-Linux-NIC-Dev@marvell.com,
-        Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: Fix multiple WARNING and CHECK relating
- to formatting
-Message-ID: <20191211082839.GA13244@karen>
-References: <20191211014759.4749-1-schaferjscott@gmail.com>
- <20191211073136.GB397938@kroah.com>
+        id S1728332AbfLKIex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 03:34:53 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:33929 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726845AbfLKIew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 03:34:52 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iexSF-00042B-PL; Wed, 11 Dec 2019 08:34:43 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ath11k: fix several spelling mistakes
+Date:   Wed, 11 Dec 2019 08:34:43 +0000
+Message-Id: <20191211083443.372506-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191211073136.GB397938@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 08:31:36AM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Dec 10, 2019 at 07:47:59PM -0600, Scott Schafer wrote:
-> > CHECK: Please don't use multiple blank lines
-> > CHECK: Blank lines aren't necessary before a close brace '}'
-> > CHECK: Blank lines aren't necessary after an open brace '{'
-> > WARNING: Missing a blank line after declarations
-> > CHECK: No space is necessary after a cast
-> > CHECK: braces {} should be used on all arms of this statement
-> > CHECK: Unbalanced braces around else statement
-> > WARNING: please, no space before tabs
-> > CHECK: spaces preferred around that '/' (ctx:VxV)
-> > CHECK: spaces preferred around that '+' (ctx:VxV)
-> > CHECK: spaces preferred around that '%' (ctx:VxV)
-> > CHECK: spaces preferred around that '|' (ctx:VxV)
-> > CHECK: spaces preferred around that '*' (ctx:VxV)
-> > WARNING: Unnecessary space before function pointer arguments
-> > WARNING: please, no spaces at the start of a line
-> > WARNING: Block comments use a trailing */ on a separate line
-> > ERROR: trailing whitespace
-> > 
-> > In files qlge.h, qlge_dbg.c, qlge_ethtool.c, qlge_main.c, and qlge_mpi.c
-> > 
-> > Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
-> > ---
-> >  drivers/staging/qlge/qlge.h         |  45 ++++++-------
-> >  drivers/staging/qlge/qlge_dbg.c     |  41 ++++++-----
-> >  drivers/staging/qlge/qlge_ethtool.c |  20 ++++--
-> >  drivers/staging/qlge/qlge_main.c    | 101 ++++++++++++++--------------
-> >  drivers/staging/qlge/qlge_mpi.c     |  37 +++++-----
-> >  5 files changed, 125 insertions(+), 119 deletions(-)
-> 
-> Hi,
-> 
-> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> a patch that has triggered this response.  He used to manually respond
-> to these common problems, but in order to save his sanity (he kept
-> writing the same thing over and over, yet to different people), I was
-> created.  Hopefully you will not take offence and will fix the problem
-> in your patch and resubmit it so that it can be accepted into the Linux
-> kernel tree.
-> 
-> You are receiving this message because of the following common error(s)
-> as indicated below:
-> 
-> - Your patch did many different things all at once, making it difficult
->   to review.  All Linux kernel patches need to only do one thing at a
->   time.  If you need to do multiple things (such as clean up all coding
->   style issues in a file/driver), do it in a sequence of patches, each
->   one doing only one thing.  This will make it easier to review the
->   patches to ensure that they are correct, and to help alleviate any
->   merge issues that larger patches can cause.
-> 
-> If you wish to discuss this problem further, or you have questions about
-> how to resolve this issue, please feel free to respond to this email and
-> Greg will reply once he has dug out from the pending patches received
-> from other developers.
-> 
-> thanks,
-> 
-> greg k-h's patch email bot
+From: Colin Ian King <colin.king@canonical.com>
 
-I was wondering how I would go about chaning the patch. I know I should
-switch to a patchset but how would I go about doing that? Also where
-would I place the new patches? Would I, create a new patch series or
-would I split the patch into new (smaller) patches and reply to this
-thread?
+There are several spelling mistakes in warning and debug messages,
+fix them.
 
-Thanks, 
-Scott Schafer
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/ath/ath11k/debug.c           | 4 ++--
+ drivers/net/wireless/ath/ath11k/debug_htt_stats.c | 2 +-
+ drivers/net/wireless/ath/ath11k/wmi.c             | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/debug.c b/drivers/net/wireless/ath/ath11k/debug.c
+index c27fffd13a5d..e00b5739fb00 100644
+--- a/drivers/net/wireless/ath/ath11k/debug.c
++++ b/drivers/net/wireless/ath/ath11k/debug.c
+@@ -704,7 +704,7 @@ static ssize_t ath11k_write_extd_rx_stats(struct file *file,
+ 					       DP_RX_BUFFER_SIZE, &tlv_filter);
+ 
+ 	if (ret) {
+-		ath11k_warn(ar->ab, "failed to set rx filter for moniter status ring\n");
++		ath11k_warn(ar->ab, "failed to set rx filter for monitor status ring\n");
+ 		goto exit;
+ 	}
+ 
+@@ -948,7 +948,7 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+ 					       HAL_RXDMA_MONITOR_STATUS,
+ 					       DP_RX_BUFFER_SIZE, &tlv_filter);
+ 	if (ret) {
+-		ath11k_warn(ar->ab, "failed to set rx filter for moniter status ring\n");
++		ath11k_warn(ar->ab, "failed to set rx filter for monitor status ring\n");
+ 		goto out;
+ 	}
+ 
+diff --git a/drivers/net/wireless/ath/ath11k/debug_htt_stats.c b/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
+index 27b301bc1a1b..a824826f562c 100644
+--- a/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
++++ b/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
+@@ -3512,7 +3512,7 @@ htt_print_rx_pdev_fw_stats_phy_err_tlv(const void *tag_buf,
+ 	len += HTT_DBG_OUT(buf + len, buf_len - len, "HTT_RX_PDEV_FW_STATS_PHY_ERR_TLV:");
+ 	len += HTT_DBG_OUT(buf + len, buf_len - len, "mac_id__word = %u",
+ 			   htt_stats_buf->mac_id__word);
+-	len += HTT_DBG_OUT(buf + len, buf_len - len, "tota_phy_err_nct = %u",
++	len += HTT_DBG_OUT(buf + len, buf_len - len, "total_phy_err_nct = %u",
+ 			   htt_stats_buf->total_phy_err_cnt);
+ 
+ 	ARRAY_TO_STRING(phy_errs,
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index b05642617b78..682563ccfe5a 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -2544,7 +2544,7 @@ ath11k_wmi_send_twt_disable_cmd(struct ath11k *ar, u32 pdev_id)
+ 	ret = ath11k_wmi_cmd_send(wmi, skb,
+ 				  WMI_TWT_DISABLE_CMDID);
+ 	if (ret) {
+-		ath11k_warn(ab, "Failed to send WMI_TWT_DIeABLE_CMDID");
++		ath11k_warn(ab, "Failed to send WMI_TWT_DISABLE_CMDID");
+ 		dev_kfree_skb(skb);
+ 	}
+ 	return ret;
+-- 
+2.24.0
+
