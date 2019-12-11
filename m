@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D94C11BB7B
-	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B3911BB73
+	for <lists+netdev@lfdr.de>; Wed, 11 Dec 2019 19:16:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731501AbfLKSQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 13:16:57 -0500
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:42917 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731131AbfLKSPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:16 -0500
-Received: by mail-yb1-f195.google.com with SMTP id p137so9382249ybg.9;
-        Wed, 11 Dec 2019 10:15:15 -0800 (PST)
+        id S1731487AbfLKSQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 13:16:51 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:38751 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729797AbfLKSPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 13:15:17 -0500
+Received: by mail-yb1-f196.google.com with SMTP id l129so9394094ybf.5;
+        Wed, 11 Dec 2019 10:15:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3ggr+AKX5engezExfhdC8ySYECM4dPUTKeu6ngH19AQ=;
-        b=SYSEnQSHkXFv2CrX2qUTpmmHJzxW/Dx4QYpxBbxNTRF0K3PxkVr/4r1nMWIpUv1plZ
-         fQbKZMY8i37JD2A+SgjyHodZg/twL/N9nQNrrUxV8JnrHa3eEfQREgXKCqu1CxkpDErY
-         tI2AkDEmYJNJKnz7xRUMHfAk+VIWCPDB7VsLjJe8SdOBdPKuk3N0gzH1SbVNFvNPxp5c
-         AsaIx6wsCOPXlzrUq4wWCbCzGZwh9/YtWy6K2+9PLb7XKbqJcsc9wHTR4MYvbFZ5X2Pz
-         sm8vnWvaFyzuqKdmCHnKs2MiiTb1vPUSb4BgUDybs2spDIN1RB/8YfTN5fKfpJbHP5xC
-         sjiQ==
+        bh=d13RLX6NhyAv5ZdFefjfKBGNP9hWY+i8u20CJzTC+ac=;
+        b=TfUavIKv9uEq7wg4iS9gbh0Jx4VTX8vw7590D9U3L/bJblXqToqS+gM0nQJenfkwwf
+         J2qowTuuhNz7s1dDFWqOc4okguAuLh7D0y6sj5RkdydhdeAyNtHuv4z3jNUFL//vwAAl
+         DbCRxN2us9teEcCyPEcl3YMnkYYdnlurYPcghdf3Qghy49cdIHa2AmH/UNKvQ558hQEI
+         MhHWHrTgpUAGIX7FFALKsP9zE28NUn3kWjNmQvRHvSbRh71v4el+egZB4xvHWbO193wf
+         T3TOxVavcWjWgX+6IHzjgc3LnPKS6VRFpnjZZJNDB0TVHFm3GdvQddiTp/StY3FBg4Py
+         4kvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3ggr+AKX5engezExfhdC8ySYECM4dPUTKeu6ngH19AQ=;
-        b=qMWmvA7eaHRYrqZeblCxd7UVJKMMO3L55tO3m9iH6MdyZO5BJiGwAhRRLBMsv42vgi
-         udDTyg57FOQ/HYjiXgVYrz44UD5oTiSr6XhWEY5ET6WFevi8ucqmFkI4+O6gcuFFLfi6
-         O/jAHUvyBNtSQenNQTo9KuaNy+o3FN+qmDkx5b/fYRL2G8kTEdpdbeqrhMa4dBTEtODJ
-         Dg9s0/tjvx1E1uh84rWjFUb2VWj/F0ix3tISIYt/z/l/Ll9fgc5eSfV7Uy7KNFXeCX3B
-         5uXihxT1xZubBhj6Z85HSXK33ekISPq6NQtVYHfhUuFcS2SYD+FV9J+Vf1pQcn4w2j2M
-         c3vg==
-X-Gm-Message-State: APjAAAX3QfGuW/lmrk8FZT6X6UyzAxETxv6icAQCB0qpe2xa9W2A3Me0
-        7thJeQp9lV65sQ2vci/6R72t2V2GL1fuzg==
-X-Google-Smtp-Source: APXvYqw/v53mnh/ks839I6SYLP366QTd8fXU7JQmPj1HGsXw45yrN1RegI6j8aV7uG/iGeKakaiJrA==
-X-Received: by 2002:a25:db47:: with SMTP id g68mr1024543ybf.224.1576088114636;
-        Wed, 11 Dec 2019 10:15:14 -0800 (PST)
+        bh=d13RLX6NhyAv5ZdFefjfKBGNP9hWY+i8u20CJzTC+ac=;
+        b=UP0sBOn+GyU06aGwPyjETAPYQGCE7+mw7a7Z98kawp2oL7mQT1Gy7kkuJ7DV8FTKTH
+         cnuG8vdMKdF39KhHaJGmpHUK12g7FYLNmh8grF7+FFfpXokGxVMiZbWnL2PkZgs/qTAe
+         Lq8rHsD0YdTQ0omI3vNF9ZYx4QRf+3QZWv/E8V5sv8IbMHW3u4WEpdXp6BVTj/bieDGw
+         O9iBHbCMygO/8pLQLQ1iEeSKYlEPTy55eU+8Ro4zALwVbOljfxx1M+aehGZ7G3Dt/8iF
+         cjv/JjEa5FvUjx8qOcVxklp/SJRdXof5lpOK6noL4j15jq1D7T0BY79U9BFLZ0ax9Znc
+         ouDw==
+X-Gm-Message-State: APjAAAUojgq9v056S53tyFVxRkYFSMP1DC5DyHEPyjcsTx0ihvmd+yme
+        DyUQqxyya7xBQShunICsWyepqQV1uML6qA==
+X-Google-Smtp-Source: APXvYqx0PyEq0X95gP3rmHgsA/8bcB8XqHkjAz3WmSh1MSMIo6lwgD82jrxWNNN1M/6fp2nXGr+LQQ==
+X-Received: by 2002:a25:aa05:: with SMTP id s5mr926645ybi.513.1576088116289;
+        Wed, 11 Dec 2019 10:15:16 -0800 (PST)
 Received: from karen ([2604:2d80:d68a:cf00:a4bc:8e08:1748:387f])
-        by smtp.gmail.com with ESMTPSA id d9sm1372449ywh.55.2019.12.11.10.15.14
+        by smtp.gmail.com with ESMTPSA id 207sm1260876ywq.100.2019.12.11.10.15.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2019 10:15:14 -0800 (PST)
+        Wed, 11 Dec 2019 10:15:15 -0800 (PST)
 From:   Scott Schafer <schaferjscott@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Scott Schafer <schaferjscott@gmail.com>,
         Manish Chopra <manishc@marvell.com>,
         GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/23] staging: qlge: Fix WARNING: quoted string split across lines
-Date:   Wed, 11 Dec 2019 12:12:36 -0600
-Message-Id: <0e1f9c5182a909bfe534f7f2d6f93c3e65862d48.1576086080.git.schaferjscott@gmail.com>
+Subject: [PATCH v2 08/23] staging: qlge: Fix CHECK: Unnecessary parentheses around mpi_coredump->mpi_global_header
+Date:   Wed, 11 Dec 2019 12:12:37 -0600
+Message-Id: <d6b36b83cf1069b20cc0a720c2fd82974b9053d5.1576086080.git.schaferjscott@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1576086080.git.schaferjscott@gmail.com>
 References: <cover.1576086080.git.schaferjscott@gmail.com>
@@ -63,85 +63,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix WARNING: quoted string split across lines in the following files:
-
-qlge_dbg.c
-qlge_main.c
+Fix CHECK: Unnecessary parentheses around
+mpi_coredump->mpi_global_header in file qlge_dbg.c
 
 Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
 ---
- drivers/staging/qlge/qlge_dbg.c  | 19 +++++++++----------
- drivers/staging/qlge/qlge_main.c | 13 ++++++-------
- 2 files changed, 15 insertions(+), 17 deletions(-)
+ drivers/staging/qlge/qlge_dbg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index 6b740a712943..1d4de39a2a70 100644
+index 1d4de39a2a70..f8b2f105592f 100644
 --- a/drivers/staging/qlge/qlge_dbg.c
 +++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -1331,16 +1331,15 @@ void ql_mpi_core_to_log(struct work_struct *work)
- 		     "Core is dumping to log file!\n");
- 
- 	for (i = 0; i < count; i += 8) {
--		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x "
--			"%.08x %.08x %.08x\n", i,
--			tmp[i + 0],
--			tmp[i + 1],
--			tmp[i + 2],
--			tmp[i + 3],
--			tmp[i + 4],
--			tmp[i + 5],
--			tmp[i + 6],
--			tmp[i + 7]);
-+		pr_err("%.08x: %.08x %.08x %.08x %.08x %.08x %.08x %.08x %.08x\n", i,
-+		       tmp[i + 0],
-+		       tmp[i + 1],
-+		       tmp[i + 2],
-+		       tmp[i + 3],
-+		       tmp[i + 4],
-+		       tmp[i + 5],
-+		       tmp[i + 6],
-+		       tmp[i + 7]);
- 		msleep(5);
- 	}
- }
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index f5cc235e9854..a103d491bbb1 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -2095,9 +2095,9 @@ static void ql_process_chip_ae_intr(struct ql_adapter *qdev,
- 		break;
- 
- 	case PCI_ERR_ANON_BUF_RD:
--		netdev_err(qdev->ndev, "PCI error occurred when reading "
--					"anonymous buffers from rx_ring %d.\n",
--					ib_ae_rsp->q_id);
-+		netdev_err(qdev->ndev,
-+			   "PCI error occurred when reading anonymous buffers from rx_ring %d.\n",
-+			   ib_ae_rsp->q_id);
- 		ql_queue_asic_error(qdev);
- 		break;
- 
-@@ -2428,8 +2428,8 @@ static irqreturn_t qlge_isr(int irq, void *dev_id)
- 		ql_queue_asic_error(qdev);
- 		netdev_err(qdev->ndev, "Got fatal error, STS = %x.\n", var);
- 		var = ql_read32(qdev, ERR_STS);
--		netdev_err(qdev->ndev, "Resetting chip. "
--					"Error Status Register = 0x%x\n", var);
-+		netdev_err(qdev->ndev, "Resetting chip. Error Status Register = 0x%x\n",
-+			   var);
- 		return IRQ_HANDLED;
+@@ -737,7 +737,7 @@ int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump)
  	}
  
-@@ -3749,8 +3749,7 @@ static void ql_display_dev_info(struct net_device *ndev)
- 	struct ql_adapter *qdev = netdev_priv(ndev);
+ 	/* Insert the global header */
+-	memset(&(mpi_coredump->mpi_global_header), 0,
++	memset(&mpi_coredump->mpi_global_header, 0,
+ 	       sizeof(struct mpi_coredump_global_header));
+ 	mpi_coredump->mpi_global_header.cookie = MPI_COREDUMP_COOKIE;
+ 	mpi_coredump->mpi_global_header.header_size =
+@@ -1225,7 +1225,7 @@ static void ql_gen_reg_dump(struct ql_adapter *qdev,
+ {
+ 	int i, status;
  
- 	netif_info(qdev, probe, qdev->ndev,
--		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, "
--		   "XG Roll = %d, XG Rev = %d.\n",
-+		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, XG Roll = %d, XG Rev = %d.\n",
- 		   qdev->func,
- 		   qdev->port,
- 		   qdev->chip_rev_id & 0x0000000f,
+-	memset(&(mpi_coredump->mpi_global_header), 0,
++	memset(&mpi_coredump->mpi_global_header, 0,
+ 	       sizeof(struct mpi_coredump_global_header));
+ 	mpi_coredump->mpi_global_header.cookie = MPI_COREDUMP_COOKIE;
+ 	mpi_coredump->mpi_global_header.header_size =
 -- 
 2.20.1
 
