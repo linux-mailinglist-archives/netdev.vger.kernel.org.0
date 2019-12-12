@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CBBE11D639
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A3911D66B
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:53:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730580AbfLLSuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:50:00 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42564 "EHLO
+        id S1730685AbfLLSw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:52:59 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42592 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730261AbfLLSuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:50:00 -0500
+        with ESMTP id S1730463AbfLLSw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:52:59 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4215A153DCA8A;
-        Thu, 12 Dec 2019 10:49:59 -0800 (PST)
-Date:   Thu, 12 Dec 2019 10:49:56 -0800 (PST)
-Message-Id: <20191212.104956.2134616389786003650.davem@davemloft.net>
-To:     gomonovych@gmail.com
-Cc:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] igb: index regs_buff array via index variable
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D516D153DCDBB;
+        Thu, 12 Dec 2019 10:52:58 -0800 (PST)
+Date:   Thu, 12 Dec 2019 10:52:58 -0800 (PST)
+Message-Id: <20191212.105258.579549471896891617.davem@davemloft.net>
+To:     yuehaibing@huawei.com
+Cc:     Jason@zx2c4.com, wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net: Remove unused including <linux/version.h>
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191212105847.16488-1-gomonovych@gmail.com>
-References: <20191212105847.16488-1-gomonovych@gmail.com>
+In-Reply-To: <20191212091527.35293-1-yuehaibing@huawei.com>
+References: <20191212091527.35293-1-yuehaibing@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Dec 2019 10:49:59 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Dec 2019 10:52:59 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasyl Gomonovych <gomonovych@gmail.com>
-Date: Thu, 12 Dec 2019 11:58:47 +0100
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Thu, 12 Dec 2019 09:15:27 +0000
 
-> This patch is just a preparation for additional register dump in regs_buff.
-> To make new register insertion in the middle of regs_buff array easier
-> change array indexing to use local counter reg_ix.
+> Remove including <linux/version.h> that don't need it.
 > 
-> ---
-> 
-> Basically this path is just a subject to ask
-> How to add a new register to dump from dataseet
-> Because it is logically better to add an additional register
-> in the middle of an array but that will break ABI.
-> To not have the ABI problem we should just add it at the
-> end of the array and increase the array size.
-> 
-> ---
-> 
-> Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Anything you put after "---" will be removed by git if someone actually
-applies this patch, which means your signoff will disappear.
+Appropriate subject line for this should have been:
+
+	Subject: [PATCH net-next] wireguard: Remove unused include <linux/version.h>
+
+'net' is too broad a subsystem prefix as it basically encompases half of the
+entire kernel tree.  When people look at the git shortlog output you need to
+be specific enough that people can tell what touches what.
