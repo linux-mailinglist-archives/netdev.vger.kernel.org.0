@@ -2,84 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D06F11D82F
+	by mail.lfdr.de (Postfix) with ESMTP id 86CAE11D830
 	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 21:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730968AbfLLUzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 15:55:41 -0500
-Received: from mail-pj1-f74.google.com ([209.85.216.74]:55684 "EHLO
-        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730860AbfLLUzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 15:55:40 -0500
-Received: by mail-pj1-f74.google.com with SMTP id e7so103600pjt.22
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 12:55:40 -0800 (PST)
+        id S1730970AbfLLUzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 15:55:44 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:45097 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730860AbfLLUzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 15:55:44 -0500
+Received: by mail-pf1-f202.google.com with SMTP id x21so23195pfp.12
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 12:55:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=lcu+XBlazISW9Ha+P8a6hKyT894dJ4fC/BtrAAGAtZQ=;
-        b=pJTG96umM9VU1pl/7wVCyvjkAyX8W29aWjT8GUh3xQ6yx6wDS/0Z7GHvhDGMKiWX53
-         7pFU0H7e4Kqn46F9uKIi7+AYrFkUwKGdY7yBwntKJ9v0Gd/vIv1O5oTtOvPeIQaEnVov
-         lkIcOO2FIJsWsv6eoC/jjRchjlfcZFvon2Vfb6fiBEdAF5bTpwyZMvpX1yL+wLj06LTm
-         WxE4o5GLDJMljg5F0phRWN+ZeQFUCnHbM+o1MzUNt3u4B6eAIZWg1C+A75xtNDmU7L9l
-         RT6Qb1ahOZdw52bXNLcPtv8eD7GEoireFcDhyfyI2E1KiP6JVskMt7ghcTBf8blzQelE
-         yjZA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=EpyDNDYeLGxwn+USrdxWDhMzrxJdC0I1/5c9j25Btgg=;
+        b=fIJBB6tor5LfC8Fgps0hBoB2/wKYg2ioDhm3OQvdKvVjnIRJPTOrgVknCYNfJf7Ne+
+         Ls/hh/1EZZhM/PWvM+rfgggTtpGhng6IG/+F+ywbqFTp+h2qkdJPwd/22Vqvw6BE/CMZ
+         ttZMQTcg1iN9LM/6vkYrXzS/kOgnu21fQZTsin0g55PG4/p6enVWtIx3XjctfuadRFg6
+         GFQ9j267Yl4Uect2bs2qMM3S3HGp0PwVYzCCVCpcBJtGQ3/zBtyKX0A8G59+jr+hnO/6
+         xi8it8bVFAY4NX9srxNgACvJ6Bu8dSdjhXcb0xNz2b6pvFr4IwDkGO9UwWcQoXS8cn/v
+         u+tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=lcu+XBlazISW9Ha+P8a6hKyT894dJ4fC/BtrAAGAtZQ=;
-        b=tFglpPxjyJrDLFwm4ag0sgV3YbolTJxjCcB40SxzWIC5QPeOJ7RCXtagghDyqtVtKK
-         I93bq6nqxFgJQ1XibCL6xjbeo96KMTy4zMJtnkwlJTzl9gfyjaXNOUVMMiNdL88An8Zm
-         n/HYaPmJXbG938MMfFSoCgDHfm3LG6iQNcXPTBIAgwlpZ47XdaVDKeeyCJqhEDIhQxrA
-         WzhbI9yb0Of7Qyo/C5RaklBrgizF0NAjvxlF43f5LZpNy6gL3uN9cDwVWRr+kQRy2o5z
-         S+DSysIJD8nuZIxcD2pC1c4cfGKYud3h7DgXcKQFlRN+WRVR22USqzgS0JSYn+j4blb0
-         uQ9Q==
-X-Gm-Message-State: APjAAAWuCTHjI8OqRdpGPJLeXcb/J7lKvFh+o0mv6im+xE7Zri7k42t/
-        s8/hRkMuIP1ir0wja8cTWMwGj4CKRe58Yg==
-X-Google-Smtp-Source: APXvYqwlGrFtMlT9ITB37Bi3MxY1JuSNkJGoH78oMjBFJQucPkqXrKj4KMYRhzbu783MXFoPbjpCn+RwXgVCdA==
-X-Received: by 2002:a63:31cf:: with SMTP id x198mr12560933pgx.272.1576184140174;
- Thu, 12 Dec 2019 12:55:40 -0800 (PST)
-Date:   Thu, 12 Dec 2019 12:55:28 -0800
-Message-Id: <20191212205531.213908-1-edumazet@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=EpyDNDYeLGxwn+USrdxWDhMzrxJdC0I1/5c9j25Btgg=;
+        b=IQ6s9pSa2YvBB7FIT+ULWUfdgctDnnGLfOn/CwExex3W1b+Ok3c8ZD61TNG2dCSNtb
+         aYMHFh3nI6EPmJp3SKgK8q6D6lA7+yBSCOmNS+u5b/VNl7ciUqsEEJnuFZp70AurTfE6
+         o8XwMrDk/m4klr67fCcFrJlSNsspasVp2p1yI41cEnXkTiM3fg9ILFsj7M/N/JSr5DdN
+         tZdR1aUOlpbDW5QxPcFQ644JN9iQVQEL+UYa2MeXplyc39A+Rhal0/Re5wFCMNfcYfKq
+         m5XxOGqd9lHi+OkVdw88cRoyEw9y9BcpExhj8G5Q1Y2+aKD4KrMddYn9haOtVKKs8F+k
+         /Fvg==
+X-Gm-Message-State: APjAAAWjsxzwBsTbbLTcps9quMHwkVWt4EU3sAZZUb6ln4s90Bwp0Odc
+        sZxC89kQ/bZxcINrbeN8bSBKRnRyyzOzXg==
+X-Google-Smtp-Source: APXvYqx0Ue0UQvb0id1RExwtJ7LiwcQF0BwJqSIgf3bRntNGGulMHbRLqoH3683une6s/vTfE3sbg/KJSwquyA==
+X-Received: by 2002:a63:4303:: with SMTP id q3mr12790552pga.439.1576184143238;
+ Thu, 12 Dec 2019 12:55:43 -0800 (PST)
+Date:   Thu, 12 Dec 2019 12:55:29 -0800
+In-Reply-To: <20191212205531.213908-1-edumazet@google.com>
+Message-Id: <20191212205531.213908-2-edumazet@google.com>
 Mime-Version: 1.0
+References: <20191212205531.213908-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net 0/3] tcp: take care of empty skbs in write queue
+Subject: [PATCH net 1/3] tcp: do not send empty skb from tcp_write_xmit()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Jason Baron <jbaron@akamai.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <cpaasch@apple.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We understood recently that TCP sockets could have an empty
-skb at the tail of the write queue, leading to various problems.
+Backport of commit fdfc5c8594c2 ("tcp: remove empty skb from
+write queue in error cases") in linux-4.14 stable triggered
+various bugs. One of them has been fixed in commit ba2ddb43f270
+("tcp: Don't dequeue SYN/FIN-segments from write-queue"), but
+we still have crashes in some occasions.
 
-This patch series :
+Root-cause is that when tcp_sendmsg() has allocated a fresh
+skb and could not append a fragment before being blocked
+in sk_stream_wait_memory(), tcp_write_xmit() might be called
+and decide to send this fresh and empty skb.
 
-1) Make sure we do not send an empty packet since this
-   was unintended and causing crashes in old kernels.
+Sending an empty packet is not only silly, it might have caused
+many issues we had in the past with tp->packets_out being
+out of sync.
 
-2) Change tcp_write_queue_empty() to not be fooled by
-   the presence of an empty skb.
+Fixes: c65f7f00c587 ("[TCP]: Simplify SKB data portion allocation with NETIF_F_SG.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Christoph Paasch <cpaasch@apple.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Cc: Jason Baron <jbaron@akamai.com>
+---
+ net/ipv4/tcp_output.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-3) Fix a bug that could trigger suboptimal epoll()
-   application behavior under memory pressure.
-
-Eric Dumazet (3):
-  tcp: do not send empty skb from tcp_write_xmit()
-  tcp: refine tcp_write_queue_empty() implementation
-  tcp: refine rule to allow EPOLLOUT generation under mem pressure
-
- include/net/tcp.h     | 11 ++++++++++-
- net/ipv4/tcp.c        |  6 ++----
- net/ipv4/tcp_output.c | 13 +++++++++++--
- 3 files changed, 23 insertions(+), 7 deletions(-)
-
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index b184f03d743715ef4b2d166ceae651529be77953..57f434a8e41ffd6bc584cb4d9e87703491a378c1 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2438,6 +2438,14 @@ static bool tcp_write_xmit(struct sock *sk, unsigned int mss_now, int nonagle,
+ 		if (tcp_small_queue_check(sk, skb, 0))
+ 			break;
+ 
++		/* Argh, we hit an empty skb(), presumably a thread
++		 * is sleeping in sendmsg()/sk_stream_wait_memory().
++		 * We do not want to send a pure-ack packet and have
++		 * a strange looking rtx queue with empty packet(s).
++		 */
++		if (TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq)
++			break;
++
+ 		if (unlikely(tcp_transmit_skb(sk, skb, 1, gfp)))
+ 			break;
+ 
 -- 
 2.24.1.735.g03f4e72817-goog
 
