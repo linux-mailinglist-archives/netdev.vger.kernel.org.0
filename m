@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C538A11C3C3
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 682E111C3D3
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbfLLDBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 22:01:46 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35470 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbfLLDBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:01:45 -0500
-Received: by mail-wr1-f65.google.com with SMTP id g17so1028717wro.2;
-        Wed, 11 Dec 2019 19:01:44 -0800 (PST)
+        id S1726901AbfLLDTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 22:19:47 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:33642 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfLLDTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:19:46 -0500
+Received: by mail-wm1-f66.google.com with SMTP id d139so2587678wmd.0;
+        Wed, 11 Dec 2019 19:19:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zLk62ztlgIJAvsjlJDdcf8Bf8DhVZYKsZxBJcGQt0b0=;
-        b=SMw+DBEEqNnmWuPG8olNP+jO6Dxr3jBIuuYkTp/noXeKwZDYhXD7eeukh25kTRYo+1
-         Ff+FFnOs0FILQc4rfav5BSPpQ8c8W7+ooYsKhTWRoq62cUZfC+cPbho0SoBcnEuYl5J9
-         Z0KcDXtFAUrI7InF2jGnwtUsR6TPAoA6cEm0lRnn+cofn41lHhOmqPuOO/KLb4TVKcNn
-         eMdjp54uZcIbcktKISgboIJ48Rr4DNp1iM2wzUDadRqHqr/HdQp1OYeIBzmB4fwHYGtL
-         fUf0uV7NBDxbN+7Sg3mnDMPJ+UmoKKbzcB/8f15i/o0LD0aq8BL4tLNEyP+6eKEONBUR
-         O0pg==
+        bh=8aKAK2wIbXo8MeQVudDOrxWtQIV7GTCJgC/T3O4iEuI=;
+        b=YRtRGE7VHgSvgu92ycD7KxiObgAE/MDagw4eIyqUaD4HGUFO3rvyMS0qK+m1nr4JDr
+         c1260O7hU0VrPQHoOa45ahYRRO8jzTVPzA54agZbHqKZFlkeKoTlNRARIK0BKweymD9M
+         +MqynsMIUw3qGKJCCwBpt+36C7EENZ9QhEY0plZUB7G2wA6ew4ViaSaiER0ZDm8BkhS3
+         SB+AlN3GYg5uY4Z1lAqjXBYnHF1ei2C3TZq1LJooZuGYkkJVZP3Zb7bkAv7y478dmi++
+         IWMAtHnXwxW+v8ukLSkXQTQf9G5hsRpWAS38Rm7/L2BohhZwwlS0gOZeMC/OUqlvpSH4
+         MBtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zLk62ztlgIJAvsjlJDdcf8Bf8DhVZYKsZxBJcGQt0b0=;
-        b=g1altYg6Afw1JMonJVSFVChjOQgoVaLqblTv7mgcwNMJA7qaQ5PgSRyulUhqMhSQxN
-         +VeK1+N+b0zMlI0rlpYhcMJAlNOv32ffRo/5HsrJBuZ4BItRleJaiZKV6pKilimnVYgU
-         YAsvvX/r8jo5whUqdf8ytvJpY++ayyrpYC4Wm1Bf6cJtoalpQGOKDMc1b/lN35IJSoLU
-         AMIrBs6NbXW3oPPn3hTbgFR6va1CUel261oDgITXrjIxVDj6egs8oq/NoWT9D5bNFIVR
-         m1GZAuDHdaQlkj3ezItDkQWRnEWQnqzk+uGRoEP5fQ4F7dGULbS1JcNfNT6iN+Ei8lmT
-         kIFg==
-X-Gm-Message-State: APjAAAW1zDCoFidaoWdx1k7ZvIDHrmqHCaJwGMcYhshmHRp6vq11NfF6
-        aHv0CbIogwCE7IfkQwKaaHdqc+J9i2/xcLvq6lPjLNSC
-X-Google-Smtp-Source: APXvYqwB8jjyBy+3Jfi761+iN29O3hCLik++EAZkDC9IiuM/dzBpR5aJl6/EaDgiPUc34+w2KsctYhOuqPmJggW1EQk=
-X-Received: by 2002:adf:cf12:: with SMTP id o18mr3364061wrj.361.1576119703162;
- Wed, 11 Dec 2019 19:01:43 -0800 (PST)
+        bh=8aKAK2wIbXo8MeQVudDOrxWtQIV7GTCJgC/T3O4iEuI=;
+        b=UeeVmnPQG/XQjAaKh4L1LYX83TLExkvdJr4nB//I8K2yRAl6jWIGpPAnD40jV8wxg+
+         l3ERtj0KiO4g3eE5nQghcPeL+Lup3XaMkQRW1TS3emrWJWMjPMTWqRQLxZi6OCb1mAvH
+         7kwrF7KPvz2LnSVOIHjHG557pzvld3FTbw5tIJhN0/101LyhPvPvKadlfK1Q+iAAs1Nj
+         C2BytPBhCQF1UjiER4UDD2OCeMBKDtGdryWldYCNtPKI3g+k4X41pINNdzfghc4Oah/1
+         ceVXio8jmiZjnYnuNwVmkUUJ5NQb73j0IYcV/aWuAkbRnuaQX1lBaMNfCcAV2VwLaC0U
+         l5Ig==
+X-Gm-Message-State: APjAAAUKlRqs2BRRySWmgC0fu9PyrETuMwHDAuZ0WeU5NVIrWDWN2Dl9
+        d+ZSAhWOpCQKZ6UkPlmvSHlkhJvwrtcEEy8Wz3PP69KV
+X-Google-Smtp-Source: APXvYqxI42jVAyxXWFlKHEIL1wk2L/adOyS9dnzLHQdpyerrKTVanUvZukzdPNIouQigUOGCnYr5du9WaNEChkUpyKI=
+X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3374252wmm.145.1576120785215;
+ Wed, 11 Dec 2019 19:19:45 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1575779993.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1575779993.git.lucien.xin@gmail.com>
+References: <cover.1575779993.git.lucien.xin@gmail.com> <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
+ <20191211215104.qnvifdmlg55ox45b@salvia>
+In-Reply-To: <20191211215104.qnvifdmlg55ox45b@salvia>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 12 Dec 2019 11:02:19 +0800
-Message-ID: <CADvbK_e25HuWG98OYCWsmWMB6cyRDSM6SovNYKa8ySZyJPchkA@mail.gmail.com>
-Subject: Re: [PATCH nf-next 0/7] netfilter: nft_tunnel: reinforce key opts support
-To:     network dev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     davem <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Thu, 12 Dec 2019 11:20:19 +0800
+Message-ID: <CADvbK_cxeZmJa_FMd+p_35CPOSMDfnos1j3TC0_3u9TdmZZH=g@mail.gmail.com>
+Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
+ attr as u8
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, davem <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 8, 2019 at 12:41 PM Xin Long <lucien.xin@gmail.com> wrote:
+On Thu, Dec 12, 2019 at 5:51 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
 >
-> This patchset improves quite a few places to make vxlan/erspan
-> opts in nft_tunnel work with userspace nftables/libnftnl, and
-> also keep consistent with the support for vxlan/erspan opts in
-> act_tunnel_key, cls_flower and ip_tunnel_core.
+> Hi,
 >
-> Meanwhile, add support for geneve opts in nft_tunnel. One patch
-> for nftables and one for libnftnl will be posted here for the
-> testing. With them, nft_tunnel can be set and used by:
+> On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
+> > To keep consistent with ipgre_policy, it's better to parse
+> > ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
+> > cls_flower and ip_tunnel_core.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  net/netfilter/nft_tunnel.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+> > index 3d4c2ae..f76cd7d 100644
+> > --- a/net/netfilter/nft_tunnel.c
+> > +++ b/net/netfilter/nft_tunnel.c
+> > @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
+> >  }
+> >
+> >  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
+> > +     [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U8 },
+> >       [NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]       = { .type = NLA_U32 },
+> > -     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR] = { .type = NLA_U8 },
+> > +     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]         = { .type = NLA_U8 },
+> >       [NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]        = { .type = NLA_U8 },
+> >  };
+> >
+> > @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
+> >       if (err < 0)
+> >               return err;
+> >
+> > -     version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
+> > +     version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
 >
->   # nft add table ip filter
->   # nft add chain ip filter input { type filter hook input priority 0 \; }
->   # nft add tunnel filter vxlan_01 { type vxlan\; id 2\; \
->     ip saddr 192.168.1.1\; ip daddr 192.168.1.2\; \
->     sport 9000\; dport 9001\; dscp 1234\; ttl 64\; flags 1\; \
->     opts \"ffff\"\; }
->   # nft add tunnel filter erspan_01 { type erspan\; id 2\; \
->     ip saddr 192.168.1.1\; ip daddr 192.168.1.2\; \
->     sport 9000\; dport 9001\; dscp 1234\; ttl 64\; flags 1\; \
->     opts \"1:1:0:0\"\; }
->   # nft add tunnel filter erspan_02 { type erspan\; id 2\; \
->     ip saddr 192.168.1.1\; ip daddr 192.168.1.2\; \
->     sport 9000\; dport 9001\; dscp 1234\; ttl 64\; flags 1\; \
->     opts \"2:0:1:1\"\; }
->   # nft add tunnel filter geneve_01 { type geneve\; id 2\; \
->     ip saddr 192.168.1.1\; ip daddr 192.168.1.2\; \
->     sport 9000\; dport 9001\; dscp 1234\; ttl 64\; flags 1\; \
->     opts \"1:1:1212121234567890\"\; }
->   # nft add tunnel filter geneve_02 { type geneve\; id 2\; \
->     ip saddr 192.168.1.1\; ip daddr 192.168.1.2\; \
->     sport 9000\; dport 9001\; dscp 1234\; ttl 64\; flags 1\; \
->     opts \"1:1:34567890,2:2:12121212,3:3:1212121234567890\"\; }
->   # nft list tunnels table filter
->   # nft add rule filter input ip protocol udp tunnel name geneve_02
->   # nft add rule filter input meta l4proto udp tunnel id 2 drop
->   # nft add rule filter input meta l4proto udp tunnel path 0 drop
->   # nft list chain filter input -a
+> I think NFTA_TUNNEL_KEY_ERSPAN_VERSION as 32-bit is just fine.
+>
+> Netlink will be adding the padding anyway for u8.
+>
+> I would suggest you leave this as is.
+okay.
 
-Hi, Pablo
-as you commented on other patches, I will post v2 and
->
-> Xin Long (7):
->   netfilter: nft_tunnel: parse ERSPAN_VERSION attr as u8
->   netfilter: nft_tunnel: parse VXLAN_GBP attr as u32 in nft_tunnel
-drop these two patches
->   netfilter: nft_tunnel: no need to call htons() when dumping ports
-move this one to nf.git
->   netfilter: nft_tunnel: also dump ERSPAN_VERSION
->   netfilter: nft_tunnel: also dump OPTS_ERSPAN/VXLAN
->   netfilter: nft_tunnel: add the missing nla_nest_cancel()
-adjust these three for nf-next.git
->   netfilter: nft_tunnel: add support for geneve opts
-will you also check this one before my posting v2?
+do you think I should prepare another patch/fix for the missing nla_policy part?
+[NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U32 },
 
 Thanks.
