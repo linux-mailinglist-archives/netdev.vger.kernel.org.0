@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B34B311C249
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B5011C24B
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727564AbfLLBgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 20:36:14 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62972 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727469AbfLLBgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:36:13 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBC1Yh47022335
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:12 -0800
+        id S1727595AbfLLBgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 20:36:31 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35404 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727469AbfLLBgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:36:31 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBC1XN7N028613
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:30 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : mime-version : content-type; s=facebook;
- bh=q2yXvwQlWtQh556GVbO35lfheFRkkaZdBIVAVVg+UUo=;
- b=rDGznlTqjXyuoNKEWCivpeYWUsVRl7o1i4p+xhL0a8TMC+X4NyAhllHzxBGZ4hENddqe
- 2nde3sQHYRulHulKblBa7VC5E5HXDnwh8/ycUTVIIcJDFenTD+jxAEGBEDiLOQmW0hE2
- SDeAh1AcSijvQNoMqUgR3eiDmQJvam4mleE= 
+ bh=xQ5M/cOvnftQuavJNO36z9POUkMAY3rR4Tcd3dP6nOs=;
+ b=DrA4PzWqytYfSQOyqEfOAvw/9mkOLjoNnpD1ZBkM/jvcV/UrCqjGvihNyuJ87JO9Ak3U
+ 0MWxReOblLAhlh85MqiE9LTc6tjZ9Zcscnmz4jcQbxX6jYR4+P+ciw4SYYnJCt/TgfmP
+ WquOjjvqudLtapmjm2RQyqowWIhpm7qvmdo= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2wtpnencsx-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2wu4ksa1a8-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:12 -0800
-Received: from intmgw005.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:30 -0800
+Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 11 Dec 2019 17:36:11 -0800
+ 15.1.1713.5; Wed, 11 Dec 2019 17:36:28 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id D46A12EC1A0E; Wed, 11 Dec 2019 17:36:10 -0800 (PST)
+        id 2C0AE2EC1A0E; Wed, 11 Dec 2019 17:36:23 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,19 +38,19 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/4] libbpf: don't attach perf_buffer to offline/missing CPUs
-Date:   Wed, 11 Dec 2019 17:36:09 -0800
-Message-ID: <20191212013609.1691168-1-andriin@fb.com>
+Subject: [PATCH bpf-next 4/4] selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
+Date:   Wed, 11 Dec 2019 17:36:20 -0800
+Message-ID: <20191212013621.1691858-1-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-11_07:2019-12-11,2019-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- clxscore=1015 suspectscore=25 phishscore=0 mlxlogscore=999 mlxscore=0
- spamscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ suspectscore=25 adultscore=0 priorityscore=1501 spamscore=0 mlxscore=0
+ bulkscore=0 malwarescore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1912120004
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -58,116 +58,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's quite common on some systems to have more CPUs enlisted as "possible",
-than there are (and could ever be) present/online CPUs. In such cases,
-perf_buffer creationg will fail due to inability to create perf event on
-missing CPU with error like this:
-
-libbpf: failed to open perf buffer event on cpu #16: No such device
-
-This patch fixes the logic of perf_buffer__new() to ignore CPUs that are
-missing or currently offline. In rare cases where user explicitly listed
-specific CPUs to connect to, behavior is unchanged: libbpf will try to open
-perf event buffer on specified CPU(s) anyways.
-
-Fixes: fb84b8224655 ("libbpf: add perf buffer API")
+Fix up perf_buffer.c selftest to take into account offline/missing CPUs.
+Fixes: ee5cf82ce04a ("selftests/bpf: test perf buffer API")
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/libbpf.c | 32 +++++++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ .../selftests/bpf/prog_tests/perf_buffer.c    | 29 +++++++++++++++----
+ 1 file changed, 24 insertions(+), 5 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b761d8636026..1bb63961d2ce 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5944,7 +5944,7 @@ struct perf_buffer {
- 	size_t mmap_size;
- 	struct perf_cpu_buf **cpu_bufs;
- 	struct epoll_event *events;
--	int cpu_cnt;
-+	int cpu_cnt; /* number of allocated CPU buffers */
- 	int epoll_fd; /* perf event FD */
- 	int map_fd; /* BPF_MAP_TYPE_PERF_EVENT_ARRAY BPF map FD */
- };
-@@ -6078,11 +6078,13 @@ perf_buffer__new_raw(int map_fd, size_t page_cnt,
- static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
- 					      struct perf_buffer_params *p)
+diff --git a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+index 3003fddc0613..cf6c87936c69 100644
+--- a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
++++ b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+@@ -4,6 +4,7 @@
+ #include <sched.h>
+ #include <sys/socket.h>
+ #include <test_progs.h>
++#include "libbpf_internal.h"
+ 
+ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
  {
-+	const char *online_cpus_file = "/sys/devices/system/cpu/online";
- 	struct bpf_map_info map = {};
- 	char msg[STRERR_BUFSIZE];
+@@ -19,7 +20,7 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
+ 
+ void test_perf_buffer(void)
+ {
+-	int err, prog_fd, nr_cpus, i, duration = 0;
++	int err, prog_fd, on_len, nr_on_cpus = 0,  nr_cpus, i, duration = 0;
+ 	const char *prog_name = "kprobe/sys_nanosleep";
+ 	const char *file = "./test_perf_buffer.o";
+ 	struct perf_buffer_opts pb_opts = {};
+@@ -29,15 +30,27 @@ void test_perf_buffer(void)
+ 	struct bpf_object *obj;
  	struct perf_buffer *pb;
-+	bool *online = NULL;
- 	__u32 map_info_len;
--	int err, i;
-+	int err, i, j, n;
+ 	struct bpf_link *link;
++	bool *online;
  
- 	if (page_cnt & (page_cnt - 1)) {
- 		pr_warn("page count should be power of two, but is %zu\n",
-@@ -6151,20 +6153,32 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
- 		goto error;
- 	}
+ 	nr_cpus = libbpf_num_possible_cpus();
+ 	if (CHECK(nr_cpus < 0, "nr_cpus", "err %d\n", nr_cpus))
+ 		return;
  
--	for (i = 0; i < pb->cpu_cnt; i++) {
-+	err = parse_cpu_mask_file(online_cpus_file, &online, &n);
-+	if (err) {
-+		pr_warn("failed to get online CPU mask: %d\n", err);
-+		goto error;
++	err = parse_cpu_mask_file("/sys/devices/system/cpu/online",
++				  &online, &on_len);
++	if (CHECK(err, "nr_on_cpus", "err %d\n", err))
++		return;
++
++	for (i = 0; i < on_len; i++)
++		if (online[i])
++			nr_on_cpus++;
++
+ 	/* load program */
+ 	err = bpf_prog_load(file, BPF_PROG_TYPE_KPROBE, &obj, &prog_fd);
+-	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
+-		return;
++	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno)) {
++		obj = NULL;
++		goto out_close;
 +	}
-+
-+	for (i = 0, j = 0; i < pb->cpu_cnt; i++) {
- 		struct perf_cpu_buf *cpu_buf;
- 		int cpu, map_key;
  
- 		cpu = p->cpu_cnt > 0 ? p->cpus[i] : i;
- 		map_key = p->cpu_cnt > 0 ? p->map_keys[i] : i;
- 
-+		/* in case user didn't explicitly requested particular CPUs to
-+		 * be attached to, skip offline/not present CPUs
-+		 */
-+		if (p->cpu_cnt <= 0 && (cpu >= n || !online[cpu]))
+ 	prog = bpf_object__find_program_by_title(obj, prog_name);
+ 	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", prog_name))
+@@ -64,6 +77,11 @@ void test_perf_buffer(void)
+ 	/* trigger kprobe on every CPU */
+ 	CPU_ZERO(&cpu_seen);
+ 	for (i = 0; i < nr_cpus; i++) {
++		if (i >= on_len || !online[i]) {
++			printf("skipping offline CPU #%d\n", i);
 +			continue;
++		}
 +
- 		cpu_buf = perf_buffer__open_cpu_buf(pb, p->attr, cpu, map_key);
- 		if (IS_ERR(cpu_buf)) {
- 			err = PTR_ERR(cpu_buf);
- 			goto error;
- 		}
+ 		CPU_ZERO(&cpu_set);
+ 		CPU_SET(i, &cpu_set);
  
--		pb->cpu_bufs[i] = cpu_buf;
-+		pb->cpu_bufs[j] = cpu_buf;
+@@ -81,8 +99,8 @@ void test_perf_buffer(void)
+ 	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
+ 		goto out_free_pb;
  
- 		err = bpf_map_update_elem(pb->map_fd, &map_key,
- 					  &cpu_buf->fd, 0);
-@@ -6176,21 +6190,25 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
- 			goto error;
- 		}
+-	if (CHECK(CPU_COUNT(&cpu_seen) != nr_cpus, "seen_cpu_cnt",
+-		  "expect %d, seen %d\n", nr_cpus, CPU_COUNT(&cpu_seen)))
++	if (CHECK(CPU_COUNT(&cpu_seen) != nr_on_cpus, "seen_cpu_cnt",
++		  "expect %d, seen %d\n", nr_on_cpus, CPU_COUNT(&cpu_seen)))
+ 		goto out_free_pb;
  
--		pb->events[i].events = EPOLLIN;
--		pb->events[i].data.ptr = cpu_buf;
-+		pb->events[j].events = EPOLLIN;
-+		pb->events[j].data.ptr = cpu_buf;
- 		if (epoll_ctl(pb->epoll_fd, EPOLL_CTL_ADD, cpu_buf->fd,
--			      &pb->events[i]) < 0) {
-+			      &pb->events[j]) < 0) {
- 			err = -errno;
- 			pr_warn("failed to epoll_ctl cpu #%d perf FD %d: %s\n",
- 				cpu, cpu_buf->fd,
- 				libbpf_strerror_r(err, msg, sizeof(msg)));
- 			goto error;
- 		}
-+		j++;
- 	}
-+	pb->cpu_cnt = j;
+ out_free_pb:
+@@ -91,4 +109,5 @@ void test_perf_buffer(void)
+ 	bpf_link__destroy(link);
+ out_close:
+ 	bpf_object__close(obj);
 +	free(online);
- 
- 	return pb;
- 
- error:
-+	free(online);
- 	if (pb)
- 		perf_buffer__free(pb);
- 	return ERR_PTR(err);
+ }
 -- 
 2.17.1
 
