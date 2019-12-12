@@ -2,133 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C8811CA81
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:22:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B03111CABF
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbfLLKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 05:22:36 -0500
-Received: from foss.arm.com ([217.140.110.172]:41272 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728435AbfLLKWg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 05:22:36 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 64FED328;
-        Thu, 12 Dec 2019 02:22:35 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CF0D23F6CF;
-        Thu, 12 Dec 2019 02:22:33 -0800 (PST)
-Subject: Re: [PATCH v2 9/9] arm64: dts: rockchip: RockPro64: hook up bluetooth
- at uart0
-To:     Soeren Moch <smoch@web.de>, Kalle Valo <kvalo@codeaurora.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, brcm80211-dev-list@cypress.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20191211235253.2539-1-smoch@web.de>
- <20191211235253.2539-10-smoch@web.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a0ad4723-db85-0eda-efb5-f0c9a2a6aec3@arm.com>
-Date:   Thu, 12 Dec 2019 10:22:27 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728661AbfLLKaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 05:30:09 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:37930 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728561AbfLLKaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 05:30:08 -0500
+Received: by mail-lf1-f67.google.com with SMTP id r14so1294223lfm.5
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 02:30:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=U2g3Tx5xnJ3ahG+w/a081Oszkkyiux0oCAA5dO7KUNs=;
+        b=ipGd1mbjflOGctzu98UqeCn8A3rubCUKwo1nqkFtejIVuIqm2GFh7AGXlds/cuCilf
+         IsOSn02Ka/b68WKRDub/4gJ2yWxw7u5HCJm+VOh9EYGI7AWNKO9TloUnSW4hv08imxaN
+         9oIUYTAzY98OtDxdm/Ao9V4bv12MNbQJKl3yQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=U2g3Tx5xnJ3ahG+w/a081Oszkkyiux0oCAA5dO7KUNs=;
+        b=NrN6zQ6+v1QqYuImfcqUOWW5bGqttt5Nat6c0luUx2KM/h788k2CIttPOIcTmrvC/X
+         I0qlyxuKHNvvwDTKNn3zUGI45JKHr0ljir1judcssWW+O/eZFJu/vA6WXrj20crkqr6G
+         A3t0J1cq7Q+FBLvGT+u608GgGPfcknIKVCAogxKvftEV6E5OkoX5g+8gtqRdM1M1EPbS
+         Ycprr+GNCtvgxGWpyROZVvKKFrrPGJS7SYGvCQAje6ZX0GJsnC3HalcgpcGb/DVhJoat
+         XAKTRkQM/tFNMBETjmxo9eV5B9TdBEc1AveVvGDU+sRw26y2OQJ3yBwncdWikb/6jX/0
+         P+3A==
+X-Gm-Message-State: APjAAAUjFmnsZLe6THX+sv7phTFgPJPXhnTBXkV0DQ/lEalWtQJoZgn2
+        sEAdwDHAsT8yFYsDz+KN46y9DA==
+X-Google-Smtp-Source: APXvYqwQLpBqpme64En3iQM4+rxb4gw4aotUDiwJrj6viKPTKwFwHcX0reYR7bpYvJTlSoqYNw8ycA==
+X-Received: by 2002:a19:2d0d:: with SMTP id k13mr5108311lfj.12.1576146606804;
+        Thu, 12 Dec 2019 02:30:06 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id r20sm2681371lfi.91.2019.12.12.02.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 02:30:06 -0800 (PST)
+References: <20191123110751.6729-1-jakub@cloudflare.com> <20191123110751.6729-8-jakub@cloudflare.com> <20191125222958.aaplyw7ebtqs6yyl@kafai-mbp>
+User-agent: mu4e 1.1.0; emacs 26.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH bpf-next 7/8] selftests/bpf: Extend SK_REUSEPORT tests to cover SOCKMAP
+In-reply-to: <20191125222958.aaplyw7ebtqs6yyl@kafai-mbp>
+Date:   Thu, 12 Dec 2019 11:30:05 +0100
+Message-ID: <87r219g7ki.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20191211235253.2539-10-smoch@web.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Soeren,
+On Mon, Nov 25, 2019 at 11:30 PM CET, Martin Lau wrote:
+> On Sat, Nov 23, 2019 at 12:07:50PM +0100, Jakub Sitnicki wrote:
+>> Parametrize the SK_REUSEPORT tests so that the map type for storing sockets
+>> can be selected at run-time. Also allow choosing which L4 protocols get
+>> tested.
+> If new cmdline args are added to select different subtests,
+> I would prefer to move it to the test_progs framework and reuse the subtests
+> support in test_progs commit 3a516a0a3a7b ("selftests/bpf: add sub-tests support for test_progs").
+> Its default is to run all instead of having a separate bash script to
+> do that.
 
-On 11/12/2019 11:52 pm, Soeren Moch wrote:
-> With enabled wifi support (required for firmware loading) for the
-> Ampak AP6359SA based wifi/bt combo module we now also can enable
-> the bluetooth part.
-> 
-> Suggested-by: Heiko Stuebner <heiko@sntech.de>
-> Signed-off-by: Soeren Moch <smoch@web.de>
-> ---
-> changes in v2:
-> - new patch
-> 
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: brcm80211-dev-list.pdl@broadcom.com
-> Cc: brcm80211-dev-list@cypress.com
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-rockchip@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->   .../boot/dts/rockchip/rk3399-rockpro64.dts    | 29 ++++++++++++++++++-
->   1 file changed, 28 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> index 9fa92790d6e0..94cc462e234d 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
-> @@ -561,6 +561,20 @@
->   };
-> 
->   &pinctrl {
-> +	bt {
-> +		bt_enable_h: bt-enable-h {
-> +			rockchip,pins = <0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +
-> +		bt_host_wake_l: bt-host-wake-l {
-> +			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
-> +		};
-> +
-> +		bt_wake_l: bt-wake-l {
-> +			rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
-> +		};
-> +	};
-> +
->   	buttons {
->   		pwrbtn: pwrbtn {
->   			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
-> @@ -729,8 +743,21 @@
-> 
->   &uart0 {
->   	pinctrl-names = "default";
-> -	pinctrl-0 = <&uart0_xfer &uart0_cts>;
-> +	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
->   	status = "okay";
-> +
-> +	bluetooth {
-> +		compatible = "brcm,bcm43438-bt";
-> +		clocks = <&rk808 1>;
-> +		clock-names = "extclk";
+This turned out to be more work than I expected, so I've split it out
+into a separate series:
 
-Is this right? Comparing the binding and the naming on the schematics, 
-it seems more likely that this might be the LPO clock rather than the 
-TXCO clock.
+https://lore.kernel.org/bpf/20191212102259.418536-1-jakub@cloudflare.com/T/#t
 
-Robin.
-
-> +		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
-> +		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
-> +		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
-> +		vbat-supply = <&vcc3v3_sys>;
-> +		vddio-supply = <&vcc_1v8>;
-> +	};
->   };
-> 
->   &uart2 {
-> --
-> 2.17.1
-> 
-> 
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
-> 
+Thanks,
+Jakub
