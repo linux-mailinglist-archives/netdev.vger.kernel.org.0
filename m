@@ -2,90 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80CED11D9BD
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 00:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7865711DA0B
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 00:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731285AbfLLW7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 17:59:35 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43229 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731036AbfLLW7e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 17:59:34 -0500
-Received: by mail-pf1-f194.google.com with SMTP id h14so204365pfe.10
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 14:59:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sMBnAEeraSfPGQP+C7503fB1T0zEbsk9vYFpO8TVdhQ=;
-        b=HsEWSY7HbTxWBEiEKd93O9lcCuv1z5uv7YAf2HtbrJU411G/lrWDiFqJDC4/N1UZYN
-         NLFxCpyzxfT6jBeUqRvA4aZCpw/8eZVD0byZap7lAbi20YrqmGjVjsjqcJwLN+6tYvLF
-         Gu/mUsLnbvY7YVFVWN5ePtGz2kUuVh+GHOpnr1MFxh2ZjVh/zzo4HjBr8ZmXs0WKh7ce
-         0JEAeVl65up/GuTninYNaHrT8eOu/CGQTyTV4Kx0I0jZRWQls6SlPySviZP1N9i7pBs1
-         i+Uu0kZBrr0oH7hq9LPCfn75+5S+y0GZA6mC0nRmGsdFf2UZh+gH/PboyWdfDaQdvZFR
-         r9Qw==
+        id S1731259AbfLLXdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 18:33:11 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:46498 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731170AbfLLXdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 18:33:11 -0500
+Received: by mail-io1-f72.google.com with SMTP id p206so425125iod.13
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 15:33:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sMBnAEeraSfPGQP+C7503fB1T0zEbsk9vYFpO8TVdhQ=;
-        b=ex+tdy0EzpmBjMK06tplQ+1a1hnLEh0vn5F4xkv/WoQ4NtQR4vCrzkfViU9xkHvlXf
-         M4TMSY45UFviXXLM7/TZusubwZy+9A+pu4ufC7RUCIbmvqUfqvdhWIsP5DRfYE/4zatB
-         jFrRAnMFaKOexfkz0f1STwF/UZAKkw65pEDGJo0yLCRgG0YhHQ8q7++vEVqPhuRD8R8e
-         fyiSc56s9EhfIkmkxFgl69GsvdvHshel8ZprCWzwyJcgaKLVnjVb8zAolFB3skC/s2TC
-         sjYPMqXBJEuvsZCgY7NKzFdFCwVsfc/2z+HWbGqfHIh0hFX/potnbWETRnKBQMJZu2bp
-         z5rg==
-X-Gm-Message-State: APjAAAVxIMhkKGCJtfujXrPmGkl4d7h1uYQdT7esvviSfl+ITolycxPE
-        5Xv5Pn15lPcsW/2xe88oFcY=
-X-Google-Smtp-Source: APXvYqwhGBXebvLX+5ieGdJGTvT4PQekPJrtA9tJ6ADFWQP8fR9VDv9nUEaW3VgJ9OGUg7uAwc+LbA==
-X-Received: by 2002:a63:2355:: with SMTP id u21mr13136613pgm.179.1576191574329;
-        Thu, 12 Dec 2019 14:59:34 -0800 (PST)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
-        by smtp.gmail.com with ESMTPSA id i24sm8650180pfo.83.2019.12.12.14.59.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 14:59:33 -0800 (PST)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, soheil@google.com, edumazet@google.com,
-        Arjun Roy <arjunroy.kdev@gmail.com>
-Subject: [PATCH net-next] tcp: Set rcv zerocopy hint correctly if skb last frag is < PAGE_SIZE.
-Date:   Thu, 12 Dec 2019 14:59:30 -0800
-Message-Id: <20191212225930.233745-1-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=uPmT7H1u4tQQr91gsmUmlGu51pKPCSerupF0+mBYR+A=;
+        b=BlZnm9YH0y6rnUig/2/FVQfgklLRpgY5VW1iI5rBnfkJpV+Daqe0UX92kNxx7CrK9E
+         m7CaDBT/s6CwLx2VudL6n4qjuPa77BMkMEuIjmjxErlRtOqMPAbf1Rcmh+QgqRkQkfLo
+         wqK8ip7oqqNDgdygGPpjFVCEBEH1P1X6giRmmrwgP0gidwJlL2aKz3XJkhqdYynBEe+7
+         vO0GATTO0FFMFj58mhVfw/++4eZrmRpUJ/GLWaG/eiXXGBWftSY5VGXW7Q/xig88BVl5
+         HzHoMsoypwSXbrVgV7ihEcOdg5dJXkNNEJA533rk+Xc0X8GnTjT1lKv82tgekKDo9x8t
+         a4bw==
+X-Gm-Message-State: APjAAAUJgU7XZ6jleRHvZnr1IGPkL/yQm2gvq83G0KhAwX9u8JmGPytG
+        TeMLOjUszY5fetRP1K73t9g4RjzQyIV6PXgWooiw3aIXJ0Rc
+X-Google-Smtp-Source: APXvYqxRonIBYq3QlOSfLTDmRhr3h1LOT5KDkHtrZySgylant5xgPnByJCRl6xs7oY/bbF7kt3LOHlPciackUCos0rlrM+RWe26+
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:7606:: with SMTP id r6mr10592785ilc.120.1576193590352;
+ Thu, 12 Dec 2019 15:33:10 -0800 (PST)
+Date:   Thu, 12 Dec 2019 15:33:10 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000ce4b105998a2b08@google.com>
+Subject: KCSAN: data-race in add_timer / timer_clear_idle (2)
+From:   syzbot <syzbot+c051abeff5e2e8ac40f0@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, elver@google.com,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At present, if the last frag of paged data in a skb has < PAGE_SIZE
-data, we compute the recv_skip_hint as being equal to the size of that
-frag and the entire next skb.
+Hello,
 
-Instead, just return the runt frag size as the hint.
+syzbot found the following crash on:
 
-Signed-off-by: Arjun Roy <arjunroy@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+HEAD commit:    ef798c30 x86, kcsan: Enable KCSAN for x86
+git tree:       https://github.com/google/ktsan.git kcsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=156e052ee00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8077a73bd604a9d4
+dashboard link: https://syzkaller.appspot.com/bug?extid=c051abeff5e2e8ac40f0
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+c051abeff5e2e8ac40f0@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KCSAN: data-race in add_timer / timer_clear_idle
+
+read to 0xffff88812be1b6e4 of 1 bytes by task 23 on cpu 1:
+  forward_timer_base kernel/time/timer.c:892 [inline]
+  __mod_timer kernel/time/timer.c:1009 [inline]
+  mod_timer kernel/time/timer.c:1100 [inline]
+  add_timer+0x3a6/0x550 kernel/time/timer.c:1136
+  __queue_delayed_work+0x13b/0x1d0 kernel/workqueue.c:1649
+  queue_delayed_work_on+0xf3/0x110 kernel/workqueue.c:1674
+  queue_delayed_work include/linux/workqueue.h:509 [inline]
+  batadv_mcast_start_timer net/batman-adv/multicast.c:71 [inline]
+  batadv_mcast_mla_update+0x11ad/0x19e0 net/batman-adv/multicast.c:949
+  process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
+  worker_thread+0xa0/0x800 kernel/workqueue.c:2415
+  kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
+  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
+
+write to 0xffff88812be1b6e4 of 1 bytes by task 0 on cpu 0:
+  timer_clear_idle+0x42/0x50 kernel/time/timer.c:1675
+  tick_nohz_restart_sched_tick kernel/time/tick-sched.c:839 [inline]
+  __tick_nohz_idle_restart_tick+0x36/0x1b0 kernel/time/tick-sched.c:1140
+  tick_nohz_idle_exit+0x1af/0x1e0 kernel/time/tick-sched.c:1181
+  do_idle+0xb1/0x280 kernel/sched/idle.c:276
+  cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:355
+  rest_init+0xec/0xf6 init/main.c:452
+  arch_call_rest_init+0x17/0x37
+  start_kernel+0x838/0x85e init/main.c:786
+  x86_64_start_reservations+0x29/0x2b arch/x86/kernel/head64.c:490
+  x86_64_start_kernel+0x72/0x76 arch/x86/kernel/head64.c:471
+  secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+==================================================================
+
 
 ---
- net/ipv4/tcp.c | 2 ++
- 1 file changed, 2 insertions(+)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 34490d972758..b9623d896469 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1904,6 +1904,8 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 	while (length + PAGE_SIZE <= zc->length) {
- 		if (zc->recv_skip_hint < PAGE_SIZE) {
- 			if (skb) {
-+				if (zc->recv_skip_hint > 0)
-+					break;
- 				skb = skb->next;
- 				offset = seq - TCP_SKB_CB(skb)->seq;
- 			} else {
--- 
-2.24.1.735.g03f4e72817-goog
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
