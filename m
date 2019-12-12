@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA66011D6DE
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:10:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DA111D6FD
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:24:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730573AbfLLTKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 14:10:50 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:60870 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730355AbfLLTKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 14:10:49 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1ifTrI-0000w1-HG; Thu, 12 Dec 2019 19:10:44 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
-        Ganesh Sesetti <gseset@codeaurora.org>,
-        Karthikeyan Periyasamy <periyasa@codeaurora.org>,
-        John Crispin <john@phrozen.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ath11k: fix uninitialized variable radioup
-Date:   Thu, 12 Dec 2019 19:10:44 +0000
-Message-Id: <20191212191044.107544-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.24.0
+        id S1730631AbfLLTX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 14:23:59 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:37572 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730168AbfLLTX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 14:23:59 -0500
+Received: by mail-pj1-f68.google.com with SMTP id ep17so1483699pjb.4
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 11:23:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=0bnwhQPrNoLKShlvQAzBBKAOH/VCCS9XFOqu0ESqP/Y=;
+        b=YSC85zcbWFrbTaI0+aNFg+ZOORvDZCCajBd/r4XT0ZsSO7yV8DrhYiohqNGS+r9ozk
+         AD81wxqimeqeEVYT/sWCf4E4XUq2wCZjw8W5Sc+hPWe2X0uMqjiCfPlork8yjnKWOasS
+         AtVdapZYsViEcsmiWzKxoJNz69SV/O15vdHcP8u2/hurW/5lU3RUmW2bK2KwrUkxxHWv
+         4CdQTpuPxWGL+g+HpRSrgKftQFZdu6XqEJrWQm8xa4bjtGYA/ea+39e+110GcvNBh2a9
+         ktTAc5p1fCYDjNorBsdXQvlKpVFgSh7mGwdfJZy9KuzQ0rD+jHE/xU91sKvLpr6Xhi8t
+         V0LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=0bnwhQPrNoLKShlvQAzBBKAOH/VCCS9XFOqu0ESqP/Y=;
+        b=pdtu5pp6DJ5LJNqWgb4lx7hj9GXfxKXIuaERQz2eILHq+dX8FH2LuGob85NsFd6Ax6
+         qGV7qmtC962AAwSFKBiyvG8U7dCN/meJ0Aanndz1zFmBnZ/ExZbxTS23t96GzQ4osvTj
+         LJvXDeOiyfsijjjVtv7n3Y0Zm9Ocsh5bksPBFVdNKEpbblb/67I4Oku5cAofeum1ZH6l
+         /D5Il4JQU2/rNqZWrYYtqpll9U1AoXoPZjO6NRcO5lLWykGGEX5Xgnw6wsjVnb1U9BqB
+         MbwoOmmI7vjA6YxKKYZe1kuFbJWMmuoEMJlSiNBXTgmq9rc73HPnIklhQUxNS/pdIs2F
+         MmjA==
+X-Gm-Message-State: APjAAAXWTmagG8Ht6/gy+tHBJHuXxUU29E+S6FeL38IapQSyfNlabPQO
+        juIBCkO2X59CsQpruJtg8TnGoWSsz98=
+X-Google-Smtp-Source: APXvYqyuUQoo7OqdUF2hZ8Tymf+B4ZnOq2m3N/lN2LknjI8630Nd7AaDmNqXMbioGtaaq+6IX0689A==
+X-Received: by 2002:a17:90a:d682:: with SMTP id x2mr11930941pju.44.1576178638725;
+        Thu, 12 Dec 2019 11:23:58 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id k23sm7600955pgg.7.2019.12.12.11.23.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 11:23:58 -0800 (PST)
+Date:   Thu, 12 Dec 2019 11:23:54 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+Message-ID: <20191212112354.55881154@cakuba.netronome.com>
+In-Reply-To: <20191212185831.GN3105713@mini-arch>
+References: <CAEf4Bzb+3b-ypP8YJVA=ogQgp1KXx2xPConOswA0EiGXsmfJow@mail.gmail.com>
+        <20191211191518.GD3105713@mini-arch>
+        <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
+        <20191211200924.GE3105713@mini-arch>
+        <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
+        <20191212025735.GK3105713@mini-arch>
+        <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
+        <20191212162953.GM3105713@mini-arch>
+        <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
+        <20191212104334.222552a1@cakuba.netronome.com>
+        <20191212185831.GN3105713@mini-arch>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Thu, 12 Dec 2019 10:58:31 -0800, Stanislav Fomichev wrote:
+> > I'd honestly leave the distro packaging problem for people who actually
+> > work on that to complain about.  
+> I'm representing a 'Google distro' :-D
 
-The variable radioup is not uninitalized so it may contain a garbage
-value and hence the detection of a radio that is not up is buggy.
-Fix this by initializing it to zero.
-
-Addresses-Coverity: ("Uninitalized scalar variable")
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/ath11k/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/debug.c b/drivers/net/wireless/ath/ath11k/debug.c
-index c27fffd13a5d..34b960453edc 100644
---- a/drivers/net/wireless/ath/ath11k/debug.c
-+++ b/drivers/net/wireless/ath/ath11k/debug.c
-@@ -541,7 +541,7 @@ static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
- 	struct ath11k *ar = ab->pdevs[0].ar;
- 	char buf[32] = {0};
- 	ssize_t rc;
--	int i, ret, radioup;
-+	int i, ret, radioup = 0;
- 
- 	for (i = 0; i < ab->num_radios; i++) {
- 		pdev = &ab->pdevs[i];
--- 
-2.24.0
-
+Suits me :)
