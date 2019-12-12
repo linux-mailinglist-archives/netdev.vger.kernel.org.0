@@ -2,149 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3C1E11D2F1
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:58:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B09B11D30E
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:03:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730010AbfLLQ6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:58:46 -0500
-Received: from mx2.cyber.ee ([193.40.6.72]:46704 "EHLO mx2.cyber.ee"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729260AbfLLQ6q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 11:58:46 -0500
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-wireless@vger.kernel.org
-From:   Meelis Roos <mroos@linux.ee>
-Subject: UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c
- (two lines)
-Message-ID: <0992ebdc-54a6-3451-86af-7d94ed3cf9cf@linux.ee>
-Date:   Thu, 12 Dec 2019 18:58:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1730042AbfLLRDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 12:03:43 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21340 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729993AbfLLRDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:03:41 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCH3ZXc020093
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:03:40 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=DSe7tE7dbySpwf53sEiniXx5xKGB49USZ61XOVlkAAs=;
+ b=bQiy3Z+dCxHRqoLSSJECeONfbrq09LqIt5ABW3nn6dD5dHzkg1/eD2Ayf+IVdbWVCAo2
+ JqTcFRQ5Ef8x4FHC/+2FMqwSzTNwP7jiVYB+FeAH6VXXerjoYc8sZnyDov/lOb6sXAWu
+ 354s3PSlCQilBXlaGYNJkEdUJVMyU/85h3M= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wu404dgw0-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:03:40 -0800
+Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 12 Dec 2019 09:03:37 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 889F92EC1AD2; Thu, 12 Dec 2019 08:41:40 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 03/15] libbpf: move non-public APIs from libbpf.h to libbpf_internal.h
+Date:   Thu, 12 Dec 2019 08:41:16 -0800
+Message-ID: <20191212164129.494329-4-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191212164129.494329-1-andriin@fb.com>
+References: <20191212164129.494329-1-andriin@fb.com>
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_05:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8 mlxscore=0
+ phishscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 malwarescore=0 clxscore=1015 spamscore=0
+ mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912120133
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I added a AR5005G to a laptop toget WiFI and got UBSAN warnings with todays git kernel.
+Few libbpf APIs are not public but currently exposed through libbpf.h to be
+used by bpftool. Move them to libbpf_internal.h, where intent of being
+non-stable and non-public is much more obvious.
 
-Relevant parts of dmesg (anything wireless or ath5k related + the UBSAN warnings themselves):
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/bpf/bpftool/net.c         |  1 +
+ tools/lib/bpf/libbpf.h          | 17 -----------------
+ tools/lib/bpf/libbpf_internal.h | 17 +++++++++++++++++
+ 3 files changed, 18 insertions(+), 17 deletions(-)
 
-[   24.407902] cfg80211: Loading compiled-in X.509 certificates for regulatory database
-[   24.426476] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-[...]
-[   25.075174] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
-[   25.082956] cfg80211: failed to load regulatory.d
-[...]
-[   31.285760] ath5k 0000:06:04.0: registered as 'phy0'
-[   32.058128] ath: EEPROM regdomain: 0x63
-[   32.058130] ath: EEPROM indicates we should expect a direct regpair map
-[   32.058134] ath: Country alpha2 being used: 00
-[   32.058135] ath: Regpair used: 0x63
-[   32.058256] ieee80211 phy0: Selected rate control algorithm 'minstrel_ht'
-[   32.058554] ath5k: phy0: Atheros AR2413 chip found (MAC: 0x78, PHY: 0x45)
-[   32.339426] ath5k 0000:06:04.0 wlp6s4: renamed from wlan0
-[   45.651817] ================================================================================
-[   45.654340] UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c:498:16
-[   45.656882] load of value 225 is not a valid value for type '_Bool'
-[   45.659422] CPU: 0 PID: 340 Comm: NetworkManager Not tainted 5.5.0-rc1-00027-gae4b064e2a61 #4
-[   45.662014] Hardware name: QCI             00000000000000000               /EF6                             , BIOS Q3B81 10/11/2005
-[   45.667286] Call Trace:
-[   45.669906]  dump_stack+0x16/0x19
-[   45.672508]  ubsan_epilogue+0x8/0x20
-[   45.675114]  __ubsan_handle_load_invalid_value.cold+0x43/0x48
-[   45.677786]  ? ieee80211_wake_queues_by_reason+0x85/0xa0 [mac80211]
-[   45.680441]  ? __internal_add_timer+0x14/0x50
-[   45.683081]  ath5k_vif_iter.cold+0x43/0x48 [ath5k]
-[   45.685722]  ath5k_update_bssid_mask_and_opmode+0x52/0x140 [ath5k]
-[   45.688390]  ath5k_add_interface+0x198/0x250 [ath5k]
-[   45.691061]  ? ath5k_start+0xeb/0x120 [ath5k]
-[   45.693680]  drv_add_interface+0x34/0x70 [mac80211]
-[   45.696265]  ieee80211_do_open+0x13d/0x980 [mac80211]
-[   45.698844]  ieee80211_open+0x41/0x50 [mac80211]
-[   45.701382]  __dev_open+0xb6/0x150
-[   45.703920]  __dev_change_flags+0x182/0x200
-[   45.706482]  dev_change_flags+0x28/0x60
-[   45.709032]  do_setlink+0x281/0x980
-[   45.711519]  ? rtnl_is_locked+0xd/0x20
-[   45.713957]  ? netdev_master_upper_dev_get+0xf/0x90
-[   45.716374]  ? __nla_parse+0x2d/0x40
-[   45.718760]  __rtnl_newlink+0x5f5/0x960
-[   45.721120]  ? __nla_reserve+0x20/0xd0
-[   45.723443]  ? nla_put+0x32/0x60
-[   45.725743]  ? __kmalloc_track_caller+0xe7/0x270
-[   45.728060]  ? pskb_expand_head+0x59/0x460
-[   45.730379]  ? skb_free_head+0x25/0x30
-[   45.732680]  ? sk_filter_trim_cap+0x33/0x210
-[   45.735001]  ? __netlink_sendskb+0x37/0x50
-[   45.737335]  ? apparmor_task_free+0xc0/0xc0
-[   45.739665]  ? security_capable+0x3f/0x60
-[   45.741985]  ? kmem_cache_alloc+0xc7/0x230
-[   45.744299]  ? rtnl_newlink+0x24/0x60
-[   45.746616]  rtnl_newlink+0x39/0x60
-[   45.748890]  ? __rtnl_newlink+0x960/0x960
-[   45.751160]  rtnetlink_rcv_msg+0x2bf/0x3e0
-[   45.753428]  ? rtnl_calcit+0x100/0x100
-[   45.755680]  netlink_rcv_skb+0x76/0xf0
-[   45.757929]  ? rtnl_calcit+0x100/0x100
-[   45.760167]  rtnetlink_rcv+0xd/0x10
-[   45.762318]  netlink_unicast+0x19d/0x280
-[   45.764378]  ? __check_object_size+0x104/0x11d
-[   45.766437]  netlink_sendmsg+0x20f/0x470
-[   45.768434]  ? netlink_unicast+0x280/0x280
-[   45.770390]  sock_sendmsg+0x75/0x90
-[   45.772290]  ____sys_sendmsg+0x1ea/0x240
-[   45.774149]  ___sys_sendmsg+0x66/0xa0
-[   45.775930]  ? addrconf_sysctl_forward+0xe5/0x240
-[   45.777700]  ? dev_forward_change+0x140/0x140
-[   45.779474]  ? sysctl_head_finish+0x11/0x30
-[   45.781256]  ? proc_sys_call_handler+0xf8/0x1c0
-[   45.783041]  ? proc_sys_call_handler+0x1c0/0x1c0
-[   45.784790]  ? __fget_light+0x52/0x60
-[   45.786514]  ? __fdget+0xd/0x10
-[   45.788195]  __sys_sendmsg+0x4b/0x90
-[   45.789876]  sys_socketcall+0x3af/0x450
-[   45.791532]  ? exit_to_usermode_loop+0x76/0xb0
-[   45.793190]  do_fast_syscall_32+0x95/0x270
-[   45.794831]  entry_SYSENTER_32+0xa5/0xf7
-[   45.796461] EIP: 0xb7ee19a9
-[   45.798073] Code: 5d c3 8d b4 26 00 00 00 00 b8 00 09 3d 00 eb b4 8b 04 24 c3 8b 14 24 c3 8b 1c 24 c3 8b 34 24 c3 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
-[   45.801678] EAX: ffffffda EBX: 00000010 ECX: bf8041a0 EDX: 00000000
-[   45.803543] ESI: b7711000 EDI: 020948c8 EBP: 020948c8 ESP: bf804190
-[   45.805422] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000282
-[   45.807320] ================================================================================
-[   45.935535] ================================================================================
-[   45.937514] UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c:489:16
-[   45.939532] load of value 8 is not a valid value for type '_Bool'
-[   45.941557] CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.5.0-rc1-00027-gae4b064e2a61 #4
-[   45.943638] Hardware name: QCI             00000000000000000               /EF6                             , BIOS Q3B81 10/11/2005
-[   45.947971] Workqueue: phy0 ieee80211_reconfig_filter [mac80211]
-[   45.950165] Call Trace:
-[   45.952352]  dump_stack+0x16/0x19
-[   45.954528]  ubsan_epilogue+0x8/0x20
-[   45.956700]  __ubsan_handle_load_invalid_value.cold+0x43/0x48
-[   45.958930]  ath5k_vif_iter.cold+0xd/0x48 [ath5k]
-[   45.961182]  ? ath5k_remove_padding+0xa0/0xa0 [ath5k]
-[   45.963457]  __iterate_interfaces+0x72/0x110 [mac80211]
-[   45.965743]  ? ath5k_remove_padding+0xa0/0xa0 [ath5k]
-[   45.968046]  ieee80211_iterate_active_interfaces_atomic+0x15/0x20 [mac80211]
-[   45.970405]  ath5k_configure_filter+0x10d/0x1a0 [ath5k]
-[   45.972764]  ? __switch_to_asm+0x27/0x50
-[   45.975120]  ? __switch_to_asm+0x33/0x50
-[   45.977438]  ? __switch_to_asm+0x27/0x50
-[   45.979749]  ? ath5k_set_key+0x160/0x160 [ath5k]
-[   45.982095]  ieee80211_configure_filter+0x123/0x1a0 [mac80211]
-[   45.984451]  ieee80211_reconfig_filter+0xd/0x10 [mac80211]
-[   45.986827]  process_one_work+0x134/0x2b0
-[   45.989198]  worker_thread+0x13e/0x390
-[   45.991557]  kthread+0xcd/0x100
-[   45.993909]  ? process_one_work+0x2b0/0x2b0
-[   45.996271]  ? kthread_unpark+0x70/0x70
-[   45.998620]  ret_from_fork+0x2e/0x38
-[   46.000968] ================================================================================
-
+diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+index 4f52d3151616..d93bee298e54 100644
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -18,6 +18,7 @@
+ 
+ #include <bpf.h>
+ #include <nlattr.h>
++#include "libbpf_internal.h"
+ #include "main.h"
+ #include "netlink_dumper.h"
+ 
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 804f445c9957..2698fbcb0c79 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -126,11 +126,6 @@ bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
+ LIBBPF_API struct bpf_object *
+ bpf_object__open_xattr(struct bpf_object_open_attr *attr);
+ 
+-int bpf_object__section_size(const struct bpf_object *obj, const char *name,
+-			     __u32 *size);
+-int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+-				__u32 *off);
+-
+ enum libbpf_pin_type {
+ 	LIBBPF_PIN_NONE,
+ 	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+@@ -514,18 +509,6 @@ bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+ 			   void **copy_mem, size_t *copy_size,
+ 			   bpf_perf_event_print_t fn, void *private_data);
+ 
+-struct nlattr;
+-typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb);
+-int libbpf_netlink_open(unsigned int *nl_pid);
+-int libbpf_nl_get_link(int sock, unsigned int nl_pid,
+-		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
+-int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie);
+-int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
+-			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie);
+-int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int handle,
+-			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie);
+-
+ struct bpf_prog_linfo;
+ struct bpf_prog_info;
+ 
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 97ac17a64a58..7ee0c8691835 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -98,6 +98,23 @@ static inline bool libbpf_validate_opts(const char *opts,
+ int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
+ 			 const char *str_sec, size_t str_len);
+ 
++int bpf_object__section_size(const struct bpf_object *obj, const char *name,
++			     __u32 *size);
++int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
++				__u32 *off);
++
++struct nlattr;
++typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb);
++int libbpf_netlink_open(unsigned int *nl_pid);
++int libbpf_nl_get_link(int sock, unsigned int nl_pid,
++		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
++int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
++			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie);
++int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
++			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie);
++int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int handle,
++			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie);
++
+ struct btf_ext_info {
+ 	/*
+ 	 * info points to the individual info section (e.g. func_info and
 -- 
-Meelis Roos <mroos@linux.ee>
+2.17.1
+
