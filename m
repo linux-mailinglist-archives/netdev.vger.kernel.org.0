@@ -2,277 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8236011D26C
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 505CB11D279
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729904AbfLLQgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:36:50 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39663 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729883AbfLLQgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:36:50 -0500
-Received: by mail-qt1-f195.google.com with SMTP id i12so2785865qtp.6
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:36:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JHntgrrBjeNyPsGxQSc+b1zy3+T4ugECE3btZhC+mKo=;
-        b=XKW0p3zTuuWX5aAdIZHPEwjdvNHO3tZP9IZhrGWLPdhwu8AQQhnEU2paLwZHd0TGWN
-         oyndZwYv96ZfNrthG3CczpiOInawTqhxwOFimBF1vEwauchxD5fIM/Vj+hz07BfOw+zU
-         ktQEwMvI+vauNreC02dmj7vcT0bCFRh2nbdpz9iZ0Uw9O73yRuGu/4SvNrpYutOvnbxP
-         kvmxbWuA5yh8wdmx3Oa442CBM/InvVyt024WOJxkd07K77K7BV0Qg4gnplQlDpMyGYkv
-         rsSVlFoXImzOlJSXcqchEaf0ZsHIqsx5vmWe+CchrUZ9yLadMXhiIiJ7H+O5rYEt2bds
-         MWWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JHntgrrBjeNyPsGxQSc+b1zy3+T4ugECE3btZhC+mKo=;
-        b=aNju94UeeRfryKTPYuHbCf1gm7Hqsryp8kI5XzglC+6TLWRbefKCL6KA8Nr3sluohL
-         Z3EpnXTo2kMD2hyOfQkXiaitoVsHcuy0rhhvSYi2xNctNTjF6qd1H7lr2uqicUrWhz9s
-         akUhJ35VfTKCPXTcNyGmIj4CDf/PVmCONX8fug/CRjSsoEBSVrtib2FlHFUK49sPi5pV
-         Y32enGx+MURqHuIyb5TYQ3f/gq8ke17ssIZ7Tp9ovDd0o8dRAls5bwcu+XEaeEMnc3CW
-         f+fPwdfxab7jrjygd8/GRsPrC56t30m7fUDflBfFYHkgSVG3WZCRKLWgHwCH0+4uEO58
-         NBHw==
-X-Gm-Message-State: APjAAAXmk4u8Vg389L74xwCPyozNOT+6Z3toL6sBUh4KYbCBJ3Wc1gRm
-        UWk5ymVFfj+a3gWG3HoFz/7iKtq3
-X-Google-Smtp-Source: APXvYqz8PHooLE2y+yn+1wL+cMFfz/W+XUuW0bmB+2rDQ3C8AF70rDzNyq2ZuVLlS927fgnUTCdHUA==
-X-Received: by 2002:aed:24b2:: with SMTP id t47mr8149031qtc.337.1576168608444;
-        Thu, 12 Dec 2019 08:36:48 -0800 (PST)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:6084:feee:4efa:5ea9])
-        by smtp.gmail.com with ESMTPSA id t16sm2203052qtn.74.2019.12.12.08.36.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 08:36:47 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Subject: [PATCH net-next] selftests/net: make so_txtime more robust to timer variance
-Date:   Thu, 12 Dec 2019 11:36:46 -0500
-Message-Id: <20191212163646.190982-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.24.0.525.g8f36a354ae-goog
+        id S1729943AbfLLQlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 11:41:39 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50192 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729933AbfLLQli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:41:38 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGa1SI014976
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:38 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=2+L3nWuZ0eq53f4RKvDhBscbYwLQbvxKxa0uESWI/xc=;
+ b=RpJiCesqDnnokfBflsU2y1yKkt3NfWe04X2L9x+8BMy0RrD9taqpA6KDjD1Wz76uCR/Q
+ 3+v6ADbb30EAH2CsfglKZgKVe9/EeOjHAeDxUkxMtEbXhDlG9LYVydfG4yoeWmmJCjb8
+ 8MnuCuK7zEW8yHtEmHcaDFQZBD9HpXu+fts= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wub46bbcu-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:38 -0800
+Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 12 Dec 2019 08:41:35 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id DC6872EC1AD2; Thu, 12 Dec 2019 08:41:33 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 00/15] Add code-generated BPF object skeleton support
+Date:   Thu, 12 Dec 2019 08:41:13 -0800
+Message-ID: <20191212164129.494329-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_04:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ bulkscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=9 spamscore=0 mlxscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120129
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+This patch set introduces an alternative and complimentary to existing libbpf
+API interface for working with BPF objects, maps, programs, and global data
+from userspace side. This approach is relying on code generation. bpftool
+produces a struct (a.k.a. skeleton) tailored and specific to provided BPF
+object file. It includes hard-coded fields and data structures for every map,
+program, link, and global data present.
 
-The SO_TXTIME test depends on accurate timers. In some virtualized
-environments the test has been reported to be flaky. This is easily
-reproduced by disabling kvm acceleration in Qemu.
+Altogether this approach significantly reduces amount of userspace boilerplate
+code required to open, load, attach, and work with BPF objects. It improves
+attach/detach story, by providing pre-allocated space for bpf_links, and
+ensuring they are properly detached on shutdown. It allows to do away with by
+name/title lookups of maps and programs, because libbpf's skeleton API, in
+conjunction with generated code from bpftool, is filling in hard-coded fields
+with actual pointers to corresponding struct bpf_map/bpf_program/bpf_link.
 
-Allow greater variance in a run and retry to further reduce flakiness.
+Also, thanks to BPF array mmap() support, working with global data (variables)
+from userspace is now as natural as it is from BPF side: each variable is just
+a struct field inside skeleton struct. Furthermore, this allows to have
+a natural way for userspace to pre-initialize global data (including
+previously impossible to initialize .rodata) by just assigning values to the
+same per-variable fields. Libbpf will carefully take into account this
+initialization image, will use it to pre-populate BPF maps at creation time,
+and will re-mmap() BPF map's contents at exactly the same userspace memory
+address such that it can continue working with all the same pointers without
+any interruptions. If kernel doesn't support mmap(), global data will still be
+successfully initialized, but after map creation global data structures inside
+skeleton will be NULL-ed out. This allows userspace application to gracefully
+handle lack of mmap() support, if necessary.
 
-Observed errors are one of two kinds: either the packet arrives too
-early or late at recv(), or it was dropped in the qdisc itself and the
-recv() call times out.
+A bunch of selftests are also converted to using skeletons, demonstrating
+significant simplification of userspace part of test and reduction in amount
+of code necessary.
 
-In the latter case, the qdisc queues a notification to the error
-queue of the send socket. Also explicitly report this cause.
+v1->v2:
+- checkpatch.pl and reverse Christmas tree styling (Jakub);
+- sanitize variable names to accomodate in-function static vars;
 
-Link: https://lore.kernel.org/netdev/CA+FuTSdYOnJCsGuj43xwV1jxvYsaoa_LzHQF9qMyhrkLrivxKw@mail.gmail.com
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/net/so_txtime.c  | 84 +++++++++++++++++++++++-
- tools/testing/selftests/net/so_txtime.sh |  9 ++-
- 2 files changed, 88 insertions(+), 5 deletions(-)
+rfc->v1:
+- runqslower moved out into separate patch set waiting for vmlinux.h
+  improvements;
+- skeleton generation code deals with unknown internal maps more gracefully.
 
-diff --git a/tools/testing/selftests/net/so_txtime.c b/tools/testing/selftests/net/so_txtime.c
-index 34df4c8882afb..383bac05ac324 100644
---- a/tools/testing/selftests/net/so_txtime.c
-+++ b/tools/testing/selftests/net/so_txtime.c
-@@ -12,7 +12,11 @@
- #include <arpa/inet.h>
- #include <error.h>
- #include <errno.h>
-+#include <inttypes.h>
- #include <linux/net_tstamp.h>
-+#include <linux/errqueue.h>
-+#include <linux/ipv6.h>
-+#include <linux/tcp.h>
- #include <stdbool.h>
- #include <stdlib.h>
- #include <stdio.h>
-@@ -28,7 +32,7 @@ static int	cfg_clockid	= CLOCK_TAI;
- static bool	cfg_do_ipv4;
- static bool	cfg_do_ipv6;
- static uint16_t	cfg_port	= 8000;
--static int	cfg_variance_us	= 2000;
-+static int	cfg_variance_us	= 4000;
- 
- static uint64_t glob_tstart;
- 
-@@ -43,6 +47,9 @@ static struct timed_send cfg_in[MAX_NUM_PKT];
- static struct timed_send cfg_out[MAX_NUM_PKT];
- static int cfg_num_pkt;
- 
-+static int cfg_errq_level;
-+static int cfg_errq_type;
-+
- static uint64_t gettime_ns(void)
- {
- 	struct timespec ts;
-@@ -90,13 +97,15 @@ static void do_send_one(int fdt, struct timed_send *ts)
- 
- }
- 
--static void do_recv_one(int fdr, struct timed_send *ts)
-+static bool do_recv_one(int fdr, struct timed_send *ts)
- {
- 	int64_t tstop, texpect;
- 	char rbuf[2];
- 	int ret;
- 
- 	ret = recv(fdr, rbuf, sizeof(rbuf), 0);
-+	if (ret == -1 && errno == EAGAIN)
-+		return true;
- 	if (ret == -1)
- 		error(1, errno, "read");
- 	if (ret != 1)
-@@ -113,6 +122,8 @@ static void do_recv_one(int fdr, struct timed_send *ts)
- 
- 	if (labs(tstop - texpect) > cfg_variance_us)
- 		error(1, 0, "exceeds variance (%d us)", cfg_variance_us);
-+
-+	return false;
- }
- 
- static void do_recv_verify_empty(int fdr)
-@@ -125,12 +136,70 @@ static void do_recv_verify_empty(int fdr)
- 		error(1, 0, "recv: not empty as expected (%d, %d)", ret, errno);
- }
- 
-+static void do_recv_errqueue_timeout(int fdt)
-+{
-+	char control[CMSG_SPACE(sizeof(struct sock_extended_err)) +
-+		     CMSG_SPACE(sizeof(struct sockaddr_in6))] = {0};
-+	char data[sizeof(struct ipv6hdr) +
-+		  sizeof(struct tcphdr) + 1];
-+	struct sock_extended_err *err;
-+	struct msghdr msg = {0};
-+	struct iovec iov = {0};
-+	struct cmsghdr *cm;
-+	int64_t tstamp = 0;
-+	int ret;
-+
-+	iov.iov_base = data;
-+	iov.iov_len = sizeof(data);
-+
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+
-+	msg.msg_control = control;
-+	msg.msg_controllen = sizeof(control);
-+
-+	while (1) {
-+		ret = recvmsg(fdt, &msg, MSG_ERRQUEUE);
-+		if (ret == -1 && errno == EAGAIN)
-+			break;
-+		if (ret == -1)
-+			error(1, errno, "errqueue");
-+		if (msg.msg_flags != MSG_ERRQUEUE)
-+			error(1, 0, "errqueue: flags 0x%x\n", msg.msg_flags);
-+
-+		cm = CMSG_FIRSTHDR(&msg);
-+		if (cm->cmsg_level != cfg_errq_level ||
-+		    cm->cmsg_type != cfg_errq_type)
-+			error(1, 0, "errqueue: type 0x%x.0x%x\n",
-+				    cm->cmsg_level, cm->cmsg_type);
-+
-+		err = (struct sock_extended_err *)CMSG_DATA(cm);
-+		if (err->ee_origin != SO_EE_ORIGIN_TXTIME)
-+			error(1, 0, "errqueue: origin 0x%x\n", err->ee_origin);
-+		if (err->ee_code != ECANCELED)
-+			error(1, 0, "errqueue: code 0x%x\n", err->ee_code);
-+
-+		tstamp = ((int64_t) err->ee_data) << 32 | err->ee_info;
-+		tstamp -= (int64_t) glob_tstart;
-+		tstamp /= 1000 * 1000;
-+		fprintf(stderr, "send: pkt %c at %" PRId64 "ms dropped\n",
-+				data[ret - 1], tstamp);
-+
-+		msg.msg_flags = 0;
-+		msg.msg_controllen = sizeof(control);
-+	}
-+
-+	error(1, 0, "recv: timeout");
-+}
-+
- static void setsockopt_txtime(int fd)
- {
- 	struct sock_txtime so_txtime_val = { .clockid = cfg_clockid };
- 	struct sock_txtime so_txtime_val_read = { 0 };
- 	socklen_t vallen = sizeof(so_txtime_val);
- 
-+	so_txtime_val.flags = SOF_TXTIME_REPORT_ERRORS;
-+
- 	if (setsockopt(fd, SOL_SOCKET, SO_TXTIME,
- 		       &so_txtime_val, sizeof(so_txtime_val)))
- 		error(1, errno, "setsockopt txtime");
-@@ -194,7 +263,8 @@ static void do_test(struct sockaddr *addr, socklen_t alen)
- 	for (i = 0; i < cfg_num_pkt; i++)
- 		do_send_one(fdt, &cfg_in[i]);
- 	for (i = 0; i < cfg_num_pkt; i++)
--		do_recv_one(fdr, &cfg_out[i]);
-+		if (do_recv_one(fdr, &cfg_out[i]))
-+			do_recv_errqueue_timeout(fdt);
- 
- 	do_recv_verify_empty(fdr);
- 
-@@ -280,6 +350,10 @@ int main(int argc, char **argv)
- 		addr6.sin6_family = AF_INET6;
- 		addr6.sin6_port = htons(cfg_port);
- 		addr6.sin6_addr = in6addr_loopback;
-+
-+		cfg_errq_level = SOL_IPV6;
-+		cfg_errq_type = IPV6_RECVERR;
-+
- 		do_test((void *)&addr6, sizeof(addr6));
- 	}
- 
-@@ -289,6 +363,10 @@ int main(int argc, char **argv)
- 		addr4.sin_family = AF_INET;
- 		addr4.sin_port = htons(cfg_port);
- 		addr4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-+
-+		cfg_errq_level = SOL_IP;
-+		cfg_errq_type = IP_RECVERR;
-+
- 		do_test((void *)&addr4, sizeof(addr4));
- 	}
- 
-diff --git a/tools/testing/selftests/net/so_txtime.sh b/tools/testing/selftests/net/so_txtime.sh
-index 5aa519328a5b5..3f7800eaecb1e 100755
---- a/tools/testing/selftests/net/so_txtime.sh
-+++ b/tools/testing/selftests/net/so_txtime.sh
-@@ -5,7 +5,12 @@
- 
- # Run in network namespace
- if [[ $# -eq 0 ]]; then
--	./in_netns.sh $0 __subprocess
-+	if ! ./in_netns.sh $0 __subprocess; then
-+		# test is time sensitive, can be flaky
-+		echo "test failed: retry once"
-+		./in_netns.sh $0 __subprocess
-+	fi
-+
- 	exit $?
- fi
- 
-@@ -18,7 +23,7 @@ tc qdisc add dev lo root fq
- ./so_txtime -4 -6 -c mono a,10,b,20 a,10,b,20
- ./so_txtime -4 -6 -c mono a,20,b,10 b,20,a,20
- 
--if tc qdisc replace dev lo root etf clockid CLOCK_TAI delta 200000; then
-+if tc qdisc replace dev lo root etf clockid CLOCK_TAI delta 400000; then
- 	! ./so_txtime -4 -6 -c tai a,-1 a,-1
- 	! ./so_txtime -4 -6 -c tai a,0 a,0
- 	./so_txtime -4 -6 -c tai a,10 a,10
+
+Andrii Nakryiko (15):
+  libbpf: don't require root for bpf_object__open()
+  libbpf: add generic bpf_program__attach()
+  libbpf: move non-public APIs from libbpf.h to libbpf_internal.h
+  libbpf: add BPF_EMBED_OBJ macro for embedding BPF .o files
+  libbpf: expose field/var declaration emitting API internally
+  libbpf: expose BPF program's function name
+  libbpf: refactor global data map initialization
+  libbpf: postpone BTF ID finding for TRACING programs to load phase
+  libbpf: reduce log level of supported section names dump
+  libbpf: add experimental BPF object skeleton support
+  bpftool: add skeleton codegen command
+  selftests/bpf: add BPF skeletons selftests and convert attach_probe.c
+  selftests/bpf: convert few more selftest to skeletons
+  selftests/bpf: add test validating data section to struct convertion
+    layout
+  bpftool: add `gen skeleton` BASH completions
+
+ tools/bpf/bpftool/bash-completion/bpftool     |  11 +
+ tools/bpf/bpftool/gen.c                       | 540 ++++++++++++++++
+ tools/bpf/bpftool/main.c                      |   3 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/net.c                       |   1 +
+ tools/lib/bpf/btf_dump.c                      |  61 +-
+ tools/lib/bpf/libbpf.c                        | 583 ++++++++++++++----
+ tools/lib/bpf/libbpf.h                        |  63 +-
+ tools/lib/bpf/libbpf.map                      |   4 +
+ tools/lib/bpf/libbpf_internal.h               |  61 ++
+ tools/testing/selftests/bpf/.gitignore        |   2 +
+ tools/testing/selftests/bpf/Makefile          |  36 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   | 154 +----
+ .../selftests/bpf/prog_tests/fentry_fexit.c   | 105 ++--
+ .../selftests/bpf/prog_tests/fentry_test.c    |  72 +--
+ tools/testing/selftests/bpf/prog_tests/mmap.c |  58 +-
+ .../selftests/bpf/prog_tests/probe_user.c     |   6 +-
+ .../selftests/bpf/prog_tests/rdonly_maps.c    |  11 +-
+ .../selftests/bpf/prog_tests/skeleton.c       |  49 ++
+ .../bpf/prog_tests/stacktrace_build_id.c      |  79 +--
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  84 +--
+ .../selftests/bpf/progs/test_attach_probe.c   |  34 +-
+ .../selftests/bpf/progs/test_skeleton.c       |  37 ++
+ 23 files changed, 1456 insertions(+), 599 deletions(-)
+ create mode 100644 tools/bpf/bpftool/gen.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/skeleton.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_skeleton.c
+
 -- 
-2.24.0.525.g8f36a354ae-goog
+2.17.1
 
