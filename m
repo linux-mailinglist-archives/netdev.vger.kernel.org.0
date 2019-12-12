@@ -2,201 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17DF411D586
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6466A11D598
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:31:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730357AbfLLS3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:29:14 -0500
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:42374 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730017AbfLLS3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:29:13 -0500
-Received: by mail-yb1-f196.google.com with SMTP id p137so829599ybg.9
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 10:29:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=exBs6cbYBhiaiO85VuX1I/b0vyw8Vg3ZJUVGTes5fL4=;
-        b=IV0M6yXBR/LWP427wPO0bQQoZ0TEv4OV1+JAaeAoeGL/I3oPnwnvWynLO82VHop2dB
-         Fw1YqLVJF5/AZ2FLL8BsFzp1dmrxwGPOmCOYPKfWxmJpa4xPmHhgG5W+95FLM3b4edTE
-         hYQfUDutLAxuSIISmcwCHaAp9bw5xd0Vx9HpjXhEM/GCeY48HmAUUkjaw+8GIdHevGIy
-         qTyHZ6pAhDt1XEGpUOGOaF3ZxJPvPZ+Up6iIK9HKECtQkNyXe/NcTiGVWSX4D83m8UrA
-         XafsCXPRN3tlTE96nkZLm17p/4gaLsjhBPibkw+IizeTSzhD+g1n6kE258Mo3x3C1obw
-         10uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=exBs6cbYBhiaiO85VuX1I/b0vyw8Vg3ZJUVGTes5fL4=;
-        b=mPBXLwdKiCu3sTd9dE3grWymdmZE2tVfadenZJ07imICc8ZXd3Nv09CLN1cGnn0OyA
-         zHTA71lP6y3x4r6J57ZNtW04tf+t25W93PgQ4kJrnpDxyisD0lTEbqk96bKyz9qTaXHT
-         RN519JFJjM4vRoylsRU4MTRlFnzjQQe5sDcu2Wscwgkau2og9KP4IKf83sF7y+0t/MHW
-         SyHZL8MXepowmPjiu0z/1PgN8oyScy/Z3wIYyOz+//miljE0Jo1G7ldxKmsnw1YkP4LD
-         f6lWECL4XEOeUoXJSv7lJVYjEW52YIlN4JjfrOtnyj8jrDS9UXPc2kE/OxPlHr1F0OZ0
-         33mg==
-X-Gm-Message-State: APjAAAXUmfDwTPknkHaBhTnEk1ujXUdbVL1wPVMfjEmLkEy6naQ4vxL1
-        J6r5Bdb1WMhU+FYn+sYxwtchftLHuw3IaggUtNhmj6TP++o=
-X-Google-Smtp-Source: APXvYqznO9y2VeSUIdrxIZXFU7Gwp9xcAtTaYEU56OgaWmbq4eOLu9EjV/rh57frBSO390VzFzGDMc1hX//VLi1khwU=
-X-Received: by 2002:a25:6c86:: with SMTP id h128mr5556181ybc.305.1576175351865;
- Thu, 12 Dec 2019 10:29:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20191206234455.213159-1-maheshb@google.com> <10902.1575756592@famine>
- <CAF2d9jgjeky0eMgwFZKHO_RLTBNstH1gCq4hn1FfO=TtrMP1ow@mail.gmail.com> <26918.1576132686@famine>
-In-Reply-To: <26918.1576132686@famine>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Thu, 12 Dec 2019 10:28:55 -0800
-Message-ID: <CAF2d9jh7WAydcm79VYZLb=A=fXo7B7RDiMquZRJdP2fnwnLabg@mail.gmail.com>
-Subject: Re: [PATCH net] bonding: fix active-backup transition after link failure
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730383AbfLLSbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:31:07 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36494 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730034AbfLLSbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:31:06 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCISJMK018738;
+        Thu, 12 Dec 2019 10:30:53 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
+ b=UYh3cdu5/Gg6PsPhdgpBvRMK1meYKXZ92xNfZxjpZIPJx9+37p3RaC8098MBqo7tPahd
+ 8HFo6U2QsX2arhjkxvKOEqMm0H4d2OSv7nhi18ffRNP79BlRMxlOLJS6eaZqlm2pyjAr
+ HK2uePd8+7zCcqSKo9ugaYr2CBwBZ8+QbwI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wub46bvt7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 12 Dec 2019 10:30:53 -0800
+Received: from ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) by
+ ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 12 Dec 2019 10:30:51 -0800
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 12 Dec 2019 10:30:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mMdy1O7vXeaoY+0P8x4AtwUEkchE0dHa3c1oEECGv9xVxDKB+n5JBj9T9I58fBDtol3+3Is13U2NoCB0+tvCMCukFpZoHxJdAZaoNW+jqJ7bf3xNGb0lD8j51Ja8BEyD4Pm9k3ygPiuG3hCAA+gOCp2YFjrhEu4rCX8dGFhjS4okzrlONPiuWGorSW5lUOqgFoPMORWfRMElFE54Wz/fUvAIkIbzr0LKx8SPjBDkiWX0DA7nsauC/lPnCkkF7w+Gg3w/Wdcumat2c66omB8auAt2NO0CShp+cM64H2TZDfZo+/5Kaxe4WIyJl9btq87UzGclX0g+z6JYHOKk9F1ZOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
+ b=FRsC0JQsJTg/Yl1sZt0aWBvEXYMMDF5y43EDBau8wKFOtGKrEFenYXdEIWRHYAhdJgIAo/qJKkkR+ImkNQZcbmCvoEQ/wqutVjthJjjavoVz/fS5RFEkPIk+CMtRrSmSxyY9NGDJuViyXDRreLW28vz3XM48TxtNe4SJJKpMoczJW+Pm19JYhTEE76a3uRKFLSnWBtsJx1SJ+mkSvvp/rfTomrGSrnNsD0hYS/ZeG8Tsc9UEF0w4f7G2upoX/cHb1gP6JCIO7R5lVerlqepXrTWZ/G/tu4nkDlxpIv3QlRGqB5NV4TwETg/1qy3X2mA2rsdTPzEs4jGT1UUeg/UNaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
+ b=h4/lUHX2QAKyMqalNLbgQClXdkns5sS+Il0Ph/gTE5FrmoxgeYbopYigiIlB9ngc79BH5UY6NFMIa9tGlQX+76FrwZgAXpdRG9TtX9VEx27Py+znTqMy8qBZ2OFfQhmc5j5glysQLY7AeLBsJ47crrHcaTNjAY2wsp74KOwPFdg=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB3597.namprd15.prod.outlook.com (52.132.172.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Thu, 12 Dec 2019 18:30:50 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2538.017; Thu, 12 Dec 2019
+ 18:30:50 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on
+ ppc64le arch
+Thread-Topic: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on
+ ppc64le arch
+Thread-Index: AQHVsRBQNM/jsU+ZtU6WmSyUu/Ydt6e20mkA
+Date:   Thu, 12 Dec 2019 18:30:50 +0000
+Message-ID: <20191212183046.7h4kcuvmayafzztg@kafai-mbp>
+References: <20191212171918.638010-1-andriin@fb.com>
+In-Reply-To: <20191212171918.638010-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR05CA0085.namprd05.prod.outlook.com
+ (2603:10b6:104:1::11) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::97ef]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 54b674c2-06d7-4602-178e-08d77f3169de
+x-ms-traffictypediagnostic: MN2PR15MB3597:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR15MB35970C89DC2C98BDFEF6C3B1D5550@MN2PR15MB3597.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1247;
+x-forefront-prvs: 0249EFCB0B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(136003)(366004)(39860400002)(376002)(346002)(396003)(189003)(199004)(81156014)(54906003)(81166006)(66556008)(6506007)(64756008)(4326008)(66946007)(66446008)(316002)(66476007)(6636002)(478600001)(8676002)(71200400001)(186003)(6862004)(1076003)(4744005)(6486002)(6512007)(9686003)(86362001)(5660300002)(2906002)(8936002)(52116002)(33716001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3597;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sm7N40idxhdWnkiWtN89rWQVavCpq7znYkr4Cmxsbdi7bcyjs47vlG8BQXiZytad6tjgxKe+2Jx0193tS+5gI9UwTJEezUXtN0jpaHo828jMF2WfsXW45m83egDp4PAGsi6+xQ+ZTUjxOABppZgbOvUXE+ogEUsbe4K+QAxWv/xXBohd9iFH5DAXuuCpA4gUqH0ykyQqNWsOqJ5hxOy0HAeV7oAQwz4D3ffcekSnWjUwyikNQRoTc58PzyZ1NqNcK5QwbW4Myc5TFOCdowqBhw6a3TgeCxPF7gEw7p/3M1fOeszJyuAE4qeRZ+1rCrxkG3+ns+9K0hlQDpDCq364nCAbik/4TOW7CBcHHfFh8Tn2pc8R9M9vTFkAzAZYTlrdjC7N8S0J283ug4jJWfFmYsOXuIdz9gBXIICBmtpvRNKs16BOUcBtwsAe6jg0eAxo
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B09A384F47A7E143B576B653314A73F3@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54b674c2-06d7-4602-178e-08d77f3169de
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2019 18:30:50.4191
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8+ScWyl3sUTMGW8hI/w+2Sz49/bX1owadyA+AKLSWO2FHC2rnAFthZUjFeO6BuA6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3597
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_06:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ bulkscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=508
+ lowpriorityscore=0 suspectscore=0 spamscore=0 mlxscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120141
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 10:39 PM Jay Vosburgh
-<jay.vosburgh@canonical.com> wrote:
->
-> Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=
-=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wrote:
->
-> >On Sat, Dec 7, 2019 at 2:09 PM Jay Vosburgh <jay.vosburgh@canonical.com>=
- wrote:
-> >>
-> >> Mahesh Bandewar <maheshb@google.com> wrote:
-> >>
-> >> >After the recent fix 1899bb325149 ("bonding: fix state transition
-> >> >issue in link monitoring"), the active-backup mode with miimon
-> >> >initially come-up fine but after a link-failure, both members
-> >> >transition into backup state.
-> >> >
-> >> >Following steps to reproduce the scenario (eth1 and eth2 are the
-> >> >slaves of the bond):
-> >> >
-> >> >    ip link set eth1 up
-> >> >    ip link set eth2 down
-> >> >    sleep 1
-> >> >    ip link set eth2 up
-> >> >    ip link set eth1 down
-> >> >    cat /sys/class/net/eth1/bonding_slave/state
-> >> >    cat /sys/class/net/eth2/bonding_slave/state
-> >> >
-> >> >Fixes: 1899bb325149 ("bonding: fix state transition issue in link mon=
-itoring")
-> >> >CC: Jay Vosburgh <jay.vosburgh@canonical.com>
-> >> >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> >> >---
-> >> > drivers/net/bonding/bond_main.c | 3 ---
-> >> > 1 file changed, 3 deletions(-)
-> >> >
-> >> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bo=
-nd_main.c
-> >> >index fcb7c2f7f001..ad9906c102b4 100644
-> >> >--- a/drivers/net/bonding/bond_main.c
-> >> >+++ b/drivers/net/bonding/bond_main.c
-> >> >@@ -2272,9 +2272,6 @@ static void bond_miimon_commit(struct bonding *=
-bond)
-> >> >                       } else if (BOND_MODE(bond) !=3D BOND_MODE_ACTI=
-VEBACKUP) {
-> >> >                               /* make it immediately active */
-> >> >                               bond_set_active_slave(slave);
-> >> >-                      } else if (slave !=3D primary) {
-> >> >-                              /* prevent it from being the active on=
-e */
-> >> >-                              bond_set_backup_slave(slave);
-> >>
-> >>         How does this fix things?  Doesn't bond_select_active_slave() =
-->
-> >> bond_change_active_slave() set the backup flag correctly via a call to
-> >> bond_set_slave_active_flags() when it sets a slave to be the active
-> >> slave?  If this change resolves the problem, I'm not sure how this eve=
-r
-> >> worked correctly, even prior to 1899bb325149.
-> >>
-> >Hi Jay, I used kprobes to figure out the brokenness this patch fixes.
-> >Prior to your patch this call would not happen but with the patch,
-> >this extra call will put the master into the backup mode erroneously
-> >(in fact both members would be in backup state). The mechanics you
-> >have mentioned works correctly except that in the prior case, the
-> >switch statement was using new_link which was not same as
-> >link_new_state. The miimon_inspect will update new_link which is what
-> >was used in miimon_commit code. The link_new_state was used only to
-> >mitigate the rtnl-lock issue which would update the "link". Hence in
-> >the prior code, this path would never get executed.
->
->         I'm looking at the old code (prior to 1899bb325149), and I don't
-> see a path to what you're describing for the down to up transition in
-> active-backup mode.
->
-I was referring to the code where bond_miimon_inspect() switches using
-bond->link and bond_miimon_commit() (which happens after inspect)
-switches using bond->new_link. inspect doesn't touch new_link unless
-delay is set which is a corner case and probably ignore for this
-purpose since it's just postponing the behavior.
-bond->link_new_state was brought in to mitigate RTNL issue and affects
-only bond->link, if it can acquire RTNL. So irrespective of what
-bond_miimon_inspect() does for bond->link or bond->link_new_state the
-bond->new_link was maintained and then used in the bond_miimon_commit.
-Because of this the wrong transition wouldn't happen.
-
-Once the new_link and link_new_state is merged, the state that
-bond_miimon_inspect() sets for bond->link_new_state *is* used in
-bond_miimon_commit() (which is after the fact) and hence (I believe)
-the erroneous transition.
-
-Having said that, the fix that you put in is necessary to close the
-window between link_propose() and link_commit() but the side effect of
-that was the situation that I explained
-above which is what this patch fixes it.
-
-> bond_miimon_inspect enters switch, slave->link =3D=3D BOND_LINK_DOWN.
->
-> link_state is nonzero, call bond_propose_link_state(BOND_LINK_BACK),
-> which sets slave->link_new_state to _BACK.
->
-> Fall through to BOND_LINK_BACK case, set slave->new_link =3D BOND_LINK_UP
->
-> bond_mii_monitor then calls bond_commit_link_state, which sets
-> slave->link to BOND_LINK_BACK
->
-> Enter bond_miimon_commit switch (new_link), which is BOND_LINK_UP
->
-> In "case BOND_LINK_UP:" there is no way out of this block, and it should
-> proceed to call bond_set_backup_slave for active-backup mode every time.
->
-> >The steps to reproduce this issue is straightforward and happens 100%
-> >of the time (I used two mlx interfaces but that shouldn't matter).
->
->         Yes, I've been able to reproduce it locally (with igb, FWIW).  I
-> think the patch is likely ok, I'm just mystified as to how the backup
-> setting could have worked prior to 1899bb325149, so perhaps the Fixes
-> tag doesn't go back far enough.
->
-Well, I added fixes-tag since the behavior started as soon as the
-1899bb325149 was added. I don't see the issue if I revert
-1899bb325149.
-
-
->         -J
->
-> >thanks,
-> >--mahesh..
-> >>         -J
-> >>
-> >> >                       }
-> >> >
-> >> >                       slave_info(bond->dev, slave->dev, "link status=
- definitely up, %u Mbps %s duplex\n",
-> >> >--
-> >> >2.24.0.393.g34dc348eaf-goog
->
-> ---
->         -Jay Vosburgh, jay.vosburgh@canonical.com
+On Thu, Dec 12, 2019 at 09:19:18AM -0800, Andrii Nakryiko wrote:
+> On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
+> respectively. This causes compiler to emit warning when %lld/%llu are use=
+d to
+> printf 64-bit numbers. Fix this by casting to size_t/ssize_t with %zu and=
+ %zd
+> format specifiers, respectively.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
