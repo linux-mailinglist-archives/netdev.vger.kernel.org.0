@@ -2,114 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE1A711CD4D
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A3BD11CD53
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbfLLMgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:36:31 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38470 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729157AbfLLMgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:36:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576154190;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vx9zJGf1oMGJUZXazsjSWnZ1RqAwmrURKhXjqCuTSZw=;
-        b=hTmtLE3R+BlTeyJOH581i/0AVRT5Z4l3O0dz89qP//BI7ncyqS+uOdXWxttP80hECqlJRC
-        nX3EuXek0LwHbl/nbxBNKW4diEOAbHYn86p7RjiYgVvpKlHcljP8PjvhBpoj1qFwcuWDVD
-        6disNfMURYWiokmBX7+nXhperAH2U7Y=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-4-NHH4jUObMgOtoc-tGE42jg-1; Thu, 12 Dec 2019 07:36:29 -0500
-X-MC-Unique: NHH4jUObMgOtoc-tGE42jg-1
-Received: by mail-wr1-f71.google.com with SMTP id u12so970555wrt.15
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 04:36:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vx9zJGf1oMGJUZXazsjSWnZ1RqAwmrURKhXjqCuTSZw=;
-        b=Ejw3Iot9lEvhv2RPt3W2vKkXezG3a8h/toecdgniok1KfAGKXmVlCEvqZfU3VPmiqL
-         rngD0hBMio6neMcZJ5Ibglr/wo93mKvW1Op6xmluLcj9tMPypvndnjsdeUT/oMPVDB0h
-         RIj4zC30hgkwPfwqpwboOL+2Eb7XUgZn+1I3bO3Cm9JengCijBfMk+dFJssHewu1Y7WG
-         Tbwjh/uAoGOqhpjcmS56vJQYPRSYVVzppXT1HArHAPSQixf6pGcbC+YPm/V+1ryGvqzv
-         1nAyacXqjEJwo3BFGElyXynX+Aqx4e5aaDuGhkVZXPP+Q75JpDglESLL1EGL4GoRzddV
-         f4GQ==
-X-Gm-Message-State: APjAAAWrWLr+7ZDgckJykiJrb2TvLZv+Tn1dFGSJuwm3Go8o5NWXQayp
-        elTT4BF1VndqpKFyx7UWJV6DSHbauh9KFjIquq1Jn11OUk2/bEAfvqR9iwKCG74F5kAxlMoMBVM
-        fX4ht9BsmPX9IjIo6
-X-Received: by 2002:a1c:9893:: with SMTP id a141mr6328753wme.131.1576154187822;
-        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
-X-Google-Smtp-Source: APXvYqw8OuvK7uQUGPj2YPMKShfitWnCo2iXv2VXIudtkzMfeAvfFAzJUBd43fFj7MHbtZkQxZXP5g==
-X-Received: by 2002:a1c:9893:: with SMTP id a141mr6328729wme.131.1576154187582;
-        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
-Received: from steredhat ([95.235.120.92])
-        by smtp.gmail.com with ESMTPSA id x10sm5861395wrp.58.2019.12.12.04.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
-Date:   Thu, 12 Dec 2019 13:36:24 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: accept only packets with the right dst_cid
-Message-ID: <20191212123624.ahyhrny7u6ntn3xt@steredhat>
-References: <20191206143912.153583-1-sgarzare@redhat.com>
- <20191211110235-mutt-send-email-mst@kernel.org>
+        id S1729286AbfLLMhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 07:37:53 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:1778 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729157AbfLLMhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:37:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1576154272; x=1607690272;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=64i9dOS4nNgwTFfSAmSWV7jMZ71ZQlmzTwYxEKBpjQc=;
+  b=YwBVWriEPo3H0XaPTyAZBKR5NqaZK4T5A778guGAwvIIbgmeZDPG2Zjf
+   FWdHsZnMt0ZH5OhMXwuUEkLnRKErl7wIWfbWGzpiEGbke3qLO5nQ2HtTt
+   vPafJLhUZ8I6k+GjL69v7M26/7zPVtfbUMf/v+jFpdgWelJdNTMRD2VMY
+   g=;
+IronPort-SDR: u48cjDvfsDaqvN8mi03+dtkm+PjjjAcd0TOEvApWEU4rNGoaDFBQwhsWz1lW0OSTr6EgStUtWO
+ qWR9JC3DsDjA==
+X-IronPort-AV: E=Sophos;i="5.69,305,1571702400"; 
+   d="scan'208";a="4722440"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 12 Dec 2019 12:37:39 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id B8FDBA1CBF;
+        Thu, 12 Dec 2019 12:37:36 +0000 (UTC)
+Received: from EX13D32EUB004.ant.amazon.com (10.43.166.212) by
+ EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 12 Dec 2019 12:37:36 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D32EUB004.ant.amazon.com (10.43.166.212) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 12 Dec 2019 12:37:35 +0000
+Received: from u2f063a87eabd5f.cbg10.amazon.com (10.125.106.135) by
+ mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Thu, 12 Dec 2019 12:37:32 +0000
+From:   Paul Durrant <pdurrant@amazon.com>
+To:     <netdev@vger.kernel.org>, <xen-devel@lists.xenproject.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Paul Durrant <pdurrant@amazon.com>,
+        Juergen Gross <jgross@suse.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net] xen-netback: avoid race that can lead to NULL pointer dereference
+Date:   Thu, 12 Dec 2019 12:37:23 +0000
+Message-ID: <20191212123723.21548-1-pdurrant@amazon.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191211110235-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 11:03:07AM -0500, Michael S. Tsirkin wrote:
-> On Fri, Dec 06, 2019 at 03:39:12PM +0100, Stefano Garzarella wrote:
-> > When we receive a new packet from the guest, we check if the
-> > src_cid is correct, but we forgot to check the dst_cid.
-> > 
-> > The host should accept only packets where dst_cid is
-> > equal to the host CID.
-> > 
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> 
-> Stefano can you clarify the impact pls?
+Commit 2ac061ce97f4 ("xen/netback: cleanup init and deinit code")
+introduced a problem. In function xenvif_disconnect_queue(), the value of
+queue->rx_irq is zeroed *before* queue->task is stopped. Unfortunately that
+task may call notify_remote_via_irq(queue->rx_irq) and calling that
+function with a zero value results in a NULL pointer dereference in
+evtchn_from_irq().
 
-Sure, I'm sorry I didn't do it earlier.
+This patch simply re-orders things, stopping all tasks before zero-ing the
+irq values, thereby avoiding the possibility of the race.
 
-> E.g. is this needed on stable? Etc.
+Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+---
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+---
+ drivers/net/xen-netback/interface.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-This is a better analysis (I hope) when there is a malformed guest
-that sends a packet with a wrong dst_cid:
-- before v5.4 we supported only one transport at runtime, so the sockets
-  in the host can only receive packets from guests. In this case, if
-  the dst_cid is wrong, maybe the only issue is that the getsockname()
-  returns an inconsistent address (the cid returned is the one received
-  from the guest)
-
-- from v5.4 we support multi-transport, so the L1 VM (e.g. L0 assigned
-  cid 5 to this VM) can have both Guest2Host and Host2Guest transports.
-  In this case, we have these possible issues:
-  - L2 (or L1) guest can use cid 0, 1, and 2 to reach L1 (or L0),
-    instead we should allow only CID_HOST (2) to reach the level below.
-    Note: this happens also with not malformed guest that runs Linux v5.4
-
-  - if a malformed L2 guest sends a packet with the wrong dst_cid, for example
-    instead of CID_HOST, it uses the cid assigned by L0 to L1 (5 in this
-    example), this packets can wrongly queued to a socket on L1 bound to cid 5,
-    that only expects connections from L0.
-
-Maybe we really need this only on stable v5.4, but the patch is very simple
-and should apply cleanly to all stable branches.
-
-What do you think?
-
-Thanks,
-Stefano
+diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
+index 68dd7bb07ca6..f15ba3de6195 100644
+--- a/drivers/net/xen-netback/interface.c
++++ b/drivers/net/xen-netback/interface.c
+@@ -628,18 +628,6 @@ int xenvif_connect_ctrl(struct xenvif *vif, grant_ref_t ring_ref,
+ 
+ static void xenvif_disconnect_queue(struct xenvif_queue *queue)
+ {
+-	if (queue->tx_irq) {
+-		unbind_from_irqhandler(queue->tx_irq, queue);
+-		if (queue->tx_irq == queue->rx_irq)
+-			queue->rx_irq = 0;
+-		queue->tx_irq = 0;
+-	}
+-
+-	if (queue->rx_irq) {
+-		unbind_from_irqhandler(queue->rx_irq, queue);
+-		queue->rx_irq = 0;
+-	}
+-
+ 	if (queue->task) {
+ 		kthread_stop(queue->task);
+ 		queue->task = NULL;
+@@ -655,6 +643,18 @@ static void xenvif_disconnect_queue(struct xenvif_queue *queue)
+ 		queue->napi.poll = NULL;
+ 	}
+ 
++	if (queue->tx_irq) {
++		unbind_from_irqhandler(queue->tx_irq, queue);
++		if (queue->tx_irq == queue->rx_irq)
++			queue->rx_irq = 0;
++		queue->tx_irq = 0;
++	}
++
++	if (queue->rx_irq) {
++		unbind_from_irqhandler(queue->rx_irq, queue);
++		queue->rx_irq = 0;
++	}
++
+ 	xenvif_unmap_frontend_data_rings(queue);
+ }
+ 
+-- 
+2.20.1
 
